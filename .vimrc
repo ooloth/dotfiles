@@ -80,7 +80,7 @@ set encoding=UTF-8
 nmap <space>e :Lexplore<CR>
     
 "Customize file tree 
-let g:netrw_altv=0                              " open splits to the right
+let g:netrw_altv=1                              " open splits to the right
 let g:netrw_banner=0                            " disable banner 
 let g:netrw_browse_split=4                      " open in non-tree window
 " let g:netrw_list_hide=netrw_gitignore#Hide()    " hide .gitignore files
