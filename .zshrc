@@ -28,6 +28,7 @@ export PATH="/usr/local/sbin:$PATH"
 alias cdh='cd /Users/Michael'
 alias cds='cd /Users/Michael/Sites'
 alias cde='cd /Users/Michael/Sites/ecobee/consumer-website'
+alias cdd='cd /Users/Michael/Sites/projects/dotfiles'
 alias cdmu='cd /Users/Michael/Sites/projects/michaeluloth.com'
 alias cdgt='cd /Users/Michael/Sites/projects/gatsbytutorials.com'
 
