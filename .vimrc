@@ -119,12 +119,10 @@ set softtabstop=2
 set tabstop=2
 
 "Line wrapping
-" set wrap
-set linebreak         " when wrapping, don't break words
+set linebreak    " keep words intact when wrapping
 " set colorcolumn=100
 " highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
 " set textwidth=100
-set nowrap
 
 " ------------------------------------------------------------------------ 
 " SYNTAX HIGHLIGHTING
