@@ -1,6 +1,3 @@
-export PATH=$HOME/bin:/usr/local/bin:$PATH
-export EDITOR='vim'
-
 # Oh my zsh
 export ZSH="/Users/Michael/.oh-my-zsh"
 export NVM_AUTO_USE=true 
@@ -14,15 +11,17 @@ SPACESHIP_EXEC_TIME_SHOW=false
 autoload -U promptinit; promptinit
 prompt spaceship
 
+# Editor
+export EDITOR='vim'
+
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# make fzf use ripgrep for grepping and include hidden files
+# tell fzf to use ripgrep and include hidden files in searches
 export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
 
 # Google Cloud SDK (ecobee)
 if [ -f '/Users/Michael/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/Michael/google-cloud-sdk/path.zsh.inc'; fi
 if [ -f '/Users/Michael/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/Michael/google-cloud-sdk/completion.zsh.inc'; fi
-export PATH="/usr/local/sbin:$PATH"
 
 # Jump to common directories
 alias cdh='cd /Users/Michael'
@@ -50,9 +49,4 @@ jwp() {
 alias gp='git push --no-verify'
 alias yb='yarn build'
 alias ys='yarn storybook'
-
-# alias ff='fzf ./**'
-# alias new=~/Sites/scripts/new-project/new-project.sh
-
-
 
