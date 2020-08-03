@@ -1,5 +1,5 @@
 # Oh my zsh
-export ZSH="/Users/Michael/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 export NVM_AUTO_USE=true 
 ZSH_THEME="dracula"
 plugins=(git zsh-nvm zsh-autosuggestions zsh-syntax-highlighting bgnotify)
@@ -20,16 +20,16 @@ export EDITOR='vim'
 export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
 
 # Google Cloud SDK (ecobee)
-if [ -f '/Users/Michael/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/Michael/google-cloud-sdk/path.zsh.inc'; fi
-if [ -f '/Users/Michael/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/Michael/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '$HOME/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/google-cloud-sdk/completion.zsh.inc'; fi
 
 # Jump to common directories
-alias cdh='cd /Users/Michael'
-alias cds='cd /Users/Michael/Sites'
-alias cde='cd /Users/Michael/Sites/ecobee/consumer-website'
-alias cdd='cd /Users/Michael/Sites/projects/dotfiles'
-alias cdmu='cd /Users/Michael/Sites/projects/michaeluloth.com'
-alias cdgt='cd /Users/Michael/Sites/projects/gatsbytutorials.com'
+alias cdh='cd $HOME'
+alias cds='cd $HOME/Sites'
+alias cde='cd $HOME/Sites/ecobee/consumer-website'
+alias cdd='cd $HOME/Sites/projects/dotfiles'
+alias cdmu='cd $HOME/Sites/projects/michaeluloth.com'
+alias cdgt='cd $HOME/Sites/projects/gatsbytutorials.com'
 
 # Run common ecobee commands
 alias yd='yarn install && yarn develop'

@@ -1,5 +1,5 @@
 [core]
-  excludesfile = /Users/Michael/.gitignore_global
+  excludesfile = $HOME/.gitignore_global
 
 [user]
   name = Michael Uloth
