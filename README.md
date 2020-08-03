@@ -13,7 +13,7 @@ ln -sfv $HOME/Sites/projects/dotfiles/.gitconfig $HOME
 ln -sfv $HOME/Sites/projects/dotfiles/alacritty.yml $HOME/.config/alacritty/alacritty.yml
 ```
 
-Now, changes to these files will be synced to the home directory automatically.
+Now, updates to these files will be synced to the home directory automatically.
 
 ## Disclaimer
 
