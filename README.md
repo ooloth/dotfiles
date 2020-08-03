@@ -9,6 +9,7 @@ Locally, these files live outside my home folder with my other project files. I 
 ```sh
 ln -sfv ~/Sites/projects/dotfiles/.zshrc ~
 ln -sfv ~/Sites/projects/dotfiles/.vimrc ~
+ln -sfv ~/Sites/projects/dotfiles/.gitconfig ~
 ln -sfv ~/Sites/projects/dotfiles/alacritty.yml ~/.config/alacritty/alacritty.yml
 ```
 

@@ -1,0 +1,6 @@
+[core]
+  excludesfile = /Users/Michael/.gitignore_global
+
+[user]
+  name = Michael Uloth
+  email = hello@michaeluloth.com
