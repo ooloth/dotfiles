@@ -21,19 +21,21 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
+Plug 'vim-airline/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
 
 "Automatically install missing plugins on startup
-"https://github.com/ChristianChiarulli/nvim/blob/master/vim-plug/plugins.vim 
+"https://github.com/ChristianChiarulli/nvim/blob/master/vim-plug/plugins.vim
 autocmd VimEnter *
   \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
   \|   PlugInstall --sync | q
-  \| endif" 
+  \| endif"
 
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 " GENERAL
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 
 let mapleader = " "
 set noerrorbells  " shhhhh
@@ -338,6 +340,42 @@ set splitbelow
 " Make Y behave like D and C instead of yanking the entire line
 nnoremap Y y$
 
-" autosource config on exit
-au BufLeave $MYVIMRC :source $MYVIMRC
+" Copy/paste between Vim and everything else
+set clipboard=unnamedplus
 
+
+" If I wanted to stop inserting a comment character when pressing <Enter> in a
+" comment line, this is how:
+" set formatoptions-=cro
+
+" Better nav for omnicomplete
+inoremap <expr> <c-j> ("\<C-n>")
+inoremap <expr> <c-k> ("\<C-p>")
+
+inoremap kj <Esc>
+
+nnoremap <TAB> :bnext<CR>       " TAB in normal mode will move to next buffer
+nnoremap <S-TAB> :bprevious<CR> " SHIFT-TAB will go back
+
+" Airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
+let g:airline_highlighting_cache = 1
+let g:airline_focuslost_inactive = 1
+
+" Replace some unwanted symbols with empty space
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+
+let g:airline_symbols.linenr = ' '
+let g:airline_symbols.maxlinenr = '  ln'
+
+" Always show tabs
+set showtabline=2
+
+" We don't need to see things like -- INSERT -- anymore
+set noshowmode
+
+autocmd BufWritePre * :%s/\s\+$//e   " remove trailing whitespace on save
+autocmd BufWritePost .vimrc source % " auto source when writing file
