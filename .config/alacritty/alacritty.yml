@@ -1,6 +1,8 @@
 # See: https://github.com/alacritty/alacritty/blob/master/alacritty.yml
 # See: https://github.com/alacritty/alacritty/wiki/Color-schemes
 
+# background_opacity: 0.85
+
 # Colors (Dracula)
 
 colors:
@@ -52,22 +54,6 @@ cursor:
   text: CellBackground
   unfocused_hollow: true
 
-vi_mode_cursor:
-  cursor: CellForeground
-  text: CellBackground
-
-selection:
-  background: CellForeground
-  text: CellBackground
-
-search:
-  matches:
-    foreground: "#000000"
-    background: "#ffffff"
-  bar:
-    background: "#c5c8c6"
-    foreground: "#1d1f21"
-
 draw_bold_text_with_bright_colors: false
 
 env:
@@ -79,7 +65,7 @@ font:
     family: "Dank Mono"
   offset:
     x: 0
-    y: 9
+    y: 5
   size: 17
   use_thin_strokes: true
 
@@ -100,10 +86,27 @@ scrolling:
   history: 10000 # max lines in the scrollback buffer
   multiplier: 3
 
+search:
+  matches:
+    foreground: "#000000"
+    background: "#ffffff"
+  bar:
+    background: "#c5c8c6"
+    foreground: "#1d1f21"
+
+selection:
+  background: CellForeground
+  save_to_clipboard: true
+  text: CellBackground
+
+vi_mode_cursor:
+  cursor: CellForeground
+  text: CellBackground
+
 window:
-  decorations: full # or none
+  decorations: none # or full
   padding:
-    x: 10
-    y: 10
+    x: 5
+    y: 5
 
 working_directory: /Users/Michael/Sites
