@@ -7,10 +7,13 @@ It dawned on me that I should make sure I don't lose these!
 Locally, these files live outside my home folder with my other project files. I symlinked them to the corresponding files in my home directory by running the following commands once:
 
 ```sh
+ln -sfv $HOME/Sites/projects/dotfiles/.config/alacritty/alacritty.yml $HOME/.config/alacritty/alacritty.yml
+ln -sfv $HOME/Sites/projects/dotfiles/.vim/mappings.vim $HOME/.vim/mappings.vim
+ln -sfv $HOME/Sites/projects/dotfiles/.vim/plugins.vim $HOME/.vim/plugins.vim
+ln -sfv $HOME/Sites/projects/dotfiles/.vim/settings.vim $HOME/.vim/settings.vim
+ln -sfv $HOME/Sites/projects/dotfiles/.gitconfig $HOME
 ln -sfv $HOME/Sites/projects/dotfiles/.zshrc $HOME
 ln -sfv $HOME/Sites/projects/dotfiles/.vimrc $HOME
-ln -sfv $HOME/Sites/projects/dotfiles/.gitconfig $HOME
-ln -sfv $HOME/Sites/projects/dotfiles/alacritty.yml $HOME/.config/alacritty/alacritty.yml
 ```
 
 Now, updates to these files will be synced to the home directory automatically.
