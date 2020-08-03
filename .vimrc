@@ -1,6 +1,6 @@
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 " INSTALL PLUGINS
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 
 "Install vim-plug if not already installed
 "https://github.com/junegunn/vim-plug/wiki/tips#automatic-installation
@@ -48,9 +48,9 @@ set undodir=~/.vim/undodir
 set undofile
 set undolevels=200 " make more changes undoable
 
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 " NAVIGATION
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 
 " Line numbers
 set number
@@ -78,15 +78,15 @@ set scrolloff=15 "keep cursor this many lines away from top/bottom
 "Show file tree
 set encoding=UTF-8
 nmap <space>e :Lexplore<CR>
-    
-"Customize file tree 
+
+"Customize file tree
 let g:netrw_altv=1                              " open splits to the right
-let g:netrw_banner=0                            " disable banner 
+let g:netrw_banner=0                            " disable banner
 let g:netrw_browse_split=4                      " open in non-tree window
 " let g:netrw_list_hide=netrw_gitignore#Hide()    " hide .gitignore files
 " let g:netrw_list_hide.=',\(^\?\s\s\)\zs\.\S\+'  " hide dot files
 let g:netrw_liststyle=3                         " use tree view
-let g:netrw_preview=1                           " vertical split preview 
+let g:netrw_preview=1                           " vertical split preview
 let g:netrw_winsize=20                          " % of horizontal space
 
 " TODO: customize which files are toggled as hidden by 'gh'
@@ -102,9 +102,9 @@ autocmd FileType netrw setl bufhidden=delete
 " Enable mouse
 set mouse=a
 
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 " LINTING & FORMATTING
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 
 "Indenting
 filetype plugin indent on
@@ -124,9 +124,9 @@ set linebreak    " keep words intact when wrapping
 " highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
 " set textwidth=100
 
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 " SYNTAX HIGHLIGHTING
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 
 "Rescan the entire buffer when highlighting js, jsx, ts and tsx files
 "https://thoughtbot.com/blog/modern-typescript-and-react-development-in-vim
@@ -149,22 +149,22 @@ let g:one_allow_italics = 1
 let g:javascript_plugin_flow = 1
 
 "Tweak syntax coloring
-highlight Comment gui=italic cterm=italic ctermfg=darkgray guifg=#6272a4
+highlight Comment gui=italic cterm=italic ctermfg=darkgrey guifg=#6272a4
 highlight Type gui=italic cterm=italic ctermfg=cyan
 highlight htmlArg gui=italic cterm=italic
 highlight Function ctermfg=green guifg=green
 
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 " SEARCH
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 
 " Search current file with '/' (remapped to 'f')
 set ignorecase
-set incsearch  "see incremental results while typing 
+set incsearch  "see incremental results while typing
 nnoremap f /
 
 set hlsearch   " highlight search terms (manually remove with :nohl)
-set incsearch  " show search matches while typing 
+set incsearch  " show search matches while typing
 set ignorecase " ignore case when searching (if search is lowercase)
 set smartcase  " override above and match case (if search includes uppercase)
 
@@ -185,11 +185,11 @@ nnoremap <Leader>g :Rg<Space>
 " if executable('rg')
 "   let g:rg_derive_root='true'
 " endif
-" set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --follow  
+" set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --follow
 
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 " CONQUER OF COMPLETION
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
 
 " Coc plugins to automatically install and update in any project
 let g:coc_global_extensions = [
@@ -215,7 +215,7 @@ if isdirectory('./node_modules')
   elseif isdirectory('./node_modules/typescript')
     let g:coc_global_extensions += ['coc-tsserver']
   endif
-  
+
   "Activate tailwind (if installed)
   if isdirectory('./node_modules/tailwindcss')
     let g:coc_global_extensions += ['coc-tailwindcss']
@@ -261,9 +261,9 @@ nmap <leader>rn <Plug>(coc-rename)
 "Prompt for how to autofix issue with word under cursor
 nmap <leader>do <Plug>(coc-codeaction)
 
-" ------------------------------------------------------------------------ 
-" CUSTOM KEYBINDINGS 
-" ------------------------------------------------------------------------ 
+" ------------------------------------------------------------------------
+" CUSTOM KEYBINDINGS
+" ------------------------------------------------------------------------
 
 "Disable arrow key navigation
 noremap <Up> <nop>
@@ -305,7 +305,7 @@ tnoremap <Leader>h <C-\><C-n><C-w>h
 tnoremap <Leader>j <C-\><C-n><C-w>j
 tnoremap <Leader>k <C-\><C-n><C-w>k
 tnoremap <Leader>l <C-\><C-n><C-w>l
-	
+
 "Open current file in new tab (to temporarily make it fullscreen)
 "https://stackoverflow.com/a/15584901
 noremap tt :tab split<CR>
@@ -313,7 +313,7 @@ noremap tt :tab split<CR>
 "Show open windows (navigate list with C-j, C-k)
 noremap <Leader>w :Windows<CR>
 
-"Show undo tree 
+"Show undo tree
 nnoremap <Leader>u :UndotreeShow<CR>
 
 "Toggle comments
