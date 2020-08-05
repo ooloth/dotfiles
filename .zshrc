@@ -1,6 +1,6 @@
 # Oh my zsh
 export ZSH="$HOME/.oh-my-zsh"
-export NVM_AUTO_USE=true 
+export NVM_AUTO_USE=true
 ZSH_THEME="dracula"
 plugins=(git zsh-nvm zsh-autosuggestions zsh-syntax-highlighting bgnotify)
 source $ZSH/oh-my-zsh.sh
@@ -22,6 +22,10 @@ export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
 # Google Cloud SDK (ecobee)
 if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk/path.zsh.inc'; fi
 if [ -f '$HOME/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Neovim
+alias v='nvim'
+alias vim='nvim'
 
 # Jump to common directories
 alias cdh='cd $HOME'
