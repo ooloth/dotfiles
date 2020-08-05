@@ -3,7 +3,9 @@
 " ------------------------------------------------------------------------
 
 " Copy/paste between Vim and everything else
-" set clipboard=unnamedplus
+set clipboard+=unnamed  " use the clipboards of vim and win
+set paste               " Paste from a windows or from vim
+set go+=a               " Visual selection automatically copied to the clipboard
 
 " ------------------------------------------------------------------------
 " Undo History
@@ -31,7 +33,7 @@ set updatetime=300
 set timeoutlen=500 "faster action after keypress (but still time for double)
 
 " Give more space for displaying messages.
-set cmdheight=2
+" set cmdheight=2
 
 " ------------------------------------------------------------------------
 " BUFFERS
@@ -81,44 +83,37 @@ autocmd BufWritePre * :%s/\s\+$//e
 " ------------------------------------------------------------------------
 
 syntax enable
+" filetype on
+" filetype plugin on
+" filetype indent on
+" set redrawtime=10000
 
-filetype on
-filetype plugin on
-filetype indent on
-set redrawtime=10000
+set re=0 " https://github.com/HerringtonDarkholme/yats.vim#config
 
-if has('nvim') || has('termguicolors')
-  set termguicolors
-endif
+set termguicolors
+set background=dark
 
-colorscheme dracula
+let g:gruvbox_italic=1
+let g:gruvbox_contrast_dark='medium'
 
-" Enable italics (must come after colorscheme)
-let g:one_allow_italics = 1
-let g:javascript_plugin_flow = 1
-
-"Tweak syntax coloring
-highlight Comment gui=italic cterm=italic ctermfg=darkgrey guifg=#6272a4
-highlight Type gui=italic cterm=italic ctermfg=cyan
-highlight htmlArg gui=italic cterm=italic
-highlight Function ctermfg=green guifg=green
-
-"Rescan the entire buffer when highlighting js, jsx, ts and tsx files
-"https://thoughtbot.com/blog/modern-typescript-and-react-development-in-vim
-" autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
-" autocmd BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
+colorscheme gruvbox
+" colorscheme dracula
+" colorscheme dogrun
+" colorscheme deus
+" colorscheme edge
+" colorscheme onedark
+" colorscheme xcodedark
 
 " ------------------------------------------------------------------------
 " CURSOR
 " ------------------------------------------------------------------------
 
-set scrolloff=10 "keep cursor this many lines away from top/bottom
+set scrolloff=12 "keep cursor this many lines away from top/bottom
 
 " Cursor line
 set cursorline
 autocmd InsertEnter * set nocursorline
 autocmd InsertLeave * set cursorline
-highlight CursorLine guibg=darkgrey ctermbg=237
 
 " ------------------------------------------------------------------------
 " SEARCH
@@ -146,9 +141,8 @@ set noshowmode    " No need for --INSERT-- anymore
 " LIVE CONFIG RELOAD
 " ------------------------------------------------------------------------
 
-" Source .vimrc again whenever I save changes to it
-autocmd BufWritePost .vim/mappings.vim source .vimrc
-autocmd BufWritePost .vim/plugins.vim source .vimrc
-autocmd BufWritePost .vim/settings.vim source .vimrc
-autocmd BufWritePost .vimrc source %
-
+" Source init.vim again whenever I save changes to it
+autocmd BufWritePost .config/nvim/mappings.vim source .config/nvim/init.vim
+autocmd BufWritePost .config/nvim/plugins.vim source .config/nvim/init.vim
+autocmd BufWritePost .config/nvim/settings.vim source .config/nvim/init.vim
+autocmd BufWritePost .config/nvim/init.vim source %

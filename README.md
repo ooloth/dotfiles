@@ -8,12 +8,12 @@ Locally, these files live outside my home folder with my other project files. I 
 
 ```sh
 ln -sfv $HOME/Sites/projects/dotfiles/.config/alacritty/alacritty.yml $HOME/.config/alacritty/alacritty.yml
-ln -sfv $HOME/Sites/projects/dotfiles/.vim/mappings.vim $HOME/.vim/mappings.vim
-ln -sfv $HOME/Sites/projects/dotfiles/.vim/plugins.vim $HOME/.vim/plugins.vim
-ln -sfv $HOME/Sites/projects/dotfiles/.vim/settings.vim $HOME/.vim/settings.vim
+ln -sfv $HOME/Sites/projects/dotfiles/.config/nvim/init.vim $HOME/.config/nvim/init.vim
+ln -sfv $HOME/Sites/projects/dotfiles/.config/nvim/mappings.vim $HOME/.config/nvim/mappings.vim
+ln -sfv $HOME/Sites/projects/dotfiles/.config/nvim/plugins.vim $HOME/.config/nvim/plugins.vim
+ln -sfv $HOME/Sites/projects/dotfiles/.config/nvim/settings.vim $HOME/.config/nvim/settings.vim
 ln -sfv $HOME/Sites/projects/dotfiles/.gitconfig $HOME
 ln -sfv $HOME/Sites/projects/dotfiles/.zshrc $HOME
-ln -sfv $HOME/Sites/projects/dotfiles/.vimrc $HOME
 ```
 
 Now, updates to these files will be synced to the home directory automatically.

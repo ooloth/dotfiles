@@ -12,22 +12,41 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'dracula/vim', { 'as': 'dracula' }
+" Syntax (https://github.com/MaxMEllon/vim-jsx-pretty#installation)
+Plug 'yuezk/vim-js'                 " highlight JS + Flow
+Plug 'HerringtonDarkholme/yats.vim' " highlight TS + TSX
+Plug 'maxmellon/vim-jsx-pretty'     " highlight JSX
+Plug 'sheerun/vim-polyglot'         " must be last syntax plugin
+
+" Intellisense
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" Search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'junegunn/rainbow_parentheses.vim'
 Plug 'jremmen/vim-ripgrep'
-Plug 'liuchengxu/vim-which-key'
 Plug 'mbbill/undotree'
-Plug 'mhinz/vim-startify'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'sheerun/vim-polyglot'
-Plug 'tpope/vim-commentary'
-Plug 'vim-airline/vim-airline'
-" Plug 'voldikss/vim-floaterm'
+
+" Highlighting
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'joshdick/onedark.vim'
+Plug 'arzg/vim-colors-xcode'
+Plug 'morhetz/gruvbox'
+Plug 'wadackel/vim-dogrun'
+Plug 'sainnhe/edge'
+Plug 'ajmwagar/vim-deus'
 
 " Git
 Plug 'tpope/vim-fugitive'
+
+" Organization
+Plug 'mhinz/vim-startify'
+Plug 'liuchengxu/vim-which-key'
+Plug 'vim-airline/vim-airline'
+" Plug 'voldikss/vim-floaterm'
+
+" Convenience
+Plug 'tpope/vim-commentary'
 
 call plug#end()
 
@@ -46,42 +65,20 @@ autocmd VimEnter *
 let g:loaded_netrw = 1
 let g:loaded_netrwPlugin = 1
 
-""Customize file tree
-"let g:netrw_altv=1                              " open splits to the right
-"let g:netrw_banner=0                            " disable banner
-"let g:netrw_browse_split=4                      " open in non-tree window
-"" let g:netrw_list_hide=netrw_gitignore#Hide()    " hide .gitignore files
-"" let g:netrw_list_hide.=',\(^\?\s\s\)\zs\.\S\+'  " hide dot files
-"let g:netrw_liststyle=3                         " use tree view
-"let g:netrw_preview=1                           " vertical split preview
-"let g:netrw_winsize=20                          " % of horizontal space
-
-" TODO: customize which files are toggled as hidden by 'gh'
-" let dotFiles = //
-" let gitIgnoreFiles = //
-" let npmFiles = //
-" let gatsbyFiles = //
-" let g:netrw_list_hide=dotFiles + gitIgnoreFiles + npmFiles + gatsbyFiles
-
-"Delete abandoned Netrw buffers (e.g. preview windows)
-" autocmd FileType netrw setl bufhidden=delete
-
 " ------------------------------------------------------------------------
 " DRACULA THEME
 " ------------------------------------------------------------------------
 
-let g:dracula_colorterm = 0
-let g:dracula_italic = 0
+" let g:dracula_colorterm = 0
 
 " ------------------------------------------------------------------------
 " FZF
 " ------------------------------------------------------------------------
 
-" ripgrep
-" if executable('rg')
-"   let g:rg_derive_root='true'
-" endif
-" set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --follow
+if executable('rg')
+  let g:rg_derive_root='true'
+endif
+set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --follow
 
 " ------------------------------------------------------------------------
 " CONQUER OF COMPLETION
@@ -124,12 +121,13 @@ endif
 " ------------------------------------------------------------------------
 
 "Change coc-yank highlight color
-hi HighlightedyankRegion term=bold ctermbg=green ctermfg=black guibg=#13354A
+hi HighlightedyankRegion term=bold ctermbg=yellow ctermfg=black guibg=#fabd2f
 
 " ------------------------------------------------------------------------
 " AIRLINE
 " ------------------------------------------------------------------------
 
+let g:airline_theme = 'gruvbox'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 let g:airline_highlighting_cache = 1
@@ -142,6 +140,12 @@ endif
 
 let g:airline_symbols.linenr = ' '
 let g:airline_symbols.maxlinenr = '  ln'
+
+" ------------------------------------------------------------------------
+" VIM POLYGLOT
+" ------------------------------------------------------------------------
+
+let g:polyglot_disabled = ['javascript','jsx','typescript']
 
 " ------------------------------------------------------------------------
 " Which Key
@@ -168,16 +172,16 @@ autocmd  FileType which_key set laststatus=0 noshowmode noruler
 " Rainbow Parentheses
 " ------------------------------------------------------------------------
 
-let g:rainbow#max_level = 16
-let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+" let g:rainbow#max_level = 16
+" let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 
-autocmd FileType * RainbowParentheses
+" autocmd FileType * RainbowParentheses
 
-" Activate based on file type
-augroup rainbow_lisp
-  autocmd!
-  autocmd FileType javascript,javascriptreact,typescript,typescriptreact  RainbowParentheses
-augroup END
+" " Activate based on file type
+" augroup rainbow_lisp
+"   autocmd!
+"   autocmd FileType javascript,javascriptreact,typescript,typescriptreact RainbowParentheses
+" augroup END
 
 " ------------------------------------------------------------------------
 " STARTIFY

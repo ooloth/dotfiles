@@ -27,12 +27,9 @@ noremap N Nzz
 noremap } }zz
 noremap { {zz
 noremap G Gzz
-noremap i zzi
-noremap I zzI
-noremap a zza
-noremap A zzA
-noremap s zzs
-noremap S zzS
+
+" TODO: refactor the next line so that it works (to avoid remapping, i and a)
+" autocmd InsertEnter * zz
 
 " Search all file names with fzf (mapped to 'ff'; like Cmd-P in VS Code)
 noremap ff :Files<CR>
@@ -75,7 +72,7 @@ noremap <silent> <space>s :<C-u>CocList -I symbols<cr>
 noremap <leader>rn <Plug>(coc-rename)
 
 "Prompt for how to autofix issue with word under cursor
-noremap <leader>do <Plug>(coc-codeaction)
+noremap <leader>a <Plug>(coc-codeaction)
 
 " Toggle comments
 noremap <Leader>c :Commentary<cr>
@@ -176,7 +173,7 @@ nnoremap <silent> <leader> :silent <c-u> :silent WhichKey '<Space>'<CR>
 vnoremap <silent> <leader> :silent <c-u> :silent WhichKeyVisual '<Space>'<CR>
 
 " " Create map to add keys to
-let g:which_key_map =  {}
+" let g:which_key_map =  {}
 
 " Todo get these plugins working...
 " let g:which_key_map['t'] = {
@@ -190,7 +187,11 @@ let g:which_key_map =  {}
 "   \ }
 
 " Register which key map
-call which_key#register('<Space>', "g:which_key_map")
+" call which_key#register('<Space>', "g:which_key_map")
+
+"
+" Example settings follow...
+"
 
 " " Single mappings
 " let g:which_key_map['/'] = [ ':call Comment()'            , 'comment' ]
