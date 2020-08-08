@@ -82,32 +82,19 @@ autocmd BufWritePre * :%s/\s\+$//e
 " ------------------------------------------------------------------------
 
 syntax enable
-" filetype on
-" filetype plugin on
-" filetype indent on
-" set redrawtime=10000
-
-set re=0 " https://github.com/HerringtonDarkholme/yats.vim#config
-
 set termguicolors
 set background=dark
+set re=0            " https://github.com/HerringtonDarkholme/yats.vim#config
 
 let g:gruvbox_italic=1
 let g:gruvbox_contrast_dark='medium'
-
 colorscheme gruvbox
-" colorscheme dracula
-" colorscheme dogrun
-" colorscheme deus
-" colorscheme edge
-" colorscheme onedark
-" colorscheme xcodedark
 
 " ------------------------------------------------------------------------
 " CURSOR
 " ------------------------------------------------------------------------
 
-set scrolloff=12 "keep cursor this many lines away from top/bottom
+set scrolloff=12 " keep cursor this many lines away from top/bottom
 
 " Cursor line
 set cursorline
