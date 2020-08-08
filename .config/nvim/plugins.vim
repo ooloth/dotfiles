@@ -124,14 +124,15 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 let g:airline_highlighting_cache = 1
 let g:airline_focuslost_inactive = 1
-
+let g:airline#extensions#branch#format = 1 "show only tail of branch name
+" let g:airline#extensions#coc#enabled = 1
 " Replace some unwanted symbols with empty space
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
 
 let g:airline_symbols.linenr = ' '
-let g:airline_symbols.maxlinenr = '  ln'
+let g:airline_symbols.maxlinenr = ''
 
 " ------------------------------------------------------------------------
 " VIM POLYGLOT
