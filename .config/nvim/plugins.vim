@@ -66,12 +66,6 @@ let g:loaded_netrw = 1
 let g:loaded_netrwPlugin = 1
 
 " ------------------------------------------------------------------------
-" DRACULA THEME
-" ------------------------------------------------------------------------
-
-" let g:dracula_colorterm = 0
-
-" ------------------------------------------------------------------------
 " FZF
 " ------------------------------------------------------------------------
 
@@ -116,13 +110,13 @@ if isdirectory('./node_modules')
   endif
 endif
 
-" ------------------------------------------------------------------------
-" COC-YANK
-" ------------------------------------------------------------------------
+if isdirectory('./git')
+  let g:coc_global_extensions += ['coc-git']
+endif
 
-"Change coc-yank highlight color
-hi HighlightedyankRegion term=bold ctermbg=yellow ctermfg=black guibg=#fabd2f
-
+" COC GIT
+let b:coc_git_blame = 1  "git status of current line
+let b:coc_git_status = 1 " git status of current buffer
 " ------------------------------------------------------------------------
 " AIRLINE
 " ------------------------------------------------------------------------
