@@ -12,7 +12,7 @@ autoload -U promptinit; promptinit
 prompt spaceship
 
 # Editor
-export EDITOR='vim'
+export EDITOR='nvim'
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
