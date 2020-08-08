@@ -11,25 +11,26 @@ noremap <Down> <nop>
 noremap <Left> <nop>
 
 " Close the current buffer (use ZZ for :wq)
+noremap W :w<CR>
+noremap Q :q<CR>
 noremap <Leader>w :w<CR>
 noremap <Leader>q :q<CR>
 
 "Show file explorer
-noremap <Leader>e :CocCommand explorer<CR>
+noremap <Leader>ee :CocCommand explorer<CR>
+noremap <Leader>er :RnvimrToggle<CR>
+noremap <Leader>ev :EditVifm .<CR>
 
 " Search current file with 'f'
 noremap f /
 noremap F ?
 
 " Keep cursor near the middle of the screen
+autocmd InsertEnter * norm zz
 noremap n nzz
 noremap N Nzz
 noremap } }zz
 noremap { {zz
-noremap G Gzz
-
-" TODO: refactor the next line so that it works (to avoid remapping, i and a)
-" autocmd InsertEnter * zz
 
 " Search all file names with fzf (mapped to 'ff'; like Cmd-P in VS Code)
 noremap ff :Files<CR>
@@ -50,33 +51,43 @@ noremap <Leader>l <C-w>l
 " View buffer list
 noremap <Leader>b :Buffers<Cr>
 
+" Resize panes
+noremap <C>== <C-w>=
+noremap <C>- :vertical resize -2<CR>
+noremap <C>= :vertical resize +2<CR>
+
+noremap <Leader>= <C-w>=<CR>
+noremap <Leader>+ :vertical resize +2<CR>
+noremap <Leader>- :vertical resize -2<CR>
 "View documentation pop-up for word under cursor
 noremap <silent> K :call CocAction('doHover')<CR>
 
 "Go to related details about word under cursor
-noremap <silent> gd <Plug>(coc-definition)
+" https://github.com/neoclide/coc.nvim/issues/1445#issuecomment-570856671
+function! s:GoToDefinition()
+  if CocAction('jumpDefinition')
+    return v:true
+  endif
+
+  let ret = execute("silent! normal \<C-]>")
+  if ret =~ "Error" || ret =~ "错误"
+    call searchdecl(expand('<cword>'))
+  endif
+endfunction
+
+nmap <silent> gd :call <SID>GoToDefinition()<CR>
 noremap <silent> gy <Plug>(coc-type-definition)
 noremap <silent> gr <Plug>(coc-references)
 
-"Go to prev/next error in current file
-noremap <silent> [g <Plug>(coc-diagnostic-prev)
-noremap <silent> ]g <Plug>(coc-diagnostic-next)
-
 "See all workspace errors and warnings
-noremap <silent> <space>d :<C-u>CocList diagnostics<cr>
-
-"See all symbols in workspace
-noremap <silent> <space>s :<C-u>CocList -I symbols<cr>
-
-"Rename symbol under cursor
-noremap <leader>rn <Plug>(coc-rename)
+noremap <silent> <Leader>d :<C-u>CocList diagnostics<cr>
 
 "Prompt for how to autofix issue with word under cursor
-noremap <leader>a <Plug>(coc-codeaction)
+noremap <Leader>a :CocAction<CR>
+" noremap <Leader>a <Plug>(coc-codeaction)
 
 " Toggle comments
-noremap <Leader>c :Commentary<cr>
-noremap <Leader>/ :Commentary<cr>
+noremap <silent> <Leader>c :Commentary<cr>
 
 " Wrap word under cursor in a console log
 " https://vi.stackexchange.com/a/21896
