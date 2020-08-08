@@ -50,8 +50,8 @@ set splitbelow
 set number
 set relativenumber
 
-" Enable mouse
-set mouse=a
+" Disable mouse
+set mouse=
 
 " ------------------------------------------------------------------------
 " FORMATTING
