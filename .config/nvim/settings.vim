@@ -110,11 +110,12 @@ set hlsearch   " highlight search terms (manually remove with :nohl)
 set incsearch  " show search matches while typing
 set ignorecase " ignore case when searching (if search is lowercase)
 set smartcase  " override above and match case (if search includes uppercase)
+set gdefault            " Use 'g' flag by default with :s/foo/bar/
 
 " Search file names with ':find'" (use * to make fuzzy and tab to autocomplete)
-set nocompatible " limit search to this project
-set path+=**     " search all subdirectories
-set wildmenu     " show command line tab completion matches on one line
+set path+=**;     " search all subdirectories (https://stackoverflow.com/a/52126548/8802485)
+set suffixesadd=.js,.ts,.tsx
+" set wildmode=longest,list,full
 
 " ------------------------------------------------------------------------
 " AIRLINE
@@ -127,8 +128,7 @@ set noshowmode    " No need for --INSERT-- anymore
 " LIVE CONFIG RELOAD
 " ------------------------------------------------------------------------
 
-" Source init.vim again whenever I save changes to it
-autocmd BufWritePost .config/nvim/mappings.vim source .config/nvim/init.vim
-autocmd BufWritePost .config/nvim/plugins.vim source .config/nvim/init.vim
-autocmd BufWritePost .config/nvim/settings.vim source .config/nvim/init.vim
-autocmd BufWritePost .config/nvim/init.vim source %
+" Source init.vim again whenever I save changes to its source files
+autocmd BufWritePost $HOME/.config/nvim/mappings.vim source $HOME/.config/nvim/init.vim
+autocmd BufWritePost $HOME/.config/nvim/plugins.vim source $HOME/.config/nvim/init.vim
+autocmd BufWritePost $HOME/.config/nvim/settings.vim source $HOME/.config/nvim/init.vim
