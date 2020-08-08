@@ -25,16 +25,14 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'jremmen/vim-ripgrep'
+Plug 'vifm/vifm.vim'
+Plug 'francoiscabrol/ranger.vim'
+Plug 'rbgrouleff/bclose.vim'    " ranger dependency
+" Plug 'kevinhwang91/rnvimr'
 Plug 'mbbill/undotree'
 
 " Highlighting
-Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'joshdick/onedark.vim'
-Plug 'arzg/vim-colors-xcode'
 Plug 'morhetz/gruvbox'
-Plug 'wadackel/vim-dogrun'
-Plug 'sainnhe/edge'
-Plug 'ajmwagar/vim-deus'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -176,6 +174,12 @@ autocmd  FileType which_key set laststatus=0 noshowmode noruler
 "   autocmd!
 "   autocmd FileType javascript,javascriptreact,typescript,typescriptreact RainbowParentheses
 " augroup END
+
+"
+" RANGER
+"
+
+let g:ranger_map_keys = 0 " stop ranger from mapping <Leader>f
 
 " ------------------------------------------------------------------------
 " STARTIFY
