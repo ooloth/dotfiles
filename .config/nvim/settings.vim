@@ -3,9 +3,8 @@
 " ------------------------------------------------------------------------
 
 " Copy/paste between Vim and everything else
-set clipboard+=unnamed  " use the clipboards of vim and win
-set paste               " Paste from a windows or from vim
-set go+=a               " Visual selection automatically copied to the clipboard
+set clipboard+=unnamedplus  " use the system clipboard for everything
+set go+=a                   " Visual selection automatically copied to the clipboard
 
 " ------------------------------------------------------------------------
 " Undo History
