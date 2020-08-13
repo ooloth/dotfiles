@@ -23,6 +23,14 @@ export EDITOR='nvim'
 # tell fzf to use ripgrep and include hidden files in searches
 export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
 
+# bat
+export BAT_THEME="gruvbox"
+# https://github.com/sharkdp/bat#highlighting-theme
+
+# GitHub CLI tab completion
+# https://www.youtube.com/watch?v=UNJVqevfg-8
+eval "$(gh completion -s zsh)"
+
 # Google Cloud SDK (ecobee)
 if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk/path.zsh.inc'; fi
 if [ -f '$HOME/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/google-cloud-sdk/completion.zsh.inc'; fi
