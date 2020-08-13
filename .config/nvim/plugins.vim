@@ -26,9 +26,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'jremmen/vim-ripgrep'
 Plug 'vifm/vifm.vim'
-Plug 'francoiscabrol/ranger.vim'
-Plug 'rbgrouleff/bclose.vim'    " ranger dependency
-" Plug 'kevinhwang91/rnvimr'
 Plug 'mbbill/undotree'
 
 " Highlighting
@@ -194,11 +191,12 @@ let g:ranger_map_keys = 0 " stop ranger from mapping <Leader>f
 let g:startify_change_to_vcs_root = 1     " change cwd to project root on open
 let g:startify_enable_special = 0         " get rid of empty buffers on quit
 let g:startify_fortune_use_unicode = 1    " if I want Unicode
-let g:startify_session_autoload = 1 " automatically restart sessions if dir has Sessions.vim
+let g:startify_session_autoload = 1       " automatically restart sessions if dir has Sessions.vim
 let g:startify_session_delete_buffers = 1 " let Startify take care of buffers
-let g:startify_session_dir = '/Users/Michael/.vim/sessions'
+let g:startify_session_dir = '$HOME/.config/nvim/sessions'
 let g:startify_session_persistence = 1    " automatically update sessions on quit
 let g:startify_session_sort = 0           " sort sessions by date modified
+let g:startify_update_oldfiles = 1        " keep Startify up to date as I work
 
 " returns all modified files of the current git repo
 " `2>/dev/null` makes the command fail quietly, so that when we are not
@@ -224,7 +222,6 @@ let g:startify_lists = [
   \ { 'type': 'sessions',  'header': [' Sessions'] },
   \ { 'type': function('s:gitModified'), 'header': [' [Git] Modified in current branch'] },
   \ { 'type': function('s:gitUntracked'), 'header': [' [Git] Untracked in current branch'] },
-  \ { 'type': 'dir', 'header': [' Recently opened in '. s:getDir()] },
   \ { 'type': 'bookmarks', 'header': [' Bookmarks'] },
   \ ]
 
@@ -251,21 +248,3 @@ let g:startify_bookmarks = [
 
 " Prevent coc-explorer from staying stuck in the last session's CWD after :SClose
 autocmd User Startified :silent CocRestart
-
-" ------------------------------------------------------------------------
-" FLOATERM
-"
-" Useful commands: ...
-"
-" https://github.com/voldikss/vim-floaterm
-" https://www.chrisatmachine.com/Neovim/16-floaterm/
-" ------------------------------------------------------------------------
-
-" TODO: get this working...
-" let g:floaterm_gitcommit='floaterm'
-" let g:floaterm_autoinsert=1
-" let g:floaterm_width=0.8
-" let g:floaterm_height=0.8
-" let g:floaterm_wintitle=0
-" let g:floaterm_autoclose=1
-
