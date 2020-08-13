@@ -1,3 +1,7 @@
+source $HOME/.config/.secrets
+
+export PATH="/usr/local/sbin:$PATH"
+
 # Oh my zsh
 export ZSH="$HOME/.oh-my-zsh"
 export NVM_AUTO_USE=true
