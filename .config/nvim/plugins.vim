@@ -38,10 +38,11 @@ Plug 'tpope/vim-fugitive'
 Plug 'mhinz/vim-startify'
 Plug 'liuchengxu/vim-which-key'
 Plug 'vim-airline/vim-airline'
-" Plug 'voldikss/vim-floaterm'
 
 " Convenience
+Plug 'alvan/vim-closetag'
 Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
 
 call plug#end()
 
@@ -56,7 +57,7 @@ autocmd VimEnter *
 " NETRW
 " ------------------------------------------------------------------------
 
-"Disable Netrw file tree
+" Disable Netrw file tree
 let g:loaded_netrw = 1
 let g:loaded_netrwPlugin = 1
 
@@ -64,10 +65,19 @@ let g:loaded_netrwPlugin = 1
 " FZF
 " ------------------------------------------------------------------------
 
+" https://github.com/junegunn/fzf#search-syntax
 if executable('rg')
   let g:rg_derive_root='true'
 endif
 set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --follow
+
+" Floating window
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let $FZF_DEFAULT_OPTS='--reverse'
+
+" Close search window with Esc
+" https://github.com/junegunn/fzf/issues/1393#issuecomment-426576577
+autocmd! FileType fzf tnoremap <buffer> <esc> <c-c>
 
 " ------------------------------------------------------------------------
 " CONQUER OF COMPLETION
@@ -78,6 +88,8 @@ let g:coc_global_extensions = [
   \ 'coc-css',
   \ 'coc-explorer',
   \ 'coc-json',
+  \ 'coc-pairs',
+  \ 'coc-snippets',
   \ 'coc-yaml'
   \ ]
 
@@ -109,9 +121,16 @@ if isdirectory('./git')
   let g:coc_global_extensions += ['coc-git']
 endif
 
+" Accept suggestion with Enter
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" ------------------------------------------------------------------------
 " COC GIT
-let b:coc_git_blame = 1  "git status of current line
+" ------------------------------------------------------------------------
+
+let b:coc_git_blame = 1  " git status of current line
 let b:coc_git_status = 1 " git status of current buffer
+
 " ------------------------------------------------------------------------
 " AIRLINE
 " ------------------------------------------------------------------------
@@ -122,7 +141,8 @@ let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 let g:airline_highlighting_cache = 1
 let g:airline_focuslost_inactive = 1
 let g:airline#extensions#branch#format = 1 "show only tail of branch name
-" let g:airline#extensions#coc#enabled = 1
+let g:airline#extensions#coc#enabled = 1
+
 " Replace some unwanted symbols with empty space
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
@@ -135,10 +155,10 @@ let g:airline_symbols.maxlinenr = ''
 " VIM POLYGLOT
 " ------------------------------------------------------------------------
 
-let g:polyglot_disabled = ['javascript','jsx','typescript']
+let g:polyglot_disabled = ['javascript', 'jsx', 'typescript']
 
 " ------------------------------------------------------------------------
-" Which Key
+" WHICH KEY
 " ------------------------------------------------------------------------
 
 " Define a separator
@@ -159,25 +179,37 @@ autocmd  FileType which_key set laststatus=0 noshowmode noruler
   \| autocmd BufLeave <buffer> set laststatus=2 noshowmode ruler
 
 " ------------------------------------------------------------------------
-" Rainbow Parentheses
+" VIM CLOSETAG
 " ------------------------------------------------------------------------
 
-" let g:rainbow#max_level = 16
-" let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+" These are the file extensions where this plugin is enabled.
+let g:closetag_filenames = '*.html,*.xhtml,*.jsx,*.js,*.tsx'
 
-" autocmd FileType * RainbowParentheses
+" This will make the list of non-closing tags self-closing in the specified files.
+let g:closetag_xhtml_filenames = '*.xml,*.xhtml,*.jsx,*.js,*.tsx'
 
-" " Activate based on file type
-" augroup rainbow_lisp
-"   autocmd!
-"   autocmd FileType javascript,javascriptreact,typescript,typescriptreact RainbowParentheses
-" augroup END
+" These are the file types where this plugin is enabled.
+let g:closetag_filetypes = 'html,xhtml,jsx,js,tsx'
 
-"
-" RANGER
-"
+" This will make the list of non-closing tags self-closing in the specified files.
+let g:closetag_xhtml_filetypes = 'xml,xhtml,jsx,js,tsx'
 
-let g:ranger_map_keys = 0 " stop ranger from mapping <Leader>f
+" integer value [0|1]
+" This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
+let g:closetag_emptyTags_caseSensitive = 1
+
+" dict
+" Disables auto-close if not in a "valid" region (based on filetype)
+let g:closetag_regions = {
+    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
+    \ 'javascript.jsx': 'jsxRegion',
+    \ }
+
+" Shortcut for closing tags, default is '>'
+let g:closetag_shortcut = '>'
+
+" Add > at current position without closing the current tag, default is ''
+let g:closetag_close_shortcut = '<leader>>'
 
 " ------------------------------------------------------------------------
 " STARTIFY
