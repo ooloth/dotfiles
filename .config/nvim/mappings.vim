@@ -17,9 +17,9 @@ noremap <Leader>w :w<CR>
 noremap <Leader>q :q<CR>
 
 "Show file explorer
-noremap <Leader>ee :CocCommand explorer<CR>
-noremap <Leader>er :RnvimrToggle<CR>
-noremap <Leader>ev :EditVifm .<CR>
+noremap <Leader>e :CocCommand explorer<CR>
+noremap <Leader>v :EditVifm .<CR>
+noremap <Leader>n :Vexplore<CR>
 
 " Search current file with 'f'
 noremap f /
@@ -43,10 +43,6 @@ noremap <Leader>h <C-w>h
 noremap <Leader>j <C-w>j
 noremap <Leader>k <C-w>k
 noremap <Leader>l <C-w>l
-" noremap <C-h> <C-w>h
-" noremap <C-j> <C-w>j
-" noremap <C-k> <C-w>k
-" noremap <C-l> <C-w>l
 
 " View buffer list
 noremap <Leader>b :Buffers<Cr>
@@ -91,7 +87,7 @@ noremap <silent> <Leader>c :Commentary<cr>
 
 " Wrap word under cursor in a console log
 " https://vi.stackexchange.com/a/21896
-noremap <Leader>L "ayiwoconsole.log('<C-R>a:', <C-R>a);<Esc>
+noremap <Leader>L "ayiwoconsole.log('<C-R>a:', <C-R>a)<Esc>
 
 " Show undo tree
 noremap <Leader>u :UndotreeShow<CR>
@@ -167,15 +163,6 @@ tnoremap <Leader>k <C-\><C-n><C-w>k
 tnoremap <Leader>l <C-\><C-n><C-w>l
 
 " ------------------------------------------------------------------------
-" FLOATERM
-" ------------------------------------------------------------------------
-
-let g:floaterm_keymap_toggle = '<F1>'
-let g:floaterm_keymap_next   = '<F2>'
-let g:floaterm_keymap_prev   = '<F3>'
-let g:floaterm_keymap_new    = '<F4>'
-
-" ------------------------------------------------------------------------
 " Which Key
 " ------------------------------------------------------------------------
 
@@ -185,17 +172,6 @@ vnoremap <silent> <leader> :silent <c-u> :silent WhichKeyVisual '<Space>'<CR>
 
 " " Create map to add keys to
 " let g:which_key_map =  {}
-
-" Todo get these plugins working...
-" let g:which_key_map['t'] = {
-"   \ 'name' : '+terminal' ,
-"   \ ';' : [':FloatermNew --wintype=popup --height=6', 'terminal'],
-"   \ 'f' : [':FloatermNew fzf'                       , 'fzf'],
-"   \ 'g' : [':FloatermNew lazygit'                   , 'git'],
-"   \ 'n' : [':FloatermNew node'                      , 'node'],
-"   \ 'r' : [':FloatermNew ranger'                    , 'ranger'],
-"   \ 't' : [':FloatermToggle'                        , 'toggle'],
-"   \ }
 
 " Register which key map
 " call which_key#register('<Space>', "g:which_key_map")
