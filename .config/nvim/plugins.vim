@@ -85,7 +85,6 @@ let g:coc_global_extensions = [
   \ 'coc-css',
   \ 'coc-explorer',
   \ 'coc-json',
-  \ 'coc-pairs',
   \ 'coc-snippets',
   \ 'coc-yaml'
   \ ]
