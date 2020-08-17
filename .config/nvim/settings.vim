@@ -22,17 +22,10 @@ set undolevels=200 " make more changes undoable
 " UX
 " ------------------------------------------------------------------------
 
-set noerrorbells  " shhhhh
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
-
-"Return to normal mode
-set timeoutlen=500 "faster action after keypress (but still time for double)
-
-" Give more space for displaying messages.
-" set cmdheight=2
+set noerrorbells   " shhhhh
+set updatetime=300 " reduce lag (default is 4000)
+set timeoutlen=500 " respond faster to keypresses (default is 1000)
+set ttimeoutlen=10
 
 " ------------------------------------------------------------------------
 " BUFFERS
@@ -81,7 +74,11 @@ autocmd BufWritePre * :%s/\s\+$//e
 " SYNTAX HIGHLIGHTING
 " ------------------------------------------------------------------------
 
+filetype on
+filetype plugin on
+filetype indent on
 syntax enable
+
 set termguicolors
 set background=dark
 set re=0            " https://github.com/HerringtonDarkholme/yats.vim#config
@@ -108,9 +105,8 @@ autocmd InsertLeave * set cursorline
 " Current file search
 set hlsearch   " highlight search terms (manually remove with :nohl)
 set incsearch  " show search matches while typing
-set ignorecase " ignore case when searching (if search is lowercase)
-set smartcase  " override above and match case (if search includes uppercase)
-set gdefault            " Use 'g' flag by default with :s/foo/bar/
+set ignorecase " ignore case when searching...
+set smartcase  " ...unless search includes uppercase letters
 
 " Search file names with ':find'" (use * to make fuzzy and tab to autocomplete)
 set path+=**;     " search all subdirectories (https://stackoverflow.com/a/52126548/8802485)
@@ -124,11 +120,3 @@ set suffixesadd=.js,.ts,.tsx
 set showtabline=2 " Always show tabs
 set noshowmode    " No need for --INSERT-- anymore
 
-" ------------------------------------------------------------------------
-" LIVE CONFIG RELOAD
-" ------------------------------------------------------------------------
-
-" Source init.vim again whenever I save changes to its source files
-autocmd BufWritePost $HOME/.config/nvim/mappings.vim source $HOME/.config/nvim/init.vim
-autocmd BufWritePost $HOME/.config/nvim/plugins.vim source $HOME/.config/nvim/init.vim
-autocmd BufWritePost $HOME/.config/nvim/settings.vim source $HOME/.config/nvim/init.vim
