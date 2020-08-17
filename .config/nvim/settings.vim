@@ -98,6 +98,13 @@ set cursorline
 autocmd InsertEnter * set nocursorline
 autocmd InsertLeave * set cursorline
 
+" Indicate which window is active
+augroup HighlightActiveWindow
+    autocmd!
+    autocmd WinEnter * set cursorline relativenumber
+    autocmd WinLeave * set nocursorline norelativenumber
+augroup END
+
 " ------------------------------------------------------------------------
 " SEARCH
 " ------------------------------------------------------------------------
