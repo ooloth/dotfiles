@@ -27,10 +27,10 @@ Plug 'Shougo/echodoc.vim'
 
 " Search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
 Plug 'jremmen/vim-ripgrep'
 " Plug 'vifm/vifm.vim'
 Plug 'mbbill/undotree'
+Plug 'LeafCage/yankround.vim'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -84,30 +84,42 @@ let g:airline_symbols.maxlinenr = ''
 let g:coc_global_extensions = [
   \ 'coc-css',
   \ 'coc-explorer',
+  \ 'coc-fzf-preview',
+  \ 'coc-highlight',
+  \ 'coc-html',
   \ 'coc-json',
   \ 'coc-snippets',
+  \ 'coc-vimlsp',
   \ 'coc-yaml'
   \ ]
 
 if isdirectory('./node_modules')
-  "Activate prettier (if installed)
+  " Activate import cost
+  let g:coc_global_extensions += ['coc-import-cost']
+
+  " Activate prettier (if installed)
   if isdirectory('./node_modules/prettier')
     let g:coc_global_extensions += ['coc-prettier']
   endif
 
-  "Activate eslint (if installed)
+  " Activate eslint (if installed)
   if isdirectory('./node_modules/eslint')
     let g:coc_global_extensions += ['coc-eslint']
   endif
 
-  "Activate flow or typescript (if installed), but never both
+  " Activate flow or typescript (if installed), but never both
   if isdirectory('./node_modules/flow-bin')
     let g:coc_global_extensions += ['coc-flow']
   elseif isdirectory('./node_modules/typescript')
     let g:coc_global_extensions += ['coc-tsserver']
   endif
 
-  "Activate tailwind (if installed)
+  " Activate inline jest (if jest installed)
+  if isdirectory('./node_modules/jest')
+    let g:coc_global_extensions += ['coc-inline-jest']
+  endif
+
+  " Activate tailwind (if installed)
   if isdirectory('./node_modules/tailwindcss')
     let g:coc_global_extensions += ['coc-tailwindcss']
   endif
