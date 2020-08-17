@@ -2,8 +2,8 @@
 " INSTALL PLUGINS
 " ------------------------------------------------------------------------
 
-"Install vim-plug if not already installed
-"https://github.com/junegunn/vim-plug/wiki/tips#automatic-installation
+" Install vim-plug if not already installed
+" https://github.com/junegunn/vim-plug/wiki/tips#automatic-installation
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -18,18 +18,19 @@ Plug 'HerringtonDarkholme/yats.vim' " highlight TS + TSX
 Plug 'maxmellon/vim-jsx-pretty'     " highlight JSX
 Plug 'sheerun/vim-polyglot'         " must be last syntax plugin
 
+" Highlighting
+Plug 'morhetz/gruvbox'
+
 " Intellisense
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'Shougo/echodoc.vim'
 
 " Search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'jremmen/vim-ripgrep'
-Plug 'vifm/vifm.vim'
+" Plug 'vifm/vifm.vim'
 Plug 'mbbill/undotree'
-
-" Highlighting
-Plug 'morhetz/gruvbox'
 
 " Git
 Plug 'tpope/vim-fugitive'
