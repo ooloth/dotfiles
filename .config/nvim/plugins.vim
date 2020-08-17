@@ -133,93 +133,79 @@ let b:coc_git_blame = 1  " git status of current line
 let b:coc_git_status = 1 " git status of current buffer
 
 " ------------------------------------------------------------------------
-" AIRLINE
+" ECHO DOC
 " ------------------------------------------------------------------------
 
-let g:airline_theme = 'gruvbox'
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
-let g:airline_highlighting_cache = 1
-let g:airline_focuslost_inactive = 1
-let g:airline#extensions#branch#format = 1 "show only tail of branch name
-let g:airline#extensions#coc#enabled = 1
+let g:echodoc_enable_at_startup = 1
+" let g:echodoc#type = 'virtual'
+" let g:echodoc#type = 'floating'
+" let g:echodoc#type = 'popup'
 
-" Replace some unwanted symbols with empty space
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
+" ------------------------------------------------------------------------
+" FZF
+" ------------------------------------------------------------------------
+
+" https://github.com/junegunn/fzf#search-syntax
+if executable('rg')
+  let g:rg_derive_root='true'
 endif
+set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --follow
 
-let g:airline_symbols.linenr = ' '
-let g:airline_symbols.maxlinenr = ''
+" Floating window
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let $FZF_DEFAULT_OPTS='--reverse'
 
-" ------------------------------------------------------------------------
-" VIM POLYGLOT
-" ------------------------------------------------------------------------
-
-let g:polyglot_disabled = ['javascript', 'jsx', 'typescript']
-
-" ------------------------------------------------------------------------
-" WHICH KEY
-" ------------------------------------------------------------------------
-
-" Define a separator
-let g:which_key_sep = '→'
-
-" Not a fan of floating windows for this
-let g:which_key_use_floating_win = 0
-
-" Change the colors if you want
-highlight default link WhichKey          Operator
-highlight default link WhichKeySeperator DiffAdded
-highlight default link WhichKeyGroup     Identifier
-highlight default link WhichKeyDesc      Function
-
-" Hide status line
-autocmd! FileType which_key
-autocmd  FileType which_key set laststatus=0 noshowmode noruler
-  \| autocmd BufLeave <buffer> set laststatus=2 noshowmode ruler
+" Close search window with Esc
+" https://github.com/junegunn/fzf/issues/1393#issuecomment-426576577
+autocmd! FileType fzf tnoremap <buffer> <esc> <c-c>
 
 " ------------------------------------------------------------------------
-" VIM CLOSETAG
+" NETRW
 " ------------------------------------------------------------------------
 
-" These are the file extensions where this plugin is enabled.
-let g:closetag_filenames = '*.html,*.xhtml,*.jsx,*.js,*.tsx'
+" Disable Netrw file tree
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
 
-" This will make the list of non-closing tags self-closing in the specified files.
-let g:closetag_xhtml_filenames = '*.xml,*.xhtml,*.jsx,*.js,*.tsx'
+" ------------------------------------------------------------------------
+" NERD COMMENTER
+" ------------------------------------------------------------------------
 
-" These are the file types where this plugin is enabled.
-let g:closetag_filetypes = 'html,xhtml,jsx,js,tsx'
+" Disable default mappings
+let g:NERDCreateDefaultMappings = 0
 
-" This will make the list of non-closing tags self-closing in the specified files.
-let g:closetag_xhtml_filetypes = 'xml,xhtml,jsx,js,tsx'
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
 
-" integer value [0|1]
-" This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
-let g:closetag_emptyTags_caseSensitive = 1
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
 
-" dict
-" Disables auto-close if not in a "valid" region (based on filetype)
-let g:closetag_regions = {
-    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
-    \ 'javascript.jsx': 'jsxRegion',
-    \ }
+" Align line-wise comment delimiters flush left instead of following code indentation
+let g:NERDDefaultAlign = 'left'
 
-" Shortcut for closing tags, default is '>'
-let g:closetag_shortcut = '>'
+" Set a language to use its alternate delimiters by default
+let g:NERDAltDelims_java = 1
 
-" Add > at current position without closing the current tag, default is ''
-let g:closetag_close_shortcut = '<leader>>'
+" Add your own custom formats or override the defaults
+let g:NERDCustomDelimiters = { 'c': { 'left': '/**','right': '*/' } }
+
+" Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
+
+" Enable NERDCommenterToggle to check all selected lines is commented or not
+let g:NERDToggleCheckAllLines = 1
 
 " ------------------------------------------------------------------------
 " STARTIFY
-"
+" ------------------------------------------------------------------------
+
 " Useful commands: ':SSave', ':SLoad', ':SDelete'
-"
+
 " https://github.com/mhinz/vim-startify/blob/master/doc/startify.txt
 " https://www.chrisatmachine.com/Neovim/11-startify/
-" ------------------------------------------------------------------------
 
 let g:startify_change_to_vcs_root = 1     " change cwd to project root on open
 let g:startify_enable_special = 0         " get rid of empty buffers on quit
@@ -235,20 +221,20 @@ let g:startify_update_oldfiles = 1        " keep Startify up to date as I work
 " `2>/dev/null` makes the command fail quietly, so that when we are not
 " in a git repo, the list will be empty
 function! s:gitModified()
-    let files = systemlist('git ls-files -m 2>/dev/null')
-    return map(files, "{'line': v:val, 'path': v:val}")
+  let files = systemlist('git ls-files -m 2>/dev/null')
+  return map(files, "{'line': v:val, 'path': v:val}")
 endfunction
 
 " same as above, but show untracked files, honouring .gitignore
 function! s:gitUntracked()
-    let files = systemlist('git ls-files -o --exclude-standard 2>/dev/null')
-    return map(files, "{'line': v:val, 'path': v:val}")
+  let files = systemlist('git ls-files -o --exclude-standard 2>/dev/null')
+  return map(files, "{'line': v:val, 'path': v:val}")
 endfunction
 
 " Return just the tail path of the current working directory
 " https://vi.stackexchange.com/a/15047
 function! s:getDir()
-    return fnamemodify(getcwd(), ':t')
+  return fnamemodify(getcwd(), ':t')
 endfunction
 
 let g:startify_lists = [
@@ -281,3 +267,64 @@ let g:startify_bookmarks = [
 
 " Prevent coc-explorer from staying stuck in the last session's CWD after :SClose
 autocmd User Startified :silent CocRestart
+
+" ------------------------------------------------------------------------
+" VIM CLOSETAG
+" ------------------------------------------------------------------------
+
+" These are the file extensions where this plugin is enabled.
+let g:closetag_filenames = '*.html,*.xhtml,*.jsx,*.js,*.tsx'
+
+" This will make the list of non-closing tags self-closing in the specified files.
+let g:closetag_xhtml_filenames = '*.xml,*.xhtml,*.jsx,*.js,*.tsx'
+
+" These are the file types where this plugin is enabled.
+let g:closetag_filetypes = 'html,xhtml,jsx,js,tsx'
+
+" This will make the list of non-closing tags self-closing in the specified files.
+let g:closetag_xhtml_filetypes = 'xml,xhtml,jsx,js,tsx'
+
+" This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
+let g:closetag_emptyTags_caseSensitive = 1
+
+" Disables auto-close if not in a "valid" region (based on filetype)
+let g:closetag_regions = {
+    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
+    \ 'javascript.jsx': 'jsxRegion',
+    \ }
+
+" Shortcut for closing tags, default is '>'
+let g:closetag_shortcut = '>'
+
+" Add > at current position without closing the current tag, default is ''
+let g:closetag_close_shortcut = '<leader>>'
+
+" ------------------------------------------------------------------------
+" VIM POLYGLOT
+" ------------------------------------------------------------------------
+
+let g:polyglot_disabled = ['javascript', 'jsx', 'typescript']
+
+" ------------------------------------------------------------------------
+" WHICH KEY
+" ------------------------------------------------------------------------
+
+" Define a separator
+let g:which_key_sep='→'
+
+" Delay popping up the window
+let g:which_key_timeout=500
+
+" Not a fan of floating windows for this
+let g:which_key_use_floating_win=0
+
+" Change the colors if you want
+highlight default link WhichKey          Operator
+highlight default link WhichKeySeperator DiffAdded
+highlight default link WhichKeyGroup     Identifier
+highlight default link WhichKeyDesc      Function
+
+" Hide status line
+autocmd! FileType which_key
+autocmd  FileType which_key set laststatus=0 noshowmode noruler
+  \| autocmd BufLeave <buffer> set laststatus=2 noshowmode ruler
