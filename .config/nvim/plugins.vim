@@ -41,44 +41,40 @@ Plug 'liuchengxu/vim-which-key'
 Plug 'vim-airline/vim-airline'
 
 " Convenience
+Plug 'metakirby5/codi.vim'
 Plug 'alvan/vim-closetag'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'        " Extends . functionality to plugins like vim-surround
 
 call plug#end()
 
-"Automatically install missing plugins on startup
-"https://github.com/ChristianChiarulli/nvim/blob/master/vim-plug/plugins.vim
+" Automatically install missing plugins on startup
+" https://github.com/ChristianChiarulli/nvim/blob/master/vim-plug/plugins.vim
 autocmd VimEnter *
   \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
   \|   PlugInstall --sync | q
   \| endif"
 
 " ------------------------------------------------------------------------
-" NETRW
+" AIRLINE
 " ------------------------------------------------------------------------
 
-" Disable Netrw file tree
-let g:loaded_netrw = 1
-let g:loaded_netrwPlugin = 1
+let g:airline_theme = 'gruvbox'
+" let g:airline#extensions#tabline#enabled = 1
+let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
+let g:airline_highlighting_cache = 1
+let g:airline_focuslost_inactive = 1
+let g:airline#extensions#branch#format = 1 "show only tail of branch name
+let g:airline#extensions#coc#enabled = 1
 
-" ------------------------------------------------------------------------
-" FZF
-" ------------------------------------------------------------------------
-
-" https://github.com/junegunn/fzf#search-syntax
-if executable('rg')
-  let g:rg_derive_root='true'
+" Replace some unwanted symbols with empty space
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
 endif
-set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --follow
 
-" Floating window
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let $FZF_DEFAULT_OPTS='--reverse'
-
-" Close search window with Esc
-" https://github.com/junegunn/fzf/issues/1393#issuecomment-426576577
-autocmd! FileType fzf tnoremap <buffer> <esc> <c-c>
+let g:airline_symbols.linenr = ' '
+let g:airline_symbols.maxlinenr = ''
 
 " ------------------------------------------------------------------------
 " CONQUER OF COMPLETION
