@@ -223,6 +223,9 @@ let g:which_key_map['r'] = [ '<Plug>(coc-rename)'   , 'rename symbol' ]
 let @g = ':CocCommand fzf-preview.ProjectGrep '
 let @s = ':CocSearch '
 
+" Rename the word under the cursor across the project ("project rename word")
+nnoremap <Leader>prw :CocSearch <C-R>=expand("<cword>")<CR><CR>
+
 " FZF Preview
 let g:which_key_map['s'] = {
   \ 'name' : '+search' ,
