@@ -174,51 +174,44 @@ let g:which_key_map['c'] = {
   \ 'Z' : [':CocEnable'                        , 'enable CoC'],
   \ }
 
-let g:which_key_map['d'] = [ ':bd'                                           , 'delete buffer']
-let g:which_key_map['E'] = [ ':CocCommand fzf-preview.CocDiagnostics'        , 'errors in project' ]
-let g:which_key_map['e'] = [ ':CocCommand fzf-preview.CocCurrentDiagnostics' , 'errors in buffer' ]
-let g:which_key_map['f'] = [ ':CocCommand fzf-preview.ProjectFiles'          , 'find project file' ]
+let g:which_key_map['d'] = [ ':bd'                                    , 'delete buffer']
+let g:which_key_map['e'] = [ ':CocCommand fzf-preview.CocDiagnostics' , 'errors' ]
+let g:which_key_map['f'] = [ ':CocCommand fzf-preview.GitFiles'       , 'files' ]
 
 " Git
 let g:which_key_map['g'] = {
   \ 'name' : '+git' ,
-  \ 'a' : [':Git add %'   , 'add current'],
-  \ 'A' : [':Git add .'   , 'add all'],
-  \ 'b' : [':Git blame'   , 'blame'],
-  \ 'B' : [':GBrowse'     , 'browse'],
-  \ 'c' : [':Git commit'  , 'commit'],
-  \ 'd' : [':Git diff'    , 'diff'],
-  \ 'D' : [':Gdiffsplit'  , 'diff split'],
-  \ 'g' : [':GGrep'       , 'git grep'],
-  \ 'l' : [':Git log'     , 'log'],
-  \ 'p' : [':Git push'    , 'push'],
-  \ 'P' : [':Git pull'    , 'pull'],
-  \ 'r' : [':GRemove'     , 'remove'],
-  \ 's' : [':Gstatus'     , 'status'],
-  \ 'S' : [':!git status' , 'status'],
-  \ 'v' : [':GV'          , 'view commits'],
-  \ 'V' : [':GV!'         , 'view buffer commits'],
+  \ 'a' : [':Git add %'                      , 'add current file'],
+  \ 'A' : [':Git add .'                      , 'add all files'],
+  \ 'b' : [':Git blame'                      , 'blame'],
+  \ 'B' : [':CocCommand fzf-preview.BlamePR' , 'blame PR'],
+  \ 'c' : [':Git commit'                     , 'commit'],
+  \ 'd' : [':Git diff'                       , 'diff'],
+  \ 'D' : [':Gdiffsplit'                     , 'diff split'],
+  \ 'g' : [':GGrep'                          , 'git grep'],
+  \ 'l' : [':Git log'                        , 'log'],
+  \ 'm' : [':Git move'                       , 'move'],
+  \ 'p' : [':Git push'                       , 'push'],
+  \ 'P' : [':Git pull'                       , 'pull'],
+  \ 'r' : [':GRemove'                        , 'remove'],
+  \ 's' : [':vert Git'                       , 'status in split'],
+  \ 'S' : [':tab Git'                        , 'status in tab'],
   \ }
-" Use the fzf-preview integration?
-" https://github.com/yuki-ycino/fzf-preview.vim#command
-" :CocCommand fzf-preview.BlamePR
-" :CocCommand fzf-preview.GitActions
-" :CocCommand fzf-preview.GitStatus
 
-let g:which_key_map['h'] = [ '<C-w>h' , 'left a window' ]
-let g:which_key_map['i'] = [ ':Codi'  , 'inline evaluation on' ]
-let g:which_key_map['I'] = [ ':Codi!' , 'inline evaluation off' ]
-let g:which_key_map['j'] = [ '<C-w>j' , 'down a window' ]
-let g:which_key_map['k'] = [ '<C-w>k' , 'up a window' ]
-let g:which_key_map['l'] = [ '<C-w>l' , 'right a window' ]
+let g:which_key_map['h'] = [ '<C-w>h'                                     , 'left a window' ]
+let g:which_key_map['i'] = [ ':Codi'                                      , 'inline evaluation on' ]
+let g:which_key_map['I'] = [ ':Codi!'                                     , 'inline evaluation off' ]
+let g:which_key_map['j'] = [ '<C-w>j'                                     , 'down a window' ]
+let g:which_key_map['k'] = [ '<C-w>k'                                     , 'up a window' ]
+let g:which_key_map['l'] = [ '<C-w>l'                                     , 'right a window' ]
 let g:which_key_map['L'] = [ "\"ayiwoconsole.log('<C-R>a:', <C-R>a)<Esc>" , 'log to console' ]
 
 " let g:which_key_map['m'] = [ ':EditVifm'                 , 'manage files' ]
 
-let g:which_key_map['n'] = [ ':let @/ = ""'         , 'no search highlights' ]
-let g:which_key_map['o'] = [ ':CocCommand explorer' , 'open file tree' ]
-let g:which_key_map['q'] = [ ':q'                   , 'quit window (or session if last window)' ]
-let g:which_key_map['r'] = [ '<Plug>(coc-rename)'   , 'rename symbol' ]
+let g:which_key_map['n'] = [ ':let @/ = ""'       , 'no search highlights' ]
+let g:which_key_map['o'] = [ ':Vexplore'          , 'open file tree' ]
+let g:which_key_map['q'] = [ ':q'                 , 'quit window (or session if last window)' ]
+let g:which_key_map['r'] = [ '<Plug>(coc-rename)' , 'rename symbol' ]
 
 let @g = ':CocCommand fzf-preview.ProjectGrep '
 let @s = ':CocSearch '
