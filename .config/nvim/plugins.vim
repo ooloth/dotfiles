@@ -39,13 +39,14 @@ Plug 'tpope/vim-fugitive'
 Plug 'mhinz/vim-startify'
 Plug 'liuchengxu/vim-which-key'
 Plug 'vim-airline/vim-airline'
+Plug 'voldikss/vim-floaterm'
 
 " Convenience
 Plug 'metakirby5/codi.vim'
 Plug 'alvan/vim-closetag'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'        " Extends . functionality to plugins like vim-surround
+Plug 'tpope/vim-repeat'        " gives . functionality to plugins like vim-surround
 
 call plug#end()
 
@@ -84,6 +85,7 @@ let g:airline_symbols.maxlinenr = ''
 let g:coc_global_extensions = [
   \ 'coc-css',
   \ 'coc-explorer',
+  \ 'coc-floaterm',
   \ 'coc-fzf-preview',
   \ 'coc-highlight',
   \ 'coc-html',
