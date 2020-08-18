@@ -31,6 +31,7 @@ Plug 'jremmen/vim-ripgrep'
 " Plug 'vifm/vifm.vim'
 Plug 'mbbill/undotree'
 Plug 'LeafCage/yankround.vim'
+Plug 'tpope/vim-vinegar'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -181,9 +182,35 @@ autocmd! FileType fzf tnoremap <buffer> <esc> <c-c>
 " NETRW
 " ------------------------------------------------------------------------
 
-" Disable Netrw file tree
-let g:loaded_netrw = 1
-let g:loaded_netrwPlugin = 1
+" " Disable Netrw file tree
+" let g:loaded_netrw = 1
+" let g:loaded_netrwPlugin = 1
+
+"Customize file tree
+let g:netrw_altv=1                              " open splits to the right
+let g:netrw_banner=0                            " disable banner
+let g:netrw_browse_split=4                      " open in non-tree window
+" let g:netrw_list_hide=netrw_gitignore#Hide()    " hide .gitignore files
+" let g:netrw_list_hide.=',\(^\?\s\s\)\zs\.\S\+'  " hide dot files
+let g:netrw_liststyle=3                         " use tree view
+let g:netrw_preview=1                           " vertical split preview
+let g:netrw_winsize=25                          " % of horizontal space
+
+" TODO: customize which files are toggled as hidden by 'gh'
+" let dotFiles = //
+" let gitIgnoreFiles = //
+" let npmFiles = //
+" let gatsbyFiles = //
+" let g:netrw_list_hide=dotFiles + gitIgnoreFiles + npmFiles + gatsbyFiles
+
+" " Automatically open Netrw when entering a project
+" augroup ProjectDrawer
+"   autocmd!
+"   autocmd VimEnter * :Vexplore
+" augroup END
+
+"Delete abandoned Netrw buffers (e.g. preview windows)
+autocmd FileType netrw setl bufhidden=delete
 
 " ------------------------------------------------------------------------
 " NERD COMMENTER
