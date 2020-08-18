@@ -40,19 +40,16 @@ cursor:
   text: CellBackground
   unfocused_hollow: true
 
-draw_bold_text_with_bright_colors: false
-
-env:
-  TERM: xterm-256color
-  # TERM: xterm-256color-italic
-  # TERM: alacritty
+# env:
+# TERM: xterm-256color
+# TERM: tmux
 
 font:
   normal:
-    family: "Dank Mono"
+    family: "Ubuntu Mono"
   offset:
     x: 0
-    y: 5
+    y: 10
   size: 17
   use_thin_strokes: true
 
