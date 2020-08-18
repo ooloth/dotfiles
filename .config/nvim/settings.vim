@@ -83,8 +83,15 @@ set termguicolors
 set background=dark
 set re=0            " https://github.com/HerringtonDarkholme/yats.vim#config
 
+if exists('+termgicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+
 let g:gruvbox_italic=1
-let g:gruvbox_contrast_dark='medium'
+let g:gruvbox_invert_selection='0'
+let g:gruvbox_contrast_dark='hard'
+" let g:gruvbox_contrast_dark='medium'
 colorscheme gruvbox
 
 " ------------------------------------------------------------------------
@@ -100,9 +107,9 @@ autocmd InsertLeave * set cursorline
 
 " Indicate which window is active
 augroup HighlightActiveWindow
-    autocmd!
-    autocmd WinEnter * set cursorline relativenumber
-    autocmd WinLeave * set nocursorline norelativenumber
+  autocmd!
+  autocmd WinEnter * set cursorline relativenumber
+  autocmd WinLeave * set nocursorline norelativenumber
 augroup END
 
 " ------------------------------------------------------------------------
