@@ -92,7 +92,8 @@ let g:coc_global_extensions = [
   \ 'coc-json',
   \ 'coc-snippets',
   \ 'coc-vimlsp',
-  \ 'coc-yaml'
+  \ 'coc-yaml',
+  \ 'coc-yank'
   \ ]
 
 if isdirectory('./node_modules')
