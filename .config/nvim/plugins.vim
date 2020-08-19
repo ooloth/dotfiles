@@ -28,26 +28,25 @@ Plug 'Shougo/echodoc.vim'
 " Search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'jremmen/vim-ripgrep'
-" Plug 'vifm/vifm.vim'
 Plug 'mbbill/undotree'
-Plug 'LeafCage/yankround.vim'
 Plug 'tpope/vim-vinegar'
 
 " Git
 Plug 'tpope/vim-fugitive'
+Plug 'idanarye/vim-merginal'
 
 " Organization
 Plug 'mhinz/vim-startify'
 Plug 'liuchengxu/vim-which-key'
 Plug 'vim-airline/vim-airline'
-Plug 'voldikss/vim-floaterm'
 
 " Convenience
 Plug 'metakirby5/codi.vim'
 Plug 'alvan/vim-closetag'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'        " gives . functionality to plugins like vim-surround
+Plug 'tpope/vim-repeat'        " extends . functionality to plugins like vim-surround
+Plug 'tpope/vim-unimpaired'    " pairs of '[' and ']' mappings
 
 call plug#end()
 
