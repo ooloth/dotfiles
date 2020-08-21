@@ -7,7 +7,7 @@ set clipboard+=unnamedplus  " use the system clipboard for everything
 set go+=a                   " Visual selection automatically copied to the clipboard
 
 " ------------------------------------------------------------------------
-" Undo History
+" HISTORY
 " ------------------------------------------------------------------------
 
 set history=1000  " remember more commands and search history
@@ -22,10 +22,12 @@ set undolevels=200 " make more changes undoable
 " UX
 " ------------------------------------------------------------------------
 
+set confirm        " instead of failing, ask me what to do
 set noerrorbells   " shhhhh
 set updatetime=300 " reduce lag (default is 4000)
 set timeoutlen=500 " respond faster to keypresses (default is 1000)
-set ttimeoutlen=10
+set ttimeoutlen=1
+set lazyredraw     " wait to redraw screen until macro is complete
 
 " ------------------------------------------------------------------------
 " BUFFERS
@@ -90,15 +92,14 @@ endif
 
 let g:gruvbox_italic=1
 let g:gruvbox_invert_selection='0'
-let g:gruvbox_contrast_dark='hard'
-" let g:gruvbox_contrast_dark='medium'
+let g:gruvbox_contrast_dark='hard' " or 'medium'
 colorscheme gruvbox
 
 " ------------------------------------------------------------------------
 " CURSOR
 " ------------------------------------------------------------------------
 
-set scrolloff=12 " keep cursor this many lines away from top/bottom
+set scrolloff=20 " keep cursor this many lines away from top/bottom
 
 " Cursor line
 set cursorline
@@ -126,11 +127,4 @@ set smartcase  " ...unless search includes uppercase letters
 set path+=**;     " search all subdirectories (https://stackoverflow.com/a/52126548/8802485)
 set suffixesadd=.js,.ts,.tsx
 " set wildmode=longest,list,full
-
-" ------------------------------------------------------------------------
-" AIRLINE
-" ------------------------------------------------------------------------
-
-set showtabline=2 " Always show tabs
-set noshowmode    " No need for --INSERT-- anymore
 
