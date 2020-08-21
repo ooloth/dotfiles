@@ -12,20 +12,7 @@ noremap <Right> <nop>
 noremap <Down> <nop>
 noremap <Left> <nop>
 
-" Move vertically through each virtual wrapped line
-nmap j gj
-nmap k gk
-
-" Window actions
-noremap <C-h> <C-w>h
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
-noremap <C-l> <C-w>l
-
-" Keep cursor near the middle of the screen
-autocmd InsertEnter * norm zz
-
-" Easily exit temporary windows with Esc or q
+" Easily exit help windows with Esc or q
 autocmd Filetype help nmap <buffer> <Esc> :q<CR>
 autocmd Filetype help nmap <buffer> q :q<CR>
 
@@ -41,14 +28,6 @@ nnoremap <S-TAB> :bprevious<CR>
 nnoremap Y y$
 
 " ------------------------------------------------------------------------
-" VISUAL MODE ONLY
-" ------------------------------------------------------------------------
-
-" Return to normal mode
-noremap! jk <Esc>
-noremap! kj <Esc>
-
-" ------------------------------------------------------------------------
 " INSERT MODE ONLY
 " ------------------------------------------------------------------------
 
@@ -60,23 +39,13 @@ inoremap <Left> <nop>
 
 " Return to normal mode + autosave
 inoremap <Esc> <Esc>:w<CR>
-inoremap jk    <Esc>:w<CR>
-inoremap kj    <Esc>:w<CR>
 
 " ------------------------------------------------------------------------
 " TERMINAL MODE
 " ------------------------------------------------------------------------
 
 " Return to normal mode
-tnoremap jk    <C-\><C-n>
-tnoremap kj    <C-\><C-n>
 tnoremap <Esc> <C-\><C-n>
-
-" Navigate panes
-tnoremap <Leader>h <C-\><C-n><C-w>h
-tnoremap <Leader>j <C-\><C-n><C-w>j
-tnoremap <Leader>k <C-\><C-n><C-w>k
-tnoremap <Leader>l <C-\><C-n><C-w>l
 
 " ------------------------------------------------------------------------
 " CONQUER OF COMPLETION
