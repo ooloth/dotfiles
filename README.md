@@ -15,6 +15,7 @@ ln -sfv $HOME/Sites/projects/dotfiles/.config/nvim/plugins.vim $HOME/.config/nvi
 ln -sfv $HOME/Sites/projects/dotfiles/.config/nvim/settings.vim $HOME/.config/nvim/settings.vim
 ln -sfv $HOME/Sites/projects/dotfiles/.config/nvim/snippets/javascript.snippets $HOME/.config/nvim/snippets/javascript.snippets
 ln -sfv $HOME/Sites/projects/dotfiles/.config/.secrets $HOME/.config/.secrets
+ln -sfv $HOME/Sites/projects/dotfiles/.config/vifm/vifmrc $HOME/.config/vifm/vifmrc
 ln -sfv $HOME/Sites/projects/dotfiles/.gitconfig $HOME
 ln -sfv $HOME/Sites/projects/dotfiles/.tmux.conf $HOME
 ln -sfv $HOME/Sites/projects/dotfiles/.zshrc $HOME
