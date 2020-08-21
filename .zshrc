@@ -48,22 +48,15 @@ alias cdm='cd $HOME/Sites/projects/michaeluloth.com'
 alias cdg='cd $HOME/Sites/projects/gatsbytutorials.com'
 alias cdn='ssh ooloth@192.168.0.104'
 
-# Run common ecobee commands
+# Common ecobee commands
 alias yd='yarn install && yarn develop'
-
-alias yt='$(npm bin)/jest --watch' # tests of uncommitted changes
-alias yta='$(npm bin)/jest --watchAll' # all tests
-ytp() {
-   $(npm bin)/jest --watch --testPathPattern=$1 # tests matching pattern
-}
-
 alias jw='$(npm bin)/jest --watch' # tests of uncommitted changes
 alias jwa='$(npm bin)/jest --watchAll' # all tests
 jwp() {
    $(npm bin)/jest --watch --testPathPattern=$1 # tests matching pattern
 }
-
 alias gp='git push --no-verify'
 alias yb='yarn build'
 alias ys='yarn storybook'
 
+source /Users/Michael/.config/broot/launcher/bash/br
