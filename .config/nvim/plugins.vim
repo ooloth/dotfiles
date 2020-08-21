@@ -13,9 +13,9 @@ endif
 call plug#begin('~/.vim/plugged')
 
 " Syntax (https://github.com/MaxMEllon/vim-jsx-pretty#installation)
-Plug 'yuezk/vim-js'                 " highlight JS + Flow
 Plug 'HerringtonDarkholme/yats.vim' " highlight TS + TSX
 Plug 'maxmellon/vim-jsx-pretty'     " highlight JSX
+Plug 'yuezk/vim-js'                 " highlight JS + Flow
 Plug 'sheerun/vim-polyglot'         " must be last syntax plugin
 
 " Highlighting
@@ -23,30 +23,34 @@ Plug 'morhetz/gruvbox'
 
 " Intellisense
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'Shougo/echodoc.vim'
 
 " Search
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'jremmen/vim-ripgrep'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'mbbill/undotree'
-Plug 'tpope/vim-vinegar'
 
 " Git
 Plug 'tpope/vim-fugitive'
 Plug 'idanarye/vim-merginal'
 
+" Tests
+Plug 'vim-test/vim-test'
+
 " Organization
-Plug 'mhinz/vim-startify'
+Plug 'Asheq/close-buffers.vim'
 Plug 'liuchengxu/vim-which-key'
+Plug 'mhinz/vim-startify'
 Plug 'vim-airline/vim-airline'
 
 " Convenience
-Plug 'metakirby5/codi.vim'
 Plug 'alvan/vim-closetag'
+Plug 'christoomey/vim-tmux-navigator' " navigate seamlessly between vim + tmux splits
+" Plug 'christoomey/vim-tmux-runner'
+Plug 'metakirby5/codi.vim'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'        " extends . functionality to plugins like vim-surround
-Plug 'tpope/vim-unimpaired'    " pairs of '[' and ']' mappings
+Plug 'tpope/vim-repeat'               " extends . functionality to plugins like vim-surround
+Plug 'tpope/vim-unimpaired'           " pairs of '[' and ']' mappings
 
 call plug#end()
 
@@ -85,7 +89,6 @@ let g:airline_symbols.maxlinenr = ''
 let g:coc_global_extensions = [
   \ 'coc-css',
   \ 'coc-explorer',
-  \ 'coc-floaterm',
   \ 'coc-fzf-preview',
   \ 'coc-highlight',
   \ 'coc-html',
@@ -152,15 +155,6 @@ let b:coc_git_blame = 1  " git status of current line
 let b:coc_git_status = 1 " git status of current buffer
 
 " ------------------------------------------------------------------------
-" ECHO DOC
-" ------------------------------------------------------------------------
-
-let g:echodoc_enable_at_startup = 1
-" let g:echodoc#type = 'virtual'
-" let g:echodoc#type = 'floating'
-" let g:echodoc#type = 'popup'
-
-" ------------------------------------------------------------------------
 " FZF
 " ------------------------------------------------------------------------
 
@@ -183,65 +177,8 @@ autocmd! FileType fzf tnoremap <buffer> <esc> <c-c>
 " ------------------------------------------------------------------------
 
 " " Disable Netrw file tree
-" let g:loaded_netrw = 1
-" let g:loaded_netrwPlugin = 1
-
-"Customize file tree
-let g:netrw_altv=1                              " open splits to the right
-let g:netrw_banner=0                            " disable banner
-let g:netrw_browse_split=4                      " open in non-tree window
-" let g:netrw_list_hide=netrw_gitignore#Hide()    " hide .gitignore files
-" let g:netrw_list_hide.=',\(^\?\s\s\)\zs\.\S\+'  " hide dot files
-let g:netrw_liststyle=3                         " use tree view
-let g:netrw_preview=1                           " vertical split preview
-let g:netrw_winsize=25                          " % of horizontal space
-
-" TODO: customize which files are toggled as hidden by 'gh'
-" let dotFiles = //
-" let gitIgnoreFiles = //
-" let npmFiles = //
-" let gatsbyFiles = //
-" let g:netrw_list_hide=dotFiles + gitIgnoreFiles + npmFiles + gatsbyFiles
-
-" " Automatically open Netrw when entering a project
-" augroup ProjectDrawer
-"   autocmd!
-"   autocmd VimEnter * :Vexplore
-" augroup END
-
-"Delete abandoned Netrw buffers (e.g. preview windows)
-autocmd FileType netrw setl bufhidden=delete
-
-" ------------------------------------------------------------------------
-" NERD COMMENTER
-" ------------------------------------------------------------------------
-
-" Disable default mappings
-let g:NERDCreateDefaultMappings = 0
-
-" Add spaces after comment delimiters by default
-let g:NERDSpaceDelims = 1
-
-" Use compact syntax for prettified multi-line comments
-let g:NERDCompactSexyComs = 1
-
-" Align line-wise comment delimiters flush left instead of following code indentation
-let g:NERDDefaultAlign = 'left'
-
-" Set a language to use its alternate delimiters by default
-let g:NERDAltDelims_java = 1
-
-" Add your own custom formats or override the defaults
-let g:NERDCustomDelimiters = { 'c': { 'left': '/**','right': '*/' } }
-
-" Allow commenting and inverting empty lines (useful when commenting a region)
-let g:NERDCommentEmptyLines = 1
-
-" Enable trimming of trailing whitespace when uncommenting
-let g:NERDTrimTrailingWhitespace = 1
-
-" Enable NERDCommenterToggle to check all selected lines is commented or not
-let g:NERDToggleCheckAllLines = 1
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
 
 " ------------------------------------------------------------------------
 " STARTIFY
@@ -299,16 +236,6 @@ let g:startify_bookmarks = [
   \ { 'c': '~/Sites/cc/' },
   \ { 's': '~/Sites/' },
   \ ]
-
-" Unicode art generator:
-" http://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
-"
-" let g:startify_custom_header = [
-"   \ '   _  __     _         __  ___         __     ___ ',
-"   \ '  / |/ /  __(_)_ _    /  |/  /__ _____/ /    |_  |',
-"   \ ' /    / |/ / /  ` \  / /|_/ / _ `/ __/ _ \  / __/ ',
-"   \ '/_/|_/|___/_/_/_/_/ /_/  /_/\_,_/\__/_//_/ /____/ ',
-"   \ ]
 
 " Prevent coc-explorer from staying stuck in the last session's CWD after :SClose
 autocmd User Startified :silent CocRestart
