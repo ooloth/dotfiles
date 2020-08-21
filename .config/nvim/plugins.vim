@@ -65,8 +65,11 @@ autocmd VimEnter *
 " AIRLINE
 " ------------------------------------------------------------------------
 
+set showtabline=2 " Always show tabs
+set noshowmode    " No need for --INSERT-- anymore
+
 let g:airline_theme = 'gruvbox'
-" let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#enabled = 1
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 let g:airline_highlighting_cache = 1
 let g:airline_focuslost_inactive = 1
