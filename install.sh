@@ -37,7 +37,8 @@ get_linkables() {
 }
 
 backup() {
-  BACKUP_DIR=$HOME/dotfiles-backup
+  DATE_STAMP=$(date +"%F-%H-%M-%S")
+  BACKUP_DIR=$HOME/Desktop/dotfiles-backup-$DATE_STAMP
 
   echo "Creating backup directory at $BACKUP_DIR"
   mkdir -p "$BACKUP_DIR"
