@@ -16,20 +16,20 @@ title() {
 }
 
 error() {
-  echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1"
+  echo -e "\n${COLOR_RED}Error: ${COLOR_NONE}$1"
   exit 1
 }
 
 warning() {
-  echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
+  echo -e "\n${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
 }
 
 info() {
-  echo -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
+  echo -e "\n${COLOR_BLUE}Info: ${COLOR_NONE}$1"
 }
 
 success() {
-  echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
+  echo -e "\n${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
 get_linkables() {
@@ -47,7 +47,7 @@ backup() {
      filename=".$(basename "$file" '.symlink')"
      target="$HOME/$filename"
      if [ -f "$target" ]; then
-       echo "backing up $filename"
+       info "Backing up $filename..."
        cp "$target" "$BACKUP_DIR"
      else
        warning "$filename does not exist at this location or is a symlink"
@@ -56,7 +56,7 @@ backup() {
 
   for filename in "$HOME/.config/nvim" "$HOME/.vim" "$HOME/.vimrc"; do
     if [ ! -L "$filename" ]; then
-      echo "backing up $filename"
+      info "Backing up $filename..."
       cp -rf "$filename" "$BACKUP_DIR"
     else
       warning "$filename does not exist at this location or is a symlink"
