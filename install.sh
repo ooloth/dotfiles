@@ -50,16 +50,20 @@ backup() {
        info "Backing up $filename..."
        cp "$target" "$BACKUP_DIR"
      else
-       warning "$filename does not exist at this location or is a symlink"
+       warning "$filename does not exist at this location. Skipping."
      fi
   done
 
-  for filename in "$HOME/.config/nvim" "$HOME/.vim" "$HOME/.vimrc"; do
-    if [ ! -L "$filename" ]; then
-      info "Backing up $filename..."
-      cp -rf "$filename" "$BACKUP_DIR"
+  for filename in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
+    if [ -f "$target" ]; then
+      if [ ! -L "$filename" ]; then
+        info "Backing up $filename..."
+        cp -rf "$filename" "$BACKUP_DIR"
+      else
+        warning "$filename is a symlink. Skipping."
+      fi
     else
-      warning "$filename does not exist at this location or is a symlink"
+      warning "$filename does not exist at this location. Skipping."
     fi
   done
 }
