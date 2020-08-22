@@ -55,7 +55,7 @@ backup() {
   done
 
   for filename in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
-    if [ -f "$target" ]; then
+    if [ -f "$filename" ]; then
       if [ ! -L "$filename" ]; then
         info "Backing up $filename..."
         cp -rf "$filename" "$BACKUP_DIR"
