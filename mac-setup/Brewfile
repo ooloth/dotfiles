@@ -1,0 +1,107 @@
+# taps
+tap "homebrew/bundle"
+tap "homebrew/core"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "schniz/tap"
+
+# packages
+brew "bat"
+brew "exa"
+brew "fzf"
+brew "gh"
+# brew "git"
+brew "lazygit"
+brew "mas"
+brew "neovim"
+# brew "python"
+brew "ranger"
+brew "ripgrep"
+brew "schniz/tap/fnm"
+brew "speedtest-cli"
+brew "svn"            # required for font cask installations
+brew "tmux"
+brew "vifm"
+# brew "zsh"
+
+# brew=(
+#   ffmpeg
+#   python@3.8
+#   zsh-autosuggestions
+#   zsh-completions
+# )
+# brew "cloc"
+# brew "diff-so-fancy"
+# brew "entr"
+# brew "fd"
+# brew "gnupg"
+# brew "grep"
+# brew "highlight"
+# brew "htop"
+# brew "jq"
+# brew "lazydocker"
+# brew "markdown"
+# brew "neofetch"
+# brew "noti"
+# brew "shellcheck"
+# brew "trash"
+# brew "tree"
+# brew "vim"
+# brew "wdiff"
+# brew "wget"
+# brew "z"
+
+# Applications
+cask "alacritty"
+cask "karabiner-elements"
+cask "notion"
+cask "rectangle"
+cask "rocket"
+
+# cask "cleanshot"
+# cask "vmware-fusion"
+# cask "timing"
+# cask "choosy"
+# cask "soundsource"
+# cask "farrago"
+# cask "loopback"
+# cask "audio-hijack"
+# cask "paw"
+# cask "postman"
+# cask "anybar"
+# cask "hazel"
+# cask "imageoptim"
+# cask "istat-menus"
+# cask "textbar"
+
+# Browsers
+cask "firefox"
+cask "google-chrome"
+
+# Fonts
+cask "font-ubuntu-mono"
+cask "font-ubuntu-mono-nerd-font"
+
+# macOS App Store
+mas "Bear", id: 1091189122
+mas "Pages", id: 1289583905
+mas "Pixelmator Pro", id: 1289583905
+mas "Vimari", id: 1289583905
+
+# mas "ColorSlurp", id: 1287239339
+# mas "Magnet", id: 441258766
+# mas "MindNode", id: 1289197285
+# mas "Keynote", id: 1289583905
+# mas "Numbers", id: 1289583905
+# mas "FruitJuice", id: 671736912
+# mas "Drafts", id: 1435957248
+# mas "Logic Pro X", id: 634148309
+# mas "Fantastical", id: 975937182
+# mas "Xcode", id: 497799835
+# mas "Reeder", id: 1449412482
+# mas "Deliveries", id: 924726344
+# mas "Shush", id: 496437906
+# mas "Octotree Pro", id: 1457450145
+# mas "Coca", id: 1000808993
+# mas "1Blocker", id: 1107421413
+
