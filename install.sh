@@ -68,7 +68,7 @@ backup() {
       fi
     else
       warning "$foldername does not exist at this location. Skipping."
-    if
+    fi
   done
 
   # for filename in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
