@@ -1,0 +1,93 @@
+# See: https://github.com/alacritty/alacritty/blob/master/alacritty.yml
+# See: https://github.com/alacritty/alacritty/wiki/Color-schemes
+
+# Colors (Gruvbox dark)
+colors:
+  # Default colors
+  primary:
+    background: "#1d2021" # hard
+    # background: "#282828" # medium
+    # background = '#32302f' # soft
+    foreground: "#ebdbb2"
+
+  # Normal colors
+  normal:
+    black: "#282828"
+    red: "#cc241d"
+    green: "#98971a"
+    yellow: "#d79921"
+    blue: "#458588"
+    magenta: "#b16286"
+    cyan: "#689d6a"
+    white: "#a89984"
+
+  # Bright colors
+  bright:
+    black: "#928374"
+    red: "#fb4934"
+    green: "#b8bb26"
+    yellow: "#fabd2f"
+    blue: "#83a598"
+    magenta: "#d3869b"
+    cyan: "#8ec07c"
+    white: "#ebdbb2"
+
+cursor:
+  cursor: CellForeground
+  style: Block
+  text: CellBackground
+  unfocused_hollow: true
+
+env:
+  TERM: xterm-256color
+
+font:
+  normal:
+    family: "UbuntuMono Nerd Font"
+  offset:
+    x: 0
+    y: 10
+  size: 17
+  use_thin_strokes: true
+
+key_bindings:
+  - { key: Q, mods: Command, action: None } # prevent accidentally closing unsaved Vim buffers
+  - { key: W, mods: Command, action: None } # prevent accidentally closing unsaved Vim buffers
+  - { key: C, mods: Command, action: Copy } # Typical macOS app behaviour
+  - { key: V, mods: Command, action: Paste } # Typical macOS app behaviour
+  - { key: N, mods: Command, action: SpawnNewInstance } # Typical macOS app behaviour
+  - { key: Return, mods: Shift, action: ToggleFullscreen }
+
+live_config_reload: true
+
+mouse:
+  hide_when_typing: true
+
+scrolling:
+  history: 10000 # max lines in the scrollback buffer
+  multiplier: 3
+
+search:
+  matches:
+    foreground: "#000000"
+    background: "#ffffff"
+  bar:
+    background: "#c5c8c6"
+    foreground: "#1d1f21"
+
+selection:
+  background: CellForeground
+  save_to_clipboard: true
+  text: CellBackground
+
+vi_mode_cursor:
+  cursor: CellForeground
+  text: CellBackground
+
+window:
+  decorations: none # or full
+  padding:
+    x: 5
+    y: 5
+
+working_directory: /Users/Michael/Sites
