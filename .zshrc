@@ -79,8 +79,9 @@ alias cdh='cd $HOME'
 alias cds='cd $HOME/Sites'
 alias cde='cd $HOME/Sites/ecobee/consumer-website'
 alias cdd='cd $HOME/Sites/projects/dotfiles'
-alias cdm='cd $HOME/Sites/projects/michaeluloth.com'
-alias cdg='cd $HOME/Sites/projects/gatsbytutorials.com'
+alias cdms='cd $HOME/Sites/projects/mac-setup'
+alias cdmu='cd $HOME/Sites/projects/michaeluloth.com'
+alias cdgt='cd $HOME/Sites/projects/gatsbytutorials.com'
 alias cdn='ssh ooloth@192.168.0.104'
 
 # Common ecobee commands
@@ -94,4 +95,6 @@ alias gp='git push --no-verify'
 alias yb='yarn build'
 alias ys='yarn storybook'
 
-source /Users/Michael/.config/broot/launcher/bash/br
+# Speed test
+alias speed='speedtest-cli'
+
