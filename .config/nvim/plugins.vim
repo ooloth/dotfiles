@@ -12,6 +12,8 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+Plug 'ryanoasis/vim-devicons'
+
 " Syntax (https://github.com/MaxMEllon/vim-jsx-pretty#installation)
 Plug 'HerringtonDarkholme/yats.vim' " highlight TS + TSX
 Plug 'maxmellon/vim-jsx-pretty'     " highlight JSX
@@ -68,13 +70,18 @@ autocmd VimEnter *
 set showtabline=2 " Always show tabs
 set noshowmode    " No need for --INSERT-- anymore
 
-let g:airline_theme = 'gruvbox'
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
-let g:airline_highlighting_cache = 1
 let g:airline_focuslost_inactive = 1
-let g:airline#extensions#branch#format = 1 "show only tail of branch name
+let g:airline_highlighting_cache = 1
+let g:airline_left_sep=''                  " no arrows pointing right
+let g:airline_powerline_fonts = 1          " use nerd font devicons
+let g:airline_right_sep=''                 " no arrows pointing left
+let g:airline_theme = 'gruvbox'
+let g:airline#extensions#branch#format = 1 " show only tail of branch name
 let g:airline#extensions#coc#enabled = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 
 " Replace some unwanted symbols with empty space
 if !exists('g:airline_symbols')
