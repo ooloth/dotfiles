@@ -1,0 +1,190 @@
+# ------------------------------------------------------------------------------
+# SETTINGS
+# ------------------------------------------------------------------------------
+
+# tmux display things in 256 colors
+set -g default-terminal "tmux-256color"
+set -as terminal-overrides ',xterm*:Tc:sitm=\E[3m'
+# set-option -ga terminal-overrides ",tmux-256color:Tc,xterm-256color:Tc"
+
+set -g history-limit 20000
+
+# automatically renumber tmux windows
+set -g renumber-windows on
+
+# for nested tmux sessions
+bind-key a send-prefix
+
+# Rather than constraining window size to the maximum size of any client
+# connected to the *session*, constrain window size to the maximum size of any
+# client connected to *that window*. Much more reasonable.
+setw -g aggressive-resize on
+
+# Renumber windows when a window is closed.
+set -g renumber-windows on
+
+# make delay shorter
+set -sg escape-time 0
+
+# tile all windows
+unbind =
+bind = select-layout tiled
+
+# make window/pane index start with 1
+set -g base-index 1
+setw -g pane-base-index 1
+
+set-option -g set-titles on
+set-option -g set-titles-string "#T - #W"
+
+# don't rename windows automatically after each executed command
+set-option -g allow-rename off
+
+# enable mouse for scrolling up in the terminal
+set -g mouse on
+
+# ------------------------------------------------------------------------------
+# THEMING
+# ------------------------------------------------------------------------------
+
+# https://github.com/LawAbidingCactus/tmux-gruvbox-truecolor/blob/master/tmux-colorscheme.conf
+
+# window separators
+set-option -wg window-status-separator ""
+
+# monitor window changes
+set-option -wg monitor-activity on
+set-option -wg monitor-bell on
+
+# set statusbar update interval
+set-option -g status-interval 1
+
+###############
+# COLORSCHEME #
+###############
+
+# change window screen colors
+set-option -wg mode-style bg="#FE8019",fg="#3C3836"
+
+# default statusbar colors (terminal bg should be #282828)
+set-option -g status-style bg=terminal,fg="#A89984"
+
+# default window title colors
+set-option -wg window-status-style bg="#3C3836",fg="#7C6F64"
+
+# colors for windows with activity
+set-option -wg window-status-activity-style bg="#3C3836",fg="#A89984"
+
+# colors for windows with bells
+set-option -wg window-status-bell-style bg="#3C3836",fg="#FE8019"
+
+# active window title colors
+set-option -wg window-status-current-style bg="#FE8019",fg="#3C3836"
+
+# pane border
+set-option -g pane-active-border-style fg="#FE8019"
+set-option -g pane-border-style fg="#3C3836"
+
+# message info
+set-option -g message-style bg="#FE8019",fg="#3C3836"
+
+# writing commands inactive
+set-option -g message-command-style bg="#A89984",fg="#3C3836"
+
+# pane number display
+set-option -g display-panes-active-colour "#FE8019"
+set-option -g display-panes-colour "#3C3836"
+
+# clock
+set-option -wg clock-mode-colour "#FE8019"
+
+# copy mode highlighting
+%if #{>=:#{version},3.2}
+  set-option -wg copy-mode-match-style "bg=#A89984,fg=#3C3836"
+  set-option -wg copy-mode-current-match-style "bg=#FE8109,fg=#3C3836"
+%endif
+
+# statusbar formatting
+# "#fe8019" MUST be in lowercase here (conflicts with statusline alias otherwise)
+set-option -g status-left "#[bg=#A89984, fg=#3C3836]#{?client_prefix,#[bg=#fe8019],#[bg=#A89984]} #{session_name} "
+set-option -g status-right "#(cd #{pane_current_path}; git rev-parse --abbrev-ref HEAD) #[bg=#3C3836, fg=#7C6F64] %H:%M #[bg=#A89984, fg=#3C3836]#{?client_prefix,#[bg=#fe8019],#[bg=#A89984]} #{host_short} "
+
+set-option -wg window-status-current-format " #{window_index} #{window_name} "
+set-option -wg window-status-format " #{window_index} #{window_name} "
+
+# ------------------------------------------------------------------------------
+# MAPPINGS
+# ------------------------------------------------------------------------------
+
+# remap prefix from C-b to C-a (Caps Lock is Ctrl when pressed with another key)
+unbind C-b
+set-option -g prefix C-a
+bind-key C-a send-prefix
+
+# for nested tmux sessions
+bind-key a send-prefix
+
+# Smart pane switching with awareness of Vim splits.
+# See: https://github.com/christoomey/vim-tmux-navigator
+is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+    | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$'"
+bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
+bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
+bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
+bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
+tmux_version='$(tmux -V | sed -En "s/^tmux ([0-9]+(.[0-9]+)?).*/\1/p")'
+if-shell -b '[ "$(echo "$tmux_version < 3.0" | bc)" = 1 ]' \
+    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\'  'select-pane -l'"
+if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
+    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\\\'  'select-pane -l'"
+bind-key -T copy-mode-vi 'C-h' select-pane -L
+bind-key -T copy-mode-vi 'C-j' select-pane -D
+bind-key -T copy-mode-vi 'C-k' select-pane -U
+bind-key -T copy-mode-vi 'C-l' select-pane -R
+bind-key -T copy-mode-vi 'C-\' select-pane -l
+
+# Use Vim keybindings in copy mode.
+set-window-option -g mode-keys vi
+
+# more settings to make copy-mode more vim-like
+unbind [
+bind Escape copy-mode
+unbind p
+bind p paste-buffer
+bind -Tcopy-mode-vi 'v' send -X begin-selection
+bind -Tcopy-mode-vi 'y' send -X copy-pipe-and-cancel "tmux save-buffer - | reattach-to-user-namespace pbcopy"
+
+# Buffers to/from Mac clipboard, yay tmux book from pragprog
+bind C-c run "tmux save-buffer - | reattach-to-user-namespace pbcopy"
+bind C-v run "tmux set-buffer $(reattach-to-user-namespace pbpaste); tmux paste-buffer"
+
+# reload config file
+bind r source-file ~/.tmux.conf \; display "Config Reloaded!"
+
+# ------------------------------------------------------------------------------
+# PLUGINS
+# ------------------------------------------------------------------------------
+
+set -g @plugin 'tmux-plugins/tpm'               # plugin manager
+set -g @plugin 'tmux-plugins/tmux-resurrect'    # restore sessions after system restart
+set -g @plugin 'tmux-plugins/tmux-continuum'    # save sessions every 15 minutes
+
+# https://github.com/tmux-plugins/tmux-sensible#options
+set -g @plugin 'tmux-plugins/tmux-sensible'     # standard options + keybindings
+
+# https://github.com/tmux-plugins/tmux-pain-control#bindings
+set -g @plugin 'tmux-plugins/tmux-pain-control' # better pane navigation bindings
+
+set -g @plugin 'arl/gitmux'
+
+# ------------------------------------------------------------------------------
+# TMUX RESURRECT
+# ------------------------------------------------------------------------------
+
+set -g @continuum-restore 'on'                  # restore last autosaved tmux session
+set -g @resurrect-processes '"vim->vim +SLoad"' # let Startify handle Vim sessions
+# set -g @resurrect-capture-pane-contents 'on'    # restore pane contents
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'
+
