@@ -46,7 +46,8 @@ env:
 
 font:
   normal:
-    family: "Ubuntu Mono"
+    family: "UbuntuMono Nerd Font"
+    # family: "Ubuntu Mono derivative Powerline"
   offset:
     x: 0
     y: 10
