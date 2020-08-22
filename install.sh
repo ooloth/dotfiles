@@ -54,18 +54,23 @@ backup() {
      fi
   done
 
-  for filename in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
-    if [ -f "$filename" ]; then
-      if [ ! -L "$filename" ]; then
-        info "Backing up $filename..."
-        cp -rf "$filename" "$BACKUP_DIR"
-      else
-        warning "$filename is a symlink. Skipping."
-      fi
+  for foldername in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
+    if [ ! -L "$foldername" ]; then
+      info "Backing up $foldername..."
+      cp -rf "$foldername" "$BACKUP_DIR"
     else
-      warning "$filename does not exist at this location. Skipping."
+      warning "$foldername is a symlink. Skipping."
     fi
   done
+
+  # for filename in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
+  #   if [ ! -L "$filename" ]; then
+  #     info "Backing up $filename..."
+  #     cp -rf "$filename" "$BACKUP_DIR"
+  #   else
+  #     warning "$filename is a symlink. Skipping."
+  #   fi
+  # done
 }
 
 setup_symlinks() {
