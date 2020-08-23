@@ -189,7 +189,7 @@ clone_dotfiles() {
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
   if [ ! -d "$DOTFILES" ]; then
     printf "\n"
-    git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
+    git clone "git@github.com:ooloth/dotfiles.git" "$DOTFILES"
     printf "\n"
     success "Cloned new dotfiles to $DOTFILES\n"
   else
