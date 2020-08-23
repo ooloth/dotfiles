@@ -228,9 +228,11 @@ setup_ssh() {
   title "Setting up SSH"
 
   info "Generating SSH public/private key pair."
+  # silent output, "id_rsa", overwrite existing, no password
   # https://security.stackexchange.com/a/23385
   # https://stackoverflow.com/a/43235320
-  ssh-keygen -q -t rsa -b 2048
+   ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+  # ssh-keygen -q -t rsa -b 2048
 
   Info "Adding SSH key pair to ssh-agent and Keychain"
 
