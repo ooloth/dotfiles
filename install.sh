@@ -16,20 +16,20 @@ title() {
 }
 
 error() {
-  echo -e "\n${COLOR_RED}Error: ${COLOR_NONE}$1"
+  echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1"
   exit 1
 }
 
 warning() {
-  echo -e "\n${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
+  echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
 }
 
 info() {
-  echo -e "\n${COLOR_BLUE}Info: ${COLOR_NONE}$1"
+  echo -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
 }
 
 success() {
-  echo -e "\n${COLOR_GREEN}$1${COLOR_NONE}"
+  echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
 get_linkables() {
