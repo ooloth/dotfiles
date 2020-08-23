@@ -334,86 +334,88 @@ set_up_neovim() {
   sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
-  printf "TODO: set up neovim\n"
+  warning "TODO: set up neovim\n"
 }
 
 setup_macos() {
   title "Configuring Mac preferences"
 
-  info "Configuring general settings..."
+  info "Configuring general settings...\n"
   printf "\n"
 
-  printf "Expand save dialog by default"
+  printf "Expand save dialog by default\n"
   defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 
-  printf "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)"
+  printf "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)\n"
   defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
-  printf "Enable subpixel font rendering on non-Apple LCDs"
+  printf "Enable subpixel font rendering on non-Apple LCDs\n"
   defaults write NSGlobalDomain AppleFontSmoothing -int 2
 
   printf "\n"
   info "Configuring Finder..."
 
-  echo "Show all filename extensions"
+  printf "Show all filename extensions\n"
   defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
-  echo "Show hidden files by default"
+  printf "Show hidden files by default\n"
   defaults write com.apple.Finder AppleShowAllFiles -bool false
 
-  echo "Use current directory as default search scope in Finder"
+  printf "Use current directory as default search scope in Finder\n"
   defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
-  echo "Show Path bar in Finder"
+  printf "Show Path bar in Finder\n"
   defaults write com.apple.finder ShowPathbar -bool true
 
-  echo "Show Status bar in Finder"
+  printf "Show Status bar in Finder\n"
   defaults write com.apple.finder ShowStatusBar -bool true
 
-  echo "Show the ~/Library folder in Finder"
+  printf "Show the ~/Library folder in Finder\n"
   chflags nohidden ~/Library
 
   printf "\n"
   info "Configuring Terminal..."
 
-  echo "only use UTF-8 in Terminal.app"
+  printf "only use UTF-8 in Terminal.app\n"
   defaults write com.apple.terminal StringEncodings -array 4
 
   printf "\n"
   info "Configuring keyboard..."
 
-  echo "Disable press-and-hold for keys in favor of key repeat"
+  printf "Disable press-and-hold for keys in favor of key repeat\n"
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
-  echo "Set a blazingly fast keyboard repeat rate"
+  printf "Set a blazingly fast keyboard repeat rate\n"
   defaults write NSGlobalDomain KeyRepeat -int 1
 
-  echo "Set a shorter Delay until key repeat"
+  printf "Set a shorter Delay until key repeat\n"
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
   printf "\n"
   info "Configuring trackpad..."
 
-  echo "Enable tap to click (Trackpad)"
+  printf "Enable tap to click (Trackpad)\n"
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
   printf "\n"
   info "Configuring Safari..."
 
-  echo "Enable Safari’s debug menu"
+  printf "Enable Safari’s debug menu\n"
   defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
 
   # echo "Kill affected applications"
 
   # for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
 
-  success "\nFinished configuring Mac system and app preferences."
+  success "\nFinished configuring Mac system preferences."
 }
 
 set_up_apps() {
-  title "Configuring Mac preferences"
+  title "Configuring app preferences"
 
-  printf "TODO: configure apps\n"
+  warning "TODO: configure apps\n"
+
+  success "\nFinished configuring app preferences."
 }
 
 suggest_restart() {
@@ -462,9 +464,9 @@ case "$1" in
     ;;
   all)
     prerequisites && confirm_plan && backup && setup_dotfiles
-    setup_terminfo
     setup_shell
     set_up_oh_my_zsh
+    setup_terminfo
     # setup_git
     # setup_ssh
     setup_homebrew
