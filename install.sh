@@ -400,14 +400,14 @@ setup_macos() {
 
 suggest_restart() {
   printf "\nTo apply your your preferences, your computer needs to restart."
-  read -p -r "\nAre you ready to restart now? (y/N) " -n 1
-  echo
-  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    printf "Excellent choice. Restarting..."
-    sudo shutdown -r now
-  else
-    printf "No worries! Just remember to restart manually as soon as you can."
-  fi
+  # read -p -r "\nAre you ready to restart now? (y/N) " -n 1
+  # echo
+  # if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+  #   printf "Excellent choice. Restarting..."
+  #   sudo shutdown -r now
+  # else
+  #   printf "No worries! Just remember to restart manually as soon as you can."
+  # fi
 }
 
 prerequisites() {
@@ -417,7 +417,7 @@ prerequisites() {
 }
 
 goodbye() {
- success "\nDone."
+  success "\nDone."
 }
 
 case "$1" in
