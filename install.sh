@@ -107,7 +107,7 @@ backup() {
 }
 
 setup_symlinks() {
-  title "Creating symlinks"
+  title "Creating symlinks to new dotfiles"
 
   # if [ ! -e "$HOME/.dotfiles" ]; then
   #   info "Adding symlink to dotfiles at $HOME/.dotfiles"
@@ -116,12 +116,10 @@ setup_symlinks() {
 
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
-    rm -f $target # works whether an old link is there or not
+    # rm -f $target # works whether an old link is there or not
     info "Creating symlink for $file..."
-    ln -s "$file" "$target"
+    ln -sfv "$file" "$target"
   done
-
-  echo -e
 
   # Create ~/.config if it doesn't exist
   if [ ! -d "$HOME/.config" ]; then
@@ -130,15 +128,15 @@ setup_symlinks() {
   fi
 
   # Symlink .config folders
-  config_files=$(find "$DOTFILES/config" -maxdepth 1 2>/dev/null)
+  config_files=$(find "$DOTFILES/config"/* -maxdepth 1 2>/dev/null)
   for config in $config_files; do
     target="$HOME/.config/$(basename "$config")"
-    rm -rf $target # works whether an old link is there or not
+    # rm -rf $target # works whether an old link is there or not
     info "Creating symlink for $config..."
-    ln -s "$config" "$target"
+    ln -sfv "$config" "$target"
   done
 
-  success "Done."
+  success "Done symlinking new dotfiles to the home folder."
 }
 
 setup_git() {
