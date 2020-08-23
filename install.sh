@@ -349,6 +349,11 @@ set_up_neovim() {
   sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
+  warning "TODO: open vim to install plugins, then close"
+
+  info "Creating viminfo directory for Startify..."
+  create_missing_directory "${HOME}/.vim/files/info"
+
   warning "TODO: set up neovim\n"
 }
 
