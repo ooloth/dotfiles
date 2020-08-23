@@ -220,16 +220,7 @@ setup_git() {
   git config -f ~/.gitconfig-local user.email "${email:-$defaultEmail}"
   git config -f ~/.gitconfig-local github.user "${github:-$defaultGithub}"
 
-  if [[ "$(uname)" == "Darwin" ]]; then
-    git config --global credential.helper "osxkeychain"
-  else
-    read -rn 1 -p "Save user and password to an unencrypted file to avoid writing? [y/N] " save
-    if [[ $save =~ ^([Yy])$ ]]; then
-      git config --global credential.helper "store"
-    else
-      git config --global credential.helper "cache --timeout 3600"
-    fi
-  fi
+  git config --global credential.helper "osxkeychain"
 }
 
 setup_homebrew() {
@@ -241,16 +232,10 @@ setup_homebrew() {
     curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
   fi
 
-  if [ "$(uname)" == "Linux" ]; then
-    test -d ~/.linuxbrew && eval "$(~/.linuxbrew/bin/brew shellenv)"
-    test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
-  fi
-
-  # install brew dependencies from Brewfile
+  # Install brew dependencies from Brewfile
   brew bundle
 
-  # install fzf
+  # Install fzf
   echo -e
   info "Installing fzf"
   "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
@@ -261,13 +246,13 @@ setup_shell() {
 
   [[ -n "$(command -v brew)" ]] && zsh_path="$(brew --prefix)/bin/zsh" || zsh_path="$(which zsh)"
   if ! grep "$zsh_path" /etc/shells; then
-    info "adding $zsh_path to /etc/shells"
+    info "Adding $zsh_path to /etc/shells"
     echo "$zsh_path" | sudo tee -a /etc/shells
   fi
 
   if [[ "$SHELL" != "$zsh_path" ]]; then
     chsh -s "$zsh_path"
-    info "default shell changed to $zsh_path"
+    info "Default shell changed to $zsh_path"
   fi
 }
 
@@ -275,70 +260,66 @@ function setup_terminfo() {
   title "Configuring terminfo"
 
   info "adding tmux.terminfo"
-  tic -x "$DOTFILES/resources/tmux.terminfo"
+  tic -x "$DOTFILES/tmux/tmux.terminfo"
 
   info "adding xterm-256color-italic.terminfo"
-  tic -x "$DOTFILES/resources/xterm-256color-italic.terminfo"
+  tic -x "$DOTFILES/tmux/xterm-256color-italic.terminfo"
 }
 
 setup_macos() {
   title "Configuring macOS"
-  if [[ "$(uname)" == "Darwin" ]]; then
 
-    echo "Finder: show all filename extensions"
-    defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+  echo "Finder: show all filename extensions"
+  defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
-    echo "show hidden files by default"
-    defaults write com.apple.Finder AppleShowAllFiles -bool false
+  echo "show hidden files by default"
+  defaults write com.apple.Finder AppleShowAllFiles -bool false
 
-    echo "only use UTF-8 in Terminal.app"
-    defaults write com.apple.terminal StringEncodings -array 4
+  echo "only use UTF-8 in Terminal.app"
+  defaults write com.apple.terminal StringEncodings -array 4
 
-    echo "expand save dialog by default"
-    defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+  echo "expand save dialog by default"
+  defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 
-    echo "show the ~/Library folder in Finder"
-    chflags nohidden ~/Library
+  echo "show the ~/Library folder in Finder"
+  chflags nohidden ~/Library
 
-    echo "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)"
-    defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+  echo "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)"
+  defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
-    echo "Enable subpixel font rendering on non-Apple LCDs"
-    defaults write NSGlobalDomain AppleFontSmoothing -int 2
+  echo "Enable subpixel font rendering on non-Apple LCDs"
+  defaults write NSGlobalDomain AppleFontSmoothing -int 2
 
-    echo "Use current directory as default search scope in Finder"
-    defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+  echo "Use current directory as default search scope in Finder"
+  defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
-    echo "Show Path bar in Finder"
-    defaults write com.apple.finder ShowPathbar -bool true
+  echo "Show Path bar in Finder"
+  defaults write com.apple.finder ShowPathbar -bool true
 
-    echo "Show Status bar in Finder"
-    defaults write com.apple.finder ShowStatusBar -bool true
+  echo "Show Status bar in Finder"
+  defaults write com.apple.finder ShowStatusBar -bool true
 
-    echo "Disable press-and-hold for keys in favor of key repeat"
-    defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+  echo "Disable press-and-hold for keys in favor of key repeat"
+  defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
-    echo "Set a blazingly fast keyboard repeat rate"
-    defaults write NSGlobalDomain KeyRepeat -int 1
+  echo "Set a blazingly fast keyboard repeat rate"
+  defaults write NSGlobalDomain KeyRepeat -int 1
 
-    echo "Set a shorter Delay until key repeat"
-    defaults write NSGlobalDomain InitialKeyRepeat -int 15
+  echo "Set a shorter Delay until key repeat"
+  defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
-    echo "Enable tap to click (Trackpad)"
-    defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+  echo "Enable tap to click (Trackpad)"
+  defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
-    echo "Enable Safari’s debug menu"
-    defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+  echo "Enable Safari’s debug menu"
+  defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
 
-    echo "Kill affected applications"
+  echo "Kill affected applications"
 
-    for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
-  else
-    warning "macOS not detected. Skipping."
-  fi
+  for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
 }
 
-prerequisites () {
+prerequisites() {
   confirm_macos
   confirm_command_line_tools
   authenticate
