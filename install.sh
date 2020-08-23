@@ -98,9 +98,9 @@ confirm_plan() {
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n"
 
-  printf "Sound good? (y/N)"
+  # printf "Sound good? (y/N)"
 
-  read -p
+  read -p "Sound good? (y/N)"
   echo "Reply: $REPLY"
 
   # read -p "Continue? (y/N) " -n 1 -r
