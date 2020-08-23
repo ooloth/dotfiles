@@ -98,7 +98,11 @@ confirm_plan() {
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n"
 
-  read -p "Continue? (y/N) " -n 1 -r
+  printf "Sound good? (y/N)"
+
+  read -p
+
+  # read -p "Continue? (y/N) " -n 1 -r
   # read -r -p "Sound good? (y/N) " -n 1 REPLY
 
   if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
