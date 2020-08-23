@@ -97,11 +97,6 @@ setup_symlinks() {
   # Create ~/.config if it doesn't exist
   create_missing_directory "$HOME/.config"
   echo -e
-  # if [ ! -d "$HOME/.config" ]; then
-    # info "Creating ~/.config..."
-    # mkdir -p "$HOME/.config"
-    # echo -e
-  # fi
 
   # config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
   #   for config in $config_files; do
@@ -117,7 +112,10 @@ setup_symlinks() {
   # Symlink .config subfolder contents
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
   for config_subfolder in $config_subfolders; do
-    create_missing_directory $config_subfolder
+    home_config_subfolder="$HOME/.config/$(basename $config_subfolder)"
+
+    create_missing_directory "$home_config_subfolder"
+
     config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
 
     for config_file in $config_files; do
