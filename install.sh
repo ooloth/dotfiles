@@ -81,15 +81,15 @@ authenticate() {
   success "Yup. That's the password. Have your way with this thing."
 }
 
-confirm_names() {
-  # printf "\\nEnter a name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_COMPUTER_NAME"
-# read -r -p "> " COMPUTER_NAME
-# export COMPUTER_NAME=${COMPUTER_NAME:-$DEFAULT_COMPUTER_NAME}
-#
-# printf "\\nEnter a host name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_HOST_NAME"
-# read -r -p "> " HOST_NAME
-# export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
-}
+# confirm_names() {
+#   printf "\\nEnter a name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_COMPUTER_NAME"
+#   read -r -p "> " COMPUTER_NAME
+#   export COMPUTER_NAME=${COMPUTER_NAME:-$DEFAULT_COMPUTER_NAME}
+
+#   printf "\\nEnter a host name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_HOST_NAME"
+#   read -r -p "> " HOST_NAME
+#   export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
+# }
 
 confirm_plan() {
   info "This installation will set you up by doing this:\n"
@@ -191,7 +191,7 @@ setup_ssh() {
   step.)\n"
 
   # Pause for a reply
-  read -p
+  read -p -r
 
   if [ "$REPLY" == 'saved' ]; then
     printf "Good job! Moving on...\n"
@@ -292,7 +292,7 @@ setup_homebrew() {
 #   mkdir "${HOME}/bin"
 # fi
 
-  HOMEBREW_PREFIX="/usr/local"
+  # HOMEBREW_PREFIX="/usr/local"
 
 # if [ -d "$HOMEBREW_PREFIX" ]; then
 #   if ! [ -r "$HOMEBREW_PREFIX" ]; then
