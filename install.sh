@@ -80,18 +80,18 @@ authenticate() {
 confirm_plan() {
   info "This installation will set you up by doing this:\n"
 
-  printf "1. Backup any exising dotfiles in your home folder"
-  printf "2. Symlink the new dotfiles to your home folder"
+  printf "1. Back up any existing dotfiles in your home folder\n"
+  printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n"
 
-  read -p "Sound good? (y/N) " -n 1 -r
+  read -r -p "Sound good? (y/N) " -n 1 REPLY
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     printf "\nExcellent! Here we go..."
   else
     printf "\nNo worries! Maybe next time."
-    printf "\nExiting..."
-    exit 1
+    # printf "\nExiting..."
+    # exit 1
   fi
 }
 
