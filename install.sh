@@ -403,7 +403,8 @@ suggest_restart() {
   read -p "\nAre you ready to restart now? (y/N) " -n 1 -r
   echo
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    printf "Excellent choice. When your Mac has restarted, remember to complete the following tasks to wrap up:\\n"
+    printf "Excellent choice. Restarting..."
+    sudo shutdown -r now
   else
     printf "No worries! Just remember to restart manually as soon as you can."
   fi
@@ -453,5 +454,4 @@ case "$1" in
   ;;
 esac
 
-printf "\n"
-success "Done."
+success "\nDone."
