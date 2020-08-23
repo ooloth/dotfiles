@@ -102,7 +102,7 @@ confirm_plan() {
 
   vared -p "Sound good? (y/N) " -c key
 
-  if [[ ! "$key" = 'y' ]]; then
+  if [[ ! "$key" == 'y' ]]; then
     printf "\nNo worries! Maybe next time."
     printf "\nExiting..."
     exit 1
@@ -185,7 +185,7 @@ setup_ssh() {
   vared -p "Type 'saved' when you've finished saving the key on GitHub. (You'll need it for the next step.) " -c reply
   echo "Reply: $reply"
 
-  if [ "$reply" == 'saved' ]; then
+  if [ "$reply" = 'saved' ]; then
     printf "Good job! Moving on...\n"
   else
     printf "Your funeral...\n"
