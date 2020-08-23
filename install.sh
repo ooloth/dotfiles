@@ -32,6 +32,43 @@ success() {
   echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
+confirm_macos() {
+  if [ "$osname" != "Darwin" ]; then
+    error "Oops, it looks like this is a non-UNIX system. This script only works on a Mac.  Exiting..."
+  fi
+}
+
+confirm_command_line_tools() {
+  if [ ! -d "$COMMANDLINE_TOOLS" ]; then
+    error "Apple's command line developer tools must be installed before running this script.  To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
+  fi
+}
+
+authenticate() {
+  sudo -v
+  # Keep-alive: update existing `sudo` time stamp until setup has finished
+  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+  set -e
+}
+
+confirm_plan() {
+  info "This installation will set up your Mac for web development by doing the following things:"
+
+  echo "1. Backup any exising dotfiles in your home folder"
+  echo "2. Symlink the new dotfiles to your home folder"
+  echo "3. TBD..."
+
+  read -p "Sound good? (y/N) " -n 1 -r
+
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    echo "\nExcellent! Here we go..."
+  else
+    echo "\nNo worries! Maybe next time."
+    echo "\nExiting..."
+    exit 1
+  fi
+}
+
 get_linkables() {
   find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
 }
@@ -251,30 +288,44 @@ setup_macos() {
   fi
 }
 
+prerequisites () {
+  confirm_macos
+  confirm_command_line_tools
+  authenticate
+  backup
+}
+
 case "$1" in
   backup)
+    prerequisites
     backup
     ;;
   link)
+    prerequisites
     setup_symlinks
     ;;
   git)
+    prerequisites
     setup_git
     ;;
   homebrew)
+    prerequisites
     setup_homebrew
     ;;
   shell)
+    prerequisites
     setup_shell
     ;;
   terminfo)
+    prerequisites
     setup_terminfo
     ;;
   macos)
+    prerequisites
     setup_macos
     ;;
   all)
-    backup
+    prerequisites
     setup_symlinks
     setup_terminfo
     setup_homebrew
