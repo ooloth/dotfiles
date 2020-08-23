@@ -102,6 +102,8 @@ confirm_plan() {
 
   read -p
 
+  echo "Reply: $REPLY"
+
   # read -p "Continue? (y/N) " -n 1 -r
   # read -r -p "Sound good? (y/N) " -n 1 REPLY
 
@@ -190,6 +192,7 @@ setup_ssh() {
 
   # Pause for a reply
   read -p -r
+  echo "Reply: $REPLY"
 
   if [ "$REPLY" == 'saved' ]; then
     printf "Good job! Moving on...\n"
