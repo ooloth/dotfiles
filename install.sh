@@ -258,7 +258,7 @@ setup_ssh() {
   success "\nDone setting up SSH."
 }
 
-function setup_terminfo() {
+setup_terminfo() {
   title "Configuring terminfo"
 
   info "adding tmux.terminfo"
@@ -268,23 +268,6 @@ function setup_terminfo() {
   tic -x "$DOTFILES/tmux/xterm-256color-italic.terminfo"
 
   success "\nDone configuring terminfo settings."
-}
-
-setup_shell() {
-  title "Configuring shell"
-
-  [[ -n "$(command -v brew)" ]] && zsh_path="$(brew --prefix)/bin/zsh" || zsh_path="$(which zsh)"
-  if ! grep "$zsh_path" /etc/shells; then
-    info "Adding $zsh_path to /etc/shells"
-    echo "$zsh_path" | sudo tee -a /etc/shells
-  fi
-
-  if [[ "$SHELL" != "$zsh_path" ]]; then
-    chsh -s "$zsh_path"
-    info "Default shell changed to $zsh_path"
-  fi
-
-  success "Done configuring shell."
 }
 
 set_up_oh_my_zsh() {
@@ -307,6 +290,37 @@ set_up_oh_my_zsh() {
   fi
 
   success "\nDone setting up Oh My Zsh."
+}
+
+set_up_spaceship_prompt() {
+  title "Setting up spaceship prompt..."
+
+  # https://github.com/denysdovhan/spaceship-prompt#installing
+  git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
+  ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+
+  success "\nDone setting up spaceship prompt."
+}
+
+setup_shell() {
+  title "Configuring shell"
+
+  [[ -n "$(command -v brew)" ]] && zsh_path="$(brew --prefix)/bin/zsh" || zsh_path="$(which zsh)"
+  if ! grep "$zsh_path" /etc/shells; then
+    info "Adding $zsh_path to /etc/shells"
+    echo "$zsh_path" | sudo tee -a /etc/shells
+  fi
+
+  if [[ "$SHELL" != "$zsh_path" ]]; then
+    chsh -s "$zsh_path"
+    info "Default shell changed to $zsh_path"
+  fi
+
+  setup_terminfo
+  set_up_oh_my_zsh
+  set_up_spaceship_prompt
+
+  success "\nDone configuring shell."
 }
 
 setup_homebrew() {
@@ -456,17 +470,12 @@ case "$1" in
   shell)
     prerequisites && backup && setup_shell
     ;;
-  terminfo)
-    prerequisites && setup_terminfo
-    ;;
   macos)
     prerequisites && setup_macos && suggest_restart
     ;;
   all)
     prerequisites && confirm_plan && backup && setup_dotfiles
     setup_shell
-    set_up_oh_my_zsh
-    setup_terminfo
     # setup_git
     # setup_ssh
     setup_homebrew
@@ -477,7 +486,7 @@ case "$1" in
     goodbye
     ;;
   *)
-  echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|terminfo|macos|all}\n"
+  echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|macos|all}\n"
   exit 1
   ;;
 esac
