@@ -400,7 +400,7 @@ setup_macos() {
 
 suggest_restart() {
   printf "\nTo apply your your preferences, your computer needs to restart."
-  read -p "\nAre you ready to restart now? (y/N) " -n 1 -r
+  read -p -r "\nAre you ready to restart now? (y/N) " -n 1
   echo
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     printf "Excellent choice. Restarting..."
@@ -454,4 +454,4 @@ case "$1" in
   ;;
 esac
 
-success "\nDone."
+ success "\nDone."
