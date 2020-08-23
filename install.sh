@@ -79,42 +79,26 @@ backup() {
 setup_symlinks() {
   title "Creating symlinks to new dotfiles"
 
-  # if [ ! -e "$HOME/.dotfiles" ]; then
-  #   info "Adding symlink to dotfiles at $HOME/.dotfiles"
-  #   ln -s "$DOTFILES" ~/.dotfiles
-  # fi
-
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
-    # rm -f $target # works whether an old link is there or not
     info "Creating symlink for $file..."
     ln -sfv "$file" "$target"
     echo -e
   done
 
-  # # Create ~/.config if it doesn't exist
-  # if [ ! -d "$HOME/.config" ]; then
-  #   info "Creating ~/.config..."
-  #   mkdir -p "$HOME/.config"
-  # fi
+  # Create ~/.config if it doesn't exist
+  if [ ! -d "$HOME/.config" ]; then
+    info "Creating ~/.config..."
+    mkdir -p "$HOME/.config"
+  fi
 
-  # Symlink .config folder
-  # config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
-  # for config in $config_files; do
-  # target="$HOME/.config/$(basename "$config")"
-    # rm -rf $target # works whether an old link is there or not
-  info "Creating symlink for $DOTFILES/.config..."
-  ln -sfv "$DOTFILES/.config" "$HOME"
-  # done
-
-  # # Symlink .config folders
-  # config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
-  # for config in $config_files; do
-  #   target="$HOME/.config/$(basename "$config")"
-  #   # rm -rf $target # works whether an old link is there or not
-  #   info "Creating symlink for $config..."
-  #   ln -sfv "$config" "$target"
-  # done
+  # Symlink .config folders
+  config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
+  for config in $config_files; do
+    target="$HOME/.config/$(basename "$config")"
+    info "Creating symlink for $config..."
+    ln -sfv "$config" "$target"
+  done
 
   success "Done symlinking new dotfiles to the home folder."
 }
