@@ -1,4 +1,4 @@
-source $HOME/.secrets
+# source $HOME/.secrets
 
 export PATH="/usr/local/sbin:$PATH"
 
