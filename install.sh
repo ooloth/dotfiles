@@ -37,7 +37,7 @@ success() {
 go_home() {
   info "Moving to home directory."
 
-  cd $HOME
+  cd "$HOME"
 
   success "Ahh. So fresh and so clean.\n"
 }
@@ -87,10 +87,10 @@ confirm_plan() {
   read -p "\nSound good? (y/N) " -n 1 -r
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    echo "\nExcellent! Here we go..."
+    printf "\nExcellent! Here we go..."
   else
-    echo "\nNo worries! Maybe next time."
-    echo "\nExiting..."
+    printf "\nNo worries! Maybe next time."
+    printf "\nExiting..."
     exit 1
   fi
 }
@@ -143,7 +143,7 @@ create_missing_directory() {
   if [ ! -d "$1" ]; then
     info "Creating $1\n"
     mkdir -p "$1"
-    echo "\n"
+    printf "\n"
   fi
 }
 
@@ -182,7 +182,7 @@ setup_symlinks() {
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
   for config_subfolder in $config_subfolders; do
     # Create .config subfolder if it's missing
-    home_config_subfolder="$HOME/.config/$(basename $config_subfolder)"
+    home_config_subfolder="$HOME/.config/$(basename "$config_subfolder")"
     create_missing_directory "$home_config_subfolder"
 
     # Get the files inside the subfolder
@@ -190,7 +190,7 @@ setup_symlinks() {
 
     # Symlink the files themselves (not the folders, which apps also modify)
     for config_file in $config_files; do
-      target="$HOME/.config/$(basename $config_subfolder)/$(basename "$config_file")"
+      target="$HOME/.config/$(basename "$config_subfolder")/$(basename "$config_file")"
       ln -sfv "$config_file" "$target"
     done
   done
