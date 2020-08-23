@@ -251,7 +251,7 @@ let g:startify_bookmarks = [
 autocmd User Startified :silent CocRestart
 
 " Create viminfo file (for new installs)
-set viminfo='100,n$HOME/.vim/files/info/viminfo
+set viminfo='100,n$HOME/.vim/files/info/viminfo'
 
 " ------------------------------------------------------------------------
 " VIM CLOSETAG
