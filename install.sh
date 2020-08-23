@@ -270,8 +270,20 @@ setup_homebrew() {
 
   # Install fzf
   echo -e
-  info "Installing fzf"
+  title "Installing fzf"
   "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
+}
+
+function setup_terminfo() {
+  title "Configuring terminfo"
+
+  info "adding tmux.terminfo"
+  tic -x "$DOTFILES/tmux/tmux.terminfo"
+
+  info "adding xterm-256color-italic.terminfo"
+  tic -x "$DOTFILES/tmux/xterm-256color-italic.terminfo"
+
+  success "\nDone configuring terminfo settings."
 }
 
 setup_shell() {
@@ -287,6 +299,8 @@ setup_shell() {
     chsh -s "$zsh_path"
     info "Default shell changed to $zsh_path"
   fi
+
+  success "Done configuring shell."
 }
 
 set_up_oh_my_zsh() {
@@ -308,34 +322,25 @@ set_up_oh_my_zsh() {
     sudo chmod -R 755 /usr/local/share/zsh/site-functions
   fi
 
-  success "Done setting up Oh My Zsh."
-
-}
-
-function setup_terminfo() {
-  title "Configuring terminfo"
-
-  info "adding tmux.terminfo"
-  tic -x "$DOTFILES/tmux/tmux.terminfo"
-
-  info "adding xterm-256color-italic.terminfo"
-  tic -x "$DOTFILES/tmux/xterm-256color-italic.terminfo"
+  success "\nDone setting up Oh My Zsh."
 }
 
 setup_macos() {
   title "Configuring macOS"
 
   info "Configuring general settings..."
+  printf "\n"
 
-  echo "Expand save dialog by default"
+  printf "Expand save dialog by default"
   defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 
-  echo "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)"
+  printf "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)"
   defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
-  echo "Enable subpixel font rendering on non-Apple LCDs"
+  printf "Enable subpixel font rendering on non-Apple LCDs"
   defaults write NSGlobalDomain AppleFontSmoothing -int 2
 
+  printf "\n"
   info "Configuring Finder..."
 
   echo "Show all filename extensions"
@@ -356,11 +361,13 @@ setup_macos() {
   echo "Show the ~/Library folder in Finder"
   chflags nohidden ~/Library
 
+  printf "\n"
   info "Configuring Terminal..."
 
   echo "only use UTF-8 in Terminal.app"
   defaults write com.apple.terminal StringEncodings -array 4
 
+  printf "\n"
   info "Configuring keyboard..."
 
   echo "Disable press-and-hold for keys in favor of key repeat"
@@ -372,11 +379,13 @@ setup_macos() {
   echo "Set a shorter Delay until key repeat"
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+  printf "\n"
   info "Configuring trackpad..."
 
   echo "Enable tap to click (Trackpad)"
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
+  printf "\n"
   info "Configuring Safari..."
 
   echo "Enable Safari’s debug menu"
@@ -386,12 +395,12 @@ setup_macos() {
 
   # for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
 
-  success "Finished configuring Mac system and app preferences."
+  success "\nFinished configuring Mac system and app preferences."
 }
 
 suggest_restart() {
-  printf "\\nTo apply your your preferences, your computer needs to restart."
-  read -p "\\nAre you ready to restart now? (y/N) " -n 1 -r
+  printf "\nTo apply your your preferences, your computer needs to restart."
+  read -p "\nAre you ready to restart now? (y/N) " -n 1 -r
   echo
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     printf "Excellent choice. When your Mac has restarted, remember to complete the following tasks to wrap up:\\n"
