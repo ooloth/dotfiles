@@ -102,7 +102,7 @@ confirm_plan() {
   # echo "Reply: $key"
   printf "Sound good? (y/n)"
   read $key
-  echo "Reply: $key"
+  echo "\nReply: $key"
   # read -p "Sound good? (y/N)"
 
   # read reply
