@@ -204,25 +204,25 @@ setup_dotfiles() {
   clone_dotfiles && setup_symlinks
 }
 
-setup_git() {
-  title "Setting up Git"
+# setup_git() {
+#   title "Setting up Git"
 
-  defaultName=$(git config user.name)
-  defaultEmail=$(git config user.email)
-  defaultGithub=$(git config github.user)
+#   defaultName=$(git config user.name)
+#   defaultEmail=$(git config user.email)
+#   defaultUser=$(git config github.user)
 
-  read -rp "Name [$defaultName] " name
-  read -rp "Email [$defaultEmail] " email
-  read -rp "Github username [$defaultGithub] " github
+#   read -rp "Name [$defaultName] " name
+#   read -rp "Email [$defaultEmail] " email
+#   read -rp "Github username [$defaultUser] " github
 
-  git config -f ~/.config/git/config user.name "${name:-$defaultName}"
-  git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
-  git config -f ~/.config/git/config github.user "${github:-$defaultGithub}"
+#   git config -f ~/.config/git/config user.name "${name:-$defaultName}"
+#   git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
+#   git config -f ~/.config/git/config github.user "${github:-$defaultGithub}"
 
-  git config --global credential.helper "osxkeychain"
+#   git config --global credential.helper "osxkeychain"
 
-  success "Done setting up your git credentials."
-}
+#   success "Done setting up your git credentials."
+# }
 
 setup_ssh() {
   title "Setting up SSH"
@@ -385,7 +385,7 @@ case "$1" in
     setup_terminfo
     setup_homebrew
     setup_shell
-    setup_git
+    # setup_git
     setup_macos
     ;;
   *)
