@@ -40,38 +40,71 @@ backup() {
   DATE_STAMP=$(date +"%F-%H-%M-%S")
   BACKUP_DIR=$HOME/Desktop/dotfiles-backup-$DATE_STAMP
 
-  echo "Creating backup directory at $BACKUP_DIR"
+  title "Backing up existing dotfiles"
+
+  info "Creating backup directory at $BACKUP_DIR..."
   mkdir -p "$BACKUP_DIR"
 
+  # Back up symlinked files
   for file in $(get_linkables); do
-     filename=".$(basename "$file" '.symlink')"
-     target="$HOME/$filename"
-     if [ -f "$target" ]; then
-       if [ ! -L "$target" ]; then
-         info "Backing up $filename..."
-         cp "$target" "$BACKUP_DIR"
-         success "Done."
-       else
-         warning "$foldername is a symlink. Skipping."
-       fi
-     else
-       warning "$filename does not exist at this location. Skipping."
-     fi
-  done
-
-  for foldername in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
-    if [ -d "$foldername" ]; then
-      if [ ! -L "$foldername" ]; then
-        info "Backing up $foldername..."
-        cp -rf "$foldername" "$BACKUP_DIR"
-        success "Done."
-      else
-        warning "$foldername is a symlink. Skipping."
-      fi
-    else
-      warning "$foldername does not exist at this location. Skipping."
+    filename=".$(basename "$file" '.symlink')"
+    target="$HOME/$filename"
+    if [ -f "$target" ]; then
+      info "Backing up $filename..."
+      mv "$target" "$BACKUP_DIR"
     fi
   done
+
+  # Back up ~/.config folder
+  if [ -d "$HOME/.config" ]; then
+    info "Backing up ~/.config..."
+    mv "$HOME/.config" "$BACKUP_DIR"
+  fi
+
+  # Back up ~/.ssh folder
+  if [ -d "$HOME/.ssh" ]; then
+    info "Backing up ~/.ssh..."
+    mv "$HOME/.ssh" "$BACKUP_DIR"
+  fi
+
+  # Back up ~/.terminfo folder
+  if [ -d "$HOME/.terminfo" ]; then
+    info "Backing up ~/.terminfo..."
+    mv "$HOME/.terminfo" "$BACKUP_DIR"
+  fi
+
+  success "Done."
+}
+
+  # for file in $(get_linkables); do
+  #    filename=".$(basename "$file" '.symlink')"
+  #    target="$HOME/$filename"
+  #    if [ -f "$target" ]; then
+  #      if [ ! -L "$target" ]; then
+  #        info "Backing up $filename..."
+  #        cp "$target" "$BACKUP_DIR"
+  #        success "Done."
+  #      else
+  #        warning "$foldername is a symlink. Skipping."
+  #      fi
+  #    else
+  #      warning "$filename does not exist at this location. Skipping."
+  #    fi
+  # done
+
+#   for foldername in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
+#     if [ -d "$foldername" ]; then
+#       if [ ! -L "$foldername" ]; then
+#         info "Backing up $foldername..."
+#         cp -rf "$foldername" "$BACKUP_DIR"
+#         success "Done."
+#       else
+#         warning "$foldername is a symlink. Skipping."
+#       fi
+#     else
+#       warning "$foldername does not exist at this location. Skipping."
+#     fi
+#   done
 }
 
 setup_symlinks() {
