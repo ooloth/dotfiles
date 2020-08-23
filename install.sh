@@ -75,37 +75,6 @@ backup() {
 
   success "Done backing up current dotfiles."
 
-  # for file in $(get_linkables); do
-  #    filename=".$(basename "$file" '.symlink')"
-  #    target="$HOME/$filename"
-  #    if [ -f "$target" ]; then
-  #      if [ ! -L "$target" ]; then
-  #        info "Backing up $filename..."
-  #        cp "$target" "$BACKUP_DIR"
-  #        success "Done."
-  #      else
-  #        warning "$foldername is a symlink. Skipping."
-  #      fi
-  #    else
-  #      warning "$filename does not exist at this location. Skipping."
-  #    fi
-  # done
-
-#   for foldername in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
-#     if [ -d "$foldername" ]; then
-#       if [ ! -L "$foldername" ]; then
-#         info "Backing up $foldername..."
-#         cp -rf "$foldername" "$BACKUP_DIR"
-#         success "Done."
-#       else
-#         warning "$foldername is a symlink. Skipping."
-#       fi
-#     else
-#       warning "$foldername does not exist at this location. Skipping."
-#     fi
-#   done
-}
-
 setup_symlinks() {
   title "Creating symlinks to new dotfiles"
 
