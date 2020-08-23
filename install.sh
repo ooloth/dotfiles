@@ -167,6 +167,16 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
+  printf "Press [Enter] when you've finished saving the key on GitHub. (You'll need it for the next
+  step.) "
+
+  read
+
+  if [ "$REPLY" = 'saved' ]; then
+    printf "Good job! Moving on..."
+  else
+    printf "Your funeral..."
+  fi
   # printf "\n"
   # read -pr "Press [Enter] when you've finished saving the key on GitHub. (You'll test if it worked after this installation has finished)..."
 
