@@ -141,7 +141,7 @@ backup() {
 
 create_missing_directory() {
   if [ ! -d "$1" ]; then
-    printf "Creating $1"
+    echo -e "Creating $1"
     mkdir -p "$1"
   fi
 }
@@ -154,9 +154,9 @@ clone_dotfiles() {
 
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
   if [ ! -d "$DOTFILES" ]; then
-    echo -e
+    printf "\n"
     git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
-    echo -e
+    printf "\n"
     success "Cloned dotfiles to $DOTFILES\n"
   else
     success "Found dotfiles in $DOTFILES\n"
@@ -215,11 +215,44 @@ setup_git() {
   read -rp "Email [$defaultEmail] " email
   read -rp "Github username [$defaultGithub] " github
 
-  git config -f ~/.gitconfig-local user.name "${name:-$defaultName}"
-  git config -f ~/.gitconfig-local user.email "${email:-$defaultEmail}"
-  git config -f ~/.gitconfig-local github.user "${github:-$defaultGithub}"
+  git config -f ~/.config/git/config user.name "${name:-$defaultName}"
+  git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
+  git config -f ~/.config/git/config github.user "${github:-$defaultGithub}"
 
   git config --global credential.helper "osxkeychain"
+
+  success "Done setting up your git credentials."
+}
+
+setup_ssh() {
+  title "Setting up SSH"
+
+  info "Generating SSH public/private key pair."
+  # https://security.stackexchange.com/a/23385
+  # https://stackoverflow.com/a/43235320
+  ssh-keygen -q -t rsa -b 2048
+
+  Info "Adding SSH key pair to ssh-agent and Keychain"
+
+  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
+  eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
+
+  # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
+  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+  cp $DOTFILES/mac-setup/ssh-config $HOME/.ssh/config
+
+  # Add SSH private key to ssh-agent and store the passphrase in Keychain
+  ssh-add -K ~/.ssh/id_rsa
+
+  echo "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following public key:\n"
+  echo "https://github.com/settings/ssh/new\n"
+
+  cat $HOME/.ssh/id_rsa.pub
+
+  read -p "\nPress [Enter] when you've finished saving the key on GitHub. (You'll test if it worked
+  after this installation has finished)\n..."
+
+  success "Done setting up SSH."
 }
 
 setup_homebrew() {

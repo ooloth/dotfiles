@@ -1,6 +1,9 @@
 [core]
   excludesfile = $HOME/.config/git/ignore
 
+[github]
+  user = ooloth
+
 [user]
   name = Michael Uloth
   email = hello@michaeluloth.com
