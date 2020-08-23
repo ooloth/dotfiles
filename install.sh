@@ -13,6 +13,9 @@ COLOR_PURPLE="\033[1;35m"
 COLOR_YELLOW="\033[1;33m"
 COLOR_NONE="\033[0m"
 
+# shellcheck disable=SC2154
+trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
+
 title() {
   echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
   echo -e "${COLOR_GRAY}==============================${COLOR_NONE}\n"
@@ -78,6 +81,16 @@ authenticate() {
   success "Yup. That's the password. Have your way with this thing."
 }
 
+confirm_names() {
+  # printf "\\nEnter a name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_COMPUTER_NAME"
+# read -r -p "> " COMPUTER_NAME
+# export COMPUTER_NAME=${COMPUTER_NAME:-$DEFAULT_COMPUTER_NAME}
+#
+# printf "\\nEnter a host name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_HOST_NAME"
+# read -r -p "> " HOST_NAME
+# export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
+}
+
 confirm_plan() {
   info "This installation will set you up by doing this:\n"
 
@@ -85,7 +98,8 @@ confirm_plan() {
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n"
 
-  read -r -p "Sound good? (y/N) " -n 1 REPLY
+  read -p "Continue? (y/N) " -n 1 -r
+  # read -r -p "Sound good? (y/N) " -n 1 REPLY
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     printf "\nExcellent! Here we go..."
@@ -94,6 +108,12 @@ confirm_plan() {
     # printf "\nExiting..."
     # exit 1
   fi
+
+# if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+#   echo "Exiting..."
+#   exit 1
+# fi
+
 }
 
 get_linkables() {
@@ -167,18 +187,17 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  printf "Press [Enter] when you've finished saving the key on GitHub. (You'll need it for the next
-  step.) "
+  printf "\nType 'saved' when you've finished saving the key on GitHub. (You'll need it for the next
+  step.)\n"
 
-  read
+  # Pause for a reply
+  read -p
 
-  if [ "$REPLY" = 'saved' ]; then
-    printf "Good job! Moving on..."
+  if [ "$REPLY" == 'saved' ]; then
+    printf "Good job! Moving on...\n"
   else
-    printf "Your funeral..."
+    printf "Your funeral...\n"
   fi
-  # printf "\n"
-  # read -pr "Press [Enter] when you've finished saving the key on GitHub. (You'll test if it worked after this installation has finished)..."
 
   success "\nDone setting up SSH."
 }
@@ -248,25 +267,64 @@ setup_dotfiles() {
   clone_dotfiles && setup_symlinks
 }
 
-# setup_git() {
-#   title "Setting up Git"
+setup_git() {
+  title "Setting up Git"
 
-#   defaultName=$(git config user.name)
-#   defaultEmail=$(git config user.email)
-#   defaultUser=$(git config github.user)
+  defaultName=$(git config user.name)
+  defaultEmail=$(git config user.email)
+  defaultUser=$(git config github.user)
 
-#   read -rp "Name [$defaultName] " name
-#   read -rp "Email [$defaultEmail] " email
-#   read -rp "Github username [$defaultUser] " github
+  read -rp "Name [$defaultName] " name
+  read -rp "Email [$defaultEmail] " email
+  read -rp "Github username [$defaultUser] " github
 
-#   git config -f ~/.config/git/config user.name "${name:-$defaultName}"
-#   git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
-#   git config -f ~/.config/git/config github.user "${github:-$defaultGithub}"
+  git config -f ~/.config/git/config user.name "${name:-$defaultName}"
+  git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
+  git config -f ~/.config/git/config github.user "${github:-$defaultGithub}"
 
-#   git config --global credential.helper "osxkeychain"
+  success "Done setting up your git credentials."
+}
 
-#   success "Done setting up your git credentials."
-# }
+setup_homebrew() {
+  title "Setting up Homebrew"
+
+# if [ ! -d "${HOME}/bin/" ]; then
+#   mkdir "${HOME}/bin"
+# fi
+
+  HOMEBREW_PREFIX="/usr/local"
+
+# if [ -d "$HOMEBREW_PREFIX" ]; then
+#   if ! [ -r "$HOMEBREW_PREFIX" ]; then
+#     sudo chown -R "${LOGNAME}:admin" "$HOMEBREW_PREFIX"
+#   fi
+# else
+#   sudo mkdir "$HOMEBREW_PREFIX"
+#   sudo chflags norestricted "$HOMEBREW_PREFIX"
+#   sudo chown -R "${LOGNAME}:admin" "$HOMEBREW_PREFIX"
+# fi
+
+
+  if test ! "$(command -v brew)"; then
+    info "Homebrew not installed. Installing."
+    # Run as a login shell (non-interactive) so that the script doesn't pause for user input
+    curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
+  fi
+
+  # Install brew dependencies from Brewfile
+  brew bundle --file="$DOTFILES/mac-setup/Brewfile"
+
+  # Install fzf
+  echo -e
+  title "Installing fzf"
+  "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
+
+  info "Updating Homebrew..."
+  brew update
+  brew upgrade
+
+  success "\nDone setting up Homebrew."
+}
 
 setup_terminfo() {
   title "Configuring terminfo"
@@ -333,30 +391,28 @@ setup_shell() {
   success "\nDone configuring shell."
 }
 
-setup_homebrew() {
-  title "Setting up Homebrew"
-
-  if test ! "$(command -v brew)"; then
-    info "Homebrew not installed. Installing."
-    # Run as a login shell (non-interactive) so that the script doesn't pause for user input
-    curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
-  fi
-
-  # Install brew dependencies from Brewfile
-  brew bundle --file="$DOTFILES/mac-setup/Brewfile"
-
-  # Install fzf
-  echo -e
-  title "Installing fzf"
-  "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
-
-  success "\nDone setting up Homebrew."
-}
+# update_zsh_shell() {
+#   local shell_path;
+#   shell_path="$(command -v zsh)"
+#
+#   laptop_echo "Changing your shell to zsh ..."
+#   if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
+#     laptop_echo "Adding '${shell_path}' to /etc/shells"
+#     sudo sh -c "echo ${shell_path} >> /etc/shells"
+#   fi
+#   sudo chsh -s "$shell_path" "$USER"
+# }
 
 set_up_node() {
   title "Installing node"
 
   fnm install latest && fnm default latest && fnm use latest
+
+  echo "Node --> $(command -v node)"
+  node -v
+
+  echo "NPM --> $(command -v npm)"
+  npm -v
 
   success "\nDone installing node."
 }
@@ -370,10 +426,10 @@ set_up_neovim() {
 
   warning "TODO: open vim to install plugins, then close"
 
-  info "Creating viminfo directory for Startify..."
-  create_missing_directory "${HOME}/.vim/files/info"
+  # info "Creating viminfo directory for Startify..."
+  # create_missing_directory "${HOME}/.vim/files/info"
 
-  warning "TODO: set up neovim\n"
+  success "\nDone setting up neovim."
 }
 
 setup_macos() {
@@ -459,14 +515,16 @@ set_up_apps() {
 
 suggest_restart() {
   printf "\nTo apply your your preferences, your computer needs to restart.\n"
-  # read -p -r "\nAre you ready to restart now? (y/N) " -n 1
-  # echo
-  # if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-  #   printf "Excellent choice. Restarting..."
-  #   sudo shutdown -r now
-  # else
-  #   printf "No worries! Just remember to restart manually as soon as you can."
-  # fi
+
+  read -p -r "\nAre you ready to restart now? (y/N) " -n 1
+  echo
+
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    printf "Excellent choice. Restarting..."
+    sudo shutdown -r now
+  else
+    printf "No worries! Just remember to restart manually as soon as you can."
+  fi
 }
 
 prerequisites() {
@@ -500,9 +558,9 @@ case "$1" in
     ;;
   all)
     prerequisites && confirm_plan && backup && setup_ssh && setup_dotfiles
-    # setup_git
-    setup_shell
+    setup_git
     setup_homebrew
+    setup_shell
     set_up_node
     set_up_neovim
     setup_macos
