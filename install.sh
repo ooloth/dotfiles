@@ -266,7 +266,7 @@ setup_homebrew() {
   fi
 
   # Install brew dependencies from Brewfile
-  brew bundle --file="./mac-setup/Brewfile"
+  brew bundle --file="$DOTFILES/mac-setup/Brewfile"
 
   # Install fzf
   echo -e
