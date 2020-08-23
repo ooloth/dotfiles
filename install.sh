@@ -150,7 +150,7 @@ clone_dotfiles() {
   create_missing_directory "$HOME/Repos"
   create_missing_directory "$HOME/Repos/ooloth"
 
-  info "Looking for the new dotfiles"
+  info "Finding the new dotfiles."
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
   if [ ! -d "$DOTFILES" ]; then
     git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
@@ -161,19 +161,21 @@ clone_dotfiles() {
 }
 
 setup_symlinks() {
-  title "Creating symlinks to new dotfiles"
+  info "Creating symlinks for dotfiles at the home folder root..."
 
   # Symlink root-level files
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
-    info "Creating symlink for $(basename $file)..."
+    # info "Creating symlink for $(basename $file)..."
     ln -sfv "$file" "$target"
-    echo -e
+    # echo -e
   done
 
   # Create ~/.config if it doesn't exist
   create_missing_directory "$HOME/.config"
   echo -e
+
+  info "Creating symlinks for dotfiles in ~/.config..."
 
   # Symlink .config subfolder files and folders
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
@@ -188,13 +190,13 @@ setup_symlinks() {
     # Symlink the files themselves (not the folders, which apps also modify)
     for config_file in $config_files; do
       target="$HOME/.config/$(basename $config_subfolder)/$(basename "$config_file")"
-      info "Creating symlink for $(basename $config_file)..."
+      # info "Creating symlink for $(basename $config_file)..."
       ln -sfv "$config_file" "$target"
-      echo -e
+      # echo -e
     done
   done
 
-  success "Done symlinking new dotfiles to the home folder."
+  success "\nDone symlinking new dotfiles to the home folder."
 }
 
 setup_dotfiles() {
