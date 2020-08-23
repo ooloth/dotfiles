@@ -34,8 +34,18 @@ success() {
   echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
+go_home() {
+  info "Moving to home directory."
+
+  cd $HOME
+
+  success "Ahh. So fresh and so clean.\n"
+}
+
 confirm_macos() {
   title "Verifying prerequisites"
+
+  go_home # helps for some reason
 
   info "Confirming this is a Mac."
 
