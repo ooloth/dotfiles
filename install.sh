@@ -100,11 +100,11 @@ confirm_plan() {
 
   # printf "Sound good? (y/N)"
 
-  read -p "Sound good? (y/N)"
-  echo "Reply: $REPLY"
+  # read -p "Sound good? (y/N)"
 
-  # read -p "Continue? (y/N) " -n 1 -r
+  read -p "Continue? (y/N) " -n 1 -r
   # read -r -p "Sound good? (y/N) " -n 1 REPLY
+  echo "Reply: $REPLY"
 
   if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
     printf "\nNo worries! Maybe next time."
