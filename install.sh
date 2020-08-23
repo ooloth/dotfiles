@@ -142,11 +142,11 @@ clone_dotfiles() {
 
   info "Looking for the new dotfiles"
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
-  if [ -d "$DOTFILES" ]; then
-    success "Found dotfiles in $DOTFILES"
-  else
-    git clone "https://github.com/nicknisi/dotfiles.git" "$DOTFILES"
+  if [ ! -d "$DOTFILES" ]; then
+    git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
     success "Cloned dotfiles to $DOTFILES."
+  else
+    success "Found dotfiles in $DOTFILES"
   fi
 }
 
