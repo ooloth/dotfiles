@@ -2,8 +2,7 @@
 
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
-# DOTFILES="$(pwd)"
-LOCAL_DOTFILES="$HOME/Repos/ooloth/dotfiles"
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -65,7 +64,7 @@ authenticate() {
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   set -e
 
-  success "Yup. That's the password. Have your way with it.\n"
+  success "Yup. That's the password. Have your way with this thing."
 }
 
 confirm_plan() {
@@ -87,7 +86,7 @@ confirm_plan() {
 }
 
 get_linkables() {
-  find -H "$LOCAL_DOTFILES" -maxdepth 3 -name '*.symlink'
+  find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
 }
 
 backup() {
@@ -143,11 +142,11 @@ clone_dotfiles() {
 
   info "Looking for the new dotfiles"
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
-  if [ -d "$LOCAL_DOTFILES" ]; then
-    success "Found dotfiles in $LOCAL_DOTFILES"
+  if [ -d "$DOTFILES" ]; then
+    success "Found dotfiles in $DOTFILES"
   else
-    git clone "https://github.com/nicknisi/dotfiles.git" "$LOCAL_DOTFILES"
-    success "Cloned dotfiles to $LOCAL_DOTFILES."
+    git clone "https://github.com/nicknisi/dotfiles.git" "$DOTFILES"
+    success "Cloned dotfiles to $DOTFILES."
   fi
 }
 
