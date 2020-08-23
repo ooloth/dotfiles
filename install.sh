@@ -42,7 +42,7 @@ backup() {
 
   title "Backing up existing dotfiles"
 
-  info "Creating backup directory at $BACKUP_DIR..."
+  info "Creating backup directory at $BACKUP_DIR"
   mkdir -p "$BACKUP_DIR"
 
   # Copy root-level dotfiles to backup folders
@@ -50,26 +50,26 @@ backup() {
     filename=".$(basename "$file" '.symlink')"
     target="$HOME/$filename"
     if [ -f "$target" ]; then
-      info "Backing up $filename..."
+      info "Backing up $filename"
       cp "$target" "$BACKUP_DIR"
     fi
   done
 
   # Copy ~/.config folder dotfiles to backup folder
   if [ -d "$HOME/.config" ]; then
-    info "Backing up ~/.config..."
+    info "Backing up ~/.config"
     cp -R "$HOME/.config" "$BACKUP_DIR"
   fi
 
   # Back up ~/.ssh folder
   if [ -d "$HOME/.ssh" ]; then
-    info "Backing up ~/.ssh..."
+    info "Backing up ~/.ssh"
     cp -R "$HOME/.ssh" "$BACKUP_DIR"
   fi
 
   # Back up ~/.terminfo folder
   if [ -d "$HOME/.terminfo" ]; then
-    info "Backing up ~/.terminfo..."
+    info "Backing up ~/.terminfo"
     cp -R "$HOME/.terminfo" "$BACKUP_DIR"
   fi
 
@@ -89,7 +89,7 @@ setup_symlinks() {
   # Symlink root-level dotfiles
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
-    info "Creating symlink for $file..."
+    info "Creating symlink for $file"
     ln -sfv "$file" "$target"
     echo -e
   done
@@ -97,17 +97,6 @@ setup_symlinks() {
   # Create ~/.config if it doesn't exist
   create_missing_directory "$HOME/.config"
   echo -e
-
-  # config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
-  #   for config in $config_files; do
-  #       target="$HOME/.config/$(basename "$config")"
-  #       if [ -e "$target" ]; then
-  #           info "~${target#$HOME} already exists... Skipping."
-  #       else
-  #           info "Creating symlink for $config"
-  #           ln -s "$config" "$target"
-  #       fi
-  #   done
 
   # Symlink .config subfolder contents
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
@@ -120,7 +109,7 @@ setup_symlinks() {
 
     for config_file in $config_files; do
       target="$HOME/.config/$(basename $config_subfolder)/$(basename "$config_file")"
-      info "Creating symlink for $config_file..."
+      info "Creating symlink for $config_file"
       ln -sfv "$config_file" "$target"
       echo -e
     done
