@@ -97,7 +97,7 @@ setup_symlinks() {
   fi
 
   # Symlink .config folders
-  config_files=$(find "$DOTFILES/config"/* -maxdepth 1 2>/dev/null)
+  config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
   for config in $config_files; do
     target="$HOME/.config/$(basename "$config")"
     # rm -rf $target # works whether an old link is there or not
