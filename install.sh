@@ -108,8 +108,9 @@ setup_symlinks() {
   # Symlink .config subfolder contents
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
   for config_subfolder in $config_subfolders; do
-    for config_file in $config_subfolder; do
-      target="$HOME/.config/$(basename "$config_subfolder")"
+    config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
+    for config_file in $config_files; do
+      target="$HOME/.config/$(basename "$config_file")"
       info "Creating symlink for $config_file..."
       ln -sfv "$config_file" "$target"
       echo -e
