@@ -84,10 +84,12 @@ authenticate() {
 # confirm_names() {
 #   printf "\\nEnter a name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_COMPUTER_NAME"
 #   read -r -p "> " COMPUTER_NAME
+  # vared -p "\nAre you ready to restart now? (y/N) " -c key
 #   export COMPUTER_NAME=${COMPUTER_NAME:-$DEFAULT_COMPUTER_NAME}
 
 #   printf "\\nEnter a host name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_HOST_NAME"
 #   read -r -p "> " HOST_NAME
+  # vared -p "\nAre you ready to restart now? (y/N) " -c key
 #   export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
 # }
 
@@ -96,22 +98,11 @@ confirm_plan() {
 
   printf "1. Back up any existing dotfiles in your home folder\n"
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
-  printf "3. TBD...\n"
+  printf "3. TBD...\n\n"
 
-  vared -p "Sound good? (y/n) " -c key
-  # read -n1 -r -p "Sound good? (y/n) " key
-  # echo "Reply: $key"
-  # printf "Sound good? (y/n)"
-  # read $key
-  printf "\nReply: $key"
-  # read -p "Sound good? (y/N)"
+  vared -p "Sound good? (y/N) " -c key
 
-  # read reply
-  # read -p "Continue? (y/N) " -n 1 -r
-  # read -r -p "Sound good? (y/N) " -n 1 REPLY
-  # echo "Reply: $reply"
-
-  if [[ ! "$key" = 'n' ]]; then
+  if [[ ! "$key" = 'y' ]]; then
     printf "\nNo worries! Maybe next time."
     printf "\nExiting..."
     exit 1
@@ -191,14 +182,11 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  printf "\nType 'saved' when you've finished saving the key on GitHub. (You'll need it for the next
-  step.)\n"
+  printf "\nType 'saved' when you've finished saving the key on GitHub. (You'll need it for the next step.)\n"
 
-  # Pause for a reply
-  read -p -r
-  echo "Reply: $REPLY"
+  vared -p "\nType 'saved' when you've finished saving the key on GitHub. (You'll need it for the next step.) " -c reply
 
-  if [ "$REPLY" == 'saved' ]; then
+  if [ "$REPLY" == 'reply' ]; then
     printf "Good job! Moving on...\n"
   else
     printf "Your funeral...\n"
@@ -279,18 +267,13 @@ setup_git() {
   defaultEmail=$(git config user.email)
   defaultUser=$(git config github.user)
 
-  read -rp "Name [$defaultName] " name
-  echo "Name: $name"
-
-  read -rp "Email [$defaultEmail] " email
-  echo "Email: $email"
-
-  read -rp "Github username [$defaultUser] " user
-  echo "User: $user"
+  vared -p "Name [$defaultName] " -c name
+  vared -p "Email [$defaultEmail] " -c email
+  vared -p "GitHub username [$defaultUser] " -c user
 
   git config -f ~/.config/git/config user.name "${name:-$defaultName}"
   git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
-  git config -f ~/.config/git/config github.user "${user:-$defaultGithub}"
+  git config -f ~/.config/git/config github.user "${user:-$defaultUser}"
 
   success "Done setting up your git credentials."
 }
@@ -526,10 +509,9 @@ set_up_apps() {
 suggest_restart() {
   printf "\nTo apply your your preferences, your computer needs to restart.\n"
 
-  read -p -r "\nAre you ready to restart now? (y/N) " -n 1
-  echo "Reply: $REPLY"
+  vared -p "\nAre you ready to restart now? (y/N) " -c key
 
-  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+  if [[ "$key" = 'y' ]]; then
     printf "Excellent choice. Restarting..."
     sudo shutdown -r now
   else
