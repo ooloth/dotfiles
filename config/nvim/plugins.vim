@@ -252,7 +252,7 @@ autocmd User Startified :silent CocRestart
 
 " Create viminfo file (for new installs)
 " https://github.com/ChristianChiarulli/nvim/issues/5#issuecomment-625933872
-set viminfo='100,n$HOME/.config/nvim/autoload/plugged/vim-startify/test/viminfo'
+" set viminfo='100,n$HOME/.config/nvim/autoload/plugged/vim-startify/test/viminfo'
 
 " ------------------------------------------------------------------------
 " VIM CLOSETAG
