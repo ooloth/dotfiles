@@ -309,32 +309,25 @@ prerequisites () {
 
 case "$1" in
   backup)
-    prerequisites
-    backup
+    prerequisites && backup
     ;;
   link)
-    prerequisites
-    setup_symlinks
+    prerequisites && setup_symlinks
     ;;
   git)
-    prerequisites
-    setup_git
+    prerequisites && setup_git
     ;;
   homebrew)
-    prerequisites
-    setup_homebrew
+    prerequisites && setup_homebrew
     ;;
   shell)
-    prerequisites
-    setup_shell
+    prerequisites && setup_shell
     ;;
   terminfo)
-    prerequisites
-    setup_terminfo
+    prerequisites && setup_terminfo
     ;;
   macos)
-    prerequisites
-    setup_macos
+    prerequisites && setup_macos
     ;;
   all)
     prerequisites
