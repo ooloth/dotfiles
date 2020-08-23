@@ -45,35 +45,35 @@ backup() {
   info "Creating backup directory at $BACKUP_DIR..."
   mkdir -p "$BACKUP_DIR"
 
-  # Back up symlinked files
+  # Copy root-level dotfiles to backup folders
   for file in $(get_linkables); do
     filename=".$(basename "$file" '.symlink')"
     target="$HOME/$filename"
     if [ -f "$target" ]; then
       info "Backing up $filename..."
-      mv "$target" "$BACKUP_DIR"
+      cp "$target" "$BACKUP_DIR"
     fi
   done
 
-  # Back up ~/.config folder
+  # Copy ~/.config folder dotfiles to backup folder
   if [ -d "$HOME/.config" ]; then
     info "Backing up ~/.config..."
-    mv "$HOME/.config" "$BACKUP_DIR"
+    cp -R "$HOME/.config" "$BACKUP_DIR"
   fi
 
   # Back up ~/.ssh folder
   if [ -d "$HOME/.ssh" ]; then
     info "Backing up ~/.ssh..."
-    mv "$HOME/.ssh" "$BACKUP_DIR"
+    cp -R "$HOME/.ssh" "$BACKUP_DIR"
   fi
 
   # Back up ~/.terminfo folder
   if [ -d "$HOME/.terminfo" ]; then
     info "Backing up ~/.terminfo..."
-    mv "$HOME/.terminfo" "$BACKUP_DIR"
+    cp -R "$HOME/.terminfo" "$BACKUP_DIR"
   fi
 
-  success "Done."
+  success "Done backing up current dotfiles."
 
   # for file in $(get_linkables); do
   #    filename=".$(basename "$file" '.symlink')"
