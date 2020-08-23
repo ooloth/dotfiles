@@ -370,12 +370,12 @@ setup_macos() {
   echo "Enable Safari’s debug menu"
   defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
 
-  echo "Kill affected applications"
+  # echo "Kill affected applications"
 
   # for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
 }
 
-restart() {
+suggest_restart() {
   echo "\\nTo apply your your preferences, your computer needs to restart."
   read -p "\\nAre you ready to restart now? (y/N) " -n 1 -r
   echo
@@ -403,7 +403,7 @@ case "$1" in
     prerequisites && backup && setup_git
     ;;
   homebrew)
-    prerequisites && setup_homebrew
+    prerequisites && setup_homebrew && suggest_restart
     ;;
   shell)
     prerequisites && backup && setup_shell
@@ -412,7 +412,7 @@ case "$1" in
     prerequisites && setup_terminfo
     ;;
   macos)
-    prerequisites && setup_macos
+    prerequisites && setup_macos && suggest_restart
     ;;
   all)
     prerequisites && confirm_plan && backup && setup_dotfiles
@@ -422,6 +422,7 @@ case "$1" in
     # setup_git
     setup_homebrew
     setup_macos
+    suggest_restart
     ;;
   *)
   echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|terminfo|macos|all}\n"
