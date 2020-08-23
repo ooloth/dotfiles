@@ -466,7 +466,7 @@ case "$1" in
     setup_shell
     set_up_oh_my_zsh
     # setup_git
-    setup_ssh
+    # setup_ssh
     setup_homebrew
     set_up_neovim
     setup_macos
