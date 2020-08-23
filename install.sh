@@ -74,7 +74,6 @@ backup() {
   fi
 
   success "Done."
-}
 
   # for file in $(get_linkables); do
   #    filename=".$(basename "$file" '.symlink')"
@@ -117,7 +116,7 @@ setup_symlinks() {
 
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
-    rm -f $target # works whether it's there or not
+    rm -f $target # works whether an old link is there or not
     info "Creating symlink for $file..."
     ln -s "$file" "$target"
   done
@@ -130,13 +129,16 @@ setup_symlinks() {
     mkdir -p "$HOME/.config"
   fi
 
+  # Symlink .config folders
   config_files=$(find "$DOTFILES/config" -maxdepth 1 2>/dev/null)
   for config in $config_files; do
     target="$HOME/.config/$(basename "$config")"
-    rm -rf $target
+    rm -rf $target # works whether an old link is there or not
     info "Creating symlink for $config..."
     ln -s "$config" "$target"
   done
+
+  success "Done."
 }
 
 setup_git() {
