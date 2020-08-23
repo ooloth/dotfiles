@@ -13,25 +13,25 @@ COLOR_YELLOW="\033[1;33m"
 COLOR_NONE="\033[0m"
 
 title() {
-  echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
-  echo -e "${COLOR_GRAY}==============================${COLOR_NONE}\n"
+  printf -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
+  printf -e "${COLOR_GRAY}==============================${COLOR_NONE}\n"
 }
 
 error() {
-  echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1"
+  printf -e "${COLOR_RED}Error: ${COLOR_NONE}$1"
   exit 1
 }
 
 warning() {
-  echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
+  printf -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
 }
 
 info() {
-  echo -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
+  printf -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
 }
 
 success() {
-  echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
+  printf -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
 go_home() {
@@ -80,17 +80,17 @@ authenticate() {
 confirm_plan() {
   info "This installation will set you up by doing this:\n"
 
-  echo "1. Backup any exising dotfiles in your home folder"
-  echo "2. Symlink the new dotfiles to your home folder"
-  echo "3. TBD..."
+  printf "1. Backup any exising dotfiles in your home folder"
+  printf "2. Symlink the new dotfiles to your home folder"
+  printf "3. TBD..."
 
   read -p "\nSound good? (y/N) " -n 1 -r
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    echo "\nExcellent! Here we go..."
+    printf "\nExcellent! Here we go..."
   else
-    echo "\nNo worries! Maybe next time."
-    echo "\nExiting..."
+    printf "\nNo worries! Maybe next time."
+    printf "\nExiting..."
     exit 1
   fi
 }
@@ -141,9 +141,8 @@ backup() {
 
 create_missing_directory() {
   if [ ! -d "$1" ]; then
-    info "Creating $1"
+    info "Creating $1\n"
     mkdir -p "$1"
-    echo -e
   fi
 }
 
@@ -155,9 +154,9 @@ clone_dotfiles() {
 
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
   if [ ! -d "$DOTFILES" ]; then
-    echo -e
+    printf ""
     git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
-    echo -e
+    printf ""
     success "Cloned dotfiles to $DOTFILES\n"
   else
     success "Found dotfiles in $DOTFILES\n"
@@ -235,7 +234,7 @@ setup_homebrew() {
   brew bundle
 
   # Install fzf
-  echo -e
+  printf ""
   info "Installing fzf"
   "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
 }
@@ -246,7 +245,7 @@ setup_shell() {
   [[ -n "$(command -v brew)" ]] && zsh_path="$(brew --prefix)/bin/zsh" || zsh_path="$(which zsh)"
   if ! grep "$zsh_path" /etc/shells; then
     info "Adding $zsh_path to /etc/shells"
-    echo "$zsh_path" | sudo tee -a /etc/shells
+    printf "$zsh_path" | sudo tee -a /etc/shells
   fi
 
   if [[ "$SHELL" != "$zsh_path" ]]; then
@@ -268,52 +267,52 @@ function setup_terminfo() {
 setup_macos() {
   title "Configuring macOS"
 
-  echo "Finder: show all filename extensions"
+  printf "Finder: show all filename extensions"
   defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
-  echo "show hidden files by default"
+  printf "show hidden files by default"
   defaults write com.apple.Finder AppleShowAllFiles -bool false
 
-  echo "only use UTF-8 in Terminal.app"
+  printf "only use UTF-8 in Terminal.app"
   defaults write com.apple.terminal StringEncodings -array 4
 
-  echo "expand save dialog by default"
+  printf "expand save dialog by default"
   defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 
-  echo "show the ~/Library folder in Finder"
+  printf "show the ~/Library folder in Finder"
   chflags nohidden ~/Library
 
-  echo "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)"
+  printf "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)"
   defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
-  echo "Enable subpixel font rendering on non-Apple LCDs"
+  printf "Enable subpixel font rendering on non-Apple LCDs"
   defaults write NSGlobalDomain AppleFontSmoothing -int 2
 
-  echo "Use current directory as default search scope in Finder"
+  printf "Use current directory as default search scope in Finder"
   defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
-  echo "Show Path bar in Finder"
+  printf "Show Path bar in Finder"
   defaults write com.apple.finder ShowPathbar -bool true
 
-  echo "Show Status bar in Finder"
+  printf "Show Status bar in Finder"
   defaults write com.apple.finder ShowStatusBar -bool true
 
-  echo "Disable press-and-hold for keys in favor of key repeat"
+  printf "Disable press-and-hold for keys in favor of key repeat"
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
-  echo "Set a blazingly fast keyboard repeat rate"
+  printf "Set a blazingly fast keyboard repeat rate"
   defaults write NSGlobalDomain KeyRepeat -int 1
 
-  echo "Set a shorter Delay until key repeat"
+  printf "Set a shorter Delay until key repeat"
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
-  echo "Enable tap to click (Trackpad)"
+  printf "Enable tap to click (Trackpad)"
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
-  echo "Enable Safari’s debug menu"
+  printf "Enable Safari’s debug menu"
   defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
 
-  echo "Kill affected applications"
+  printf "Kill affected applications"
 
   for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
 }
@@ -355,10 +354,10 @@ case "$1" in
     setup_macos
     ;;
   *)
-  echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|terminfo|macos|all}\n"
+  printf -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|terminfo|macos|all}\n"
   exit 1
   ;;
 esac
 
-echo -e
+printf "\n"
 success "Done."
