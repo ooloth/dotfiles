@@ -3,6 +3,7 @@
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
+OH_MY_ZSH="$HOME/.oh-my-zsh"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -273,11 +274,11 @@ setup_terminfo() {
 set_up_oh_my_zsh() {
   title "Setting up Oh My Zsh..."
 
-  if [ -d "${HOME}/.oh-my-zsh" ]; then
-    rm -rf "${HOME}/.oh-my-zsh"
+  if [ -d "$OH_MY_ZSH" ]; then
+    rm -rf "$OH_MY_ZSH"
   fi
 
-  git clone https://github.com/robbyrussell/oh-my-zsh.git "${HOME}/.oh-my-zsh"
+  git clone https://github.com/robbyrussell/oh-my-zsh.git "$OH_MY_ZSH"
 
   if [ -d /usr/local/share/zsh ]; then
     info "Setting permissions for /usr/local/share/zsh..."
@@ -296,8 +297,8 @@ set_up_spaceship_prompt() {
   title "Setting up spaceship prompt..."
 
   # https://github.com/denysdovhan/spaceship-prompt#installing
-  git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
-  ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+  git clone https://github.com/denysdovhan/spaceship-prompt.git "$OH_MY_ZSH/custom/themes/spaceship-prompt"
+  ln -s "$OH_MY_ZSH/custom/themes/spaceship-prompt/spaceship.zsh-theme" "$OH_MY_ZSH/custom/themes/spaceship.zsh-theme"
 
   success "\nDone setting up spaceship prompt."
 }
