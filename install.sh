@@ -94,25 +94,27 @@ setup_symlinks() {
     echo -e
   fi
 
-  config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
-    for config in $config_files; do
-        target="$HOME/.config/$(basename "$config")"
-        if [ -e "$target" ]; then
-            info "~${target#$HOME} already exists... Skipping."
-        else
-            info "Creating symlink for $config"
-            ln -s "$config" "$target"
-        fi
+  # config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
+  #   for config in $config_files; do
+  #       target="$HOME/.config/$(basename "$config")"
+  #       if [ -e "$target" ]; then
+  #           info "~${target#$HOME} already exists... Skipping."
+  #       else
+  #           info "Creating symlink for $config"
+  #           ln -s "$config" "$target"
+  #       fi
+  #   done
+
+  # Symlink .config subfolder contents
+  config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
+  for config_subfolder in $config_subfolders; do
+    for config_file in $config_subfolder; do
+      target="$HOME/.config/$(basename "$config_subfolder")"
+      info "Creating symlink for $config_file..."
+      ln -sfv "$config_file" "$target"
+      echo -e
     done
-  # # Symlink .config subfolder contents
-  # config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
-  # for config_subfolder in $config_subfolders; do
-  #   target="$HOME/.config"
-  #   # target="$HOME/.config/$(basename "$config")"
-  #   info "Creating symlink for $config_subfolder..."
-  #   ln -sfv "$config_subfolder" "$target"
-  #   echo -e
-  # done
+  done
 
   success "Done symlinking new dotfiles to the home folder."
 }
