@@ -18,6 +18,7 @@ brew "neovim"
 brew "ranger"
 brew "ripgrep"
 brew "schniz/tap/fnm"
+brew "shellcheck"
 brew "speedtest-cli"
 brew "svn"            # required for font cask installations
 brew "tmux"
