@@ -101,7 +101,7 @@ confirm_plan() {
   # read -n1 -r -p "Sound good? (y/n) " key
   # echo "Reply: $key"
   printf "Sound good? (y/n)"
-  && read $key &&
+  read $key
   echo "Reply: $key"
   # read -p "Sound good? (y/N)"
 
