@@ -158,7 +158,7 @@ backup() {
 setup_ssh() {
   title "Setting up SSH"
 
-  info "Generating SSH public/private key pair."
+  info "Generating SSH public/private key pair...\n"
   # silent output, "id_rsa", overwrite existing, no password
   # https://security.stackexchange.com/a/23385
   # https://stackoverflow.com/a/43235320
@@ -182,7 +182,7 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  vared -p "\nType 'saved' when you've finished saving the key on GitHub. (You'll need it for the next step.) " -c reply
+  vared -pr "\nType 'saved' when you've finished saving the key on GitHub. (You'll need it for the next step.) " -c reply
 
   if [ "$reply" == 'saved' ]; then
     printf "Good job! Moving on...\n"
