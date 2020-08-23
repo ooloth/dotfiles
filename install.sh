@@ -299,12 +299,12 @@ set_up_oh_my_zsh() {
   git clone https://github.com/robbyrussell/oh-my-zsh.git "${HOME}/.oh-my-zsh"
 
   if [ -d /usr/local/share/zsh ]; then
-    bootstrap_echo "Setting permissions for /usr/local/share/zsh..."
+    info "Setting permissions for /usr/local/share/zsh..."
     sudo chmod -R 755 /usr/local/share/zsh
   fi
 
   if [ -d /usr/local/share/zsh/site-functions ]; then
-    bootstrap_echo "Setting permissions for /usr/local/share/zsh/site-functions..."
+    info "Setting permissions for /usr/local/share/zsh/site-functions..."
     sudo chmod -R 755 /usr/local/share/zsh/site-functions
   fi
 
