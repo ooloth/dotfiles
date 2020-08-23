@@ -43,33 +43,32 @@ confirm_macos() {
     error "\nOops, it looks like this is a non-UNIX system. This script only works on a Mac.\n\nExiting..."
   fi
 
-  success "This is definitely a Mac. You knew that already."
+  success "This is definitely a Mac. But you knew that already.\n"
 }
 
 confirm_command_line_tools() {
-  info "\nConfirming the Xcode CLI tools are installed."
+  info "Confirming the Xcode CLI tools are installed."
 
   if [ ! -d "$COMMAND_LINE_TOOLS" ]; then
     error "Apple's command line developer tools must be installed before running this script.  To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
   fi
 
-  success "Nice! That's usually the hard one."
+  success "Nice! That's usually the hard part.\n"
 }
 
 authenticate() {
-  info "\nAuthenticating that you're authorized to install things on this Mac.\n"
+  info "Authenticating you as an Installer Of Things on this Mac."
 
   sudo -v
   # Keep-alive: update existing `sudo` time stamp until setup has finished
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   set -e
 
-  success "Have your way with this thing."
+  success "Yup. That's the password. Have your way with this machine.\n"
 }
 
 confirm_plan() {
-  info "\nThis installation will set up your Mac for web development by doing the following
-  things:\n"
+  info "This installation will set you up by doing this:\n"
 
   echo "1. Backup any exising dotfiles in your home folder"
   echo "2. Symlink the new dotfiles to your home folder"
