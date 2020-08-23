@@ -104,7 +104,7 @@ setup_symlinks() {
   # target="$HOME/.config/$(basename "$config")"
     # rm -rf $target # works whether an old link is there or not
   info "Creating symlink for $DOTFILES/.config..."
-  ln -sfv "$DOTFILES/.config" "$HOME/.config"
+  ln -sfv "$DOTFILES/.config" "$HOME"
   # done
 
   # # Symlink .config folders
