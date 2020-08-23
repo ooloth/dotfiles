@@ -35,18 +35,28 @@ success() {
 }
 
 confirm_macos() {
+  title "Verifying installation"
+
+  info "Confirming this is a Mac."
+
   if [ "$OS_NAME" != "Darwin" ]; then
     error "Oops, it looks like this is a non-UNIX system. This script only works on a Mac.\n\nExiting..."
   fi
+
+  success "This is definitely a Mac. You knew that already."
 }
 
 confirm_command_line_tools() {
+  info "Confirming that the Xcode CLI tools are installed."
+
   if [ ! -d "$COMMAND_LINE_TOOLS" ]; then
     error "Apple's command line developer tools must be installed before running this script.  To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
   fi
 }
 
 authenticate() {
+  info "Authenticating that you own this Mac."
+
   sudo -v
   # Keep-alive: update existing `sudo` time stamp until setup has finished
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
