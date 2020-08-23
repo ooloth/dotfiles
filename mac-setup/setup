@@ -399,7 +399,7 @@ brew upgrade
 # cask "iterm2-beta"
 # EOF
 
-laptop_echo "Your shell preference is set to ZSH..."
+# laptop_echo "Your shell preference is set to ZSH..."
 
 # laptop_echo "Configuring asdf version manager..."
 # if [ ! -d "${HOME}/.asdf" ]; then
@@ -473,95 +473,95 @@ laptop_echo "Laptop installation completed successfully!"
 # 2. Install Oh My Zsh
 ################################################################################
 
-bootstrap_echo "Step 2: Installing Oh My Zsh..."
+# bootstrap_echo "Step 2: Installing Oh My Zsh..."
 
-if [ -d "${HOME}/.oh-my-zsh" ]; then
-  rm -rf "${HOME}/.oh-my-zsh"
-fi
+# if [ -d "${HOME}/.oh-my-zsh" ]; then
+#   rm -rf "${HOME}/.oh-my-zsh"
+# fi
 
-git clone https://github.com/robbyrussell/oh-my-zsh.git "${HOME}/.oh-my-zsh"
+# git clone https://github.com/robbyrussell/oh-my-zsh.git "${HOME}/.oh-my-zsh"
 
-if [ -d /usr/local/share/zsh ]; then
-  bootstrap_echo "Setting permissions for /usr/local/share/zsh..."
-  sudo chmod -R 755 /usr/local/share/zsh
-fi
+# if [ -d /usr/local/share/zsh ]; then
+#   bootstrap_echo "Setting permissions for /usr/local/share/zsh..."
+#   sudo chmod -R 755 /usr/local/share/zsh
+# fi
 
-if [ -d /usr/local/share/zsh/site-functions ]; then
-  bootstrap_echo "Setting permissions for /usr/local/share/zsh/site-functions..."
-  sudo chmod -R 755 /usr/local/share/zsh/site-functions
-fi
+# if [ -d /usr/local/share/zsh/site-functions ]; then
+#   bootstrap_echo "Setting permissions for /usr/local/share/zsh/site-functions..."
+#   sudo chmod -R 755 /usr/local/share/zsh/site-functions
+# fi
 
-bootstrap_echo "Done!"
+# bootstrap_echo "Done!"
 
 #
 # CREATE BACKUP DIRECTORY
 #
 
-if [[ ! -d $BACKUP_DIR ]]; then
-  bootstrap_echo "\nCreating backup directory..."
-  mkdir $BACKUP_DIR
-fi
+# if [[ ! -d $BACKUP_DIR ]]; then
+#   bootstrap_echo "\nCreating backup directory..."
+#   mkdir $BACKUP_DIR
+# fi
 
 ################################################################################
 # 7. Setup dotfiles (http://jsua.co/dotfiles)
 ################################################################################
 
-bootstrap_echo "Step 7: Installing dotfiles..."
+# bootstrap_echo "Step 7: Installing dotfiles..."
 
-# Back up any existing dotfiles
-if [[ -d $DOTFILES_DIR ]]; then
-  bootstrap_echo "Backing up old dotfiles to ${BACKUP_DIR}..."
-  rm -rf "$OLD_DOTFILES"                # remove any previous backup
-  cp -R "$DOTFILES_DIR" "$OLD_DOTFILES" # backup the existing dotfiles folder
-  rm -rf "$DOTFILES_DIR"                # remove the dotfiles folder
-fi
+# # Back up any existing dotfiles
+# if [[ -d $DOTFILES_DIR ]]; then
+#   bootstrap_echo "Backing up old dotfiles to ${BACKUP_DIR}..."
+#   rm -rf "$OLD_DOTFILES"                # remove any previous backup
+#   cp -R "$DOTFILES_DIR" "$OLD_DOTFILES" # backup the existing dotfiles folder
+#   rm -rf "$DOTFILES_DIR"                # remove the dotfiles folder
+# fi
 
-# Clone a fresh dotfiles folder
-bootstrap_echo "Cloning dotfiles repo to ${DOTFILES_DIR} ..."
-git clone "$DOTFILES_REPO_URL" -b "$DOTFILES_BRANCH" "$DOTFILES_DIR"
+# # Clone a fresh dotfiles folder
+# bootstrap_echo "Cloning dotfiles repo to ${DOTFILES_DIR} ..."
+# git clone "$DOTFILES_REPO_URL" -b "$DOTFILES_BRANCH" "$DOTFILES_DIR"
 
 # shellcheck source=/dev/null
 # source "${DOTFILES_DIR}/install.sh"
 
-bootstrap_echo "Done!"
+# bootstrap_echo "Done!"
 
 ################################################################################
 # Generate SSH keys
 ################################################################################
 
-echo "Creating an SSH key..."
+# echo "Creating an SSH key..."
 
 # silent output, "id_rsa", overwrite existing, no password
 # https://security.stackexchange.com/a/23385
 # https://stackoverflow.com/a/43235320
-ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+# ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
 
-echo "Adding SSH key to ssh-agent..."
+# echo "Adding SSH key to ssh-agent..."
 
 # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
-eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
+# eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
 
-# If an SSH config file exists, move it to the backup folder
-if [[ -f $HOME/.ssh/config ]]; then
-  bootstrap_echo "Backing up old SSH config to ${BACKUP_DIR}..."
-  rm -rf "$OLD_SSH_CONFIG"           # remove any previous backup
-  mv "$SSH_CONFIG" "$OLD_SSH_CONFIG" # backup the existing ssh config
-fi
+# # If an SSH config file exists, move it to the backup folder
+# if [[ -f $HOME/.ssh/config ]]; then
+#   bootstrap_echo "Backing up old SSH config to ${BACKUP_DIR}..."
+#   rm -rf "$OLD_SSH_CONFIG"           # remove any previous backup
+#   mv "$SSH_CONFIG" "$OLD_SSH_CONFIG" # backup the existing ssh config
+# fi
 
 # Update SSH config to automatically load keys in ssh-agent and store passphrases in Keychain
 # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-cp $HOME/mac-setup/ssh-config $HOME/.ssh/config
+# cp $HOME/mac-setup/ssh-config $HOME/.ssh/config
 
 # Add SSH private key to ssh-agent and store the passphrase in Keychain
-ssh-add -K ~/.ssh/id_rsa
+# ssh-add -K ~/.ssh/id_rsa
 
-echo "\\nPlease visit https://github.com/settings/ssh/new and enter the following public key:\\n"
-echo "https://github.com/settings/ssh/new\\n"
+# echo "\\nPlease visit https://github.com/settings/ssh/new and enter the following public key:\\n"
+# echo "https://github.com/settings/ssh/new\\n"
 
-cat $HOME/.ssh/id_rsa.pub
+# cat $HOME/.ssh/id_rsa.pub
 
-read -p "\nPress [Enter] when you've finished saving the key on GitHub. (You'll test your ability to
-connect to GitHub via SSH after this setup script has finished)\\n..."
+# read -p "\nPress [Enter] when you've finished saving the key on GitHub. (You'll test your ability to
+# connect to GitHub via SSH after this setup script has finished)\\n..."
 
 ################################################################################
 # 3. Set macOS preferences
