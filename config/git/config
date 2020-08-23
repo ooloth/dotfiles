@@ -1,5 +1,5 @@
 [core]
-  excludesfile = $HOME/.gitignore_global
+  excludesfile = $HOME/.config/git/ignore
 
 [user]
   name = Michael Uloth
