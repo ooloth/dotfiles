@@ -164,7 +164,7 @@ clone_dotfiles() {
 }
 
 setup_symlinks() {
-  info "Creating symlinks in the home folder root..."
+  info "Creating symlinks in ~/..."
 
   # Symlink root-level files
   for file in $(get_linkables) ; do
@@ -266,7 +266,7 @@ setup_homebrew() {
   fi
 
   # Install brew dependencies from Brewfile
-  brew bundle
+  brew bundle --file="./mac-setup/Brewfile"
 
   # Install fzf
   echo -e
