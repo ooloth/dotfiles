@@ -340,6 +340,16 @@ setup_homebrew() {
   echo -e
   title "Installing fzf"
   "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
+
+  success "\nDone setting up Homebrew."
+}
+
+install_node() {
+  title "Installing node"
+
+  fnm install latest
+
+  success "\nDone installing node."
 }
 
 set_up_neovim() {
@@ -485,6 +495,7 @@ case "$1" in
     # setup_git
     # setup_ssh
     setup_homebrew
+    install_node
     set_up_neovim
     setup_macos
     set_up_apps
