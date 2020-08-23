@@ -289,6 +289,29 @@ setup_shell() {
   fi
 }
 
+set_up_oh_my_zsh() {
+  title "Setting up Oh My Zsh..."
+
+  if [ -d "${HOME}/.oh-my-zsh" ]; then
+    rm -rf "${HOME}/.oh-my-zsh"
+  fi
+
+  git clone https://github.com/robbyrussell/oh-my-zsh.git "${HOME}/.oh-my-zsh"
+
+  if [ -d /usr/local/share/zsh ]; then
+    bootstrap_echo "Setting permissions for /usr/local/share/zsh..."
+    sudo chmod -R 755 /usr/local/share/zsh
+  fi
+
+  if [ -d /usr/local/share/zsh/site-functions ]; then
+    bootstrap_echo "Setting permissions for /usr/local/share/zsh/site-functions..."
+    sudo chmod -R 755 /usr/local/share/zsh/site-functions
+  fi
+
+  success "Done setting up Oh My Zsh."
+
+}
+
 function setup_terminfo() {
   title "Configuring terminfo"
 
@@ -349,7 +372,18 @@ setup_macos() {
 
   echo "Kill affected applications"
 
-  for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
+  # for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
+}
+
+restart() {
+  echo "\\nTo apply your your preferences, your computer needs to restart."
+  read -p "\\nAre you ready to restart now? (y/N) " -n 1 -r
+  echo
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    echo "Excellent choice. When your Mac has restarted, remember to complete the following tasks to wrap up:\\n"
+  else
+    echo "No worries! Just remember to restart manually as soon as you can."
+  fi
 }
 
 prerequisites() {
@@ -383,9 +417,10 @@ case "$1" in
   all)
     prerequisites && confirm_plan && backup && setup_dotfiles
     setup_terminfo
-    setup_homebrew
     setup_shell
+    set_up_oh_my_zsh
     # setup_git
+    setup_homebrew
     setup_macos
     ;;
   *)
