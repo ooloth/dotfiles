@@ -140,6 +140,39 @@ backup() {
   success "\nDone backing up your smelly old dotfiles."
 }
 
+setup_ssh() {
+  title "Setting up SSH"
+
+  info "Generating SSH public/private key pair."
+  # silent output, "id_rsa", overwrite existing, no password
+  # https://security.stackexchange.com/a/23385
+  # https://stackoverflow.com/a/43235320
+   ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\y'"n" 2>&1 >/dev/null
+  # ssh-keygen -q -t rsa -b 2048
+
+  Info "Adding SSH key pair to ssh-agent and Keychain"
+
+  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
+  eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
+
+  # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
+  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+  cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
+
+  # Add SSH private key to ssh-agent and store the passphrase in Keychain
+  ssh-add -K ~/.ssh/id_rsa
+
+  printf "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following public key:\n"
+  printf "https://github.com/settings/ssh/new\n"
+
+  cat "$HOME/.ssh/id_rsa.pub"
+
+  # printf "\n"
+  # read -pr "Press [Enter] when you've finished saving the key on GitHub. (You'll test if it worked after this installation has finished)..."
+
+  success "\nDone setting up SSH."
+}
+
 create_missing_directory() {
   if [ ! -d "$1" ]; then
     echo -e "Creating $1"
@@ -224,39 +257,6 @@ setup_dotfiles() {
 
 #   success "Done setting up your git credentials."
 # }
-
-setup_ssh() {
-  title "Setting up SSH"
-
-  info "Generating SSH public/private key pair."
-  # silent output, "id_rsa", overwrite existing, no password
-  # https://security.stackexchange.com/a/23385
-  # https://stackoverflow.com/a/43235320
-   ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
-  # ssh-keygen -q -t rsa -b 2048
-
-  Info "Adding SSH key pair to ssh-agent and Keychain"
-
-  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
-  eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
-
-  # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
-  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-  cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
-
-  # Add SSH private key to ssh-agent and store the passphrase in Keychain
-  ssh-add -K ~/.ssh/id_rsa
-
-  printf "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following public key:\n"
-  printf "https://github.com/settings/ssh/new\n"
-
-  cat "$HOME/.ssh/id_rsa.pub"
-
-  # printf "\n"
-  # read -pr "Press [Enter] when you've finished saving the key on GitHub. (You'll test if it worked after this installation has finished)..."
-
-  success "\nDone setting up SSH."
-}
 
 setup_terminfo() {
   title "Configuring terminfo"
@@ -474,7 +474,7 @@ case "$1" in
     prerequisites && backup
     ;;
   link)
-    prerequisites && backup && setup_dotfiles
+    prerequisites && backup && setup_ssh && setup_dotfiles
     ;;
   git)
     prerequisites && backup && setup_git
@@ -489,10 +489,9 @@ case "$1" in
     prerequisites && setup_macos && suggest_restart
     ;;
   all)
-    prerequisites && confirm_plan && backup && setup_dotfiles
-    setup_shell
+    prerequisites && confirm_plan && backup && setup_ssh && setup_dotfiles
     # setup_git
-    setup_ssh
+    setup_shell
     setup_homebrew
     set_up_node
     set_up_neovim
