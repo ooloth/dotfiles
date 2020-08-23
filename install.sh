@@ -325,26 +325,24 @@ function setup_terminfo() {
 setup_macos() {
   title "Configuring macOS"
 
-  echo "Finder: show all filename extensions"
-  defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+  info "Configuring general settings..."
 
-  echo "show hidden files by default"
-  defaults write com.apple.Finder AppleShowAllFiles -bool false
-
-  echo "only use UTF-8 in Terminal.app"
-  defaults write com.apple.terminal StringEncodings -array 4
-
-  echo "expand save dialog by default"
+  echo "Expand save dialog by default"
   defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
-
-  echo "show the ~/Library folder in Finder"
-  chflags nohidden ~/Library
 
   echo "Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)"
   defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
   echo "Enable subpixel font rendering on non-Apple LCDs"
   defaults write NSGlobalDomain AppleFontSmoothing -int 2
+
+  info "Configuring Finder..."
+
+  echo "Show all filename extensions"
+  defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+  echo "Show hidden files by default"
+  defaults write com.apple.Finder AppleShowAllFiles -bool false
 
   echo "Use current directory as default search scope in Finder"
   defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
@@ -355,6 +353,16 @@ setup_macos() {
   echo "Show Status bar in Finder"
   defaults write com.apple.finder ShowStatusBar -bool true
 
+  echo "Show the ~/Library folder in Finder"
+  chflags nohidden ~/Library
+
+  info "Configuring Terminal..."
+
+  echo "only use UTF-8 in Terminal.app"
+  defaults write com.apple.terminal StringEncodings -array 4
+
+  info "Configuring keyboard..."
+
   echo "Disable press-and-hold for keys in favor of key repeat"
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
@@ -364,8 +372,12 @@ setup_macos() {
   echo "Set a shorter Delay until key repeat"
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+  info "Configuring trackpad..."
+
   echo "Enable tap to click (Trackpad)"
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+
+  info "Configuring Safari..."
 
   echo "Enable Safari’s debug menu"
   defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
@@ -373,16 +385,18 @@ setup_macos() {
   # echo "Kill affected applications"
 
   # for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
+
+  success "Finished configuring Mac system and app preferences."
 }
 
 suggest_restart() {
-  echo "\\nTo apply your your preferences, your computer needs to restart."
+  printf "\\nTo apply your your preferences, your computer needs to restart."
   read -p "\\nAre you ready to restart now? (y/N) " -n 1 -r
   echo
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    echo "Excellent choice. When your Mac has restarted, remember to complete the following tasks to wrap up:\\n"
+    printf "Excellent choice. When your Mac has restarted, remember to complete the following tasks to wrap up:\\n"
   else
-    echo "No worries! Just remember to restart manually as soon as you can."
+    printf "No worries! Just remember to restart manually as soon as you can."
   fi
 }
 
@@ -430,5 +444,5 @@ case "$1" in
   ;;
 esac
 
-echo -e
+printf "\n"
 success "Done."
