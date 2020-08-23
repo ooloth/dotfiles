@@ -101,7 +101,6 @@ confirm_plan() {
   printf "Sound good? (y/N)"
 
   read -p
-
   echo "Reply: $REPLY"
 
   # read -p "Continue? (y/N) " -n 1 -r
@@ -276,12 +275,17 @@ setup_git() {
   defaultUser=$(git config github.user)
 
   read -rp "Name [$defaultName] " name
+  echo "Name: $name"
+
   read -rp "Email [$defaultEmail] " email
-  read -rp "Github username [$defaultUser] " github
+  echo "Email: $email"
+
+  read -rp "Github username [$defaultUser] " user
+  echo "User: $user"
 
   git config -f ~/.config/git/config user.name "${name:-$defaultName}"
   git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
-  git config -f ~/.config/git/config github.user "${github:-$defaultGithub}"
+  git config -f ~/.config/git/config github.user "${user:-$defaultGithub}"
 
   success "Done setting up your git credentials."
 }
@@ -518,7 +522,7 @@ suggest_restart() {
   printf "\nTo apply your your preferences, your computer needs to restart.\n"
 
   read -p -r "\nAre you ready to restart now? (y/N) " -n 1
-  echo
+  echo "Reply: $REPLY"
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     printf "Excellent choice. Restarting..."
@@ -558,9 +562,9 @@ case "$1" in
     prerequisites && setup_macos && suggest_restart
     ;;
   all)
-    prerequisites && backup && setup_ssh && setup_dotfiles
-    # prerequisites && confirm_plan && backup && setup_ssh && setup_dotfiles
-    # setup_git
+    # prerequisites && backup && setup_ssh && setup_dotfiles
+    prerequisites && confirm_plan && backup && setup_ssh && setup_dotfiles
+    setup_git
     setup_homebrew
     setup_shell
     set_up_node
