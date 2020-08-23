@@ -79,6 +79,7 @@ backup() {
 setup_symlinks() {
   title "Creating symlinks to new dotfiles"
 
+  # Symlink root-level dotfiles
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
     info "Creating symlink for $file..."
@@ -90,14 +91,17 @@ setup_symlinks() {
   if [ ! -d "$HOME/.config" ]; then
     info "Creating ~/.config..."
     mkdir -p "$HOME/.config"
+    echo -e
   fi
 
-  # Symlink .config folders
-  config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
-  for config in $config_files; do
-    target="$HOME/.config/$(basename "$config")"
-    info "Creating symlink for $config..."
-    ln -sfv "$config" "$target"
+  # Symlink .config subfolder contents
+  config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
+  for config_subfolder in $config_subfolders; do
+    target="$HOME/.config"
+    # target="$HOME/.config/$(basename "$config")"
+    info "Creating symlink for $config_subfolder..."
+    ln -sfv "$config_subfolder" "$target"
+    echo -e
   done
 
   success "Done symlinking new dotfiles to the home folder."
