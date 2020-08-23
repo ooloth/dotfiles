@@ -182,13 +182,13 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  vared -p "Type 'saved' when you've finished saving the key on GitHub. (You'll need it for the next step.) " -c reply
-  echo "Reply: $reply"
+  vared -p "Type 'saved' when you've finished saving the key on GitHub. (You'll need it for the next
+  step.) " -c word
 
-  if [ "$reply" = 'saved' ]; then
-    printf "Good job! Moving on...\n"
-  else
+  if [ ! "$word" == 'saved' ]; then
     printf "Your funeral...\n"
+  else
+    printf "Good job! Moving on...\n"
   fi
 
   success "\nDone setting up SSH."
