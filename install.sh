@@ -33,6 +33,8 @@ success() {
 }
 
 confirm_macos() {
+  osname=$(uname)
+
   if [ "$osname" != "Darwin" ]; then
     error "Oops, it looks like this is a non-UNIX system. This script only works on a Mac.  Exiting..."
   fi
