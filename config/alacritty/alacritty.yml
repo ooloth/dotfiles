@@ -89,5 +89,4 @@ window:
   padding:
     x: 5
     y: 5
-
-working_directory: /Users/Michael/Sites
+# working_directory: /Users/Michael/Sites
