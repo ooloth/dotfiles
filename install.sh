@@ -50,6 +50,7 @@ backup() {
        if [ ! -L "$target" ]; then
          info "Backing up $filename..."
          cp "$target" "$BACKUP_DIR"
+         success "Done."
        else
          warning "$foldername is a symlink. Skipping."
        fi
@@ -63,6 +64,7 @@ backup() {
       if [ ! -L "$foldername" ]; then
         info "Backing up $foldername..."
         cp -rf "$foldername" "$BACKUP_DIR"
+        success "Done."
       else
         warning "$foldername is a symlink. Skipping."
       fi
@@ -70,77 +72,47 @@ backup() {
       warning "$foldername does not exist at this location. Skipping."
     fi
   done
-
-  # for filename in "$HOME/.config/alacritty" "$HOME/.config/git" "$HOME/.config/nvim" "$HOME/.config/vifm" ; do
-  #   if [ ! -L "$filename" ]; then
-  #     info "Backing up $filename..."
-  #     cp -rf "$filename" "$BACKUP_DIR"
-  #   else
-  #     warning "$filename is a symlink. Skipping."
-  #   fi
-  # done
 }
 
 setup_symlinks() {
   title "Creating symlinks"
 
-  if [ ! -e "$HOME/.dotfiles" ]; then
-    info "Adding symlink to dotfiles at $HOME/.dotfiles"
-    ln -s "$DOTFILES" ~/.dotfiles
-  fi
+  # if [ ! -e "$HOME/.dotfiles" ]; then
+  #   info "Adding symlink to dotfiles at $HOME/.dotfiles"
+  #   ln -s "$DOTFILES" ~/.dotfiles
+  # fi
 
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
     if [ -e "$target" ]; then
-      info "~${target#$HOME} already exists... Skipping."
+      info "~${target#$HOME} already exists. Skipping."
     else
-      info "Creating symlink for $file"
+      info "Creating symlink for $file..."
       ln -s "$file" "$target"
+      success "Done."
     fi
   done
 
   echo -e
-  info "installing to ~/.config"
+
+  # Create ~/.config if it doesn't exist
   if [ ! -d "$HOME/.config" ]; then
-    info "Creating ~/.config"
+    info "Creating ~/.config..."
     mkdir -p "$HOME/.config"
+    success "Done."
   fi
 
   config_files=$(find "$DOTFILES/config" -maxdepth 1 2>/dev/null)
   for config in $config_files; do
     target="$HOME/.config/$(basename "$config")"
     if [ -e "$target" ]; then
-      info "~${target#$HOME} already exists... Skipping."
+      info "~${target#$HOME} already exists. Skipping."
     else
-      info "Creating symlink for $config"
+      info "Creating symlink for $config..."
       ln -s "$config" "$target"
+      success "Done."
     fi
   done
-
-  # create vim symlinks
-  # As I have moved off of vim as my full time editor in favor of neovim,
-  # I feel it doesn't make sense to leave my vimrc intact in the dotfiles repo
-  # as it is not really being actively maintained. However, I would still
-  # like to configure vim, so lets symlink ~/.vimrc and ~/.vim over to their
-  # neovim equivalent.
-
-#  echo -e
-#  info "Creating vim symlinks"
-#  VIMFILES=(
-#    "$HOME/.vim:$DOTFILES/config/nvim"
-#    "$HOME/.vimrc:$DOTFILES/config/nvim/init.vim"
-#  )
-#
-#  for file in "${VIMFILES[@]}"; do
-#    KEY=${file%%:*}
-#    VALUE=${file#*:}
-#    if [ -e "${KEY}" ]; then
-#      info "${KEY} already exists... skipping."
-#    else
-#      info "Creating symlink for $KEY"
-#      ln -s "${VALUE}" "${KEY}"
-#    fi
-#  done
 }
 
 setup_git() {
