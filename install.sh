@@ -141,9 +141,8 @@ backup() {
 
 create_missing_directory() {
   if [ ! -d "$1" ]; then
-    info "Creating $1\n"
+    printf "Creating $1"
     mkdir -p "$1"
-    printf "\n"
   fi
 }
 
@@ -176,6 +175,7 @@ setup_symlinks() {
   # Create ~/.config if it doesn't exist
   create_missing_directory "$HOME/.config"
 
+  printf "\n"
   info "Creating symlinks in ~/.config..."
 
   # Symlink .config subfolder files and folders
