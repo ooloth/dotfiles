@@ -93,7 +93,7 @@ backup() {
   DATE_STAMP=$(date +"%F-%H-%M-%S")
   BACKUP_DIR=$HOME/Desktop/dotfiles-backup-$DATE_STAMP
 
-  title "Backing up existing dotfiles"
+  title "Backing up current dotfiles"
 
   info "Creating backup directory at $BACKUP_DIR"
   mkdir -p "$BACKUP_DIR"
@@ -126,7 +126,7 @@ backup() {
     cp -R "$HOME/.terminfo" "$BACKUP_DIR"
   fi
 
-  success "\nDone backing up current dotfiles."
+  success "\nDone backing up your smelly old dotfiles."
 }
 
 create_missing_directory() {
@@ -136,13 +136,27 @@ create_missing_directory() {
   fi
 }
 
+clone_dotfiles() {
+  create_missing_directory "$HOME/Repos"
+  create_missing_directory "$HOME/Repos/ooloth"
+
+  LOCAL_DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+  # Only clone dotfiles if they're missing (don't overwrite local changes!)
+  if [ ! -d "$LOCAL_DOTFILES" ]; then
+    info "Cloning dotfiles to $LOCAL_DOTFILES."
+  else
+    info "Using existing local copy of dotfiles repo in $LOCAL_DOTFILES."
+  fi
+}
+
 setup_symlinks() {
   title "Creating symlinks to new dotfiles"
 
   # Symlink root-level dotfiles
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
-    info "Creating symlink for $file"
+    info "Creating symlink for $(basename $file):"
     ln -sfv "$file" "$target"
     echo -e
   done
@@ -169,6 +183,12 @@ setup_symlinks() {
   done
 
   success "Done symlinking new dotfiles to the home folder."
+}
+
+setup_dotfiles() {
+  title "Installing new dotfiles"
+
+  clone_dotfiles && setup_symlinks
 }
 
 setup_git() {
