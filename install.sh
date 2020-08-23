@@ -555,8 +555,9 @@ case "$1" in
     prerequisites && setup_macos && suggest_restart
     ;;
   all)
-    prerequisites && confirm_plan && backup && setup_ssh && setup_dotfiles
-    setup_git
+    prerequisites && backup && setup_ssh && setup_dotfiles
+    # prerequisites && confirm_plan && backup && setup_ssh && setup_dotfiles
+    # setup_git
     setup_homebrew
     setup_shell
     set_up_node
