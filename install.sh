@@ -163,10 +163,10 @@ clone_dotfiles() {
 setup_symlinks() {
   title "Creating symlinks to new dotfiles"
 
-  # Symlink root-level dotfiles
+  # Symlink root-level files
   for file in $(get_linkables) ; do
     target="$HOME/.$(basename "$file" '.symlink')"
-    info "Creating symlink for $(basename $file):"
+    info "Creating symlink for $(basename $file)..."
     ln -sfv "$file" "$target"
     echo -e
   done
@@ -175,18 +175,20 @@ setup_symlinks() {
   create_missing_directory "$HOME/.config"
   echo -e
 
-  # Symlink .config subfolder contents
+  # Symlink .config subfolder files and folders
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
   for config_subfolder in $config_subfolders; do
+    # Create .config subfolder if it's missing
     home_config_subfolder="$HOME/.config/$(basename $config_subfolder)"
-
     create_missing_directory "$home_config_subfolder"
 
+    # Get the files inside the subfolder
     config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
 
+    # Symlink the files themselves (not the folders, which apps also modify)
     for config_file in $config_files; do
       target="$HOME/.config/$(basename $config_subfolder)/$(basename "$config_file")"
-      info "Creating symlink for $config_file"
+      info "Creating symlink for $(basename $config_file)..."
       ln -sfv "$config_file" "$target"
       echo -e
     done
