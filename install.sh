@@ -148,7 +148,7 @@ create_missing_directory() {
 }
 
 clone_dotfiles() {
-  create_missing_directory "$HOME/Repos"
+  # create_missing_directory "$HOME/Repos"
   create_missing_directory "$HOME/Repos/ooloth"
 
   info "Locating the new dotfiles."
@@ -176,8 +176,8 @@ setup_symlinks() {
   # Create ~/.config if it doesn't exist
   create_missing_directory "$HOME/.config"
 
-  printf "\n"
-  info "Creating symlinks in ~/.config..."
+  # printf "\n"
+  # info "Creating symlinks in ~/.config..."
 
   # Symlink .config subfolder files and folders
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
