@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+OS_NAME=$(uname)
+COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$(pwd)"
 
 COLOR_GRAY="\033[1;38;5;243m"
@@ -33,15 +35,13 @@ success() {
 }
 
 confirm_macos() {
-  osname=$(uname)
-
-  if [ "$osname" != "Darwin" ]; then
-    error "Oops, it looks like this is a non-UNIX system. This script only works on a Mac.  Exiting..."
+  if [ "$OS_NAME" != "Darwin" ]; then
+    error "Oops, it looks like this is a non-UNIX system. This script only works on a Mac.\n\nExiting..."
   fi
 }
 
 confirm_command_line_tools() {
-  if [ ! -d "$COMMANDLINE_TOOLS" ]; then
+  if [ ! -d "$COMMAND_LINE_TOOLS" ]; then
     error "Apple's command line developer tools must be installed before running this script.  To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
   fi
 }
