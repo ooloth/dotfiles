@@ -344,10 +344,10 @@ setup_homebrew() {
   success "\nDone setting up Homebrew."
 }
 
-install_node() {
+set_up_node() {
   title "Installing node"
 
-  fnm install latest
+  fnm install latest && fnm default latest && fnm use latest
 
   success "\nDone installing node."
 }
@@ -495,7 +495,7 @@ case "$1" in
     # setup_git
     # setup_ssh
     setup_homebrew
-    install_node
+    set_up_node
     set_up_neovim
     setup_macos
     set_up_apps
