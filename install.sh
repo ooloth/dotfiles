@@ -177,16 +177,14 @@ setup_ssh() {
   # Add SSH private key to ssh-agent and store the passphrase in Keychain
   ssh-add -K ~/.ssh/id_rsa
 
-  printf "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following public key:\n"
-  printf "https://github.com/settings/ssh/new\n"
+  printf "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following
+  public key:\n\n"
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  printf "\nType 'saved' when you've finished saving the key on GitHub. (You'll need it for the next step.)\n"
-
   vared -p "\nType 'saved' when you've finished saving the key on GitHub. (You'll need it for the next step.) " -c reply
 
-  if [ "$REPLY" == 'reply' ]; then
+  if [ "$reply" == 'saved' ]; then
     printf "Good job! Moving on...\n"
   else
     printf "Your funeral...\n"
