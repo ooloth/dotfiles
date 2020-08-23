@@ -1,6 +1,9 @@
 [core]
   excludesfile = $HOME/.config/git/ignore
 
+[credential]
+  helper = osxkeychain
+
 [github]
   user = ooloth
 
