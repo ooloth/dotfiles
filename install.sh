@@ -98,16 +98,16 @@ confirm_plan() {
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n"
 
-  printf "Sound good? (y/N)"
+  printf "Sound good? (y/n)"
 
   # read -p "Sound good? (y/N)"
 
-  read -n 1 -r
+  read reply
   # read -p "Continue? (y/N) " -n 1 -r
   # read -r -p "Sound good? (y/N) " -n 1 REPLY
-  echo "Reply: $REPLY"
+  echo "Reply: $reply"
 
-  if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+  if [[ ! "$reply" =~ ^[Yy]$ ]]; then
     printf "\nNo worries! Maybe next time."
     printf "\nExiting..."
     exit 1
