@@ -312,16 +312,16 @@ case "$1" in
     prerequisites && backup
     ;;
   link)
-    prerequisites && setup_symlinks
+    prerequisites && backup && setup_symlinks
     ;;
   git)
-    prerequisites && setup_git
+    prerequisites && backup && setup_git
     ;;
   homebrew)
     prerequisites && setup_homebrew
     ;;
   shell)
-    prerequisites && setup_shell
+    prerequisites && backup && setup_shell
     ;;
   terminfo)
     prerequisites && setup_terminfo
@@ -330,8 +330,7 @@ case "$1" in
     prerequisites && setup_macos
     ;;
   all)
-    prerequisites
-    setup_symlinks
+    prerequisites && confirm_plan && backup && setup_symlinks
     setup_terminfo
     setup_homebrew
     setup_shell
