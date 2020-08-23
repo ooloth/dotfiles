@@ -74,6 +74,7 @@ backup() {
   fi
 
   success "Done backing up current dotfiles."
+}
 
 setup_symlinks() {
   title "Creating symlinks to new dotfiles"
