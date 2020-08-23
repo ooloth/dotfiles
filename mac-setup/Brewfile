@@ -24,12 +24,12 @@ brew "svn"            # required for font cask installations
 brew "tmux"
 brew "vifm"
 # brew "zsh"
+brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
 
 # brew=(
 #   ffmpeg
 #   python@3.8
-#   zsh-autosuggestions
-#   zsh-completions
 # )
 # brew "cloc"
 # brew "diff-so-fancy"
