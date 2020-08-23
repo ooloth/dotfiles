@@ -80,11 +80,11 @@ authenticate() {
 confirm_plan() {
   info "This installation will set you up by doing this:\n"
 
-  echo "1. Backup any exising dotfiles in your home folder"
-  echo "2. Symlink the new dotfiles to your home folder"
-  echo "3. TBD..."
+  printf "1. Backup any exising dotfiles in your home folder"
+  printf "2. Symlink the new dotfiles to your home folder"
+  printf "3. TBD...\n"
 
-  read -p "\nSound good? (y/N) " -n 1 -r
+  read -p "Sound good? (y/N) " -n 1 -r
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     printf "\nExcellent! Here we go..."
@@ -239,20 +239,21 @@ setup_ssh() {
 
   # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
   # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-  cp $DOTFILES/mac-setup/ssh-config $HOME/.ssh/config
+  cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
 
   # Add SSH private key to ssh-agent and store the passphrase in Keychain
   ssh-add -K ~/.ssh/id_rsa
 
-  echo "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following public key:\n"
-  echo "https://github.com/settings/ssh/new\n"
+  printf "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following public key:\n"
+  printf "https://github.com/settings/ssh/new\n"
 
-  cat $HOME/.ssh/id_rsa.pub
+  cat "$HOME/.ssh/id_rsa.pub"
 
-  read -p "\nPress [Enter] when you've finished saving the key on GitHub. (You'll test if it worked
-  after this installation has finished)\n..."
+  printf "\n"
+  read -pr "Press [Enter] when you've finished saving the key on GitHub. (You'll test if it worked
+  after this installation has finished)..."
 
-  success "Done setting up SSH."
+  success "\nDone setting up SSH."
 }
 
 setup_homebrew() {
