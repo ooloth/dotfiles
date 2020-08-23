@@ -2,7 +2,8 @@
 
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
-DOTFILES="$(pwd)"
+# DOTFILES="$(pwd)"
+LOCAL_DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -86,7 +87,7 @@ confirm_plan() {
 }
 
 get_linkables() {
-  find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
+  find -H "$LOCAL_DOTFILES" -maxdepth 3 -name '*.symlink'
 }
 
 backup() {
@@ -140,13 +141,13 @@ clone_dotfiles() {
   create_missing_directory "$HOME/Repos"
   create_missing_directory "$HOME/Repos/ooloth"
 
-  LOCAL_DOTFILES="$HOME/Repos/ooloth/dotfiles"
-
+  info "Looking for the new dotfiles"
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
-  if [ ! -d "$LOCAL_DOTFILES" ]; then
-    info "Cloning dotfiles to $LOCAL_DOTFILES."
+  if [ -d "$LOCAL_DOTFILES" ]; then
+    success "Found dotfiles in $LOCAL_DOTFILES"
   else
-    info "Using existing local copy of dotfiles repo in $LOCAL_DOTFILES."
+    git clone "https://github.com/nicknisi/dotfiles.git" "$LOCAL_DOTFILES"
+    success "Cloned dotfiles to $LOCAL_DOTFILES."
   fi
 }
 
