@@ -76,6 +76,13 @@ backup() {
   success "\nDone backing up current dotfiles."
 }
 
+create_missing_directory() {
+  if [ ! -d "$1" ]; then
+    info "Creating $1"
+    mkdir -p "$1"
+  fi
+}
+
 setup_symlinks() {
   title "Creating symlinks to new dotfiles"
 
@@ -88,11 +95,13 @@ setup_symlinks() {
   done
 
   # Create ~/.config if it doesn't exist
-  if [ ! -d "$HOME/.config" ]; then
-    info "Creating ~/.config..."
-    mkdir -p "$HOME/.config"
-    echo -e
-  fi
+  create_missing_directory "$HOME/.config"
+  echo -e
+  # if [ ! -d "$HOME/.config" ]; then
+    # info "Creating ~/.config..."
+    # mkdir -p "$HOME/.config"
+    # echo -e
+  # fi
 
   # config_files=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
   #   for config in $config_files; do
@@ -108,7 +117,9 @@ setup_symlinks() {
   # Symlink .config subfolder contents
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
   for config_subfolder in $config_subfolders; do
+    create_missing_directory $config_subfolder
     config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
+
     for config_file in $config_files; do
       target="$HOME/.config/$(basename $config_subfolder)/$(basename "$config_file")"
       info "Creating symlink for $config_file..."
