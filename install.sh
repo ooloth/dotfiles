@@ -256,24 +256,6 @@ setup_ssh() {
   success "\nDone setting up SSH."
 }
 
-setup_homebrew() {
-  title "Setting up Homebrew"
-
-  if test ! "$(command -v brew)"; then
-    info "Homebrew not installed. Installing."
-    # Run as a login shell (non-interactive) so that the script doesn't pause for user input
-    curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
-  fi
-
-  # Install brew dependencies from Brewfile
-  brew bundle --file="$DOTFILES/mac-setup/Brewfile"
-
-  # Install fzf
-  echo -e
-  title "Installing fzf"
-  "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
-}
-
 function setup_terminfo() {
   title "Configuring terminfo"
 
@@ -325,8 +307,36 @@ set_up_oh_my_zsh() {
   success "\nDone setting up Oh My Zsh."
 }
 
+setup_homebrew() {
+  title "Setting up Homebrew"
+
+  if test ! "$(command -v brew)"; then
+    info "Homebrew not installed. Installing."
+    # Run as a login shell (non-interactive) so that the script doesn't pause for user input
+    curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
+  fi
+
+  # Install brew dependencies from Brewfile
+  brew bundle --file="$DOTFILES/mac-setup/Brewfile"
+
+  # Install fzf
+  echo -e
+  title "Installing fzf"
+  "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
+}
+
+set_up_neovim() {
+  title "Setting up neovim"
+
+  info "Installing vim-plug..."
+  sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+  printf "TODO: set up neovim\n"
+}
+
 setup_macos() {
-  title "Configuring macOS"
+  title "Configuring Mac preferences"
 
   info "Configuring general settings..."
   printf "\n"
@@ -398,8 +408,14 @@ setup_macos() {
   success "\nFinished configuring Mac system and app preferences."
 }
 
+set_up_apps() {
+  title "Configuring Mac preferences"
+
+  printf "TODO: configure apps\n"
+}
+
 suggest_restart() {
-  printf "\nTo apply your your preferences, your computer needs to restart."
+  printf "\nTo apply your your preferences, your computer needs to restart.\n"
   # read -p -r "\nAre you ready to restart now? (y/N) " -n 1
   # echo
   # if [[ "$REPLY" =~ ^[Yy]$ ]]; then
@@ -448,8 +464,11 @@ case "$1" in
     setup_shell
     set_up_oh_my_zsh
     # setup_git
+    setup_ssh
     setup_homebrew
+    set_up_neovim
     setup_macos
+    set_up_apps
     suggest_restart
     goodbye
     ;;
