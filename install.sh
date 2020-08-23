@@ -252,9 +252,8 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  printf "\n"
-  read -pr "Press [Enter] when you've finished saving the key on GitHub. (You'll test if it worked
-  after this installation has finished)..."
+  # printf "\n"
+  # read -pr "Press [Enter] when you've finished saving the key on GitHub. (You'll test if it worked after this installation has finished)..."
 
   success "\nDone setting up SSH."
 }
@@ -493,7 +492,7 @@ case "$1" in
     prerequisites && confirm_plan && backup && setup_dotfiles
     setup_shell
     # setup_git
-    # setup_ssh
+    setup_ssh
     setup_homebrew
     set_up_node
     set_up_neovim
