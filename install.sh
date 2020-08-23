@@ -57,14 +57,14 @@ confirm_command_line_tools() {
 }
 
 authenticate() {
-  info "Authenticating you as an Installer Of Things on this Mac."
+  info "Authenticating you are a verified Installer Of Things on this Mac."
 
   sudo -v
   # Keep-alive: update existing `sudo` time stamp until setup has finished
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   set -e
 
-  success "Yup. That's the password. Have your way with this machine.\n"
+  success "Yup. That's the password. Have your way with it.\n"
 }
 
 confirm_plan() {
@@ -335,7 +335,7 @@ case "$1" in
     prerequisites && backup
     ;;
   link)
-    prerequisites && backup && setup_symlinks
+    prerequisites && backup && setup_dotfiles
     ;;
   git)
     prerequisites && backup && setup_git
@@ -353,7 +353,7 @@ case "$1" in
     prerequisites && setup_macos
     ;;
   all)
-    prerequisites && confirm_plan && backup && setup_symlinks
+    prerequisites && confirm_plan && backup && setup_dotfiles
     setup_terminfo
     setup_homebrew
     setup_shell
