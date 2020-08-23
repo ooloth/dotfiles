@@ -416,6 +416,10 @@ prerequisites() {
   authenticate
 }
 
+goodbye() {
+ success "\nDone."
+}
+
 case "$1" in
   backup)
     prerequisites && backup
@@ -447,6 +451,7 @@ case "$1" in
     setup_homebrew
     setup_macos
     suggest_restart
+    goodbye
     ;;
   *)
   echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|terminfo|macos|all}\n"
@@ -454,4 +459,3 @@ case "$1" in
   ;;
 esac
 
- success "\nDone."
