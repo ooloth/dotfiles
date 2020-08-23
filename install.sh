@@ -78,7 +78,7 @@ authenticate() {
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   set -e
 
-  success "Yup. That's the password. Have your way with this thing."
+  success "Yup. That's the password. Have your way with this thing.\n"
 }
 
 # confirm_names() {
