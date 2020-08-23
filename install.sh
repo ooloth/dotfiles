@@ -157,7 +157,7 @@ clone_dotfiles() {
     printf "\n"
     git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
     printf "\n"
-    success "Cloned dotfiles to $DOTFILES\n"
+    success "Cloned new dotfiles to $DOTFILES\n"
   else
     success "Found dotfiles in $DOTFILES\n"
   fi
