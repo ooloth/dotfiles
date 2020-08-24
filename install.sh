@@ -229,7 +229,7 @@ setup_ssh() { title "Setting up SSH"
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  vared -p "All set? (You'll need a working key pair for the next step.) (y/N)" -c key
+  vared -p "\nAll set? (You'll need a working key pair for the next step.) (y/N)" -c gitHubKeyAdded
 
   # if [ ! "$word" == 'saved' ]; then
   #   printf "Your funeral...\n"
@@ -239,7 +239,7 @@ setup_ssh() { title "Setting up SSH"
 
   # vared -p "Sound good? (y/N) " -c key
 
-  if [[ ! "$key" == 'y' ]]; then
+  if [[ ! "$gitHubKeyAdded" == 'y' ]]; then
     printf "\nThis will not be pretty then...\n"
   else
     printf "\nExcellent! Moving on...\n"
@@ -602,9 +602,9 @@ case "$1" in
     # prerequisites && backup && setup_ssh && setup_dotfiles
     confirm_plan && prerequisites && setup_ssh && clone_temp_dotfiles && backup
     # confirm_plan && prerequisites && clone_temp_dotfiles && backup && setup_ssh
-    setup_git
     clone_repos
     set_up_symlinks
+    setup_git
     setup_homebrew
     setup_shell
     set_up_node
