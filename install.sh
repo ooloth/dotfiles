@@ -103,8 +103,6 @@ confirm_plan() {
   printf "3. TBD...\n\n"
 
   read "ready?Sound good? (y/N)"
-  # printf "Cool (y/n)?"
-  # read -r -p "> "
   # read -p "Continue? (y/N) " -n 1 -r
   # vared -p "Sound good? (y/N) " -c key
 
