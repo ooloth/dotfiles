@@ -155,6 +155,13 @@ backup() {
   success "\nDone backing up your smelly old dotfiles."
 }
 
+create_missing_directory() {
+  if [ ! -d "$1" ]; then
+    echo -e "Creating $1"
+    mkdir -p "$1"
+  fi
+}
+
 setup_ssh() {
   title "Setting up SSH"
 
@@ -176,9 +183,10 @@ setup_ssh() {
 
   info "Creating SSH config file"
 
-  SSH_CONFIG = "$HOME/.ssh/config"
+  # SSH_CONFIG = "$HOME/.ssh/config"
+  create_missing_directory "$HOME/.ssh"
 
-  if [ ! -f "$SSH_CONFIG" ]; then
+  if [ ! -f "$HOME/.ssh/config" ]; then
     touch "$BACKUP_DIR/ssh-config"
     printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$BACKUP_DIR/ssh-config"
     cp "$BACKUP_DIR/ssh-config" "$HOME/.ssh/config"
@@ -214,13 +222,6 @@ setup_ssh() {
   success "\nDone setting up SSH."
 }
 
-create_missing_directory() {
-  if [ ! -d "$1" ]; then
-    echo -e "Creating $1"
-    mkdir -p "$1"
-  fi
-}
-
 clone_dotfiles() {
   # create_missing_directory "$HOME/Repos"
   create_missing_directory "$HOME/Repos/ooloth"
@@ -248,7 +249,7 @@ setup_symlinks() {
   done
 
   # Create ~/.config if it doesn't exist
-  create_missing_directory "$HOME/.config"
+  # create_missing_directory "$HOME/.config"
 
   # printf "\n"
   # info "Creating symlinks in ~/.config..."
