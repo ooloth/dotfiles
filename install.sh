@@ -1,4 +1,6 @@
-#!/usr/local/bin/zsh
+#!/bin/zsh
+
+# !/usr/local/bin/zsh
 
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
