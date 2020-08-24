@@ -123,6 +123,7 @@ create_missing_directory() {
 }
 
 clone_temp_dotfiles() {
+  rm -rm "$TEMP_DIR" # so reruns don't fail
   create_missing_directory "$TEMP_DIR"
 
   info "Cloning installation dotfiles."
