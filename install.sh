@@ -229,15 +229,21 @@ setup_ssh() { title "Setting up SSH"
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  vared -p "Type 'saved' when you've finished saving the key on GitHub. (You'll need it for the next
-  step.) " -c word
+  vared -p "All set? (You'll need a working key pair for the next step.) (y/N)" -c key
 
-  if [ ! "$word" == 'saved' ]; then
-    printf "Your funeral...\n"
+  # if [ ! "$word" == 'saved' ]; then
+  #   printf "Your funeral...\n"
+  # else
+  #   printf "Good job! Moving on...\n"
+  # fi
+
+  # vared -p "Sound good? (y/N) " -c key
+
+  if [[ ! "$key" == 'y' ]]; then
+    printf "\nThis will not be pretty then...\n"
   else
-    printf "Good job! Moving on...\n"
+    printf "\nExcellent! Moving on...\n"
   fi
-
   success "\nDone setting up SSH."
 }
 
