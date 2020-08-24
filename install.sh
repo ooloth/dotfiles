@@ -158,7 +158,7 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  printf "\nMake sure you do this now! You'll need a working SSH key pair for the next step.\n\n"
+  printf "\nDo this now! You need a working SSH key pair to complete the next step.\n\n"
 
   vared -p "All set? (y/N)" -c gitHubKeyAdded
 
@@ -259,8 +259,8 @@ set_up_symlinks() {
   # create_missing_directory "$HOME/.config"
 
   # Symlink .config subfolder files and folders
-  # config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
-  config_subfolders=$(find "$DOTFILES/config")
+  config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
+  # config_subfolders=$(find "$DOTFILES/config")
   echo "\nconfig_subfolders: $config_subfolders"
 
   for config_subfolder in $config_subfolders; do
@@ -273,8 +273,8 @@ set_up_symlinks() {
     create_missing_directory "$home_config_subfolder"
 
     # Get the files inside the subfolder
-    config_files=$(find "$config_subfolder")
-    # config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
+    # config_files=$(find "$config_subfolder")
+    config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
     echo "\nconfig_files: $config_files"
 
     # Symlink the files themselves (not the folders, which apps also modify)
