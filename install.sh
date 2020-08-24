@@ -1,5 +1,5 @@
-#!/bin/zsh
-
+#!/usr/bin/env zsh
+# !/bin/zsh
 # !/usr/local/bin/zsh
 
 OS_NAME=$(uname)
@@ -101,6 +101,10 @@ confirm_plan() {
   printf "1. Back up any existing dotfiles in your home folder\n"
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n\n"
+
+  echo -n "Continue? y or n? "
+  read REPLY
+  echo "$REPLY"
 
   # read "ready?Sound good? (y/N)"
   vared -p "Sound good? (y/N) " -c key
