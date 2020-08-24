@@ -264,7 +264,8 @@ set_up_symlinks() {
   echo "\nconfig_subfolders: $config_subfolders"
 
   for config_subfolder in "${config_subfolders[@]}"; do
-    echo "\nconfig_subfolder: $config_subfolder"
+    printf "\n"
+    info "config_subfolder: $config_subfolder"
 
     # Create .config subfolder if it's missing
     home_config_subfolder="$HOME/.config/$(basename "$config_subfolder")"
@@ -274,11 +275,11 @@ set_up_symlinks() {
 
     # Get the files inside the subfolder
     # config_files=$(find "$config_subfolder")
-    config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
+    config_files=($(find "$config_subfolder"/* -maxdepth 0 2>/dev/null))
     echo "\nconfig_files: $config_files"
 
     # Symlink the files themselves (not the folders, which apps also modify)
-    for config_file in $config_files; do
+    for config_file in "${config_files[@]}"; do
       echo "\nconfig_file: $config_file"
 
       target="$HOME/.config/$(basename "$config_subfolder")/$(basename "$config_file")"
