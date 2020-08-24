@@ -434,8 +434,8 @@ set_up_spaceship_prompt() {
 
 set_up_zsh_shell() {
   setup_terminfo
-  set_up_spaceship_prompt
   set_up_oh_my_zsh
+  set_up_spaceship_prompt
 
   title "Configuring zsh shell"
 
