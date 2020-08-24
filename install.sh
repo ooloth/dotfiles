@@ -294,7 +294,8 @@ setup_symlinks() {
 setup_dotfiles() {
   title "Installing new dotfiles"
 
-  clone_dotfiles && setup_symlinks
+  setup_symlinks
+  # clone_dotfiles && setup_symlinks
 }
 
 setup_git() {
