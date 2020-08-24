@@ -147,7 +147,7 @@ setup_ssh() { title "Setting up SSH"
     printf "SSH config file already exists. Skipping."
   else
     touch "$TEMP_DIR/ssh-config"
-    printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$TEMP_DIR/ssh-config"
+    printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentityFile ~/.ssh/id_rsa" >> "$TEMP_DIR/ssh-config"
     cp "$TEMP_DIR/ssh-config" "$SSH_CONFIG"
     rm "$TEMP_DIR/ssh-config"
 
