@@ -159,7 +159,7 @@ setup_ssh() {
   cat "$HOME/.ssh/id_rsa.pub"
 
   printf "\n"
-  warning "Do this now! The next step requires SSH.\n\n"
+  warning "Do this now! The next step requires SSH.\n"
 
   vared -p "All set? (y/N)" -c gitHubKeyAdded
 
@@ -189,7 +189,7 @@ clone_dotfiles() {
     create_missing_directory "$HOME/Repos/ooloth"
 
     printf "\n"
-    info "If you're asked if you want to continue connecting, type 'yes':"
+    info "If you're asked if you want to continue connecting, type 'yes':\n"
 
     git clone "git@github.com:ooloth/dotfiles.git" "$DOTFILES"
 
@@ -449,7 +449,8 @@ set_up_zsh_shell() {
 
   sudo chsh -s "$shell_path" "$USER"
 
-  source $HOME/.zshrc
+  # This kills the script - move to very last step?
+  # source $HOME/.zshrc
 
   success "\nDone configuring zsh shell."
 }
