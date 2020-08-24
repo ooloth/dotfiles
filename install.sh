@@ -260,11 +260,10 @@ set_up_symlinks() {
     ln -sfv "$file" "$target"
   done
 
-  # Create ~/.config if it doesn't exist
-  # create_missing_directory "$HOME/.config"
+  printf "\n"
+  info "Creating symlinks in ~/.config..."
 
-  # printf "\n"
-  # info "Creating symlinks in ~/.config..."
+  create_missing_directory "$HOME/.config"
 
   # Symlink .config subfolder files and folders
   config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
