@@ -4,8 +4,10 @@
 
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
-DOTFILES="$HOME/Repos/ooloth/dotfiles"
+# DOTFILES="$HOME/Repos/ooloth/dotfiles"
 OH_MY_ZSH="$HOME/.oh-my-zsh"
+TEMP_DIR="$HOME/Desktop/temp"
+DOTFILES="$TEMP_DIR/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -109,8 +111,25 @@ confirm_plan() {
     printf "\nExiting..."
     exit 1
   else
-    printf "\nExcellent! Here we go..."
+    printf "\nExcellent! Here we go...\n"
   fi
+}
+
+create_missing_directory() {
+  if [ ! -d "$1" ]; then
+    echo -e "Creating $1"
+    mkdir -p "$1"
+  fi
+}
+
+clone_temp_dotfiles() {
+  create_missing_directory "$TEMP_DIR"
+
+  info "Cloning installation dotfiles."
+
+  git clone "https://github.com/ooloth/dotfiles.git" "$TEMP_DIR"
+
+  success "\nCloned installation dotfiles to $DOTFILES\n"
 }
 
 get_linkables() {
@@ -225,6 +244,8 @@ setup_ssh() {
   success "\nDone setting up SSH."
 }
 
+# TODO: repurpose for downloading all repos (skipping if they're already there to avoid overwriting
+# local changes
 clone_dotfiles() {
   # create_missing_directory "$HOME/Repos"
   create_missing_directory "$HOME/Repos/ooloth"
@@ -299,6 +320,8 @@ setup_git() {
   git config -f ~/.config/git/config github.user "${user:-$defaultUser}"
 
   success "Done setting up your git credentials."
+
+  # Clone repos
 }
 
 setup_homebrew() {
@@ -554,26 +577,27 @@ goodbye() {
 
 case "$1" in
   backup)
-    prerequisites && backup
+    prerequisites && clone_temp_dotfiles && backup
     ;;
   link)
-    prerequisites && backup && setup_ssh && setup_dotfiles
+    prerequisites && clone_temp_dotfiles && backup && setup_dotfiles
     ;;
   git)
-    prerequisites && backup && setup_git
+    prerequisites && clone_temp_dotfiles && backup && setup_ssh && setup_git
     ;;
   homebrew)
     prerequisites && setup_homebrew && suggest_restart
     ;;
   shell)
-    prerequisites && backup && setup_shell
+    prerequisites && clone_temp_dotfiles && backup && setup_shell
     ;;
   macos)
     prerequisites && setup_macos && suggest_restart
     ;;
   all)
     # prerequisites && backup && setup_ssh && setup_dotfiles
-    prerequisites && confirm_plan && backup && setup_ssh && setup_dotfiles
+    prerequisites && confirm_plan && clone_temp_dotfiles && backup && setup_dotfiles
+    setup_ssh
     setup_git
     setup_homebrew
     setup_shell
