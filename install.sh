@@ -176,6 +176,41 @@ backup() {
   success "\nDone backing up your smelly old dotfiles."
 }
 
+set_up_symlinks() {
+  info "Creating symlinks in ~/..."
+
+  # Symlink root-level files
+  for file in $(get_linkables) ; do
+    target="$HOME/.$(basename "$file" '.symlink')"
+    ln -sfv "$file" "$target"
+  done
+
+  # Create ~/.config if it doesn't exist
+  # create_missing_directory "$HOME/.config"
+
+  # printf "\n"
+  # info "Creating symlinks in ~/.config..."
+
+  # Symlink .config subfolder files and folders
+  config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
+  for config_subfolder in $config_subfolders; do
+    # Create .config subfolder if it's missing
+    home_config_subfolder="$HOME/.config/$(basename "$config_subfolder")"
+    create_missing_directory "$home_config_subfolder"
+
+    # Get the files inside the subfolder
+    config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
+
+    # Symlink the files themselves (not the folders, which apps also modify)
+    for config_file in $config_files; do
+      target="$HOME/.config/$(basename "$config_subfolder")/$(basename "$config_file")"
+      ln -sfv "$config_file" "$target"
+    done
+  done
+
+  success "\nDone symlinking new dotfiles to the home folder."
+}
+
 setup_ssh() {
   title "Setting up SSH"
 
@@ -256,47 +291,12 @@ clone_dotfiles() {
   fi
 }
 
-setup_symlinks() {
-  info "Creating symlinks in ~/..."
+# setup_dotfiles() {
+#   title "Installing new dotfiles"
 
-  # Symlink root-level files
-  for file in $(get_linkables) ; do
-    target="$HOME/.$(basename "$file" '.symlink')"
-    ln -sfv "$file" "$target"
-  done
-
-  # Create ~/.config if it doesn't exist
-  # create_missing_directory "$HOME/.config"
-
-  # printf "\n"
-  # info "Creating symlinks in ~/.config..."
-
-  # Symlink .config subfolder files and folders
-  config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
-  for config_subfolder in $config_subfolders; do
-    # Create .config subfolder if it's missing
-    home_config_subfolder="$HOME/.config/$(basename "$config_subfolder")"
-    create_missing_directory "$home_config_subfolder"
-
-    # Get the files inside the subfolder
-    config_files=$(find "$config_subfolder"/* -maxdepth 0 2>/dev/null)
-
-    # Symlink the files themselves (not the folders, which apps also modify)
-    for config_file in $config_files; do
-      target="$HOME/.config/$(basename "$config_subfolder")/$(basename "$config_file")"
-      ln -sfv "$config_file" "$target"
-    done
-  done
-
-  success "\nDone symlinking new dotfiles to the home folder."
-}
-
-setup_dotfiles() {
-  title "Installing new dotfiles"
-
-  setup_symlinks
-  # clone_dotfiles && setup_symlinks
-}
+#   setup_symlinks
+#   # clone_dotfiles && setup_symlinks
+# }
 
 setup_git() {
   title "Setting up Git"
@@ -574,7 +574,7 @@ case "$1" in
     prerequisites && clone_temp_dotfiles && backup
     ;;
   link)
-    prerequisites && clone_temp_dotfiles && backup && setup_dotfiles
+    prerequisites && clone_temp_dotfiles && backup && set_up_symlinks
     ;;
   git)
     prerequisites && clone_temp_dotfiles && backup && setup_ssh && setup_git
@@ -590,7 +590,7 @@ case "$1" in
     ;;
   all)
     # prerequisites && backup && setup_ssh && setup_dotfiles
-    prerequisites && confirm_plan && clone_temp_dotfiles && backup && setup_dotfiles
+    prerequisites && confirm_plan && clone_temp_dotfiles && backup && set_up_symlinks
     setup_ssh
     setup_git
     setup_homebrew
