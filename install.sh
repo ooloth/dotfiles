@@ -183,10 +183,13 @@ setup_ssh() {
 
   info "Creating SSH config file"
 
-  SSH_CONFIG="$HOME/.ssh/config"
   create_missing_directory "$HOME/.ssh"
 
-  if [ ! -f "$SSH_CONFIG" ]; then
+  SSH_CONFIG="$HOME/.ssh/config"
+
+  if [ -f "$SSH_CONFIG" ]; then
+    printf "SSH config file already exists. Skipping."
+  else
     touch "$BACKUP_DIR/ssh-config"
     printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$BACKUP_DIR/ssh-config"
     cp "$BACKUP_DIR/ssh-config" "$SSH_CONFIG"
@@ -194,8 +197,6 @@ setup_ssh() {
 
     # touch "$SSH_CONFIG"
     # printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
-  else
-    printf "SSH config file already exists. Skipping."
   fi
 
   info "Adding keys to ssh-agent and Keychain"
