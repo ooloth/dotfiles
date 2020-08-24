@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # !/usr/local/bin/zsh
 
@@ -102,12 +102,14 @@ confirm_plan() {
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n\n"
 
-  printf "Cool (y/n)?"
-  read -r -p "> "
+  read "brave?Here be dragons. Continue?"
+  # printf "Cool (y/n)?"
+  # read -r -p "> "
   # read -p "Continue? (y/N) " -n 1 -r
   # vared -p "Sound good? (y/N) " -c key
 
-  if [[ ! "$REPLY" == 'y' ]]; then
+  if [[ ! "$brave" =~ ^[Yy]$ ]]
+  # if [[ ! "$REPLY" == 'y' ]]; then
   # if [[ ! "$key" == 'y' ]]; then
     printf "\nNo worries! Maybe next time."
     printf "\nExiting..."
