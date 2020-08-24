@@ -127,7 +127,7 @@ clone_temp_dotfiles() {
 
   info "Cloning installation dotfiles."
 
-  git clone "https://github.com/ooloth/dotfiles.git" "$TEMP_DIR"
+  git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 
   success "\nCloned installation dotfiles to $DOTFILES\n"
 }
