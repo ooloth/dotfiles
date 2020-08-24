@@ -180,8 +180,7 @@ setup_ssh() {
 
   if [ ! -f "$SSH_CONFIG" ]; then
     touch "$SSH_CONFIG"
-    echo "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >>
-    "$SSH_CONFIG"
+    echo "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
   else
     echo "SSH config file already exists. Skipping."
   fi
