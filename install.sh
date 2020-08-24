@@ -158,7 +158,7 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  printf "\nDo this now! You need a working SSH key pair to complete the next step.\n\n"
+  printf "\nDo this now! You'll need a working SSH key pair in the next step.\n\n"
 
   vared -p "All set? (y/N)" -c gitHubKeyAdded
 
@@ -263,7 +263,7 @@ set_up_symlinks() {
   # config_subfolders=$(find "$DOTFILES/config")
   echo "\nconfig_subfolders: $config_subfolders"
 
-  for config_subfolder in $config_subfolders; do
+  for config_subfolder in ${config_subfolders[@]}; do
     echo "\nconfig_subfolder: $config_subfolder"
 
     # Create .config subfolder if it's missing
