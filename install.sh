@@ -158,7 +158,8 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  printf "\nDo this now! The next step requires a working SSH key pair.\n\n"
+  printf "\n"
+  warning "Do this now! The next step requires SSH.\n\n"
 
   vared -p "All set? (y/N)" -c gitHubKeyAdded
 
@@ -188,7 +189,7 @@ clone_dotfiles() {
     create_missing_directory "$HOME/Repos/ooloth"
 
     printf "\n"
-    info "If you're asked below if you want to continue connecting, type 'yes' (it's fine):\n\n"
+    info "If you're asked if you want to continue connecting, type 'yes':"
 
     git clone "git@github.com:ooloth/dotfiles.git" "$DOTFILES"
 
@@ -600,7 +601,7 @@ case "$1" in
     prerequisites && setup_homebrew && suggest_restart
     ;;
   shell)
-    prerequisites && clone_temp_dotfiles && backup && setup_shell
+    prerequisites && clone_temp_dotfiles && backup && set_up_zsh_shell
     ;;
   macos)
     prerequisites && setup_macos && suggest_restart
@@ -613,7 +614,7 @@ case "$1" in
     setup_git
     clone_repos
     setup_homebrew
-    setup_shell
+    set_up_zsh_shell
     set_up_node
     set_up_neovim
     setup_macos
