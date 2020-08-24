@@ -67,7 +67,7 @@ go_home() {
 
   cd "$HOME"
 
-  success "Ahh. So fresh and so clean.\n"
+  success "\nAhh. So fresh and so clean.\n"
 }
 
 confirm_macos() {
@@ -81,7 +81,7 @@ confirm_macos() {
     error "\nOops, it looks like this is a non-UNIX system. This script only works on a Mac.\n\nExiting..."
   fi
 
-  success "This is definitely a Mac. But you knew that already.\n"
+  success "\nThis is definitely a Mac. But you knew that already.\n"
 }
 
 confirm_command_line_tools() {
@@ -91,7 +91,7 @@ confirm_command_line_tools() {
     error "Apple's command line developer tools must be installed before running this script.  To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
   fi
 
-  success "Nice! That's usually the hard part.\n"
+  success "\nNice! That's usually the hard part.\n"
 }
 
 authenticate() {
@@ -102,7 +102,7 @@ authenticate() {
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   set -e
 
-  success "Yup. That's the password. Have your way with this thing.\n"
+  success "\nYup. That's the password. Have your way with this thing.\n"
 }
 
 # confirm_names() {
@@ -126,6 +126,7 @@ setup_ssh() { title "Setting up SSH"
   ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
   # ssh-keygen -q -t rsa -b 2048
 
+  printf "\n"
   info "Adding SSH key pair to ssh-agent and Keychain"
 
   # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
@@ -135,6 +136,7 @@ setup_ssh() { title "Setting up SSH"
   # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
   # cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
 
+  printf "\n"
   info "Creating SSH config file"
 
   create_missing_directory "$HOME/.ssh"
@@ -153,19 +155,20 @@ setup_ssh() { title "Setting up SSH"
     # printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
   fi
 
+  printf "\n"
   info "Adding keys to ssh-agent and Keychain"
 
   # Add SSH private key to ssh-agent and store the passphrase in Keychain
   ssh-add -K ~/.ssh/id_rsa
 
-  info "Adding public key to GitHub settings (this one's for you!)"
+  info "Adding public key to GitHub settings"
 
-  printf "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following
-  public key:\n\n"
+  printf "\nPlease visit https://github.com/settings/ssh/new and log into your GitHub account and add the following SSH key:\n\n"
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  vared -p "\nAll set? (You'll need a working key pair for the next step.) (y/N)" -c gitHubKeyAdded
+  printf "\n"
+  vared -p "All set? (You'll need a working SSH key pair for the next step.) (y/N)" -c gitHubKeyAdded
 
   if [[ ! "$gitHubKeyAdded" == 'y' ]]; then
     printf "\nThis will not be pretty then...\n"
