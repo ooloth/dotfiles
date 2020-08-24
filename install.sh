@@ -125,14 +125,16 @@ create_missing_directory() {
 }
 
 clone_temp_dotfiles() {
-  rm -rm "$TEMP_DIR" # so reruns don't fail
+  title "Cloning temporary copy of dotfiles"
+
+  rm -rf "$TEMP_DIR" # so reruns don't fail
   create_missing_directory "$TEMP_DIR"
 
   info "Cloning installation dotfiles."
 
   git clone "https://github.com/ooloth/dotfiles.git" "$TEMP_DOTFILES"
 
-  success "\nCloned installation dotfiles to $TEMP_DOTFILES\n"
+  success "\nCloned temporary dotfiles to $TEMP_DOTFILES"
 }
 
 get_linkables() {
