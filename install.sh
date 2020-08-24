@@ -108,7 +108,7 @@ confirm_plan() {
   # read -p "Continue? (y/N) " -n 1 -r
   # vared -p "Sound good? (y/N) " -c key
 
-  if [[ ! "$brave" =~ ^[Yy]$ ]]
+  if [[ ! "$brave" =~ ^[Yy]$ ]]; then
   # if [[ ! "$REPLY" == 'y' ]]; then
   # if [[ ! "$key" == 'y' ]]; then
     printf "\nNo worries! Maybe next time."
