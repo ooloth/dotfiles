@@ -8,29 +8,31 @@ The settings here are based purely on my personal preferences and I'm doing this
 
 ## Prerequisites
 
-1. Install Apple's command line tools:
+1. Open Terminal.app
+
+2. Install Apple's command line tools:
 
 ```sh
 xcode-select --install
 ```
 
-2. Update your Mac's software (your Mac will automatically restart if necessary):
+3. Update your Mac's software (your Mac will automatically restart if necessary):
 
 ```sh
 sudo softwareupdate --install --all --restart
 ```
 
-3. Repeat (2) until everything is up to date
+4. Repeat (3) until everything is up to date
 
 ## Installation
 
-To set up your Mac with one command, run this command:
+To set up your Mac, run the following command:
 
 ```sh
 curl -s https://raw.githubusercontent.com/ooloth/dotfiles/master/install.sh | zsh -s all
 ```
 
-To run only one part of the install setup, replace `all` with `backup`, `link` `git`, `homebrew`, `shell`, `terminfo` or `macos`.
+To run only one part of the installation, replace `all` with `backup`, `link` `git`, `homebrew`, `shell`, `terminfo` or `macos`.
 
 ## What does it do?
 
