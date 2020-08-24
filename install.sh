@@ -6,7 +6,7 @@ OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 OH_MY_ZSH="$HOME/.oh-my-zsh"
-# TEMP_DIR="$HOME/Desktop/temp"
+TEMP_DIR="$HOME/Desktop/temp"
 # TEMP_DOTFILES="$TEMP_DIR/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
@@ -144,10 +144,10 @@ setup_ssh() { title "Setting up SSH"
   if [ -f "$SSH_CONFIG" ]; then
     printf "SSH config file already exists. Skipping."
   else
-    touch "$BACKUP_DIR/ssh-config"
-    printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$BACKUP_DIR/ssh-config"
-    cp "$BACKUP_DIR/ssh-config" "$SSH_CONFIG"
-    rm "$BACKUP_DIR/ssh-config"
+    touch "$TEMP_DIR/ssh-config"
+    printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$TEMP_DIR/ssh-config"
+    cp "$TEMP_DIR/ssh-config" "$SSH_CONFIG"
+    rm "$TEMP_DIR/ssh-config"
 
     # touch "$SSH_CONFIG"
     # printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
