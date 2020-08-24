@@ -21,7 +21,7 @@ COLOR_NONE="\033[0m"
 trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
 
 title() {
-  echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
+  echo -e "\n\n${COLOR_PURPLE}$1${COLOR_NONE}"
   echo -e "${COLOR_GRAY}==============================${COLOR_NONE}\n"
 }
 
@@ -102,7 +102,7 @@ authenticate() {
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   set -e
 
-  success "\nYup. That's the password. Have your way with this thing.\n"
+  success "\nYup. That's the password. Have your way with this thing."
 }
 
 # confirm_names() {
@@ -117,7 +117,8 @@ authenticate() {
 #   export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
 # }
 
-setup_ssh() { title "Setting up SSH"
+setup_ssh() {
+  title "Setting up SSH"
 
   info "Generating SSH public/private key pair...\n"
   # silent output, "id_rsa", overwrite existing, no password
@@ -131,10 +132,6 @@ setup_ssh() { title "Setting up SSH"
 
   # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
   eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
-
-  # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
-  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-  # cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
 
   printf "\n"
   info "Creating SSH config file"
