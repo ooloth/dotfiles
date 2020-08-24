@@ -27,7 +27,7 @@ sudo softwareupdate --install --all --restart
 To set up your Mac with one command, run this command:
 
 ```sh
-curl -s https://raw.githubusercontent.com/ooloth/dotfiles/master/install.sh | bash -s all
+curl -s https://raw.githubusercontent.com/ooloth/dotfiles/master/install.sh | zsh -s all
 ```
 
 To run only one part of the install setup, replace `all` with `backup`, `link` `git`, `homebrew`, `shell`, `terminfo` or `macos`.
