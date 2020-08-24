@@ -102,13 +102,13 @@ confirm_plan() {
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n\n"
 
-  read "brave?Here be dragons. Continue?"
+  read "ready?Sound good? (y/N)"
   # printf "Cool (y/n)?"
   # read -r -p "> "
   # read -p "Continue? (y/N) " -n 1 -r
   # vared -p "Sound good? (y/N) " -c key
 
-  if [[ ! "$brave" =~ ^[Yy]$ ]]; then
+  if [[ ! "$ready" =~ ^[Yy]$ ]]; then
   # if [[ ! "$REPLY" == 'y' ]]; then
   # if [[ ! "$key" == 'y' ]]; then
     printf "\nNo worries! Maybe next time."
