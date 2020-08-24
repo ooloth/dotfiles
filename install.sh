@@ -176,13 +176,6 @@ backup() {
   success "\nDone backing up your smelly old dotfiles."
 }
 
-create_missing_directory() {
-  if [ ! -d "$1" ]; then
-    echo -e "Creating $1"
-    mkdir -p "$1"
-  fi
-}
-
 setup_ssh() {
   title "Setting up SSH"
 
@@ -190,7 +183,7 @@ setup_ssh() {
   # silent output, "id_rsa", overwrite existing, no password
   # https://security.stackexchange.com/a/23385
   # https://stackoverflow.com/a/43235320
-  ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\y'"n" 2>&1 >/dev/null
+  ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
   # ssh-keygen -q -t rsa -b 2048
 
   # info "Adding SSH key pair to ssh-agent and Keychain"
