@@ -91,7 +91,7 @@ confirm_command_line_tools() {
 }
 
 authenticate() {
-  info "Authenticating you are a verified Installer Of Things on this Mac."
+  info "Confirming you are authorized to install things on this Mac.\n"
 
   sudo -v
   # Keep-alive: update existing `sudo` time stamp until setup has finished
@@ -189,7 +189,7 @@ clone_dotfiles() {
     create_missing_directory "$HOME/Repos/ooloth"
 
     printf "\n"
-    info "If you're asked if you want to continue connecting, type 'yes':\n"
+    info "If you're asked if you want to continue connecting, type 'yes'...\n"
 
     git clone "git@github.com:ooloth/dotfiles.git" "$DOTFILES"
 
@@ -240,7 +240,7 @@ backup() {
     cp -R "$HOME/.terminfo" "$BACKUP_DIR"
   fi
 
-  success "\nDone backing up your smelly old dotfiles."
+  success "\nDone backing up your old dotfiles."
 }
 
 set_up_symlinks() {
@@ -296,7 +296,7 @@ set_up_symlinks() {
 setup_git() {
   title "Setting up Git"
 
-  info "Please confirm your GitHub credentials (Enter accepts the default):\n"
+  info "Please confirm your GitHub credentials (pressing [Enter] accepts the default):\n"
   defaultName=$(git config user.name)
   defaultEmail=$(git config user.email)
   defaultUser=$(git config github.user)
@@ -566,11 +566,13 @@ suggest_restart() {
   vared -p "Are you ready to restart now (recommended)? (y/N) " -c restartChoice
 
   if [[ "$restartChoice" = 'y' ]]; then
-    printf "Excellent choice. When you're back, remember to complete the manual follow-up steps in the README.\n\n"
-    printf "Restarting..."
+    printf "\nExcellent choice. When you're back, remember to complete the manual follow-up steps in the README.\n"
+    printf "\nRestarting..."
     sudo shutdown -r now
   else
-    printf "No worries! Just remember to restart manually as soon as you can."
+    printf "No worries! For now, just type 'zsh' to refresh this terminal and have fun exploring your new Mac!"
+    success "\nDone."
+    source $HOME/.zshrc
   fi
 }
 
@@ -578,12 +580,6 @@ prerequisites() {
   confirm_macos
   confirm_command_line_tools
   authenticate
-}
-
-goodbye() {
-  success "\nDone."
-
-  source $HOME/.zshrc
 }
 
 case "$1" in
@@ -619,7 +615,6 @@ case "$1" in
     setup_macos
     set_up_apps
     suggest_restart
-    goodbye
     ;;
   *)
   echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|macos|all}\n"

@@ -8,7 +8,7 @@ The settings here are based purely on my personal preferences and I'm doing this
 
 ## Prerequisites
 
-1. Open Terminal.app
+1. Open Terminal.app (you'll probably want to increase the font size)
 
 2. Install Apple's command line tools:
 
