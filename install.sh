@@ -247,23 +247,6 @@ setup_ssh() { title "Setting up SSH"
   success "\nDone setting up SSH."
 }
 
-setup_git() {
-  title "Setting up Git"
-
-  defaultName=$(git config user.name)
-  defaultEmail=$(git config user.email)
-  defaultUser=$(git config github.user)
-
-  vared -p "Name [$defaultName] " -c name
-  vared -p "Email [$defaultEmail] " -c email
-  vared -p "GitHub username [$defaultUser] " -c user
-
-  git config -f ~/.config/git/config user.name "${name:-$defaultName}"
-  git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
-  git config -f ~/.config/git/config github.user "${user:-$defaultUser}"
-
-  success "Done setting up your git credentials."
-}
 
 # TODO: repurpose for downloading all repos (skipping if they're already there to avoid overwriting
 # local changes
@@ -325,6 +308,24 @@ set_up_symlinks() {
   done
 
   success "\nDone symlinking new dotfiles to the home folder."
+}
+
+setup_git() {
+  title "Setting up Git"
+
+  defaultName=$(git config user.name)
+  defaultEmail=$(git config user.email)
+  defaultUser=$(git config github.user)
+
+  vared -p "Name [$defaultName] " -c name
+  vared -p "Email [$defaultEmail] " -c email
+  vared -p "GitHub username [$defaultUser] " -c user
+
+  git config -f ~/.config/git/config user.name "${name:-$defaultName}"
+  git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
+  git config -f ~/.config/git/config github.user "${user:-$defaultUser}"
+
+  success "Done setting up your git credentials."
 }
 
 setup_homebrew() {
@@ -599,7 +600,8 @@ case "$1" in
     ;;
   all)
     # prerequisites && backup && setup_ssh && setup_dotfiles
-    confirm_plan && prerequisites && clone_temp_dotfiles && backup && setup_ssh
+    confirm_plan && prerequisites && setup_ssh && clone_temp_dotfiles && backup
+    # confirm_plan && prerequisites && clone_temp_dotfiles && backup && setup_ssh
     setup_git
     clone_repos
     set_up_symlinks
