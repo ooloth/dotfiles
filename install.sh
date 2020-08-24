@@ -6,8 +6,8 @@ OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 OH_MY_ZSH="$HOME/.oh-my-zsh"
-TEMP_DIR="$HOME/Desktop/temp"
-TEMP_DOTFILES="$TEMP_DIR/dotfiles"
+# TEMP_DIR="$HOME/Desktop/temp"
+# TEMP_DOTFILES="$TEMP_DIR/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -117,70 +117,6 @@ authenticate() {
 #   export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
 # }
 
-create_missing_directory() {
-  if [ ! -d "$1" ]; then
-    echo -e "Creating $1"
-    mkdir -p "$1"
-  fi
-}
-
-clone_temp_dotfiles() {
-  title "Cloning temporary copy of dotfiles"
-
-  rm -rf "$TEMP_DIR" # so reruns don't fail
-  create_missing_directory "$TEMP_DIR"
-
-  info "Cloning installation dotfiles."
-
-  git clone "https://github.com/ooloth/dotfiles.git" "$TEMP_DOTFILES"
-
-  success "\nCloned temporary dotfiles to $TEMP_DOTFILES"
-}
-
-get_linkables() {
-  find -H "$TEMP_DOTFILES" -maxdepth 3 -name '*.symlink'
-}
-
-backup() {
-  DATE_STAMP=$(date +"%F-%H-%M-%S")
-  BACKUP_DIR=$HOME/Desktop/dotfiles-backup-$DATE_STAMP
-
-  title "Backing up current dotfiles"
-
-  info "Creating backup directory at $BACKUP_DIR"
-  mkdir -p "$BACKUP_DIR"
-
-  # Copy root-level dotfiles to backup folders
-  for file in $(get_linkables); do
-    filename=".$(basename "$file" '.symlink')"
-    target="$HOME/$filename"
-    if [ -f "$target" ]; then
-      info "Backing up $filename"
-      cp "$target" "$BACKUP_DIR"
-    fi
-  done
-
-  # Copy ~/.config folder dotfiles to backup folder
-  if [ -d "$HOME/.config" ]; then
-    info "Backing up ~/.config"
-    cp -R "$HOME/.config" "$BACKUP_DIR"
-  fi
-
-  # Back up ~/.ssh folder
-  if [ -d "$HOME/.ssh" ]; then
-    info "Backing up ~/.ssh"
-    cp -R "$HOME/.ssh" "$BACKUP_DIR"
-  fi
-
-  # Back up ~/.terminfo folder
-  if [ -d "$HOME/.terminfo" ]; then
-    info "Backing up ~/.terminfo"
-    cp -R "$HOME/.terminfo" "$BACKUP_DIR"
-  fi
-
-  success "\nDone backing up your smelly old dotfiles."
-}
-
 setup_ssh() { title "Setting up SSH"
 
   info "Generating SSH public/private key pair...\n"
@@ -247,15 +183,19 @@ setup_ssh() { title "Setting up SSH"
   success "\nDone setting up SSH."
 }
 
+create_missing_directory() {
+  if [ ! -d "$1" ]; then
+    echo -e "Creating $1"
+    mkdir -p "$1"
+  fi
+}
 
-# TODO: repurpose for downloading all repos (skipping if they're already there to avoid overwriting
-# local changes
-clone_repos() {
-  title "Cloning GitHub repositories"
+clone_dotfiles() {
+  title "Recloning dotfiles using SSH"
 
   create_missing_directory "$HOME/Repos/ooloth"
 
-  info "Cloning new dotfiles folder using SSH"
+  info "Cloning permanent dotfiles folder using SSH"
 
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
   if [ ! -d "$DOTFILES" ]; then
@@ -264,13 +204,66 @@ clone_repos() {
     printf "\n"
     success "Cloned new dotfiles to $DOTFILES\n"
   else
-    success "Found dotfiles in $DOTFILES\n"
+    success "Found dotfiles in $DOTFILES\n. Skipping."
   fi
 
-  warning "TODO: loop through all available repos for any username"
-  # gitHubUsername=$(git config github.user)
-  # create_missing_directory "$HOME/Repos/$gitHubUsername"
-  # etc...
+}
+
+# clone_temp_dotfiles() {
+#   title "Cloning temporary copy of dotfiles"
+
+#   rm -rf "$TEMP_DIR" # so reruns don't fail
+#   create_missing_directory "$TEMP_DIR"
+
+#   info "Cloning installation dotfiles."
+
+#   git clone "https://github.com/ooloth/dotfiles.git" "$TEMP_DOTFILES"
+
+#   success "\nCloned temporary dotfiles to $TEMP_DOTFILES"
+# }
+
+get_linkables() {
+  find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
+}
+
+backup() {
+  DATE_STAMP=$(date +"%F-%H-%M-%S")
+  BACKUP_DIR=$HOME/Desktop/dotfiles-backup-$DATE_STAMP
+
+  title "Backing up current dotfiles"
+
+  info "Creating backup directory at $BACKUP_DIR"
+  mkdir -p "$BACKUP_DIR"
+
+  # Copy root-level dotfiles to backup folders
+  for file in $(get_linkables); do
+    filename=".$(basename "$file" '.symlink')"
+    target="$HOME/$filename"
+    if [ -f "$target" ]; then
+      info "Backing up $filename"
+      cp "$target" "$BACKUP_DIR"
+    fi
+  done
+
+  # Copy ~/.config folder dotfiles to backup folder
+  if [ -d "$HOME/.config" ]; then
+    info "Backing up ~/.config"
+    cp -R "$HOME/.config" "$BACKUP_DIR"
+  fi
+
+  # Back up ~/.ssh folder
+  if [ -d "$HOME/.ssh" ]; then
+    info "Backing up ~/.ssh"
+    cp -R "$HOME/.ssh" "$BACKUP_DIR"
+  fi
+
+  # Back up ~/.terminfo folder
+  if [ -d "$HOME/.terminfo" ]; then
+    info "Backing up ~/.terminfo"
+    cp -R "$HOME/.terminfo" "$BACKUP_DIR"
+  fi
+
+  success "\nDone backing up your smelly old dotfiles."
 }
 
 set_up_symlinks() {
@@ -326,6 +319,17 @@ setup_git() {
   git config -f ~/.config/git/config github.user "${user:-$defaultUser}"
 
   success "Done setting up your git credentials."
+}
+
+# TODO: repurpose for downloading all repos (skipping if they're already there to avoid overwriting
+# local changes
+clone_repos() {
+  title "Cloning GitHub repositories"
+
+  warning "TODO: loop through all available repos for any username"
+  # gitHubUsername=$(git config github.user)
+  # create_missing_directory "$HOME/Repos/$gitHubUsername"
+  # etc...
 }
 
 setup_homebrew() {
@@ -600,11 +604,11 @@ case "$1" in
     ;;
   all)
     # prerequisites && backup && setup_ssh && setup_dotfiles
-    confirm_plan && prerequisites && setup_ssh && clone_temp_dotfiles && backup
+    confirm_plan && prerequisites && setup_ssh && clone_dotfiles && backup
     # confirm_plan && prerequisites && clone_temp_dotfiles && backup && setup_ssh
-    clone_repos
     set_up_symlinks
     setup_git
+    clone_repos
     setup_homebrew
     setup_shell
     set_up_node
