@@ -259,11 +259,11 @@ set_up_symlinks() {
   # create_missing_directory "$HOME/.config"
 
   # Symlink .config subfolder files and folders
-  config_subfolders=$(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null)
+  config_subfolders=($(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null))
   # config_subfolders=$(find "$DOTFILES/config")
   echo "\nconfig_subfolders: $config_subfolders"
 
-  for config_subfolder in ${config_subfolders[@]}; do
+  for config_subfolder in "${config_subfolders[@]}"; do
     echo "\nconfig_subfolder: $config_subfolder"
 
     # Create .config subfolder if it's missing
