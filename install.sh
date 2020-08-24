@@ -42,6 +42,24 @@ success() {
   echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
+confirm_plan() {
+  info "This installation will set you up by doing this:\n"
+
+  printf "1. Back up any existing dotfiles in your home folder\n"
+  printf "2. Find your new dotfiles and symlink them where they need to be\n"
+  printf "3. TBD...\n\n"
+
+  vared -p "Sound good? (y/N) " -c key
+
+  if [[ ! "$key" == 'y' ]]; then
+    printf "\nNo worries! Maybe next time."
+    printf "\nExiting..."
+    exit 1
+  else
+    printf "\nExcellent! Here we go...\n"
+  fi
+}
+
 go_home() {
   info "Moving to home directory."
 
@@ -96,24 +114,6 @@ authenticate() {
   # vared -p "\nAre you ready to restart now? (y/N) " -c key
 #   export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
 # }
-
-confirm_plan() {
-  info "This installation will set you up by doing this:\n"
-
-  printf "1. Back up any existing dotfiles in your home folder\n"
-  printf "2. Find your new dotfiles and symlink them where they need to be\n"
-  printf "3. TBD...\n\n"
-
-  vared -p "Sound good? (y/N) " -c key
-
-  if [[ ! "$key" == 'y' ]]; then
-    printf "\nNo worries! Maybe next time."
-    printf "\nExiting..."
-    exit 1
-  else
-    printf "\nExcellent! Here we go...\n"
-  fi
-}
 
 create_missing_directory() {
   if [ ! -d "$1" ]; then
@@ -584,7 +584,7 @@ case "$1" in
     ;;
   all)
     # prerequisites && backup && setup_ssh && setup_dotfiles
-    prerequisites && confirm_plan && clone_temp_dotfiles && backup && set_up_symlinks
+    confirm_plan && prerequisites && clone_temp_dotfiles && backup && set_up_symlinks
     setup_homebrew
     setup_shell
     set_up_node
