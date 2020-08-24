@@ -102,14 +102,8 @@ confirm_plan() {
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
   printf "3. TBD...\n\n"
 
-  echo -n "Continue? y or n? "
-  read REPLY
-  echo "$REPLY"
-
-  # read "ready?Sound good? (y/N)"
   vared -p "Sound good? (y/N) " -c key
 
-  # if [[ ! "$ready" =~ ^[Yy]$ ]]; then
   if [[ ! "$key" == 'y' ]]; then
     printf "\nNo worries! Maybe next time."
     printf "\nExiting..."
@@ -177,40 +171,40 @@ setup_ssh() {
   # silent output, "id_rsa", overwrite existing, no password
   # https://security.stackexchange.com/a/23385
   # https://stackoverflow.com/a/43235320
-  # ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\y'"n" 2>&1 >/dev/null
-  ssh-keygen -q -t rsa -b 2048
+  ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\y'"n" 2>&1 >/dev/null
+  # ssh-keygen -q -t rsa -b 2048
 
-  info "Adding SSH key pair to ssh-agent and Keychain"
+  # info "Adding SSH key pair to ssh-agent and Keychain"
 
-  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
-  eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
+  # # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
+  # eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
 
-  # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
-  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-  # cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
+  # # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
+  # # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+  # # cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
 
-  info "Creating SSH config file"
+  # info "Creating SSH config file"
 
-  create_missing_directory "$HOME/.ssh"
+  # create_missing_directory "$HOME/.ssh"
 
-  SSH_CONFIG="$HOME/.ssh/config"
+  # SSH_CONFIG="$HOME/.ssh/config"
 
-  if [ -f "$SSH_CONFIG" ]; then
-    printf "SSH config file already exists. Skipping."
-  else
-    touch "$BACKUP_DIR/ssh-config"
-    printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$BACKUP_DIR/ssh-config"
-    cp "$BACKUP_DIR/ssh-config" "$SSH_CONFIG"
-    rm "$BACKUP_DIR/ssh-config"
+  # if [ -f "$SSH_CONFIG" ]; then
+  #   printf "SSH config file already exists. Skipping."
+  # else
+  #   touch "$BACKUP_DIR/ssh-config"
+  #   printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$BACKUP_DIR/ssh-config"
+  #   cp "$BACKUP_DIR/ssh-config" "$SSH_CONFIG"
+  #   rm "$BACKUP_DIR/ssh-config"
 
-    # touch "$SSH_CONFIG"
-    # printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
-  fi
+  #   # touch "$SSH_CONFIG"
+  #   # printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
+  # fi
 
-  info "Adding keys to ssh-agent and Keychain"
+  # info "Adding keys to ssh-agent and Keychain"
 
-  # Add SSH private key to ssh-agent and store the passphrase in Keychain
-  ssh-add -K ~/.ssh/id_rsa
+  # # Add SSH private key to ssh-agent and store the passphrase in Keychain
+  # ssh-add -K ~/.ssh/id_rsa
 
   info "Adding public key to GitHub settings (this one's for you!)"
 
