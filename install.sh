@@ -563,7 +563,7 @@ suggest_restart() {
 
   info "To apply your your preferences, your computer needs to restart.\n\n"
 
-  vared -p "Are you ready to restart now? (y/N) " -c restartChoice
+  vared -p "Are you ready to restart now (recommended)? (y/N) " -c restartChoice
 
   if [[ "$restartChoice" = 'y' ]]; then
     printf "Excellent choice. When you're back, remember to complete the manual follow-up steps in the README.\n\n"
@@ -603,7 +603,7 @@ case "$1" in
     prerequisites && clone_temp_dotfiles && backup && set_up_zsh_shell
     ;;
   macos)
-    prerequisites && setup_macos && suggest_restart
+    prerequisites && setup_macos && set_up_apps && suggest_restart
     ;;
   all)
     # prerequisites && backup && setup_ssh && setup_dotfiles
