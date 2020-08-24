@@ -449,9 +449,6 @@ set_up_zsh_shell() {
 
   sudo chsh -s "$shell_path" "$USER"
 
-  # This kills the script - move to very last step?
-  # source $HOME/.zshrc
-
   success "\nDone configuring zsh shell."
 }
 
@@ -586,6 +583,8 @@ prerequisites() {
 
 goodbye() {
   success "\nDone."
+
+  source $HOME/.zshrc
 }
 
 case "$1" in
