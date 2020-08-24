@@ -158,13 +158,14 @@ setup_ssh() {
 
   cat "$HOME/.ssh/id_rsa.pub"
 
-  printf "\n"
-  vared -p "All set? (You'll need a working SSH key pair for the next step.) (y/N)" -c gitHubKeyAdded
+  printf "\nMake sure you do this now! You'll need a working SSH key pair for the next step.\n\n"
+
+  vared -p "All set? (y/N)" -c gitHubKeyAdded
 
   if [[ ! "$gitHubKeyAdded" == 'y' ]]; then
-    printf "\nThis will not be pretty then...\n"
+    printf "\nYou have chosen...poorly.\n"
   else
-    printf "\nExcellent! Moving on...\n"
+    printf "\nExcellent!\n"
   fi
 
   success "\nDone setting up SSH."
@@ -185,13 +186,16 @@ clone_dotfiles() {
     info "Cloning a fresh copy of dotfiles"
 
     create_missing_directory "$HOME/Repos/ooloth"
+
+    printf "\n"
+    info "If you're asked below if you want to continue connecting, type 'yes' (it's fine):\n\n"
+
     git clone "git@github.com:ooloth/dotfiles.git" "$DOTFILES"
 
     success "\nCloned new dotfiles to $DOTFILES"
   else
     success "Found dotfiles in $DOTFILES."
   fi
-
 }
 
 get_linkables() {
