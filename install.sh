@@ -154,12 +154,12 @@ setup_ssh() {
   printf "\n"
   info "Your turn!"
 
-  printf "\nPlease visit https://github.com/settings/ssh/new in your GitHub account and add the following SSH key:\n\n"
+  printf "\nPlease open https://github.com/settings/ssh/new now and and the following SSH key to your GitHub account:\n\n"
 
   cat "$HOME/.ssh/id_rsa.pub"
 
   printf "\n"
-  warning "Do this now! The next step requires SSH.\n"
+  warning "Actually do this right now! The next step requires SSH to be working.\n"
 
   vared -p "All set? (y/N)" -c gitHubKeyAdded
 
@@ -296,6 +296,7 @@ set_up_symlinks() {
 setup_git() {
   title "Setting up Git"
 
+  info "Please confirm your GitHub credentials (Enter accepts the default):\n"
   defaultName=$(git config user.name)
   defaultEmail=$(git config user.email)
   defaultUser=$(git config github.user)
@@ -357,7 +358,7 @@ setup_homebrew() {
   "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
 
   printf "\n"
-  info "Updating Homebrew..."
+  info "Updating Homebrew...\n"
 
   brew update
   brew upgrade
@@ -385,6 +386,7 @@ set_up_oh_my_zsh() {
   fi
 
   git clone https://github.com/robbyrussell/oh-my-zsh.git "$OH_MY_ZSH"
+  printf "\n"
 
   if [ -d /usr/local/share/zsh ]; then
     info "Setting permissions for /usr/local/share/zsh..."
@@ -440,7 +442,7 @@ set_up_zsh_shell() {
   local shell_path;
   shell_path="$(command -v zsh)"
 
-  info "Changing your shell to zsh ..."
+  info "Changing your shell to zsh...\n"
 
   if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
     laptop_echo "Adding '${shell_path}' to /etc/shells"
@@ -467,6 +469,7 @@ set_up_neovim() {
   sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
+  printf "\n"
   warning "TODO: open vim to install plugins, then close"
 
   # info "Creating viminfo directory for Startify..."
@@ -479,7 +482,6 @@ setup_macos() {
   title "Configuring Mac preferences"
 
   info "Configuring general settings...\n"
-  printf "\n"
 
   printf "Expand save dialog by default\n"
   defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
@@ -491,7 +493,7 @@ setup_macos() {
   defaults write NSGlobalDomain AppleFontSmoothing -int 2
 
   printf "\n"
-  info "Configuring Finder..."
+  info "Configuring Finder...\n"
 
   printf "Show all filename extensions\n"
   defaults write NSGlobalDomain AppleShowAllExtensions -bool true
@@ -512,13 +514,13 @@ setup_macos() {
   chflags nohidden ~/Library
 
   printf "\n"
-  info "Configuring Terminal..."
+  info "Configuring Terminal...\n"
 
   printf "only use UTF-8 in Terminal.app\n"
   defaults write com.apple.terminal StringEncodings -array 4
 
   printf "\n"
-  info "Configuring keyboard..."
+  info "Configuring keyboard...\n"
 
   printf "Disable press-and-hold for keys in favor of key repeat\n"
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
@@ -530,13 +532,13 @@ setup_macos() {
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
   printf "\n"
-  info "Configuring trackpad..."
+  info "Configuring trackpad...\n"
 
   printf "Enable tap to click (Trackpad)\n"
   defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
   printf "\n"
-  info "Configuring Safari..."
+  info "Configuring Safari...\n"
 
   printf "Enable Safari’s debug menu\n"
   defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
@@ -551,18 +553,21 @@ setup_macos() {
 set_up_apps() {
   title "Configuring app preferences"
 
-  warning "TODO: configure apps\n"
+  warning "TODO: configure apps"
 
   success "\nFinished configuring app preferences."
 }
 
 suggest_restart() {
-  printf "\nTo apply your your preferences, your computer needs to restart.\n"
+  title "Congratulations! Your Mac is nearly set up"
 
-  vared -p "\nAre you ready to restart now? (y/N) " -c key
+  info "To apply your your preferences, your computer needs to restart.\n\n"
 
-  if [[ "$key" = 'y' ]]; then
-    printf "Excellent choice. Restarting..."
+  vared -p "Are you ready to restart now? (y/N) " -c restartChoice
+
+  if [[ "$restartChoice" = 'y' ]]; then
+    printf "Excellent choice. When you're back, remember to complete the manual follow-up steps in the README.\n\n"
+    printf "Restarting..."
     sudo shutdown -r now
   else
     printf "No worries! Just remember to restart manually as soon as you can."
