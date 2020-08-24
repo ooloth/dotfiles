@@ -1,13 +1,9 @@
 #!/usr/bin/env zsh
-# !/bin/zsh
-# !/usr/local/bin/zsh
 
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 OH_MY_ZSH="$HOME/.oh-my-zsh"
-TEMP_DIR="$HOME/Desktop/temp"
-# TEMP_DOTFILES="$TEMP_DIR/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -143,15 +139,8 @@ setup_ssh() {
   if [ -f "$SSH_CONFIG" ]; then
     printf "SSH config file already exists. Skipping."
   else
-    # touch "$TEMP_DIR/ssh-config"
-
     # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
     # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-    # printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentityFile ~/.ssh/id_rsa" >> "$TEMP_DIR/ssh-config"
-
-    # cp "$TEMP_DIR/ssh-config" "$SSH_CONFIG"
-    # rm "$TEMP_DIR/ssh-config"
-
     touch "$SSH_CONFIG"
     printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentityFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
   fi
