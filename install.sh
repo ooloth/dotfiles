@@ -408,38 +408,50 @@ set_up_spaceship_prompt() {
   success "\nDone setting up spaceship prompt."
 }
 
-setup_shell() {
-  title "Configuring shell"
+# setup_shell() {
+#   title "Configuring shell"
 
-  [[ -n "$(command -v brew)" ]] && zsh_path="$(brew --prefix)/bin/zsh" || zsh_path="$(which zsh)"
-  if ! grep "$zsh_path" /etc/shells; then
-    info "Adding $zsh_path to /etc/shells"
-    echo "$zsh_path" | sudo tee -a /etc/shells
-  fi
-
-  if [[ "$SHELL" != "$zsh_path" ]]; then
-    chsh -s "$zsh_path"
-    info "Default shell changed to $zsh_path"
-  fi
-
-  setup_terminfo
-  set_up_oh_my_zsh
-  set_up_spaceship_prompt
-
-  success "\nDone configuring shell."
-}
-
-# update_zsh_shell() {
-#   local shell_path;
-#   shell_path="$(command -v zsh)"
-#
-#   laptop_echo "Changing your shell to zsh ..."
-#   if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
-#     laptop_echo "Adding '${shell_path}' to /etc/shells"
-#     sudo sh -c "echo ${shell_path} >> /etc/shells"
+#   [[ -n "$(command -v brew)" ]] && zsh_path="$(brew --prefix)/bin/zsh" || zsh_path="$(which zsh)"
+#   if ! grep "$zsh_path" /etc/shells; then
+#     info "Adding $zsh_path to /etc/shells"
+#     echo "$zsh_path" | sudo tee -a /etc/shells
 #   fi
-#   sudo chsh -s "$shell_path" "$USER"
+
+#   if [[ "$SHELL" != "$zsh_path" ]]; then
+#     chsh -s "$zsh_path"
+#     info "Default shell changed to $zsh_path"
+#   fi
+
+#   success "\nDone configuring shell."
+
+#   setup_terminfo
+#   set_up_oh_my_zsh
+#   set_up_spaceship_prompt
 # }
+
+set_up_zsh_shell() {
+  setup_terminfo
+  set_up_spaceship_prompt
+  set_up_oh_my_zsh
+
+  title "Configuring zsh shell"
+
+  local shell_path;
+  shell_path="$(command -v zsh)"
+
+  info "Changing your shell to zsh ..."
+
+  if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
+    laptop_echo "Adding '${shell_path}' to /etc/shells"
+    sudo sh -c "echo ${shell_path} >> /etc/shells"
+  fi
+
+  sudo chsh -s "$shell_path" "$USER"
+
+  source $HOME/.zshrc
+
+  success "\nDone configuring zsh shell."
+}
 
 set_up_node() {
   title "Installing node"
