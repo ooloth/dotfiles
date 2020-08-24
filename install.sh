@@ -457,13 +457,7 @@ set_up_node() {
 
   fnm install latest && fnm default latest && fnm use latest
 
-  echo "Node --> $(command -v node)"
-  node -v
-
-  echo "NPM --> $(command -v npm)"
-  npm -v
-
-  success "\nDone installing node."
+  success "\nDone installing node using fnm."
 }
 
 set_up_neovim() {
