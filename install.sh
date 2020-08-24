@@ -4,10 +4,10 @@
 
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
-# DOTFILES="$HOME/Repos/ooloth/dotfiles"
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
 OH_MY_ZSH="$HOME/.oh-my-zsh"
 TEMP_DIR="$HOME/Desktop/temp"
-DOTFILES="$TEMP_DIR/dotfiles"
+TEMP_DOTFILES="$TEMP_DIR/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -128,13 +128,13 @@ clone_temp_dotfiles() {
 
   info "Cloning installation dotfiles."
 
-  git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
+  git clone "https://github.com/ooloth/dotfiles.git" "$TEMP_DOTFILES"
 
-  success "\nCloned installation dotfiles to $DOTFILES\n"
+  success "\nCloned installation dotfiles to $TEMP_DOTFILES\n"
 }
 
 get_linkables() {
-  find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
+  find -H "$TEMP_DOTFILES" -maxdepth 3 -name '*.symlink'
 }
 
 backup() {
@@ -177,7 +177,112 @@ backup() {
   success "\nDone backing up your smelly old dotfiles."
 }
 
+setup_ssh() { title "Setting up SSH"
+
+  info "Generating SSH public/private key pair...\n"
+  # silent output, "id_rsa", overwrite existing, no password
+  # https://security.stackexchange.com/a/23385
+  # https://stackoverflow.com/a/43235320
+  ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+  # ssh-keygen -q -t rsa -b 2048
+
+  # info "Adding SSH key pair to ssh-agent and Keychain"
+
+  # # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
+  # eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
+
+  # # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
+  # # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+  # # cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
+
+  # info "Creating SSH config file"
+
+  # create_missing_directory "$HOME/.ssh"
+
+  # SSH_CONFIG="$HOME/.ssh/config"
+
+  # if [ -f "$SSH_CONFIG" ]; then
+  #   printf "SSH config file already exists. Skipping."
+  # else
+  #   touch "$BACKUP_DIR/ssh-config"
+  #   printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$BACKUP_DIR/ssh-config"
+  #   cp "$BACKUP_DIR/ssh-config" "$SSH_CONFIG"
+  #   rm "$BACKUP_DIR/ssh-config"
+
+  #   # touch "$SSH_CONFIG"
+  #   # printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
+  # fi
+
+  # info "Adding keys to ssh-agent and Keychain"
+
+  # # Add SSH private key to ssh-agent and store the passphrase in Keychain
+  # ssh-add -K ~/.ssh/id_rsa
+
+  info "Adding public key to GitHub settings (this one's for you!)"
+
+  printf "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following
+  public key:\n\n"
+
+  cat "$HOME/.ssh/id_rsa.pub"
+
+  vared -p "Type 'saved' when you've finished saving the key on GitHub. (You'll need it for the next
+  step.) " -c word
+
+  if [ ! "$word" == 'saved' ]; then
+    printf "Your funeral...\n"
+  else
+    printf "Good job! Moving on...\n"
+  fi
+
+  success "\nDone setting up SSH."
+}
+
+setup_git() {
+  title "Setting up Git"
+
+  defaultName=$(git config user.name)
+  defaultEmail=$(git config user.email)
+  defaultUser=$(git config github.user)
+
+  vared -p "Name [$defaultName] " -c name
+  vared -p "Email [$defaultEmail] " -c email
+  vared -p "GitHub username [$defaultUser] " -c user
+
+  git config -f ~/.config/git/config user.name "${name:-$defaultName}"
+  git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
+  git config -f ~/.config/git/config github.user "${user:-$defaultUser}"
+
+  success "Done setting up your git credentials."
+}
+
+# TODO: repurpose for downloading all repos (skipping if they're already there to avoid overwriting
+# local changes
+clone_repos() {
+  title "Cloning GitHub repositories"
+
+  create_missing_directory "$HOME/Repos/ooloth"
+
+  info "Cloning new dotfiles folder using SSH"
+
+  # Only clone dotfiles if they're missing (don't overwrite local changes!)
+  if [ ! -d "$DOTFILES" ]; then
+    printf "\n"
+    git clone "git@github.com:ooloth/dotfiles.git" "$DOTFILES"
+    printf "\n"
+    success "Cloned new dotfiles to $DOTFILES\n"
+  else
+    success "Found dotfiles in $DOTFILES\n"
+  fi
+
+  warning "TODO: loop through all available repos for any username"
+  # gitHubUsername=$(git config github.user)
+  # create_missing_directory "$HOME/Repos/$gitHubUsername"
+  # etc...
+}
+
 set_up_symlinks() {
+  title "Symlinking dotfiles to home folder"
+
   info "Creating symlinks in ~/..."
 
   # Symlink root-level files
