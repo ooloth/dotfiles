@@ -162,9 +162,10 @@ setup_ssh() {
   # Add SSH private key to ssh-agent and store the passphrase in Keychain
   ssh-add -K ~/.ssh/id_rsa
 
-  info "Adding public key to GitHub settings"
+  printf "\n"
+  info "Your turn!"
 
-  printf "\nPlease visit https://github.com/settings/ssh/new and log into your GitHub account and add the following SSH key:\n\n"
+  printf "\nPlease visit https://github.com/settings/ssh/new in your GitHub account and add the following SSH key:\n\n"
 
   cat "$HOME/.ssh/id_rsa.pub"
 
@@ -188,36 +189,21 @@ create_missing_directory() {
 }
 
 clone_dotfiles() {
-  title "Recloning dotfiles using SSH"
-
-  create_missing_directory "$HOME/Repos/ooloth"
-
-  info "Cloning permanent dotfiles folder using SSH"
+  title "Locating dotfiles"
 
   # Only clone dotfiles if they're missing (don't overwrite local changes!)
   if [ ! -d "$DOTFILES" ]; then
-    printf "\n"
+    info "Cloning a fresh copy of dotfiles"
+
+    create_missing_directory "$HOME/Repos/ooloth"
     git clone "git@github.com:ooloth/dotfiles.git" "$DOTFILES"
-    printf "\n"
-    success "Cloned new dotfiles to $DOTFILES\n"
+
+    success "\nCloned new dotfiles to $DOTFILES"
   else
-    success "Found dotfiles in $DOTFILES\n. Skipping."
+    success "Found dotfiles in $DOTFILES."
   fi
 
 }
-
-# clone_temp_dotfiles() {
-#   title "Cloning temporary copy of dotfiles"
-
-#   rm -rf "$TEMP_DIR" # so reruns don't fail
-#   create_missing_directory "$TEMP_DIR"
-
-#   info "Cloning installation dotfiles."
-
-#   git clone "https://github.com/ooloth/dotfiles.git" "$TEMP_DOTFILES"
-
-#   success "\nCloned temporary dotfiles to $TEMP_DOTFILES"
-# }
 
 get_linkables() {
   find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
