@@ -299,15 +299,15 @@ setup_git() {
   defaultEmail=$(git config user.email)
   defaultUser=$(git config github.user)
 
-  vared -p "Name [$defaultName] " -c name
-  vared -p "Email [$defaultEmail] " -c email
-  vared -p "GitHub username [$defaultUser] " -c user
+  vared -p "Name (default: $defaultName) " -c name
+  vared -p "Email (default: $defaultEmail) " -c email
+  vared -p "GitHub username (default: $defaultUser) " -c user
 
   git config -f ~/.config/git/config user.name "${name:-$defaultName}"
   git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
   git config -f ~/.config/git/config github.user "${user:-$defaultUser}"
 
-  success "Done setting up your git credentials."
+  success "\nDone setting up your git credentials."
 }
 
 # TODO: repurpose for downloading all repos (skipping if they're already there to avoid overwriting
@@ -355,7 +355,9 @@ setup_homebrew() {
   title "Installing fzf"
   "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
 
+  printf "\n"
   info "Updating Homebrew..."
+
   brew update
   brew upgrade
 
