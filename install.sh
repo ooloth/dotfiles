@@ -165,17 +165,33 @@ setup_ssh() {
    ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\y'"n" 2>&1 >/dev/null
   # ssh-keygen -q -t rsa -b 2048
 
-  Info "Adding SSH key pair to ssh-agent and Keychain"
+  info "Adding SSH key pair to ssh-agent and Keychain"
 
   # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
   eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
 
   # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
   # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-  cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
+  # cp "$DOTFILES/mac-setup/ssh-config" "$HOME/.ssh/config"
+
+  info "Creating SSH config file"
+
+  SSH_CONFIG = "$HOME/.ssh/config"
+
+  if [ ! -f "$SSH_CONFIG" ]; then
+    touch "$SSH_CONFIG"
+    echo "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentifyFile ~/.ssh/id_rsa" >>
+    "$SSH_CONFIG"
+  else
+    echo "SSH config file already exists. Skipping."
+  fi
+
+  info "Adding keys to ssh-agent and Keychain"
 
   # Add SSH private key to ssh-agent and store the passphrase in Keychain
   ssh-add -K ~/.ssh/id_rsa
+
+  info "Adding public key to GitHub settings (this one's for you!)"
 
   printf "\nPlease visit https://github.com/settings/ssh/new and log in and enter the following
   public key:\n\n"
