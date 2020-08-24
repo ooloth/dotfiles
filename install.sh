@@ -169,8 +169,8 @@ setup_ssh() {
   # silent output, "id_rsa", overwrite existing, no password
   # https://security.stackexchange.com/a/23385
   # https://stackoverflow.com/a/43235320
-   ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\y'"n" 2>&1 >/dev/null
-  # ssh-keygen -q -t rsa -b 2048
+  # ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\y'"n" 2>&1 >/dev/null
+  ssh-keygen -q -t rsa -b 2048
 
   info "Adding SSH key pair to ssh-agent and Keychain"
 
