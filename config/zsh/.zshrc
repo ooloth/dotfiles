@@ -8,6 +8,9 @@ KEYTIMEOUT=1 # Faster ESC response in vi mode
 # ALIASES #
 ###########
 
+# Point tmux to config file
+alias tmux='tmux -f $HOME/.config/tmux/tmux.conf'
+
 # Replace vim with neovim
 alias vim='nvim'
 alias v='vim'
@@ -89,8 +92,6 @@ SPACESHIP_PACKAGE_SHOW=false
 SPACESHIP_PROMPT_ORDER=(user dir host git node vi_mode line_sep jobs char)
 SPACESHIP_VI_MODE_PREFIX='in '
 SPACESHIP_VI_MODE_SHOW=true
-# autoload -U promptinit; promptinit
-# prompt spaceship
 
 plugins=(git vi-mode) # exclude brew-installed plugins
 source $ZSH/oh-my-zsh.sh
