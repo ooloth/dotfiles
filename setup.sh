@@ -309,7 +309,7 @@ clone_repos() {
   # etc...
 }
 
-setup_homebrew() {
+set_up_homebrew() {
   title "Setting up Homebrew"
 
 # if [ ! -d "${HOME}/bin/" ]; then
@@ -352,7 +352,7 @@ setup_homebrew() {
   success "\nDone setting up Homebrew."
 }
 
-setup_terminfo() {
+set_up_terminfo() {
   title "Updating terminfo"
 
   info "adding tmux.terminfo"
@@ -398,7 +398,7 @@ set_up_spaceship_prompt() {
 }
 
 set_up_zsh() {
-  setup_terminfo
+  set_up_terminfo
   set_up_oh_my_zsh
   set_up_spaceship_prompt
 
@@ -540,52 +540,6 @@ suggest_restart() {
     source $HOME/.zshrc
   fi
 }
-
-# prerequisites() {
-#   confirm_macos
-#   confirm_command_line_tools
-#   authenticate
-# }
-
-# case "$1" in
-#   backup)
-#     prerequisites && clone_temp_dotfiles && backup
-#     ;;
-#   link)
-#     prerequisites && clone_temp_dotfiles && backup && set_up_symlinks
-#     ;;
-#   git)
-#     prerequisites && clone_temp_dotfiles && backup && setup_ssh && setup_git
-#     ;;
-#   homebrew)
-#     prerequisites && setup_homebrew && suggest_restart
-#     ;;
-#   shell)
-#     prerequisites && clone_temp_dotfiles && backup && set_up_zsh_shell
-#     ;;
-#   macos)
-#     prerequisites && setup_macos && set_up_apps && suggest_restart
-#     ;;
-#   all)
-#     # prerequisites && backup && setup_ssh && setup_dotfiles
-#     confirm_plan && prerequisites && setup_ssh && clone_dotfiles && backup
-#     # confirm_plan && prerequisites && clone_temp_dotfiles && backup && setup_ssh
-#     set_up_symlinks
-#     setup_git
-#     clone_repos
-#     setup_homebrew
-#     set_up_zsh_shell
-#     set_up_node
-#     set_up_neovim
-#     setup_macos
-#     set_up_apps
-#     suggest_restart
-#     ;;
-#   *)
-#   echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|macos|all}\n"
-#   exit 1
-#   ;;
-# esac
 
 confirm_consent \
   && run_checks \
