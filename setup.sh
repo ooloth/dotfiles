@@ -101,6 +101,13 @@ authenticate() {
   success "\nYup. That's the password. Have your way with this thing."
 }
 
+run_checks() {
+  go_home
+  confirm_macos
+  confirm_command_line_tools
+  authenticate
+}
+
 # confirm_names() {
 #   printf "\\nEnter a name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_COMPUTER_NAME"
 #   read -r -p "> " COMPUTER_NAME
@@ -113,8 +120,8 @@ authenticate() {
 #   export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
 # }
 
-setup_ssh() {
-  title "Setting up SSH"
+configure_ssh() {
+  title "Configuring SSH"
 
   info "Generating SSH public/private key pair...\n"
   # silent output, "id_rsa", overwrite existing, no password
@@ -199,7 +206,7 @@ clone_dotfiles() {
   fi
 }
 
-backup() {
+backup_config() {
   DATE_STAMP=$(date +"%F-%H-%M-%S")
   BACKUP_DIR=$HOME/Desktop/dotfiles-backup-$DATE_STAMP
 
@@ -236,7 +243,7 @@ backup() {
   success "\nDone backing up your old dotfiles."
 }
 
-set_up_symlinks() {
+create_symlinks() {
   title "Symlinking dotfiles to home folder"
 
   info "Creating symlinks in ~/..."
@@ -272,7 +279,7 @@ set_up_symlinks() {
   success "\nDone symlinking new dotfiles to the home folder."
 }
 
-setup_git() {
+set_up_git() {
   title "Setting up Git"
 
   info "Please confirm your GitHub credentials (pressing [Enter] accepts the default):\n"
@@ -390,7 +397,7 @@ set_up_spaceship_prompt() {
   success "\nDone setting up spaceship prompt."
 }
 
-set_up_zsh_shell() {
+set_up_zsh() {
   setup_terminfo
   set_up_oh_my_zsh
   set_up_spaceship_prompt
@@ -436,7 +443,7 @@ set_up_neovim() {
   success "\nDone setting up neovim."
 }
 
-setup_macos() {
+configure_macos() {
   title "Configuring Mac preferences"
 
   info "Configuring general settings...\n"
@@ -508,7 +515,7 @@ setup_macos() {
   success "\nFinished configuring Mac system preferences."
 }
 
-set_up_apps() {
+configure_apps() {
   title "Configuring app preferences"
 
   warning "TODO: configure apps"
@@ -534,48 +541,64 @@ suggest_restart() {
   fi
 }
 
-prerequisites() {
-  confirm_macos
-  confirm_command_line_tools
-  authenticate
-}
+# prerequisites() {
+#   confirm_macos
+#   confirm_command_line_tools
+#   authenticate
+# }
 
-case "$1" in
-  backup)
-    prerequisites && clone_temp_dotfiles && backup
-    ;;
-  link)
-    prerequisites && clone_temp_dotfiles && backup && set_up_symlinks
-    ;;
-  git)
-    prerequisites && clone_temp_dotfiles && backup && setup_ssh && setup_git
-    ;;
-  homebrew)
-    prerequisites && setup_homebrew && suggest_restart
-    ;;
-  shell)
-    prerequisites && clone_temp_dotfiles && backup && set_up_zsh_shell
-    ;;
-  macos)
-    prerequisites && setup_macos && set_up_apps && suggest_restart
-    ;;
-  all)
-    # prerequisites && backup && setup_ssh && setup_dotfiles
-    confirm_plan && prerequisites && setup_ssh && clone_dotfiles && backup
-    # confirm_plan && prerequisites && clone_temp_dotfiles && backup && setup_ssh
-    set_up_symlinks
-    setup_git
-    clone_repos
-    setup_homebrew
-    set_up_zsh_shell
-    set_up_node
-    set_up_neovim
-    setup_macos
-    set_up_apps
-    suggest_restart
-    ;;
-  *)
-  echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|macos|all}\n"
-  exit 1
-  ;;
-esac
+# case "$1" in
+#   backup)
+#     prerequisites && clone_temp_dotfiles && backup
+#     ;;
+#   link)
+#     prerequisites && clone_temp_dotfiles && backup && set_up_symlinks
+#     ;;
+#   git)
+#     prerequisites && clone_temp_dotfiles && backup && setup_ssh && setup_git
+#     ;;
+#   homebrew)
+#     prerequisites && setup_homebrew && suggest_restart
+#     ;;
+#   shell)
+#     prerequisites && clone_temp_dotfiles && backup && set_up_zsh_shell
+#     ;;
+#   macos)
+#     prerequisites && setup_macos && set_up_apps && suggest_restart
+#     ;;
+#   all)
+#     # prerequisites && backup && setup_ssh && setup_dotfiles
+#     confirm_plan && prerequisites && setup_ssh && clone_dotfiles && backup
+#     # confirm_plan && prerequisites && clone_temp_dotfiles && backup && setup_ssh
+#     set_up_symlinks
+#     setup_git
+#     clone_repos
+#     setup_homebrew
+#     set_up_zsh_shell
+#     set_up_node
+#     set_up_neovim
+#     setup_macos
+#     set_up_apps
+#     suggest_restart
+#     ;;
+#   *)
+#   echo -e $"\nUsage: $(basename "$0") {backup|link|git|homebrew|shell|macos|all}\n"
+#   exit 1
+#   ;;
+# esac
+
+confirm_consent \
+  && run_checks \
+  && configure_ssh \
+  && clone_dotfiles \
+  && backup_config \
+  && create_symlinks \
+  && set_up_git \
+  && clone_repos \
+  && set_up_homebrew \
+  && set_up_zsh \
+  && set_up_node \
+  && set_up_neovim \
+  && configure_macos \
+  && configure_apps \
+  && suggest_restart
