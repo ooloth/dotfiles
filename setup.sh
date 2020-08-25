@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# shellcheck disable=SC2154
+trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
+
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
@@ -12,9 +15,6 @@ COLOR_RED="\033[1;31m"
 COLOR_PURPLE="\033[1;35m"
 COLOR_YELLOW="\033[1;33m"
 COLOR_NONE="\033[0m"
-
-# shellcheck disable=SC2154
-trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
 
 title() {
   echo -e "\n\n${COLOR_PURPLE}$1${COLOR_NONE}"
@@ -199,9 +199,9 @@ clone_dotfiles() {
   fi
 }
 
-get_linkables() {
-  find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
-}
+# get_linkables() {
+#   find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
+# }
 
 backup() {
   DATE_STAMP=$(date +"%F-%H-%M-%S")
@@ -210,19 +210,26 @@ backup() {
   title "Backing up current dotfiles"
 
   info "Creating backup directory at $BACKUP_DIR"
-  mkdir -p "$BACKUP_DIR"
 
-  # Copy root-level dotfiles to backup folders
-  for file in $(get_linkables); do
-    filename=".$(basename "$file" '.symlink')"
-    target="$HOME/$filename"
-    if [ -f "$target" ]; then
-      info "Backing up $filename"
-      cp "$target" "$BACKUP_DIR"
-    fi
-  done
+  create_missing_directory "$BACKUP_DIR"
 
-  # Copy ~/.config folder dotfiles to backup folder
+  # # Copy root-level dotfiles to backup folders
+  # for file in $(get_linkables); do
+  #   filename=".$(basename "$file" '.symlink')"
+  #   target="$HOME/$filename"
+  #   if [ -f "$target" ]; then
+  #     info "Backing up $filename"
+  #     cp "$target" "$BACKUP_DIR"
+  #   fi
+  # done
+
+  # Copy ~/.zshenv to backup folder
+  if [ -d "$HOME/.config" ]; then
+    info "Backing up ~/.config"
+    cp -R "$HOME/.config" "$BACKUP_DIR"
+  fi
+
+  # Copy ~/.config folder to backup folder
   if [ -d "$HOME/.config" ]; then
     info "Backing up ~/.config"
     cp -R "$HOME/.config" "$BACKUP_DIR"
@@ -248,43 +255,34 @@ set_up_symlinks() {
 
   info "Creating symlinks in ~/..."
 
-  # Symlink root-level files
-  for file in $(get_linkables) ; do
-    target="$HOME/.$(basename "$file" '.symlink')"
-    ln -sfv "$file" "$target"
-  done
+  # # Symlink root-level files
+  # for file in $(get_linkables) ; do
+  #   target="$HOME/.$(basename "$file" '.symlink')"
+  #   ln -sfv "$file" "$target"
+  # done
+
+  # Symlink .zshenv
+  ln -sfv "$DOTFILES/.zshenv" "$HOME/.zshenv"
 
   printf "\n"
   info "Creating symlinks in ~/.config..."
 
-  # create_missing_directory "$HOME/.config"
-
   # Symlink .config subfolder files and folders
+
+  # Get array of $DOTFILES/config subfolders
   config_subfolders=($(find "$DOTFILES/config"/* -maxdepth 0 2>/dev/null))
-  # config_subfolders=$(find "$DOTFILES/config")
-  # echo "\nconfig_subfolders: $config_subfolders"
 
   for config_subfolder in "${config_subfolders[@]}"; do
-    # printf "\n"
-    # info "config_subfolder: $config_subfolder"
-
-    # Create .config subfolder if it's missing
+    # Create corresponding $HOME/.config subfolder if it's missing
     home_config_subfolder="$HOME/.config/$(basename "$config_subfolder")"
-    # echo "\nhome_config_subfolder: $home_config_subfolder"
-
     create_missing_directory "$home_config_subfolder"
 
-    # Get the files inside the subfolder
-    # config_files=$(find "$config_subfolder")
+    # Get array of subfolder contents (mostly files)
     config_files=($(find "$config_subfolder"/* -maxdepth 0 2>/dev/null))
-    # echo "\nconfig_files: $config_files"
 
-    # Symlink the files themselves (not the folders, which apps also modify)
+    # Symlink the contents (to allow apps to add unlinked content to these folders as well)
     for config_file in "${config_files[@]}"; do
-      # echo "\nconfig_file: $config_file"
-
       target="$HOME/.config/$(basename "$config_subfolder")/$(basename "$config_file")"
-      # echo "\ntarget: $target"
 
       ln -sfv "$config_file" "$target"
     done
@@ -350,7 +348,7 @@ setup_homebrew() {
   fi
 
   # Install brew dependencies from Brewfile
-  brew bundle --file="$DOTFILES/mac-setup/Brewfile"
+  brew bundle --file="$DOTFILES/apps/Brewfile"
 
   # Install fzf
   echo -e
@@ -370,10 +368,10 @@ setup_terminfo() {
   title "Configuring terminfo"
 
   info "adding tmux.terminfo"
-  tic -x "$DOTFILES/tmux/tmux.terminfo"
+  tic -x "$DOTFILES/terminfo/tmux.terminfo"
 
   info "adding xterm-256color-italic.terminfo"
-  tic -x "$DOTFILES/tmux/xterm-256color-italic.terminfo"
+  tic -x "$DOTFILES/terminfo/xterm-256color-italic.terminfo"
 
   success "\nDone configuring terminfo settings."
 }
@@ -410,27 +408,6 @@ set_up_spaceship_prompt() {
 
   success "\nDone setting up spaceship prompt."
 }
-
-# setup_shell() {
-#   title "Configuring shell"
-
-#   [[ -n "$(command -v brew)" ]] && zsh_path="$(brew --prefix)/bin/zsh" || zsh_path="$(which zsh)"
-#   if ! grep "$zsh_path" /etc/shells; then
-#     info "Adding $zsh_path to /etc/shells"
-#     echo "$zsh_path" | sudo tee -a /etc/shells
-#   fi
-
-#   if [[ "$SHELL" != "$zsh_path" ]]; then
-#     chsh -s "$zsh_path"
-#     info "Default shell changed to $zsh_path"
-#   fi
-
-#   success "\nDone configuring shell."
-
-#   setup_terminfo
-#   set_up_oh_my_zsh
-#   set_up_spaceship_prompt
-# }
 
 set_up_zsh_shell() {
   setup_terminfo
