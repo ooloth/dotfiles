@@ -270,7 +270,7 @@ set_up_symlinks() {
   # Symlink .config subfolder files and folders
 
   # Get array of $DOTFILES/config subfolders
-  config_subfolders=($(find "$DOTFILES/config" -maxdepth 1 2>/dev/null))
+  config_subfolders=($(find "$DOTFILES/config" -maxdepth 1 -mindepth 1 2>/dev/null))
 
   for config_subfolder in "${config_subfolders[@]}"; do
     # Create corresponding $HOME/.config subfolder if it's missing
@@ -278,7 +278,7 @@ set_up_symlinks() {
     create_missing_directory "$home_config_subfolder"
 
     # Get array of subfolder contents (mostly files)
-    config_files=($(find "$config_subfolder" -maxdepth 1 2>/dev/null))
+    config_files=($(find "$config_subfolder" -maxdepth 1 -mindepth 1 2>/dev/null))
 
     # Symlink the contents (to allow apps to add unlinked content to these folders as well)
     for config_file in "${config_files[@]}"; do
