@@ -54,9 +54,36 @@ brew "zsh-syntax-highlighting"
 
 # Applications
 cask "alacritty"
+cask "alfred"
+cask "appcleaner"
+cask "backblaze"
+cask "catch"
+cask "cheatsheet"
+cask "daisydisk"
+cask "discord"
+cask "drivedx"
+cask "gitkraken"
+cask "handbrake"
+cask "hyper"
+cask "ishowu-instant"
+cask "iterm2"
 cask "karabiner-elements"
+cask "keybase"
+cask "local"
+cask "microsoft-teams"
 cask "notion"
+cask "openvpn-connect"
+cask "prepros"
 cask "rectangle"
+cask "runjs"
+cask "sizzy"
+cask "skype"
+cask "transmit"
+cask "transmission"
+cask "visual-studio-code"
+cask "vlc"
+cask "zeplin"
+cask "zoomus"
 
 # cask "cleanshot"
 # cask "vmware-fusion"
@@ -83,16 +110,32 @@ cask "font-ubuntu-mono"
 cask "font-ubuntu-mono-nerd-font"
 
 # macOS App Store
+mas "1Password 7", id: 1333542190
+mas "Amphetamine", id: 937984704
 mas "Bear", id: 1091189122
-mas "Pages", id: 1289583905
+mas "Contrast", id: 1254981365
+mas "DaVinci Resolve", id: 571213070
+mas "Disk Care", id: 913724705
+mas "iA Writer", id: 775737590
+mas "Keynote", id: 409183694
+mas "Microsoft Outlook", id: 985367838
+mas "Numbers", id: 409203825
+mas "Pages", id: 409201541
+mas "PiPifier", id: 1160374471
+mas "Pixave", id: 924891282
 mas "Pixelmator Pro", id: 1289583905
+mas "Save to Pocket", id: 1477385213
+mas "Slack", id: 803453959
+mas "Sip", id: 507257563
+mas "Smart Converter Pro", id: 450078312
+mas "Spark", id: 1176895641
+mas "The Unarchiver", id: 425424353
+mas "Things 3", id: 904280696
 mas "Vimari", id: 1289583905
 
 # mas "ColorSlurp", id: 1287239339
 # mas "Magnet", id: 441258766
 # mas "MindNode", id: 1289197285
-# mas "Keynote", id: 1289583905
-# mas "Numbers", id: 1289583905
 # mas "FruitJuice", id: 671736912
 # mas "Drafts", id: 1435957248
 # mas "Logic Pro X", id: 634148309
