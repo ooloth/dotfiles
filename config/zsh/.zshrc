@@ -42,12 +42,11 @@ alias .....='cd ../../../..'
 
 # Jump to common directories
 alias cdh='cd $HOME'
-alias cds='cd $HOME/Sites'
-alias cde='cd $HOME/Sites/ecobee/consumer-website'
-alias cdd='cd $HOME/Sites/projects/dotfiles'
-alias cdms='cd $HOME/Sites/projects/mac-setup'
-alias cdmu='cd $HOME/Sites/projects/michaeluloth.com'
-alias cdgt='cd $HOME/Sites/projects/gatsbytutorials.com'
+alias cds='cd $HOME/Repos'
+alias cde='cd $HOME/Repos/ecobee/consumer-website'
+alias cdd='cd $HOME/Repos/ooloth/dotfiles'
+alias cdm='cd $HOME/Repos/ooloth/michaeluloth.com'
+alias cdg='cd $HOME/Repos/ooloth/gatsbytutorials.com'
 alias cdn='ssh ooloth@192.168.0.104'
 
 # Common ecobee commands

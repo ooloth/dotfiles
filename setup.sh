@@ -123,6 +123,10 @@ run_checks() {
 configure_ssh() {
   title "Configuring SSH"
 
+  warning: "TODO: check if an SSH key pair already exists\n"
+
+  # Check if an SSH key pair already exists
+
   info "Generating SSH public/private key pair...\n"
   # silent output, "id_rsa", overwrite existing, no password
   # https://security.stackexchange.com/a/23385
@@ -536,8 +540,12 @@ suggest_restart() {
     sudo shutdown -r now
   else
     printf "No worries! For now, just type 'zsh' to refresh this terminal and have fun exploring your new Mac!"
+
     success "\nDone."
-    source $HOME/.zshrc
+
+    # Reload terminal
+    zsh
+    # source $HOME/.config/zsh/.zshrc
   fi
 }
 

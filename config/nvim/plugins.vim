@@ -237,14 +237,11 @@ let g:startify_lists = [
   \ ]
 
 let g:startify_bookmarks = [
-  \ { 'e': '~/Sites/ecobee/consumer-website/' },
-  \ { 'm': '~/Sites/projects/michaeluloth.com/' },
-  \ { 'g': '~/Sites/projects/gatsbytutorials.com/' },
-  \ { 'd': '~/Sites/projects/dotfiles/' },
-  \ { 'p': '~/Sites/projects/' },
-  \ { 'u': '~/Sites/mu/' },
-  \ { 'c': '~/Sites/cc/' },
-  \ { 's': '~/Sites/' },
+  \ { 'e': '~/Repos/ecobee/consumer-website/' },
+  \ { 'd': '~/Repos/ooloth/dotfiles/' },
+  \ { 'm': '~/Repos/ooloth/michaeluloth.com/' },
+  \ { 'g': '~/Repos/ooloth/gatsbytutorials.com/' },
+  \ { 's': '~/Repos/' },
   \ ]
 
 " Prevent coc-explorer from staying stuck in the last session's CWD after :SClose
