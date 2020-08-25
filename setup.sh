@@ -41,7 +41,7 @@ success() {
 confirm_plan() {
   title "Welcome to your new Mac!"
 
-  info "This installation will set you up by doing this:\n"
+  info "This installation will perform the following steps:\n"
 
   printf "1. Back up any existing dotfiles in your home folder\n"
   printf "2. Find your new dotfiles and symlink them where they need to be\n"
@@ -199,10 +199,6 @@ clone_dotfiles() {
   fi
 }
 
-# get_linkables() {
-#   find -H "$DOTFILES" -maxdepth 3 -name '*.symlink'
-# }
-
 backup() {
   DATE_STAMP=$(date +"%F-%H-%M-%S")
   BACKUP_DIR=$HOME/Desktop/dotfiles-backup-$DATE_STAMP
@@ -212,16 +208,6 @@ backup() {
   info "Creating backup directory at $BACKUP_DIR"
 
   create_missing_directory "$BACKUP_DIR"
-
-  # # Copy root-level dotfiles to backup folders
-  # for file in $(get_linkables); do
-  #   filename=".$(basename "$file" '.symlink')"
-  #   target="$HOME/$filename"
-  #   if [ -f "$target" ]; then
-  #     info "Backing up $filename"
-  #     cp "$target" "$BACKUP_DIR"
-  #   fi
-  # done
 
   # Copy ~/.zshenv to backup folder
   if [ -d "$HOME/.config" ]; then
@@ -255,12 +241,6 @@ set_up_symlinks() {
 
   info "Creating symlinks in ~/..."
 
-  # # Symlink root-level files
-  # for file in $(get_linkables) ; do
-  #   target="$HOME/.$(basename "$file" '.symlink')"
-  #   ln -sfv "$file" "$target"
-  # done
-
   # Symlink .zshenv
   ln -sfv "$DOTFILES/.zshenv" "$HOME/.zshenv"
 
@@ -275,6 +255,7 @@ set_up_symlinks() {
   for config_subfolder in "${config_subfolders[@]}"; do
     # Create corresponding $HOME/.config subfolder if it's missing
     home_config_subfolder="$HOME/.config/$(basename "$config_subfolder")"
+
     create_missing_directory "$home_config_subfolder"
 
     # Get array of subfolder contents (mostly files)
@@ -365,7 +346,7 @@ setup_homebrew() {
 }
 
 setup_terminfo() {
-  title "Configuring terminfo"
+  title "Updating terminfo"
 
   info "adding tmux.terminfo"
   tic -x "$DOTFILES/terminfo/tmux.terminfo"
