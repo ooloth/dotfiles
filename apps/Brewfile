@@ -21,6 +21,7 @@ brew "schniz/tap/fnm"
 brew "shellcheck"
 brew "speedtest-cli"
 brew "svn"            # required for font cask installations
+brew "tldr"
 brew "tmux"
 brew "vifm"
 # brew "zsh"
