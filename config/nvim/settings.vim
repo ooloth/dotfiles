@@ -67,7 +67,6 @@ set tabstop=2
 
 "Line wrapping
 set linebreak     " keep words intact when wrapping
-set textwidth=100 " match ecobee's max-width
 
 " Remove trailing whitespace on save
 autocmd BufWritePre * :%s/\s\+$//e
