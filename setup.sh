@@ -168,7 +168,7 @@ create_ssh_keys() {
 
   vared -p "All set? (y/N)" -c gitHubKeyAdded
 
-  if [[ ! "$gitHubKeyAdded" == 'y' ]]; then
+  if [ ! "$gitHubKeyAdded" == 'y' ]; then
     printf "\nYou have chosen...poorly.\n"
   else
     printf "\nExcellent!\n"
@@ -178,20 +178,17 @@ create_ssh_keys() {
 configure_ssh() {
   title "Configuring SSH"
 
-  warning: "TODO: check if an SSH key pair already exists\n"
-
-  # Check if an SSH key pair already exists
   info "Checking for existing SSH keys..."
 
   if [[ ! -d "$HOME/.ssh" || ! -f "$HOME/.ssh/id_rsa" || ! -f "$HOME/.ssh/id_rsa.pub" ]]; then
     info "SSH keys not found. Generating new keys..."
     create_ssh_keys
   else
-    info "Existing SSH keys found."
+    info "Existing SSH keys found.\n"
 
     vared -p "Would you like to replace them? (y/N)" -c replaceKeys
 
-    if [[ ! "$replaceKeys" == 'y' ]]; then
+    if [ ! "$replaceKeys" == 'y' ]; then
       printf "\nMakes sense! Keeping the existing keys.\n"
     else
       printf "\n You got it! Here we go...\n"
