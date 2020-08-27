@@ -560,7 +560,7 @@ confirm_consent \
   && backup_config \
   && create_symlinks \
   && set_up_git \
-  && clone_repos \
+  # && clone_repos \
   && set_up_homebrew \
   && set_up_zsh \
   && set_up_node \
