@@ -543,7 +543,7 @@ suggest_restart() {
     printf "\nRestarting..."
     sudo shutdown -r now
   else
-    printf "No worries! For now, just type 'zsh' to refresh this terminal and have fun exploring your new Mac!"
+    printf "\nNo worries! Just type 'zsh' to refresh this terminal and enjoy your new Mac!\n"
 
     success "\nDone."
 
