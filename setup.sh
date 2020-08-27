@@ -320,23 +320,6 @@ clone_repos() {
 set_up_homebrew() {
   title "Setting up Homebrew"
 
-# if [ ! -d "${HOME}/bin/" ]; then
-#   mkdir "${HOME}/bin"
-# fi
-
-  # HOMEBREW_PREFIX="/usr/local"
-
-# if [ -d "$HOMEBREW_PREFIX" ]; then
-#   if ! [ -r "$HOMEBREW_PREFIX" ]; then
-#     sudo chown -R "${LOGNAME}:admin" "$HOMEBREW_PREFIX"
-#   fi
-# else
-#   sudo mkdir "$HOMEBREW_PREFIX"
-#   sudo chflags norestricted "$HOMEBREW_PREFIX"
-#   sudo chown -R "${LOGNAME}:admin" "$HOMEBREW_PREFIX"
-# fi
-
-
   if test ! "$(command -v brew)"; then
     info "Homebrew not installed. Installing."
     # Run as a login shell (non-interactive) so that the script doesn't pause for user input
@@ -545,11 +528,10 @@ suggest_restart() {
   else
     printf "\nNo worries! Just type 'zsh' to refresh this terminal and enjoy your new Mac!\n"
 
-    success "\nDone."
+    success "\nDone.\n"
 
     # Reload terminal
-    $(zsh)
-    # source $HOME/.config/zsh/.zshrc
+    $(source $HOME/.config/zsh/.zshrc)
   fi
 }
 
