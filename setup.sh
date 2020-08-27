@@ -531,7 +531,8 @@ suggest_restart() {
     success "\nDone.\n"
 
     # Reload terminal
-    $(source $HOME/.config/zsh/.zshrc)
+    # TODO: doesn't work
+    # source $HOME/.config/zsh/.zshrc
   fi
 }
 
