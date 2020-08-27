@@ -548,7 +548,7 @@ suggest_restart() {
     success "\nDone."
 
     # Reload terminal
-    zsh
+    $(zsh)
     # source $HOME/.config/zsh/.zshrc
   fi
 }
