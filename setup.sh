@@ -120,13 +120,7 @@ run_checks() {
 #   export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
 # }
 
-configure_ssh() {
-  title "Configuring SSH"
-
-  warning: "TODO: check if an SSH key pair already exists\n"
-
-  # Check if an SSH key pair already exists
-
+create_ssh_keys() {
   info "Generating SSH public/private key pair...\n"
   # silent output, "id_rsa", overwrite existing, no password
   # https://security.stackexchange.com/a/23385
@@ -178,6 +172,31 @@ configure_ssh() {
     printf "\nYou have chosen...poorly.\n"
   else
     printf "\nExcellent!\n"
+  fi
+}
+
+configure_ssh() {
+  title "Configuring SSH"
+
+  warning: "TODO: check if an SSH key pair already exists\n"
+
+  # Check if an SSH key pair already exists
+  info "Checking for existing SSH keys..."
+
+  if [[ ! -d "$HOME/.ssh" || ! -f "$HOME/.ssh/id_rsa" || -f "$HOME/.ssh/id_rsa.pub" ]]; then
+    info "SSH keys not found. Generating new keys..."
+    create_ssh_keys
+  else
+    info "Existing SSH keys found."
+
+    vared -p "Would you like to replace them? (y/N)" -c replaceKeys
+
+    if [[ ! "$replaceKeys" == 'y' ]]; then
+      printf "\nMakes sense! Keeping the existing keys.\n"
+    else
+      printf "\n You got it! Here we go...\n"
+      create_ssh_keys
+    fi
   fi
 
   success "\nDone setting up SSH."
