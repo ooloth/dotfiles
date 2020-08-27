@@ -3,7 +3,8 @@ tap "homebrew/bundle"
 tap "homebrew/core"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
-# tap "schniz/tap"
+tap "github/gh"
+tap "schniz/tap"
 
 # packages
 brew "bat"
