@@ -54,6 +54,9 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'               " extends . functionality to plugins like vim-surround
 Plug 'tpope/vim-unimpaired'           " pairs of '[' and ']' mappings
 
+" Use nvim in browser textareas
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+
 call plug#end()
 
 " Automatically install missing plugins on startup
@@ -163,6 +166,30 @@ command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport
 
 let b:coc_git_blame = 1  " git status of current line
 let b:coc_git_status = 1 " git status of current buffer
+
+" ------------------------------------------------------------------------
+" FIRENVM
+" ------------------------------------------------------------------------
+
+" https://github.com/glacambre/firenvim#building-a-firenvim-specific-config
+function! s:IsFirenvimActive(event) abort
+  if !exists('*nvim_get_chan_info')
+    return 0
+  endif
+  let l:ui = nvim_get_chan_info(a:event.chan)
+  return has_key(l:ui, 'client') && has_key(l:ui.client, 'name') &&
+      \ l:ui.client.name =~? 'Firenvim'
+endfunction
+
+function! OnUIEnter(event) abort
+  if s:IsFirenvimActive(a:event)
+    set cmdheight=2
+		set guifont=Ubunto_Mono:h12
+		set lines=25
+  endif
+endfunction
+
+autocmd UIEnter * call OnUIEnter(deepcopy(v:event))
 
 " ------------------------------------------------------------------------
 " FZF
