@@ -98,7 +98,7 @@ authenticate() {
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   set -e
 
-  success "\nYup. That's the password. Have your way with this thing."
+  success "Yup. That's the password. Have your way with this thing."
 }
 
 run_checks() {
@@ -108,25 +108,13 @@ run_checks() {
   authenticate
 }
 
-# confirm_names() {
-#   printf "\\nEnter a name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_COMPUTER_NAME"
-#   read -r -p "> " COMPUTER_NAME
-  # vared -p "\nAre you ready to restart now? (y/N) " -c key
-#   export COMPUTER_NAME=${COMPUTER_NAME:-$DEFAULT_COMPUTER_NAME}
-
-#   printf "\\nEnter a host name for your Mac. (Leave blank for default: %s)\\n" "$DEFAULT_HOST_NAME"
-#   read -r -p "> " HOST_NAME
-  # vared -p "\nAre you ready to restart now? (y/N) " -c key
-#   export HOST_NAME=${HOST_NAME:-$DEFAULT_HOST_NAME}
-# }
-
 create_ssh_keys() {
   info "Generating SSH public/private key pair...\n"
+
   # silent output, "id_rsa", overwrite existing, no password
   # https://security.stackexchange.com/a/23385
   # https://stackoverflow.com/a/43235320
   ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
-  # ssh-keygen -q -t rsa -b 2048
 
   printf "\n"
   info "Adding SSH key pair to ssh-agent and Keychain"
@@ -164,11 +152,11 @@ create_ssh_keys() {
   cat "$HOME/.ssh/id_rsa.pub"
 
   printf "\n"
-  warning "Actually do this right now! The next step requires SSH to be working.\n"
+  warning "Actually go do this! The next step requires SSH to be working.\n"
 
   vared -p "All set? (y/N)" -c gitHubKeyAdded
 
-  if [ ! "$gitHubKeyAdded" == 'y' ]; then
+  if [[ ! "$gitHubKeyAdded" == 'y' ]]; then
     printf "\nYou have chosen...poorly.\n"
   else
     printf "\nExcellent!\n"
@@ -184,11 +172,11 @@ configure_ssh() {
     info "SSH keys not found. Generating new keys..."
     create_ssh_keys
   else
-    info "Existing SSH keys found.\n"
+    success "\nSSH keys found.\n"
 
-    vared -p "Would you like to replace them? (y/N)" -c replaceKeys
+    vared -p "Would you like to replace them with a new key pair (not recommended)? (y/N)" -c replaceKeys
 
-    if [ ! "$replaceKeys" == 'y' ]; then
+    if [[ ! "$replaceKeys" == 'y' ]]; then
       printf "\nMakes sense! Keeping the existing keys.\n"
     else
       printf "\n You got it! Here we go...\n"
