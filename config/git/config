@@ -1,4 +1,5 @@
 [core]
+  editor = nvim
   excludesfile = $HOME/.config/git/ignore
 
 [credential]
@@ -6,6 +7,9 @@
 
 [github]
   user = ooloth
+
+[merge]
+  tool = vimdiff
 
 [user]
   name = Michael Uloth
