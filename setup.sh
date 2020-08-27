@@ -183,7 +183,7 @@ configure_ssh() {
   # Check if an SSH key pair already exists
   info "Checking for existing SSH keys..."
 
-  if [[ ! -d "$HOME/.ssh" || ! -f "$HOME/.ssh/id_rsa" || -f "$HOME/.ssh/id_rsa.pub" ]]; then
+  if [[ ! -d "$HOME/.ssh" || ! -f "$HOME/.ssh/id_rsa" || ! -f "$HOME/.ssh/id_rsa.pub" ]]; then
     info "SSH keys not found. Generating new keys..."
     create_ssh_keys
   else
