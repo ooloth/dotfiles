@@ -21,6 +21,9 @@ alias nvm='fnm'
 # Open both vifm panes in cwd
 alias vifm='vifm . .'
 
+# Make clear faster to type
+alias c='clear'
+
 # Replace ls with exa
 alias ls='exa --all --group-directories-first'                             # top level dir + files
 alias lsa='ls --git-ignore -I .git --recurse'                              # nested dirs + files
