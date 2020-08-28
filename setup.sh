@@ -306,17 +306,6 @@ set_up_git() {
   success "\nDone setting up your git credentials."
 }
 
-# TODO: repurpose for downloading all repos (skipping if they're already there to avoid overwriting
-# local changes
-clone_repos() {
-  title "Cloning GitHub repositories"
-
-  warning "TODO: loop through all available repos for any username"
-  # gitHubUsername=$(git config github.user)
-  # create_missing_directory "$HOME/Repos/$gitHubUsername"
-  # etc...
-}
-
 set_up_homebrew() {
   title "Setting up Homebrew"
 
