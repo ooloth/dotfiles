@@ -18,11 +18,6 @@ map f <Plug>(easymotion-s)
 " Jump to one of the visible words
 map ff <Plug>(easymotion-bd-w)
 
-map  <Leader>/ <Plug>(easymotion-sn)
-omap <Leader>/ <Plug>(easymotion-tn)
-" map n <Plug>(easymotion-next)
-" map N <Plug>(easymotion-prev)
-
 " Easily exit help windows with Esc or q
 autocmd Filetype help nmap <buffer> <Esc> :q<CR>
 autocmd Filetype help nmap <buffer> q :q<CR>
@@ -35,7 +30,7 @@ autocmd Filetype help nmap <buffer> q :q<CR>
 nnoremap <TAB>   :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
 
-" Make Y behave like D and C by yank remainder of line instead of entire line
+" Make Y behave like D and C by yanking remainder of line only
 nnoremap Y y$
 
 " ------------------------------------------------------------------------
