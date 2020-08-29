@@ -107,14 +107,17 @@ nnoremap <Leader>] :vertical resize +5<CR>
 " Initialize key map
 let g:which_key_map =  {}
 
-let g:which_key_map[';'] = [':CocList commands'                      , 'commands']
+let g:which_key_map[';'] = [':CocList commands'                      , 'command list']
 let g:which_key_map['='] = ['<C-w>='                                 , 'equal width windows']
-let g:which_key_map['a'] = ['<Plug>(coc-codeaction)'                 , 'actions']
-let g:which_key_map['b'] = [':CocCommand fzf-preview.Buffers'        , 'buffers']
-let g:which_key_map['c'] = [':SClose'                                , 'close session']
+let g:which_key_map['a'] = ['<Plug>(coc-codeaction)'                 , 'actions list']
+let g:which_key_map['b'] = [':CocCommand fzf-preview.Buffers'        , 'buffer search']
+
+nnoremap <Leader>c "ayiwoconsole.log('<C-R>a:', <C-R>a)<Esc>
+let g:which_key_map['c'] = ['c' , 'console log' ]
+
 let g:which_key_map['d'] = [':Bdelete menu'                          , 'delete buffers']
-let g:which_key_map['e'] = [':CocCommand fzf-preview.CocDiagnostics' , 'errors']
-let g:which_key_map['f'] = [':CocCommand fzf-preview.ProjectFiles'   , 'files']
+let g:which_key_map['e'] = [':CocCommand fzf-preview.CocDiagnostics' , 'error list']
+let g:which_key_map['f'] = [':CocCommand fzf-preview.ProjectFiles'   , 'file search']
 
 " Git
 let g:which_key_map['g'] = {
@@ -136,22 +139,20 @@ let g:which_key_map['g'] = {
   \ 'S' : [':tab Git'                            , 'status in tab'],
   \ }
 
-let g:which_key_map['h'] = [':let @/ = ""' , 'hide highlights']
+let g:which_key_map['h'] = [':let @/ = ""' , 'highlights off']
 
 " let g:which_key_map['i'] = [ '' , '' ]
+" let g:which_key_map['j'] = [ '' , '' ]
+" let g:which_key_map['k'] = [ '' , '' ]
 
-let g:which_key_map['j'] = [ '<Plug>(easymotion-j)' , 'jump down to a line' ]
-let g:which_key_map['k'] = [ '<Plug>(easymotion-k)' , 'jump up to a line' ]
-
-nnoremap <Leader>l "ayiwoconsole.log('<C-R>a:', <C-R>a)<Esc>
-let g:which_key_map['l'] = ['l' , 'log to console' ]
+let g:which_key_map['l'] = [ '<Plug>(easymotion-bd-jk)' , 'line jump' ]
 
 " let g:which_key_map['m'] = [ '' , '' ]
 
 let g:which_key_map['n'] = ['<Plug>(coc-references)' , 'references']
 let g:which_key_map['o'] = [':CocCommand explorer'   , 'open file tree']
 let g:which_key_map['p'] = [':CocList snippets'      , 'snippets']
-let g:which_key_map['q'] = [':q'                     , 'quit window (or session if last window)']
+let g:which_key_map['q'] = [':q'                     , 'quit window']
 
 let @r = ':CocCommand fzf-preview.ProjectGrep '
 let g:which_key_map['r'] = ['@r' , 'ripgrep word']
@@ -169,13 +170,11 @@ let g:which_key_map['t'] = {
   \ 'v' : [':TestVisit'   , 'visit file with last run tests'],
   \}
 
-let g:which_key_map['u'] = [':UndotreeShow' , 'undo tree']
-let g:which_key_map['v'] = ['<C-w>v'        , 'vertical split']
-let g:which_key_map['w'] = [':w'            , 'write buffer']
-
-" let g:which_key_map['x'] = [ '' , '' ]
-
-let g:which_key_map['y'] = [ ':CocList -A --normal yank' , 'yanks' ]
+let g:which_key_map['u'] = [':UndotreeShow'              , 'undo list']
+let g:which_key_map['v'] = ['<C-w>v'                     , 'vertical split']
+let g:which_key_map['w'] = [':w'                         , 'write buffer']
+let g:which_key_map['x'] = [':SClose'                    , 'end session']
+let g:which_key_map['y'] = [ ':CocList -A --normal yank' , 'yank list' ]
 
 " let g:which_key_map['z'] = [ '' , '' ]
 
