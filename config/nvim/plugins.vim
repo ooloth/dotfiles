@@ -48,6 +48,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'alvan/vim-closetag'
 Plug 'christoomey/vim-tmux-navigator' " navigate seamlessly between vim + tmux splits
 " Plug 'christoomey/vim-tmux-runner'
+Plug 'easymotion/vim-easymotion'
 Plug 'metakirby5/codi.vim'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -163,6 +164,30 @@ command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport
 
 let b:coc_git_blame = 1  " git status of current line
 let b:coc_git_status = 1 " git status of current buffer
+
+" ------------------------------------------------------------------------
+" EASY MOTION
+" ------------------------------------------------------------------------
+
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+let g:EasyMotion_smartcase = 1  " similar to vim (only case sensitive if you include uppercase chars)
+
+" Prevent temporary COC diagnostic error about replacement letters
+" https://github.com/neoclide/coc.nvim/issues/110#issuecomment-631868877
+let g:easymotion#is_active = 0
+function! EasyMotionCoc() abort
+  if EasyMotion#is_active()
+    let g:easymotion#is_active = 1
+    CocDisable
+  else
+    if g:easymotion#is_active == 1
+      let g:easymotion#is_active = 0
+      CocEnable
+    endif
+  endif
+endfunction
+
+autocmd TextChanged,CursorMoved * silent call EasyMotionCoc()
 
 " ------------------------------------------------------------------------
 " FZF

@@ -98,7 +98,7 @@ colorscheme gruvbox
 " CURSOR
 " ------------------------------------------------------------------------
 
-set scrolloff=20 " keep cursor this many lines away from top/bottom
+set scrolloff=22 " keep cursor this many lines away from top/bottom
 
 " Cursor line
 set cursorline

@@ -12,6 +12,17 @@ noremap <Right> <nop>
 noremap <Down> <nop>
 noremap <Left> <nop>
 
+" Find a character in the visible part of the window
+map f <Plug>(easymotion-s)
+
+" Jump to one of the visible words
+map ff <Plug>(easymotion-bd-w)
+
+map  <Leader>/ <Plug>(easymotion-sn)
+omap <Leader>/ <Plug>(easymotion-tn)
+" map n <Plug>(easymotion-next)
+" map N <Plug>(easymotion-prev)
+
 " Easily exit help windows with Esc or q
 autocmd Filetype help nmap <buffer> <Esc> :q<CR>
 autocmd Filetype help nmap <buffer> q :q<CR>
@@ -131,8 +142,9 @@ let g:which_key_map['g'] = {
 let g:which_key_map['h'] = [':let @/ = ""' , 'hide highlights']
 
 " let g:which_key_map['i'] = [ '' , '' ]
-" let g:which_key_map['j'] = [ '' , '' ]
-" let g:which_key_map['k'] = [ '' , '' ]
+
+let g:which_key_map['j'] = [ '<Plug>(easymotion-j)' , 'jump down to a line' ]
+let g:which_key_map['k'] = [ '<Plug>(easymotion-k)' , 'jump up to a line' ]
 
 nnoremap <Leader>l "ayiwoconsole.log('<C-R>a:', <C-R>a)<Esc>
 let g:which_key_map['l'] = ['l' , 'log to console' ]
