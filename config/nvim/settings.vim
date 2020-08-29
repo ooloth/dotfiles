@@ -37,6 +37,9 @@ set hidden        " persist buffers in the background
 set splitright
 set splitbelow
 
+" Write buffer after leaving insert mode or changing text in normal mode
+autocmd InsertLeave,TextChanged * update
+
 " ------------------------------------------------------------------------
 " NAVIGATION
 " ------------------------------------------------------------------------

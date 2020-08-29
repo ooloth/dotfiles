@@ -48,9 +48,6 @@ inoremap <Right> <nop>
 inoremap <Down> <nop>
 inoremap <Left> <nop>
 
-" Return to normal mode + autosave
-inoremap <Esc> <Esc>:w<CR>
-
 " ------------------------------------------------------------------------
 " TERMINAL MODE
 " ------------------------------------------------------------------------
