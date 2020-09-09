@@ -7,10 +7,10 @@ let mapleader = " "
 " ------------------------------------------------------------------------
 
 "Disable arrow key navigation
-noremap <Up> <nop>
-noremap <Right> <nop>
-noremap <Down> <nop>
-noremap <Left> <nop>
+" noremap <Up> <nop>
+" noremap <Right> <nop>
+" noremap <Down> <nop>
+" noremap <Left> <nop>
 
 " Find a character in the visible part of the window
 map f <Plug>(easymotion-s)
@@ -38,10 +38,10 @@ nnoremap Y y$
 " ------------------------------------------------------------------------
 
 " Turn off arrow keys
-inoremap <Up> <nop>
-inoremap <Right> <nop>
-inoremap <Down> <nop>
-inoremap <Left> <nop>
+" inoremap <Up> <nop>
+" inoremap <Right> <nop>
+" inoremap <Down> <nop>
+" inoremap <Left> <nop>
 
 " ------------------------------------------------------------------------
 " TERMINAL MODE
