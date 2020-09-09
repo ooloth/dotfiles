@@ -102,13 +102,13 @@ nnoremap <Leader>] :vertical resize +5<CR>
 " Initialize key map
 let g:which_key_map =  {}
 
-let g:which_key_map[';'] = [':CocList commands'                      , 'command list']
-let g:which_key_map['='] = ['<C-w>='                                 , 'equal width windows']
-let g:which_key_map['a'] = ['<Plug>(coc-codeaction)'                 , 'actions list']
-let g:which_key_map['b'] = [':CocCommand fzf-preview.Buffers'        , 'buffer search']
+let g:which_key_map[';'] = [':CocList commands'               , 'command list']
+let g:which_key_map['='] = ['<C-w>='                          , 'equal width windows']
+let g:which_key_map['a'] = ['<Plug>(coc-codeaction)'          , 'actions list']
+let g:which_key_map['b'] = [':CocCommand fzf-preview.Buffers' , 'buffer search']
 
-nnoremap <Leader>c "ayiwoconsole.log('<C-R>a:', <C-R>a)<Esc>
-let g:which_key_map['c'] = ['c' , 'console log' ]
+let @c = '"ayiwoconsole.log(`<C-R>a:`, <C-R>a)'
+let g:which_key_map['c'] = ['@c' , 'console log' ]
 
 let g:which_key_map['d'] = [':Bdelete menu'                          , 'delete buffers']
 let g:which_key_map['e'] = [':CocCommand fzf-preview.CocDiagnostics' , 'error list']
