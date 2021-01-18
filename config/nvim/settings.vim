@@ -2,9 +2,7 @@
 " CLIPBOARD
 " ------------------------------------------------------------------------
 
-" Copy/paste between Vim and everything else
-set clipboard+=unnamedplus  " use the system clipboard for everything
-set go+=a                   " Visual selection automatically copied to the clipboard
+set clipboard+=unnamedplus " use the system clipboard for everything
 
 " ------------------------------------------------------------------------
 " HISTORY
