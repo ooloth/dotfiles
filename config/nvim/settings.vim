@@ -80,15 +80,11 @@ set termguicolors
 set background=dark
 set re=0            " https://github.com/HerringtonDarkholme/yats.vim#config
 
-if exists('+termgicolors')
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
-let g:gruvbox_italic=1
-let g:gruvbox_invert_selection='0'
-let g:gruvbox_contrast_dark='hard' " or 'medium'
-colorscheme gruvbox
+let g:onedark_terminal_italics=1
+colorscheme onedark
 
 " ------------------------------------------------------------------------
 " CURSOR
