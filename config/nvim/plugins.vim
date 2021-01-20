@@ -20,7 +20,6 @@ Plug 'tjdevries/lsp_extensions.nvim'
 " Syntax highlighting
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'joshdick/onedark.vim'
-Plug 'gruvbox-community/gruvbox'
 
 " Linting
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
