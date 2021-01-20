@@ -140,13 +140,13 @@ let g:which_key_map['g'] = {
 
 let g:which_key_map['h'] = [':let @/ = ""' , 'highlights off']
 
-" let g:which_key_map['i'] = [ '' , '' ]
-" let g:which_key_map['j'] = [ '' , '' ]
+" let g:which_key_map['i'] = ['' , '' ]
+" let g:which_key_map['j'] = ['' , '' ]
 
 let g:which_key_map['k'] = [':Telescope keymaps'                                   , 'keymaps' ]
 let g:which_key_map['l'] = [":normal \"ahiwlconsole.log('\<C-R>a:', \<C-R>a)\<CR>" , 'log to console']
 
-" let g:which_key_map['m'] = [ '', '' ]
+" let g:which_key_map['m'] = ['', '' ]
 " let g:which_key_map['n'] = ['', '']
 
 let g:which_key_map['o'] = [':Dirvish', 'open file tree']
@@ -176,8 +176,8 @@ let g:which_key_map['s'] = {
 let g:which_key_map['u'] = [':UndotreeShow'                         , 'undo list']
 let g:which_key_map['v'] = ['<C-w>v'                                , 'vertical split']
 let g:which_key_map['w'] = [':write | edit | TSBufEnable highlight' , 'write buffer']
-let g:which_key_map['x'] = [''                                      , '']
 
+" let g:which_key_map['x'] = ['', '']
 " let g:which_key_map['y'] = ['', 'yank list']
 " let g:which_key_map['z'] = ['', '']
 

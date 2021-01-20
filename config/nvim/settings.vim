@@ -8,13 +8,13 @@ set clipboard+=unnamedplus " use the system clipboard for everything
 " HISTORY
 " ------------------------------------------------------------------------
 
-set history=1000  " remember more commands and search history
-set nobackup      " rely on git-based version control
+set history=1000           " remember more commands and search history
+set nobackup               " rely on git-based version control
 set noswapfile
-set nowritebackup " some servers have issues with backup files
+set nowritebackup          " some servers have issues with backup files
 set undodir=~/.vim/undodir
 set undofile
-set undolevels=200 " make more changes undoable
+set undolevels=200         " make more changes undoable
 
 " ------------------------------------------------------------------------
 " UX
