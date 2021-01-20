@@ -12,31 +12,36 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'ryanoasis/vim-devicons'
+" Neovim LSP
+Plug 'neovim/nvim-lspconfig'
+Plug 'tjdevries/nlua.nvim'
+Plug 'tjdevries/lsp_extensions.nvim'
 
-" Syntax (https://github.com/MaxMEllon/vim-jsx-pretty#installation)
-Plug 'HerringtonDarkholme/yats.vim' " highlight TS + TSX
-Plug 'maxmellon/vim-jsx-pretty'     " highlight JSX
-Plug 'yuezk/vim-js'                 " highlight JS + Flow
-Plug 'sheerun/vim-polyglot'         " must be last syntax plugin
+" Syntax highlighting
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'joshdick/onedark.vim'
+Plug 'gruvbox-community/gruvbox'
 
-" Highlighting
-Plug 'morhetz/gruvbox'
+" Linting
+Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 
-" Intellisense
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Completion
+Plug 'nvim-lua/completion-nvim'
 
 " Search
-Plug 'jremmen/vim-ripgrep'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 Plug 'mbbill/undotree'
+
+" File tree
+Plug 'justinmk/vim-dirvish'
 
 " Git
 Plug 'tpope/vim-fugitive'
-Plug 'idanarye/vim-merginal'
 
 " Tests
-Plug 'vim-test/vim-test'
+" Plug 'vim-test/vim-test'
 
 " Organization
 Plug 'Asheq/close-buffers.vim'
@@ -46,14 +51,13 @@ Plug 'vim-airline/vim-airline'
 
 " Convenience
 Plug 'alvan/vim-closetag'
-Plug 'christoomey/vim-tmux-navigator' " navigate seamlessly between vim + tmux splits
-" Plug 'christoomey/vim-tmux-runner'
-Plug 'easymotion/vim-easymotion'
-Plug 'metakirby5/codi.vim'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'               " extends . functionality to plugins like vim-surround
-Plug 'tpope/vim-unimpaired'           " pairs of '[' and ']' mappings
+Plug 'norcalli/nvim-colorizer.lua'
+" Plug 'tpope/vim-unimpaired'           " pairs of '[' and ']' mappings
+" Plug 'christoomey/vim-tmux-navigator' " navigate seamlessly between vim + tmux splits
+" Plug 'christoomey/vim-tmux-runner'
 
 call plug#end()
 
@@ -76,7 +80,6 @@ let g:airline_highlighting_cache = 1
 let g:airline_left_sep=''                  " no arrows pointing right
 let g:airline_powerline_fonts = 1          " use nerd font devicons
 let g:airline_right_sep=''                 " no arrows pointing left
-let g:airline_theme = 'gruvbox'
 let g:airline#extensions#branch#format = 1 " show only tail of branch name
 let g:airline#extensions#coc#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
@@ -93,119 +96,18 @@ let g:airline_symbols.linenr = ' '
 let g:airline_symbols.maxlinenr = ''
 
 " ------------------------------------------------------------------------
-" CONQUER OF COMPLETION
+" COLORIZER
 " ------------------------------------------------------------------------
 
-" Coc plugins to automatically install and update in any project
-let g:coc_global_extensions = [
-  \ 'coc-css',
-  \ 'coc-explorer',
-  \ 'coc-fzf-preview',
-  \ 'coc-highlight',
-  \ 'coc-html',
-  \ 'coc-json',
-  \ 'coc-snippets',
-  \ 'coc-vimlsp',
-  \ 'coc-yaml',
-  \ 'coc-yank'
-  \ ]
-
-if isdirectory('./node_modules')
-  " Activate import cost
-  let g:coc_global_extensions += ['coc-import-cost']
-
-  " Activate prettier (if installed)
-  if isdirectory('./node_modules/prettier')
-    let g:coc_global_extensions += ['coc-prettier']
-  endif
-
-  " Activate eslint (if installed)
-  if isdirectory('./node_modules/eslint')
-    let g:coc_global_extensions += ['coc-eslint']
-  endif
-
-  " Activate flow or typescript (if installed), but never both
-  if isdirectory('./node_modules/flow-bin')
-    let g:coc_global_extensions += ['coc-flow']
-  elseif isdirectory('./node_modules/typescript')
-    let g:coc_global_extensions += ['coc-tsserver']
-  endif
-
-  " Activate inline jest (if jest installed)
-  if isdirectory('./node_modules/jest')
-    let g:coc_global_extensions += ['coc-inline-jest']
-  endif
-
-  " Activate tailwind (if installed)
-  if isdirectory('./node_modules/tailwindcss')
-    let g:coc_global_extensions += ['coc-tailwindcss']
-  endif
-endif
-
-if isdirectory('./git')
-  let g:coc_global_extensions += ['coc-git']
-endif
-
-" Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
-
-" Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
+set termguicolors " repeated here to avoid a plugin error
+lua require'colorizer'.setup()
 
 " ------------------------------------------------------------------------
-" COC GIT
+" LSP
 " ------------------------------------------------------------------------
 
-let b:coc_git_blame = 1  " git status of current line
-let b:coc_git_status = 1 " git status of current buffer
-
-" ------------------------------------------------------------------------
-" EASY MOTION
-" ------------------------------------------------------------------------
-
-let g:EasyMotion_do_mapping = 0 " Disable default mappings
-let g:EasyMotion_smartcase = 1  " similar to vim (only case sensitive if you include uppercase chars)
-
-" Prevent temporary COC diagnostic error about replacement letters
-" https://github.com/neoclide/coc.nvim/issues/110#issuecomment-631868877
-let g:easymotion#is_active = 0
-function! EasyMotionCoc() abort
-  if EasyMotion#is_active()
-    let g:easymotion#is_active = 1
-    CocDisable
-  else
-    if g:easymotion#is_active == 1
-      let g:easymotion#is_active = 0
-      CocEnable
-    endif
-  endif
-endfunction
-
-autocmd TextChanged,CursorMoved * silent call EasyMotionCoc()
-
-" ------------------------------------------------------------------------
-" FZF
-" ------------------------------------------------------------------------
-
-" https://github.com/junegunn/fzf#search-syntax
-if executable('rg')
-  let g:rg_derive_root='true'
-endif
-set grepprg=rg\ --vimgrep\ --smart-case\ --hidden\ --follow
-
-" Floating window
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let $FZF_DEFAULT_OPTS='--reverse'
-
-" Close search window with Esc
-" https://github.com/junegunn/fzf/issues/1393#issuecomment-426576577
-autocmd! FileType fzf tnoremap <buffer> <esc> <c-c>
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
+lua require'lspconfig'.tsserver.setup{ on_attach=require'completion'.on_attach }
 
 " ------------------------------------------------------------------------
 " NETRW
@@ -269,12 +171,72 @@ let g:startify_bookmarks = [
   \ { 's': '~/Repos/' },
   \ ]
 
-" Prevent coc-explorer from staying stuck in the last session's CWD after :SClose
-autocmd User Startified :silent CocRestart
-
 " Create viminfo file (for new installs)
 " https://github.com/ChristianChiarulli/nvim/issues/5#issuecomment-625933872
 " set viminfo='100,n$HOME/.config/nvim/autoload/plugged/vim-startify/test/viminfo'
+
+"------------------------------------------------------------------------
+" TELESCOPE
+" ------------------------------------------------------------------------
+
+lua << EOF
+require('telescope').setup{
+  defaults = {
+    file_sorter = require('telescope.sorters').get_fzy_sorter,
+    file_ignore_patterns = { 'yarn.lock', '**/*.snap', '.gitignore' },
+    file_previewer = require'telescope.previewers'.vim_buffer_cat.new,
+    grep_previewer = require'telescope.previewers'.vim_buffer_vimgrep.new,
+    qflist_previewer = require'telescope.previewers'.vim_buffer_qflist.new,
+  }
+}
+EOF
+
+" ------------------------------------------------------------------------
+" TREESITTER
+" ------------------------------------------------------------------------
+
+lua << EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "bash", "css", "graphql", "html", "javascript", "jsdoc", "json", "lua", "php", "toml", "tsx", "typescript", "vue", "yaml" },
+}
+EOF
+
+" Syntax highlighting
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+    custom_captures = {
+      -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
+      ["foo.bar"] = "Identifier",
+    },
+  },
+}
+EOF
+
+" Incremental selection (based on the named nodes from the grammar)
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = "gnn",
+      node_incremental = "grn",
+      scope_incremental = "grc",
+      node_decremental = "grm",
+    },
+  },
+}
+EOF
+
+" Indentation
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  indent = {
+    enable = true
+  }
+}
+EOF
 
 " ------------------------------------------------------------------------
 " VIM CLOSETAG
@@ -308,17 +270,73 @@ let g:closetag_shortcut = '>'
 let g:closetag_close_shortcut = '<leader>>'
 
 " ------------------------------------------------------------------------
-" VIM POLYGLOT
+" VIM DIRVISH
 " ------------------------------------------------------------------------
 
-let g:polyglot_disabled = ['javascript', 'jsx', 'typescript']
+let g:dirvish_mode = ':sort ,^.*[\/],'
+
+augroup dirvish_config
+  autocmd!
+
+  " Map `t` to open in new tab.
+  autocmd FileType dirvish
+    \  nnoremap <silent><buffer> t :call dirvish#open('tabedit', 0)<CR>
+    \ |xnoremap <silent><buffer> t :call dirvish#open('tabedit', 0)<CR>
+
+  " Map `gr` to reload.
+  autocmd FileType dirvish nnoremap <silent><buffer>
+    \ gr :<C-U>Dirvish %<CR>
+
+  " Map `gh` to hide dot-prefixed files.  Press `R` to "toggle" (reload).
+  autocmd FileType dirvish nnoremap <silent><buffer>
+    \ gh :silent keeppatterns g@\v/\.[^\/]+/?$@d _<cr>:setl cole=3<cr>
+augroup END
+
+" ------------------------------------------------------------------------
+" VIM FUGITIVE
+"
+" See: https://github.com/tpope/vim-fugitive/issues/1080#issuecomment-521100430
+" ------------------------------------------------------------------------
+
+" Remove default y<C-G> mapping causing delays when using Y to move left
+let g:nremap = {'y': ''}
+let g:xremap = {'y': ''}
+let g:oremap = {'y': ''}
+
+" ------------------------------------------------------------------------
+" VIM PRETTIER
+" ------------------------------------------------------------------------
+
+" let g:prettier#autoformat=1
+let g:prettier#autoformat_require_pragma=0
+let g:prettier#autoformat_config_present=1
+
+" ------------------------------------------------------------------------
+" VIM SURROUND
+"
+" See: https://github.com/tpope/vim-surround/issues/269
+" ------------------------------------------------------------------------
+
+" Customizing mappings to avoid default Y maps delaying my Y movements
+let g:surround_no_mappings=1
+
+nmap ds  <Plug>Dsurround
+nmap cs  <Plug>Csurround
+nmap cS  <Plug>CSurround
+nmap gs  <Plug>Ysurround
+nmap gS  <Plug>YSurround
+nmap gss <Plug>Yssurround
+nmap gSs <Plug>YSsurround
+nmap gSS <Plug>YSsurround
+xmap S   <Plug>VSurround
+" xmap gS  <Plug>VgSurround
 
 " ------------------------------------------------------------------------
 " VIM TEST
 " ------------------------------------------------------------------------
 
-let test#strategy = 'neovim'
-let test#neovim#term_position = "vert"
+" let test#strategy = 'neovim'
+" let test#neovim#term_position = 'vert'
 
 " ------------------------------------------------------------------------
 " WHICH KEY
