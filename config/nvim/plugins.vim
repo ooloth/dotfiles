@@ -345,9 +345,6 @@ xmap S   <Plug>VSurround
 " Define a separator
 let g:which_key_sep='→'
 
-" Delay popping up the window
-let g:which_key_timeout=500
-
 " Not a fan of floating windows for this
 let g:which_key_use_floating_win=0
 
