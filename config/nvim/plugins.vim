@@ -109,6 +109,15 @@ let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
 lua require'lspconfig'.tsserver.setup{ on_attach=require'completion'.on_attach }
 
 " ------------------------------------------------------------------------
+" LSP EXTENSIONS
+" ------------------------------------------------------------------------
+
+augroup inlay_hints
+    autocmd!
+    autocmd BufEnter,BufWinEnter,TabEnter * :lua require'lsp_extensions'.inlay_hints{}
+augroup END
+
+" ------------------------------------------------------------------------
 " NETRW
 " ------------------------------------------------------------------------
 
