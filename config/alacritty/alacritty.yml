@@ -1,36 +1,52 @@
 # See: https://github.com/alacritty/alacritty/blob/master/alacritty.yml
 # See: https://github.com/alacritty/alacritty/wiki/Color-schemes
 
-# Colors (Gruvbox dark)
-colors:
-  # Default colors
-  primary:
-    background: "#1d2021" # hard
-    # background: "#282828" # medium
-    # background = '#32302f' # soft
-    foreground: "#ebdbb2"
+schemes:
+  gruvbox: &gruvbox
+    primary:
+      background: "#1d2021" # hard
+      # background: "#282828" # medium
+      # background = '#32302f' # soft
+      foreground: "#ebdbb2"
+    normal:
+      black: "#282828"
+      red: "#cc241d"
+      green: "#98971a"
+      yellow: "#d79921"
+      blue: "#458588"
+      magenta: "#b16286"
+      cyan: "#689d6a"
+      white: "#a89984"
+    bright:
+      black: "#928374"
+      red: "#fb4934"
+      green: "#b8bb26"
+      yellow: "#fabd2f"
+      blue: "#83a598"
+      magenta: "#d3869b"
+      cyan: "#8ec07c"
+      white: "#ebdbb2"
+  onedark: &onedark
+    primary:
+      background: '#282c34'
+      foreground: '#abb2bf'
+    # cursor:
+    #   text:       CellBackground
+    #   cursor:     '#528bff' # syntax-cursor-color
+    selection:
+      text:       CellForeground
+      background: '#3e4451' # syntax-selection-color
+    normal:
+      black:      '#5c6370' # mono-3
+      red:        '#e06c75' # red 1
+      green:      '#98c379'
+      yellow:     '#e5c07b' # orange 2
+      blue:       '#61afef'
+      magenta:    '#c678dd'
+      cyan:       '#56b6c2'
+      white:      '#828997' # mono-2
 
-  # Normal colors
-  normal:
-    black: "#282828"
-    red: "#cc241d"
-    green: "#98971a"
-    yellow: "#d79921"
-    blue: "#458588"
-    magenta: "#b16286"
-    cyan: "#689d6a"
-    white: "#a89984"
-
-  # Bright colors
-  bright:
-    black: "#928374"
-    red: "#fb4934"
-    green: "#b8bb26"
-    yellow: "#fabd2f"
-    blue: "#83a598"
-    magenta: "#d3869b"
-    cyan: "#8ec07c"
-    white: "#ebdbb2"
+colors: *onedark
 
 cursor:
   cursor: CellForeground
