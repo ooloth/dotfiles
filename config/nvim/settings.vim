@@ -60,7 +60,9 @@ set softtabstop=2
 set tabstop=2
 
 "Line wrapping
+set wrap
 set linebreak     " keep words intact when wrapping
+set breakindent   " wrap with same indentation
 
 " Remove trailing whitespace on save
 autocmd BufWritePre * :%s/\s\+$//e
