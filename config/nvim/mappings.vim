@@ -6,21 +6,60 @@ let mapleader = " "
 " NORMAL + VISUAL MODE
 " ------------------------------------------------------------------------
 
-"Disable arrow key navigation
-" noremap <Up> <nop>
-" noremap <Right> <nop>
-" noremap <Down> <nop>
-" noremap <Left> <nop>
+" -----------------------
+" Workman keyboard layout
+" -----------------------
 
-" Find a character in the visible part of the window
-map f <Plug>(easymotion-s)
+" h <-> y
+noremap y h
+noremap Y H
+noremap h y
+noremap H y$ " Make Y behave like D and C by yanking remainder of line only
+onoremap h y
 
-" Jump to one of the visible words
-map ff <Plug>(easymotion-bd-w)
+" j <-> n
+noremap n j
+noremap N J
+noremap j n
+noremap J N
+noremap gn gj
+noremap gj gn
+
+" k <-> e
+noremap e k
+noremap E <nop>
+noremap k e
+noremap K E
+noremap ge gk
+noremap gk ge
+
+" l <-> o
+noremap o l
+noremap O L
+noremap l o
+noremap L O
 
 " Easily exit help windows with Esc or q
 autocmd Filetype help nmap <buffer> <Esc> :q<CR>
 autocmd Filetype help nmap <buffer> q :q<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    exec ":lua vim.lsp.buf.hover()"
+  endif
+endfunction
+
+" Get details on hover
+noremap ga :Telescope lsp_code_actions<CR>
+noremap gh :call <SID>show_documentation()<CR>
+noremap gs :lua vim.lsp.buf.signature_help()<CR>
+
+" Go to related code
+noremap gd :lua vim.lsp.buf.definition()<CR>
+noremap gi :lua vim.lsp.buf.implementation()<CR>
+noremap gm :Telescope marks<CR>
 
 " ------------------------------------------------------------------------
 " NORMAL MODE ONLY
@@ -30,42 +69,13 @@ autocmd Filetype help nmap <buffer> q :q<CR>
 nnoremap <TAB>   :bnext<CR>
 nnoremap <S-TAB> :bprevious<CR>
 
-" Make Y behave like D and C by yanking remainder of line only
-nnoremap Y y$
-
 " ------------------------------------------------------------------------
 " INSERT MODE ONLY
 " ------------------------------------------------------------------------
 
-" Turn off arrow keys
-" inoremap <Up> <nop>
-" inoremap <Right> <nop>
-" inoremap <Down> <nop>
-" inoremap <Left> <nop>
-
-" ------------------------------------------------------------------------
-" TERMINAL MODE
-" ------------------------------------------------------------------------
-
-" Return to normal mode
-tnoremap <Esc> <C-\><C-n>
-
-" ------------------------------------------------------------------------
-" CONQUER OF COMPLETION
-" ------------------------------------------------------------------------
-
-" Source: https://github.com/neoclide/coc.nvim#example-vim-configuration
-
-" Use tab for trigger completion with characters ahead and navigate.
-inoremap <silent><expr> <TAB>
-  \ pumvisible() ? "\<C-n>" :
-  \ <SID>check_back_space() ? "\<TAB>" :
-  \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
 " Better nav for omnicomplete
-inoremap <expr> <c-j> ("\<C-n>")
-inoremap <expr> <c-k> ("\<C-p>")
+inoremap <expr> <c-n> ("\<C-n>")
+inoremap <expr> <c-e> ("\<C-p>")
 
 " Accept suggestion with Enter
 if exists('*complete_info')
@@ -74,22 +84,12 @@ else
   inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 endif
 
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+" ------------------------------------------------------------------------
+" TERMINAL MODE
+" ------------------------------------------------------------------------
 
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+" Return to normal mode
+tnoremap <Esc> <C-\><C-n>
 
 " ------------------------------------------------------------------------
 " WHICH KEY (leader key mappings)
