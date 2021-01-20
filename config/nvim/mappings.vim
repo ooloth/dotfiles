@@ -102,76 +102,77 @@ nnoremap <Leader>] :vertical resize +5<CR>
 " Initialize key map
 let g:which_key_map =  {}
 
-let g:which_key_map[';'] = [':CocList commands'               , 'command list']
-let g:which_key_map['='] = ['<C-w>='                          , 'equal width windows']
-let g:which_key_map['a'] = ['<Plug>(coc-codeaction)'          , 'actions list']
-let g:which_key_map['b'] = [':CocCommand fzf-preview.Buffers' , 'buffer search']
+let g:which_key_map['='] = ['<C-w>='                                       , 'equal width windows']
+let g:which_key_map['b'] = [':Telescope buffers'                           , 'buffer search']
+let g:which_key_map['c'] = [':Telescope command_history'                   , 'command history' ]
+let g:which_key_map['d'] = [':Bdelete menu'                                , 'delete buffers']
+let g:which_key_map['e'] = [':exec "lua vim.lsp.diagnostic.set_loclist()"' , 'error list']
 
-let @c = '"ayiwoconsole.log(`<C-R>a:`, <C-R>a)'
-let g:which_key_map['c'] = ['@c' , 'console log' ]
+let g:which_key_map['f'] = {
+  \ 'name' : '+find',
+  \ 'f' : [':Telescope find_files', 'files'],
+  \ 'g' : [':Telescope git_files', 'git files'],
+  \ 'p' : [':Telescope live_grep', 'phrase'],
+  \ 'r' : [':Telescope lsp_references', 'references'],
+  \ 'R' : [':Telescope registers', 'registers'],
+  \ 's' : [':Telescope lsp_document_symbols', 'symbols'],
+  \ }
 
-let g:which_key_map['d'] = [':Bdelete menu'                          , 'delete buffers']
-let g:which_key_map['e'] = [':CocCommand fzf-preview.CocDiagnostics' , 'error list']
-let g:which_key_map['f'] = [':CocCommand fzf-preview.ProjectFiles'   , 'file search']
+nnoremap <leader>vrn :lua vim.lsp.buf.rename()<CR>
+nnoremap <leader>vsd :lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
 
-" Git
 let g:which_key_map['g'] = {
   \ 'name' : '+git' ,
-  \ 'a' : [':CocCommand fzf-preview.GitActions'  , 'actions'],
-  \ 'A' : [':Git add .'                          , 'add all'],
-  \ 'b' : [':CocCommand fzf-preview.GitBranches' , 'branches'],
-  \ 'B' : [':Git blame'                          , 'blame'],
-  \ 'c' : [':Git commit'                         , 'commit'],
-  \ 'd' : [':vert Gdiff'                         , 'diff'],
-  \ 'g' : [':GGrep'                              , 'git grep'],
-  \ 'h' : [':CocCommand fzf-preview.GitStashes'  , 'stashes'],
-  \ 'l' : [':CocCommand fzf-preview.GitLogs'     , 'log'],
-  \ 'm' : [':Git move'                           , 'move'],
-  \ 'p' : [':Git push --no-verify'               , 'push (no verify)'],
-  \ 'P' : [':Git pull --ff'                      , 'pull (ff when possible)'],
-  \ 'r' : [':GRemove'                            , 'remove'],
-  \ 's' : [':vert Git'                           , 'status in split'],
-  \ 'S' : [':tab Git'                            , 'status in tab'],
+  \ 'A' : [':Git add .'              , 'add all'],
+  \ 'b' : [':Telescope git_branches' , 'branches (local + remote)'],
+  \ 'B' : [':Git blame'              , 'blame'],
+  \ 'c' : [':Telescope git_bcommits' , 'commits (buffer)'],
+  \ 'C' : [':Telescope git_commits'  , 'commits (repo)'],
+  \ 'd' : [':vert Gdiff'             , 'diff'],
+  \ 'g' : [':GGrep'                  , 'git grep'],
+  \ 'm' : [':Git move'               , 'move'],
+  \ 'p' : [':Git push --no-verify'   , 'push (no verify)'],
+  \ 'P' : [':Git pull --ff'          , 'pull (ff when possible)'],
+  \ 'r' : [':GRemove'                , 'remove'],
+  \ 's' : [':vert Git'               , 'status (in split)'],
+  \ 'S' : [':tab Git'                , 'status (in tab)'],
   \ }
 
 let g:which_key_map['h'] = [':let @/ = ""' , 'highlights off']
 
 " let g:which_key_map['i'] = [ '' , '' ]
 " let g:which_key_map['j'] = [ '' , '' ]
-" let g:which_key_map['k'] = [ '' , '' ]
 
-let g:which_key_map['l'] = [ '<Plug>(easymotion-bd-jk)' , 'line jump' ]
+let g:which_key_map['k'] = [':Telescope keymaps'                                   , 'keymaps' ]
+let g:which_key_map['l'] = [":normal \"ahiwlconsole.log('\<C-R>a:', \<C-R>a)\<CR>" , 'log to console']
 
-" let g:which_key_map['m'] = [ '' , '' ]
+" let g:which_key_map['m'] = [ '', '' ]
+" let g:which_key_map['n'] = ['', '']
 
-let g:which_key_map['n'] = ['<Plug>(coc-references)' , 'references']
-let g:which_key_map['o'] = [':CocCommand explorer'   , 'open file tree']
-let g:which_key_map['p'] = [':CocList snippets'      , 'snippets']
-let g:which_key_map['q'] = [':q'                     , 'quit window']
+let g:which_key_map['o'] = [':Dirvish', 'open file tree']
 
-let @r = ':CocCommand fzf-preview.ProjectGrep '
-let g:which_key_map['r'] = ['@r' , 'ripgrep word']
+" let g:which_key_map['p'] = ['', 'snippets']
 
-let @s = ':CocSearch '
-let g:which_key_map['s'] = ['@s' , 'search word']
+let g:which_key_map['q'] = [':q'                              , 'quit window']
+let g:which_key_map['r'] = [':source ~/.config/nvim/init.vim' , 'reload neovim']
 
 " Vim Test
-let g:which_key_map['t'] = {
-  \ 'name' : '+test' ,
-  \ 'f' : [':TestFile'    , "file's tests (or last run file's tests)"],
-  \ 'l' : [':TestLast'    , 'last test'],
-  \ 'n' : [':TestNearest' , 'nearest test to cursor'],
-  \ 's' : [':TestSuite'   , 'suite of tests'],
-  \ 'v' : [':TestVisit'   , 'visit file with last run tests'],
-  \}
+" let g:which_key_map['t'] = {
+"   \ 'name' : '+test' ,
+"   \ 'f' : [':TestFile'    , 'file's tests (or last run file's tests)'],
+"   \ 'l' : [':TestLast'    , 'last test'],
+"   \ 'n' : [':TestNearest' , 'nearest test to cursor'],
+"   \ 's' : [':TestSuite'   , 'suite of tests'],
+"   \ 'v' : [':TestVisit'   , 'visit file with last run tests'],
+"   \}
 
-let g:which_key_map['u'] = [':UndotreeShow'              , 'undo list']
-let g:which_key_map['v'] = ['<C-w>v'                     , 'vertical split']
-let g:which_key_map['w'] = [':w'                         , 'write buffer']
-let g:which_key_map['x'] = [':SClose'                    , 'end session']
-let g:which_key_map['y'] = [ ':CocList -A --normal yank' , 'yank list' ]
+let g:which_key_map['u'] = [':UndotreeShow'                         , 'undo list']
+let g:which_key_map['v'] = ['<C-w>v'                                , 'vertical split']
+let g:which_key_map['w'] = [':write | edit | TSBufEnable highlight' , 'write buffer']
+let g:which_key_map['x'] = [':SClose'                               , 'exit startify session']
 
-" let g:which_key_map['z'] = [ '' , '' ]
+" let g:which_key_map['y'] = ['', 'yank list']
+" let g:which_key_map['z'] = ['', '']
 
 " Register which key map
 call which_key#register('<Space>', 'g:which_key_map')
