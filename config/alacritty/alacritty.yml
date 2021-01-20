@@ -62,8 +62,8 @@ font:
     family: "UbuntuMono Nerd Font"
   offset:
     x: 0
-    y: 10
-  size: 17
+    y: 20
+  size: 16
   use_thin_strokes: true
 
 key_bindings:
