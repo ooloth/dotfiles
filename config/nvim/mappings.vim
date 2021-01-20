@@ -156,6 +156,13 @@ let g:which_key_map['o'] = [':Dirvish', 'open file tree']
 let g:which_key_map['q'] = [':q'                              , 'quit window']
 let g:which_key_map['r'] = [':source ~/.config/nvim/init.vim' , 'reload neovim']
 
+let g:which_key_map['s'] = {
+  \ 'name' : '+session',
+  \ 'd' : [':SDelete' , 'delete'],
+  \ 's' : [':SSave'   , 'save'],
+  \ 'x' : [':SClose'  , 'exit'],
+  \}
+
 " Vim Test
 " let g:which_key_map['t'] = {
 "   \ 'name' : '+test' ,
@@ -169,7 +176,7 @@ let g:which_key_map['r'] = [':source ~/.config/nvim/init.vim' , 'reload neovim']
 let g:which_key_map['u'] = [':UndotreeShow'                         , 'undo list']
 let g:which_key_map['v'] = ['<C-w>v'                                , 'vertical split']
 let g:which_key_map['w'] = [':write | edit | TSBufEnable highlight' , 'write buffer']
-let g:which_key_map['x'] = [':SClose'                               , 'exit startify session']
+let g:which_key_map['x'] = [''                                      , '']
 
 " let g:which_key_map['y'] = ['', 'yank list']
 " let g:which_key_map['z'] = ['', '']
