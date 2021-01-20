@@ -20,34 +20,27 @@ set undolevels=200         " make more changes undoable
 " UX
 " ------------------------------------------------------------------------
 
-set confirm        " instead of failing, ask me what to do
-set noerrorbells   " shhhhh
-set updatetime=300 " reduce lag (default is 4000)
-set timeoutlen=500 " respond faster to keypresses (default is 1000)
+set confirm                                " instead of failing, ask me what to do
+set noerrorbells                           " shhhhh
+set updatetime=50                          " reduce lag (default is 4000)
+set timeoutlen=500                         " respond faster to keypresses (default is 1000)
 set ttimeoutlen=1
-set lazyredraw     " wait to redraw screen until macro is complete
+set lazyredraw                             " wait to redraw screen until macro is complete
+set signcolumn=yes
+set cmdheight=2
+set completeopt=menuone,noinsert,noselect
+set shortmess+=c                           " don't pass messages to |ins-completion-menu|
 
 " ------------------------------------------------------------------------
 " BUFFERS
 " ------------------------------------------------------------------------
 
-set hidden        " persist buffers in the background
+set hidden     " persist buffers in the background
 set splitright
 set splitbelow
 
 " Write buffer after leaving insert mode or changing text in normal mode
 autocmd InsertLeave,TextChanged * update
-
-" ------------------------------------------------------------------------
-" NAVIGATION
-" ------------------------------------------------------------------------
-
-" Line numbers
-set number
-set relativenumber
-
-" Disable mouse
-set mouse=
 
 " ------------------------------------------------------------------------
 " FORMATTING
