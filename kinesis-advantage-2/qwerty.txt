@@ -1,0 +1,82 @@
+* See: https://github.com/vlnn/kinesis-advantage-2/blob/master/official/active/qwerty.txt
+*
+* Instructions:
+*
+* 1. Update the remappings in this file (pressing the original X should output the new Y) and the settings in state.txt
+* 2. Get to power-user mode by pressing progm+shift+esc
+* 3. Mount the keyboard's v-drive by pressing progm+F1
+* 4. Open the mounted drive in Finder and navigate to /active
+* 5. Copy the configs from my qwerty.txt and state.txt files over the existing ones
+* 6. Press progm+F1 again to unmount the v-drive and apply the new configuration
+
+* Workman layout (top row)
+[w]>[d]
+[e]>[r]
+[r]>[w]
+[t]>[b]
+[y]>[j]
+[u]>[f]
+[i]>[u]
+[o]>[p]
+[p]>[;]
+
+* Workman layout (home row)
+[a]>[a][t&h200][lshift]
+[s]>[s][t&h200][lctrl]
+[d]>[h][t&h200][lalt]
+[f]>[t][t&h200][lwin]
+[h]>[y]
+[j]>[n][t&h200][rwin]
+[k]>[e][t&h200][ralt]
+[l]>[o][t&h200][rctrl]
+[;]>[i][t&h200][rshift]
+
+* Workman layout (bottom row)
+[c]>[m]
+[v]>[c]
+[b]>[v]
+[n]>[k]
+[m]>[l]
+
+* Arrows (right side)
+[up]>[down]
+[down]>[up]
+
+* Modifiers (left side)
+[caps]>[escape][t&h200][hyper]
+
+* Modifiers (left thumb cluster)
+
+* mapping i3 workplaces changes
+* {f1}>{-rwin}{1}{+rwin}
+* {f2}>{-rwin}{2}{+rwin}
+* {f3}>{-rwin}{3}{+rwin}
+* {f4}>{-rwin}{4}{+rwin}
+* {f5}>{-rwin}{5}{+rwin}
+* {f6}>{-rwin}{6}{+rwin}
+* {f7}>{-rwin}{7}{+rwin}
+* {f8}>{-rwin}{8}{+rwin}
+
+* moving app to i3 workplaces
+* {rshift}{f1}>{-rwin}{-rshift}{1}{+rshift}{+rwin}
+* {rshift}{f2}>{-rwin}{-rshift}{2}{+rshift}{+rwin}
+* {rshift}{f3}>{-rwin}{-rshift}{3}{+rshift}{+rwin}
+* {rshift}{f4}>{-rwin}{-rshift}{4}{+rshift}{+rwin}
+* {rshift}{f5}>{-rwin}{-rshift}{5}{+rshift}{+rwin}
+* {rshift}{f6}>{-rwin}{-rshift}{6}{+rshift}{+rwin}
+* {rshift}{f7}>{-rwin}{-rshift}{7}{+rshift}{+rwin}
+* {rshift}{f8}>{-rwin}{-rshift}{8}{+rshift}{+rwin}
+
+* {} are more usual than []
+* {obrack}>{speed4}{-lshift}{obrack}{+lshift}
+* {lshift}{obrack}>{speed4}{obrack}
+* {rshift}{obrack}>{speed4}{obrack}
+* {cbrack}>{speed4}{-lshift}{cbrack}{+lshift}
+* {lshift}{cbrack}>{speed4}{cbrack}
+* {rshift}{cbrack}>{speed4}{cbrack}
+
+* make copy-pasting a quick artistic instinct
+* {end}>{-lctrl}{c}{+lctrl}
+* {home}>{-lctrl}{v}{+lctrl}
+* {lshift}{end}>{-lctrl}{x}{+lctrl}
+
