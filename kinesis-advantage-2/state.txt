@@ -1,5 +1,3 @@
-* See: https://github.com/vlnn/kinesis-advantage-2/blob/master/official/active/state.txt
-
 startup_file=qwerty.txt
 key_click_tone=ON
 toggle_tone=ON

@@ -1,14 +1,3 @@
-* See: https://github.com/vlnn/kinesis-advantage-2/blob/master/official/active/qwerty.txt
-*
-* Instructions:
-*
-* 1. Update the remappings in this file (pressing the original X should output the new Y) and the settings in state.txt
-* 2. Get to power-user mode by pressing progm+shift+esc
-* 3. Mount the keyboard's v-drive by pressing progm+F1
-* 4. Open the mounted drive in Finder and navigate to /active
-* 5. Copy the configs from my qwerty.txt and state.txt files over the existing ones
-* 6. Press progm+F1 again to unmount the v-drive and apply the new configuration
-
 * Workman layout (top row)
 [w]>[d]
 [e]>[r]
