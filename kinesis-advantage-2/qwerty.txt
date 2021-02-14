@@ -10,15 +10,15 @@
 [p]>[;]
 
 * Workman layout (home row)
-[a]>[a][t&h200][lshift]
-[s]>[s][t&h200][lctrl]
-[d]>[h][t&h200][lalt]
-[f]>[t][t&h200][lwin]
+[a]>[a][t&h150][lshift]
+[s]>[s][t&h150][lctrl]
+[d]>[h][t&h150][lalt]
+[f]>[t][t&h150][lwin]
 [h]>[y]
-[j]>[n][t&h200][rwin]
-[k]>[e][t&h200][ralt]
-[l]>[o][t&h200][rctrl]
-[;]>[i][t&h200][rshift]
+[j]>[n][t&h150][rwin]
+[k]>[e][t&h150][ralt]
+[l]>[o][t&h150][rctrl]
+[;]>[i][t&h150][rshift]
 
 * Workman layout (bottom row)
 [c]>[m]
@@ -32,7 +32,7 @@
 [down]>[up]
 
 * Modifiers (left side)
-[caps]>[escape][t&h200][hyper]
+[caps]>[escape][t&h150][hyper]
 
 * Modifiers (left thumb cluster)
 
