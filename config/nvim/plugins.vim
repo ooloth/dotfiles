@@ -19,7 +19,8 @@ Plug 'tjdevries/lsp_extensions.nvim'
 
 " Syntax highlighting
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'joshdick/onedark.vim'
+" Plug 'joshdick/onedark.vim'
+Plug 'drewtempelmeyer/palenight.vim'
 
 " Linting
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }

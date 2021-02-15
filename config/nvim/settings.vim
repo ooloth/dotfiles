@@ -101,8 +101,13 @@ set re=0            " https://github.com/HerringtonDarkholme/yats.vim#config
 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
-let g:onedark_terminal_italics=1
-colorscheme onedark
+" let g:onedark_terminal_italics=1
+" colorscheme onedark
+
+colorscheme palenight
+
+" Highlight MDX like MD
+autocmd BufNewFile,BufRead *.mdx set filetype=markdown.mdx
 
 " ------------------------------------------------------------------------
 " UX
