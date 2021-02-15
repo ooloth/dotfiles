@@ -119,6 +119,9 @@ set updatetime=50                          " reduce lag (default is 4000)
 set timeoutlen=500                         " respond faster to keypresses (default is 1000)
 set ttimeoutlen=1
 
+set number
+set relativenumber
+
 augroup highlight_yank
     autocmd!
     autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({timeout = 700})
