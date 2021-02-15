@@ -39,7 +39,7 @@ set vimhelp
 set norunexec
 
 " Selected color scheme
-colorscheme gruvbox
+colorscheme palenight
 
 " Format for displaying time in file list. For example:
 " See man date or man strftime for details.

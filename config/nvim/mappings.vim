@@ -149,7 +149,7 @@ let g:which_key_map['l'] = [":normal \"ahiwlconsole.log('\<C-R>a:', \<C-R>a)\<CR
 " let g:which_key_map['m'] = ['', '' ]
 " let g:which_key_map['n'] = ['', '']
 
-let g:which_key_map['o'] = [':Dirvish', 'open file tree']
+let g:which_key_map['o'] = [':Vifm', 'open file tree']
 
 " let g:which_key_map['p'] = ['', 'snippets']
 

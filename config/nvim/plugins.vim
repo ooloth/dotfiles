@@ -19,7 +19,6 @@ Plug 'tjdevries/lsp_extensions.nvim'
 
 " Syntax highlighting
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-" Plug 'joshdick/onedark.vim'
 Plug 'drewtempelmeyer/palenight.vim'
 
 " Linting
@@ -35,7 +34,7 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'mbbill/undotree'
 
 " File tree
-Plug 'justinmk/vim-dirvish'
+Plug 'vifm/vifm.vim'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -248,6 +247,12 @@ require'nvim-treesitter.configs'.setup {
 EOF
 
 " ------------------------------------------------------------------------
+" VIFM VIM
+" ------------------------------------------------------------------------
+
+let g:vifm_replace_netrw=1
+
+" ------------------------------------------------------------------------
 " VIM CLOSETAG
 " ------------------------------------------------------------------------
 
@@ -279,27 +284,10 @@ let g:closetag_shortcut = '>'
 let g:closetag_close_shortcut = '<leader>>'
 
 " ------------------------------------------------------------------------
-" VIM DIRVISH
+" VIM EMMET
 " ------------------------------------------------------------------------
 
-let g:dirvish_mode = ':sort ,^.*[\/],'
-
-augroup dirvish_config
-  autocmd!
-
-  " Map `t` to open in new tab.
-  autocmd FileType dirvish
-    \  nnoremap <silent><buffer> t :call dirvish#open('tabedit', 0)<CR>
-    \ |xnoremap <silent><buffer> t :call dirvish#open('tabedit', 0)<CR>
-
-  " Map `gr` to reload.
-  autocmd FileType dirvish nnoremap <silent><buffer>
-    \ gr :<C-U>Dirvish %<CR>
-
-  " Map `gh` to hide dot-prefixed files.  Press `R` to "toggle" (reload).
-  autocmd FileType dirvish nnoremap <silent><buffer>
-    \ gh :silent keeppatterns g@\v/\.[^\/]+/?$@d _<cr>:setl cole=3<cr>
-augroup END
+let g:user_emmet_leader_key='<C-x>'
 
 " ------------------------------------------------------------------------
 " VIM FUGITIVE
