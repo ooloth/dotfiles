@@ -39,6 +39,7 @@
 [end]>[null]
 
 * Symbols (left bottom)
+[intl-\]>[\]
 [left]>[obrack]
 [right]>[cbrack]
 
