@@ -49,11 +49,12 @@ Plug 'mhinz/vim-startify'
 Plug 'vim-airline/vim-airline'
 
 " Convenience
-Plug 'alvan/vim-closetag'
+Plug 'mattn/emmet-vim'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'               " extends . functionality to plugins like vim-surround
 Plug 'norcalli/nvim-colorizer.lua'
+" Plug 'alvan/vim-closetag'
 " Plug 'tpope/vim-unimpaired'           " pairs of '[' and ']' mappings
 " Plug 'christoomey/vim-tmux-navigator' " navigate seamlessly between vim + tmux splits
 " Plug 'christoomey/vim-tmux-runner'
