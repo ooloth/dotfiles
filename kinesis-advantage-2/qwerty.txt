@@ -27,14 +27,35 @@
 [n]>[k]
 [m]>[l]
 
-* Arrows (right side)
-[up]>[down]
-[down]>[up]
-
-* Modifiers (left side)
+* Modifiers (left column)
+[=]>[hyphen]
 [caps]>[escape][t&h150][hyper]
+[lshift]>[null]
 
 * Modifiers (left thumb cluster)
+[lctrl]>[null]
+[lalt]>[null]
+[home]>[null]
+[end]>[null]
+
+* Symbols (left bottom)
+[left]>[obrack]
+[right]>[cbrack]
+
+* Modifiers (right thumb cluster)
+[rctrl]>[null]
+[rwin]>[null]
+[pup]>[null]
+[pdown]>[null]
+
+* Arrows (right bottom)
+[up]>[left]
+[obrack]>[up]
+[cbrack]>[right]
+
+* Modifiers (right column)
+[hyphen]>[=]
+[rshift]>[null]
 
 * mapping i3 workplaces changes
 * {f1}>{-rwin}{1}{+rwin}
