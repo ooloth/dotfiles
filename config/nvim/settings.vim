@@ -101,7 +101,11 @@ set re=0            " https://github.com/HerringtonDarkholme/yats.vim#config
 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
-colorscheme palenight
+" let g:gruvbox_contrast_dark='hard'
+let g:gruvbox_italic=1
+colorscheme gruvbox
+
+" colorscheme palenight
 
 " Highlight MDX like MD
 autocmd BufNewFile,BufRead *.mdx set filetype=markdown.mdx
