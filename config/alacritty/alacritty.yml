@@ -81,6 +81,26 @@ schemes:
       cyan: "#8ec07c"
       white: "#ebdbb2"
 
+  # See: https://github.com/material-theme/vsc-material-theme/blob/d8e1accd08a55948174410a470e1f1fc9889d6f6/scripts/generator/settings/specific/ocean-hc.ts
+  material_ocean: &material_ocean
+    primary:
+      background: "#0F111A"
+      foreground: "#A6ACCD"
+    normal:
+      white: "#ffffff"
+      black: "#000000"
+      red: "#f07178"
+      orange: "#F78C6C"
+      yellow: "#FFCB6B"
+      green: "#C3E88D"
+      cyan: "#89DDFF"
+      blue: "#82AAFF"
+      paleblue: "#B2CCD6"
+      purple: "#C792EA"
+      brown: "#916b53"
+      pink: "#ff9cac"
+      violet: "#bb80b3"
+
   nord: &nord
     primary:
       background: "#2e3440"
@@ -174,7 +194,7 @@ schemes:
       cyan: "#a3f7ff"
       white: "#ffffff"
 
-colors: *gruvbox
+colors: *material_ocean
 
 cursor:
   cursor: CellForeground
