@@ -1,5 +1,3 @@
-# Kinesis Advantage2 Settings, Remaps and Macros
-
 ## Prerequisites
 
 1. Connect the keyboard to your computer
@@ -16,8 +14,8 @@ For safety, manually record all your remaps, macros and settings in version-cont
 - Use `qwerty.txt` to record your remaps and macros
 - The remaps and macros are written with the original QWERTY input key on left + the new output key(s) on the right
 - Use `[]` for remaps
-- Use `{}` for macros
-- Use `[t&h150]` to create tap-and-hold remap variants (adjust `150` to your preferred delay in `ms`)
+- `{}` for macros
+- Use `[t&h120]` to create tap-and-hold remap variants (adjust `120` to your preferred delay in `ms`)
 - Use `[hyper]` to remap to a combo of shift+ctrl+alt+cmd
 - Use `[meh]` to remap to a combo of ctrl+alt+cmd
 
@@ -33,4 +31,4 @@ For safety, manually record all your remaps, macros and settings in version-cont
 ## References
 
 - 📖 [Kinesis Advantage2 User's Manual](https://kinesis-ergo.com/wp-content/uploads/Adv2-Users-Manual-fw1.0.521.us-9-16-20.pdf) • See Section 7 for details about modifying files on the v-Drive and Appendix 13.1 and 13.2 for a list of tokens that can be used to author remaps and macros.
-- 🧑‍💻 [vlnn/kinesis-advantage-2: Sane layouts for the THE KEYBOARD](https://github.com/vlnn/kinesis-advantage-2) • The repo that taught ne how to do this. 🙌
+- 🧑‍💻 [vlnn/kinesis-advantage-2: Sane layouts for the THE KEYBOARD](https://github.com/vlnn/kinesis-advantage-2) • The repo that taught me how to do this. 🙌

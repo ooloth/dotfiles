@@ -1,36 +1,34 @@
-* Workman layout (top row)
-[w]>[d]
-[e]>[r]
-[r]>[w]
+* Colemak Mod-DH layout (top row)
+[e]>[f]
+[r]>[p]
 [t]>[b]
 [y]>[j]
-[u]>[f]
+[u]>[l]
 [i]>[u]
-[o]>[p]
+[o]>[y]
 [p]>[;]
 
-* Workman layout (home row)
-[a]>[a][t&h150][lshift]
-[s]>[s][t&h150][lctrl]
-[d]>[h][t&h150][lalt]
-[f]>[t][t&h150][lwin]
-[h]>[y]
-[j]>[n][t&h150][rwin]
-[k]>[e][t&h150][ralt]
-[l]>[o][t&h150][rctrl]
-[;]>[i][t&h150][rshift]
+* Colemak Mod-DH layout (home row)
+[a]>[a][t&h120][lshift]
+[s]>[r][t&h120][lctrl]
+[d]>[s][t&h120][lalt]
+[f]>[t][t&h120][lwin]
+[h]>[m]
+[j]>[n][t&h120][rwin]
+[k]>[e][t&h120][ralt]
+[l]>[i][t&h120][rctrl]
+[;]>[o][t&h120][rshift]
 
-* Workman layout (bottom row)
-[c]>[m]
-[v]>[c]
+* Colemak Mod-DH layout (bottom row)
+[v]>[d]
 [b]>[v]
 [n]>[k]
-[m]>[l]
+[m]>[h]
 
 * Modifiers (left column)
 [=]>[hyphen]
-[caps]>[escape][t&h150][hyper]
-[lshift]>[null]
+[caps]>[escape]
+[lshift]>[hyper]
 
 * Modifiers (left thumb cluster)
 [lctrl]>[null]
@@ -38,10 +36,8 @@
 [home]>[null]
 [end]>[null]
 
-* Symbols (left bottom)
+* Symbols & Arrows (left bottom)
 [intl-\]>[\]
-[left]>[obrack]
-[right]>[cbrack]
 
 * Modifiers (right thumb cluster)
 [rctrl]>[null]
@@ -50,13 +46,12 @@
 [pdown]>[null]
 
 * Arrows (right bottom)
-[up]>[left]
-[obrack]>[up]
-[cbrack]>[right]
+[up]>[down]
+[down]>[up]
 
 * Modifiers (right column)
 [hyphen]>[=]
-[rshift]>[null]
+[rshift]>[hyper]
 
 * mapping i3 workplaces changes
 * {f1}>{-rwin}{1}{+rwin}
