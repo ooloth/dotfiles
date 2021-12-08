@@ -14,3 +14,5 @@
 [user]
   name = Michael Uloth
   email = hello@michaeluloth.com
+[init]
+	defaultBranch = main
