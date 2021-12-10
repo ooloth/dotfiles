@@ -24,6 +24,8 @@ sudo softwareupdate --install --all --restart
 
 4. Repeat (3) until everything is up to date
 
+5. Open the App Store and sign in
+
 ## Installation
 
 To set up your Mac, run the following command:
