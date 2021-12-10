@@ -61,6 +61,7 @@ cask "visual-studio-code"
 cask "zoom"
 
 # Browsers
+cask "brave-browser"
 cask "firefox"
 cask "google-chrome"
 
