@@ -84,7 +84,7 @@ confirm_command_line_tools() {
   info "Confirming the Xcode CLI tools are installed."
 
   if [ ! -d "$COMMAND_LINE_TOOLS" ]; then
-    error "Apple's command line developer tools must be installed before running this script.  To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
+    error "Apple's command line developer tools must be installed before running this script. To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
   fi
 
   success "\nNice! That's usually the hard part.\n"
