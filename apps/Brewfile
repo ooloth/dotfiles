@@ -19,6 +19,7 @@ brew "neovim"
 brew "fnm"
 brew "shellcheck"
 # brew "speedtest-cli"
+brew "starship"
 brew "svn"            # required for font cask installations
 # brew "tldr"
 brew "tmux"
@@ -31,16 +32,12 @@ brew "zsh-syntax-highlighting"
 cask "alfred"
 # cask "appcleaner"
 cask "backblaze"
-# cask "catch"
-# cask "cheatsheet"
-# cask "daisydisk"
+cask "cleanmymac"
 # cask "discord"
-# cask "drivedx"
+cask "drivedx"
 cask "gitkraken"
 # cask "handbrake"
-# cask "hyper"
 cask "ishowu-instant"
-# cask "iterm2"
 # cask "karabiner-elements"
 cask "keybase"
 cask "kitty"
@@ -48,7 +45,7 @@ cask "kitty"
 cask "microsoft-teams"
 cask "notion"
 cask "openvpn-connect"
-# cask "prepros"
+cask "prepros"
 cask "rectangle"
 cask "runjs"
 # cask "sizzy"
@@ -74,15 +71,14 @@ mas "1Password 7", id: 1333542190
 mas "Amphetamine", id: 937984704
 # mas "Bear", id: 1091189122
 # mas "Contrast", id: 1254981365
-# mas "Disk Care", id: 913724705
 # mas "iA Writer", id: 775737590
 # mas "Keynote", id: 409183694
-# mas "Microsoft Outlook", id: 985367838
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 # mas "PiPifier", id: 1160374471
 mas "Pixave", id: 924891282
 mas "Pixelmator Pro", id: 1289583905
+mas "Reeder 5.", id: 1529448980
 # mas "Save to Pocket", id: 1477385213
 mas "Slack", id: 803453959
 mas "Sip", id: 507257563
