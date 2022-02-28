@@ -459,28 +459,10 @@ configure_macos() {
   chflags nohidden ~/Library
 
   printf "\n"
-  info "Configuring Terminal...\n"
-
-  printf "only use UTF-8 in Terminal.app\n"
-  defaults write com.apple.terminal StringEncodings -array 4
-
-  printf "\n"
   info "Configuring keyboard...\n"
 
   printf "Disable press-and-hold for keys in favor of key repeat\n"
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
-
-  printf "Set a blazingly fast keyboard repeat rate\n"
-  defaults write NSGlobalDomain KeyRepeat -int 1
-
-  printf "Set a shorter Delay until key repeat\n"
-  defaults write NSGlobalDomain InitialKeyRepeat -int 15
-
-  printf "\n"
-  info "Configuring trackpad...\n"
-
-  printf "Enable tap to click (Trackpad)\n"
-  defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
   printf "\n"
   info "Configuring Safari...\n"
