@@ -344,43 +344,32 @@ set_up_terminfo() {
   success "\nDone configuring terminfo settings."
 }
 
-set_up_oh_my_zsh() {
-  title "Setting up Oh My Zsh..."
+# set_up_oh_my_zsh() {
+#   title "Setting up Oh My Zsh..."
 
-  if [ -d "$OH_MY_ZSH" ]; then
-    rm -rf "$OH_MY_ZSH"
-  fi
+#   if [ -d "$OH_MY_ZSH" ]; then
+#     rm -rf "$OH_MY_ZSH"
+#   fi
 
-  git clone https://github.com/robbyrussell/oh-my-zsh.git "$OH_MY_ZSH"
-  printf "\n"
+#   git clone https://github.com/robbyrussell/oh-my-zsh.git "$OH_MY_ZSH"
+#   printf "\n"
 
-  if [ -d /usr/local/share/zsh ]; then
-    info "Setting permissions for /usr/local/share/zsh..."
-    sudo chmod -R 755 /usr/local/share/zsh
-  fi
+#   if [ -d /usr/local/share/zsh ]; then
+#     info "Setting permissions for /usr/local/share/zsh..."
+#     sudo chmod -R 755 /usr/local/share/zsh
+#   fi
 
-  if [ -d /usr/local/share/zsh/site-functions ]; then
-    info "Setting permissions for /usr/local/share/zsh/site-functions..."
-    sudo chmod -R 755 /usr/local/share/zsh/site-functions
-  fi
+#   if [ -d /usr/local/share/zsh/site-functions ]; then
+#     info "Setting permissions for /usr/local/share/zsh/site-functions..."
+#     sudo chmod -R 755 /usr/local/share/zsh/site-functions
+#   fi
 
-  success "\nDone setting up Oh My Zsh."
-}
-
-set_up_spaceship_prompt() {
-  title "Setting up spaceship prompt..."
-
-  # https://github.com/denysdovhan/spaceship-prompt#installing
-  git clone https://github.com/denysdovhan/spaceship-prompt.git "$OH_MY_ZSH/custom/themes/spaceship-prompt"
-  ln -s "$OH_MY_ZSH/custom/themes/spaceship-prompt/spaceship.zsh-theme" "$OH_MY_ZSH/custom/themes/spaceship.zsh-theme"
-
-  success "\nDone setting up spaceship prompt."
-}
+#   success "\nDone setting up Oh My Zsh."
+# }
 
 set_up_zsh() {
   set_up_terminfo
-  set_up_oh_my_zsh
-  set_up_spaceship_prompt
+  # set_up_oh_my_zsh
 
   title "Configuring zsh shell"
 
