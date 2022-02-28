@@ -8,11 +8,12 @@
 [github]
   user = ooloth
 
+[init]
+	defaultBranch = main
+  
 [merge]
   tool = vimdiff
 
 [user]
   name = Michael Uloth
   email = hello@michaeluloth.com
-[init]
-	defaultBranch = main
