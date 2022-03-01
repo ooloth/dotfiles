@@ -399,7 +399,7 @@ set_up_zsh() {
 set_up_node() {
   title "Installing node"
 
-  fnm install latest && fnm default latest && fnm use latest
+  fnm install 17 && fnm default 17 && fnm use 17
 
   success "\nDone installing node using fnm."
 }
