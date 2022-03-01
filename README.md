@@ -8,23 +8,25 @@ The settings here are based purely on my personal preferences and I'm doing this
 
 ## Prerequisites
 
-1. Open Terminal.app (you'll probably want to increase the font size)
+1. Connect to the internet
 
-2. Install Apple's command line tools:
+2. Open the App Store and sign in
+
+3. Open Terminal.app (you'll probably want to increase the font size)
+
+4. Install Apple's command line tools:
 
 ```sh
 xcode-select --install
 ```
 
-3. Update your Mac's software (your Mac will automatically restart if necessary):
+5. Update your Mac's software (your Mac will automatically restart if necessary):
 
 ```sh
 sudo softwareupdate --install --all --restart
 ```
 
-4. Repeat (3) until everything is up to date
-
-5. Open the App Store and sign in
+6. Repeat (5) until everything is up to date
 
 ## Installation
 
