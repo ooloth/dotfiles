@@ -7,7 +7,7 @@ tap "homebrew/cask-fonts"
 # packages
 # brew "bat"
 brew "exa"
-# brew "fzf"
+brew "fzf"
 brew "gh"
 # brew "git"
 # brew "lazygit"
