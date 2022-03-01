@@ -397,11 +397,13 @@ set_up_zsh() {
 }
 
 set_up_node() {
-  title "Installing node"
+  title "Installing node, npm and yarn"
 
   fnm install 17 && fnm default 17 && fnm use 17
 
-  success "\nDone installing node using fnm."
+  npm install --global yarn
+
+  success "\nDone installing node using fnm and yarn using npm."
 }
 
 set_up_neovim() {
