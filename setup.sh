@@ -306,13 +306,21 @@ set_up_git() {
   success "\nDone setting up your git credentials."
 }
 
+install_homebrew() {
+  # Run as a login shell (non-interactive) so that the script doesn't pause for user input
+  curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
+
+
+
+  success "\nDone installing Homebrew."
+}
+
 set_up_homebrew() {
   title "Setting up Homebrew"
 
   if test ! "$(command -v brew)"; then
-    info "Homebrew not installed. Installing."
-    # Run as a login shell (non-interactive) so that the script doesn't pause for user input
-    curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
+    info "Homebrew not installed. Installing now..."
+    install_homebrew
   fi
 
   # Install brew dependencies from Brewfile
