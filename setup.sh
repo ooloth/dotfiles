@@ -310,8 +310,6 @@ install_homebrew() {
   # Run as a login shell (non-interactive) so that the script doesn't pause for user input
   curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
 
-
-
   success "\nDone installing Homebrew."
 }
 
@@ -352,32 +350,8 @@ set_up_terminfo() {
   success "\nDone configuring terminfo settings."
 }
 
-# set_up_oh_my_zsh() {
-#   title "Setting up Oh My Zsh..."
-
-#   if [ -d "$OH_MY_ZSH" ]; then
-#     rm -rf "$OH_MY_ZSH"
-#   fi
-
-#   git clone https://github.com/robbyrussell/oh-my-zsh.git "$OH_MY_ZSH"
-#   printf "\n"
-
-#   if [ -d /usr/local/share/zsh ]; then
-#     info "Setting permissions for /usr/local/share/zsh..."
-#     sudo chmod -R 755 /usr/local/share/zsh
-#   fi
-
-#   if [ -d /usr/local/share/zsh/site-functions ]; then
-#     info "Setting permissions for /usr/local/share/zsh/site-functions..."
-#     sudo chmod -R 755 /usr/local/share/zsh/site-functions
-#   fi
-
-#   success "\nDone setting up Oh My Zsh."
-# }
-
 set_up_zsh() {
   set_up_terminfo
-  # set_up_oh_my_zsh
 
   title "Configuring zsh shell"
 
