@@ -22,7 +22,7 @@ alias lt4='lt --level=4'                                                   # fil
 alias cdh='cd $HOME'
 alias cdr='cd $HOME/Repos'
 alias cdd='cd $HOME/Repos/ooloth/dotfiles'
-alias cde='cd $HOME/Repos/ecobee/consumer-website'
+alias cde='cd $HOME/Repos/ecobee/beehive-api'
 alias cdm='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 # Up we go
