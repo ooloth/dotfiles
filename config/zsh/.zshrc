@@ -57,6 +57,12 @@ alias nvm='fnm'
 # Open both vifm panes in cwd
 alias vifm='vifm . .'
 
+##########
+# ecobee #
+##########
+
+eval "$(direnv hook zsh)"
+
 #######
 # fnm #
 #######
