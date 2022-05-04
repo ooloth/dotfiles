@@ -36,7 +36,7 @@ chpwd() ls
 
 # ecobee 
 alias y='yarn install'
-alias yd='y && yarn develop'
+alias yd='y && yarn start:dev'
 alias yb='y && yarn build'
 alias ys='yb && yarn serve'
 alias yc='yarn clean'
