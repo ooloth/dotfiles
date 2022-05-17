@@ -35,18 +35,6 @@ alias .....='cd ../../../..'
 # List directory contents after moving
 chpwd() ls
 
-# ecobee 
-alias y='yarn install'
-alias yd='y && yarn start:dev'
-alias yb='y && yarn build'
-alias ys='yb && yarn serve'
-alias yc='yarn clean'
-alias yt='yarn test:dev'
-alias ytu='yarn test:update'
-ytp() {
-   yt --testPathPattern=$1
-}
-
 # Replace vim with neovim
 alias vim='nvim'
 alias v='vim'
@@ -72,6 +60,17 @@ if [ -f '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/m
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
+
+alias y='yarn install'
+alias yd='y && yarn start:dev'
+alias yb='y && yarn build'
+alias ys='yb && yarn serve'
+alias yc='yarn clean'
+alias yt='yarn test:dev'
+alias ytu='yarn test:update'
+ytp() {
+   yt --testPathPattern=$1
+}
 
 #######
 # fnm #
