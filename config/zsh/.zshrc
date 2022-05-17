@@ -21,6 +21,7 @@ alias lt4='lt --level=4'                                                   # fil
 # Jump to common directories
 alias cdh='cd $HOME'
 alias cdr='cd $HOME/Repos'
+alias cdo='cd $HOME/Repos/ooloth'
 alias cdd='cd $HOME/Repos/ooloth/dotfiles'
 alias cde='cd $HOME/Repos/ecobee/beehive-api'
 alias cdm='cd $HOME/Repos/ooloth/michaeluloth.com'
