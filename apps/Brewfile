@@ -50,11 +50,9 @@ cask "rectangle"
 cask "runjs"
 # cask "sizzy"
 # cask "skype"
-# cask "transmit"
-# cask "transmission"
+cask "transmit"
 cask "visual-studio-code"
-# cask "vlc"
-# cask "zeplin"
+cask "vlc"
 cask "zoom"
 
 # Browsers
@@ -69,23 +67,20 @@ cask "font-ubuntu-mono-nerd-font"
 # macOS App Store
 mas "1Password 7", id: 1333542190
 mas "Amphetamine", id: 937984704
-# mas "Bear", id: 1091189122
+mas "Bear", id: 1091189122
 # mas "Contrast", id: 1254981365
 mas "Fantastical - Calendar", id: 975937182
-# mas "iA Writer", id: 775737590
-# mas "Keynote", id: 409183694
+mas "Keynote", id: 409183694
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 # mas "PiPifier", id: 1160374471
 mas "Pixave", id: 924891282
 mas "Pixelmator Pro", id: 1289583905
 mas "Reeder 5.", id: 1529448980
-# mas "Save to Pocket", id: 1477385213
 mas "Slack", id: 803453959
 mas "Sip", id: 507257563
 # mas "Smart Converter Pro", id: 450078312
 mas "Spark", id: 1176895641
-# mas "The Unarchiver", id: 425424353
 mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
