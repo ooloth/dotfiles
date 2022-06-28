@@ -6,14 +6,19 @@
   helper = osxkeychain
 
 [github]
-  user = ooloth
+	user = ooloth
 
 [init]
-	defaultBranch = main
+	defaultBranch = trunk
   
 [merge]
   tool = vimdiff
 
 [user]
-  name = Michael Uloth
-  email = hello@michaeluloth.com
+	name = Michael Uloth
+	email = hello@michaeluloth.com
+
+# Work-specific changes
+# See: https://stackoverflow.com/a/59184292
+[includeIf "gitdir:~/Repos/recursionpharma/"]
+    path = config.recursionpharma
