@@ -76,12 +76,15 @@ eval "$(fnm env --use-on-cd)"
 #######
 # ENV #
 #######
-# export PYTHONPATH=.
-# Add Homebrew's executable directory to the front of the PATH
+
+# Add Homebrew's executable directory to front of PATH
 export PATH=/usr/local/bin:$PATH
 
-# Add lvim location to the PATH
+# Add lvim location to PATH
 export PATH=$HOME/.local/bin:$PATH
+
+# Add cargo to PATH
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc'; fi
