@@ -9,7 +9,7 @@
 	user = ooloth
 
 [init]
-	defaultBranch = trunk
+	defaultBranch = main
   
 [merge]
   tool = vimdiff
@@ -18,7 +18,7 @@
 	name = Michael Uloth
 	email = hello@michaeluloth.com
 
-# Work-specific changes
-# See: https://stackoverflow.com/a/59184292
+# Context-specific configurations (see https://stackoverflow.com/a/59184292)
+
 [includeIf "gitdir:~/Repos/recursionpharma/"]
     path = config.recursionpharma
