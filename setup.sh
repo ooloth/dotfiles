@@ -373,7 +373,7 @@ set_up_zsh() {
 set_up_node() {
   title "Installing node, npm and yarn"
 
-  fnm install 17 && fnm default 17 && fnm use 17
+  fnm install 18 && fnm default 18 && fnm use 18
 
   npm install --global yarn
 
