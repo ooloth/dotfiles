@@ -20,7 +20,6 @@ brew "pyenv-virtualenv"
 # brew "ripgrep"
 brew "fnm"
 brew "shellcheck"
-# brew "speedtest-cli"
 brew "starship"
 brew "svn"            # required for font cask installations
 # brew "tldr"
