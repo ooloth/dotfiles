@@ -1,15 +1,16 @@
-# taps
+# Taps
 tap "homebrew/bundle"
 tap "homebrew/core"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 
-# packages
-# brew "bat"
+# Packages
+brew "bat"
 brew "exa"
 brew "fzf"
 brew "gh"
 # brew "git"
+brew "k9s"
 # brew "lazygit"
 brew "mas"
 brew "neovim"
@@ -29,20 +30,22 @@ brew "vifm"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
-# Applications
+# Apps
 cask "alfred"
-# cask "appcleaner"
+cask "appcleaner"
 cask "backblaze"
+cask "brave-browser"
 cask "cleanmymac"
 # cask "discord"
 cask "drivedx"
+cask "firefox"
 cask "gitkraken"
+cask "google-chrome"
 # cask "handbrake"
 cask "ishowu-instant"
 # cask "karabiner-elements"
 cask "keybase"
 cask "kitty"
-# cask "local"
 cask "microsoft-teams"
 cask "notion"
 cask "openvpn-connect"
@@ -50,16 +53,10 @@ cask "prepros"
 cask "rectangle"
 cask "runjs"
 # cask "sizzy"
-# cask "skype"
 cask "transmit"
 cask "visual-studio-code"
 cask "vlc"
 cask "zoom"
-
-# Browsers
-cask "brave-browser"
-cask "firefox"
-cask "google-chrome"
 
 # Fonts
 cask "font-ubuntu-mono"
