@@ -81,6 +81,13 @@ alias bu='brew upgrade && brew update && brew cleanup && brew doctor'
 # Add Homebrew's executable directory to front of PATH
 export PATH=/usr/local/bin:$PATH
 
+#########
+# kitty #
+#########
+
+# Alias kitty's ssh kitten
+alias s="kitty +kitten ssh"
+
 ############
 # LunarVim #
 ############
