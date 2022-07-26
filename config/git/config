@@ -14,6 +14,10 @@
 [merge]
   tool = vimdiff
 
+[push]
+  autoSetupRemote = true
+  default = simple
+
 [user]
 	name = Michael Uloth
 	email = hello@michaeluloth.com
