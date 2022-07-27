@@ -1,6 +1,5 @@
-
 ###########
-# ALIASES #
+# General #
 ###########
 
 # Make clear faster to type
@@ -174,7 +173,7 @@ eval "$(starship init zsh)"
 alias vifm='vifm . .'
 
 ###############
-# ZSH PLUGINS #
+# zsh plugins #
 ###############
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
