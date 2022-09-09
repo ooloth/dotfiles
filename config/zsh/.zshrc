@@ -28,14 +28,9 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-# List directory contents + activate python venv (if any) after moving
+# List directory contents after changing directories
 chpwd() {
    ls
-
-   # On work laptop only
-   if [ -d "$HOME/Repos/recursionpharma" ]; then
-     va
-   fi
 }
 
 ##########
@@ -58,12 +53,12 @@ ytp() {
 #######
 
 # Replace ls with exa
-alias ls='exa --all --group-directories-first'                             # top level dir + files
-alias ld='exa --all --git --group-directories-first --header --long'       # top level details
+alias ls='exa --all --group-directories-first'                                       # top level dir + files
+alias ld='exa --all --git --group-directories-first --header --long'                 # top level details
 alias lt='exa --all --git-ignore --group-directories-first -I .git --tree --level=1' # file tree (all levels)
-alias lt2='lt --level=2'                                                   # file tree (2 levels only)
-alias lt3='lt --level=3'                                                   # file tree (3 levels only)
-alias lt4='lt --level=4'                                                   # file tree (4 levels only)
+alias lt2='lt --level=2'                                                             # file tree (2 levels only)
+alias lt3='lt --level=3'                                                             # file tree (3 levels only)
+alias lt4='lt --level=4'                                                             # file tree (4 levels only)
 
 #######
 # fnm #
@@ -79,7 +74,13 @@ eval "$(fnm env --use-on-cd)"
 ############
 
 # Update homebrew
-alias bu='brew upgrade && brew update && brew cleanup && brew doctor'
+alias bu() {
+   brew upgrade && brew update && brew cleanup && brew doctor
+
+   if [ -d "$HOME/Repos/recursionpharma" ]; then
+     echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.
+   fi
+}
 
 # Add Homebrew's executable directory to front of PATH
 export PATH=/usr/local/bin:$PATH
@@ -123,7 +124,8 @@ if [ -d "$HOME/Repos/recursionpharma" ]; then
    alias cdps='cd $HOME/Repos/recursionpharma/phenoservice-api'
    alias cdpc='cd $HOME/Repos/recursionpharma/phenoservice-consumer'
 
-   va() {
+   # Activate python venv (if any) after changing directories
+   chpwd() {
       if [[ $PWD =~ "recursionpharma/dash-phenoapp-v2" ]]; then
          pyenv shell dash-phenoapp-v2
       elif [[ $PWD =~ "recursionpharma/eng-onboarding" ]]; then
