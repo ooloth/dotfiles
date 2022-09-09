@@ -1,3 +1,5 @@
+# Don't add work packages here! Treat them as one-off installs.
+
 # Taps
 tap "homebrew/bundle"
 tap "homebrew/core"
@@ -7,18 +9,15 @@ tap "homebrew/cask-fonts"
 # Packages
 brew "bat"
 brew "exa"
+brew "fnm"
 brew "fzf"
 brew "gh"
 # brew "git"
-brew "k9s"
 # brew "lazygit"
 brew "mas"
 brew "neovim"
-brew "pyenv"
-brew "pyenv-virtualenv"
 # brew "ranger"
 # brew "ripgrep"
-brew "fnm"
 brew "shellcheck"
 brew "starship"
 brew "svn"            # required for font cask installations
@@ -35,7 +34,6 @@ cask "appcleaner"
 cask "backblaze"
 cask "brave-browser"
 cask "cleanmymac"
-# cask "discord"
 cask "drivedx"
 cask "firefox"
 cask "gitkraken"
@@ -43,11 +41,8 @@ cask "google-chrome"
 # cask "handbrake"
 cask "ishowu-instant"
 # cask "karabiner-elements"
-cask "keybase"
 cask "kitty"
-cask "microsoft-teams"
 cask "notion"
-cask "openvpn-connect"
 cask "prepros"
 cask "rectangle"
 cask "runjs"
@@ -76,7 +71,6 @@ mas "Pages", id: 409201541
 mas "Pixave", id: 924891282
 mas "Pixelmator Pro", id: 1289583905
 mas "Reeder 5.", id: 1529448980
-mas "Slack", id: 803453959
 mas "Sip", id: 507257563
 # mas "Smart Converter Pro", id: 450078312
 mas "Spark", id: 1176895641
