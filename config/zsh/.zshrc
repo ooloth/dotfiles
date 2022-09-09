@@ -28,9 +28,11 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-# List directory contents after changing directories
+# List directory contents on start-up + after changing directories
+exa --all --group-directories-first
+
 chpwd() {
-   ls
+  exa --all --group-directories-first
 }
 
 ##########
@@ -139,6 +141,8 @@ if [ -d "$HOME/Repos/recursionpharma" ]; then
       else
          pyenv shell system
       fi
+
+      exa --all --group-directories-first
    }
 
    # Confluent-Kafka
