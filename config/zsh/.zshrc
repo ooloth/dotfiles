@@ -74,12 +74,12 @@ eval "$(fnm env --use-on-cd)"
 ############
 
 # Update homebrew
-alias bu() {
-   brew upgrade && brew update && brew cleanup && brew doctor
+bu() {
+  brew upgrade && brew update && brew cleanup && brew doctor
 
-   if [ -d "$HOME/Repos/recursionpharma" ]; then
-     echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
-   fi
+  if [ -d "$HOME/Repos/recursionpharma" ]; then
+    echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
+  fi
 }
 
 # Add Homebrew's executable directory to front of PATH
