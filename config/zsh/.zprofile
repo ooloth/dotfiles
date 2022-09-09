@@ -1,4 +1,6 @@
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Pyenv
-eval "$(pyenv init --path)"
+# On work laptop only
+if [ -d "$HOME/Repos/recursionpharma" ]; then
+  eval "$(pyenv init --path)"
+fi 
