@@ -28,9 +28,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-# List directory contents on start-up + after changing directories
-exa --all --group-directories-first
-
+# List directory contents after changing directories
 chpwd() {
   exa --all --group-directories-first
 }
