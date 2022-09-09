@@ -31,7 +31,11 @@ alias .....='cd ../../../..'
 # List directory contents + activate python venv (if any) after moving
 chpwd() {
    ls
-   va
+
+   # On work laptop only
+   if [ -d "$HOME/Repos/recursionpharma" ]; then
+     va
+   fi
 }
 
 ##########
