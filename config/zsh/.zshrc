@@ -78,7 +78,7 @@ alias bu() {
    brew upgrade && brew update && brew cleanup && brew doctor
 
    if [ -d "$HOME/Repos/recursionpharma" ]; then
-     echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.
+     echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
    fi
 }
 
