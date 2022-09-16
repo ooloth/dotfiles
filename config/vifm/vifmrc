@@ -1,3 +1,12 @@
+""""""""""""""""
+" My additions "
+""""""""""""""""
+
+" Mix files and directories
+set sort=+iname,dir
+
+""""""""""""""""
+
 " Command used to edit files in various contexts.
 set vicmd=nvim
 
@@ -291,23 +300,6 @@ set vifminfo=dhistory,chistory,state,tui,shistory,phistory,fhistory,dirstack,reg
 " Filter-out build and temporary files
 "
 " filter! /^.*\.(lo|o|d|class|py[co])$|.*~$/
-
-" ------------------------------------------------------------------------------
-
-" MY MAPPINGS
-
-" Workman layout
-nnoremap h y
-nnoremap y h
-nnoremap n j
-nnoremap e k
-nnoremap o l
-
-" Yank current directory path into the clipboard
-nnoremap hd :!printf %d | pbcopy<cr>
-
-" Yank current file path into the clipboard
-nnoremap hf :!printf %c:p | pbcopy<cr>
 
 " ------------------------------------------------------------------------------
 
