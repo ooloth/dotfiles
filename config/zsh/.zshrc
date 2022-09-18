@@ -91,6 +91,7 @@ export PATH=/usr/local/bin:$PATH
 
 # Alias kitty's ssh kitten
 alias s="kitty +kitten ssh"
+alias mini="s michael@192.168.68.102" # automatically log in using SSH key pair
 
 ############
 # LunarVim #
