@@ -99,8 +99,8 @@ alias mini="s michael@192.168.68.102" # automatically log in using SSH key pair
 
 export EDITOR='lvim'
 
-# Replace vim with LunarVim
-alias vim='lvim'
+# Replace vim with NeoVim
+alias vim='nvim'
 alias v='vim'
 
 # Add lvim location to PATH
