@@ -21,6 +21,7 @@ alias cdh='cd $HOME'
 alias cdo='cd $HOME/Repos/ooloth'
 alias cdd='cd $HOME/Repos/ooloth/dotfiles'
 alias cdm='cd $HOME/Repos/ooloth/michaeluloth.com'
+alias cdp='cd $HOME/Repos/ooloth/download-pilots'
 
 # Up we go
 alias ..='cd ..'
