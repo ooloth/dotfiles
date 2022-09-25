@@ -98,17 +98,21 @@ alias mini="s michael@192.168.68.102" # automatically log in using SSH key pair
 # LunarVim #
 ############
 
-export EDITOR='lvim'
-
-# Replace vim with NeoVim
-alias vim='nvim'
-alias v='vim'
-
 # Add lvim location to PATH
 export PATH=$HOME/.local/bin:$PATH
 
 # Add cargo to PATH
 export PATH="$HOME/.cargo/bin:$PATH"
+
+##########
+# NeoVim #
+##########
+
+export EDITOR='nvim'
+
+# Replace vim with NeoVim
+alias vim='nvim'
+alias v='vim'
 
 #############
 # Recursion #
