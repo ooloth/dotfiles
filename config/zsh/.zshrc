@@ -17,11 +17,11 @@ alias cat='bat --paging=never'
 ######
 
 # Jump to common directories
-alias cdh='cd $HOME'
-alias cdo='cd $HOME/Repos/ooloth'
-alias cdd='cd $HOME/Repos/ooloth/dotfiles'
-alias cdm='cd $HOME/Repos/ooloth/michaeluloth.com'
-alias cdp='cd $HOME/Repos/ooloth/download-pilots'
+alias h='cd $HOME'
+alias oo='cd $HOME/Repos/ooloth'
+alias dot='cd $HOME/Repos/ooloth/dotfiles'
+alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
+alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 
 # Up we go
 alias ..='cd ..'
@@ -104,14 +104,10 @@ export PATH=$HOME/.local/bin:$PATH
 # Add cargo to PATH
 export PATH="$HOME/.cargo/bin:$PATH"
 
-##########
-# NeoVim #
-##########
+export EDITOR='lvim'
 
-export EDITOR='nvim'
-
-# Replace vim with NeoVim
-alias vim='nvim'
+# Replace vim with LundrVim
+alias vim='lvim'
 alias v='vim'
 
 #############
@@ -122,13 +118,13 @@ alias v='vim'
 if [ -d "$HOME/Repos/recursionpharma" ]; then
 
    # Aliases
-   alias cdr='cd $HOME/Repos/recursionpharma'
-   alias cdpa='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2'
-   alias cdpab='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp'
-   alias cdpaf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
-   alias cdpr='cd $HOME/Repos/recursionpharma/phenoreader'
-   alias cdps='cd $HOME/Repos/recursionpharma/phenoservice-api'
-   alias cdpc='cd $HOME/Repos/recursionpharma/phenoservice-consumer'
+   alias r='cd $HOME/Repos/recursionpharma'
+   alias pa='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2'
+   alias pab='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp'
+   alias paf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
+   alias pr='cd $HOME/Repos/recursionpharma/phenoreader'
+   alias psa='cd $HOME/Repos/recursionpharma/phenoservice-api'
+   alias psc='cd $HOME/Repos/recursionpharma/phenoservice-consumer'
 
    # Activate python venv (if any) after changing directories
    chpwd() {
@@ -176,13 +172,13 @@ if [ -d "$HOME/Repos/recursionpharma" ]; then
    export GITHUB_TOKEN=$(cat $VAULT_AUTH_CREDS_PATH)
 
    # The next line updates PATH for the Google Cloud SDK.
-   if [ -f '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc' ]; then 
-   . '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc'; 
+   if [ -f '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc' ]; then
+   . '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc';
    fi
 
    # The next line enables shell command completion for gcloud.
    if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then
-   . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; 
+   . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc';
    fi
 
 fi
