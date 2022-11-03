@@ -1,13 +1,8 @@
---[[
-lvim is the global options object
-
-]]
--- THESE ARE EXAMPLE CONFIGS FEEL FREE TO CHANGE TO WHATEVER YOU WANT
-
 -- general
 lvim.log.level = "warn"
-lvim.format_on_save = false
+lvim.format_on_save = true
 lvim.colorscheme = "tokyonight"
+
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
 
@@ -67,16 +62,13 @@ lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
   "bash",
-  "c",
+  "css",
   "javascript",
   "json",
   "lua",
   "python",
-  "typescript",
   "tsx",
-  "css",
-  "rust",
-  "java",
+  "typescript",
   "yaml",
 }
 
@@ -98,9 +90,6 @@ lvim.builtin.treesitter.highlight.enable = true
 --     uninstall_server = "d",
 --     toggle_server_expand = "o",
 -- }
-
--- ---@usage disable automatic installation of servers
--- lvim.lsp.installer.setup.automatic_installation = false
 
 -- ---configure a server manually. !!Requires `:LvimCacheReset` to take effect!!
 -- ---see the full default list `:lua print(vim.inspect(lvim.lsp.automatic_configuration.skipped_servers))`
@@ -159,12 +148,13 @@ lvim.builtin.treesitter.highlight.enable = true
 -- }
 
 -- Additional Plugins
--- lvim.plugins = {
---     {
---       "folke/trouble.nvim",
---       cmd = "TroubleToggle",
---     },
--- }
+lvim.plugins = {
+  { 'tpope/vim-fugitive' },
+  --     {
+  --       "folke/trouble.nvim",
+  --       cmd = "TroubleToggle",
+  --     },
+}
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
 -- vim.api.nvim_create_autocmd("BufEnter", {
@@ -179,4 +169,3 @@ lvim.builtin.treesitter.highlight.enable = true
 --     require("nvim-treesitter.highlight").attach(0, "bash")
 --   end,
 -- })
-
