@@ -131,6 +131,7 @@ if [ -d "$HOME/Repos/recursionpharma" ]; then
    alias psa='cd $HOME/Repos/recursionpharma/phenoservice-api'
    alias psc='cd $HOME/Repos/recursionpharma/phenoservice-consumer'
 
+   # TODO: move to tmux session creation scripts?
    # Activate python venv (if any) after changing directories
    chpwd() {
       if [[ $PWD =~ "recursionpharma/dash-phenoapp-v2" ]]; then
