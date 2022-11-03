@@ -5,6 +5,11 @@
 # Make clear faster to type
 alias c='clear'
 
+# Easier symlinking
+sl() {
+   ln -sfv $1 $2
+}
+
 #######
 # bat #
 #######
