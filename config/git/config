@@ -5,12 +5,15 @@
 [credential]
   helper = osxkeychain
 
+[fetch]
+  prune = true
+
 [github]
 	user = ooloth
 
 [init]
 	defaultBranch = main
-  
+
 [merge]
   tool = vimdiff
 
