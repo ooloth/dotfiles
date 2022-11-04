@@ -24,6 +24,9 @@
   autoSetupRemote = true
   default = simple
 
+[status]
+  showStash = true
+
 [user]
 	name = Michael Uloth
 	email = hello@michaeluloth.com
