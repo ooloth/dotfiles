@@ -10,6 +10,7 @@
 
 [fetch]
   prune = true
+  pruneTags = true
 
 [github]
 	user = ooloth
