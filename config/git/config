@@ -1,9 +1,12 @@
 [core]
-  editor = nvim
+  editor = lvim
   excludesfile = $HOME/.config/git/ignore
 
 [credential]
   helper = osxkeychain
+
+[diff]
+  colorMoved = true
 
 [fetch]
   prune = true
