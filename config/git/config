@@ -18,7 +18,10 @@
 	defaultBranch = main
 
 [merge]
-  tool = vimdiff
+  tool = fugitive
+
+[mergetool "fugitive"]
+  cmd = 'nvim -f -c "Gvdiffsplit!" "$MERGED"'
 
 [push]
   autoSetupRemote = true
