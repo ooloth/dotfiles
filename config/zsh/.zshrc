@@ -6,7 +6,7 @@
 alias c='clear'
 
 # Easier symlinking
-sl() {
+function sl() {
    ln -sfv $1 $2
 }
 
@@ -35,7 +35,7 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
 # List directory contents after changing directories
-chpwd() {
+function chpwd() {
   exa --all --group-directories-first
 }
 
@@ -50,7 +50,8 @@ alias ys='yb && yarn serve'
 alias yc='yarn clean'
 alias yt='yarn test:dev'
 alias ytu='yarn test:update'
-ytp() {
+
+function ytp() {
    yt --testPathPattern=$1
 }
 
@@ -80,7 +81,7 @@ eval "$(fnm env --use-on-cd)"
 ############
 
 # Update homebrew
-bu() {
+function bu() {
   brew upgrade && brew update && brew cleanup && brew doctor
 
   if [ -d "$HOME/Repos/recursionpharma" ]; then
