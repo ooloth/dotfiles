@@ -1,127 +1,89 @@
+#############
+# Variables #
+#############
+
+export EDITOR='lvim'
+export STARSHIP_CONFIG=~/.config/starship/config.toml
+
+IS_WORK_LAPTOP=false
+if [[ -d "$HOME/Repos/recursionpharma" ]]; then IS_WORK_LAPTOP=true; fi
+
 ###########
-# General #
+# ALIASES #
 ###########
 
-# Make clear faster to type
-alias c='clear'
-
-# Easier symlinking
-function sl() {
-   ln -sfv $1 $2
-}
-
-#######
-# bat #
-#######
-
-# Replace cat with bat
-alias cat='bat --paging=never'
-
-######
-# cd #
-######
-
-# Jump to common directories
-alias h='cd $HOME'
-alias oo='cd $HOME/Repos/ooloth'
-alias dot='cd $HOME/Repos/ooloth/dotfiles'
-alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
-alias pilots='cd $HOME/Repos/ooloth/download-pilots'
-
-# Up we go
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
-
-# List directory contents after changing directories
-function chpwd() {
-  exa --all --group-directories-first
-}
-
-##########
-# ecobee #
-##########
-
-alias y='yarn install'
-alias yd='y && yarn start:dev'
-alias yb='y && yarn build'
-alias ys='yb && yarn serve'
-alias yc='yarn clean'
-alias yt='yarn test:dev'
-alias ytu='yarn test:update'
-
-function ytp() {
-   yt --testPathPattern=$1
-}
-
-#######
-# exa #
-#######
-
-# Replace ls with exa
+alias c='clear'
+alias cat='bat --paging=never'  # Replace cat with bat
+alias dot='cd $HOME/Repos/ooloth/dotfiles'
+alias h='cd $HOME'
 alias ls='exa --all --group-directories-first'                                       # top level dir + files
 alias ld='exa --all --git --group-directories-first --header --long'                 # top level details
 alias lt='exa --all --git-ignore --group-directories-first -I .git --tree --level=1' # file tree (all levels)
 alias lt2='lt --level=2'                                                             # file tree (2 levels only)
 alias lt3='lt --level=3'                                                             # file tree (3 levels only)
 alias lt4='lt --level=4'                                                             # file tree (4 levels only)
-
-#######
-# fnm #
-#######
-
-# Replace nvm with fnm
+alias mini="s michael@192.168.68.102" # automatically log in using SSH key pair
+alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 alias nvm='fnm'
+alias oo='cd $HOME/Repos/ooloth'
+alias pilots='cd $HOME/Repos/ooloth/download-pilots'
+alias s="kitty +kitten ssh" # Alias kitty's ssh kitten
 
-eval "$(fnm env --use-on-cd)"
+function sl() { ln -sfv $1 $2 } # easier symlinking
 
-############
-# Homebrew #
-############
+alias t='tmux a'
 
-# Update homebrew
-function bu() {
+function u() {
   brew upgrade && brew update && brew cleanup && brew doctor
-
-  if [ -d "$HOME/Repos/recursionpharma" ]; then
+  if $IS_WORK_LAPTOP; then
     echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
   fi
 }
 
-# Add Homebrew's executable directory to front of PATH
-export PATH=/usr/local/bin:$PATH
-
-#########
-# kitty #
-#########
-
-# Alias kitty's ssh kitten
-alias s="kitty +kitten ssh"
-alias mini="s michael@192.168.68.102" # automatically log in using SSH key pair
-
-############
-# LunarVim #
-############
-
-# Add lvim location to PATH
-export PATH=$HOME/.local/bin:$PATH
-
-# Add cargo to PATH
-export PATH="$HOME/.cargo/bin:$PATH"
-
-export EDITOR='lvim'
-
-# Replace vim with LundrVim
-alias vim='lvim'
 alias v='vim'
+alias vifm='vifm . .' # Open both vifm panes in cwd
+alias vim='lvim'
+# TODO: make yarn/npm/python agnostic
+alias y='yarn install'
+alias yd='y && yarn start:dev'
+alias yb='y && yarn build'
+alias ys='yb && yarn serve'
+alias yc='yarn clean'
+alias yt='yarn test:dev'
+
+function ytp() { yt --testPathPattern=$1 }
+
+alias ytu='yarn test:update'
+alias ze="$EDITOR $HOME/Repos/ooloth/dotfiles/config/zsh/.zshrc"
+alias zs="source $HOME/.config/zsh/.zshrc"
+
+#################
+# Auto commands #
+#################
+
+function chpwd() { exa --all --group-directories-first } # list directory contents after changing directories
+
+eval "$(fnm env --use-on-cd)" # use node version defined in .nvmrc when changing directories
+eval "$(starship init zsh)"
+
+########
+# PATH #
+########
+
+export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
+export PATH=$HOME/.local/bin:$PATH # Add lvim location to PATH
+export PATH=$HOME/.cargo/bin:$PATH # Add cargo to PATH
 
 #############
 # Recursion #
 #############
 
 # Only add the following on my work laptop
-if [ -d "$HOME/Repos/recursionpharma" ]; then
+if $IS_WORK_LAPTOP; then
 
    # Aliases
    alias r='cd $HOME/Repos/recursionpharma'
@@ -190,23 +152,10 @@ if [ -d "$HOME/Repos/recursionpharma" ]; then
 
 fi
 
-############
-# Starship #
-############
-
-export STARSHIP_CONFIG=~/.config/starship/config.toml
-eval "$(starship init zsh)"
-
-########
-# Vifm #
-########
-
-# Open both vifm panes in cwd
-alias vifm='vifm . .'
-
 ###############
 # zsh plugins #
 ###############
 
+# TODO: store my plugin configs in separate files and source them?
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
