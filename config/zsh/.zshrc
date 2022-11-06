@@ -47,17 +47,17 @@ function u() {
 
 alias v='vim'
 alias vim='lvim'
-# TODO: make yarn/npm/python agnostic
+
+# TODO: make these yarn/npm/python agnostic:
 alias y='yarn install'
 alias yd='y && yarn start:dev'
 alias yb='y && yarn build'
 alias ys='yb && yarn serve'
 alias yc='yarn clean'
 alias yt='yarn test:dev'
-
 function ytp() { yt --testPathPattern=$1 }
-
 alias ytu='yarn test:update'
+
 alias ze="$EDITOR $HOME/Repos/ooloth/dotfiles/config/zsh/.zshrc"
 alias zs="source $HOME/.config/zsh/.zshrc"
 
