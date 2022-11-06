@@ -444,12 +444,6 @@ configure_macos() {
   chflags nohidden ~/Library
 
   printf "\n"
-  info "Configuring keyboard...\n"
-
-  printf "Disable press-and-hold for keys in favor of key repeat\n"
-  defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
-
-  printf "\n"
   info "Configuring Safari...\n"
 
   printf "Enable Safari’s debug menu\n"
