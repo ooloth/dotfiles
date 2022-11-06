@@ -24,6 +24,9 @@
 [mergetool "fugitive"]
   cmd = 'nvim -f -c "Gvdiffsplit!" "$MERGED"'
 
+[pull]
+  rebase = false
+
 [push]
   autoSetupRemote = true
   default = simple
