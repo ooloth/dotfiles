@@ -120,7 +120,6 @@ lvim.lsp.installer.setup.ensure_installed = {
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
   { command = "isort" },
-  -- { command = "luaformat" },
   { command = "yapf" },
   { command = "prettier" },
   { command = "prismaFmt" },
@@ -132,12 +131,10 @@ local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   { command = "eslint" },
   { command = "flake8" },
-  { command = "luacheck" },
   { command = "markdownlint" },
   { command = "mypy" },
   { command = "proselint" },
   { command = "puglint" },
-  -- { command = "refactoring" },
   { command = "shellcheck" },
   { command = "yamllint" },
 }
