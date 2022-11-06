@@ -380,6 +380,18 @@ set_up_node() {
   success "\nDone installing node using fnm and yarn using npm."
 }
 
+set_up_tmux() {
+  title "Setting up tmux"
+
+  info "Installing tpm..."
+  sh -c 'git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm'
+
+  printf "\n"
+  warning "TODO: open tmux and run "Prefix + I" a few times to install tpm + all other tmux plugins"
+
+  success "\nDone setting up tmux."
+}
+
 set_up_neovim() {
   title "Setting up neovim"
 
@@ -430,12 +442,6 @@ configure_macos() {
 
   printf "Show the ~/Library folder in Finder\n"
   chflags nohidden ~/Library
-
-  printf "\n"
-  info "Configuring keyboard...\n"
-
-  printf "Disable press-and-hold for keys in favor of key repeat\n"
-  defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
   printf "\n"
   info "Configuring Safari...\n"
@@ -490,6 +496,7 @@ confirm_consent \
   && set_up_homebrew \
   && set_up_zsh \
   && set_up_node \
+  && set_up_tmux \
   && set_up_neovim \
   && configure_macos \
   && configure_apps \

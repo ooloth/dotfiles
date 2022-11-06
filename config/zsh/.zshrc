@@ -20,6 +20,7 @@ alias c='clear'
 alias cat='bat --paging=never'  # Replace cat with bat
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias f='vifm . .'                                                                   # open both vifm panes in cwd
+alias g='lazygit'
 alias h='cd $HOME'
 alias ls='exa --all --group-directories-first'                                       # top level dir + files
 alias ld='exa --all --git --group-directories-first --header --long'                 # top level details
@@ -41,6 +42,7 @@ alias t='tmux a'
 function u() {
   brew upgrade && brew update && brew cleanup && brew doctor
   if $IS_WORK_LAPTOP; then
+    # TODO: store version in a variable and update it programmatically?
     echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
   fi
 }
