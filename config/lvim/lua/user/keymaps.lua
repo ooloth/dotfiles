@@ -6,21 +6,21 @@ M.config = function()
   -- keymappings [view all the defaults by pressing <leader>Lk]
 
   -- LSP
-  -- vim.api.nvim_set_keymap("n", "ga", "<cmd>Telescope lsp_code_actions<CR>", keymap_options)
-  -- vim.api.nvim_set_keymap("n", "gh", "<Cmd>lua vim.lsp.buf.hover()<CR>", keymap_options)
-  -- vim.api.nvim_set_keymap("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<CR>", keymap_options)
-  -- vim.api.nvim_set_keymap("n", "gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", keymap_options)
+  -- vim.keymap.set("n", "ga", "<cmd>Telescope lsp_code_actions<CR>", keymap_options)
+  -- vim.keymap.set("n", "gh", "<Cmd>lua vim.lsp.buf.hover()<CR>", keymap_options)
+  -- vim.keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<CR>", keymap_options)
+  -- vim.keymap.set("n", "gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", keymap_options)
 
   -- Editing
   -- make Y behave like D and C by yanking remainder of line only
-  vim.api.nvim_set_keymap("n", "Y", "y$", keymap_options)
+  vim.keymap.set("n", "Y", "y$", keymap_options)
 
   -- Navigate buffers
-  vim.api.nvim_set_keymap("", "<Tab>", ":bnext<CR>", keymap_options)
-  vim.api.nvim_set_keymap("", "<S-Tab>", ":bprevious<CR>", keymap_options)
+  vim.keymap.set("", "<Tab>", ":bnext<CR>", keymap_options)
+  vim.keymap.set("", "<S-Tab>", ":bprevious<CR>", keymap_options)
 
-  vim.api.nvim_set_keymap("", "<S-l>", ":bnext<CR>", keymap_options)
-  vim.api.nvim_set_keymap("", "<S-h>", ":bprevious<CR>", keymap_options)
+  vim.keymap.set("", "<S-l>", ":bnext<CR>", keymap_options)
+  vim.keymap.set("", "<S-h>", ":bprevious<CR>", keymap_options)
 
   -- exit help windows with Esc or q
   vim.cmd([[
