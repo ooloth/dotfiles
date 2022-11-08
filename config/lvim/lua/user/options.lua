@@ -12,8 +12,6 @@ vim.opt.shortmess:append("c") -- don't pass messages to |ins-completion-menu|
 
 -- cursor
 vim.opt.scrolloff = 22 -- keep cursor this many lines away from top/bottom
-
--- cursor line
 vim.opt.cursorline = true
 
 vim.cmd([[
