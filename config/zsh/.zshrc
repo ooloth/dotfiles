@@ -89,7 +89,7 @@ if $IS_WORK_LAPTOP; then
 
    # Aliases
    alias r='cd $HOME/Repos/recursionpharma'
-   alias pa='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2'
+   function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && source venv/bin/activate }
    alias pab='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp'
    alias paf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
    alias pr='cd $HOME/Repos/recursionpharma/phenoreader'
