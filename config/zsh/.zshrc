@@ -17,7 +17,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias c='clear'
-alias cat='bat --paging=never'  # Replace cat with bat
+alias cat='bat --paging=never' 
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias f='vifm . .'                                                                   # open both vifm panes in cwd
 alias g='lazygit'
@@ -28,12 +28,12 @@ alias lt='exa --all --git-ignore --group-directories-first -I .git --tree --leve
 alias lt2='lt --level=2'                                                             # file tree (2 levels only)
 alias lt3='lt --level=3'                                                             # file tree (3 levels only)
 alias lt4='lt --level=4'                                                             # file tree (4 levels only)
-alias mini="s michael@192.168.68.102" # automatically log in using SSH key pair
+alias mini="s michael@192.168.68.102"                                                # auto log in with SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
-alias s="kitty +kitten ssh" # Alias kitty's ssh kitten
+alias s="kitty +kitten ssh"                                                          # kitty's ssh kitten
 
 function sl() { ln -sfv $1 $2 } # easier symlinking
 
