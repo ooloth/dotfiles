@@ -28,7 +28,7 @@ alias lt='exa --all --git-ignore --group-directories-first -I .git --tree --leve
 alias lt2='lt --level=2'                                                             # file tree (2 levels only)
 alias lt3='lt --level=3'                                                             # file tree (3 levels only)
 alias lt4='lt --level=4'                                                             # file tree (4 levels only)
-alias mini="s michael@192.168.68.102" # automatically log in using SSH key pair
+alias mini="s michael@192.168.2.22" # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
