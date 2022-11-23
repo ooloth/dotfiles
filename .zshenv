@@ -1,6 +1,6 @@
 ZDOTDIR=$HOME/.config/zsh
 
-if [[ -d "$HOME/.cargo" ]]; 
+if [[ -d "$HOME/.cargo" ]]; then 
   # Added by LunarVim
-  . "$HOME/.cargo/env"
+  . "$HOME/.cargo/env" 
 fi
