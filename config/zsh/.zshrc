@@ -16,6 +16,15 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
+
+function bu() {
+  brew upgrade && brew update && brew cleanup && brew doctor
+  if $IS_WORK_LAPTOP; then
+    # TODO: store version in a variable and update it programmatically?
+    echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
+  fi
+}
+
 alias c='clear'
 alias cat='bat --paging=never' 
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
@@ -38,15 +47,6 @@ alias s="kitty +kitten ssh"                                                     
 function sl() { ln -sfv $1 $2 } # easier symlinking
 
 alias t='tmux a'
-
-function u() {
-  brew upgrade && brew update && brew cleanup && brew doctor
-  if $IS_WORK_LAPTOP; then
-    # TODO: store version in a variable and update it programmatically?
-    echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
-  fi
-}
-
 alias v='vim'
 alias vim='lvim'
 
