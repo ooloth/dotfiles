@@ -17,7 +17,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias c='clear'
-alias cat='bat --paging=never'  # Replace cat with bat
+alias cat='bat --paging=never' 
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias f='vifm . .'                                                                   # open both vifm panes in cwd
 alias g='lazygit'
@@ -33,7 +33,7 @@ alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
-alias s="kitty +kitten ssh" # Alias kitty's ssh kitten
+alias s="kitty +kitten ssh"                                                          # kitty's ssh kitten
 
 function sl() { ln -sfv $1 $2 } # easier symlinking
 
@@ -89,32 +89,14 @@ if $IS_WORK_LAPTOP; then
 
    # Aliases
    alias r='cd $HOME/Repos/recursionpharma'
-   alias pa='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2'
-   alias pab='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp'
+   function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && pyenv shell eng-onboarding }
+   function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && source venv/bin/activate }
+   function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && source venv/bin/activate }
    alias paf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
-   alias pr='cd $HOME/Repos/recursionpharma/phenoreader'
-   alias psa='cd $HOME/Repos/recursionpharma/phenoservice-api'
-   alias psc='cd $HOME/Repos/recursionpharma/phenoservice-consumer'
-
-   # TODO: move to tmux session creation scripts?
-   # Activate python venv (if any) after changing directories
-   chpwd() {
-      if [[ $PWD =~ "recursionpharma/dash-phenoapp-v2" ]]; then
-         pyenv shell dash-phenoapp-v2
-      elif [[ $PWD =~ "recursionpharma/eng-onboarding" ]]; then
-         pyenv shell eng-onboarding
-      elif [[ $PWD =~ "recursionpharma/phenoreader" ]]; then
-         pyenv shell phenoreader
-      elif [[ $PWD =~ "recursionpharma/phenoservice-api" ]]; then
-         pyenv shell phenoservice-api
-      elif [[ $PWD =~ "recursionpharma/phenoservice-consumer" ]]; then
-         pyenv shell phenoservice-consumer
-      else
-         pyenv shell system
-      fi
-
-      exa --all --group-directories-first
-   }
+   alias pm='cd $HOME/Repos/recursionpharma/phenomap'
+   function pr() { cd $HOME/Repos/recursionpharma/phenoreader && pyenv shell phenoreader }
+   function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && pyenv shell phenoservice-api }
+   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && pyenv shell phenoservice-consumer }
 
    # Confluent-Kafka
    # TODO: update these whenever I run brew update
