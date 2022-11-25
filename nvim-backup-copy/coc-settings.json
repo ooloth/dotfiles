@@ -1,0 +1,43 @@
+{
+  "coc.preferences.formatOnSaveFiletypes": ["*"],
+
+  "explorer.file.column.indent.indentLine": true,
+  "explorer.file.hiddenRules": {
+    "extensions": ["o", "a", "obj", "pyc"],
+    "filenames": [],
+    "patternMatches": ["^\\.cache$", "^\\.git$", "^node_modules$", "^public$"]
+  },
+  "explorer.file.showHiddenFiles": false,
+  "explorer.icon.enableNerdfont": true,
+  "explorer.icon.enableVimDevicons": true,
+  "explorer.keyMappings": {
+    "<cr>": ["expandable?", "expand", "open"],
+    "l": ["expandable?", "expand", "preview"]
+  },
+  "explorer.previewAction.onHover": false,
+  "explorer.quitOnOpen": true,
+  "explorer.sources": [
+    {
+      "name": "bookmark",
+      "expand": true
+    },
+    {
+      "name": "buffer",
+      "expand": true
+    },
+    {
+      "name": "file",
+      "expand": true
+    }
+  ],
+  "explorer.width": 60,
+
+  "git.addGBlameToVirtualText": true,
+  "git.enableGutters": true,
+
+  "javascript.validate.enable": false,
+
+  "snippets.userSnippetsDirectory": "~/.config/nvim/snippets",
+
+  "suggest.noselect": false
+}
