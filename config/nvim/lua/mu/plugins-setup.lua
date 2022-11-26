@@ -30,15 +30,17 @@ end
 return packer.startup(function(use)
   use("wbthomason/packer.nvim") -- packer can manage itself
 
-  use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
   use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
+
+  -- colors
+  use("bluz71/vim-nightfly-guicolors") 
 
   -- navigating
   use("nvim-tree/nvim-tree.lua") -- file explorer
   use("christoomey/vim-tmux-navigator") -- navigate vim splits (and tmux panes) with <C-hjkl>
   use("szw/vim-maximizer") -- maximizes and restores the current split
 
-  -- essential plugins
+  -- editing
   use("tpope/vim-surround") -- add, delete, change surrounding characters
   use("inkarkat/vim-ReplaceWithRegister") -- replace text with register contents (gr + motion)
   use("numToStr/Comment.nvim") -- comment text (gc + motion)
