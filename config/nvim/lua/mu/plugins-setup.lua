@@ -46,6 +46,8 @@ return packer.startup(function(use)
   use("inkarkat/vim-ReplaceWithRegister") -- replace text with register contents (gr + motion)
   use("numToStr/Comment.nvim") -- comment text (gc + motion)
 
+  -- status
+  use("nvim-lualine/lualine.nvim") -- statusline
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
     require('packer').sync()
