@@ -35,6 +35,8 @@ return packer.startup(function(use)
   use("christoomey/vim-tmux-navigator") -- navigate vim splits (and tmux panes) with <C-hjkl>
   use("szw/vim-maximizer") -- maximizes and restores the current split
 
+  -- essential plugins
+  use("tpope/vim-surround") -- add, delete, change surrounding characters
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
     require('packer').sync()
