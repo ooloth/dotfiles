@@ -37,6 +37,7 @@ return packer.startup(function(use)
 
   -- navigating
   use("nvim-tree/nvim-tree.lua") -- file explorer
+  use("nvim-tree/nvim-web-devicons") -- vs code-like icons
   use("christoomey/vim-tmux-navigator") -- navigate vim splits (and tmux panes) with <C-hjkl>
   use("szw/vim-maximizer") -- maximizes and restores the current split
 
