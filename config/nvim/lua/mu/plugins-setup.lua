@@ -33,6 +33,7 @@ return packer.startup(function(use)
   use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
 
   use("christoomey/vim-tmux-navigator") -- navigate vim splits (and tmux panes) with <C-hjkl>
+  use("szw/vim-maximizer") -- maximizes and restores the current split
 
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
