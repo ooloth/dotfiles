@@ -31,6 +31,7 @@ return packer.startup(function(use)
   use("wbthomason/packer.nvim") -- packer can manage itself
 
   use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
+  use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
 
   -- navigating
   use("nvim-tree/nvim-tree.lua") -- file explorer
