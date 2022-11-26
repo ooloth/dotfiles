@@ -12,6 +12,8 @@ vim.keymap.set('n', 'x', '"_x"') -- delete single character without copying into
 -------------
 
 vim.keymap.set('n', '<leader>sm', ':MaximizerToggle<CR>')
+vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>')
+
 ----------------
 -- LEADER KEY --
 ----------------

@@ -32,6 +32,8 @@ return packer.startup(function(use)
 
   use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
 
+  -- navigating
+  use("nvim-tree/nvim-tree.lua") -- file explorer
   use("christoomey/vim-tmux-navigator") -- navigate vim splits (and tmux panes) with <C-hjkl>
   use("szw/vim-maximizer") -- maximizes and restores the current split
 
