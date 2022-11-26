@@ -32,6 +32,8 @@ return packer.startup(function(use)
 
   use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
 
+  use("christoomey/vim-tmux-navigator") -- navigate vim splits (and tmux panes) with <C-hjkl>
+
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
     require('packer').sync()
