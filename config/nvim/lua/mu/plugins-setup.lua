@@ -37,6 +37,8 @@ return packer.startup(function(use)
 
   -- essential plugins
   use("tpope/vim-surround") -- add, delete, change surrounding characters
+  use("inkarkat/vim-ReplaceWithRegister") -- replace text with register contents (gr + motion)
+
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
     require('packer').sync()
