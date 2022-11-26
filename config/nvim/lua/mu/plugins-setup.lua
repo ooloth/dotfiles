@@ -30,6 +30,8 @@ end
 return packer.startup(function(use)
   use("wbthomason/packer.nvim") -- packer can manage itself
 
+  use("bluz71/vim-nightfly-guicolors") -- preferred colorscheme
+
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
     require('packer').sync()
