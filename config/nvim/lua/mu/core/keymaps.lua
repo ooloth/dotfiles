@@ -4,7 +4,8 @@ vim.g.mapleader = ' '
 -- GENERAL --
 -------------
 
-vim.keymap.set('i', 'jk', '<ESC>')
+vim.keymap.set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
+vim.keymap.set({ 'n', 'v' }, ':', ',') -- walk through f and t results using ;/: (like n/N for / results)
 vim.keymap.set('n', 'x', '"_x"') -- delete single character without copying into register 
 
 -------------
