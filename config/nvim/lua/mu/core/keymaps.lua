@@ -34,11 +34,12 @@ vim.keymap.set('n', '<leader>gs', '<cmd>Telescope git_status<CR>') -- list curre
 -- restart lsp server (not on youtube nvim video)
 vim.keymap.set('n', '<leader>rs', ':LspRestart<CR>') -- mapping to restart lsp if necessary
 
--- lazygit
-vim.keymap.set('n', '<leader>gg', 'lazygit')
 ----------------
 -- LEADER KEY --
 ----------------
+
+-- general
+vim.keymap.set('n', '<leader>w', ':w<CR>') -- save current buffer 
 
 -- search
 vim.keymap.set('n', '<leader>nh', ':nohl<CR>') -- clear search highlights
@@ -47,11 +48,17 @@ vim.keymap.set('n', '<leader>nh', ':nohl<CR>') -- clear search highlights
 vim.keymap.set('n', '<leader>+', '<C-a>') -- increment number under cursor
 vim.keymap.set('n', '<leader>-', '<C-x>') -- decrement number under cursor
 
--- windows 
+-- splits 
 vim.keymap.set('n', '<leader>sv', '<C-w>v') -- split window vertically
 vim.keymap.set('n', '<leader>sh', '<C-w>s') -- split window horizontally
 vim.keymap.set('n', '<leader>se', '<C-w>=') -- make split windows equal width & height
 vim.keymap.set('n', '<leader>sx', ':close<CR>') -- close current split window
+
+-- windows
+vim.keymap.set('n', '<leader>x', '<C-w>x') -- close window (but keep buffer)
+
+-- buffers
+-- vim.keymap.set('n', '<leader>x', ':bd') -- close 
 
 -- tabs
 vim.keymap.set('n', '<leader>to', ':tabnew<CR>') -- open new tab
