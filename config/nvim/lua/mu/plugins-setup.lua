@@ -36,6 +36,8 @@ return packer.startup(function(use)
   use("bluz71/vim-nightfly-guicolors") 
 
   -- navigating
+  use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" }) -- telescope dependency for faster sorting 
+  use({ "nvim-telescope/telescope.nvim", branch = "0.1.x" }) -- fuzzy finder
   use("nvim-tree/nvim-tree.lua") -- file explorer
   use("nvim-tree/nvim-web-devicons") -- vs code-like icons
   use("christoomey/vim-tmux-navigator") -- navigate vim splits (and tmux panes) with <C-hjkl>
@@ -48,6 +50,7 @@ return packer.startup(function(use)
 
   -- status
   use("nvim-lualine/lualine.nvim") -- statusline
+
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
     require('packer').sync()
