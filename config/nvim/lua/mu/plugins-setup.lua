@@ -52,6 +52,11 @@ return packer.startup(function(use)
   -- status
   use("nvim-lualine/lualine.nvim") -- statusline
 
+   -- autocompletion
+  use("hrsh7th/nvim-cmp") -- completion plugin
+  use("hrsh7th/cmp-buffer") -- source for text in buffer
+  use("hrsh7th/cmp-path") -- source for file system paths
+
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
     require('packer').sync()
