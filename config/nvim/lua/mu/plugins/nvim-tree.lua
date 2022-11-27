@@ -45,6 +45,9 @@ nvimtree.setup({
   git = {
     ignore = false,
   },
+  update_focused_file = {
+    enable = true,
+  },
   view = {
     adaptive_size = true,
     mappings = {
