@@ -30,7 +30,8 @@ end
 return packer.startup(function(use)
   use("wbthomason/packer.nvim") -- packer can manage itself
 
-  use("nvim-lua/plenary.nvim") -- lua functions that many plugins use
+  -- utilities
+  use("nvim-lua/plenary.nvim") -- lua functions many other plugins use
 
   -- colors
   use("bluz71/vim-nightfly-guicolors") 
