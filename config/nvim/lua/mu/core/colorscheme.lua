@@ -23,6 +23,11 @@ vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
 
 vim.diagnostic.config({ float = { border = "single" } })
 
+-- separate windows with a thick line instead of a block
+-- See: https://github.com/bluz71/vim-nightfly-colors#nightflywinseparator
+vim.g.nightflyWinSeparator = 2
+vim.opt.fillchars = { horiz = '━', horizup = '┻', horizdown = '┳', vert = '┃', vertleft = '┫', vertright = '┣', verthoriz = '╋', }
+
 -- display correct colors when vim opened inside tmux
 vim.cmd([[ 
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
