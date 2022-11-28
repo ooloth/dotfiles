@@ -1,0 +1,13 @@
+;; C  | left_command
+;; T  | left_control
+;; O  | left_option
+;; S  | left_shift
+;; F  | fn
+;; Q  | right_command
+;; W  | right_control
+;; E  | right_option
+;; R  | right_shift
+;; !  | mandatory
+;; !! | mandatory command + control + optional + shift (hyper)
+;; #  | optional
+;; ## | optional any

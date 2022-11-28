@@ -3,7 +3,8 @@
 #############
 
 export EDITOR='lvim'
-export STARSHIP_CONFIG=~/.config/starship/config.toml
+export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
+export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
 IS_WORK_LAPTOP=false
 if [[ -d "$HOME/Repos/recursionpharma" ]]; then IS_WORK_LAPTOP=true; fi
