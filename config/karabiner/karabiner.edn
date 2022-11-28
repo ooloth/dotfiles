@@ -1,3 +1,5 @@
+;; run "goku" command after updating
+
 ;; C  | left_command
 ;; T  | left_control
 ;; O  | left_option
@@ -11,3 +13,39 @@
 ;; !! | mandatory command + control + optional + shift (hyper)
 ;; #  | optional
 ;; ## | optional any
+
+{
+  :templates {:open "open \"%s\""}
+
+  :layers    {}
+
+  :simlayers {
+    ;; make spacebar key a simlayer key
+    ;; layers works too, but is only recommended for rarely typed keys like . , tab or z 
+    :launch-mode {:key :spacebar}
+  }
+
+  :main [
+    {
+      ; See: https://github.com/yqrashawn/GokuRakuJoudo/blob/master/examples.org#caps_lock-to-esc-when-pressed-alone-to-ctrl-as-modifier
+      :des "caps_lock to esc when pressed alone, to ctrl as modifier"
+      :rules [[:##caps_lock :left_control nil {:alone :escape}]]
+    }
+    {
+      :des "left_command to open Alfred when pressed alone"
+      :rules [[:left_command :left_command nil {:alone "open '/Applications/Alfred 4.app'"}]]
+    }
+    {
+      :des "launch mode"
+      :rules [:launch-mode
+        [:b [:open "/Applications/Google Chrome.app"]] ; browser
+        [:c [:open "/Applications/Fantastical.app"]]   ; calendar
+        [:k [:open "/Applications/kitty.app"]]         ; kitty
+        [:m [:open "/Applications/Spark.app"]]         ; mail 
+        [:n [:open "/Applications/Notion.app"]]        ; notes
+        [:p [:open "/Applications/1Password 7.app"]]   ; passwords
+        [:t [:open "/Applications/Things3.app"]]       ; tasks
+      ]
+    }
+  ]
+}
