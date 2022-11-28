@@ -16,6 +16,15 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
+
+function bu() {
+  brew upgrade && brew update && brew cleanup && brew doctor
+  if $IS_WORK_LAPTOP; then
+    # TODO: store version in a variable and update it programmatically?
+    echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
+  fi
+}
+
 alias c='clear'
 alias cat='bat --paging=never' 
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
@@ -28,7 +37,7 @@ alias lt='exa --all --git-ignore --group-directories-first -I .git --tree --leve
 alias lt2='lt --level=2'                                                             # file tree (2 levels only)
 alias lt3='lt --level=3'                                                             # file tree (3 levels only)
 alias lt4='lt --level=4'                                                             # file tree (4 levels only)
-alias mini="s michael@192.168.68.102"                                                # auto log in with SSH key pair
+alias mini="s michael@192.168.2.22" # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
@@ -38,15 +47,6 @@ alias s="kitty +kitten ssh"                                                     
 function sl() { ln -sfv $1 $2 } # easier symlinking
 
 alias t='tmux a'
-
-function u() {
-  brew upgrade && brew update && brew cleanup && brew doctor
-  if $IS_WORK_LAPTOP; then
-    # TODO: store version in a variable and update it programmatically?
-    echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
-  fi
-}
-
 alias v='vim'
 alias vim='lvim'
 

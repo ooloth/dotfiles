@@ -8,41 +8,41 @@ local cmd = vim.cmd
 -- Colemak Mod-DH keyboard layout --
 ------------------------------------
 
--- m -> h
-set_keymap('', 'm', 'h')
-set_keymap('', 'M', 'H')
-set_keymap('', 'gm', 'gh')
+-- -- m -> h
+-- set_keymap('', 'm', 'h')
+-- set_keymap('', 'M', 'H')
+-- set_keymap('', 'gm', 'gh')
 
--- n -> j
-set_keymap('', 'n', 'j')
-set_keymap('', 'N', 'J')
-set_keymap('', 'gn', 'gj')
+-- -- n -> j
+-- set_keymap('', 'n', 'j')
+-- set_keymap('', 'N', 'J')
+-- set_keymap('', 'gn', 'gj')
 
--- e -> k
-set_keymap('', 'e', 'k')
-set_keymap('', 'E', 'K')
+-- -- e -> k
+-- set_keymap('', 'e', 'k')
+-- set_keymap('', 'E', 'K')
 
--- i -> l
-set_keymap('', 'i', 'l')
-set_keymap('', 'I', 'L')
+-- -- i -> l
+-- set_keymap('', 'i', 'l')
+-- set_keymap('', 'I', 'L')
 
--- h -> i
-set_keymap('', 'h', 'i')
-set_keymap('', 'H', 'I')
+-- -- h -> i
+-- set_keymap('', 'h', 'i')
+-- set_keymap('', 'H', 'I')
 
--- j -> n
-set_keymap('', 'j', 'n')
-set_keymap('', 'J', 'N')
-set_keymap('', 'gj', 'gn')
+-- -- j -> n
+-- set_keymap('', 'j', 'n')
+-- set_keymap('', 'J', 'N')
+-- set_keymap('', 'gj', 'gn')
 
--- k -> m
-set_keymap('', 'k', 'm')
-set_keymap('', 'K', 'M')
-set_keymap('', 'gk', 'gm')
+-- -- k -> m
+-- set_keymap('', 'k', 'm')
+-- set_keymap('', 'K', 'M')
+-- set_keymap('', 'gk', 'gm')
 
--- l -> e
-set_keymap('', 'l', 'e')
-set_keymap('', 'L', 'E')
+-- -- l -> e
+-- set_keymap('', 'l', 'e')
+-- set_keymap('', 'L', 'E')
 
 -- Easily exit help windows with Esc or q
 cmd([[
@@ -54,7 +54,7 @@ cmd([[
 -- LSP --
 ---------
 
-local opts = { noremap=true, silent=true }
+local opts = { noremap = true, silent = true }
 
 -- See `:help vim.lsp.*` for documentation on any of the below functions
 set_keymap('n', 'ga', '<cmd>Telescope lsp_code_actions<cr>', opts)
@@ -181,4 +181,4 @@ set_keymap('n', 'Y', 'y$') -- make Y behave like D and C by yanking remainder of
 -- Leader key mappings --
 -------------------------
 
-try_require('plugins.which-key')
+-- try_require('plugins.which-key')

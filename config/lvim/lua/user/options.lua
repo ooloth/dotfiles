@@ -1,7 +1,7 @@
 -- buffers
--- vim.opt.hidden = true -- persist buffers in the background
--- vim.opt.splitright = true
--- vim.opt.splitbelow = true
+vim.opt.hidden = true -- persist buffers in the background
+vim.opt.splitright = true
+vim.opt.splitbelow = true
 
 -- clipboard
 -- vim.opt.clipboard:append("unnamedplus") -- use the system clipboard for everything

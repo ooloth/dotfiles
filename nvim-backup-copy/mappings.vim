@@ -10,56 +10,56 @@ let mapleader = " "
 " Workman keyboard layout
 " -----------------------
 
-" h <-> y
-noremap y h
-noremap Y H
-noremap h y
-noremap H y$ " Make Y behave like D and C by yanking remainder of line only
-onoremap h y
+" " h <-> y
+" noremap y h
+" noremap Y H
+" noremap h y
+" noremap H y$ " Make Y behave like D and C by yanking remainder of line only
+" onoremap h y
 
-" j <-> n
-noremap n j
-noremap N J
-noremap j n
-noremap J N
-noremap gn gj
-noremap gj gn
+" " j <-> n
+" noremap n j
+" noremap N J
+" noremap j n
+" noremap J N
+" noremap gn gj
+" noremap gj gn
 
-" k <-> e
-noremap e k
-noremap E <nop>
-noremap k e
-noremap K E
-noremap ge gk
-noremap gk ge
+" " k <-> e
+" noremap e k
+" noremap E <nop>
+" noremap k e
+" noremap K E
+" noremap ge gk
+" noremap gk ge
 
-" l <-> o
-noremap o l
-noremap O L
-noremap l o
-noremap L O
+" " l <-> o
+" noremap o l
+" noremap O L
+" noremap l o
+" noremap L O
 
 " Easily exit help windows with Esc or q
 autocmd Filetype help nmap <buffer> <Esc> :q<CR>
 autocmd Filetype help nmap <buffer> q :q<CR>
 
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    exec ":lua vim.lsp.buf.hover()"
-  endif
-endfunction
+" function! s:show_documentation()
+"   if (index(['vim','help'], &filetype) >= 0)
+"     execute 'h '.expand('<cword>')
+"   else
+"     exec ":lua vim.lsp.buf.hover()"
+"   endif
+" endfunction
 
-" Get details on hover
-noremap ga :Telescope lsp_code_actions<CR>
-noremap gh :call <SID>show_documentation()<CR>
-noremap gs :lua vim.lsp.buf.signature_help()<CR>
+" " Get details on hover
+" noremap ga :Telescope lsp_code_actions<CR>
+" noremap gh :call <SID>show_documentation()<CR>
+" noremap gs :lua vim.lsp.buf.signature_help()<CR>
 
-" Go to related code
-noremap gd :lua vim.lsp.buf.definition()<CR>
-noremap gi :lua vim.lsp.buf.implementation()<CR>
-noremap gm :Telescope marks<CR>
+" " Go to related code
+" noremap gd :lua vim.lsp.buf.definition()<CR>
+" noremap gi :lua vim.lsp.buf.implementation()<CR>
+" noremap gm :Telescope marks<CR>
 
 " ------------------------------------------------------------------------
 " NORMAL MODE ONLY
@@ -73,16 +73,16 @@ nnoremap <S-TAB> :bprevious<CR>
 " INSERT MODE ONLY
 " ------------------------------------------------------------------------
 
-" Better nav for omnicomplete
-inoremap <expr> <c-n> ("\<C-n>")
-inoremap <expr> <c-e> ("\<C-p>")
+" " Better nav for omnicomplete
+" inoremap <expr> <c-n> ("\<C-n>")
+" inoremap <expr> <c-e> ("\<C-p>")
 
-" Accept suggestion with Enter
-if exists('*complete_info')
-  inoremap <expr> <CR> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-else
-  inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-endif
+" " Accept suggestion with Enter
+" if exists('*complete_info')
+"   inoremap <expr> <CR> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+" else
+"   inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" endif
 
 " ------------------------------------------------------------------------
 " TERMINAL MODE

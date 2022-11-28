@@ -1,11 +1,10 @@
-# Don't add work packages here! Treat them as one-off installs.
+# Don't add work-only packages here! Treat them as one-off installs on my work laptop.
 
 # Taps
 tap "homebrew/bundle"
 tap "homebrew/core"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
-tap "jesseduffield/lazygit/lazygit"
 
 # Packages
 brew "bat"
@@ -17,6 +16,7 @@ brew "gh"
 brew "yqrashawn/goku/goku" # for configuring Karibiner
 brew "lazydocker"
 brew "lazygit"
+brew "jesseduffield/lazygit/lazygit"
 brew "mas"
 brew "neovim"
 # brew "ranger"
