@@ -16,6 +16,31 @@ require("user.options")
 ------------------
 -- AUTOCOMMANDS --
 ------------------
+-- lvim.format_on_save = false
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--     pattern = "*",
+--     callback = function()
+--         if vim.bo.filetype == "typescript" or vim.bo.filetype == "javascript" or vim.bo.filetype == "javascriptreact" or
+--             vim.bo.filetype == "typescriptreact"
+--         then
+--             -- NOTE: don't format javascript files
+--             vim.cmd("EslintFixAll")
+--             -- vim.lsp.buf.format({ name = "eslint" }) -- works too
+--             return
+--         else
+--             require("lvim.lsp.utils").format { timeout_ms = 2000, filter = require("lvim.lsp.utils").format_filter }
+--             -- vim.lsp.buf.format() -- careful, this overrides null-ls preferences
+--             return
+--         end
+--     end,
+-- })
+
+-- FIXME: doesn't work
+-- vim.api.nvim_create_autocmd('BufWritePre', {
+--   pattern = { '*.tsx', '*.ts', '*.jsx', '*.js' },
+--   command = 'silent! EslintFixAll',
+--   group = vim.api.nvim_create_augroup('MyAutocmdsESLint', {}),
+-- })
 
 -----------------
 -- KEYMAPPINGS --
