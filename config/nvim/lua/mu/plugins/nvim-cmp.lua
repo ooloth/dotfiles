@@ -21,6 +21,10 @@ require("luasnip/loaders/from_vscode").lazy_load()
 
 vim.opt.completeopt = "menu,menuone,noselect"
 
+local winhighlight = {
+  winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel",
+}
+
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -50,4 +54,10 @@ cmp.setup({
       ellipsis_char = "...",
     }),
   },
+  -- apply nightfly floating window styles to nvim-cmp floating windows
+  -- See: https://github.com/bluz71/vim-nightfly-colors#nightflynormalfloat
+  window = {
+    completion = cmp.config.window.bordered(winhighlight),
+    documentation = cmp.config.window.bordered(winhighlight),
+  }
 })
