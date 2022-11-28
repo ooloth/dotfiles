@@ -20,9 +20,9 @@
   :layers    {}
 
   :simlayers {
-    ;; make spacebar key a simlayer key
+    ;; make period key a simlayer key
     ;; layers works too, but is only recommended for rarely typed keys like . , tab or z 
-    :launch-mode {:key :spacebar}
+    :launch-mode {:key :period}
   }
 
   :main [
