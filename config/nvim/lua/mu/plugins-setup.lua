@@ -34,10 +34,10 @@ return packer.startup(function(use)
   use('nvim-lua/plenary.nvim') -- lua functions many other plugins use
 
   -- colors
-  use('bluz71/vim-nightfly-guicolors') 
+  use('bluz71/vim-nightfly-guicolors')
 
   -- navigating
-  use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }) -- telescope dependency for faster sorting 
+  use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }) -- telescope dependency for faster sorting
   use({ 'nvim-telescope/telescope.nvim', branch = '0.1.x' }) -- fuzzy finder
   use('nvim-tree/nvim-tree.lua') -- file explorer
   use('nvim-tree/nvim-web-devicons') -- vs code-like icons
@@ -76,6 +76,19 @@ return packer.startup(function(use)
 
   -- formatting & linting
   use('jose-elias-alvarez/null-ls.nvim') -- configure formatters & linters
+
+  -- treesitter configuration
+  use({
+    'nvim-treesitter/nvim-treesitter',
+    run = function()
+      local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
+      ts_update()
+    end,
+  })
+
+  -- auto closing (to help treesitter)
+  use('windwp/nvim-autopairs') -- autoclose parens, brackets, quotes, etc...
+  use({ 'windwp/nvim-ts-autotag', after = 'nvim-treesitter' }) -- autoclose tags
 
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
