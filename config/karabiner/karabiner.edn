@@ -12,28 +12,51 @@
 ;; !  | mandatory
 ;; !! | mandatory command + control + optional + shift (hyper)
 ;; #  | optional
-;; ## | optional any
+;; ## | key optionally accepts any combination of modifiers
 
 {
+  :alone 1 
+
   :templates {:open "open \"%s\""}
 
-  :layers    {}
-
+  ; TODO: layer keys to use: caps_lock left_shift right_shift , . 
   :simlayers {
-    ;; make period key a simlayer key
-    ;; layers works too, but is only recommended for rarely typed keys like . , tab or z 
-    :launch-mode {:key :period}
+    ; :caps-mode {:key :caps_lock :alone {:key :escape}}
+    :launch-mode {:key :quote}
   }
+
+  :simlayer-threshold 250
 
   :main [
     {
       ; See: https://github.com/yqrashawn/GokuRakuJoudo/blob/master/examples.org#caps_lock-to-esc-when-pressed-alone-to-ctrl-as-modifier
-      :des "caps_lock to esc when pressed alone, to ctrl as modifier"
+      :des "caps_lock to esc when pressed alone"
       :rules [[:##caps_lock :left_control nil {:alone :escape}]]
     }
     {
-      :des "left_command to open Alfred when pressed alone"
-      :rules [[:left_command :left_command nil {:alone "open '/Applications/Alfred 4.app'"}]]
+      :des "caps_mode (caps_lock to left_control when combined with another key)"
+      :rules [:caps-mode
+        [{:any :key_code} [:left_control]]
+      ]
+    }
+    {
+      :des "taps"
+      :rules [
+        ; deleting
+        [:##left_shift :left_shift nil {:alone :delete_or_backspace}]
+        [:right_shift :right_shift nil {:alone :delete_forward}]
+        ; left hand modifiers
+        ; [:z :left_shift nil {:alone :z}]
+        ; [:x :left_control nil {:alone :x}]
+        ; [:c :left_option nil {:alone :c}]
+        ; [:v :left_command nil {:alone :v}]
+        ; right hand modifiers
+        ; [:slash :right_shift nil {:alone :slash}]
+        ; [:period :right_control nil {:alone :period}]
+        ; [:comma :right_option nil {:alone :comma}]
+        ; [:m :right_command nil {:alone :m}]
+        ; [:semicolon :right_shift nil {:alone :semicolon}]
+      ]
     }
     {
       :des "launch mode"
