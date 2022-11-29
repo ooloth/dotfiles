@@ -22,6 +22,7 @@ vim.opt.cursorline = true
 vim.opt.termguicolors = true
 vim.opt.background = 'dark' -- default light/dark colorschemes to dark
 vim.opt.signcolumn = 'yes'
+vim.opt.cmdheight = 0
 
 -- backspace
 vim.opt.backspace = 'indent,eol,start'
@@ -33,4 +34,5 @@ vim.opt.clipboard:append('unnamedplus') -- use the macos system clipboard when y
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
+-- editing
 vim.opt.iskeyword:append('-') -- treat hyphens as part of a single word
