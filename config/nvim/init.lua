@@ -1,7 +1,7 @@
 require('mu.plugins-setup') -- should be first
-require('mu.core.colorscheme')
-require('mu.core.keymaps')
-require('mu.core.options')
+require('mu.keymaps')
+require('mu.options')
+require('mu.colorscheme')
 require('mu.plugins.comment')
 require('mu.plugins.lsp.mason') -- set up before lsp-config
 require('mu.plugins.lsp.lsp-saga') -- set up before lsp-config
