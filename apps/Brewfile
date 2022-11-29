@@ -13,7 +13,7 @@ brew "fnm"
 brew "fzf"
 brew "gh"
 # brew "git"
-brew "yqrashawn/goku/goku" # for configuring Karibiner
+brew "yqrashawn/goku/goku" # for Karibiner
 brew "lazydocker"
 brew "lazygit"
 brew "jesseduffield/lazygit/lazygit"
@@ -21,11 +21,11 @@ brew "mas"
 brew "neovim"
 # brew "ranger"
 brew "raycast"
-# brew "ripgrep"
+brew "ripgrep"        # for Telesope
 brew "shellcheck"
 brew "starship"
 brew "stylua" 
-brew "svn"            # required for font cask installations
+brew "svn"            # for font cask installations
 # brew "tldr"
 brew "tmux"
 brew "vifm"
