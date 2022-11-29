@@ -24,6 +24,7 @@ brew "raycast"
 # brew "ripgrep"
 brew "shellcheck"
 brew "starship"
+brew "stylua" 
 brew "svn"            # required for font cask installations
 # brew "tldr"
 brew "tmux"
