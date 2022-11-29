@@ -9,13 +9,14 @@
 ;; W  | right_control
 ;; E  | right_option
 ;; R  | right_shift
-;; !  | mandatory
-;; !! | mandatory command + control + optional + shift (hyper)
-;; #  | optional
-;; ## | key optionally accepts any combination of modifiers
+;; !  | the modifier after ! is mandatory
+;; !! | command + control + optional + shift are mandatory (i.e. hyper)
+;; #  | the modifier after # is optionally accepted
+;; ## | any combination of modifiers is optionally accepted
 
 {
   :alone 1 
+  :delay 0
 
   :templates {:open "open \"%s\""}
 
