@@ -35,6 +35,8 @@ return packer.startup(function(use)
 
   -- colors
   use('bluz71/vim-nightfly-guicolors')
+  -- use('dracula/vim')
+  use('Mofiqul/dracula.nvim')
 
   -- navigating
   use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }) -- telescope dependency for faster sorting

@@ -1,4 +1,5 @@
-require('mu.plugins.colorscheme.nightfly') -- require relative to init.lua
+require('mu.plugins.colorscheme.dracula') -- require relative to init.lua
+-- require('mu.plugins.colorscheme.nightfly') -- require relative to init.lua
 
 -- style lsp floating windows
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
