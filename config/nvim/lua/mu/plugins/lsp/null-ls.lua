@@ -15,20 +15,8 @@ local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
 null_ls.setup({
   -- set up formatters & linters
   sources = {
-    --  to disable file types use
-    --  "formatting.prettier.with({disabled_filetypes: {}})" (see null-ls docs)
-    formatting.prettierd.with({ -- js/ts formatter
-      -- only enable prettier if root has .prettierrc
-      condition = function(utils)
-        return utils.root_has_file({ '.prettierrc', '.prettierrc.yml' })
-      end,
-    }),
-    formatting.stylua.with({ -- lua formatter
-      -- only enable stylua if root has .stylua
-      condition = function(utils)
-        return utils.root_has_file({ '.stylua.toml', 'stylua.toml' })
-      end,
-    }),
+    formatting.prettierd, -- js/ts formatter
+    formatting.stylua, -- lua formatter
     diagnostics.eslint_d.with({ -- js/ts linter
       -- only enable eslint if root has .eslintrc
       condition = function(utils)
