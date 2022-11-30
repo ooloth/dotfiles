@@ -15,7 +15,6 @@ brew "gh"
 # brew "git"
 brew "yqrashawn/goku/goku" # for Karibiner
 brew "lazydocker"
-brew "lazygit"
 brew "jesseduffield/lazygit/lazygit"
 brew "mas"
 brew "neovim"
