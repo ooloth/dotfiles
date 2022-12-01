@@ -30,8 +30,7 @@ if $IS_WORK_LAPTOP; then
    # Pyenv
    export PYENV_ROOT="$HOME/.pyenv"
    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-   eval "$(pyenv init -)"
-   eval "$(pyenv virtualenv-init -)"
+   # NOTE: do NOT add eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
 
    # Python
    export PYTHONPATH=.
