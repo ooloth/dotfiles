@@ -2,6 +2,7 @@ if $IS_WORK_LAPTOP; then
 
    # Aliases
    alias r='cd $HOME/Repos/recursionpharma'
+   function rv() { pip install -U 'roadie[cli]' && roadie venv }
    function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && pyenv shell eng-onboarding }
    function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && pyenv shell dash-phenoapp-v2 }
    function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && source venv/bin/activate }
