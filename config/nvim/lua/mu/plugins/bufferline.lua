@@ -3,4 +3,4 @@ if not setup then
   return
 end
 
-bufferline.setup() -- enable comment
+bufferline.setup()

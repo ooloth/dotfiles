@@ -38,10 +38,10 @@ treesitter.setup({
     'vim',
     'yaml',
   },
-  -- enable syntax highlighting
+  -- syntax highlighting
   highlight = {
     enable = true,
   },
-  -- enable indentation
+  -- indentation
   indent = { enable = true },
 })
