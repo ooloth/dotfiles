@@ -45,6 +45,7 @@ return packer.startup(function(use)
   use('nvim-tree/nvim-web-devicons') -- vs code-like icons
   use('christoomey/vim-tmux-navigator') -- navigate vim splits (and tmux panes) with <C-hjkl>
   use('szw/vim-maximizer') -- maximizes and restores the current split
+  use({ 'akinsho/bufferline.nvim', tag = 'v3.*', requires = 'nvim-tree/nvim-web-devicons' })
 
   -- editing
   use('tpope/vim-surround') -- add, delete, change surrounding characters
