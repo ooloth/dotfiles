@@ -64,3 +64,21 @@ vim.keymap.set('n', '<leader>w', ':w<CR>') -- save current buffer
 
 -- x (close)
 vim.keymap.set('n', '<leader>x', ':bd<CR>') -- close
+
+local setup, wk = pcall(require, 'which-key') -- import comment plugin safely
+if not setup then
+  return
+end
+
+-- See: https://github.com/folke/which-key.nvim#%EF%B8%8F-configuration
+wk.setup()
+
+wk.register({
+  f = {
+    name = 'find', -- optional group name
+    f = { '<cmd>Telescope find_files<cr>', 'File' },
+    g = { '<cmd>Telescope git_files<cr>', 'Git File' },
+    r = { '<cmd>Telescope oldfiles<cr>', 'Recent File' }, -- additional options for creating the keymap
+    ['1'] = 'which_key_ignore', -- special label to hide it in the popup
+  },
+}, { prefix = '<leader>' })

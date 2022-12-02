@@ -96,6 +96,9 @@ return packer.startup(function(use)
   -- git
   use('lewis6991/gitsigns.nvim') -- show line modifications on left hand side
 
+  -- mappings
+  use('folke/which-key.nvim')
+
   -- if packer was just installed, sync plugins
   if packer_bootstrap then
     require('packer').sync()
