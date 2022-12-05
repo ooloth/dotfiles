@@ -3,23 +3,23 @@ if $IS_WORK_LAPTOP; then
    # Aliases
    alias r='cd $HOME/Repos/recursionpharma'
    function rv() { pip install -U 'roadie[cli]' && roadie venv }
-   function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && pyenv shell eng-onboarding }
-   function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && pyenv shell dash-phenoapp-v2 }
-   function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && source venv/bin/activate }
+   function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell eng-onboarding }
+   function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell dash-phenoapp-v2 }
+   function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell dash-phenoapp-v2 }
    alias paf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
    alias pm='cd $HOME/Repos/recursionpharma/phenomap'
-   function pr() { cd $HOME/Repos/recursionpharma/phenoreader && pyenv shell phenoreader }
-   function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && pyenv shell phenoservice-api }
-   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && pyenv shell phenoservice-consumer }
+   function pr() { cd $HOME/Repos/recursionpharma/phenoreader && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell phenoreader }
+   function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell phenoservice-api }
+   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell phenoservice-consumer }
 
    # Confluent-Kafka
    # TODO: update these whenever I run brew update
    export C_INCLUDE_PATH=/opt/homebrew/Cellar/librdkafka/1.9.2/include
    export LIBRARY_PATH=/opt/homebrew/Cellar/librdkafka/1.9.2/lib
 
-   # grpcio on M! (see: https://github.com/grpc/grpc/issues/30064)
-   export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1 
-   export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1 
+   # grpcio on M1 (see: https://github.com/grpc/grpc/issues/30064)
+   # export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1 
+   # export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1 
 
    # OpenSSL
    export PATH=/opt/homebrew/opt/openssl@3/bin:$PATH
