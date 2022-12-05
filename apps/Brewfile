@@ -18,6 +18,7 @@ brew "lazydocker"
 brew "jesseduffield/lazygit/lazygit"
 brew "mas"
 brew "neovim"
+brew "romkatv/powerlevel10k/powerlevel10k"
 # brew "ranger"
 brew "raycast"
 brew "ripgrep"        # for Telesope
