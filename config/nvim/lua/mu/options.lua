@@ -19,8 +19,8 @@ vim.opt.confirm = true -- offer to save changes to open files before :q
 ----------------
 
 -- colors
-vim.opt.termguicolors = true
 vim.opt.background = 'dark' -- default light/dark colorschemes to dark
+vim.opt.termguicolors = true
 
 -- cursor
 vim.opt.cursorline = true
@@ -35,11 +35,11 @@ vim.opt.cmdheight = 0
 vim.opt.signcolumn = 'yes'
 
 -- split windows
-vim.opt.splitright = true
 vim.opt.splitbelow = true
+vim.opt.splitright = true
 
 -- tabs & indentation
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
 vim.opt.autoindent = true
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 2
+vim.opt.tabstop = 2
