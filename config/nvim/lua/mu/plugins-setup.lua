@@ -95,6 +95,7 @@ return packer.startup(function(use)
 
   -- git
   use('lewis6991/gitsigns.nvim') -- show line modifications on left hand side
+  use('tpope/vim-fugitive')
 
   -- mappings
   use('folke/which-key.nvim')
