@@ -2,13 +2,13 @@
 -- NON-LEADER KEY --
 --------------------
 
--- command mode
+-- swap : and ,
 vim.keymap.set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
-
--- navigation
-vim.keymap.set('n', '<TAB>', ':bnext<CR>') -- go to next buffer
-vim.keymap.set('n', '<S-TAB>', ':bprev<CR>') -- go to previous buffer
 vim.keymap.set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
+
+-- tab through buffers
+vim.keymap.set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
+vim.keymap.set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
 
 ----------------
 -- LEADER KEY --
