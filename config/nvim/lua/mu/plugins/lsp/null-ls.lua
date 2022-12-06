@@ -1,10 +1,8 @@
--- import null-ls plugin safely
-local setup, null_ls = pcall(require, 'null-ls')
+local setup, null_ls = pcall(require, 'null-ls') -- import null-ls plugin safely
 if not setup then
   return
 end
 
--- for conciseness
 local formatting = null_ls.builtins.formatting -- to setup formatters
 local diagnostics = null_ls.builtins.diagnostics -- to setup linters
 
@@ -17,7 +15,10 @@ null_ls.setup({
   sources = {
     formatting.prettierd, -- js/ts formatter
     formatting.stylua, -- lua formatter
+    formatting.isort, -- python formatter
     diagnostics.eslint_d, -- js/ts linter
+    diagnostics.flake8, -- python linter
+    diagnostics.mypy, -- python linter
   },
   -- configure format on save
   on_attach = function(current_client, bufnr)

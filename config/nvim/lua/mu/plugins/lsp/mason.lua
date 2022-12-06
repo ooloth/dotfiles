@@ -27,6 +27,7 @@ mason_lspconfig.setup({
     'emmet_ls',
     'html',
     'jsonls',
+    'pyright',
     'remark_ls',
     'sumneko_lua',
     'tailwindcss',
@@ -41,6 +42,9 @@ mason_null_ls.setup({
   -- list of formatters & linters for mason to install
   ensure_installed = {
     'eslint_d', -- ts/js linter
+    'flake8', -- python linter
+    'isort', -- python formatter
+    'mypy', -- python linter
     'prettierd', -- ts/js formatter
     'stylua', -- lua formatter
   },
