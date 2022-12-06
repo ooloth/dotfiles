@@ -67,6 +67,9 @@ wk.register({
 
   -- reserve l for LSP
 
+  q = { '<cmd>q<cr>', 'quit' },
+  Q = { '<cmd>qa<cr>', 'quit all' },
+
   s = {
     name = 'split',
     ['\\'] = { '<C-w>v', 'vertically' },
