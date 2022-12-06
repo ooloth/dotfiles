@@ -36,20 +36,18 @@ end
 -- See: https://github.com/folke/which-key.nvim#%EF%B8%8F-configuration
 wk.setup()
 
+-- NOTE: attach LSP mappings in lsp-config.lua (instead of here)
 wk.register({
-  -- ['1'] = 'which_key_ignore', -- special label to hide it in the popup
-
-  ['\\'] = { '<C-w>v', 'vertical split' },
   ['-'] = { '<C-w>s', 'horizontal split' },
+  ['\\'] = { '<C-w>v', 'vertical split' },
 
   e = { '<cmd>NvimTreeToggle<cr>', 'explore' },
-
-  h = { '<cmd>nohl<cr>', 'highlights off' },
 
   f = {
     name = 'find', -- optional group name
     b = { '<cmd>Telescope buffers<cr>', 'buffer' },
     c = { '<cmd>Telescope grep_string<cr>', 'cursor word' }, -- find string under cursor in cwd
+    -- reserve fd/fD for LSP (find document/project diagnostics)
     f = { '<cmd>Telescope find_files<cr>', 'file' }, -- fuzzy-find files in cwd (respects .gitignore)
     g = { '<cmd>Telescope git_files<cr>', 'git file' }, -- fuzzy-find git files in cwd
     h = { '<cmd>Telescope help_tags<cr>', 'help tag' }, -- fuzzy-find available help tags
@@ -65,10 +63,9 @@ wk.register({
     s = { '<cmd>Telescope git_status<cr>', 'status' },
   },
 
-  l = {
-    name = 'LSP',
-    r = { '<cmd>LspRestart<cr>', 'restart' },
-  },
+  h = { '<cmd>nohl<cr>', 'highlights off' },
+
+  -- reserve l for LSP
 
   s = {
     name = 'split',
