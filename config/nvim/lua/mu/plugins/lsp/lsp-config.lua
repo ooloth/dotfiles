@@ -8,8 +8,8 @@ if not cmp_nvim_lsp_ok then
   return
 end
 
-local typescript_ok, typescript = pcall(require, 'typescript')
-if not typescript_ok then
+local setup, typescript = pcall(require, 'typescript')
+if not setup then
   return
 end
 
@@ -26,16 +26,15 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '[d', '<cmd>Lspsaga diagnostic_jump_prev<CR>', opts) -- jump to previous diagnostic in buffer
   vim.keymap.set('n', ']d', '<cmd>Lspsaga diagnostic_jump_next<CR>', opts) -- jump to next diagnostic in buffer
   vim.keymap.set('n', 'gd', '<cmd>Lspsaga peek_definition<CR>', opts) -- see definition and make edits in window
-  vim.keymap.set('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts) -- go to declaration
   vim.keymap.set('n', 'gf', '<cmd>Lspsaga lsp_finder<CR>', opts) -- show definition, references
-  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts) -- go to implementation
+  vim.keymap.set('n', 'gh', '<cmd>Lspsaga hover_doc<CR>', opts) -- show documentation for what is under cursor
   vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>', opts) -- show documentation for what is under cursor
 
   -- set lsp keymaps (leader key)
   wk.register({
     f = {
-      d = { '<cmd>Telescope lsp_document_diagnostics<cr>', 'document diagnostics' },
-      D = { '<cmd>Telescope lsp_workspace_diagnostics<cr>', 'project diagnostics' },
+      d = { '<cmd>Telescope diagnostics bufnr=0<cr>', 'document diagnostics' },
+      D = { '<cmd>Telescope diagnostics<cr>', 'project diagnostics' },
     },
     l = {
       name = 'lsp',
