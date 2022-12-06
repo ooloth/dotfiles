@@ -1,29 +1,28 @@
-local lspconfig_ok, lspconfig = pcall(require, 'lspconfig') -- import lspconfig plugin safely
+local lspconfig_ok, lspconfig = pcall(require, 'lspconfig')
 if not lspconfig_ok then
   return
 end
 
-local cmp_nvim_lsp_ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp') -- import cmp-nvim-lsp plugin safely
+local cmp_nvim_lsp_ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
 if not cmp_nvim_lsp_ok then
   return
 end
 
-local typescript_ok, typescript = pcall(require, 'typescript') -- import typescript plugin safely
+local typescript_ok, typescript = pcall(require, 'typescript')
 if not typescript_ok then
   return
 end
 
-local whichkey_ok, wk = pcall(require, 'which-key') -- import which-key safely
-if not whichkey_ok then
+local which_key_ok, wk = pcall(require, 'which-key')
+if not which_key_ok then
   return
 end
 
--- enable keybinds only for when lsp server available
+-- enable lsp keymaps only when an lsp server is attached
 local on_attach = function(client, bufnr)
-  -- keybind options
   local opts = { noremap = true, silent = true, buffer = bufnr }
 
-  -- add lsp keymaps (non-leader key)
+  -- set lsp keymaps (non-leader key)
   vim.keymap.set('n', '[d', '<cmd>Lspsaga diagnostic_jump_prev<CR>', opts) -- jump to previous diagnostic in buffer
   vim.keymap.set('n', ']d', '<cmd>Lspsaga diagnostic_jump_next<CR>', opts) -- jump to next diagnostic in buffer
   vim.keymap.set('n', 'gd', '<cmd>Lspsaga peek_definition<CR>', opts) -- see definition and make edits in window
@@ -32,7 +31,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts) -- go to implementation
   vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>', opts) -- show documentation for what is under cursor
 
-  -- add lsp keymaps (leader key)
+  -- set lsp keymaps (leader key)
   wk.register({
     f = {
       d = { '<cmd>Telescope lsp_document_diagnostics<cr>', 'document diagnostics' },
@@ -49,7 +48,7 @@ local on_attach = function(client, bufnr)
     },
   }, { buffer = bufnr, prefix = '<leader>' })
 
-  -- add typescript-specific lsp keymaps
+  -- set typescript-specific lsp keymaps
   if client.name == 'tsserver' then
     wk.register({
       l = {
@@ -125,6 +124,7 @@ lspconfig['sumneko_lua'].setup({
   },
 })
 
+-- TODO: only attach if tailwindcss is installed in project
 -- configure tailwindcss server
 lspconfig['tailwindcss'].setup({
   capabilities = capabilities,
