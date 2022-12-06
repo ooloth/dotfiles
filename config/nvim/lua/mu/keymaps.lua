@@ -26,6 +26,10 @@ wk.setup()
 
 wk.register({
   -- ['1'] = 'which_key_ignore', -- special label to hide it in the popup
+
+  ['\\'] = { '<C-w>v', 'vertical split' },
+  ['-'] = { '<C-w>s', 'horizontal split' },
+
   e = { '<cmd>NvimTreeToggle<cr>', 'explore' },
 
   h = { '<cmd>nohl<cr>', 'highlights off' },
