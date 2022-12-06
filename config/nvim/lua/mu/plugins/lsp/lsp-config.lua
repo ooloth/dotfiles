@@ -1,18 +1,20 @@
--- import lspconfig plugin safely
-local lspconfig_status, lspconfig = pcall(require, 'lspconfig')
-if not lspconfig_status then
+local lspconfig_ok, lspconfig = pcall(require, 'lspconfig') -- import lspconfig plugin safely
+if not lspconfig_ok then
   return
 end
 
--- import cmp-nvim-lsp plugin safely
-local cmp_nvim_lsp_status, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
-if not cmp_nvim_lsp_status then
+local cmp_nvim_lsp_ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp') -- import cmp-nvim-lsp plugin safely
+if not cmp_nvim_lsp_ok then
   return
 end
 
--- import typescript plugin safely
-local typescript_setup, typescript = pcall(require, 'typescript')
-if not typescript_setup then
+local typescript_ok, typescript = pcall(require, 'typescript') -- import typescript plugin safely
+if not typescript_ok then
+  return
+end
+
+local whichkey_ok, wk = pcall(require, 'which-key') -- import which-key safely
+if not whichkey_ok then
   return
 end
 
@@ -21,25 +23,39 @@ local on_attach = function(client, bufnr)
   -- keybind options
   local opts = { noremap = true, silent = true, buffer = bufnr }
 
-  -- set keybinds
-  vim.keymap.set('n', 'gf', '<cmd>Lspsaga lsp_finder<CR>', opts) -- show definition, references
-  vim.keymap.set('n', 'gd', '<cmd>Lspsaga peek_definition<CR>', opts) -- see definition and make edits in window
-  vim.keymap.set('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts) -- go to declaration
-  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts) -- go to implementation
-  vim.keymap.set('n', '<leader>ca', '<cmd>Lspsaga code_action<CR>', opts) -- see available code actions
-  vim.keymap.set('n', '<leader>rn', '<cmd>Lspsaga rename<CR>', opts) -- smart rename
-  vim.keymap.set('n', '<leader>D', '<cmd>Lspsaga show_line_diagnostics<CR>', opts) -- show diagnostics for line
-  vim.keymap.set('n', '<leader>d', '<cmd>Lspsaga show_cursor_diagnostics<CR>', opts) -- show diagnostics for cursor
+  -- add lsp keymaps (non-leader key)
   vim.keymap.set('n', '[d', '<cmd>Lspsaga diagnostic_jump_prev<CR>', opts) -- jump to previous diagnostic in buffer
   vim.keymap.set('n', ']d', '<cmd>Lspsaga diagnostic_jump_next<CR>', opts) -- jump to next diagnostic in buffer
+  vim.keymap.set('n', 'gd', '<cmd>Lspsaga peek_definition<CR>', opts) -- see definition and make edits in window
+  vim.keymap.set('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts) -- go to declaration
+  vim.keymap.set('n', 'gf', '<cmd>Lspsaga lsp_finder<CR>', opts) -- show definition, references
+  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts) -- go to implementation
   vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>', opts) -- show documentation for what is under cursor
-  vim.keymap.set('n', '<leader>o', '<cmd>LSoutlineToggle<CR>', opts) -- see outline on right hand side
 
-  -- typescript specific keymaps (e.g. rename file and update imports)
+  -- add lsp keymaps (leader key)
+  wk.register({
+    f = {
+      d = { '<cmd>Telescope lsp_document_diagnostics<cr>', 'document diagnostics' },
+      D = { '<cmd>Telescope lsp_workspace_diagnostics<cr>', 'project diagnostics' },
+    },
+    l = {
+      name = 'lsp',
+      a = { '<cmd>Lspsaga code_action<cr>', 'action' },
+      d = { '<cmd>Lspsaga show_cursor_diagnostics<cr>', 'diagnostics for cursor' },
+      D = { '<cmd>Lspsaga show_line_diagnostics<cr>', 'diagnostics for line' },
+      i = { '<cmd>LspInfo<cr>', 'Lsp Info' },
+      rs = { '<cmd>Lspsaga rename<CR>', 'rename symbol under cursor' },
+      R = { '<cmd>LspRestart<cr>', 'restart' },
+    },
+  }, { buffer = bufnr, prefix = '<leader>' })
+
+  -- add typescript-specific lsp keymaps
   if client.name == 'tsserver' then
-    vim.keymap.set('n', '<leader>rf', ':TypescriptRenameFile<CR>') -- rename file and update imports
-    vim.keymap.set('n', '<leader>oi', ':TypescriptOrganizeImports<CR>') -- organize imports
-    vim.keymap.set('n', '<leader>ru', ':TypescriptRemoveUnused<CR>') -- remove unused variables
+    wk.register({
+      l = {
+        rf = { '<cmd>TypescriptRenameFile<cr>', 'rename file' }, -- TODO: confirm if this works
+      },
+    }, { buffer = bufnr, prefix = '<leader>' })
   end
 end
 
