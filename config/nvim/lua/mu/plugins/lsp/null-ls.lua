@@ -17,12 +17,7 @@ null_ls.setup({
   sources = {
     formatting.prettierd, -- js/ts formatter
     formatting.stylua, -- lua formatter
-    diagnostics.eslint_d.with({ -- js/ts linter
-      -- only enable eslint if root has .eslintrc
-      condition = function(utils)
-        return utils.root_has_file({ '.eslintrc', '.eslintrc.js', '.eslintrc.yml', '.eslintrc.json' })
-      end,
-    }),
+    diagnostics.eslint_d, -- js/ts linter
   },
   -- configure format on save
   on_attach = function(current_client, bufnr)
