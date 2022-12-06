@@ -6,7 +6,6 @@ end
 lualine.setup({
   options = {
     component_separators = '',
-    globalstatus = true, -- have a single statusline instead of one for every window
     section_separators = '',
     theme = 'dracula-nvim',
   },
