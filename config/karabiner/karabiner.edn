@@ -15,7 +15,7 @@
 ;; ## | any combination of modifiers is optionally accepted
 
 {
-  :alone 1 
+  :alone 70 
   :delay 0
 
   :templates {:open "open \"%s\""}
@@ -43,9 +43,6 @@
     {
       :des "taps"
       :rules [
-        ; deleting
-        [:##left_shift :left_shift nil {:alone :delete_or_backspace}]
-        [:right_shift :right_shift nil {:alone :delete_forward}]
         ; left hand modifiers
         ; [:z :left_shift nil {:alone :z}]
         ; [:x :left_control nil {:alone :x}]
