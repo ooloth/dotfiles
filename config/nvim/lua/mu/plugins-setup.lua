@@ -35,7 +35,6 @@ return packer.startup(function(use)
 
   -- colors
   use('bluz71/vim-nightfly-guicolors')
-  -- use('dracula/vim')
   use('Mofiqul/dracula.nvim')
 
   -- navigating
