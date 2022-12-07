@@ -67,8 +67,8 @@ wk.register({
 
   -- reserve l for LSP
 
-  q = { '<cmd>q<cr>', 'quit' },
-  Q = { '<cmd>qa<cr>', 'quit all' },
+  q = { '<cmd>q<cr>', 'quit window' },
+  Q = { '<cmd>confirm qa<cr>', 'quit vim' },
 
   s = {
     name = 'split',
