@@ -6,8 +6,7 @@
 vim.opt.backspace = 'indent,eol,start'
 vim.opt.clipboard:append('unnamedplus') -- use the macos system clipboard when yanking, cutting or deleting
 vim.opt.iskeyword:append('-') -- treat hyphens as part of a single word
-vim.opt.undodir = vim.fn.expand('~/.config/nvim/undo') -- directory where undo files will be stored
-vim.opt.undofile = true -- persist undo tree after closing buffer
+vim.opt.undofile = true -- persist buffer undo tree after closing
 
 -- searching
 vim.opt.ignorecase = true -- assume I want a case-insensitive search if my search only includes lowercase characters
