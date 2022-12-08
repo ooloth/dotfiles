@@ -35,7 +35,7 @@ return packer.startup(function(use)
   -- use('bluz71/vim-nightfly-guicolors')
 
   -- navigating
-  use('mhinz/vim-startify') -- start screen + session manager
+  -- use('mhinz/vim-startify') -- start screen + session manager
   use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }) -- telescope dependency for faster sorting
   use({ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' }, branch = '0.1.x' }) -- fuzzy finder
 
