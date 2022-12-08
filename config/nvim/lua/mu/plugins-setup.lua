@@ -48,6 +48,7 @@ return packer.startup(function(use)
   use('tpope/vim-surround') -- add, delete, change surrounding characters
   use('inkarkat/vim-ReplaceWithRegister') -- replace text with register contents (gr + motion)
   use('numToStr/Comment.nvim') -- comment text (gc + motion)
+  use('tpope/vim-repeat') -- repeat plugin commands with .
 
   -- status
   use('nvim-lualine/lualine.nvim') -- statusline
