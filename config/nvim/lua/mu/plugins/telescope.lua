@@ -10,6 +10,20 @@ end
 
 telescope.setup({
   defaults = {
+    builtin = {
+      find_files = {
+        -- find_command = { 'fd', '--hidden', '--glob', '' },
+        -- find_command = { 'rg', '--files', '--hidden', '-g', '!.git' },
+        hidden = true, -- show hidden files
+        no_ignore = true, -- show ignored files
+      },
+      git_files = {
+        show_untracked = true,
+      },
+      oldfiles = {
+        cwd_only = true,
+      },
+    },
     mappings = {
       i = {
         ['<C-k>'] = actions.move_selection_previous, -- move to prev result
