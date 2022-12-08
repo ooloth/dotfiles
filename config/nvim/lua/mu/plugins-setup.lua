@@ -30,8 +30,8 @@ end
 return packer.startup(function(use)
   use('wbthomason/packer.nvim') -- packer can manage itself
 
-  -- utilities
-  use('nvim-lua/plenary.nvim') -- lua functions many other plugins use
+  -- sessions
+  use({ 'Shatur/neovim-session-manager', requires = { 'nvim-lua/plenary.nvim' } })
 
   -- colors
   use('bluz71/vim-nightfly-guicolors')
