@@ -42,6 +42,7 @@ return packer.startup(function(use)
   use('nvim-tree/nvim-web-devicons') -- vs code-like icons
   use('christoomey/vim-tmux-navigator') -- navigate vim splits (and tmux panes) with <C-hjkl>
   use('szw/vim-maximizer') -- maximizes and restores the current split
+  use('moll/vim-bbye') -- close buffers without closing splits
 
   -- editing
   use('tpope/vim-surround') -- add, delete, change surrounding characters
