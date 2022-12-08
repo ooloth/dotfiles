@@ -22,6 +22,12 @@ vim.keymap.set('v', '<up>', ":m '<-2<CR>gv=gv")
 vim.keymap.set('n', '<right>', 'gt') -- go to next tab
 vim.keymap.set('n', '<left>', 'gT') -- go to next tab
 
+-- Easily exit help windows with Esc or q
+vim.cmd([[
+  autocmd Filetype help nmap <buffer> <Esc> :q<CR>
+  autocmd Filetype help nmap <buffer> q :q<CR>
+]])
+
 ----------------
 -- LEADER KEY --
 ----------------
@@ -38,37 +44,62 @@ wk.setup()
 
 -- NOTE: attach LSP mappings in lsp-config.lua (instead of here)
 wk.register({
-  ['-'] = { '<C-w>s', 'horizontal split' },
-  ['\\'] = { '<C-w>v', 'vertical split' },
+  ['-'] = { '<c-w>s', 'horizontal split' },
+  ['\\'] = { '<c-w>v', 'vertical split' },
+  ['='] = { '<c-w>=', 'equal width splits' },
+  ['['] = { '<cmd>vertical resize -3<cr>', 'reduce split size' },
+  [']'] = { '<cmd>vertical resize +3<cr>', 'increase split size' },
+
+  c = { "<cmd> normal \"ayiwOconsole.log('<C-R>a:', <C-R>a);<Esc>", 'console.log word' },
 
   e = { '<cmd>NvimTreeToggle<cr>', 'explore' },
 
   f = {
     name = 'find', -- optional group name
+    [','] = { '<cmd>Telescope command_history<cr>', 'recent command' },
     b = { '<cmd>Telescope buffers<cr>', 'buffer' },
     -- reserve fd/fD for LSP (find document/project diagnostics)
     f = { '<cmd>Telescope find_files<cr>', 'file' }, -- fuzzy-find files in cwd (respects .gitignore)
     g = { '<cmd>Telescope git_files<cr>', 'git file' }, -- fuzzy-find git files in cwd
     h = { '<cmd>Telescope help_tags<cr>', 'help tag' }, -- fuzzy-find available help tags
+    k = { '<cmd>Telescope keymaps<cr>', 'keymaps' }, -- fuzzy-find available help tags
+    m = { '<cmd>Telescope marks<cr>', 'marks' }, -- fuzzy-find bookmarks
     r = { '<cmd>Telescope oldfiles<cr>', 'recent file' }, -- sort files by most recent first
+    R = { '<cmd>Telescope registers<cr>', 'registers' }, -- fuzzy-find register content
     s = { '<cmd>Telescope live_grep<CR>', 'string' }, -- fuzzy-find string in cwd
     w = { '<cmd>Telescope grep_string<cr>', 'word under cursor' }, -- find string under cursor in cwd
   },
 
   g = {
     name = 'git',
-    b = { '<cmd>Telescope git_branches<cr>', 'branches (<cr> to checkout)' },
-    c = { '<cmd>Telescope git_commits<cr>', 'commits (<cr> to checkout)' },
-    fc = { '<cmd>Telescope git_bcommits<cr>', 'file commits (<cr> to checkout)' },
-    s = { '<cmd>Telescope git_status<cr>', 'status' },
+    b = { '<cmd>Telescope git_branches<cr>', 'branches' },
+    B = { '<cmd>Git blame<cr>', 'blame' },
+    c = { '<cmd>Telescope git_bcommits<cr>', 'commits (buffer)' },
+    C = { '<cmd>Telescope git_commits<cr>', 'commits (project)' },
+    d = { '<cmd>vert Gdiff<cr>', 'diff' },
+    g = { '<cmd>Ggrep<cr>', 'grep' },
+    m = { '<cmd>Git move<cr>', 'move' },
+    p = { '<cmd>Git pull<cr>', 'pull' },
+    P = { '<cmd>Git push<cr>', 'push' },
+    s = { '<cmd>vert Git<cr>', 'status (in split)' },
+    S = { '<cmd>tab Git<cr>', 'status (in tab)' },
   },
 
   h = { '<cmd>nohl<cr>', 'highlights off' },
 
   -- reserve l for LSP
 
+  n = {
+    name = 'session',
+    d = { '<cmd>SessionManager delete_session', 'delete' },
+    o = { '<cmd>SessionManager save_current_session', 'open' },
+    s = { '<cmd>SessionManager delete_session', 'save' },
+  },
+
   q = { '<cmd>q<cr>', 'quit window' },
   Q = { '<cmd>confirm qa<cr>', 'quit vim' },
+
+  R = { '<cmd>source $MYVIMRC<cr>', 'reload vim' },
 
   s = {
     name = 'split',
