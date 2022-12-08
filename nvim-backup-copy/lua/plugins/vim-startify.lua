@@ -3,7 +3,7 @@
 -- See: https://github.com/mhinz/vim-startify/blob/master/doc/startify.txt
 -- See: https://www.chrisatmachine.com/Neovim/11-startify/
 
-vim.g.startify_change_to_vcs_root = 1  -- change cwd to project root on open
+vim.g.startify_change_to_vcs_root = 1 -- change cwd to project root on open
 vim.g.startify_enable_special = 0 -- get rid of empty buffers on quit
 vim.g.startify_fortune_use_unicode = 1 -- if I want Unicode
 vim.g.startify_session_autoload = 1 -- automatically restart sessions if dir has Sessions.vim
@@ -33,10 +33,11 @@ vim.g.startify_update_oldfiles = 1 -- keep Startify up to date as I work
 -- endfunction
 
 vim.g.startify_lists = {
-  { type = 'sessions', header = {' Sessions'} },
+  { type = 'sessions', header = { 'Sessions' } },
+  { type = 'bookmarks', header = { 'Bookmarks' } },
+  { type = 'files', header = { 'Files' } },
   -- { type = function('s:gitModified'), header = {' [Git] Modified in current branch'} },
   -- { type = function('s:gitUntracked'), header = {' [Git] Untracked in current branch'} },
-  { type = 'bookmarks', header = {' Bookmarks'} },
 }
 
 vim.g.startify_bookmarks = {
@@ -44,10 +45,9 @@ vim.g.startify_bookmarks = {
   { d = '~/Repos/ooloth/dotfiles/' },
   { m = '~/Repos/ooloth/michaeluloth.com/' },
   { g = '~/Repos/ooloth/gatsbytutorials.com/' },
-  { s = '~/Repos/' }
+  { s = '~/Repos/' },
 }
 
 -- Create viminfo file (for new installs)
 -- https://github.com/ChristianChiarulli/nvim/issues/5#issuecomment-625933872
 -- set viminfo='100,n$HOME/.config/nvim/autoload/plugged/vim-startify/test/viminfo'
-

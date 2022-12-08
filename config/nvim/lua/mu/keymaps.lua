@@ -50,7 +50,8 @@ wk.register({
   ['['] = { '<cmd>vertical resize -3<cr>', 'reduce split size' },
   [']'] = { '<cmd>vertical resize +3<cr>', 'increase split size' },
 
-  c = { "<cmd> normal \"ayiwOconsole.log('<C-R>a:', <C-R>a);<Esc>", 'console.log word' },
+  -- FIXME: get this to work? (see: https://vi.stackexchange.com/questions/21894/how-to-insert-a-console-log-for-word-under-cursor-in-new-line)
+  -- c = { "<cmd> normal \"ayiwOconsole.log('<C-R>a:', <C-R>a);<Esc>", 'console.log word' },
 
   e = { '<cmd>NvimTreeToggle<cr>', 'explore' },
 
@@ -91,15 +92,17 @@ wk.register({
 
   n = {
     name = 'session',
-    d = { '<cmd>SessionManager delete_session', 'delete' },
-    o = { '<cmd>SessionManager save_current_session', 'open' },
-    s = { '<cmd>SessionManager delete_session', 'save' },
+    d = { '<cmd>SDelete<cr>', 'delete' },
+    l = { '<cmd>SLoad<cr>', 'load' },
+    s = { '<cmd>SSave<cr>', 'save' },
+    x = { '<cmd>SClose<cr>', 'close' },
   },
 
   q = { '<cmd>q<cr>', 'quit window' },
   Q = { '<cmd>confirm qa<cr>', 'quit vim' },
 
-  R = { '<cmd>source $MYVIMRC<cr>', 'reload vim' },
+  -- FIXME: can this work?
+  -- R = { '<cmd>source $MYVIMRC<cr>', 'reload vim' },
 
   s = {
     name = 'split',
@@ -122,5 +125,5 @@ wk.register({
 
   w = { '<cmd>w<cr>', 'write' },
 
-  x = { '<cmd>bd<cr>', 'close' },
+  x = { '<cmd>confirm Bdelete<cr>', 'close' }, -- close buffer but not split (with vim-bbye)
 }, { prefix = '<leader>' })
