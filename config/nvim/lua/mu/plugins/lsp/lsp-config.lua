@@ -33,8 +33,8 @@ local on_attach = function(client, bufnr)
   -- set lsp keymaps (leader key)
   wk.register({
     f = {
-      d = { '<cmd>Telescope diagnostics bufnr=0<cr>', 'document diagnostics' },
-      D = { '<cmd>Telescope diagnostics<cr>', 'project diagnostics' },
+      d = { '<cmd>Telescope diagnostics bufnr=0<cr>', 'diagnostics (buffer)' },
+      D = { '<cmd>Telescope diagnostics<cr>', 'diagnostics (project)' },
     },
     l = {
       name = 'lsp',
@@ -42,7 +42,7 @@ local on_attach = function(client, bufnr)
       d = { '<cmd>Lspsaga show_cursor_diagnostics<cr>', 'diagnostics for cursor' },
       D = { '<cmd>Lspsaga show_line_diagnostics<cr>', 'diagnostics for line' },
       i = { '<cmd>LspInfo<cr>', 'Lsp Info' },
-      rs = { '<cmd>Lspsaga rename<CR>', 'rename symbol under cursor' },
+      rs = { '<cmd>Lspsaga rename<cr>', 'rename symbol under cursor' },
       R = { '<cmd>LspRestart<cr>', 'restart' },
     },
   }, { buffer = bufnr, prefix = '<leader>' })

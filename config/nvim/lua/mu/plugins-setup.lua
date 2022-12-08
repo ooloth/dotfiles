@@ -30,26 +30,26 @@ end
 return packer.startup(function(use)
   use('wbthomason/packer.nvim') -- packer can manage itself
 
-  -- utilities
-  use('nvim-lua/plenary.nvim') -- lua functions many other plugins use
-
   -- colors
-  use('bluz71/vim-nightfly-guicolors')
-  -- use('dracula/vim')
   use('Mofiqul/dracula.nvim')
+  -- use('bluz71/vim-nightfly-guicolors')
 
   -- navigating
+  use('mhinz/vim-startify') -- start screen + session manager
   use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }) -- telescope dependency for faster sorting
-  use({ 'nvim-telescope/telescope.nvim', branch = '0.1.x' }) -- fuzzy finder
+  use({ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' }, branch = '0.1.x' }) -- fuzzy finder
+
   use('nvim-tree/nvim-tree.lua') -- file explorer
   use('nvim-tree/nvim-web-devicons') -- vs code-like icons
   use('christoomey/vim-tmux-navigator') -- navigate vim splits (and tmux panes) with <C-hjkl>
   use('szw/vim-maximizer') -- maximizes and restores the current split
+  use('moll/vim-bbye') -- close buffers without closing splits
 
   -- editing
   use('tpope/vim-surround') -- add, delete, change surrounding characters
   use('inkarkat/vim-ReplaceWithRegister') -- replace text with register contents (gr + motion)
   use('numToStr/Comment.nvim') -- comment text (gc + motion)
+  use('tpope/vim-repeat') -- repeat plugin commands with .
 
   -- status
   use('nvim-lualine/lualine.nvim') -- statusline
@@ -77,7 +77,7 @@ return packer.startup(function(use)
   use('onsails/lspkind.nvim') -- vs-code like icons for autocompletion
 
   -- formatting & linting
-  use('jose-elias-alvarez/null-ls.nvim') -- configure formatters & linters
+  use({ 'jose-elias-alvarez/null-ls.nvim', requires = { 'nvim-lua/plenary.nvim' } }) -- configure formatters & linters
 
   -- treesitter configuration
   use({
