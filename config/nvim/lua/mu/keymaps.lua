@@ -58,10 +58,10 @@ wk.register({
   f = {
     name = 'find', -- optional group name
     [','] = { '<cmd>Telescope command_history<cr>', 'recent command' },
+    a = { '<cmd>Telescope find_files<cr>', 'all files' }, -- fuzzy-find files in cwd (respects .gitignore)
     b = { '<cmd>Telescope buffers<cr>', 'buffer' },
     -- reserve fd/fD for LSP (find document/project diagnostics)
-    f = { '<cmd>Telescope find_files<cr>', 'file' }, -- fuzzy-find files in cwd (respects .gitignore)
-    g = { '<cmd>Telescope git_files<cr>', 'git file' }, -- fuzzy-find git files in cwd
+    f = { '<cmd>Telescope git_files<cr>', 'file' }, -- fuzzy-find git files in cwd
     h = { '<cmd>Telescope help_tags<cr>', 'help tag' }, -- fuzzy-find available help tags
     k = { '<cmd>Telescope keymaps<cr>', 'keymaps' }, -- fuzzy-find available help tags
     m = { '<cmd>Telescope marks<cr>', 'marks' }, -- fuzzy-find bookmarks
