@@ -58,17 +58,18 @@ wk.register({
   f = {
     name = 'find', -- optional group name
     [','] = { '<cmd>Telescope command_history<cr>', 'recent command' },
-    a = { '<cmd>Telescope find_files<cr>', 'all files' }, -- fuzzy-find files in cwd (respects .gitignore)
+    a = { '<cmd>Telescope find_files<cr>', 'any file' }, -- fuzzy-find files in cwd (respects .gitignore)
     b = { '<cmd>Telescope buffers<cr>', 'buffer' },
-    -- reserve fd/fD for LSP (find document/project diagnostics)
-    f = { '<cmd>Telescope git_files<cr>', 'file' }, -- fuzzy-find git files in cwd
+    -- reserve d/D for LSP (find document/project diagnostics)
+    f = { '<cmd>Telescope git_files<cr>', 'git file' }, -- fuzzy-find git files in cwd
     h = { '<cmd>Telescope help_tags<cr>', 'help tag' }, -- fuzzy-find available help tags
-    k = { '<cmd>Telescope keymaps<cr>', 'keymaps' }, -- fuzzy-find available help tags
+    k = { '<cmd>Telescope keymaps<cr>', 'keymaps' }, -- fuzzy-find available keymaps
     m = { '<cmd>Telescope marks<cr>', 'marks' }, -- fuzzy-find bookmarks
     r = { '<cmd>Telescope oldfiles<cr>', 'recent file' }, -- sort files by most recent first
     R = { '<cmd>Telescope registers<cr>', 'registers' }, -- fuzzy-find register content
     s = { '<cmd>Telescope live_grep<CR>', 'string' }, -- fuzzy-find string in cwd
     w = { '<cmd>Telescope grep_string<cr>', 'word under cursor' }, -- find string under cursor in cwd
+    z = { '<cmd>Telescope resume<cr>', 'resume' }, -- resume previous search
   },
 
   g = {
