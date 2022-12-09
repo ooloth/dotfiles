@@ -164,6 +164,7 @@ mason_lspconfig.setup_handlers({
       settings = {
         Lua = {
           diagnostics = {
+            -- if necessary, add to .luacheckrc "read_globals" as well
             globals = { 'pcall', 'read_globals', 'require', 'std', 'vim' },
           },
           workspace = {
