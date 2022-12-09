@@ -164,7 +164,7 @@ mason_lspconfig.setup_handlers({
       settings = {
         Lua = {
           diagnostics = {
-            globals = { 'require', 'pcall', 'vim' },
+            globals = { 'pcall', 'read_globals', 'require', 'std', 'vim' },
           },
           workspace = {
             -- make language server aware of runtime files
