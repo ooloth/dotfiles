@@ -45,9 +45,15 @@ mason_null_ls.setup({
     'eslint_d', -- ts/js linter
     'flake8', -- python linter
     'isort', -- python formatter
+    'markdownlint', -- markdown linter
     'mypy', -- python linter
+    'proselint', -- prose linter
+    'puglint', -- pug linter
     'prettierd', -- ts/js formatter
+    'shellcheck', -- shell linter
     'stylua', -- lua formatter
+    'yamllint', -- yaml linter
+    'yapf', -- python formatter
   },
   -- auto-install configured formatters & linters (with null-ls)
   automatic_installation = true,
