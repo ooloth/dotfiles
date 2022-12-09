@@ -70,7 +70,7 @@ return packer.startup(function(use)
   use('williamboman/mason-lspconfig.nvim') -- bridges gap b/w mason & lspconfig
   use('jayp0521/mason-null-ls.nvim') -- bridges gap b/w mason & null-ls
 
-  -- configuring lsp servers
+  -- lsp servers
   use('neovim/nvim-lspconfig') -- configure language servers
   use('hrsh7th/cmp-nvim-lsp') -- add lsp server info to autocompletions
   use({ 'glepnir/lspsaga.nvim', branch = 'main' }) -- enhanced lsp uis
@@ -89,10 +89,9 @@ return packer.startup(function(use)
     end,
   })
 
-  -- auto closing (to help treesitter)
+  -- treesetter extensions
   use('windwp/nvim-autopairs') -- autoclose parens, brackets, quotes, etc...
   use({ 'windwp/nvim-ts-autotag', after = 'nvim-treesitter' }) -- autoclose tags
-
   use({ 'nvim-treesitter/nvim-treesitter-context', after = 'nvim-treesitter' }) -- sticky scroll context
 
   -- git
