@@ -1,0 +1,6 @@
+# see: https://yamllint.readthedocs.io/en/stable/configuration.html
+
+extends: relaxed
+
+rules:
+  document-start: disable
