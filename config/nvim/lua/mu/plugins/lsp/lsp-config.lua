@@ -47,6 +47,13 @@ local on_attach = function(client, bufnr)
     },
   }, { buffer = bufnr, prefix = '<leader>' })
 
+  -- autofix eslint issues on save
+  if client.name == 'eslint' then
+    vim.cmd([[
+      autocmd BufWritePre *.tsx,*.ts,*.jsx,*.js EslintFixAll
+    ]])
+  end
+
   -- set typescript-specific lsp keymaps
   if client.name == 'tsserver' then
     wk.register({
@@ -80,13 +87,21 @@ lspconfig['emmet_ls'].setup({
   filetypes = { 'css', 'html', 'javascriptreact', 'less', 'sass', 'scss', 'svelte', 'typescriptreact' },
 })
 
+-- configure eslint server (adds ability to auto-fix issues on save)
+-- See: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#eslint
+-- See: https://github.com/jose-elias-alvarez/null-ls.nvim/discussions/824#discussioncomment-3796550
+lspconfig['eslint'].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
 -- configure html server
 lspconfig['html'].setup({
   capabilities = capabilities,
   on_attach = on_attach,
 })
 
--- configure html server
+-- configure python server
 lspconfig['pyright'].setup({
   capabilities = capabilities,
   on_attach = on_attach,
