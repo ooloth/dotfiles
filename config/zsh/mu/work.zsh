@@ -6,10 +6,10 @@ if $IS_WORK_LAPTOP; then
   alias nb='n && npm run build'
   alias nfc='npm run format:check'
   alias nff='npm run format:fix'
+  alias nk='npm run typecheck'
   alias nl='npm run lint'
   alias ns='n && npm run start'
   alias nt='npm run test'
-  alias ntc='npm run typecheck'
   function ntp() { yt --testPathPattern=$1 }
   function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
   function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
