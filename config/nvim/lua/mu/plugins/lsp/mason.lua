@@ -49,23 +49,27 @@ mason.setup()
 --------------------------------
 
 mason_lspconfig.setup({
-  -- list of servers for mason to install
+  automatic_installation = true,
+  -- lsp servers mason will automatically install + set up below
   -- See: https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
   ensure_installed = {
+    'bashls',
     'cssls',
+    'cssmodules_ls',
+    'dockerls',
     'emmet_ls',
     'eslint',
     'html',
     'jsonls',
+    'marksman',
     'pyright',
-    'remark_ls',
     'sumneko_lua',
+    'svelte',
     'tailwindcss',
+    'terraformls',
     'tsserver',
     'yamlls',
   },
-  -- auto-install configured servers (with lspconfig)
-  automatic_installation = true, -- not the same as ensure_installed
 })
 
 -------------------------------------------------
@@ -139,7 +143,11 @@ mason_lspconfig.setup_handlers({
     })
   end,
 
-  -- pyright overrides
+  ---------------
+  -- OVERRIDES --
+  ---------------
+  -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+
   ['pyright'] = function()
     lspconfig.pyright.setup({
       capabilities = capabilities,
@@ -201,7 +209,7 @@ local diagnostics = null_ls.builtins.diagnostics
 local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
 
 null_ls.setup({
-  -- define which formatters & linters mason will install + set up below
+  -- formatters & linters mason will automatically install + set up below
   sources = {
     -- linters & type-checkers
     diagnostics.eslint_d, -- js/ts linter
