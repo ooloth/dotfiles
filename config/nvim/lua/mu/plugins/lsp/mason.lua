@@ -1,3 +1,5 @@
+-- this file automatically installs + sets up all my lsp + null-ls servers
+
 local mason_ok, mason = pcall(require, 'mason')
 if not mason_ok then
   return
