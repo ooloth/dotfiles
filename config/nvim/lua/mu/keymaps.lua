@@ -90,14 +90,14 @@ wk.register({
 
   -- reserve l for LSP
 
-  n = {
-    name = 'session',
-    d = { '<cmd>SDelete<cr>', 'delete' },
-    l = { '<cmd>SLoad<cr>', 'load' },
-    s = { '<cmd>SSave<cr>', 'save' },
-    x = { '<cmd>SClose<cr>', 'close' },
-  },
-
+  -- n = {
+  --   name = 'session',
+  --   d = { '<cmd>SDelete<cr>', 'delete' },
+  --   l = { '<cmd>SLoad<cr>', 'load' },
+  --   s = { '<cmd>SSave<cr>', 'save' },
+  --   x = { '<cmd>SClose<cr>', 'close' },
+  -- },
+  --
   q = { '<cmd>q<cr>', 'quit window' },
   Q = { '<cmd>confirm qa<cr>', 'quit vim' },
 
