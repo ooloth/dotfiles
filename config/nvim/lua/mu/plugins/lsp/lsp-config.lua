@@ -1,3 +1,4 @@
+-- TODO: automatically set up all servers installed by mason (instead of doing it separately)
 local lspconfig_ok, lspconfig = pcall(require, 'lspconfig')
 if not lspconfig_ok then
   return
@@ -8,8 +9,8 @@ if not cmp_nvim_lsp_ok then
   return
 end
 
-local setup, typescript = pcall(require, 'typescript')
-if not setup then
+local typescript_ok, typescript = pcall(require, 'typescript')
+if not typescript_ok then
   return
 end
 
@@ -101,6 +102,11 @@ lspconfig['html'].setup({
   on_attach = on_attach,
 })
 
+lspconfig['jsonls'].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
+
 -- configure python server
 lspconfig['pyright'].setup({
   capabilities = capabilities,
@@ -115,6 +121,11 @@ lspconfig['pyright'].setup({
       disableOrganizeImports = true, -- using isort for import sorting
     },
   },
+})
+
+lspconfig['remark_ls'].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
 })
 
 -- configure lua server (with special settings)
@@ -139,7 +150,6 @@ lspconfig['sumneko_lua'].setup({
 })
 
 -- TODO: only attach if tailwindcss is installed in project
--- configure tailwindcss server
 lspconfig['tailwindcss'].setup({
   capabilities = capabilities,
   on_attach = on_attach,
@@ -151,4 +161,9 @@ typescript.setup({
     capabilities = capabilities,
     on_attach = on_attach,
   },
+})
+
+lspconfig['yamlls'].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
 })

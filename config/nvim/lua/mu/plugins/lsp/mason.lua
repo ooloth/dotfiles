@@ -25,6 +25,7 @@ mason_lspconfig.setup({
   ensure_installed = {
     'cssls',
     'emmet_ls',
+    'eslint',
     'html',
     'jsonls',
     'pyright',
