@@ -1,4 +1,7 @@
-export EDITOR='nvim'
+# See: https://stackoverflow.com/questions/1371261/get-current-directory-or-folder-name-without-the-full-path
+export CURRENT_DIRECTORY=${PWD##*/}
+
+export EDITOR=nvim
 export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
 
 export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
