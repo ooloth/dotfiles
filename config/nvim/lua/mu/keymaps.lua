@@ -111,6 +111,7 @@ wk.register({
     ['='] = { '<C-w>=', 'equally' },
     h = { '<C-w>s', 'horizontally' },
     m = { '<cmd>MaximizerToggle<cr>', 'maximize / unmaximize' }, -- maximize split OR restore previous split layout (with vim-maximizer}
+    o = { '<C-w>o', 'only keep this one' },
     v = { '<C-w>v', 'vertically' },
     x = { '<cmd>close<cr>', 'close' }, -- close current split
   },
