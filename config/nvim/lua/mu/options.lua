@@ -25,6 +25,7 @@ vim.opt.termguicolors = true
 
 -- cursor
 vim.opt.cursorline = true
+vim.opt.scrolloff = 20
 
 -- lines
 vim.opt.number = true
