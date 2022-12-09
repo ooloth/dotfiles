@@ -16,6 +16,7 @@ brew "gh"
 brew "yqrashawn/goku/goku" # for karibiner
 brew "lazydocker"
 brew "jesseduffield/lazygit/lazygit"
+brew "luarocks" # for luacheck (via null-ls)
 brew "mas"
 brew "neovim"
 brew "romkatv/powerlevel10k/powerlevel10k"
