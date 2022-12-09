@@ -1,13 +1,13 @@
 require('mu.plugins-setup') -- should be first
+require('mu.colorscheme')
 require('mu.keymaps')
 require('mu.options')
-require('mu.colorscheme')
-require('mu.plugins.comment')
-require('mu.plugins.lsp.lsp-saga') -- set up before lsp-config
-require('mu.plugins.lsp.mason')
 require('mu.plugins.autopairs')
 require('mu.plugins.auto-session')
+require('mu.plugins.comment')
 require('mu.plugins.gitsigns')
+require('mu.plugins.lsp.lsp-saga') -- set up before mason
+require('mu.plugins.lsp.mason')
 require('mu.plugins.lualine')
 require('mu.plugins.nvim-cmp')
 require('mu.plugins.nvim-tree')
