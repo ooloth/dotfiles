@@ -56,6 +56,8 @@ wk.register({
   -- FIXME: get this to work? (see: https://vi.stackexchange.com/questions/21894/how-to-insert-a-console-log-for-word-under-cursor-in-new-line)
   -- c = { "<cmd> normal \"ayiwOconsole.log('<C-R>a:', <C-R>a);<Esc>", 'console.log word' },
 
+  -- d = { name = 'debug' },
+
   e = { '<cmd>NvimTreeToggle<cr>', 'explore' },
 
   f = {
@@ -100,7 +102,9 @@ wk.register({
     R = { '<cmd>LspRestart<cr>', 'restart' },
   },
 
-  n = { '<cmd>NullLsInfo', 'Null-ls Info' },
+  m = { '<cmd>Mason<cr>', 'Mason' },
+
+  n = { '<cmd>NullLsInfo<cr>', 'Null-ls Info' },
 
   q = { '<cmd>q<cr>', 'quit window' },
   Q = { '<cmd>confirm qa<cr>', 'quit vim' },
