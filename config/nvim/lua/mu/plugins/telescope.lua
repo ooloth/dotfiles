@@ -8,11 +8,6 @@ if not actions_ok then
   return
 end
 
-local trouble_ok, trouble = pcall(require, 'trouble.providers.telescope')
-if not trouble_ok then
-  return
-end
-
 telescope.setup({
   defaults = {
     builtin = {
@@ -31,10 +26,6 @@ telescope.setup({
       i = {
         ['<c-j>'] = actions.move_selection_next, -- move to next result
         ['<c-k>'] = actions.move_selection_previous, -- move to prev result
-        ['<c-t>'] = trouble.open_with_trouble, -- send list to trouble
-      },
-      n = {
-        ['<c-t>'] = trouble.open_with_trouble, -- send list to trouble
       },
     },
   },
