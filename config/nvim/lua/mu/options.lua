@@ -9,9 +9,6 @@ vim.opt.clipboard:append('unnamedplus') -- use the macos system clipboard when y
 vim.opt.iskeyword:append('-') -- treat hyphens as part of a single word
 vim.opt.undofile = true -- persist buffer undo tree after closing
 
--- folding
-vim.opt.foldenable = false -- open all folds on startup
-
 -- searching
 vim.opt.ignorecase = true -- ignore case when searching
 vim.opt.smartcase = true -- unless search includes uppercase letters
@@ -33,13 +30,21 @@ vim.cmd([[
   autocmd InsertLeave * set cursorline
 ]])
 
--- lines
-vim.opt.listchars:append('precedes:<,extends:>')
+-- line numbers
 vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.scrolloff = 20
+vim.cmd([[
+  autocmd WinLeave * setlocal norelativenumber
+  autocmd WinEnter * setlocal relativenumber
+  autocmd InsertEnter * setlocal norelativenumber
+  autocmd InsertLeave * setlocal relativenumber
+]])
+
+-- line wrapping
+vim.opt.listchars:append('precedes:<,extends:>')
+vim.opt.scrolloff = 20 -- min lines between cursor and top/bottom of window
 vim.opt.sidescroll = 5
-vim.opt.sidescrolloff = 5
+vim.opt.sidescrolloff = 5 -- min lines between cursor and left/right of window
 vim.opt.wrap = false
 
 -- spacing
