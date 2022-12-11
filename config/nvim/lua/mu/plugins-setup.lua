@@ -12,11 +12,12 @@ end
 
 local packer_bootstrap = ensure_packer() -- true if packer was just installed
 
--- reload neovim and install/update/remove plugins when this file is saved
+-- sync plugins after entering vim or saving this file
 vim.cmd([[
-  augroup packer_user_config
+  augroup packer_sync
     autocmd!
     autocmd BufWritePost plugins-setup.lua source <afile> | PackerSync
+	  autocmd VimEnter * PackerSync
   augroup end
 ]])
 
