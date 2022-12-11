@@ -8,12 +8,15 @@ if not actions_ok then
   return
 end
 
+local trouble_ok, trouble = pcall(require, 'trouble.providers.telescope')
+if not trouble_ok then
+  return
+end
+
 telescope.setup({
   defaults = {
     builtin = {
       find_files = {
-        -- find_command = { 'fd', '--hidden', '--glob', '' },
-        -- find_command = { 'rg', '--files', '--hidden', '-g', '!.git' },
         hidden = true, -- show hidden files
         no_ignore = true, -- show ignored files
       },
@@ -26,8 +29,12 @@ telescope.setup({
     },
     mappings = {
       i = {
-        ['<C-k>'] = actions.move_selection_previous, -- move to prev result
-        ['<C-j>'] = actions.move_selection_next, -- move to next result
+        ['<c-j>'] = actions.move_selection_next, -- move to next result
+        ['<c-k>'] = actions.move_selection_previous, -- move to prev result
+        ['<c-t>'] = trouble.open_with_trouble, -- send list to trouble
+      },
+      n = {
+        ['<c-t>'] = trouble.open_with_trouble, -- send list to trouble
       },
     },
   },

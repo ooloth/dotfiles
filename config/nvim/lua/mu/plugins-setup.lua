@@ -13,7 +13,7 @@ end
 local packer_bootstrap = ensure_packer() -- true if packer was just installed
 
 -- reload neovim and install/update/remove plugins when this file is saved
-vim.cmd([[ 
+vim.cmd([[
   augroup packer_user_config
     autocmd!
     autocmd BufWritePost plugins-setup.lua source <afile> | PackerSync
@@ -32,10 +32,8 @@ return packer.startup(function(use)
 
   -- colors
   use('Mofiqul/dracula.nvim')
-  -- use('bluz71/vim-nightfly-guicolors')
 
   -- navigating
-  -- use('mhinz/vim-startify') -- start screen + session manager
   use('rmagatti/auto-session') -- session manager
   use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }) -- telescope dependency for faster sorting
   use({ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' }, branch = '0.1.x' }) -- fuzzy finder
@@ -66,19 +64,25 @@ return packer.startup(function(use)
   use('rafamadriz/friendly-snippets') -- useful snippets
 
   -- managing & installing lsp servers, linters & formatters
-  use('williamboman/mason.nvim') -- in charge of managing lsp servers, linters & formatters
-  use('williamboman/mason-lspconfig.nvim') -- bridges gap b/w mason & lspconfig
-  use('jayp0521/mason-null-ls.nvim') -- bridges gap b/w mason & null-ls
+  use('williamboman/mason.nvim') -- manages lsp servers, linters & formatters
+  use('williamboman/mason-lspconfig.nvim') -- installs + sets up lsp servers
+  use('jayp0521/mason-null-ls.nvim') -- installs + sets up null-ls servers
 
   -- lsp servers
   use('neovim/nvim-lspconfig') -- configure language servers
   use('hrsh7th/cmp-nvim-lsp') -- add lsp server info to autocompletions
   use({ 'glepnir/lspsaga.nvim', branch = 'main' }) -- enhanced lsp uis
-  use('jose-elias-alvarez/typescript.nvim') -- additional functionality for typescript server (e.g. rename file & update imports)
+  use('jose-elias-alvarez/typescript.nvim') -- additional functionality for typescript server
   use('onsails/lspkind.nvim') -- vs-code like icons for autocompletion
 
   -- formatting & linting
   use({ 'jose-elias-alvarez/null-ls.nvim', requires = { 'nvim-lua/plenary.nvim' } }) -- configure formatters & linters
+
+  -- view lsp + diagnostic info
+  use({
+    'folke/trouble.nvim',
+    requires = 'kyazdani42/nvim-web-devicons',
+  })
 
   -- treesitter configuration
   use({

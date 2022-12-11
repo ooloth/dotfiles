@@ -83,27 +83,27 @@ local on_attach = function(client, bufnr)
   local opts = { noremap = true, silent = true, buffer = bufnr }
 
   -- set lsp keymaps (non-leader key)
-  vim.keymap.set('n', '[d', '<cmd>Lspsaga diagnostic_jump_prev<CR>', opts) -- jump to previous diagnostic in buffer
-  vim.keymap.set('n', ']d', '<cmd>Lspsaga diagnostic_jump_next<CR>', opts) -- jump to next diagnostic in buffer
-  vim.keymap.set('n', 'gd', '<cmd>Lspsaga peek_definition<CR>', opts) -- see definition and make edits in window
-  vim.keymap.set('n', 'gf', '<cmd>Lspsaga lsp_finder<CR>', opts) -- show definition, references
-  vim.keymap.set('n', 'gh', '<cmd>Lspsaga hover_doc<CR>', opts) -- show documentation for what is under cursor
-  vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<CR>', opts) -- show documentation for what is under cursor
+  vim.keymap.set('n', '[d', '<cmd>Lspsaga diagnostic_jump_prev<cr>', opts) -- jump to previous diagnostic in buffer
+  vim.keymap.set('n', ']d', '<cmd>Lspsaga diagnostic_jump_next<cr>', opts) -- jump to next diagnostic in buffer
+  vim.keymap.set('n', 'ga', '<cmd>Lspsaga code_action<cr>', opts) -- see definition and make edits in window
+  vim.keymap.set('n', 'gd', '<cmd>Lspsaga peek_definition<cr>', opts) -- see definition and make edits in window
+  vim.keymap.set('n', 'gh', '<cmd>Lspsaga hover_doc<cr>', opts) -- show documentation for what is under cursor
+  vim.keymap.set('n', 'gf', '<cmd>Lspsaga lsp_finder<cr>', opts) -- show definition, references
+  vim.keymap.set('n', 'gr', '<cmd>TroubleToggle lsp_references<cr>', opts) -- show references to word under cursor
+  vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<cr>', opts) -- show documentation for what is under cursor
 
   -- set lsp keymaps (leader key)
   wk.register({
     f = {
-      d = { '<cmd>Telescope diagnostics bufnr=0<cr>', 'diagnostics (buffer)' },
-      D = { '<cmd>Telescope diagnostics<cr>', 'diagnostics (project)' },
+      d = { '<cmd>TroubleToggle document_diagnostics<cr>', 'diagnostics (buffer)' },
+      D = { '<cmd>TroubleToggle workspace_diagnostics<cr>', 'diagnostics (project)' },
     },
     l = {
-      name = 'lsp',
-      a = { '<cmd>Lspsaga code_action<cr>', 'action' },
       d = { '<cmd>Lspsaga show_cursor_diagnostics<cr>', 'diagnostics for cursor' },
       D = { '<cmd>Lspsaga show_line_diagnostics<cr>', 'diagnostics for line' },
-      i = { '<cmd>LspInfo<cr>', 'Lsp Info' },
-      rs = { '<cmd>Lspsaga rename<cr>', 'rename symbol under cursor' },
-      R = { '<cmd>LspRestart<cr>', 'restart' },
+      -- reserve i for LspInfo
+      r = { '<cmd>Lspsaga rename<cr>', 'rename symbol under cursor' },
+      -- reserve R{ for LspRestart
     },
   }, { buffer = bufnr, prefix = '<leader>' })
 
@@ -174,8 +174,8 @@ mason_lspconfig.setup_handlers({
       settings = {
         Lua = {
           diagnostics = {
-            -- if necessary, add to .luacheckrc "read_globals" as well
-            globals = { 'pcall', 'read_globals', 'require', 'std', 'vim' },
+            -- if necessary, add to .luacheckrc "globals" as well
+            globals = { 'globals', 'pcall', 'require', 'std', 'vim' },
           },
           workspace = {
             -- make language server aware of runtime files

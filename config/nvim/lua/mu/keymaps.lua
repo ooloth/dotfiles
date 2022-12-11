@@ -22,6 +22,9 @@ vim.keymap.set('v', '<up>', ":m '<-2<CR>gv=gv")
 vim.keymap.set('n', '<right>', 'gt') -- go to next tab
 vim.keymap.set('n', '<left>', 'gT') -- go to next tab
 
+vim.keymap.set('n', 'gl', '<cmd>TroubleToggle loclist<cr>')
+vim.keymap.set('n', 'gq', '<cmd>TroubleToggle quickfix<cr>')
+
 -- Easily exit help windows with Esc or q
 vim.cmd([[
   autocmd Filetype help nmap <buffer> <Esc> :q<CR>
@@ -89,16 +92,16 @@ wk.register({
 
   h = { '<cmd>nohl<cr>', 'highlights off' },
 
-  -- reserve l for LSP
+  l = {
+    name = 'lsp',
+    -- reserve d/D for cursor/line diagnostics
+    i = { '<cmd>LspInfo<cr>', 'info' },
+    -- reserve r for rename symbol
+    R = { '<cmd>LspRestart<cr>', 'restart' },
+  },
 
-  -- n = {
-  --   name = 'session',
-  --   d = { '<cmd>SDelete<cr>', 'delete' },
-  --   l = { '<cmd>SLoad<cr>', 'load' },
-  --   s = { '<cmd>SSave<cr>', 'save' },
-  --   x = { '<cmd>SClose<cr>', 'close' },
-  -- },
-  --
+  n = { '<cmd>NullLsInfo', 'Null-ls Info' },
+
   q = { '<cmd>q<cr>', 'quit window' },
   Q = { '<cmd>confirm qa<cr>', 'quit vim' },
 
