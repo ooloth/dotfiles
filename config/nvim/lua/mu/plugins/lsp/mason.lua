@@ -174,8 +174,7 @@ mason_lspconfig.setup_handlers({
       settings = {
         Lua = {
           diagnostics = {
-            -- if necessary, add to .luacheckrc "globals" as well
-            globals = { 'globals', 'pcall', 'require', 'std', 'vim' },
+            globals = { 'pcall', 'require', 'vim' },
           },
           workspace = {
             -- make language server aware of runtime files
@@ -216,7 +215,6 @@ null_ls.setup({
     -- linters & type-checkers
     diagnostics.eslint_d, -- js/ts linter
     diagnostics.flake8, -- python linter
-    diagnostics.luacheck, -- lua linter
     diagnostics.markdownlint, -- markdown linter
     diagnostics.mypy, -- python type-checker
     diagnostics.proselint, -- prose linter
