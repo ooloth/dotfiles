@@ -53,7 +53,8 @@ mason.setup()
 mason_lspconfig.setup({
   automatic_installation = true,
   -- lsp servers mason will automatically install + set up below
-  -- See: https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
+  -- see: https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
+  -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
   ensure_installed = {
     'bashls',
     'cssls',
