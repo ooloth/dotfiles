@@ -9,6 +9,9 @@ vim.opt.clipboard:append('unnamedplus') -- use the macos system clipboard when y
 vim.opt.iskeyword:append('-') -- treat hyphens as part of a single word
 vim.opt.undofile = true -- persist buffer undo tree after closing
 
+-- folding
+vim.opt.foldenable = false -- open all folds on startup
+
 -- searching
 vim.opt.ignorecase = true -- ignore case when searching
 vim.opt.smartcase = true -- unless search includes uppercase letters
