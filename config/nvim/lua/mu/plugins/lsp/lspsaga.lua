@@ -4,7 +4,13 @@ if not lspsaga_ok then
 end
 
 -- float source currently only shows in lspsaga jump window
-vim.diagnostic.config({ float = { source = true }, virtual_text = { source = true } })
+-- see: https://github.com/glepnir/lspsaga.nvim/issues/417#issuecomment-1210081841
+vim.diagnostic.config({
+  float = { source = true },
+  severity_sort = true,
+  update_in_insert = true,
+  virtual_text = { prefix = ' ', source = false },
+})
 
 lspsaga.init_lsp_saga({
   border_style = 'rounded',
