@@ -57,6 +57,7 @@ vim.opt.splitright = true
 
 -- tabs & indentation
 vim.opt.autoindent = true
+vim.opt.expandtab = true
 vim.opt.shiftround = true -- round indent to multiple of 'shiftwidth'
 vim.opt.shiftwidth = 2
 vim.opt.smartindent = true -- auto-indent when starting a new line
