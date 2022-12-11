@@ -86,10 +86,9 @@ local on_attach = function(client, bufnr)
   -- set lsp keymaps (non-leader key)
   vim.keymap.set('n', '[d', '<cmd>Lspsaga diagnostic_jump_prev<cr>', opts) -- jump to previous diagnostic in buffer
   vim.keymap.set('n', ']d', '<cmd>Lspsaga diagnostic_jump_next<cr>', opts) -- jump to next diagnostic in buffer
-  vim.keymap.set('n', 'ga', '<cmd>Lspsaga code_action<cr>', opts) -- see definition and make edits in window
-  vim.keymap.set('n', 'gd', '<cmd>Lspsaga peek_definition<cr>', opts) -- see definition and make edits in window
+  vim.keymap.set('n', 'ga', '<cmd>Lspsaga code_action<cr>', opts) -- see code actions
+  vim.keymap.set('n', 'gd', '<cmd>Lspsaga lsp_finder<cr>', opts) -- show definition, references, implementations
   vim.keymap.set('n', 'gh', '<cmd>Lspsaga hover_doc<cr>', opts) -- show documentation for what is under cursor
-  vim.keymap.set('n', 'gf', '<cmd>Lspsaga lsp_finder<cr>', opts) -- show definition, references
   vim.keymap.set('n', 'gr', '<cmd>TroubleToggle lsp_references<cr>', opts) -- show references to word under cursor
   vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<cr>', opts) -- show documentation for what is under cursor
 
