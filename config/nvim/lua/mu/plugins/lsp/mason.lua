@@ -224,7 +224,7 @@ null_ls.setup({
     diagnostics.zsh, -- zsh linter
 
     -- formatters
-    formatting.beautysh, -- zsh/bash/sh
+    -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
     formatting.isort, -- python
     formatting.prettierd, -- js/ts etc
     formatting.stylua, -- lua
