@@ -46,6 +46,7 @@ return packer.startup(function(use)
 
   -- editing
   use('tpope/vim-surround') -- add, delete, change surrounding characters
+  use('tpope/vim-unimpaired') -- pairs of '[' and ']' mappings
   use('inkarkat/vim-ReplaceWithRegister') -- replace text with register contents (gr + motion)
   use('numToStr/Comment.nvim') -- comment text (gc + motion)
   use('tpope/vim-repeat') -- repeat plugin commands with .
