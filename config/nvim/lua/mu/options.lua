@@ -1,16 +1,17 @@
+-- default nvim options: https://neovim.io/doc/user/vim_diff.html#nvim-defaults
+
 ---------------
 -- BEHAVIOUR --
 ---------------
 
 -- editing
-vim.opt.backspace = 'indent,eol,start'
 vim.opt.clipboard:append('unnamedplus') -- use the macos system clipboard when yanking, cutting or deleting
 vim.opt.iskeyword:append('-') -- treat hyphens as part of a single word
 vim.opt.undofile = true -- persist buffer undo tree after closing
 
 -- searching
-vim.opt.ignorecase = true -- assume I want a case-insensitive search if my search only includes lowercase characters
-vim.opt.smartcase = true -- assume I want a case-sensitive search if my search includes uppercase characters
+vim.opt.ignorecase = true -- ignore case when searching
+vim.opt.smartcase = true -- unless search includes uppercase letters
 
 -- quitting
 vim.opt.confirm = true -- offer to save changes to open files before :q
@@ -20,17 +21,23 @@ vim.opt.confirm = true -- offer to save changes to open files before :q
 ----------------
 
 -- colors
-vim.opt.background = 'dark' -- default light/dark colorschemes to dark
 vim.opt.termguicolors = true
 
 -- cursor
 vim.opt.cursorline = true
-vim.opt.scrolloff = 20
+vim.cmd([[
+  autocmd InsertEnter * set nocursorline
+  autocmd InsertLeave * set cursorline
+]])
 
 -- lines
 vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.wrap = false
+vim.opt.scrolloff = 20
+-- vim.opt.wrap = false
+-- vim.opt.sidescroll = 5
+-- vim.opt.sidescrolloff = 5
+-- vim.opt.listchars = 'precedes:<,extends:>'
 
 -- spacing
 vim.opt.cmdheight = 0
@@ -45,3 +52,10 @@ vim.opt.autoindent = true
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
+
+vim.cmd([[
+  augroup highlight_yank
+    autocmd!
+    autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({timeout = 200})
+  augroup END
+]])
