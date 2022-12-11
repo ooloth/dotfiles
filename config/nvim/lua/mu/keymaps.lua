@@ -30,8 +30,8 @@ vim.keymap.set('n', 'gq', '<cmd>copen<cr>')
 
 -- Easily exit help windows with Esc or q
 vim.cmd([[
-  autocmd Filetype help nmap <buffer> <Esc> :q<CR>
-  autocmd Filetype help nmap <buffer> q :q<CR>
+  autocmd Filetype help noremap <buffer> <Esc> :q<CR>
+  autocmd FileType help noremap <buffer> q :q<cr>
 ]])
 
 ----------------
