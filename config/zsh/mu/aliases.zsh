@@ -3,16 +3,8 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-function bu() {
-  brew upgrade && brew update && brew cleanup && brew doctor
-  if $IS_WORK_LAPTOP; then
-    # TODO: store version in a variable and update it programmatically?
-    echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
-  fi
-}
-
 alias c='clear'
-alias cat='bat --paging=never' 
+alias cat='bat --paging=never'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias et="$EDITOR $HOME/Repos/ooloth/dotfiles/config/tmux/tmux.conf"
 alias ez="$EDITOR $HOME/Repos/ooloth/dotfiles/config/zsh/.zshrc"
@@ -36,17 +28,17 @@ alias s="kitty +kitten ssh"                                                     
 function sl() { ln -sfv $1 $2 } # easier symlinking
 
 alias t='tmux a'
+
+function u() {
+	npm update -g
+	brew upgrade && brew update && brew cleanup && brew doctor
+	if $IS_WORK_LAPTOP; then
+		# TODO: store version in a variable and update it programmatically?
+		echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
+	fi
+}
+
 alias v='vim'
 alias vim='nvim'
-
-# TODO: make these yarn/npm/python agnostic:
-alias y='yarn install'
-alias yd='y && yarn start:dev'
-alias yb='y && yarn build'
-alias ys='yb && yarn serve'
-alias yc='yarn clean'
-alias yt='yarn test:dev'
-function ytp() { yt --testPathPattern=$1 }
-alias ytu='yarn test:update'
 
 function zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
