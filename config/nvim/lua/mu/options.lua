@@ -64,8 +64,5 @@ vim.opt.smartindent = true -- auto-indent when starting a new line
 vim.opt.tabstop = 2
 
 vim.cmd([[
-  augroup highlight_yank
-    autocmd!
-    autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({timeout = 200})
-  augroup END
+  autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({timeout = 200})
 ]])
