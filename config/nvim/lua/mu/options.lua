@@ -31,13 +31,13 @@ vim.cmd([[
 ]])
 
 -- lines
+vim.opt.listchars:append('precedes:<,extends:>')
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.scrolloff = 20
--- vim.opt.wrap = false
--- vim.opt.sidescroll = 5
--- vim.opt.sidescrolloff = 5
--- vim.opt.listchars = 'precedes:<,extends:>'
+vim.opt.sidescroll = 5
+vim.opt.sidescrolloff = 5
+vim.opt.wrap = false
 
 -- spacing
 vim.opt.cmdheight = 0
@@ -49,8 +49,9 @@ vim.opt.splitright = true
 
 -- tabs & indentation
 vim.opt.autoindent = true
-vim.opt.expandtab = true
+vim.opt.shiftround = true -- round indent to multiple of 'shiftwidth'
 vim.opt.shiftwidth = 2
+vim.opt.smartindent = true -- auto-indent when starting a new line
 vim.opt.tabstop = 2
 
 vim.cmd([[
