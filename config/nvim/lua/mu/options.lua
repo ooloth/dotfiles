@@ -34,8 +34,10 @@ vim.cmd([[
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.cmd([[
-  autocmd WinLeave * setlocal norelativenumber
-  autocmd WinEnter * setlocal relativenumber
+  " see: https://stackoverflow.com/a/10410590/8802485
+  let ignored_filetypes = ['help', 'NvimTree', 'TelescopePrompt']
+  autocmd WinLeave * if index(ignored_filetypes, &ft) < 0 | setlocal norelativenumber | endif
+  autocmd WinEnter * if index(ignored_filetypes, &ft) < 0 | setlocal relativenumber | endif
   autocmd InsertEnter * setlocal norelativenumber
   autocmd InsertLeave * setlocal relativenumber
 ]])
