@@ -1,12 +1,12 @@
-local status, lualine = pcall(require, 'lualine') -- import lualine plugin safely
-if not status then
+local lualine_ok, lualine = pcall(require, 'lualine')
+if not lualine_ok then
   return
 end
 
 lualine.setup({
   options = {
     component_separators = '',
-    global_status = true,
+    globalstatus = true,
     section_separators = '',
     theme = 'dracula-nvim',
   },
