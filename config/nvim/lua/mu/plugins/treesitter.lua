@@ -60,6 +60,45 @@ treesitter.setup({
   -- make = operator use treesitter
   -- see: https://github.com/nvim-treesitter/nvim-treesitter#indentation
   indent = { enable = true },
+
+  textobjects = {
+    -- see: https://github.com/nvim-treesitter/nvim-treesitter-textobjects#text-objects-move
+    move = {
+      enable = true,
+      set_jumps = true, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        [']m'] = '@function.outer',
+        [']]'] = '@class.outer',
+      },
+      goto_next_end = {
+        [']M'] = '@function.outer',
+        [']['] = '@class.outer',
+      },
+      goto_previous_start = {
+        ['[m'] = '@function.outer',
+        ['[['] = '@class.outer',
+      },
+      goto_previous_end = {
+        ['[M'] = '@function.outer',
+        ['[]'] = '@class.outer',
+      },
+    },
+
+    -- see: https://github.com/nvim-treesitter/nvim-treesitter-textobjects#text-objects-select
+    select = {
+      enable = true,
+      include_surrounding_whitespace = true,
+      keymaps = {
+        -- see: https://github.com/nvim-treesitter/nvim-treesitter-textobjects#built-in-textobjects
+        ['ac'] = { query = '@class.outer', desc = 'outer class' },
+        ['ic'] = { query = '@class.inner', desc = 'inner class' },
+        ['af'] = { query = '@function.outer', desc = 'outer function' },
+        ['if'] = { query = '@function.inner', desc = 'inner function' },
+      },
+
+      lookahead = true, -- automatically jump forward to textobj, similar to targets.vim
+    },
+  },
 })
 
 -- fold using treesitter
