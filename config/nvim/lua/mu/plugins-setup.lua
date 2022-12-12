@@ -81,10 +81,7 @@ return packer.startup(function(use)
   use({ 'jose-elias-alvarez/null-ls.nvim', requires = { 'nvim-lua/plenary.nvim' } }) -- configure formatters & linters
 
   -- view lsp + diagnostic info
-  use({
-    'folke/trouble.nvim',
-    requires = 'kyazdani42/nvim-web-devicons',
-  })
+  use({ 'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons' })
 
   -- treesitter configuration
   use({
@@ -96,6 +93,7 @@ return packer.startup(function(use)
   })
 
   -- treesetter extensions
+  use('nvim-treesitter/nvim-treesitter-textobjects') -- add more syntax aware text-objects
   use('windwp/nvim-autopairs') -- autoclose parens, brackets, quotes, etc...
   use({ 'windwp/nvim-ts-autotag', after = 'nvim-treesitter' }) -- autoclose tags
   use({ 'nvim-treesitter/nvim-treesitter-context', after = 'nvim-treesitter' }) -- sticky scroll context
