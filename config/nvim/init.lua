@@ -2,7 +2,7 @@ require('mu.plugins-setup') -- should be first
 require('mu.colorscheme')
 require('mu.keymaps')
 require('mu.options')
--- require('mu.plugins.autopairs')
+require('mu.plugins.autopairs')
 require('mu.plugins.auto-session')
 require('mu.plugins.comment')
 require('mu.plugins.gitsigns')
