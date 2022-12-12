@@ -35,18 +35,18 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 vim.cmd([[
   " see: https://stackoverflow.com/a/10410590/8802485
-  let ignored_filetypes = ['help', 'NvimTree', 'packer', 'TelescopePrompt']
+  let ignored_filetypes = ['help', 'NvimTree', 'packer', 'qf', 'TelescopePrompt', 'Trouble']
   autocmd WinLeave * if index(ignored_filetypes, &ft) < 0 | setlocal norelativenumber | endif
   autocmd WinEnter * if index(ignored_filetypes, &ft) < 0 | setlocal relativenumber | endif
-  autocmd InsertEnter * setlocal norelativenumber
-  autocmd InsertLeave * setlocal relativenumber
+  autocmd InsertEnter * if index(ignored_filetypes, &ft) < 0 | setlocal norelativenumber
+  autocmd InsertLeave * if index(ignored_filetypes, &ft) < 0 | setlocal relativenumber
 ]])
 
 -- line wrapping
-vim.opt.listchars:append('precedes:<,extends:>')
+-- vim.opt.listchars:append('precedes:<,extends:>')
 vim.opt.scrolloff = 20 -- min lines between cursor and top/bottom of window
-vim.opt.sidescroll = 5
-vim.opt.sidescrolloff = 5 -- min lines between cursor and left/right of window
+-- vim.opt.sidescroll = 5
+-- vim.opt.sidescrolloff = 5 -- min lines between cursor and left/right of window
 vim.opt.wrap = false
 
 -- spacing
