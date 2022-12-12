@@ -6,7 +6,6 @@ end
 lualine.setup({
   options = {
     component_separators = '',
-    globalstatus = true,
     section_separators = '',
     theme = 'dracula-nvim',
   },
