@@ -17,7 +17,7 @@ vim.cmd([[
   augroup packer_sync
     autocmd!
     autocmd BufWritePost plugins-setup.lua source <afile> | PackerSync
-	  autocmd VimEnter * PackerSync
+	  " autocmd VimEnter * PackerSync " 
   augroup end
 ]])
 
