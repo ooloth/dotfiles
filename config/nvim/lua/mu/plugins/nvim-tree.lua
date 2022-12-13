@@ -1,4 +1,4 @@
-local setup, nvimtree = pcall(require, "nvim-tree") -- import nvim-tree plugin safely
+local setup, nvimtree = pcall(require, 'nvim-tree') -- import nvim-tree plugin safely
 if not setup then
   return
 end
@@ -12,11 +12,25 @@ vim.g.loaded_netrwPlugin = 1
 
 -- configure nvim-tree
 nvimtree.setup({
+  -- disable window_picker for explorer to work well with window splits
+  actions = {
+    change_dir = {
+      enable = false -- don't change cwd when changing folders in tree
+    },
+    open_file = {
+      window_picker = {
+        enable = false,
+      },
+    },
+  },
   diagnostics = {
     enable = true,
   },
+  git = {
+    ignore = false,
+  },
   live_filter = {
-    prefix = "[FILTER]: ",
+    prefix = '[FILTER]: ',
     always_show_folders = false, -- filter out folders as well
   },
   renderer = {
@@ -31,20 +45,6 @@ nvimtree.setup({
       },
     },
   },
-  -- disable window_picker for explorer to work well with window splits
-  actions = {
-    -- change_dir = {
-    --   enable = false -- don't change cwd when changing folders in tree
-    -- },
-    open_file = {
-      window_picker = {
-        enable = false,
-      },
-    },
-  },
-  git = {
-    ignore = false,
-  },
   update_focused_file = {
     enable = true,
   },
@@ -53,11 +53,11 @@ nvimtree.setup({
     mappings = {
       custom_only = false,
       list = {
-        { key = "l", action = "edit" },
-        { key = "L", action = "expand_all" },
-        { key = "h", action = "close_node" },
-        { key = "H", action = "collapse_all" }
-      } 
+        { key = 'l', action = 'edit' },
+        { key = 'L', action = 'expand_all' },
+        { key = 'h', action = 'close_node' },
+        { key = 'H', action = 'collapse_all' },
+      },
     },
     side = 'right',
   },
