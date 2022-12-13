@@ -81,6 +81,7 @@ return packer.startup(function(use)
   use({ 'jose-elias-alvarez/null-ls.nvim', requires = { 'nvim-lua/plenary.nvim' } }) -- configure formatters & linters
 
   -- view lsp + diagnostic info
+  -- lsp diagnostics
   use({ 'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons' })
 
   -- treesitter configuration

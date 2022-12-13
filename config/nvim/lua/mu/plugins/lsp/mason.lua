@@ -103,7 +103,7 @@ local on_attach = function(client, bufnr)
       D = { '<cmd>Lspsaga show_line_diagnostics<cr>', 'diagnostics for line' },
       -- reserve i for LspInfo
       r = { '<cmd>Lspsaga rename<cr>', 'rename symbol under cursor' },
-      -- reserve R{ for LspRestart
+      -- reserve R for LspRestart
     },
   }, { buffer = bufnr, prefix = '<leader>' })
 
