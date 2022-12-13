@@ -38,8 +38,8 @@ vim.cmd([[
   let ignored_filetypes = ['help', 'NvimTree', 'packer', 'qf', 'TelescopePrompt', 'Trouble']
   autocmd WinLeave * if index(ignored_filetypes, &ft) < 0 | setlocal norelativenumber | endif
   autocmd WinEnter * if index(ignored_filetypes, &ft) < 0 | setlocal relativenumber | endif
-  autocmd InsertEnter * if index(ignored_filetypes, &ft) < 0 | setlocal norelativenumber
-  autocmd InsertLeave * if index(ignored_filetypes, &ft) < 0 | setlocal relativenumber
+  autocmd InsertEnter * if index(ignored_filetypes, &ft) < 0 | setlocal norelativenumber | endif
+  autocmd InsertLeave * if index(ignored_filetypes, &ft) < 0 | setlocal relativenumber | endif
 ]])
 
 -- line wrapping
