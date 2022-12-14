@@ -205,6 +205,7 @@ mason_lspconfig.setup_handlers({
 -- 4. DEFINE LINTERS & FORMATTERS USING NULL-LS --
 --------------------------------------------------
 
+local code_actions = null_ls.builtins.code_actions
 local formatting = null_ls.builtins.formatting
 local diagnostics = null_ls.builtins.diagnostics
 local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
@@ -212,6 +213,9 @@ local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
 null_ls.setup({
   -- formatters & linters mason will automatically install + set up below
   sources = {
+    -- code actions providers
+    code_actions.gitsigns,
+
     -- linters & type-checkers
     diagnostics.eslint_d, -- js/ts linter
     diagnostics.flake8, -- python linter
