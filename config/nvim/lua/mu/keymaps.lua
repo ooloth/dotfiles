@@ -88,6 +88,13 @@ wk.register({
     C = { '<cmd>Telescope git_commits<cr>', 'commits (project)' },
     d = { '<cmd>Gdiffsplit<cr>', 'diff' },
     -- reserve h for gitsigns hunk commands
+    l = {
+      name = 'log',
+      b = { '<cmd>Gclog %</cr>', 'commits (buffer)' },
+      c = { '<cmd>G log</cr>', 'commit list (project)' },
+      h = { '<cmd>0Gclog</cr>', 'history (buffer; :Ge to return to current version)' },
+      p = { '<cmd>Gclog %</cr>', 'commits (project)' },
+    },
     p = { '<cmd>Git pull<cr>', 'pull' },
     P = { '<cmd>Git push<cr>', 'push' },
     r = { '<cmd>Gread<cr>', 'reset file to last commit' },
