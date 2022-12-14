@@ -90,8 +90,7 @@ wk.register({
     p = { '<cmd>Git pull<cr>', 'pull' },
     P = { '<cmd>Git push<cr>', 'push' },
     r = { '<cmd>Gread<cr>', 'reset file to last commit' },
-    s = { '<cmd>vert Git<cr>', 'status (in split)' },
-    S = { '<cmd>tab Git<cr>', 'status (in tab)' },
+    s = { '<cmd>tab Git<cr>', 'status' },
   },
 
   h = { '<cmd>nohl<cr>', 'highlights off' },
