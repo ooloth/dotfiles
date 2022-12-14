@@ -60,14 +60,5 @@ gitsigns.setup({
         },
       },
     }, { buffer = bufnr, prefix = '<leader>' })
-
-    -- Actions
-    map('n', '<leader>hS', gs.stage_buffer)
-    map('n', '<leader>hR', gs.reset_buffer)
-    map('n', '<leader>hd', gs.diffthis)
-    map('n', '<leader>hD', function()
-      gs.diffthis('~')
-    end)
-    map('n', '<leader>td', gs.toggle_deleted)
   end,
 })
