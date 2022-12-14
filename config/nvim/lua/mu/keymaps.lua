@@ -82,15 +82,17 @@ wk.register({
 
   g = {
     name = 'git',
-    b = { '<cmd>Telescope git_branches<cr>', 'branches' },
-    B = { '<cmd>Git blame<cr>', 'blame' },
+    -- reserve b for gitsigns blame_line
+    -- B = { '<cmd>Telescope git_branches<cr>', 'branches' },
     c = { '<cmd>Telescope git_bcommits<cr>', 'commits (buffer)' },
     C = { '<cmd>Telescope git_commits<cr>', 'commits (project)' },
     d = { '<cmd>Gdiffsplit<cr>', 'diff' },
+    -- reserve h for gitsigns hunk commands
     p = { '<cmd>Git pull<cr>', 'pull' },
     P = { '<cmd>Git push<cr>', 'push' },
     r = { '<cmd>Gread<cr>', 'reset file to last commit' },
     s = { '<cmd>tab Git<cr>', 'status' },
+    -- s = { '<cmd>vert Git<cr>', 'status' },
   },
 
   h = { '<cmd>nohl<cr>', 'highlights off' },
