@@ -96,11 +96,13 @@ wk.register({
       h = { '<cmd>0Gclog<cr>', 'history (buffer; :Ge to return to current version)' },
       p = { '<cmd>Gclog %<cr>', 'commits (project)' },
     },
+    o = { '<cmd>GBrowse<cr>', 'open file in browser' },
     p = { '<cmd>Git pull<cr>', 'pull' },
     P = { '<cmd>Git push<cr>', 'push' },
     r = { '<cmd>Gread<cr>', 'reset file to last commit' },
     s = { '<cmd>tab Git<cr>', 'status' },
     -- s = { '<cmd>vert Git<cr>', 'status' },
+    y = { '<cmd>GBrowse!<cr>', 'copy link to file' },
   },
 
   h = { '<cmd>nohl<cr>', 'highlights off' },
@@ -147,3 +149,9 @@ wk.register({
 
   x = { '<cmd>confirm Bdelete<cr>', 'close' }, -- close buffer but not split (with vim-bbye)
 }, { prefix = '<leader>' })
+
+-- open or copy GitHub link to selected lines
+vim.cmd([[
+  xnoremap <Leader>go :'<'>GBrowse<CR>
+  xnoremap <Leader>gy :'<'>GBrowse!<CR>
+]])
