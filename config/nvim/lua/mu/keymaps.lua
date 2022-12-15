@@ -22,16 +22,16 @@ vim.keymap.set('v', '<up>', ":m '<-2<CR>gv=gv")
 vim.keymap.set('n', '<right>', 'gt') -- go to next tab
 vim.keymap.set('n', '<left>', 'gT') -- go to next tab
 
--- location list
+-- location list (use ]l + [l to navigate)
 vim.keymap.set('n', 'gl', '<cmd>lopen<cr>')
 
--- quickfix list
+-- quickfix list (use ]q + [q to navigate)
 vim.keymap.set('n', 'gq', '<cmd>copen<cr>')
 
--- Easily exit help windows with Esc or q
+-- Easily exit window where I never use insert mode with Esc or q
 vim.cmd([[
-  autocmd Filetype help noremap <buffer> <Esc> :q<CR>
-  autocmd FileType help noremap <buffer> q :q<cr>
+  autocmd Filetype help,NvimTree,qf noremap <buffer> <Esc> :q<CR>
+  autocmd FileType help,NvimTree,qf noremap <buffer> q :q<cr>
 ]])
 
 ----------------
