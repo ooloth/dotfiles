@@ -87,6 +87,7 @@ wk.register({
     c = { '<cmd>Telescope git_bcommits<cr>', 'commits (buffer)' },
     C = { '<cmd>Telescope git_commits<cr>', 'commits (project)' },
     d = { '<cmd>Gdiffsplit<cr>', 'diff' },
+    g = { '<cmd>FloatermNew lazygit<cr>', 'lazygit' },
     -- reserve h for gitsigns hunk commands
     l = {
       name = 'log',
