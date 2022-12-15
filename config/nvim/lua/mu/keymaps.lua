@@ -28,10 +28,10 @@ vim.keymap.set('n', 'gl', '<cmd>lopen<cr>')
 -- quickfix list (use ]q + [q to navigate)
 vim.keymap.set('n', 'gq', '<cmd>copen<cr>')
 
--- Easily exit help windows with Esc or q
+-- Easily exit window where I never use insert mode with Esc or q
 vim.cmd([[
-  autocmd Filetype help noremap <buffer> <Esc> :q<CR>
-  autocmd FileType help noremap <buffer> q :q<cr>
+  autocmd Filetype help,NvimTree,qf noremap <buffer> <Esc> :q<CR>
+  autocmd FileType help,NvimTree,qf noremap <buffer> q :q<cr>
 ]])
 
 ----------------
