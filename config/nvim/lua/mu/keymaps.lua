@@ -22,10 +22,10 @@ vim.keymap.set('v', '<up>', ":m '<-2<CR>gv=gv")
 vim.keymap.set('n', '<right>', 'gt') -- go to next tab
 vim.keymap.set('n', '<left>', 'gT') -- go to next tab
 
--- location list
+-- location list (use ]l + [l to navigate)
 vim.keymap.set('n', 'gl', '<cmd>lopen<cr>')
 
--- quickfix list
+-- quickfix list (use ]q + [q to navigate)
 vim.keymap.set('n', 'gq', '<cmd>copen<cr>')
 
 -- Easily exit help windows with Esc or q
