@@ -102,6 +102,7 @@ return packer.startup(function(use)
   -- git
   use('lewis6991/gitsigns.nvim') -- show line modifications on left hand side
   use('tpope/vim-fugitive')
+  use('tpope/vim-rhubarb') -- open GitHub URLs with :GBrowse
   use('voldikss/vim-floaterm') -- for lazygit
 
   -- mappings

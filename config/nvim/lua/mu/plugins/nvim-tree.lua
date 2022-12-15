@@ -1,23 +1,17 @@
-local setup, nvimtree = pcall(require, 'nvim-tree') -- import nvim-tree plugin safely
-if not setup then
+local nvim_tree_ok, nvim_tree = pcall(require, 'nvim-tree')
+if not nvim_tree_ok then
   return
 end
 
--- nvim tree docs: "It is strongly advised to eagerly disable netrw due to race conditions at vim startup"
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-- NOTE: vim-rhubarb depends on netrw, so don't disable it (even though nvim-tree says to)
 
--- change color for arrows in tree to light blue
--- vim.cmd([[ highlight NvimTreeIndentMarker guifg=#3FC5FF ]])
-
--- configure nvim-tree
-nvimtree.setup({
-  -- disable window_picker for explorer to work well with window splits
+nvim_tree.setup({
   actions = {
     change_dir = {
-      enable = false -- don't change cwd when changing folders in tree
+      enable = false, -- don't change cwd when changing folders in tree
     },
     open_file = {
+      -- disable window_picker for explorer to work well with window splits
       window_picker = {
         enable = false,
       },
