@@ -403,6 +403,7 @@ set_up_neovim() {
     dockerfile-language-server-nodejs \
     eslint_d \
     emmet-ls \
+    neovim \
     npm-check \
     pug-lint \
     svelte-language-server \
