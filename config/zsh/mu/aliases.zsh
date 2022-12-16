@@ -19,6 +19,26 @@ alias lt3='lt --level=3'                                                        
 alias lt4='lt --level=4'                                                             # file tree (4 levels only)
 alias mini="s michael@192.168.2.22"                                                  # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
+
+function nig() {
+  npm i -g \
+    @fsouza/prettierd \
+    bash-language-server \
+    cssmodules-language-server \
+    dockerfile-language-server-nodejs \
+    eslint_d \
+    emmet-ls \
+    neovim \
+    npm-check \
+    pug-lint \
+    svelte-language-server \
+    tldr \
+    tree-sitter-cli \
+    typescript \
+    vscode-langservers-extracted \
+    yarn
+}
+
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
