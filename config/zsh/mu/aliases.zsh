@@ -42,3 +42,25 @@ alias v='vim'
 alias vim='nvim'
 
 function zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
+
+# see: https://github.com/Schniz/fnm/issues/409#issuecomment-993644497
+function fnm_get_latest {
+  fnm ls-remote | cut -d "." -f1 | cut -d "v" -f2 | tail -1
+}
+
+# outputs each global npm dependency on its own line (without its current version)
+function npm_get_global_dependencies {
+  npm ls -g | sed -E 's/@[0-9].*//g' | cut -d " " -f2 | tail -n +2 | sed -r '/^\s*$/d'
+}
+#
+# "node latest" (set latest node as default + reinstall global npm deps there)
+function fl() { 
+  FNM_CURRENT=$(fnm current) && \
+  NPM_GLOBAL_DEPS=$(npm_get_global_dependencies) && \
+    FNM_LATEST=$(fnm_get_latest) && \
+    fnm use $FNM_LATEST && \
+    echo "Setting default node version to ${FNM_LATEST}..."
+    fnm default $FNM_LATEST && \
+    echo "Reinstalling global npm dependencies from ${FNM_CURRENT}..." && \
+    while read -r line; do npm i -g $line; done <<< $NPM_GLOBAL_DEPS
+}
