@@ -371,13 +371,13 @@ set_up_zsh() {
 }
 
 set_up_node() {
-  title "Installing node, npm and yarn"
+  title "Installing node and general global dependencies..."
 
   fnm install 19 && fnm default 19 && fnm use 19
 
-  npm i -g yarn
+  npm i -g tldr yarn
 
-  success "\nDone installing node, npm and yarn."
+  success "\nDone installing node and global dependencies."
 }
 
 set_up_tmux() {
@@ -395,15 +395,22 @@ set_up_tmux() {
 set_up_neovim() {
   title "Setting up neovim"
 
-  info "Installing vim-plug..."
-  sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  info "Installing global npm dependencies for neovim..."
+  npm i -g \
+    @fsouza/prettierd \
+    bash-language-server \
+    cssmodules-language-server \
+    dockerfile-language-server-nodejs \
+    eslint_d \
+    emmet-ls \
+    npm-check \
+    pug-lint \
+    svelte-language-server \
+    tree-sitter-cli \
+    typescript
 
   printf "\n"
   warning "TODO: open vim to install plugins, then close"
-
-  # info "Creating viminfo directory for Startify..."
-  # create_missing_directory "${HOME}/.vim/files/info"
 
   success "\nDone setting up neovim."
 }
