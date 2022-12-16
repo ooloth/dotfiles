@@ -375,7 +375,7 @@ set_up_node() {
 
   fnm install 19 && fnm default 19 && fnm use 19
 
-  npm i -g tldr yarn
+  npm i -g npm-check tldr yarn
 
   success "\nDone installing node and global dependencies."
 }
@@ -404,14 +404,14 @@ set_up_neovim() {
     eslint_d \
     emmet-ls \
     neovim \
-    npm-check \
     pug-lint \
     svelte-language-server \
     tree-sitter-cli \
-    typescript
+    typescript \
+    vscode-langservers-extracted
 
   printf "\n"
-  warning "TODO: open vim to install plugins, then close"
+  warning "TODO: open vim + save plugins-setup.lua to install plugins"
 
   success "\nDone setting up neovim."
 }
