@@ -33,10 +33,6 @@ if $IS_WORK_LAPTOP; then
   export C_INCLUDE_PATH=/opt/homebrew/Cellar/librdkafka/1.9.2/include
   export LIBRARY_PATH=/opt/homebrew/Cellar/librdkafka/1.9.2/lib
 
-  # grpcio on M1 (see: https://github.com/grpc/grpc/issues/30064)
-  # export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1 
-  # export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1 
-
   # OpenSSL
   export PATH=/opt/homebrew/opt/openssl@3/bin:$PATH
   export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
