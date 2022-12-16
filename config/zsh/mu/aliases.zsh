@@ -35,8 +35,7 @@ function nig() {
     tldr \
     tree-sitter-cli \
     typescript \
-    vscode-langservers-extracted \
-    yarn
+    vscode-langservers-extracted
 }
 
 alias nvm='fnm'
