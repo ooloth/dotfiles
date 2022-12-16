@@ -12,7 +12,7 @@ end
 
 local packer_bootstrap = ensure_packer() -- true if packer was just installed
 
--- sync plugins after entering vim or saving this file
+-- sync plugins after or saving this file
 vim.cmd([[
   augroup packer_sync
     autocmd!
