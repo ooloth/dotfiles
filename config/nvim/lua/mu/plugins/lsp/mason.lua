@@ -112,15 +112,6 @@ local on_attach = function(client, bufnr)
       autocmd BufWritePre *.tsx,*.ts,*.jsx,*.js EslintFixAll
     ]])
   end
-
-  -- set typescript-specific lsp keymaps
-  if client.name == 'tsserver' then
-    wk.register({
-      l = {
-        rf = { '<cmd>TypescriptRenameFile<cr>', 'rename file' }, -- TODO: confirm if this works
-      },
-    }, { buffer = bufnr, prefix = '<leader>' })
-  end
 end
 
 -- used to enable autocompletion (assign to every lsp server config)
@@ -213,9 +204,13 @@ null_ls.setup({
   -- formatters & linters mason will automatically install + set up below
   sources = {
     -- code actions providers
+    -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
+    code_actions.eslint_d,
     code_actions.gitsigns,
+    code_actions.proselint,
 
     -- linters & type-checkers
+    -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#diagnostics
     diagnostics.eslint_d, -- js/ts linter
     diagnostics.flake8, -- python linter
     diagnostics.markdownlint, -- markdown linter
@@ -227,6 +222,7 @@ null_ls.setup({
     diagnostics.zsh, -- zsh linter
 
     -- formatters
+    -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#formatting
     -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
     formatting.isort, -- python
     formatting.prettierd, -- js/ts etc
