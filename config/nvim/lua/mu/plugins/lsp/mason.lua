@@ -61,7 +61,6 @@ mason_lspconfig.setup({
     'cssmodules_ls',
     'dockerls',
     'emmet_ls',
-    'eslint',
     'html',
     'jsonls',
     'marksman',
