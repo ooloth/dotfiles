@@ -373,11 +373,11 @@ set_up_zsh() {
 set_up_node() {
   title "Installing node, npm and yarn"
 
-  fnm install 18 && fnm default 18 && fnm use 18
+  fnm install 19 && fnm default 19 && fnm use 19
 
-  npm install --global yarn
+  npm i -g yarn
 
-  success "\nDone installing node using fnm and yarn using npm."
+  success "\nDone installing node, npm and yarn."
 }
 
 set_up_tmux() {
