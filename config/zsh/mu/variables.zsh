@@ -8,6 +8,9 @@ export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front 
 export PATH=$HOME/.local/bin:$PATH # Add lvim location to PATH
 export PATH=$HOME/.cargo/bin:$PATH # Add cargo to PATH (for lvim)
 
+# see: https://github.com/fsouza/prettierd#local-instance
+export PRETTIERD_LOCAL_PRETTIER_ONLY=true
+
 export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
 IS_WORK_LAPTOP=false
