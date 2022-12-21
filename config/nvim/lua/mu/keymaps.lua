@@ -5,6 +5,8 @@
 -- swap : and ,
 vim.keymap.set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 vim.keymap.set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
+vim.keymap.set('n', 'g;', 'g,') -- go to next change with g;
+vim.keymap.set('n', 'g:', 'g;') -- go to previous change with g;
 
 -- tab through buffers
 vim.keymap.set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
