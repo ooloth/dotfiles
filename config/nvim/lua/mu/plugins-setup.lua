@@ -35,7 +35,6 @@ return packer.startup(function(use)
   use('Mofiqul/dracula.nvim')
 
   -- navigating
-  use('rmagatti/auto-session') -- session manager
   use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }) -- telescope dependency for faster sorting
   use({ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' }, branch = '0.1.x' }) -- fuzzy finder
 
