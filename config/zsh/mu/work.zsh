@@ -10,7 +10,7 @@ if $IS_WORK_LAPTOP; then
   alias nl='npm run lint'
   alias ns='n && npm run start'
   alias nt='npm run test'
-  function ntp() { yt --testPathPattern=$1 }
+  function ntp() { nt -- --testPathPattern=$1 }
   function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
   function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
   alias paf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
@@ -23,7 +23,7 @@ if $IS_WORK_LAPTOP; then
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
       react-app)                   ns ;;
-      *)                           echo "🚨 No 'run' condition set for ${CURRENT_DIRECTORY} in work.zsh" ;;
+      *)                           echo "🚨 No 'run' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
