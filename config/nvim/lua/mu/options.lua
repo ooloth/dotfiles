@@ -9,6 +9,14 @@ vim.opt.clipboard:append('unnamedplus') -- use the macos system clipboard when y
 vim.opt.iskeyword:append('-') -- treat hyphens as part of a single word
 vim.opt.undofile = true -- persist buffer undo tree after closing
 
+-- filetypes
+vim.cmd([[
+  "see: https://eslint.org/docs/user-guide/configuring
+  autocmd BufNewFile,BufRead .eslintrc.json setlocal filetype=jsonc
+  "see: https://github.com/microsoft/TypeScript/pull/5450
+  autocmd BufNewFile,BufRead tsconfig.json setlocal filetype=jsonc
+]])
+
 -- searching
 vim.opt.ignorecase = true -- ignore case when searching
 vim.opt.smartcase = true -- unless search includes uppercase letters
