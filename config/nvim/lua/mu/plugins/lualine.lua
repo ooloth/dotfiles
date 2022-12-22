@@ -3,14 +3,11 @@ if not lualine_ok then
   return
 end
 
-local function get_venv()
-  local venv = vim.env.PYENV_VERSION
-  if venv then
-    return '(' .. venv .. ')'
-  else
-    return ''
-  end
-end
+local options = {
+  component_separators = '',
+  section_separators = '',
+  theme = 'dracula-nvim',
+}
 
 local sections = {
   lualine_a = { 'mode' },
@@ -28,11 +25,9 @@ local inactive_sections = {
   lualine_c = { { 'filename', path = 1, shorting_target = 100 } },
 }
 
-local options = {
-  component_separators = '',
-  section_separators = '',
-  theme = 'dracula-nvim',
-}
+local function get_venv()
+  return vim.env.PYENV_VERSION and '(' .. vim.env.PYENV_VERSION .. ')' or ''
+end
 
 local python_sections = {
   lualine_a = { 'mode' },
