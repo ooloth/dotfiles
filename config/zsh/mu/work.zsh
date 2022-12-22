@@ -1,7 +1,7 @@
 if $IS_WORK_LAPTOP; then
 
   # Aliases
-  function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell eng-onboarding }
+  function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && venv }
   function n() { npm install }
   function nb() { n && npm run build }
   function nfc() { npm run format:check }
@@ -11,15 +11,28 @@ if $IS_WORK_LAPTOP; then
   function ns() { n && npm run start }
   function nt() { npm run test }
   function ntp() { nt -- --testPathPattern=$1 }
-  function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
-  function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
+  function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && venv }
+  function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && venv }
   function paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app }
-  function pm() { cd $HOME/Repos/recursionpharma/phenomap }
-  function pr() { cd $HOME/Repos/recursionpharma/phenoreader && eval "$(pyenv init -)" && pyenv shell phenoreader }
-  function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && eval "$(pyenv init -)" && pyenv shell phenoservice-api }
-  function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && eval "$(pyenv init -)" && pyenv shell phenoservice-consumer }
+  function pm() { cd $HOME/Repos/recursionpharma/phenomap && venv }
+  function pr() { cd $HOME/Repos/recursionpharma/phenoreader && venv }
+  function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && venv }
+  function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && venv }
   function rp() { cd $HOME/Repos/recursionpharma } 
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
+
+  function venv() {
+    eval "$(pyenv init -)" 
+    case $CURRENT_DIRECTORY in
+      dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
+      eng-onboarding)              eval "$(pyenv init -)" && pyenv shell eng-onboarding ;; 
+      phenoreader)                 eval "$(pyenv init -)" && pyenv shell phenoreader ;;
+      phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
+      phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
+      *)                           echo "🚨 No 'venv' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+      # *)                           source venv/bin/activate ;;
+    esac
+  }
 
   function e() {
     case $CURRENT_DIRECTORY in
