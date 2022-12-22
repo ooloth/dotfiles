@@ -2,24 +2,24 @@ if $IS_WORK_LAPTOP; then
 
   # Aliases
   function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell eng-onboarding }
-  alias n='npm install'
-  alias nb='n && npm run build'
-  alias nfc='npm run format:check'
-  alias nff='npm run format:fix'
-  alias nk='npm run typecheck'
-  alias nl='npm run lint'
-  alias ns='n && npm run start'
-  alias nt='npm run test'
+  function n() { npm install }
+  function nb() { n && npm run build }
+  function nfc() { npm run format:check }
+  function nff() { npm run format:fix }
+  function nk() { npm run typecheck }
+  function nl() { npm run lint }
+  function ns() { n && npm run start }
+  function nt() { npm run test }
   function ntp() { nt -- --testPathPattern=$1 }
   function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
   function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
-  alias paf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
-  alias pm='cd $HOME/Repos/recursionpharma/phenomap'
+  function paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app }
+  function pm() { cd $HOME/Repos/recursionpharma/phenomap }
   function pr() { cd $HOME/Repos/recursionpharma/phenoreader && eval "$(pyenv init -)" && pyenv shell phenoreader }
   function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && eval "$(pyenv init -)" && pyenv shell phenoservice-api }
   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && eval "$(pyenv init -)" && pyenv shell phenoservice-consumer }
-  alias r='cd $HOME/Repos/recursionpharma'
-  function run() {
+  function rp() { cd $HOME/Repos/recursionpharma } 
+  function rv() { pip install -U 'roadie[cli]' && roadie venv }
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
       react-app)                   ns ;;
