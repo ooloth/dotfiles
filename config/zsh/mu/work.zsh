@@ -37,7 +37,12 @@ if $IS_WORK_LAPTOP; then
   function e() {
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp | react-app) pa && nvim ;;
+      dotfiles)                                dot && nvim ;; 
       eng-onboarding)                          eo && nvim ;; 
+      phenomap)                                pm && nvim ;; 
+      phenoreader)                             pr && nvim ;; 
+      phenoservice-api)                        psa && nvim ;; 
+      phenoservice-consumer)                   psc && nvim ;; 
       *)                                       echo "🚨 No 'edit' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
