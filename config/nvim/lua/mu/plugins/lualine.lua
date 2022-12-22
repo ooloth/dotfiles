@@ -23,6 +23,17 @@ local sections = {
   lualine_z = { 'location' },
 }
 
+local inactive_sections = {
+  -- see: https://github.com/nvim-lualine/lualine.nvim#filename-component-options
+  lualine_c = { { 'filename', path = 1, shorting_target = 100 } },
+}
+
+local options = {
+  component_separators = '',
+  section_separators = '',
+  theme = 'dracula-nvim',
+}
+
 local python_sections = {
   lualine_a = { 'mode' },
   lualine_b = { 'branch', 'diff', 'diagnostics' },
@@ -34,19 +45,17 @@ local python_sections = {
 
 -- show active venv next to filetypee in python files only
 -- see: https://github.com/nvim-lualine/lualine.nvim#custom-extensions
-local python_extension = { sections = python_sections, filetypes = { 'python' } }
+local python_extension = {
+  filetypes = { 'python' },
+  options = options,
+  sections = python_sections,
+  inactive_sections = inactive_sections,
+}
 
 lualine.setup({
   disabled_filetypes = {},
   extensions = { 'fugitive', 'nvim-tree', 'quickfix', python_extension },
-  options = {
-    component_separators = '',
-    section_separators = '',
-    theme = 'dracula-nvim',
-  },
+  options = options,
   sections = sections,
-  inactive_sections = {
-    -- see: https://github.com/nvim-lualine/lualine.nvim#filename-component-options
-    lualine_c = { { 'filename', path = 1, shorting_target = 100 } },
-  },
+  inactive_sections = inactive_sections,
 })
