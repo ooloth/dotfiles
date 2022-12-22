@@ -29,13 +29,14 @@ if $IS_WORK_LAPTOP; then
     esac
   }
 
+  function r() {
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
+      eng-onboarding)              eo ;; 
       react-app)                   ns ;;
       *)                           echo "🚨 No 'run' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
-  function rv() { pip install -U 'roadie[cli]' && roadie venv }
 
   # Confluent-Kafka
   # TODO: update these whenever I run brew update
