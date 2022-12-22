@@ -24,11 +24,11 @@ if $IS_WORK_LAPTOP; then
   function venv() {
     eval "$(pyenv init -)" 
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
-      eng-onboarding)              eval "$(pyenv init -)" && pyenv shell eng-onboarding ;; 
-      phenoreader)                 eval "$(pyenv init -)" && pyenv shell phenoreader ;;
-      phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
-      phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
+      dash-phenoapp-v2 | phenoapp) pyenv shell dash-phenoapp-v2 ;;
+      eng-onboarding)              pyenv shell eng-onboarding ;; 
+      phenoreader)                 pyenv shell phenoreader ;;
+      phenoservice-api)            pyenv shell phenoservice-api ;;
+      phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
       *)                           echo "🚨 No 'venv' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
       # *)                           source venv/bin/activate ;;
     esac
