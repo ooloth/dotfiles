@@ -3,21 +3,10 @@ if not lualine_ok then
   return
 end
 
-local function split(input, delimiter)
-  local arr = {}
-  string.gsub(input, '[^' .. delimiter .. ']+', function(w)
-    table.insert(arr, w)
-  end)
-  return arr
-end
-
--- see: https://github.com/nvim-lualine/lualine.nvim/issues/277#issuecomment-1337515821
 local function get_venv()
-  local venv = vim.env.VIRTUAL_ENV
+  local venv = vim.env.PYENV_VERSION
   if venv then
-    local params = split(venv, '/')
-    -- see: https://scriptinghelpers.org/questions/75451/how-do-you-index-the-last-element-in-a-list
-    return '(' .. params[#params] .. ')'
+    return '(' .. venv .. ')'
   else
     return ''
   end
@@ -45,11 +34,11 @@ local python_sections = {
 
 -- show active venv next to filetypee in python files only
 -- see: https://github.com/nvim-lualine/lualine.nvim#custom-extensions
-local venv_extension = { sections = python_sections, filetypes = { 'python' } }
+local python_extension = { sections = python_sections, filetypes = { 'python' } }
 
 lualine.setup({
   disabled_filetypes = {},
-  extensions = { 'fugitive', 'nvim-tree', 'quickfix', venv_extension },
+  extensions = { 'fugitive', 'nvim-tree', 'quickfix', python_extension },
   options = {
     component_separators = '',
     section_separators = '',
