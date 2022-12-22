@@ -148,6 +148,7 @@ mason_lspconfig.setup_handlers({
       settings = {
         python = {
           analysis = {
+            diagnosticMode = 'workspace',
             typeCheckingMode = 'off', -- using pyright for lsp but mypy for type-checking
             useLibraryCodeForTypes = true,
           },
