@@ -20,6 +20,15 @@ if $IS_WORK_LAPTOP; then
   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && eval "$(pyenv init -)" && pyenv shell phenoservice-consumer }
   function rp() { cd $HOME/Repos/recursionpharma } 
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
+
+  function e() {
+    case $CURRENT_DIRECTORY in
+      dash-phenoapp-v2 | phenoapp | react-app) pa && nvim ;;
+      eng-onboarding)                          eo && nvim ;; 
+      *)                                       echo "🚨 No 'edit' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+    esac
+  }
+
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
       react-app)                   ns ;;
