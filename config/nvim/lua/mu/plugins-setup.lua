@@ -103,6 +103,7 @@ return packer.startup(function(use)
   use('tpope/vim-fugitive')
   use('tpope/vim-rhubarb') -- open GitHub URLs with :GBrowse
   use('voldikss/vim-floaterm') -- for lazygit
+  use('whiteinge/diffconflicts') -- two-window merge conflict diff view
 
   -- mappings
   use('folke/which-key.nvim')
