@@ -86,8 +86,10 @@ wk.register({
     name = 'git',
     -- reserve b for gitsigns blame_line
     -- B = { '<cmd>Telescope git_branches<cr>', 'branches' },
-    c = { '<cmd>Telescope git_bcommits<cr>', 'commits (buffer)' },
-    C = { '<cmd>Telescope git_commits<cr>', 'commits (project)' },
+    c = { '<cmd>GV!<cr>', 'commits (buffer)' },
+    -- c = { '<cmd>Telescope git_bcommits<cr>', 'commits (buffer)' },
+    C = { '<cmd>GV<cr>', 'commits (branch)' },
+    -- C = { '<cmd>Telescope git_commits<cr>', 'commits (project)' },
     d = { '<cmd>Gdiffsplit<cr>', 'diff' },
     g = { '<cmd>FloatermNew lazygit<cr>', 'lazygit' },
     -- reserve h for gitsigns hunk commands
