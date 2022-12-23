@@ -61,6 +61,7 @@ mason_lspconfig.setup({
     'cssmodules_ls',
     'dockerls',
     'emmet_ls',
+    'eslint',
     'html',
     'jsonls',
     'marksman',
@@ -206,13 +207,11 @@ null_ls.setup({
   sources = {
     -- code actions providers
     -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
-    code_actions.eslint_d,
     code_actions.gitsigns,
     code_actions.proselint,
 
     -- linters & type-checkers
     -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#diagnostics
-    diagnostics.eslint_d, -- js/ts linter
     diagnostics.flake8, -- python linter
     diagnostics.markdownlint, -- markdown linter
     diagnostics.mypy, -- python type-checker
@@ -231,8 +230,8 @@ null_ls.setup({
     formatting.yapf, -- python
   },
 
-  -- configure format on save
   on_attach = function(current_client, bufnr)
+    -- configure format on save
     if current_client.supports_method('textDocument/formatting') then
       vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
       vim.api.nvim_create_autocmd('BufWritePre', {
@@ -250,13 +249,6 @@ null_ls.setup({
       })
     end
   end,
-
-  -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/issues/429#issuecomment-992741722
-  -- on_attach = function(client)
-  --   if client.resolved_capabilities.document_formatting then
-  --     vim.cmd('autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()')
-  --   end
-  -- end,
 })
 
 --------------------------------------------------------------------------
