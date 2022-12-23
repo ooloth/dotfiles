@@ -26,7 +26,6 @@ function nig() {
     bash-language-server \
     cssmodules-language-server \
     dockerfile-language-server-nodejs \
-    eslint_d \
     emmet-ls \
     neovim \
     npm-check \
