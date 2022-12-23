@@ -21,7 +21,7 @@ alias mini="s michael@192.168.2.22"                                             
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 function nig() {
-  npm i -g \
+  npm install --location=global \
     @fsouza/prettierd \
     bash-language-server \
     cssmodules-language-server \
