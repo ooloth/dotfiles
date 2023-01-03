@@ -28,11 +28,11 @@ vim.cmd([[
   autocmd FileType help,NvimTree,qf noremap <buffer> q :q<cr>
 ]])
 
--- Disable arrow keys
-vim.keymap.set('', '<up>', '<Nop>')
-vim.keymap.set('', '<down>', '<Nop>')
-vim.keymap.set('', '<left>', '<Nop>')
-vim.keymap.set('', '<right>', '<Nop>')
+-- disable arrow keys
+vim.keymap.set('', '<up>', '<nop>')
+vim.keymap.set('', '<down>', '<nop>')
+vim.keymap.set('', '<left>', '<nop>')
+vim.keymap.set('', '<right>', '<nop>')
 
 ----------------
 -- LEADER KEY --
