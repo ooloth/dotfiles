@@ -12,14 +12,6 @@ vim.keymap.set('n', 'g:', 'g;') -- go to previous change with g;
 vim.keymap.set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
 vim.keymap.set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
 
--- move lines with up/down arrows
-vim.keymap.set('n', '<down>', ':m .+1<CR>==')
-vim.keymap.set('n', '<up>', ':m .-2<CR>==')
-vim.keymap.set('i', '<down>', '<Esc>:m .+1<CR>==gi')
-vim.keymap.set('i', '<up>', '<Esc>:m .-2<CR>==gi')
-vim.keymap.set('v', '<down>', ":m '>+1<CR>gv=gv")
-vim.keymap.set('v', '<up>', ":m '<-2<CR>gv=gv")
-
 -- left/right through tabs
 vim.keymap.set('n', '<right>', 'gt') -- go to next tab
 vim.keymap.set('n', '<left>', 'gT') -- go to next tab
@@ -35,6 +27,12 @@ vim.cmd([[
   autocmd Filetype help,NvimTree,qf noremap <buffer> <Esc> :q<CR>
   autocmd FileType help,NvimTree,qf noremap <buffer> q :q<cr>
 ]])
+
+-- Disable arrow keys
+vim.keymap.set('', '<up>', '<Nop>')
+vim.keymap.set('', '<down>', '<Nop>')
+vim.keymap.set('', '<left>', '<Nop>')
+vim.keymap.set('', '<right>', '<Nop>')
 
 ----------------
 -- LEADER KEY --
