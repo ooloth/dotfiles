@@ -4,6 +4,17 @@ export CURRENT_DIRECTORY=${PWD##*/}
 export EDITOR=nvim
 export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
 
+# TODO: customize HISTORY behavior (validate ideas below + use with fzf?)
+# export HISTSIZE=10000
+# SAVEHIST=10000
+# export HISTCONTROL=ignoreboth:erasedups
+# export HISTORY_IGNORE="git*"
+# setopt EXTENDED_HISTORY
+# setopt HIST_IGNORE_SPACE
+# setopt HIST_IGNORE_ALL_DUPS
+# alias history='history 0'
+# alias h='history | grep'
+#
 export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
 export PATH=$HOME/.local/bin:$PATH # Add lvim location to PATH
 export PATH=$HOME/.cargo/bin:$PATH # Add cargo to PATH (for lvim)
