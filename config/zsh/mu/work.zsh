@@ -17,7 +17,7 @@ if $IS_WORK_LAPTOP; then
   function pr() { cd $HOME/Repos/recursionpharma/phenoreader && venv }
   function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && venv }
   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && venv }
-  function rp() { cd $HOME/Repos/recursionpharma } 
+  function r() { cd $HOME/Repos/recursionpharma } 
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
 
   function venv() {
