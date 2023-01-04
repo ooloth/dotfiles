@@ -34,7 +34,7 @@ if $IS_WORK_LAPTOP; then
     esac
   }
 
-  function e() {
+  function edit() {
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp | react-app) pa && nvim ;;
       dotfiles)                                dot && nvim ;; 
@@ -47,7 +47,7 @@ if $IS_WORK_LAPTOP; then
     esac
   }
 
-  function r() {
+  function run() {
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
       eng-onboarding)              eo ;; 
