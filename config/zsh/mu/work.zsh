@@ -1,6 +1,5 @@
 if $IS_WORK_LAPTOP; then
 
-  # Aliases
   function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && venv }
   function n() { npm install }
   function nb() { n && npm run build }
@@ -50,7 +49,6 @@ if $IS_WORK_LAPTOP; then
   function run() {
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
-      eng-onboarding)              eo ;; 
       react-app)                   ns ;;
       *)                           echo "🚨 No 'run' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
