@@ -3,6 +3,7 @@ export CURRENT_DIRECTORY=${PWD##*/}
 
 export EDITOR=nvim
 export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
+export K9SCONFIG=$HOME/.config/k9s
 
 # TODO: customize HISTORY behavior (validate ideas below + use with fzf?)
 # export HISTSIZE=10000
