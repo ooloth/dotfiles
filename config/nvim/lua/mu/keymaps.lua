@@ -5,18 +5,12 @@
 -- swap : and ,
 vim.keymap.set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 vim.keymap.set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
+vim.keymap.set('n', 'g;', 'g,') -- go to next change with g;
+vim.keymap.set('n', 'g:', 'g;') -- go to previous change with g;
 
 -- tab through buffers
 vim.keymap.set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
 vim.keymap.set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
-
--- move lines with up/down arrows
-vim.keymap.set('n', '<down>', ':m .+1<CR>==')
-vim.keymap.set('n', '<up>', ':m .-2<CR>==')
-vim.keymap.set('i', '<down>', '<Esc>:m .+1<CR>==gi')
-vim.keymap.set('i', '<up>', '<Esc>:m .-2<CR>==gi')
-vim.keymap.set('v', '<down>', ":m '>+1<CR>gv=gv")
-vim.keymap.set('v', '<up>', ":m '<-2<CR>gv=gv")
 
 -- left/right through tabs
 vim.keymap.set('n', '<right>', 'gt') -- go to next tab
@@ -33,6 +27,12 @@ vim.cmd([[
   autocmd Filetype help,NvimTree,qf noremap <buffer> <Esc> :q<CR>
   autocmd FileType help,NvimTree,qf noremap <buffer> q :q<cr>
 ]])
+
+-- disable arrow keys
+vim.keymap.set('', '<up>', '<nop>')
+vim.keymap.set('', '<down>', '<nop>')
+vim.keymap.set('', '<left>', '<nop>')
+vim.keymap.set('', '<right>', '<nop>')
 
 ----------------
 -- LEADER KEY --
@@ -84,8 +84,8 @@ wk.register({
     name = 'git',
     -- reserve b for gitsigns blame_line
     -- B = { '<cmd>Telescope git_branches<cr>', 'branches' },
-    c = { '<cmd>Telescope git_bcommits<cr>', 'commits (buffer)' },
-    C = { '<cmd>Telescope git_commits<cr>', 'commits (project)' },
+    c = { '<cmd>GV!<cr>', 'commits (buffer)' },
+    C = { '<cmd>GV<cr>', 'commits (branch)' },
     d = { '<cmd>Gdiffsplit<cr>', 'diff' },
     g = { '<cmd>FloatermNew lazygit<cr>', 'lazygit' },
     -- reserve h for gitsigns hunk commands

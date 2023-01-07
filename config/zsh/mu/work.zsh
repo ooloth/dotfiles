@@ -1,32 +1,58 @@
 if $IS_WORK_LAPTOP; then
 
-  # Aliases
-  function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && eval "$(pyenv init -)" && eval "$(pyenv virtualenv-init -)" && pyenv shell eng-onboarding }
-  alias n='npm install'
-  alias nb='n && npm run build'
-  alias nfc='npm run format:check'
-  alias nff='npm run format:fix'
-  alias nk='npm run typecheck'
-  alias nl='npm run lint'
-  alias ns='n && npm run start'
-  alias nt='npm run test'
-  function ntp() { yt --testPathPattern=$1 }
-  function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
-  function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 }
-  alias paf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
-  alias pm='cd $HOME/Repos/recursionpharma/phenomap'
-  function pr() { cd $HOME/Repos/recursionpharma/phenoreader && eval "$(pyenv init -)" && pyenv shell phenoreader }
-  function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && eval "$(pyenv init -)" && pyenv shell phenoservice-api }
-  function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && eval "$(pyenv init -)" && pyenv shell phenoservice-consumer }
-  alias r='cd $HOME/Repos/recursionpharma'
+  function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && venv }
+  function n() { npm install }
+  function nb() { n && npm run build }
+  function nfc() { npm run format:check }
+  function nff() { npm run format:fix }
+  function nk() { npm run typecheck }
+  function nl() { npm run lint }
+  function ns() { n && npm run start }
+  function nt() { npm run test }
+  function ntp() { nt -- --testPathPattern=$1 }
+  function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && venv }
+  function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && venv }
+  function paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app }
+  function pm() { cd $HOME/Repos/recursionpharma/phenomap && venv }
+  function pr() { cd $HOME/Repos/recursionpharma/phenoreader && venv }
+  function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && venv }
+  function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && venv }
+  function r() { cd $HOME/Repos/recursionpharma } 
+  function rv() { pip install -U 'roadie[cli]' && roadie venv }
+
+  function venv() {
+    eval "$(pyenv init -)" 
+    case $CURRENT_DIRECTORY in
+      dash-phenoapp-v2 | phenoapp) pyenv shell dash-phenoapp-v2 ;;
+      eng-onboarding)              pyenv shell eng-onboarding ;; 
+      phenoreader)                 pyenv shell phenoreader ;;
+      phenoservice-api)            pyenv shell phenoservice-api ;;
+      phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
+      *)                           echo "🚨 No 'venv' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+      # *)                           source venv/bin/activate ;;
+    esac
+  }
+
+  function edit() {
+    case $CURRENT_DIRECTORY in
+      dash-phenoapp-v2 | phenoapp | react-app) pa && nvim ;;
+      dotfiles)                                dot && nvim ;; 
+      eng-onboarding)                          eo && nvim ;; 
+      phenomap)                                pm && nvim ;; 
+      phenoreader)                             pr && nvim ;; 
+      phenoservice-api)                        psa && nvim ;; 
+      phenoservice-consumer)                   psc && nvim ;; 
+      *)                                       echo "🚨 No 'edit' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+    esac
+  }
+
   function run() {
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
       react-app)                   ns ;;
-      *)                           echo "🚨 No 'run' condition set for ${CURRENT_DIRECTORY} in work.zsh" ;;
+      *)                           echo "🚨 No 'run' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
-  function rv() { pip install -U 'roadie[cli]' && roadie venv }
 
   # Confluent-Kafka
   # TODO: update these whenever I run brew update

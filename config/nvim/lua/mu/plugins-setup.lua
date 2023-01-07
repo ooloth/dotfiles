@@ -34,7 +34,6 @@ return packer.startup(function(use)
   use('Mofiqul/dracula.nvim')
 
   -- navigating
-  use('rmagatti/auto-session') -- session manager
   use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }) -- telescope dependency for faster sorting
   use({ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' }, branch = '0.1.x' }) -- fuzzy finder
 
@@ -99,10 +98,11 @@ return packer.startup(function(use)
   use({ 'nvim-treesitter/nvim-treesitter-context', after = 'nvim-treesitter' }) -- sticky scroll context
 
   -- git
+  use('voldikss/vim-floaterm') -- open lazygit inside vim session
   use('lewis6991/gitsigns.nvim') -- show line modifications on left hand side
-  use('tpope/vim-fugitive')
-  use('tpope/vim-rhubarb') -- open GitHub URLs with :GBrowse
-  use('voldikss/vim-floaterm') -- for lazygit
+  use({ 'tpope/vim-rhubarb', requires = 'tpope/vim-fugitive' }) -- open GitHub URLs with :GBrowse
+  use({ 'junegunn/gv.vim', requires = 'tpope/vim-fugitive' }) -- git commit browser (including viewing diff for a range of commits)
+  use('whiteinge/diffconflicts') -- resolve merge conflicts in a two-pane view
 
   -- mappings
   use('folke/which-key.nvim')

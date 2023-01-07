@@ -375,7 +375,11 @@ set_up_node() {
 
   fnm install 19 && fnm default 19 && fnm use 19
 
-  npm i -g npm-check tldr yarn
+  npm i -g npm-check tldr 
+
+  info "Enabling corepack to activate yarn"
+  # see: https://yarnpkg.com/getting-started/install
+  corepack enable
 
   success "\nDone installing node and global dependencies."
 }

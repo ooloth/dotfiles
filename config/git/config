@@ -18,8 +18,17 @@
 [init]
 	defaultBranch = main
 
+# see: https://github.com/whiteinge/diffconflicts#installation
 [merge]
-  tool = fugitive
+  tool = diffconflicts
+  # tool = fugitive
+
+[mergetool]
+  keepBackup = false
+
+[mergetool "diffconflicts"]
+  cmd = 'nvim -c DiffConflicts "$MERGED" "$BASE" "$LOCAL" "$REMOTE"'
+  trustExitCode = true
 
 [mergetool "fugitive"]
   cmd = 'nvim -f -c "Gvdiffsplit!" "$MERGED"'

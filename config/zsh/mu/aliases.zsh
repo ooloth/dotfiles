@@ -5,7 +5,7 @@ alias .....='cd ../../../..'
 
 alias c='clear'
 alias cat='bat --paging=never'
-alias dot='cd $HOME/Repos/ooloth/dotfiles'
+function dot() { cd $HOME/Repos/ooloth/dotfiles }
 alias et="$EDITOR $HOME/Repos/ooloth/dotfiles/config/tmux/tmux.conf"
 alias ez="$EDITOR $HOME/Repos/ooloth/dotfiles/config/zsh/.zshrc"
 alias f='vifm . .'                                                                   # open both vifm panes in cwd
@@ -21,12 +21,11 @@ alias mini="s michael@192.168.2.22"                                             
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 function nig() {
-  npm i -g \
+  npm install --location=global \
     @fsouza/prettierd \
     bash-language-server \
     cssmodules-language-server \
     dockerfile-language-server-nodejs \
-    eslint_d \
     emmet-ls \
     neovim \
     npm-check \
@@ -35,8 +34,7 @@ function nig() {
     tldr \
     tree-sitter-cli \
     typescript \
-    vscode-langservers-extracted \
-    yarn
+    vscode-langservers-extracted
 }
 
 alias nvm='fnm'
@@ -61,26 +59,5 @@ function u() {
 alias v='vim'
 alias vim='nvim'
 
+# [z]sh [t]ime: measure how long new shells take to launch
 function zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
-
-# see: https://github.com/Schniz/fnm/issues/409#issuecomment-993644497
-function fnm_get_latest {
-  fnm ls-remote | cut -d "." -f1 | cut -d "v" -f2 | tail -1
-}
-
-# outputs each global npm dependency on its own line (without its current version)
-function npm_get_global_dependencies {
-  npm ls -g | sed -E 's/@[0-9].*//g' | cut -d " " -f2 | tail -n +2 | sed -r '/^\s*$/d'
-}
-#
-# "node latest" (set latest node as default + reinstall global npm deps there)
-function fl() { 
-  FNM_CURRENT=$(fnm current) && \
-  NPM_GLOBAL_DEPS=$(npm_get_global_dependencies) && \
-    FNM_LATEST=$(fnm_get_latest) && \
-    fnm use $FNM_LATEST && \
-    echo "Setting default node version to ${FNM_LATEST}..."
-    fnm default $FNM_LATEST && \
-    echo "Reinstalling global npm dependencies from ${FNM_CURRENT}..." && \
-    while read -r line; do npm i -g $line; done <<< $NPM_GLOBAL_DEPS
-}
