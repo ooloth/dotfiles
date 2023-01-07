@@ -12,7 +12,7 @@ end
 
 local packer_bootstrap = ensure_packer() -- true if packer was just installed
 
--- sync plugins after or saving this file
+-- sync plugins after saving this file
 vim.cmd([[
   augroup packer_sync
     autocmd!
@@ -21,9 +21,8 @@ vim.cmd([[
   augroup end
 ]])
 
--- import packer safely
-local status, packer = pcall(require, 'packer')
-if not status then
+local packer_ok, packer = pcall(require, 'packer')
+if not packer_ok then
   return
 end
 
