@@ -104,6 +104,9 @@ return packer.startup(function(use)
   use({ 'junegunn/gv.vim', requires = 'tpope/vim-fugitive' }) -- git commit browser (including viewing diff for a range of commits)
   use('whiteinge/diffconflicts') -- resolve merge conflicts in a two-pane view
 
+  -- AI assistance
+  use('github/copilot.vim')
+
   -- mappings
   use('folke/which-key.nvim')
 
