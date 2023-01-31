@@ -224,10 +224,10 @@ null_ls.setup({
     -- formatters
     -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#formatting
     -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
+    formatting.black, -- python
     formatting.isort, -- python
     formatting.prettierd, -- js/ts etc
     formatting.stylua, -- lua
-    formatting.yapf, -- python
   },
 
   on_attach = function(current_client, bufnr)
