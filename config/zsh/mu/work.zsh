@@ -19,6 +19,7 @@ if $IS_WORK_LAPTOP; then
   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && venv }
   function r() { cd $HOME/Repos/recursionpharma } 
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
+  function rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app && venv }
 
   function venv() {
     eval "$(pyenv init -)" 
@@ -28,6 +29,7 @@ if $IS_WORK_LAPTOP; then
       phenoreader)                 pyenv shell phenoreader ;;
       phenoservice-api)            pyenv shell phenoservice-api ;;
       phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
+      rxrx3-app)                   pyenv shell rxrx3-app ;;
       *)                           echo "🚨 No 'venv' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
       # *)                           source venv/bin/activate ;;
     esac
@@ -42,6 +44,7 @@ if $IS_WORK_LAPTOP; then
       phenoreader)                             pr && nvim ;; 
       phenoservice-api)                        psa && nvim ;; 
       phenoservice-consumer)                   psc && nvim ;; 
+      rxrx3-app)                               rx3 && nvim ;; 
       *)                                       echo "🚨 No 'edit' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
@@ -50,6 +53,7 @@ if $IS_WORK_LAPTOP; then
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
       react-app)                   ns ;;
+      rxrx3-app)                   rx3 && export SKIP_AUTH="True" && export LOCAL_CACHE="True" && export DOCKER="False" && python -m rxrx3_app.index --debug -p 5001;;
       *)                           echo "🚨 No 'run' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
