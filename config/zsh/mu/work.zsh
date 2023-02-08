@@ -30,12 +30,12 @@ if $IS_WORK_LAPTOP; then
       phenoservice-api)            pyenv shell phenoservice-api ;;
       phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
       rxrx3-app)                   pyenv shell rxrx3-app ;;
-      *)                           echo "🚨 No 'venv' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+      *)                           echo "🚨 No 'venv' case created for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
       # *)                           source venv/bin/activate ;;
     esac
   }
 
-  function edit() {
+  function nvim() {
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp | react-app) pa && nvim ;;
       dotfiles)                                dot && nvim ;; 
@@ -45,7 +45,7 @@ if $IS_WORK_LAPTOP; then
       phenoservice-api)                        psa && nvim ;; 
       phenoservice-consumer)                   psc && nvim ;; 
       rxrx3-app)                               rx3 && nvim ;; 
-      *)                                       echo "🚨 No 'edit' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+      *)                                       echo "🚨 No 'nvim' case created for '/${CURRENT_DIRECTORY}' in work.zsh" && nvim ;;
     esac
   }
 
