@@ -24,6 +24,7 @@
   # tool = fugitive
 
 [mergetool]
+  hideResolved = true
   keepBackup = false
 
 [mergetool "diffconflicts"]
