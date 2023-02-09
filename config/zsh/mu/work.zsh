@@ -30,7 +30,7 @@ if $IS_WORK_LAPTOP; then
       phenoservice-api)            pyenv shell phenoservice-api ;;
       phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
       rxrx3-app)                   pyenv shell rxrx3-app ;;
-      *)                           echo "🚨 No 'venv' case created for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+      *)                           echo "🚨 No 'venv' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
       # *)                           source venv/bin/activate ;;
     esac
   }
@@ -39,15 +39,15 @@ if $IS_WORK_LAPTOP; then
   function nvim() {
     # avoids infinite loop by calling nvim as a command instead of re-calling nvim function
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp | react-app) pa && zsh -c "nvim" ;;
-      dotfiles)                                dot && zsh -c "nvim" ;;
-      eng-onboarding)                          eo && zsh -c "nvim" ;;
-      phenomap)                                pm && zsh -c "nvim" ;;
-      phenoreader)                             pr && zsh -c "nvim" ;;
-      phenoservice-api)                        psa && zsh -c "nvim" ;;
-      phenoservice-consumer)                   psc && zsh -c "nvim" ;;
-      rxrx3-app)                               rx3 && zsh -c "nvim" ;;
-      *)                                       echo "🚨 No 'nvim' case created for '/${CURRENT_DIRECTORY}' in work.zsh" && zsh -c "nvim" ;;
+      dash-phenoapp-v2 | phenoapp | react-app) pa && zsh -c "nvim $1" ;;
+      dotfiles)                                dot && zsh -c "nvim $1" ;;
+      eng-onboarding)                          eo && zsh -c "nvim $1" ;;
+      phenomap)                                pm && zsh -c "nvim $1" ;;
+      phenoreader)                             pr && zsh -c "nvim $1" ;;
+      phenoservice-api)                        psa && zsh -c "nvim $1" ;;
+      phenoservice-consumer)                   psc && zsh -c "nvim $1" ;;
+      rxrx3-app)                               rx3 && zsh -c "nvim $1" ;;
+      *)                                       echo "🚨 No 'nvim' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" && sleep 3 && zsh -c "nvim $1" ;;
     esac
   }
 
@@ -56,7 +56,7 @@ if $IS_WORK_LAPTOP; then
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
       react-app)                   ns ;;
       rxrx3-app)                   rx3 && export SKIP_AUTH="True" && export LOCAL_CACHE="True" && export DOCKER="False" && python -m rxrx3_app.index --debug -p 5001;;
-      *)                           echo "🚨 No 'run' condition set for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+      *)                           echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
 
