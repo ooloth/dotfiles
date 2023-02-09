@@ -35,17 +35,19 @@ if $IS_WORK_LAPTOP; then
     esac
   }
 
+  # override 'nvim' command to cd into appropriate directory and call 'venv' before opening
   function nvim() {
+    # avoids infinite loop by calling nvim as a command instead of re-calling nvim function
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp | react-app) pa && nvim ;;
-      dotfiles)                                dot && nvim ;; 
-      eng-onboarding)                          eo && nvim ;; 
-      phenomap)                                pm && nvim ;; 
-      phenoreader)                             pr && nvim ;; 
-      phenoservice-api)                        psa && nvim ;; 
-      phenoservice-consumer)                   psc && nvim ;; 
-      rxrx3-app)                               rx3 && nvim ;; 
-      *)                                       echo "🚨 No 'nvim' case created for '/${CURRENT_DIRECTORY}' in work.zsh" && nvim ;;
+      dash-phenoapp-v2 | phenoapp | react-app) pa && zsh -c "nvim" ;;
+      dotfiles)                                dot && zsh -c "nvim" ;;
+      eng-onboarding)                          eo && zsh -c "nvim" ;;
+      phenomap)                                pm && zsh -c "nvim" ;;
+      phenoreader)                             pr && zsh -c "nvim" ;;
+      phenoservice-api)                        psa && zsh -c "nvim" ;;
+      phenoservice-consumer)                   psc && zsh -c "nvim" ;;
+      rxrx3-app)                               rx3 && zsh -c "nvim" ;;
+      *)                                       echo "🚨 No 'nvim' case created for '/${CURRENT_DIRECTORY}' in work.zsh" && zsh -c "nvim" ;;
     esac
   }
 
