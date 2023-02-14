@@ -64,9 +64,9 @@ mason_lspconfig.setup({
     'eslint',
     'html',
     'jsonls',
+    'lua_ls',
     'marksman',
     'pyright',
-    'sumneko_lua',
     'svelte',
     'tailwindcss',
     'terraformls',
@@ -159,8 +159,8 @@ mason_lspconfig.setup_handlers({
     })
   end,
 
-  ['sumneko_lua'] = function()
-    lspconfig.sumneko_lua.setup({
+  ['lua_ls'] = function()
+    lspconfig.lua_ls.setup({
       capabilities = capabilities,
       on_attach = on_attach,
       settings = {
