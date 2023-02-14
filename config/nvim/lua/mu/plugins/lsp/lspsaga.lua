@@ -12,9 +12,8 @@ vim.diagnostic.config({
   virtual_text = { prefix = ' ', source = false },
 })
 
-lspsaga.init_lsp_saga({
-  border_style = 'rounded',
-  definition_action_keys = { edit = '<cr>' }, -- use enter to open file with definition preview
-  finder_action_keys = { open = '<cr>' }, -- use enter to open file with finder
-  move_in_saga = { prev = '<C-k>', next = '<C-j>' }, -- keybinds for navigation in lspsaga window
+lspsaga.setup({
+  ui = { border = 'rounded' },
+  definition = { edit = '<cr>' },
+  scroll_preview = { scroll_down = '<C-j>', scroll_up = '<C-k>' },
 })
