@@ -45,12 +45,7 @@ gitsigns.setup({
     -- set gitsigns action keymaps (leader key)
     wk.register({
       g = {
-        b = {
-          function()
-            gs.blame_line({ full = true })
-          end,
-          'blame (full)',
-        },
+        b = { '<cmd>Gitsigns blame_line<cr>', 'blame' },
         h = {
           name = 'hunk',
           p = { gs.preview_hunk, 'preview' },
