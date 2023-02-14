@@ -48,7 +48,7 @@ if $IS_WORK_LAPTOP; then
       phenoservice-api)                        psa && zsh -c "nvim $1" ;;
       phenoservice-consumer)                   psc && zsh -c "nvim $1" ;;
       rxrx3-app)                               rx3 && zsh -c "nvim $1" ;;
-      *)                                       echo "🚨 No 'nvim' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" && sleep 3 && zsh -c "nvim $1" ;;
+      *)                                       echo "🚨 No 'nvim' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" && sleep 2 && zsh -c "nvim $1" ;;
     esac
   }
 
