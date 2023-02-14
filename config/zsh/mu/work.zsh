@@ -1,15 +1,16 @@
 if $IS_WORK_LAPTOP; then
 
   function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && venv }
-  function n() { npm install }
+  function n() { npm install -- $1 }
   function nb() { n && npm run build }
   function nfc() { npm run format:check }
   function nff() { npm run format:fix }
   function nk() { npm run typecheck }
   function nl() { npm run lint }
   function ns() { n && npm run start }
-  function nt() { npm run test }
-  function ntp() { nt -- --testPathPattern=$1 }
+  function nt() { npm run test -- $1 }
+  function nta() { nt --watchAll }
+  function ntp() { nt --testPathPattern=$1 }
   function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && venv }
   function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && venv }
   function paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app }
