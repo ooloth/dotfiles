@@ -13,6 +13,7 @@ brew "fnm"
 brew "fzf"
 brew "gh"
 brew "git"
+brew "gnu-sed"
 brew "yqrashawn/goku/goku" # for karibiner
 brew "lazydocker"
 brew "jesseduffield/lazygit/lazygit"
