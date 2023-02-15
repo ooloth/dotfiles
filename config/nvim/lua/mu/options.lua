@@ -38,23 +38,6 @@ vim.cmd([[
   autocmd InsertLeave * set cursorline
 ]])
 
--- line numbers
--- vim.opt.number = true
--- vim.opt.relativenumber = true
--- vim.cmd([[
--- " see: https://stackoverflow.com/a/10410590/8802485
--- let ignored_filetypes = ['help', 'NvimTree', 'packer', 'qf', 'TelescopePrompt', 'TelescopeResults', 'Trouble']
--- " autocmd WinEnter * if &number ==# 'number' | setlocal relativenumber | endif
--- " autocmd WinLeave * if &relativenumber ==# 'relativenumber' | setlocal norelativenumber | endif
--- " autocmd InsertEnter * if &relativenumber ==# 'relativenumber' | setlocal norelativenumber | endif
--- " autocmd InsertLeave * if &number ==# 'number' | setlocal relativenumber | endif
--- autocmd WinLeave * if index(ignored_filetypes, &ft) < 0 | setlocal norelativenumber | endif
--- autocmd WinEnter * if index(ignored_filetypes, &ft) < 0 | setlocal relativenumber | endif
--- autocmd InsertEnter * if index(ignored_filetypes, &ft) < 0 | setlocal norelativenumber | endif
--- autocmd InsertLeave * if index(ignored_filetypes, &ft) < 0 | setlocal relativenumber | endif
--- " autocmd InsertEnter TelescopePrompt setlocal nonumber
--- ]])
-
 -- line wrapping
 -- vim.opt.listchars:append('precedes:<,extends:>')
 vim.opt.scrolloff = 20 -- min lines between cursor and top/bottom of window
