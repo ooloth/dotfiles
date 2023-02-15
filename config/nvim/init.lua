@@ -1,7 +1,7 @@
-local config = 'mine' -- 'mine' or 'lazyvim'
+local config = 'lazyvim' -- 'mine' or 'lazyvim'
 
 if config == 'lazyvim' then
-  require('config.lazyvim')
+  require('config.lazy')
 else
   require('mu.plugins-setup') -- should be first
   require('mu.colorscheme')
