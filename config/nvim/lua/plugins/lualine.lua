@@ -1,3 +1,5 @@
+local icons = require('lazyvim.config').icons
+
 local options = {
   component_separators = '',
   -- disabled_filetypes = {},
@@ -8,7 +10,19 @@ local options = {
 
 local sections = {
   lualine_a = { 'mode' },
-  lualine_b = { 'branch', 'diff', 'diagnostics' },
+  lualine_b = {
+    'branch',
+    'diff',
+    {
+      'diagnostics',
+      symbols = {
+        error = icons.diagnostics.Error,
+        warn = icons.diagnostics.Warn,
+        info = icons.diagnostics.Info,
+        hint = icons.diagnostics.Hint,
+      },
+    },
+  },
   -- the larger the shorting_target number, the sooner the file path abbreviates
   -- see: https://github.com/nvim-lualine/lualine.nvim#filename-component-options
   lualine_c = { { 'filename', path = 1, shorting_target = 100 } },
