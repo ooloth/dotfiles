@@ -9,6 +9,7 @@ tap "homebrew/cask-fonts"
 # Packages
 brew "bat"
 brew "exa"
+brew "fd"
 brew "fnm"
 brew "fzf"
 brew "gh"
