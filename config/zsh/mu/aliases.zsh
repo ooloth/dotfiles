@@ -22,7 +22,6 @@ alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 function nig() {
   npm install --location=global \
-    @fsouza/prettierd \
     bash-language-server \
     cssmodules-language-server \
     dockerfile-language-server-nodejs \

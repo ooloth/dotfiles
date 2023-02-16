@@ -401,11 +401,9 @@ set_up_neovim() {
 
   info "Installing global npm dependencies for neovim..."
   npm i -g \
-    @fsouza/prettierd \
     bash-language-server \
     cssmodules-language-server \
     dockerfile-language-server-nodejs \
-    eslint_d \
     emmet-ls \
     neovim \
     pug-lint \

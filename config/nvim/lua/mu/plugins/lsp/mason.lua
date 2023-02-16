@@ -226,7 +226,7 @@ null_ls.setup({
     -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
     formatting.black, -- python
     formatting.isort, -- python
-    formatting.prettierd, -- js/ts etc
+    formatting.prettier, -- js/ts etc
     formatting.stylua, -- lua
   },
 
