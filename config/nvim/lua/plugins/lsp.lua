@@ -29,32 +29,30 @@ return {
   --------------------------------
   {
     'williamboman/mason-lspconfig.nvim',
-    opts = function()
-      return {
-        automatic_installation = true,
-        -- lsp servers mason will automatically install + set up below
-        -- see: https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
-        -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
-        ensure_installed = {
-          'bashls',
-          'cssls',
-          'cssmodules_ls',
-          'dockerls',
-          'emmet_ls',
-          'eslint',
-          'html',
-          'jsonls',
-          'lua_ls',
-          'marksman',
-          'pyright',
-          'svelte',
-          'tailwindcss',
-          'terraformls',
-          'tsserver',
-          'yamlls',
-        },
-      }
-    end,
+    opts = {
+      automatic_installation = true,
+      -- lsp servers mason will automatically install + set up below
+      -- see: https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
+      -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+      ensure_installed = {
+        'bashls',
+        'cssls',
+        'cssmodules_ls',
+        'dockerls',
+        'emmet_ls',
+        'eslint',
+        'html',
+        'jsonls',
+        'lua_ls',
+        'marksman',
+        'pyright',
+        'svelte',
+        'tailwindcss',
+        'terraformls',
+        'tsserver',
+        'yamlls',
+      },
+    },
   },
 
   --------------------------------------------------
