@@ -6,10 +6,3 @@ vim.cmd([[
   autocmd InsertEnter * set nocursorline
   autocmd InsertLeave * set cursorline
 ]])
-
-vim.cmd([[
-  "see: https://eslint.org/docs/user-guide/configuring
-  autocmd BufNewFile,BufRead .eslintrc.json setlocal filetype=jsonc
-  "see: https://github.com/microsoft/TypeScript/pull/5450
-  autocmd BufNewFile,BufRead tsconfig.json setlocal filetype=jsonc
-]])
