@@ -45,12 +45,8 @@ curl -s https://raw.githubusercontent.com/ooloth/dotfiles/master/setup.sh | zsh
 I'd like to automate the following steps as well (let me know if you know how), but for now you'll need to set up a few last things manually:
 
 1. Restart your Mac
-2. Go to System Preferences > Security & Privacy > Privacy > Developer Tools and add your terminal
-   apps with a checkmark next to each so your Mac will let you open apps installed with Homebrew.
-3. Confirm you can connect to GitHub via SSH by running `ssh -T git@github.com`. If you see
-   "Permission denied (public key).", the public key you entered in GitHub doesn't match the private
-   key on your Mac. Try adding it again, making sure to include everything in your `~/.ssh/id_rsa`
-   file.
+2. Go to System Preferences > Security & Privacy > Privacy > Developer Tools and add your terminal apps with a checkmark next to each so your Mac will let you open apps installed with Homebrew.
+3. Confirm you can connect to GitHub via SSH by running `ssh -T git@github.com`. If you see "Permission denied (public key).", the public key you entered in GitHub doesn't match the private key on your Mac. Try adding it again, making sure to include everything in your `~/.ssh/id_rsa` file.
 4. Manually set any remaining app settings and macOS keyboard shortcuts (see example list below)
 
 ## macOS Keyboard Shortcuts
