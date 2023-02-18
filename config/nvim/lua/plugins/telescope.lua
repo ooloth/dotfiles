@@ -3,7 +3,7 @@ local Util = require('lazyvim.util')
 
 return {
   'nvim-telescope/telescope.nvim',
-  keys = function()
+  keys = function() -- replace all default keymaps
     return {
       {
         '<leader><space>',
@@ -20,6 +20,7 @@ return {
       { '<leader>fd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostic' },
       { '<leader>ff', Util.telescope('files'), desc = 'File' },
       { '<leader>fh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
+      { '<leader>fj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
       { '<leader>fk', '<cmd>Telescope keymaps<cr>', desc = 'Key map' },
       { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
       { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
