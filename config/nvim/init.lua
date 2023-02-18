@@ -15,7 +15,7 @@ else
   require('mu.plugins.lualine')
   require('mu.plugins.nvim-cmp')
   require('mu.plugins.nvim-tree')
-  require('mu.plugins.telescope')
+  -- require('mu.plugins.telescope')
   require('mu.plugins.treesitter')
   require('mu.plugins.trouble')
   require('mu.plugins.vim-floaterm')
