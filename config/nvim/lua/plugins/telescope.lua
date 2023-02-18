@@ -20,7 +20,7 @@ return {
       { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
       { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
       { '<leader>fo', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
-      { '<leader>fr', '<cmd>Telescope oldfiles<cr>', desc = 'Recent file' },
+      { '<leader>fr', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent file' },
       { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to word' },
       { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
       { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
@@ -42,10 +42,6 @@ return {
         },
         git_files = {
           show_untracked = true,
-        },
-        oldfiles = {
-          -- FIXME: doesn't work
-          cwd_only = true,
         },
       },
       mappings = {
