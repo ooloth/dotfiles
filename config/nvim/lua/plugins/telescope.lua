@@ -5,7 +5,7 @@ return {
   'nvim-telescope/telescope.nvim',
   keys = function()
     return {
-      { '<leader><space>', '<cmd>Telescope buffers show_all_buffers=true<cr>', desc = 'Switch Buffer' },
+      { '<leader><space>', '<cmd>Telescope buffers show_all_buffers=true<cr>', desc = 'Switch buffer' },
       { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Search buffer' },
       { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
       -- find
@@ -14,8 +14,7 @@ return {
       { '<leader>fb', '<cmd>Telescope buffers<cr>', desc = 'Buffer' },
       { '<leader>fc', '<cmd>Telescope commands<cr>', desc = 'Command' }, -- remove?
       { '<leader>fd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostic' },
-      { '<leader>ff', Util.telescope('files'), desc = 'File (git)' },
-      { '<leader>fF', '<cmd>Telescope find_files<cr>', desc = 'File (all)' },
+      { '<leader>ff', Util.telescope('files'), desc = 'File' },
       { '<leader>fh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
       { '<leader>fk', '<cmd>Telescope keymaps<cr>', desc = 'Key map' },
       { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
