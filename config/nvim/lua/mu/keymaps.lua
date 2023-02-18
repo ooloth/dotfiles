@@ -12,10 +12,6 @@ vim.keymap.set('n', 'g:', 'g;') -- go to previous change with g;
 vim.keymap.set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
 vim.keymap.set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
 
--- left/right through tabs
-vim.keymap.set('n', '<right>', 'gt') -- go to next tab
-vim.keymap.set('n', '<left>', 'gT') -- go to next tab
-
 -- location list (use ]l + [l to navigate)
 vim.keymap.set('n', 'gl', '<cmd>lopen<cr>')
 
