@@ -34,16 +34,6 @@ return {
   end,
   opts = {
     defaults = {
-      builtin = {
-        find_files = {
-          -- FIXME: doesn't work
-          hidden = true, -- show hidden files
-          no_ignore = true, -- show ignored files
-        },
-        git_files = {
-          show_untracked = true,
-        },
-      },
       mappings = {
         i = {
           ['<esc>'] = actions.close,
