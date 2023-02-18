@@ -8,7 +8,7 @@ return {
       {
         '<leader><space>',
         '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>',
-        desc = 'Switch buffer',
+        desc = 'Find buffer',
       },
       { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Search buffer' },
       { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
@@ -17,7 +17,7 @@ return {
       { '<leader>fa', '<cmd>Telescope autocommands<cr>', desc = 'Auto command' },
       { '<leader>fb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
       { '<leader>fc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
-      { '<leader>fd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostic' },
+      { '<leader>fd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
       { '<leader>ff', Util.telescope('files'), desc = 'File' },
       { '<leader>fh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
       { '<leader>fj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
@@ -26,15 +26,15 @@ return {
       { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
       { '<leader>fo', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
       { '<leader>fr', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent file' },
-      { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to word' },
+      { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
       { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
       { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
       { '<leader>fz', '<cmd>Telescope resume<CR>', desc = 'Resume last search' },
       -- git
-      { '<leader>gb', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
+      { '<leader>gB', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
       { '<leader>gc', '<cmd>Telescope git_commits<cr>', desc = 'Commits' },
       { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Status' },
-      { '<leader>gS', '<cmd>Telescope git_stash<cr>', desc = 'Stash' },
+      { '<leader>gS', '<cmd>Telescope git_stash<cr>', desc = 'Stashes' },
       -- ui
       { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorscheme with preview' },
     }
