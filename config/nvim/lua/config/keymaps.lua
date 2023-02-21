@@ -25,7 +25,11 @@ set('n', 'gl', '<cmd>lopen<cr>')
 -- quickfix list (use ]q + [q to navigate)
 set('n', 'gq', '<cmd>copen<cr>')
 
--- WINDOWS --
+-- git
+set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
+del('n', '<leader>gG')
+
+-- windows --
 set('n', '<leader>\\', '<c-w>v', { desc = 'Split right' })
 set('n', '<leader>w\\', '<c-w>v', { desc = 'Split right' })
 set('n', '<leader>-', '<c-w>v', { desc = 'Split below' })
