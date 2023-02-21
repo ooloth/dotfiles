@@ -11,30 +11,59 @@ set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for 
 set('n', 'g;', 'g,') -- go to next change with g;
 set('n', 'g:', 'g;') -- go to previous change with g;
 
--- tab through buffers
+-- "actions"
+
+-- "buffer"
 set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
 set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
 
--- left/right through tabs
-set('n', '<right>', 'gt') -- go to next tab
-set('n', '<left>', 'gT') -- go to next tab
+-- "debug"
 
--- location list (use ]l + [l to navigate)
-set('n', 'gl', '<cmd>lopen<cr>')
+-- "explorer"
 
--- quickfix list (use ]q + [q to navigate)
-set('n', 'gq', '<cmd>copen<cr>')
+-- "find"
+del('n', '<leader>st')
 
--- git
+-- "git"
 set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
 del('n', '<leader>gG')
 
--- terminal
-set({ 'n', 'v' }, '<leader>ot', '<cmd>FloatermNew<cr>', { desc = 'Terminal' })
+-- "help"
+
+-- "i"
+
+-- "jumps"
+
+-- "keymaps"
+
+-- "lazy"? "lsp"?
+
+-- "mason"
+
+-- "notifications"
+
+-- "open"
+set('n', '<leader>ol', '<cmd>lopen<cr>', { desc = 'Location list' }) -- use ]l + [l to navigate
+set('n', 'gl', '<cmd>lopen<cr>', { desc = 'Location list' })
+set('n', '<leader>oq', '<cmd>copen<cr>', { desc = 'Quickfix list' }) -- use ]q + [q to navigate
+set('n', 'gq', '<cmd>copen<cr>', { desc = 'Quickfix list' })
+set('n', '<leader>ot', '<cmd>FloatermNew<cr>', { desc = 'Terminal' })
 del('n', '<leader>ft')
 del('n', '<leader>fT')
 
--- windows --
+-- "problems"
+
+-- "r"
+
+-- "save"
+
+-- "t"
+
+-- "u" ("ui"? "undo list"? "updates?")
+
+-- "v" ("view"?)
+
+-- "window"
 set('n', '<leader>\\', '<c-w>v', { desc = 'Split right' })
 set('n', '<leader>w\\', '<c-w>v', { desc = 'Split right' })
 set('n', '<leader>-', '<c-w>v', { desc = 'Split below' })
@@ -61,3 +90,9 @@ vim.cmd([[
   noremap <silent> <c-l> :<C-U>TmuxNavigateRight<cr>
   noremap <silent> <c-\> :<C-U>TmuxNavigatePrevious<cr>
 ]])
+
+-- "x" ("close buffer?", "problems?", "quickfix + subcommands for navigating it?")
+
+-- "y"
+
+-- "z" ("lazy"? "undo list"?)
