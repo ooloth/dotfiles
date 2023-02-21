@@ -29,6 +29,11 @@ set('n', 'gq', '<cmd>copen<cr>')
 set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
 del('n', '<leader>gG')
 
+-- terminal
+set({ 'n', 'v' }, '<leader>ot', '<cmd>FloatermNew<cr>', { desc = 'Terminal' })
+del('n', '<leader>ft')
+del('n', '<leader>fT')
+
 -- windows --
 set('n', '<leader>\\', '<c-w>v', { desc = 'Split right' })
 set('n', '<leader>w\\', '<c-w>v', { desc = 'Split right' })
