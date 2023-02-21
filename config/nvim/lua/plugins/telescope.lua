@@ -28,8 +28,9 @@ return {
       { '<leader>fr', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent file' },
       { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
       { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
+      { '<leader>ft', '<cmd>TodoTelescope<cr>', desc = 'Todos' },
       { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
-      { '<leader>fz', '<cmd>Telescope resume<CR>', desc = 'Resume last search' },
+      { '<leader>fz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
       -- "g" = git
       { '<leader>gB', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
       { '<leader>gc', '<cmd>Telescope git_commits<cr>', desc = 'Commits' },
