@@ -12,7 +12,7 @@ return {
       },
       { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Search buffer' },
       { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
-      -- find
+      -- "f" = find
       { '<leader>f,', '<cmd>Telescope command_history<cr>', desc = 'Command (recent)' },
       { '<leader>fa', '<cmd>Telescope autocommands<cr>', desc = 'Auto command' },
       { '<leader>fb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
@@ -30,12 +30,12 @@ return {
       { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
       { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
       { '<leader>fz', '<cmd>Telescope resume<CR>', desc = 'Resume last search' },
-      -- git
+      -- "g" = git
       { '<leader>gB', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
       { '<leader>gc', '<cmd>Telescope git_commits<cr>', desc = 'Commits' },
       { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Status' },
       { '<leader>gS', '<cmd>Telescope git_stash<cr>', desc = 'Stashes' },
-      -- ui
+      -- "u" = ui
       { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorscheme with preview' },
     }
   end,
