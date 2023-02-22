@@ -1,4 +1,23 @@
+local set = vim.keymap.set
+
 return {
+  --------------
+  -- LSP SAGA --
+  --------------
+  {
+    'glepnir/lspsaga.nvim',
+    dependencies = {
+      { 'nvim-tree/nvim-web-devicons' },
+      { 'nvim-treesitter/nvim-treesitter' }, -- please make sure you install markdown and markdown_inline parsers
+    },
+    event = 'BufRead',
+    opts = {
+      definition = { edit = '<cr>' },
+      scroll_preview = { scroll_down = '<C-j>', scroll_up = '<C-k>' },
+      symbol_in_winbar = { enable = false },
+      ui = { border = 'rounded' },
+    },
+  },
 
   --------------------------------------
   -- 1. CUSTOMIZE LSP SERVER SETTINGS --
