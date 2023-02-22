@@ -16,6 +16,8 @@ set('n', 'g:', 'g;') -- go to previous change with g;
 -- "buffer"
 set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
 set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
+set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
+set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
 -- "debug"
 
@@ -28,13 +30,10 @@ del('n', '<leader>st')
 set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
 del('n', '<leader>gG')
 
--- "help"
-
+-- "help" (see plugins/telescope.lua)
 -- "i"
-
--- "jumps"
-
--- "keymaps"
+-- "jumps" (see plugins/telescope.lua)
+-- "keymaps" (see plugins/telescope.lua)
 
 -- "lazy"? "lsp"?
 

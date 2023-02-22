@@ -9,7 +9,7 @@ return {
         {
           '<leader><space>',
           '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>',
-          desc = 'Find buffer',
+          desc = 'Buffers',
         },
         { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Search buffer' },
         { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
@@ -22,7 +22,7 @@ return {
         { '<leader>ff', Util.telescope('files'), desc = 'File' },
         { '<leader>fh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
         { '<leader>fj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
-        { '<leader>fk', '<cmd>Telescope keymaps<cr>', desc = 'Key map' },
+        { '<leader>fk', '<cmd>Telescope keymaps<cr>', desc = 'Keymap' },
         { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
         { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
         { '<leader>fo', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
@@ -37,6 +37,12 @@ return {
         { '<leader>gc', '<cmd>Telescope git_commits<cr>', desc = 'Commits' },
         { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Status' },
         { '<leader>gS', '<cmd>Telescope git_stash<cr>', desc = 'Stashes' },
+        -- "help"
+        { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
+        -- "jumps"
+        { '<leader>j', '<cmd>Telescope jumplist<cr>', desc = 'Jumps' },
+        -- "keymaps"
+        { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
         -- "ui"
         { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorscheme with preview' },
       }
