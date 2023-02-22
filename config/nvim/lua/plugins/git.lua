@@ -16,7 +16,7 @@ return {
         gs.diffthis('~')
       end, 'Diff vs ~ (file)')
       map('n', '<leader>gp', gs.preview_hunk, 'Preview (hunk)')
-      map('n', '<leader>gtb', gs.toggle_current_line_blame, 'Line blame')
+      map('n', '<leader>gtb', gs.toggle_current_line_blame, 'Blame')
       map('n', '<leader>gtd', gs.toggle_deleted, 'Deleted lines')
       -- make hunks available as text objects
       map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<cr>', 'Select hunk')
