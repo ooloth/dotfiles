@@ -10,10 +10,10 @@ vim.cmd([[
 
 -- floating windows
 vim.diagnostic.config({
-  float = { border = 'rounded', source = 'always' },
+  float = { border = 'rounded', source = true },
   severity_sort = true,
-  -- update_in_insert = true,
-  virtual_text = { source = 'always' },
+  update_in_insert = false,
+  virtual_text = { source = true },
 })
 
 -- python
