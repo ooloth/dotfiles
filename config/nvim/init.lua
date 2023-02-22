@@ -10,7 +10,7 @@ else
   -- require('mu.plugins.autopairs')
   -- require('mu.plugins.comment')
   -- require('mu.plugins.gitsigns')
-  require('mu.plugins.lsp.lspsaga') -- set up before mason
+  -- require('mu.plugins.lsp.lspsaga') -- set up before mason
   require('mu.plugins.lsp.mason')
   require('mu.plugins.lualine')
   require('mu.plugins.nvim-cmp')
