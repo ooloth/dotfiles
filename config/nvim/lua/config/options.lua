@@ -9,5 +9,20 @@ vim.diagnostic.config({
   virtual_text = { source = 'always' },
 })
 
+-- quieter checkhealth
+vim.cmd([[
+  let g:loaded_perl_provider = 0
+  let g:loaded_ruby_provider = 0
+]])
+
+-- python
+if vim.env.IS_WORK_LAPTOP == 'true' then
+  vim.cmd([[
+    let g:python3_host_prog = '$HOME/.pyenv/versions/py3nvim/bin/python'
+  ]])
+end
+
+-- UI
+vim.opt.cmdheight = 0
 vim.opt.number = false
 vim.opt.relativenumber = false

@@ -22,6 +22,6 @@ export PATH=$HOME/.cargo/bin:$PATH # Add cargo to PATH (for lvim)
 
 export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
-IS_WORK_LAPTOP=false
+export IS_WORK_LAPTOP=false
 if [[ -d "$HOME/Repos/recursionpharma" ]]; then IS_WORK_LAPTOP=true; fi
 
