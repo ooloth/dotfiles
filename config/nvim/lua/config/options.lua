@@ -8,14 +8,6 @@ vim.cmd([[
   let g:loaded_ruby_provider = 0
 ]])
 
--- floating windows
-vim.diagnostic.config({
-  float = { border = 'rounded', source = true },
-  severity_sort = true,
-  update_in_insert = false,
-  virtual_text = { source = true },
-})
-
 -- python
 if vim.env.IS_WORK_LAPTOP == 'true' then
   vim.cmd([[

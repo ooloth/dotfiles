@@ -25,6 +25,11 @@ return {
   {
     'neovim/nvim-lspconfig',
     opts = {
+      diagnostics = {
+        -- options for vim.diagnostic.config()
+        float = { border = 'rounded', source = true },
+        virtual_text = { source = true },
+      },
       -- LSP Server Settings
       servers = {
         pyright = {
