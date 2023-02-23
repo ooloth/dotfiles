@@ -26,10 +26,9 @@ return {
     'neovim/nvim-lspconfig',
     -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
     opts = {
+      -- options for vim.diagnostic.config()
       diagnostics = {
-        -- options for vim.diagnostic.config()
         float = { border = 'rounded', source = true },
-        virtual_text = { source = true },
       },
       -- LSP Server Settings
       servers = {
