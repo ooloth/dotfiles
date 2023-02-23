@@ -32,12 +32,21 @@ return {
       },
       -- LSP Server Settings
       servers = {
+        bashls = {},
+        cssls = {},
+        cssmodules_ls = {},
+        dockerls = {},
+        emmet_ls = {},
         eslint = {
           settings = {
             -- helpful when eslintrc is in a subfolder
             workingDirectory = { mode = 'auto' },
           },
         },
+        html = {},
+        jsonls = {},
+        lua_ls = {},
+        marksman = {},
         pyright = {
           settings = {
             python = {
@@ -50,6 +59,10 @@ return {
             },
           },
         },
+        tailwindcss = {},
+        terraformls = {},
+        tsserver = {},
+        yamlls = {},
       },
       setup = {
         eslint = function()
@@ -57,45 +70,6 @@ return {
             autocmd BufWritePre *.tsx,*.ts,*.jsx,*.js EslintFixAll
           ]])
         end,
-      },
-    },
-  },
-
-  --------------------------------
-  -- 2. SET UP MASON-LSPCONFIG --
-  --------------------------------
-  -- {
-  --   'williamboman/mason.nvim',
-  --   opts = {
-  --     ensure_installed = {
-  --       'eslint-lsp',
-  --     },
-  --   },
-  -- },
-  {
-    'williamboman/mason-lspconfig.nvim',
-    opts = {
-      automatic_installation = true,
-      -- lsp servers mason will automatically install + set up below
-      -- see: https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
-      -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
-      ensure_installed = {
-        'bashls',
-        'cssls',
-        'cssmodules_ls',
-        'dockerls',
-        'emmet_ls',
-        'eslint',
-        'html',
-        'jsonls',
-        'lua_ls',
-        'marksman',
-        'pyright',
-        'svelte',
-        'tailwindcss',
-        'terraformls',
-        'tsserver',
-        'yamlls',
       },
     },
   },
