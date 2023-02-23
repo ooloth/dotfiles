@@ -24,6 +24,7 @@ return {
   --------------------------------------
   {
     'neovim/nvim-lspconfig',
+    -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
     opts = {
       diagnostics = {
         -- options for vim.diagnostic.config()
@@ -32,6 +33,12 @@ return {
       },
       -- LSP Server Settings
       servers = {
+        eslint = {
+          settings = {
+            -- helpful when eslintrc is in a subfolder
+            workingDirectory = { mode = 'auto' },
+          },
+        },
         pyright = {
           settings = {
             python = {
@@ -45,12 +52,27 @@ return {
           },
         },
       },
+      setup = {
+        eslint = function()
+          vim.cmd([[
+            autocmd BufWritePre *.tsx,*.ts,*.jsx,*.js EslintFixAll
+          ]])
+        end,
+      },
     },
   },
 
   --------------------------------
   -- 2. SET UP MASON-LSPCONFIG --
   --------------------------------
+  -- {
+  --   'williamboman/mason.nvim',
+  --   opts = {
+  --     ensure_installed = {
+  --       'eslint-lsp',
+  --     },
+  --   },
+  -- },
   {
     'williamboman/mason-lspconfig.nvim',
     opts = {
@@ -89,12 +111,10 @@ return {
       return {
         -- formatters & linters mason will automatically install + set up below
         sources = {
-          -- code actions providers
           -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
           nls.builtins.code_actions.gitsigns,
           nls.builtins.code_actions.proselint,
 
-          -- linters & type-checkers
           -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#diagnostics
           nls.builtins.diagnostics.flake8, -- python linter
           nls.builtins.diagnostics.markdownlint, -- markdown linter
@@ -105,7 +125,6 @@ return {
           nls.builtins.diagnostics.yamllint, -- yaml linter
           nls.builtins.diagnostics.zsh, -- zsh linter
 
-          -- formatters
           -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#formatting
           -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
           nls.builtins.formatting.black, -- python
