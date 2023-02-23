@@ -111,7 +111,6 @@ return {
         -- formatters & linters mason will automatically install + set up below
         sources = {
           -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
-          nls.builtins.code_actions.gitsigns,
           nls.builtins.code_actions.proselint,
 
           -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#diagnostics
