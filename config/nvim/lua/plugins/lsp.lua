@@ -59,6 +59,7 @@ return {
             },
           },
         },
+        -- TODO: only load if used by project
         tailwindcss = {},
         terraformls = {},
         tsserver = {},
@@ -79,7 +80,7 @@ return {
   --------------------------------------------------
   {
     'jose-elias-alvarez/null-ls.nvim',
-    opts = function()
+    opts = function() -- replace all default opts
       local nls = require('null-ls')
       return {
         -- formatters & linters mason will automatically install + set up below
@@ -114,6 +115,7 @@ return {
   --------------------------------------------------------------------------
   {
     'jay-babu/mason-null-ls.nvim',
+    -- see: https://github.com/jay-babu/mason-null-ls.nvim#primary-source-of-truth-is-null-ls
     opts = {
       ensure_installed = nil, -- defined in null-ls sources above
       automatic_installation = true,
