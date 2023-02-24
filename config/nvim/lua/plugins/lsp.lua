@@ -1,5 +1,4 @@
 local set = vim.keymap.set
-
 return {
   --------------
   -- LSP SAGA --
@@ -11,8 +10,32 @@ return {
       { 'nvim-treesitter/nvim-treesitter' }, -- please make sure you install markdown and markdown_inline parsers
     },
     event = 'BufRead',
+    keys = function()
+      return {
+        { '[d', '<cmd>Lspsaga diagnostic_jump_prev<cr>', desc = 'Previous diagnostic' },
+        { ']d', '<cmd>Lspsaga diagnostic_jump_next<cr>', desc = 'Next diagnostic' },
+        { 'ga', '<cmd>Lspsaga code_action<cr>', desc = 'Code actions' },
+        { 'gd', '<cmd>Lspsaga lsp_finder<cr>', desc = 'Definition, references & implentations' },
+        { 'gh', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
+        -- { 'gr', '<cmd>TroubleToggle lsp_references<cr>', desc = {} }, -- show references to word under cursor
+        -- { 'K', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
+      }
+    end,
     opts = {
       definition = { edit = '<cr>' },
+      finder = {
+        max_height = 0.5,
+        keys = {
+          jump_to = 'p',
+          edit = { 'o', '<CR>' },
+          vsplit = 'v',
+          tabe = 't',
+          -- tabnew = 'r',
+          -- quit = { 'q', '<ESC>' },
+          -- close_in_preview = '<ESC>'
+        },
+      },
+      lightbulb = { enable = false },
       scroll_preview = { scroll_down = '<C-j>', scroll_up = '<C-k>' },
       symbol_in_winbar = { enable = false },
       ui = { border = 'rounded' },
@@ -24,6 +47,32 @@ return {
   --------------------------------------
   {
     'neovim/nvim-lspconfig',
+    init = function()
+      local keys = require('lazyvim.plugins.lsp.keymaps').get()
+      -- disable default keymaps
+      keys[#keys + 1] = { ']d', false }
+      keys[#keys + 1] = { '[d', false }
+      keys[#keys + 1] = { 'gd', false }
+      -- keys[#keys + 1] = { 'K', false }
+      -- { "<leader>cd", vim.diagnostic.open_float, desc = "Line Diagnostics" },
+      -- { "<leader>cl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },
+      -- { "gr", "<cmd>Telescope lsp_references<cr>", desc = "References" },
+      -- { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
+      -- { "gI", "<cmd>Telescope lsp_implementations<cr>", desc = "Goto Implementation" },
+      -- { "gt", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto Type Definition" },
+      -- { "K", vim.lsp.buf.hover, desc = "Hover" },
+      -- { "gK", vim.lsp.buf.signature_help, desc = "Signature Help", has = "signatureHelp" },
+      -- { "<c-k>", vim.lsp.buf.signature_help, mode = "i", desc = "Signature Help", has = "signatureHelp" },
+      -- { "]d", M.diagnostic_goto(true), desc = "Next Diagnostic" },
+      -- { "[d", M.diagnostic_goto(false), desc = "Prev Diagnostic" },
+      -- { "]e", M.diagnostic_goto(true, "ERROR"), desc = "Next Error" },
+      -- { "[e", M.diagnostic_goto(false, "ERROR"), desc = "Prev Error" },
+      -- { "]w", M.diagnostic_goto(true, "WARN"), desc = "Next Warning" },
+      -- { "[w", M.diagnostic_goto(false, "WARN"), desc = "Prev Warning" },
+      -- { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" }, has = "codeAction" },
+      -- { "<leader>cf", format, desc = "Format Document", has = "documentFormatting" },
+      -- { "<leader>cf", format, desc = "Format Range", mode = "v", has = "documentRangeFormatting" },
+    end,
     -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
     opts = {
       -- options for vim.diagnostic.config()
