@@ -14,6 +14,7 @@ brew "fnm"
 brew "fzf"
 brew "gh"
 brew "git"
+brew "arl/arl/gitmux"
 brew "gnu-sed"
 brew "yqrashawn/goku/goku" # for karibiner
 brew "lazydocker"
