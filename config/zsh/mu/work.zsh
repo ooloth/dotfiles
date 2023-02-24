@@ -1,6 +1,6 @@
 if $IS_WORK_LAPTOP; then
 
-  function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding && venv }
+  function eo() { cd $HOME/Repos/recursionpharma/eng-onboarding }
   function n() { npm install -- $1 }
   function nb() { n && npm run build }
   function nfc() { npm run format:check }
@@ -11,34 +11,35 @@ if $IS_WORK_LAPTOP; then
   function nt() { npm run test -- $1 }
   function nta() { nt --watchAll }
   function ntp() { nt --testPathPattern=$1 }
-  function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 && venv }
-  function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp && venv }
+  function pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 }
+  function pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp }
   function paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app }
-  function pm() { cd $HOME/Repos/recursionpharma/phenomap && venv }
-  function pr() { cd $HOME/Repos/recursionpharma/phenoreader && venv }
-  function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api && venv }
-  function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer && venv }
+  function pm() { cd $HOME/Repos/recursionpharma/phenomap }
+  function pr() { cd $HOME/Repos/recursionpharma/phenoreader }
+  function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api }
+  function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer }
   function r() { cd $HOME/Repos/recursionpharma } 
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
   function rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app && venv }
 
-  function venv() {
-    eval "$(pyenv init -)" 
+  function activate_venv() {
+    # if defined, activate the appropriate venv for this directory
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp) pyenv shell dash-phenoapp-v2 ;;
-      eng-onboarding)              pyenv shell eng-onboarding ;; 
-      phenoreader)                 pyenv shell phenoreader ;;
-      phenoservice-api)            pyenv shell phenoservice-api ;;
-      phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
-      rxrx3-app)                   pyenv shell rxrx3-app ;;
-      *)                           echo "🚨 No 'venv' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
-      # *)                           source venv/bin/activate ;;
+      dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
+      eng-onboarding)              eval "$(pyenv init -)" && pyenv shell eng-onboarding ;;
+      phenoreader)                 eval "$(pyenv init -)" && pyenv shell phenoreader ;;
+      phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
+      phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
+      rxrx3-app)                   eval "$(pyenv init -)" && pyenv shell rxrx3-app ;;
     esac
   }
 
-  # override 'nvim' command to cd into appropriate directory and call 'venv' before opening
+  # automatically activate the appropriate venv when zsh first loads (called again in autocommands.zsh whenever cwd changes)
+  activate_venv
+
+  # override 'nvim' command to cd into appropriate directory and call 'venv' (if necessary) before opening
   function nvim() {
-    # avoids infinite loop by calling nvim as a command instead of re-calling nvim function
+    # 'zsh -c "nvim"' avoids the infinite loop caused by calling the "nvim" function recursively
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp | react-app) pa && zsh -c "nvim $1" ;;
       dotfiles)                                dot && zsh -c "nvim $1" ;;
@@ -102,5 +103,4 @@ if $IS_WORK_LAPTOP; then
   fi
 
 fi
-
 
