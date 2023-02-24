@@ -28,30 +28,12 @@ if $IS_WORK_LAPTOP; then
       dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
       eng-onboarding)              eval "$(pyenv init -)" && pyenv shell eng-onboarding ;;
       phenoreader)                 eval "$(pyenv init -)" && pyenv shell phenoreader ;;
-      phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
-      phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
       rxrx3-app)                   eval "$(pyenv init -)" && pyenv shell rxrx3-app ;;
     esac
   }
 
   # automatically activate the appropriate venv when zsh first loads (called again in autocommands.zsh whenever cwd changes)
   activate_venv
-
-  # override 'nvim' command to cd into appropriate directory and call 'venv' (if necessary) before opening
-  function nvim() {
-    # 'zsh -c "nvim"' avoids the infinite loop caused by calling the "nvim" function recursively
-    case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp | react-app) pa && zsh -c "nvim $1" ;;
-      dotfiles)                                dot && zsh -c "nvim $1" ;;
-      eng-onboarding)                          eo && zsh -c "nvim $1" ;;
-      phenomap)                                pm && zsh -c "nvim $1" ;;
-      phenoreader)                             pr && zsh -c "nvim $1" ;;
-      phenoservice-api)                        psa && zsh -c "nvim $1" ;;
-      phenoservice-consumer)                   psc && zsh -c "nvim $1" ;;
-      rxrx3-app)                               rx3 && zsh -c "nvim $1" ;;
-      *)                                       echo "🚨 No 'nvim' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" && sleep 2 && zsh -c "nvim $1" ;;
-    esac
-  }
 
   function run() {
     case $CURRENT_DIRECTORY in
