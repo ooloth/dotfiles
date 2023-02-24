@@ -27,7 +27,10 @@ if $IS_WORK_LAPTOP; then
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
       eng-onboarding)              eval "$(pyenv init -)" && pyenv shell eng-onboarding ;;
+      phenomap)                    eval "$(pyenv init -)" && pyenv shell phenomap ;;
       phenoreader)                 eval "$(pyenv init -)" && pyenv shell phenoreader ;;
+      phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
+      phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
       rxrx3-app)                   eval "$(pyenv init -)" && pyenv shell rxrx3-app ;;
     esac
   }
