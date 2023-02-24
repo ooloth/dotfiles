@@ -1,4 +1,3 @@
-local set = vim.keymap.set
 return {
   --------------
   -- LSP SAGA --
@@ -16,27 +15,58 @@ return {
         { ']d', '<cmd>Lspsaga diagnostic_jump_next<cr>', desc = 'Next diagnostic' },
         { 'ga', '<cmd>Lspsaga code_action<cr>', desc = 'Code actions' },
         { 'gd', '<cmd>Lspsaga lsp_finder<cr>', desc = 'Definition, references & implentations' },
+        { 'gD', '<cmd>Lspsaga goto_definition<cr>', desc = 'Go to definition' },
         { 'gh', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
-        -- { 'gr', '<cmd>TroubleToggle lsp_references<cr>', desc = {} }, -- show references to word under cursor
+        { 'go', '<cmd>Lspsaga outline<cr>', desc = 'Outline' },
+        { 'gp', '<cmd>Lspsaga show_line_diagnostics<cr>', desc = 'Problems (line)' },
+        { 'gt', '<cmd>Lspsaga goto_type_definition<cr>', desc = 'Go to type definition' },
         -- { 'K', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
+        { 'R', '<cmd>LspRestart<cr>', desc = 'Restart LSP servers' },
+        { '<leader>r', '<cmd>Lspsaga rename<cr>', desc = 'Rename symbol' },
       }
     end,
     opts = {
-      definition = { edit = '<cr>' },
+      code_action = {
+        keys = {
+          quit = { 'q', '<esc>' },
+          exec = '<CR>',
+        },
+      },
+      diagnostic = {
+        max_width = 0.99,
+        keys = { quit = '<esc>' },
+      },
       finder = {
-        max_height = 0.5,
+        max_height = 0.99,
         keys = {
           jump_to = 'p',
           edit = { 'o', '<CR>' },
           vsplit = 'v',
           tabe = 't',
-          -- tabnew = 'r',
-          -- quit = { 'q', '<ESC>' },
-          -- close_in_preview = '<ESC>'
         },
       },
+      hover = { max_width = 0.99 },
       lightbulb = { enable = false },
-      scroll_preview = { scroll_down = '<C-j>', scroll_up = '<C-k>' },
+      outline = {
+        win_position = 'right',
+        win_with = '',
+        win_width = 50,
+        show_detail = true,
+        auto_preview = true,
+        auto_refresh = true,
+        auto_close = true,
+        custom_sort = nil,
+        keys = {
+          jump = 'o',
+          expand_collapse = 'u',
+          quit = '<esc>',
+        },
+      },
+      rename = {
+        quit = '<C-c>',
+        in_select = false,
+      },
+      scroll_preview = { scroll_down = '<C-d>', scroll_up = '<C-u>' },
       symbol_in_winbar = { enable = false },
       ui = { border = 'rounded' },
     },
@@ -53,6 +83,7 @@ return {
       keys[#keys + 1] = { ']d', false }
       keys[#keys + 1] = { '[d', false }
       keys[#keys + 1] = { 'gd', false }
+      keys[#keys + 1] = { '<leader>ca', false }
       -- keys[#keys + 1] = { 'K', false }
       -- { "<leader>cd", vim.diagnostic.open_float, desc = "Line Diagnostics" },
       -- { "<leader>cl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },

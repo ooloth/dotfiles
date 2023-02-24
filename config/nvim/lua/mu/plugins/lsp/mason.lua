@@ -89,7 +89,6 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', 'ga', '<cmd>Lspsaga code_action<cr>', opts) -- see code actions
   vim.keymap.set('n', 'gd', '<cmd>Lspsaga lsp_finder<cr>', opts) -- show definition, references, implementations
   vim.keymap.set('n', 'gh', '<cmd>Lspsaga hover_doc<cr>', opts) -- show documentation for what is under cursor
-  vim.keymap.set('n', 'gr', '<cmd>TroubleToggle lsp_references<cr>', opts) -- show references to word under cursor
   vim.keymap.set('n', 'K', '<cmd>Lspsaga hover_doc<cr>', opts) -- show documentation for what is under cursor
 
   -- set lsp keymaps (leader key)
