@@ -46,7 +46,7 @@ set('n', '<leader>ol', '<cmd>lopen<cr>', { desc = 'Location list' }) -- use ]l +
 set('n', 'gl', '<cmd>lopen<cr>', { desc = 'Location list' })
 set('n', '<leader>oq', '<cmd>copen<cr>', { desc = 'Quickfix list' }) -- use ]q + [q to navigate
 set('n', 'gq', '<cmd>copen<cr>', { desc = 'Quickfix list' })
-set('n', '<leader>ot', '<cmd>FloatermNew<cr>', { desc = 'Terminal' })
+-- '<leader>ot' = 'Terminal' (see vim-floaterm.lua)
 del('n', '<leader>ft')
 del('n', '<leader>fT')
 
