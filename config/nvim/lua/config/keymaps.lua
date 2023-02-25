@@ -19,7 +19,7 @@ set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
 set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
--- "changes"?
+-- "changes"
 set('n', ']c', 'g,', { desc = 'Next change' }) -- go to next change with g;
 set('n', '[c', 'g;', { desc = 'Previous change' }) -- go to next change with g;
 set('n', 'g;', 'g,', { desc = 'Next change' }) -- go to next change with g;
@@ -55,7 +55,7 @@ set('n', '<leader>oq', '<cmd>copen<cr>', { desc = 'Quickfix list' }) -- use ]q +
 del('n', '<leader>ft')
 del('n', '<leader>fT')
 
--- "p"
+-- "p" ("pin"? "LSP info"?)
 
 -- "r"
 
