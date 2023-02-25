@@ -1,7 +1,4 @@
 return {
-  --------------
-  -- LSP SAGA --
-  --------------
   {
     'glepnir/lspsaga.nvim',
     dependencies = {
@@ -72,9 +69,6 @@ return {
     },
   },
 
-  --------------------------------------
-  -- 1. CUSTOMIZE LSP SERVER SETTINGS --
-  --------------------------------------
   {
     'neovim/nvim-lspconfig',
     init = function()
@@ -106,7 +100,7 @@ return {
         emmet_ls = {},
         eslint = {
           settings = {
-            -- helpful when eslintrc is in a subfolder
+            -- helps eslint find the eslintrc when it's placed in a subfolder instead of the cwd root
             workingDirectory = { mode = 'auto' },
           },
         },
@@ -142,9 +136,6 @@ return {
     },
   },
 
-  --------------------------------------------------
-  -- 3. DEFINE LINTERS & FORMATTERS USING NULL-LS --
-  --------------------------------------------------
   {
     'jose-elias-alvarez/null-ls.nvim',
     opts = function() -- replace all default opts
@@ -177,9 +168,6 @@ return {
     end,
   },
 
-  --------------------------------------------------------------------------
-  -- 4. AUTOMATICALLY INSTALL + SET UP NULL-LS SOURCES WITH MASON-NULL-LS --
-  --------------------------------------------------------------------------
   {
     'jay-babu/mason-null-ls.nvim',
     -- see: https://github.com/jay-babu/mason-null-ls.nvim#primary-source-of-truth-is-null-ls
