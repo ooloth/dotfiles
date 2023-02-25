@@ -10,8 +10,6 @@ local del = vim.keymap.del
 -- swap : and ,
 set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
-set('n', 'g;', 'g,') -- go to next change with g;
-set('n', 'g:', 'g;') -- go to previous change with g;
 
 -- "actions" (see lsp.lua)
 
@@ -21,7 +19,11 @@ set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
 set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
--- "c"?
+-- "changes"?
+set('n', ']c', 'g,', { desc = 'Next change' }) -- go to next change with g;
+set('n', '[c', 'g;', { desc = 'Previous change' }) -- go to next change with g;
+set('n', 'g;', 'g,', { desc = 'Next change' }) -- go to next change with g;
+set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with g;
 
 -- "diagnostics" (see lsp.lua)
 -- "explorer" (see neo-tree.lua)
