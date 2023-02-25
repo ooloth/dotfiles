@@ -24,8 +24,8 @@ return {
     end,
     opts = {
       code_action = {
+        quit = { 'q', '<esc>' },
         keys = {
-          quit = { 'q', '<esc>' },
           exec = '<CR>',
         },
       },
