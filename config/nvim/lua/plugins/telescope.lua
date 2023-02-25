@@ -17,11 +17,8 @@ return {
     },
     keys = function() -- replace all default keymaps
       return {
-        {
-          '<leader><space>',
-          '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>',
-          desc = 'Buffers',
-        },
+        { '<leader><space>', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent files' },
+        -- { '<leader><space>', Util.telescope('files'), desc = 'Files' },
         { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Search buffer' },
         { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
         -- "find"
