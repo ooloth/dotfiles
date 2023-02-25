@@ -1,4 +1,5 @@
 local actions = require('telescope.actions')
+-- local undo_actions = require('telescope-undo.actions')
 local Util = require('lazyvim.util')
 
 return {
@@ -7,14 +8,9 @@ return {
     config = function(_, opts)
       local telescope = require('telescope')
       telescope.setup(opts)
-      telescope.load_extension('fzf')
       telescope.load_extension('undo')
     end,
-    dependencies = {
-      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-      'nvim-lua/plenary.nvim',
-      'debugloop/telescope-undo.nvim',
-    },
+    dependencies = { 'debugloop/telescope-undo.nvim' },
     keys = function() -- replace all default keymaps
       return {
         { '<leader><space>', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent files' },
@@ -77,7 +73,16 @@ return {
         },
       },
       extensions = {
-        undo = {},
+        undo = {
+          use_delta = false,
+          -- mappings = {
+          --   i = {
+          --     ['<C-cr>'] = undo_actions.restore,
+          --     ['<cr>'] = undo_actions.yank_additions,
+          --     ['<S-cr>'] = undo_actions.yank_deletions,
+          --   },
+          -- },
+        },
       },
     },
   },
