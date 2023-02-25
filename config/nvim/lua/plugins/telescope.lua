@@ -56,10 +56,10 @@ return {
         { '<leader>j', '<cmd>Telescope jumplist<cr>', desc = 'Jumps' },
         -- "keymaps"
         { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
-        -- "ui"
-        { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorscheme with preview' },
         -- "undo"
         { '<leader>u', '<cmd>Telescope undo<cr>', desc = 'Undo list' },
+        -- "view"
+        { '<leader>vC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorschemes (with preview)' },
       }
     end,
     opts = {
