@@ -3,7 +3,11 @@ vim.g.floaterm_title = ''
 vim.g.floaterm_width = 0.9999999999999999
 
 return {
-  { 'voldikss/vim-floaterm', keys = {
-    { '<leader>ot', '<cmd>FloatermNew<cr>', desc = 'Terminal' },
-  } },
+  {
+    'voldikss/vim-floaterm',
+    cmd = 'FloatermNew',
+    keys = {
+      { '<leader>ot', '<cmd>FloatermNew<cr>', desc = 'Terminal' },
+    },
+  },
 }
