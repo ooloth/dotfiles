@@ -11,7 +11,7 @@ set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for 
 set('n', 'g;', 'g,') -- go to next change with g;
 set('n', 'g:', 'g;') -- go to previous change with g;
 
--- "actions"
+-- "actions" (see lsp.lua)
 
 -- "buffer"
 set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
@@ -19,27 +19,25 @@ set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
 set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
--- "debug"
+-- "c"?
 
--- "explorer"
+-- "diagnostics" (see lsp.lua)
+-- "explorer" (see neo-tree.lua)
 
--- "find"
 del('n', '<leader>st')
+-- "find" (see telescope.lua)
 
--- "git"
+-- "git" (see git.lua)
 set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
 del('n', '<leader>gG')
 
--- "help" (see plugins/telescope.lua)
--- "i"
--- "jumps" (see plugins/telescope.lua)
--- "keymaps" (see plugins/telescope.lua)
-
--- "lazy"? "lsp"?
-
--- "mason"
-
--- "notifications"
+-- "help" (see telescope.lua)
+-- "inspect" (for debugging)
+-- "jumps" (see telescope.lua)
+-- "keymaps" (see telescope.lua)
+-- "lazy" + "Lsp" (see lsp.lua)
+-- "mason" (see lsp.lua)
+-- "null-ls" (see lsp.lua)
 
 -- "open"
 set('n', '<leader>ol', '<cmd>lopen<cr>', { desc = 'Location list' }) -- use ]l + [l to navigate
@@ -50,15 +48,16 @@ set('n', 'gq', '<cmd>copen<cr>', { desc = 'Quickfix list' })
 del('n', '<leader>ft')
 del('n', '<leader>fT')
 
--- "problems"
+-- "p"
 
 -- "r"
 
 -- "save"
+set('n', '<leader>s', '<cmd>w<cr>', { desc = 'Save' })
 
--- "t"
+-- "tabs"
 
--- "u" ("ui"? "undo list"? "updates?")
+-- "u" ("ui"? "undo list"?)
 
 -- "v" ("view"?)
 

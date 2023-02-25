@@ -25,10 +25,12 @@ return {
         { '<leader>fk', '<cmd>Telescope keymaps<cr>', desc = 'Keymap' },
         { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
         { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
+        -- '<leader>fn' = 'Notifications' (see noice.lua)
         { '<leader>fo', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
         { '<leader>fr', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent file' },
         { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
         { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
+        -- '<leader>ft' = 'Todo' (see todo-comment.lua)
         { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
         { '<leader>fz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "git"
