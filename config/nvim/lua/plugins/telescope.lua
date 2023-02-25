@@ -4,6 +4,14 @@ local Util = require('lazyvim.util')
 return {
   {
     'nvim-telescope/telescope.nvim',
+    config = function(_, opts)
+      local telescope = require('telescope')
+      telescope.setup(opts)
+      telescope.load_extension('fzf')
+    end,
+    dependencies = {
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+    },
     keys = function() -- replace all default keymaps
       return {
         {
