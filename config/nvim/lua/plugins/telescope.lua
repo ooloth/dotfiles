@@ -58,6 +58,8 @@ return {
         { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
         -- "ui"
         { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorscheme with preview' },
+        -- "undo"
+        { '<leader>u', '<cmd>Telescope undo<cr>', desc = 'Undo list' },
       }
     end,
     opts = {
