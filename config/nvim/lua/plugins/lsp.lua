@@ -20,8 +20,8 @@ return {
         { 'go', '<cmd>Lspsaga outline<cr>', desc = 'Outline' },
         { 'gp', '<cmd>Lspsaga show_line_diagnostics<cr>', desc = 'Problems (line)' },
         { 'gt', '<cmd>Lspsaga goto_type_definition<cr>', desc = 'Go to type definition' },
-        -- { 'K', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
         { 'R', '<cmd>LspRestart<cr>', desc = 'Restart LSP servers' },
+        { 'K', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
         { '<leader>r', '<cmd>Lspsaga rename<cr>', desc = 'Rename symbol' },
       }
     end,
@@ -80,29 +80,16 @@ return {
     init = function()
       local keys = require('lazyvim.plugins.lsp.keymaps').get()
       -- disable default keymaps
+      -- see: https://www.lazyvim.org/plugins/lsp#%EF%B8%8F-customizing-lsp-keymaps
       keys[#keys + 1] = { ']d', false }
       keys[#keys + 1] = { '[d', false }
       keys[#keys + 1] = { 'gd', false }
-      keys[#keys + 1] = { '<leader>ca', false }
-      -- keys[#keys + 1] = { 'K', false }
-      -- { "<leader>cd", vim.diagnostic.open_float, desc = "Line Diagnostics" },
-      -- { "<leader>cl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },
-      -- { "gr", "<cmd>Telescope lsp_references<cr>", desc = "References" },
-      -- { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
-      -- { "gI", "<cmd>Telescope lsp_implementations<cr>", desc = "Goto Implementation" },
-      -- { "gt", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Goto Type Definition" },
-      -- { "K", vim.lsp.buf.hover, desc = "Hover" },
-      -- { "gK", vim.lsp.buf.signature_help, desc = "Signature Help", has = "signatureHelp" },
-      -- { "<c-k>", vim.lsp.buf.signature_help, mode = "i", desc = "Signature Help", has = "signatureHelp" },
-      -- { "]d", M.diagnostic_goto(true), desc = "Next Diagnostic" },
-      -- { "[d", M.diagnostic_goto(false), desc = "Prev Diagnostic" },
-      -- { "]e", M.diagnostic_goto(true, "ERROR"), desc = "Next Error" },
-      -- { "[e", M.diagnostic_goto(false, "ERROR"), desc = "Prev Error" },
-      -- { "]w", M.diagnostic_goto(true, "WARN"), desc = "Next Warning" },
-      -- { "[w", M.diagnostic_goto(false, "WARN"), desc = "Prev Warning" },
-      -- { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" }, has = "codeAction" },
-      -- { "<leader>cf", format, desc = "Format Document", has = "documentFormatting" },
-      -- { "<leader>cf", format, desc = "Format Range", mode = "v", has = "documentRangeFormatting" },
+      keys[#keys + 1] = { 'gD', false }
+      keys[#keys + 1] = { 'gt', false }
+      keys[#keys + 1] = { 'K', false }
+      keys[#keys + 1] = { '<leader>ca', mode = { 'n', 'v' }, false }
+      keys[#keys + 1] = { '<leader>cf', false }
+      keys[#keys + 1] = { '<leader>cf', mode = { 'v' }, false }
     end,
     -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
     opts = {
