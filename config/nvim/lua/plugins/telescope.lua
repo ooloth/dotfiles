@@ -8,9 +8,12 @@ return {
       local telescope = require('telescope')
       telescope.setup(opts)
       telescope.load_extension('fzf')
+      telescope.load_extension('undo')
     end,
     dependencies = {
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      'nvim-lua/plenary.nvim',
+      'debugloop/telescope-undo.nvim',
     },
     keys = function() -- replace all default keymaps
       return {
@@ -39,6 +42,7 @@ return {
         { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
         { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
         -- '<leader>ft' = 'Todo' (see todo-comment.lua)
+        { '<leader>fu', '<cmd>Telescope undo<cr>', desc = 'Undo' },
         { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
         { '<leader>fz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "git"
@@ -72,6 +76,9 @@ return {
             ['<C-l>'] = actions.cycle_history_next,
           },
         },
+      },
+      extensions = {
+        undo = {},
       },
     },
   },
