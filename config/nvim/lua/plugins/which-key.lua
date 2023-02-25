@@ -21,6 +21,7 @@ return {
         ['<leader>q'] = { name = 'Quit/Session' },
         ['<leader>s'] = { name = 'Search' },
         ['<leader>u'] = { name = 'UI' },
+        ['<leader>v'] = { name = 'View' },
         ['<leader>w'] = { name = 'Window' },
       }
       wk.register(keymaps)
