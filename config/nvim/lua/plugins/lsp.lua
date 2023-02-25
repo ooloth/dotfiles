@@ -8,17 +8,19 @@ return {
     event = 'BufRead',
     keys = function()
       return {
-        { '[d', '<cmd>Lspsaga diagnostic_jump_prev<cr>', desc = 'Previous diagnostic' },
         { ']d', '<cmd>Lspsaga diagnostic_jump_next<cr>', desc = 'Next diagnostic' },
+        { '[d', '<cmd>Lspsaga diagnostic_jump_prev<cr>', desc = 'Previous diagnostic' },
         { 'ga', '<cmd>Lspsaga code_action<cr>', desc = 'Code actions' },
         { 'gd', '<cmd>Lspsaga lsp_finder<cr>', desc = 'Definition, references & implentations' },
         { 'gD', '<cmd>Lspsaga goto_definition<cr>', desc = 'Go to definition' },
         { 'gh', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
         { 'go', '<cmd>Lspsaga outline<cr>', desc = 'Outline' },
-        { 'gp', '<cmd>Lspsaga show_line_diagnostics<cr>', desc = 'Problems (line)' },
+        -- 'gr' = 'References'
         { 'gt', '<cmd>Lspsaga goto_type_definition<cr>', desc = 'Go to type definition' },
-        { 'K', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
-        { '<leader>r', '<cmd>Lspsaga rename<cr>', desc = 'Rename symbol' },
+        { 'K', 'gh', desc = 'Hover', remap = true },
+        { '<leader>a', 'ga', desc = 'Actions', remap = true },
+        { '<leader>dn', ']d', desc = 'Next diagnostic', remap = true },
+        { '<leader>dp', '[d', desc = 'Previous diagnostic', remap = true },
       }
     end,
     opts = {
@@ -69,21 +71,35 @@ return {
   },
 
   {
+
+    'williamboman/mason.nvim',
+    keys = function() -- remove all keys
+      return {}
+    end,
+  },
+
+  {
     'neovim/nvim-lspconfig',
     init = function()
       local keys = require('lazyvim.plugins.lsp.keymaps').get()
-      -- disable default keymaps
       -- see: https://www.lazyvim.org/plugins/lsp#%EF%B8%8F-customizing-lsp-keymaps
+      keys[#keys + 1] = { 'R', '<cmd>LspRestart<cr>', desc = 'Restart LSP servers' }
+      keys[#keys + 1] = { '<leader>L', '<cmd>LspInfo<cr>', desc = 'LSP info' }
+      keys[#keys + 1] = { '<leader>m', '<cmd>Mason<cr>', desc = 'Mason' }
+      keys[#keys + 1] = { '<leader>n', '<cmd>NullLsInfo<cr>', desc = 'Null-LS info' }
+      keys[#keys + 1] = { '<leader>rr', vim.lsp.buf.rename, desc = 'Rename symbol', has = 'rename' }
       keys[#keys + 1] = { ']d', false }
       keys[#keys + 1] = { '[d', false }
       keys[#keys + 1] = { 'gd', false }
       keys[#keys + 1] = { 'gD', false }
       keys[#keys + 1] = { 'gt', false }
       keys[#keys + 1] = { 'K', false }
-      keys[#keys + 1] = { 'R', '<cmd>LspRestart<cr>', desc = 'Restart LSP servers' }
       keys[#keys + 1] = { '<leader>ca', mode = { 'n', 'v' }, false }
+      keys[#keys + 1] = { '<leader>cd', false }
       keys[#keys + 1] = { '<leader>cf', false }
       keys[#keys + 1] = { '<leader>cf', mode = { 'v' }, false }
+      keys[#keys + 1] = { '<leader>cl', false }
+      keys[#keys + 1] = { '<leader>cr', false }
     end,
     -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
     opts = {
