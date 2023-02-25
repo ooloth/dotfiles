@@ -2,6 +2,8 @@
 -- Default keymaps: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+local Util = require('lazyvim.util')
+
 local set = vim.keymap.set
 local del = vim.keymap.del
 
@@ -24,8 +26,11 @@ set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to la
 -- "diagnostics" (see lsp.lua)
 -- "explorer" (see neo-tree.lua)
 
-del('n', '<leader>st')
 -- "find" (see telescope.lua)
+del('n', '<leader>fn')
+if Util.has('noice.nvim') then
+  set('n', '<leader>fn', '<cmd>Noice telescope<cr>', { desc = 'Notification' })
+end
 
 -- "git" (see git.lua)
 set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
