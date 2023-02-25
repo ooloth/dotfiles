@@ -1,10 +1,10 @@
 return {
   {
     'folke/noice.nvim',
+    keys = function() -- replace all keys
+      return {}
+    end,
     opts = {
-      presets = {
-        bottom_search = false,
-      },
       lsp = {
         hover = {
           opts = {
@@ -14,6 +14,9 @@ return {
             },
           },
         },
+      },
+      presets = {
+        bottom_search = false,
       },
     },
   },
