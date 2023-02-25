@@ -13,7 +13,7 @@ set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for 
 
 -- "actions" (see lsp.lua)
 
--- "buffer"
+-- "buffer" (or "debug"?)
 set('n', '<tab>', '<cmd>bnext<cr>') -- go to next buffer
 set('n', '<s-tab>', '<cmd>bprev<cr>') -- go to previous buffer
 set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
