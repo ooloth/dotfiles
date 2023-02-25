@@ -45,10 +45,10 @@ del('n', '<leader>gG')
 -- "null-ls" (see lsp.lua)
 
 -- "open"
-set('n', '<leader>ol', '<cmd>lopen<cr>', { desc = 'Location list' }) -- use ]l + [l to navigate
 set('n', 'gl', '<cmd>lopen<cr>', { desc = 'Location list' })
-set('n', '<leader>oq', '<cmd>copen<cr>', { desc = 'Quickfix list' }) -- use ]q + [q to navigate
 set('n', 'gq', '<cmd>copen<cr>', { desc = 'Quickfix list' })
+set('n', '<leader>ol', '<cmd>lopen<cr>', { desc = 'Location list' }) -- use ]l + [l to navigate
+set('n', '<leader>oq', '<cmd>copen<cr>', { desc = 'Quickfix list' }) -- use ]q + [q to navigate
 -- '<leader>ot' = 'Terminal' (see vim-floaterm.lua)
 del('n', '<leader>ft')
 del('n', '<leader>fT')
@@ -95,6 +95,8 @@ vim.cmd([[
 ]])
 
 -- "x" ("close buffer?", "problems?", "quickfix + subcommands for navigating it?")
+del('n', '<leader>xl')
+del('n', '<leader>xq')
 
 -- "y"
 
