@@ -63,9 +63,9 @@ return {
     opts = {
       defaults = {
         layout_config = {
-          flex = { width = 0.99, height = 0.99, preview_width = 0.55 },
-          horizontal = { width = 0.99, height = 0.99, preview_width = 0.55 },
-          vertical = { width = 0.99, height = 0.99, preview_width = 0.55 },
+          flex = { width = 0.97, height = 0.97, preview_width = 0.55 },
+          horizontal = { width = 0.97, height = 0.97, preview_width = 0.55 },
+          vertical = { width = 0.97, height = 0.97, preview_width = 0.55 },
         },
         mappings = {
           i = {
