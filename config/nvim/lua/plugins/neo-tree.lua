@@ -14,5 +14,12 @@ return {
         { '<leader>e', '<leader>fe', desc = 'Explorer', remap = true },
       }
     end,
+    opts = {
+      filesystem = {
+        filtered_items = {
+          hide_dotfiles = false,
+        },
+      },
+    },
   },
 }
