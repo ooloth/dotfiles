@@ -62,7 +62,7 @@ del('n', '<leader>fT')
 -- "save"
 set('n', '<leader>s', '<cmd>w<cr>', { desc = 'Save' })
 
--- "tabs"
+-- "tab"
 
 -- "u" ("ui"? "undo list"?)
 
