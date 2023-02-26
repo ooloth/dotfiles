@@ -1,5 +1,12 @@
 return {
   {
+    'sindrets/diffview.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    -- see: https://github.com/sindrets/diffview.nvim#configuration
+    opts = {},
+  },
+
+  {
     'lewis6991/gitsigns.nvim',
     opts = {
       on_attach = function(buffer)
