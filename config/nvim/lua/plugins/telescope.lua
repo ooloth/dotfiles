@@ -35,7 +35,7 @@ return {
         { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
         { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
         -- '<leader>ft' = 'Todo' (see todo-comment.lua)
-        { '<leader>fu', '<cmd>Telescope undo<cr>', desc = 'Undo' },
+        -- '<leader>fu' = 'URLs' (see urlview.lua)
         { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
         { '<leader>fz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "git"
