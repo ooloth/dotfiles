@@ -17,7 +17,6 @@ return {
         { 'go', '<cmd>Lspsaga outline<cr>', desc = 'Outline' },
         -- 'gr' = 'References'
         { 'gt', '<cmd>Lspsaga goto_type_definition<cr>', desc = 'Go to type definition' },
-        { 'K', 'gh', desc = 'Hover', remap = true },
         { '<leader>a', 'ga', desc = 'Actions', remap = true },
         { '<leader>dn', ']d', desc = 'Next diagnostic', remap = true },
         { '<leader>dp', '[d', desc = 'Previous diagnostic', remap = true },

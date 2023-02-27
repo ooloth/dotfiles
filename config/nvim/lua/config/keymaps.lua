@@ -14,6 +14,18 @@ set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for 
 -- join
 set('n', '<leader>j', '<cmd>join<cr>', { desc = 'Join lines' })
 
+-- move lines
+set('n', '<S-j>', '<cmd>m .+1<cr>==', { desc = 'Move down' })
+set('n', '<S-k>', '<cmd>m .-2<cr>==', { desc = 'Move up' })
+set('v', '<S-j>', ":m '>+1<cr>gv=gv", { desc = 'Move down' })
+set('v', '<S-k>', ":m '<-2<cr>gv=gv", { desc = 'Move up' })
+del('n', '<A-j>')
+del('n', '<A-k>')
+del('i', '<A-j>')
+del('i', '<A-k>')
+del('v', '<A-j>')
+del('v', '<A-k>')
+
 -- "actions" (see lsp.lua)
 
 -- "buffer" (or "debug"?)
