@@ -26,7 +26,7 @@ del('i', '<A-k>')
 del('v', '<A-j>')
 del('v', '<A-k>')
 
--- line beginning & end
+-- line beginning + end
 set('n', '<S-h>', '^', { desc = 'Go to end of line' })
 set('n', '<S-l>', '$', { desc = 'Go to beginning of line' })
 

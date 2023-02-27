@@ -15,7 +15,6 @@ return {
         { 'gD', '<cmd>Lspsaga goto_definition<cr>', desc = 'Go to definition' },
         { 'gh', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
         { 'go', '<cmd>Lspsaga outline<cr>', desc = 'Outline' },
-        -- 'gr' = 'References'
         { 'gt', '<cmd>Lspsaga goto_type_definition<cr>', desc = 'Go to type definition' },
         { '<leader>a', 'ga', desc = 'Actions', remap = true },
         { '<leader>dn', ']d', desc = 'Next diagnostic', remap = true },
