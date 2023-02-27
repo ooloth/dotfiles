@@ -45,8 +45,6 @@ return {
         { '<leader>gS', '<cmd>Telescope git_stash<cr>', desc = 'Stashes' },
         -- "help"
         { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
-        -- "jumps"
-        { '<leader>j', '<cmd>Telescope jumplist<cr>', desc = 'Jumps' },
         -- "keymaps"
         { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
         -- "undo"

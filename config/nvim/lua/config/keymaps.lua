@@ -11,6 +11,9 @@ local del = vim.keymap.del
 set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
 
+-- join
+set('n', '<leader>j', '<cmd>join<cr>', { desc = 'Join lines' })
+
 -- "actions" (see lsp.lua)
 
 -- "buffer" (or "debug"?)
