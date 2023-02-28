@@ -129,7 +129,7 @@ set('n', '<leader>w]', '<cmd>vertical resize +3<cr>', { desc = 'Increase size' }
 set('n', '<leader>wc', '<c-w>c', { desc = 'Close' })
 -- m = { '<cmd>MaximizerToggle<cr>', 'maximize / unmaximize' }, -- maximize split OR restore previous split layout (with vim-maximizer}
 set('n', '<leader>wo', '<c-w>o', { desc = 'Only keep this one' })
--- set('n', '<leader>ww', '<cmd>w<cr>', { desc = 'Write' })
+set('n', '<leader>ww', '<cmd>w<cr>', { desc = 'Write' })
 del('n', '<leader>|')
 del('n', '<leader>w|')
 
