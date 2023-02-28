@@ -15,9 +15,29 @@ return {
       }
     end,
     opts = {
+      event_handlers = {
+        -- see: https://github.com/nvim-neo-tree/neo-tree.nvim/wiki/Recipes#auto-close-on-open-file
+        {
+          event = 'file_opened',
+          handler = function()
+            --auto close
+            require('neo-tree').close_all()
+          end,
+        },
+      },
       filesystem = {
         filtered_items = {
           hide_dotfiles = false,
+        },
+      },
+      window = {
+        mappings = {
+          ['<space>'] = 'none',
+          ['.'] = 'none',
+          ['h'] = 'close_node',
+          ['l'] = 'open',
+          ['s'] = 'open_split',
+          ['v'] = 'open_vsplit',
         },
       },
     },
