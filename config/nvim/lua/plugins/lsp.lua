@@ -1,11 +1,11 @@
 return {
   {
     'glepnir/lspsaga.nvim',
+    event = 'BufRead',
     dependencies = {
       { 'nvim-tree/nvim-web-devicons' },
       { 'nvim-treesitter/nvim-treesitter' }, -- please make sure you install markdown and markdown_inline parsers
     },
-    event = 'BufRead',
     keys = function()
       return {
         { ']x', '<cmd>Lspsaga diagnostic_jump_next<cr>', desc = 'Next diagnostic' },
@@ -78,6 +78,7 @@ return {
 
   {
     'neovim/nvim-lspconfig',
+    dependencies = { 'jose-elias-alvarez/typescript.nvim' },
     init = function()
       local keys = require('lazyvim.plugins.lsp.keymaps').get()
       -- see: https://www.lazyvim.org/plugins/lsp#%EF%B8%8F-customizing-lsp-keymaps
@@ -97,6 +98,7 @@ return {
       keys[#keys + 1] = { '<leader>cf', false }
       keys[#keys + 1] = { '<leader>cf', mode = { 'v' }, false }
       keys[#keys + 1] = { '<leader>cl', false }
+      keys[#keys + 1] = { '<leader>co', false }
       keys[#keys + 1] = { '<leader>cr', false }
     end,
     -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
@@ -134,7 +136,6 @@ return {
             },
           },
         },
-        -- TODO: only load if used by project
         tailwindcss = {},
         terraformls = {},
         tsserver = {},
@@ -145,6 +146,10 @@ return {
           vim.cmd([[
             autocmd BufWritePre *.tsx,*.ts,*.jsx,*.js EslintFixAll
           ]])
+        end,
+        tsserver = function(_, opts)
+          require('typescript').setup({ server = opts })
+          return true
         end,
       },
     },
