@@ -4,21 +4,21 @@ return {
     keys = function() -- replace all keys
       return {
         {
-          '<leader>bd',
+          '<leader>bc',
           function()
             require('mini.bufremove').delete(0, false)
           end,
-          desc = 'Delete buffer',
+          desc = 'Close buffer',
         },
         {
-          '<leader>bD',
+          '<leader>bC',
           function()
             require('mini.bufremove').delete(0, true)
           end,
-          desc = 'Delete buffer (force)',
+          desc = 'Close buffer (force)',
         },
-        { '<leader>x', '<leader>bd', desc = 'Close buffer', remap = true },
-        { '<leader>X', '<leader>bD', desc = 'Close buffer (force)', remap = true },
+        { '<leader>c', '<leader>bc', desc = 'Close buffer', remap = true },
+        { '<leader>C', '<leader>bC', desc = 'Close buffer (force)', remap = true },
       }
     end,
   },

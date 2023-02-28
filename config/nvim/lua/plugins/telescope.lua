@@ -27,6 +27,7 @@ return {
         { '<leader>fh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
         { '<leader>fj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
         { '<leader>fk', '<cmd>Telescope keymaps<cr>', desc = 'Keymap' },
+        -- '<leader>fl' = 'Links in buffer' (see urlview.lua)
         { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
         { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
         -- '<leader>fn' = 'Notifications' (see noice.lua)
@@ -35,8 +36,8 @@ return {
         { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
         { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
         -- '<leader>ft' = 'Todo' (see todo-comment.lua)
-        -- '<leader>fu' = 'URLs' (see urlview.lua)
         { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
+        { '<leader>fu', '<cmd>Telescope undo<cr>', desc = 'Undo history' },
         { '<leader>fz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "git"
         { '<leader>gB', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
@@ -47,10 +48,8 @@ return {
         { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
         -- "keymaps"
         { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
-        -- "undo"
-        { '<leader>u', '<cmd>Telescope undo<cr>', desc = 'Undo list' },
-        -- "view"
-        { '<leader>vC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorschemes (with preview)' },
+        -- "UI"
+        { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorschemes (with preview)' },
       }
     end,
     opts = {
@@ -67,6 +66,18 @@ return {
             ['<C-k>'] = actions.move_selection_previous,
             ['<C-h>'] = actions.cycle_history_prev,
             ['<C-l>'] = actions.cycle_history_next,
+          },
+        },
+      },
+      pickers = {
+        help_tags = {
+          mappings = {
+            i = {
+              ['<CR>'] = 'select_vertical',
+            },
+            n = {
+              ['<CR>'] = 'select_vertical',
+            },
           },
         },
       },
