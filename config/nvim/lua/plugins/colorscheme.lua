@@ -2,6 +2,7 @@ return {
   -- add dracula
   {
     'Mofiqul/dracula.nvim',
+    lazy = true,
     -- See: https://github.com/Mofiqul/dracula.nvim#-configuration
     opts = {
       italic_comment = true,

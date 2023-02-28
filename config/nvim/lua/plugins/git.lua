@@ -1,8 +1,9 @@
 return {
-  { 'tpope/vim-fugitive' },
+  { 'tpope/vim-fugitive', event = 'VeryLazy' },
 
   {
     'sindrets/diffview.nvim',
+    event = 'VeryLazy',
     dependencies = { 'nvim-lua/plenary.nvim' },
     -- see: https://github.com/sindrets/diffview.nvim#configuration
     opts = {},
@@ -36,6 +37,7 @@ return {
 
   {
     'ruifm/gitlinker.nvim',
+    event = 'VeryLazy',
     config = function()
       require('gitlinker').setup()
     end,

@@ -76,7 +76,6 @@ local python_extension = {
 return {
   {
     'nvim-lualine/lualine.nvim',
-    event = 'VeryLazy',
     opts = function()
       return {
         extensions = { 'neo-tree', 'nvim-dap-ui', python_extension, 'quickfix', 'toggleterm' },
