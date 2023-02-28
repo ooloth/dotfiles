@@ -29,6 +29,7 @@ brew "starship"
 brew "stylua" 
 brew "svn" # for font cask installations
 brew "tmux"
+brew "trash"
 brew "vifm"
 brew "wget" # for neovim
 brew "zsh"
