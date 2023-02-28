@@ -20,7 +20,8 @@
 
 # see: https://github.com/whiteinge/diffconflicts#installation
 [merge]
-  tool = diffconflicts
+  tool = vimdiff1
+  # tool = diffconflicts
   # tool = fugitive
 
 [mergetool]
