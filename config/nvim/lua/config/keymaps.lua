@@ -93,6 +93,7 @@ del('n', '<leader>fT')
 
 -- "save"
 set('n', '<leader>s', '<cmd>w<cr>', { desc = 'Save' })
+del('n', '<c-s>')
 
 -- "tab"
 set('n', '<leader>tt', '<cmd>tabnew<cr>', { desc = 'New Tab' })

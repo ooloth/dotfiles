@@ -4,8 +4,8 @@ return {
     event = 'VeryLazy',
     config = function()
       require('copilot').setup({
-        -- suggestion = { enabled = false },
-        -- panel = { enabled = false },
+        suggestion = { enabled = false },
+        panel = { enabled = false },
       })
     end,
   },
@@ -31,7 +31,7 @@ return {
         ['<c-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
         ['<c-u>'] = cmp.mapping.scroll_docs(-4),
         ['<c-d>'] = cmp.mapping.scroll_docs(4),
-        -- ['<s-space>'] = cmp.mapping.complete(),
+        ['<c-s>'] = cmp.mapping.complete(),
         ['<cr>'] = cmp.mapping.abort(),
         ['<tab>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
       })
@@ -39,6 +39,10 @@ return {
         { name = 'emoji' },
         { name = 'copilot', group_index = 2 },
       }))
+      opts.window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+      }
     end,
   },
 }
