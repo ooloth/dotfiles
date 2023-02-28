@@ -83,6 +83,7 @@ set('n', 'gl', '<cmd>lopen<cr>', { desc = 'Location list' })
 set('n', 'gq', '<cmd>copen<cr>', { desc = 'Quickfix list' })
 set('n', '<leader>ol', '<cmd>lopen<cr>', { desc = 'Location list' }) -- use ]l + [l to navigate
 set('n', '<leader>oq', '<cmd>copen<cr>', { desc = 'Quickfix list' }) -- use ]q + [q to navigate
+set('n', '<leader>on', ':ene <BAR> startinsert<cr>', { desc = 'New file' })
 -- '<leader>ot' = 'Terminal' (see vim-floaterm.lua)
 del('n', '<leader>ft')
 del('n', '<leader>fT')
