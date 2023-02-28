@@ -4,7 +4,7 @@ return {
     config = function(_, opts)
       local wk = require('which-key')
       wk.setup(opts)
-      local keymaps = {
+      wk.register({
         mode = { 'n', 'v' },
         ['g'] = { name = 'Go to' },
         ['gz'] = { name = 'Surround' },
@@ -16,14 +16,13 @@ return {
         ['<leader>g'] = { name = 'Git' },
         ['<leader>gt'] = { name = 'Toggle' },
         ['<leader>o'] = { name = 'Open' },
-        ['<leader>q'] = { name = 'Quit/Session' },
+        ['<leader>q'] = { name = 'Quit' },
         ['<leader>r'] = { name = 'Replace' },
         ['<leader>t'] = { name = 'Tab' },
         ['<leader>u'] = { name = 'UI' },
         ['<leader>w'] = { name = 'Window' },
         ['<leader>x'] = { name = 'Diagnostics' },
-      }
-      wk.register(keymaps)
+      })
     end,
   },
 }
