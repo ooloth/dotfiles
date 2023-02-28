@@ -28,6 +28,8 @@ return {
       filesystem = {
         filtered_items = {
           hide_dotfiles = false,
+          hide_gitignored = false,
+          hide_by_name = { '.git' },
         },
       },
       window = {
@@ -39,6 +41,7 @@ return {
           ['s'] = 'open_split',
           ['v'] = 'open_vsplit',
         },
+        position = 'right',
       },
     },
   },
