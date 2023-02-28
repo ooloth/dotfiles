@@ -2,9 +2,8 @@ return {
   {
     'folke/trouble.nvim',
     keys = {
-      { '<leader>dd', '<cmd>TroubleToggle document_diagnostics<cr>', desc = 'Diagnostics (document)' },
-      { '<leader>da', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = 'Diagnostics (all)' },
-      { '<leader>xx', false },
+      { '<leader>xx', '<cmd>TroubleToggle document_diagnostics<cr>', desc = 'Diagnostics (file)' },
+      { '<leader>xa', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = 'Diagnostics (all)' },
       { '<leader>xX', false },
       { '<leader>xL', false },
       { '<leader>xQ', false },

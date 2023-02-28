@@ -8,8 +8,8 @@ return {
     event = 'BufRead',
     keys = function()
       return {
-        { ']d', '<cmd>Lspsaga diagnostic_jump_next<cr>', desc = 'Next diagnostic' },
-        { '[d', '<cmd>Lspsaga diagnostic_jump_prev<cr>', desc = 'Previous diagnostic' },
+        { ']x', '<cmd>Lspsaga diagnostic_jump_next<cr>', desc = 'Next diagnostic' },
+        { '[x', '<cmd>Lspsaga diagnostic_jump_prev<cr>', desc = 'Previous diagnostic' },
         { 'ga', '<cmd>Lspsaga code_action<cr>', desc = 'Code actions' },
         { 'gd', '<cmd>Lspsaga lsp_finder<cr>', desc = 'Definition, references & implentations' },
         { 'gD', '<cmd>Lspsaga goto_definition<cr>', desc = 'Go to definition' },
@@ -17,8 +17,8 @@ return {
         { 'go', '<cmd>Lspsaga outline<cr>', desc = 'Outline' },
         { 'gt', '<cmd>Lspsaga goto_type_definition<cr>', desc = 'Go to type definition' },
         { '<leader>a', 'ga', desc = 'Actions', remap = true },
-        { '<leader>dn', ']d', desc = 'Next diagnostic', remap = true },
-        { '<leader>dp', '[d', desc = 'Previous diagnostic', remap = true },
+        { '<leader>xn', ']x', desc = 'Next diagnostic', remap = true },
+        { '<leader>xp', '[x', desc = 'Previous diagnostic', remap = true },
       }
     end,
     opts = {
@@ -85,7 +85,7 @@ return {
       keys[#keys + 1] = { '<leader>L', '<cmd>LspInfo<cr>', desc = 'LSP info' }
       keys[#keys + 1] = { '<leader>m', '<cmd>Mason<cr>', desc = 'Mason' }
       keys[#keys + 1] = { '<leader>n', '<cmd>NullLsInfo<cr>', desc = 'Null-LS info' }
-      keys[#keys + 1] = { '<leader>rr', vim.lsp.buf.rename, desc = 'Rename symbol', has = 'rename' }
+      keys[#keys + 1] = { '<leader>rs', vim.lsp.buf.rename, desc = 'Rename symbol', has = 'rename' }
       keys[#keys + 1] = { ']d', false }
       keys[#keys + 1] = { '[d', false }
       keys[#keys + 1] = { 'gd', false }
