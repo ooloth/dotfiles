@@ -1,4 +1,5 @@
 return {
+
   {
     'nvim-neo-tree/neo-tree.nvim',
     keys = function() -- replace all default keys
@@ -41,7 +42,7 @@ return {
           ['s'] = 'open_split',
           ['v'] = 'open_vsplit',
         },
-        position = 'right',
+        width = 52,
       },
     },
   },
