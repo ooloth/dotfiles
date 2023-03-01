@@ -8,4 +8,13 @@ return {
       { '<leader>P', '<cmd>BufferLineGroupClose ungrouped<cr>', desc = 'Close non-pinned buffers' },
     },
   },
+
+  -- only show the current tab's buffers in bufferline
+  {
+    'tiagovla/scope.nvim',
+    event = 'VeryLazy',
+    config = function()
+      require('scope').setup()
+    end,
+  },
 }
