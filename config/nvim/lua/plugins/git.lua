@@ -27,6 +27,7 @@ return {
         map('n', '<leader>gb', gs.blame_line, 'Blame line')
         map('n', '<leader>gd', '<cmd>DiffviewOpen<cr>', 'Diff (all changes)')
         map('n', '<leader>gl', '<cmd>DiffviewFileHistory %<cr>', 'Log (file)')
+        map('n', '<leader>gL', '<cmd>DiffviewFileHistory<cr>', 'Log (all)')
         map('n', '<leader>gp', gs.preview_hunk, 'Preview (hunk)')
         map('n', '<leader>gtb', gs.toggle_current_line_blame, 'Line blame')
         map('n', '<leader>gtd', gs.toggle_deleted, 'Deleted lines')
