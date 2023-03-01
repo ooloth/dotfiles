@@ -180,53 +180,53 @@ return {
           -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
           nls.builtins.formatting.black, -- python
           nls.builtins.formatting.isort, -- python
-          -- nls.builtins.formatting.prettier, -- js/ts etc
-          nls.builtins.formatting.prettier.with({
-            -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTIN_CONFIG.md#conditional-sources
-            -- runtime_condition = function(utils)
-            --   return utils.root_has_file({
-            --     -- https://prettier.io/docs/en/configuration.html
-            --     '.prettierrc',
-            --     '.prettierrc.json',
-            --     '.prettierrc.yml',
-            --     '.prettierrc.yaml',
-            --     '.prettierrc.json5',
-            --     '.prettierrc.js',
-            --     '.prettierrc.cjs',
-            --     '.prettierrc.toml',
-            --     'prettier.config.js',
-            --     'prettier.config.cjs',
-            --   })
-            -- end,
-            -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTIN_CONFIG.md#using-local-executables
-            -- only_local = 'node_modules/.bin',
-            root_dir = require('null-ls.utils').root_pattern('.prettierrc'),
-            -- or require('null-ls.utils').root_pattern('.git'),
-            runtime_condition = function(params)
-              local utils = require('null-ls.utils')
-              --
-              local package_json_root = utils.root_pattern('package.json')(params.bufname)
-              --   -- local git_root = utils.root_pattern('.git')(params.bufname)
-              --   -- local root = package_json_root or git_root
-              local root = package_json_root
+          nls.builtins.formatting.prettier, -- js/ts etc
+          -- nls.builtins.formatting.prettier.with({
+          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTIN_CONFIG.md#conditional-sources
+          -- runtime_condition = function(utils)
+          --   return utils.root_has_file({
+          --     -- https://prettier.io/docs/en/configuration.html
+          --     '.prettierrc',
+          --     '.prettierrc.json',
+          --     '.prettierrc.yml',
+          --     '.prettierrc.yaml',
+          --     '.prettierrc.json5',
+          --     '.prettierrc.js',
+          --     '.prettierrc.cjs',
+          --     '.prettierrc.toml',
+          --     'prettier.config.js',
+          --     'prettier.config.cjs',
+          --   })
+          -- end,
+          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTIN_CONFIG.md#using-local-executables
+          -- only_local = 'node_modules/.bin',
+          -- root_dir = require('null-ls.utils').root_pattern('.prettierrc'),
+          -- or require('null-ls.utils').root_pattern('.git'),
+          -- runtime_condition = function(params)
+          -- local utils = require('null-ls.utils')
+          --
+          -- local package_json_root = utils.root_pattern('package.json')(params.bufname)
+          -- local git_root = utils.root_pattern('.git')(params.bufname)
+          -- local root = package_json_root or git_root
+          -- local root = package_json_root
 
-              return root and utils.path.exists(utils.path.join(root, '.prettierrc'))
-              --   --   return root
-              --   --     and utils.root_has_file({
-              --   --       -- https://prettier.io/docs/en/configuration.html
-              --   --       '.prettierrc',
-              --   --       '.prettierrc.json',
-              --   --       '.prettierrc.yml',
-              --   --       '.prettierrc.yaml',
-              --   --       '.prettierrc.json5',
-              --   --       '.prettierrc.js',
-              --   --       '.prettierrc.cjs',
-              --   --       '.prettierrc.toml',
-              --   --       'prettier.config.js',
-              --   --       'prettier.config.cjs',
-              --   --     })
-            end,
-          }), -- js/ts etc
+          -- return root and utils.path.exists(utils.path.join(root, '.prettierrc'))
+          --   return root
+          --     and utils.root_has_file({
+          --       -- https://prettier.io/docs/en/configuration.html
+          --       '.prettierrc',
+          --       '.prettierrc.json',
+          --       '.prettierrc.yml',
+          --       '.prettierrc.yaml',
+          --       '.prettierrc.json5',
+          --       '.prettierrc.js',
+          --       '.prettierrc.cjs',
+          --       '.prettierrc.toml',
+          --       'prettier.config.js',
+          --       'prettier.config.cjs',
+          --     })
+          -- end,
+          -- }), -- js/ts etc
 
           nls.builtins.formatting.shfmt, -- bash
           nls.builtins.formatting.stylua, -- lua
