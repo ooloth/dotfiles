@@ -1,5 +1,8 @@
+-- test
 return {
   { 'tpope/vim-fugitive', event = 'VeryLazy' },
+
+  { 'whiteinge/diffconflicts', event = 'VeryLazy' },
 
   {
     'sindrets/diffview.nvim',
