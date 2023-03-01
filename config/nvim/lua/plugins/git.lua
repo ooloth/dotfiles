@@ -1,5 +1,8 @@
+-- test
 return {
   { 'tpope/vim-fugitive', event = 'VeryLazy' },
+
+  { 'whiteinge/diffconflicts', event = 'VeryLazy' },
 
   {
     'sindrets/diffview.nvim',
@@ -22,10 +25,9 @@ return {
         map('n', ']h', gs.next_hunk, 'Next hunk')
         map('n', '[h', gs.prev_hunk, 'Prev hunk')
         map('n', '<leader>gb', gs.blame_line, 'Blame line')
-        map('n', '<leader>gd', gs.diffthis, 'Diff vs index (file)')
-        map('n', '<leader>gD', function()
-          gs.diffthis('~')
-        end, 'Diff vs ~ (file)')
+        map('n', '<leader>gd', '<cmd>DiffviewOpen<cr>', 'Diff (all changes)')
+        map('n', '<leader>gl', '<cmd>DiffviewFileHistory %<cr>', 'Log (file)')
+        map('n', '<leader>gL', '<cmd>DiffviewFileHistory<cr>', 'Log (all)')
         map('n', '<leader>gp', gs.preview_hunk, 'Preview (hunk)')
         map('n', '<leader>gtb', gs.toggle_current_line_blame, 'Line blame')
         map('n', '<leader>gtd', gs.toggle_deleted, 'Deleted lines')
