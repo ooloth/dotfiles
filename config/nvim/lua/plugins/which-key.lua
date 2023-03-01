@@ -22,6 +22,7 @@ return {
         ['<leader>u'] = { name = 'UI' },
         ['<leader>w'] = { name = 'Window' },
         ['<leader>x'] = { name = 'Diagnostics' },
+        ['<leader>xt'] = { name = 'Toggle' },
       })
     end,
   },

@@ -158,6 +158,16 @@ return {
 
   {
     'jose-elias-alvarez/null-ls.nvim',
+    keys = {
+      {
+        '<leader>xtp',
+        function()
+          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/discussions/1258#discussioncomment-4245688
+          require('null-ls').toggle('prettier')
+        end,
+        desc = 'Toggle prettier',
+      },
+    },
     opts = function() -- replace all default opts
       local nls = require('null-ls')
       return {
