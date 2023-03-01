@@ -171,12 +171,11 @@ return {
     opts = function() -- replace all default opts
       local nls = require('null-ls')
       return {
+        -- root_dir = require('null-ls.utils').root_pattern('package.json', '.git'),
         -- formatters & linters mason will automatically install + set up below
+        -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
         sources = {
-          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
           nls.builtins.code_actions.proselint,
-
-          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#diagnostics
           nls.builtins.diagnostics.flake8, -- python linter
           nls.builtins.diagnostics.markdownlint, -- markdown linter
           nls.builtins.diagnostics.mypy, -- python type-checker
@@ -185,8 +184,6 @@ return {
           nls.builtins.diagnostics.tsc, -- ts type-checker
           nls.builtins.diagnostics.yamllint, -- yaml linter
           nls.builtins.diagnostics.zsh, -- zsh linter
-
-          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#formatting
           -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
           nls.builtins.formatting.black, -- python
           nls.builtins.formatting.isort, -- python
@@ -237,7 +234,6 @@ return {
           --     })
           -- end,
           -- }), -- js/ts etc
-
           nls.builtins.formatting.shfmt, -- bash
           nls.builtins.formatting.stylua, -- lua
         },
