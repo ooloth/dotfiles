@@ -1,6 +1,6 @@
 [core]
   editor = nvim
-  excludesfile = $HOME/.config/git/ignore
+  excludesfile = ~/.config/git/ignore
 
 [credential]
   helper = osxkeychain
