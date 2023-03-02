@@ -1,4 +1,3 @@
--- test
 return {
   { 'tpope/vim-fugitive', event = 'VeryLazy' },
 
@@ -6,6 +5,19 @@ return {
     'sindrets/diffview.nvim',
     event = 'VeryLazy',
     dependencies = { 'nvim-lua/plenary.nvim' },
+    keys = function()
+      local upstream_branch = 'origin/main'
+      if vim.env.IS_WORK_LAPTOP == 'true' then
+        upstream_branch = 'origin/trunk'
+      end
+
+      return {
+        { '<leader>gd', '<cmd>DiffviewOpen<cr>', 'Diff vs HEAD' },
+        { '<leader>gD', '<cmd>DiffviewOpen ' .. upstream_branch .. '<cr>', 'Diff vs upstream' },
+        { '<leader>gl', '<cmd>DiffviewFileHistory %<cr>', 'Log (file)' },
+        { '<leader>gL', '<cmd>DiffviewFileHistory<cr>', 'Log (all)' },
+      }
+    end,
     -- see: https://github.com/sindrets/diffview.nvim#configuration
     opts = {},
   },
@@ -23,10 +35,6 @@ return {
         map('n', ']h', gs.next_hunk, 'Next hunk')
         map('n', '[h', gs.prev_hunk, 'Prev hunk')
         map('n', '<leader>gb', gs.blame_line, 'Blame line')
-        map('n', '<leader>gd', '<cmd>DiffviewOpen<cr>', 'Diff (all changes)')
-        map('n', '<leader>gl', '<cmd>DiffviewFileHistory %<cr>', 'Log (file)')
-        map('n', '<leader>gL', '<cmd>DiffviewFileHistory<cr>', 'Log (all)')
-        map('n', '<leader>gp', gs.preview_hunk, 'Preview (hunk)')
         map('n', '<leader>gtb', gs.toggle_current_line_blame, 'Line blame')
         map('n', '<leader>gtd', gs.toggle_deleted, 'Deleted lines')
         -- make hunks available as text objects
