@@ -8,9 +8,10 @@ return {
     config = function(_, opts)
       local telescope = require('telescope')
       telescope.setup(opts)
+      telescope.load_extension('noice')
       telescope.load_extension('undo')
     end,
-    dependencies = { 'debugloop/telescope-undo.nvim' },
+    dependencies = { 'debugloop/telescope-undo.nvim', 'folke/noice.nvim' },
     keys = function() -- replace all default keymaps
       return {
         { '<leader><space>', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent files' },
@@ -30,7 +31,9 @@ return {
         -- '<leader>fl' = 'Links in buffer' (see urlview.lua)
         { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
         { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
-        -- '<leader>fn' = 'Notifications' (see noice.lua)
+        { '<leader>fn', '<cmd>Telescope noice<cr>', desc = 'Notification' },
+
+        -- '<leader>fn' = 'Notifications' (see keymaps.lua)
         { '<leader>fo', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
         { '<leader>fr', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent file' },
         { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },

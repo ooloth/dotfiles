@@ -62,9 +62,6 @@ set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with
 
 -- "find" (see telescope.lua)
 del('n', '<leader>fn')
-if Util.has('noice.nvim') then
-  set('n', '<leader>fn', '<cmd>Noice telescope<cr>', { desc = 'Notification' })
-end
 
 -- "git" (see git.lua)
 set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
