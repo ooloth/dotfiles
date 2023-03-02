@@ -48,7 +48,7 @@ if $IS_WORK_LAPTOP; then
   }
 
   # Confluent-Kafka
-  # TODO: update these whenever I run brew update
+  # TODO: update versions whenever I run brew update
   export C_INCLUDE_PATH=/opt/homebrew/Cellar/librdkafka/2.0.2/include
   export LIBRARY_PATH=/opt/homebrew/Cellar/librdkafka/2.0.2/lib
 
