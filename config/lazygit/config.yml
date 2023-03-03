@@ -1,3 +1,7 @@
+git:
+  commit:
+    verbose: always # 'default' | 'always' | 'never' (default: 'default'; applies to C only, not c)
+
 gui:
   # mainPanelSplitMode: "horizontal" # 'horizontal' | 'flexible' | 'vertical'
   expandFocusedSidePanel: true
