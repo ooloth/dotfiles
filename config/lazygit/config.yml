@@ -3,7 +3,6 @@ git:
     verbose: always # 'default' | 'always' | 'never' (default: 'default'; applies to C only, not c)
 
 gui:
-  # mainPanelSplitMode: "horizontal" # 'horizontal' | 'flexible' | 'vertical'
   expandFocusedSidePanel: true
   showBottomLine: false # for hiding the bottom information line (unless it has important information to tell you)
   showCommandLog: false
@@ -16,52 +15,8 @@ gui:
 
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
-# gui:
-#   # stuff relating to the UI
-#   windowSize: 'normal' # one of 'normal' | 'half' | 'full' default is 'normal'
-#   scrollHeight: 2 # how many lines you scroll by
-#   scrollPastBottom: true # enable scrolling past the bottom
-#   language: 'auto' # one of 'auto' | 'en' | 'zh' | 'pl' | 'nl' | 'ja' | 'ko'
-#   timeFormat: '02 Jan 06 15:04 MST' # https://pkg.go.dev/time#Time.Format
-#   theme:
-#     activeBorderColor:
-#       - green
-#       - bold
-#     inactiveBorderColor:
-#       - white
-#     optionsTextColor:
-#       - blue
-#     selectedLineBgColor:
-#       - blue # set to `default` to have no background colour
-#     selectedRangeBgColor:
-#       - blue
-#     cherryPickedCommitBgColor:
-#       - cyan
-#     cherryPickedCommitFgColor:
-#       - blue
-#     unstagedChangesColor:
-#       - red
-#     defaultFgColor:
-#       - default
-#   commitLength:
-#     show: true
-#   mouseEvents: true
-#   skipUnstageLineWarning: false
-#   skipStashWarning: false
-#   showListFooter: true # for seeing the '5 of 20' message in list panels
-#   showRandomTip: true
-#   showCommandLog: true
-#   showIcons: false
-#   commandLogSize: 8
-#   splitDiff: 'auto' # one of 'auto' | 'always'
-#   skipRewordInEditorWarning: false # for skipping the confirmation before launching the reword editor
+
 # git:
-#   paging:
-#     colorArg: always
-#     useConfig: false
-#   commit:
-#     signOff: false
-#     verbose: default # one of 'default' | 'always' | 'never'
 #   merging:
 #     # only applicable to unix users
 #     manualCommit: false
