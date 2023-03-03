@@ -3,7 +3,11 @@ gui:
   expandFocusedSidePanel: true
   showBottomLine: false # for hiding the bottom information line (unless it has important information to tell you)
   showCommandLog: false
+  showFileTree: false # for rendering changes files in a tree format
   sidePanelWidth: 0.25 # number from 0 to 1 (default: 0.33333)
+  theme:
+    selectedLineBgColor:
+      - default # set to `default` to have no background colour (default: blue)
   windowSize: half # 'normal' | 'half' | 'full' (default: 'normal')
 
 promptToReturnFromSubprocess: false
