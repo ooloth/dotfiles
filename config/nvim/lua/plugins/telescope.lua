@@ -5,26 +5,17 @@ local Util = require('lazyvim.util')
 return {
   {
     'nvim-telescope/telescope.nvim',
+    config = function(_, opts)
+      local telescope = require('telescope')
+      telescope.setup(opts)
+      telescope.load_extension('fzf')
+      telescope.load_extension('noice')
+      telescope.load_extension('undo')
+    end,
     dependencies = {
-      {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        build = 'make',
-        config = function()
-          require('telescope').load_extension('fzf')
-        end,
-      },
-      {
-        'folke/noice.nvim',
-        config = function()
-          require('telescope').load_extension('noice')
-        end,
-      },
-      {
-        'debugloop/telescope-undo.nvim',
-        config = function()
-          require('telescope').load_extension('undo')
-        end,
-      },
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      'folke/noice.nvim',
+      'debugloop/telescope-undo.nvim',
     },
     keys = function() -- replace all default keymaps
       return {
