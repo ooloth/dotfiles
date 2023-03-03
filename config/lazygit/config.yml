@@ -1,6 +1,7 @@
 gui:
   # mainPanelSplitMode: "horizontal" # 'horizontal' | 'flexible' | 'vertical'
   sidePanelWidth: 0.25 # number from 0 to 1
+promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 # gui:
 #   # stuff relating to the UI
