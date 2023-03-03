@@ -91,7 +91,7 @@ return {
       },
       extensions = {
         undo = {
-          use_delta = false,
+          use_delta = true,
           -- mappings = {
           --   i = {
           --     ['<C-cr>'] = undo_actions.restore,
