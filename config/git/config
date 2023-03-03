@@ -1,7 +1,6 @@
 [core]
   editor = nvim
   excludesfile = ~/.config/git/ignore
-  pager = delta
 
 [credential]
   helper = osxkeychain
