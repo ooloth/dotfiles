@@ -2,6 +2,8 @@ gui:
   # mainPanelSplitMode: "horizontal" # 'horizontal' | 'flexible' | 'vertical'
   sidePanelWidth: 0.25 # number from 0 to 1
   expandFocusedSidePanel: true
+  showBottomLine: false # for hiding the bottom information line (unless it has important information to tell you)
+  showCommandLog: false
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 # gui:
@@ -36,10 +38,8 @@ quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 #   mouseEvents: true
 #   skipUnstageLineWarning: false
 #   skipStashWarning: false
-#   showFileTree: true # for rendering changes files in a tree format
 #   showListFooter: true # for seeing the '5 of 20' message in list panels
 #   showRandomTip: true
-#   showBottomLine: true # for hiding the bottom information line (unless it has important information to tell you)
 #   showCommandLog: true
 #   showIcons: false
 #   commandLogSize: 8
