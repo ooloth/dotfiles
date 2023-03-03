@@ -1,3 +1,5 @@
+gui:
+  mainPanelSplitMode: "horizontal" # 'horizontal' | 'flexible' | 'vertical'
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 # gui:
 #   # stuff relating to the UI
