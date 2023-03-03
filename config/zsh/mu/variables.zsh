@@ -22,6 +22,9 @@ export PATH=$HOME/.cargo/bin:$PATH # Add cargo to PATH (for lvim)
 
 export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
+# see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#user-config
+export XDG_CONFIG_HOME=$HOME/.config
+
 export IS_WORK_LAPTOP=false
 if [[ -d "$HOME/Repos/recursionpharma" ]]; then IS_WORK_LAPTOP=true; fi
 
