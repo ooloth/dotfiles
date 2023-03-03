@@ -27,10 +27,11 @@ return {
     opts = function(_, opts)
       local cmp = require('cmp')
       opts.mapping = cmp.mapping.preset.insert({
+        ['<S-Space>'] = cmp.mapping.complete(), -- show completion suggestions
         ['<c-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
         ['<c-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-        ['<c-u>'] = cmp.mapping.scroll_docs(-4),
-        ['<c-d>'] = cmp.mapping.scroll_docs(4),
+        ['<c-u>'] = cmp.mapping.scroll_docs(-4), -- scroll preview window up
+        ['<c-d>'] = cmp.mapping.scroll_docs(4), -- scroll preview window down
         ['<c-s>'] = cmp.mapping.complete(),
         ['<cr>'] = cmp.mapping.abort(),
         ['<tab>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
