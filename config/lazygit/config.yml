@@ -1,9 +1,11 @@
 gui:
   # mainPanelSplitMode: "horizontal" # 'horizontal' | 'flexible' | 'vertical'
-  sidePanelWidth: 0.25 # number from 0 to 1
   expandFocusedSidePanel: true
   showBottomLine: false # for hiding the bottom information line (unless it has important information to tell you)
   showCommandLog: false
+  sidePanelWidth: 0.25 # number from 0 to 1 (default: 0.33333)
+  windowSize: half # 'normal' | 'half' | 'full' (default: 'normal')
+
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 # gui:
