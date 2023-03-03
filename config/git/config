@@ -8,7 +8,7 @@
 
 
 [diff]
-  colorMoved = default
+  colorMoved = true
 
 [fetch]
   prune = true
