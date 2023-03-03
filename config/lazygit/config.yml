@@ -1,5 +1,4 @@
-# determines whether hitting 'esc' will quit the application when there is nothing to cancel/close
-quitOnTopLevelReturn: true
+quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 # gui:
 #   # stuff relating to the UI
 #   windowSize: 'normal' # one of 'normal' | 'half' | 'full' default is 'normal'
