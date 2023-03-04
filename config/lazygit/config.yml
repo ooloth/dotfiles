@@ -1,6 +1,6 @@
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
 # colours: black | red | green | yellow | blue | magenta | cyan | white | '#ff00ff'
-# modifiers: bold | default | reverse (useful for high-contrast underline)
+# modifiers: bold | default | reverse (useful for high-contrast) | underline
 
 git:
   commit:
