@@ -1,4 +1,6 @@
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
+# colours: black | red | green | yellow | blue | magenta | cyan | white | '#ff00ff'
+# modifiers: bold | default | reverse (useful for high-contrast underline)
 
 git:
   commit:
@@ -13,8 +15,9 @@ gui:
   sidePanelWidth: 0.25 # number from 0 to 1 (default: 0.33333)
   theme:
     selectedLineBgColor:
-      - default # set to `default` to have no background colour (default: blue)
-  windowSize: half # 'normal' | 'half' | 'full' (default: 'normal')
+      - reverse
+    selectedRangeBgColor:
+      - reverse
 
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
