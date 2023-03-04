@@ -19,8 +19,6 @@ gui:
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 
-# os:
-#   openCommand: ''
 # keybinding:
 #   universal:
 #     quit: 'q'
