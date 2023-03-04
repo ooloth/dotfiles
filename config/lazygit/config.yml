@@ -19,6 +19,13 @@ gui:
     selectedRangeBgColor:
       - reverse
 
+keybinding:
+  branches:
+    createRebaseOptionsMenu: "M"
+    mergeIntoCurrentBranch: "m"
+    rebaseBranch: "R"
+    renameBranch: "r"
+
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 
