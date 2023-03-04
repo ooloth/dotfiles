@@ -20,21 +20,7 @@ promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 
 # os:
-#   editCommand: '' # see 'Configuring File Editing' section
-#   editCommandTemplate: ''
 #   openCommand: ''
-# refresher:
-#   refreshInterval: 10 # File/submodule refresh interval in seconds. Auto-refresh can be disabled via option 'git.autoRefresh'.
-#   fetchInterval: 60 # Re-fetch interval in seconds. Auto-fetch can be disabled via option 'git.autoFetch'.
-# update:
-#   method: prompt # can be: prompt | background | never
-#   days: 14 # how often an update is checked for
-# confirmOnQuit: false
-# # determines whether hitting 'esc' will quit the application when there is nothing to cancel/close
-# quitOnTopLevelReturn: false
-# disableStartupPopups: false
-# notARepository: 'prompt' # one of: 'prompt' | 'create' | 'skip' | 'quit'
-# promptToReturnFromSubprocess: true # display confirmation when subprocess terminates
 # keybinding:
 #   universal:
 #     quit: 'q'
