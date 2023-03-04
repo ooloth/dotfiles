@@ -4,7 +4,7 @@
 
 git:
   commit:
-    verbose: always # 'default' | 'always' | 'never' (default: 'default'; applies to C only, not c)
+    verbose: always # 'default' | 'always' | 'never' (applies to C, not c)
 
 gui:
   expandFocusedSidePanel: true
