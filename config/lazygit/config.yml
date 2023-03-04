@@ -6,6 +6,7 @@ git:
 
 gui:
   expandFocusedSidePanel: true
+  parseEmoji: true
   showBottomLine: false # for hiding the bottom information line (unless it has important information to tell you)
   showCommandLog: false
   showFileTree: false # for rendering changes files in a tree format
@@ -18,31 +19,6 @@ gui:
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
 
-# git:
-#   merging:
-#     # only applicable to unix users
-#     manualCommit: false
-#     # extra args passed to `git merge`, e.g. --no-ff
-#     args: ''
-#   log:
-#     # one of date-order, author-date-order, topo-order or default.
-#     # topo-order makes it easier to read the git log graph, but commits may not
-#     # appear chronologically. See https://git-scm.com/docs/git-log#_commit_ordering
-#     order: 'topo-order'
-#     # one of always, never, when-maximised
-#     # this determines whether the git graph is rendered in the commits panel
-#     showGraph: 'when-maximised'
-#     # displays the whole git graph by default in the commits panel (equivalent to passing the `--all` argument to `git log`)
-#     showWholeGraph: false
-#   skipHookPrefix: WIP
-#   autoFetch: true
-#   autoRefresh: true
-#   branchLogCmd: 'git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --'
-#   allBranchesLogCmd: 'git log --graph --all --color=always --abbrev-commit --decorate --date=relative  --pretty=medium'
-#   overrideGpg: false # prevents lazygit from spawning a separate process when using GPG
-#   disableForcePushing: false
-#   parseEmoji: false
-#   diffContextSize: 3 # how many lines of context are shown around a change in diffs
 # os:
 #   editCommand: '' # see 'Configuring File Editing' section
 #   editCommandTemplate: ''
