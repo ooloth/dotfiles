@@ -1,5 +1,5 @@
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
-# colours: black | red | green | yellow | blue | magenta | cyan | white | '#ff00ff'
+# colours: black | red | green | yellow | blue | magenta | cyan | white | '#ff00ff' (any hex code)
 # modifiers: bold | default | reverse (useful for high-contrast) | underline
 
 git:
