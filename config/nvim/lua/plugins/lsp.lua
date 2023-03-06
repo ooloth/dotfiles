@@ -139,7 +139,13 @@ return {
         -- TODO: only load if used by project
         tailwindcss = {},
         terraformls = {},
-        tsserver = {},
+        tsserver = {
+          settings = {
+            completions = {
+              completeFunctionCalls = true,
+            },
+          },
+        },
         yamlls = {},
       },
       setup = {
