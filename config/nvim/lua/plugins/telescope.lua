@@ -65,6 +65,7 @@ return {
         layout_config = {
           flex = { width = 0.98, height = 0.97, preview_width = 0.55 },
           horizontal = { width = 0.98, height = 0.97, preview_width = 0.55 },
+          -- prompt_position = 'top',
           vertical = { width = 0.98, height = 0.97, preview_width = 0.55 },
         },
         mappings = {
@@ -76,6 +77,7 @@ return {
             ['<C-l>'] = actions.cycle_history_next,
           },
         },
+        -- sorting_strategy = 'ascending',
       },
       pickers = {
         help_tags = {
