@@ -19,14 +19,19 @@ return {
     'NvChad/nvim-colorizer.lua',
     event = 'BufReadPre',
     opts = {
-      filetypes = { '*', '!lazy' },
+      -- see: https://github.com/NvChad/nvim-colorizer.lua#customization
+      filetypes = { '*', '!lazy', css = { names = true } },
       buftype = { '*', '!prompt', '!nofile' },
       user_default_options = {
+        mode = 'virtualtext', -- 'foreground' | 'background' | 'virtualtext'
+        RGB = true, -- #RGB hex codes
+        RRGGBB = true, -- #RRGGBB hex codes
         RRGGBBAA = true, -- #RRGGBBAA hex codes
         AARRGGBB = true, -- 0xAARRGGBB hex codes
-        css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-        css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-        tailwind = true,
+        rgb_fn = true, -- CSS rgb() and rgba() functions
+        hsl_fn = true, -- CSS hsl() and hsla() functions
+        names = false, -- Named codes like "blue" (not accurate in configs that reference theme colors)
+        tailwind = false,
       },
     },
   },
