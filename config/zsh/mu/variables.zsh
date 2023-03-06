@@ -15,10 +15,8 @@ export K9SCONFIG=$HOME/.config/k9s
 # setopt HIST_IGNORE_ALL_DUPS
 # alias history='history 0'
 # alias h='history | grep'
-#
+
 export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
-export PATH=$HOME/.local/bin:$PATH # Add lvim location to PATH
-export PATH=$HOME/.cargo/bin:$PATH # Add cargo to PATH (for lvim)
 
 export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
