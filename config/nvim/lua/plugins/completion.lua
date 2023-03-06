@@ -1,45 +1,19 @@
 return {
   {
-    'zbirenbaum/copilot.lua',
-    event = 'VeryLazy',
-    config = function()
-      require('copilot').setup({
-        suggestion = { enabled = false },
-        panel = { enabled = false },
-      })
-    end,
-  },
-
-  {
-    'zbirenbaum/copilot-cmp',
-    after = { 'copilot.lua' },
-    config = function()
-      require('copilot_cmp').setup()
-    end,
-  },
-
-  {
     'hrsh7th/nvim-cmp',
-    dependencies = {
-      'hrsh7th/cmp-emoji',
-      'zbirenbaum/copilot-cmp',
-    },
+    dependencies = { 'hrsh7th/cmp-emoji' },
     opts = function(_, opts)
       local cmp = require('cmp')
       opts.mapping = cmp.mapping.preset.insert({
-        ['<S-Space>'] = cmp.mapping.complete(), -- show completion suggestions
+        ['<esc>'] = cmp.mapping.abort(),
+        ['<c-s>'] = cmp.mapping.complete(), -- show completion suggestions
+        ['<cr>'] = cmp.mapping.confirm({ select = true }), -- accept currently selected item
         ['<c-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
         ['<c-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
         ['<c-u>'] = cmp.mapping.scroll_docs(-4), -- scroll preview window up
         ['<c-d>'] = cmp.mapping.scroll_docs(4), -- scroll preview window down
-        ['<c-s>'] = cmp.mapping.complete(),
-        ['<cr>'] = cmp.mapping.abort(),
-        ['<tab>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
       })
-      opts.sources = cmp.config.sources(vim.list_extend(opts.sources, {
-        { name = 'emoji' },
-        { name = 'copilot', group_index = 2 },
-      }))
+      opts.sources = cmp.config.sources(vim.list_extend(opts.sources, { { name = 'emoji' } }))
       opts.window = {
         completion = cmp.config.window.bordered(),
         documentation = cmp.config.window.bordered(),
