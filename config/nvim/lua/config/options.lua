@@ -19,3 +19,4 @@ end
 vim.opt.cmdheight = 0
 vim.opt.number = false
 vim.opt.relativenumber = false
+vim.opt.scrolloff = 10

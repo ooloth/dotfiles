@@ -10,7 +10,6 @@ return {
     -- Make special mapping for "add surrounding for line"
     vim.keymap.set('n', 'gss', 'ys_', { remap = true })
   end,
-
   opts = {
     mappings = {
       add = 'gs', -- Add surrounding in Normal and Visual modes
