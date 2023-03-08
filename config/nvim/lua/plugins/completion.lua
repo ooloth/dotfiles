@@ -5,7 +5,7 @@ return {
     opts = function(_, opts)
       local cmp = require('cmp')
       opts.mapping = cmp.mapping.preset.insert({
-        ['<esc>'] = cmp.mapping.abort(),
+        ['<c-e>'] = cmp.mapping.abort(),
         ['<c-s>'] = cmp.mapping.complete(), -- show completion suggestions
         ['<cr>'] = cmp.mapping.confirm({ select = true }), -- accept currently selected item
         ['<c-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
