@@ -150,9 +150,14 @@ return {
       },
       setup = {
         eslint = function()
-          vim.cmd([[
-            autocmd BufWritePre *.tsx,*.ts,*.jsx,*.js EslintFixAll
-          ]])
+          vim.api.nvim_create_autocmd('BufWritePre', {
+            callback = function(event)
+              -- if eslint lsp server is active in buffer, automatically fix linting errors on save
+              if require('lspconfig.util').get_active_client_by_name(event.buf, 'eslint') then
+                vim.cmd('EslintFixAll')
+              end
+            end,
+          })
         end,
         tsserver = function(_, opts)
           require('typescript').setup({ server = opts })
