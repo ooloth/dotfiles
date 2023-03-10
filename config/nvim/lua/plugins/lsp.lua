@@ -183,6 +183,10 @@ return {
         sources = {
           nls.builtins.code_actions.proselint,
           nls.builtins.code_actions.shellcheck, -- bash linter
+
+          -- see: https://github.com/jose-elias-alvarez/typescript.nvim#setup-1
+          require('typescript.extensions.null-ls.code-actions'),
+
           nls.builtins.diagnostics.flake8, -- python linter
           nls.builtins.diagnostics.markdownlint, -- markdown linter
           nls.builtins.diagnostics.mypy, -- python type-checker
@@ -192,6 +196,7 @@ return {
           nls.builtins.diagnostics.tsc, -- ts type-checker
           nls.builtins.diagnostics.yamllint, -- yaml linter
           nls.builtins.diagnostics.zsh, -- zsh linter (basic compared to shellcheck for bash)
+
           -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
           nls.builtins.formatting.black, -- python
           nls.builtins.formatting.isort, -- python
