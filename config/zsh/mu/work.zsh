@@ -36,7 +36,7 @@ if $IS_WORK_LAPTOP; then
     esac
   }
 
-  # automatically activate the appropriate venv when zsh first loads (called again in autocommands.zsh whenever cwd changes)
+  # automatically activate appropriate venv when zsh first loads (called again in autocommands.zsh whenever cwd changes)
   activate_venv
 
   function run() {
