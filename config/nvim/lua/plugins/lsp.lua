@@ -193,13 +193,13 @@ return {
           require('typescript.extensions.null-ls.code-actions'),
 
           nls.builtins.diagnostics.flake8, -- python linter
-          nls.builtins.diagnostics.markdownlint, -- markdown linter
+          -- nls.builtins.diagnostics.markdownlint, -- markdown linter
           nls.builtins.diagnostics.mypy, -- python type-checker
-          nls.builtins.diagnostics.proselint, -- prose linter
+          -- nls.builtins.diagnostics.proselint, -- prose linter
           nls.builtins.diagnostics.puglint, -- pug linter
           nls.builtins.diagnostics.shellcheck, -- bash linter
           nls.builtins.diagnostics.tsc, -- ts type-checker
-          nls.builtins.diagnostics.yamllint, -- yaml linter
+          -- nls.builtins.diagnostics.yamllint, -- yaml linter
           nls.builtins.diagnostics.zsh, -- zsh linter (basic compared to shellcheck for bash)
 
           -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
