@@ -32,6 +32,7 @@ if $IS_WORK_LAPTOP; then
       phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
       phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
       rxrx3-app)                   eval "$(pyenv init -)" && pyenv shell rxrx3-app ;;
+      *)                           eval export PYENV_VERSION='' ;;
     esac
   }
 
