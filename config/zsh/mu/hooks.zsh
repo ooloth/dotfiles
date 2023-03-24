@@ -4,5 +4,7 @@ function chpwd() {
   export CURRENT_DIRECTORY=${PWD##*/}
 
   # automatically activate appropriate venv when cwd changes
-  activate_venv
+  if $IS_WORK_LAPTOP; then
+    activate_venv
+  fi
 }
