@@ -5,11 +5,6 @@ return {
     'williamboman/mason.nvim',
     'mfussenegger/nvim-dap',
   },
-  -- config = function(opts)
-  --   -- local dap = require('dap')
-  --   require('mason-nvim-dap').setup(opts)
-  --   require('mason-nvim-dap').setup_handlers()
-  -- end,
   opts = {
     automatic_installation = true,
     automatic_setup = true,

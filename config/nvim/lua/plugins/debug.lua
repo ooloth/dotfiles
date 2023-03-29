@@ -7,7 +7,7 @@ local mason_nvim_dap = require('plugins.dap.mason-nvim-dap')
 -- local dap_ui = require('plugins.dap.dap-ui')
 
 return {
-  -- step 1: automatically install required underlying system-level debuggers
+  -- 1. automatically install necessary debuggers (not vim-related)
   mason_nvim_dap,
   -- dap,
   -- javascript,
