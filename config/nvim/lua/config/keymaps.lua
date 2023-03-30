@@ -60,8 +60,8 @@ set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with
 -- "debug" (see debug.lua)
 -- "explorer" (see neo-tree.lua)
 
--- "find" (see telescope.lua)
-del('n', '<leader>fn')
+-- "find"
+set('n', '<leader>fn', '<cmd>Telescope noice<cr>')
 
 -- "git" (see git.lua)
 set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })

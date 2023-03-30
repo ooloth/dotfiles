@@ -36,9 +36,6 @@ return {
         -- '<leader>fl' = 'Links in buffer' (see urlview.lua)
         { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
         { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
-        { '<leader>fn', '<cmd>Telescope noice<cr>', desc = 'Notification' },
-
-        -- '<leader>fn' = 'Notifications' (see keymaps.lua)
         { '<leader>fo', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
         { '<leader>fr', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent file' },
         { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
