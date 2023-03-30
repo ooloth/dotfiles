@@ -1,6 +1,3 @@
-# See: https://stackoverflow.com/questions/1371261/get-current-directory-or-folder-name-without-the-full-path
-export CURRENT_DIRECTORY=${PWD##*/}
-
 export EDITOR=nvim
 export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
 export K9SCONFIG=$HOME/.config/k9s

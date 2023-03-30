@@ -22,6 +22,8 @@ if $IS_WORK_LAPTOP; then
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
   function rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app && venv }
 
+  local CURRENT_DIRECTORY=$(basename $PWD)
+
   function activate_venv() {
     # if defined, activate the appropriate venv for this directory
     case $CURRENT_DIRECTORY in
