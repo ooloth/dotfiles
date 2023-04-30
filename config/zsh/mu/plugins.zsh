@@ -1,5 +1,5 @@
 # fnm
-eval "$(fnm env --use-on-cd)" 
+eval "$(fnm env --use-on-cd --log-level=error)" 
 
 # prompt
 # eval "$(starship init zsh)"
