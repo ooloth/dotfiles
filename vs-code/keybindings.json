@@ -1,0 +1,73 @@
+// prettier-ignore-start
+
+[
+  ////////////////
+  // NAVIGATING //
+  ////////////////
+
+   // Workbench navigation
+  { "key": "ctrl+h", "command": "workbench.action.navigateLeft" },
+  { "key": "ctrl+l", "command": "workbench.action.navigateRight" },
+  { "key": "ctrl+j", "command": "workbench.action.navigateDown" },
+  { "key": "ctrl+k", "command": "workbench.action.navigateUp" },
+
+  // Editor navigation
+  { "key": "ctrl+]", "command": "workbench.action.nextEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+[", "command": "workbench.action.previousEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+
+  // Terminal navigation
+  { "key": "ctrl+t", "command": "workbench.action.terminal.toggleTerminal", "when": "terminal.active" },
+  { "key": "ctrl+\\", "command": "workbench.action.terminal.split", "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile" },
+  { "key": "ctrl+h", "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+l", "command": "workbench.action.terminal.focusNextPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+cmd+h", "command": "workbench.action.terminal.resizePaneLeft", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+cmd+l", "command": "workbench.action.terminal.resizePaneRight", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+cmd+j", "command": "workbench.action.terminal.resizePaneDown", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+cmd+k", "command": "workbench.action.terminal.resizePaneUp", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+
+  // Panel navigation
+  { "key": "ctrl+]", "command": "workbench.action.nextPanelView", "when": "panelFocus" },
+  { "key": "ctrl+[", "command": "workbench.action.previousPanelView", "when": "panelFocus" },
+
+  // List navigation
+  { "key": "j", "command": "list.focusDown", "when": "listFocus && !inputFocus" },
+  { "key": "k", "command": "list.focusUp", "when": "listFocus && !inputFocus" },
+  { "key": "l", "command": "list.select", "when": "listFocus && !inputFocus" },
+  { "key": "h", "command": "list.collapse", "when": "listFocus && !inputFocus" },
+  { "key": "ctrl+j", "command": "cursorDown", "when": "textInputFocus" },
+  { "key": "ctrl+k", "command": "cursorUp", "when": "textInputFocus" },
+  { "key": "j", "command": "workbench.action.quickOpenSelectNext", "when": "inQuickOpen && !inputFocus && !whichkeyVisible" },
+  { "key": "k", "command": "workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen && !inputFocus && !whichkeyVisible" },
+  { "key": "ctrl+j", "command": "workbench.action.quickOpenSelectNext", "when": "inQuickOpen" },
+  { "key": "ctrl+k", "command": "workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen" },
+  { "key": "ctrl+j", "command": "selectNextSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
+  { "key": "ctrl+k", "command": "selectPrevSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
+  { "key": "ctrl+j", "command": "selectNextCodeAction", "when": "codeActionMenuVisible" },
+  { "key": "ctrl+k", "command": "selectPrevCodeAction", "when": "codeActionMenuVisible" },
+  { "key": "ctrl+j", "command": "showNextParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+  { "key": "ctrl+k", "command": "showPrevParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+
+  /////////////
+  // EDITING //
+  /////////////
+
+  { "key": "shift+.", "command": "editor.action.indentLines", "when": "editorTextFocus && !editorReadonly" },
+  { "key": "shift+,", "command": "editor.action.outdentLines", "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+r", "command": "redo", "when": "editorTextFocus && vim.active && !inDebugRepl" },
+  { "key": "cmd+n", "command": "extension.advancedNewFile" },
+
+  /////////////
+  // FINDING //
+  /////////////
+
+  { "key": "cmd+s", "command": "searchEditorApplyChanges.apply", "when": "inSearchEditor" },
+
+  ///////////////
+  // WHICH-KEY //
+  ///////////////
+
+  { "key": "space", "command": "whichkey.show", "when": "editorTextFocus && vim.mode != 'Insert'" },
+  { "key": "ctrl+,", "command": "whichkey.show" },
+]
+
+// prettier-ignore-end

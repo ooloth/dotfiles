@@ -1,0 +1,13 @@
+{
+  "Print to console": {
+    "prefix": "clg",
+    "body": ["console.log({ $1 })"],
+    "description": "Log output to console"
+  },
+
+  "Comment": {
+    "prefix": "cmt",
+    "body": ["/*", " *", " * $1", " *", " */"],
+    "description": "Big comment"
+  }
+}
