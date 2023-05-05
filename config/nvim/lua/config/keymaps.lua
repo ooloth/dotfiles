@@ -90,6 +90,7 @@ del('n', '<leader>fT')
 -- "replace" (see spectre.lua + lsp.lua)
 
 -- "save"
+set('n', '<leader><space>', '<cmd>w<cr>', { desc = 'Save' })
 set('n', '<leader>s', '<cmd>w<cr>', { desc = 'Save' })
 del('n', '<c-s>')
 
