@@ -1,8 +1,8 @@
 -- see: https://harrisoncramer.me/debugging-in-neovim/
 
-local mason_nvim_dap = require('plugins.dap.mason-nvim-dap')
-local dap = require('plugins.dap.dap')
-local javascript = require('plugins.dap.javascript')
+-- local mason_nvim_dap = require('plugins.dap.mason-nvim-dap')
+-- local dap = require('plugins.dap.dap')
+-- local javascript = require('plugins.dap.javascript')
 -- local python = require('plugins.dap.python')
 -- local dap_ui = require('plugins.dap.dap-ui')
 
