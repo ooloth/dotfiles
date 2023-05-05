@@ -67,7 +67,7 @@
   ///////////////
 
   { "key": "space", "command": "whichkey.show", "when": "editorTextFocus && vim.mode != 'Insert'" },
-  { "key": "ctrl+,", "command": "whichkey.show" },
+  { "key": "ctrl+,", "command": "whichkey.show" }
 ]
 
 // prettier-ignore-end

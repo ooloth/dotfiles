@@ -238,7 +238,7 @@
     {
       "before": [ "Z", "Z" ],
       "commands": [ ":wq" ]
-    },
+    }
     // {
     //   "before": ["<leader>", "<leader>"],
     //   "commands": ["workbench.action.showCommands"]
@@ -338,13 +338,13 @@
       { "key": "w", "name": "Open active in new window", "command": "workbench.action.files.showOpenedFileInNewWindow", "type": "command" },
       { "key": "s", "name": "Save file", "command": "workbench.action.files.save", "type": "command" },
       { "key": "S", "name": "Save all files", "command": "workbench.action.files.saveAll", "type": "command" },
-      { "key": "r", "name": "Open recent", "command": "workbench.action.openRecent", "type": "command", },
+      { "key": "r", "name": "Open recent", "command": "workbench.action.openRecent", "type": "command" },
       { "key": "R", "name": "Rename file", "commands": [ "workbench.files.action.showActiveFileInExplorer", "renameFile" ], "type": "commands" },
       { "key": "t", "name": "Show tree/explorer view", "command": "workbench.view.explorer", "type": "command" },
       { "key": "T", "name": "Show active file in tree/explorer view", "command": "workbench.files.action.showActiveFileInExplorer", "type": "command" },
       { "key": "y", "name": "Copy path of active file", "command": "workbench.action.files.copyPathOfActiveFile", "type": "command" },
       { "key": "o", "name": "Open with", "command": "explorer.openWith", "type": "command" },
-      { "key": "l", "name": "Change file language", "command": "workbench.action.editor.changeLanguageMode", "type": "command" },
+      { "key": "l", "name": "Change file language", "command": "workbench.action.editor.changeLanguageMode", "type": "command" }
     ]},
     { "key": "g", "name": "+Git", "type": "bindings", "bindings": [
       { "key": "b", "name": "Checkout", "command": "git.checkout", "type": "command" },
@@ -385,7 +385,7 @@
       { "key": "r", "name": "Show remote explorer", "command": "workbench.view.remote", "type": "command" },
       { "key": "x", "name": "Show extensions", "command": "workbench.view.extensions", "type": "command" },
       { "key": "p", "name": "Show problem", "command": "workbench.actions.view.problems", "type": "command" },
-      { "key": "o", "name": "Show output", "command": "workbench.action.output.toggleOutput", "type": "command" },
+      { "key": "o", "name": "Show output", "command": "workbench.action.output.toggleOutput", "type": "command" }
       // { "key": "d", "name": "Show debug console", "command": "workbench.debug.action.toggleRepl", "type": "command" }
     ]},
     { "key": "t", "name": "+Toggles", "type": "bindings", "bindings": [
