@@ -19,8 +19,7 @@ return {
     },
     keys = function() -- replace all default keymaps
       return {
-        { '<leader><space>', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent files' },
-        -- { '<leader><space>', Util.telescope('files'), desc = 'Files' },
+        -- { '<leader><space>', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent files' },
         { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Search buffer' },
         { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
         -- "find"
@@ -60,10 +59,10 @@ return {
     opts = {
       defaults = {
         layout_config = {
-          flex = { width = 0.98, height = 0.97, preview_width = 0.55 },
-          horizontal = { width = 0.98, height = 0.97, preview_width = 0.55 },
+          flex = { width = 0.98, height = 0.97, preview_width = 0.5 },
+          horizontal = { width = 0.98, height = 0.97, preview_width = 0.5 },
           -- prompt_position = 'top',
-          vertical = { width = 0.98, height = 0.97, preview_width = 0.55 },
+          vertical = { width = 0.98, height = 0.97, preview_width = 0.5 },
         },
         mappings = {
           i = {
