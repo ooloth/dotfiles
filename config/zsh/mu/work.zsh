@@ -22,9 +22,10 @@ if $IS_WORK_LAPTOP; then
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
   function rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app && venv }
 
-  local CURRENT_DIRECTORY=$(basename $PWD)
 
   function activate_venv() {
+    local CURRENT_DIRECTORY=$(basename $PWD)
+
     # if defined, activate the appropriate venv for this directory
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
@@ -42,6 +43,8 @@ if $IS_WORK_LAPTOP; then
   activate_venv
 
   function run() {
+    local CURRENT_DIRECTORY=$(basename $PWD)
+
     case $CURRENT_DIRECTORY in
       dash-phenoapp-v2 | phenoapp) pa && python phenoapp/app.py ;;
       react-app)                   ns ;;
