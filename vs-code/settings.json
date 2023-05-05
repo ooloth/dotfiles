@@ -31,7 +31,7 @@
   "editor.formatOnSaveMode": "file",
   "editor.guides.indentation": false,
   "editor.inlineSuggest.enabled": true,
-  "editor.lineHeight": 1.35,
+  "editor.lineHeight": 1.4,
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": false,
@@ -99,7 +99,7 @@
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
   "terminal.integrated.fontSize": 14,
-  "terminal.integrated.lineHeight": 1.3,
+  "terminal.integrated.lineHeight": 1.35,
   "terminal.integrated.scrollback": 10000,
   "terminal.integrated.tabs.enabled": false,
   "todohighlight.keywords": [
@@ -229,6 +229,7 @@
     // }
   ],
   "whichkey.bindings": [
+    // see: https://vspacecode.github.io/docs/whichkey/reference
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
     { "key": ".", "name": "Repeat most recent action", "command": "whichkey.repeatMostRecent", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
@@ -430,6 +431,12 @@
   "window.newWindowDimensions": "inherit",
   "workbench.activityBar.visible": false,
   "workbench.colorCustomizations": {
+    "[Dracula]": {
+      // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
+      "editorGroupHeader.tabsBackground": "#21222C",
+      // "statusBar.background": "#282A36"
+      "statusBar.background": "#21222C"
+    },
     "[Moonlight II]": {
       // "editorCursor.foreground": "#ff757f",
       "editorCursor.background": "#000000",
