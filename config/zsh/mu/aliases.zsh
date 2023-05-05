@@ -22,6 +22,7 @@ alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 function nig() {
   npm install --location=global \
+    @githubnext/github-copilot-cli \
     bash-language-server \
     cssmodules-language-server \
     dockerfile-language-server-nodejs \
