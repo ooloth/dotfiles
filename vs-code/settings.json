@@ -486,6 +486,7 @@
     { "key": "7", "name": "Focus 7th editor group", "command": "workbench.action.focusSeventhEditorGroup", "type": "command" },
     { "key": "8", "name": "Focus 8th editor group", "command": "workbench.action.focusEighthEditorGroup", "type": "command" }
   ],
+  "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
   "workbench.activityBar.visible": false,
   "workbench.colorTheme": "Dracula",
@@ -494,6 +495,7 @@
   "workbench.editor.wrapTabs": true,
   "workbench.fontAliasing": "auto",
   "workbench.iconTheme": "eq-material-theme-icons-palenight",
+  "workbench.layoutControl.enabled": false,
   "workbench.panel.opensMaximized": "always",
   "workbench.preferredDarkColorTheme": "Gruvbox Dark Medium",
   "workbench.sideBar.location": "right",
