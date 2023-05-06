@@ -399,19 +399,6 @@
       { "key": "o", "name": "Show output", "command": "workbench.action.output.toggleOutput", "type": "command" }
       // { "key": "d", "name": "Show debug console", "command": "workbench.debug.action.toggleRepl", "type": "command" }
     ]},
-    { "key": "t", "name": "+Toggles", "type": "bindings", "bindings": [
-      { "key": "b", "name": "Toggle side bar visibility", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
-      // { "key": "c", "name": "Toggle find case sensitive", "command": "toggleFindCaseSensitive", "type": "command" },
-      { "key": "j", "name": "Toggle panel visibility", "command": "workbench.action.togglePanel", "type": "command" },
-      { "key": "F", "name": "Toggle full screen", "command": "workbench.action.toggleFullScreen", "type": "command" },
-      { "key": "s", "name": "Select theme", "command": "workbench.action.selectTheme", "type": "command" },
-      { "key": "m", "name": "Toggle maximized panel", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
-      { "key": "t", "name": "Toggle tool/activity bar visibility", "command": "workbench.action.toggleActivityBarVisibility", "type": "command" },
-      { "key": "T", "name": "Toggle tab visibility", "command": "workbench.action.toggleTabsVisibility", "type": "command" },
-      // { "key": "w", "name": "Toggle ignore trim whitespace in diff", "command": "toggle.diff.ignoreTrimWhitespace", "type": "command" },
-      { "key": "w", "name": "Toggle word wrap", "command": "editor.action.toggleWordWrap", "type": "command" },
-      { "key": "z", "name": "Toggle zen mode", "command": "workbench.action.toggleZenMode", "type": "command" }
-    ]},
     { "key": "w", "name": "+Window", "type": "bindings", "bindings": [
       { "key": "W", "name": "Focus previous editor group", "command": "workbench.action.focusPreviousGroup", "type": "command" },
       { "key": "-", "name": "Split editor below", "command": "workbench.action.splitEditorDown", "type": "command" },
