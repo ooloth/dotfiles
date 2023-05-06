@@ -101,6 +101,11 @@
     "**/tmp": true
   },
   "security.workspace.trust.untrustedFiles": "open",
+  "settings.cycle": [
+    // Referenced in whichkey.bindings
+    { "id": "lineNumbers", "values": [ { "editor.lineNumbers": "on", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "off", "vim.smartRelativeLine": false } ] },
+    { "id": "relativeLineNumbers", "values": [ { "editor.lineNumbers": "relative", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "on", "vim.smartRelativeLine": false } ] }
+  ],
   "tailwindCSS.emmetCompletions": true,
   "terminal.integrated.cursorBlinking": false,
   "terminal.integrated.defaultProfile.osx": "zsh",
