@@ -302,24 +302,6 @@
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
     { "key": ".", "name": "Repeat most recent action", "command": "whichkey.repeatMostRecent", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
-        { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
-      { "key": "a", "name": "Activity bar (toggle)", "command": "workbench.action.toggleActivityBarVisibility", "type": "command" },
-      { "key": "b", "name": "Sidebar (toggle)", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
-      { "key": "c", "name": "Color theme", "command": "workbench.action.selectTheme", "type": "command" },
-      { "key": "f", "name": "Full screen (toggle)", "command": "workbench.action.toggleFullScreen", "type": "command" },
-      { "key": "l", "name": "Line numbers (toggle)", "command": "settings.cycle.lineNumbers", "type": "command" },
-      { "key": "r", "name": "Relative line numbers (toggle)", "command": "settings.cycle.relativeLineNumbers", "type": "command" },
-      { "key": "m", "name": "Maximized panel (toggle)", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
-      { "key": "p", "name": "Panel (toggle)", "command": "workbench.action.togglePanel", "type": "command" },
-      { "key": "s", "name": "Statusbar (toggle)", "command": "workbench.action.toggleStatusbarVisibility", "type": "command" },
-      { "key": "t", "name": "Tabs (toggle)", "command": "workbench.action.toggleTabsVisibility", "type": "command" },
-      { "key": "w", "name": "Word wrap (toggle)", "command": "editor.action.toggleWordWrap", "type": "command" },
-      { "key": "z", "name": "Zen mode (toggle)", "command": "workbench.action.toggleZenMode", "type": "command" }
-    ]},
-
-    { "key": "-", "name": "------------------", "command": " ", "type": "command" },
-
-    // { "key": "\t", "name": "Last editor", "commands": [ "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup", "list.select" ], "type": "commands" },
     { "key": "b", "name": "+Buffers/Editors", "type": "bindings", "bindings": [
       { "key": "b", "name": "Show all buffers/editors", "command": "workbench.action.showAllEditors", "type": "command" },
       { "key": "B", "name": "Show all buffers/editors in active group", "command": "workbench.action.showEditorsInActiveGroup", "type": "command" },
@@ -358,7 +340,44 @@
       { "key": "l", "name": "List errors", "command": "workbench.actions.view.problems", "type": "command" },
       { "key": "n", "name": "Next error", "command": "editor.action.marker.next", "type": "command" },
       { "key": "p", "name": "Previous error", "command": "editor.action.marker.prev", "type": "command" }
+    { "key": "e", "name": "+Editor", "type": "bindings", "bindings": [
+      { "key": "a", "name": "Show all buffers/editors", "command": "workbench.action.showAllEditors", "type": "command" },
+      { "key": "A", "name": "Show all buffers/editors in active group", "command": "workbench.action.showEditorsInActiveGroup", "type": "command" },
+      { "key": "d", "name": "Close active editor", "command": "workbench.action.closeActiveEditor", "type": "command" },
+      { "key": "h", "name": "Move editor into left group", "command": "workbench.action.moveEditorToLeftGroup", "type": "command" },
+      { "key": "l", "name": "Move editor into right group", "command": "workbench.action.moveEditorToRightGroup", "type": "command" },
+      { "key": "j", "name": "Move editor into below group", "command": "workbench.action.moveEditorToBelowGroup", "type": "command" },
+      { "key": "k", "name": "Move editor into above group", "command": "workbench.action.moveEditorToAboveGroup", "type": "command" },
+      { "key": "n", "name": "New untitled editor", "command": "workbench.action.files.newUntitledFile", "type": "command" },
+      { "key": "o", "name": "Only (close other editors)", "command": "workbench.action.closeOtherEditors", "type": "command" },
+      { "key": "p", "name": "Paste clipboard to editor", "commands": [ "editor.action.selectAll", "editor.action.clipboardPasteAction" ], "type": "commands" },
+      { "key": "u", "name": "Reopen closed editor", "command": "workbench.action.reopenClosedEditor", "type": "command" },
+      { "key": "y", "name": "Copy editor to clipboard", "commands": [ "editor.action.selectAll", "editor.action.clipboardCopyAction", "cancelSelection" ], "type": "commands" }
     ]},
+    { "key": "p", "name": "+Problems", "type": "bindings", "bindings": [
+      { "key": "a", "name": "All errors", "command": "workbench.actions.view.problems", "type": "command" },
+      { "key": "n", "name": "Next error", "command": "editor.action.marker.nextInFiles", "type": "command" },
+      { "key": "p", "name": "Previous error", "command": "editor.action.marker.prevInFiles", "type": "command" }
+    ]},
+    { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
+      { "key": "a", "name": "Activity bar (toggle)", "command": "workbench.action.toggleActivityBarVisibility", "type": "command" },
+      { "key": "b", "name": "Sidebar (toggle)", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
+      { "key": "c", "name": "Color theme", "command": "workbench.action.selectTheme", "type": "command" },
+      { "key": "f", "name": "Full screen (toggle)", "command": "workbench.action.toggleFullScreen", "type": "command" },
+      { "key": "l", "name": "Line numbers (toggle)", "command": "settings.cycle.lineNumbers", "type": "command" },
+      { "key": "r", "name": "Relative line numbers (toggle)", "command": "settings.cycle.relativeLineNumbers", "type": "command" },
+      { "key": "m", "name": "Maximized panel (toggle)", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
+      { "key": "p", "name": "Panel (toggle)", "command": "workbench.action.togglePanel", "type": "command" },
+      { "key": "s", "name": "Statusbar (toggle)", "command": "workbench.action.toggleStatusbarVisibility", "type": "command" },
+      { "key": "t", "name": "Tabs (toggle)", "command": "workbench.action.toggleTabsVisibility", "type": "command" },
+      { "key": "w", "name": "Word wrap (toggle)", "command": "editor.action.toggleWordWrap", "type": "command" },
+      { "key": "z", "name": "Zen mode (toggle)", "command": "workbench.action.toggleZenMode", "type": "command" }
+    ]},
+
+    { "key": "-", "name": "------------------", "command": " ", "type": "command" },
+
+    // { "key": "\t", "name": "Last editor", "commands": [ "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup", "list.select" ], "type": "commands" },
+
     { "key": "f", "name": "+File", "type": "bindings", "bindings": [
       { "key": "f", "name": "Open file/folder", "command": "whichkey.openFile", "type": "command" },
       { "key": "n", "name": "New Untitled", "command": "workbench.action.files.newUntitledFile", "type": "command" },
