@@ -129,9 +129,11 @@
   "vim.hlsearch": true,
   "vim.insertModeKeyBindingsNonRecursive": [],
   "vim.normalModeKeyBindingsNonRecursive": [
+    { "before": [ "g", "a" ], "commands": [ "editor.action.quickFix" ] },
     { "before": [ "Y" ], "after": [ "y", "$" ] },
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
+
     // {
     //   "before": ["<leader>", "b"],
     //   "commands": ["workbench.action.toggleSidebarVisibility"]
@@ -257,11 +259,6 @@
           - t = terminal
       - [ = previous...
           - (same as above)
-      - a = view code actions (quick fixes)
-      - a = actions...
-          - a = actions for current line
-          - n = next marker
-          - p = previous marker
       - d = debugging...
       - e = errors/problems...
         - n = next (editor.action.marker.nextInFiles)
