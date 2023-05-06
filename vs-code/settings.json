@@ -506,6 +506,8 @@
   "workbench.colorCustomizations": {
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
+      "activityBar.background": "#21222C",
+      // "activityBar.background": "#282A36",
       "editorGroupHeader.tabsBackground": "#21222C",
       // "statusBar.background": "#282A36"
       "statusBar.background": "#21222C"
