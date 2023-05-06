@@ -30,6 +30,8 @@
   { "key": "cmd+ctrl+k", "command": "workbench.action.terminal.resizePaneUp", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
 
   // Panel navigation
+  { "key": "cmd+ctrl+]", "command": "workbench.action.nextPanelView", "when": "panelFocus" },
+  { "key": "cmd+ctrl+[", "command": "workbench.action.previousPanelView", "when": "panelFocus" },
 
   // List navigation
   { "key": "j", "command": "list.focusDown", "when": "listFocus && !inputFocus" },
