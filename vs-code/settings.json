@@ -4,6 +4,9 @@
   "[javascript][json][jsonc][typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[jsonc]": {
+    "editor.formatOnSave": false
+  },
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
