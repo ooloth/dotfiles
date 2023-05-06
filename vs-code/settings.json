@@ -231,6 +231,72 @@
   ],
   "whichkey.bindings": [
     // see: https://vspacecode.github.io/docs/whichkey/reference
+    /*
+      Keyboard shortcut ideas (multiple times or very common; chords):
+      - C-] = next editor/terminal
+      - C-[ = previous editor/terminal
+      - C-t = toggle view terminal
+      - C-p = toggle view problems
+
+      Vim ideas (multiple times or very common; sequences)
+      - ] = next...
+          - c = change/conflict (depending on if in editor vs diff vs merge conflict view)
+      - [ = previous...
+          - (same as above)
+
+      WhichKey ideas (one shot or uncommon):
+      - ] = next...
+          - e = editor
+          - g = editor group
+          - p = problem in files
+          - t = terminal
+      - [ = previous...
+          - (same as above)
+      - a = view code actions (quick fixes)
+      - a = actions...
+          - a = actions for current line
+          - n = next marker
+          - p = previous marker
+      - d = debugging...
+      - e = errors/problems...
+        - n = next (editor.action.marker.nextInFiles)
+        - p = previous (editor.action.marker.previousInFiles)
+      - f = finding/searching...
+      - folding...
+      - git (including gitlens, lazygit, etc.)
+      - new...
+        - file
+        - terminal
+      - o = open...
+        - e = explorer
+        - f = new file
+        - t = terminal
+        - x = extensions
+      - p = problems...
+        - a = all
+        - n = next
+        - p = previous
+      - r = replace...
+      - s = settings/ui...
+        - l = line numbers (toggle)
+        - w = word wrap (toggle)
+      - v = view...
+        - a = activity bar
+        - b = sidebar
+        - c = comments
+        - d = debugger
+        - e = explorer
+        - f = find
+        - F = find and replace
+        - o = output
+        - p = problems
+        - P = panel
+        - s = status bar
+        - t = terminal
+        - x = extensions
+        - z = zen mode
+
+    */
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
     { "key": ".", "name": "Repeat most recent action", "command": "whichkey.repeatMostRecent", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
@@ -399,22 +465,22 @@
         { "key": "N", "name": "Previous Conflict", "command": "merge-conflict.previous", "type": "command" }
       ]}
     ]},
-    { "key": "z", "name": "+Zoom/Fold", "type": "bindings", "bindings": [
-      { "key": ".", "name": "+Fold", "type": "bindings", "bindings": [
-        { "key": "a", "name": "Toggle: around a point", "command": "editor.toggleFold", "type": "command" },
-        { "key": "c", "name": "Close: at a point", "command": "editor.fold", "type": "command" },
-        { "key": "b", "name": "Close: all block comments", "command": "editor.foldAllBlockComments", "type": "command" },
-        { "key": "g", "name": "Close: all regions", "command": "editor.foldAllMarkerRegions", "type": "command" },
-        { "key": "m", "name": "Close: all", "command": "editor.foldAll", "type": "command" },
-        { "key": "o", "name": "Open: at a point", "command": "editor.unfold", "type": "command" },
-        { "key": "O", "name": "Open: recursively", "command": "editor.unfoldRecursively", "type": "command" },
-        { "key": "G", "name": "Open: all regions", "command": "editor.unfoldAllMarkerRegions", "type": "command" },
-        { "key": "r", "name": "Open: all", "command": "editor.unfoldAll", "type": "command" }
-      ]},
-      { "key": "f", "name": "Frame zooming transient", "command": "whichkey.showTransient", "args": "whichkey.transient.frameZooming", "type": "command" },
-      { "key": "x", "name": "Font zooming transient", "command": "whichkey.showTransient", "args": "whichkey.transient.fontZooming", "type": "command" },
-      { "key": "i", "name": "Image zooming transient", "command": "whichkey.showTransient", "args": "whichkey.transient.imageZooming", "type": "command" }
-    ]},
+    // { "key": "z", "name": "+Zoom/Fold", "type": "bindings", "bindings": [
+    //   { "key": ".", "name": "+Fold", "type": "bindings", "bindings": [
+    //     { "key": "a", "name": "Toggle: around a point", "command": "editor.toggleFold", "type": "command" },
+    //     { "key": "c", "name": "Close: at a point", "command": "editor.fold", "type": "command" },
+    //     { "key": "b", "name": "Close: all block comments", "command": "editor.foldAllBlockComments", "type": "command" },
+    //     { "key": "g", "name": "Close: all regions", "command": "editor.foldAllMarkerRegions", "type": "command" },
+    //     { "key": "m", "name": "Close: all", "command": "editor.foldAll", "type": "command" },
+    //     { "key": "o", "name": "Open: at a point", "command": "editor.unfold", "type": "command" },
+    //     { "key": "O", "name": "Open: recursively", "command": "editor.unfoldRecursively", "type": "command" },
+    //     { "key": "G", "name": "Open: all regions", "command": "editor.unfoldAllMarkerRegions", "type": "command" },
+    //     { "key": "r", "name": "Open: all", "command": "editor.unfoldAll", "type": "command" }
+    //   ]},
+    //   { "key": "f", "name": "Frame zooming transient", "command": "whichkey.showTransient", "args": "whichkey.transient.frameZooming", "type": "command" },
+    //   { "key": "x", "name": "Font zooming transient", "command": "whichkey.showTransient", "args": "whichkey.transient.fontZooming", "type": "command" },
+    //   { "key": "i", "name": "Image zooming transient", "command": "whichkey.showTransient", "args": "whichkey.transient.imageZooming", "type": "command" }
+    // ]},
     { "key": "!", "name": "Show terminal", "command": "workbench.action.terminal.focus", "type": "command" },
     { "key": "/", "name": "Search in a project", "command": "workbench.action.findInFiles", "type": "command" },
     { "key": "*", "name": "Search in a project with a selection", "commands": [ "editor.action.addSelectionToNextFindMatch", "workbench.action.findInFiles" ], "type": "commands" },
@@ -459,7 +525,8 @@
   "workbench.startupEditor": "newUntitledFile",
   "yaml.format.enable": true,
   "zenMode.centerLayout": false,
-  "zenMode.fullScreen": false
+  "zenMode.fullScreen": false,
+  "editor.renderLineHighlight": "gutter"
 }
 
 // prettier-ignore-end
