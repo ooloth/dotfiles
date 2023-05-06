@@ -15,7 +15,6 @@
     "editor.formatOnSave": false,
     "editor.tabSize": 2
   },
-  "breadcrumbs.enabled": false,
   "css.lint.unknownAtRules": "ignore",
   "debug.console.fontFamily": "editor",
   "debug.console.fontSize": 0,
@@ -36,11 +35,9 @@
   "editor.guides.indentation": false,
   "editor.inlineSuggest.enabled": true,
   "editor.lineHeight": 1.4,
-  "editor.lineNumbers": "off",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": false,
-  "editor.renderLineHighlight": "gutter",
   "editor.stickyScroll.enabled": true,
   "editor.suggest.preview": true,
   "editor.suggest.showStatusBar": true,
@@ -519,7 +516,6 @@
   ],
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
-  "workbench.activityBar.visible": false,
   "workbench.colorCustomizations": {
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
@@ -551,7 +547,11 @@
   "yaml.format.enable": true,
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
-  "editor.renderLineHighlight": "gutter"
+  "editor.renderLineHighlight": "gutter",
+  "breadcrumbs.enabled": false,
+  "zenMode.hideStatusBar": true,
+  "editor.lineNumbers": "off",
+  "workbench.activityBar.visible": false
 }
 
 // prettier-ignore-end
