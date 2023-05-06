@@ -259,12 +259,7 @@
           - t = terminal
       - [ = previous...
           - (same as above)
-      - d = debugging...
-      - e = errors/problems...
-        - n = next (editor.action.marker.nextInFiles)
-        - p = previous (editor.action.marker.previousInFiles)
       - f = finding/searching...
-      - folding...
       - git (including gitlens, lazygit, etc.)
       - new...
         - file
@@ -274,17 +269,10 @@
         - f = new file
         - t = terminal
         - x = extensions
-      - p = problems...
-        - a = all
-        - n = next
-        - p = previous
       - r = replace...
-      - s = settings/ui...
-        - l = line numbers (toggle)
-        - w = word wrap (toggle)
+      - s = search...
+        - ...
       - v = view...
-        - a = activity bar
-        - b = sidebar
         - c = comments
         - d = debugger
         - e = explorer
@@ -293,31 +281,13 @@
         - o = output
         - p = problems
         - P = panel
-        - s = status bar
         - t = terminal
         - x = extensions
-        - z = zen mode
 
     */
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
     { "key": ".", "name": "Repeat most recent action", "command": "whichkey.repeatMostRecent", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
-    { "key": "b", "name": "+Buffers/Editors", "type": "bindings", "bindings": [
-      { "key": "b", "name": "Show all buffers/editors", "command": "workbench.action.showAllEditors", "type": "command" },
-      { "key": "B", "name": "Show all buffers/editors in active group", "command": "workbench.action.showEditorsInActiveGroup", "type": "command" },
-      { "key": "d", "name": "Close active editor", "command": "workbench.action.closeActiveEditor", "type": "command" },
-      { "key": "H", "name": "Move editor into left group", "command": "workbench.action.moveEditorToLeftGroup", "type": "command" },
-      { "key": "J", "name": "Move editor into below group", "command": "workbench.action.moveEditorToBelowGroup", "type": "command" },
-      { "key": "K", "name": "Move editor into above group", "command": "workbench.action.moveEditorToAboveGroup", "type": "command" },
-      { "key": "L", "name": "Move editor into right group", "command": "workbench.action.moveEditorToRightGroup", "type": "command" },
-      { "key": "M", "name": "Close other editors", "command": "workbench.action.closeOtherEditors", "type": "command" },
-      { "key": "n", "name": "Next editor", "command": "workbench.action.nextEditor", "type": "command" },
-      { "key": "p", "name": "Previous editor", "command": "workbench.action.previousEditor", "type": "command" },
-      { "key": "N", "name": "New untitled editor", "command": "workbench.action.files.newUntitledFile", "type": "command" },
-      { "key": "u", "name": "Reopen closed editor", "command": "workbench.action.reopenClosedEditor", "type": "command" },
-      { "key": "P", "name": "Paste clipboard to buffer", "commands": [ "editor.action.selectAll", "editor.action.clipboardPasteAction" ], "type": "commands" },
-      { "key": "Y", "name": "Copy buffer to clipboard", "commands": [ "editor.action.selectAll", "editor.action.clipboardCopyAction", "cancelSelection" ], "type": "commands" }
-    ]},
     { "key": "d", "name": "+Debug", "type": "bindings", "bindings": [
       { "key": "d", "name": "Start debug", "command": "workbench.action.debug.start", "type": "command" },
       { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
@@ -335,11 +305,6 @@
       { "key": "w", "name": "Focus on watch window", "command": "workbench.debug.action.focusWatchView", "type": "command" },
       { "key": "W", "name": "Add to watch", "command": "editor.debug.action.selectionToWatch", "type": "command" }
     ]},
-    { "key": "e", "name": "+Errors", "type": "bindings", "bindings": [
-      { "key": ".", "name": "Error transient", "command": "whichkey.showTransient", "args": "whichkey.transient.error", "type": "command" },
-      { "key": "l", "name": "List errors", "command": "workbench.actions.view.problems", "type": "command" },
-      { "key": "n", "name": "Next error", "command": "editor.action.marker.next", "type": "command" },
-      { "key": "p", "name": "Previous error", "command": "editor.action.marker.prev", "type": "command" }
     { "key": "e", "name": "+Editor", "type": "bindings", "bindings": [
       { "key": "a", "name": "Show all buffers/editors", "command": "workbench.action.showAllEditors", "type": "command" },
       { "key": "A", "name": "Show all buffers/editors in active group", "command": "workbench.action.showEditorsInActiveGroup", "type": "command" },
