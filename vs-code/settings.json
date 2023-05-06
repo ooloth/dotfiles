@@ -12,6 +12,7 @@
     "editor.formatOnSave": false,
     "editor.tabSize": 2
   },
+  "breadcrumbs.enabled": false,
   "css.lint.unknownAtRules": "ignore",
   "debug.console.fontFamily": "editor",
   "debug.console.fontSize": 0,
@@ -32,9 +33,11 @@
   "editor.guides.indentation": false,
   "editor.inlineSuggest.enabled": true,
   "editor.lineHeight": 1.4,
+  "editor.lineNumbers": "off",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": false,
+  "editor.renderLineHighlight": "gutter",
   "editor.stickyScroll.enabled": true,
   "editor.suggest.preview": true,
   "editor.suggest.showStatusBar": true,
@@ -175,11 +178,12 @@
   ],
   "vim.searchHighlightColor": "#65bcff",
   "vim.searchHighlightTextColor": "black",
-  "vim.smartRelativeLine": true,
+  "vim.smartRelativeLine": false,
   "vim.useSystemClipboard": true,
   "vim.visualModeKeyBindingsNonRecursive": [
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
+
     // {
     //   "before": ["<leader>", "<leader>"],
     //   "commands": ["workbench.action.showCommands"]
