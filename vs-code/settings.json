@@ -528,7 +528,6 @@
   "yaml.format.enable": true,
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
-  "editor.renderLineHighlight": "gutter",
   "breadcrumbs.enabled": false,
   "zenMode.hideStatusBar": true,
   "editor.lineNumbers": "off",
