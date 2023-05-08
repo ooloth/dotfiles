@@ -1,3 +1,5 @@
+// see: https://code.visualstudio.com/api/references/when-clause-contexts
+
 // prettier-ignore-start
 
 [
@@ -20,14 +22,16 @@
   { "key": "ctrl+\\", "command": "workbench.action.terminal.split", "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile" },
   { "key": "ctrl+h", "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
   { "key": "ctrl+l", "command": "workbench.action.terminal.focusNextPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "ctrl+cmd+h", "command": "workbench.action.terminal.resizePaneLeft", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "ctrl+cmd+l", "command": "workbench.action.terminal.resizePaneRight", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "ctrl+cmd+j", "command": "workbench.action.terminal.resizePaneDown", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "ctrl+cmd+k", "command": "workbench.action.terminal.resizePaneUp", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+]", "command": "workbench.action.terminal.focusNext", "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  { "key": "ctrl+[", "command": "workbench.action.terminal.focusPrevious", "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  { "key": "cmd+ctrl+h", "command": "workbench.action.terminal.resizePaneLeft", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "cmd+ctrl+l", "command": "workbench.action.terminal.resizePaneRight", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "cmd+ctrl+j", "command": "workbench.action.terminal.resizePaneDown", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "cmd+ctrl+k", "command": "workbench.action.terminal.resizePaneUp", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
 
   // Panel navigation
-  { "key": "ctrl+]", "command": "workbench.action.nextPanelView", "when": "panelFocus" },
-  { "key": "ctrl+[", "command": "workbench.action.previousPanelView", "when": "panelFocus" },
+  { "key": "cmd+ctrl+]", "command": "workbench.action.nextPanelView", "when": "panelFocus" },
+  { "key": "cmd+ctrl+[", "command": "workbench.action.previousPanelView", "when": "panelFocus" },
 
   // List navigation
   { "key": "j", "command": "list.focusDown", "when": "listFocus && !inputFocus" },
@@ -46,6 +50,19 @@
   { "key": "ctrl+k", "command": "selectPrevCodeAction", "when": "codeActionMenuVisible" },
   { "key": "ctrl+j", "command": "showNextParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
   { "key": "ctrl+k", "command": "showPrevParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+  { "key": "ctrl+n", "command": "-workbench.action.quickOpenSelectNext", "when": "inQuickOpen" },
+  { "key": "ctrl+n", "command": "-cursorDown", "when": "textInputFocus" },
+  { "key": "ctrl+p", "command": "-cursorUp", "when": "textInputFocus" },
+  { "key": "ctrl+n", "command": "-list.focusDown", "when": "listFocus && !inputFocus" },
+  { "key": "ctrl+p", "command": "-list.focusUp", "when": "listFocus && !inputFocus" },
+  { "key": "ctrl+n", "command": "-selectNextCodeAction", "when": "codeActionMenuVisible" },
+  { "key": "ctrl+p", "command": "-selectPrevCodeAction", "when": "codeActionMenuVisible" },
+  { "key": "ctrl+n", "command": "-selectNextSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
+  { "key": "ctrl+p", "command": "-selectPrevSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
+  { "key": "ctrl+n", "command": "-showNextParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+  { "key": "ctrl+p", "command": "-showPrevParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+  { "key": "ctrl+n", "command": "-workbench.action.quickOpenSelectNext", "when": "inQuickOpen" },
+  { "key": "ctrl+p", "command": "-workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen" },
 
   /////////////
   // EDITING //
@@ -67,7 +84,9 @@
   ///////////////
 
   { "key": "space", "command": "whichkey.show", "when": "editorTextFocus && vim.mode != 'Insert'" },
-  { "key": "ctrl+,", "command": "whichkey.show" }
+  { "key": "ctrl+,", "command": "whichkey.show" },
+  { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
+
 ]
 
 // prettier-ignore-end
