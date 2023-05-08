@@ -506,7 +506,7 @@
   "zenMode.fullScreen": false,
   "[python]": {
     "editor.formatOnType": true
-  }
+  },
   "breadcrumbs.enabled": false,
   "zenMode.hideStatusBar": true,
   "editor.lineNumbers": "off",
