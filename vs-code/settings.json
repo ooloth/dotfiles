@@ -458,7 +458,10 @@
   "workbench.startupEditor": "newUntitledFile",
   "yaml.format.enable": true,
   "zenMode.centerLayout": false,
-  "zenMode.fullScreen": false
+  "zenMode.fullScreen": false,
+  "[python]": {
+    "editor.formatOnType": true
+  }
 }
 
 // prettier-ignore-end
