@@ -288,6 +288,7 @@
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
     { "key": ".", "name": "Repeat most recent action", "command": "whichkey.repeatMostRecent", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
+
     { "key": "d", "name": "+Debug", "type": "bindings", "bindings": [
       { "key": "d", "name": "Start debug", "command": "workbench.action.debug.start", "type": "command" },
       { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
@@ -330,11 +331,31 @@
       { "key": "x", "name": "Close all editor groups", "command": "workbench.action.closeAllGroups", "type": "command" },
       { "key": "y", "name": "Copy editor contents to clipboard", "commands": [ "editor.action.selectAll", "editor.action.clipboardCopyAction", "cancelSelection" ], "type": "commands" }
     ]},
+
+    { "key": "f", "name": "+File", "type": "bindings", "bindings": [
+      { "key": "d", "name": "Duplicate", "command": "fileutils.duplicateFile", "type": "command" },
+      { "key": "D", "name": "Delete", "command": "fileutils.removeFile", "type": "command" },
+      { "key": "e", "name": "Explore file tree", "command": "workbench.view.explorer", "type": "command" },
+      { "key": "f", "name": "Find", "command": "workbench.action.quickOpen", "type": "command" },
+      { "key": "l", "name": "Change language", "command": "workbench.action.editor.changeLanguageMode", "type": "command" },
+      { "key": "m", "name": "Change language", "command": "fileutils.moveFile", "type": "command" },
+      { "key": "n", "name": "New", "command": "extension.advancedNewFile", "type": "command" },
+      { "key": "N", "name": "New untitled", "command": "workbench.action.files.newUntitledFile", "type": "command" },
+      { "key": "O", "name": "Open from Finder", "command": "whichkey.openFile", "type": "command" },
+      { "key": "R", "name": "Rename file", "commands": [ "workbench.files.action.showActiveFileInExplorer", "renameFile" ], "type": "commands" },
+      { "key": "s", "name": "Save", "command": "workbench.action.files.save", "type": "command" },
+      { "key": "S", "name": "Save all", "command": "workbench.action.files.saveAll", "type": "command" },
+      { "key": "w", "name": "Open in new window", "command": "workbench.action.files.showOpenedFileInNewWindow", "type": "command" },
+      { "key": "y", "name": "Copy name", "command": "fileutils.copyFileName", "type": "command" },
+      { "key": "Y", "name": "Copy full path", "command": "workbench.action.files.copyPathOfActiveFile", "type": "command" }
+    ]},
+
     { "key": "p", "name": "+Problems", "type": "bindings", "bindings": [
       { "key": "a", "name": "All errors", "command": "workbench.actions.view.problems", "type": "command" },
       { "key": "n", "name": "Next error", "command": "editor.action.marker.nextInFiles", "type": "command" },
       { "key": "p", "name": "Previous error", "command": "editor.action.marker.prevInFiles", "type": "command" }
     ]},
+
     { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
       { "key": "a", "name": "Activity bar (toggle)", "command": "workbench.action.toggleActivityBarVisibility", "type": "command" },
       { "key": "b", "name": "Sidebar (toggle)", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
@@ -352,22 +373,6 @@
 
     { "key": "-", "name": "------------------", "command": " ", "type": "command" },
 
-    // { "key": "\t", "name": "Last editor", "commands": [ "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup", "list.select" ], "type": "commands" },
-
-    { "key": "f", "name": "+File", "type": "bindings", "bindings": [
-      { "key": "f", "name": "Open file/folder", "command": "whichkey.openFile", "type": "command" },
-      { "key": "n", "name": "New Untitled", "command": "workbench.action.files.newUntitledFile", "type": "command" },
-      { "key": "w", "name": "Open active in new window", "command": "workbench.action.files.showOpenedFileInNewWindow", "type": "command" },
-      { "key": "s", "name": "Save file", "command": "workbench.action.files.save", "type": "command" },
-      { "key": "S", "name": "Save all files", "command": "workbench.action.files.saveAll", "type": "command" },
-      { "key": "r", "name": "Open recent", "command": "workbench.action.openRecent", "type": "command" },
-      { "key": "R", "name": "Rename file", "commands": [ "workbench.files.action.showActiveFileInExplorer", "renameFile" ], "type": "commands" },
-      { "key": "t", "name": "Show tree/explorer view", "command": "workbench.view.explorer", "type": "command" },
-      { "key": "T", "name": "Show active file in tree/explorer view", "command": "workbench.files.action.showActiveFileInExplorer", "type": "command" },
-      { "key": "y", "name": "Copy path of active file", "command": "workbench.action.files.copyPathOfActiveFile", "type": "command" },
-      { "key": "o", "name": "Open with", "command": "explorer.openWith", "type": "command" },
-      { "key": "l", "name": "Change file language", "command": "workbench.action.editor.changeLanguageMode", "type": "command" }
-    ]},
     { "key": "g", "name": "+Git", "type": "bindings", "bindings": [
       { "key": "b", "name": "Checkout", "command": "git.checkout", "type": "command" },
       { "key": "c", "name": "Commit", "command": "git.commit", "type": "command" },
