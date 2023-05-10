@@ -306,12 +306,11 @@
       { "key": "w", "name": "Focus on watch window", "command": "workbench.debug.action.focusWatchView", "type": "command" },
       { "key": "W", "name": "Add to watch", "command": "editor.debug.action.selectionToWatch", "type": "command" }
     ]},
+
     { "key": "e", "name": "+Editor", "type": "bindings", "bindings": [
       { "key": "\\", "name": "Split editor right", "command": "workbench.action.splitEditor", "type": "command" },
       { "key": "-", "name": "Split editor below", "command": "workbench.action.splitEditorDown", "type": "command" },
       { "key": "=", "name": "Reset editor group sizes", "command": "workbench.action.evenEditorWidths", "type": "command" },
-      // { "key": "a", "name": "Show all editors", "command": "workbench.action.showAllEditors", "type": "command" },
-      // { "key": "A", "name": "Show all editors in active group", "command": "workbench.action.showEditorsInActiveGroup", "type": "command" },
       { "key": "c", "name": "Combine all editor groups", "command": "workbench.action.joinAllGroups", "type": "command" },
       { "key": "d", "name": "Close active editor", "command": "workbench.action.closeActiveEditor", "type": "command" },
       { "key": "D", "name": "Close editor group", "command": "workbench.action.closeEditorsInGroup", "type": "command" },
@@ -341,8 +340,8 @@
       { "key": "m", "name": "Change language", "command": "fileutils.moveFile", "type": "command" },
       { "key": "n", "name": "New", "command": "extension.advancedNewFile", "type": "command" },
       { "key": "N", "name": "New untitled", "command": "workbench.action.files.newUntitledFile", "type": "command" },
-      { "key": "O", "name": "Open from Finder", "command": "whichkey.openFile", "type": "command" },
-      { "key": "R", "name": "Rename file", "commands": [ "workbench.files.action.showActiveFileInExplorer", "renameFile" ], "type": "commands" },
+      { "key": "o", "name": "Open from Finder", "command": "whichkey.openFile", "type": "command" },
+      { "key": "r", "name": "Rename file", "commands": "fileutils.renameFile", "type": "commands" },
       { "key": "s", "name": "Save", "command": "workbench.action.files.save", "type": "command" },
       { "key": "S", "name": "Save all", "command": "workbench.action.files.saveAll", "type": "command" },
       { "key": "w", "name": "Open in new window", "command": "workbench.action.files.showOpenedFileInNewWindow", "type": "command" },
