@@ -387,15 +387,19 @@
       { "key": "S", "name": "Stage", "command": "git.stage", "type": "command" },
       { "key": "U", "name": "Unstage", "command": "git.unstage", "type": "command" }
     ]},
+
     { "key": "p", "name": "+Project", "type": "bindings", "bindings": [
       { "key": "f", "name": "Find file in project", "command": "workbench.action.quickOpen", "type": "command" },
       { "key": "p", "name": "Switch project", "command": "workbench.action.openRecent", "type": "command" },
+      { "key": "r", "name": "Open recent", "command": "workbench.action.openRecent", "type": "command" },
       { "key": "t", "name": "Show tree/explorer view", "command": "workbench.view.explorer", "type": "command" }
     ]},
+
     { "key": "r", "name": "+Repeat", "type": "bindings", "bindings": [
       { "key": ".", "name": "Repeat recent actions", "command": "whichkey.repeatRecent", "type": "command" }
     ]},
-    { "key": "s", "name": "+Search/Symbol", "type": "bindings", "bindings": [
+
+    { "key": "s", "name": "+Search", "type": "bindings", "bindings": [
       { "key": "e", "name": "Edit symbol", "command": "editor.action.rename", "type": "command" },
       { "key": "h", "name": "Highlight symbol transient", "commands": [ "editor.action.wordHighlight.trigger", "whichkey.showTransient" ], "args": [ null, "whichkey.transient.symbol" ], "type": "commands" },
       { "key": "j", "name": "Jump to symbol in file", "command": "workbench.action.gotoSymbol", "type": "command" },
@@ -406,6 +410,7 @@
       { "key": "R", "name": "Search all references in side bar", "command": "references-view.find", "type": "command" },
       { "key": "s", "name": "Search in current file", "command": "actions.find", "type": "command" }
     ]},
+
     { "key": "S", "name": "+Show", "type": "bindings", "bindings": [
       { "key": "e", "name": "Show explorer", "command": "workbench.view.explorer", "type": "command" },
       { "key": "s", "name": "Show search", "command": "workbench.view.search", "type": "command" },
@@ -417,6 +422,7 @@
       { "key": "o", "name": "Show output", "command": "workbench.action.output.toggleOutput", "type": "command" }
       // { "key": "d", "name": "Show debug console", "command": "workbench.debug.action.toggleRepl", "type": "command" }
     ]},
+
     { "key": "x", "name": "+Text", "type": "bindings", "bindings": [
       // { "key": "i", "name": "Organize Imports", "command": "editor.action.organizeImports", "type": "command" },
       { "key": "r", "name": "Rename symbol", "command": "editor.action.rename", "type": "command" },
@@ -427,15 +433,18 @@
       { "key": "U", "name": "To upper case", "command": "editor.action.transformToUppercase", "type": "command" },
       { "key": "J", "name": "Move lines down transient", "commands": [ "editor.action.moveLinesDownAction", "whichkey.showTransient" ], "args": [ null, "whichkey.transient.lineMoving" ], "type": "commands" },
       { "key": "K", "name": "Move lines up transient", "commands": [ "editor.action.moveLinesUpAction", "whichkey.showTransient" ], "args": [ null, "whichkey.transient.lineMoving" ], "type": "commands" },
+
       { "key": "l", "name": "+Lines", "type": "bindings", "bindings": [
         { "key": "s", "name": "Sort lines in ascending order", "command": "editor.action.sortLinesAscending", "type": "command" },
         { "key": "S", "name": "Sort lines in descending order", "command": "editor.action.sortLinesDescending", "type": "command" },
         { "key": "d", "name": "Duplicate lines down", "command": "editor.action.copyLinesDownAction", "type": "command" },
         { "key": "D", "name": "Duplicate lines up", "command": "editor.action.copyLinesUpAction", "type": "command" }
       ]},
+
       { "key": "d", "name": "+Delete", "type": "bindings", "bindings": [
         { "key": "w", "name": "Delete trailing whitespace", "command": "editor.action.trimTrailingWhitespace", "type": "command" }
       ]},
+
       { "key": "m", "name": "+Merge conflict", "type": "bindings", "bindings": [
         { "key": "b", "name": "Accept both", "command": "merge-conflict.accept.both", "type": "command" },
         { "key": "c", "name": "Accept current", "command": "merge-conflict.accept.current", "type": "command" },
@@ -449,6 +458,7 @@
         { "key": "N", "name": "Previous Conflict", "command": "merge-conflict.previous", "type": "command" }
       ]}
     ]},
+
     // { "key": "z", "name": "+Zoom/Fold", "type": "bindings", "bindings": [
     //   { "key": ".", "name": "+Fold", "type": "bindings", "bindings": [
     //     { "key": "a", "name": "Toggle: around a point", "command": "editor.toggleFold", "type": "command" },
@@ -465,7 +475,6 @@
     //   { "key": "x", "name": "Font zooming transient", "command": "whichkey.showTransient", "args": "whichkey.transient.fontZooming", "type": "command" },
     //   { "key": "i", "name": "Image zooming transient", "command": "whichkey.showTransient", "args": "whichkey.transient.imageZooming", "type": "command" }
     // ]},
-    { "key": "!", "name": "Show terminal", "command": "workbench.action.terminal.focus", "type": "command" },
     { "key": "/", "name": "Search in a project", "command": "workbench.action.findInFiles", "type": "command" },
     { "key": "*", "name": "Search in a project with a selection", "commands": [ "editor.action.addSelectionToNextFindMatch", "workbench.action.findInFiles" ], "type": "commands" },
     { "key": "v", "name": "Smart select/expand region transient", "commands": [ "editor.action.smartSelect.grow", "whichkey.showTransient" ], "args": [ null, "whichkey.transient.smartExpand" ], "type": "commands" },
