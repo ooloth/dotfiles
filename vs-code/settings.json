@@ -289,16 +289,16 @@
     { "key": ".", "name": "Repeat most recent action", "command": "whichkey.repeatMostRecent", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
 
-    { "key": "d", "name": "+Debug", "type": "bindings", "bindings": [
-      { "key": "d", "name": "Start debug", "command": "workbench.action.debug.start", "type": "command" },
+    { "key": "d", "name": "+Debugger", "type": "bindings", "bindings": [
+      { "key": "d", "name": "Start", "command": "workbench.action.debug.start", "type": "command" },
       { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
-      { "key": "S", "name": "Stop debug", "command": "workbench.action.debug.stop", "type": "command" },
-      { "key": "c", "name": "Continue debug", "command": "workbench.action.debug.continue", "type": "command" },
-      { "key": "p", "name": "Pause debug", "command": "workbench.action.debug.pause", "type": "command" },
-      { "key": "R", "name": "Restart debug", "command": "workbench.action.debug.restart", "type": "command" },
+      { "key": "S", "name": "Stop", "command": "workbench.action.debug.stop", "type": "command" },
+      { "key": "c", "name": "Continue", "command": "workbench.action.debug.continue", "type": "command" },
+      { "key": "p", "name": "Pause", "command": "workbench.action.debug.pause", "type": "command" },
+      { "key": "R", "name": "Restart", "command": "workbench.action.debug.restart", "type": "command" },
       { "key": "i", "name": "Step into", "command": "workbench.action.debug.stepInto", "type": "command" },
-      { "key": "s", "name": "Step over", "command": "workbench.action.debug.stepOver", "type": "command" },
       { "key": "o", "name": "Step out", "command": "workbench.action.debug.stepOut", "type": "command" },
+      { "key": "s", "name": "Step over", "command": "workbench.action.debug.stepOver", "type": "command" },
       { "key": "b", "name": "Toggle breakpoint", "command": "editor.debug.action.toggleBreakpoint", "type": "command" },
       { "key": "B", "name": "Toggle inline breakpoint", "command": "editor.debug.action.toggleInlineBreakpoint", "type": "command" },
       { "key": "j", "name": "Jump to cursor", "command": "debug.jumpToCursor", "type": "command" },
