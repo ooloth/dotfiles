@@ -528,7 +528,6 @@
   "editor.lineNumbers": "off",
   "workbench.activityBar.visible": false,
   "errorLens.statusBarMessageEnabled": true,
-  "gitlens.statusBar.alignment": "left",
   "gitlens.graph.statusBar.enabled": false,
   "gitlens.mode.statusBar.enabled": false,
   "vim.showmodename": false
