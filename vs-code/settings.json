@@ -7,6 +7,9 @@
   "[jsonc]": {
     "editor.formatOnSave": false
   },
+  "[python]": {
+    "editor.formatOnType": true
+  },
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
@@ -35,6 +38,7 @@
   "editor.guides.indentation": false,
   "editor.inlineSuggest.enabled": true,
   "editor.lineHeight": 1.4,
+  "editor.lineNumbers": "off",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": false,
@@ -49,6 +53,7 @@
   "emmet.syntaxProfiles": {
     "postcss": "css"
   },
+  "errorLens.statusBarMessageEnabled": true,
   "explorer.confirmDragAndDrop": false,
   "explorer.fileNesting.enabled": false,
   "explorer.openEditors.visible": 0,
@@ -67,6 +72,8 @@
   "gitlens.codeLens.authors.enabled": false,
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
+  "gitlens.graph.statusBar.enabled": false,
+  "gitlens.mode.statusBar.enabled": false,
   "javascript.inlayHints.enumMemberValues.enabled": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "javascript.inlayHints.parameterTypes.enabled": true,
@@ -185,6 +192,7 @@
   ],
   "vim.searchHighlightColor": "#65bcff",
   "vim.searchHighlightTextColor": "black",
+  "vim.showmodename": false,
   "vim.smartRelativeLine": false,
   "vim.useSystemClipboard": true,
   "vim.visualModeKeyBindingsNonRecursive": [
@@ -489,6 +497,7 @@
   ],
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
+  "workbench.activityBar.visible": false,
   "workbench.colorCustomizations": {
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
@@ -520,15 +529,6 @@
   "yaml.format.enable": true,
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
-  "[python]": {
-    "editor.formatOnType": true
-  },
-  "zenMode.hideStatusBar": true,
-  "editor.lineNumbers": "off",
-  "workbench.activityBar.visible": false,
-  "errorLens.statusBarMessageEnabled": true,
-  "gitlens.graph.statusBar.enabled": false,
-  "gitlens.mode.statusBar.enabled": false,
-  "vim.showmodename": false,
+  "zenMode.hideStatusBar": true
 }
 
