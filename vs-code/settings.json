@@ -135,7 +135,9 @@
   "vim.highlightedyank.textColor": "#000000",
   "vim.hlsearch": true,
   "vim.insertModeKeyBindingsNonRecursive": [],
+  "vim.leader": "",
   "vim.normalModeKeyBindingsNonRecursive": [
+    { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
     { "before": [ "g", "a" ], "commands": [ "editor.action.quickFix" ] },
     { "before": [ "Y" ], "after": [ "y", "$" ] },
     { "before": [ "u" ], "commands": [ "undo" ] },
@@ -196,6 +198,7 @@
   "vim.smartRelativeLine": false,
   "vim.useSystemClipboard": true,
   "vim.visualModeKeyBindingsNonRecursive": [
+    { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
 

@@ -83,7 +83,6 @@
   // WHICH-KEY //
   ///////////////
 
-  { "key": "space", "command": "whichkey.show", "when": "editorTextFocus && vim.mode != 'Insert'" },
   { "key": "ctrl+,", "command": "whichkey.show" },
   { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
 
