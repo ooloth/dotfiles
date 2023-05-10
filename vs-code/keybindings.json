@@ -68,8 +68,8 @@
   // EDITING //
   /////////////
 
-  { "key": "shift+.", "command": "editor.action.indentLines", "when": "editorTextFocus && !editorReadonly" },
-  { "key": "shift+,", "command": "editor.action.outdentLines", "when": "editorTextFocus && !editorReadonly" },
+  { "key": "shift+.", "command": "editor.action.indentLines", "when": "editorTextFocus && !editorReadonly && vim.mode != 'Insert'" },
+  { "key": "shift+,", "command": "editor.action.outdentLines", "when": "editorTextFocus && !editorReadonly && vim.mode != 'Insert'" },
   { "key": "ctrl+r", "command": "redo", "when": "editorTextFocus && vim.active && !inDebugRepl" },
   { "key": "cmd+n", "command": "extension.advancedNewFile" },
 
