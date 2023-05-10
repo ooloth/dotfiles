@@ -196,6 +196,7 @@
   "vim.searchHighlightTextColor": "black",
   "vim.showmodename": false,
   "vim.smartRelativeLine": false,
+  "vim.surround": true,
   "vim.useSystemClipboard": true,
   "vim.visualModeKeyBindingsNonRecursive": [
     { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
