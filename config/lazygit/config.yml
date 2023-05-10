@@ -24,10 +24,10 @@ keybinding:
     scrollUpMain: "<c-u>" # main panel scroll up
     scrollDownMain: "<c-d>" # main panel scroll down
   branches:
-    createRebaseOptionsMenu: "M"
+    createRebaseOptionsMenu: "M" # avoid accidental rebasing
     mergeIntoCurrentBranch: "m"
-    rebaseBranch: "R"
+    rebaseBranch: "R" # avoid accidental rebasing
     renameBranch: "r"
 
 promptToReturnFromSubprocess: false
-quitOnTopLevelReturn: true # "esc" quits when there's nothing to cancel/close
+quitOnTopLevelReturn: false # "esc" quits when there's nothing to cancel/close
