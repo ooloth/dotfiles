@@ -350,9 +350,12 @@
     ]},
 
     { "key": "p", "name": "+Problems", "type": "bindings", "bindings": [
-      { "key": "a", "name": "All errors", "command": "workbench.actions.view.problems", "type": "command" },
-      { "key": "n", "name": "Next error", "command": "editor.action.marker.nextInFiles", "type": "command" },
-      { "key": "p", "name": "Previous error", "command": "editor.action.marker.prevInFiles", "type": "command" }
+      { "key": "a", "name": "All", "command": "workbench.actions.view.problems", "type": "command" },
+      { "key": "n", "name": "Next", "command": "editor.action.marker.nextInFiles", "type": "command" },
+      { "key": "p", "name": "Previous", "command": "editor.action.marker.prevInFiles", "type": "command" },
+      { "key": "r", "name": "Find rule in linter config", "command": "errorLens.findLinterRuleDefinition", "type": "command" },
+      { "key": "y", "name": "Copy problem message", "command": "errorLens.copyProblemMessage", "type": "command" },
+      { "key": "Y", "name": "Copy problem code", "command": "errorLens.copyProblemCode", "type": "command" }
     ]},
 
     { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
