@@ -523,13 +523,12 @@
   "[python]": {
     "editor.formatOnType": true
   },
-  "breadcrumbs.enabled": false,
   "zenMode.hideStatusBar": true,
   "editor.lineNumbers": "off",
   "workbench.activityBar.visible": false,
   "errorLens.statusBarMessageEnabled": true,
   "gitlens.graph.statusBar.enabled": false,
   "gitlens.mode.statusBar.enabled": false,
-  "vim.showmodename": false
+  "vim.showmodename": false,
 }
 
