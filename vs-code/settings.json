@@ -357,7 +357,7 @@
       { "key": "n", "name": "New", "command": "extension.advancedNewFile", "type": "command" },
       { "key": "N", "name": "New untitled", "command": "workbench.action.files.newUntitledFile", "type": "command" },
       { "key": "o", "name": "Open from Finder", "command": "whichkey.openFile", "type": "command" },
-      { "key": "r", "name": "Rename file", "commands": "fileutils.renameFile", "type": "commands" },
+      { "key": "r", "name": "Rename file", "command": "fileutils.renameFile", "type": "command" },
       { "key": "s", "name": "Save", "command": "workbench.action.files.save", "type": "command" },
       { "key": "S", "name": "Save all", "command": "workbench.action.files.saveAll", "type": "command" },
       { "key": "w", "name": "Open in new window", "command": "workbench.action.files.showOpenedFileInNewWindow", "type": "command" },
