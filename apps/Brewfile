@@ -2,8 +2,6 @@
 
 # Taps
 tap "homebrew/bundle"
-tap "homebrew/core"
-tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 
 # Packages
@@ -26,7 +24,7 @@ brew "romkatv/powerlevel10k/powerlevel10k"
 brew "raycast"
 brew "ripgrep" # for telescope
 brew "starship"
-brew "stylua" 
+brew "stylua"
 brew "svn" # for font cask installations
 brew "tmux"
 brew "trash"
