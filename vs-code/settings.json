@@ -138,6 +138,8 @@
   "vim.leader": "",
   "vim.normalModeKeyBindingsNonRecursive": [
     { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
+    { "before": [ "]", "c" ], "commands": [ "workbench.action.navigateForwardInEditLocations" ] },
+    { "before": [ "[", "c" ], "commands": [ "workbench.action.navigateBackInEditLocations" ] },
     { "before": [ "]", "p" ], "commands": [ "editor.action.marker.nextInFiles" ] },
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
     { "before": [ "g", "a" ], "commands": [ "editor.action.quickFix" ] },
