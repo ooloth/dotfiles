@@ -7,11 +7,13 @@
   // NAVIGATING //
   ////////////////
 
-   // Workbench navigation
+   // UI navigation
   { "key": "ctrl+h", "command": "workbench.action.navigateLeft" },
   { "key": "ctrl+l", "command": "workbench.action.navigateRight" },
   { "key": "ctrl+j", "command": "workbench.action.navigateDown" },
   { "key": "ctrl+k", "command": "workbench.action.navigateUp" },
+
+  // Project navigation
   { "key": "ctrl+i", "command": "workbench.action.navigateForward" },
   { "key": "ctrl+o", "command": "workbench.action.navigateBack" },
 

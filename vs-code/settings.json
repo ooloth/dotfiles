@@ -263,21 +263,7 @@
       - C-t = toggle view terminal
       - C-p = toggle view problems
 
-      Vim ideas (multiple times or very common; sequences)
-      - ] = next...
-          - c = change/conflict (depending on if in editor vs diff vs merge conflict view)
-      - [ = previous...
-          - (same as above)
-
       WhichKey ideas (one shot or uncommon):
-      - ] = next...
-          - e = editor
-          - g = editor group
-          - p = problem in files
-          - t = terminal
-      - [ = previous...
-          - (same as above)
-      - f = finding/searching...
       - git (including gitlens, lazygit, etc.)
       - new...
         - file
