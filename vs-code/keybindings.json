@@ -12,6 +12,8 @@
   { "key": "ctrl+l", "command": "workbench.action.navigateRight" },
   { "key": "ctrl+j", "command": "workbench.action.navigateDown" },
   { "key": "ctrl+k", "command": "workbench.action.navigateUp" },
+  { "key": "ctrl+i", "command": "workbench.action.navigateForward" },
+  { "key": "ctrl+o", "command": "workbench.action.navigateBack" },
 
   // Editor navigation
   { "key": "ctrl+]", "command": "workbench.action.nextEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
