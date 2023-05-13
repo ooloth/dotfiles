@@ -374,6 +374,12 @@
       { "key": "Y", "name": "Copy problem code", "command": "errorLens.copyProblemCode", "type": "command" }
     ]},
 
+    { "key": "t", "name": "+Terminal", "type": "bindings", "bindings": [
+      { "key": "n", "name": "Next", "command": "workbench.action.terminal.focusNext", "type": "command" },
+      { "key": "N", "name": "New", "command": "workbench.action.terminal.new", "type": "command" },
+      { "key": "p", "name": "Previous", "command": "workbench.action.terminal.focusPrevious", "type": "command" }
+    ]},
+
     { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
       { "key": "a", "name": "Activity bar (toggle)", "command": "workbench.action.toggleActivityBarVisibility", "type": "command" },
       { "key": "b", "name": "Sidebar (toggle)", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
