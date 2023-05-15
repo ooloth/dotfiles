@@ -360,6 +360,8 @@
       { "key": "f", "name": "Fetch", "command": "git.fetch", "type": "command" },
       { "key": "i", "name": "Init", "command": "git.init", "type": "command" },
       { "key": "m", "name": "Merge branch", "command": "git.merge", "type": "command" },
+      { "key": "p", "name": "Pull", "command": "git.push", "type": "command" },
+      { "key": "P", "name": "Push", "command": "git.push", "type": "command" },
       { "key": "s", "name": "Status", "command": "workbench.view.scm", "type": "command" },
       { "key": "S", "name": "Stage", "command": "git.stage", "type": "command" },
       { "key": "U", "name": "Unstage", "command": "git.unstage", "type": "command" },
