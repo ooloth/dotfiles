@@ -7,6 +7,7 @@ if $IS_WORK_LAPTOP; then
   function nff() { npm run format:fix }
   function nk() { npm run typecheck }
   function nl() { npm run lint }
+  function nlc() { npm run lint:check }
   function ns() { n && npm run start }
   function nt() { npm run test -- $1 }
   function nta() { nt --watchAll }
@@ -20,7 +21,7 @@ if $IS_WORK_LAPTOP; then
   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer }
   function r() { cd $HOME/Repos/recursionpharma }
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
-  function rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app && venv }
+  function rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app }
 
   function check_pyenv_init_run {
     # If the pyenv function is not present in the shell environment...
