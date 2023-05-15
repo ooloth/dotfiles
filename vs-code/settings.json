@@ -353,6 +353,21 @@
       { "key": "Y", "name": "Copy full path", "command": "workbench.action.files.copyPathOfActiveFile", "type": "command" }
     ]},
 
+    { "key": "g", "name": "+Git", "type": "bindings", "bindings": [
+      { "key": "b", "name": "Checkout", "command": "git.checkout", "type": "command" },
+      { "key": "c", "name": "Commit", "command": "git.commit", "type": "command" },
+      { "key": "d", "name": "Delete Branch", "command": "git.deleteBranch", "type": "command" },
+      { "key": "f", "name": "Fetch", "command": "git.fetch", "type": "command" },
+      { "key": "i", "name": "Init", "command": "git.init", "type": "command" },
+      { "key": "m", "name": "Merge", "command": "git.merge", "type": "command" },
+      { "key": "p", "name": "Publish", "command": "git.publish", "type": "command" },
+      { "key": "s", "name": "Status", "command": "workbench.view.scm", "type": "command" },
+      { "key": "S", "name": "Stage", "command": "git.stage", "type": "command" },
+      { "key": "U", "name": "Unstage", "command": "git.unstage", "type": "command" },
+      { "key": "y", "name": "Copy GitHub permalink", "command": "issue.copyGithubPermalink", "type": "command" },
+      { "key": "Y", "name": "Open GitHub permalink", "command": "issue.openGithubPermalink", "type": "command" }
+    ]},
+
     { "key": "p", "name": "+Problems", "type": "bindings", "bindings": [
       { "key": "a", "name": "All", "command": "workbench.actions.view.problems", "type": "command" },
       { "key": "n", "name": "Next", "command": "editor.action.marker.nextInFiles", "type": "command" },
@@ -384,19 +399,6 @@
     ]},
 
     { "key": "-", "name": "------------------", "command": " ", "type": "command" },
-
-    { "key": "g", "name": "+Git", "type": "bindings", "bindings": [
-      { "key": "b", "name": "Checkout", "command": "git.checkout", "type": "command" },
-      { "key": "c", "name": "Commit", "command": "git.commit", "type": "command" },
-      { "key": "d", "name": "Delete Branch", "command": "git.deleteBranch", "type": "command" },
-      { "key": "f", "name": "Fetch", "command": "git.fetch", "type": "command" },
-      { "key": "i", "name": "Init", "command": "git.init", "type": "command" },
-      { "key": "m", "name": "Merge", "command": "git.merge", "type": "command" },
-      { "key": "p", "name": "Publish", "command": "git.publish", "type": "command" },
-      { "key": "s", "name": "Status", "command": "workbench.view.scm", "type": "command" },
-      { "key": "S", "name": "Stage", "command": "git.stage", "type": "command" },
-      { "key": "U", "name": "Unstage", "command": "git.unstage", "type": "command" }
-    ]},
 
     { "key": "p", "name": "+Project", "type": "bindings", "bindings": [
       { "key": "f", "name": "Find file in project", "command": "workbench.action.quickOpen", "type": "command" },
