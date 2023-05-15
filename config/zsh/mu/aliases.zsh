@@ -41,6 +41,17 @@ alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 alias R="source $HOME/.config/zsh/.zshrc"
+
+# choose a folder to open with vs code, always starts at home directory
+repos() {
+  folder=$(fd --type d --exclude node_modules . $HOME/Repos | fzf)
+
+  if [ -n "$folder" ];
+  then
+    code $folder
+  fi
+}
+
 alias s="kitty +kitten ssh"                                                          # kitty's ssh kitten
 
 function sl() { ln -sfv $1 $2 } # easier symlinking
