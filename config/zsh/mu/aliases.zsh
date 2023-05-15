@@ -42,14 +42,9 @@ alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 alias R="source $HOME/.config/zsh/.zshrc"
 
-# choose a folder to open with vs code, always starts at home directory
-repos() {
-  folder=$(fd --type d --exclude node_modules . $HOME/Repos | fzf)
-
-  if [ -n "$folder" ];
-  then
-    code $folder
-  fi
+# find all directories two levels below ~/Repos, pass them to fzf and open the selected one in vs code
+repo() {
+  code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
 }
 
 alias s="kitty +kitten ssh"                                                          # kitty's ssh kitten
