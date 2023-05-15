@@ -1,13 +1,16 @@
 [core]
-  editor = nvim
+  editor = code --wait
   excludesfile = ~/.config/git/ignore
 
 [credential]
   helper = osxkeychain
 
-
 [diff]
   colorMoved = true
+  tool = vscode
+
+[difftool "vscode"]
+  cmd = code --wait --diff $LOCAL $REMOTE
 
 [fetch]
   prune = true
@@ -18,6 +21,12 @@
 
 [init]
 	defaultBranch = main
+
+[merge]
+  tool = vscode
+
+[mergetool "vscode"]
+  cmd = code --wait $MERGED
 
 [pull]
   rebase = false
