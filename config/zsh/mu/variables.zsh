@@ -1,5 +1,9 @@
-export EDITOR=nvim
+export EDITOR=code
+
 export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
+
+export IS_WORK_LAPTOP=$( [[ -d "$HOME/Repos/recursionpharma" ]] && echo "true" || echo "false" )
+
 export K9SCONFIG=$HOME/.config/k9s
 
 # TODO: customize HISTORY behavior (validate ideas below + use with fzf?)
@@ -19,7 +23,3 @@ export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#user-config
 export XDG_CONFIG_HOME=$HOME/.config
-
-export IS_WORK_LAPTOP=false
-if [[ -d "$HOME/Repos/recursionpharma" ]]; then IS_WORK_LAPTOP=true; fi
-
