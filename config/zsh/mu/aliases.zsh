@@ -20,7 +20,7 @@ alias lt4='lt --level=4'                                                        
 alias mini="s michael@192.168.2.22"                                                  # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
-function nig() {
+nig() {
   npm install --location=global \
     @githubnext/github-copilot-cli \
     bash-language-server \
@@ -54,11 +54,11 @@ repos() {
 
 alias s="kitty +kitten ssh"                                                          # kitty's ssh kitten
 
-function sl() { ln -sfv $1 $2 } # easier symlinking
+sl() { ln -sfv $1 $2 } # easier symlinking
 
 alias t='tmux a'
 
-function u() {
+u() {
 	npm update -g
 	brew upgrade && brew update && brew cleanup && brew doctor
 	if $IS_WORK_LAPTOP; then
@@ -71,4 +71,4 @@ alias v='vim'
 alias vim='nvim'
 
 # [z]sh [t]ime: measure how long new shells take to launch
-function zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
+zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
