@@ -210,10 +210,6 @@
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
 
     // {
-    //   "before": ["<leader>", "<leader>"],
-    //   "commands": ["workbench.action.showCommands"]
-    // },
-    // {
     //   "before": ["<leader>", "b"],
     //   "commands": ["workbench.action.toggleSidebarVisibility"]
     // },
@@ -290,7 +286,7 @@
 
     */
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
-    { "key": ".", "name": "Repeat most recent action", "command": "whichkey.repeatMostRecent", "type": "command" },
+    // { "key": ".", "name": "Repeat most recent action", "command": "whichkey.repeatMostRecent", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
 
     { "key": "d", "name": "+Debugger", "type": "bindings", "bindings": [
@@ -361,6 +357,18 @@
       { "key": "m", "name": "Merge branch", "command": "git.merge", "type": "command" },
       { "key": "p", "name": "Pull", "command": "git.push", "type": "command" },
       { "key": "P", "name": "Push", "command": "git.push", "type": "command" },
+      { "key": "r", "name": "+Resolve merge conflict", "type": "bindings", "bindings": [
+        { "key": "b", "name": "Accept both", "command": "merge-conflict.accept.both", "type": "command" },
+        { "key": "B", "name": "Accept all both", "command": "merge-conflict.accept.all-both", "type": "command" },
+        { "key": "c", "name": "Accept current", "command": "merge-conflict.accept.current", "type": "command" },
+        { "key": "C", "name": "Accept all current", "command": "merge-conflict.accept.all-current", "type": "command" },
+        { "key": "i", "name": "Accept incoming", "command": "merge-conflict.accept.incoming", "type": "command" },
+        { "key": "I", "name": "Accept all incoming", "command": "merge-conflict.accept.all-incoming", "type": "command" },
+        { "key": "s", "name": "Accept selection", "command": "merge-conflict.accept.selection", "type": "command" },
+        { "key": "k", "name": "Compare current conflict", "command": "merge-conflict.compare", "type": "command" },
+        { "key": "n", "name": "Next Conflict", "command": "merge-conflict.next", "type": "command" },
+        { "key": "p", "name": "Previous Conflict", "command": "merge-conflict.previous", "type": "command" }
+      ]},
       { "key": "s", "name": "Status", "command": "workbench.view.scm", "type": "command" },
       { "key": "S", "name": "Stage", "command": "git.stage", "type": "command" },
       { "key": "U", "name": "Unstage", "command": "git.unstage", "type": "command" },
@@ -452,24 +460,8 @@
         { "key": "S", "name": "Sort lines in descending order", "command": "editor.action.sortLinesDescending", "type": "command" },
         { "key": "d", "name": "Duplicate lines down", "command": "editor.action.copyLinesDownAction", "type": "command" },
         { "key": "D", "name": "Duplicate lines up", "command": "editor.action.copyLinesUpAction", "type": "command" }
-      ]},
-
-      { "key": "d", "name": "+Delete", "type": "bindings", "bindings": [
-        { "key": "w", "name": "Delete trailing whitespace", "command": "editor.action.trimTrailingWhitespace", "type": "command" }
-      ]},
-
-      { "key": "m", "name": "+Merge conflict", "type": "bindings", "bindings": [
-        { "key": "b", "name": "Accept both", "command": "merge-conflict.accept.both", "type": "command" },
-        { "key": "c", "name": "Accept current", "command": "merge-conflict.accept.current", "type": "command" },
-        { "key": "i", "name": "Accept incoming", "command": "merge-conflict.accept.incoming", "type": "command" },
-        { "key": "B", "name": "Accept all both", "command": "merge-conflict.accept.all-both", "type": "command" },
-        { "key": "C", "name": "Accept all current", "command": "merge-conflict.accept.all-current", "type": "command" },
-        { "key": "I", "name": "Accept all incoming", "command": "merge-conflict.accept.all-incoming", "type": "command" },
-        { "key": "s", "name": "Accept selection", "command": "merge-conflict.accept.selection", "type": "command" },
-        { "key": "k", "name": "Compare current conflict", "command": "merge-conflict.compare", "type": "command" },
-        { "key": "n", "name": "Next Conflict", "command": "merge-conflict.next", "type": "command" },
-        { "key": "N", "name": "Previous Conflict", "command": "merge-conflict.previous", "type": "command" }
       ]}
+
     ]},
 
     // { "key": "z", "name": "+Zoom/Fold", "type": "bindings", "bindings": [
