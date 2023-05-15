@@ -18,23 +18,32 @@ if $IS_WORK_LAPTOP; then
   function pr() { cd $HOME/Repos/recursionpharma/phenoreader }
   function psa() { cd $HOME/Repos/recursionpharma/phenoservice-api }
   function psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer }
-  function r() { cd $HOME/Repos/recursionpharma } 
+  function r() { cd $HOME/Repos/recursionpharma }
   function rv() { pip install -U 'roadie[cli]' && roadie venv }
   function rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app && venv }
 
+  function check_pyenv_init_run {
+    # If the pyenv function is not present in the shell environment...
+    if ! type pyenv >/dev/null 2>&1; then
+      # run the pyenv init commands
+      eval "$(pyenv init --path)"
+      eval "$(pyenv init -)"
+    fi
+  }
 
   function activate_venv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
 
     # if defined, activate the appropriate venv for this directory
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
-      eng-onboarding)              eval "$(pyenv init -)" && pyenv shell eng-onboarding ;;
-      phenomap)                    eval "$(pyenv init -)" && pyenv shell phenomap ;;
-      phenoreader)                 eval "$(pyenv init -)" && pyenv shell phenoreader ;;
-      phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
-      phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
-      rxrx3-app)                   eval "$(pyenv init -)" && pyenv shell rxrx3-app ;;
+      dash-phenoapp-v2 | phenoapp) check_pyenv_init && pyenv shell dash-phenoapp-v2 ;;
+      # dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
+      eng-onboarding)              check_pyenv_init_run && pyenv shell eng-onboarding ;;
+      phenomap)                    check_pyenv_init_run && pyenv shell phenomap ;;
+      phenoreader)                 check_pyenv_init_run && pyenv shell phenoreader ;;
+      phenoservice-api)            check_pyenv_init_run && pyenv shell phenoservice-api ;;
+      phenoservice-consumer)       check_pyenv_init_run && pyenv shell phenoservice-consumer ;;
+      rxrx3-app)                   check_pyenv_init_run && pyenv shell rxrx3-app ;;
       *)                           eval export PYENV_VERSION='' ;;
     esac
   }
@@ -67,7 +76,7 @@ if $IS_WORK_LAPTOP; then
   # Pyenv
   export PYENV_ROOT="$HOME/.pyenv"
   command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-  # NOTE: do NOT add eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
+  # NOTE: do NOT add eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" here (they slow the shell down a lot)
 
   # Python
   export PYTHONPATH=.
