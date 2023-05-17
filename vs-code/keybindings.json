@@ -81,7 +81,10 @@
   // FINDING //
   /////////////
 
-  { "key": "cmd+s", "command": "searchEditorApplyChanges.apply", "when": "inSearchEditor" },
+  { "key": "ctrl+k", "command": "search.action.focusSearchFromResults", "when": "accessibilityModeEnabled && searchViewletVisible || firstMatchFocus && searchViewletVisible" },
+  { "key": "ctrl+j", "command": "search.focus.nextInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
+  { "key": "ctrl+k", "command": "search.focus.previousInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible && !searchInputBoxFocus" },
+  // { "key": "cmd+s", "command": "searchEditorApplyChanges.apply", "when": "inSearchEditor" },
 
   ///////////////
   // WHICH-KEY //
@@ -89,7 +92,6 @@
 
   { "key": "ctrl+,", "command": "whichkey.show" },
   { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
-
 ]
 
 // prettier-ignore-end
