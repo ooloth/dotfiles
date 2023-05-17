@@ -84,15 +84,8 @@
   "npm.enableRunFromFolder": true,
   "prettier.requireConfig": true,
   "problems.showCurrentInStatus": true,
-  "python.linting.mypyArgs": [
-    "--check-untyped-defs"
-    // "--strict"
-    // "--strict-equality",
-    // "--disallow-untyped-defs"
-  ],
-  "python.linting.mypyEnabled": true,
-  "python.testing.autoTestDiscoverOnSaveEnabled": false,
-  "python.testing.unittestEnabled": false,
+  // "python.testing.autoTestDiscoverOnSaveEnabled": false,
+  // "python.testing.unittestEnabled": false,
   "redhat.telemetry.enabled": false,
   "scm.inputFontFamily": "editor",
   "scm.inputFontSize": 0,
