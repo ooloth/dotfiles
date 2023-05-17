@@ -14,4 +14,3 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 # github-copilot-cli
 eval "$(github-copilot-cli alias -- "$0")"
-
