@@ -42,8 +42,8 @@ alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 alias R="source $HOME/.config/zsh/.zshrc"
 
-# find all directories two levels below ~/Repos, pass them to fzf and open the selected one in vs code
-repo() {
+# find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in vs code
+vs() {
   code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
 }
 
