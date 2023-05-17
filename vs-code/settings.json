@@ -58,6 +58,7 @@
   "explorer.fileNesting.enabled": false,
   "explorer.openEditors.visible": 0,
   "files.autoSave": "afterDelay",
+  "files.simpleDialog.enable": true,
   "files.trimTrailingWhitespace": true,
   "git.autofetch": true,
   "git.autoStash": true,
