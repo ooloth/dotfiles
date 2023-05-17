@@ -27,7 +27,7 @@ if $IS_WORK_LAPTOP; then
     # If the pyenv function is not present in the shell environment...
     if ! type pyenv >/dev/null 2>&1; then
       # run the pyenv init commands
-      eval "$(pyenv init --path)"
+      # eval "$(pyenv init --path)"
       eval "$(pyenv init -)"
     fi
   }
@@ -37,7 +37,7 @@ if $IS_WORK_LAPTOP; then
 
     # if defined, activate the appropriate venv for this directory
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp) check_pyenv_init && pyenv shell dash-phenoapp-v2 ;;
+      dash-phenoapp-v2 | phenoapp) check_pyenv_init_run && pyenv shell dash-phenoapp-v2 ;;
       # dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
       eng-onboarding)              check_pyenv_init_run && pyenv shell eng-onboarding ;;
       phenomap)                    check_pyenv_init_run && pyenv shell phenomap ;;
