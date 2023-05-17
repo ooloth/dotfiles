@@ -21,5 +21,11 @@ export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front 
 
 export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
+# enable vi mode
+bindkey -v
+# restore history search while in vi mode
+# bindkey ^R history-incremental-search-backward
+# bindkey ^S history-incremental-search-forward
+
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#user-config
 export XDG_CONFIG_HOME=$HOME/.config
