@@ -56,19 +56,6 @@
   { "key": "ctrl+k", "command": "selectPrevCodeAction", "when": "codeActionMenuVisible" },
   { "key": "ctrl+j", "command": "showNextParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
   { "key": "ctrl+k", "command": "showPrevParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
-  { "key": "ctrl+n", "command": "-workbench.action.quickOpenSelectNext", "when": "inQuickOpen" },
-  { "key": "ctrl+n", "command": "-cursorDown", "when": "textInputFocus" },
-  { "key": "ctrl+p", "command": "-cursorUp", "when": "textInputFocus" },
-  { "key": "ctrl+n", "command": "-list.focusDown", "when": "listFocus && !inputFocus" },
-  { "key": "ctrl+p", "command": "-list.focusUp", "when": "listFocus && !inputFocus" },
-  { "key": "ctrl+n", "command": "-selectNextCodeAction", "when": "codeActionMenuVisible" },
-  { "key": "ctrl+p", "command": "-selectPrevCodeAction", "when": "codeActionMenuVisible" },
-  { "key": "ctrl+n", "command": "-selectNextSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
-  { "key": "ctrl+p", "command": "-selectPrevSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
-  { "key": "ctrl+n", "command": "-showNextParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
-  { "key": "ctrl+p", "command": "-showPrevParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
-  { "key": "ctrl+n", "command": "-workbench.action.quickOpenSelectNext", "when": "inQuickOpen" },
-  { "key": "ctrl+p", "command": "-workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen" },
 
   /////////////
   // EDITING //
