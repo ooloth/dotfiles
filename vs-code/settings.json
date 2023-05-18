@@ -375,6 +375,8 @@
       { "key": "Y", "name": "Open GitHub permalink", "command": "issue.openGithubPermalink", "type": "command" }
     ]},
 
+    { "key": "l", "name": "Log to console", "command": "console.log.wrap.nameValue", "type": "command" },
+
     { "key": "p", "name": "+Problems", "type": "bindings", "bindings": [
       { "key": "a", "name": "All", "command": "workbench.actions.view.problems", "type": "command" },
       { "key": "n", "name": "Next", "command": "editor.action.marker.nextInFiles", "type": "command" },
