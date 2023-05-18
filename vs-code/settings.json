@@ -82,6 +82,7 @@
   "javascript.preferences.importModuleSpecifier": "relative",
   "javascript.updateImportsOnFileMove.enabled": "always",
   "markdown.preview.fontSize": 0,
+  "markdown.updateLinksOnFileMove.enabled": "prompt",
   "npm.enableRunFromFolder": true,
   "prettier.requireConfig": true,
   "problems.showCurrentInStatus": true,
