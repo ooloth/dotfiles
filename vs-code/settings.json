@@ -140,55 +140,18 @@
     { "before": [ "Y" ], "after": [ "y", "$" ] },
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
-
-    // {
-    //   "before": ["<leader>", "b"],
-    //   "commands": ["workbench.action.toggleSidebarVisibility"]
-    // },
-    // {
-    //   "before": ["<leader>", "c"],
-    //   "commands": ["editor.action.commentLine"]
-    // },
-    // {
-    //   "before": ["<leader>", "e"],
-    //   "commands": ["workbench.view.explorer"]
-    // },
-    // {
-    //   "before": ["<leader>", "f"],
-    //   "commands": ["actions.find"]
-    // },
-    // {
-    //   "before": ["<leader>", "g"],
-    //   "commands": ["workbench.view.scm"]
-    // },
-    // {
-    //   "before": ["<leader>", "h"],
-    //   "commands": [":nohl"]
-    // },
-    // {
-    //   "before": ["<leader>", "o"],
-    //   "commands": ["workbench.action.quickOpen"]
-    // },
-    // {
-    //   "before": ["<leader>", "s"],
-    //   "commands": ["workbench.view.search"]
-    // },
-    // {
-    //   "before": ["<leader>", "t"],
-    //   "commands": ["workbench.action.terminal.toggleTerminal"]
-    // },
-    // {
-    //   "before": ["<leader>", "v"],
-    //   "commands": ["workbench.action.splitEditor"]
-    // },
-    // {
-    //   "before": ["<leader>", "w"],
-    //   "commands": ["workbench.action.files.save"]
-    // },
-    // {
-    //   "before": ["<leader>", "x"],
-    //   "commands": ["workbench.view.extensions"]
-    // }
+    // { //   "before": ["<leader>", "b"], //   "commands": ["workbench.action.toggleSidebarVisibility"] // },
+    // { //   "before": ["<leader>", "c"], //   "commands": ["editor.action.commentLine"] // },
+    // { //   "before": ["<leader>", "e"], //   "commands": ["workbench.view.explorer"] // },
+    // { //   "before": ["<leader>", "f"], //   "commands": ["actions.find"] // },
+    // { //   "before": ["<leader>", "g"], //   "commands": ["workbench.view.scm"] // },
+    // { //   "before": ["<leader>", "h"], //   "commands": [":nohl"] // },
+    // { //   "before": ["<leader>", "o"], //   "commands": ["workbench.action.quickOpen"] // },
+    // { //   "before": ["<leader>", "s"], //   "commands": ["workbench.view.search"] // },
+    // { //   "before": ["<leader>", "t"], //   "commands": ["workbench.action.terminal.toggleTerminal"] // },
+    // { //   "before": ["<leader>", "v"], //   "commands": ["workbench.action.splitEditor"] // },
+    // { //   "before": ["<leader>", "w"], //   "commands": ["workbench.action.files.save"] // },
+    // { //   "before": ["<leader>", "x"], //   "commands": ["workbench.view.extensions"] // }
   ],
   "vim.searchHighlightColor": "#65bcff",
   "vim.searchHighlightTextColor": "black",
@@ -202,47 +165,16 @@
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
-
-    // {
-    //   "before": ["<leader>", "b"],
-    //   "commands": ["workbench.action.toggleSidebarVisibility"]
-    // },
-    // {
-    //   "before": ["<leader>", "c"],
-    //   "commands": ["editor.action.commentLine"]
-    // },
-    // {
-    //   "before": ["<leader>", "e"],
-    //   "commands": ["workbench.view.explorer"]
-    // },
-    // {
-    //   "before": ["<leader>", "f"],
-    //   "commands": ["actions.find"]
-    // },
-    // {
-    //   "before": ["<leader>", "g"],
-    //   "commands": ["workbench.view.scm"]
-    // },
-    // {
-    //   "before": ["<leader>", "o"],
-    //   "commands": ["workbench.action.quickOpen"]
-    // },
-    // {
-    //   "before": ["<leader>", "s"],
-    //   "commands": ["workbench.view.search"]
-    // },
-    // {
-    //   "before": ["<leader>", "v"],
-    //   "commands": ["workbench.action.splitEditor"]
-    // },
-    // {
-    //   "before": ["<leader>", "w"],
-    //   "commands": ["workbench.action.files.save"]
-    // },
-    // {
-    //   "before": ["<leader>", "x"],
-    //   "commands": ["workbench.view.extensions"]
-    // }
+    // { //   "before": ["<leader>", "b"], //   "commands": ["workbench.action.toggleSidebarVisibility"] // },
+    // { //   "before": ["<leader>", "c"], //   "commands": ["editor.action.commentLine"] // },
+    // { //   "before": ["<leader>", "e"], //   "commands": ["workbench.view.explorer"] // },
+    // { //   "before": ["<leader>", "f"], //   "commands": ["actions.find"] // },
+    // { //   "before": ["<leader>", "g"], //   "commands": ["workbench.view.scm"] // },
+    // { //   "before": ["<leader>", "o"], //   "commands": ["workbench.action.quickOpen"] // },
+    // { //   "before": ["<leader>", "s"], //   "commands": ["workbench.view.search"] // },
+    // { //   "before": ["<leader>", "v"], //   "commands": ["workbench.action.splitEditor"] // },
+    // { //   "before": ["<leader>", "w"], //   "commands": ["workbench.action.files.save"] // },
+    // { //   "before": ["<leader>", "x"], //   "commands": ["workbench.view.extensions"] // }
   ],
   "whichkey.bindings": [
     // see: https://vspacecode.github.io/docs/whichkey/reference
