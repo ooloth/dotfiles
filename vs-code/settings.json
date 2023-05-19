@@ -82,6 +82,7 @@
   "javascript.preferences.importModuleSpecifier": "relative",
   "javascript.updateImportsOnFileMove.enabled": "always",
   "markdown.preview.fontSize": 0,
+  "markdown.updateLinksOnFileMove.enabled": "prompt",
   "npm.enableRunFromFolder": true,
   "prettier.requireConfig": true,
   "problems.showCurrentInStatus": true,
@@ -306,6 +307,8 @@
       { "key": "y", "name": "Copy GitHub permalink", "command": "issue.copyGithubPermalink", "type": "command" },
       { "key": "Y", "name": "Open GitHub permalink", "command": "issue.openGithubPermalink", "type": "command" }
     ]},
+
+    { "key": "l", "name": "Log to console", "command": "console.log.wrap.nameValue", "type": "command" },
 
     { "key": "p", "name": "+Problems", "type": "bindings", "bindings": [
       { "key": "a", "name": "All", "command": "workbench.actions.view.problems", "type": "command" },

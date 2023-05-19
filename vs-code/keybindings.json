@@ -7,7 +7,7 @@
   // NAVIGATING //
   ////////////////
 
-   // UI navigation
+  // UI navigation
   { "key": "ctrl+h", "command": "workbench.action.navigateLeft" },
   { "key": "ctrl+l", "command": "workbench.action.navigateRight" },
   { "key": "ctrl+j", "command": "workbench.action.navigateDown" },
@@ -36,6 +36,7 @@
   // Panel navigation
   { "key": "cmd+ctrl+]", "command": "workbench.action.nextPanelView", "when": "panelFocus" },
   { "key": "cmd+ctrl+[", "command": "workbench.action.previousPanelView", "when": "panelFocus" },
+  { "key": "cmd+j", "command": "-console.log.wrap.json", "when": "editorTextFocus" },
 
   // List navigation
   { "key": "j", "command": "list.focusDown", "when": "listFocus && !inputFocus" },
@@ -56,6 +57,10 @@
   { "key": "ctrl+k", "command": "selectPrevCodeAction", "when": "codeActionMenuVisible" },
   { "key": "ctrl+j", "command": "showNextParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
   { "key": "ctrl+k", "command": "showPrevParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+
+  // Diff navigation
+  { "key": "] c", "command": "workbench.action.compareEditor.nextChange", "when": "editorTextFocus && textCompareEditorActive" },
+  { "key": "[ c", "command": "workbench.action.compareEditor.previousChange", "when": "editorTextFocus && textCompareEditorActive" },
 
   /////////////
   // EDITING //
