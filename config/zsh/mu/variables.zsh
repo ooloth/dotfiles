@@ -19,6 +19,8 @@ export K9SCONFIG=$HOME/.config/k9s
 
 export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
 
+export SHELL=$(which zsh)
+
 export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
 # enable vi mode
