@@ -8,6 +8,7 @@ if $IS_WORK_LAPTOP; then
   nk() { npm run typecheck }
   nl() { npm run lint }
   nlc() { npm run lint:check }
+  nlf() { npm run lint:fix }
   ns() { n && npm run start }
   nt() { npm run test -- $1 }
   nta() { nt --watchAll }
