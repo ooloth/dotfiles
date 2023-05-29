@@ -459,6 +459,7 @@
   "yaml.format.enable": true,
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
-  "zenMode.hideStatusBar": true
+  "zenMode.hideStatusBar": true,
+  "editor.linkedEditing": true,
 }
 
