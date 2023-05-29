@@ -461,5 +461,8 @@
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
   "editor.linkedEditing": true,
+  "files.associations": {
+    "*.njk": "nunjucks"
+  }
 }
 
