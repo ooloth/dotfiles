@@ -8,6 +8,7 @@ if $IS_WORK_LAPTOP; then
   nk() { npm run typecheck }
   nl() { npm run lint }
   nlc() { npm run lint:check }
+  nlf() { npm run lint:fix }
   ns() { n && npm run start }
   nt() { npm run test -- $1 }
   nta() { nt --watchAll }
@@ -23,28 +24,25 @@ if $IS_WORK_LAPTOP; then
   rv() { pip install -U 'roadie[cli]' && roadie venv -c }
   rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app }
 
-  check_pyenv_init_run() {
-    # If the pyenv function is not present in the shell environment...
-    if ! type pyenv >/dev/null 2>&1; then
-      # run the pyenv init commands
-      # eval "$(pyenv init --path)"
-      eval "$(pyenv init -)"
-    fi
-  }
-
   activate_venv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
 
+    # if the correct venv is already active, do nothing
+    if [[ "$PYENV_VERSION" == "$CURRENT_DIRECTORY" ]]; then
+      return
+    # else
+      # eval "$(pyenv init -)"
+    fi
+
     # if defined, activate the appropriate venv for this directory
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp) check_pyenv_init_run && pyenv shell dash-phenoapp-v2 ;;
-      # dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
-      eng-onboarding)              check_pyenv_init_run && pyenv shell eng-onboarding ;;
-      phenomap)                    check_pyenv_init_run && pyenv shell phenomap ;;
-      phenoreader)                 check_pyenv_init_run && pyenv shell phenoreader ;;
-      phenoservice-api)            check_pyenv_init_run && pyenv shell phenoservice-api ;;
-      phenoservice-consumer)       check_pyenv_init_run && pyenv shell phenoservice-consumer ;;
-      rxrx3-app)                   check_pyenv_init_run && pyenv shell rxrx3-app ;;
+      dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
+      eng-onboarding)              eval "$(pyenv init -)" && pyenv shell eng-onboarding ;;
+      phenomap)                    eval "$(pyenv init -)" && pyenv shell phenomap ;;
+      phenoreader)                 eval "$(pyenv init -)" && pyenv shell phenoreader ;;
+      phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
+      phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
+      rxrx3-app)                   eval "$(pyenv init -)" && pyenv shell rxrx3-app ;;
       *)                           eval export PYENV_VERSION='' ;;
     esac
   }
