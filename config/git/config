@@ -38,6 +38,9 @@
 [status]
   showStash = true
 
+[submodule]
+	recurse = true
+
 [user]
 	name = Michael Uloth
 	email = hello@michaeluloth.com
