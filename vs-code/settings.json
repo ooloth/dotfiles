@@ -1,7 +1,7 @@
 // prettier-ignore-start
 
 {
-  "[css][html][javascript][javascriptreact][json][jsonc][markdown][typescript][typescriptreact][vue]": {
+  "[css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][terraform][terraform-vars][toml][typescript][typescriptreact][vue][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
@@ -9,14 +9,6 @@
   },
   "[python]": {
     "editor.formatOnType": true
-  },
-  "[terraform][terraform-vars]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml"
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml",
-    "editor.formatOnSave": false,
-    "editor.tabSize": 2
   },
   "css.lint.unknownAtRules": "ignore",
   "debug.console.fontFamily": "editor",
