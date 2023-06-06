@@ -58,8 +58,9 @@
   "git.useEditorAsCommitInput": false,
   "github.copilot.enable": {
     "*": true,
-    "markdown": false,
     "plaintext": true,
+    "markdown": true,
+    "scminput": false,
     "yaml": true
   },
   "gitlens.codeLens.authors.enabled": false,
