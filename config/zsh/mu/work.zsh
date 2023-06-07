@@ -30,19 +30,19 @@ if $IS_WORK_LAPTOP; then
     # if the correct venv is already active, do nothing
     if [[ "$PYENV_VERSION" == "$CURRENT_DIRECTORY" ]]; then
       return
-    # else
-      # eval "$(pyenv init -)"
+    else
+      eval "$(pyenv init -)"
     fi
 
     # if defined, activate the appropriate venv for this directory
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2 | phenoapp) eval "$(pyenv init -)" && pyenv shell dash-phenoapp-v2 ;;
-      eng-onboarding)              eval "$(pyenv init -)" && pyenv shell eng-onboarding ;;
-      phenomap)                    eval "$(pyenv init -)" && pyenv shell phenomap ;;
-      phenoreader)                 eval "$(pyenv init -)" && pyenv shell phenoreader ;;
-      phenoservice-api)            eval "$(pyenv init -)" && pyenv shell phenoservice-api ;;
-      phenoservice-consumer)       eval "$(pyenv init -)" && pyenv shell phenoservice-consumer ;;
-      rxrx3-app)                   eval "$(pyenv init -)" && pyenv shell rxrx3-app ;;
+      dash-phenoapp-v2 | phenoapp) pyenv shell dash-phenoapp-v2 ;;
+      eng-onboarding)              pyenv shell eng-onboarding ;;
+      phenomap)                    pyenv shell phenomap ;;
+      phenoreader)                 pyenv shell phenoreader ;;
+      phenoservice-api)            pyenv shell phenoservice-api ;;
+      phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
+      rxrx3-app)                   pyenv shell rxrx3-app ;;
       *)                           eval export PYENV_VERSION='' ;;
     esac
   }
