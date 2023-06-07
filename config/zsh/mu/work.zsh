@@ -93,6 +93,9 @@ if $IS_WORK_LAPTOP; then
   export PYTHONPATH=.
   export MYPYPATH=.
 
+  # roadie
+  eval "$(_ROADIE_COMPLETE=source_zsh roadie)"
+
   # sbin
   export PATH="/opt/homebrew/sbin:$PATH"
 
