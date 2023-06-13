@@ -28,6 +28,9 @@ keybinding:
     mergeIntoCurrentBranch: "m"
     rebaseBranch: "R" # avoid accidental rebasing
     renameBranch: "r"
+  commits:
+    amendToCommit: 'a'
+    resetCommitAuthor: 'A'
 
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: false # "esc" quits when there's nothing to cancel/close
