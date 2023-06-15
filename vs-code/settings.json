@@ -104,7 +104,7 @@
   "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.lineHeight": 1.35,
-  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.scrollback": 15000,
   "terminal.integrated.tabs.enabled": false,
   "todohighlight.keywords": [
     { "backgroundColor": "#ffc777", "color": "black", "text": "TODO:" },
