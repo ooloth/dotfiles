@@ -11,8 +11,6 @@ if $IS_WORK_LAPTOP; then
   nlf() { npm run lint:fix }
   ns() { n && npm run start }
   nt() { npm run test -- $1 }
-  nta() { nt --watchAll }
-  ntp() { nt --testPathPattern=$1 }
   pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 }
   pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp }
   paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app }
