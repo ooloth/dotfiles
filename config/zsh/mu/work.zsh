@@ -19,8 +19,8 @@ if $IS_WORK_LAPTOP; then
   psa() { cd $HOME/Repos/recursionpharma/phenoservice-api }
   psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer }
   r() { cd $HOME/Repos/recursionpharma }
-  rv() { pip install -U 'roadie[cli]' && roadie venv && pip install --upgrade watchdog }
-  rx3() { cd $HOME/Repos/recursionpharma/rxrx3-app }
+  # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
+  rv() { pip install -U 'roadie[cli]' && roadie venv }
 
   activate_venv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
