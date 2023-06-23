@@ -40,7 +40,6 @@ if $IS_WORK_LAPTOP; then
       phenoreader)                 pyenv shell phenoreader ;;
       phenoservice-api)            pyenv shell phenoservice-api ;;
       phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
-      rxrx3-app)                   pyenv shell rxrx3-app ;;
       *)                           eval export PYENV_VERSION='' ;;
     esac
   }
@@ -55,7 +54,6 @@ if $IS_WORK_LAPTOP; then
       dash-phenoapp-v2) python phenoapp/app.py ;;
       phenoapp)         pa && python phenoapp/app.py ;;
       react-app)        ns ;;
-      rxrx3-app)        rx3 && export SKIP_AUTH="True" && export LOCAL_CACHE="True" && export DOCKER="False" && python -m rxrx3_app.index --debug -p 5001;;
       *)                echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
