@@ -437,7 +437,7 @@
       "editorCursor.foreground": "#ff966c"
     }
   },
-  "workbench.colorTheme": "Dracula",
+  "workbench.colorTheme": "Gruvbox Dark Medium",
   "workbench.editor.enablePreview": false,
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.wrapTabs": true,
