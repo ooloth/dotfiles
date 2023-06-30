@@ -89,7 +89,6 @@
     "**/.js.map": true,
     "**/bower_components": true,
     "**/dist": true,
-    "**/public": true,
     "**/tmp": true
   },
   "security.workspace.trust.untrustedFiles": "open",
