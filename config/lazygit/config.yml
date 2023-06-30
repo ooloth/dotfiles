@@ -14,8 +14,9 @@ gui:
   # showFileTree: false # for rendering changes files in a tree format
   sidePanelWidth: 0.25 # number from 0 to 1 (default: 0.33333)
   theme:
-    selectedLineBgColor:
-      - red
+    # I like this one with the dracula theme, but not with gruvbox
+    # selectedLineBgColor:
+      # - red
     selectedRangeBgColor:
       - reverse
 
@@ -33,4 +34,4 @@ keybinding:
     resetCommitAuthor: 'A'
 
 promptToReturnFromSubprocess: false
-quitOnTopLevelReturn: false # "esc" quits when there's nothing to cancel/close
+quitOnTopLevelReturn: false # true means "esc" quits when there's nothing to cancel/close
