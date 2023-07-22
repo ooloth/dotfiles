@@ -1,7 +1,7 @@
 // prettier-ignore-start
 
 {
-  "[css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][terraform][terraform-vars][toml][typescript][typescriptreact][vue][yaml]": {
+  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][terraform][terraform-vars][toml][typescript][typescriptreact][vue][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
@@ -34,6 +34,9 @@
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": false,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
   "editor.stickyScroll.enabled": true,
   "editor.suggest.preview": true,
   "editor.suggest.showStatusBar": true,
@@ -46,6 +49,13 @@
     "postcss": "css"
   },
   "errorLens.statusBarMessageEnabled": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "astro", // Enable .astro
+    "typescript", // Enable .ts
+    "typescriptreact" // Enable .tsx
+  ],
   "explorer.confirmDragAndDrop": false,
   "explorer.fileNesting.enabled": false,
   "explorer.openEditors.visible": 0,
