@@ -58,7 +58,7 @@
   ],
   "explorer.confirmDragAndDrop": false,
   "explorer.fileNesting.enabled": false,
-  "explorer.openEditors.visible": 0,
+  "explorer.openEditors.visible": 1,
   "files.autoSave": "afterDelay",
   "files.simpleDialog.enable": true,
   "files.trimTrailingWhitespace": true,
