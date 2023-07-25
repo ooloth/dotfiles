@@ -4,9 +4,6 @@
   "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][terraform][terraform-vars][toml][typescript][typescriptreact][vue][xml][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[jsonc]": {
-    "editor.formatOnSave": false
-  },
   "[python]": {
     "editor.formatOnType": true
   },
