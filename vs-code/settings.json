@@ -15,7 +15,9 @@
   "editor.accessibilitySupport": "off",
   "editor.autoClosingDelete": "always",
   "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
-  "editor.codeActionsOnSave": { "source.fixAll.eslint": true },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
   "editor.cursorSurroundingLines": 20,
   "editor.foldingImportsByDefault": true,
   "editor.fontFamily": "'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
@@ -26,6 +28,7 @@
   "editor.formatOnSaveMode": "file",
   "editor.guides.indentation": false,
   "editor.inlineSuggest.enabled": true,
+  "editor.linkedEditing": true,
   "editor.lineHeight": 1.4,
   "editor.lineNumbers": "off",
   "editor.matchBrackets": "near",
@@ -56,6 +59,10 @@
   "explorer.confirmDragAndDrop": false,
   "explorer.fileNesting.enabled": false,
   "explorer.openEditors.visible": 1,
+  "files.associations": {
+    "*.njk": "nunjucks",
+    "*.webc": "html"
+  },
   "files.autoSave": "afterDelay",
   "files.simpleDialog.enable": true,
   "files.trimTrailingWhitespace": true,
@@ -458,11 +465,7 @@
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
-  "editor.linkedEditing": true,
-  "files.associations": {
-    "*.njk": "nunjucks",
-    "*.webc": "html"
-  },
+
   "workbench.activityBar.visible": false
 }
 
