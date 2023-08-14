@@ -34,18 +34,18 @@ ns() { n && npm run start }
 nig() {
   npm install --location=global \
     @githubnext/github-copilot-cli \
-    bash-language-server \
-    cssmodules-language-server \
-    dockerfile-language-server-nodejs \
-    emmet-ls \
-    neovim \
+    # bash-language-server \
+    # cssmodules-language-server \
+    # dockerfile-language-server-nodejs \
+    # emmet-ls \
+    # neovim \
     npm-check \
-    pug-lint \
-    svelte-language-server \
+    # pug-lint \
+    # svelte-language-server \
     tldr \
-    tree-sitter-cli \
-    typescript \
-    vscode-langservers-extracted
+    # tree-sitter-cli \
+    # typescript \
+    # vscode-langservers-extracted
 }
 
 alias nvm='fnm'
