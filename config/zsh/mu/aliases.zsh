@@ -9,13 +9,13 @@ alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias f='vifm . .'                                                                   # open both vifm panes in cwd
 alias g='lazygit'
 alias h='cd $HOME'
-alias ls='exa --all --group-directories-first'                                       # top level dir + files
-alias ld='exa --all --git --group-directories-first --header --long'                 # top level details
-alias lt='exa --all --git-ignore --group-directories-first -I .git --tree --level=1' # file tree (all levels)
-alias lt2='lt --level=2'                                                             # file tree (2 levels only)
-alias lt3='lt --level=3'                                                             # file tree (3 levels only)
-alias lt4='lt --level=4'                                                             # file tree (4 levels only)
 alias mini="s michael@192.168.2.22"                                                  # automatically log in using SSH key pair
+alias ls='exa --all --group-directories-first'    # top level dir + files
+alias ld='ls --git --header --long'               # top level details
+alias lt='ls --git-ignore -I .git --tree' .       # file tree (all levels)
+alias lt2='lt --level=2'                          # file tree (2 levels only)
+alias lt3='lt --level=3'                          # file tree (3 levels only)
+alias lt4='lt --level=4'                          # file tree (4 levels only)
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 n() { npm install -- $1 }
