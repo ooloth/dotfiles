@@ -20,6 +20,17 @@ alias lt4='lt --level=4'                                                        
 alias mini="s michael@192.168.2.22"                                                  # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
+n() { npm install -- $1 }
+nb() { n && npm run build }
+nc() { npm run check }
+nd() { n && npm run dev }
+nfc() { npm run format:check }
+nff() { npm run format:fix }
+nk() { npm run types:check }
+nlc() { npm run lint:check }
+nlf() { npm run lint:fix }
+ns() { n && npm run start }
+
 nig() {
   npm install --location=global \
     @githubnext/github-copilot-cli \
