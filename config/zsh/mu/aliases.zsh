@@ -6,16 +6,16 @@ alias .....='cd ../../../..'
 alias c='clear'
 alias cat='bat --paging=never'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
-alias f='vifm . .'                                                                   # open both vifm panes in cwd
+alias f='vifm . .'                                # open both vifm panes in cwd
 alias g='lazygit'
 alias h='cd $HOME'
-alias mini="s michael@192.168.2.22"                                                  # automatically log in using SSH key pair
 alias ls='exa --all --group-directories-first'    # top level dir + files
 alias ld='ls --git --header --long'               # top level details
 alias lt='ls --git-ignore -I .git --tree' .       # file tree (all levels)
 alias lt2='lt --level=2'                          # file tree (2 levels only)
 alias lt3='lt --level=3'                          # file tree (3 levels only)
 alias lt4='lt --level=4'                          # file tree (4 levels only)
+alias mini="s michael@192.168.2.22"               # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 n() { npm install -- $1 }
@@ -62,8 +62,13 @@ sl() { ln -sfv $1 $2 } # easier symlinking
 alias t='tmux a'
 
 u() {
+  # update all global npm packages to their latest versions
+  # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
 	ng
+
+  # update all brew packages to their latest versions
 	brew upgrade && brew update && brew cleanup && brew doctor
+
 	if $IS_WORK_LAPTOP; then
 		# TODO: store version in a variable and update it programmatically?
 		echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
