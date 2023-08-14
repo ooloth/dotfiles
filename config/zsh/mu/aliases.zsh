@@ -6,8 +6,6 @@ alias .....='cd ../../../..'
 alias c='clear'
 alias cat='bat --paging=never'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
-alias et="$EDITOR $HOME/Repos/ooloth/dotfiles/config/tmux/tmux.conf"
-alias ez="$EDITOR $HOME/Repos/ooloth/dotfiles/config/zsh/.zshrc"
 alias f='vifm . .'                                                                   # open both vifm panes in cwd
 alias g='lazygit'
 alias h='cd $HOME'
