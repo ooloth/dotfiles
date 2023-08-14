@@ -26,12 +26,7 @@ nc() { npm run check }
 nd() { n && npm run dev }
 nfc() { npm run format:check }
 nff() { npm run format:fix }
-nk() { npm run types:check }
-nlc() { npm run lint:check }
-nlf() { npm run lint:fix }
-ns() { n && npm run start }
-
-nig() {
+ng() {
   npm install --location=global \
     @githubnext/github-copilot-cli \
     # bash-language-server \
@@ -47,6 +42,10 @@ nig() {
     # typescript \
     # vscode-langservers-extracted
 }
+nk() { npm run types:check }
+nlc() { npm run lint:check }
+nlf() { npm run lint:fix }
+ns() { n && npm run start }
 
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
@@ -58,14 +57,14 @@ vs() {
   code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
 }
 
-alias s="kitty +kitten ssh"                                                          # kitty's ssh kitten
+alias s="kitty +kitten ssh" # kitty's ssh kitten
 
 sl() { ln -sfv $1 $2 } # easier symlinking
 
 alias t='tmux a'
 
 u() {
-	npm update -g
+	ng
 	brew upgrade && brew update && brew cleanup && brew doctor
 	if $IS_WORK_LAPTOP; then
 		# TODO: store version in a variable and update it programmatically?
