@@ -226,6 +226,8 @@
       { "key": "a", "name": "Ask CodeGPT", "command": "codegpt.askCodeGPT", "type": "command" }
     ]},
 
+    { "key": "b", "name": "Toggle sidebar", "command": "workbench.action.splitEditor", "type": "command" },
+
     { "key": "d", "name": "+Debugger", "type": "bindings", "bindings": [
       { "key": "d", "name": "Start", "command": "workbench.action.debug.start", "type": "command" },
       { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
