@@ -11,12 +11,12 @@ gui:
   parseEmoji: true
   showBottomLine: false # for hiding the bottom information line (unless it has important information to tell you)
   showCommandLog: false
-  # showFileTree: false # for rendering changes files in a tree format
+  showFileTree: false # for rendering changes files in a tree format
   sidePanelWidth: 0.25 # number from 0 to 1 (default: 0.33333)
   theme:
     # I like this one with the dracula theme, but not with gruvbox
-    # selectedLineBgColor:
-      # - red
+    selectedLineBgColor:
+      - '#1A1C25' # material ocean input bg color (see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts)
     selectedRangeBgColor:
       - reverse
 
