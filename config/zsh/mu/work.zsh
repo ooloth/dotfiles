@@ -1,26 +1,25 @@
 if $IS_WORK_LAPTOP; then
 
-  eo() { cd $HOME/Repos/recursionpharma/eng-onboarding }
-  n() { npm install -- $1 }
-  nb() { n && npm run build }
-  nfc() { npm run format:check }
-  nff() { npm run format:fix }
-  nk() { npm run typecheck }
-  nl() { npm run lint }
-  nlc() { npm run lint:check }
-  nlf() { npm run lint:fix }
-  ns() { n && npm run start }
-  nt() { npm run test -- $1 }
-  pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2 }
-  pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp }
-  paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app }
-  pm() { cd $HOME/Repos/recursionpharma/phenomap }
-  pr() { cd $HOME/Repos/recursionpharma/phenoreader }
-  psa() { cd $HOME/Repos/recursionpharma/phenoservice-api }
-  psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer }
-  r() { cd $HOME/Repos/recursionpharma }
-  # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
-  rv() { pip install -U 'roadie[cli]' && roadie venv }
+  eo() { cd $HOME/Repos/recursionpharma/eng-onboarding; }
+  n() { npm install -- $1; }
+  nb() { n && npm run build; }
+  nfc() { npm run format:check; }
+  nff() { npm run format:fix; }
+  nk() { npm run typecheck; }
+  nl() { npm run lint; }
+  nlc() { npm run lint:check; }
+  nlf() { npm run lint:fix; }
+  ns() { n && npm run start; }
+  nt() { npm run test -- $1; }
+  pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2; }
+  pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp; }
+  paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app; }
+  pm() { cd $HOME/Repos/recursionpharma/phenomap; }
+  pr() { cd $HOME/Repos/recursionpharma/phenoreader; }
+  psa() { cd $HOME/Repos/recursionpharma/phenoservice-api; }
+  psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer; }
+  r() { cd $HOME/Repos/recursionpharma; }
+  rv() { pip install -U 'roadie[cli]' && roadie venv; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
 
   activate_venv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
