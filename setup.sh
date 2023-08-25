@@ -375,7 +375,7 @@ set_up_node() {
 
   fnm install 19 && fnm default 19 && fnm use 19
 
-  npm i -g npm-check tldr 
+  npm i -g npm-check tldr
 
   info "Enabling corepack to activate yarn"
   # see: https://yarnpkg.com/getting-started/install
@@ -416,6 +416,15 @@ set_up_neovim() {
   warning "TODO: open vim + save plugins-setup.lua to install plugins"
 
   success "\nDone setting up neovim."
+}
+
+set_up_vifm() {
+  title "Setting up vifm"
+
+  info "Cloning vifm/vifm-colors in .config/vifm/colors"
+  git clone "git@github.com:vifm/vifm-colors.git" "$HOME/.config/vifm/colors"
+
+  success "\nDone setting up vifm."
 }
 
 configure_macos() {
@@ -508,6 +517,7 @@ confirm_consent \
   && set_up_node \
   && set_up_tmux \
   && set_up_neovim \
+  && set_up_vifm \
   && configure_macos \
   && configure_apps \
   && suggest_restart
