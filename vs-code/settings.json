@@ -120,9 +120,9 @@
   "terminal.integrated.scrollback": 15000,
   "terminal.integrated.tabs.enabled": false,
   "todohighlight.keywords": [
-    { "backgroundColor": "#ffc777", "color": "black", "text": "TODO:" },
-    { "backgroundColor": "#ff757f", "color": "black", "text": "FIXME:" },
-    { "backgroundColor": "#c3e88d", "color": "black", "text": "NOTE:" }
+    { "backgroundColor": "transparent", "color": "#ffc777", "text": "TODO:" },
+    { "backgroundColor": "transparent", "color": "#ff757f", "text": "FIXME:" },
+    { "backgroundColor": "transparent", "color": "#c3e88d", "text": "NOTE:" }
   ],
   "typescript.implementationsCodeLens.enabled": true,
   "typescript.inlayHints.enumMemberValues.enabled": true,
