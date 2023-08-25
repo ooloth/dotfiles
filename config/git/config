@@ -1,3 +1,6 @@
+[commit]
+  verbose = true
+
 [core]
   editor = code --wait
   excludesfile = ~/.config/git/ignore
