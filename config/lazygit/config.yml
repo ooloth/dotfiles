@@ -3,12 +3,10 @@
 # modifiers: bold | default | reverse (useful for high-contrast) | underline
 
 git:
-  commit:
-    verbose: always # 'default' | 'always' | 'never' (applies to C, not c)
+  parseEmoji: true
 
 gui:
   expandFocusedSidePanel: true
-  parseEmoji: true
   showBottomLine: false # for hiding the bottom information line (unless it has important information to tell you)
   showCommandLog: false
   showFileTree: false # for rendering changes files in a tree format
@@ -22,16 +20,15 @@ gui:
 
 keybinding:
   universal:
+    createRebaseOptionsMenu: "M" # avoid accidental rebasing when pressing "m" to merge into current branch
     scrollUpMain: "<c-u>" # main panel scroll up
     scrollDownMain: "<c-d>" # main panel scroll down
   branches:
-    createRebaseOptionsMenu: "M" # avoid accidental rebasing
     mergeIntoCurrentBranch: "m"
     rebaseBranch: "R" # avoid accidental rebasing
     renameBranch: "r"
   commits:
     amendToCommit: 'a'
-    resetCommitAuthor: 'A'
 
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: false # true means "esc" quits when there's nothing to cancel/close
