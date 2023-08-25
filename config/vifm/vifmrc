@@ -575,4 +575,4 @@ set sort=+iname,dir
 set vicmd=nvim
 
 " Display file and folder icons
-source ~/.config/vifm/mu/vifm_devicons/favicons.vifm
+source ~/.config/vifm/mu/vifm_devicons.vifm
