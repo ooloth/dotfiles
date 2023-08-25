@@ -452,7 +452,7 @@
       "editorCursor.foreground": "#ff966c"
     }
   },
-  "workbench.colorTheme": "Gruvbox Dark Hard",
+  "workbench.colorTheme": "Material Theme Ocean",
   "workbench.editor.enablePreview": false,
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.wrapTabs": true,
