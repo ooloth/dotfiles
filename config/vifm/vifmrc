@@ -565,7 +565,7 @@ nnoremap <c-u> <c-w>x
 " My customizations
 " ------------------------------------------------------------------------------
 
-" List of color schemes to try (picks the first one supported by the terminal)
+" Not sure why, but choosing a valid custom colorscheme ends up using the terminal's general colorscheme (which is what I want)
 colorscheme palenight
 
 " Sort files and folders in alphabetical order (mixing files and directories as needed)
