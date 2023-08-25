@@ -18,12 +18,12 @@ alias lt4='lt --level=4'                          # file tree (4 levels only)
 alias mini="s michael@192.168.2.22"               # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
-n() { npm install -- $1 }
-nb() { n && npm run build }
-nc() { npm run check }
-nd() { n && npm run dev }
-nfc() { npm run format:check }
-nff() { npm run format:fix }
+n() { npm install -- $1; }
+nb() { n && npm run build; }
+nc() { npm run check; }
+nd() { n && npm run dev; }
+nfc() { npm run format:check; }
+nff() { npm run format:fix; }
 ng() {
   npm install --location=global \
     @githubnext/github-copilot-cli \
@@ -40,10 +40,10 @@ ng() {
     # typescript \
     # vscode-langservers-extracted
 }
-nk() { npm run types:check }
-nlc() { npm run lint:check }
-nlf() { npm run lint:fix }
-ns() { n && npm run start }
+nk() { npm run types:check; }
+nlc() { npm run lint:check; }
+nlf() { npm run lint:fix; }
+ns() { n && npm run start; }
 
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
@@ -57,7 +57,7 @@ vs() {
 
 alias s="kitty +kitten ssh" # kitty's ssh kitten
 
-sl() { ln -sfv $1 $2 } # easier symlinking
+sl() { ln -sfv $1 $2; } # easier symlinking
 
 alias t='tmux a'
 
