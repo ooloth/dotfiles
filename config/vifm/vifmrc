@@ -45,47 +45,6 @@ filetype * open| " open all files with default system program
 source ~/.config/vifm/mu/vifm_devicons.vifm
 
 " ------------------------------------------------------------------------------
-" BOOKMARKS
-"  syntax: :mark mark /full/directory/path [filename]
-"  NOTE: to use, type ' then the mark shortcut
-"  NOTE: to view all bookmarks, type :marks
-" ------------------------------------------------------------------------------
-
-mark 1 '/Volumes/Media 1'
-mark 2 '/Volumes/Media 2'
-mark d ~/Downloads/
-mark h ~/
-mark p ~/Downloads/@Complete/prowlarr
-mark r ~/Downloads/@Complete/radarr
-mark s ~/Downloads/@Complete/sonarr
-
-" ------------------------------------------------------------------------------
-" COMMANDS
-"  syntax: :com[mand][!] command_name action
-" ------------------------------------------------------------------------------
-
-" These are some of the macros that can be used in the action part:
-"  %a for user arguments
-"  %c for current file under the cursor
-"  %C for current file under the cursor of inactive pane
-"  %f for selected file(s)
-"  %F for selected file(s) of inactive pane
-"  %b is the same as %f %F
-"  %d for current directory name
-"  %D for current directory name of inactive pane
-"  %r{x} for list of files in register {x}
-"  %m runs the command in a menu window
-"  %u uses command's output to build a file list
-"  see `:help vifm-macros` and `:help vifm-filename-modifiers` for more
-
-command! df df -h %m 2> /dev/null
-command! diff nvim -d %f %F
-command! mkcd :mkdir %a | cd %a
-command! reload :write | restart full
-command! run !! ./%f
-command! zip zip -r %c.zip %f
-
-" ------------------------------------------------------------------------------
 " KEYMAPS
 " ------------------------------------------------------------------------------
 
@@ -129,3 +88,44 @@ nnoremap <tab> <c-w>x
 
 " Block particular shortcut
 " nnoremap <left> <nop>
+
+" ------------------------------------------------------------------------------
+" BOOKMARKS
+"  syntax: :mark mark /full/directory/path [filename]
+"  NOTE: to use, type ' then the mark shortcut
+"  NOTE: to view all bookmarks, type :marks
+" ------------------------------------------------------------------------------
+
+mark 1 '/Volumes/Media 1'
+mark 2 '/Volumes/Media 2'
+mark d ~/Downloads/
+mark h ~/
+mark p ~/Downloads/@Complete/prowlarr
+mark r ~/Downloads/@Complete/radarr
+mark s ~/Downloads/@Complete/sonarr
+
+" ------------------------------------------------------------------------------
+" COMMANDS
+"  syntax: :com[mand][!] command_name action
+" ------------------------------------------------------------------------------
+
+" These are some of the macros that can be used in the action part:
+"  %a for user arguments
+"  %c for current file under the cursor
+"  %C for current file under the cursor of inactive pane
+"  %f for selected file(s)
+"  %F for selected file(s) of inactive pane
+"  %b is the same as %f %F
+"  %d for current directory name
+"  %D for current directory name of inactive pane
+"  %r{x} for list of files in register {x}
+"  %m runs the command in a menu window
+"  %u uses command's output to build a file list
+"  see `:help vifm-macros` and `:help vifm-filename-modifiers` for more
+
+command! df df -h %m 2> /dev/null
+command! diff vim -d %f %F
+command! mkcd :mkdir %a | cd %a
+command! reload :write | restart full
+command! run !! ./%f
+command! zip zip -r %c.zip %f
