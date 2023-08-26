@@ -1,4 +1,5 @@
 " NOTE: manually copied Aug 25, 2023 from https://github.com/thimc/vifm_devicons/blob/master/favicons.vifm
+" NOTE: added an extra space between each icon and file extension (two spaces total)
 " NOTE: added *.csv, *.dmg, *.txt
 
 " Ranger devicons for ViFM
