@@ -57,9 +57,10 @@ vnoremap , :
 nnoremap : ,
 vnoremap : ,
 
-" Easier renaming
+" Easier command line renaming
 nnoremap I cw<c-a>
-nnoremap cc cw<c-u>
+" nnoremap cc cw<c-u>
+nnoremap cc :rename<cr>
 nnoremap A cw
 
 " don't open files with l or <Right> (only do that with Enter)
@@ -71,11 +72,12 @@ nnoremap <right> :if filetype('.') == 'dir'|cd %c|endif<cr>
 nnoremap w :view<cr>
 vnoremap w :view<cr>gv
 
-" Example of standard two-panel file managers mappings
-nnoremap <f5> :copy<cr>
-nnoremap <f6> :move<cr>
 nnoremap <f7> :mkdir<space>
-nnoremap <f8> :delete<cr>
+nnoremap <f6> :move &<cr>
+nnoremap <f8> :delete &<cr>
+
+" reload vifm
+nnoremap R :write | restart full<cr>
 
 " open directory under cursor in the other pane
 nnoremap s :sync %c<cr>
@@ -123,9 +125,8 @@ mark s ~/Downloads/@Complete/sonarr
 "  %u uses command's output to build a file list
 "  see `:help vifm-macros` and `:help vifm-filename-modifiers` for more
 
+command! d :delete &
+command! m :move &
 command! df df -h %m 2> /dev/null
-command! diff vim -d %f %F
 command! mkcd :mkdir %a | cd %a
-command! reload :write | restart full
-command! run !! ./%f
 command! zip zip -r %c.zip %f
