@@ -61,6 +61,7 @@
   "explorer.openEditors.visible": 1,
   "files.associations": {
     "*.njk": "nunjucks",
+    "vifmrc": "vimrc",
     "*.webc": "html"
   },
   "files.autoSave": "afterDelay",
