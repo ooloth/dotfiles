@@ -6,7 +6,7 @@ alias .....='cd ../../../..'
 alias c='clear'
 alias cat='bat --paging=never'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
-alias f='vifm . .'                                # open both vifm panes in cwd
+alias f='vifm'
 alias g='lazygit'
 alias h='cd $HOME'
 
