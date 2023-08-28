@@ -39,7 +39,16 @@ set wildstyle=popup| " display completions in a form of popup with descriptions 
 " TODO: make my own customized colorscheme based on palenight?
 colorscheme palenight Default-256 Default
 
-filetype * open| " open all files with default system program
+" open all files with default system program
+filetype * open
+
+" preview folder contents with exa
+fileviewer */,.*/ exa --tree --group-directories-first --colour=always --icons %c/
+fileviewer ../ exa --tree --group-directories-first --colour=always %c/
+
+" preview file contents with bat
+" see: https://github.com/vifm/vifm/issues/404#issuecomment-462652105
+fileviewer * bat --color always --wrap never --pager never %c -p
 
 " Display file and folder icons
 source ~/.config/vifm/mu/vifm_devicons.vifm
