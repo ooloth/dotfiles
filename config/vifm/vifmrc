@@ -58,7 +58,7 @@ source ~/.config/vifm/mu/vifm_devicons.vifm
 " ------------------------------------------------------------------------------
 
 " exit with Q
-nnoremap Q :q!<cr>
+nnoremap Q :wq<cr>
 
 " swap : and , (enter command mode with , instead of : and navigate f and t results using ;/: (like n/N for / results))
 nnoremap , :
