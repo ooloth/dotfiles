@@ -37,7 +37,7 @@ set wildstyle=popup| " display completions in a form of popup with descriptions 
 " The "palenight" colorscheme uses the terminal's global bg colour (which is what I want)
 " see: https://github.com/vifm/vifm-colors/blob/master/palenight.vifm
 " TODO: make my own customized colorscheme based on palenight?
-colorscheme palenight Default-256 Default
+colorscheme custom Default-256 Default
 
 " open all files with default system program
 filetype * open

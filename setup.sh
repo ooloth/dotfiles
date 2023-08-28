@@ -418,15 +418,6 @@ set_up_neovim() {
   success "\nDone setting up neovim."
 }
 
-set_up_vifm() {
-  title "Setting up vifm"
-
-  info "Cloning vifm/vifm-colors in .config/vifm/colors"
-  git clone "git@github.com:vifm/vifm-colors.git" "$HOME/.config/vifm/colors"
-
-  success "\nDone setting up vifm."
-}
-
 configure_macos() {
   title "Configuring Mac preferences"
 
@@ -517,7 +508,6 @@ confirm_consent \
   && set_up_node \
   && set_up_tmux \
   && set_up_neovim \
-  && set_up_vifm \
   && configure_macos \
   && configure_apps \
   && suggest_restart

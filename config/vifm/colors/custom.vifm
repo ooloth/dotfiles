@@ -1,0 +1,31 @@
+" my custom theme designed to leverage the active terminal colors
+" based palenight color scheme for vifm
+" TODO: add link
+
+" Reset all styles first
+highlight clear
+
+highlight Border      cterm=none	ctermfg=default	 ctermbg=default
+
+highlight TopLine	    cterm=none	ctermfg=2  ctermbg=default
+highlight TopLineSel  cterm=bold	ctermfg=2	 ctermbg=default
+
+highlight Win		      cterm=none	ctermfg=251	 ctermbg=default
+highlight Directory	  cterm=bold	ctermfg=4	 ctermbg=default
+highlight CurrLine	  cterm=bold,inverse  ctermfg=default	 ctermbg=default
+highlight OtherLine	  cterm=bold	ctermfg=default	 ctermbg=default
+highlight Selected	  cterm=none	ctermfg=3	 ctermbg=default
+
+highlight JobLine	    cterm=bold	ctermfg=251	 ctermbg=8
+highlight StatusLine	cterm=none	ctermfg=8	 ctermbg=default
+highlight ErrorMsg	  cterm=bold	ctermfg=1	 ctermbg=default
+highlight WildMenu	  cterm=bold	ctermfg=15	 ctermbg=8
+highlight CmdLine	    cterm=none	ctermfg=7	 ctermbg=default
+
+highlight Executable  cterm=bold	ctermfg=2	 ctermbg=default
+highlight Link		    cterm=bold	ctermfg=6	 ctermbg=default
+highlight BrokenLink	cterm=bold	ctermfg=1	 ctermbg=default
+highlight Device	    cterm=bold,standout	 ctermfg=0	ctermbg=11
+highlight Fifo		    cterm=none	ctermfg=3	 ctermbg=default
+highlight Socket	    cterm=bold	ctermfg=5	 ctermbg=default
+
