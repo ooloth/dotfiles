@@ -114,6 +114,7 @@ mark h ~/
 mark p ~/Downloads/@Complete/prowlarr
 mark r ~/Downloads/@Complete/radarr
 mark s ~/Downloads/@Complete/sonarr
+mark t ~/.local/share/vifm/Trash
 
 " ------------------------------------------------------------------------------
 " COMMANDS
