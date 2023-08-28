@@ -1,5 +1,11 @@
 export EDITOR=code
 
+# see: https://the.exa.website/docs/environment-variables
+export EXA_GRID_ROWS=10
+export EXA_ICON_SPACING=2
+export EXA_STRICT=true
+export TIME_STYLE='long-iso'
+
 export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
 
 # TODO: customize HISTORY behavior (validate ideas below + use with fzf?)

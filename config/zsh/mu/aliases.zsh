@@ -9,9 +9,12 @@ alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias f='vifm . .'                                # open both vifm panes in cwd
 alias g='lazygit'
 alias h='cd $HOME'
-alias ls='exa --all --group-directories-first'    # top level dir + files
-alias ld='ls --git --header --long'               # top level details
-alias lt='ls --git-ignore -I .git --tree' .       # file tree (all levels)
+
+# see: https://the.exa.website/docs/command-line-options
+# see EXA_* env vars in zsh/mu/variables.zsh
+alias ls='exa --all --group-directories-first --classify'    # top level dir + files
+alias ld='ls --long --no-user --header --grid'               # top level details
+alias lt='ls --tree --git-ignore -I .git'       # file tree (all levels)
 alias lt2='lt --level=2'                          # file tree (2 levels only)
 alias lt3='lt --level=3'                          # file tree (3 levels only)
 alias lt4='lt --level=4'                          # file tree (4 levels only)

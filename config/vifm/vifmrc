@@ -43,8 +43,8 @@ colorscheme palenight Default-256 Default
 filetype * open
 
 " preview folder contents with exa
-fileviewer */,.*/ exa --tree --group-directories-first --colour=always --icons %c/
-fileviewer ../ exa --tree --group-directories-first --colour=always %c/
+fileviewer */,.*/ exa --tree --group-directories-first --all --classify --git-ignore -I .git --colour=always %c/
+fileviewer ../ exa --tree --group-directories-first --all --classify --git-ignore -I .git --colour=always %c/
 
 " preview file contents with bat
 " see: https://github.com/vifm/vifm/issues/404#issuecomment-462652105
