@@ -9,6 +9,7 @@
 " - NOTE: the line continuation character ("|") immedately after each command is what makes inline comments possible
 " ------------------------------------------------------------------------------
 
+set dotfiles| " show hidden files
 set history=100| " how many directories to store in the directory history
 set ignorecase| " ignore case in search patterns (see "smartcase" below for the exception)
 set incsearch| " search incrementally (i.e. search while typing)
