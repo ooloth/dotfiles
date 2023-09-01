@@ -46,4 +46,3 @@ highlight BrokenLink	cterm=bold	ctermfg=1	 ctermbg=default
 highlight Device	    cterm=bold,standout	 ctermfg=0	ctermbg=11
 highlight Fifo		    cterm=none	ctermfg=3	 ctermbg=default
 highlight Socket	    cterm=bold	ctermfg=5	 ctermbg=default
-
