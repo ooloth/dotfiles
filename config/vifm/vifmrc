@@ -26,6 +26,7 @@ set suggestoptions=normal,visual,view,otherpane,keys,marks,registers| " When ava
 set syscalls| " perform file operations with vifm instead of external programs (to speed things up and allow progress measuring)
 set timefmt='%Y/%m/%d %H:%M'| " format for displaying time in file list. For example: TIME_STAMP_FORMAT=%m/%d-%H:%M (see man date or man strftime for details)
 set trash| " move files deleted with dd or :d to the trash directory
+set trashdir=~/.Trash| " set trash directory to macOS default Trash folder
 set undolevels=100| " maximum number of changes that can be undone
 set vicmd=vim| " edit files and file names in vim
 set viewcolumns=-{name}..,6{}.| " customize view columns (enable ellipsis for truncated file names)
@@ -115,7 +116,7 @@ mark h ~/
 mark p ~/Downloads/@Complete/prowlarr
 mark r ~/Downloads/@Complete/radarr
 mark s ~/Downloads/@Complete/sonarr
-mark t ~/.local/share/vifm/Trash
+mark t ~/.Trash
 
 " ------------------------------------------------------------------------------
 " COMMANDS
