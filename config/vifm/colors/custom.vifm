@@ -1,6 +1,24 @@
-" my custom theme designed to leverage the active terminal colors
-" based palenight color scheme for vifm
-" TODO: add link
+" My custom theme designed to leverage the active terminal colors
+" Based palenight color scheme for vifm: https://github.com/vifm/vifm-colors/blob/master/palenight.vifm
+
+" Default = -1 = None, can be used for transparency or default color
+" Black = 0
+" Red = 1
+" Green = 2
+" Yellow = 3
+" Blue = 4
+" Magenta = 5
+" Cyan = 6
+" White = 7
+
+" STYLES
+" bold
+" underline
+" reverse or inverse
+" standout
+" none
+
+" For list of all 256 xterm colors, see: https://robotmoon.com/256-colors/
 
 " Reset all styles first
 highlight clear
