@@ -15,7 +15,7 @@ set ignorecase| " ignore case in search patterns (see "smartcase" below for the 
 set incsearch| " search incrementally (i.e. search while typing)
 set nofollowlinks| " automatically resolve symbolic links on l or Enter
 set nohlsearch| " Don't highlight search results automatically
-set norunexec| " run executable files on Enter, l or Right Arrow
+set runexec| " run executable files on Enter, l or Right Arrow
 set scrolloff=4| " try to leave some space from cursor to upper/lower border in lists
 set slowfs=curlftpfs| " don't do too many requests to slow file systems
 set smartcase| " respect case in search patterns if contains at least one uppercase letter
