@@ -34,7 +34,7 @@ highlight CurrLine	  cterm=bold,inverse  ctermfg=default	 ctermbg=default
 highlight OtherLine	  cterm=bold	ctermfg=default	 ctermbg=default
 highlight Selected	  cterm=none	ctermfg=3	 ctermbg=default
 
-highlight JobLine	    cterm=bold	ctermfg=5	 ctermbg=default
+highlight JobLine	    cterm=none	ctermfg=5	 ctermbg=default
 highlight StatusLine	cterm=none	ctermfg=8	 ctermbg=default
 highlight ErrorMsg	  cterm=bold	ctermfg=1	 ctermbg=default
 highlight WildMenu	  cterm=bold	ctermfg=15	ctermbg=8
