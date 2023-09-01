@@ -36,6 +36,10 @@ set vimhelp| " use Vim's format of help file (includes highlighting and "hyperli
 set wildmenu| " show list of matches on tab completion in command-line mode
 set wildstyle=popup| " display completions in a form of popup with descriptions of the matches
 
+" hide specific files in all panes
+" see: https://q2a.vifm.info/36/can-i-hide-some-folders-in-vifm?show=49#c49
+windo filter .DS_Store
+
 " List of color schemes to try (picks the first one supported by the terminal)
 " The "palenight" colorscheme uses the terminal's global bg colour (which is what I want)
 " see: https://github.com/vifm/vifm-colors/blob/master/palenight.vifm
