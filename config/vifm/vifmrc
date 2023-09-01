@@ -21,7 +21,7 @@ set slowfs=curlftpfs| " don't do too many requests to slow file systems
 set smartcase| " respect case in search patterns if contains at least one uppercase letter
 set sort=+iname,dir| " sort files and folders in alphabetical order (mixing files and directories as needed)
 set sortnumbers| " natural sort of (version) numbers within text
-set statusline='  Hint: %z%= %A %10u:%-7g %15s %20d  '|  " customize status line look
+set statusline=' Hint: %z%= %A %10u:%-7g %15s %20d '|  " customize status line look
 set suggestoptions=normal,visual,view,otherpane,keys,marks,registers| " When available, suggest keys, marks and registers in other pane while in normal, visual and view modes (at most 5 files)
 set syscalls| " perform file operations with vifm instead of external programs (to speed things up and allow progress measuring)
 set timefmt='%Y/%m/%d %H:%M'| " format for displaying time in file list. For example: TIME_STAMP_FORMAT=%m/%d-%H:%M (see man date or man strftime for details)
