@@ -28,7 +28,7 @@ highlight Border      cterm=none	ctermfg=default	 ctermbg=default
 highlight TopLine	    cterm=none	ctermfg=2  ctermbg=default
 highlight TopLineSel  cterm=bold	ctermfg=2	 ctermbg=default
 
-highlight Win		      cterm=none	ctermfg=251	 ctermbg=default
+highlight Win		      cterm=none	ctermfg=252	 ctermbg=default
 highlight Directory	  cterm=bold	ctermfg=4	 ctermbg=default
 highlight CurrLine	  cterm=bold,inverse  ctermfg=default	 ctermbg=default
 highlight OtherLine	  cterm=bold	ctermfg=default	 ctermbg=default
