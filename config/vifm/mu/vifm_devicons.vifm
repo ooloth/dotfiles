@@ -44,7 +44,7 @@ set classify+='  ::*.ai::'
 set classify+='  ::*.psb,,*.psd::'
 set classify+='  ::*.jsx::'
 
-set classify+='  ::*.db,,*.dump,,*.sql,,*.tvdb::'
+set classify+='  ::*.db,,*.dump,,*.sql,,*.sqlite,,*.tvdb,,*pdb::'
 
 set classify+='  ::*.bmp,,*.gif,,*.ico,,*.jpeg,,*.jpg,,*.png,,*.svg,,*.svgz,,*.tga,,*.tiff,,*.xmb,,*.xcf,,*.xpm,,*.xspf,,*.xwd,,*.cr2,,*.dng,,*.3fr,,*.ari,,*.arw,,*.bay,,*.crw,,*.cr3,,*.cap,,*.data,,*.dcs,,*.dcr,,*.drf,,*.eip,,*.erf,,*.fff,,*.gpr,,*.iiq,,*.k25,,*.kdc,,*.mdc,,*.mef,,*.mos,,*.mrw,,*.obm,,*.orf,,*.pef,,*.ptx,,*.pxn,,*.r3d,,*.raf,,*.raw,,*.rwl,,*.rw2,,*.rwz,,*.sr2,,*.srf,,*.srw,,*.tif,,*.x3f,,*.webp,,*.avif,,*.jxl::'
 set classify+='  ::*.aac,,*.anx,,*.asf,,*.au,,*.axa,,*.flac,,*.m2a,,*.m4a,,*.mid,,*.midi,,*.mp3,,*.mpc,,*.oga,,*.ogg,,*.ogx,,*.ra,,*.ram,,*.rm,,*.spx,,*.wav,,*.wma,,*.ac3::'
@@ -53,7 +53,9 @@ set classify+='  ::*.avi,,*.flv,,*.mkv,,*.mov,,*.mp4,,*.mpeg,,*.mpg,,*.webm,,
 set classify+='  ::*.7z,,*.apk,,*.bz2,,*.cab,,*.cpio,,*.deb,,*.dmg,,*.gem,,*.gz,,*.gzip,,*.lh,,*.lzh,,*.lzma,,*.rar,,*.rpm,,*.tar,,*.tgz,,*.xz,,*.zip,,*.zst::'
 set classify+='  ::*.cbr,,*.cbz::'
 
-set classify+='  ::*.txt,,*.rtf,,*.log,,*.srt,,*.sub::'
+set classify+='  ::*.a,,*.dll,,*.dylib::'
+
+set classify+='  ::*.txt,,*.rtf,,*.log,,*.srt,,*.sub,,*.torrent::'
 set classify+='  ::*.markdown,,*.md::'
 set classify+='  ::*.pdf::'
 set classify+='  ::*.csv::'
