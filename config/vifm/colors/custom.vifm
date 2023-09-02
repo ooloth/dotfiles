@@ -18,7 +18,7 @@
 " standout
 " none
 
-" For list of all 256 xterm colors, see: https://robotmoon.com/256-colors/
+" For list of all 256 xterm colors, see: https://robotmoon.com/256-colors/ + https://www.ditig.com/256-colors-cheat-sheet
 
 " Reset all styles first
 highlight clear
@@ -28,7 +28,7 @@ highlight Border      cterm=none	ctermfg=default	 ctermbg=default
 highlight TopLine	    cterm=none	ctermfg=2  ctermbg=default
 highlight TopLineSel  cterm=bold	ctermfg=2	 ctermbg=default
 
-highlight Win		      cterm=none	ctermfg=252	 ctermbg=default
+highlight Win		      cterm=none	ctermfg=250	 ctermbg=default
 highlight Directory	  cterm=bold	ctermfg=4	 ctermbg=default
 highlight CurrLine	  cterm=bold,inverse  ctermfg=default	 ctermbg=default
 highlight OtherLine	  cterm=bold	ctermfg=default	 ctermbg=default
