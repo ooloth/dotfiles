@@ -20,7 +20,7 @@
   },
   "editor.cursorSurroundingLines": 20,
   "editor.foldingImportsByDefault": true,
-  "editor.fontFamily": "'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontFamily": "'UbuntuMono Nerd Font', 'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
   "editor.fontSize": 15,
   "editor.formatOnPaste": true,
