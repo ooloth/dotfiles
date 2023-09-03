@@ -78,8 +78,8 @@ u() {
 	fi
 }
 
-alias v='vim'
-alias vim='nvim'
+# alias v='vim'
+# alias vim='nvim'
 
 # [z]sh [t]ime: measure how long new shells take to launch
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
