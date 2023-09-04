@@ -12,13 +12,13 @@ alias h='cd $HOME'
 
 # see: https://the.exa.website/docs/command-line-options
 # see EXA_* env vars in zsh/mu/variables.zsh
-alias ls='exa --all --group-directories-first --classify'    # top level dir + files
-alias ld='ls --long --no-user --header --grid'               # top level details
-alias lt='ls --tree --git-ignore -I .git'       # file tree (all levels)
-alias lt2='lt --level=2'                          # file tree (2 levels only)
-alias lt3='lt --level=3'                          # file tree (3 levels only)
-alias lt4='lt --level=4'                          # file tree (4 levels only)
-alias mini="s michael@192.168.2.22"               # automatically log in using SSH key pair
+alias ls='exa --all --group-directories-first --classify' # top level dir + files
+alias ld='ls --long --no-user --header --grid'            # top level details
+alias lt='ls --tree --git-ignore -I .git'                 # file tree (all levels)
+alias lt2='lt --level=2'                                  # file tree (2 levels only)
+alias lt3='lt --level=3'                                  # file tree (3 levels only)
+alias lt4='lt --level=4'                                  # file tree (4 levels only)
+alias mini="s michael@192.168.2.22"                       # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 n() { npm install -- $1; }
