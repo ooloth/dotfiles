@@ -73,10 +73,12 @@ vnoremap , :
 nnoremap : ,
 vnoremap : ,
 
+" rename in vim editor by default
+nnoremap cw :rename<cr>
+
 " Easier command line renaming
+nnoremap cc cw<c-u>
 nnoremap I cw<c-a>
-" nnoremap cc cw<c-u>
-nnoremap cc :rename<cr>
 nnoremap A cw
 
 " don't open files with l or <Right> (only do that with Enter)
