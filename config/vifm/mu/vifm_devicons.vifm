@@ -58,7 +58,7 @@ set classify+='  ::*.cbr,,*.cbz::'
 
 set classify+='  ::*.a,,*.dll,,*.dylib::'
 
-set classify+='  ::*.txt,,*.rtf,,*.log,,*.srt,,*.sub,,*.torrent,,*.nfo::'
+set classify+='  ::*.txt,,*.rtf,,*.log,,*.srt,,*.sub,,*.torrent,,*.nfo,,*.idx::'
 set classify+='  ::*.markdown,,*.md,,LICENSE::'
 set classify+='  ::*.pdf::'
 set classify+='  ::*.csv::'
