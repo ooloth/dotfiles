@@ -29,7 +29,7 @@ set timefmt='%Y/%m/%d %H:%M'| " format for displaying time in file list. For exa
 set trash| " move files deleted with dd or :d to the trash directory
 set trashdir=~/.Trash| " set trash directory to macOS default Trash folder
 set undolevels=100| " maximum number of changes that can be undone
-set vicmd=vim| " edit files and file names in vim
+set vicmd=nvim| " edit files and file names in nvim
 set viewcolumns=-{name}..,6{}.| " customize view columns (enable ellipsis for truncated file names)
 set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,phistory,fhistory,dirstack,registers,bookmarks,bmarks| " save history, last visited directories, etc. on exit
 set vimhelp| " use Vim's format of help file (includes highlighting and "hyperlinks")
