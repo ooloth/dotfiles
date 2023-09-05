@@ -48,13 +48,13 @@ else
   set('n', '<leader>b[', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
   set('n', '<leader>b]', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 end
-set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
+set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' })  -- switch to last buffer
 set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
 -- "changes"
-set('n', ']c', 'g,', { desc = 'Next change' }) -- go to next change with g;
+set('n', ']c', 'g,', { desc = 'Next change' })     -- go to next change with g;
 set('n', '[c', 'g;', { desc = 'Previous change' }) -- go to next change with g;
-set('n', 'g;', 'g,', { desc = 'Next change' }) -- go to next change with g;
+set('n', 'g;', 'g,', { desc = 'Next change' })     -- go to next change with g;
 set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with g;
 
 -- "debug" (see debug.lua)

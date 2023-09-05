@@ -5,6 +5,7 @@ alias .....='cd ../../../..'
 
 alias c='clear'
 alias cat='bat --paging=never'
+alias con='cd $HOME/Repos/ooloth/content'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias f='vifm'
 alias g='lazygit'
@@ -78,8 +79,9 @@ u() {
 	fi
 }
 
-# alias v='vim'
-# alias vim='nvim'
+alias v='NVIM_APPNAME=nvim-simple nvim'
+alias vim='nvim'
+alias vl='NVIM_APPNAME=nvim-lazyvim nvim'
 
 # [z]sh [t]ime: measure how long new shells take to launch
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
