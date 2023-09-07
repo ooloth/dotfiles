@@ -54,11 +54,6 @@ alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 alias R="source $HOME/.config/zsh/.zshrc"
 
-# find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in vs code
-vs() {
-  code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
-}
-
 alias s="kitty +kitten ssh" # kitty's ssh kitten
 
 sl() { ln -sfv $1 $2; } # easier symlinking
@@ -82,6 +77,29 @@ u() {
 alias v='NVIM_APPNAME=nvim-simple nvim'
 alias vim='nvim'
 alias vl='NVIM_APPNAME=nvim-lazyvim nvim'
+
+# find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in vs code
+vs() {
+  code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
+}
+
+vv() {
+  # Assumes all configs are in directories named ~/.config/nvim-*
+  local config=$(fd --max-depth 1 --glob 'nvim-*' ~/.config | fzf --prompt="Neovim Config > " --height=~50% --layout=reverse --border --exit-0)
+
+  # If I exit fzf without selecting a config, don't open Neovim
+  [[ -z $config ]] && echo "No config selected" && return
+
+  # Open Neovim with the selected config
+  NVIM_APPNAME=$(basename $config) nvim
+}
+
+vvv() {
+  # Assumes configs exist in folders named ~/.config/nvim-*
+  select config in lazyvim kickstart nvchad astrovim lunarvim
+  # select config in simple lazyvim
+  do NVIM_APPNAME=nvim-$config nvim; break; done
+}
 
 # [z]sh [t]ime: measure how long new shells take to launch
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
