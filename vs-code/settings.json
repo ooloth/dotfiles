@@ -447,6 +447,15 @@
       "statusBar.background": "#21222C"
     },
     "[Moonlight II]": {
+      "dropdown.background": "#1f1f22",
+      "input.background": "#1f1f22",
+      "menu.background": "#1f1f22",
+      "sideBar.background": "#1f1f22",
+      "activityBar.activeBackground": "#1f1f22",
+      "titleBar.activeBackground": "#1f1f22",
+      "panel.background": "#1f1f22",
+      "editor.background": "#1f1f22",
+      "terminal.background": "#1f1f22",
       // "editorCursor.foreground": "#ff757f",
       "editorCursor.background": "#000000",
       // See: https://github.com/atomiks/moonlight-vscode-theme/blob/master/src/moonlight-ii.json
