@@ -479,6 +479,15 @@
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
 
-  "workbench.activityBar.visible": false
+  "workbench.activityBar.visible": false,
+  "workbench.statusBar.visible": false,
+  "breadcrumbs.enabled": false,
+  "workbench.tree.indent": 14,
+  "editor.gotoLocation.multipleDeclarations": "goto",
+  "editor.gotoLocation.multipleDefinitions": "goto",
+  "editor.gotoLocation.multipleImplementations": "goto",
+  "editor.gotoLocation.multipleReferences": "goto",
+  "editor.gotoLocation.multipleTypeDefinitions": "goto",
+  "references.preferredLocation": "view",
+  "editor.fontWeight": "normal"
 }
-
