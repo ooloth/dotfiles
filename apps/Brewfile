@@ -50,7 +50,7 @@ cask "ishowu-instant"
 cask "karabiner-elements"
 cask "kitty"
 cask "notion"
-cask "prepros"
+# cask "prepros" - manually download v6 instead
 cask "raycast"
 cask "rectangle"
 cask "runjs"
