@@ -6,7 +6,7 @@ tap "homebrew/cask-fonts"
 
 # Packages
 brew "bat"
-brew "exa"
+brew "eza"
 brew "fd"
 brew "fnm"
 brew "fzf"
@@ -20,7 +20,7 @@ brew "lazydocker"
 brew "jesseduffield/lazygit/lazygit"
 brew "mas"
 brew "neovim"
-brew "romkatv/powerlevel10k/powerlevel10k"
+brew "powerlevel10k"
 brew "raycast"
 brew "ripgrep" # for telescope
 brew "starship"
