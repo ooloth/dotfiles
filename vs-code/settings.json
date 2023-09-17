@@ -170,6 +170,8 @@
   "vim.useSystemClipboard": true,
   "vim.visualModeKeyBindingsNonRecursive": [
     { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
+    { "before": [ "v" ], "commands": [ "editor.action.smartSelect.grow" ] },
+    { "before": [ "<s-v>" ], "commands": [ "editor.action.smartSelect.shrink" ] },
     { "before": [ "]", "p" ], "commands": [ "editor.action.marker.nextInFiles" ] },
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
     { "before": [ "u" ], "commands": [ "undo" ] },
