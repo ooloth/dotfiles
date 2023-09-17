@@ -38,6 +38,12 @@
   autoSetupRemote = true
   default = simple
 
+[remote "origin"]
+  # Removes branches locally when you do a git pull/fetch if the branches was deleted on the remote.
+  # e.g. merge request/delete branch; on next pull local, will delete local branch
+  # see: https://www.jvt.me/posts/2017/06/07/clean-up-git-branches/
+	prune = true
+
 [status]
   showStash = true
 
