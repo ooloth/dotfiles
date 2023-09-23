@@ -1,3 +1,5 @@
+vim.g.material_style = 'deep ocean'
+
 return {
   {
     'Mofiqul/dracula.nvim',
@@ -9,10 +11,22 @@ return {
     },
   },
 
+  {
+    'marko-cerovac/material.nvim',
+    lazy = true,
+    opts = {
+      high_visibility = {
+        lighter = false, -- Enable higher contrast text for lighter style
+        darker = true, -- Enable higher contrast text for darker style
+      },
+    },
+  },
+
   -- Configure LazyVim to load dracula
   {
     'LazyVim/LazyVim',
-    opts = { colorscheme = 'dracula' },
+    opts = { colorscheme = 'material' },
+    -- opts = { colorscheme = 'dracula' },
   },
 
   {
