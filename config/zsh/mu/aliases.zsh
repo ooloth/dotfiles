@@ -101,5 +101,7 @@ vvv() {
   do NVIM_APPNAME=nvim-$config nvim; break; done
 }
 
+alias x='exit'
+
 # [z]sh [t]ime: measure how long new shells take to launch
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
