@@ -13,7 +13,6 @@ return {
         'css',
         'diff',
         'gitcommit',
-        'help',
         'html',
         'javascript',
         'jsdoc',
