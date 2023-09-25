@@ -17,6 +17,7 @@ end
 
 -- UI
 vim.opt.cmdheight = 0
+vim.opt.fillchars = { eob = ' ' } -- hide ~ at end of buffer
 vim.opt.number = false
 vim.opt.relativenumber = false
 vim.opt.scrolloff = 10
