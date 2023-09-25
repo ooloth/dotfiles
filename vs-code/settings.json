@@ -114,6 +114,7 @@
     { "id": "relativeLineNumbers", "values": [ { "editor.lineNumbers": "relative", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "on", "vim.smartRelativeLine": false } ] }
   ],
   "tailwindCSS.emmetCompletions": true,
+  "terminal.external.osxExec": "kitty.app",
   "terminal.integrated.cursorBlinking": false,
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
