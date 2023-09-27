@@ -142,13 +142,15 @@
   "vim.leader": "",
   "vim.normalModeKeyBindingsNonRecursive": [
     { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
+    { "before": [ "," ], "after": [ ":" ] }, // enter command mode with , instead of :
+    { "before": [ ":" ], "after": [ "," ] }, // navigate f and t results using ;/: (like n/N for / results)
     { "before": [ "]", "c" ], "commands": [ "workbench.action.navigateForwardInEditLocations" ] },
     { "before": [ "[", "c" ], "commands": [ "workbench.action.navigateBackInEditLocations" ] },
     { "before": [ "]", "p" ], "commands": [ "editor.action.marker.nextInFiles" ] },
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
     { "before": [ "g", "a" ], "commands": [ "editor.action.quickFix" ] },
-    { "before": [ "Y" ], "after": [ "y", "$" ] },
     { "before": [ "u" ], "commands": [ "undo" ] },
+    { "before": [ "Y" ], "after": [ "y", "$" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
     // { //   "before": ["<leader>", "b"], //   "commands": ["workbench.action.toggleSidebarVisibility"] // },
     // { //   "before": ["<leader>", "c"], //   "commands": ["editor.action.commentLine"] // },
@@ -171,11 +173,13 @@
   "vim.useSystemClipboard": true,
   "vim.visualModeKeyBindingsNonRecursive": [
     { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
-    { "before": [ "v" ], "commands": [ "editor.action.smartSelect.grow" ] },
-    { "before": [ "<s-v>" ], "commands": [ "editor.action.smartSelect.shrink" ] },
+    { "before": [ "," ], "after": [ ":" ] }, // enter command mode with , instead of :
+    { "before": [ ":" ], "after": [ "," ] }, // navigate f and t results using ;/: (like n/N for / results)
     { "before": [ "]", "p" ], "commands": [ "editor.action.marker.nextInFiles" ] },
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
     { "before": [ "u" ], "commands": [ "undo" ] },
+    { "before": [ "v" ], "commands": [ "editor.action.smartSelect.grow" ] },
+    { "before": [ "<s-v>" ], "commands": [ "editor.action.smartSelect.shrink" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
     // { //   "before": ["<leader>", "b"], //   "commands": ["workbench.action.toggleSidebarVisibility"] // },
     // { //   "before": ["<leader>", "c"], //   "commands": ["editor.action.commentLine"] // },
@@ -231,7 +235,7 @@
       { "key": "a", "name": "Ask CodeGPT", "command": "codegpt.askCodeGPT", "type": "command" }
     ]},
 
-    { "key": "b", "name": "Toggle sidebar", "command": "workbench.action.splitEditor", "type": "command" },
+    { "key": "b", "name": "Toggle sidebar", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
 
     { "key": "d", "name": "+Debugger", "type": "bindings", "bindings": [
       { "key": "d", "name": "Start", "command": "workbench.action.debug.start", "type": "command" },
@@ -483,7 +487,6 @@
   "zenMode.hideStatusBar": true,
 
   "workbench.activityBar.visible": false,
-  "workbench.statusBar.visible": false,
   "breadcrumbs.enabled": false,
   "workbench.tree.indent": 14,
   "editor.gotoLocation.multipleDeclarations": "goto",
