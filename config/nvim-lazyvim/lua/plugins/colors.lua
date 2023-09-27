@@ -3,7 +3,6 @@ vim.g.material_style = 'deep ocean'
 return {
   {
     'Mofiqul/dracula.nvim',
-    lazy = true,
     -- See: https://github.com/Mofiqul/dracula.nvim#-configuration
     opts = {
       italic_comment = true,
@@ -13,7 +12,6 @@ return {
 
   {
     'marko-cerovac/material.nvim',
-    lazy = true,
     opts = {
       high_visibility = {
         lighter = false, -- Enable higher contrast text for lighter style
@@ -25,8 +23,8 @@ return {
   -- Configure LazyVim to load dracula
   {
     'LazyVim/LazyVim',
-    opts = { colorscheme = 'material' },
-    -- opts = { colorscheme = 'dracula' },
+    opts = { colorscheme = 'catppuccin' },
+    -- opts = { colorscheme = 'material' },
   },
 
   {

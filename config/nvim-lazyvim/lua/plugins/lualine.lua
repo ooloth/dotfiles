@@ -5,7 +5,8 @@ local options = {
   -- disabled_filetypes = {},
   globalstatus = true,
   section_separators = '',
-  theme = 'material-nvim',
+  theme = 'auto',
+  -- theme = 'material-nvim',
   -- theme = 'dracula-nvim',
 }
 
