@@ -20,6 +20,7 @@
   // Editor navigation
   { "key": "ctrl+]", "command": "workbench.action.nextEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
   { "key": "ctrl+[", "command": "workbench.action.previousEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+\\", "command": "workbench.action.splitEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
 
   // Terminal navigation
   { "key": "ctrl+t", "command": "workbench.action.terminal.toggleTerminal", "when": "terminal.active" },
