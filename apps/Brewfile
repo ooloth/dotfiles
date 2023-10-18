@@ -47,6 +47,7 @@ cask "hyperkey"
 cask "karabiner-elements"
 cask "kitty"
 cask "notion"
+cask "obsidian"
 # cask "prepros" - manually download v6 instead
 cask "raycast"
 cask "rectangle"
