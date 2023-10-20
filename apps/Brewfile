@@ -38,9 +38,8 @@ cask "appcleaner"
 # cask "backblaze"
 cask "brave-browser"
 # cask "cleanmymac"
-# cask "drivedx"
 cask "firefox"
-cask "google-chrome"
+# cask "google-chrome"
 # cask "handbrake"
 cask "hyperkey"
 # cask "ishowu-instant"
@@ -65,20 +64,20 @@ cask "font-ubuntu-mono-nerd-font"
 
 # macOS App Store
 mas "Amphetamine", id: 937984704
-mas "Bear", id: 1091189122
+# mas "Bear", id: 1091189122
 # mas "Contrast", id: 1254981365
-mas "Fantastical - Calendar", id: 975937182
+# mas "Fantastical - Calendar", id: 975937182
 mas "Keynote", id: 409183694
 mas "Notion Web Clipper", id: 1559269364 # Safari extension
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 # mas "PiPifier", id: 1160374471
 # mas "Pixave", id: 924891282
-mas "Pixelmator Pro", id: 1289583905
+# mas "Pixelmator Pro", id: 1289583905
 mas "Reeder 5.", id: 1529448980
 mas "Sip", id: 507257563
 # mas "Smart Converter Pro", id: 450078312
-mas "Spark", id: 1176895641
+# mas "Spark", id: 1176895641
 mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
