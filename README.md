@@ -4,7 +4,7 @@ It dawned on me that I should make sure I don't lose these!
 
 ## Disclaimer
 
-The settings here are based purely on my personal preferences and I'm doing this for fun, so...expect lots of changes and experimenting. Unless you love surprises, you'll probably want to fork this repo before using them.
+The settings here are based purely on my personal preferences and I'm doing this for fun, so...expect lots of changes and experimenting. Unless you love surprises, you'll probably want to fork this repo before using it.
 
 ## Prerequisites
 
