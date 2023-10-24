@@ -377,7 +377,7 @@ set_up_node() {
 
   fnm install 21 && fnm default 21 && fnm use 21
 
-  npm i -g npm-check tldr
+  npm i -g @githubnext/github-copilot-cli npm-check tldr
 
   info "Enabling corepack to activate yarn"
   # see: https://yarnpkg.com/getting-started/install
