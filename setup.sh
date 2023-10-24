@@ -433,7 +433,7 @@ set_up_vs_code() {
   info "Installing VS Code extensions...\n"
 
   # Install VS Code extensions from extensions.txt
-  cat "$DOTFILES/vs-code/extensions.txt" | xargs -L 1 echo code --install-extension
+  cat "$DOTFILES/vs-code/extensions.txt" | xargs -L 1 code --install-extension
 
   success "\nDone setting up VS Code."
 }
