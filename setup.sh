@@ -322,18 +322,18 @@ set_up_homebrew() {
   fi
 
   # Install brew dependencies from Brewfile
-  /opt/hombrew/bin/brew bundle --file="$DOTFILES/apps/Brewfile"
+  /opt/homebrew/bin/brew bundle --file="$DOTFILES/apps/Brewfile"
 
   # Install fzf
   echo -e
   title "Installing fzf"
-  "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
+  /opt/homebrew/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
 
   printf "\n"
   info "Updating Homebrew...\n"
 
-  brew update
-  brew upgrade
+  opt/homebrew/bin/brew update
+  opt/homebrew/bin/brew upgrade
 
   success "\nDone setting up Homebrew."
 }
