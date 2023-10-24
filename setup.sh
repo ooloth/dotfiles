@@ -375,7 +375,7 @@ set_up_zsh() {
 set_up_node() {
   title "Installing node and general global dependencies..."
 
-  fnm install 19 && fnm default 19 && fnm use 19
+  fnm install 21 && fnm default 21 && fnm use 21
 
   npm i -g npm-check tldr
 
