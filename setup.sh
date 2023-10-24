@@ -425,9 +425,9 @@ set_up_vs_code() {
 
   info "Symlinking VS Code settings, keybindings and snippets..."
 
-  ln -sfv "$DOTFILES/vs-code/settings.json" "$HOME/Library/Application Support/Code/User/"
-  ln -sfv "$DOTFILES/vs-code/keybindings.json" "$HOME/Library/Application Support/Code/User/"
-  ln -sfv "$DOTFILES/vs-code/snippets" "$HOME/Library/Application Support/Code/User/"
+  ln -sfv "$DOTFILES/vs-code/settings.json" "$HOME/Library/Application Support/Code/User"
+  ln -sfv "$DOTFILES/vs-code/keybindings.json" "$HOME/Library/Application Support/Code/User"
+  ln -sfv "$DOTFILES/vs-code/snippets" "$HOME/Library/Application Support/Code/User"
 
   printf "\n"
   info "Installing VS Code extensions...\n"
