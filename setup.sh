@@ -310,6 +310,8 @@ install_homebrew() {
   # Run as a login shell (non-interactive) so that the script doesn't pause for user input
   curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
 
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+
   success "\nDone installing Homebrew."
 }
 
@@ -322,18 +324,18 @@ set_up_homebrew() {
   fi
 
   # Install brew dependencies from Brewfile
-  /opt/homebrew/bin/brew bundle --file="$DOTFILES/apps/Brewfile"
+  brew bundle --file="$DOTFILES/apps/Brewfile"
 
   # Install fzf
   echo -e
   title "Installing fzf"
-  /opt/homebrew/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
+  "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
 
   printf "\n"
   info "Updating Homebrew...\n"
 
-  opt/homebrew/bin/brew update
-  opt/homebrew/bin/brew upgrade
+  brew update
+  brew upgrade
 
   success "\nDone setting up Homebrew."
 }
