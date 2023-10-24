@@ -324,7 +324,8 @@ set_up_homebrew() {
   fi
 
   # Install brew dependencies from Brewfile
-  brew bundle --file="$DOTFILES/apps/Brewfile"
+  # see: https://github.com/Homebrew/homebrew-bundle#versions-and-lockfiles
+  export HOMEBREW_BUNDLE_NO_LOCK=1 && brew bundle --file="$DOTFILES/apps/Brewfile"
 
   # Install fzf
   echo -e
