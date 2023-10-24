@@ -322,7 +322,7 @@ set_up_homebrew() {
   fi
 
   # Install brew dependencies from Brewfile
-  brew bundle --file="$DOTFILES/apps/Brewfile"
+  /opt/hombrew/bin/brew bundle --file="$DOTFILES/apps/Brewfile"
 
   # Install fzf
   echo -e
