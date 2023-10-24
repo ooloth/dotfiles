@@ -84,6 +84,9 @@
   "gitlens.currentLine.enabled": false,
   "gitlens.graph.statusBar.enabled": false,
   "gitlens.mode.statusBar.enabled": false,
+  // allow installing extensions via the cli
+  // see: https://stackoverflow.com/questions/36506539/how-do-i-get-visual-studio-code-to-trust-our-self-signed-proxy-certificate
+  "http.proxyStrictSSL": false,
   "javascript.inlayHints.enumMemberValues.enabled": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "javascript.inlayHints.parameterTypes.enabled": true,
