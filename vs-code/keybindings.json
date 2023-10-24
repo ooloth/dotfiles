@@ -84,7 +84,7 @@
   // WHICH-KEY //
   ///////////////
 
-  // { "key": "space space", "command": "whichkey.show","when": "vim.mode != 'Insert' && !whichKeyVisible" },
+  { "key": ",", "command": "whichkey.show","when": "vim.mode != 'Insert' && !whichKeyVisible" },
   { "key": "ctrl+,", "command": "whichkey.show" },
   { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
 ]

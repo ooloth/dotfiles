@@ -485,7 +485,6 @@
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
-
   "workbench.activityBar.visible": false,
   "breadcrumbs.enabled": false,
   "workbench.tree.indent": 14,
