@@ -10,7 +10,7 @@ The settings here are based purely on my personal preferences and I'm doing this
 
 1. Connect to the internet
 
-2. Open the App Store and sign in
+2. Open System Preferences and sign into iCloud (which will sign you into the App Store for `mas`)
 
 3. Open Terminal.app (you'll probably want to increase the font size)
 
