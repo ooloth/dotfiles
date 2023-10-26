@@ -19,6 +19,9 @@ setopt HIST_IGNORE_ALL_DUPS
 # alias history='history 0'
 # alias h='history | grep'
 
+# see: https://github.com/Homebrew/homebrew-bundle#versions-and-lockfiles
+export HOMEBREW_BUNDLE_NO_LOCK=1
+
 export IS_WORK_LAPTOP=$( [[ -d "$HOME/Repos/recursionpharma" ]] && echo "true" || echo "false" )
 
 export K9SCONFIG=$HOME/.config/k9s

@@ -1,10 +1,10 @@
 # My dotfiles
 
-It dawned on me that I should make sure I don't lose these!
+It dawned on me to make sure I don't lose these!
 
 ## Disclaimer
 
-The settings here are based purely on my personal preferences and I'm doing this for fun, so...expect lots of changes and experimenting. Unless you love surprises, you'll probably want to fork this repo before using it.
+The settings here reflect my personal preferences, so...expect lots of changes and experiments. Unless you love surprises, I highly recommend you fork and customize this repo before using it.
 
 ## Prerequisites
 
@@ -35,32 +35,6 @@ To set up your Mac, run the following command:
 ```sh
 curl -s https://raw.githubusercontent.com/ooloth/dotfiles/master/setup.sh | zsh
 ```
-
-## What does it do?
-
-- TODO
-
-## Post-install tasks
-
-I'd like to automate the following steps as well (let me know if you know how), but for now you'll need to set up a few last things manually:
-
-1. Restart your Mac
-2. Go to System Preferences > Security & Privacy > Privacy > Developer Tools and add your terminal apps with a checkmark next to each so your Mac will let you open apps installed with Homebrew.
-3. Confirm you can connect to GitHub via SSH by running `ssh -T git@github.com`. If you see "Permission denied (public key).", the public key you entered in GitHub doesn't match the private key on your Mac. Try adding it again, making sure to include everything in your `~/.ssh/id_rsa` file.
-4. Manually set any remaining app settings and macOS keyboard shortcuts (see example list below)
-
-## macOS Keyboard Shortcuts
-
-I like to manually adjust the following settings that weren't set automatically:
-
-- **Rectangle:** enable "Launch on login" + "Check for updates automatically"
-
-## macOS Keyboard Shortcuts
-
-I like to customize the following keyboard shortcuts:
-
-- **Alfred:** `⌘Space`
-- **Things:** `⌃Space`
 
 ## Inspiration
 

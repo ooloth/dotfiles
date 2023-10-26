@@ -52,7 +52,8 @@ ns() { n && npm run start; }
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
-alias R="source $HOME/.config/zsh/.zshrc"
+alias R="exec -l $SHELL"
+# alias R="source $HOME/.config/zsh/.zshrc"
 
 alias s="kitty +kitten ssh" # kitty's ssh kitten
 

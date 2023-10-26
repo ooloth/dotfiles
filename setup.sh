@@ -324,7 +324,8 @@ set_up_homebrew() {
   fi
 
   # Install brew dependencies from Brewfile
-  brew bundle --file="$DOTFILES/apps/Brewfile"
+  # see: https://github.com/Homebrew/homebrew-bundle#versions-and-lockfiles
+  export HOMEBREW_BUNDLE_NO_LOCK=1 && brew bundle --file="$DOTFILES/apps/Brewfile"
 
   # Install fzf
   echo -e
@@ -375,9 +376,9 @@ set_up_zsh() {
 set_up_node() {
   title "Installing node and general global dependencies..."
 
-  fnm install 19 && fnm default 19 && fnm use 19
+  fnm install 21 && fnm default 21 && fnm use 21
 
-  npm i -g npm-check tldr
+  npm i -g @githubnext/github-copilot-cli npm-check tldr
 
   info "Enabling corepack to activate yarn"
   # see: https://yarnpkg.com/getting-started/install
@@ -425,15 +426,15 @@ set_up_vs_code() {
 
   info "Symlinking VS Code settings, keybindings and snippets..."
 
-  ln -sfv "$DOTFILES/vs-code/settings.json" "$HOME/Library/Application Support/Code/User/"
-  ln -sfv "$DOTFILES/vs-code/keybindings.json" "$HOME/Library/Application Support/Code/User/"
-  ln -sfv "$DOTFILES/vs-code/snippets" "$HOME/Library/Application Support/Code/User/"
+  ln -sfv "$DOTFILES/vs-code/settings.json" "$HOME/Library/Application Support/Code/User"
+  ln -sfv "$DOTFILES/vs-code/keybindings.json" "$HOME/Library/Application Support/Code/User"
+  ln -sfv "$DOTFILES/vs-code/snippets" "$HOME/Library/Application Support/Code/User"
 
   printf "\n"
   info "Installing VS Code extensions...\n"
 
   # Install VS Code extensions from extensions.txt
-  cat "$DOTFILES/vs-code/extensions.txt" | xargs -L 1 echo code --install-extension
+  cat "$DOTFILES/vs-code/extensions.txt" | xargs -L 1 code --install-extension
 
   success "\nDone setting up VS Code."
 }
