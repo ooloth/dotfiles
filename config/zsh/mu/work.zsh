@@ -75,10 +75,6 @@ if $IS_WORK_LAPTOP; then
   # see: https://github.com/recursionpharma/netskope_dev_tools
   source "$HOME/.config/netskope/env.sh"
 
-  # npm
-  # export GITHUB_NPM_TOKEN="$(cat $HOME/.griphook/github.pat)"
-  # export GITHUB_NPM_TOKEN=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
-
   # openSSL
   export PATH=/opt/homebrew/opt/openssl@3/bin:$PATH
   export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"

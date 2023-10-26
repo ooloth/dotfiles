@@ -3,6 +3,9 @@
 # Taps
 tap "homebrew/bundle"
 tap "homebrew/cask-fonts"
+tap "arl/arl" # for gitmux
+tap "goku" # for goku
+tap "jesseduffield/lazygit"
 
 # Packages
 brew "bat"
@@ -12,11 +15,11 @@ brew "fnm"
 brew "fzf"
 brew "gh"
 brew "git"
-brew "arl/arl/gitmux"
+brew "gitmux"
 brew "gnu-sed"
-brew "yqrashawn/goku/goku" # for karibiner
+brew "goku" # for karibiner
 brew "lazydocker"
-brew "jesseduffield/lazygit/lazygit"
+brew "lazygit"
 brew "mas"
 brew "neovim"
 brew "powerlevel10k"
