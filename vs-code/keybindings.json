@@ -14,8 +14,8 @@
   { "key": "ctrl+k", "command": "workbench.action.navigateUp" },
 
   // Project navigation
-  { "key": "ctrl+i", "command": "workbench.action.navigateForward" },
-  { "key": "ctrl+o", "command": "workbench.action.navigateBack" },
+  { "key": "ctrl+i", "command": "workbench.action.navigateForwardInNavigationLocations" },
+  { "key": "ctrl+o", "command": "workbench.action.navigateBackInNavigationLocations" },
 
   // Editor navigation
   { "key": "ctrl+]", "command": "workbench.action.nextEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
@@ -84,7 +84,6 @@
   // WHICH-KEY //
   ///////////////
 
-  { "key": ",", "command": "whichkey.show","when": "vim.mode != 'Insert' && !whichKeyVisible" },
   { "key": "ctrl+,", "command": "whichkey.show" },
   { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
 ]
