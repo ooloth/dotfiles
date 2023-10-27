@@ -22,7 +22,7 @@
   "editor.foldingImportsByDefault": true,
   "editor.fontFamily": "'UbuntuMono Nerd Font', 'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
-  "editor.fontSize": 15,
+  "editor.fontSize": 14.5,
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
@@ -556,4 +556,5 @@
       }
     ]
   }
+  "window.zoomLevel": 0.25
 }
