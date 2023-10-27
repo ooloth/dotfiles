@@ -1,7 +1,7 @@
 // prettier-ignore-start
 
 {
-  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][terraform][terraform-vars][toml][typescript][typescriptreact][vue][xml][yaml]": {
+  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][terraform][terraform-vars][toml][typescript][typescriptreact][vue][xml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[python]": {
@@ -124,7 +124,6 @@
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.lineHeight": 1.35,
   "terminal.integrated.scrollback": 15000,
-  "terminal.integrated.tabs.enabled": false,
   "todohighlight.keywords": [
     { "backgroundColor": "transparent", "color": "#ffc777", "text": "TODO:" },
     { "backgroundColor": "transparent", "color": "#ff757f", "text": "FIXME:" },
@@ -484,12 +483,10 @@
   "workbench.preferredDarkColorTheme": "Dracula",
   "workbench.sideBar.location": "right",
   "workbench.startupEditor": "newUntitledFile",
-  "yaml.format.enable": true,
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
   "workbench.activityBar.visible": false,
-  "breadcrumbs.enabled": false,
   "workbench.tree.indent": 14,
   "editor.gotoLocation.multipleDeclarations": "goto",
   "editor.gotoLocation.multipleDefinitions": "goto",
@@ -555,6 +552,10 @@
         }
       }
     ]
-  }
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "terminal.integrated.tabs.enabled": false,
   "window.zoomLevel": 0.25
 }
