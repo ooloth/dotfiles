@@ -4,6 +4,7 @@
 [core]
   editor = code --wait
   excludesfile = ~/.config/git/ignore
+  pager="bat"
 
 [credential]
   helper = osxkeychain
