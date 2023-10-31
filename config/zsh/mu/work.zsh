@@ -22,11 +22,13 @@ if $IS_WORK_LAPTOP; then
   r() { cd $HOME/Repos/recursionpharma; }
 
   rv() {
+    local CURRENT_DIRECTORY=$(basename $PWD)
+
     # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
     pip install -U 'roadie[cli]'
     roadie venv
 
-    if [[ "CURRENT_DIRECTORY" === "dash-phenoapp-v2" ]]; then
+    if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
       # just leads to annoying local ouput I don't need
       # see: https://pip.pypa.io/en/stable/cli/pip_uninstall/
       pip uninstall watchdog -y
@@ -62,8 +64,9 @@ if $IS_WORK_LAPTOP; then
     local CURRENT_DIRECTORY=$(basename $PWD)
 
     case $CURRENT_DIRECTORY in
-      dash-phenoapp-v2) python phenoapp/app.py ;;
-      phenoapp)         pa && python phenoapp/app.py ;;
+      # silence out of control watchdog output when working locally
+      dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
+      phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
       react-app)        ns ;;
       *)                echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
