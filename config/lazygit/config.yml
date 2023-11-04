@@ -20,6 +20,7 @@ gui:
 
 keybinding:
   universal:
+    copyToClipboard: 'y'
     createRebaseOptionsMenu: "M" # avoid accidental rebasing when pressing "m" to merge into current branch
     scrollUpMain: "<c-u>" # main panel scroll up
     scrollDownMain: "<c-d>" # main panel scroll down
