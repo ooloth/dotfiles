@@ -9,6 +9,7 @@ alias con='cd $HOME/Repos/ooloth/content'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 
 # see: https://docs.docker.com/engine/reference/commandline/compose_up/
+alias d='lazydocker'
 alias da='docker ps --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias dd='docker compose down --remove-orphans'
 de() { 'docker compose exec -it' $1 $2; }
