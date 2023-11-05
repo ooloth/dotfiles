@@ -7,6 +7,14 @@ alias c='clear'
 alias cat='bat --paging=never'
 alias con='cd $HOME/Repos/ooloth/content'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
+
+# see: https://docs.docker.com/engine/reference/commandline/compose_up/
+alias da='docker ps --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dd='docker compose down --remove-orphans'
+de() { 'docker compose exec -it' $1 $2; }
+dl() { 'docker compose logs --follow --tail=100' $1; }
+alias du='docker compose up --detach --remove-orphans'
+
 alias f='vifm'
 alias g='lazygit'
 alias h='cd $HOME'
