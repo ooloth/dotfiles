@@ -12,8 +12,8 @@ alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias d='lazydocker'
 alias da='docker ps --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias dd='docker compose down --remove-orphans'
-de() { 'docker compose exec -it' $1 $2; }
-dl() { 'docker compose logs --follow --tail=100' $1; }
+de() { docker compose exec -it $1 $2; }
+dl() { docker compose logs --follow --tail=100 $1; }
 alias du='docker compose up --detach --remove-orphans'
 
 alias f='vifm'
