@@ -6,6 +6,7 @@ tap "homebrew/cask-fonts"
 tap "arl/arl" # for gitmux
 tap "goku" # for goku
 tap "jesseduffield/lazygit"
+tap "jesseduffield/lazydocker"
 
 # Packages
 brew "bat"
