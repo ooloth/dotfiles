@@ -41,15 +41,15 @@ nff() { npm run format:fix; }
 ng() {
   npm install --location=global \
     @githubnext/github-copilot-cli \
+    npm-check \
+    tldr \
     # bash-language-server \
     # cssmodules-language-server \
     # dockerfile-language-server-nodejs \
     # emmet-ls \
     # neovim \
-    npm-check \
     # pug-lint \
     # svelte-language-server \
-    tldr \
     # tree-sitter-cli \
     # typescript \
     # vscode-langservers-extracted
@@ -63,8 +63,6 @@ alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 alias R="exec -l $SHELL"
-# alias R="source $HOME/.config/zsh/.zshrc"
-
 alias s="kitty +kitten ssh" # kitty's ssh kitten
 
 sl() { ln -sfv $1 $2; } # easier symlinking
