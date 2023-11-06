@@ -486,7 +486,6 @@
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
-  "workbench.activityBar.visible": false,
   "workbench.tree.indent": 14,
   "editor.gotoLocation.multipleDeclarations": "goto",
   "editor.gotoLocation.multipleDefinitions": "goto",
@@ -557,5 +556,7 @@
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
   "terminal.integrated.tabs.enabled": false,
-  "window.zoomLevel": 0.25
+  "window.zoomLevel": 0.25,
+  "workbench.activityBar.location": "top",
+  "editor.multiDocumentOccurrencesHighlight": true
 }
