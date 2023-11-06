@@ -58,6 +58,7 @@ nk() { npm run types:check; }
 nlc() { npm run lint:check; }
 nlf() { npm run lint:fix; }
 ns() { n && npm run start; }
+nu() { n && npm-check -u; }
 
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
