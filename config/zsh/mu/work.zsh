@@ -95,6 +95,9 @@ if $IS_WORK_LAPTOP; then
   export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
   export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
 
+  # prometheus (dash-phenoapp-v2 backend server)
+  export PROMETHEUS_MULTIPROC_DIR=./.prom
+
   # pyenv
   # NOTE: do NOT add eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" here (they slow the shell down a lot)
 
