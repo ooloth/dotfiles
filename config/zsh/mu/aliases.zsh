@@ -84,6 +84,8 @@ u() {
 	if $IS_WORK_LAPTOP; then
 		# TODO: store version in a variable and update it programmatically?
 		echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
+
+    gcloud components update
 	fi
 }
 
