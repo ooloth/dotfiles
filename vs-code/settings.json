@@ -22,7 +22,7 @@
   "editor.foldingImportsByDefault": true,
   "editor.fontFamily": "'UbuntuMono Nerd Font', 'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
-  "editor.fontSize": 14.5,
+  "editor.fontSize": 13,
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
@@ -121,7 +121,6 @@
   "terminal.integrated.cursorBlinking": false,
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
-  "terminal.integrated.fontSize": 14,
   "terminal.integrated.lineHeight": 1.35,
   "terminal.integrated.scrollback": 15000,
   "todohighlight.keywords": [
@@ -556,7 +555,8 @@
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
   "terminal.integrated.tabs.enabled": false,
-  "window.zoomLevel": 0.25,
+  "window.zoomLevel": 1,
   "workbench.activityBar.location": "top",
   "editor.multiDocumentOccurrencesHighlight": true
+  "terminal.integrated.fontSize": 12.5
 }
