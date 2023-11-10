@@ -22,6 +22,9 @@
   { "key": "ctrl+[", "command": "workbench.action.previousEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
   { "key": "ctrl+\\", "command": "workbench.action.splitEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
 
+  // Sidebar
+  { "key": "ctrl+b", "command": "workbench.action.toggleSidebarVisibility" },
+
   // Terminal navigation
   { "key": "ctrl+t", "command": "workbench.action.terminal.toggleTerminal", "when": "terminal.active" },
   { "key": "ctrl+\\", "command": "workbench.action.terminal.split", "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile" },
