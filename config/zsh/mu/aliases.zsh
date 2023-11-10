@@ -8,13 +8,16 @@ alias cat='bat --paging=never'
 alias con='cd $HOME/Repos/ooloth/content'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 
-# see: https://docs.docker.com/engine/reference/commandline/compose_up/
 alias d='lazydocker'
-alias da='docker ps --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
-alias dd='docker compose down --remove-orphans'
-de() { docker compose exec -it $1 $2; }
-dl() { docker compose logs --follow --tail=100 $1; }
-alias du='docker compose up --detach --remove-orphans'
+
+# docker container
+alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
+de() { docker container exec -it $1 $2; }
+
+# docker compose
+dcd() { docker compose down --remove-orphans "$@"; }        # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
+dcl() { docker compose logs --follow --tail=100 "$@"; }     # see last 100 log lines of one or more services (or all services if no args provided)
+dcu() { docker compose up --detach --remove-orphans "$@"; } # start one or more services (or all services if no args provided)
 
 alias f='vifm'
 alias g='lazygit'
