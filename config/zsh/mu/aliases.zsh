@@ -12,7 +12,7 @@ alias d='lazydocker'
 
 # docker container
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
-de() { docker container exec -it $1 -- sh; }
+de() { docker container exec -it $1 sh; }
 
 # docker compose
 dcd() { docker compose down --remove-orphans "$@"; }        # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
