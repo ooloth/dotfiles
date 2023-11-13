@@ -556,6 +556,6 @@
   "terminal.integrated.tabs.enabled": false,
   "window.zoomLevel": 1,
   "workbench.activityBar.location": "top",
-  "editor.multiDocumentOccurrencesHighlight": true
+  "editor.multiDocumentOccurrencesHighlight": true,
   "terminal.integrated.fontSize": 12.5
 }
