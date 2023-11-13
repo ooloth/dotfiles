@@ -36,6 +36,7 @@ alias lt2='lt --level=2'                                  # file tree (2 levels 
 alias lt3='lt --level=3'                                  # file tree (3 levels only)
 alias lt4='lt --level=4'                                  # file tree (4 levels only)
 alias md='cd $HOME/Repos/ooloth/media'
+alias mr='sudo shutdown -r now' # restart macos
 alias mini="s michael@mini.local"                         # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
@@ -70,7 +71,6 @@ nu() { n && npm-check -u; }
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
-alias r='sudo shutdown -r now' # restart macos
 alias R="exec -l $SHELL"
 alias s="kitty +kitten ssh" # kitty's ssh kitten
 
