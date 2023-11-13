@@ -12,9 +12,10 @@ alias d='lazydocker'
 
 # docker container
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
-de() { docker container exec -it $1 $2; }
+de() { docker container exec -it $1 sh; }
 
 # docker compose
+dcb() { docker compose up --build --detach --remove-orphans "$@"; } # recreate and start one or more services (or all services if no args provided)
 dcd() { docker compose down --remove-orphans "$@"; }        # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
 dcl() { docker compose logs --follow --tail=100 "$@"; }     # see last 100 log lines of one or more services (or all services if no args provided)
 dcu() { docker compose up --detach --remove-orphans "$@"; } # start one or more services (or all services if no args provided)
@@ -35,7 +36,8 @@ alias lt2='lt --level=2'                                  # file tree (2 levels 
 alias lt3='lt --level=3'                                  # file tree (3 levels only)
 alias lt4='lt --level=4'                                  # file tree (4 levels only)
 alias md='cd $HOME/Repos/ooloth/media'
-alias mini="s michael@192.168.2.22"                       # automatically log in using SSH key pair
+alias mr='sudo shutdown -r now' # restart macos
+alias mini="s michael@mini.local"                         # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 
 n() { npm install -- $1; }
