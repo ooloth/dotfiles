@@ -70,6 +70,7 @@ nu() { n && npm-check -u; }
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
+alias r='sudo shutdown -r now' # restart macos
 alias R="exec -l $SHELL"
 alias s="kitty +kitten ssh" # kitty's ssh kitten
 
