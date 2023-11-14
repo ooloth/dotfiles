@@ -4,8 +4,6 @@
   "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][terraform][terraform-vars][toml][typescript][typescriptreact][vue][xml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[python]": {
-    "editor.formatOnType": true
   },
   "css.lint.unknownAtRules": "ignore",
   "debug.console.fontFamily": "editor",
@@ -26,6 +24,7 @@
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
+  "editor.formatOnType": true,
   "editor.guides.indentation": false,
   "editor.inlineSuggest.enabled": true,
   "editor.linkedEditing": true,
