@@ -4,6 +4,8 @@
   "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][terraform][terraform-vars][toml][typescript][typescriptreact][vue][xml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
   },
   "css.lint.unknownAtRules": "ignore",
   "debug.console.fontFamily": "editor",
@@ -21,10 +23,16 @@
   "editor.fontFamily": "'UbuntuMono Nerd Font', 'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
   "editor.fontSize": 13,
+  "editor.fontWeight": "normal",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
   "editor.formatOnType": true,
+  "editor.gotoLocation.multipleDeclarations": "goto",
+  "editor.gotoLocation.multipleDefinitions": "goto",
+  "editor.gotoLocation.multipleImplementations": "goto",
+  "editor.gotoLocation.multipleReferences": "goto",
+  "editor.gotoLocation.multipleTypeDefinitions": "goto",
   "editor.guides.indentation": false,
   "editor.inlineSuggest.enabled": true,
   "editor.linkedEditing": true,
@@ -32,6 +40,7 @@
   "editor.lineNumbers": "off",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
+  "editor.multiDocumentOccurrencesHighlight": true,
   "editor.occurrencesHighlight": false,
   "editor.quickSuggestions": {
     "strings": true
@@ -100,6 +109,7 @@
   // "python.testing.autoTestDiscoverOnSaveEnabled": false,
   // "python.testing.unittestEnabled": false,
   "redhat.telemetry.enabled": false,
+  "references.preferredLocation": "view",
   "scm.inputFontFamily": "editor",
   "scm.inputFontSize": 0,
   "search.exclude": {
@@ -445,6 +455,8 @@
   ],
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
+  "window.zoomLevel": 1,
+  "workbench.activityBar.location": "top",
   "workbench.colorCustomizations": {
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
@@ -481,81 +493,10 @@
   "workbench.panel.opensMaximized": "always",
   "workbench.preferredDarkColorTheme": "Dracula",
   "workbench.startupEditor": "newUntitledFile",
+  "workbench.tree.indent": 14,
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
-  "workbench.tree.indent": 14,
-  "editor.gotoLocation.multipleDeclarations": "goto",
-  "editor.gotoLocation.multipleDefinitions": "goto",
-  "editor.gotoLocation.multipleImplementations": "goto",
-  "editor.gotoLocation.multipleReferences": "goto",
-  "editor.gotoLocation.multipleTypeDefinitions": "goto",
-  "references.preferredLocation": "view",
-  "editor.fontWeight": "normal",
-  "editor.tokenColorCustomizations": {
-    "[*Light*]": {
-      "textMateRules": [
-        {
-          "scope": "ref.matchtext",
-          "settings": {
-            "foreground": "#000"
-          }
-        }
-      ]
-    },
-    "[*Dark*]": {
-      "textMateRules": [
-        {
-          "scope": "ref.matchtext",
-          "settings": {
-            "foreground": "#fff"
-          }
-        }
-      ]
-    },
-    "textMateRules": [
-      {
-        "name": "One Dark italic",
-        "scope": [
-          "comment",
-          "entity.other.attribute-name",
-          "keyword",
-          "markup.underline.link",
-          "storage.modifier",
-          "storage.type",
-          "string.url",
-          "variable.language.super",
-          "variable.language.this"
-        ],
-        "settings": {
-          "fontStyle": "italic"
-        }
-      },
-      {
-        "name": "One Dark italic reset",
-        "scope": [
-          "keyword.operator",
-          "keyword.other.type",
-          "storage.modifier.import",
-          "storage.modifier.package",
-          "storage.type.built-in",
-          "storage.type.function.arrow",
-          "storage.type.generic",
-          "storage.type.java",
-          "storage.type.primitive"
-        ],
-        "settings": {
-          "fontStyle": ""
-        }
-      }
-    ]
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml"
-  },
   "terminal.integrated.tabs.enabled": false,
-  "window.zoomLevel": 1,
-  "workbench.activityBar.location": "top",
-  "editor.multiDocumentOccurrencesHighlight": true,
   "terminal.integrated.fontSize": 12.5
 }
