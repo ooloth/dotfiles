@@ -303,6 +303,7 @@
       { "key": "c", "name": "Commit", "command": "git.commit", "type": "command" },
       { "key": "f", "name": "Fetch", "command": "git.fetch", "type": "command" },
       { "key": "h", "name": "History (of file)", "command": "gitlens.showFileHistoryView", "type": "command" },
+      { "key": "l", "name": "Log (search commits)", "command": "gitlens.showCommitSearch", "type": "command" },
       { "key": "m", "name": "Merge branch", "command": "git.merge", "type": "command" },
       { "key": "p", "name": "Pull", "command": "git.push", "type": "command" },
       { "key": "P", "name": "Push", "command": "git.push", "type": "command" },
