@@ -466,6 +466,11 @@
       // "statusBar.background": "#282A36"
       "statusBar.background": "#21222C"
     },
+    "[Material Theme Ocean]": {
+      // see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts
+      "editor.lineHighlightBackground": "#1A1C25", // more noticeable line highlight when editing
+      "editor.rangeHighlightBackground": "#292D3E" // more noticeable line highlight when previewing search results
+    },
     "[Moonlight II]": {
       "dropdown.background": "#1f1f22",
       "input.background": "#1f1f22",
