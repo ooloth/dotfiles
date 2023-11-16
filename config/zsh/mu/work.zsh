@@ -21,13 +21,13 @@ if $IS_WORK_LAPTOP; then
   psa() { cd $HOME/Repos/recursionpharma/phenoservice-api; }
   psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer; }
   r() { cd $HOME/Repos/recursionpharma; }
-
+  rl() { roadie lock -- $1; } # optionally "rl -c" etc
+  rlc() { roadie lock -c; }
+  ru() { pip install -U 'roadie[cli]'; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
   rv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
 
-    # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
-    pip install -U 'roadie[cli]'
-    roadie venv
+    ru && roadie venv
 
     if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
       # just leads to annoying local ouput I don't need
