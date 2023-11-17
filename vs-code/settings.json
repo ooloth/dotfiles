@@ -350,6 +350,21 @@
       { "key": "Y", "name": "Copy problem code", "command": "errorLens.copyProblemCode", "type": "command" }
     ]},
 
+    { "key": "s", "name": "+Search/Show", "type": "bindings", "bindings": [
+      { "key": "c", "name": "Show incoming calls", "command": "references-view.showIncomingCalls", "type": "command" },
+      { "key": "C", "name": "Show outgoing calls", "command": "references-view.showOutgoingCalls", "type": "command" },
+      { "key": "e", "name": "Edit symbol", "command": "editor.action.rename", "type": "command" }, // TODO: move elsewhere
+      { "key": "f", "name": "Search current file", "command": "actions.find", "type": "command" },
+      { "key": "F", "name": "Search and replace in current file", "command": "editor.action.startFindReplaceAction", "type": "command" },
+      { "key": "h", "name": "Highlight symbol transient", "commands": [ "editor.action.wordHighlight.trigger", "whichkey.showTransient" ], "args": [ null, "whichkey.transient.symbol" ], "type": "commands" },
+      { "key": "p", "name": "Search project", "command": "workbench.action.findInFiles", "type": "command" },
+      { "key": "P", "name": "Search and replace in project", "command": "workbench.action.replaceInFiles", "type": "command" },
+      { "key": "R", "name": "Show references", "command": "references-view.find", "type": "command" },
+      { "key": "s", "name": "Search symbols in file", "command": "workbench.action.gotoSymbol", "type": "command" },
+      { "key": "S", "name": "Search symbols in workspace", "command": "workbench.action.showAllSymbols", "type": "command" },
+    ]},
+
+
     { "key": "t", "name": "+Terminal", "type": "bindings", "bindings": [
       { "key": "n", "name": "Next", "command": "workbench.action.terminal.focusNext", "type": "command" },
       { "key": "N", "name": "New", "command": "workbench.action.terminal.new", "type": "command" },
@@ -382,18 +397,6 @@
 
     { "key": "r", "name": "+Repeat", "type": "bindings", "bindings": [
       { "key": ".", "name": "Repeat recent actions", "command": "whichkey.repeatRecent", "type": "command" }
-    ]},
-
-    { "key": "s", "name": "+Search", "type": "bindings", "bindings": [
-      { "key": "e", "name": "Edit symbol", "command": "editor.action.rename", "type": "command" },
-      { "key": "h", "name": "Highlight symbol transient", "commands": [ "editor.action.wordHighlight.trigger", "whichkey.showTransient" ], "args": [ null, "whichkey.transient.symbol" ], "type": "commands" },
-      { "key": "j", "name": "Jump to symbol in file", "command": "workbench.action.gotoSymbol", "type": "command" },
-      { "key": "J", "name": "Jump to symbol in workspace", "command": "workbench.action.showAllSymbols", "type": "command" },
-      { "key": "p", "name": "Search in a project", "command": "workbench.action.findInFiles", "type": "command" },
-      { "key": "P", "name": "Search in a project with a selection", "commands": [ "editor.action.addSelectionToNextFindMatch", "workbench.action.findInFiles" ], "type": "commands" },
-      { "key": "r", "name": "Search all references", "command": "editor.action.referenceSearch.trigger", "type": "command" },
-      { "key": "R", "name": "Search all references in side bar", "command": "references-view.find", "type": "command" },
-      { "key": "s", "name": "Search in current file", "command": "actions.find", "type": "command" }
     ]},
 
     { "key": "S", "name": "+Show", "type": "bindings", "bindings": [
