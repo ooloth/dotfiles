@@ -1,5 +1,6 @@
 if $IS_WORK_LAPTOP; then
 
+  bp() { cd $HOME/Repos/recursionpharma/build-pipelines; }
   eo() { cd $HOME/Repos/recursionpharma/eng-onboarding; }
   mp() { cd $HOME/Repos/recursionpharma/mapapp-public; }
   n() { npm install -- $1; }
@@ -48,6 +49,7 @@ if $IS_WORK_LAPTOP; then
 
     # if defined, activate the appropriate venv for this directory
     case $CURRENT_DIRECTORY in
+      build-pipelines)             pyenv shell build-pipelines ;;
       dash-phenoapp-v2 | phenoapp) pyenv shell dash-phenoapp-v2 ;;
       eng-onboarding)              pyenv shell eng-onboarding ;;
       phenomap)                    pyenv shell phenomap ;;
