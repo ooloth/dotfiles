@@ -21,6 +21,7 @@
   { "key": "ctrl+]", "command": "workbench.action.nextEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
   { "key": "ctrl+[", "command": "workbench.action.previousEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
   { "key": "ctrl+\\", "command": "workbench.action.splitEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+m", "command": "workbench.action.toggleEditorWidths", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
 
   // Sidebar
   { "key": "ctrl+b", "command": "workbench.action.toggleSidebarVisibility" },
