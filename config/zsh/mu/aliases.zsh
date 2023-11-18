@@ -5,6 +5,8 @@ alias .....='cd ../../../..'
 
 alias c='clear'
 alias cat='bat --paging=never'
+alias cte='EDITOR=vim crontab -e'
+alias ctl='crontab -l'
 alias con='cd $HOME/Repos/ooloth/content'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 
