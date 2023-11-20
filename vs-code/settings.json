@@ -71,7 +71,9 @@
   "explorer.fileNesting.enabled": false,
   "explorer.openEditors.visible": 1,
   "files.associations": {
+    ".eslintrc": "yaml",
     "*.njk": "nunjucks",
+    ".prettierrc": "yaml",
     "*.vifm": "vimrc",
     "vifmrc": "vimrc",
     "*.webc": "html"
