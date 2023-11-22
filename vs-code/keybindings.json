@@ -29,6 +29,7 @@
   // Terminal navigation
   { "key": "ctrl+t", "command": "workbench.action.terminal.toggleTerminal", "when": "terminal.active" },
   { "key": "ctrl+\\", "command": "workbench.action.terminal.split", "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile" },
+  // { "key": "cmd", "name": "New", "command": "workbench.action.terminal.new", "type": "command" },
   { "key": "ctrl+h", "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
   { "key": "ctrl+l", "command": "workbench.action.terminal.focusNextPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
   { "key": "ctrl+]", "command": "workbench.action.terminal.focusNext", "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
@@ -41,7 +42,7 @@
   // Panel navigation
   { "key": "cmd+ctrl+]", "command": "workbench.action.nextPanelView", "when": "panelFocus" },
   { "key": "cmd+ctrl+[", "command": "workbench.action.previousPanelView", "when": "panelFocus" },
-  { "key": "cmd+j", "command": "-console.log.wrap.json", "when": "editorTextFocus" },
+  { "key": "cmd+j", "command": "-console.log.wrap.json", "when": "editorTextFocus" }, // unblock cmd+j toggling the panel
 
   // List navigation
   { "key": "j", "command": "list.focusDown", "when": "listFocus && !inputFocus" },
@@ -69,20 +70,17 @@
   { "key": "] c", "command": "workbench.action.compareEditor.nextChange", "when": "editorTextFocus && textCompareEditorActive" },
   { "key": "[ c", "command": "workbench.action.compareEditor.previousChange", "when": "editorTextFocus && textCompareEditorActive" },
 
+  // Find results navigation
+  { "key": "ctrl+k", "command": "search.action.focusSearchFromResults", "when": "accessibilityModeEnabled && searchViewletVisible || firstMatchFocus && searchViewletVisible" },
+  { "key": "ctrl+j", "command": "search.focus.nextInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
+  { "key": "ctrl+k", "command": "search.focus.previousInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible && !searchInputBoxFocus" },
+
   /////////////
   // EDITING //
   /////////////
 
   { "key": "ctrl+r", "command": "redo", "when": "editorTextFocus && vim.active && !inDebugRepl" },
   { "key": "cmd+n", "command": "extension.advancedNewFile" },
-
-  /////////////
-  // FINDING //
-  /////////////
-
-  { "key": "ctrl+k", "command": "search.action.focusSearchFromResults", "when": "accessibilityModeEnabled && searchViewletVisible || firstMatchFocus && searchViewletVisible" },
-  { "key": "ctrl+j", "command": "search.focus.nextInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
-  { "key": "ctrl+k", "command": "search.focus.previousInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible && !searchInputBoxFocus" },
 
   ///////////////
   // WHICH-KEY //
