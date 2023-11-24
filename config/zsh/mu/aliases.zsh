@@ -27,8 +27,26 @@ alias f='vifm'
 alias g='lazygit'
 alias h='cd $HOME'
 
+# Kubernetes
+alias k='kubectl'
+alias kc='k create'
+alias kcd='k create deployment'
+alias kd='k describe'
+alias ke='k expose'
+alias kg='k get'
+alias kgw='kg -o wide'
+alias kgy='kg -o yaml'
+alias ka='kg all'
+alias kr='k run'
+alias ks='k scale'
+# Use stern as a replacement for kubectl logs
+# Tails a pod regex or "resource/name" and shows logs for any containers that match the regex
+# Add -c regex to filter by container name
+# see: https://github.com/stern/stern#usage
+alias kl='stern'
+
 # kill process running on given port
-k() { lsof -t -i:$1 | xargs kill -9; }
+kill() { lsof -t -i:$1 | xargs kill -9; }
 
 # see: https://the.exa.website/docs/command-line-options
 # see EXA_* env vars in zsh/mu/variables.zsh
@@ -74,6 +92,7 @@ nu() { n && npm-check -u; }
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
+alias rm='trash' # see: https://github.com/sindresorhus/trash-cli
 alias R="exec -l $SHELL"
 alias s="kitty +kitten ssh" # kitty's ssh kitten
 
