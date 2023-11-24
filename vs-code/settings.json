@@ -423,5 +423,8 @@
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
   "terminal.integrated.tabs.enabled": false,
-  "terminal.integrated.fontSize": 12.5
+  "terminal.integrated.fontSize": 12.5,
+  "terraform.codelens.referenceCount": true,
+  "terraform.experimentalFeatures.validateOnSave": true,
+  "terraform.languageServer.terraform.path": "/opt/homebrew/bin/terraform"
 }
