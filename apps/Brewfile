@@ -20,6 +20,7 @@ brew "git"
 brew "gitmux"
 brew "gnu-sed"
 brew "goku" # for karibiner
+brew "kubectl" # for kubernetes
 brew "lazydocker"
 brew "lazygit"
 brew "mas"
