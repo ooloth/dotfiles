@@ -27,6 +27,24 @@ alias f='vifm'
 alias g='lazygit'
 alias h='cd $HOME'
 
+# Kubernetes
+alias k='kubectl'
+alias kc='k create'
+alias kcd='k create deployment'
+alias kd='k describe'
+alias ke='k expose'
+alias kg='k get'
+alias kgw='kg -o wide'
+alias kgy='kg -o yaml'
+alias ka='kg all'
+alias kr='k run'
+alias ks='k scale'
+# Use stern as a replacement for kubectl logs
+# Tails a pod regex or "resource/name" and shows logs for any containers that match the regex
+# Add -c regex to filter by container name
+# see: https://github.com/stern/stern#usage
+alias kl='stern'
+
 # kill process running on given port
 kill() { lsof -t -i:$1 | xargs kill -9; }
 
