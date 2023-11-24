@@ -74,6 +74,7 @@ nu() { n && npm-check -u; }
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
+alias rm='trash' # see: https://github.com/sindresorhus/trash-cli
 alias R="exec -l $SHELL"
 alias s="kitty +kitten ssh" # kitty's ssh kitten
 
