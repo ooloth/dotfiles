@@ -29,6 +29,7 @@ brew "powerlevel10k"
 brew "ripgrep" # for telescope
 brew "starship"
 brew "stylua"
+brew "stern" # for kubectl
 brew "svn" # for font cask installations
 brew "tmux"
 brew "trash"
