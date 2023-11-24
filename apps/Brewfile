@@ -9,16 +9,16 @@ tap "jesseduffield/lazygit"
 tap "jesseduffield/lazydocker"
 
 # Packages
-brew "bat"
-brew "eza"
-brew "fd"
-brew "fnm"
+brew "bat" # replaces cat
 brew "coreutils"
+brew "eza" # replaces ls
+brew "fd" # replaces find
+brew "fnm" # replaces nvm
 brew "fzf"
 brew "gh"
 brew "git"
-brew "gitmux"
 brew "gnu-sed"
+brew "gitmux" # for tmux
 brew "goku" # for karibiner
 brew "kubectl" # for kubernetes
 brew "lazydocker"
@@ -28,8 +28,8 @@ brew "neovim"
 brew "powerlevel10k"
 brew "ripgrep" # for telescope
 brew "starship"
-brew "stylua"
 brew "stern" # for kubectl
+brew "stylua" # for lua
 brew "svn" # for font cask installations
 brew "tmux"
 brew "trash"
