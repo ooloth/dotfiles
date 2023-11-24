@@ -28,7 +28,7 @@ alias g='lazygit'
 alias h='cd $HOME'
 
 # kill process running on given port
-k() { lsof -t -i:$1 | xargs kill -9; }
+kill() { lsof -t -i:$1 | xargs kill -9; }
 
 # see: https://the.exa.website/docs/command-line-options
 # see EXA_* env vars in zsh/mu/variables.zsh
