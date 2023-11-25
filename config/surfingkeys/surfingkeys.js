@@ -7,7 +7,12 @@ mapkey('<Ctrl-y>', 'Copy page link as markdown', () => {
   Clipboard.write(`[${title}](${url})`)
 })
 
+// see: https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md#map
 map('gt', 'T')
+map('<Ctrl-h>', 'E') // go one tab left
+unmap('E')
+map('<Ctrl-l>', 'R') // go one tab right
+unmap('R')
 
 
 // {
