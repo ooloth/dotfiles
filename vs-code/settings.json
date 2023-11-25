@@ -317,7 +317,7 @@
 
     { "key": "l", "name": "Log to console", "command": "console.log.wrap.nameValue", "type": "command" },
 
-    { "key": "v", "name": "+Open", "type": "bindings", "bindings": [
+    { "key": "o", "name": "+Open", "type": "bindings", "bindings": [
       { "key": "d", "name": "Open debug console", "command": "workbench.debug.action.toggleRepl", "type": "command" },
       { "key": "e", "name": "Open explorer", "command": "workbench.view.explorer", "type": "command" },
       { "key": "g", "name": "Open source control", "command": "workbench.view.scm", "type": "command" },
