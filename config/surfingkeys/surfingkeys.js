@@ -29,6 +29,7 @@ unmap('D')
 //     },
 // }
 
+settings.hintAlign = 'left'
 // set theme
 settings.theme = `
 .sk_theme {
