@@ -1,3 +1,5 @@
+// see: https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md
+
 api.mapkey("<Ctrl-m>", "Copy page link as markdown", () => {
   let url = document.URL;
   let title = document.title;
@@ -13,10 +15,10 @@ api.unmap('<ctrl-i>');
 // set theme
 settings.theme = `
 .sk_theme {
-    font-family: Input Sans Condensed, Charcoal, sans-serif;
-    font-size: 10pt;
-    background: #24272e;
-    color: #abb2bf;
+  font-family: Input Sans Condensed, Charcoal, sans-serif;
+  font-size: 10pt;
+  background: #24272e;
+  color: #abb2bf;
 }
 .sk_theme tbody {
     color: #fff;
