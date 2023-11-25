@@ -1,16 +1,17 @@
 // see: https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md
 
-api.mapkey("<Ctrl-y>", "Copy page link as markdown", () => {
-  let url = document.URL;
-  let title = document.title;
-  api.Clipboard.write(`[${title}](${url})`);
-});
+api.mapkey('<Ctrl-y>', 'Copy page link as markdown', () => {
+  let url = document.URL
+  let title = document.title
+
+  api.Clipboard.write(`[${title}](${url})`)
+})
 
 // an example to replace `T` with `gt`, click `Default mappings` to see how `T` works.
-api.map('gt', 'T');
+api.map('gt', 'T')
 
 // an example to remove mapkey `Ctrl-i`
-api.unmap('<ctrl-i>');
+api.unmap('<ctrl-i>')
 
 // {
 //     "disabledSearchAliases": {
@@ -63,4 +64,4 @@ settings.theme = `
 }
 #sk_status, #sk_find {
     font-size: 20pt;
-}`;
+}`
