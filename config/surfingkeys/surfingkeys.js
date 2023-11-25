@@ -1,6 +1,6 @@
 // see: https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md
 
-api.mapkey("<Ctrl-m>", "Copy page link as markdown", () => {
+api.mapkey("<Ctrl-y>", "Copy page link as markdown", () => {
   let url = document.URL;
   let title = document.title;
   api.Clipboard.write(`[${title}](${url})`);
