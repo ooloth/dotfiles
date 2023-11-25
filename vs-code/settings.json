@@ -317,6 +317,9 @@
 
     { "key": "l", "name": "Log to console", "command": "console.log.wrap.nameValue", "type": "command" },
 
+    { "key": "n", "name": "+Notebook (or Jupyter?)", "type": "bindings", "bindings": [
+    ]},
+
     { "key": "o", "name": "+Open", "type": "bindings", "bindings": [
       { "key": "d", "name": "Open debug console", "command": "workbench.debug.action.toggleRepl", "type": "command" },
       { "key": "e", "name": "Open explorer", "command": "workbench.view.explorer", "type": "command" },
@@ -351,9 +354,9 @@
       { "key": "f", "name": "Search for a file", "command": "workbench.action.quickOpen", "type": "command" },
       { "key": "p", "name": "Search project text", "command": "workbench.action.findInFiles", "type": "command" },
       { "key": "P", "name": "Search and replace in project", "command": "workbench.action.replaceInFiles", "type": "command" },
-      { "key": "p", "name": "Search recent projects", "command": "workbench.action.openRecent", "type": "command" },
-      // { "key": "s", "name": "Search symbols in editor", "command": "workbench.action.gotoSymbol", "type": "command" },
-      // { "key": "S", "name": "Search symbols in project", "command": "workbench.action.showAllSymbols", "type": "command" },
+      { "key": "r", "name": "Search recent projects", "command": "workbench.action.openRecent", "type": "command" },
+      { "key": "s", "name": "Search symbols in editor", "command": "workbench.action.gotoSymbol", "type": "command" },
+      { "key": "S", "name": "Search symbols in project", "command": "workbench.action.showAllSymbols", "type": "command" },
     ]},
 
     { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
@@ -420,5 +423,8 @@
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
   "terminal.integrated.tabs.enabled": false,
-  "terminal.integrated.fontSize": 12.5
+  "terminal.integrated.fontSize": 12.5,
+  "terraform.codelens.referenceCount": true,
+  "terraform.experimentalFeatures.validateOnSave": true,
+  "terraform.languageServer.terraform.path": "/opt/homebrew/bin/terraform"
 }

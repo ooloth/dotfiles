@@ -14,8 +14,8 @@
   { "key": "ctrl+k", "command": "workbench.action.navigateUp" },
 
   // Project navigation
-  { "key": "ctrl+i", "command": "workbench.action.navigateForwardInNavigationLocations" },
-  { "key": "ctrl+o", "command": "workbench.action.navigateBackInNavigationLocations" },
+  { "key": "ctrl+i", "command": "workbench.action.navigateForward", "when": "canNavigateForward" },
+  { "key": "ctrl+o", "command": "workbench.action.navigateBack", "when": "canNavigateBack" },
 
   // Editor navigation
   { "key": "ctrl+]", "command": "workbench.action.nextEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },

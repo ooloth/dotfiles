@@ -5,6 +5,7 @@ tap "homebrew/bundle"
 tap "homebrew/cask-fonts"
 tap "arl/arl" # for gitmux
 tap "goku" # for goku
+tap "hashicorp/tap" # for terraform
 tap "jesseduffield/lazygit"
 tap "jesseduffield/lazydocker"
 
@@ -20,6 +21,7 @@ brew "git"
 brew "gnu-sed"
 brew "gitmux" # for tmux
 brew "goku" # for karibiner
+brew "hashicorp/tap/terraform"
 brew "kubectl" # for kubernetes
 brew "lazydocker"
 brew "lazygit"
