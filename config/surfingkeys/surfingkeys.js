@@ -14,6 +14,10 @@ unmap('E')
 map('<Ctrl-l>', 'R') // go one tab right
 unmap('R')
 
+map('<Ctrl-k>', 'S') // go back in history
+unmap('S')
+map('<Ctrl-j>', 'D') // go forward in history
+unmap('D')
 
 // {
 //     "disabledSearchAliases": {
