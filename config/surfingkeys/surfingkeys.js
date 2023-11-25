@@ -1,4 +1,4 @@
-// see: https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md
+// see https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md
 
 api.mapkey("<Ctrl-m>", "Copy page link as markdown", () => {
   let url = document.URL;
@@ -50,4 +50,3 @@ settings.theme = `
 #sk_status, #sk_find {
     font-size: 20pt;
 }`;
-// click `Save` button to make above settings to take effect.</ctrl-i></ctrl-y>
