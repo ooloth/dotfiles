@@ -13,15 +13,15 @@ alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias d='lazydocker'
 
 # docker container
-dc() { docker container "$@"; }
+alias dc='docker container'
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 de() { docker container exec -it $1 sh; }
 
 # docker compose
-dp() { docker compose "$@"; }
-dpd() { docker compose down --remove-orphans "$@"; }        # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
-dpl() { docker compose logs --follow --tail=100 "$@"; }     # see last 100 log lines of one or more services (or all services if no args provided)
-dpu() { docker compose up --build --detach --remove-orphans "$@"; } # recreate and start one or more services (or all services if no args provided)
+alias dp='docker compose'
+alias dpd='docker compose down --remove-orphans'                # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
+alias dpl='docker compose logs --follow --tail=100'             # see last 100 log lines of one or more services (or all services if no args provided)
+alias dpu='docker compose up --build --detach --remove-orphans' # recreate and start one or more services (or all services if no args provided)
 
 alias f='vifm'
 alias g='lazygit'
