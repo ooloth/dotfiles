@@ -30,8 +30,8 @@ if $IS_WORK_LAPTOP; then
 
     ru && roadie venv
 
+    # silence out of control watchdog output when working locally
     if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
-      # just leads to annoying local ouput I don't need
       # see: https://pip.pypa.io/en/stable/cli/pip_uninstall/
       pip uninstall watchdog -y
     fi
@@ -39,25 +39,18 @@ if $IS_WORK_LAPTOP; then
 
   activate_venv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
+    local PYENV_VENV="${PYENV_ROOT}/versions/${CURRENT_DIRECTORY}"
 
-    # if the correct venv is already active, do nothing
-    if [[ "$PYENV_VERSION" == "$CURRENT_DIRECTORY" ]]; then
+    if [[ ! -d "$PYENV_VENV" ]]; then
+      export VIRTUAL_ENV=''
+      # export VIRTUAL_ENV_PROMPT=''
       return
-    else
-      eval "$(pyenv init -)"
     fi
 
-    # if defined, activate the appropriate venv for this directory
-    case $CURRENT_DIRECTORY in
-      build-pipelines)             pyenv shell build-pipelines ;;
-      dash-phenoapp-v2 | phenoapp) pyenv shell dash-phenoapp-v2 ;;
-      eng-onboarding)              pyenv shell eng-onboarding ;;
-      phenomap)                    pyenv shell phenomap ;;
-      phenoreader)                 pyenv shell phenoreader ;;
-      phenoservice-api)            pyenv shell phenoservice-api ;;
-      phenoservice-consumer)       pyenv shell phenoservice-consumer ;;
-      *)                           eval export PYENV_VERSION='' ;;
-    esac
+    # much faster than "pyenv init" + "pyenv shell $CURRENT_DIRECTORY" is just to manually activate the venv without the shell integration
+    # see: https://stackoverflow.com/a/74290100/8802485
+    # see: https://stackoverflow.com/questions/45554864/why-am-i-getting-permission-denied-when-activating-a-venv
+    source "${PYENV_VENV}/bin/activate"
   }
 
   # automatically activate appropriate venv when zsh first loads (called again in autocommands.zsh whenever cwd changes)
@@ -68,8 +61,10 @@ if $IS_WORK_LAPTOP; then
 
     case $CURRENT_DIRECTORY in
       # silence out of control watchdog output when working locally
-      dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
-      phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
+      dash-phenoapp-v2) python phenoapp/app.py ;;
+      # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
+      phenoapp)         pa && python phenoapp/app.py ;;
+      # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
       react-app)        ns ;;
       *)                echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
@@ -102,15 +97,12 @@ if $IS_WORK_LAPTOP; then
   export PROMETHEUS_MULTIPROC_DIR=./.prom
 
   # pyenv
-  # NOTE: do NOT add eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" here (they slow the shell down a lot)
+  # NOTE: do NOT use eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
 
   # python
   # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
   export PYTHONPATH="$PYTHONPATH:/Users/$USER"
   export MYPYPATH=.
-
-  # roadie
-  eval "$(_ROADIE_COMPLETE=source_zsh roadie)"
 
   # sbin
   export PATH="/opt/homebrew/sbin:$PATH"
