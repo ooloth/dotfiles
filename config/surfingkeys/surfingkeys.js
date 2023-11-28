@@ -1,6 +1,10 @@
 // see: https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md
 const { Clipboard, Hints, map, mapkey, removeSearchAlias, unmap, unmapAllExcept, vmap, vunmap } = api
 
+// "linkHintCharacters": "asdfjklqwerzxc",
+// "detectByCursorStyle": false,
+// "openTab": "t"
+
 map('<Ctrl-i>', '<Alt-s>') // toggle Surfingkeys for current site
 
 map('<Ctrl-h>', 'E') // go one tab left
@@ -12,6 +16,20 @@ map('<Ctrl-k>', 'S') // go back in a tab's history
 unmap('S')
 map('<Ctrl-j>', 'D') // go forward in a tab's history
 unmap('D')
+
+map('<Ctrl-d>', 'd') // scroll half page down
+// unmap('d')
+unmap('P')
+map('<Ctrl-u>', 'e') // scroll half page up
+unmap('e')
+unmap('U')
+
+map('<Ctrl-b>', 'B') // go back one tab
+unmap('B')
+map('<Ctrl-f>', 'F') // go formard one tab
+unmap('F')
+
+map('F', 'C') // open link in non-active new tab
 
 map('gt', 'T')
 
@@ -36,7 +54,7 @@ settings.hintAlign = 'left'
 // settings.hintExplicit = true // wait for explicit input when there is only a single hint available
 // settings.modeAfterYank = 'Normal' // after yanking text in Visual mode, switch to Normal mode
 settings.richHintsForKeystroke = 100
-settings.scrollStepSize = 80 // step size for each move by j/k
+settings.scrollStepSize = 150 // step size for each move by j/k
 settings.showModeStatus = true // always to show mode
 settings.startToShowEmoji = 0 // show emoji 0 chars after ":"
 // settings.tabsMRUOrder = false // list opened tabs in order of most recently used
