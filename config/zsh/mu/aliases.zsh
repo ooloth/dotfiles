@@ -23,6 +23,7 @@ alias dpd='docker compose down --remove-orphans'                # stop and remov
 alias dpl='docker compose logs --follow --tail=100'             # see last 100 log lines of one or more services (or all services if no args provided)
 alias dpu='docker compose up --build --detach --remove-orphans' # recreate and start one or more services (or all services if no args provided)
 
+alias env='env | sort'
 alias f='vifm'
 alias g='lazygit'
 alias h='cd $HOME'
