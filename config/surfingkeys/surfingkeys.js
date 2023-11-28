@@ -1,5 +1,19 @@
 // see: https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md
-const { Clipboard, Hints, map, mapkey, unmap, unmapAllExcept, vmap, vunmap } = api
+const { Clipboard, Hints, map, mapkey, removeSearchAlias, unmap, unmapAllExcept, vmap, vunmap } = api
+
+map('<Ctrl-i>', '<Alt-s>') // toggle Surfingkeys for current site
+
+map('<Ctrl-h>', 'E') // go one tab left
+unmap('E')
+map('<Ctrl-l>', 'R') // go one tab right
+unmap('R')
+
+map('<Ctrl-k>', 'S') // go back in a tab's history
+unmap('S')
+map('<Ctrl-j>', 'D') // go forward in a tab's history
+unmap('D')
+
+map('gt', 'T')
 
 mapkey('<Ctrl-y>', 'Copy page link as markdown', () => {
   let url = document.URL
@@ -7,30 +21,26 @@ mapkey('<Ctrl-y>', 'Copy page link as markdown', () => {
   Clipboard.write(`[${title}](${url})`)
 })
 
-// see: https://github.com/brookhong/Surfingkeys/blob/master/docs/API.md#map
-map('gt', 'T')
-map('<Ctrl-h>', 'E') // go one tab left
-unmap('E')
-map('<Ctrl-l>', 'R') // go one tab right
-unmap('R')
+removeSearchAlias('b') // remove baidu
+removeSearchAlias('d') // remove duckduckgo
+removeSearchAlias('e') // remove wikipedia
+removeSearchAlias('s') // remove stackoverflow
+removeSearchAlias('w') // remove bing
 
-map('<Ctrl-k>', 'S') // go back in history
-unmap('S')
-map('<Ctrl-j>', 'D') // go forward in history
-unmap('D')
-
-// {
-//     "disabledSearchAliases": {
-//         "b": "baidu",
-//         "d": "duckduckgo",
-//         "e": "wikipedia",
-//         "s": "stackoverflow",
-//         "w": "bing"
-//     },
-// }
-
+// see: https://github.com/brookhong/Surfingkeys#properties-list
+settings.blocklistPattern = undefined // regex for sites with Surfingkeys disabled
+settings.enableEmojiInsertion = true // enable emoji insertion after ":" in insert mode
+// settings.focusAfterClosed = 'last' // focus last tab after closing current tab
+settings.focusFirstCandidate = true // focus first matched result in Omnibar
 settings.hintAlign = 'left'
-// set theme
+// settings.hintExplicit = true // wait for explicit input when there is only a single hint available
+// settings.modeAfterYank = 'Normal' // after yanking text in Visual mode, switch to Normal mode
+settings.richHintsForKeystroke = 100
+settings.scrollStepSize = 80 // step size for each move by j/k
+settings.showModeStatus = true // always to show mode
+settings.startToShowEmoji = 0 // show emoji 0 chars after ":"
+// settings.tabsMRUOrder = false // list opened tabs in order of most recently used
+settings.tabsThreshold = 20 // choose tabs with omnibar when tabs exceed this number
 settings.theme = `
 .sk_theme {
   font-family: Input Sans Condensed, Charcoal, sans-serif;
