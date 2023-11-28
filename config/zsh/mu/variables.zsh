@@ -1,3 +1,5 @@
+export DEBUG=false
+
 export EDITOR=code
 
 # see: https://the.exa.website/docs/environment-variables
