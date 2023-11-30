@@ -7,34 +7,22 @@ const { Clipboard, Hints, map, mapkey, removeSearchAlias, unmap, unmapAllExcept,
 
 map('<Ctrl-i>', '<Alt-s>') // toggle Surfingkeys for current site
 
-map('<Ctrl-h>', 'E') // go one tab left
-unmap('E')
-map('<Ctrl-l>', 'R') // go one tab right
-unmap('R')
+map('F', 'C'), unmap('C') // open link in non-active new tab
 
-map('<Ctrl-k>', 'S') // go back in a tab's history
-unmap('S')
-map('<Ctrl-j>', 'D') // go forward in a tab's history
-unmap('D')
+map('gt', 'T') // go to a tab
+map('<Ctrl-h>', 'E'), unmap('E') // go one tab left
+map('<Ctrl-l>', 'R'), unmap('R') // go one tab right
 
-map('<Ctrl-d>', 'd') // scroll half page down
-// unmap('d')
-unmap('P')
-map('<Ctrl-u>', 'e') // scroll half page up
-unmap('e')
-unmap('U')
+map('<Ctrl-k>', 'S'), unmap('S') // go back in a tab's history
+map('<Ctrl-j>', 'D'), unmap('D') // go forward in a tab's history
 
-map('<Ctrl-b>', 'B') // go back one tab
-unmap('B')
-map('<Ctrl-f>', 'F') // go formard one tab
-unmap('F')
+map('<Ctrl-d>', 'd'), unmap('P') // scroll half page down ('d' still works too)
+map('<Ctrl-u>', 'u'), unmap('e'), unmap('U') // scroll half page up ('u' still works too)
 
-map('F', 'C') // open link in non-active new tab
-
-map('gt', 'T')
+map('<Ctrl-b>', 'B'), unmap('B') // go back one visited tab
+map('<Ctrl-f>', 'F'), unmap('F') // go formard one visited tab
 
 map('yl', 'yy') // copy page link with yl
-
 mapkey('yy', 'Copy page link as markdown', () => {
   let url = document.URL
   let title = document.title
@@ -49,7 +37,7 @@ removeSearchAlias('w') // remove bing
 
 // see: https://github.com/brookhong/Surfingkeys#properties-list
 settings.blocklistPattern = undefined // regex for sites with Surfingkeys disabled
-settings.enableEmojiInsertion = true // enable emoji insertion after ":" in insert mode
+// settings.enableEmojiInsertion = true // enable emoji insertion after ":" in insert mode
 // settings.focusAfterClosed = 'last' // focus last tab after closing current tab
 settings.focusFirstCandidate = true // focus first matched result in Omnibar
 settings.hintAlign = 'left'
@@ -58,7 +46,7 @@ settings.hintAlign = 'left'
 settings.richHintsForKeystroke = 100
 settings.scrollStepSize = 150 // step size for each move by j/k
 // settings.showModeStatus = true // always show mode
-settings.startToShowEmoji = 0 // show emoji 0 chars after ":"
+// settings.startToShowEmoji = 0 // show emoji 0 chars after ":"
 // settings.tabsMRUOrder = false // list opened tabs in order of most recently used
 settings.tabsThreshold = 20 // choose tabs with omnibar when tabs exceed this number
 settings.theme = `
