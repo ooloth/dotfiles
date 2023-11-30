@@ -22,6 +22,8 @@ map('<Ctrl-u>', 'u'), unmap('e'), unmap('U') // scroll half page up ('u' still w
 map('<Ctrl-b>', 'B'), unmap('B') // go back one visited tab
 map('<Ctrl-f>', 'F'), unmap('F') // go formard one visited tab
 
+// NOTE: I use ctrl-m to merge all windows (in Chrome on Pro)
+
 map('yl', 'yy') // copy page link with yl
 mapkey('yy', 'Copy page link as markdown', () => {
   let url = document.URL
@@ -37,7 +39,6 @@ removeSearchAlias('w') // remove bing
 
 // see: https://github.com/brookhong/Surfingkeys#properties-list
 settings.blocklistPattern = undefined // regex for sites with Surfingkeys disabled
-// settings.enableEmojiInsertion = true // enable emoji insertion after ":" in insert mode
 // settings.focusAfterClosed = 'last' // focus last tab after closing current tab
 settings.focusFirstCandidate = true // focus first matched result in Omnibar
 settings.hintAlign = 'left'
@@ -46,7 +47,6 @@ settings.hintAlign = 'left'
 settings.richHintsForKeystroke = 100
 settings.scrollStepSize = 150 // step size for each move by j/k
 // settings.showModeStatus = true // always show mode
-// settings.startToShowEmoji = 0 // show emoji 0 chars after ":"
 // settings.tabsMRUOrder = false // list opened tabs in order of most recently used
 settings.tabsThreshold = 20 // choose tabs with omnibar when tabs exceed this number
 settings.theme = `
