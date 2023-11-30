@@ -34,6 +34,8 @@ map('F', 'C') // open link in non-active new tab
 map('gt', 'T')
 
 mapkey('<Ctrl-y>', 'Copy page link as markdown', () => {
+map('yl', 'yy') // copy page link with yl
+
   let url = document.URL
   let title = document.title
   Clipboard.write(`[${title}](${url})`)
