@@ -39,15 +39,17 @@ if $IS_WORK_LAPTOP; then
 
   activate_venv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
+
+    # "roadie venv" always creates a venv named after the current directory
     local PYENV_VENV="${PYENV_ROOT}/versions/${CURRENT_DIRECTORY}"
 
+    # if there's no pyenv venv for this directory, deactivate any venv sticking from a previous directory and be done
     if [[ ! -d "$PYENV_VENV" ]]; then
       export VIRTUAL_ENV=''
-      # export VIRTUAL_ENV_PROMPT=''
       return
     fi
 
-    # much faster than "pyenv init" + "pyenv shell $CURRENT_DIRECTORY" is just to manually activate the venv without the shell integration
+    # its much faster to activate the venv directly and not use the pyenv shell integration at all ("pyenv init" + "pyenv shell <venv>")
     # see: https://stackoverflow.com/a/74290100/8802485
     # see: https://stackoverflow.com/questions/45554864/why-am-i-getting-permission-denied-when-activating-a-venv
     source "${PYENV_VENV}/bin/activate"
@@ -77,6 +79,10 @@ if $IS_WORK_LAPTOP; then
 
   # The next line enables shell command completion for gcloud.
   if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
+
+  # IPG
+  # see: https://app.swimm.io/workspaces/ctl2gE0Uy2okwcN3LfOg/repos/Z2l0aHViJTNBJTNBaXBnLW9yY2hlc3RyYXRvciUzQSUzQXJlY3Vyc2lvbnBoYXJtYQ==/branch/trunk/docs/v0jze
+  export CONFIGOME_ENV=dev
 
   # kafka
   # TODO: update versions whenever I run brew update
