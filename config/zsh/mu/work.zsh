@@ -2,6 +2,9 @@ if $IS_WORK_LAPTOP; then
 
   bp() { cd $HOME/Repos/recursionpharma/build-pipelines; }
   eo() { cd $HOME/Repos/recursionpharma/eng-onboarding; }
+  ip() { cd $HOME/Repos/recursionpharma/ipg-processing; }
+  is() { cd $HOME/Repos/recursionpharma/iw-system; }
+  iu() { cd $HOME/Repos/recursionpharma/grey-havens; } # soon to be renamed "iw-ui"
   mp() { cd $HOME/Repos/recursionpharma/mapapp-public; }
   n() { npm install -- $1; }
   nb() { n && npm run build; }
