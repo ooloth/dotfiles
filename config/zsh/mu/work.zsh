@@ -67,6 +67,8 @@ if $IS_WORK_LAPTOP; then
     case $CURRENT_DIRECTORY in
       # silence out of control watchdog output when working locally
       dash-phenoapp-v2) python phenoapp/app.py ;;
+      grey-havens)      ./run-local.sh ;;
+      iw-system)        dpu ;;
       # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
       phenoapp)         pa && python phenoapp/app.py ;;
       # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
