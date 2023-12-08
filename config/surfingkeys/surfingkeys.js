@@ -5,22 +5,20 @@ const { Clipboard, Hints, map, mapkey, removeSearchAlias, unmap, unmapAllExcept,
 // "detectByCursorStyle": false,
 // "openTab": "t"
 
-map('<Ctrl-i>', '<Alt-s>') // toggle Surfingkeys for current site
-
-map('F', 'C'), unmap('C') // open link in non-active new tab
-
 map('gt', 'T') // go to a tab
-map('<Ctrl-h>', 'E'), unmap('E') // go one tab left
-map('<Ctrl-l>', 'R'), unmap('R') // go one tab right
-
-map('<Ctrl-k>', 'S'), unmap('S') // go back in a tab's history
-map('<Ctrl-j>', 'D'), unmap('D') // go forward in a tab's history
 
 map('<Ctrl-d>', 'd'), unmap('P') // scroll half page down ('d' still works too)
+map('<Ctrl-h>', 'E'), unmap('E') // go one tab left
+map('<Ctrl-i>', '<Alt-s>') // toggle Surfingkeys for current site
+map('<Ctrl-j>', 'D'), unmap('D') // go forward in a tab's history
+map('<Ctrl-k>', 'S'), unmap('S') // go back in a tab's history
+map('<Ctrl-l>', 'R'), unmap('R') // go one tab right
+map('<Ctrl-n>', 'F'), unmap('F') // go formard one visited tab
+map('<Ctrl-p>', 'B'), unmap('B') // go back one visited tab
 map('<Ctrl-u>', 'u'), unmap('e'), unmap('U') // scroll half page up ('u' still works too)
 
-map('<Ctrl-b>', 'B'), unmap('B') // go back one visited tab
-map('<Ctrl-f>', 'F'), unmap('F') // go formard one visited tab
+// TODO: reserve <Ctrl-f> for sending page to Feedbin
+map('F', 'C'), unmap('C') // open link in non-active new tab
 
 // NOTE: I use ctrl-m to merge all windows (in Chrome on Pro)
 
