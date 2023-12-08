@@ -19,7 +19,7 @@
   "editor.autoClosingDelete": "always",
   "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.cursorSurroundingLines": 20,
   "editor.foldingImportsByDefault": true,
@@ -44,7 +44,7 @@
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
   "editor.multiDocumentOccurrencesHighlight": true,
-  "editor.occurrencesHighlight": false,
+  "editor.occurrencesHighlight": "off",
   "editor.quickSuggestions": {
     "strings": true
   },
@@ -211,8 +211,9 @@
     // see: https://vspacecode.github.io/docs/whichkey/reference
 
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
-    { "key": ".", "name": "Quick fix", "command": "editor.action.quickFix", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
+    { "key": "\\", "name": "Split editor right", "command": "workbench.action.splitEditorToRightGroup", "type": "command" },
+    { "key": ".", "name": "Quick fix", "command": "editor.action.quickFix", "type": "command" },
 
     { "key": "a", "name": "+AI", "type": "bindings", "bindings": [
       { "key": "a", "name": "Ask CodeGPT", "command": "codegpt.askCodeGPT", "type": "command" }
@@ -239,8 +240,8 @@
     ]},
 
     { "key": "e", "name": "+Editor", "type": "bindings", "bindings": [
-      { "key": "\\", "name": "Split editor right", "command": "workbench.action.splitEditor", "type": "command" },
-      { "key": "-", "name": "Split editor below", "command": "workbench.action.splitEditorDown", "type": "command" },
+      { "key": "\\", "name": "Split editor right", "command": "workbench.action.splitEditorToRightGroup", "type": "command" },
+      { "key": "-", "name": "Split editor below", "command": "workbench.action.splitEditorToBelowGroup", "type": "command" },
       { "key": "=", "name": "Reset editor group sizes", "command": "workbench.action.evenEditorWidths", "type": "command" },
       { "key": "c", "name": "Combine all editor groups", "command": "workbench.action.joinAllGroups", "type": "command" },
       { "key": "d", "name": "Close active editor", "command": "workbench.action.closeActiveEditor", "type": "command" },
