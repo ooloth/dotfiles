@@ -18,7 +18,7 @@ map('<Ctrl-p>', 'B'), unmap('B') // go back one visited tab
 map('<Ctrl-u>', 'u'), unmap('e'), unmap('U') // scroll half page up ('u' still works too)
 
 // TODO: reserve <Ctrl-f> for sending page to Feedbin
-map('F', 'C'), unmap('C') // open link in non-active new tab
+map('F', '<Ctrl-f>'), unmap('<Ctrl-f>') // open link in non-active new tab
 
 // NOTE: I use ctrl-m to merge all windows (in Chrome on Pro)
 
