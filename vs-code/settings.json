@@ -43,8 +43,7 @@
   "editor.lineNumbers": "off",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
-  "editor.multiDocumentOccurrencesHighlight": true,
-  "editor.occurrencesHighlight": "off",
+  "editor.occurrencesHighlight": "multiFile",
   "editor.quickSuggestions": {
     "strings": true
   },
@@ -311,15 +310,9 @@
       { "key": "Y", "name": "Open GitHub permalink", "command": "issue.openGithubPermalink", "type": "command" }
     ]},
 
-    { "key": "i", "name": "+Inspect", "type": "bindings", "bindings": [
-      { "key": "i", "name": "Inspect incoming calls", "command": "references-view.showIncomingCalls", "type": "command" },
-      { "key": "o", "name": "Inspect outgoing calls", "command": "references-view.showOutgoingCalls", "type": "command" },
-      { "key": "r", "name": "Inspect references", "command": "references-view.find", "type": "command" },
-    ]},
-
     { "key": "l", "name": "Log to console", "command": "console.log.wrap.nameValue", "type": "command" },
 
-    { "key": "n", "name": "+Notebook (or Jupyter?)", "type": "bindings", "bindings": [
+    { "key": "n", "name": "+Notebook/Jupyter", "type": "bindings", "bindings": [
     ]},
 
     { "key": "o", "name": "+Open", "type": "bindings", "bindings": [
@@ -351,7 +344,7 @@
     ]},
 
     { "key": "s", "name": "+Search", "type": "bindings", "bindings": [
-      { "key": "e", "name": "Search editor text", "command": "actions.find", "type": "command" },
+      { "key": "c", "name": "Search incoming calls", "command": "references-view.showIncomingCalls", "type": "command" },
       { "key": "E", "name": "Search and replace in editor", "command": "editor.action.startFindReplaceAction", "type": "command" },
       { "key": "f", "name": "Search for a file", "command": "workbench.action.quickOpen", "type": "command" },
       { "key": "p", "name": "Search project text", "command": "workbench.action.findInFiles", "type": "command" },
