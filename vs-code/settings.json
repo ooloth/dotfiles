@@ -351,7 +351,8 @@
       { "key": "e", "name": "Search in editor", "command": "actions.find", "type": "command" },
       { "key": "E", "name": "Search and replace in editor", "command": "editor.action.startFindReplaceAction", "type": "command" },
       { "key": "f", "name": "Search for a file", "command": "workbench.action.quickOpen", "type": "command" },
-      { "key": "p", "name": "Search in project", "command": "workbench.action.findInFiles", "type": "command" },
+      { "key": "p", "name": "Search in project", "command": "search.action.openNewEditor", "type": "command" },
+      // { "key": "p", "name": "Search in project", "command": "workbench.action.findInFiles", "type": "command" },
       { "key": "P", "name": "Search and replace in project", "command": "workbench.action.replaceInFiles", "type": "command" },
       { "key": "r", "name": "Search recent projects", "command": "workbench.action.openRecent", "type": "command" },
       { "key": "R", "name": "Search references", "command": "references-view.find", "type": "command" },
@@ -389,7 +390,10 @@
     "[Material Theme Ocean]": {
       // see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts
       "editor.lineHighlightBackground": "#1A1C25", // more noticeable line highlight when editing
-      "editor.rangeHighlightBackground": "#292D3E" // more noticeable line highlight when previewing search results
+      "editor.rangeHighlightBackground": "#292D3E", // more noticeable line highlight when previewing search results
+      "searchEditor.findMatchBorder": "#80CBC4",
+      // "searchEditor.findMatchBackground": "#1A1C25",
+      "editor.findMatchHighlightBorder": "#80CBC4",
     },
     "[Moonlight II]": {
       "dropdown.background": "#1f1f22",
@@ -425,4 +429,5 @@
   "zenMode.hideStatusBar": true,
   "terminal.integrated.tabs.enabled": false,
   "terminal.integrated.fontSize": 12.5,
+  "search.searchEditor.doubleClickBehaviour": "openLocationToSide",
 }
