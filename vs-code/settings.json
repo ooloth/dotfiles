@@ -43,7 +43,7 @@
   "editor.lineNumbers": "off",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
-  "editor.occurrencesHighlight": "multiFile",
+  "editor.occurrencesHighlight": "off",
   "editor.quickSuggestions": {
     "strings": true
   },
@@ -136,6 +136,9 @@
   "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
   "terminal.integrated.lineHeight": 1.35,
   "terminal.integrated.scrollback": 15000,
+  "terraform.codelens.referenceCount": true,
+  "terraform.experimentalFeatures.validateOnSave": true,
+  "terraform.languageServer.terraform.path": "/opt/homebrew/bin/terraform",
   "todohighlight.keywords": [
     { "backgroundColor": "transparent", "color": "#ffc777", "text": "TODO:" },
     { "backgroundColor": "transparent", "color": "#ff757f", "text": "FIXME:" },
@@ -422,7 +425,4 @@
   "zenMode.hideStatusBar": true,
   "terminal.integrated.tabs.enabled": false,
   "terminal.integrated.fontSize": 12.5,
-  "terraform.codelens.referenceCount": true,
-  "terraform.experimentalFeatures.validateOnSave": true,
-  "terraform.languageServer.terraform.path": "/opt/homebrew/bin/terraform"
 }
