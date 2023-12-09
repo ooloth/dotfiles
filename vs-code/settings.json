@@ -164,6 +164,7 @@
     { "before": [ "]", "p" ], "commands": [ "editor.action.marker.nextInFiles" ] },
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
     { "before": [ "g", "a" ], "commands": [ "editor.action.quickFix" ] },
+    { "before": ["g", "D"] , "commands": [ "editor.action.revealDefinitionAside" ], "when": "editorHasDefinitionProvider && editorTextFocus && isWeb && !isInEmbeddedEditor" },
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "Y" ], "after": [ "y", "$" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
@@ -410,6 +411,7 @@
   },
   "workbench.colorTheme": "Material Theme Ocean",
   "workbench.editor.enablePreview": false,
+  "workbench.editor.revealIfOpen": true,
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.wrapTabs": true,
   "workbench.fontAliasing": "auto",
