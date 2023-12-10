@@ -49,6 +49,11 @@
   "editor.suggest.preview": true,
   "editor.suggest.showStatusBar": true,
   "editor.tabSize": 2,
+  "editor.tokenColorCustomizations": {
+    "[Material Theme Ocean]": {
+      "comments": "#525975"
+    }
+  },
   "editor.wordWrapColumn": 120,
   "emmet.includeLanguages": {
     "javascript": "javascriptreact"
@@ -389,9 +394,19 @@
       // see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts
       "editor.lineHighlightBackground": "#1A1C25", // more noticeable line highlight when editing
       "editor.rangeHighlightBackground": "#292D3E", // more noticeable line highlight when previewing search results
-      "searchEditor.findMatchBorder": "#80CBC4",
+      // "searchEditor.findMatchBorder": "#80CBC4",
       // "searchEditor.findMatchBackground": "#1A1C25",
+      // "editor.findMatchHighlightBackground": "#1A1C25",
+      // "editor.findMatchHighlightBackground": "#292D3E",
+      // "editor.findMatchHighlightBackground": "#babed830",
+      // "editor.findMatchHighlightBackground": "#80CBC4",
+      "editor.findMatchHighlightBackground": "#000000",
+      // "editor.findMatchHighlightBorder": "#ffffff50",
       "editor.findMatchHighlightBorder": "#80CBC4",
+      // "sideBar.foreground": "#80869E"
+      // "sideBar.foreground": "#8F93A2"
+      "sideBar.foreground": "#babed8"
+      // "sideBar.foreground": "#525975"
     },
     "[Moonlight II]": {
       "dropdown.background": "#1f1f22",
