@@ -1,7 +1,5 @@
 // see: https://code.visualstudio.com/api/references/when-clause-contexts
 
-// prettier-ignore-start
-
 [
   ////////////////
   // NAVIGATING //
@@ -75,6 +73,7 @@
   { "key": "ctrl+k", "command": "search.action.focusQueryEditorWidget", "when": "inSearchEditor" },
   { "key": "ctrl+j", "command": "search.focus.nextInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
   { "key": "ctrl+k", "command": "search.focus.previousInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible && !searchInputBoxFocus" },
+  { "key": "cmd+enter", "name": "Replace all", "command": "search.action.replaceAll", "type": "command", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" },
 
   /////////////
   // EDITING //
@@ -88,7 +87,7 @@
   ///////////////
 
   { "key": "ctrl+,", "command": "whichkey.show" },
-  { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
+  { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" },
+  { "key": "cmd+enter", "command": "-search.action.openInEditor", "when": "hasSearchResult && searchViewletFocus" },
+  { "key": "alt+cmd+enter", "command": "-search.action.replaceAll", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" }
 ]
-
-// prettier-ignore-end
