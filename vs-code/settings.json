@@ -126,6 +126,7 @@
     "**/dist": true,
     "**/tmp": true
   },
+  "search.searchEditor.doubleClickBehaviour": "openLocationToSide",
   "search.smartCase": true,
   "security.workspace.trust.untrustedFiles": "open",
   "settings.cycle": [
@@ -337,8 +338,9 @@
       { "key": "e", "name": "Search in editor", "command": "actions.find", "type": "command" },
       { "key": "E", "name": "Search and replace in editor", "command": "editor.action.startFindReplaceAction", "type": "command" },
       { "key": "f", "name": "Search for a file", "command": "workbench.action.quickOpen", "type": "command" },
-      { "key": "p", "name": "Search in project", "command": "search.action.openNewEditor", "type": "command" },
-      // { "key": "p", "name": "Search in project", "command": "workbench.action.findInFiles", "type": "command" },
+      // { "key": "p", "name": "Search in project", "command": "search.action.openNewEditor", "type": "command" },
+      { "key": "k", "name": "Search keyboard shortcuts", "command": "workbench.action.openGlobalKeybindings", "type": "command" },
+      { "key": "p", "name": "Search in project", "command": "workbench.action.findInFiles", "type": "command" },
       { "key": "P", "name": "Search and replace in project", "command": "workbench.action.replaceInFiles", "type": "command" },
       { "key": "r", "name": "Search recent projects", "command": "workbench.action.openRecent", "type": "command" },
       { "key": "R", "name": "Search references", "command": "references-view.find", "type": "command" },
