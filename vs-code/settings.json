@@ -126,6 +126,7 @@
     "**/dist": true,
     "**/tmp": true
   },
+  "search.smartCase": true,
   "security.workspace.trust.untrustedFiles": "open",
   "settings.cycle": [
     // Referenced in whichkey.bindings
