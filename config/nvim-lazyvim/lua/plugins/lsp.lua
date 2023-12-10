@@ -224,7 +224,7 @@ return {
           --     'prettier.config.cjs',
           --   })
           -- end,
-          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTIN_CONFIG.md#using-local-executables
+          
           -- only_local = 'node_modules/.bin',
           -- root_dir = require('null-ls.utils').root_pattern('.prettierrc'),
           -- or require('null-ls.utils').root_pattern('.git'),
