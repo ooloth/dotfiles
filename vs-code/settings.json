@@ -3,7 +3,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[terraform][terraform-vars]": {
-    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.defaultFormatter": "hashicorp.terraform"
   },
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
@@ -170,21 +170,11 @@
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
     { "before": [ "g", "a" ], "commands": [ "editor.action.quickFix" ] },
     { "before": ["g", "D"] , "commands": [ "editor.action.revealDefinitionAside" ], "when": "editorHasDefinitionProvider && editorTextFocus && isWeb && !isInEmbeddedEditor" },
+    // { "before": ["n"], "commands": [ "search.action.focusNextSearchResult" ], "when": "inSearchEditor && hasSearchResult" },
+    // { "before": ["N"], "commands": [ "search.action.focusPreviousSearchResult" ], "when": "inSearchEditor && hasSearchResult" },
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "Y" ], "after": [ "y", "$" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
-    // { //   "before": ["<leader>", "b"], //   "commands": ["workbench.action.toggleSidebarVisibility"] // },
-    // { //   "before": ["<leader>", "c"], //   "commands": ["editor.action.commentLine"] // },
-    // { //   "before": ["<leader>", "e"], //   "commands": ["workbench.view.explorer"] // },
-    // { //   "before": ["<leader>", "f"], //   "commands": ["actions.find"] // },
-    // { //   "before": ["<leader>", "g"], //   "commands": ["workbench.view.scm"] // },
-    // { //   "before": ["<leader>", "h"], //   "commands": [":nohl"] // },
-    // { //   "before": ["<leader>", "o"], //   "commands": ["workbench.action.quickOpen"] // },
-    // { //   "before": ["<leader>", "s"], //   "commands": ["workbench.view.search"] // },
-    // { //   "before": ["<leader>", "t"], //   "commands": ["workbench.action.terminal.toggleTerminal"] // },
-    // { //   "before": ["<leader>", "v"], //   "commands": ["workbench.action.splitEditor"] // },
-    // { //   "before": ["<leader>", "w"], //   "commands": ["workbench.action.files.save"] // },
-    // { //   "before": ["<leader>", "x"], //   "commands": ["workbench.view.extensions"] // }
   ],
   "vim.searchHighlightColor": "#65bcff",
   "vim.searchHighlightTextColor": "black",
@@ -198,20 +188,12 @@
     { "before": [ ":" ], "after": [ "," ] }, // navigate f and t results using ;/: (like n/N for / results)
     { "before": [ "]", "p" ], "commands": [ "editor.action.marker.nextInFiles" ] },
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
+    // { "before": ["n"], "commands": [ "search.action.focusNextSearchResult" ], "when": "inSearchEditor && hasSearchResult" },
+    // { "before": ["N"], "commands": [ "search.action.focusPreviousSearchResult" ], "when": "inSearchEditor && hasSearchResult" },
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "v" ], "commands": [ "editor.action.smartSelect.grow" ] },
     { "before": [ "<s-v>" ], "commands": [ "editor.action.smartSelect.shrink" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
-    // { //   "before": ["<leader>", "b"], //   "commands": ["workbench.action.toggleSidebarVisibility"] // },
-    // { //   "before": ["<leader>", "c"], //   "commands": ["editor.action.commentLine"] // },
-    // { //   "before": ["<leader>", "e"], //   "commands": ["workbench.view.explorer"] // },
-    // { //   "before": ["<leader>", "f"], //   "commands": ["actions.find"] // },
-    // { //   "before": ["<leader>", "g"], //   "commands": ["workbench.view.scm"] // },
-    // { //   "before": ["<leader>", "o"], //   "commands": ["workbench.action.quickOpen"] // },
-    // { //   "before": ["<leader>", "s"], //   "commands": ["workbench.view.search"] // },
-    // { //   "before": ["<leader>", "v"], //   "commands": ["workbench.action.splitEditor"] // },
-    // { //   "before": ["<leader>", "w"], //   "commands": ["workbench.action.files.save"] // },
-    // { //   "before": ["<leader>", "x"], //   "commands": ["workbench.view.extensions"] // }
   ],
   "whichkey.bindings": [
     // see: https://vspacecode.github.io/docs/whichkey/reference
@@ -267,7 +249,7 @@
       { "key": "p", "name": "Paste clipboard over editor contents", "commands": [ "editor.action.selectAll", "editor.action.clipboardPasteAction" ], "type": "commands" },
       { "key": "u", "name": "Undo close editor", "command": "workbench.action.reopenClosedEditor", "type": "command" },
       { "key": "x", "name": "Close all editor groups", "command": "workbench.action.closeAllGroups", "type": "command" },
-      { "key": "y", "name": "Copy editor contents to clipboard", "commands": [ "editor.action.selectAll", "editor.action.clipboardCopyAction", "cancelSelection" ], "type": "commands" },
+      { "key": "y", "name": "Copy editor contents to clipboard", "commands": [ "editor.action.selectAll", "editor.action.clipboardCopyAction", "cancelSelection" ], "type": "commands" }
     ]},
 
     { "key": "f", "name": "+File", "type": "bindings", "bindings": [
@@ -329,7 +311,7 @@
       { "key": "p", "name": "Open problems", "command": "workbench.actions.view.problems", "type": "command" },
       { "key": "r", "name": "Open remote explorer", "command": "workbench.view.remote", "type": "command" },
       // { "key": "t", "name": "Open test", "command": "workbench.view.extension.test", "type": "command" },
-      { "key": "x", "name": "Open extensions", "command": "workbench.view.extensions", "type": "command" },
+      { "key": "x", "name": "Open extensions", "command": "workbench.view.extensions", "type": "command" }
     ]},
 
     { "key": "p", "name": "+Problems", "type": "bindings", "bindings": [
@@ -346,7 +328,7 @@
       { "key": "r", "name": "Refactor", "command": "editor.action.refactor", "type": "command" },
       { "key": "s", "name": "Rename symbol", "command": "editor.action.rename", "type": "command" },
       { "key": "u", "name": "To lower case", "command": "editor.action.transformToLowercase", "type": "command" },
-      { "key": "U", "name": "To upper case", "command": "editor.action.transformToUppercase", "type": "command" },
+      { "key": "U", "name": "To upper case", "command": "editor.action.transformToUppercase", "type": "command" }
     ]},
 
     { "key": "s", "name": "+Search", "type": "bindings", "bindings": [
@@ -360,7 +342,7 @@
       { "key": "r", "name": "Search recent projects", "command": "workbench.action.openRecent", "type": "command" },
       { "key": "R", "name": "Search references", "command": "references-view.find", "type": "command" },
       { "key": "s", "name": "Search symbols in editor", "command": "workbench.action.gotoSymbol", "type": "command" },
-      { "key": "S", "name": "Search symbols in project", "command": "workbench.action.showAllSymbols", "type": "command" },
+      { "key": "S", "name": "Search symbols in project", "command": "workbench.action.showAllSymbols", "type": "command" }
     ]},
 
     { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
@@ -375,7 +357,7 @@
       { "key": "s", "name": "Toggle statusbar", "command": "workbench.action.toggleStatusbarVisibility", "type": "command" },
       { "key": "w", "name": "Toggle word wrapping", "command": "editor.action.toggleWordWrap", "type": "command" },
       { "key": "z", "name": "Toggle zen mode", "command": "workbench.action.toggleZenMode", "type": "command" }
-    ]},
+    ]}
   ],
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
