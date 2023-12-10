@@ -70,16 +70,11 @@
   { "key": "] c", "command": "workbench.action.compareEditor.nextChange", "when": "editorTextFocus && textCompareEditorActive" },
   { "key": "[ c", "command": "workbench.action.compareEditor.previousChange", "when": "editorTextFocus && textCompareEditorActive" },
 
-  // Find results navigation
+  // Search results navigation
   { "key": "ctrl+k", "command": "search.action.focusSearchFromResults", "when": "accessibilityModeEnabled && searchViewletVisible || firstMatchFocus && searchViewletVisible" },
   { "key": "ctrl+k", "command": "search.action.focusQueryEditorWidget", "when": "inSearchEditor" },
-
   { "key": "ctrl+j", "command": "search.focus.nextInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
   { "key": "ctrl+k", "command": "search.focus.previousInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible && !searchInputBoxFocus" },
-  { "key": "n", "command": "search.action.focusNextSearchResult", "when": "inSearchEditor && hasSearchResult" },
-  { "key": "shift+n", "command": "search.action.focusPreviousSearchResult", "when": "inSearchEditor && hasSearchResult" },
-
-
 
   /////////////
   // EDITING //
