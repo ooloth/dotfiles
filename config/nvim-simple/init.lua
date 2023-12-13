@@ -2,7 +2,7 @@ local opt = vim.opt
 
 opt.autowrite = true          -- Enable auto write
 opt.clipboard = "unnamedplus" -- Sync with system clipboard
-opt.cmdheight = 0
+-- opt.cmdheight = 0
 opt.completeopt = "menu,menuone,noselect"
 opt.conceallevel = 3           -- Hide * markup for bold and italic
 opt.confirm = true             -- Confirm to save changes before exiting modified buffer
@@ -24,16 +24,16 @@ opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize" }
 opt.shiftround = true      -- Round indent
 opt.shiftwidth = 2         -- Size of an indent
 opt.shortmess:append({ W = true, I = true, c = true })
-opt.showmode = false       -- Dont show mode since we have a statusline
-opt.sidescrolloff = 8      -- Columns of context
-opt.signcolumn = "no"      -- Always show the signcolumn, otherwise it would shift the text each time
-opt.smartcase = true       -- Don't ignore case with capitals
-opt.smartindent = true     -- Insert indents automatically
+-- opt.showmode = false       -- Dont show mode since we have a statusline
+opt.sidescrolloff = 8    -- Columns of context
+opt.signcolumn = "no"
+opt.smartcase = true     -- Don't ignore case with capitals
+opt.smartindent = true   -- Insert indents automatically
 opt.spelllang = { "en" }
-opt.splitbelow = true      -- Put new windows below current
-opt.splitright = true      -- Put new windows right of current
-opt.tabstop = 2            -- Number of spaces tabs count for
-opt.termguicolors = true   -- True color support
+opt.splitbelow = true    -- Put new windows below current
+opt.splitright = true    -- Put new windows right of current
+opt.tabstop = 2          -- Number of spaces tabs count for
+opt.termguicolors = true -- True color support
 opt.timeoutlen = 300
 opt.undofile = true
 opt.undolevels = 10000
@@ -42,7 +42,16 @@ opt.wildmode = "longest:full,full" -- Command-line completion mode
 opt.winminwidth = 5                -- Minimum window width
 opt.wrap = false                   -- Disable line wrap
 
-vim.cmd.colorscheme "habamax"
+-- Nicer line highlighting while using Material Ocean theme in terminal
+vim.api.nvim_create_autocmd('ColorScheme', {
+  command = [[
+    highlight CursorLine guibg=#292D3E cterm=NONE
+    highlight Visual guibg=#292D3E cterm=NONE
+    highlight Search guibg=#FFCB6B cterm=NONE
+  ]]
+})
+
+vim.cmd.colorscheme "default"
 
 local set = vim.keymap.set
 
