@@ -35,6 +35,14 @@ vim.api.nvim_create_autocmd('ColorScheme', {
 
 vim.cmd.colorscheme "default"
 
+-- Allow deleting lines and start at the bottom
+vim.api.nvim_create_autocmd('VimEnter', {
+  command = [[
+    setlocal modifiable
+    normal G
+  ]]
+})
+
 local set = vim.keymap.set
 
 vim.g.mapleader = " "
