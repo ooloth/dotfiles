@@ -163,6 +163,7 @@
   "vim.insertModeKeyBindingsNonRecursive": [],
   "vim.leader": "",
   "vim.normalModeKeyBindingsNonRecursive": [
+    { "before": [ "<esc>" ], "commands": [ ":nohl" ] },
     { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
     { "before": [ "," ], "after": [ ":" ] }, // enter command mode with , instead of :
     { "before": [ ":" ], "after": [ "," ] }, // navigate f and t results using ;/: (like n/N for / results)
