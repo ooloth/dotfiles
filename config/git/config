@@ -2,7 +2,8 @@
   verbose = true
 
 [core]
-  editor = code --wait
+  editor = NVIM_APPNAME=nvim-simple nvim
+  # editor = code --wait
   excludesfile = ~/.config/git/ignore
   pager="bat"
 
