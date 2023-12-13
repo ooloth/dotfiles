@@ -179,7 +179,7 @@
     { "before": [ "Y" ], "after": [ "y", "$" ] },
     { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
   ],
-  "vim.searchHighlightColor": "#65bcff",
+  "vim.searchHighlightColor": "#FFCB6B",
   "vim.searchHighlightTextColor": "black",
   "vim.showmodename": false,
   "vim.smartRelativeLine": false,
@@ -382,23 +382,7 @@
       "editor.lineHighlightBackground": "#1A1C25", // higher constrast
       "editor.rangeHighlightBackground": "#292D3E", // higher contrast
       "searchEditor.findMatchBackground": "#292D3E", // higher contrast
-      "sideBar.foreground": "#babed8", // higher contrast
-    },
-    "[Moonlight II]": {
-      "dropdown.background": "#1f1f22",
-      "input.background": "#1f1f22",
-      "menu.background": "#1f1f22",
-      "sideBar.background": "#1f1f22",
-      "activityBar.activeBackground": "#1f1f22",
-      "titleBar.activeBackground": "#1f1f22",
-      "panel.background": "#1f1f22",
-      "editor.background": "#1f1f22",
-      "terminal.background": "#1f1f22",
-      // "editorCursor.foreground": "#ff757f",
-      "editorCursor.background": "#000000",
-      // See: https://github.com/atomiks/moonlight-vscode-theme/blob/master/src/moonlight-ii.json
-      // See: https://github.com/atomiks/moonlight-vscode-theme/blob/master/src/colors.js
-      "editorCursor.foreground": "#ff966c"
+      "sideBar.foreground": "#babed8" // higher contrast
     }
   },
   "workbench.colorTheme": "Material Theme Ocean",
