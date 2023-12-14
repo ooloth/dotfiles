@@ -63,8 +63,8 @@ set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
 
 -- line beginning + end
-set('n', '<S-h>', '^', { desc = 'Go to start of line' })
-set('n', '<S-l>', '$', { desc = 'Go to end of line' })
+set({ 'n', 'v' }, '<S-h>', '^', { silent = true })
+set({ 'n', 'v' }, '<S-l>', '$', { silent = true })
 
 -- clear search highlights
 set('n', '<esc>', '<cmd>nohl<CR>', { silent = true })
