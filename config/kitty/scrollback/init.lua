@@ -30,6 +30,8 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     highlight CursorLine guibg=#292D3E cterm=NONE
     highlight Visual guibg=#292D3E cterm=NONE
     highlight Search guibg=#FFCB6B cterm=NONE
+    highlight IncSearch guibg=#FFCB6B cterm=NONE
+    highlight CurSearch guibg=#ff9cac cterm=NONE
   ]]
 })
 
