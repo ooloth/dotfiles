@@ -381,6 +381,7 @@
       "editor.findMatchHighlightBackground": "#292D3E", // higher contrast
       "editor.lineHighlightBackground": "#1A1C25", // higher constrast
       "editor.rangeHighlightBackground": "#292D3E", // higher contrast
+      "editorSuggestWidget.selectedBackground": "#292D3E", // higher contrast
       "searchEditor.findMatchBackground": "#292D3E", // higher contrast
       "sideBar.foreground": "#babed8" // higher contrast
     }
