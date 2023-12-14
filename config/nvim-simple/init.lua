@@ -103,6 +103,9 @@ set('n', '<leader>wo', '<c-w>o', { desc = 'Only keep this one' })
 set('n', '<leader>wt', '<cmd>tab split<cr>', { desc = 'Open in new tab' })
 set('n', '<leader>ww', '<cmd>w<cr>', { desc = 'Write' })
 
+-- clear search highlights
+set('n', '<esc>', '<cmd>nohl<CR>', { silent = true })
+
 -- see: https://github.com/christoomey/vim-tmux-navigator/blob/master/plugin/tmux_navigator.vim
 vim.cmd([[
   noremap <silent> <c-h> :<C-U>TmuxNavigateLeft<cr>

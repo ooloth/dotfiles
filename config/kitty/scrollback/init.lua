@@ -61,3 +61,6 @@ set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for 
 -- line beginning + end
 set('n', '<S-h>', '^', { desc = 'Go to start of line' })
 set('n', '<S-l>', '$', { desc = 'Go to end of line' })
+
+-- clear search highlights
+set('n', '<esc>', '<cmd>nohl<CR>', { silent = true })
