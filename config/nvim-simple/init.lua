@@ -106,7 +106,8 @@ set('n', '<leader>wt', '<cmd>tab split<cr>', { desc = 'Open in new tab' })
 set('n', '<leader>ww', '<cmd>w<cr>', { desc = 'Write' })
 
 -- clear search highlights
-set('n', '<esc>', '<cmd>nohl<CR>', { silent = true })
+set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })
+
 
 -- see: https://github.com/christoomey/vim-tmux-navigator/blob/master/plugin/tmux_navigator.vim
 vim.cmd([[

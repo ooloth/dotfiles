@@ -67,4 +67,4 @@ set({ 'n', 'v' }, '<S-h>', '^', { silent = true })
 set({ 'n', 'v' }, '<S-l>', '$', { silent = true })
 
 -- clear search highlights
-set('n', '<esc>', '<cmd>nohl<CR>', { silent = true })
+set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })
