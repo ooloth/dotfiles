@@ -48,10 +48,14 @@ local set = vim.keymap.set
 vim.g.mapleader = " "
 
 -- avoid terminal mode in read only buffers
-set('n', 'i', '<noop>', { silent = true })
-set('n', 'a', '<noop>', { silent = true })
-set('n', 'I', '<noop>', { silent = true })
-set('n', 'A', '<noop>', { silent = true })
+set('n', 'i', '<Esc>', { silent = true })
+set('n', 'I', '<Esc>', { silent = true })
+set('n', 'a', '<Esc>', { silent = true })
+set('n', 'A', '<Esc>', { silent = true })
+set('n', 'o', '<Esc>', { silent = true })
+set('n', 'O', '<Esc>', { silent = true })
+set('n', 'c', '<Esc>', { silent = true })
+set('n', 's', '<Esc>', { silent = true })
 
 set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 -- swap : and ,
