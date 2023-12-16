@@ -405,4 +405,5 @@
   "github.copilot.chat.localeOverride": "en",
   "github.copilot.editor.enableCodeActions": false,
   "workbench.sideBar.location": "right",
+  "files.autoSaveDelay": 5000
 }
