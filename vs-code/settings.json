@@ -163,7 +163,7 @@
   "vim.insertModeKeyBindingsNonRecursive": [],
   "vim.leader": "",
   "vim.normalModeKeyBindingsNonRecursive": [
-    { "before": [ "<esc>" ], "commands": [ ":nohl" ] },
+    { "before": [ "<esc>" ], "commands": [ ":nohlsearch" ] },
     { "before": [ "<space>" ], "commands": [ "whichkey.show" ] },
     { "before": [ "," ], "after": [ ":" ] }, // enter command mode with , instead of :
     { "before": [ ":" ], "after": [ "," ] }, // navigate f and t results using ;/: (like n/N for / results)
@@ -173,11 +173,15 @@
     { "before": [ "[", "p" ], "commands": [ "editor.action.marker.prevInFiles" ] },
     { "before": [ "g", "a" ], "commands": [ "editor.action.quickFix" ] },
     { "before": ["g", "D"] , "commands": [ "editor.action.revealDefinitionAside" ], "when": "editorHasDefinitionProvider && editorTextFocus && isWeb && !isInEmbeddedEditor" },
+    { "before": [ "H" ], "after": [ "^" ] }, // go to first character in line
+    { "before": [ "L" ], "after": [ "$" ] }, // go to last character in line
     // { "before": ["n"], "commands": [ "search.action.focusNextSearchResult" ], "when": "inSearchEditor && hasSearchResult" },
     // { "before": ["N"], "commands": [ "search.action.focusPreviousSearchResult" ], "when": "inSearchEditor && hasSearchResult" },
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "Y" ], "after": [ "y", "$" ] },
-    { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
+    { "before": [ "Z", "Z" ], "commands": [ ":wq" ] },
+    // { "before": [ "^" ], "after": [ "<noop>" ] }, // practice using H instead
+    { "before": [ "$" ], "after": [ "<noop>" ] } // practice using L instead
   ],
   "vim.searchHighlightColor": "#FFCB6B",
   "vim.searchHighlightTextColor": "black",
@@ -196,7 +200,11 @@
     { "before": [ "u" ], "commands": [ "undo" ] },
     { "before": [ "v" ], "commands": [ "editor.action.smartSelect.grow" ] },
     { "before": [ "<s-v>" ], "commands": [ "editor.action.smartSelect.shrink" ] },
-    { "before": [ "Z", "Z" ], "commands": [ ":wq" ] }
+    { "before": [ "H" ], "after": [ "^" ] }, // go to first character in line
+    { "before": [ "L" ], "after": [ "$" ] }, // go to last character in line
+    { "before": [ "Z", "Z" ], "commands": [ ":wq" ] },
+    // { "before": [ "^" ], "after": [ "<noop>" ] }, // practice using H instead
+    { "before": [ "$" ], "after": [ "<noop>" ] } // practice using L instead
   ],
   "whichkey.bindings": [
     // see: https://vspacecode.github.io/docs/whichkey/reference
@@ -381,6 +389,7 @@
       "editor.findMatchHighlightBackground": "#292D3E", // higher contrast
       "editor.lineHighlightBackground": "#1A1C25", // higher constrast
       "editor.rangeHighlightBackground": "#292D3E", // higher contrast
+      "editorSuggestWidget.selectedBackground": "#292D3E", // higher contrast
       "searchEditor.findMatchBackground": "#292D3E", // higher contrast
       "sideBar.foreground": "#babed8" // higher contrast
     }

@@ -86,7 +86,8 @@
   // WHICH-KEY //
   ///////////////
 
-  { "key": "ctrl+,", "command": "whichkey.show" },
+  { "key": "shift shift", "command": "whichkey.show" },
+  // { "key": "ctrl+,", "command": "whichkey.show" },
   { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" },
   { "key": "cmd+enter", "command": "-search.action.openInEditor", "when": "hasSearchResult && searchViewletFocus" },
   { "key": "alt+cmd+enter", "command": "-search.action.replaceAll", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" }

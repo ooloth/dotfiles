@@ -30,6 +30,8 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     highlight CursorLine guibg=#292D3E cterm=NONE
     highlight Visual guibg=#292D3E cterm=NONE
     highlight Search guibg=#FFCB6B cterm=NONE
+    highlight IncSearch guibg=#FFCB6B cterm=NONE
+    highlight CurSearch guibg=#ff9cac cterm=NONE
   ]]
 })
 
@@ -48,10 +50,14 @@ local set = vim.keymap.set
 vim.g.mapleader = " "
 
 -- avoid terminal mode in read only buffers
-set('n', 'i', '<noop>', { silent = true })
-set('n', 'a', '<noop>', { silent = true })
-set('n', 'I', '<noop>', { silent = true })
-set('n', 'A', '<noop>', { silent = true })
+set('n', 'i', '<Esc>', { silent = true })
+set('n', 'I', '<Esc>', { silent = true })
+set('n', 'a', '<Esc>', { silent = true })
+set('n', 'A', '<Esc>', { silent = true })
+set('n', 'o', '<Esc>', { silent = true })
+set('n', 'O', '<Esc>', { silent = true })
+set('n', 'c', '<Esc>', { silent = true })
+set('n', 's', '<Esc>', { silent = true })
 
 set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 -- swap : and ,
@@ -59,5 +65,8 @@ set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
 
 -- line beginning + end
-set('n', '<S-h>', '^', { desc = 'Go to start of line' })
-set('n', '<S-l>', '$', { desc = 'Go to end of line' })
+set({ 'n', 'v' }, '<S-h>', '^', { silent = true })
+set({ 'n', 'v' }, '<S-l>', '$', { silent = true })
+
+-- clear search highlights
+set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })

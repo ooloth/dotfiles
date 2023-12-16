@@ -62,8 +62,10 @@ set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
 
 -- line beginning + end
-set('n', '<S-h>', '^', { desc = 'Go to start of line' })
-set('n', '<S-l>', '$', { desc = 'Go to end of line' })
+set({ 'n', 'v' }, '<S-h>', '^', { desc = 'Go to start of line', silent = true })
+set({ 'n', 'v' }, '<S-l>', '$', { desc = 'Go to end of line', silent = true })
+-- set({ 'n', 'v' }, '^', '<noop>', { silent = true }) -- practice using H instead
+set({ 'n', 'v' }, '$', '<noop>', { silent = true }) -- practice using L instead
 
 -- "changes"
 set('n', ']c', 'g,', { desc = 'Next change' })     -- go to next change with g;
@@ -102,6 +104,10 @@ set('n', '<leader>wc', '<c-w>c', { desc = 'Close' })
 set('n', '<leader>wo', '<c-w>o', { desc = 'Only keep this one' })
 set('n', '<leader>wt', '<cmd>tab split<cr>', { desc = 'Open in new tab' })
 set('n', '<leader>ww', '<cmd>w<cr>', { desc = 'Write' })
+
+-- clear search highlights
+set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })
+
 
 -- see: https://github.com/christoomey/vim-tmux-navigator/blob/master/plugin/tmux_navigator.vim
 vim.cmd([[
