@@ -404,4 +404,5 @@
   "terminal.integrated.fontSize": 12.5,
   "github.copilot.chat.localeOverride": "en",
   "github.copilot.editor.enableCodeActions": false,
+  "workbench.sideBar.location": "right",
 }
