@@ -401,5 +401,7 @@
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
   "terminal.integrated.tabs.enabled": false,
-  "terminal.integrated.fontSize": 12.5
+  "terminal.integrated.fontSize": 12.5,
+  "github.copilot.chat.localeOverride": "en",
+  "github.copilot.editor.enableCodeActions": false,
 }
