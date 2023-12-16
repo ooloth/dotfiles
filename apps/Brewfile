@@ -22,6 +22,7 @@ brew "gnu-sed"
 brew "gitmux" # for tmux
 brew "goku" # for karibiner
 brew "hashicorp/tap/terraform"
+brew "jq"
 brew "kubectl" # for kubernetes
 brew "lazydocker"
 brew "lazygit"
