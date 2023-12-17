@@ -48,6 +48,26 @@ local function update_mode_colors()
   return mode_color
 end
 
+-- see: https://github.com/nvim-lualine/lualine.nvim/blob/master/lua/lualine/components/searchcount.lua
+local function searchcount()
+  if vim.v.hlsearch == 0 then
+    return ''
+  end
+
+  local ok, result = pcall(vim.fn.searchcount, { maxcount = 999, timeout = 500 })
+  if not ok or next(result) == nil then
+    return ''
+  end
+
+  local denominator = math.min(result.total, result.maxcount)
+  return string.format('[%d/%d]', result.current, denominator)
+  -- local search_count = vim.fn.searchcount({ recompute = 0 })
+  -- if search_count.total > 0 then
+  --   return string.format(" %s/%s ", search_count.current, search_count.total)
+  -- end
+  -- return ""
+end
+
 Statusline = {}
 
 Statusline.update = function()
