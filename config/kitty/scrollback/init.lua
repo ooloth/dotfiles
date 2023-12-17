@@ -25,13 +25,15 @@ opt.winminwidth = 5                -- Minimum window width
 opt.wrap = false                   -- Disable line wrap
 
 -- Nicer line highlighting while using Material Ocean theme in terminal
+-- see: https://neovim.io/doc/user/syntax.html#highlight-groups
+-- see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts
 vim.api.nvim_create_autocmd('ColorScheme', {
   command = [[
     highlight CursorLine guibg=#292D3E cterm=NONE
     highlight Visual guibg=#292D3E cterm=NONE
-    highlight Search guibg=#FFCB6B cterm=NONE
-    highlight IncSearch guibg=#FFCB6B cterm=NONE
-    highlight CurSearch guibg=#ff9cac cterm=NONE
+    highlight Search guibg=#FFCB6B guifg=#000000 cterm=NONE
+    highlight IncSearch guibg=#000000 guifg=#FFCB6B cterm=NONE
+    highlight CurSearch guibg=#C3E88D guifg=#000000 cterm=NONE
   ]]
 })
 
