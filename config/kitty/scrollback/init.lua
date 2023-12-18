@@ -129,9 +129,9 @@ vim.api.nvim_create_autocmd('ColorScheme', {
   command = [[
     highlight CursorLine guibg=#292D3E cterm=NONE
     highlight Visual guibg=#292D3E cterm=NONE
-    highlight Search guibg=#FFCB6B guifg=#000000 cterm=NONE
-    highlight IncSearch guibg=#000000 guifg=#FFCB6B cterm=NONE
-    highlight CurSearch guibg=#C3E88D guifg=#000000 cterm=NONE
+    highlight Search guibg=#FFFFFF guifg=#000000 cterm=NONE
+    highlight IncSearch guibg=#000000 guifg=#FFFFFF cterm=NONE
+    highlight CurSearch guibg=#FFCB6B guifg=#000000 cterm=NONE
     highlight StatuslineAccent guibg=#82AAFF guifg=#000000 cterm=NONE
     highlight StatuslineInsertAccent guibg=#C3E88D guifg=#000000 cterm=NONE
     highlight StatuslineVisualAccent guibg=#C792EA guifg=#000000 cterm=NONE
