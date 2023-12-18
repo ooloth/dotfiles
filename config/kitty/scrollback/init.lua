@@ -132,6 +132,12 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     highlight Search guibg=#FFCB6B guifg=#000000 cterm=NONE
     highlight IncSearch guibg=#000000 guifg=#FFCB6B cterm=NONE
     highlight CurSearch guibg=#C3E88D guifg=#000000 cterm=NONE
+    highlight StatuslineAccent guibg=#82AAFF guifg=#000000 cterm=NONE
+    highlight StatuslineInsertAccent guibg=#C3E88D guifg=#000000 cterm=NONE
+    highlight StatuslineVisualAccent guibg=#C792EA guifg=#000000 cterm=NONE
+    highlight StatuslineReplaceAccent guibg=#916b53 guifg=#000000 cterm=NONE
+    highlight StatuslineCmdLineAccent guibg=#FFCB6B guifg=#000000 cterm=NONE
+    highlight StatuslineTerminalAccent guibg=#F78C6C guifg=#000000 cterm=NONE
   ]]
 })
 
@@ -145,7 +151,7 @@ local set = vim.keymap.set
 
 vim.g.mapleader = " "
 
--- avoid terminal mode in read only buffers
+-- avoid entering terminal mode in a read only buffer
 set('n', 'i', '<Esc>', { silent = true })
 set('n', 'I', '<Esc>', { silent = true })
 set('n', 'a', '<Esc>', { silent = true })
@@ -163,6 +169,8 @@ set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for 
 -- line beginning + end
 set({ 'n', 'v' }, '<S-h>', '^', { silent = true })
 set({ 'n', 'v' }, '<S-l>', '$', { silent = true })
+-- set({ 'n', 'v' }, '^', ':execute ""', { silent = true }) -- practice using H instead
+set({ 'n', 'v' }, '$', '<Esc>', { silent = true }) -- practice using L instead
 
 -- clear search highlights
 set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })
