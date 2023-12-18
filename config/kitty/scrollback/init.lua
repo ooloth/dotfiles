@@ -109,6 +109,19 @@ opt.wildmode = "longest:full,full"             -- Command-line completion mode
 opt.winminwidth = 5                            -- Minimum window width
 opt.wrap = false                               -- Disable line wrap
 
+------------------
+-- Autocommands --
+------------------
+-- see: https://neovim.io/doc/user/api.html#nvim_create_autocmd()
+
+-- Allow deleting lines + start with cursor at the bottom
+vim.api.nvim_create_autocmd('VimEnter', {
+  command = [[
+    setlocal modifiable
+    normal G
+  ]]
+})
+
 -- Nicer line highlighting while using Material Ocean theme in terminal
 -- see: https://neovim.io/doc/user/syntax.html#highlight-groups
 -- see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts
@@ -124,13 +137,9 @@ vim.api.nvim_create_autocmd('ColorScheme', {
 
 vim.cmd.colorscheme "default"
 
--- Allow deleting lines and start at the bottom
-vim.api.nvim_create_autocmd('VimEnter', {
-  command = [[
-    setlocal modifiable
-    normal G
-  ]]
-})
+-------------
+-- KEYMAPS --
+-------------
 
 local set = vim.keymap.set
 
