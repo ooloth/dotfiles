@@ -161,7 +161,6 @@ set('n', 'O', '<Esc>', { silent = true })
 set('n', 'c', '<Esc>', { silent = true })
 set('n', 's', '<Esc>', { silent = true })
 
-set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 -- swap : and ,
 set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
@@ -169,7 +168,6 @@ set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for 
 -- line beginning + end
 set({ 'n', 'v' }, '<S-h>', '^', { silent = true })
 set({ 'n', 'v' }, '<S-l>', '$', { silent = true })
--- set({ 'n', 'v' }, '^', ':execute ""', { silent = true }) -- practice using H instead
 set({ 'n', 'v' }, '$', '<Esc>', { silent = true }) -- practice using L instead
 
 -- clear search highlights
