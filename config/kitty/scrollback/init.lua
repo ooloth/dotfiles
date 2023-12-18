@@ -61,11 +61,10 @@ local function searchcount()
 
   local denominator = math.min(result.total, result.maxcount)
   return string.format('[%d/%d]', result.current, denominator)
-  -- local search_count = vim.fn.searchcount({ recompute = 0 })
-  -- if search_count.total > 0 then
-  --   return string.format(" %s/%s ", search_count.current, search_count.total)
-  -- end
-  -- return ""
+end
+
+local function lineinfo()
+  return " %l/%L "
 end
 
 Statusline = {}
@@ -76,14 +75,10 @@ Statusline.update = function()
     update_mode_colors(),
     mode(),
     "%#Normal# ",
+    "%=%#Normal# ",
     searchcount(),
-    -- filepath(),
-    -- filename(),
-    -- "%#Normal#",
-    -- lsp(),
-    -- "%=%#StatusLineExtra#",
-    -- filetype(),
-    -- lineinfo(),
+    "%=%#StatusLineExtra#",
+    lineinfo(),
   }
 end
 
@@ -92,24 +87,21 @@ local opt = vim.opt
 opt.clipboard = "unnamedplus" -- Sync with system clipboard
 opt.cmdheight = 0
 opt.completeopt = "menu,menuone,noselect"
-opt.cursorline = true          -- Enable highlighting of the current line
-opt.formatoptions = "jcroqlnt" -- tcqj
-opt.ignorecase = true          -- Ignore case
-opt.laststatus = 3             -- Always show one global statusline
-opt.mouse = "a"                -- Enable mouse mode
-opt.number = false             -- Print line number
-opt.pumblend = 10              -- Popup blend
-opt.pumheight = 10             -- Maximum number of entries in a popup
-opt.relativenumber = false     -- Relative line numbers
-opt.scrolloff = 10             -- Lines of context
+opt.cursorline = true                          -- Enable highlighting of the current line
+opt.formatoptions = "jcroqlnt"                 -- tcqj
+opt.ignorecase = true                          -- Ignore case
+opt.laststatus = 3                             -- Always show one global statusline
+opt.mouse = "a"                                -- Enable mouse mode
+opt.number = false                             -- Print line number
+opt.pumblend = 10                              -- Popup blend
+opt.pumheight = 10                             -- Maximum number of entries in a popup
+opt.relativenumber = false                     -- Relative line numbers
+opt.scrolloff = 10                             -- Lines of context
 opt.shortmess:append({ W = true, I = true, c = true })
-opt.showmode = false           -- Dont show mode since we have a statusline
-opt.sidescrolloff = 8          -- Columns of context
+opt.showmode = false                           -- Don't show mode since we have a statusline
+opt.sidescrolloff = 8                          -- Columns of context
 opt.signcolumn = "no"
-opt.smartcase = true           -- Don't ignore case with capitals
--- opt.statusline = "%f %L"
--- opt.statusline = "%n:%f%r%m |%{&ff}/%{&fenc}| |%l:%c/%LL| %{strftime('%H:%M')}"
--- opt.statusline = '%{Statusline.update()}'
+opt.smartcase = true                           -- Don't ignore case with capitals
 opt.statusline = '%!v:lua.Statusline.update()' -- see :help statusline, :help v:lua
 opt.termguicolors = true                       -- True color support
 opt.timeoutlen = 300
