@@ -127,17 +127,17 @@ vim.api.nvim_create_autocmd('VimEnter', {
 -- see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts
 vim.api.nvim_create_autocmd('ColorScheme', {
   command = [[
-    highlight CursorLine guibg=#292D3E cterm=NONE
-    highlight Visual guibg=#292D3E cterm=NONE
-    highlight Search guibg=#FFFFFF guifg=#000000 cterm=NONE
-    highlight IncSearch guibg=#000000 guifg=#FFFFFF cterm=NONE
-    highlight CurSearch guibg=#FFCB6B guifg=#000000 cterm=NONE
-    highlight StatuslineAccent guibg=#82AAFF guifg=#000000 cterm=NONE
-    highlight StatuslineInsertAccent guibg=#C3E88D guifg=#000000 cterm=NONE
-    highlight StatuslineVisualAccent guibg=#C792EA guifg=#000000 cterm=NONE
-    highlight StatuslineReplaceAccent guibg=#916b53 guifg=#000000 cterm=NONE
-    highlight StatuslineCmdLineAccent guibg=#FFCB6B guifg=#000000 cterm=NONE
-    highlight StatuslineTerminalAccent guibg=#F78C6C guifg=#000000 cterm=NONE
+    highlight CursorLine guibg=#292D3E
+    highlight Visual guibg=#292D3E
+    highlight Search guibg=#FFFFFF guifg=#000000
+    highlight IncSearch guibg=#000000 guifg=#FFFFFF
+    highlight CurSearch guibg=#FFCB6B guifg=#000000
+    highlight StatuslineAccent guibg=#82AAFF guifg=#000000 gui=bold
+    highlight StatuslineInsertAccent guibg=#C3E88D guifg=#000000 gui=bold
+    highlight StatuslineVisualAccent guibg=#C792EA guifg=#000000 gui=bold
+    highlight StatuslineReplaceAccent guibg=#916b53 guifg=#000000 gui=bold
+    highlight StatuslineCmdLineAccent guibg=#FFCB6B guifg=#000000 gui=bold
+    highlight StatuslineTerminalAccent guibg=#F78C6C guifg=#000000 gui=bold
   ]]
 })
 
