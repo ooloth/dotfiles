@@ -111,7 +111,7 @@
   "markdown.preview.fontSize": 0,
   "markdown.updateLinksOnFileMove.enabled": "prompt",
   "npm.enableRunFromFolder": true,
-  "prettier.requireConfig": true,
+  "prettier.documentSelectors": ["**/*.astro"],
   "problems.showCurrentInStatus": true,
   // "python.testing.autoTestDiscoverOnSaveEnabled": false,
   // "python.testing.unittestEnabled": false,
