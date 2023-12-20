@@ -1,3 +1,5 @@
+// prettier-ignore-start
+
 {
   "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -112,6 +114,7 @@
   "markdown.updateLinksOnFileMove.enabled": "prompt",
   "npm.enableRunFromFolder": true,
   "prettier.documentSelectors": ["**/*.astro"],
+  "prettier.requireConfig": true,
   "problems.showCurrentInStatus": true,
   // "python.testing.autoTestDiscoverOnSaveEnabled": false,
   // "python.testing.unittestEnabled": false,
@@ -416,3 +419,5 @@
   "workbench.sideBar.location": "right",
   "files.autoSaveDelay": 5000
 }
+
+// prettier-ignore-end

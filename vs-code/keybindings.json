@@ -1,5 +1,7 @@
 // see: https://code.visualstudio.com/api/references/when-clause-contexts
 
+// prettier-ignore-start
+
 [
   ////////////////
   // NAVIGATING //
@@ -92,3 +94,5 @@
   { "key": "cmd+enter", "command": "-search.action.openInEditor", "when": "hasSearchResult && searchViewletFocus" },
   { "key": "alt+cmd+enter", "command": "-search.action.replaceAll", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" }
 ]
+
+// prettier-ignore-end
