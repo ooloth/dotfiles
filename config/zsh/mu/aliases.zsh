@@ -12,11 +12,10 @@ alias dot='cd $HOME/Repos/ooloth/dotfiles'
 
 alias d='lazydocker'
 
-# docker container
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dash='cd $HOME/Repos/ooloth/dashboard'
 de() { docker container exec -it $1 sh; }
 
-# docker compose
 alias dc='docker compose'
 alias dd='dc down --remove-orphans'                # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
 alias dl='dc logs --follow --tail=100'             # see last 100 log lines of one or more services (or all services if no args provided)
