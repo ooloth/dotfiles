@@ -3,6 +3,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
+alias test='just kidding'
 alias c='clear'
 alias cat='bat --paging=never'
 alias cte='EDITOR=vim crontab -e'
