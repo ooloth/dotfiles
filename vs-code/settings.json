@@ -135,6 +135,10 @@
   "settings.cycle": [
     // Referenced in whichkey.bindings
     { "id": "lineNumbers", "values": [ { "editor.lineNumbers": "on", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "off", "vim.smartRelativeLine": false } ] },
+    { "id": "prettier", "values": [
+      { "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": { "editor.defaultFormatter": null } },
+      { "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" } },
+    ]},
     { "id": "relativeLineNumbers", "values": [ { "editor.lineNumbers": "relative", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "on", "vim.smartRelativeLine": false } ] }
   ],
   "tailwindCSS.emmetCompletions": true,
@@ -368,6 +372,7 @@
       { "key": "n", "name": "Toggle line numbers", "command": "settings.cycle.lineNumbers", "type": "command" },
       { "key": "m", "name": "Toggle maximized panel", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
       { "key": "p", "name": "Toggle panel", "command": "workbench.action.togglePanel", "type": "command" },
+      { "key": "P", "name": "Toggle prettier", "command": "settings.cycle.prettier", "type": "command" }, // TODO: move somewhere more thematic
       { "key": "r", "name": "Toggle relative line numbers", "command": "settings.cycle.relativeLineNumbers", "type": "command" },
       { "key": "s", "name": "Toggle statusbar", "command": "workbench.action.toggleStatusbarVisibility", "type": "command" },
       { "key": "w", "name": "Toggle word wrapping", "command": "editor.action.toggleWordWrap", "type": "command" },
