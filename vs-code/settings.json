@@ -426,7 +426,10 @@
   "terminal.integrated.fontSize": 12.5,
   "github.copilot.chat.localeOverride": "en",
   "workbench.sideBar.location": "right",
-  "files.autoSaveDelay": 5000
+  "files.autoSaveDelay": 5000,
+  "diffEditor.experimental.showMoves": true,
+  "multiDiffEditor.experimental.enabled": true,
+  "gitlens.experimental.openChangesInMultiDiffEditor": true,
 }
 
 // prettier-ignore-end
