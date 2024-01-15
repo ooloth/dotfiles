@@ -222,7 +222,11 @@
     { "key": ".", "name": "Quick fix", "command": "editor.action.quickFix", "type": "command" },
 
     { "key": "a", "name": "+AI", "type": "bindings", "bindings": [
-      { "key": "a", "name": "Ask CodeGPT", "command": "codegpt.askCodeGPT", "type": "command" }
+      { "key": "a", "name": "Chat inline", "command": "inlineChat.start", "type": "command" },
+      { "key": "e", "name": "Chat in new editor", "command": "workbench.action.chat.openInEditor", "type": "command" },
+      { "key": "h", "name": "Search chat history", "commands": ["workbench.action.chat.open", "workbench.action.chat.copilot.history"], "type": "commands" },
+      { "key": "s", "name": "Chat in sidebar", "command": "workbench.action.chat.open", "type": "command" },
+      { "key": "x", "name": "Export chat session as JSON", "command": "workbench.action.chat.export", "type": "command" }
     ]},
 
     { "key": "b", "name": "Toggle sidebar", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
@@ -420,7 +424,6 @@
   "terminal.integrated.tabs.enabled": false,
   "terminal.integrated.fontSize": 12.5,
   "github.copilot.chat.localeOverride": "en",
-  "github.copilot.editor.enableCodeActions": false,
   "workbench.sideBar.location": "right",
   "files.autoSaveDelay": 5000
 }
