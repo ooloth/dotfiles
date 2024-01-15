@@ -430,6 +430,9 @@
   "diffEditor.experimental.showMoves": true,
   "multiDiffEditor.experimental.enabled": true,
   "gitlens.experimental.openChangesInMultiDiffEditor": true,
+  "workbench.tree.enableStickyScroll": true,
+  "notebook.stickyScroll.enabled": true,
+  "terminal.integrated.stickyScroll.enabled": true
 }
 
 // prettier-ignore-end
