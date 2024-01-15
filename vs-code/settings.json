@@ -225,6 +225,7 @@
       { "key": "a", "name": "Open chat session in sidebar", "command": "workbench.action.chat.open", "type": "command" },
       { "key": "e", "name": "Open chat session in editor", "command": "workbench.action.chat.openInEditor", "type": "command" },
       { "key": "h", "name": "Search chat history", "commands": ["workbench.action.chat.open", "workbench.action.chat.copilot.history"], "type": "commands" },
+      { "key": "i", "name": "Chat inline", "command": "inlineChat.start", "type": "command" },
       { "key": "q", "name": "Quick chat", "command": "workbench.action.quickchat.toggle", "type": "command" },
       { "key": "s", "name": "Open chat session in sidebar", "command": "workbench.action.chat.open", "type": "command" },
       { "key": "x", "name": "Export chat session as JSON", "command": "workbench.action.chat.export", "type": "command" }
