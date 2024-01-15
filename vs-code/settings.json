@@ -276,6 +276,7 @@
     ]},
 
     { "key": "f", "name": "+File", "type": "bindings", "bindings": [
+      { "key": "c", "name": "Compare with...", "command": "workbench.files.action.compareFileWith", "type": "command" },
       { "key": "d", "name": "Duplicate", "command": "fileutils.duplicateFile", "type": "command" },
       { "key": "D", "name": "Delete", "command": "fileutils.removeFile", "type": "command" },
       { "key": "e", "name": "Explore file tree", "command": "workbench.view.explorer", "type": "command" },
