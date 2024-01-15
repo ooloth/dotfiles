@@ -325,6 +325,8 @@
     { "key": "l", "name": "Log to console", "command": "console.log.wrap.nameValue", "type": "command" },
 
     { "key": "n", "name": "+Notebook/Jupyter", "type": "bindings", "bindings": [
+      { "key": "y", "name": "Copy cell", "command": "notebook.cell.copy", "type": "command" },
+      { "key": "Y", "name": "Copy cell output", "command": "notebook.cellOutput.copy", "type": "command" },
     ]},
 
     { "key": "o", "name": "+Open", "type": "bindings", "bindings": [
