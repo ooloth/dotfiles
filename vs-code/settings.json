@@ -228,6 +228,8 @@
       { "key": "i", "name": "Chat inline", "command": "inlineChat.start", "type": "command" },
       { "key": "q", "name": "Quick chat", "command": "workbench.action.quickchat.toggle", "type": "command" },
       { "key": "s", "name": "Open chat session in sidebar", "command": "workbench.action.chat.open", "type": "command" },
+      // NOTE: use c-v to start/continue a voice chat while cursor is in an input field
+      { "key": "v", "name": "Start chat session with voice", "command": "workbench.action.chat.startVoiceChat", "when": "!voiceChatInProgress", "type": "command" },
       { "key": "x", "name": "Export chat session as JSON", "command": "workbench.action.chat.export", "type": "command" }
     ]},
 
