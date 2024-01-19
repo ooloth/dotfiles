@@ -293,7 +293,7 @@
       { "key": "S", "name": "Save all", "command": "workbench.action.files.saveAll", "type": "command" },
       { "key": "w", "name": "Open in new window", "command": "workbench.action.files.showOpenedFileInNewWindow", "type": "command" },
       { "key": "y", "name": "Copy name", "command": "fileutils.copyFileName", "type": "command" },
-      { "key": "Y", "name": "Copy full path", "command": "workbench.action.files.copyPathOfActiveFile", "type": "command" }
+      { "key": "Y", "name": "Copy relative path", "command": "copyRelativeFilePath", "type": "command" }
     ]},
 
     { "key": "g", "name": "+Git", "type": "bindings", "bindings": [
