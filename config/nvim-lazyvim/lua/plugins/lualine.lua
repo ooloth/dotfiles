@@ -34,8 +34,45 @@ local sections = {
     -- see: https://github.com/nvim-lualine/lualine.nvim#filename-component-options
     -- { 'filename', path = 1, shorting_target = 60, symbols = { modified = '', readonly = '', unnamed = '' } },
   },
-  lualine_x = { 'filetype', get_venv },
-  lualine_y = { 'diff' },
+  lualine_x = {
+    {
+      function()
+        return '  ' .. require('dap').status()
+      end,
+      cond = function()
+        return package.loaded['dap'] and require('dap').status() ~= ''
+      end,
+      color = Util.ui.fg('Debug'),
+    },
+    {
+      require('lazy.status').updates,
+      cond = require('lazy.status').has_updates,
+      color = Util.ui.fg('Special'),
+    },
+    'filetype',
+    get_venv,
+  },
+  lualine_y = {
+    'diff',
+    -- {
+    --   'diff',
+    --   symbols = {
+    --     added = icons.git.added,
+    --     modified = icons.git.modified,
+    --     removed = icons.git.removed,
+    --   },
+    --   source = function()
+    --     local gitsigns = vim.b.gitsigns_status_dict
+    --     if gitsigns then
+    --       return {
+    --         added = gitsigns.added,
+    --         modified = gitsigns.changed,
+    --         removed = gitsigns.removed,
+    --       }
+    --     end
+    --   end,
+    -- },
+  },
   lualine_z = { 'branch' },
 }
 
