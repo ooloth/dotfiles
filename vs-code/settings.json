@@ -413,7 +413,7 @@
       "sideBar.foreground": "#babed8" // higher contrast
     }
   },
-  "workbench.colorTheme": "Material Theme Ocean",
+  "workbench.colorTheme": "Catppuccin Mocha",
   "workbench.editor.enablePreview": false,
   "workbench.editor.revealIfOpen": true,
   "workbench.editor.tabSizing": "shrink",
@@ -422,7 +422,7 @@
   "workbench.iconTheme": "eq-material-theme-icons-palenight",
   "workbench.layoutControl.enabled": false,
   "workbench.panel.opensMaximized": "always",
-  "workbench.preferredDarkColorTheme": "Dracula",
+  "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
   "workbench.startupEditor": "newUntitledFile",
   "workbench.tree.indent": 14,
   "zenMode.centerLayout": false,
@@ -438,7 +438,8 @@
   "gitlens.experimental.openChangesInMultiDiffEditor": true,
   "workbench.tree.enableStickyScroll": true,
   "notebook.stickyScroll.enabled": true,
-  "terminal.integrated.stickyScroll.enabled": true
+  "terminal.integrated.stickyScroll.enabled": true,
+  "catppuccin.workbenchMode": "minimal"
 }
 
 // prettier-ignore-end
