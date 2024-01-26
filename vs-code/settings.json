@@ -395,6 +395,10 @@
   "window.zoomLevel": 1.1,
   "workbench.activityBar.location": "top",
   "workbench.colorCustomizations": {
+    "[Catppuccin Mocha]": {
+      "terminal.ansiBlack": "#000000",
+      "terminal.ansiBrightBlack": "#000000",
+    },
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
       "activityBar.background": "#21222C",
@@ -439,7 +443,8 @@
   "workbench.tree.enableStickyScroll": true,
   "notebook.stickyScroll.enabled": true,
   "terminal.integrated.stickyScroll.enabled": true,
-  "catppuccin.workbenchMode": "minimal"
+  "catppuccin.workbenchMode": "minimal",
+  "catppuccin.italicKeywords": false
 }
 
 // prettier-ignore-end

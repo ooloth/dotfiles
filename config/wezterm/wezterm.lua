@@ -7,6 +7,9 @@ config.cell_width = 0.9 -- see: https://wezfurlong.org/wezterm/colorschemes/inde
 config.color_scheme = 'Catppuccin Mocha' -- see: https://wezfurlong.org/wezterm/colorschemes/c/index.html#catppuccin-mocha
 -- config.color_scheme = 'Dracula' -- see: https://wezfurlong.org/wezterm/colorschemes/index.html
 -- config.color_scheme = 'MaterialOcean' -- see: https://wezfurlong.org/wezterm/colorschemes/index.html
+config.colors = {
+  foreground = 'black',
+}
 config.enable_tab_bar = false
 config.font = wezterm.font('UbuntuMono Nerd Font') -- see: https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
 -- config.font = wezterm.font_with_fallback({ 'UbuntuMono Nerd Font', 'Apple Color Emoji' }) -- see: https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
