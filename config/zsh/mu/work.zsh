@@ -2,6 +2,8 @@ if $IS_WORK_LAPTOP; then
 
   bp() { cd $HOME/Repos/recursionpharma/build-pipelines; }
   eo() { cd $HOME/Repos/recursionpharma/eng-onboarding; }
+  gcpi() { gcloud config set project eng-infrastructure; }
+  gcpn() { gcloud config set project rp006-prod-49a893d8; }
   ip() { cd $HOME/Repos/recursionpharma/ipg-processing; }
   is() { cd $HOME/Repos/recursionpharma/iw-system; }
   iu() { cd $HOME/Repos/recursionpharma/grey-havens; } # soon to be renamed "iw-ui"

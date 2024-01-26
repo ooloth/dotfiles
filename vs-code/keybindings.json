@@ -3,6 +3,13 @@
 // prettier-ignore-start
 
 [
+  ////////
+  // AI //
+  ////////
+
+  { "key": "ctrl+v", "command": "workbench.action.chat.startVoiceChat", "when": "!editorTextFocus && !voiceChatInProgress" },
+  { "key": "ctrl+v", "command": "workbench.action.chat.stopListeningAndSubmit", "when": "!editorTextFocus && voiceChatInProgress" },
+
   ////////////////
   // NAVIGATING //
   ////////////////

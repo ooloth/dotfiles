@@ -135,6 +135,10 @@
   "settings.cycle": [
     // Referenced in whichkey.bindings
     { "id": "lineNumbers", "values": [ { "editor.lineNumbers": "on", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "off", "vim.smartRelativeLine": false } ] },
+    { "id": "prettier", "values": [
+      { "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": { "editor.defaultFormatter": null } },
+      { "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" } },
+    ]},
     { "id": "relativeLineNumbers", "values": [ { "editor.lineNumbers": "relative", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "on", "vim.smartRelativeLine": false } ] }
   ],
   "tailwindCSS.emmetCompletions": true,
@@ -218,7 +222,15 @@
     { "key": ".", "name": "Quick fix", "command": "editor.action.quickFix", "type": "command" },
 
     { "key": "a", "name": "+AI", "type": "bindings", "bindings": [
-      { "key": "a", "name": "Ask CodeGPT", "command": "codegpt.askCodeGPT", "type": "command" }
+      { "key": "a", "name": "Open chat session in sidebar", "command": "workbench.action.chat.open", "type": "command" },
+      { "key": "e", "name": "Open chat session in editor", "command": "workbench.action.chat.openInEditor", "type": "command" },
+      { "key": "h", "name": "Search chat history", "commands": ["workbench.action.chat.open", "workbench.action.chat.copilot.history"], "type": "commands" },
+      { "key": "i", "name": "Chat inline", "command": "inlineChat.start", "type": "command" },
+      { "key": "q", "name": "Quick chat", "command": "workbench.action.quickchat.toggle", "type": "command" },
+      { "key": "s", "name": "Open chat session in sidebar", "command": "workbench.action.chat.open", "type": "command" },
+      // NOTE: use c-v to start/continue a voice chat while cursor is in an input field
+      { "key": "v", "name": "Start chat session with voice", "command": "workbench.action.chat.startVoiceChat", "when": "!voiceChatInProgress", "type": "command" },
+      { "key": "x", "name": "Export chat session as JSON", "command": "workbench.action.chat.export", "type": "command" }
     ]},
 
     { "key": "b", "name": "Toggle sidebar", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
@@ -267,6 +279,7 @@
     ]},
 
     { "key": "f", "name": "+File", "type": "bindings", "bindings": [
+      { "key": "c", "name": "Compare with...", "command": "workbench.files.action.compareFileWith", "type": "command" },
       { "key": "d", "name": "Duplicate", "command": "fileutils.duplicateFile", "type": "command" },
       { "key": "D", "name": "Delete", "command": "fileutils.removeFile", "type": "command" },
       { "key": "e", "name": "Explore file tree", "command": "workbench.view.explorer", "type": "command" },
@@ -280,7 +293,7 @@
       { "key": "S", "name": "Save all", "command": "workbench.action.files.saveAll", "type": "command" },
       { "key": "w", "name": "Open in new window", "command": "workbench.action.files.showOpenedFileInNewWindow", "type": "command" },
       { "key": "y", "name": "Copy name", "command": "fileutils.copyFileName", "type": "command" },
-      { "key": "Y", "name": "Copy full path", "command": "workbench.action.files.copyPathOfActiveFile", "type": "command" }
+      { "key": "Y", "name": "Copy relative path", "command": "copyRelativeFilePath", "type": "command" }
     ]},
 
     { "key": "g", "name": "+Git", "type": "bindings", "bindings": [
@@ -315,6 +328,8 @@
     { "key": "l", "name": "Log to console", "command": "console.log.wrap.nameValue", "type": "command" },
 
     { "key": "n", "name": "+Notebook/Jupyter", "type": "bindings", "bindings": [
+      { "key": "y", "name": "Copy cell", "command": "notebook.cell.copy", "type": "command" },
+      { "key": "Y", "name": "Copy cell output", "command": "notebook.cellOutput.copy", "type": "command" },
     ]},
 
     { "key": "o", "name": "+Open", "type": "bindings", "bindings": [
@@ -368,6 +383,7 @@
       { "key": "n", "name": "Toggle line numbers", "command": "settings.cycle.lineNumbers", "type": "command" },
       { "key": "m", "name": "Toggle maximized panel", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
       { "key": "p", "name": "Toggle panel", "command": "workbench.action.togglePanel", "type": "command" },
+      { "key": "P", "name": "Toggle prettier", "command": "settings.cycle.prettier", "type": "command" }, // TODO: move somewhere more thematic
       { "key": "r", "name": "Toggle relative line numbers", "command": "settings.cycle.relativeLineNumbers", "type": "command" },
       { "key": "s", "name": "Toggle statusbar", "command": "workbench.action.toggleStatusbarVisibility", "type": "command" },
       { "key": "w", "name": "Toggle word wrapping", "command": "editor.action.toggleWordWrap", "type": "command" },
@@ -415,9 +431,14 @@
   "terminal.integrated.tabs.enabled": false,
   "terminal.integrated.fontSize": 12.5,
   "github.copilot.chat.localeOverride": "en",
-  "github.copilot.editor.enableCodeActions": false,
   "workbench.sideBar.location": "right",
-  "files.autoSaveDelay": 5000
+  "files.autoSaveDelay": 5000,
+  "diffEditor.experimental.showMoves": true,
+  "multiDiffEditor.experimental.enabled": true,
+  "gitlens.experimental.openChangesInMultiDiffEditor": true,
+  "workbench.tree.enableStickyScroll": true,
+  "notebook.stickyScroll.enabled": true,
+  "terminal.integrated.stickyScroll.enabled": true
 }
 
 // prettier-ignore-end

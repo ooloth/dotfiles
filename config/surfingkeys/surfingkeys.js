@@ -29,6 +29,9 @@ mapkey('yy', 'Copy page link as markdown', () => {
   Clipboard.write(`[${title}](${url})`)
 })
 
+// Allow opening VS Code Web on GitHub with '.'
+unmap('.', /https:\/\/github\.com\/.*/i)
+
 removeSearchAlias('b') // remove baidu
 removeSearchAlias('d') // remove duckduckgo
 removeSearchAlias('e') // remove wikipedia
