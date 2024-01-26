@@ -71,16 +71,17 @@ ng() {
     @githubnext/github-copilot-cli \
     npm-check \
     tldr \
-    # bash-language-server \
-    # cssmodules-language-server \
-    # dockerfile-language-server-nodejs \
-    # emmet-ls \
+    # neovim dependencies:
+    bash-language-server \
+    cssmodules-language-server \
+    dockerfile-language-server-nodejs \
+    emmet-ls \
     # neovim \
     # pug-lint \
     # svelte-language-server \
-    # tree-sitter-cli \
-    # typescript \
-    # vscode-langservers-extracted
+    tree-sitter-cli \
+    typescript \
+    vscode-langservers-extracted
 }
 nk() { npm run types:check; }
 nlc() { npm run lint:check; }
@@ -100,21 +101,21 @@ sl() { ln -sfv $1 $2; } # easier symlinking
 alias t='tmux a'
 
 u() {
+  printf "\nUpdating tpm plugins...\n"
+  ~/.config/tmux/plugins/tpm/bin/install_plugins
+
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-  printf "\nUpdating global npm packages..."
+  printf "\nUpdating global npm packages...\n"
 	ng
 
-  printf "\nUpdating brew packages..."
+  printf "\nUpdating brew packages...\n"
 	brew upgrade && brew update && brew cleanup && brew doctor
-
-  printf "\nUpdating tpm plugins..."
-  ~/.config/tmux/plugins/tpm/bin/install_plugins
 
 	if $IS_WORK_LAPTOP; then
 		# TODO: store version in a variable and update it programmatically?
 		printf '\n🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
 
-    printf "\nUpdating gcloud components..."
+    printf "\nUpdating gcloud components...\n"
     gcloud components update
 	fi
 }
