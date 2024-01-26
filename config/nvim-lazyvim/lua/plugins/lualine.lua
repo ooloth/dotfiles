@@ -81,9 +81,12 @@ return {
     opts = function()
       return {
         extensions = { 'neo-tree', 'nvim-dap-ui', python_extension, 'quickfix', 'toggleterm' },
+        inactive_sections = {},
+        -- inactive_sections = inactive_sections,
         options = options,
-        sections = sections,
-        inactive_sections = inactive_sections,
+        sections = {},
+        -- sections = sections,
+        tabline = sections,
       }
     end,
   },
