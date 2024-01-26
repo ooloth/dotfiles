@@ -100,17 +100,21 @@ sl() { ln -sfv $1 $2; } # easier symlinking
 alias t='tmux a'
 
 u() {
-  # update all global npm packages to their latest versions
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
+  printf "\nUpdating global npm packages..."
 	ng
 
-  # update all brew packages to their latest versions
+  printf "\nUpdating brew packages..."
 	brew upgrade && brew update && brew cleanup && brew doctor
+
+  printf "\nUpdating tpm plugins..."
+  ~/.config/tmux/plugins/tpm/bin/install_plugins
 
 	if $IS_WORK_LAPTOP; then
 		# TODO: store version in a variable and update it programmatically?
-		echo '🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
+		printf '\n🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
 
+    printf "\nUpdating gcloud components..."
     gcloud components update
 	fi
 }
