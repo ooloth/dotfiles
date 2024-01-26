@@ -9,6 +9,11 @@ right_format = """$all"""
 [docker_context]
 disabled = true
 
+[gcloud]
+format = ' on [$symbol$project]($style)'
+symbol = '☁️ '
+detect_env_vars = []
+
 [kubernetes]
 symbol = '☸ '
 disabled = false
