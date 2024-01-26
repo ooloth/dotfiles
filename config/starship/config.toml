@@ -13,7 +13,7 @@ disabled = true
 symbol = '☸ '
 disabled = false
 detect_files = ['Dockerfile']
-format = '[$context(\[$namespace\])]($style) '
+format = ' [$context(\[$namespace\])]($style)'
 
 [nodejs]
 detect_extensions=[]
