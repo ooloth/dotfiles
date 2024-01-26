@@ -4,8 +4,9 @@ local wezterm = require('wezterm')
 local config = {}
 
 config.cell_width = 0.9 -- see: https://wezfurlong.org/wezterm/colorschemes/index.html
-config.color_scheme = 'Dracula' -- see: https://wezfurlong.org/wezterm/colorschemes/index.html
-config.color_scheme = 'MaterialOcean' -- see: https://wezfurlong.org/wezterm/colorschemes/index.html
+config.color_scheme = 'Catppuccin Mocha' -- see: https://wezfurlong.org/wezterm/colorschemes/c/index.html#catppuccin-mocha
+-- config.color_scheme = 'Dracula' -- see: https://wezfurlong.org/wezterm/colorschemes/index.html
+-- config.color_scheme = 'MaterialOcean' -- see: https://wezfurlong.org/wezterm/colorschemes/index.html
 config.enable_tab_bar = false
 config.font = wezterm.font('Ubuntu Mono') -- see: https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
 config.font_size = 16
