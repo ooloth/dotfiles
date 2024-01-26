@@ -12,11 +12,11 @@ config.font = wezterm.font('Ubuntu Mono') -- see: https://wezfurlong.org/wezterm
 config.font_size = 16
 config.line_height = 1.28
 config.window_decorations = 'RESIZE'
-config.window_padding = {
-  left = 0,
-  right = 0,
-  top = 0,
-  bottom = 0,
-}
+-- config.window_padding = {
+--   left = 0,
+--   right = 0,
+--   top = 0,
+--   bottom = 0,
+-- }
 
 return config
