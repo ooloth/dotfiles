@@ -2,197 +2,74 @@
 # See: https://github.com/alacritty/alacritty/wiki/Color-schemes
 
 schemes:
-  # See: https://github.com/projekt0n/github-nvim-theme/blob/main/extras/alacritty/dark.yml
-  github-dark: &github-dark
-    primary:
-      background: "0x24292e"
-      foreground: "0xd1d5da"
-    normal:
-      black: "0x24292e"
-      red: "0xf14c4c"
-      green: "0x23d18b"
-      yellow: "0xe2e210"
-      blue: "0x3b8eea"
-      magenta: "0xbc3fbc"
-      cyan: "0x29b7da"
-      white: "0xd1d5da"
-    bright:
-      black: "0x666666"
-      red: "0xf14c4c"
-      green: "0x23d18b"
-      yellow: "0xf5f543"
-      blue: "0x3b8eea"
-      magenta: "0xd670d6"
-      cyan: "0x29b7da"
-      white: "0xd1d5da"
-    indexed_colors:
-      - { index: 16, color: "0xd18616" }
-      - { index: 17, color: "0xf14c4c" }
-
-  # See: https://github.com/projekt0n/github-nvim-theme/blob/main/extras/alacritty/dimmed.yml
-  github-dimmed: &github-dimmed
-    primary:
-      background: "0x22272e"
-      foreground: "0x768390"
-    normal:
-      black: "0x22272e"
-      red: "0xff938a"
-      green: "0x6bc46d"
-      yellow: "0xc69026"
-      blue: "0x6cb6ff"
-      magenta: "0xb083f0"
-      cyan: "0x56d4dd"
-      white: "0x768390"
-    bright:
-      black: "0x636e7b"
-      red: "0xff938a"
-      green: "0x6bc46d"
-      yellow: "0xdaaa3f"
-      blue: "0x6cb6ff"
-      magenta: "0xdcbdfb"
-      cyan: "0x56d4dd"
-      white: "0x768390"
-    indexed_colors:
-      - { index: 16, color: "0xd18616" }
-      - { index: 17, color: "0xff938a" }
-
   gruvbox: &gruvbox
     primary:
-      background: "#1d2021" # hard
+      background: '#1d2021' # hard
       # background: "#282828" # medium
       # background = '#32302f' # soft
-      foreground: "#ebdbb2"
+      foreground: '#ebdbb2'
     normal:
-      black: "#282828"
-      red: "#cc241d"
-      green: "#98971a"
-      yellow: "#d79921"
-      blue: "#458588"
-      magenta: "#b16286"
-      cyan: "#689d6a"
-      white: "#a89984"
+      black: '#282828'
+      red: '#cc241d'
+      green: '#98971a'
+      yellow: '#d79921'
+      blue: '#458588'
+      magenta: '#b16286'
+      cyan: '#689d6a'
+      white: '#a89984'
     bright:
-      black: "#928374"
-      red: "#fb4934"
-      green: "#b8bb26"
-      yellow: "#fabd2f"
-      blue: "#83a598"
-      magenta: "#d3869b"
-      cyan: "#8ec07c"
-      white: "#ebdbb2"
+      black: '#928374'
+      red: '#fb4934'
+      green: '#b8bb26'
+      yellow: '#fabd2f'
+      blue: '#83a598'
+      magenta: '#d3869b'
+      cyan: '#8ec07c'
+      white: '#ebdbb2'
 
   # See: https://github.com/material-theme/vsc-material-theme/blob/d8e1accd08a55948174410a470e1f1fc9889d6f6/scripts/generator/settings/specific/ocean-hc.ts
   material_ocean: &material_ocean
     primary:
-      background: "#0F111A"
-      foreground: "#A6ACCD"
+      background: '#0F111A'
+      foreground: '#A6ACCD'
     normal:
-      white: "#ffffff"
-      black: "#000000"
-      red: "#f07178"
-      orange: "#F78C6C"
-      yellow: "#FFCB6B"
-      green: "#C3E88D"
-      cyan: "#89DDFF"
-      blue: "#82AAFF"
-      paleblue: "#B2CCD6"
-      purple: "#C792EA"
-      brown: "#916b53"
-      pink: "#ff9cac"
-      violet: "#bb80b3"
-
-  nord: &nord
-    primary:
-      background: "#2e3440"
-      foreground: "#d8dee9"
-      dim_foreground: "#a5abb6"
-    cursor:
-      text: "#2e3440"
-      cursor: "#d8dee9"
-    vi_mode_cursor:
-      text: "#2e3440"
-      cursor: "#d8dee9"
-    selection:
-      text: CellForeground
-      background: "#4c566a"
-    search:
-      matches:
-        foreground: CellBackground
-        background: "#88c0d0"
-      bar:
-        background: "#434c5e"
-        foreground: "#d8dee9"
-    normal:
-      black: "#3b4252"
-      red: "#bf616a"
-      green: "#a3be8c"
-      yellow: "#ebcb8b"
-      blue: "#81a1c1"
-      magenta: "#b48ead"
-      cyan: "#88c0d0"
-      white: "#e5e9f0"
-    bright:
-      black: "#4c566a"
-      red: "#bf616a"
-      green: "#a3be8c"
-      yellow: "#ebcb8b"
-      blue: "#81a1c1"
-      magenta: "#b48ead"
-      cyan: "#8fbcbb"
-      white: "#eceff4"
-    dim:
-      black: "#373e4d"
-      red: "#94545d"
-      green: "#809575"
-      yellow: "#b29e75"
-      blue: "#68809a"
-      magenta: "#8c738c"
-      cyan: "#6d96a5"
-      white: "#aeb3bb"
-
-  onedark: &onedark
-    primary:
-      background: "#282c34"
-      foreground: "#abb2bf"
-    # cursor:
-    #   text:       CellBackground
-    #   cursor:     '#528bff' # syntax-cursor-color
-    selection:
-      text: CellForeground
-      background: "#3e4451" # syntax-selection-color
-    normal:
-      black: "#5c6370" # mono-3
-      red: "#e06c75" # red 1
-      green: "#98c379"
-      yellow: "#e5c07b" # orange 2
-      blue: "#61afef"
-      magenta: "#c678dd"
-      cyan: "#56b6c2"
-      white: "#828997" # mono-2
+      white: '#ffffff'
+      black: '#000000'
+      red: '#f07178'
+      orange: '#F78C6C'
+      yellow: '#FFCB6B'
+      green: '#C3E88D'
+      cyan: '#89DDFF'
+      blue: '#82AAFF'
+      paleblue: '#B2CCD6'
+      purple: '#C792EA'
+      brown: '#916b53'
+      pink: '#ff9cac'
+      violet: '#bb80b3'
 
   # See: https://github.com/drewtempelmeyer/palenight.vim/blob/master/autoload/palenight.vim
   palenight: &palenight
     primary:
-      background: "#292d3e"
-      foreground: "#d0d0d0"
+      background: '#292d3e'
+      foreground: '#d0d0d0'
     normal:
-      black: "#292d3e"
-      red: "#f07178"
-      green: "#c3e88d"
-      yellow: "#ffcb6b"
-      blue: "#82aaff"
-      magenta: "#c792ea"
-      cyan: "#89ddff"
-      white: "#d0d0d0"
+      black: '#292d3e'
+      red: '#f07178'
+      green: '#c3e88d'
+      yellow: '#ffcb6b'
+      blue: '#82aaff'
+      magenta: '#c792ea'
+      cyan: '#89ddff'
+      white: '#d0d0d0'
     bright:
-      black: "#434758"
-      red: "#ff8b92"
-      green: "#ddffa7"
-      yellow: "#ffe585"
-      blue: "#9cc4ff"
-      magenta: "#e1acff"
-      cyan: "#a3f7ff"
-      white: "#ffffff"
+      black: '#434758'
+      red: '#ff8b92'
+      green: '#ddffa7'
+      yellow: '#ffe585'
+      blue: '#9cc4ff'
+      magenta: '#e1acff'
+      cyan: '#a3f7ff'
+      white: '#ffffff'
 
 colors: *material_ocean
 
@@ -207,7 +84,7 @@ env:
 
 font:
   normal:
-    family: "UbuntuMono Nerd Font Mono"
+    family: 'UbuntuMono Nerd Font Mono'
   offset:
     x: 0
     y: 20
@@ -233,11 +110,11 @@ scrolling:
 
 search:
   matches:
-    foreground: "#000000"
-    background: "#ffffff"
+    foreground: '#000000'
+    background: '#ffffff'
   bar:
-    background: "#c5c8c6"
-    foreground: "#1d1f21"
+    background: '#c5c8c6'
+    foreground: '#1d1f21'
 
 selection:
   background: CellForeground
