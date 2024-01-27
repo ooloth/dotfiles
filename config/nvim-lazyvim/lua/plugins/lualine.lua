@@ -19,11 +19,22 @@ local options = {
   theme = 'auto',
 }
 
+local empty = {
+  function()
+    return '█'
+  end,
+  padding = 0,
+  color = { fg = '#1e1e2e', bg = '#1e1e2e' },
+}
+
 local sections = {
-  lualine_a = { 'mode' },
+  lualine_a = { { 'mode', padding = 0, separator = { left = '', right = '' } } },
   lualine_b = {
+    empty,
     {
       'diagnostics',
+      padding = 0,
+      separator = { left = '', right = '' },
       symbols = {
         error = icons.diagnostics.Error,
         warn = icons.diagnostics.Warn,
@@ -34,9 +45,6 @@ local sections = {
   },
   lualine_c = {
     { Util.lualine.pretty_path() },
-    -- the larger the shorting_target number, the sooner the file path abbreviates
-    -- see: https://github.com/nvim-lualine/lualine.nvim#filename-component-options
-    -- { 'filename', path = 1, shorting_target = 60, symbols = { modified = '', readonly = '', unnamed = '' } },
   },
   lualine_x = {
     {
@@ -53,11 +61,13 @@ local sections = {
       cond = require('lazy.status').has_updates,
       color = Util.ui.fg('Special'),
     },
-    'filetype',
-    get_venv,
+    { 'filetype' },
+    { get_venv },
   },
   lualine_y = {
-    'diff',
+    { 'diff', padding = 0, separator = { left = '', right = '' } },
+    empty,
+    -- 'diff',
     -- {
     --   'diff',
     --   symbols = {
@@ -77,7 +87,7 @@ local sections = {
     --   end,
     -- },
   },
-  lualine_z = { 'branch' },
+  lualine_z = { { 'branch', padding = 0, separator = { left = '', right = '' } } },
 }
 
 return {
