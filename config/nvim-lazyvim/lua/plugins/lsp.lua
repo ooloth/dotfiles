@@ -1,4 +1,73 @@
+-- see: https://github.com/fredrikaverpil/dotfiles/blob/main/nvim-lazyvim/lua/plugins/lsp.lua
+local function prefer_bin_from_venv(executable_name)
+  -- Return the path to the executable if $VIRTUAL_ENV is set and the binary exists somewhere beneath the $VIRTUAL_ENV path, otherwise get it from Mason
+  if vim.env.VIRTUAL_ENV then
+    local paths = vim.fn.glob(vim.env.VIRTUAL_ENV .. '/**/bin/' .. executable_name, true, true)
+    local executable_path = table.concat(paths, ', ')
+    if executable_path ~= '' then
+      vim.api.nvim_echo({ { 'Using path for ' .. executable_name .. ': ' .. executable_path, 'None' } }, false, {})
+      return executable_path
+    end
+  end
+
+  local mason_registry = require('mason-registry')
+  local mason_path = mason_registry.get_package(executable_name):get_install_path() .. '/venv/bin/' .. executable_name
+  vim.api.nvim_echo({ { 'Using path for ' .. executable_name .. ': ' .. mason_path, 'None' } }, false, {})
+  return mason_path
+end
+
 return {
+  {
+    -- see: https://github.com/stevearc/conform.nvim
+    'stevearc/conform.nvim',
+    opts = {
+      formatters = {
+        -- black = {
+        --   command = prefer_bin_from_venv('black'),
+        -- },
+        -- isort = {
+        --   command = prefer_bin_from_venv('isort'),
+        -- },
+        -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/prettier.lua
+        prettier = {
+          -- command = 'node_modules/.bin/prettier',
+          require_cwd = true,
+        },
+        -- ruff_fix = {
+        --   command = prefer_bin_from_venv('ruff'),
+        -- },
+        -- ruff_format = {
+        --   command = prefer_bin_from_venv('ruff'),
+        -- },
+      },
+      formatters_by_ft = {
+        ['astro'] = { 'prettier' },
+        ['css'] = { 'prettier' },
+        ['go'] = { 'gofumpt', 'goimports', 'gci' },
+        ['graphql'] = { 'prettier' },
+        ['handlebars'] = { 'prettier' },
+        ['html'] = { 'prettier' },
+        ['javascript'] = { 'prettier' },
+        ['javascriptreact'] = { 'prettier' },
+        ['json'] = { 'prettier' },
+        ['jsonc'] = { 'prettier' },
+        ['less'] = { 'prettier' },
+        ['lua'] = { 'stylua' },
+        ['markdown'] = { 'prettier' },
+        ['markdown.mdx'] = { 'prettier' },
+        ['protobuf'] = { 'buf' },
+        ['python '] = { 'ruff_fix', 'ruff_format' },
+        ['rust '] = { 'rustfmt' },
+        ['scss'] = { 'prettier' },
+        ['typescript'] = { 'prettier' },
+        ['typescriptreact'] = { 'prettier' },
+        ['vue'] = { 'prettier' },
+        ['xml'] = { 'prettier' },
+        ['yaml'] = { 'prettier' },
+      },
+    },
+  },
+
   {
     'glepnir/lspsaga.nvim',
     event = 'BufRead',
@@ -168,105 +237,49 @@ return {
     },
   },
 
-  {
-    'nvimtools/none-ls.nvim',
-    keys = {
-      {
-        '<leader>xtp',
-        function()
-          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/discussions/1258#discussioncomment-4245688
-          require('null-ls').toggle('prettier')
-        end,
-        desc = 'Toggle prettier',
-      },
-    },
-    opts = function() -- replace all default opts
-      local nls = require('null-ls')
-      return {
-        -- root_dir = require('null-ls.utils').root_pattern('package.json', '.git'),
-        -- formatters & linters mason will automatically install + set up below
-        -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
-        sources = {
-          nls.builtins.code_actions.proselint,
-          nls.builtins.code_actions.shellcheck, -- bash linter
+  -- {
+  --   'nvimtools/none-ls.nvim',
+  --   keys = {
+  --     {
+  --       '<leader>xtp',
+  --       function()
+  --         -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/discussions/1258#discussioncomment-4245688
+  --         require('null-ls').toggle('prettier')
+  --       end,
+  --       desc = 'Toggle prettier',
+  --     },
+  --   },
+  --   opts = function() -- replace all default opts
+  --     local nls = require('null-ls')
+  --     return {
+  --       -- root_dir = require('null-ls.utils').root_pattern('package.json', '.git'),
+  --       -- formatters & linters mason will automatically install + set up below
+  --       -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
+  --       sources = {
+  --         nls.builtins.code_actions.proselint,
+  --         nls.builtins.code_actions.shellcheck, -- bash linter
+  --
+  --         -- see: https://github.com/jose-elias-alvarez/typescript.nvim#setup-1
+  --         require('typescript.extensions.null-ls.code-actions'),
+  --
+  --         nls.builtins.diagnostics.flake8, -- python linter
+  --         nls.builtins.diagnostics.mypy, -- python type-checker
+  --         nls.builtins.diagnostics.puglint, -- pug linter
+  --         nls.builtins.diagnostics.shellcheck, -- bash linter
+  --         nls.builtins.diagnostics.tsc, -- ts type-checker
+  --         nls.builtins.diagnostics.zsh, -- zsh linter (basic compared to shellcheck for bash)
+  --       },
+  --     }
+  --   end,
+  -- },
 
-          -- see: https://github.com/jose-elias-alvarez/typescript.nvim#setup-1
-          require('typescript.extensions.null-ls.code-actions'),
-
-          nls.builtins.diagnostics.flake8, -- python linter
-          -- nls.builtins.diagnostics.markdownlint, -- markdown linter
-          nls.builtins.diagnostics.mypy, -- python type-checker
-          -- nls.builtins.diagnostics.proselint, -- prose linter
-          nls.builtins.diagnostics.puglint, -- pug linter
-          nls.builtins.diagnostics.shellcheck, -- bash linter
-          nls.builtins.diagnostics.tsc, -- ts type-checker
-          -- nls.builtins.diagnostics.yamllint, -- yaml linter
-          nls.builtins.diagnostics.zsh, -- zsh linter (basic compared to shellcheck for bash)
-
-          -- formatting.beautysh, -- zsh/bash/sh (reenable when settings configurable)
-          nls.builtins.formatting.black, -- python
-          nls.builtins.formatting.isort, -- python
-          nls.builtins.formatting.prettier, -- js/ts etc
-          -- nls.builtins.formatting.prettier.with({
-          -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTIN_CONFIG.md#conditional-sources
-          -- runtime_condition = function(utils)
-          --   return utils.root_has_file({
-          --     -- https://prettier.io/docs/en/configuration.html
-          --     '.prettierrc',
-          --     '.prettierrc.json',
-          --     '.prettierrc.yml',
-          --     '.prettierrc.yaml',
-          --     '.prettierrc.json5',
-          --     '.prettierrc.js',
-          --     '.prettierrc.cjs',
-          --     '.prettierrc.toml',
-          --     'prettier.config.js',
-          --     'prettier.config.cjs',
-          --   })
-          -- end,
-
-          -- only_local = 'node_modules/.bin',
-          -- root_dir = require('null-ls.utils').root_pattern('.prettierrc'),
-          -- or require('null-ls.utils').root_pattern('.git'),
-          -- runtime_condition = function(params)
-          -- local utils = require('null-ls.utils')
-          --
-          -- local package_json_root = utils.root_pattern('package.json')(params.bufname)
-          -- local git_root = utils.root_pattern('.git')(params.bufname)
-          -- local root = package_json_root or git_root
-          -- local root = package_json_root
-
-          -- return root and utils.path.exists(utils.path.join(root, '.prettierrc'))
-          --   return root
-          --     and utils.root_has_file({
-          --       -- https://prettier.io/docs/en/configuration.html
-          --       '.prettierrc',
-          --       '.prettierrc.json',
-          --       '.prettierrc.yml',
-          --       '.prettierrc.yaml',
-          --       '.prettierrc.json5',
-          --       '.prettierrc.js',
-          --       '.prettierrc.cjs',
-          --       '.prettierrc.toml',
-          --       'prettier.config.js',
-          --       'prettier.config.cjs',
-          --     })
-          -- end,
-          -- }), -- js/ts etc
-          nls.builtins.formatting.shfmt, -- bash
-          nls.builtins.formatting.stylua, -- lua
-        },
-      }
-    end,
-  },
-
-  {
-    'jay-babu/mason-null-ls.nvim',
-    -- see: https://github.com/jay-babu/mason-null-ls.nvim#primary-source-of-truth-is-null-ls
-    opts = {
-      ensure_installed = nil, -- defined in null-ls sources above
-      automatic_installation = true,
-      automatic_setup = true,
-    },
-  },
+  -- {
+  --   'jay-babu/mason-null-ls.nvim',
+  --   -- see: https://github.com/jay-babu/mason-null-ls.nvim#primary-source-of-truth-is-null-ls
+  --   opts = {
+  --     ensure_installed = nil, -- defined in null-ls sources above
+  --     automatic_installation = true,
+  --     automatic_setup = true,
+  --   },
+  -- },
 }
