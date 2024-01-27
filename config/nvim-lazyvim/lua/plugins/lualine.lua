@@ -4,7 +4,11 @@ local Util = require('lazyvim.util')
 local icons = require('lazyvim.config').icons
 
 local function get_venv()
-  return (vim.bo.filetype == 'python' and vim.env.VIRTUAL_ENV) and '(' .. vim.env.VIRTUAL_ENV .. ')' or ''
+  if vim.bo.filetype ~= 'python' then
+    return ''
+  end
+
+  return '(' .. vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV or '  No venv activated' .. ')'
 end
 
 local options = {
