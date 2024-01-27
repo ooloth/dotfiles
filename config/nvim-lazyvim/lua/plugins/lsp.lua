@@ -169,7 +169,7 @@ return {
   },
 
   {
-    'jose-elias-alvarez/null-ls.nvim',
+    'nvimtools/none-ls.nvim',
     keys = {
       {
         '<leader>xtp',
@@ -224,7 +224,7 @@ return {
           --     'prettier.config.cjs',
           --   })
           -- end,
-          
+
           -- only_local = 'node_modules/.bin',
           -- root_dir = require('null-ls.utils').root_pattern('.prettierrc'),
           -- or require('null-ls.utils').root_pattern('.git'),
