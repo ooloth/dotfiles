@@ -52,14 +52,16 @@ return {
     -- opts = { colorscheme = 'material' },
   },
 
-  {
-    'sunjon/shade.nvim',
-    event = 'VeryLazy',
-    config = true,
-    -- see: https://github.com/sunjon/Shade.nvim?tab=readme-ov-file#configuration
-    opts = {},
-  },
-
+  --  TODO: reenable when Mason window bug is fixed
+  -- see: https://github.com/sunjon/Shade.nvim/issues/37
+  -- {
+  --   'sunjon/shade.nvim',
+  --   event = 'VeryLazy',
+  --   config = true,
+  --   -- see: https://github.com/sunjon/Shade.nvim?tab=readme-ov-file#configuration
+  --   opts = {},
+  -- },
+  --
   {
     'NvChad/nvim-colorizer.lua',
     event = 'BufReadPre',
