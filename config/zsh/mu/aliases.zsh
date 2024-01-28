@@ -72,14 +72,6 @@ ng() {
     npm-check \
     tldr \
     # neovim dependencies:
-    bash-language-server \
-    cssmodules-language-server \
-    dockerfile-language-server-nodejs \
-    emmet-ls \
-    # neovim \
-    # pug-lint \
-    # svelte-language-server \
-    tree-sitter-cli \
     typescript \
     vscode-langservers-extracted
 }
