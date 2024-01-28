@@ -11,6 +11,36 @@ local function get_venv()
   return '(' .. vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV or '  No venv activated' .. ')'
 end
 
+-- see: https://github.com/catppuccin/nvim/blob/main/lua/catppuccin/palettes/mocha.lua
+local catppuccin = {
+  rosewater = '#f5e0dc',
+  flamingo = '#f2cdcd',
+  pink = '#f5c2e7',
+  mauve = '#cba6f7',
+  red = '#f38ba8',
+  maroon = '#eba0ac',
+  peach = '#fab387',
+  yellow = '#f9e2af',
+  green = '#a6e3a1',
+  teal = '#94e2d5',
+  sky = '#89dceb',
+  sapphire = '#74c7ec',
+  blue = '#89b4fa',
+  lavender = '#b4befe',
+  text = '#cdd6f4',
+  subtext1 = '#bac2de',
+  subtext0 = '#a6adc8',
+  overlay2 = '#9399b2',
+  overlay1 = '#7f849c',
+  overlay0 = '#6c7086',
+  surface2 = '#585b70',
+  surface1 = '#45475a',
+  surface0 = '#313244',
+  base = '#1e1e2e',
+  mantle = '#181825',
+  crust = '#11111b',
+}
+
 local options = {
   component_separators = '',
   disabled_filetypes = { tabline = { 'alpha', 'dashboard', 'starter' } },
@@ -20,11 +50,12 @@ local options = {
 }
 
 local empty = {
+  -- TODO: return '' if no diagnostics?
   function()
     return '█'
   end,
   padding = 0,
-  color = { fg = '#1e1e2e', bg = '#1e1e2e' },
+  color = { fg = catppuccin['base'], bg = catppuccin['base'] },
 }
 
 local sections = {
@@ -59,33 +90,14 @@ local sections = {
     {
       require('lazy.status').updates,
       cond = require('lazy.status').has_updates,
-      color = Util.ui.fg('Special'),
+      color = { fg = catppuccin['mauve'] },
     },
-    { 'filetype' },
-    { get_venv },
+    'filetype',
+    get_venv,
   },
   lualine_y = {
     { 'diff', padding = 0, separator = { left = '', right = '' } },
     empty,
-    -- 'diff',
-    -- {
-    --   'diff',
-    --   symbols = {
-    --     added = icons.git.added,
-    --     modified = icons.git.modified,
-    --     removed = icons.git.removed,
-    --   },
-    --   source = function()
-    --     local gitsigns = vim.b.gitsigns_status_dict
-    --     if gitsigns then
-    --       return {
-    --         added = gitsigns.added,
-    --         modified = gitsigns.changed,
-    --         removed = gitsigns.removed,
-    --       }
-    --     end
-    --   end,
-    -- },
   },
   lualine_z = { { 'branch', padding = 0, separator = { left = '', right = '' } } },
 }
