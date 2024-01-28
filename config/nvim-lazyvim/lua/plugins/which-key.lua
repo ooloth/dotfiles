@@ -15,6 +15,7 @@ return {
         ['<leader>f'] = { name = 'Find' },
         ['<leader>g'] = { name = 'Git' },
         ['<leader>gt'] = { name = 'Toggle' },
+        ['<leader>i'] = { name = 'Info' },
         ['<leader>o'] = { name = 'Open' },
         ['<leader>q'] = { name = 'Quit' },
         ['<leader>r'] = { name = 'Replace' },
