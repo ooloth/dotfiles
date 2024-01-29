@@ -55,6 +55,7 @@ return {
           }
         end,
       },
+        fish = {},
     },
   },
 }
