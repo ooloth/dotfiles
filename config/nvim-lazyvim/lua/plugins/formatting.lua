@@ -33,6 +33,7 @@ return {
       'williamboman/mason-lspconfig.nvim',
     },
     opts = {
+      -- for mason names, see: https://mason-registry.dev/registry/list
       ensure_installed = { 'prettier' },
     },
   },
@@ -45,6 +46,7 @@ return {
     },
     event = 'VeryLazy',
     opts = {
+      -- see: https://github.com/stevearc/conform.nvim#options
       formatters = {
         --  TODO: add support for more filetypes that have community plugins?
         -- see: https://prettier.io/docs/en/plugins.html#community-plugins
