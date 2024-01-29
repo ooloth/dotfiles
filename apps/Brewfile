@@ -11,6 +11,7 @@ tap "jesseduffield/lazydocker"
 
 # Packages
 brew "bat" # replaces cat
+brew "commitizen" # for standardizing git commit message format
 brew "coreutils"
 brew "eza" # replaces ls
 brew "fd" # replaces find
