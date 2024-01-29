@@ -16,7 +16,22 @@ require('lspconfig').tsserver.setup({
   },
 })
 
---  TODO: lsp
+-- linting (see: https://github.com/neovim/nvim-lspconfig#quickstart)
+require('lspconfig').eslint.setup({
+  -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#eslint
+  on_attach = function(_, bufnr)
+    vim.api.nvim_create_autocmd('BufWritePre', {
+      buffer = bufnr,
+      command = 'EslintFixAll',
+    })
+  end,
+  settings = {
+    -- TODO: prefer node modules version over mason version
+    -- helps eslint find the eslintrc when it's placed in a subfolder instead of the cwd root
+    workingDirectory = { mode = 'auto' },
+  },
+})
+
 --  TODO: treesitter
---  TODO: linting
+
 --  TODO: dap
