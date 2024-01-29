@@ -76,6 +76,7 @@
   "explorer.openEditors.visible": 1,
   "files.associations": {
     ".eslintrc": "yaml",
+    "**/kitty/**/*.conf": "shellscript",
     "*.njk": "nunjucks",
     ".prettierrc": "yaml",
     "*.vifm": "vimrc",
