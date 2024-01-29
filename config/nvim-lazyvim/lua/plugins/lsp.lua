@@ -53,7 +53,6 @@ return {
         },
         html = {},
         jsonls = {},
-        lua_ls = {},
         marksman = {},
         pyright = {
           settings = {
