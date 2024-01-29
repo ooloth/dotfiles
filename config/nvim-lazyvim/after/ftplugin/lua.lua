@@ -27,7 +27,9 @@ require('lspconfig').lua_ls.setup({
   },
 })
 
---  TODO: lsp
+-- formatting (see: https://github.com/stevearc/conform.nvim#setup)
+require('conform').formatters_by_ft.lua = { 'stylua' }
+
 --  TODO: treesitter
 --  TODO: linting
 --  TODO: dap?
