@@ -1,5 +1,6 @@
 -- inherit everything from after/ftplugin/javascript.lua
-vim.cmd.runtime('after/ftplugin/javascript.lua')
+-- includes lsp (tsserver) and linting (eslint-lsp)
+vim.cmd.runtime({ 'after/ftplugin/javascript.lua', bang = true })
 
 -- formatting (see: https://github.com/stevearc/conform.nvim#setup)
 require('conform').setup({
@@ -9,7 +10,5 @@ require('conform').setup({
   },
 })
 
---  TODO: lsp
 --  TODO: treesitter
---  TODO: linting
 --  TODO: dap?
