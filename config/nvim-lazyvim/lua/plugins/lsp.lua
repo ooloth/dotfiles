@@ -8,12 +8,11 @@ return {
 
   {
     'neovim/nvim-lspconfig',
-    dependencies = { 'jose-elias-alvarez/typescript.nvim' },
     init = function()
       local keys = require('lazyvim.plugins.lsp.keymaps').get()
       -- see: https://www.lazyvim.org/plugins/lsp#%EF%B8%8F-customizing-lsp-keymaps
       keys[#keys + 1] = { 'R', '<cmd>LspRestart<cr>', desc = 'Restart LSP servers' }
-      keys[#keys + 1] = { '<leader>ic', '<cmd>ConformInfo<cr>', desc = 'Conform info' }
+      keys[#keys + 1] = { '<leader>if', '<cmd>ConformInfo<cr>', desc = 'Formatter info' }
       keys[#keys + 1] = { '<leader>il', '<cmd>LspInfo<cr>', desc = 'LSP info' }
       keys[#keys + 1] = { '<leader>m', '<cmd>Mason<cr>', desc = 'Mason' }
       keys[#keys + 1] = { '<leader>rs', vim.lsp.buf.rename, desc = 'Rename symbol', has = 'rename' }
@@ -32,6 +31,7 @@ return {
       keys[#keys + 1] = { '<leader>co', false }
       keys[#keys + 1] = { '<leader>cr', false }
     end,
+    -- TODO: return a function to disable all defaults?
     -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
     opts = {
       -- options for vim.diagnostic.config()
@@ -40,59 +40,21 @@ return {
       },
       -- LSP Server Settings
       servers = {
-        bashls = {},
-        cssls = {},
-        cssmodules_ls = {},
-        dockerls = {},
-        emmet_ls = {},
-        eslint = {
-          settings = {
-            -- helps eslint find the eslintrc when it's placed in a subfolder instead of the cwd root
-            workingDirectory = { mode = 'auto' },
-          },
-        },
-        html = {},
-        jsonls = {},
-        marksman = {},
-        pyright = {
-          settings = {
-            python = {
-              analysis = {
-                diagnosticMode = 'workspace',
-                typeCheckingMode = 'off', -- using pyright for lsp but mypy for type-checking
-                useLibraryCodeForTypes = true,
-              },
-              disableOrganizeImports = true, -- using isort for import sorting
-            },
-          },
-        },
-        -- TODO: only load if used by project
-        tailwindcss = {},
-        terraformls = {},
-        tsserver = {
-          settings = {
-            completions = {
-              completeFunctionCalls = true,
-            },
-          },
-        },
-        yamlls = {},
-      },
-      setup = {
-        eslint = function()
-          vim.api.nvim_create_autocmd('BufWritePre', {
-            callback = function(event)
-              -- if eslint lsp server is active in buffer, automatically fix linting errors on save
-              if require('lspconfig.util').get_active_client_by_name(event.buf, 'eslint') then
-                vim.cmd('EslintFixAll')
-              end
-            end,
-          })
-        end,
-        tsserver = function(_, opts)
-          require('typescript').setup({ server = opts })
-          return true
-        end,
+        -- suppress default LazyVim lua_ls installation
+        -- see: https://github.com/LazyVim/LazyVim/issues/634#issuecomment-1515151425
+        lua_ls = { enabled = false, mason = false },
+        -- bashls = {},
+        -- cssls = {},
+        -- cssmodules_ls = {},
+        -- dockerls = {},
+        -- emmet_ls = {},
+        -- html = {},
+        -- jsonls = {},
+        -- marksman = {},
+        -- -- TODO: only load if used by project
+        -- tailwindcss = {},
+        -- terraformls = {},
+        -- yamlls = {},
       },
     },
   },

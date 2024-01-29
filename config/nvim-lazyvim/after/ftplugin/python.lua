@@ -56,6 +56,8 @@ local function prefer_bin_from_venv(executable_name)
   return mason_path
 end
 
+--  TODO: linting
+
 -- formatting (see: https://github.com/stevearc/conform.nvim#setup)
 require('conform').setup({
   formatters = {
@@ -89,3 +91,5 @@ require('conform').setup({
 --  TODO: treesitter
 --  TODO: linting
 --  TODO: dap
+
+-- TODO: refactor to multiple after/ftplugin/python/*.lua files if this one gets too long?
