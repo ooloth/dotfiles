@@ -1,22 +1,21 @@
 return {
+  {
+    -- see: https://github.com/mfussenegger/nvim-lint
+    'mfussenegger/nvim-lint',
+    opts = {
+      -- see: https://www.lazyvim.org/plugins/linting#nvim-lint
+      -- see: https://github.com/mfussenegger/nvim-lint#available-linters
+      linters_by_ft = {
+        fish = {},
+      },
+    },
+  },
+
   -- {
   --   'nvimtools/none-ls.nvim',
-  --   keys = {
-  --     {
-  --       '<leader>xtp',
-  --       function()
-  --         -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/discussions/1258#discussioncomment-4245688
-  --         require('null-ls').toggle('prettier')
-  --       end,
-  --       desc = 'Toggle prettier',
-  --     },
-  --   },
   --   opts = function() -- replace all default opts
   --     local nls = require('null-ls')
   --     return {
-  --       -- root_dir = require('null-ls.utils').root_pattern('package.json', '.git'),
-  --       -- formatters & linters mason will automatically install + set up below
-  --       -- see: https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#code-actions
   --       sources = {
   --         nls.builtins.code_actions.proselint,
   --         nls.builtins.code_actions.shellcheck, -- bash linter
@@ -33,15 +32,5 @@ return {
   --       },
   --     }
   --   end,
-  -- },
-
-  -- {
-  --   'jay-babu/mason-null-ls.nvim',
-  --   -- see: https://github.com/jay-babu/mason-null-ls.nvim#primary-source-of-truth-is-null-ls
-  --   opts = {
-  --     ensure_installed = nil, -- defined in null-ls sources above
-  --     automatic_installation = true,
-  --     automatic_setup = true,
-  --   },
   -- },
 }
