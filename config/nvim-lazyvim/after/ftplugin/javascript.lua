@@ -34,4 +34,13 @@ require('lspconfig').eslint.setup({
 
 --  TODO: treesitter
 
+-- formatting (see: https://github.com/stevearc/conform.nvim#setup)
+require('conform').formatters_by_ft = {
+  javascript = { 'prettier' },
+  javascriptreact = { 'prettier' },
+}
+
 --  TODO: dap
+
+-- TODO: refactor to multiple after/ftplugin/javascript/*.lua files if this one gets too long?
+-- TODO: separate javascript + javascriptreact (if any special react config)? if so, add a typescriptreact that inherits from javascriptreact
