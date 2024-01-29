@@ -1,6 +1,27 @@
 -- install the formatters
-require('mason-tool-installer').setup({ ensure_installed = { 'black', 'isort', 'ruff_format' } })
+require('mason-tool-installer').setup({ ensure_installed = { 'black', 'isort', 'pyright', 'ruff_format' } })
 vim.api.nvim_command('MasonToolsInstall')
+
+-- lsp (see: https://github.com/neovim/nvim-lspconfig#quickstart)
+require('lspconfig').pyright.setup({
+  -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pyright
+  settings = {
+    -- TODO: prefer node modules version over mason version
+    pyright = {
+      settings = {
+        -- see: https://microsoft.github.io/pyright/#/settings
+        python = {
+          analysis = {
+            diagnosticMode = 'workspace',
+            typeCheckingMode = 'off', -- use pyright for lsp but mypy for type-checking
+            useLibraryCodeForTypes = true,
+          },
+          disableOrganizeImports = true, -- use ruff or isort for import sorting
+        },
+      },
+    },
+  },
+})
 
 -- cache the result of the first prefer_bin_from_venv call for each executable
 local cached_commands = {
