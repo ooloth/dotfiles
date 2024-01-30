@@ -8,6 +8,16 @@ vim.cmd([[
   let g:loaded_ruby_provider = 0
 ]])
 
+-- custom file -> filetype associations
+vim.filetype.add({
+  filename = {
+    ['tsconfig.json'] = 'jsonc',
+  },
+  pattern = {
+    ['.*/vscode/.*%.json'] = 'jsonc',
+  },
+})
+
 -- python
 if vim.env.IS_WORK_LAPTOP == 'true' then
   vim.cmd([[

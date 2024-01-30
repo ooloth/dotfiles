@@ -426,15 +426,15 @@ set_up_vs_code() {
 
   info "Symlinking VS Code settings, keybindings and snippets..."
 
-  ln -sfv "$DOTFILES/vs-code/settings.json" "$HOME/Library/Application Support/Code/User"
-  ln -sfv "$DOTFILES/vs-code/keybindings.json" "$HOME/Library/Application Support/Code/User"
-  ln -sfv "$DOTFILES/vs-code/snippets" "$HOME/Library/Application Support/Code/User"
+  ln -sfv "$DOTFILES/vscode/settings.json" "$HOME/Library/Application Support/Code/User"
+  ln -sfv "$DOTFILES/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User"
+  ln -sfv "$DOTFILES/vscode/snippets" "$HOME/Library/Application Support/Code/User"
 
   printf "\n"
   info "Installing VS Code extensions...\n"
 
   # Install VS Code extensions from extensions.txt
-  cat "$DOTFILES/vs-code/extensions.txt" | xargs -L 1 code --install-extension
+  cat "$DOTFILES/vscode/extensions.txt" | xargs -L 1 code --install-extension
 
   success "\nDone setting up VS Code."
 }

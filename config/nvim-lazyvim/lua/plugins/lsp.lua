@@ -49,7 +49,6 @@ return {
         -- dockerls = {},
         -- emmet_ls = {},
         -- html = {},
-        -- jsonls = {},
         -- marksman = {},
         -- -- TODO: only load if used by project
         -- tailwindcss = {},

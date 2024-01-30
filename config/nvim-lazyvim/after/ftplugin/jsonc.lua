@@ -8,6 +8,5 @@ require('conform').setup({
   },
 })
 
---  TODO: lsp?
 --  TODO: treesitter
 --  TODO: linting?
