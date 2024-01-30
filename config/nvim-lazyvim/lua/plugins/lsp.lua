@@ -60,7 +60,6 @@ return {
         -- marksman = {},
         -- -- TODO: only load if used by project
         -- tailwindcss = {},
-        -- terraformls = {},
       },
     },
   },

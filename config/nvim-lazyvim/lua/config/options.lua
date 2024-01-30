@@ -10,6 +10,12 @@ vim.cmd([[
 
 -- custom file -> filetype associations
 vim.filetype.add({
+  extension = {
+    -- see: https://sbulav.github.io/vim/neovim-improving-work-with-terraform/#correctly-detecting-tf-filetype
+    tf = 'terraform',
+    tfvars = 'terraform',
+    tfstate = 'json',
+  },
   filename = {
     ['tsconfig.json'] = 'jsonc',
   },
