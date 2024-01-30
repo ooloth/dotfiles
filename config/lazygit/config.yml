@@ -2,6 +2,14 @@
 # colours: black | red | green | yellow | blue | magenta | cyan | white | '#ff00ff' (any hex code)
 # modifiers: bold | default | reverse (useful for high-contrast) | underline
 
+# customCommands:
+#   - key: "C"
+#     command: "git cz c"
+#     description: "commit with commitizen"
+#     context: "files"
+#     loadingText: "opening commitizen commit tool"
+#     subprocess: true
+
 git:
   parseEmoji: true
 
