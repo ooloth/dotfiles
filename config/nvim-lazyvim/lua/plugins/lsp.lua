@@ -8,6 +8,14 @@ return {
 
   {
     'neovim/nvim-lspconfig',
+    dependencies = {
+      {
+        -- for library-specific json + yaml completions
+        'b0o/SchemaStore.nvim',
+        lazy = true,
+        version = false, -- last release is way too old },
+      },
+    },
     init = function()
       local keys = require('lazyvim.plugins.lsp.keymaps').get()
       -- see: https://www.lazyvim.org/plugins/lsp#%EF%B8%8F-customizing-lsp-keymaps
@@ -53,7 +61,6 @@ return {
         -- -- TODO: only load if used by project
         -- tailwindcss = {},
         -- terraformls = {},
-        -- yamlls = {},
       },
     },
   },
