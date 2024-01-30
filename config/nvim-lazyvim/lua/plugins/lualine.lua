@@ -87,11 +87,11 @@ local sections = {
       end,
       color = Util.ui.fg('Debug'),
     },
-    {
-      require('lazy.status').updates,
-      cond = require('lazy.status').has_updates,
-      color = { fg = catppuccin['mauve'] },
-    },
+    -- {
+    --   require('lazy.status').updates,
+    --   cond = require('lazy.status').has_updates,
+    --   color = { fg = catppuccin['mauve'] },
+    -- },
     'filetype',
     get_venv,
   },
