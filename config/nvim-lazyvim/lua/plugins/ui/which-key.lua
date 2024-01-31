@@ -7,7 +7,6 @@ return {
       wk.register({
         mode = { 'n', 'v' },
         ['g'] = { name = 'Go to' },
-        ['gz'] = { name = 'Surround' },
         [']'] = { name = 'Next' },
         ['['] = { name = 'Prev' },
         ['<leader>b'] = { name = 'Buffer' },
