@@ -59,37 +59,62 @@ end
 --  TODO: linting
 
 -- formatting (see: https://github.com/stevearc/conform.nvim#setup)
-require('conform').setup({
-  formatters = {
-    black = function()
-      -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/black.lua
-      return {
-        command = prefer_bin_from_venv('black'),
-        condition = function(ctx)
-          return vim.fs.basename(ctx.filename) ~= 'README.md'
-        end,
-      }
-    end,
-    isort = function()
-      return {
-        command = prefer_bin_from_venv('isort'),
-      }
-    end,
-    ruff_format = function()
-      return {
-        command = prefer_bin_from_venv('ruff'),
-      }
-    end,
-  },
-  formatters_by_ft = {
-    --  TODO: choose formatter based on packages installed in virtualenv
-    python = { 'isort', 'black', 'ruff_format' },
-  },
-})
+require('conform')
+  .setup({
+    formatters = {
+      black = function()
+        -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/black.lua
+        return {
+          command = prefer_bin_from_venv('black'),
+          condition = function(ctx)
+            return vim.fs.basename(ctx.filename) ~= 'README.md'
+          end,
+        }
+      end,
+      isort = function()
+        return {
+          command = prefer_bin_from_venv('isort'),
+        }
+      end,
+      ruff_format = function()
+        return {
+          command = prefer_bin_from_venv('ruff'),
+        }
+      end,
+    },
+    formatters_by_ft = {
+      --  TODO: choose formatter based on packages installed in virtualenv
+      python = { 'isort', 'black', 'ruff_format' },
+    },
+  })
+  (
+  --  TODO: lsp
+  --  TODO: treesitter
+  --  TODO: linting
+  --  TODO: dap
 
---  TODO: lsp
---  TODO: treesitter
---  TODO: linting
---  TODO: dap
+  -- {lua require('dap-python').setup('~/.virtualenvs/debugpy/bin/python')}
+-- {
+--     'mfussenegger/nvim-dap-python',
+--     event = 'VeryLazy',
+--     dependencies = { 'mfussenegger/nvim-dap' },
+--     config = function()
+--       require('dap-python').setup('~/.virtualenvs/debugpy/bin/python')
+--       -- local dap = require('dap')
+--       -- dap.adapters.python = {
+--       --   type = 'executable',
+--       --   command = 'python',
+--       --   args = { '-m', 'debugpy.adapter' },
+--       -- }
+--       -- dap.configurations.python = {
+--       --   {
+--       --     type = 'python',
+--       --     request = 'launch',
+--       --     name = 'Launch file',
+--       --     program = '${file}', -- This configuration will launch the current file if used.
+--       --   },
+--       -- }
+--     end,
+--   })
 
 -- TODO: refactor to multiple after/ftplugin/python/*.lua files if this one gets too long?
