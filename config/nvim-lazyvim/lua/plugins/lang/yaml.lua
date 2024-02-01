@@ -6,7 +6,7 @@ return {
     'williamboman/mason.nvim',
     opts = {
       -- see: https://mason-registry.dev/registry/list
-      ensure_installed = { 'yaml-language-server' },
+      ensure_installed = { 'prettier', 'yaml-language-server' },
     },
   },
 
