@@ -23,6 +23,7 @@ gui:
     # I like this one with the dracula theme, but not with gruvbox
     selectedLineBgColor:
       - "#292D3E" # material ocean list hover bg color (see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts)
+    # FIXME: see https://github.com/jesseduffield/lazygit/discussions/3239
     selectedRangeBgColor:
       - reverse
 

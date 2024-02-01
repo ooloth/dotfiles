@@ -40,7 +40,7 @@
   "editor.inlineSuggest.enabled": true,
   "editor.linkedEditing": true,
   "editor.lineHeight": 1.4,
-  "editor.lineNumbers": "off",
+  "editor.lineNumbers": "on",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
   "editor.occurrencesHighlight": "off",
