@@ -14,6 +14,7 @@ return {
     'stevearc/conform.nvim',
     opts = {
       formatters_by_ft = {
+        -- see: https://github.com/stevearc/conform.nvim?tab=readme-ov-file#formatters
         yaml = { 'prettier' },
       },
     },
