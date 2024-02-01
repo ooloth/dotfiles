@@ -403,14 +403,6 @@ set_up_neovim() {
 
   info "Installing global npm dependencies for neovim..."
   npm i -g \
-    bash-language-server \
-    cssmodules-language-server \
-    dockerfile-language-server-nodejs \
-    emmet-ls \
-    neovim \
-    pug-lint \
-    svelte-language-server \
-    tree-sitter-cli \
     typescript \
     vscode-langservers-extracted
 
