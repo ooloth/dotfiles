@@ -15,8 +15,6 @@ return {
       'json',
       'jsonc',
       'json5',
-      'lua',
-      'luap',
       'markdown',
       'markdown_inline',
       'python',

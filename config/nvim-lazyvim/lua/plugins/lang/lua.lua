@@ -1,35 +1,48 @@
--- install the formatter
-require('mason-tool-installer').setup({ ensure_installed = { 'lua_ls', 'stylua' } })
-vim.api.nvim_command('MasonToolsInstall')
+-- LazyVim sets up the `lua_ls` language server:
+-- https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
 
--- lsp (see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#lua_ls)
-require('lspconfig').lua_ls.setup({
-  settings = {
-    -- TODO: prefer local version over mason version?
-    -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
-    -- see: https://luals.github.io/wiki/settings/
-    Lua = {
-      completion = {
-        callSnippet = 'Replace',
-      },
-      runtime = {
-        -- tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = 'LuaJIT',
-      },
-      workspace = {
-        checkThirdParty = false,
-        -- make the server aware of Neovim runtime files
-        library = {
-          vim.env.VIMRUNTIME,
-        },
+return {
+  {
+    'williamboman/mason.nvim',
+    opts = {
+      -- see: https://mason-registry.dev/registry/list
+      ensure_installed = { 'stylua' },
+    },
+  },
+
+  {
+    'nvim-treesitter/nvim-treesitter',
+    opts = {
+      ensure_installed = {
+        'lua',
+        'luadoc',
+        'luap',
       },
     },
   },
-})
 
--- formatting (see: https://github.com/stevearc/conform.nvim#setup)
-require('conform').formatters_by_ft.lua = { 'stylua' }
+  {
+    'stevearc/conform.nvim',
+    opts = {
+      formatters_by_ft = {
+        -- see: https://github.com/stevearc/conform.nvim?tab=readme-ov-file#formatters
+        yaml = { 'stylua' },
+      },
+    },
+  },
 
---  TODO: treesitter
+  -- {
+  --   -- see: https://github.com/mfussenegger/nvim-lint
+  --   'mfussenegger/nvim-lint',
+  --   opts = {
+  --     -- see: https://www.lazyvim.org/plugins/linting#nvim-lint
+  --     -- see: https://github.com/mfussenegger/nvim-lint#available-linters
+  --     linters_by_ft = {
+  --       lua = { 'luacheck' },
+  --     },
+  --   },
+  -- },
+}
+
 --  TODO: linting
 --  TODO: dap?
