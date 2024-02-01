@@ -1,13 +1,8 @@
+-- see: https://www.lazyvim.org/plugins/lsp#masonnvim-1
+
 return {
   'williamboman/mason.nvim',
   keys = function()
-    -- remove all keymaps
-    return {}
-  end,
-  opts = function()
-    return {
-      -- remove default installations
-      ensure_installed = {},
-    }
+    return {} -- remove all keymaps
   end,
 }

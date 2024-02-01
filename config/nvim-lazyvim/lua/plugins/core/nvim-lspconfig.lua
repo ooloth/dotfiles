@@ -1,13 +1,5 @@
 return {
   'neovim/nvim-lspconfig',
-  dependencies = {
-    {
-      -- for library-specific json + yaml completions
-      'b0o/SchemaStore.nvim',
-      lazy = true,
-      version = false, -- last release is way too old },
-    },
-  },
   init = function()
     local keys = require('lazyvim.plugins.lsp.keymaps').get()
     -- see: https://www.lazyvim.org/plugins/lsp#%EF%B8%8F-customizing-lsp-keymaps
@@ -31,27 +23,11 @@ return {
     keys[#keys + 1] = { '<leader>co', false }
     keys[#keys + 1] = { '<leader>cr', false }
   end,
-  -- TODO: return a function to disable all defaults?
   -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
   opts = {
     -- options for vim.diagnostic.config()
     diagnostics = {
       float = { border = 'rounded', source = true },
-    },
-    -- LSP Server Settings
-    servers = {
-      -- suppress default LazyVim lua_ls installation
-      -- see: https://github.com/LazyVim/LazyVim/issues/634#issuecomment-1515151425
-      lua_ls = { enabled = false, mason = false },
-      -- bashls = {},
-      -- cssls = {},
-      -- cssmodules_ls = {},
-      -- dockerls = {},
-      -- emmet_ls = {},
-      -- html = {},
-      -- marksman = {},
-      -- -- TODO: only load if used by project
-      -- tailwindcss = {},
     },
   },
 }
