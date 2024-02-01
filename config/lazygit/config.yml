@@ -29,16 +29,16 @@ gui:
 
 keybinding:
   universal:
-    copyToClipboard: "y"
-    createRebaseOptionsMenu: "M" # avoid accidental rebasing when pressing "m" to merge into current branch
-    scrollUpMain: "<c-u>" # main panel scroll up
-    scrollDownMain: "<c-d>" # main panel scroll down
+    copyToClipboard: 'y'
+    createRebaseOptionsMenu: 'M' # avoid accidental rebasing when pressing "m" to merge into current branch
+    scrollUpMain: '<c-u>' # main panel scroll up
+    scrollDownMain: '<c-d>' # main panel scroll down
   branches:
-    mergeIntoCurrentBranch: "m"
-    rebaseBranch: "R" # avoid accidental rebasing
-    renameBranch: "r"
+    mergeIntoCurrentBranch: 'm'
+    rebaseBranch: 'R' # avoid accidental rebasing
+    renameBranch: 'r'
   commits:
-    amendToCommit: "a"
+    amendToCommit: 'a'
 
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: false # true means "esc" quits when there's nothing to cancel/close

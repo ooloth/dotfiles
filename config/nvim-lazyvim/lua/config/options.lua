@@ -18,11 +18,14 @@ vim.filetype.add({
   },
   filename = {
     ['tsconfig.json'] = 'jsonc',
+    -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#docker_compose_language_service
+    ['docker-compose.yaml'] = 'yaml.docker-compose',
   },
   pattern = {
-    ['.*/vscode/.*%.json'] = 'jsonc',
+    ['docker-compose.*%.yaml'] = 'yaml.docker-compose',
     ['.*/kitty/.*%.conf'] = 'bash',
     ['.*/kitty/.*/.*%.conf'] = 'bash',
+    ['.*/vscode/.*%.json'] = 'jsonc',
   },
 })
 
