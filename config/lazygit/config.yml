@@ -22,22 +22,22 @@ gui:
   theme:
     # I like this one with the dracula theme, but not with gruvbox
     selectedLineBgColor:
-      - "#292D3E" # material ocean list hover bg color (see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts)
+      - '#292D3E' # material ocean list hover bg color (see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts)
     selectedRangeBgColor:
       - reverse
 
 keybinding:
   universal:
-    copyToClipboard: "y"
-    createRebaseOptionsMenu: "M" # avoid accidental rebasing when pressing "m" to merge into current branch
-    scrollUpMain: "<c-u>" # main panel scroll up
-    scrollDownMain: "<c-d>" # main panel scroll down
+    copyToClipboard: 'y'
+    createRebaseOptionsMenu: 'M' # avoid accidental rebasing when pressing "m" to merge into current branch
+    scrollUpMain: '<c-u>' # main panel scroll up
+    scrollDownMain: '<c-d>' # main panel scroll down
   branches:
-    mergeIntoCurrentBranch: "m"
-    rebaseBranch: "R" # avoid accidental rebasing
-    renameBranch: "r"
+    mergeIntoCurrentBranch: 'm'
+    rebaseBranch: 'R' # avoid accidental rebasing
+    renameBranch: 'r'
   commits:
-    amendToCommit: "a"
+    amendToCommit: 'a'
 
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: false # true means "esc" quits when there's nothing to cancel/close
