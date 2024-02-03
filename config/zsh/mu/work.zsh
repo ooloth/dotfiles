@@ -92,14 +92,6 @@ if $IS_WORK_LAPTOP; then
   # prometheus (dash-phenoapp-v2 backend server)
   export PROMETHEUS_MULTIPROC_DIR=./.prom
 
-  # pyenv
-  # NOTE: do NOT use eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
-
-  # python
-  # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
-  export PYTHONPATH="$PYTHONPATH:/Users/$USER"
-  export MYPYPATH=.
-
   # sbin
   export PATH="/opt/homebrew/sbin:$PATH"
 
