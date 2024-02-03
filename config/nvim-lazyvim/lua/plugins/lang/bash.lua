@@ -1,10 +1,4 @@
--- TODO: lsp?
--- TODO: treesitter?
--- TODO: linting?
 -- TODO: dap?
-
--- The LazyVim YAML extra is installed (includes lsp + treesitter):
--- https://www.lazyvim.org/extras/lang/yaml
 
 local extend = require('util').extend
 
@@ -14,6 +8,17 @@ return {
     opts = function(_, opts)
       extend(opts.ensure_installed, { 'bash-language-server', 'shellcheck', 'shfmt' })
     end,
+  },
+
+  {
+    'neovim/nvim-lspconfig',
+    opts = {
+      -- NOTE: linting comes from eslint-lsp (which already includes vue files by default)
+      servers = {
+        -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#bashls
+        bashls = {},
+      },
+    },
   },
 
   {
