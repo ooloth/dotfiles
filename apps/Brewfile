@@ -33,6 +33,7 @@ brew "lazygit"
 brew "mas"
 brew "neovim"
 brew "powerlevel10k"
+brew "pyenv" # manages python versions
 brew "ripgrep" # for telescope
 brew "starship"
 brew "stern" # for kubectl
