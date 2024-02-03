@@ -1,34 +1,28 @@
 -- LazyVim sets up the `lua_ls` language server:
 -- https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
 
+local extend = require('util').extend
+
 return {
   {
     'williamboman/mason.nvim',
-    opts = {
-      -- see: https://mason-registry.dev/registry/list
-      ensure_installed = { 'stylua' },
-    },
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'stylua' })
+    end,
   },
 
   {
     'nvim-treesitter/nvim-treesitter',
-    opts = {
-      ensure_installed = {
-        'lua',
-        'luadoc',
-        'luap',
-      },
-    },
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'lua', 'luadoc' })
+    end,
   },
 
   {
     'stevearc/conform.nvim',
-    opts = {
-      formatters_by_ft = {
-        -- see: https://github.com/stevearc/conform.nvim?tab=readme-ov-file#formatters
-        yaml = { 'stylua' },
-      },
-    },
+    opts = function(_, opts)
+      extend(opts.formatters_by_ft, { yaml = { 'stylua' } })
+    end,
   },
 
   -- {
