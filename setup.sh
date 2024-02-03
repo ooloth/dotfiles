@@ -6,7 +6,6 @@ trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
-OH_MY_ZSH="$HOME/.oh-my-zsh"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -404,14 +403,6 @@ set_up_neovim() {
 
   info "Installing global npm dependencies for neovim..."
   npm i -g \
-    bash-language-server \
-    cssmodules-language-server \
-    dockerfile-language-server-nodejs \
-    emmet-ls \
-    neovim \
-    pug-lint \
-    svelte-language-server \
-    tree-sitter-cli \
     typescript \
     vscode-langservers-extracted
 
