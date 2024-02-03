@@ -1,6 +1,12 @@
 -- TODO: dap?
+-- https://www.reddit.com/r/neovim/comments/xzr6py/nvimdap_bash_debugging/
+-- TODO: testing?
 
 local extend = require('util').extend
+
+-- Tell treesitter to parse zsh like bash (until someone writes a zsh parser):
+-- https://github.com/nvim-treesitter/nvim-treesitter/issues/655#issuecomment-1476880919
+vim.treesitter.language.register('bash', 'zsh')
 
 return {
   {
