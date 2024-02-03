@@ -12,13 +12,10 @@ return {
 
   {
     'neovim/nvim-lspconfig',
-    opts = {
-      -- NOTE: linting comes from eslint-lsp (which already includes vue files by default)
-      servers = {
-        -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#bashls
-        terraformls = {},
-      },
-    },
+    opts = function(_, opts)
+      -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#bashls
+      extend(opts.servers, { terraformls = {} })
+    end,
   },
 
   {
