@@ -24,7 +24,8 @@ brew "gnu-sed"
 brew "gitmux" # for tmux
 brew "goku" # for karibiner
 brew "hadolint" # for docker
-brew "hashicorp/tap/terraform"
+brew "hashicorp/tap/terraform" # for neovim + vs code
+brew "tidy-html5" # for linting html + xml in neovim
 brew "jq"
 brew "kubectl" # for kubernetes
 brew "lazydocker"
