@@ -1,4 +1,3 @@
---  TODO: linting
 --  TODO: types
 --  TODO: testing
 --  TODO: dap
@@ -8,6 +7,32 @@
 local extend = require('util').extend
 local is_installed_in_venv = require('util.prefer_venv').is_installed_in_venv
 local prefer_venv_executable = require('util.prefer_venv').prefer_venv_executable
+
+-- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/black.lua
+local get_formatter_options = function(formatter)
+  local formatter_options = require('conform.formatters.' .. formatter)
+  local executable = formatter == 'ruff_format' and 'ruff' or formatter
+  formatter_options.command = prefer_venv_executable(executable)
+  formatter_options.condition = function()
+    return is_installed_in_venv(executable)
+  end
+  return formatter_options
+end
+
+local get_linters_in_venv = function(linters)
+  local linters_in_venv = vim.tbl_filter(function(linter)
+    local executable = linter == 'ruff_lint' and 'ruff' or linter
+    return is_installed_in_venv(executable)
+  end, linters)
+
+  return linters_in_venv
+end
+
+local get_linter_options = function(linter)
+  local linter_options = require('lint.linters.' .. linter)
+  linter_options.cmd = prefer_venv_executable(linter)
+  return linter_options
+end
 
 return {
   {
@@ -64,37 +89,16 @@ return {
       formatters_by_ft = { python = { 'isort', 'black', 'ruff_format', 'yapf' } },
       formatters = {
         black = function()
-          -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/black.lua
-          return {
-            command = prefer_venv_executable('black'),
-            condition = function()
-              return is_installed_in_venv('black')
-            end,
-          }
+          return get_formatter_options('black')
         end,
         isort = function()
-          return {
-            command = prefer_venv_executable('isort'),
-            condition = function()
-              return is_installed_in_venv('isort')
-            end,
-          }
+          return get_formatter_options('isort')
         end,
         ruff_format = function()
-          return {
-            command = prefer_venv_executable('ruff'),
-            condition = function()
-              return is_installed_in_venv('ruff')
-            end,
-          }
+          return get_formatter_options('ruff_format')
         end,
         yapf = function()
-          return {
-            command = prefer_venv_executable('yapf'),
-            condition = function()
-              return is_installed_in_venv('yapf')
-            end,
-          }
+          return get_formatter_options('yapf')
         end,
       },
     },
@@ -105,37 +109,17 @@ return {
     -- see: https://www.lazyvim.org/plugins/linting#nvim-lint
     opts = {
       linters_by_ft = {
-        python = {
-          -- 'flake8',
-          'mypy',
-          'ruff_lint',
-        },
+        python = get_linters_in_venv({ 'flake8', 'mypy', 'ruff_lint' }),
       },
       linters = {
-        -- TODO: make condition work for uninstalled linters (it currently includes them)
-        -- flake8 = function()
-        --   return {
-        --     cmd = prefer_venv_executable('flake8'),
-        --     condition = function()
-        --       return is_installed_in_venv('flake8')
-        --     end,
-        --   }
-        -- end,
+        flake8 = function()
+          return get_linter_options('flake8')
+        end,
         mypy = function()
-          return {
-            cmd = prefer_venv_executable('mypy'),
-            condition = function()
-              return is_installed_in_venv('mypy')
-            end,
-          }
+          return get_linter_options('mypy')
         end,
         ruff_lint = function()
-          return {
-            cmd = prefer_venv_executable('ruff'),
-            condition = function()
-              return is_installed_in_venv('ruff')
-            end,
-          }
+          return get_linter_options('ruff')
         end,
       },
     },
