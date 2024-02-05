@@ -97,6 +97,10 @@
     "scminput": false,
     "yaml": true
   },
+  // see: https://github.com/microsoft/vscode-copilot-release/issues/541#issuecomment-1865921869
+  "github.copilot.advanced": {
+    "debug.useNodeFetcher": true
+  },
   "gitlens.codeLens.authors.enabled": false,
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
@@ -394,7 +398,6 @@
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
   "window.zoomLevel": 1.1,
-  "workbench.activityBar.location": "top",
   "workbench.colorCustomizations": {
     "[Catppuccin Mocha]": {
       "terminal.ansiBlack": "#000000",
@@ -445,7 +448,11 @@
   "notebook.stickyScroll.enabled": true,
   "terminal.integrated.stickyScroll.enabled": true,
   "catppuccin.workbenchMode": "minimal",
-  "catppuccin.italicKeywords": false
+  "catppuccin.italicKeywords": false,
+  "window.zoomPerWindow": false,
+  "files.autoSaveWhenNoErrors": true,
+  "workbench.activityBar.location": "hidden",
+  "githubPullRequests.focusedMode": "multiDiff"
 }
 
 // prettier-ignore-end
