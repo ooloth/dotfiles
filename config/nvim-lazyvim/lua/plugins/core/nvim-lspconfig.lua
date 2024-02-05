@@ -24,6 +24,7 @@ return {
     keys[#keys + 1] = { '<leader>cr', false }
   end,
   -- see: https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
+  -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
   opts = {
     -- options for vim.diagnostic.config()
     diagnostics = {

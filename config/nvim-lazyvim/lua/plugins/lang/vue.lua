@@ -1,15 +1,35 @@
-return {}
+local extend = require('util').extend
 
--- -- -- inherit everything from after/ftplugin/javascript.lua
--- -- vim.cmd.runtime({ 'after/ftplugin/javascript.lua', bang = true })
--- --
--- -- formatting (see: https://github.com/stevearc/conform.nvim#setup)
--- require('conform').setup({
---   formatters_by_ft = {
---     vue = { 'prettier' },
---   },
--- })
---
---  TODO: lsp?
---  TODO: treesitter?
---  TODO: linting?
+return {
+  {
+    'williamboman/mason.nvim',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'prettier', 'vue-language-server' })
+    end,
+  },
+
+  {
+    'neovim/nvim-lspconfig',
+    opts = {
+      -- NOTE: linting comes from eslint-lsp (which already includes vue files by default)
+      servers = {
+        -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#vuels
+        vuels = {},
+      },
+    },
+  },
+
+  {
+    'nvim-treesitter/nvim-treesitter',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'vue' })
+    end,
+  },
+
+  {
+    'stevearc/conform.nvim',
+    opts = function(_, opts)
+      extend(opts.formatters_by_ft, { vue = { 'prettier' } })
+    end,
+  },
+}

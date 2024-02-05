@@ -11,21 +11,6 @@ local del = vim.keymap.del
 set({ 'n', 'v' }, ',', ':') -- enter command mode with , instead of :
 set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for / results)
 
--- join
-set('n', '<leader>j', '<cmd>join<cr>', { desc = 'Join lines' })
-
--- move lines
-set('n', '<S-j>', '<cmd>m .+1<cr>==', { desc = 'Move down' })
-set('n', '<S-k>', '<cmd>m .-2<cr>==', { desc = 'Move up' })
-set('v', '<S-j>', ":m '>+1<cr>gv=gv", { desc = 'Move down', silent = true })
-set('v', '<S-k>', ":m '<-2<cr>gv=gv", { desc = 'Move up', silent = true })
-del('n', '<A-j>')
-del('n', '<A-k>')
-del('i', '<A-j>')
-del('i', '<A-k>')
-del('v', '<A-j>')
-del('v', '<A-k>')
-
 -- line beginning + end
 set('n', '<S-h>', '^', { desc = 'Go to start of line' })
 set('n', '<S-l>', '$', { desc = 'Go to end of line' })
@@ -34,27 +19,27 @@ set('n', '<S-l>', '$', { desc = 'Go to end of line' })
 
 -- "buffer"
 if Util.has('bufferline.nvim') then
-  set('n', '<s-tab>', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
-  set('n', '<tab>', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
+  -- set('n', '<s-tab>', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
+  -- set('n', '<tab>', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
   set('n', '[b', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
   set('n', ']b', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
   set('n', '<leader>b[', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
   set('n', '<leader>b]', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
 else
-  set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
-  set('n', '<-tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
+  -- set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
+  -- set('n', '<-tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
   set('n', '[b', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
   set('n', ']b', '<cmd>bnext<cr>', { desc = 'Next buffer' })
   set('n', '<leader>b[', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
   set('n', '<leader>b]', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 end
-set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' })  -- switch to last buffer
+set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
 -- "changes"
-set('n', ']c', 'g,', { desc = 'Next change' })     -- go to next change with g;
+set('n', ']c', 'g,', { desc = 'Next change' }) -- go to next change with g;
 set('n', '[c', 'g;', { desc = 'Previous change' }) -- go to next change with g;
-set('n', 'g;', 'g,', { desc = 'Next change' })     -- go to next change with g;
+set('n', 'g;', 'g,', { desc = 'Next change' }) -- go to next change with g;
 set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with g;
 
 -- "debug" (see debug.lua)

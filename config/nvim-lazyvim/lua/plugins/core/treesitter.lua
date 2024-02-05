@@ -3,6 +3,7 @@ return {
   opts = {
     -- install missing parsers when entering buffer
     auto_install = true,
+    -- see: https://github.com/nvim-treesitter/nvim-treesitter?tab=readme-ov-file#supported-languages
     ensure_installed = {
       'bash',
       'comment',

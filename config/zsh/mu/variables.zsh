@@ -31,6 +31,17 @@ export K9SCONFIG=$HOME/.config/k9s
 
 export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
 
+# pyenv
+# NOTE: do NOT use eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
+# see: https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+
+# python
+# see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
+export PYTHONPATH="$PYTHONPATH:/Users/$USER"
+export MYPYPATH=.
+
 export SHELL=$(which zsh)
 
 export STARSHIP_CONFIG=$HOME/.config/starship/config.toml

@@ -25,17 +25,16 @@ local function prefer_bin_from_node_modules(executable_name)
   return mason_path
 end
 
+local util = require('util')
+local extend = util.extend
+local reset = util.reset
+
 return {
   {
-    'WhoIsSethDaniel/mason-tool-installer.nvim',
-    dependencies = {
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-    },
-    opts = {
-      -- for mason names, see: https://mason-registry.dev/registry/list
-      ensure_installed = { 'prettier' },
-    },
+    'williamboman/mason.nvim',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'prettier' })
+    end,
   },
 
   {
@@ -44,7 +43,7 @@ return {
     dependencies = {
       'williamboman/mason.nvim',
     },
-    event = 'VeryLazy',
+    keys = reset(),
     opts = {
       -- see: https://github.com/stevearc/conform.nvim#options
       formatters = {

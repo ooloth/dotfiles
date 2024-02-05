@@ -87,6 +87,7 @@ alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 alias rm='trash' # see: https://github.com/sindresorhus/trash-cli
 alias R="exec -l $SHELL"
 alias s="kitty +kitten ssh" # kitty's ssh kitten
+alias scraper='cd $HOME/Repos/ooloth/scraper'
 
 sl() { ln -sfv $1 $2; } # easier symlinking
 
