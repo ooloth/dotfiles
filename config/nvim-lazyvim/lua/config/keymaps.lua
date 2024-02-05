@@ -19,15 +19,15 @@ set('n', '<S-l>', '$', { desc = 'Go to end of line' })
 
 -- "buffer"
 if Util.has('bufferline.nvim') then
-  set('n', '<s-tab>', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
-  set('n', '<tab>', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
+  -- set('n', '<s-tab>', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
+  -- set('n', '<tab>', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
   set('n', '[b', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
   set('n', ']b', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
   set('n', '<leader>b[', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
   set('n', '<leader>b]', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
 else
-  set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
-  set('n', '<-tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
+  -- set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
+  -- set('n', '<-tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
   set('n', '[b', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
   set('n', ']b', '<cmd>bnext<cr>', { desc = 'Next buffer' })
   set('n', '<leader>b[', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
