@@ -139,6 +139,7 @@ return {
     { "<leader>dl", function() require("dap").run_last() end, desc = "Run Last" },
     { "<leader>do", function() require("dap").step_out() end, desc = "Step Out" },
     { "<leader>dp", function() require("dap").pause() end, desc = "Pause" },
+    { "<leader>dr", function() require("dap").restart() end, desc = "Restart" },
     { "<leader>ds", function() require("dap").step_over() end, desc = "Step Over" },
     { "<leader>dt", function() require("dap").terminate() end, desc = "Terminate" },
     { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
