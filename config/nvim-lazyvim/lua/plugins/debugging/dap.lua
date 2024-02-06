@@ -143,7 +143,7 @@ return {
     { "<leader>ds", function() require("dap").step_over() end, desc = "Step Over" },
     { "<leader>dx", function() require("dap").terminate() end, desc = "End session" },
     { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
-    { "<leader>dw", function() require("dapui").elements.watches.add() end, desc = "Add to Watch List" },
+    { "<leader>dw", function() require("dapui").elements.watches.add() end, desc = "Watch symbol under cursor" },
   },
 
   config = function()
