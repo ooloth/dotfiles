@@ -101,6 +101,7 @@ del('n', '<leader><tab>d')
 -- "v"
 
 -- "window"
+-- TODO: add mappings for all <c-w> commands?
 set('n', '<leader>\\', '<c-w>v', { desc = 'Split right' })
 set('n', '<leader>w\\', '<c-w>v', { desc = 'Split right' })
 set('n', '<leader>-', '<c-w>v', { desc = 'Split below' })
@@ -112,6 +113,10 @@ set('n', '<leader>w[', '<cmd>vertical resize -3<cr>', { desc = 'Reduce size' })
 set('n', '<leader>]', '<cmd>vertical resize +3<cr>', { desc = 'Increase size' })
 set('n', '<leader>w]', '<cmd>vertical resize +3<cr>', { desc = 'Increase size' })
 set('n', '<leader>wc', '<c-w>c', { desc = 'Close' })
+set('n', '<leader>wh', '<c-w>h', { desc = 'Go left one window' })
+set('n', '<leader>wj', '<c-w>j', { desc = 'Go down one window' })
+set('n', '<leader>wk', '<c-w>k', { desc = 'Go up one window' })
+set('n', '<leader>wl', '<c-w>l', { desc = 'Go right one window' })
 -- "leader-wm" = toggle maximize window (see vim-maximizer.lua}
 set('n', '<leader>wo', '<c-w>o', { desc = 'Only keep this one' })
 set('n', '<leader>wt', '<cmd>tab split<cr>', { desc = 'Open in new tab' })
