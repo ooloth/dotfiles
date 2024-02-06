@@ -25,6 +25,7 @@ require('lazy').setup({
     { import = 'plugins.git' },
     { import = 'plugins.lang' },
     { import = 'plugins.linting' },
+    { import = 'plugins.navigating' },
     { import = 'plugins.searching' },
     { import = 'plugins.testing' },
     { import = 'plugins.ui' },
