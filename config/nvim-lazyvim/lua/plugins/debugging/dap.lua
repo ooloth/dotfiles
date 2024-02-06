@@ -141,7 +141,7 @@ return {
     { "<leader>dp", function() require("dap").pause() end, desc = "Pause" },
     { "<leader>dr", function() require("dap").restart() end, desc = "Restart" },
     { "<leader>ds", function() require("dap").step_over() end, desc = "Step Over" },
-    { "<leader>dt", function() require("dap").terminate() end, desc = "Terminate" },
+    { "<leader>dx", function() require("dap").terminate() end, desc = "End session" },
     { "<leader>du", function() require("dapui").toggle({ }) end, desc = "Dap UI" },
     { "<leader>dw", function() require("dapui").elements.watches.add() end, desc = "Add to Watch List" },
   },
