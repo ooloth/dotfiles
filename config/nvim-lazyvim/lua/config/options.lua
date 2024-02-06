@@ -29,13 +29,6 @@ vim.filetype.add({
   },
 })
 
--- python
-if vim.env.IS_WORK_LAPTOP == 'true' then
-  vim.cmd([[
-    let g:python3_host_prog = '$HOME/.pyenv/versions/py3nvim/bin/python'
-  ]])
-end
-
 -- UI
 vim.opt.cmdheight = 0
 vim.opt.fillchars = { eob = ' ' } -- hide ~ at end of buffer
