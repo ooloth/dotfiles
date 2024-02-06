@@ -1,5 +1,15 @@
 -- see: https://www.lazyvim.org/extras/dap/core#nvim-dap
 
+local continue_debugging = function()
+  -- (re-)reads launch.json if present
+  if vim.fn.filereadable('.vscode/launch.json') then
+    require('dap.ext.vscode').load_launchjs(nil, {
+      ['pwa-node'] = { 'typescript', 'javascript' },
+    })
+  end
+  require('dap').continue()
+end
+
 return {
   'mfussenegger/nvim-dap',
   dependencies = {
@@ -9,19 +19,15 @@ return {
         controls = {
           element = 'repl',
           enabled = false,
-          icons = {
-            disconnect = '',
-            pause = '',
-            play = '',
-            run_last = '',
-            step_back = '',
-            step_into = '',
-            step_out = '',
-            step_over = '',
-            terminate = '',
-          },
         },
-        element_mappings = {},
+        element_mappings = {
+          scopes = {},
+          watches = {},
+          stacks = {},
+          breakpoints = {},
+          console = {},
+          repl = {},
+        },
         expand_lines = true,
         floating = {
           border = 'single',
@@ -119,20 +125,12 @@ return {
 
   -- stylua: ignore
   keys = {
-    { "<leader>da", function() require("dap").continue({ before = get_args }) end, desc = "Run with Args" },
+    -- { "<leader>da", function() require("dap").continue({ before = get_args }) end, desc = "Run with Args" },
     { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
     { "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = "Breakpoint Condition" },
-    { "<leader>dc",
-      function()
-        -- (re-)reads launch.json if present
-        if vim.fn.filereadable(".vscode/launch.json") then
-          require("dap.ext.vscode").load_launchjs(nil, {
-            ["pwa-node"] = { "typescript", "javascript" },
-          })
-        end
-        require("dap").continue()
-      end, desc = "Continue" },
+    { "<leader>dc", continue_debugging, desc = "Continue" },
     { "<leader>dC", function() require("dap").run_to_cursor() end, desc = "Run to Cursor" },
+    { "<leader>dd", continue_debugging, desc = "Start debugger" },
     { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "v"} },
     { "<leader>dg", function() require("dap").goto_() end, desc = "Go to line (no execute)" },
     { "<leader>di", function() require("dap").step_into() end, desc = "Step Into" },
