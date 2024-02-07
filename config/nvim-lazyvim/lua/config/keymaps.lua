@@ -120,6 +120,7 @@ set('n', '<leader>wl', '<c-w>l', { desc = 'Go right one window' })
 -- "leader-wm" = toggle maximize window (see vim-maximizer.lua}
 set('n', '<leader>wo', '<c-w>o', { desc = 'Only keep this one' })
 set('n', '<leader>wt', '<cmd>tab split<cr>', { desc = 'Open in new tab' })
+-- "leader-ww" = pick window (see nvim-window-picker.lua)
 del('n', '<leader>|')
 del('n', '<leader>w|')
 
