@@ -1,5 +1,4 @@
 --  TODO: testing
---  TODO: dap
 
 -- see: https://www.lazyvim.org/extras/lang/python#nvim-lspconfig
 
@@ -7,6 +6,15 @@ local extend = require('util').extend
 local inspect = require('util').inspect
 local is_installed_in_venv = require('util.prefer_venv').is_installed_in_venv
 local prefer_venv_executable = require('util.prefer_venv').prefer_venv_executable
+
+-- get the python executable from the project venv (if active) for dap and neotest
+local python = prefer_venv_executable('python')
+vim.env.PYTHONPATH = python
+
+-- get python executable where pynvim is installed for running remote plugins written in python (see :h provider-python)
+-- see: https://github.com/neovim/pynvim/issues/498
+-- see: https://github.com/neovim/pynvim/issues/16#issuecomment-152417012
+vim.g.python3_host_prog = vim.env.HOME .. '/.pyenv/versions/pynvim/bin/python'
 
 -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/black.lua
 local get_formatter_options = function(formatter)
@@ -123,11 +131,6 @@ return {
         { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
       },
       config = function()
-        local python = prefer_venv_executable('python')
-
-        vim.env.PYTHONPATH = python
-        vim.g.python3_host_prog = python
-
         require('dap-python').setup(python, { include_configs = false, pythonPath = python })
       end,
     },
