@@ -9,7 +9,8 @@ local prefer_venv_executable = require('util.prefer_venv').prefer_venv_executabl
 
 -- get the python executable from the project venv (if active) for dap and neotest
 local python = prefer_venv_executable('python')
-vim.env.PYTHONPATH = python
+vim.env.PYTHONPATH = '.'
+-- vim.env.PYTHONPATH = python
 
 -- get python executable where pynvim is installed for running remote plugins written in python (see :h provider-python)
 -- see: https://github.com/neovim/pynvim/issues/498
@@ -141,9 +142,33 @@ return {
         { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
       },
       config = function()
-        require('dap-python').setup(python, { include_configs = false, pythonPath = python })
+        local path = require('mason-registry').get_package('debugpy'):get_install_path()
+        require('dap-python').setup(path .. '/venv/bin/python')
+
+        -- local pynvim_debugpy_python = vim.env.HOME .. '/.pyenv/versions/pynvim/bin/debugpy' .. '/venv/bin/python'
+        -- .pyenv/versions/pynvim/lib/python3.12/site-packages
+
+        -- require('dap-python').setup(pynvim_debugpy_python)
+        -- require('dap-python').setup(python, { include_configs = false, pythonPath = python })
+        -- require('dap-python').setup('python', { include_configs = false, pythonPath = python })
+        -- require('dap-python').setup(pynvim_python, { include_configs = false, pythonPath = pynvim_python })
       end,
     },
+    opts = function(_, opts)
+      opts.configurations = opts.configurations or {}
+
+      table.insert(opts.configurations.python or {}, {
+        name = 'Launch Flask server',
+        type = 'python',
+        request = 'launch',
+        console = 'integratedTerminal',
+        module = 'flask',
+        pythonPath = function()
+          return python
+        end,
+        args = { '--app', 'app', 'run' },
+      })
+    end,
   },
 
   {
