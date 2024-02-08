@@ -46,8 +46,36 @@ M.prefer_venv_executable = function(executable_name)
     end
   end
 
+  -- otherwise, get the path to python outside a virtualenv from pyenv
+  if executable_name == 'python' then
+    -- return output of `pyenv which python` if it exists
+    if vim.fn.executable('pyenv') == 1 then
+      return string.gsub(vim.fn.system('pyenv which python'), '\n', '')
+    end
+    -- otherwise, return the output of `which python3` if it exists
+    return vim.fn.exepath('python3')
+  end
+
   -- otherwise, get the path to the Mason binary
-  return M.get_mason_executable_path(executable_name)
+  local mason_executable_path = M.get_mason_executable_path(executable_name)
+  if mason_executable_path ~= '' then
+    return mason_executable_path
+  end
+
+  -- fall back to the systemwide binary
+  if M.path_exists('/usr/bin/' .. executable_name) then
+    return '/usr/bin/' .. executable_name
+  end
+
+  if M.path_exists('/usr/local/bin/' .. executable_name) then
+    return '/usr/local/bin/' .. executable_name
+  end
+
+  if M.path_exists('/usr/local/opt/' .. executable_name) then
+    return '/usr/local/opt/' .. executable_name
+  end
+
+  return executable_name
 end
 
 return M

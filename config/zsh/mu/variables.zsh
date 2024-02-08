@@ -40,6 +40,7 @@ command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 # python
 # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
 export PYTHONPATH="$PYTHONPATH:/Users/$USER"
+# export PYTHONPATH=.
 export MYPYPATH=.
 
 export SHELL=$(which zsh)

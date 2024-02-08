@@ -2,8 +2,7 @@ local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   -- bootstrap lazy.nvim
   -- stylua: ignore
-  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable",
-    lazypath })
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
 end
 vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
@@ -12,9 +11,12 @@ require('lazy').setup({
     -- 1. Add LazyVim and import its plugins
     { 'LazyVim/LazyVim', import = 'lazyvim.plugins' },
     -- 2. Import any extras modules here
-    { import = 'lazyvim.plugins.extras.dap.core' },
-    { import = 'lazyvim.plugins.extras.lang.yaml' },
+    -- { import = 'lazyvim.plugins.extras.dap.core' },
     -- { import = 'lazyvim.plugins.extras.lang.json' },
+    { import = 'lazyvim.plugins.extras.dap.nlua' }, -- lua dap adapter
+    { import = 'lazyvim.plugins.extras.lang.typescript' },
+    { import = 'lazyvim.plugins.extras.lang.yaml' },
+    { import = 'lazyvim.plugins.extras.test.core' },
     -- 3. Import/override with your plugins
     { import = 'plugins' },
     -- see: https://github.com/LazyVim/LazyVim/discussions/102#discussioncomment-4757701
@@ -26,6 +28,7 @@ require('lazy').setup({
     { import = 'plugins.git' },
     { import = 'plugins.lang' },
     { import = 'plugins.linting' },
+    { import = 'plugins.navigating' },
     { import = 'plugins.searching' },
     { import = 'plugins.testing' },
     { import = 'plugins.ui' },
@@ -46,7 +49,6 @@ require('lazy').setup({
       disabled_plugins = {
         'gzip',
         -- "matchit",
-        -- "matchparen",
         -- "netrwPlugin",
         'tarPlugin',
         'tohtml',

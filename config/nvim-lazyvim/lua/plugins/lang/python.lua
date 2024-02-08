@@ -1,12 +1,20 @@
---  TODO: types
 --  TODO: testing
---  TODO: dap
 
 -- see: https://www.lazyvim.org/extras/lang/python#nvim-lspconfig
 
 local extend = require('util').extend
+local inspect = require('util').inspect
 local is_installed_in_venv = require('util.prefer_venv').is_installed_in_venv
 local prefer_venv_executable = require('util.prefer_venv').prefer_venv_executable
+
+-- get the python executable from the project venv (if active) for dap and neotest
+local python = prefer_venv_executable('python')
+vim.env.PYTHONPATH = python
+
+-- get python executable where pynvim is installed for running remote plugins written in python (see :h provider-python)
+-- see: https://github.com/neovim/pynvim/issues/498
+-- see: https://github.com/neovim/pynvim/issues/16#issuecomment-152417012
+vim.g.python3_host_prog = vim.env.HOME .. '/.pyenv/versions/pynvim/bin/python'
 
 -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/black.lua
 local get_formatter_options = function(formatter)
@@ -87,19 +95,12 @@ return {
     'stevearc/conform.nvim',
     opts = {
       formatters_by_ft = { python = { 'isort', 'black', 'ruff_format', 'yapf' } },
+      -- stylua: ignore
       formatters = {
-        black = function()
-          return get_formatter_options('black')
-        end,
-        isort = function()
-          return get_formatter_options('isort')
-        end,
-        ruff_format = function()
-          return get_formatter_options('ruff_format')
-        end,
-        yapf = function()
-          return get_formatter_options('yapf')
-        end,
+        black = function() return get_formatter_options('black') end,
+        isort = function() return get_formatter_options('isort') end,
+        ruff_format = function() return get_formatter_options('ruff_format') end,
+        yapf = function() return get_formatter_options('yapf') end,
       },
     },
   },
@@ -111,41 +112,43 @@ return {
       linters_by_ft = {
         python = get_linters_in_venv({ 'flake8', 'mypy', 'ruff_lint' }),
       },
+      -- stylua: ignore
       linters = {
-        flake8 = function()
-          return get_linter_options('flake8')
-        end,
-        mypy = function()
-          return get_linter_options('mypy')
-        end,
-        ruff_lint = function()
-          return get_linter_options('ruff')
-        end,
+        flake8 = function() return get_linter_options('flake8') end,
+        mypy = function() return get_linter_options('mypy') end,
+        ruff_lint = function() return get_linter_options('ruff') end,
+      },
+    },
+  },
+
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      'mfussenegger/nvim-dap-python',
+      -- stylua: ignore
+      keys = {
+        { "<leader>dPt", function() require('dap-python').test_method() end, desc = "Debug Method", ft = "python" },
+        { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
+      },
+      config = function()
+        require('dap-python').setup(python, { include_configs = false, pythonPath = python })
+      end,
+    },
+  },
+
+  {
+    'nvim-neotest/neotest',
+    dependencies = {
+      'nvim-neotest/neotest-python',
+    },
+    opts = {
+      adapters = {
+        ['neotest-python'] = {
+          -- args = { '--log-level', 'DEBUG' },
+          python = python,
+          runner = 'pytest',
+        },
       },
     },
   },
 }
-
--- {lua require('dap-python').setup('~/.virtualenvs/debugpy/bin/python')}
--- {
---     'mfussenegger/nvim-dap-python',
---     event = 'VeryLazy',
---     dependencies = { 'mfussenegger/nvim-dap' },
---     config = function()
---       require('dap-python').setup('~/.virtualenvs/debugpy/bin/python')
---       -- local dap = require('dap')
---       -- dap.adapters.python = {
---       --   type = 'executable',
---       --   command = 'python',
---       --   args = { '-m', 'debugpy.adapter' },
---       -- }
---       -- dap.configurations.python = {
---       --   {
---       --     type = 'python',
---       --     request = 'launch',
---       --     name = 'Launch file',
---       --     program = '${file}', -- This configuration will launch the current file if used.
---       --   },
---       -- }
---     end,
---   })

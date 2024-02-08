@@ -1,3 +1,5 @@
+-- TODO: move to relevant files?
+
 return {
   {
     'folke/which-key.nvim',
@@ -18,7 +20,6 @@ return {
         ['<leader>o'] = { name = 'Open' },
         ['<leader>q'] = { name = 'Quit' },
         ['<leader>r'] = { name = 'Replace' },
-        ['<leader>t'] = { name = 'Tab' },
         ['<leader>u'] = { name = 'UI' },
         ['<leader>w'] = { name = 'Window' },
         ['<leader>x'] = { name = 'Diagnostics' },
