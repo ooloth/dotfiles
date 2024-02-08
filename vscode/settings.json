@@ -452,7 +452,8 @@
   "window.zoomPerWindow": false,
   "files.autoSaveWhenNoErrors": true,
   "workbench.activityBar.location": "hidden",
-  "githubPullRequests.focusedMode": "multiDiff"
+  "githubPullRequests.focusedMode": "multiDiff",
+  "yaml.format.enable": false
 }
 
 // prettier-ignore-end
