@@ -1,8 +1,8 @@
 // prettier-ignore-start
 
 {
-  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
   },
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform"
