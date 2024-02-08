@@ -135,4 +135,20 @@ return {
       end,
     },
   },
+
+  {
+    'nvim-neotest/neotest',
+    dependencies = {
+      'nvim-neotest/neotest-python',
+    },
+    opts = {
+      adapters = {
+        ['neotest-python'] = {
+          -- args = { '--log-level', 'DEBUG' },
+          python = python,
+          runner = 'pytest',
+        },
+      },
+    },
+  },
 }

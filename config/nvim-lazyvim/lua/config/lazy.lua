@@ -14,6 +14,7 @@ require('lazy').setup({
     -- { import = 'lazyvim.plugins.extras.dap.core' },
     { import = 'lazyvim.plugins.extras.lang.yaml' },
     -- { import = 'lazyvim.plugins.extras.lang.json' },
+    { import = 'lazyvim.plugins.extras.test.core' },
     -- 3. Import/override with your plugins
     { import = 'plugins' },
     -- see: https://github.com/LazyVim/LazyVim/discussions/102#discussioncomment-4757701
