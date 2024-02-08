@@ -12,8 +12,10 @@ require('lazy').setup({
     { 'LazyVim/LazyVim', import = 'lazyvim.plugins' },
     -- 2. Import any extras modules here
     -- { import = 'lazyvim.plugins.extras.dap.core' },
-    { import = 'lazyvim.plugins.extras.lang.yaml' },
     -- { import = 'lazyvim.plugins.extras.lang.json' },
+    { import = 'lazyvim.plugins.extras.dap.nlua' }, -- lua dap adapter
+    { import = 'lazyvim.plugins.extras.lang.typescript' },
+    { import = 'lazyvim.plugins.extras.lang.yaml' },
     { import = 'lazyvim.plugins.extras.test.core' },
     -- 3. Import/override with your plugins
     { import = 'plugins' },
@@ -47,7 +49,6 @@ require('lazy').setup({
       disabled_plugins = {
         'gzip',
         -- "matchit",
-        -- "matchparen",
         -- "netrwPlugin",
         'tarPlugin',
         'tohtml',
