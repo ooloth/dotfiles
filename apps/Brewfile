@@ -10,6 +10,7 @@ tap "jesseduffield/lazygit"
 tap "jesseduffield/lazydocker"
 
 # Packages
+brew "1password-cli"
 brew "bat" # replaces cat
 brew "commitizen" # for git
 brew "coreutils"
