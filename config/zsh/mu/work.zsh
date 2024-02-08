@@ -33,7 +33,9 @@ if $IS_WORK_LAPTOP; then
   rv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
 
-    ru && roadie venv
+    # Install latest version of roadie, then rebuild venv to remove any no-longer-used packages
+    # https://github.com/recursionpharma/roadie/blob/5a5c6ba44c345c8fd42543db5454b502a4e96863/roadie/cli/virtual.py#L454
+    ru && roadie venv --clobber
 
     # silence out of control watchdog output when working locally
     if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
