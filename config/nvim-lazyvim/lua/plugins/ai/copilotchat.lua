@@ -1,8 +1,7 @@
 -- NOTE: this is a remote plugin written in Python, so it requires the `pynvim` package to be installed
 -- I've created a "pynvim" venv for neovim and installed pynvim and CopilotChat.nvim's pip dependencies there
--- see: https://github.com/neovim/pynvim/issues/498
+-- see: https://github.com/neovim/pynvim/issues/498#issuecomment-1114461723
 -- see: https://github.com/CopilotC-Nvim/CopilotChat.nvim?tab=readme-ov-file#installation
--- see: https://github.com/neovim/pynvim/issues/16#issuecomment-152417012
 
 -- NOTE: solve "ambiguous use of user-defined command" error by restarting nvim + :UpdateRemotePlugins
 -- see: https://github.com/jellydn/CopilotChat.nvim/issues/43#issuecomment-1923807768
@@ -47,8 +46,18 @@ return {
       { '<leader>ccw', '<cmd>CopilotChatWording<cr>', desc = 'CopilotChat - Improve wording' },
       { '<leader>ccc', '<cmd>CopilotChatConcise<cr>', desc = 'CopilotChat - Make text concise' },
       -- Chat with Copilot in visual mode
-      { '<leader>ccv', ':CopilotChatVisual', mode = 'x', desc = 'CopilotChat - Open in vertical split' },
-      { '<leader>ccx', ':CopilotChatInPlace<cr>', mode = 'x', desc = 'CopilotChat - Run in-place code' },
+      {
+        '<leader>ccv',
+        ':CopilotChatVisual',
+        mode = 'x',
+        desc = 'CopilotChat - Open in vertical split',
+      },
+      {
+        '<leader>ccx',
+        ':CopilotChatInPlace<cr>',
+        mode = 'x',
+        desc = 'CopilotChat - Run in-place code',
+      },
       -- Custom input for CopilotChat
       {
         '<leader>cci',
