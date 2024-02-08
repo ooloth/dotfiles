@@ -56,12 +56,21 @@ return {
       servers = {
         -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pyright
         pyright = {
+          capabilities = (function()
+            -- see: https://www.reddit.com/r/neovim/comments/11k5but/how_to_disable_pyright_diagnostics/
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            capabilities.textDocument.publishDiagnostics.tagSupport.valueSet = { 2 }
+            return capabilities
+          end)(),
           settings = {
             -- see: https://microsoft.github.io/pyright/#/settings
             python = {
               analysis = {
-                diagnosticMode = 'workspace',
-                typeCheckingMode = 'off', -- use pyright for lsp but mypy for type-checking
+                -- diagnosticMode = 'workspace',
+                diagnosticSeverityOverrides = {
+                  reportUnusedVariable = 'off', -- use ruff or flake8 for linting (diagnostics)
+                },
+                typeCheckingMode = 'off', -- use mypy for type-checking
                 useLibraryCodeForTypes = true,
               },
               disableOrganizeImports = true, -- use ruff or isort for import sorting
