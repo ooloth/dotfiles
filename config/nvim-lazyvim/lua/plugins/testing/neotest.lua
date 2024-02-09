@@ -1,5 +1,8 @@
 return {
   'nvim-neotest/neotest',
+  dependencies = {
+    { 'folke/neodev.nvim', opts = { library = { plugins = { 'neotest' }, types = true } } },
+  },
   -- stylua: ignore
   keys = {
     { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run File" },

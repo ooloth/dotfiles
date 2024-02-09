@@ -185,9 +185,11 @@ return {
     opts = {
       adapters = {
         ['neotest-python'] = {
+          -- see: https://github.com/nvim-neotest/neotest-python
           -- args = { '--log-level', 'DEBUG' },
+          dap = { justMyCode = false },
           python = python,
-          runner = 'pytest',
+          -- runner = 'pytest',
         },
       },
     },
