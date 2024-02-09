@@ -1,7 +1,3 @@
---  TODO: testing
-
--- see: https://www.lazyvim.org/extras/lang/python#nvim-lspconfig
-
 local extend = require('util').extend
 local inspect = require('util').inspect
 local is_installed_in_venv = require('util.prefer_venv').is_installed_in_venv
@@ -52,6 +48,7 @@ return {
 
   {
     'neovim/nvim-lspconfig',
+    -- see: https://www.lazyvim.org/extras/lang/python#nvim-lspconfig
     opts = {
       servers = {
         -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pyright
