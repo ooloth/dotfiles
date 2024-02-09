@@ -24,7 +24,7 @@ return {
     hint = 'floating-big-letter',
     show_prompt = false,
     filter_rules = {
-      bo = { filetype = { 'noice', 'neo-tree', 'notify' } },
+      bo = { filetype = { 'noice', 'neo-tree', 'notify' }, buftype = {} },
     },
   },
 }

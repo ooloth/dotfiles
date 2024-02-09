@@ -1,4 +1,5 @@
 -- see: https://www.lazyvim.org/extras/dap/core#nvim-dap
+local prefer_venv_executable = require('util.prefer_venv').prefer_venv_executable
 
 local continue_debugging = function()
   -- (re-)reads launch.json if present
@@ -6,7 +7,23 @@ local continue_debugging = function()
     require('dap.ext.vscode').load_launchjs(nil, {
       ['pwa-node'] = { 'typescript', 'javascript' },
     })
+
+    -- override console in all configurations
+    local dap_configurations = require('dap').configurations
+
+    for _, config in ipairs(dap_configurations) do
+      config.console = 'integratedTerminal'
+    end
+
+    -- override pythonPath in all python configurations
+    local python_configurations = dap_configurations.python or {}
+    local python = prefer_venv_executable('python')
+
+    for _, config in ipairs(python_configurations) do
+      config.pythonPath = python
+    end
   end
+
   require('dap').continue()
 end
 
@@ -41,16 +58,16 @@ return {
             elements = {
               { id = 'scopes', size = 0.45 },
               { id = 'watches', size = 0.15 },
-              { id = 'stacks', size = 0.15 },
               { id = 'breakpoints', size = 0.15 },
-              { id = 'console', size = 0.1 },
+              { id = 'stacks', size = 0.25 },
             },
             position = 'right',
             size = 75,
           },
           {
             elements = {
-              { id = 'repl', size = 1 },
+              { id = 'repl', size = 0.5 },
+              { id = 'console', size = 0.5 },
             },
             position = 'bottom',
             size = 15,

@@ -147,32 +147,6 @@ return {
         local pynvim_debugpy_python = vim.env.HOME .. '/.pyenv/versions/pynvim/bin/debugpy' .. '/venv/bin/python'
 
         require('dap-python').setup(pynvim_debugpy_python, { include_configs = false, pythonPath = python })
-
-        -- After setting up the dap-python plugin, define default Python configurations (prefer project launch.json though):
-        require('dap').configurations.python = {
-          -- {
-          --   name = 'Python: MY Launch file',
-          --   type = 'python',
-          --   request = 'launch',
-          --   program = '${file}',
-          --   console = 'integratedTerminal',
-          --   pythonPath = python,
-          --   -- env = {
-          --   --   -- Solves issue where the debugger can't find the project's local modules:
-          --   --   -- https://stackoverflow.com/a/63271966/8802485
-          --   --   PYTHONPATH = vim.fn.getcwd(),
-          --   -- },
-          -- },
-          -- {
-          --   name = 'Python: Launch Flask server',
-          --   type = 'python',
-          --   request = 'launch',
-          --   module = 'flask',
-          --   console = 'integratedTerminal',
-          --   pythonPath = python,
-          --   args = { '--app', 'app', 'run' },
-          -- },
-        }
       end,
     },
   },
@@ -189,7 +163,6 @@ return {
           -- args = { '--log-level', 'DEBUG' },
           dap = { justMyCode = false },
           python = python,
-          -- runner = 'pytest',
         },
       },
     },
