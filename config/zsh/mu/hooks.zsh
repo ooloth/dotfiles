@@ -2,6 +2,11 @@ function chpwd() {
   activate_venv
 }
 
+function precmd() {
+  # if cmd is not "clear", print a newline to separate the prompt from the output
+  [[ "$1" != "clear" ]] && echo
+}
+
 activate_venv() {
   local CURRENT_DIRECTORY=$(basename $PWD)
 

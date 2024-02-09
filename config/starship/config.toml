@@ -1,18 +1,93 @@
+# see: https://starship.rs/presets/nerd-font.html
+
+# Avoid a newline at the top of the shell
 add_newline = false
 
 # A minimal left prompt
-format = """$directory$character"""
+format = '$directory$character'
+# format = '$directory$git_branch$line_break$character'
 
 # move the rest of the prompt to the right
-right_format = """$all"""
+right_format = '$all'
+
+[aws]
+symbol = "  "
+
+[buf]
+symbol = " "
+
+[c]
+symbol = " "
+
+[conda]
+symbol = " "
+
+[crystal]
+symbol = " "
+
+[dart]
+symbol = " "
+
+[directory]
+read_only = " 󰌾"
+style = "#B4BEFE bold"
+truncate_to_repo = true
+truncation_length = 3
 
 [docker_context]
 disabled = true
+symbol = " "
+
+[elixir]
+symbol = " "
+
+[elm]
+symbol = " "
+
+[fennel]
+symbol = " "
+
+[fossil_branch]
+symbol = " "
 
 [gcloud]
 format = ' on [$symbol$project]($style)'
-symbol = '☁️ '
+symbol = '󰅟'
 detect_env_vars = []
+
+[git_branch]
+format = '[$symbol$branch]($style)'
+symbol = " "
+
+[git_status]
+disabled = true
+
+[golang]
+symbol = " "
+
+[guix_shell]
+symbol = " "
+
+[haskell]
+symbol = " "
+
+[haxe]
+symbol = " "
+
+[hg_branch]
+symbol = " "
+
+[hostname]
+ssh_symbol = " "
+
+[java]
+symbol = " "
+
+[julia]
+symbol = " "
+
+[kotlin]
+symbol = " "
 
 [kubernetes]
 symbol = '☸ '
@@ -20,13 +95,107 @@ disabled = false
 detect_files = ['Dockerfile']
 format = ' [$context(\[$namespace\])]($style)'
 
+[lua]
+symbol = " "
+
+[memory_usage]
+symbol = "󰍛 "
+
+[meson]
+symbol = "󰔷 "
+
+[nim]
+symbol = "󰆥 "
+
+[nix_shell]
+symbol = " "
+
 [nodejs]
 detect_extensions=[]
 detect_files=['package.json']
 detect_folders=[]
+format = ' [$symbol$version]($style)'
+symbol = ""
+# symbol = " "
+
+[ocaml]
+symbol = " "
+
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Windows = "󰍲 "
+
+[package]
+symbol = "󰏗 "
+
+[perl]
+symbol = " "
+
+[php]
+symbol = " "
+
+[pijul_channel]
+symbol = " "
 
 [python]
 detect_extensions = []
 detect_files=[]
-format = ' via [${symbol}(${version} )(\($virtualenv\))]($style)'
-# format = 'via [${symbol}$virtualenv ]($style)'
+format = ' [${symbol}(${version})( \($virtualenv\))]($style)'
+symbol = ""
+# symbol = " "
+
+[rlang]
+symbol = "󰟔 "
+
+[ruby]
+symbol = " "
+
+[rust]
+symbol = " "
+
+[scala]
+symbol = " "
+
+[swift]
+symbol = " "
+
+[zig]
+symbol = " "
+
