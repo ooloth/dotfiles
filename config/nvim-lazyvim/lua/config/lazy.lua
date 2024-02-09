@@ -11,8 +11,6 @@ require('lazy').setup({
     -- 1. Add LazyVim and import its plugins
     { 'LazyVim/LazyVim', import = 'lazyvim.plugins' },
     -- 2. Import any extras modules here
-    -- { import = 'lazyvim.plugins.extras.dap.core' },
-    -- { import = 'lazyvim.plugins.extras.lang.json' },
     { import = 'lazyvim.plugins.extras.dap.nlua' }, -- lua dap adapter
     { import = 'lazyvim.plugins.extras.lang.typescript' },
     { import = 'lazyvim.plugins.extras.lang.yaml' },

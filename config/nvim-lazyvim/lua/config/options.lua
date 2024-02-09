@@ -25,6 +25,7 @@ vim.filetype.add({
     ['docker-compose.*%.yaml'] = 'yaml.docker-compose',
     ['.*/kitty/.*%.conf'] = 'bash',
     ['.*/kitty/.*/.*%.conf'] = 'bash',
+    ['.*/.vscode/.*%.json'] = 'jsonc',
     ['.*/vscode/.*%.json'] = 'jsonc',
   },
 })

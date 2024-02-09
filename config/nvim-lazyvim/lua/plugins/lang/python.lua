@@ -5,12 +5,14 @@ local prefer_venv_executable = require('util.prefer_venv').prefer_venv_executabl
 
 -- get the python executable from the project venv (if active) for dap and neotest
 local python = prefer_venv_executable('python')
-vim.env.PYTHONPATH = python
+vim.env.PYTHONPATH = '.'
+-- vim.env.PYTHONPATH = python
 
 -- get python executable where pynvim is installed for running remote plugins written in python (see :h provider-python)
 -- see: https://github.com/neovim/pynvim/issues/498
 -- see: https://github.com/neovim/pynvim/issues/16#issuecomment-152417012
-vim.g.python3_host_prog = vim.env.HOME .. '/.pyenv/versions/pynvim/bin/python'
+local pynvim_python = vim.env.HOME .. '/.pyenv/versions/pynvim/bin/python'
+vim.g.python3_host_prog = pynvim_python
 
 -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/black.lua
 local get_formatter_options = function(formatter)
@@ -53,12 +55,21 @@ return {
       servers = {
         -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#pyright
         pyright = {
+          capabilities = (function()
+            -- see: https://www.reddit.com/r/neovim/comments/11k5but/how_to_disable_pyright_diagnostics/
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            capabilities.textDocument.publishDiagnostics.tagSupport.valueSet = { 2 }
+            return capabilities
+          end)(),
           settings = {
             -- see: https://microsoft.github.io/pyright/#/settings
             python = {
               analysis = {
-                diagnosticMode = 'workspace',
-                typeCheckingMode = 'off', -- use pyright for lsp but mypy for type-checking
+                -- diagnosticMode = 'workspace',
+                diagnosticSeverityOverrides = {
+                  reportUnusedVariable = 'off', -- use ruff or flake8 for linting (diagnostics)
+                },
+                typeCheckingMode = 'off', -- use mypy for type-checking
                 useLibraryCodeForTypes = true,
               },
               disableOrganizeImports = true, -- use ruff or isort for import sorting
@@ -128,9 +139,33 @@ return {
         { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
       },
       config = function()
-        require('dap-python').setup(python, { include_configs = false, pythonPath = python })
+        local path = require('mason-registry').get_package('debugpy'):get_install_path()
+        require('dap-python').setup(path .. '/venv/bin/python')
+
+        -- local pynvim_debugpy_python = vim.env.HOME .. '/.pyenv/versions/pynvim/bin/debugpy' .. '/venv/bin/python'
+        -- .pyenv/versions/pynvim/lib/python3.12/site-packages
+
+        -- require('dap-python').setup(pynvim_debugpy_python)
+        -- require('dap-python').setup(python, { include_configs = false, pythonPath = python })
+        -- require('dap-python').setup('python', { include_configs = false, pythonPath = python })
+        -- require('dap-python').setup(pynvim_python, { include_configs = false, pythonPath = pynvim_python })
       end,
     },
+    opts = function(_, opts)
+      opts.configurations = opts.configurations or {}
+
+      table.insert(opts.configurations.python or {}, {
+        name = 'Launch Flask server',
+        type = 'python',
+        request = 'launch',
+        console = 'integratedTerminal',
+        module = 'flask',
+        pythonPath = function()
+          return python
+        end,
+        args = { '--app', 'app', 'run' },
+      })
+    end,
   },
 
   {
