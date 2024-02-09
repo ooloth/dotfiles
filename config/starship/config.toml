@@ -1,14 +1,16 @@
 # see: https://starship.rs/presets/nerd-font.html
 
-# Avoid a newline at the top of the shell
+# Avoid a newline at the top of the shell (handled by my preexec and precmd functions)
 add_newline = false
 
+# Give pyenv, etc more time
+command_timeout = 9999999999
+
 # A minimal left prompt
-format = '$directory$character'
-# format = '$directory$git_branch$line_break$character'
+format = '$directory$cmd_duration$character'
 
 # move the rest of the prompt to the right
-right_format = '$all'
+right_format = '$git_branch$nodejs$python$kubernetes$gcloud$all'
 
 [aws]
 symbol = "  "
@@ -51,9 +53,18 @@ symbol = " "
 symbol = " "
 
 [gcloud]
-format = ' on [$symbol$project]($style)'
-symbol = '󰅟'
-detect_env_vars = []
+detect_env_vars = ['GOOGLE_CLOUD_PROJECT']
+format = ' [$symbol$project]($style)'
+symbol = ''
+# symbol = '󰅟  '
+# symbol = "  "
+
+[gcloud.project_aliases]
+rp006-prod-49a893d8 = 'rp006-prod'
+
+[gcloud.region_aliases]
+us-central1 = 'uc1'
+asia-northeast1 = 'an1'
 
 [git_branch]
 format = '[$symbol$branch]($style)'
@@ -92,8 +103,13 @@ symbol = " "
 [kubernetes]
 symbol = '☸ '
 disabled = false
-detect_files = ['Dockerfile']
-format = ' [$context(\[$namespace\])]($style)'
+detect_files = ['Dockerfile', 'docker-compose.yml', 'Kubernetesfile', 'helmfile.yaml']
+detect_folders = ['k8s', '.k8s', 'k8s-config', '.k8s-config', 'deploy', '.deploy']
+format = ' [$context:$namespace]($style)'
+
+[[kubernetes.contexts]]
+context_pattern = 'gke_rp006-prod-49a893d8_us-central1_rp006-prod'
+context_alias = 'rp006-prod'
 
 [lua]
 symbol = " "
@@ -175,11 +191,12 @@ symbol = " "
 symbol = " "
 
 [python]
-detect_extensions = []
-detect_files=[]
+# detect_extensions = []
+# detect_files=[]
 format = ' [${symbol}(${version})( \($virtualenv\))]($style)'
 symbol = ""
 # symbol = " "
+version_format = "${raw}"
 
 [rlang]
 symbol = "󰟔 "
