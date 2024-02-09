@@ -34,14 +34,13 @@ export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front 
 # pyenv
 # NOTE: do NOT use eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
 # see: https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-export PYENV_ROOT="$HOME/.pyenv"
+export PYENV_ROOT=$HOME/.pyenv
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 
 # python
 # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
-export PYTHONPATH="$PYTHONPATH:/Users/$USER"
-# export PYTHONPATH=.
-export MYPYPATH=.
+export PYTHONPATH=$HOME
+export MYPYPATH=$HOME
 
 export SHELL=$(which zsh)
 
