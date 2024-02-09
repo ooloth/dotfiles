@@ -1,5 +1,6 @@
 function chpwd() {
   activate_venv
+  set_gcloud_project_env_var
 }
 
 function precmd() {
@@ -20,6 +21,7 @@ activate_venv() {
 
   # if there's no pyenv venv for this directory, deactivate any venv sticking from a previous directory and be done
   if [[ ! -d "$PYENV_VENV" ]]; then
+    # export PYENV_VERSION='3.12.1'
     export VIRTUAL_ENV=''
     export PYTHONPATH=$HOME
     export MYPYPATH=$HOME
@@ -35,8 +37,23 @@ activate_venv() {
   export MYPYPATH=$PWD
 }
 
-# automatically activate appropriate venv when zsh first loads (called again in autocommands.zsh whenever cwd changes)
+function set_gcloud_project_env_var() {
+  if ! $IS_WORK_LAPTOP; then
+    return
+  fi
+
+  # if gcloud is not installed, do nothing
+  if ! command -v gcloud &> /dev/null; then
+    return
+  fi
+
+  # otherwise, set GOOGLE_CLOUD_PROJECT to the current gcloud project (for dap)
+  export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)
+}
 
 # automatically activate appropriate venv when zsh first loads (called again in chpwd hook whenever cwd changes)
 activate_venv
+
+# automatically set GOOGLE_CLOUD_PROJECT when zsh first loads (called again in chwpd hook whenever cwd changes)
+set_gcloud_project_env_var
 
