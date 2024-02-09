@@ -21,6 +21,8 @@ activate_venv() {
   # if there's no pyenv venv for this directory, deactivate any venv sticking from a previous directory and be done
   if [[ ! -d "$PYENV_VENV" ]]; then
     export VIRTUAL_ENV=''
+    export PYTHONPATH=$HOME
+    export MYPYPATH=$HOME
     return
   fi
 
@@ -28,8 +30,13 @@ activate_venv() {
   # see: https://stackoverflow.com/a/74290100/8802485
   # see: https://stackoverflow.com/questions/45554864/why-am-i-getting-permission-denied-when-activating-a-venv
   source "${PYENV_VENV}/bin/activate"
+
+  export PYTHONPATH=$PWD
+  export MYPYPATH=$PWD
 }
 
 # automatically activate appropriate venv when zsh first loads (called again in autocommands.zsh whenever cwd changes)
+
+# automatically activate appropriate venv when zsh first loads (called again in chpwd hook whenever cwd changes)
 activate_venv
 
