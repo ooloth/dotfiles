@@ -1,13 +1,13 @@
 if $IS_WORK_LAPTOP; then
 
-  bp() { cd $HOME/Repos/recursionpharma/build-pipelines; }
-  eo() { cd $HOME/Repos/recursionpharma/eng-onboarding; }
-  gcpi() { gcloud config set project eng-infrastructure; }
-  gcpn() { gcloud config set project rp006-prod-49a893d8; }
-  ip() { cd $HOME/Repos/recursionpharma/ipg-processing; }
-  is() { cd $HOME/Repos/recursionpharma/iw-system; }
-  iu() { cd $HOME/Repos/recursionpharma/grey-havens; } # soon to be renamed "iw-ui"
-  mp() { cd $HOME/Repos/recursionpharma/mapapp-public; }
+  alias bp='cd $HOME/Repos/recursionpharma/build-pipelines'
+  alias eo='cd $HOME/Repos/recursionpharma/eng-onboarding'
+  # see: https://stackoverflow.com/a/51563857/8802485
+  alias gca='gcloud auth login'
+  alias gci='gcloud init'
+  alias gcpi='gcloud config set project eng-infrastructure'
+  alias gcpn='gcloud config set project rp006-prod-49a893d8'
+  alias mp='cd $HOME/Repos/recursionpharma/mapapp-public'
   n() { npm install -- $1; }
   nb() { n && npm run build; }
   nfc() { npm run format:check; }
