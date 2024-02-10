@@ -7,5 +7,8 @@ return {
         { '<leader>ft', '<cmd>TodoTelescope<cr>', desc = 'Todo' },
       }
     end,
+    -- init = function()
+    --   require('tint').refresh()
+    -- end,
   },
 }

@@ -66,16 +66,38 @@ return {
     opts = { colorscheme = 'catppuccin' },
   },
 
-  --  TODO: reenable when Mason window bug is fixed
-  -- see: https://github.com/sunjon/Shade.nvim/issues/37
-  -- {
-  --   'sunjon/shade.nvim',
-  --   event = 'VeryLazy',
-  --   config = true,
-  --   -- see: https://github.com/sunjon/Shade.nvim?tab=readme-ov-file#configuration
-  --   opts = {},
-  -- },
-  --
+  {
+    'levouh/tint.nvim',
+    dependencies = { 'folke/todo-comments.nvim' },
+    opts = {
+      -- see: https://github.com/levouh/tint.nvim/blob/master/DOC.md
+      tint = -75,
+      saturation = 0.6,
+      highlight_ignore_patterns = {},
+      window_ignore_function = function(winid)
+        local bufid = vim.api.nvim_win_get_buf(winid)
+        local buftype = vim.api.nvim_buf_get_option(bufid, 'buftype')
+        local filetype = vim.api.nvim_buf_get_option(bufid, 'filetype')
+        local floating = vim.api.nvim_win_get_config(winid).relative ~= ''
+
+        -- Do not tint `terminal`, floating or dapui windows, but tint everything else
+        return buftype == 'terminal' or floating or string.find(filetype, 'dapui')
+      end,
+    },
+    -- keys = {
+    -- { '<leader>um', '<cmd>lua require("tint").toggle()<cr>', desc = 'Toggle dimming' },
+    -- { '<leader>um', function() require("tint").toggle() end, desc = 'Toggle dimming' },
+    -- },
+    init = function()
+      vim.api.nvim_set_keymap(
+        'n',
+        '<leader>um',
+        '<cmd>lua require("tint").toggle()<cr>',
+        { desc = 'Toggle dimming', noremap = true, silent = true }
+      )
+    end,
+  },
+
   {
     'NvChad/nvim-colorizer.lua',
     event = 'BufReadPre',
