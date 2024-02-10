@@ -68,10 +68,9 @@ return {
 
   {
     'levouh/tint.nvim',
-    dependencies = { 'folke/todo-comments.nvim' },
     opts = {
       -- see: https://github.com/levouh/tint.nvim/blob/master/DOC.md
-      tint = -75,
+      tint = -70,
       saturation = 0.6,
       highlight_ignore_patterns = {},
       window_ignore_function = function(winid)
