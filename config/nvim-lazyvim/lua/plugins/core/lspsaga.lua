@@ -1,5 +1,5 @@
 return {
-  'glepnir/lspsaga.nvim',
+  'nvimdev/lspsaga.nvim',
   event = 'BufRead',
   dependencies = {
     { 'nvim-tree/nvim-web-devicons' },
@@ -7,10 +7,24 @@ return {
   },
   keys = function()
     return {
-      { ']x', '<cmd>Lspsaga diagnostic_jump_next<cr>', desc = 'Next diagnostic' },
-      { '[x', '<cmd>Lspsaga diagnostic_jump_prev<cr>', desc = 'Previous diagnostic' },
+      { ']d', '<cmd>Lspsaga diagnostic_jump_next<cr>', desc = 'Next diagnostic' },
+      { '[d', '<cmd>Lspsaga diagnostic_jump_prev<cr>', desc = 'Previous diagnostic' },
+      {
+        ']e',
+        function()
+          require('lspsaga.diagnostic'):goto_next({ severity = vim.diagnostic.severity.ERROR })
+        end,
+        desc = 'Next diagnostic',
+      },
+      {
+        '[e',
+        function()
+          require('lspsaga.diagnostic'):goto_prev({ severity = vim.diagnostic.severity.ERROR })
+        end,
+        desc = 'Previous diagnostic',
+      },
       { 'ga', '<cmd>Lspsaga code_action<cr>', desc = 'Code actions' },
-      { 'gd', '<cmd>Lspsaga lsp_finder<cr>', desc = 'Definition, references & implentations' },
+      { 'gd', '<cmd>Lspsaga finder<cr>', desc = 'Definition, references & implentations' },
       { 'gD', '<cmd>Lspsaga goto_definition<cr>', desc = 'Go to definition' },
       { 'gh', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
       { 'go', '<cmd>Lspsaga outline<cr>', desc = 'Outline' },
@@ -43,17 +57,21 @@ return {
       },
     },
     diagnostic = {
-      max_width = 0.99,
+      extend_relatedInformation = true,
       keys = { quit = '<esc>' },
+      max_width = 0.99,
     },
     finder = {
-      max_height = 0.99,
+      -- see: https://nvimdev.github.io/lspsaga/finder/
+      default = 'def+ref+imp',
       keys = {
         jump_to = 'p',
         edit = { 'o', '<CR>' },
         vsplit = 'v',
         tabe = 't',
       },
+      left_width = 0.5,
+      max_height = 0.8,
     },
     hover = { max_width = 0.99 },
     lightbulb = { enable = false },
