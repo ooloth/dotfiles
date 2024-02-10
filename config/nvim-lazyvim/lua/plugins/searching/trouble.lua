@@ -8,6 +8,7 @@ return {
     { '<leader>xQ', false },
   },
   opts = {
+    -- see: https://github.com/folke/trouble.nvim?tab=readme-ov-file#%EF%B8%8F-configuration
     auto_close = true,
     height = 14,
   },

@@ -2,6 +2,23 @@ vim.g.material_style = 'deep ocean'
 
 return {
   {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    opts = {
+      -- see: https://github.com/catppuccin/nvim#integrations
+      integrations = {
+        harpoon = true,
+        native_lsp = {
+          inlay_hints = {
+            background = true,
+          },
+        },
+        octo = true,
+      },
+    },
+  },
+
+  {
     'Mofiqul/dracula.nvim',
     -- See: https://github.com/Mofiqul/dracula.nvim#-configuration
     opts = {
@@ -44,12 +61,9 @@ return {
     opts = {},
   },
 
-  -- Load my preferred colorscheme
   {
     'LazyVim/LazyVim',
     opts = { colorscheme = 'catppuccin' },
-    -- opts = { colorscheme = 'gruvbox' },
-    -- opts = { colorscheme = 'material' },
   },
 
   --  TODO: reenable when Mason window bug is fixed

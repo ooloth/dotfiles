@@ -113,6 +113,7 @@ return {
         options = options,
         sections = {},
         tabline = sections,
+        theme = 'catppuccin',
       }
     end,
   },
