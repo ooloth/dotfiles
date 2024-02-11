@@ -1,13 +1,48 @@
-return {}
+local extend = require('util').extend
 
--- -- formatting (see: https://github.com/stevearc/conform.nvim#setup)
--- require('conform').setup({
---   formatters_by_ft = {
---     markdown = { 'prettier' },
---     ['markdown.mdx'] = { 'prettier' },
---   },
--- })
---
---  TODO: lsp
---  TODO: treesitter
---  TODO: linting
+return {
+  {
+    'williamboman/mason.nvim',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'markdownlint', 'marksman', 'vale-ls' })
+    end,
+  },
+
+  {
+    'neovim/nvim-lspconfig',
+    opts = {
+      servers = {
+        -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#marksman
+        marksman = {},
+        vale_ls = {},
+      },
+    },
+  },
+
+  {
+    'nvim-treesitter/nvim-treesitter',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'markdown, markdown_inline' })
+    end,
+  },
+
+  {
+    'stevearc/conform.nvim',
+    opts = {
+      formatters_by_ft = {
+        markdown = { 'inject', 'prettier' },
+        ['markdown.mdx'] = { 'prettier' },
+      },
+    },
+  },
+
+  {
+    'mfussenegger/nvim-lint',
+    opts = {
+      linters_by_ft = {
+        markdown = { 'markdownlint' },
+        -- NOTE: eslint_lsp already lints MDX files (install https://github.com/mdx-js/eslint-mdx in project)
+      },
+    },
+  },
+}
