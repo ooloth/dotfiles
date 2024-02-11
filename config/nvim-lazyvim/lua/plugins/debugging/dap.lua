@@ -13,6 +13,7 @@ local continue_debugging = function()
 
     for _, config in ipairs(dap_configurations) do
       config.console = 'integratedTerminal'
+      config.justMyCode = true
     end
 
     -- override pythonPath in all python configurations
