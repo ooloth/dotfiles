@@ -26,17 +26,21 @@ return {
 
   {
     'stevearc/conform.nvim',
-    opts = function(_, opts)
-      -- Also need to install @prettier/plugin-xml in project:
-      -- https://github.com/prettier/plugin-xml
-      extend(opts.formatters_by_ft, { xml = { 'prettier' } })
-    end,
+    opts = {
+      formatters_by_ft = {
+        -- Also need to install @prettier/plugin-xml in project:
+        -- https://github.com/prettier/plugin-xml
+        xml = { 'prettier' },
+      },
+    },
   },
 
   {
     'mfussenegger/nvim-lint',
-    opts = function(_, opts)
-      extend(opts.linters_by_ft, { xml = { 'tidy' } })
-    end,
+    opts = {
+      linters_by_ft = {
+        xml = { 'tidy' },
+      },
+    },
   },
 }
