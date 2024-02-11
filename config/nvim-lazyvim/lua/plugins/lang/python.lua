@@ -161,7 +161,11 @@ return {
         ['neotest-python'] = {
           -- see: https://github.com/nvim-neotest/neotest-python
           -- args = { '--log-level', 'DEBUG' },
-          dap = { justMyCode = false },
+          dap = {
+            -- see: https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings#launchattach-settings
+            console = 'integratedTerminal',
+            justMyCode = true,
+          },
           python = python,
         },
       },
