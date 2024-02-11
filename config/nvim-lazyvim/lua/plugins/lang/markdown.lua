@@ -22,7 +22,7 @@ return {
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      extend(opts.ensure_installed, { 'markdown, markdown_inline' })
+      extend(opts.ensure_installed, { 'markdown', 'markdown_inline' })
     end,
   },
 
