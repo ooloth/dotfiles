@@ -160,7 +160,7 @@ return {
       adapters = {
         ['neotest-python'] = {
           -- see: https://github.com/nvim-neotest/neotest-python
-          -- args = { '--log-level', 'DEBUG' },
+          args = { '--log-level', 'DEBUG', '--quiet' },
           dap = {
             -- see: https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings#launchattach-settings
             console = 'integratedTerminal',
