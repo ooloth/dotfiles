@@ -70,7 +70,7 @@ return {
     'levouh/tint.nvim',
     opts = {
       -- see: https://github.com/levouh/tint.nvim/blob/master/DOC.md
-      tint = -70,
+      tint = -50,
       saturation = 0.6,
       highlight_ignore_patterns = {},
       window_ignore_function = function(winid)
@@ -80,7 +80,7 @@ return {
         local floating = vim.api.nvim_win_get_config(winid).relative ~= ''
 
         -- Do not tint `terminal`, floating or dapui windows, but tint everything else
-        return buftype == 'terminal' or floating or string.find(filetype, 'dapui')
+        return buftype == 'terminal' or floating or string.find(filetype, 'dap')
       end,
     },
     -- keys = {
