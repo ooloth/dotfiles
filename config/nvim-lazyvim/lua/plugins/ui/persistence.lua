@@ -1,3 +1,5 @@
+-- see: https://www.lazyvim.org/plugins/util#persistencenvim
+
 return {
   'folke/persistence.nvim',
   init = function()

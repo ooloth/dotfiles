@@ -17,6 +17,7 @@ Util.lsp.on_attach(function()
   })
 end)
 
+-- FIXME: no longer working
 Util.on_very_lazy(function()
   vim.cmd([[
     autocmd InsertEnter * set nocursorline
