@@ -41,6 +41,8 @@ command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
 export PYTHONPATH=$HOME
 export MYPYPATH=$HOME
+# Use starship prompt for virtualenv prompt placement (see: https://stackoverflow.com/a/72715907/8802485)
+export VIRTUAL_ENV_PROMPT=''
 
 export SHELL=$(which zsh)
 
