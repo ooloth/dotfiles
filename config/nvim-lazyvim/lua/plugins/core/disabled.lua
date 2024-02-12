@@ -6,4 +6,5 @@ return {
   { 'ggandor/leap.nvim', enabled = false },
   { 'ggandor/flit.nvim', enabled = false },
   { 'lukas-reineke/indent-blankline.nvim', enabled = false },
+  { 'nvimdev/dashboard-nvim', enabled = false },
 }
