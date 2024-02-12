@@ -69,7 +69,7 @@ return {
           {
             elements = { 'repl', 'console' },
             position = 'bottom',
-            size = 15,
+            size = 16,
           },
         },
         mappings = {
