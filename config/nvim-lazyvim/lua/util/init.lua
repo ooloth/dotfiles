@@ -17,4 +17,20 @@ M.extend = function(list, values)
   vim.list_extend(list or {}, values)
 end
 
+M.get_system_executable_path = function(executable_name)
+  if vim.fn.executable('/usr/bin/' .. executable_name) == 1 then
+    return executable_name
+  end
+
+  if vim.fn.executable('/usr/local/bin/' .. executable_name) == 1 then
+    return '/usr/local/bin/' .. executable_name
+  end
+
+  if vim.fn.executable('/usr/local/opt/' .. executable_name) == 1 then
+    return '/usr/local/opt/' .. executable_name
+  end
+
+  return ''
+end
+
 return M

@@ -1,12 +1,12 @@
 -- TODO: testing: vitest
 -- TODO: testing: jest
--- TODO: lsp: tsserver: prefer node modules version
--- TODO: lsp: eslint: prefer node modules version
 -- TODO: dap
+-- TODO: astro, tailwindcss, svelte, vue (any in separate files?)
 
 -- see: https://www.lazyvim.org/extras/lang/typescript
 
 local extend = require('util').extend
+local prefer_node_modules_executable = require('util.prefer_node_modules').prefer_node_modules_executable
 
 return {
   {
@@ -36,20 +36,32 @@ return {
               command = 'EslintFixAll',
             })
           end,
+          -- see: https://github.com/microsoft/vscode-eslint/tree/main?tab=readme-ov-file#settings-options
           settings = {
+            nodePath = vim.fn.getcwd() .. '/node_modules',
             -- helps eslint find the eslintrc when it's placed in a subfolder instead of the cwd root
             workingDirectory = { mode = 'auto' },
           },
         },
         tsserver = {
           -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#tsserver
+          -- see: https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#tsserver-options
           settings = {
-            -- see: https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#tsserver-options
             completions = {
               completeFunctionCalls = true,
             },
           },
         },
+      },
+      setup = {
+        tsserver = function()
+          require('lazyvim.util').lsp.on_attach(function(client, _)
+            -- prefer local typescript version (if available)
+            if client.name == 'tsserver' then
+              client.config.cmd = { prefer_node_modules_executable('tsserver'), '--stdio' }
+            end
+          end)
+        end,
       },
     },
   },

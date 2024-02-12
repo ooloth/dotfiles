@@ -1,17 +1,6 @@
-local M = {}
+local get_system_executable_path = require('util').get_system_executable_path
 
--- Check if a file or directory exists in this path
--- see: https://stackoverflow.com/a/40195356/8802485
-M.path_exists = function(path)
-  local ok, err, code = os.rename(path, path)
-  if not ok then
-    if code == 13 then
-      -- Permission denied, but it exists
-      return true
-    end
-  end
-  return ok, err
-end
+local M = {}
 
 M.get_venv_executable_path = function(executable_name)
   if not vim.env.VIRTUAL_ENV then
@@ -20,7 +9,7 @@ M.get_venv_executable_path = function(executable_name)
 
   local executable_path = vim.env.VIRTUAL_ENV .. '/bin/' .. executable_name
 
-  if M.path_exists(executable_path) then
+  if vim.fn.executable(executable_path) == 1 then
     return executable_path
   end
 
@@ -63,18 +52,12 @@ M.prefer_venv_executable = function(executable_name)
   end
 
   -- fall back to the systemwide binary
-  if M.path_exists('/usr/bin/' .. executable_name) then
-    return '/usr/bin/' .. executable_name
+  local system_executable_path = get_system_executable_path(executable_name)
+  if vim.fn.executable(system_executable_path) == 1 then
+    return system_executable_path
   end
 
-  if M.path_exists('/usr/local/bin/' .. executable_name) then
-    return '/usr/local/bin/' .. executable_name
-  end
-
-  if M.path_exists('/usr/local/opt/' .. executable_name) then
-    return '/usr/local/opt/' .. executable_name
-  end
-
+  -- fall back to the original executable name
   return executable_name
 end
 
