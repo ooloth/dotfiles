@@ -113,9 +113,8 @@ u() {
 	fi
 }
 
-alias v='NVIM_APPNAME=nvim-simple nvim'
+alias v='NVIM_APPNAME=nvim-lazyvim nvim'
 alias vim='nvim'
-alias vl='NVIM_APPNAME=nvim-lazyvim nvim'
 
 # find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in vs code
 vs() {
@@ -131,13 +130,6 @@ vv() {
 
   # Open Neovim with the selected config
   NVIM_APPNAME=$(basename $config) nvim
-}
-
-vvv() {
-  # Assumes configs exist in folders named ~/.config/nvim-*
-  select config in lazyvim kickstart nvchad astrovim lunarvim
-  # select config in simple lazyvim
-  do NVIM_APPNAME=nvim-$config nvim; break; done
 }
 
 alias x='exit'
