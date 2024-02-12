@@ -52,6 +52,13 @@ return {
   },
 
   {
+    'nvim-treesitter/nvim-treesitter',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'python' })
+    end,
+  },
+
+  {
     'neovim/nvim-lspconfig',
     -- see: https://www.lazyvim.org/extras/lang/python#nvim-lspconfig
     opts = {
@@ -94,13 +101,6 @@ return {
         end,
       },
     },
-  },
-
-  {
-    'nvim-treesitter/nvim-treesitter',
-    opts = function(_, opts)
-      extend(opts.ensure_installed, { 'python' })
-    end,
   },
 
   {
