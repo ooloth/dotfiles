@@ -21,14 +21,13 @@ activate_venv() {
 
   # if there's no pyenv venv for this directory, deactivate any venv sticking from a previous directory and be done
   if [[ ! -d "$PYENV_VENV" ]]; then
-    # export PYENV_VERSION='3.12.1'
     export VIRTUAL_ENV=''
     export PYTHONPATH=$HOME
     export MYPYPATH=$HOME
     return
   fi
 
-  # its much faster to activate the venv directly and not use the pyenv shell integration at all ("pyenv init" + "pyenv shell <venv>")
+  # its much faster to activate the venv directly instead of using the pyenv shell integration
   # see: https://stackoverflow.com/a/74290100/8802485
   # see: https://stackoverflow.com/questions/45554864/why-am-i-getting-permission-denied-when-activating-a-venv
   source "${PYENV_VENV}/bin/activate"
