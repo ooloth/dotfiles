@@ -34,6 +34,7 @@ return {
     {
       'rcarriga/nvim-dap-ui',
       opts = {
+        -- see: https://github.com/rcarriga/nvim-dap-ui/blob/master/lua/dapui/config/init.lua
         controls = {
           element = 'repl',
           enabled = false,
@@ -63,12 +64,12 @@ return {
               { id = 'stacks', size = 0.25 },
             },
             position = 'right',
-            size = 75,
+            size = 70,
           },
           {
             elements = {
-              { id = 'repl', size = 0.5 },
-              { id = 'console', size = 0.5 },
+              { id = 'repl' },
+              { id = 'console' },
             },
             position = 'bottom',
             size = 15,
