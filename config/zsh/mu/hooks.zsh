@@ -38,14 +38,10 @@ activate_venv() {
 }
 
 function set_gcloud_project_env_var() {
-  if ! $IS_WORK_LAPTOP; then
-    return
-  fi
+  [[ ! $IS_WORK_LAPTOP ]] && return
 
-  # if gcloud is not installed, do nothing
-  if ! command -v gcloud &> /dev/null; then
-    return
-  fi
+  # if the gcloud command isn't found, do nothing
+  command -v gcloud &> /dev/null || return
 
   # otherwise, set GOOGLE_CLOUD_PROJECT to the current gcloud project (for dap)
   export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)
