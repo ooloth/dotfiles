@@ -70,8 +70,8 @@ return {
     'levouh/tint.nvim',
     opts = {
       -- see: https://github.com/levouh/tint.nvim/blob/master/DOC.md
-      tint = -50,
-      saturation = 0.6,
+      tint = -30,
+      saturation = 0.7,
       highlight_ignore_patterns = {},
       window_ignore_function = function(winid)
         local bufid = vim.api.nvim_win_get_buf(winid)
