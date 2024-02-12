@@ -33,7 +33,7 @@ opt.spelllang = { 'en' }
 opt.splitbelow = true -- Put new windows below current
 opt.splitright = true -- Put new windows right of current
 opt.tabstop = 2 -- Number of spaces tabs count for
-opt.termguicolors = true -- True color support
+opt.termguicolors = false -- True color support
 opt.timeoutlen = 300
 opt.undofile = true
 opt.undolevels = 10000
@@ -45,7 +45,7 @@ opt.wrap = false -- Disable line wrap
 -- Nicer line highlighting while using Material Ocean theme in terminal
 vim.api.nvim_create_autocmd('ColorScheme', {
   command = [[
-    highlight CursorLine guibg=#292D3E cterm=NONE
+    highlight CursorLine guibg=#292D3E ctermbg=2 ctermfg=black cterm=NONE
     highlight Visual guibg=#292D3E cterm=NONE
     highlight Search guibg=#FFCB6B cterm=NONE
   ]],
@@ -75,18 +75,6 @@ set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with
 
 set('n', '<leader><space>', '<cmd>w<cr>', { desc = 'Save' })
 set('n', '<leader>s', '<cmd>w<cr>', { desc = 'Save' })
-
--- -- "tab"
--- set('n', '<leader>tt', '<cmd>tabnew<cr>', { desc = 'New tab' })
--- set('n', '<leader>tf', '<cmd>tabfirst<cr>', { desc = 'First tab' })
--- set('n', '<leader>tl', '<cmd>tablast<cr>', { desc = 'Last tab' })
--- set('n', '<leader>t]', '<cmd>tabnext<cr>', { desc = 'Next tab' })
--- set('n', '<leader>tn', '<cmd>tabnext<cr>', { desc = 'Next tab' })
--- set('n', '<leader>t[', '<cmd>tabprevious<cr>', { desc = 'Previous tab' })
--- set('n', '<leader>tp', '<cmd>tabprevious<cr>', { desc = 'Previous tab' })
--- set('n', '<leader>tc', '<cmd>tabclose<cr>', { desc = 'Close tab' })
--- set('n', ']t', '<cmd>tabnext<cr>', { desc = 'Next tab' })
--- set('n', '[t', '<cmd>tabprevious<cr>', { desc = 'Next tab' })
 
 -- "window"
 set('n', '<leader>\\', '<c-w>v', { desc = 'Split right' })
