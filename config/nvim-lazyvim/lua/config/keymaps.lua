@@ -77,7 +77,7 @@ del('n', '<leader>fT')
 -- "save"
 set('n', '<leader><space>', '<cmd>w<cr>', { desc = 'Save' })
 set('n', '<leader>s', '<cmd>w<cr>', { desc = 'Save' })
-del('n', '<c-s>')
+del({ 'n', 'i', 'x' }, '<c-s>')
 
 -- -- "tab"
 -- set('n', '<leader>tt', '<cmd>tabnew<cr>', { desc = 'New tab' })
