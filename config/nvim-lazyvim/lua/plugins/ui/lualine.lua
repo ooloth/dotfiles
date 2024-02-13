@@ -41,12 +41,17 @@ local catppuccin = {
   crust = '#11111b',
 }
 
+-- set transparent background:
+-- see: https://www.reddit.com/r/neovim/comments/zh4kc8/comment/j0qtbb4/?utm_source=share&utm_medium=web2x&context=3
+local custom_catppuccin = require('lualine.themes.catppuccin')
+custom_catppuccin.normal.c.bg = nil
+
 local options = {
   component_separators = '',
-  disabled_filetypes = { tabline = { 'alpha', 'dashboard', 'starter' } },
+  -- disabled_filetypes = { 'dashboard', tabline = { 'alpha', 'dashboard', 'starter' } },
   globalstatus = true,
   section_separators = '',
-  theme = 'auto',
+  theme = custom_catppuccin,
 }
 
 local empty = {
