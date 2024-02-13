@@ -88,6 +88,7 @@ local sections = {
     -- { Util.lualine.pretty_path() },
   },
   lualine_x = {
+    'searchcount',
     {
       function()
         return '  ' .. require('dap').status()
