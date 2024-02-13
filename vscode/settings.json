@@ -453,7 +453,9 @@
   "files.autoSaveWhenNoErrors": true,
   "workbench.activityBar.location": "hidden",
   "githubPullRequests.focusedMode": "multiDiff",
-  "yaml.format.enable": false
+  "yaml.format.enable": false,
+  "totalTypeScript.hideAllTips": false,
+  "totalTypeScript.hideBasicTips": true
 }
 
 // prettier-ignore-end
