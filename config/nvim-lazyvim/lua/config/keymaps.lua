@@ -36,6 +36,10 @@ end
 set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
+-- Close all buffers but the current one (like leader-wo does for windows):
+-- https://stackoverflow.com/a/42071865/8802485
+set('n', '<leader>bo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this one' })
+
 -- "changes"
 set('n', ']c', 'g,', { desc = 'Next change' }) -- go to next change with g;
 set('n', '[c', 'g;', { desc = 'Previous change' }) -- go to next change with g;
