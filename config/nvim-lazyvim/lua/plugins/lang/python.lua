@@ -146,7 +146,7 @@ return {
         -- use the debugpy installed in the pynvim venv so I don't have to install it in every project's venv:
         local pynvim_debugpy_python = vim.env.HOME .. '/.pyenv/versions/pynvim/bin/debugpy' .. '/venv/bin/python'
 
-        require('dap-python').setup(pynvim_debugpy_python, { include_configs = false, pythonPath = python })
+        require('dap-python').setup(pynvim_debugpy_python, { include_configs = true, pythonPath = python })
       end,
     },
   },

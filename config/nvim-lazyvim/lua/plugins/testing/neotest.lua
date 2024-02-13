@@ -12,6 +12,7 @@ return {
     { "<leader>tS", function() require("neotest").run.stop() end, desc = "Stop" },
     { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run file" },
     { "<leader>tT", function() require("neotest").run.run(vim.loop.cwd()) end, desc = "Run all test files" },
+    -- TODO: do these watch commands work with all adapters?
     { "<leader>tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end, desc = "Watch file (toggle)" },
     { "<leader>tW", function() require("neotest").watch.toggle(vim.loop.cwd()) end, desc = "Watch all test files (toggle)" },
   },
