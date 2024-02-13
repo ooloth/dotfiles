@@ -98,12 +98,13 @@ local sections = {
       end,
       color = Util.ui.fg('Debug'),
     },
-    -- {
-    --   require('lazy.status').updates,
-    --   cond = require('lazy.status').has_updates,
-    --   color = { fg = catppuccin['mauve'] },
-    -- },
-    'filetype',
+    {
+      'filetype',
+      cond = function()
+        local ignored_filetypes = { 'alpha', 'dashboard', 'neo-tree', 'floaterm' }
+        return not vim.tbl_contains(ignored_filetypes, vim.bo.filetype)
+      end,
+    },
     get_venv,
   },
   lualine_y = {
