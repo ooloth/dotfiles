@@ -1,16 +1,21 @@
 -- see: https://www.lazyvim.org/extras/dap/core#nvim-dap
 local prefer_venv_executable = require('util.prefer_venv').prefer_venv_executable
 
-local continue_debugging = function()
+local js_based_languages = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact', 'vue' }
+
+local attach_debugger = function()
   -- (re-)reads launch.json if present
   if vim.fn.filereadable('.vscode/launch.json') then
     require('dap.ext.vscode').load_launchjs(nil, {
-      ['pwa-node'] = { 'typescript', 'javascript' },
+      ['pwa-node'] = js_based_languages,
+      ['chrome'] = js_based_languages,
+      ['pwa-chrome'] = js_based_languages,
     })
 
     -- override console in all configurations
     local dap_configurations = require('dap').configurations
 
+    -- override console and justMyCode in all configurations
     for _, config in ipairs(dap_configurations) do
       config.console = 'integratedTerminal'
       config.justMyCode = true
@@ -19,7 +24,6 @@ local continue_debugging = function()
     -- override pythonPath in all python configurations
     local python_configurations = dap_configurations.python or {}
     local python = prefer_venv_executable('python')
-
     for _, config in ipairs(python_configurations) do
       config.pythonPath = python
     end
@@ -144,9 +148,9 @@ return {
     -- { "<leader>da", function() require("dap").continue({ before = get_args }) end, desc = "Run with Args" },
     { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
     { "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = "Breakpoint Condition" },
-    { "<leader>dc", continue_debugging, desc = "Continue" },
+    { "<leader>dc", function() require('dap').continue() end, desc = "Continue" },
     { "<leader>dC", function() require("dap").run_to_cursor() end, desc = "Run to Cursor" },
-    { "<leader>dd", continue_debugging, desc = "Start debugger" },
+    { "<leader>dd", attach_debugger, desc = "Start debugger" },
     { "<leader>de", function() require("dapui").eval() end, desc = "Eval", mode = {"n", "v"} },
     { "<leader>dg", function() require("dap").goto_() end, desc = "Go to line (no execute)" },
     { "<leader>di", function() require("dap").step_into() end, desc = "Step Into" },
