@@ -115,13 +115,13 @@ return {
             return vim.fn.getcwd()
           end,
         },
-        ['neotest-playwright'] = {
-          -- see: https://github.com/thenbe/neotest-playwright?tab=readme-ov-file#configuration
-          options = {
-            persist_project_selection = true,
-            enable_dynamic_test_discovery = true,
-          },
-        },
+        -- ['neotest-playwright'] = {
+        --   -- see: https://github.com/thenbe/neotest-playwright?tab=readme-ov-file#configuration
+        --   options = {
+        --     persist_project_selection = true,
+        --     enable_dynamic_test_discovery = true,
+        --   },
+        -- },
       },
     },
     -- keys = {
