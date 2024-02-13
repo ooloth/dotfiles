@@ -19,22 +19,20 @@ set('n', '<S-l>', '$', { desc = 'Go to end of line' })
 
 -- "buffer"
 if Util.has('bufferline.nvim') then
-  -- set('n', '<s-tab>', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
-  -- set('n', '<tab>', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
   set('n', '[b', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
   set('n', ']b', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
   set('n', '<leader>b[', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
   set('n', '<leader>b]', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
 else
-  -- set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
-  -- set('n', '<-tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
+  set('n', 'c-[', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
+  set('n', 'c-]', '<cmd>bnext<cr>', { desc = 'Next buffer' })
   set('n', '[b', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
   set('n', ']b', '<cmd>bnext<cr>', { desc = 'Next buffer' })
   set('n', '<leader>b[', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
   set('n', '<leader>b]', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 end
-set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
-set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Last buffer' }) -- switch to last buffer
+set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
+set('n', '<leader>bb', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
 -- Close all buffers but the current one (like leader-wo does for windows):
 -- https://stackoverflow.com/a/42071865/8802485
