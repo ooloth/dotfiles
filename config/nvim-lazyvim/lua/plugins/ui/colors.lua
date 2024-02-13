@@ -4,6 +4,7 @@ return {
   {
     'catppuccin/nvim',
     name = 'catppuccin',
+    lazy = false,
     opts = {
       -- see: https://github.com/catppuccin/nvim#integrations
       integrations = {
@@ -18,48 +19,48 @@ return {
     },
   },
 
-  {
-    'Mofiqul/dracula.nvim',
-    -- See: https://github.com/Mofiqul/dracula.nvim#-configuration
-    opts = {
-      italic_comment = true,
-      lualine_bg_color = '#282A36',
-    },
-  },
+  -- {
+  --   'Mofiqul/dracula.nvim',
+  --   -- See: https://github.com/Mofiqul/dracula.nvim#-configuration
+  --   opts = {
+  --     italic_comment = true,
+  --     lualine_bg_color = '#282A36',
+  --   },
+  -- },
 
-  {
-    'ellisonleao/gruvbox.nvim',
-    config = true,
-    opts = {
-      terminal_colors = true, -- add neovim terminal colors
-      undercurl = true,
-      underline = true,
-      bold = true,
-      italic = {
-        strings = true,
-        emphasis = true,
-        comments = true,
-        operators = false,
-        folds = true,
-      },
-      strikethrough = true,
-      invert_selection = false,
-      invert_signs = false,
-      invert_tabline = false,
-      invert_intend_guides = false,
-      inverse = true, -- invert background for search, diffs, statuslines and errors
-      contrast = 'hard', -- can be "hard", "soft" or empty string
-      palette_overrides = {},
-      overrides = {},
-      dim_inactive = true,
-      transparent_mode = false,
-    },
-  },
+  -- {
+  --   'ellisonleao/gruvbox.nvim',
+  --   config = true,
+  --   opts = {
+  --     terminal_colors = true, -- add neovim terminal colors
+  --     undercurl = true,
+  --     underline = true,
+  --     bold = true,
+  --     italic = {
+  --       strings = true,
+  --       emphasis = true,
+  --       comments = true,
+  --       operators = false,
+  --       folds = true,
+  --     },
+  --     strikethrough = true,
+  --     invert_selection = false,
+  --     invert_signs = false,
+  --     invert_tabline = false,
+  --     invert_intend_guides = false,
+  --     inverse = true, -- invert background for search, diffs, statuslines and errors
+  --     contrast = 'hard', -- can be "hard", "soft" or empty string
+  --     palette_overrides = {},
+  --     overrides = {},
+  --     dim_inactive = true,
+  --     transparent_mode = false,
+  --   },
+  -- },
 
-  {
-    'marko-cerovac/material.nvim',
-    opts = {},
-  },
+  -- {
+  --   'marko-cerovac/material.nvim',
+  --   opts = {},
+  -- },
 
   {
     'LazyVim/LazyVim',
@@ -68,6 +69,7 @@ return {
 
   {
     'levouh/tint.nvim',
+    lazy = true,
     opts = {
       -- see: https://github.com/levouh/tint.nvim/blob/master/DOC.md
       tint = -30,
