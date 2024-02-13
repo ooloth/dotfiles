@@ -117,7 +117,7 @@ local sections = {
 return {
   {
     'nvim-lualine/lualine.nvim',
-    event = 'VeryLazy',
+    lazy = false,
     opts = function()
       return {
         extensions = { 'neo-tree', 'nvim-dap-ui', 'quickfix', 'toggleterm' },
