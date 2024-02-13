@@ -1,6 +1,7 @@
 return {
   'nvim-neotest/neotest',
   dependencies = {
+    'nvim-treesitter/nvim-treesitter',
     { 'folke/neodev.nvim', opts = { library = { plugins = { 'neotest' }, types = true } } },
   },
   -- stylua: ignore
