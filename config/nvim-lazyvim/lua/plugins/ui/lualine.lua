@@ -63,6 +63,7 @@ local empty = {
   color = { fg = catppuccin['base'], bg = catppuccin['base'] },
 }
 
+-- see: https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#general-component-options
 local sections = {
   lualine_a = { { 'mode', padding = 0, separator = { left = '', right = '' } } },
   lualine_b = {
@@ -80,7 +81,11 @@ local sections = {
     },
   },
   lualine_c = {
-    { Util.lualine.pretty_path() },
+    -- see: https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#filename-component-options
+    { 'filename', path = 1 },
+    -- see: https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#windows-component-options
+    -- { 'windows', show_filename_only = false },
+    -- { Util.lualine.pretty_path() },
   },
   lualine_x = {
     {
