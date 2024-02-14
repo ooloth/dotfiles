@@ -19,7 +19,7 @@ return {
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      extend(opts.ensure_installed, { 'javascript', 'typescript', 'tsx' })
+      extend(opts.ensure_installed, { 'javascript', 'jsdoc', 'typescript', 'tsx' })
     end,
   },
 
