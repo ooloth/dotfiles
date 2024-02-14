@@ -6,6 +6,16 @@ local js_based_languages = { 'typescript', 'typescriptreact', 'javascript', 'jav
 local attach_debugger = function()
   -- (re-)reads launch.json if present
   if vim.fn.filereadable('.vscode/launch.json') then
+    -- TODO: move launch.json config divider here
+    -- for _, language in ipairs(js_based_languages) do
+    --   require('dap').configurations[language] = {
+    --         -- divider before launch.json derived configs
+    --     {
+    --       name = '↓ launch.json configs ↓',
+    --       type = '',
+    --       request = 'launch',
+    --     },
+
     require('dap.ext.vscode').load_launchjs(nil, {
       ['pwa-node'] = js_based_languages,
       ['chrome'] = js_based_languages,
