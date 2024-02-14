@@ -1,4 +1,5 @@
-# Don't add work-only packages here! Treat them as one-off installs on my work laptop.
+# see: https://github.com/Homebrew/homebrew-bundle?tab=readme-ov-file
+# NOTE: Don't add work-only packages here! Treat them as one-off installs on my work laptop.
 
 # Taps
 tap "homebrew/bundle"
@@ -98,3 +99,6 @@ mas "Sip", id: 507257563
 mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
+# 'vscode --install-extension'
+# TODO: list extensions here (replace custom installation)
+# vscode "GitHub.codespaces"
