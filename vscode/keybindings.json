@@ -94,6 +94,10 @@
   // Redo (undo the undo)
   { "key": "shift+u",    "command": "redo",                         "when": "editorTextFocus && vim.active && !inDebugRepl" },
   { "key": "ctrl+r",     "command": "redo",                         "when": "editorTextFocus && vim.active && !inDebugRepl" },
+
+  // Trigger suggestion menu
+  { "key": "ctrl+s",     "command": "editor.action.triggerSuggest", "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible" },
+
   ///////////////
   // WHICH KEY //
   ///////////////
