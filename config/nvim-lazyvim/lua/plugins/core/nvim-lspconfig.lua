@@ -7,7 +7,7 @@ return {
     keys[#keys + 1] = { '<leader>if', '<cmd>ConformInfo<cr>', desc = 'Formatter info' }
     keys[#keys + 1] = { '<leader>il', '<cmd>LspInfo<cr>', desc = 'LSP info' }
     keys[#keys + 1] = { '<leader>m', '<cmd>Mason<cr>', desc = 'Mason' }
-    keys[#keys + 1] = { '<leader>rs', vim.lsp.buf.rename, desc = 'Rename symbol', has = 'rename' }
+    keys[#keys + 1] = { '<leader>rs', '<cmd>Lspsaga rename<cr>', desc = 'Rename symbol', has = 'rename' }
     keys[#keys + 1] = { ']d', false }
     keys[#keys + 1] = { '[d', false }
     keys[#keys + 1] = { 'gd', false }
