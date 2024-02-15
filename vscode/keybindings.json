@@ -7,7 +7,7 @@
   // AI //
   ////////
 
-  { "key": "ctrl+v", "command": "workbench.action.chat.startVoiceChat", "when": "!editorTextFocus && !voiceChatInProgress" },
+  { "key": "ctrl+v", "command": "workbench.action.chat.startVoiceChat",         "when": "!editorTextFocus && !voiceChatInProgress" },
   { "key": "ctrl+v", "command": "workbench.action.chat.stopListeningAndSubmit", "when": "!editorTextFocus && voiceChatInProgress" },
 
   ////////////////
@@ -22,29 +22,29 @@
 
   // Project navigation
   { "key": "ctrl+i", "command": "workbench.action.navigateForward", "when": "canNavigateForward" },
-  { "key": "ctrl+o", "command": "workbench.action.navigateBack", "when": "canNavigateBack" },
+  { "key": "ctrl+o", "command": "workbench.action.navigateBack",    "when": "canNavigateBack" },
 
   // Editor navigation
-  { "key": "ctrl+]", "command": "workbench.action.nextEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
-  { "key": "ctrl+[", "command": "workbench.action.previousEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
-  { "key": "ctrl+\\", "command": "workbench.action.splitEditor", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
-  { "key": "ctrl+m", "command": "workbench.action.toggleEditorWidths", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+]",  "command": "workbench.action.nextEditor",         "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+[",  "command": "workbench.action.previousEditor",     "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+\\", "command": "workbench.action.splitEditor",        "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+m",  "command": "workbench.action.toggleEditorWidths", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
 
   // Sidebar
   { "key": "ctrl+b", "command": "workbench.action.toggleSidebarVisibility" },
 
   // Terminal navigation
-  { "key": "ctrl+t", "command": "workbench.action.terminal.toggleTerminal", "when": "terminal.active" },
-  { "key": "ctrl+\\", "command": "workbench.action.terminal.split", "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile" },
+  { "key": "ctrl+t",     "command": "workbench.action.terminal.toggleTerminal",    "when": "terminal.active" },
+  { "key": "ctrl+\\",    "command": "workbench.action.terminal.split",             "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile" },
   // { "key": "cmd", "name": "New", "command": "workbench.action.terminal.new", "type": "command" },
-  { "key": "ctrl+h", "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "ctrl+l", "command": "workbench.action.terminal.focusNextPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "ctrl+]", "command": "workbench.action.terminal.focusNext", "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
-  { "key": "ctrl+[", "command": "workbench.action.terminal.focusPrevious", "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
-  { "key": "cmd+ctrl+h", "command": "workbench.action.terminal.resizePaneLeft", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "cmd+ctrl+l", "command": "workbench.action.terminal.resizePaneRight", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "cmd+ctrl+j", "command": "workbench.action.terminal.resizePaneDown", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "cmd+ctrl+k", "command": "workbench.action.terminal.resizePaneUp", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+h",     "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+l",     "command": "workbench.action.terminal.focusNextPane",     "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "ctrl+]",     "command": "workbench.action.terminal.focusNext",         "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  { "key": "ctrl+[",     "command": "workbench.action.terminal.focusPrevious",     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  { "key": "cmd+ctrl+h", "command": "workbench.action.terminal.resizePaneLeft",    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "cmd+ctrl+l", "command": "workbench.action.terminal.resizePaneRight",   "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "cmd+ctrl+j", "command": "workbench.action.terminal.resizePaneDown",    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
+  { "key": "cmd+ctrl+k", "command": "workbench.action.terminal.resizePaneUp",      "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
 
   // Panel navigation
   { "key": "cmd+ctrl+]", "command": "workbench.action.nextPanelView", "when": "panelFocus" },
@@ -52,54 +52,51 @@
   { "key": "cmd+j", "command": "-console.log.wrap.json", "when": "editorTextFocus" }, // unblock cmd+j toggling the panel
 
   // List navigation
-  { "key": "j", "command": "list.focusDown", "when": "listFocus && !inputFocus" },
-  { "key": "k", "command": "list.focusUp", "when": "listFocus && !inputFocus" },
-  { "key": "ctrl+j", "command": "list.focusDown", "when": "listFocus && !inputFocus" },
-  { "key": "ctrl+k", "command": "list.focusUp", "when": "listFocus && !inputFocus" },
-  { "key": "l", "command": "list.select", "when": "listFocus && !inputFocus" },
-  { "key": "h", "command": "list.collapse", "when": "listFocus && !inputFocus" },
-  { "key": "ctrl+j", "command": "cursorDown", "when": "textInputFocus" },
-  { "key": "ctrl+k", "command": "cursorUp", "when": "textInputFocus" },
-  { "key": "j", "command": "workbench.action.quickOpenSelectNext", "when": "inQuickOpen && !inputFocus && !whichkeyVisible" },
-  { "key": "k", "command": "workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen && !inputFocus && !whichkeyVisible" },
-  { "key": "ctrl+j", "command": "workbench.action.quickOpenSelectNext", "when": "inQuickOpen" },
+  { "key": "j",      "command": "list.focusDown",                           "when": "listFocus && !inputFocus" },
+  { "key": "k",      "command": "list.focusUp",                             "when": "listFocus && !inputFocus" },
+  { "key": "ctrl+j", "command": "list.focusDown",                           "when": "listFocus && !inputFocus" },
+  { "key": "ctrl+k", "command": "list.focusUp",                             "when": "listFocus && !inputFocus" },
+  { "key": "l",      "command": "list.select",                              "when": "listFocus && !inputFocus" },
+  { "key": "h",      "command": "list.collapse",                            "when": "listFocus && !inputFocus" },
+  { "key": "ctrl+j", "command": "cursorDown",                               "when": "textInputFocus" },
+  { "key": "ctrl+k", "command": "cursorUp",                                 "when": "textInputFocus" },
+  { "key": "j",      "command": "workbench.action.quickOpenSelectNext",     "when": "inQuickOpen && !inputFocus && !whichkeyVisible" },
+  { "key": "k",      "command": "workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen && !inputFocus && !whichkeyVisible" },
+  { "key": "ctrl+j", "command": "workbench.action.quickOpenSelectNext",     "when": "inQuickOpen" },
   { "key": "ctrl+k", "command": "workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen" },
-  { "key": "ctrl+j", "command": "selectNextSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
-  { "key": "ctrl+k", "command": "selectPrevSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
-  { "key": "j", "command": "selectNextCodeAction", "when": "codeActionMenuVisible" },
-  { "key": "k", "command": "selectPrevCodeAction", "when": "codeActionMenuVisible" },
-  { "key": "ctrl+j", "command": "selectNextCodeAction", "when": "codeActionMenuVisible" },
-  { "key": "ctrl+k", "command": "selectPrevCodeAction", "when": "codeActionMenuVisible" },
-  { "key": "ctrl+j", "command": "showNextParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
-  { "key": "ctrl+k", "command": "showPrevParameterHint", "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+  { "key": "ctrl+j", "command": "selectNextSuggestion",                     "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
+  { "key": "ctrl+k", "command": "selectPrevSuggestion",                     "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
+  { "key": "j",      "command": "selectNextCodeAction",                     "when": "codeActionMenuVisible" },
+  { "key": "k",      "command": "selectPrevCodeAction",                     "when": "codeActionMenuVisible" },
+  { "key": "ctrl+j", "command": "selectNextCodeAction",                     "when": "codeActionMenuVisible" },
+  { "key": "ctrl+k", "command": "selectPrevCodeAction",                     "when": "codeActionMenuVisible" },
+  { "key": "ctrl+j", "command": "showNextParameterHint",                    "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+  { "key": "ctrl+k", "command": "showPrevParameterHint",                    "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
 
   // Diff navigation
-  { "key": "] c", "command": "workbench.action.compareEditor.nextChange", "when": "editorTextFocus && textCompareEditorActive" },
+  { "key": "] c", "command": "workbench.action.compareEditor.nextChange",     "when": "editorTextFocus && textCompareEditorActive" },
   { "key": "[ c", "command": "workbench.action.compareEditor.previousChange", "when": "editorTextFocus && textCompareEditorActive" },
 
   // Search results navigation
-  { "key": "ctrl+k", "command": "search.action.focusSearchFromResults", "when": "accessibilityModeEnabled && searchViewletVisible || firstMatchFocus && searchViewletVisible" },
-  { "key": "ctrl+k", "command": "search.action.focusQueryEditorWidget", "when": "inSearchEditor" },
-  { "key": "ctrl+j", "command": "search.focus.nextInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
-  { "key": "ctrl+k", "command": "search.focus.previousInputBox", "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible && !searchInputBoxFocus" },
-  { "key": "cmd+enter", "name": "Replace all", "command": "search.action.replaceAll", "type": "command", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" },
+  { "key": "ctrl+k",    "command": "search.action.focusSearchFromResults", "when": "accessibilityModeEnabled && searchViewletVisible || firstMatchFocus && searchViewletVisible" },
+  { "key": "ctrl+k",    "command": "search.action.focusQueryEditorWidget", "when": "inSearchEditor" },
+  { "key": "ctrl+j",    "command": "search.focus.nextInputBox",            "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
+  { "key": "ctrl+k",    "command": "search.focus.previousInputBox",        "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible && !searchInputBoxFocus" },
+  { "key": "cmd+enter", "command": "search.action.replaceAll",             "when": "replaceActive && searchViewletVisible && !findWidgetVisible" },
 
   /////////////
   // EDITING //
   /////////////
 
   { "key": "ctrl+r", "command": "redo", "when": "editorTextFocus && vim.active && !inDebugRepl" },
-  { "key": "cmd+n", "command": "extension.advancedNewFile" },
+  { "key": "cmd+n",  "command": "extension.advancedNewFile" },
 
   ///////////////
-  // WHICH-KEY //
+  // WHICH KEY //
   ///////////////
 
+  // use shift+shift as leader key fallback everywhere (since it's always available)
   { "key": "shift shift", "command": "whichkey.show" },
-  // { "key": "ctrl+,", "command": "whichkey.show" },
-  { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" },
-  { "key": "cmd+enter", "command": "-search.action.openInEditor", "when": "hasSearchResult && searchViewletFocus" },
-  { "key": "alt+cmd+enter", "command": "-search.action.replaceAll", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" }
 
   // use space as leader key in notebook editors
   { "key": "space", "command": "whichkey.show", "when": "notebookEditorFocused && !inputFocus && !notebookOutputInputFocused"},
@@ -109,6 +106,9 @@
   { "key": "ctrl+u",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
   { "key": "backspace", "command": "whichkey.undoKey", "when": "whichkeyVisible" },
 
+  // TODO: delete if I can't remember why these are here (delete all shortcut removals that aren't actual conflicts to simplify this file?)
+  // { "key": "cmd+enter", "command": "-search.action.openInEditor", "when": "hasSearchResult && searchViewletFocus" },
+  // { "key": "alt+cmd+enter", "command": "-search.action.replaceAll", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" }
 ]
 
 // prettier-ignore-end
