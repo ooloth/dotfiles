@@ -100,6 +100,9 @@
   { "key": "ctrl+u", "command": "whichkey.undoKey", "when": "whichkeyVisible" },
   { "key": "cmd+enter", "command": "-search.action.openInEditor", "when": "hasSearchResult && searchViewletFocus" },
   { "key": "alt+cmd+enter", "command": "-search.action.replaceAll", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" }
+
+  // use space as leader key in notebook editors
+  { "key": "space", "command": "whichkey.show", "when": "notebookEditorFocused && !inputFocus && !notebookOutputInputFocused"},
 ]
 
 // prettier-ignore-end
