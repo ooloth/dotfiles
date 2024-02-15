@@ -7,11 +7,21 @@ add_newline = false
 # Give pyenv, etc more time
 command_timeout = 9999999999
 
-# A minimal left prompt
-format = '$directory$cmd_duration$character'
-
-# move the rest of the prompt to the right
-right_format = '$git_branch$nodejs$python$kubernetes$gcloud$all'
+# First line = left components + middle fill + right components
+# Second line = character + prompt
+format = """
+$directory\
+$cmd_duration\
+$fill\
+$git_branch\
+$nodejs\
+$python\
+$kubernetes\
+$gcloud\
+$all\
+$line_break\
+$character\
+"""
 
 [aws]
 symbol = "  "
@@ -50,6 +60,12 @@ symbol = " "
 [fennel]
 symbol = " "
 
+# Keep left/right prompt on same line while adding a newline for the prompt input:
+# https://starship.rs/config/#fill
+# https://www.youtube.com/watch?v=VgTu1_92U0U
+[fill]
+symbol = " "
+
 [fossil_branch]
 symbol = " "
 
@@ -70,6 +86,7 @@ asia-northeast1 = 'an1'
 [git_branch]
 format = '[$symbol$branch]($style)'
 symbol = " "
+# style = "bright-black"
 
 [git_status]
 disabled = true
