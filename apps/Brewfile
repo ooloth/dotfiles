@@ -38,6 +38,7 @@ brew "powerlevel10k"
 brew "pyenv" # manages python versions
 brew "pyenv-virtualenv" # allow pyenv to manage virtualenvs
 brew "ripgrep" # for telescope
+brew "saulpw/vd/visidata"
 brew "starship"
 brew "stern" # for kubectl
 brew "stylua" # for lua
