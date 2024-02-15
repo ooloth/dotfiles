@@ -103,6 +103,12 @@
 
   // use space as leader key in notebook editors
   { "key": "space", "command": "whichkey.show", "when": "notebookEditorFocused && !inputFocus && !notebookOutputInputFocused"},
+
+  // go back a level with ctrl+h, ctrl+u, or backspace
+  { "key": "ctrl+h",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
+  { "key": "ctrl+u",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
+  { "key": "backspace", "command": "whichkey.undoKey", "when": "whichkeyVisible" },
+
 ]
 
 // prettier-ignore-end
