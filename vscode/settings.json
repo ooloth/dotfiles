@@ -7,9 +7,9 @@
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform"
   },
-  "[yaml]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml"
-  },
+  // "[yaml]": {
+  //   "editor.defaultFormatter": "redhat.vscode-yaml"
+  // },
   "css.lint.unknownAtRules": "ignore",
   "debug.console.fontFamily": "editor",
   "debug.console.fontSize": 0,
