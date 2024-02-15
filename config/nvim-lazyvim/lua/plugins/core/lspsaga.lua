@@ -62,8 +62,12 @@ return {
       },
     },
     rename = {
-      quit = '<C-c>',
+      -- see: https://nvimdev.github.io/lspsaga/rename/
       in_select = false,
+      keys = {
+        quit = { '<Esc>' },
+        exec = '<CR>',
+      },
     },
     scroll_preview = { scroll_down = '<C-d>', scroll_up = '<C-u>' },
     symbol_in_winbar = { enable = false },
