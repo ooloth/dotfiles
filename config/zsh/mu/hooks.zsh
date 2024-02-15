@@ -36,6 +36,8 @@ activate_venv() {
   export MYPYPATH=$PWD
 }
 
+# FIXME: variable is being set even when not in a gcloud project
+# TODO: only show in projects where the active project is relevant
 function set_gcloud_project_env_var() {
   [[ ! $IS_WORK_LAPTOP ]] && return
 
