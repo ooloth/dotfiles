@@ -58,7 +58,7 @@ return {
       keys = {
         jump = 'o',
         expand_collapse = 'u',
-        quit = '<esc>',
+        quit = { 'q', '<esc>' },
       },
     },
     rename = {
