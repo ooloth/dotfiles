@@ -36,6 +36,6 @@ vim.opt.fillchars = { eob = ' ' } -- hide ~ at end of buffer
 vim.opt.laststatus = 0 -- disable statusline since showing in tabline (via lualine)
 vim.opt.number = false
 vim.opt.relativenumber = false
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 12
 vim.opt.showtabline = 2
 vim.opt.spell = false
