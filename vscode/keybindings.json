@@ -88,9 +88,12 @@
   // EDITING //
   /////////////
 
-  { "key": "ctrl+r", "command": "redo", "when": "editorTextFocus && vim.active && !inDebugRepl" },
-  { "key": "cmd+n",  "command": "extension.advancedNewFile" },
+  // Create new file
+  { "key": "cmd+n",      "command": "extension.advancedNewFile" },
 
+  // Redo (undo the undo)
+  { "key": "shift+u",    "command": "redo",                         "when": "editorTextFocus && vim.active && !inDebugRepl" },
+  { "key": "ctrl+r",     "command": "redo",                         "when": "editorTextFocus && vim.active && !inDebugRepl" },
   ///////////////
   // WHICH KEY //
   ///////////////
