@@ -26,6 +26,7 @@ if $IS_WORK_LAPTOP; then
   pr() { cd $HOME/Repos/recursionpharma/phenoreader; }
   psa() { cd $HOME/Repos/recursionpharma/phenoservice-api; }
   psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer; }
+  alias pw='cd $HOME/Repos/recursionpharma/processing-witch'
   r() { cd $HOME/Repos/recursionpharma; }
   rl() { roadie lock -- $1; } # optionally "rl -c" etc
   rlc() { roadie lock -c; }
