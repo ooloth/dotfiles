@@ -1,3 +1,4 @@
+# see: https://starship.rs/config/
 # see: https://starship.rs/presets/nerd-font.html
 
 # Avoid a newline at the top of the shell (handled by my preexec and precmd functions)
@@ -179,6 +180,7 @@ Unknown = " "
 Windows = "󰍲 "
 
 [package]
+disabled = true
 symbol = "󰏗 "
 
 [perl]
