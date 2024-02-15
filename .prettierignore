@@ -1,2 +1,2 @@
-vs-code/keybindings.json
-vs-code/settings.json
+# ignore all config files in vscode folder
+vscode

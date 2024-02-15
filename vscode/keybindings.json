@@ -1,6 +1,6 @@
-// see: https://code.visualstudio.com/api/references/when-clause-contexts
+// NOTE: format on save is disabled for this file via .prettierignore
 
-// prettier-ignore-start
+// see: https://code.visualstudio.com/api/references/when-clause-contexts
 
 [
   ////////
@@ -104,11 +104,9 @@
   // go back a level with ctrl+h, ctrl+u, or backspace
   { "key": "ctrl+h",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
   { "key": "ctrl+u",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
-  { "key": "backspace", "command": "whichkey.undoKey", "when": "whichkeyVisible" },
+  { "key": "backspace", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
 
   // TODO: delete if I can't remember why these are here (delete all shortcut removals that aren't actual conflicts to simplify this file?)
   // { "key": "cmd+enter", "command": "-search.action.openInEditor", "when": "hasSearchResult && searchViewletFocus" },
   // { "key": "alt+cmd+enter", "command": "-search.action.replaceAll", "when": "replaceActive && searchViewletVisible && !findWidgetVisible" }
 ]
-
-// prettier-ignore-end

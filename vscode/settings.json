@@ -1,4 +1,4 @@
-// prettier-ignore-start
+// NOTE: format on save is disabled for this file via .prettierignore
 
 {
   "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
@@ -142,7 +142,7 @@
     { "id": "lineNumbers", "values": [ { "editor.lineNumbers": "on", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "off", "vim.smartRelativeLine": false } ] },
     { "id": "prettier", "values": [
       { "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": { "editor.defaultFormatter": null } },
-      { "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" } },
+      { "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" } }
     ]},
     { "id": "relativeLineNumbers", "values": [ { "editor.lineNumbers": "relative", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "on", "vim.smartRelativeLine": false } ] }
   ],
@@ -334,7 +334,7 @@
 
     { "key": "n", "name": "+Notebook/Jupyter", "type": "bindings", "bindings": [
       { "key": "y", "name": "Copy cell", "command": "notebook.cell.copy", "type": "command" },
-      { "key": "Y", "name": "Copy cell output", "command": "notebook.cellOutput.copy", "type": "command" },
+      { "key": "Y", "name": "Copy cell output", "command": "notebook.cellOutput.copy", "type": "command" }
     ]},
 
     { "key": "o", "name": "+Open", "type": "bindings", "bindings": [
@@ -401,7 +401,7 @@
   "workbench.colorCustomizations": {
     "[Catppuccin Mocha]": {
       "terminal.ansiBlack": "#000000",
-      "terminal.ansiBrightBlack": "#000000",
+      "terminal.ansiBrightBlack": "#000000"
     },
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
@@ -457,5 +457,3 @@
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true
 }
-
-// prettier-ignore-end
