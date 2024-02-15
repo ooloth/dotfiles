@@ -121,7 +121,6 @@ return {
       opts = {},
     },
 
-    -- which key integration
     {
       'folke/which-key.nvim',
       opts = {
