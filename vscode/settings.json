@@ -455,5 +455,6 @@
   "githubPullRequests.focusedMode": "multiDiff",
   "yaml.format.enable": false,
   "totalTypeScript.hideAllTips": false,
-  "totalTypeScript.hideBasicTips": true
+  "totalTypeScript.hideBasicTips": true,
+  "zenMode.zoomLevel": 1.1
 }
