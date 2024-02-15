@@ -88,6 +88,13 @@ local sections = {
     -- { Util.lualine.pretty_path() },
   },
   lualine_x = {
+    {
+      -- See when I'm recording a macro:
+      -- https://github.com/folke/noice.nvim?tab=readme-ov-file#-statusline-components
+      require('noice').api.status.mode.get,
+      cond = require('noice').api.status.mode.has,
+      color = { fg = catppuccin['yellow'] },
+    },
     'searchcount',
     {
       function()
