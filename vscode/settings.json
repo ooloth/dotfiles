@@ -1,4 +1,4 @@
-// NOTE: format on save is disabled for this file via .prettierignore
+// NOTE: format on save disabled via .prettierignore
 
 {
   "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
