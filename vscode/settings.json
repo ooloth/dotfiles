@@ -25,7 +25,7 @@
   "editor.foldingImportsByDefault": true,
   "editor.fontFamily": "'UbuntuMono Nerd Font', 'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
-  "editor.fontSize": 13,
+  "editor.fontSize": 12.5,
   "editor.fontWeight": "normal",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
@@ -39,7 +39,7 @@
   "editor.guides.indentation": false,
   "editor.inlineSuggest.enabled": true,
   "editor.linkedEditing": true,
-  "editor.lineHeight": 1.4,
+  "editor.lineHeight": 1.35,
   "editor.lineNumbers": "on",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
@@ -157,10 +157,28 @@
   "terraform.experimentalFeatures.validateOnSave": true,
   "terraform.languageServer.terraform.path": "/opt/homebrew/bin/terraform",
   "todohighlight.keywords": [
-    { "backgroundColor": "transparent", "color": "#ffc777", "text": "TODO:" },
-    { "backgroundColor": "transparent", "color": "#ff757f", "text": "FIXME:" },
-    { "backgroundColor": "transparent", "color": "#c3e88d", "text": "NOTE:" }
+    // see: https://github.com/catppuccin/nvim/blob/main/lua/catppuccin/palettes/mocha.lua
+    { "backgroundColor": "transparent", "color": "#f9e2af", "text": "TODO:" },
+    { "backgroundColor": "transparent", "color": "#f38ba8", "text": "FIXME:" },
+    { "backgroundColor": "transparent", "color": "#a6e3a1", "text": "NOTE:" }
+    // { "backgroundColor": "transparent", "color": "#ffc777", "text": "TODO:" },
+    // { "backgroundColor": "transparent", "color": "#ff757f", "text": "FIXME:" },
+    // { "backgroundColor": "transparent", "color": "#c3e88d", "text": "NOTE:" }
   ],
+  "totalTypeScript.hiddenTips": [
+    "passing-generics-to-types",
+    // "non-null-expression",
+    // "keyof",
+    // "typeof",
+    "record-utility-type",
+    // "partial-utility-type",
+    // "nonnullable-utility-type",
+    // "omit-utility-type",
+    // "returntype-utility-type",
+    // "generic-slots-in-functions"
+  ],
+  "totalTypeScript.hideAllTips": false,
+  "totalTypeScript.hideBasicTips": true,
   "typescript.implementationsCodeLens.enabled": true,
   "typescript.inlayHints.enumMemberValues.enabled": true,
   "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
@@ -400,22 +418,22 @@
   "window.zoomLevel": 1.1,
   "workbench.colorCustomizations": {
     "[Catppuccin Mocha]": {
+      "editorOverviewRuler.background":"#ffffff00",
+      "editorOverviewRuler.border":"#ffffff00",
       "terminal.ansiBlack": "#000000",
       "terminal.ansiBrightBlack": "#000000"
     },
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
       "activityBar.background": "#21222C",
-      // "activityBar.background": "#282A36",
       "editorGroupHeader.tabsBackground": "#21222C",
-      // "statusBar.background": "#282A36"
       "statusBar.background": "#21222C"
     },
     "[Material Theme Ocean]": {
       // see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts
-      "editor.findMatchHighlightBackground": "#292D3E", // higher contrast
+      "editor.findMatchHighlightBackground": "#292D3E99", // higher contrast
       "editor.lineHighlightBackground": "#1A1C25", // higher constrast
-      "editor.rangeHighlightBackground": "#292D3E", // higher contrast
+      "editor.rangeHighlightBackground": "#292D3E99", // higher contrast
       "editorSuggestWidget.selectedBackground": "#292D3E", // higher contrast
       "searchEditor.findMatchBackground": "#292D3E", // higher contrast
       "sideBar.foreground": "#babed8" // higher contrast
@@ -443,7 +461,6 @@
   "files.autoSaveDelay": 5000,
   "diffEditor.experimental.showMoves": true,
   "multiDiffEditor.experimental.enabled": true,
-  "gitlens.experimental.openChangesInMultiDiffEditor": true,
   "workbench.tree.enableStickyScroll": true,
   "notebook.stickyScroll.enabled": true,
   "terminal.integrated.stickyScroll.enabled": true,
@@ -454,7 +471,12 @@
   "workbench.activityBar.location": "hidden",
   "githubPullRequests.focusedMode": "multiDiff",
   "yaml.format.enable": false,
-  "totalTypeScript.hideAllTips": false,
-  "totalTypeScript.hideBasicTips": true,
-  "zenMode.zoomLevel": 1.1
+  "gitlens.graph.minimap.enabled": false,
+  "editor.scrollbar.vertical": "hidden",
+  "editor.overviewRulerBorder": false,
+  "breadcrumbs.enabled": false,
+  "window.density.editorTabHeight": "compact",
+  "window.title": "${activeEditorMedium}${separator}${rootName}${separator}${profileName}",
+  "editor.scrollbar.horizontal": "hidden",
+  "catppuccin.bracketMode": "monochromatic"
 }

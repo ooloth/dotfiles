@@ -80,7 +80,7 @@ return {
       { '<leader>aw', '<cmd>CopilotChatWording<cr>', desc = 'Improve wording' },
       { '<leader>ar', '<cmd>CopilotChatReview<cr>', desc = 'Review code' },
       { '<leader>aR', '<cmd>CopilotChatRefactor<cr>', desc = 'Refactor code' },
-      { '<leader>as', ':CopilotChatVisual', mode = 'x', desc = 'Discuss selection in split' },
+      { '<leader>as', '<cmd>CopilotChatVisual<cr>', mode = 'x', desc = 'Discuss selection in split' },
       { '<leader>at', '<cmd>CopilotChatTests<cr>', desc = 'Generate tests' },
       { '<leader>az', '<cmd>CopilotChatSummarize<cr>', desc = 'Summarize text' },
       

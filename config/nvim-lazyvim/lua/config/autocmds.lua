@@ -34,3 +34,12 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt_local.wrap = false -- or set conceallevel=0?
   end,
 })
+
+-- override LazyVim and nvim runtime filetype "ro" settings that add a comment leader to newlines below a comment:
+-- https://neovim.discourse.group/t/options-formatoptions-not-working-when-put-in-init-lua/3746/5
+vim.api.nvim_create_autocmd('BufEnter', {
+  callback = function()
+    vim.opt.formatoptions:remove('r')
+    vim.opt.formatoptions:remove('o')
+  end,
+})
