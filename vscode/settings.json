@@ -461,7 +461,6 @@
   "files.autoSaveDelay": 5000,
   "diffEditor.experimental.showMoves": true,
   "multiDiffEditor.experimental.enabled": true,
-  "gitlens.experimental.openChangesInMultiDiffEditor": true,
   "workbench.tree.enableStickyScroll": true,
   "notebook.stickyScroll.enabled": true,
   "terminal.integrated.stickyScroll.enabled": true,
@@ -472,7 +471,6 @@
   "workbench.activityBar.location": "hidden",
   "githubPullRequests.focusedMode": "multiDiff",
   "yaml.format.enable": false,
-  "zenMode.zoomLevel": 1.1,
   "gitlens.graph.minimap.enabled": false,
   "editor.scrollbar.vertical": "hidden",
   "editor.overviewRulerBorder": false,
@@ -480,5 +478,5 @@
   "window.density.editorTabHeight": "compact",
   "window.title": "${activeEditorMedium}${separator}${rootName}${separator}${profileName}",
   "editor.scrollbar.horizontal": "hidden",
-  "catppuccin.bracketMode": "monochromatic",
+  "catppuccin.bracketMode": "monochromatic"
 }
