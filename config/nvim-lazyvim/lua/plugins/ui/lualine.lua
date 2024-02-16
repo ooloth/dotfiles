@@ -8,7 +8,22 @@ local function get_venv()
     return ''
   end
 
-  return '(' .. vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV or '  No venv activated' .. ')'
+  if not vim.env.VIRTUAL_ENV then
+    return '(  No venv activated)'
+  end
+
+  -- example path = '/Users/michael/.pyenv/versions/3.12.1/envs/scraper'
+  local function get_version_and_venv(path_to_pyenv_venv)
+    local parts = {}
+    for part in string.gmatch(path_to_pyenv_venv, '([^/]+)') do
+      table.insert(parts, part)
+    end
+    local version = parts[#parts - 2]
+    local venv = parts[#parts]
+    return version .. ' (' .. venv .. ')'
+  end
+
+  return get_version_and_venv(vim.env.VIRTUAL_ENV)
 end
 
 -- see: https://github.com/catppuccin/nvim/blob/main/lua/catppuccin/palettes/mocha.lua
@@ -112,7 +127,7 @@ local sections = {
         return not vim.tbl_contains(ignored_filetypes, vim.bo.filetype)
       end,
     },
-    get_venv,
+    { get_venv, padding = { left = 0, right = 1 } },
   },
   lualine_y = {
     { 'diff', padding = 0, separator = { left = '', right = '' } },
