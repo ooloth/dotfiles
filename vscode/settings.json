@@ -415,7 +415,7 @@
   ],
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
-  "window.zoomLevel": 1.1,
+  "window.zoomLevel": 1,
   "workbench.colorCustomizations": {
     "[Catppuccin Mocha]": {
       "editorOverviewRuler.background":"#ffffff00",
