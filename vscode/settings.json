@@ -456,5 +456,8 @@
   "yaml.format.enable": false,
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
-  "zenMode.zoomLevel": 1.1
+  "zenMode.zoomLevel": 1.1,
+  "gitlens.graph.minimap.enabled": false,
+  "editor.scrollbar.vertical": "hidden",
+  "editor.overviewRulerBorder": false,
 }
