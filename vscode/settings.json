@@ -463,4 +463,5 @@
   "breadcrumbs.enabled": false,
   "window.density.editorTabHeight": "compact",
   "window.title": "${activeEditorMedium}${separator}${rootName}${separator}${profileName}",
+  "catppuccin.bracketMode": "monochromatic",
 }
