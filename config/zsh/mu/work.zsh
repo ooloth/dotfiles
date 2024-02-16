@@ -26,6 +26,7 @@ if $IS_WORK_LAPTOP; then
   pr() { cd $HOME/Repos/recursionpharma/phenoreader; }
   psa() { cd $HOME/Repos/recursionpharma/phenoservice-api; }
   psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer; }
+  alias pu='cd $HOME/Repos/recursionpharma/platelet-ui'
   alias pw='cd $HOME/Repos/recursionpharma/processing-witch'
   r() { cd $HOME/Repos/recursionpharma; }
   rl() { roadie lock -- $1; } # optionally "rl -c" etc
@@ -56,6 +57,7 @@ if $IS_WORK_LAPTOP; then
       # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
       phenoapp)         pa && python phenoapp/app.py ;;
       # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
+      platelet-ui)      n && du ;;
       react-app)        ns ;;
       *)                echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
