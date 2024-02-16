@@ -461,4 +461,5 @@
   "editor.scrollbar.vertical": "hidden",
   "editor.overviewRulerBorder": false,
   "breadcrumbs.enabled": false,
+  "window.density.editorTabHeight": "compact",
 }
