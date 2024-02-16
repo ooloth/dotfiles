@@ -478,5 +478,6 @@
   "window.density.editorTabHeight": "compact",
   "window.title": "${activeEditorMedium}${separator}${rootName}${separator}${profileName}",
   "editor.scrollbar.horizontal": "hidden",
-  "catppuccin.bracketMode": "monochromatic"
+  "catppuccin.bracketMode": "monochromatic",
+  "workbench.editor.editorActionsLocation": "hidden",
 }
