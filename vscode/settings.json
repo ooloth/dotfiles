@@ -400,22 +400,22 @@
   "window.zoomLevel": 1.1,
   "workbench.colorCustomizations": {
     "[Catppuccin Mocha]": {
+      "editorOverviewRuler.background":"#ffffff00",
+      "editorOverviewRuler.border":"#ffffff00",
       "terminal.ansiBlack": "#000000",
-      "terminal.ansiBrightBlack": "#000000"
+      "terminal.ansiBrightBlack": "#000000",
     },
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
       "activityBar.background": "#21222C",
-      // "activityBar.background": "#282A36",
       "editorGroupHeader.tabsBackground": "#21222C",
-      // "statusBar.background": "#282A36"
       "statusBar.background": "#21222C"
     },
     "[Material Theme Ocean]": {
       // see: https://github.com/material-theme/vsc-material-theme/blob/main/scripts/generator/settings/specific/ocean.ts
-      "editor.findMatchHighlightBackground": "#292D3E", // higher contrast
+      "editor.findMatchHighlightBackground": "#292D3E99", // higher contrast
       "editor.lineHighlightBackground": "#1A1C25", // higher constrast
-      "editor.rangeHighlightBackground": "#292D3E", // higher contrast
+      "editor.rangeHighlightBackground": "#292D3E99", // higher contrast
       "editorSuggestWidget.selectedBackground": "#292D3E", // higher contrast
       "searchEditor.findMatchBackground": "#292D3E", // higher contrast
       "sideBar.foreground": "#babed8" // higher contrast
