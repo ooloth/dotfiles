@@ -480,4 +480,5 @@
   "editor.scrollbar.horizontal": "hidden",
   "catppuccin.bracketMode": "monochromatic",
   "workbench.editor.editorActionsLocation": "hidden",
+  "prettier.useEditorConfig": false // avoid autoformatting in projects with no explicit .prettierrc (i.e. don't fall back to .editorconfig)
 }
