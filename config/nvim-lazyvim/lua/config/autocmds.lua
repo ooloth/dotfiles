@@ -17,13 +17,10 @@ Util.lsp.on_attach(function()
   })
 end)
 
--- FIXME: no longer working
-Util.on_very_lazy(function()
-  vim.cmd([[
-    autocmd InsertEnter * set nocursorline
-    autocmd InsertLeave * set cursorline
-  ]])
-end)
+vim.cmd([[
+  autocmd InsertEnter * set nocursorline
+  autocmd InsertLeave * set cursorline
+]])
 
 -- override default LazyVim options for Markdown files
 vim.api.nvim_create_autocmd('FileType', {
