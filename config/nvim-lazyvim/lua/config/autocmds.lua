@@ -11,8 +11,7 @@ Util.lsp.on_attach(function()
   -- see: https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization#show-line-diagnostics-automatically-in-hover-window
   vim.api.nvim_create_autocmd('CursorHold', {
     callback = function()
-      -- vim.api.nvim_command('Lspsaga show_line_diagnostics ++unfocus')
-      -- vim.diagnostic.open_float(nil, { focusable = false })
+      vim.diagnostic.open_float(nil, { focusable = false })
     end,
   })
 end)
