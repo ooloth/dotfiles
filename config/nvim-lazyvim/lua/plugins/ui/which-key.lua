@@ -3,6 +3,7 @@
 return {
   {
     'folke/which-key.nvim',
+    -- see: https://github.com/folke/which-key.nvim?tab=readme-ov-file#%EF%B8%8F-configuration
     config = function(_, opts)
       local wk = require('which-key')
       wk.setup(opts)

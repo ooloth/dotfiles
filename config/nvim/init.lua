@@ -74,7 +74,6 @@ set('n', 'g;', 'g,', { desc = 'Next change' }) -- go to next change with g;
 set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with g;
 
 set('n', '<leader><space>', '<cmd>w<cr>', { desc = 'Save' })
-set('n', '<leader>s', '<cmd>w<cr>', { desc = 'Save' })
 
 -- "window"
 set('n', '<leader>\\', '<c-w>v', { desc = 'Split right' })

@@ -8,7 +8,7 @@ vim.cmd([[
   let g:loaded_ruby_provider = 0
 ]])
 
--- custom file -> filetype associations
+-- custom filename -> filetype associations
 vim.filetype.add({
   extension = {
     -- see: https://sbulav.github.io/vim/neovim-improving-work-with-terraform/#correctly-detecting-tf-filetype

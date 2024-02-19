@@ -27,19 +27,22 @@ return {
 
   {
     'stevearc/conform.nvim',
-    opts = function(_, opts)
-      extend(opts.formatters_by_ft, {
+    opts = {
+      formatters_by_ft = {
         terraform = { 'terraform_fmt' },
         ['terraform-vars'] = { 'terraform_fmt' },
         tf = { 'terraform_fmt' },
-      })
-    end,
+      },
+    },
   },
 
   {
     'mfussenegger/nvim-lint',
-    opts = function(_, opts)
-      extend(opts.linters_by_ft, { terraform = { 'tflint' }, tf = { 'tflint' } })
-    end,
+    opts = {
+      linters_by_ft = {
+        terraform = { 'tflint' },
+        tf = { 'tflint' },
+      },
+    },
   },
 }
