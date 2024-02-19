@@ -22,14 +22,25 @@ vim.cmd([[
 ]])
 
 -- override default LazyVim options for Markdown files
+-- see: https://www.lazyvim.org/configuration/general#auto-commands
 vim.api.nvim_create_autocmd('FileType', {
   group = 'lazyvim_wrap_spell',
   pattern = { 'markdown' },
   callback = function()
     vim.opt_local.spell = false
-    vim.opt_local.wrap = false -- or set conceallevel=0?
+    vim.opt_local.conceallevel = 0
   end,
 })
+
+-- -- override default LazyVim options for JSON files
+-- -- see: https://www.lazyvim.org/configuration/general#auto-commands
+-- vim.api.nvim_create_autocmd({ 'FileType' }, {
+--   group = 'lazyvim_json_conceal',
+--   pattern = { 'json', 'jsonc', 'json5' },
+--   callback = function()
+--     vim.opt_local.conceallevel = 2
+--   end,
+-- })
 
 -- override LazyVim and nvim runtime filetype "ro" settings that add a comment leader to newlines below a comment:
 -- https://neovim.discourse.group/t/options-formatoptions-not-working-when-put-in-init-lua/3746/5
