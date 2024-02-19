@@ -1,3 +1,7 @@
+--  TODO: testing: unittest?
+--  TODO: https://www.lazyvim.org/extras/lang/python
+--  TODO: https://www.lazyvim.org/extras/formatting/black
+
 local extend = require('util').extend
 local inspect = require('util').inspect
 local is_installed_in_venv = require('util.prefer_venv').is_installed_in_venv

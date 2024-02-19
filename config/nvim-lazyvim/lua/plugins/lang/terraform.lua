@@ -1,4 +1,4 @@
--- see: https://www.lazyvim.org/xtras/lang/terraform
+--  TODO: https://www.lazyvim.org/xtras/lang/terraform
 
 local extend = require('util').extend
 

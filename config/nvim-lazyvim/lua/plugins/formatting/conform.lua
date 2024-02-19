@@ -1,3 +1,5 @@
+--  TODO: https://www.lazyvim.org/extras/formatting/prettier
+
 -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/prettier.lua
 -- see: https://www.lazyvim.org/extras/formatting/prettier
 

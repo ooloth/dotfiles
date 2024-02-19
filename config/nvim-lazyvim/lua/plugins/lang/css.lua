@@ -1,5 +1,6 @@
 --  TODO: lsp?
 --  TODO: linting?
+--  TODO: https://www.lazyvim.org/extras/lang/tailwind
 
 local extend = require('util').extend
 
