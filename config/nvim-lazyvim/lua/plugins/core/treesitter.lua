@@ -7,17 +7,9 @@ return {
     auto_install = true,
     -- see: https://github.com/nvim-treesitter/nvim-treesitter?tab=readme-ov-file#supported-languages
     ensure_installed = {
-      'comment',
-      'css',
-      'diff',
-      'gitcommit',
-      'html',
-      'jsdoc',
-      'json',
-      'jsonc',
-      'json5',
+      'http',
+      'query', -- treesitter query language
       'regex',
-      'vim',
     },
     incremental_selection = {
       keymaps = {

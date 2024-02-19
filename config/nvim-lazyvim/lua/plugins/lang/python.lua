@@ -54,7 +54,7 @@ return {
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      extend(opts.ensure_installed, { 'python' })
+      extend(opts.ensure_installed, { 'python', 'requirements' })
     end,
   },
 

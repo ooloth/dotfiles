@@ -9,6 +9,13 @@ return {
   },
 
   {
+    'nvim-treesitter/nvim-treesitter',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'markdown', 'markdown_inline', 'mermaid' })
+    end,
+  },
+
+  {
     'neovim/nvim-lspconfig',
     opts = {
       servers = {
@@ -17,13 +24,6 @@ return {
         vale_ls = {},
       },
     },
-  },
-
-  {
-    'nvim-treesitter/nvim-treesitter',
-    opts = function(_, opts)
-      extend(opts.ensure_installed, { 'markdown', 'markdown_inline' })
-    end,
   },
 
   {
