@@ -16,9 +16,6 @@ return {
     keys[#keys + 1] = { 'K', false }
     keys[#keys + 1] = { '<leader>ca', mode = { 'n', 'v' }, false }
     keys[#keys + 1] = { '<leader>cA', false }
-    keys[#keys + 1] = { '<leader>cd', false }
-    keys[#keys + 1] = { '<leader>cf', false }
-    keys[#keys + 1] = { '<leader>cf', mode = { 'v' }, false }
     keys[#keys + 1] = { '<leader>cl', false }
     keys[#keys + 1] = { '<leader>co', false }
     keys[#keys + 1] = { '<leader>cr', false }

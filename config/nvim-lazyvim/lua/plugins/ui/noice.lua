@@ -2,7 +2,9 @@ return {
   {
     'folke/noice.nvim',
     keys = function() -- replace all keys
-      return {}
+      return {
+        { '<leader>sn', '<cmd>Telescope noice<cr>', desc = 'Noice' },
+      }
     end,
     opts = {
       lsp = {

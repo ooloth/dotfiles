@@ -45,12 +45,11 @@ set('n', ']c', 'g,', { desc = 'Next change' }) -- go to next change with g;
 set('n', '[c', 'g;', { desc = 'Previous change' }) -- go to next change with g;
 set('n', 'g;', 'g,', { desc = 'Next change' }) -- go to next change with g;
 set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with g;
+del('n', '<leader>cd')
+del({ 'n', 'v' }, '<leader>cf')
 
 -- "debug" (see debug.lua)
 -- "explorer" (see neo-tree.lua)
-
--- "find"
-set('n', '<leader>fn', '<cmd>Telescope noice<cr>')
 
 -- "git" (see git.lua)
 set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })

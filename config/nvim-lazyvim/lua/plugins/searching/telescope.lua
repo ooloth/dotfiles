@@ -37,50 +37,45 @@ return {
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
       {
         'folke/which-key.nvim',
-        opts = function(_, opts)
-          extend(opts.defaults, { ['<leader>s'] = { name = '+Search' } })
-        end,
+        opts = {
+          defaults = {
+            ['<leader>s'] = { name = 'Search' },
+          },
+        },
       },
     },
-    keys = function() -- replace all default keymaps
+    keys = function()
       return {
-        -- { '<leader><space>', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent files' },
         { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Buffer' },
         { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
-        -- "find"
-        { '<leader>s,', '<cmd>Telescope command_history<cr>', desc = 'Command (recent)' },
-        { '<leader>sa', '<cmd>Telescope autocommands<cr>', desc = 'Auto command' },
-        { '<leader>sb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
-        { '<leader>sc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
-        { '<leader>sd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
-        { '<leader>sf', '<cmd>lua require("telescope").extensions.smart_open.smart_open({ type = "file" })<CR>' },
-        -- { '<leader>sf', Util.telescope('files'), desc = 'File' },
-        { '<leader>sog', '<cmd>lua require("telescope").extensions.smart_open.smart_open({ type = "git" })<CR>' },
-        { '<leader>sob', '<cmd>lua require("telescope").extensions.smart_open.smart_open({ type = "buffers" })<CR>' },
-        { '<leader>soh', '<cmd>lua require("telescope").extensions.smart_open.smart_open({ type = "help" })<CR>' },
-        { '<leader>sh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
-        { '<leader>sj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
-        { '<leader>sk', '<cmd>Telescope keymaps<cr>', desc = 'Keymap' },
-        -- '<leader>sl' = 'Links in buffer' (see urlview.lua)
-        { '<leader>sm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
-        { '<leader>sM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
-        { '<leader>so', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
-        { '<leader>sr', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent file' },
-        { '<leader>sR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
-        { '<leader>ss', Util.telescope('live_grep'), desc = 'String' },
-        -- '<leader>st' = 'Todo' (see todo-comment.lua)
-        { '<leader>sw', Util.telescope('grep_string'), desc = 'Word under cursor' },
-        { '<leader>su', '<cmd>Telescope undo<cr>', desc = 'Undo history' },
-        { '<leader>sz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "git"
         { '<leader>gB', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
         { '<leader>gc', '<cmd>Telescope git_commits<cr>', desc = 'Commits' },
         { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Status' },
         { '<leader>gS', '<cmd>Telescope git_stash<cr>', desc = 'Stashes' },
-        -- "help"
+        -- "search"
+        { '<leader>s,', '<cmd>Telescope command_history<cr>', desc = 'Command (recent)' },
+        { '<leader>sa', '<cmd>Telescope autocommands<cr>', desc = 'Auto command' },
+        { '<leader>sb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
+        { '<leader>sc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
+        { '<leader>sd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
+        { '<leader>sf', '<cmd>lua require("telescope").extensions.smart_open.smart_open()<CR>' },
+        { '<leader>sh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
         { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
-        -- "keymaps"
+        { '<leader>sj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
+        { '<leader>sk', '<cmd>Telescope keymaps<cr>', desc = 'Keymap' },
         { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
+        -- '<leader>sl' = 'Links in buffer' (see urlview.lua)
+        { '<leader>sm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
+        { '<leader>sM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
+        -- '<leader>sn', 'Noice' (see noice.lua)
+        { '<leader>so', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
+        { '<leader>sr', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
+        { '<leader>ss', Util.telescope('live_grep'), desc = 'String' },
+        -- '<leader>st' = 'Todo' (see todo-comment.lua)
+        { '<leader>sw', Util.telescope('grep_string'), desc = 'Word under cursor' },
+        { '<leader>su', '<cmd>Telescope undo<cr>', desc = 'Undo history' },
+        { '<leader>sz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "UI"
         { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorschemes (with preview)' },
       }

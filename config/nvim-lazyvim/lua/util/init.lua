@@ -1,10 +1,5 @@
 local M = {}
 
--- @type fun(): table
-M.reset = function()
-  return {}
-end
-
 -- see: https://github.com/rcarriga/nvim-notify?tab=readme-ov-file#usage
 -- @type fun(): nil
 M.inspect = function(value)
