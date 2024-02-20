@@ -2,8 +2,6 @@ local actions = require('telescope.actions')
 -- local undo_actions = require('telescope-undo.actions')
 local Util = require('lazyvim.util')
 
-local extend = require('util').extend
-
 -- Support opening multiple files in the same picker session:
 -- see: https://github.com/nvim-telescope/telescope.nvim/issues/1048#issuecomment-1679797700
 local select_one_or_multi = function(prompt_bufnr)
@@ -85,7 +83,7 @@ return {
         layout_config = {
           flex = { width = 0.98, height = 0.97, preview_width = 0.5 },
           horizontal = { width = 0.98, height = 0.97, preview_width = 0.5 },
-          -- prompt_position = 'top',
+          prompt_position = 'top',
           vertical = { width = 0.98, height = 0.97, preview_width = 0.5 },
         },
         mappings = {

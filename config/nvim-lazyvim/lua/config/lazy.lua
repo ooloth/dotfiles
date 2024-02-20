@@ -23,6 +23,7 @@ require('lazy').setup({
     -- see: https://github.com/LazyVim/LazyVim/discussions/102#discussioncomment-4757701
     { import = 'plugins.ai' },
     { import = 'plugins.core' },
+    { import = 'plugins.database' },
     { import = 'plugins.debugging' },
     { import = 'plugins.editing' },
     { import = 'plugins.formatting' },
