@@ -15,30 +15,24 @@ set({ 'n', 'v' }, ':', ',') -- navigate f and t results using ;/: (like n/N for 
 set('n', '<S-h>', '^', { desc = 'Go to start of line' })
 set('n', '<S-l>', '$', { desc = 'Go to end of line' })
 
--- "actions" (see lsp.lua)
-
 -- "buffer"
 if Util.has('bufferline.nvim') then
   set('n', '<s-tab>', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
   set('n', '<tab>', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
-  set('n', '[b', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
-  set('n', ']b', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
-  set('n', '<leader>b[', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
-  set('n', '<leader>b]', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
+  set('n', '<leader>f[', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
+  set('n', '<leader>f]', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
 else
   set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
   set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
-  set('n', '[b', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
-  set('n', ']b', '<cmd>bnext<cr>', { desc = 'Next buffer' })
-  set('n', '<leader>b[', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
-  set('n', '<leader>b]', '<cmd>bnext<cr>', { desc = 'Next buffer' })
+  set('n', '<leader>f[', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
+  set('n', '<leader>f]', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 end
 set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
-set('n', '<leader>bb', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
+set('n', '<leader>ff', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
 -- Close all buffers but the current one (like leader-wo does for windows):
 -- https://stackoverflow.com/a/42071865/8802485
-set('n', '<leader>bo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this one' })
+set('n', '<leader>fo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this one' })
 
 -- "changes"
 set('n', ']c', 'g,', { desc = 'Next change' }) -- go to next change with g;

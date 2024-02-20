@@ -10,8 +10,8 @@ return {
   'echasnovski/mini.bufremove',
   keys = function()
     return {
-      { '<leader>bc', close_buffer, desc = 'Close buffer' },
-      { '<leader>bC', force_close_buffer, desc = 'Close buffer (force)' },
+      { '<leader>fc', close_buffer, desc = 'Close buffer' },
+      { '<leader>fC', force_close_buffer, desc = 'Close buffer (force)' },
       { '<leader>c', close_buffer, desc = 'Close buffer' },
       { '<leader>C', force_close_buffer, desc = 'Close buffer (force)' },
     }
