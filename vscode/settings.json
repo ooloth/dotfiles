@@ -7,9 +7,6 @@
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform"
   },
-  // "[yaml]": {
-  //   "editor.defaultFormatter": "redhat.vscode-yaml"
-  // },
   "css.lint.unknownAtRules": "ignore",
   "debug.console.fontFamily": "editor",
   "debug.console.fontSize": 0,
@@ -137,7 +134,6 @@
   "search.smartCase": true,
   "security.workspace.trust.untrustedFiles": "open",
   "settings.cycle": [
-    // Referenced in whichkey.bindings
     { "id": "lineNumbers", "values": [ { "editor.lineNumbers": "on", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "off", "vim.smartRelativeLine": false } ] },
     { "id": "prettier", "values": [
       { "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml]": { "editor.defaultFormatter": null } },

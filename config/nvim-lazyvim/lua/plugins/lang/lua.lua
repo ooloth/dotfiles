@@ -14,15 +14,17 @@ return {
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      extend(opts.ensure_installed, { 'lua', 'luadoc' })
+      extend(opts.ensure_installed, { 'lua', 'luadoc', 'luap' })
     end,
   },
 
   {
     'stevearc/conform.nvim',
-    opts = function(_, opts)
-      extend(opts.formatters_by_ft, { yaml = { 'stylua' } })
-    end,
+    opts = {
+      formatters_by_ft = {
+        lua = { 'stylua' },
+      },
+    },
   },
 
   -- {

@@ -29,7 +29,7 @@ return {
         'folke/which-key.nvim',
         opts = {
           defaults = {
-            ['<leader>a'] = { name = '+AI' },
+            ['<leader>a'] = { name = 'AI' },
           },
         },
       },

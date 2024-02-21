@@ -1,9 +1,45 @@
-return {}
+--  TODO: lsp?
+--  TODO: linting?
+--  TODO: https://www.lazyvim.org/extras/lang/tailwind
 
--- -- -- -- -- install everything we need (see: https://mason-registry.dev/registry/list)
--- -- -- -- require('mason-tool-installer').setup({ ensure_installed = { 'cssls' } })
--- -- -- -- vim.api.nvim_command('MasonToolsInstall')
--- -- -- --
+local extend = require('util').extend
+
+return {
+  {
+    'williamboman/mason.nvim',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'prettier' })
+    end,
+  },
+
+  {
+    'nvim-treesitter/nvim-treesitter',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'css', 'scss', 'styled' })
+    end,
+  },
+
+  {
+    'neovim/nvim-lspconfig',
+    opts = {
+      servers = {
+        cssls = {},
+      },
+    },
+  },
+
+  {
+    'stevearc/conform.nvim',
+    opts = {
+      formatters_by_ft = {
+        css = { 'prettier' },
+        less = { 'prettier' },
+        scss = { 'prettier' },
+      },
+    },
+  },
+}
+
 -- -- -- -- enable (broadcasting) snippet capability for completion
 -- -- -- local capabilities = vim.lsp.protocol.make_client_capabilities()
 -- -- -- capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -12,15 +48,3 @@ return {}
 -- -- require('lspconfig').cssls.setup({
 -- --   capabilities = capabilities,
 -- -- })
--- --
--- -- formatting (see: https://github.com/stevearc/conform.nvim#setup)
--- require('conform').setup({
---   formatters_by_ft = {
---     css = { 'prettier' },
---     less = { 'prettier' },
---     scss = { 'prettier' },
---   },
--- })
---
---  TODO: treesitter
---  TODO: linting?

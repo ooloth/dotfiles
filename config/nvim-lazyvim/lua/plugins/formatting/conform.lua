@@ -1,10 +1,11 @@
+--  TODO: https://www.lazyvim.org/extras/formatting/prettier
+
 -- see: https://github.com/stevearc/conform.nvim/blob/master/lua/conform/formatters/prettier.lua
 -- see: https://www.lazyvim.org/extras/formatting/prettier
 
 local util = require('util')
 local prefer_node_modules_executable = require('util.prefer_node_modules').prefer_node_modules_executable
 local extend = util.extend
-local reset = util.reset
 
 return {
   {
@@ -20,7 +21,9 @@ return {
     dependencies = {
       'williamboman/mason.nvim',
     },
-    keys = reset(),
+    keys = function()
+      return {}
+    end,
     opts = {
       -- see: https://github.com/stevearc/conform.nvim#options
       formatters = {

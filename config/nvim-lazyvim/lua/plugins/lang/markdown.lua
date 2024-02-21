@@ -1,3 +1,5 @@
+--  TODO: https://www.lazyvim.org/extras/lang/markdown
+
 local extend = require('util').extend
 
 return {
@@ -5,6 +7,13 @@ return {
     'williamboman/mason.nvim',
     opts = function(_, opts)
       extend(opts.ensure_installed, { 'markdownlint', 'marksman', 'vale-ls' })
+    end,
+  },
+
+  {
+    'nvim-treesitter/nvim-treesitter',
+    opts = function(_, opts)
+      extend(opts.ensure_installed, { 'markdown', 'markdown_inline', 'mermaid' })
     end,
   },
 
@@ -17,13 +26,6 @@ return {
         vale_ls = {},
       },
     },
-  },
-
-  {
-    'nvim-treesitter/nvim-treesitter',
-    opts = function(_, opts)
-      extend(opts.ensure_installed, { 'markdown', 'markdown_inline' })
-    end,
   },
 
   {

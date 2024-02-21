@@ -36,15 +36,21 @@ return {
 
   {
     'stevearc/conform.nvim',
-    opts = function(_, opts)
-      extend(opts.formatters_by_ft, { bash = { 'shfmt' }, sh = { 'shfmt' } })
-    end,
+    opts = {
+      formatters_by_ft = {
+        bash = { 'shfmt' },
+        sh = { 'shfmt' },
+      },
+    },
   },
 
   {
     'mfussenegger/nvim-lint',
-    opts = function(_, opts)
-      extend(opts.linters_by_ft, { bash = { 'shellcheck' }, sh = { 'shellcheck' } })
-    end,
+    opts = {
+      linters_by_ft = {
+        bash = { 'shellcheck' },
+        sh = { 'shellcheck' },
+      },
+    },
   },
 }

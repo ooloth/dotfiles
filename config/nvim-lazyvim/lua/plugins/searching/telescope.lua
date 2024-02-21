@@ -30,45 +30,50 @@ return {
       telescope.load_extension('undo')
     end,
     dependencies = {
-      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-      'folke/noice.nvim',
       'debugloop/telescope-undo.nvim',
+      'folke/noice.nvim',
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      {
+        'folke/which-key.nvim',
+        opts = {
+          defaults = {
+            ['<leader>s'] = { name = 'Search' },
+          },
+        },
+      },
     },
-    keys = function() -- replace all default keymaps
+    keys = function()
       return {
-        -- { '<leader><space>', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent files' },
-        { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Search buffer' },
+        { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Buffer' },
         { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
-        -- "find"
-        { '<leader>f,', '<cmd>Telescope command_history<cr>', desc = 'Command (recent)' },
-        { '<leader>fa', '<cmd>Telescope autocommands<cr>', desc = 'Auto command' },
-        { '<leader>fb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
-        { '<leader>fc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
-        { '<leader>fd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
-        { '<leader>ff', Util.telescope('files'), desc = 'File' },
-        { '<leader>fh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
-        { '<leader>fj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
-        { '<leader>fk', '<cmd>Telescope keymaps<cr>', desc = 'Keymap' },
-        -- '<leader>fl' = 'Links in buffer' (see urlview.lua)
-        { '<leader>fm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
-        { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
-        { '<leader>fo', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
-        { '<leader>fr', '<cmd>Telescope oldfiles cwd_only=true<cr>', desc = 'Recent file' },
-        { '<leader>fR', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
-        { '<leader>fs', Util.telescope('live_grep'), desc = 'String' },
-        -- '<leader>ft' = 'Todo' (see todo-comment.lua)
-        { '<leader>fw', Util.telescope('grep_string'), desc = 'Word under cursor' },
-        { '<leader>fu', '<cmd>Telescope undo<cr>', desc = 'Undo history' },
-        { '<leader>fz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "git"
         { '<leader>gB', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
         { '<leader>gc', '<cmd>Telescope git_commits<cr>', desc = 'Commits' },
         { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Status' },
         { '<leader>gS', '<cmd>Telescope git_stash<cr>', desc = 'Stashes' },
-        -- "help"
+        -- "search"
+        { '<leader>s,', '<cmd>Telescope command_history<cr>', desc = 'Command (recent)' },
+        { '<leader>sa', '<cmd>Telescope autocommands<cr>', desc = 'Auto command' },
+        { '<leader>sb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
+        { '<leader>sc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
+        { '<leader>sd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
+        { '<leader>sf', '<cmd>lua require("telescope").extensions.smart_open.smart_open()<CR>' },
+        { '<leader>sh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
         { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
-        -- "keymaps"
+        { '<leader>sj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
+        { '<leader>sk', '<cmd>Telescope keymaps<cr>', desc = 'Keymap' },
         { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
+        -- '<leader>sl' = 'Links in buffer' (see urlview.lua)
+        { '<leader>sm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
+        { '<leader>sM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
+        -- '<leader>sn', 'Noice' (see noice.lua)
+        { '<leader>so', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
+        { '<leader>sr', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
+        { '<leader>ss', Util.telescope('live_grep'), desc = 'String' },
+        -- '<leader>st' = 'Todo' (see todo-comment.lua)
+        { '<leader>sw', Util.telescope('grep_string'), desc = 'Word under cursor' },
+        { '<leader>su', '<cmd>Telescope undo<cr>', desc = 'Undo history' },
+        { '<leader>sz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "UI"
         { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorschemes (with preview)' },
       }
@@ -78,7 +83,7 @@ return {
         layout_config = {
           flex = { width = 0.98, height = 0.97, preview_width = 0.5 },
           horizontal = { width = 0.98, height = 0.97, preview_width = 0.5 },
-          -- prompt_position = 'top',
+          prompt_position = 'top',
           vertical = { width = 0.98, height = 0.97, preview_width = 0.5 },
         },
         mappings = {

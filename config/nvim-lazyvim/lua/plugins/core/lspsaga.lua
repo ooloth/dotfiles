@@ -1,9 +1,16 @@
+local extend = require('util').extend
+
 return {
   'nvimdev/lspsaga.nvim',
   event = 'BufRead',
   dependencies = {
     { 'nvim-tree/nvim-web-devicons' },
-    { 'nvim-treesitter/nvim-treesitter' }, -- please make sure you install markdown and markdown_inline parsers
+    {
+      'nvim-treesitter/nvim-treesitter',
+      opts = function(_, opts)
+        extend(opts.ensure_installed, { 'markdown', 'markdown_inline' })
+      end,
+    },
   },
   keys = function()
     -- stylua: ignore
@@ -13,7 +20,6 @@ return {
       { ']e', function() require('lspsaga.diagnostic'):goto_next({ severity = vim.diagnostic.severity.ERROR }) end, desc = 'Next diagnostic' },
       { '[e', function() require('lspsaga.diagnostic'):goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, desc = 'Previous diagnostic' },
       { 'ga', '<cmd>Lspsaga code_action<cr>', desc = 'Code actions' },
-      -- { 'gd', '<cmd>Lspsaga finder<cr>', desc = 'Definition, references & implentations' },
       { 'gd', '<cmd>Lspsaga goto_definition<cr>', desc = 'Definition' },
       { 'gh', '<cmd>Lspsaga hover_doc<cr>', desc = 'Hover' },
       { 'go', '<cmd>Lspsaga outline<cr>', desc = 'Symbol outline' },

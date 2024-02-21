@@ -1,3 +1,5 @@
+--  TODO: https://www.lazyvim.org/extras/lang/yaml (then uninstall?)
+
 -- The LazyVim YAML extra is installed (includes lsp + treesitter):
 -- https://www.lazyvim.org/extras/lang/yaml
 
@@ -13,8 +15,10 @@ return {
 
   {
     'stevearc/conform.nvim',
-    opts = function(_, opts)
-      extend(opts.formatters_by_ft, { yaml = { 'prettier' } })
-    end,
+    opts = {
+      formatters_by_ft = {
+        yaml = { 'prettier' },
+      },
+    },
   },
 }

@@ -1,7 +1,7 @@
--- TODO: testing: vitest
--- TODO: testing: jest
--- TODO: dap
--- TODO: astro, tailwindcss, svelte, vue (any in separate files?)
+--  TODO: dap
+--  TODO: testing: vitest
+--  TODO: testing: jest
+--  TODO: https://www.lazyvim.org/extras/lang/typescript
 
 -- see: https://www.lazyvim.org/extras/lang/typescript
 
