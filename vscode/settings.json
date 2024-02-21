@@ -43,7 +43,6 @@
   "editor.lineNumbers": "on",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
-  "editor.occurrencesHighlight": "off",
   "editor.quickSuggestions": {
     "strings": true
   },
