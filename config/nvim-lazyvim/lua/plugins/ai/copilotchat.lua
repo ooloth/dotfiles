@@ -35,9 +35,10 @@ return {
       },
     },
     opts = {
-      debug = false, -- Enable or disable debug mode, the log file will be in ~/.local/state/nvim/CopilotChat.nvim.log
-      disable_extra_info = 'no', -- Disable extra information (e.g: system prompt) in the response.
-      prompts = {
+      debug = false, -- Enable or disable debug mode
+      disable_extra_info = 'no', -- Disable extra information in the response
+      hide_system_prompt = 'yes', -- Hide system prompts in the response
+      prompts = { -- Set dynamic prompts for CopilotChat commands
         Explain = 'Please explain how the following code works.',
         Review = 'Please review the following code and provide suggestions for improvement.',
         Tests = 'Please explain how the selected code works, then generate unit tests for it.',
@@ -51,7 +52,8 @@ return {
         Wording = 'Please improve the grammar and wording of the following text.',
         Concise = 'Please rewrite the following text to make it more concise.',
       },
-      show_help = 'yes', -- Show help text for CopilotChatInPlace, default: yes
+      proxy = '', -- Proxies requests via https or socks
+      show_help = 'yes', -- Show help text for CopilotChatInPlace
     },
     build = function()
       vim.notify("Please update the remote plugins by running ':UpdateRemotePlugins', then restart Neovim.")
