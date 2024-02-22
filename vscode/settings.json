@@ -22,7 +22,7 @@
   "editor.foldingImportsByDefault": true,
   "editor.fontFamily": "'UbuntuMono Nerd Font', 'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
-  "editor.fontSize": 12.5,
+  "editor.fontSize": 13,
   "editor.fontWeight": "normal",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
@@ -40,7 +40,6 @@
   "editor.lineNumbers": "on",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
-  "editor.occurrencesHighlight": "off",
   "editor.quickSuggestions": {
     "strings": true
   },
