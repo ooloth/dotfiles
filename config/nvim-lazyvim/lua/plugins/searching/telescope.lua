@@ -57,7 +57,7 @@ return {
         { '<leader>sb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
         { '<leader>sc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
         { '<leader>sd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
-        { '<leader>sf', '<cmd>lua require("telescope").extensions.smart_open.smart_open()<CR>' },
+        { '<leader>sf', '<cmd>lua require("telescope").extensions.smart_open.smart_open({ cwd_only = true })<CR>' },
         { '<leader>sh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
         { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
         { '<leader>sj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
