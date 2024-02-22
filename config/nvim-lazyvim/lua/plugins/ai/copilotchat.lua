@@ -77,15 +77,16 @@ return {
       { '<leader>aD', '<cmd>CopilotChatDebugInfo<cr>', desc = 'Debug Info' },
       { '<leader>ae', '<cmd>CopilotChatExplain<cr>', desc = 'Explain code' },
       { '<leader>af', '<cmd>CopilotChatFixCode<cr>', desc = 'Fix code' },
-      { '<leader>ai', ':CopilotChatInPlace<cr>', mode = 'x', desc = 'Discuss selection in float' },
+      { '<leader>ai', '<cmd>CopilotChatInPlace<cr>', mode = 'x', desc = 'Discuss selection in float' },
       { '<leader>al', '<cmd>CopilotChatSpelling<cr>', desc = 'Correct spelling' },
       { '<leader>an', '<cmd>CopilotChatBetterNamings<cr>', desc = 'Better Name' },
       { '<leader>ar', '<cmd>CopilotChatReview<cr>', desc = 'Review code' },
       { '<leader>aR', '<cmd>CopilotChatRefactor<cr>', desc = 'Refactor code' },
       { '<leader>as', '<cmd>CopilotChatVisual<cr>', mode = 'x', desc = 'Discuss selection in split' },
       { '<leader>at', '<cmd>CopilotChatTests<cr>', desc = 'Generate tests' },
+      { '<leader>aw', '<cmd>CopilotChatWording<cr>', desc = 'Improve wording' },
       { '<leader>az', '<cmd>CopilotChatSummarize<cr>', desc = 'Summarize text' },
-      
+
       -- Generate commit message base on the git diff
       {
         '<leader>am',
