@@ -19,13 +19,9 @@ set('n', '<S-l>', '$', { desc = 'Go to end of line' })
 if Util.has('bufferline.nvim') then
   set('n', '<s-tab>', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
   set('n', '<tab>', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
-  set('n', '<leader>f[', '<cmd>BufferLineCyclePrev<cr>', { desc = 'Prev buffer' })
-  set('n', '<leader>f]', '<cmd>BufferLineCycleNext<cr>', { desc = 'Next buffer' })
 else
   set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
   set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
-  set('n', '<leader>f[', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
-  set('n', '<leader>f]', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 end
 set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 set('n', '<leader>ff', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
