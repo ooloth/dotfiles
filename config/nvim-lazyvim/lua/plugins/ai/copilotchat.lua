@@ -79,7 +79,7 @@ return {
       { '<leader>af', '<cmd>CopilotChatFixCode<cr>', desc = 'Fix code' },
       { '<leader>ai', ':CopilotChatInPlace<cr>', mode = 'x', desc = 'Discuss selection in float' },
       { '<leader>al', '<cmd>CopilotChatSpelling<cr>', desc = 'Correct spelling' },
-      { '<leader>aw', '<cmd>CopilotChatWording<cr>', desc = 'Improve wording' },
+      { '<leader>an', '<cmd>CopilotChatBetterNamings<cr>', desc = 'Better Name' },
       { '<leader>ar', '<cmd>CopilotChatReview<cr>', desc = 'Review code' },
       { '<leader>aR', '<cmd>CopilotChatRefactor<cr>', desc = 'Refactor code' },
       { '<leader>as', '<cmd>CopilotChatVisual<cr>', mode = 'x', desc = 'Discuss selection in split' },
