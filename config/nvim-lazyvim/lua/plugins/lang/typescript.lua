@@ -44,6 +44,9 @@ return {
           },
         },
         tsserver = {
+          keys = function()
+            return {}
+          end,
           -- see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#tsserver
           -- see: https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#tsserver-options
           settings = {
