@@ -32,6 +32,31 @@ if $IS_WORK_LAPTOP; then
   rl() { roadie lock -- $1; } # optionally "rl -c" etc
   rlc() { roadie lock -c; }
   ru() { pip install -U 'roadie[cli]'; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
+
+  run() {
+    local CURRENT_DIRECTORY=$(basename $PWD)
+
+    case $CURRENT_DIRECTORY in
+      # TODO: automatically rerun rv if any pip packages were updated
+      dash-phenoapp-v2) python phenoapp/app.py ;;
+      # silence out of control watchdog output when working locally
+      # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
+      # TODO: genie)
+      # TODO: genie-ui)
+      grey-havens)      ./run-local.sh ;;
+      iw-system)        dpu ;;
+      # TODO: javascript-template-react)
+      phenoapp)         pa && python phenoapp/app.py ;;
+      # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
+      # TODO: platelet)
+      # FIXME: do I really need "n" first?
+      platelet-ui)      n && du ;;
+      react-app)        ns ;;
+      tech)             ns ;;
+      *)                echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+    esac
+  }
+
   rv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
 
@@ -46,25 +71,12 @@ if $IS_WORK_LAPTOP; then
     fi
   }
 
-  run() {
-    local CURRENT_DIRECTORY=$(basename $PWD)
-
-    case $CURRENT_DIRECTORY in
-      # silence out of control watchdog output when working locally
-      dash-phenoapp-v2) python phenoapp/app.py ;;
-      grey-havens)      ./run-local.sh ;;
-      iw-system)        dpu ;;
-      # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
-      phenoapp)         pa && python phenoapp/app.py ;;
-      # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
-      platelet-ui)      n && du ;;
-      react-app)        ns ;;
-      tech)             ns ;;
-      *)                echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
-    esac
-  }
-
   alias tech='cd $HOME/Repos/recursionpharma/tech'
+
+  # TODO: test() {}
+  # TODO: format() {}
+  # TODO: lint() {}
+  # TODO: typecheck() {}
 
   # gcloud
   # see: https://cloud.google.com/sdk/docs/downloads-interactive
