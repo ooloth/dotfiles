@@ -64,6 +64,8 @@ if $IS_WORK_LAPTOP; then
     esac
   }
 
+  alias tech='cd $HOME/Repos/recursionpharma/tech'
+
   # gcloud
   # see: https://cloud.google.com/sdk/docs/downloads-interactive
   # The next line updates PATH for the Google Cloud SDK.
