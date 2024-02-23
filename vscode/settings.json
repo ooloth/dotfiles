@@ -403,7 +403,6 @@
   ],
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
-  "window.zoomLevel": 1,
   "workbench.colorCustomizations": {
     "[Catppuccin Mocha]": {
       "editorOverviewRuler.background":"#ffffff00",
@@ -443,7 +442,6 @@
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
   "terminal.integrated.tabs.enabled": false,
-  "terminal.integrated.fontSize": 12.5,
   "github.copilot.chat.localeOverride": "en",
   "workbench.sideBar.location": "right",
   "files.autoSaveDelay": 3000,
@@ -468,5 +466,8 @@
   "editor.scrollbar.horizontal": "hidden",
   "catppuccin.bracketMode": "monochromatic",
   "workbench.editor.editorActionsLocation": "hidden",
-  "prettier.useEditorConfig": false // avoid autoformatting in projects with no explicit .prettierrc (i.e. don't fall back to .editorconfig)
+  // avoid autoformatting in projects with no explicit .prettierrc (i.e. don't fall back to .editorconfig)
+  "prettier.useEditorConfig": false,
+  "window.zoomLevel": 1,
+  "terminal.integrated.fontSize": 13
 }
