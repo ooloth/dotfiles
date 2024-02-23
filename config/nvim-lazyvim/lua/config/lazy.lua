@@ -13,8 +13,6 @@ require('lazy').setup({
     { 'LazyVim/LazyVim', import = 'lazyvim.plugins' },
     -- 2. Import any extras modules here
     { import = 'lazyvim.plugins.extras.dap.nlua' }, -- lua dap adapter
-    --  NOTE: I can replace "s" with "cl" (n) or "c" (v)
-    { import = 'lazyvim.plugins.extras.editor.leap' }, -- https://www.lazyvim.org/extras/editor/leap (includes flit)
     { import = 'lazyvim.plugins.extras.lang.yaml' },
     { import = 'lazyvim.plugins.extras.test.core' }, -- https://www.lazyvim.org/extras/test/core
     -- 3. Import/override with your plugins
