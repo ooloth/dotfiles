@@ -163,7 +163,8 @@
   "totalTypeScript.hiddenTips": [
     "passing-generics-to-types",
     "pick-utility-type",
-    "record-utility-type"
+    "record-utility-type",
+    "tuple-type"
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
