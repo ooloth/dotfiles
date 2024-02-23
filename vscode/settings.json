@@ -162,15 +162,8 @@
   ],
   "totalTypeScript.hiddenTips": [
     "passing-generics-to-types",
-    // "non-null-expression",
-    // "keyof",
-    // "typeof",
-    "record-utility-type",
-    // "partial-utility-type",
-    // "nonnullable-utility-type",
-    // "omit-utility-type",
-    // "returntype-utility-type",
-    // "generic-slots-in-functions"
+    "pick-utility-type",
+    "record-utility-type"
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
