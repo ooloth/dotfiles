@@ -70,7 +70,7 @@ symbol = " "
 symbol = " "
 
 [gcloud]
-detect_env_vars = ['GOOGLE_CLOUD_PROJECT']
+detect_env_vars = ['STARSHIP_SHOW_GCLOUD_COMPONENT']
 format = ' [$symbol$project]($style)'
 symbol = ''
 # symbol = '󰅟  '

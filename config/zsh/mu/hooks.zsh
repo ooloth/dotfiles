@@ -1,6 +1,7 @@
 function chpwd() {
   activate_venv
-  set_gcloud_project_env_var
+  update_starship_gcloud_component
+  # set_gcloud_project_env_var
 }
 
 function precmd() {
@@ -21,6 +22,9 @@ activate_venv() {
 
   # if there's no pyenv venv for this directory, deactivate any venv sticking from a previous directory and be done
   if [[ ! -d "$PYENV_VENV" ]]; then
+    if [[ $(which python) == *".pyenv"* ]]; then
+      # TODO: deactivate any active pyenv venv without "pyenv shell --unset"
+    fi
     export VIRTUAL_ENV=''
     export PYTHONPATH=$HOME
     export MYPYPATH=$HOME
@@ -37,7 +41,6 @@ activate_venv() {
 }
 
 # FIXME: variable is being set even when not in a gcloud project
-# TODO: only show in projects where the active project is relevant
 function set_gcloud_project_env_var() {
   [[ ! $IS_WORK_LAPTOP ]] && return
 
@@ -57,9 +60,19 @@ function set_gcloud_project_env_var() {
   export GOOGLE_CLOUD_PROJECT=$current_project
 }
 
+update_starship_gcloud_component() {
+  local CURRENT_DIRECTORY=$(basename $PWD)
+
+  case $CURRENT_DIRECTORY in
+    dash-phenoapp-v2) export STARSHIP_SHOW_GCLOUD_COMPONENT='anyvalue' ;;
+    phenoapp)         export STARSHIP_SHOW_GCLOUD_COMPONENT='anyvalue' ;;
+    react-app)        export STARSHIP_SHOW_GCLOUD_COMPONENT='anyvalue' ;;
+    *)                unset SHOW_STARSHIP_GCLOUD_COMPONENT ;;
+  esac
+}
+
 # automatically activate appropriate venv when zsh first loads (called again in chpwd hook whenever cwd changes)
 activate_venv
 
 # automatically set GOOGLE_CLOUD_PROJECT when zsh first loads (called again in chwpd hook whenever cwd changes)
-set_gcloud_project_env_var
-
+# set_gcloud_project_env_var
