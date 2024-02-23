@@ -59,6 +59,7 @@ if $IS_WORK_LAPTOP; then
       # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
       platelet-ui)      n && du ;;
       react-app)        ns ;;
+      tech)             ns ;;
       *)                echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
