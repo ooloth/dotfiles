@@ -70,7 +70,7 @@ symbol = " "
 symbol = " "
 
 [gcloud]
-detect_env_vars = ['GOOGLE_CLOUD_PROJECT']
+detect_env_vars = ['STARSHIP_SHOW_GCLOUD_COMPONENT']
 format = ' [$symbol$project]($style)'
 symbol = ''
 # symbol = '󰅟  '
@@ -124,6 +124,14 @@ disabled = false
 detect_files = ['Dockerfile', 'docker-compose.yml', 'Kubernetesfile', 'helmfile.yaml']
 detect_folders = ['k8s', '.k8s', 'k8s-config', '.k8s-config', 'deploy', '.deploy']
 format = ' [$context:$namespace]($style)'
+
+[[kubernetes.contexts]]
+context_pattern='gke_eng-infrastructure_us-east1_principal'
+context_alias = 'principal'
+
+[[kubernetes.contexts]]
+context_pattern='gke_prod-cluster-cc74bd08_us-central1_prod-cluster'
+context_alias = 'prod-cluster'
 
 [[kubernetes.contexts]]
 context_pattern = 'gke_rp006-prod-49a893d8_us-central1_rp006-prod'

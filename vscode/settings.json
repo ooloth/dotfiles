@@ -168,6 +168,7 @@
     "typeof",
     "keyof",
     "omit-utility-type"
+    "tuple-type"
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
