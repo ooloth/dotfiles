@@ -83,6 +83,8 @@ local sections = {
   lualine_a = { { 'mode', padding = 0, separator = { left = '', right = '' } } },
   lualine_b = {
     empty,
+    { 'location', padding = 0, separator = { left = '', right = '' } },
+    empty,
     {
       'diagnostics',
       padding = 0,
@@ -96,8 +98,9 @@ local sections = {
     },
   },
   lualine_c = {
+    empty,
     -- see: https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#filename-component-options
-    { 'filename', path = 1 },
+    { 'filename', padding = 0, path = 1 },
     -- see: https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#windows-component-options
     -- { 'windows', show_filename_only = false },
     -- { Util.lualine.pretty_path() },
@@ -142,12 +145,10 @@ return {
     lazy = false,
     opts = function()
       return {
-        extensions = { 'neo-tree', 'nvim-dap-ui', 'quickfix', 'toggleterm' },
+        extensions = { 'neo-tree', 'nvim-dap-ui', 'quickfix', 'toggleterm' }, -- TODO: floaterm? others?
         inactive_sections = {},
         options = options,
         sections = sections,
-        -- sections = {},
-        -- tabline = sections,
         theme = 'catppuccin',
       }
     end,
