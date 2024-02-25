@@ -71,7 +71,7 @@ return {
         desc = 'Ask for something else',
       },
       -- Code related commands
-      { '<leader>ab', '<cmd>CopilotChatBetterNamings<cr>', desc = 'Better Name' },
+      { "<leader>ab", "<cmd>CopilotChatVsplitToggle<cr>", desc = "Toggle vertical split" },
       { '<leader>ac', '<cmd>CopilotChatConcise<cr>', desc = 'Make text concise' },
       { '<leader>ad', '<cmd>CopilotChatDocumentation<cr>', desc = 'Add documentation for code' },
       { '<leader>aD', '<cmd>CopilotChatDebugInfo<cr>', desc = 'Debug Info' },
