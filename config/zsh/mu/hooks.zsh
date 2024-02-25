@@ -9,9 +9,11 @@ function precmd() {
   eval $PROMPT_COMMAND
 }
 
+# TODO: if I keep tmux at the top, just statically set the prompt command to "echo"
 function preexec() {
+  export PROMPT_COMMAND="echo"
   # if cmd is not "clear" (or "c"), print a newline before the next prompt
-  [[ "$1" == "clear" ]] || [[ "$1" == "c" ]] && export PROMPT_COMMAND="" || export PROMPT_COMMAND="echo"
+  # [[ "$1" == "clear" ]] || [[ "$1" == "c" ]] && export PROMPT_COMMAND="" || export PROMPT_COMMAND="echo"
 }
 
 activate_venv() {
@@ -76,3 +78,4 @@ activate_venv
 
 # automatically set GOOGLE_CLOUD_PROJECT when zsh first loads (called again in chwpd hook whenever cwd changes)
 # set_gcloud_project_env_var
+

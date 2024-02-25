@@ -145,8 +145,9 @@ return {
         extensions = { 'neo-tree', 'nvim-dap-ui', 'quickfix', 'toggleterm' },
         inactive_sections = {},
         options = options,
-        sections = {},
-        tabline = sections,
+        sections = sections,
+        -- sections = {},
+        -- tabline = sections,
         theme = 'catppuccin',
       }
     end,

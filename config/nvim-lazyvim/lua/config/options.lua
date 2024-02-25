@@ -37,5 +37,4 @@ vim.opt.laststatus = 0 -- disable statusline since showing in tabline (via luali
 vim.opt.number = false
 vim.opt.relativenumber = false
 vim.opt.scrolloff = 12
-vim.opt.showtabline = 2
 vim.opt.spell = false
