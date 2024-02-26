@@ -7,6 +7,8 @@ if $IS_WORK_LAPTOP; then
   alias gci='gcloud init'
   alias gcpi='gcloud config set project eng-infrastructure'
   alias gcpn='gcloud config set project rp006-prod-49a893d8'
+  alias genie='cd $HOME/Repos/recursionpharma/genie'
+  alias gu='cd $HOME/Repos/recursionpharma/genie/genie-ui'
   alias mp='cd $HOME/Repos/recursionpharma/mapapp-public'
   n() { npm install -- $1; }
   nb() { n && npm run build; }
@@ -41,10 +43,9 @@ if $IS_WORK_LAPTOP; then
       dash-phenoapp-v2) python phenoapp/app.py ;;
       # silence out of control watchdog output when working locally
       # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
-      # TODO: genie)
-      # TODO: genie-ui)
+      genie)            du ;;
+      genie-ui)         ns ;;
       grey-havens)      ./run-local.sh ;;
-      iw-system)        dpu ;;
       # TODO: javascript-template-react)
       phenoapp)         pa && python phenoapp/app.py ;;
       # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
