@@ -43,8 +43,8 @@ if $IS_WORK_LAPTOP; then
       dash-phenoapp-v2) python phenoapp/app.py ;;
       # silence out of control watchdog output when working locally
       # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
+      # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
       genie)            du ;;
-      genie-ui)         ns ;;
       grey-havens)      ./run-local.sh ;;
       # TODO: javascript-template-react)
       phenoapp)         pa && python phenoapp/app.py ;;
