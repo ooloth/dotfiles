@@ -475,5 +475,5 @@
   "window.zoomLevel": 1,
   "terminal.integrated.fontSize": 13,
   "debug.hideLauncherWhileDebugging": true,
-  "debug.console.fontSize": 13
+  "debug.console.fontSize": 12.5
 }
