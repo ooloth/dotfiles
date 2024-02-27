@@ -9,8 +9,6 @@
   },
   "accessibility.dimUnfocused.enabled": true,
   "css.lint.unknownAtRules": "ignore",
-  "debug.console.fontFamily": "editor",
-  "debug.console.fontSize": 0,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.accessibilitySupport": "off",
@@ -474,5 +472,7 @@
   // avoid autoformatting in projects with no explicit .prettierrc (i.e. don't fall back to .editorconfig)
   "prettier.useEditorConfig": false,
   "window.zoomLevel": 1,
-  "terminal.integrated.fontSize": 13
+  "terminal.integrated.fontSize": 13,
+  "debug.hideLauncherWhileDebugging": true,
+  "debug.console.fontSize": 13
 }
