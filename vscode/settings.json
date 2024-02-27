@@ -167,7 +167,7 @@
     "record-utility-type",
     "typeof",
     "keyof",
-    "omit-utility-type"
+    "omit-utility-type",
     "tuple-type"
   ],
   "totalTypeScript.hideAllTips": false,
