@@ -235,7 +235,7 @@
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
     { "key": "\\", "name": "Split editor right", "command": "workbench.action.splitEditorToRightGroup", "type": "command" },
-    { "key": ".", "name": "Quick fix", "command": "editor.action.quickFix", "type": "command" },
+    { "key": ".", "name": "Repeat last command", "command": "whichkey.repeatMostRecent", "type": "command" },
 
     { "key": "a", "name": "+AI", "type": "bindings", "bindings": [
       { "key": "a", "name": "Open chat session in sidebar", "command": "workbench.action.chat.open", "type": "command" },
