@@ -8,6 +8,7 @@
     "editor.defaultFormatter": "hashicorp.terraform"
   },
   "accessibility.dimUnfocused.enabled": true,
+  "accessibility.dimUnfocused.opacity": 0.85,
   "css.lint.unknownAtRules": "ignore",
   "debug.console.fontFamily": "editor",
   "debug.console.fontSize": 0,
@@ -162,13 +163,14 @@
     // { "backgroundColor": "transparent", "color": "#c3e88d", "text": "NOTE:" }
   ],
   "totalTypeScript.hiddenTips": [
+    "in-operator-narrowing",
     "passing-generics-to-types",
     "pick-utility-type",
     "record-utility-type",
-    "typeof",
     "keyof",
-    "omit-utility-type"
-    "tuple-type"
+    "omit-utility-type",
+    "tuple-type",
+    "typeof"
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
