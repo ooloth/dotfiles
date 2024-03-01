@@ -10,8 +10,6 @@
   "accessibility.dimUnfocused.enabled": true,
   "accessibility.dimUnfocused.opacity": 0.85,
   "css.lint.unknownAtRules": "ignore",
-  "debug.console.fontFamily": "editor",
-  "debug.console.fontSize": 0,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.accessibilitySupport": "off",
@@ -237,7 +235,7 @@
     { "key": " ", "name": "Commands", "command": "workbench.action.showCommands", "type": "command" },
     { "key": "?", "name": "Search keybindings", "command": "whichkey.searchBindings", "type": "command" },
     { "key": "\\", "name": "Split editor right", "command": "workbench.action.splitEditorToRightGroup", "type": "command" },
-    { "key": ".", "name": "Quick fix", "command": "editor.action.quickFix", "type": "command" },
+    { "key": ".", "name": "Repeat last command", "command": "whichkey.repeatMostRecent", "type": "command" },
 
     { "key": "a", "name": "+AI", "type": "bindings", "bindings": [
       { "key": "a", "name": "Open chat session in sidebar", "command": "workbench.action.chat.open", "type": "command" },
@@ -254,18 +252,19 @@
     { "key": "b", "name": "Toggle sidebar", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
 
     { "key": "d", "name": "+Debugger", "type": "bindings", "bindings": [
-      { "key": "d", "name": "Start", "command": "workbench.action.debug.start", "type": "command" },
-      { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
-      { "key": "S", "name": "Stop", "command": "workbench.action.debug.stop", "type": "command" },
-      { "key": "c", "name": "Continue", "command": "workbench.action.debug.continue", "type": "command" },
-      { "key": "p", "name": "Pause", "command": "workbench.action.debug.pause", "type": "command" },
-      { "key": "R", "name": "Restart", "command": "workbench.action.debug.restart", "type": "command" },
-      { "key": "i", "name": "Step into", "command": "workbench.action.debug.stepInto", "type": "command" },
-      { "key": "o", "name": "Step out", "command": "workbench.action.debug.stepOut", "type": "command" },
-      { "key": "s", "name": "Step over", "command": "workbench.action.debug.stepOver", "type": "command" },
       { "key": "b", "name": "Toggle breakpoint", "command": "editor.debug.action.toggleBreakpoint", "type": "command" },
       { "key": "B", "name": "Toggle inline breakpoint", "command": "editor.debug.action.toggleInlineBreakpoint", "type": "command" },
+      { "key": "c", "name": "Continue", "command": "workbench.action.debug.continue", "type": "command" },
+      { "key": "d", "name": "Start", "command": "workbench.action.debug.start", "type": "command" },
+      { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
       { "key": "j", "name": "Jump to cursor", "command": "debug.jumpToCursor", "type": "command" },
+      { "key": "i", "name": "Step into", "command": "workbench.action.debug.stepInto", "type": "command" },
+      { "key": "o", "name": "Step out", "command": "workbench.action.debug.stepOut", "type": "command" },
+      { "key": "p", "name": "Pause", "command": "workbench.action.debug.pause", "type": "command" },
+      { "key": "r", "name": "Inspect in REPL", "command": "editor.debug.action.selectionToRepl", "type": "command" },
+      { "key": "R", "name": "Restart", "command": "workbench.action.debug.restart", "type": "command" },
+      { "key": "s", "name": "Step over", "command": "workbench.action.debug.stepOver", "type": "command" },
+      { "key": "S", "name": "Stop", "command": "workbench.action.debug.stop", "type": "command" },
       { "key": "v", "name": "REPL", "command": "workbench.debug.action.toggleRepl", "type": "command" },
       { "key": "w", "name": "Focus on watch window", "command": "workbench.debug.action.focusWatchView", "type": "command" },
       { "key": "W", "name": "Add to watch", "command": "editor.debug.action.selectionToWatch", "type": "command" }
@@ -476,5 +475,7 @@
   // avoid autoformatting in projects with no explicit .prettierrc (i.e. don't fall back to .editorconfig)
   "prettier.useEditorConfig": false,
   "window.zoomLevel": 1,
-  "terminal.integrated.fontSize": 13
+  "terminal.integrated.fontSize": 13,
+  "debug.hideLauncherWhileDebugging": true,
+  "debug.console.fontSize": 12.5
 }
