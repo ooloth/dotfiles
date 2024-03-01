@@ -153,9 +153,10 @@ symbol = "󰆥 "
 symbol = " "
 
 [nodejs]
-detect_extensions=[]
-detect_files=['package.json']
-detect_folders=[]
+# detect_extensions=["*"]
+# detect_files=['package.json']
+# detect_files=[]
+# detect_folders=[]
 format = ' [$symbol$version]($style)'
 symbol = ""
 # symbol = " "
