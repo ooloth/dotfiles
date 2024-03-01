@@ -160,6 +160,7 @@ symbol = " "
 format = ' [$symbol$version]($style)'
 symbol = ""
 # symbol = " "
+version_format = "${raw}"
 
 [ocaml]
 symbol = " "
