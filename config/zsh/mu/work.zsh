@@ -40,14 +40,14 @@ if $IS_WORK_LAPTOP; then
 
     case $CURRENT_DIRECTORY in
       # TODO: automatically rerun rv if any pip packages were updated
-      dash-phenoapp-v2) python phenoapp/app.py ;;
+      dash-phenoapp-v2) pip install jupyter && python phenoapp/app.py ;;
       # silence out of control watchdog output when working locally
       # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
       # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
       genie)            du ;;
       grey-havens)      ./run-local.sh ;;
       # TODO: javascript-template-react)
-      phenoapp)         pa && python phenoapp/app.py ;;
+      phenoapp)         pa && pip install jupyter && python phenoapp/app.py ;;
       # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
       # TODO: platelet)
       # FIXME: do I really need "n" first?
