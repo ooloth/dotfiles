@@ -33,7 +33,7 @@ if $IS_WORK_LAPTOP; then
   r() { cd $HOME/Repos/recursionpharma; }
   rl() { roadie lock -- $1; } # optionally "rl -c" etc
   rlc() { roadie lock -c; }
-  ru() { pip install -U 'roadie[cli]'; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
+  ru() { pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
 
   run() {
     local CURRENT_DIRECTORY=$(basename $PWD)
