@@ -10,6 +10,7 @@ if $IS_WORK_LAPTOP; then
   alias genie='cd $HOME/Repos/recursionpharma/genie'
   alias gu='cd $HOME/Repos/recursionpharma/genie/genie-ui'
   alias mp='cd $HOME/Repos/recursionpharma/mapapp-public'
+
   n() { npm install -- $1; }
   nb() { n && npm run build; }
   nfc() { npm run format:check; }
@@ -21,16 +22,18 @@ if $IS_WORK_LAPTOP; then
   ns() { n && npm run start; }
   nt() { npm run test -- $1; }
   nu() { n && npm-check -u; }
-  pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2; }
-  pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp; }
-  paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app; }
-  pm() { cd $HOME/Repos/recursionpharma/phenomap; }
-  pr() { cd $HOME/Repos/recursionpharma/phenoreader; }
-  psa() { cd $HOME/Repos/recursionpharma/phenoservice-api; }
-  psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer; }
+
+  alias pa='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2'
+  alias pab='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp'
+  alias paf='cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app'
+  alias pm='cd $HOME/Repos/recursionpharma/phenomap'
+  alias pr='cd $HOME/Repos/recursionpharma/phenoreader'
+  alias psa='cd $HOME/Repos/recursionpharma/phenoservice-api'
+  alias psc='cd $HOME/Repos/recursionpharma/phenoservice-consumer'
   alias pu='cd $HOME/Repos/recursionpharma/platelet-ui'
   alias pw='cd $HOME/Repos/recursionpharma/processing-witch'
-  r() { cd $HOME/Repos/recursionpharma; }
+  alias r='cd $HOME/Repos/recursionpharma'
+
   rl() { roadie lock -- $1; } # optionally "rl -c" etc
   rlc() { roadie lock -c; }
   ru() { pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
