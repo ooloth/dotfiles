@@ -1,13 +1,16 @@
 if $IS_WORK_LAPTOP; then
 
   alias bp='cd $HOME/Repos/recursionpharma/build-pipelines'
+  cauldron() { cd $HOME/Repos/recursionpharma/cauldron; }
   alias eo='cd $HOME/Repos/recursionpharma/eng-onboarding'
   # see: https://stackoverflow.com/a/51563857/8802485
+  # see: https://cloud.google.com/docs/authentication/gcloud#gcloud-credentials
   alias gca='gcloud auth login'
+  alias gcaa='gcloud auth application-default login'
   alias gci='gcloud init'
   alias gcpi='gcloud config set project eng-infrastructure'
   alias gcpn='gcloud config set project rp006-prod-49a893d8'
-  alias genie='cd $HOME/Repos/recursionpharma/genie'
+  genie() { cd $HOME/Repos/recursionpharma/genie; }
   alias gu='cd $HOME/Repos/recursionpharma/genie/genie-ui'
   alias mp='cd $HOME/Repos/recursionpharma/mapapp-public'
 
@@ -30,36 +33,13 @@ if $IS_WORK_LAPTOP; then
   alias pr='cd $HOME/Repos/recursionpharma/phenoreader'
   alias psa='cd $HOME/Repos/recursionpharma/phenoservice-api'
   alias psc='cd $HOME/Repos/recursionpharma/phenoservice-consumer'
-  alias pu='cd $HOME/Repos/recursionpharma/platelet-ui'
+  pu() { cd $HOME/Repos/recursionpharma/platelet-ui; }
   alias pw='cd $HOME/Repos/recursionpharma/processing-witch'
   alias r='cd $HOME/Repos/recursionpharma'
 
   rl() { roadie lock -- $1; } # optionally "rl -c" etc
   rlc() { roadie lock -c; }
-  ru() { pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
-
-  run() {
-    local CURRENT_DIRECTORY=$(basename $PWD)
-
-    case $CURRENT_DIRECTORY in
-      # TODO: automatically rerun rv if any pip packages were updated
-      dash-phenoapp-v2) pip install jupyter && python phenoapp/app.py ;;
-      # silence out of control watchdog output when working locally
-      # dash-phenoapp-v2) pip uninstall watchdog -y && python phenoapp/app.py ;;
-      # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
-      genie)            du ;;
-      grey-havens)      ./run-local.sh ;;
-      # TODO: javascript-template-react)
-      phenoapp)         pa && pip install jupyter && python phenoapp/app.py ;;
-      # phenoapp)         pa && pip uninstall watchdog -y && python phenoapp/app.py ;;
-      # TODO: platelet)
-      # FIXME: do I really need "n" first?
-      platelet-ui)      n && du ;;
-      react-app)        ns ;;
-      tech)             ns ;;
-      *)                echo "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
-    esac
-  }
+  ru() { python -m pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
 
   rv() {
     local CURRENT_DIRECTORY=$(basename $PWD)
@@ -72,7 +52,79 @@ if $IS_WORK_LAPTOP; then
     if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
       # see: https://pip.pypa.io/en/stable/cli/pip_uninstall/
       pip uninstall watchdog -y
+      pip install jupyter
     fi
+  }
+
+  start() {
+    local CURRENT_DIRECTORY=$(basename $PWD)
+
+    case $CURRENT_DIRECTORY in
+      cauldron)
+        du ;;
+
+      dash-phenoapp-v2)
+        # TODO: automatically rerun rv if any pip packages were updated
+        du
+        python phenoapp/app.py ;;
+
+      genie)
+        # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
+        du ;;
+
+      grey-havens)
+        ./run-local.sh ;;
+
+      # TODO: javascript-template-react)
+
+      phenoapp)
+        pa && python phenoapp/app.py ;;
+
+      platelet-ui)
+        printf "🏁 Starting cauldron, genie and platelet-ui...\n"
+        cauldron && du
+        genie && du
+        pu && n && du ;;
+
+      processing-witch)
+        python -m main ;;
+
+      react-app)
+        ns ;;
+
+      tech)
+        ns ;;
+
+      *)
+        printf "🚨 No 'start' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+    esac
+  }
+
+  stop() {
+    local CURRENT_DIRECTORY=$(basename $PWD)
+
+    case $CURRENT_DIRECTORY in
+      cauldron)
+        dd ;;
+
+      dash-phenoapp-v2)
+        dd ;;
+
+      genie)
+        dd ;;
+
+      phenoapp)
+        dd ;;
+
+      platelet-ui)
+        printf "✋ Stopping cauldron, genie and platelet-ui...\n"
+        cauldron && dd
+        genie && dd
+        pu && dd ;;
+
+      *)
+        echo "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+    esac
   }
 
   alias tech='cd $HOME/Repos/recursionpharma/tech'
