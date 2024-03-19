@@ -80,13 +80,22 @@ if $IS_WORK_LAPTOP; then
       phenoapp)
         pa && python phenoapp/app.py ;;
 
+      platelet)
+        # see: https://github.com/recursionpharma/platelet/blob/trunk/docs/setup/index.md
+        printf "🏁 Starting platelet...\n"
+        gcpe
+        du ;;
+
       platelet-ui)
-        printf "🏁 Starting cauldron, genie and platelet-ui...\n"
-        cauldron && du
-        genie && du
-        pu && n && du ;;
+        printf "🏁 Starting cauldron, genie, skurge, platelet and platelet-ui...\n"
+        cauldron && dud
+        genie && dud
+        pl && dud
+        skurge && dud
+        plu && n && du ;;
 
       processing-witch)
+        # TODO: start anything else locally? leverage docker compose?
         python -m main ;;
 
       react-app)
@@ -120,10 +129,15 @@ if $IS_WORK_LAPTOP; then
         dd ;;
 
       platelet-ui)
-        printf "✋ Stopping cauldron, genie and platelet-ui...\n"
+        printf "✋ Stopping cauldron, genie, skurge, platelet and platelet-ui...\n"
         cauldron && dd
         genie && dd
-        pu && dd ;;
+        pl && dd
+        skurge && dd
+        plu && dd ;;
+
+      skurge)
+        dd ;;
 
       *)
         echo "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
