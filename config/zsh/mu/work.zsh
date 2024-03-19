@@ -54,6 +54,8 @@ if $IS_WORK_LAPTOP; then
     fi
   }
 
+  skurge() { cd $HOME/Repos/recursionpharma/skurge; }
+
   start() {
     local CURRENT_DIRECTORY=$(basename $PWD)
 
@@ -89,6 +91,9 @@ if $IS_WORK_LAPTOP; then
 
       react-app)
         ns ;;
+
+      skurge)
+        du ;;
 
       tech)
         ns ;;
