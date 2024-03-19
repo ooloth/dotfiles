@@ -8,7 +8,7 @@
     "editor.defaultFormatter": "hashicorp.terraform"
   },
   "accessibility.dimUnfocused.enabled": true,
-  "accessibility.dimUnfocused.opacity": 0.85,
+  "accessibility.dimUnfocused.opacity": 0.95,
   "css.lint.unknownAtRules": "ignore",
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.acceptSuggestionOnCommitCharacter": false,
@@ -102,11 +102,13 @@
   "gitlens.currentLine.enabled": false,
   "gitlens.graph.statusBar.enabled": false,
   "gitlens.mode.statusBar.enabled": false,
+  "go.alternateTools": {
+    // see: https://github.com/golang/vscode-go/issues/971#issuecomment-1506756761
+    "go": "/opt/homebrew/bin/go",
+  },
   // allow installing extensions via the cli
   // see: https://stackoverflow.com/questions/36506539/how-do-i-get-visual-studio-code-to-trust-our-self-signed-proxy-certificate
   "http.proxyStrictSSL": false,
-  "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "javascript.inlayHints.parameterTypes.enabled": true,
   "javascript.preferences.importModuleSpecifier": "relative",
   "javascript.updateImportsOnFileMove.enabled": "always",
   "markdown.preview.fontSize": 0,
@@ -450,7 +452,6 @@
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
   "zenMode.hideStatusBar": true,
-  "terminal.integrated.tabs.enabled": false,
   "github.copilot.chat.localeOverride": "en",
   "workbench.sideBar.location": "right",
   "files.autoSaveDelay": 3000,
@@ -475,7 +476,6 @@
   "workbench.editor.editorActionsLocation": "hidden",
   // avoid autoformatting in projects with no explicit .prettierrc (i.e. don't fall back to .editorconfig)
   "prettier.useEditorConfig": false,
-  "window.zoomLevel": 1,
   "terminal.integrated.fontSize": 13,
   "debug.hideLauncherWhileDebugging": true,
   "debug.console.fontSize": 12.5,
@@ -483,9 +483,13 @@
   "python.analysis.inlayHints.callArgumentNames": "partial",
   "Lua.hint.enable": true,
   "python.analysis.inlayHints.functionReturnTypes": true,
-  "python.analysis.inlayHints.pytestParameters": true,
-  "python.analysis.inlayHints.variableTypes": true,
-  "javascript.inlayHints.parameterNames.enabled": "all",
   "typescript.inlayHints.parameterNames.enabled": "literals",
-  "typescript.inlayHints.parameterTypes.enabled": true
+  "vs-kubernetes": {
+    "vs-kubernetes.crd-code-completion": "disabled"
+  },
+  "terminal.integrated.enableImages": true,
+  "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
+  "window.zoomLevel": 1,
+  "python.analysis.addImport.heuristics": true,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": true
 }
