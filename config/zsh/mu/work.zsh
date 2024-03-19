@@ -159,6 +159,10 @@ if $IS_WORK_LAPTOP; then
   # The next line enables shell command completion for gcloud.
   if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
 
+  # see: https://stackoverflow.com/a/47867652/8802485
+  # see: https://cloud.google.com/docs/authentication/application-default-credentials
+  export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
+
   # grey-havens
   export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
   export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1
