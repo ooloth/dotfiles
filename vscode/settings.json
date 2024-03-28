@@ -358,14 +358,14 @@
     ]},
 
     { "key": "o", "name": "+Open", "type": "bindings", "bindings": [
-      { "key": "d", "name": "Open debug console", "command": "workbench.debug.action.toggleRepl", "type": "command" },
-      { "key": "e", "name": "Open explorer", "command": "workbench.view.explorer", "type": "command" },
-      { "key": "g", "name": "Open source control", "command": "workbench.view.scm", "type": "command" },
-      { "key": "o", "name": "Open outputs", "command": "workbench.action.output.toggleOutput", "type": "command" },
-      { "key": "p", "name": "Open problems", "command": "workbench.actions.view.problems", "type": "command" },
-      { "key": "r", "name": "Open remote explorer", "command": "workbench.view.remote", "type": "command" },
-      // { "key": "t", "name": "Open test", "command": "workbench.view.extension.test", "type": "command" },
-      { "key": "x", "name": "Open extensions", "command": "workbench.view.extensions", "type": "command" }
+      { "key": "b", "name": "Sidebar (toggle)", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
+      { "key": "e", "name": "Explorer", "command": "workbench.view.explorer", "type": "command" },
+      { "key": "E", "name": "Explorer (remote)", "command": "workbench.view.remote", "type": "command" },
+      { "key": "g", "name": "Git (source control)", "command": "workbench.view.scm", "type": "command" },
+      { "key": "o", "name": "Output", "command": "workbench.action.output.toggleOutput", "type": "command" },
+      { "key": "p", "name": "Problems", "command": "workbench.actions.view.problems", "type": "command" },
+      // { "key": "t", "name": "Tests", "command": "workbench.view.extension.test", "type": "command" },
+      { "key": "x", "name": "Extensions", "command": "workbench.view.extensions", "type": "command" }
     ]},
 
     { "key": "p", "name": "+Problems", "type": "bindings", "bindings": [
