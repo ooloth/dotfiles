@@ -104,7 +104,7 @@
   "gitlens.mode.statusBar.enabled": false,
   "go.alternateTools": {
     // see: https://github.com/golang/vscode-go/issues/971#issuecomment-1506756761
-    "go": "/opt/homebrew/bin/go",
+    "go": "/opt/homebrew/bin/go"
   },
   // allow installing extensions via the cli
   // see: https://stackoverflow.com/questions/36506539/how-do-i-get-visual-studio-code-to-trust-our-self-signed-proxy-certificate
@@ -257,6 +257,8 @@
     { "key": "b", "name": "Toggle sidebar", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
 
     { "key": "d", "name": "+Debugger", "type": "bindings", "bindings": [
+      { "key": "[", "name": "Prev REPL (debug console)", "command": "workbench.action.debug.prevConsole", "type": "command" },
+      { "key": "]", "name": "Next REPL (debug console)", "command": "workbench.action.debug.nextConsole", "type": "command" },
       { "key": "b", "name": "Toggle breakpoint", "command": "editor.debug.action.toggleBreakpoint", "type": "command" },
       { "key": "B", "name": "Add conditional breakpoint", "command": "editor.debug.action.conditionalBreakpoint", "type": "command" },
       { "key": "c", "name": "Continue", "command": "workbench.action.debug.continue", "type": "command" },
