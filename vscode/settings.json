@@ -489,7 +489,8 @@
   },
   "terminal.integrated.enableImages": true,
   "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
-  "window.zoomLevel": 1,
   "python.analysis.addImport.heuristics": true,
-  "javascript.inlayHints.functionLikeReturnTypes.enabled": true
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "terminal.integrated.tabs.enabled": false,
+  "window.zoomLevel": 1
 }
