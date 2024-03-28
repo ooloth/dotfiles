@@ -401,6 +401,17 @@
       { "key": "S", "name": "Search symbols in project", "command": "workbench.action.showAllSymbols", "type": "command" }
     ]},
 
+     { "key": "t", "name": "+Terminal", "type": "bindings", "bindings": [
+      // NOTE: can also use ctrl+[] to navigate terminal groups more quickly
+      { "key": "[", "name": "Focus prev group", "command": "workbench.action.terminal.focusPrevious", "type": "command" },
+      { "key": "]", "name": "Focus prev group", "command": "workbench.action.terminal.focusNext", "type": "command" },
+      { "key": "m", "name": "Toggle maximized panel", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
+      { "key": "n", "name": "New terminal", "command": "workbench.action.terminal.new", "type": "command" },
+      { "key": "t", "name": "Toggle terminal", "command": "workbench.action.terminal.toggleTerminal", "type": "command" },
+      { "key": "y", "name": "Copy output of last command", "command": "workbench.action.terminal.copyLastCommandOutput", "type": "command" },
+      { "key": "Y", "name": "Copy last command and output", "command": "workbench.action.terminal.copyLastCommandAndLastCommandOutput", "type": "command" }
+    ]},
+
     { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
       { "key": "a", "name": "Toggle activity bar", "command": "workbench.action.toggleActivityBarVisibility", "type": "command" },
       { "key": "b", "name": "Toggle sidebar", "command": "workbench.action.toggleSidebarVisibility", "type": "command" },
