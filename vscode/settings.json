@@ -273,7 +273,7 @@
       { "key": "R", "name": "Restart", "command": "workbench.action.debug.restart", "type": "command" },
       { "key": "s", "name": "Step over", "command": "workbench.action.debug.stepOver", "type": "command" },
       { "key": "S", "name": "Stop", "command": "workbench.action.debug.stop", "type": "command" },
-      { "key": "v", "name": "REPL", "command": "workbench.debug.action.toggleRepl", "type": "command" },
+      { "key": "x", "name": "Clear REPL", "command": "workbench.debug.panel.action.clearReplAction", "type": "command" },
       { "key": "w", "name": "Focus on watch window", "command": "workbench.debug.action.focusWatchView", "type": "command" },
       { "key": "W", "name": "Add to watch", "command": "editor.debug.action.selectionToWatch", "type": "command" }
     ]},
