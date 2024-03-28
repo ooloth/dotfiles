@@ -71,9 +71,9 @@ symbol = " "
 
 [gcloud]
 detect_env_vars = ['STARSHIP_SHOW_GCLOUD_COMPONENT']
-format = ' [$symbol$project]($style)'
-symbol = ''
-# symbol = '󰅟  '
+format = '  [$symbol$project]($style)'
+# symbol = ''
+symbol = '󰅟  '
 # symbol = "  "
 
 [gcloud.project_aliases]
@@ -92,7 +92,9 @@ symbol = " "
 disabled = true
 
 [golang]
+format = '  [$symbol$version]($style)'
 symbol = " "
+version_format = "${raw}"
 
 [guix_shell]
 symbol = " "
@@ -119,11 +121,11 @@ symbol = " "
 symbol = " "
 
 [kubernetes]
-symbol = '☸ '
-disabled = false
 # detect_files = ['Dockerfile', 'docker-compose.yml', 'Kubernetesfile', 'helmfile.yaml']
 detect_folders = ['k8s', '.k8s', 'k8s-config', '.k8s-config', 'deploy', '.deploy']
-format = ' [$context:$namespace]($style)'
+disabled = false
+format = '  [$context:$namespace]($style)'
+symbol = '☸ '
 
 [[kubernetes.contexts]]
 context_pattern='gke_eng-infrastructure_us-east1_principal'
@@ -157,9 +159,10 @@ symbol = " "
 # detect_files=['package.json']
 # detect_files=[]
 # detect_folders=[]
-format = ' [$symbol$version]($style)'
-symbol = ""
-# symbol = " "
+format = '  [$symbol$version]($style)'
+style = 'bold green'
+# symbol = ""
+symbol = " "
 version_format = "${raw}"
 
 [ocaml]
@@ -222,9 +225,9 @@ symbol = " "
 [python]
 # detect_extensions = []
 # detect_files=[]
-format = ' [${symbol}(${version})( \($virtualenv\))]($style)'
-symbol = ""
-# symbol = " "
+format = '  [${symbol}(${version})( \($virtualenv\))]($style)'
+# symbol = ""
+symbol = "  "
 version_format = "${raw}"
 
 [rlang]
