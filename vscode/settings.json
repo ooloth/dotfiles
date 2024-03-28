@@ -258,7 +258,7 @@
 
     { "key": "d", "name": "+Debugger", "type": "bindings", "bindings": [
       { "key": "b", "name": "Toggle breakpoint", "command": "editor.debug.action.toggleBreakpoint", "type": "command" },
-      { "key": "B", "name": "Toggle inline breakpoint", "command": "editor.debug.action.toggleInlineBreakpoint", "type": "command" },
+      { "key": "B", "name": "Add conditional breakpoint", "command": "editor.debug.action.conditionalBreakpoint", "type": "command" },
       { "key": "c", "name": "Continue", "command": "workbench.action.debug.continue", "type": "command" },
       { "key": "d", "name": "Start", "command": "workbench.action.debug.start", "type": "command" },
       { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
