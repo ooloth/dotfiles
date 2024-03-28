@@ -459,7 +459,7 @@
   "workbench.fontAliasing": "auto",
   "workbench.iconTheme": "eq-material-theme-icons-palenight",
   "workbench.layoutControl.enabled": false,
-  "workbench.panel.opensMaximized": "always",
+  "workbench.panel.opensMaximized": "preserve",
   "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
   "workbench.startupEditor": "newUntitledFile",
   "workbench.tree.indent": 14,
