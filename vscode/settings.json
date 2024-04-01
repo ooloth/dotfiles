@@ -506,5 +506,6 @@
   "python.analysis.addImport.heuristics": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "terminal.integrated.tabs.enabled": false,
-  "window.zoomLevel": 1
+  "window.zoomLevel": 1,
+  "workbench.activityBar.location": "hidden"
 }
