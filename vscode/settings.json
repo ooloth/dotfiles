@@ -274,9 +274,10 @@
       { "key": "R", "name": "Inspect in REPL", "command": "editor.debug.action.selectionToRepl", "type": "command" },
       { "key": "s", "name": "Step over", "command": "workbench.action.debug.stepOver", "type": "command" },
       { "key": "S", "name": "Stop", "command": "workbench.action.debug.stop", "type": "command" },
+      { "key": "w", "name": "Focus watch window", "command": "workbench.debug.action.focusWatchView", "type": "command" },
+      { "key": "W", "name": "Add to watch", "command": "editor.debug.action.selectionToWatch", "type": "command" },
       { "key": "x", "name": "Clear REPL", "command": "workbench.debug.panel.action.clearReplAction", "type": "command" },
-      { "key": "w", "name": "Focus on watch window", "command": "workbench.debug.action.focusWatchView", "type": "command" },
-      { "key": "W", "name": "Add to watch", "command": "editor.debug.action.selectionToWatch", "type": "command" }
+      { "key": "X", "name": "Remove all breakpoints", "command": "workbench.debug.viewlet.action.removeAllBreakpoints", "type": "command" }
     ]},
 
     { "key": "e", "name": "+Editor", "type": "bindings", "bindings": [
