@@ -263,7 +263,7 @@
       { "key": "b", "name": "Add/remove breakpoint (toggle)", "command": "editor.debug.action.toggleBreakpoint", "type": "command" },
       { "key": "B", "name": "Add conditional breakpoint", "command": "editor.debug.action.conditionalBreakpoint", "type": "command" },
       { "key": "c", "name": "Continue", "command": "workbench.action.debug.continue", "type": "command" },
-      { "key": "d", "name": "Start", "command": "workbench.action.debug.start", "type": "command" },
+      { "key": "d", "name": "Start/Restart", "command": "workbench.action.debug.restart", "type": "command" },
       { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
       { "key": "h", "name": "Show hover", "command": "editor.debug.action.showDebugHover", "type": "command" },
       { "key": "j", "name": "Jump to cursor", "command": "debug.jumpToCursor", "type": "command" },
@@ -273,7 +273,6 @@
       // TODO: move to "open" menu?
       { "key": "r", "name": "Focus on REPL (debug console)", "command": "workbench.debug.action.toggleRepl", "type": "command" },
       // { "key": "r", "name": "Inspect in REPL", "command": "editor.debug.action.selectionToRepl", "type": "command" },
-      { "key": "R", "name": "Restart", "command": "workbench.action.debug.restart", "type": "command" },
       { "key": "s", "name": "Step over", "command": "workbench.action.debug.stepOver", "type": "command" },
       { "key": "S", "name": "Stop", "command": "workbench.action.debug.stop", "type": "command" },
       { "key": "x", "name": "Clear REPL", "command": "workbench.debug.panel.action.clearReplAction", "type": "command" },
