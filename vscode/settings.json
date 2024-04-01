@@ -270,9 +270,8 @@
       { "key": "i", "name": "Step into", "command": "workbench.action.debug.stepInto", "type": "command" },
       { "key": "o", "name": "Step out", "command": "workbench.action.debug.stepOut", "type": "command" },
       { "key": "p", "name": "Pause", "command": "workbench.action.debug.pause", "type": "command" },
-      // TODO: move to "open" menu?
-      { "key": "r", "name": "Focus on REPL (debug console)", "command": "workbench.debug.action.toggleRepl", "type": "command" },
-      // { "key": "r", "name": "Inspect in REPL", "command": "editor.debug.action.selectionToRepl", "type": "command" },
+      { "key": "r", "name": "Focus REPL/console", "command": "workbench.debug.action.toggleRepl", "type": "command" },
+      { "key": "R", "name": "Inspect in REPL", "command": "editor.debug.action.selectionToRepl", "type": "command" },
       { "key": "s", "name": "Step over", "command": "workbench.action.debug.stepOver", "type": "command" },
       { "key": "S", "name": "Stop", "command": "workbench.action.debug.stop", "type": "command" },
       { "key": "x", "name": "Clear REPL", "command": "workbench.debug.panel.action.clearReplAction", "type": "command" },
