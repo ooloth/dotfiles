@@ -407,6 +407,7 @@
       // NOTE: can also use ctrl+[] to navigate terminal groups more quickly
       { "key": "[", "name": "Focus prev group", "command": "workbench.action.terminal.focusPrevious", "type": "command" },
       { "key": "]", "name": "Focus prev group", "command": "workbench.action.terminal.focusNext", "type": "command" },
+      { "key": "e", "name": "New terminal in editor", "command": "workbench.action.createTerminalEditor", "type": "command" },
       { "key": "m", "name": "Toggle maximized panel", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
       { "key": "n", "name": "New terminal", "command": "workbench.action.terminal.new", "type": "command" },
       { "key": "t", "name": "Toggle terminal", "command": "workbench.action.terminal.toggleTerminal", "type": "command" },
