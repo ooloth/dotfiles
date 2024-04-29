@@ -7,20 +7,21 @@ add_newline = false
 # Give pyenv, etc more time
 command_timeout = 9999999999
 
-# First line = left components + middle fill + right components
-# Second line = character + prompt
+# see: https://starship.rs/config/#prompt
 format = """
 $directory\
+$character\
+"""
+
+# see: https://starship.rs/advanced-config/#enable-right-prompt
+right_format = """
 $cmd_duration\
-$fill\
 $git_branch\
 $nodejs\
 $python\
 $kubernetes\
 $gcloud\
 $all\
-$line_break\
-$character\
 """
 
 [aws]
