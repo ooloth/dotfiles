@@ -431,10 +431,49 @@
   "window.newWindowDimensions": "inherit",
   "workbench.colorCustomizations": {
     "[Catppuccin Mocha]": {
+      // Brighter fonts
+      "debugTokenExpression.value": "#a6adc8",
+      "terminal.ansiBlack": "#000000",
+      "terminal.ansiBrightBlack": "#000000",
+
+      // Darker backgrounds
+      // see: https://github.com/catppuccin/nvim/blob/main/lua/catppuccin/palettes/mocha.lua
+      "activityBar.background": "#181825",
+      "breadcrumb.background": "#181825",
+      "debugExceptionWidget.background": "#181825",
+      "dropdown.background": "#181825",
+      "editor.background": "#181825",
+      "editorMarkerNavigation.background": "#181825",
+      "editorMarkerNavigationError.background": "#181825",
+      "editorMarkerNavigationInfo.background": "#181825",
+      "editorMarkerNavigationWarning.background": "#181825",
       "editorOverviewRuler.background":"#ffffff00",
       "editorOverviewRuler.border":"#ffffff00",
-      "terminal.ansiBlack": "#000000",
-      "terminal.ansiBrightBlack": "#000000"
+      "editorWidget.background": "#181825",
+      "editorGutter.background": "#181825",
+      "input.background": "#181825",
+      "list.activeSelectionBackground": "#181825",
+      "list.focusBackground": "#181825",
+      "list.hoverBackground": "#181825",
+      "list.inactiveSelectionBackground": "#181825",
+      "notificationCenterHeader.background": "#181825",
+      "notifications.background": "#181825",
+      "notifications.border": "#181825",
+      "peekViewEditor.background": "#181825",
+      "peekViewResult.background": "#181825",
+      "peekViewTitle.background": "#181825",
+      "pickerGroup.border": "#181825",
+      "pickerGroup.foreground": "#181825",
+      "panel.background": "#181825",
+      "sideBar.background": "#181825",
+      "statusBar.background": "#181825",
+      "tab.activeBackground": "#181825",
+      "tab.hoverBackground": "#1e1e2e",
+      "tab.inactiveBackground": "#181825",
+      "tab.lastPinnedBorder": "#00000000",
+      "terminal.background": "#181825",
+      "titleBar.activeBackground": "#181825",
+      "walkThrough.embeddedEditorBackground": "#181825",
     },
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
@@ -450,7 +489,7 @@
       "editorSuggestWidget.selectedBackground": "#292D3E", // higher contrast
       "searchEditor.findMatchBackground": "#292D3E", // higher contrast
       "sideBar.foreground": "#babed8" // higher contrast
-    }
+    },
   },
   "workbench.colorTheme": "Catppuccin Mocha",
   "workbench.editor.enablePreview": false,
