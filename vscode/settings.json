@@ -174,7 +174,10 @@
     "partial-utility-type",
     "type-predicate",
     "as-const",
-    "as-const-on-object"
+    "as-const-on-object",
+    "extract-utility-type",
+    "non-null-expression",
+    "generic-slots-in-functions"
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
