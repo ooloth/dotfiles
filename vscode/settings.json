@@ -551,6 +551,7 @@
   "terminal.integrated.tabs.enabled": false,
   "window.zoomLevel": 1,
   "workbench.activityBar.location": "hidden"
+  "notebook.formatOnSave.enabled": true,
   "errorLens.codeLensEnabled": true,
   "errorLens.severityText": [
     "⛔",
