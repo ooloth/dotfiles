@@ -551,4 +551,16 @@
   "terminal.integrated.tabs.enabled": false,
   "window.zoomLevel": 1,
   "workbench.activityBar.location": "hidden"
+  "errorLens.codeLensEnabled": true,
+  "errorLens.severityText": [
+    "⛔",
+    "🚧",
+    "💡",
+    "🍏"
+  ],
+  "errorLens.codeLensTemplate": "$severity [$source] $message",
+  "errorLens.gutterIconSet": "emoji",
+  "errorLens.messageTemplate": "[$source] $message",
+  "errorLens.statusBarMessageTemplate": "[$source] $message",
+  "errorLens.messageEnabled": false,
 }
