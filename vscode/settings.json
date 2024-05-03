@@ -617,6 +617,7 @@
   "python.analysis.addImport.heuristics": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "terminal.integrated.tabs.enabled": false,
+  "workbench.panel.defaultLocation": "left",
   "window.zoomLevel": 1,
   "workbench.activityBar.location": "hidden"
   "notebook.formatOnSave.enabled": true,
