@@ -146,7 +146,6 @@
     ]},
     { "id": "relativeLineNumbers", "values": [ { "editor.lineNumbers": "relative", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "on", "vim.smartRelativeLine": false } ] }
   ],
-  "tailwindCSS.emmetCompletions": true,
   "terminal.external.osxExec": "kitty.app",
   "terminal.integrated.cursorBlinking": false,
   "terminal.integrated.defaultProfile.osx": "zsh",
@@ -631,5 +630,6 @@
   "errorLens.statusBarMessageTemplate": "[$source] $message",
   "errorLens.messageEnabled": true,
   "gitlens.codeLens.recentChange.enabled": false,
-  "workbench.activityBar.location": "hidden"
+  "workbench.activityBar.location": "hidden",
+  "tailwindCSS.emmetCompletions": true
 }
