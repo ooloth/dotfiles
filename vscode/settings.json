@@ -166,7 +166,6 @@
   "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
   "terminal.integrated.lineHeight": 1.35,
   "terminal.integrated.scrollback": 15000,
-  "terraform.codelens.referenceCount": true,
   "terraform.experimentalFeatures.validateOnSave": true,
   "terraform.languageServer.terraform.path": "/opt/homebrew/bin/terraform",
   "todohighlight.keywords": [
@@ -199,7 +198,6 @@
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
-  "typescript.implementationsCodeLens.enabled": true,
   "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
   "vim.changeWordIncludesWhitespace": true,
@@ -632,5 +630,6 @@
   "errorLens.messageTemplate": "[$source] $message",
   "errorLens.statusBarMessageTemplate": "[$source] $message",
   "errorLens.messageEnabled": true,
+  "gitlens.codeLens.recentChange.enabled": false,
   "workbench.activityBar.location": "hidden"
 }
