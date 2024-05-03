@@ -151,16 +151,12 @@
   "terminal.integrated.defaultProfile.osx": "zsh",
   // Allows tasks to find zsh, node, etc.
   "terminal.integrated.automationProfile.osx": {
-    "path": "/bin/zsh",
-    "icon": "play",
     "args": ["-l", "-i"],
+    "path": "/bin/zsh"
   },
   "terminal.integrated.profiles.osx": {
     "bash": null,
-    "zsh": {
-      "path": "/bin/zsh",
-      "icon": "star",
-    }
+    "zsh": { "path": "/bin/zsh" }
   },
   "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
   "terminal.integrated.lineHeight": 1.35,
