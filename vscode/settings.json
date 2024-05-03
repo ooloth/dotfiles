@@ -585,7 +585,6 @@
   "multiDiffEditor.experimental.enabled": true,
   "workbench.tree.enableStickyScroll": true,
   "notebook.stickyScroll.enabled": true,
-  "terminal.integrated.stickyScroll.enabled": true,
   "catppuccin.workbenchMode": "minimal",
   "catppuccin.italicKeywords": false,
   "window.zoomPerWindow": false,
