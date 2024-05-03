@@ -619,9 +619,8 @@
   "terminal.integrated.tabs.enabled": false,
   "workbench.panel.defaultLocation": "left",
   "window.zoomLevel": 1,
-  "workbench.activityBar.location": "hidden"
   "notebook.formatOnSave.enabled": true,
-  "errorLens.codeLensEnabled": true,
+  "errorLens.codeLensEnabled": false,
   "errorLens.severityText": [
     "⛔",
     "🚧",
@@ -632,5 +631,6 @@
   "errorLens.gutterIconSet": "emoji",
   "errorLens.messageTemplate": "[$source] $message",
   "errorLens.statusBarMessageTemplate": "[$source] $message",
-  "errorLens.messageEnabled": false,
+  "errorLens.messageEnabled": true,
+  "workbench.activityBar.location": "hidden"
 }
