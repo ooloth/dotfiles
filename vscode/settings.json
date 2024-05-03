@@ -48,6 +48,11 @@
   "editor.suggest.showStatusBar": true,
   "editor.tabSize": 2,
   "editor.tokenColorCustomizations": {
+    "[Catppuccin Mocha]": {
+      // Brighter text
+      // see: https://github.com/catppuccin/nvim/blob/main/lua/catppuccin/palettes/mocha.lua
+      "comments": "#7f849c"
+    },
     "[Material Theme Ocean]": {
       "comments": "#525975"
     }
