@@ -388,7 +388,7 @@
       { "key": "o", "name": "Output", "command": "workbench.action.output.toggleOutput", "type": "command" },
       { "key": "p", "name": "Problems", "command": "workbench.actions.view.problems", "type": "command" },
       { "key": "P", "name": "Panel (toggle)", "command": "workbench.action.togglePanel", "type": "command" },
-      // { "key": "t", "name": "Tests", "command": "workbench.view.extension.test", "type": "command" },
+      { "key": "t", "name": "Test Explorer", "command": "workbench.view.testing.focus", "type": "command" },
       { "key": "x", "name": "Extensions", "command": "workbench.view.extensions", "type": "command" }
     ]},
 
