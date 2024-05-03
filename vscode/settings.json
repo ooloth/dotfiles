@@ -1,11 +1,14 @@
 // NOTE: format on save disabled via .prettierignore
 
 {
-  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
+  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][typescript][typescriptreact][vue][xml][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform"
+  },
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
   "accessibility.dimUnfocused.enabled": true,
   "accessibility.dimUnfocused.opacity": 0.95,
