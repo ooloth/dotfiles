@@ -452,8 +452,8 @@
   "window.newWindowDimensions": "inherit",
   "workbench.colorCustomizations": {
     "[Catppuccin Mocha]": {
-      // Brighter fonts
-      "debugTokenExpression.value": "#a6adc8",
+      // Brighter text
+      "debugTokenExpression.value": "#9399b2",
       "terminal.ansiBlack": "#000000",
       "terminal.ansiBrightBlack": "#000000",
 
