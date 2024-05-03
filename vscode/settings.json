@@ -490,6 +490,7 @@
       "tab.unfocusedInactiveBackground": "#181825",
       "terminal.background": "#181825",
       "titleBar.activeBackground": "#181825",
+      "titleBar.inactiveBackground": "#181825",
       "walkThrough.embeddedEditorBackground": "#181825"
     },
     "[Dracula]": {
