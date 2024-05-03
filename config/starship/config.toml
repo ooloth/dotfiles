@@ -10,12 +10,12 @@ command_timeout = 9999999999
 # see: https://starship.rs/config/#prompt
 format = """
 $directory\
+$cmd_duration\
 $character\
 """
 
 # see: https://starship.rs/advanced-config/#enable-right-prompt
 right_format = """
-$cmd_duration\
 $git_branch\
 $nodejs\
 $python\
