@@ -514,6 +514,54 @@
       "searchEditor.findMatchBackground": "#292D3E", // higher contrast
       "sideBar.foreground": "#babed8" // higher contrast
     },
+    "[Nord]": {
+      // Brighter text
+      // see: https://www.nordtheme.com/docs/colors-and-palettes
+      "debugTokenExpression.value": "#7b88a1",
+      "statusBar.debuggingForeground": "#eceff4",
+
+      // Darker backgrounds
+      // see: https://github.com/orgs/nordtheme/discussions/232
+      // see: https://github.com/nordtheme/vim/commit/8494bd9006373876830bfca27f24182098aabc73
+      "activityBar.background": "#232730",
+      "breadcrumb.background": "#232730",
+      "debugExceptionWidget.background": "#232730",
+      "dropdown.background": "#232730",
+      "editor.background": "#232730",
+      "editorMarkerNavigation.background": "#232730",
+      "editorMarkerNavigationError.background": "#232730",
+      "editorMarkerNavigationInfo.background": "#232730",
+      "editorMarkerNavigationWarning.background": "#232730",
+      "editorOverviewRuler.background":"#ffffff00",
+      "editorOverviewRuler.border":"#ffffff00",
+      "editorWidget.background": "#232730",
+      "editorGutter.background": "#232730",
+      "input.background": "#232730",
+      "list.activeSelectionBackground": "#232730",
+      "list.focusBackground": "#232730",
+      "list.hoverBackground": "#232730",
+      "list.inactiveSelectionBackground": "#232730",
+      "notificationCenterHeader.background": "#232730",
+      "notifications.background": "#232730",
+      "notifications.border": "#232730",
+      "peekViewEditor.background": "#232730",
+      "peekViewResult.background": "#232730",
+      "peekViewTitle.background": "#232730",
+      "pickerGroup.border": "#232730",
+      "pickerGroup.foreground": "#232730",
+      "panel.background": "#232730",
+      "sideBar.background": "#232730",
+      "sideBarSectionHeader.background": "#232730",
+      "sideBarSectionHeader.border": "#2E3440",
+      "statusBar.background": "#232730",
+      "tab.activeBackground": "#232730",
+      "tab.hoverBackground": "#1e1e2e",
+      "tab.inactiveBackground": "#232730",
+      "tab.lastPinnedBorder": "#00000000",
+      "terminal.background": "#232730",
+      "titleBar.activeBackground": "#232730",
+      "walkThrough.embeddedEditorBackground": "#232730"
+    }
   },
   "workbench.colorTheme": "Catppuccin Mocha",
   "workbench.editor.enablePreview": false,
