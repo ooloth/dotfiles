@@ -41,6 +41,7 @@ activate_venv() {
   export MYPYPATH=$PWD
 }
 
+# This helps avoid errors in projects that rely on gcloud + enhances the starship prompt
 set_gcloud_project_env_var() {
   local CURRENT_DIRECTORY=$(basename $PWD)
 
