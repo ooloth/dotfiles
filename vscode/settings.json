@@ -464,6 +464,7 @@
       "debugExceptionWidget.background": "#181825",
       "dropdown.background": "#181825",
       "editor.background": "#181825",
+      "editorGroupHeader.tabsBackground": "#181825",
       "editorMarkerNavigation.background": "#181825",
       "editorMarkerNavigationError.background": "#181825",
       "editorMarkerNavigationInfo.background": "#181825",
@@ -487,6 +488,8 @@
       "pickerGroup.foreground": "#181825",
       "panel.background": "#181825",
       "sideBar.background": "#181825",
+      "sideBarSectionHeader.background": "#181825",
+      "sideBarSectionHeader.border": "#45475a",
       "statusBar.background": "#181825",
       "tab.activeBackground": "#181825",
       "tab.hoverBackground": "#1e1e2e",
@@ -494,7 +497,7 @@
       "tab.lastPinnedBorder": "#00000000",
       "terminal.background": "#181825",
       "titleBar.activeBackground": "#181825",
-      "walkThrough.embeddedEditorBackground": "#181825",
+      "walkThrough.embeddedEditorBackground": "#181825"
     },
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
