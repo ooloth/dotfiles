@@ -107,6 +107,9 @@ u() {
   printf "\nUpdating global npm packages...\n"
 	ng
 
+  printf "\nUpdating rust dependencies...\n"
+  rustup update
+
   printf "\nUpdating brew packages...\n"
 	brew upgrade && brew update && brew cleanup && brew doctor
 
