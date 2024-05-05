@@ -144,7 +144,8 @@ if $IS_WORK_LAPTOP; then
     esac
   }
 
-  alias tech='cd $HOME/Repos/recursionpharma/tech'
+  tech() { cd $HOME/Repos/recursionpharma/tech; }
+  zuul() { cd $HOME/Repos/recursionpharma/zuul; }
 
   # TODO: test() {}
   # TODO: format() {}
@@ -196,4 +197,3 @@ if $IS_WORK_LAPTOP; then
   # see: https://github.com/recursionpharma/data-science-onboarding#setting-up-griphook
   source $HOME/.griphook/env
 fi
-

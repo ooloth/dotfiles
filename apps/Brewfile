@@ -47,6 +47,7 @@ brew "starship"
 brew "stern" # for kubectl
 brew "stylua" # for lua
 brew "svn" # for font cask installations
+brew "taplo" # for toml
 brew "tmux"
 brew "trash"
 brew "vifm"

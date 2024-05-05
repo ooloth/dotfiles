@@ -1,3 +1,4 @@
 {
+  "evenBetterToml.taplo.configFile.path": ".taplo.toml",
   "Lua.diagnostics.globals": ["O", "vim", "use"]
 }
