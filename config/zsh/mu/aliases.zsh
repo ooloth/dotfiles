@@ -74,7 +74,9 @@ ng() {
     @githubnext/github-copilot-cli \
     npm-check \
     tldr \
-    # neovim dependencies:
+
+  # neovim dependencies
+  npm install -g \
     typescript \
     vscode-langservers-extracted
 }
