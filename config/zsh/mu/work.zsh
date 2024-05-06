@@ -75,17 +75,12 @@ if $IS_WORK_LAPTOP; then
 
       # TODO: javascript-template-react)
 
-      phenoapp)
-        pa && python phenoapp/app.py ;;
-
       platelet)
         # see: https://github.com/recursionpharma/platelet/blob/trunk/docs/setup/index.md
-        printf "🏁 Starting platelet...\n"
-        gcpe
-        du ;;
+        GOOGLE_CLOUD_PROJECT=eng-infrastructure du ;;
 
       platelet-ui)
-        printf "🏁 Starting cauldron, genie, skurge, platelet and platelet-ui...\n"
+        printf "\n🏁 Starting cauldron, genie, skurge, platelet and platelet-ui...\n\n"
         cauldron && dud
         genie && dud
         pl && dud
@@ -127,7 +122,7 @@ if $IS_WORK_LAPTOP; then
         dd ;;
 
       platelet-ui)
-        printf "✋ Stopping cauldron, genie, skurge, platelet and platelet-ui...\n"
+        printf "\n✋ Stopping cauldron, genie, skurge, platelet and platelet-ui...\n\n"
         cauldron && dd
         genie && dd
         pl && dd
