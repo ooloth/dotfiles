@@ -631,5 +631,6 @@
   "errorLens.messageEnabled": true,
   "gitlens.codeLens.recentChange.enabled": false,
   "workbench.activityBar.location": "hidden",
-  "tailwindCSS.emmetCompletions": true
+  "tailwindCSS.emmetCompletions": true,
+  "rust-analyzer.lens.enable": false
 }
