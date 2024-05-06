@@ -48,8 +48,6 @@ if $IS_WORK_LAPTOP; then
 
     # silence out of control watchdog output when working locally
     if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
-      # see: https://pip.pypa.io/en/stable/cli/pip_uninstall/
-      pip uninstall watchdog -y
       pip install jupyter
     fi
   }
@@ -64,7 +62,7 @@ if $IS_WORK_LAPTOP; then
         du ;;
 
       dash-phenoapp-v2)
-        # TODO: automatically rerun rv if any pip packages were updated
+        # TODO: automatically rerun rv if any pip packages were updated?
         du
         export CONFIGOME_ENV=dev
         export FLASK_APP=phenoapp.app.py
@@ -193,9 +191,6 @@ if $IS_WORK_LAPTOP; then
   export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
   export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
   export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
-
-  # prometheus (dash-phenoapp-v2 backend server)
-  export PROMETHEUS_MULTIPROC_DIR=./.prom
 
   # sbin
   export PATH="/opt/homebrew/sbin:$PATH"
