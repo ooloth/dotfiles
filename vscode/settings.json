@@ -626,7 +626,7 @@
   ],
   "errorLens.codeLensTemplate": "$severity [$source] $message",
   "errorLens.gutterIconSet": "emoji",
-  "errorLens.messageTemplate": "[$source] $message",
+  "errorLens.messageTemplate": "$message [$source]",
   "errorLens.statusBarMessageTemplate": "[$source] $message",
   "errorLens.messageEnabled": true,
   "gitlens.codeLens.recentChange.enabled": false,
