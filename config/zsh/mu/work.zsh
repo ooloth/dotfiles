@@ -66,7 +66,14 @@ if $IS_WORK_LAPTOP; then
       dash-phenoapp-v2)
         # TODO: automatically rerun rv if any pip packages were updated
         du
-        python phenoapp/app.py ;;
+        export CONFIGOME_ENV=dev
+        export FLASK_APP=phenoapp.app.py
+        export FLASK_DEBUG=true
+        export FLASK_ENV=development
+        export FLASK_RUN_PORT=8050
+        export GOOGLE_CLOUD_PROJECT=eng-infrastructure
+        export PROMETHEUS_MULTIPROC_DIR=./.prom
+        flask run ;;
 
       genie)
         # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
