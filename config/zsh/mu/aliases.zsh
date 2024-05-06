@@ -74,7 +74,9 @@ ng() {
     @githubnext/github-copilot-cli \
     npm-check \
     tldr \
-    # neovim dependencies:
+
+  # neovim dependencies
+  npm install -g \
     typescript \
     vscode-langservers-extracted
 }
@@ -104,6 +106,9 @@ u() {
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
   printf "\nUpdating global npm packages...\n"
 	ng
+
+  printf "\nUpdating rust dependencies...\n"
+  rustup update
 
   printf "\nUpdating brew packages...\n"
 	brew upgrade && brew update && brew cleanup && brew doctor

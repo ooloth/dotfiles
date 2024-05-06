@@ -22,14 +22,16 @@ setopt HIST_IGNORE_ALL_DUPS
 # alias history='history 0'
 # alias h='history | grep'
 
+export IS_WORK_LAPTOP=$( [[ -d "$HOME/Repos/recursionpharma" ]] && echo "true" || echo "false" )
+
+# homebrew
+export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
+
 # see: https://github.com/Homebrew/homebrew-bundle#versions-and-lockfiles
 export HOMEBREW_BUNDLE_NO_LOCK=1
 
-export IS_WORK_LAPTOP=$( [[ -d "$HOME/Repos/recursionpharma" ]] && echo "true" || echo "false" )
-
+# k9s
 export K9SCONFIG=$HOME/.config/k9s
-
-export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
 
 # pyenv
 # NOTE: do NOT use eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
@@ -43,6 +45,9 @@ export PYTHONPATH=$HOME
 export MYPYPATH=$HOME
 # Use starship prompt for virtualenv prompt placement (see: https://stackoverflow.com/a/72715907/8802485)
 export VIRTUAL_ENV_PROMPT=''
+
+# rust
+export PATH=$HOME/.cargo/bin:$PATH
 
 export SHELL=$(which zsh)
 
