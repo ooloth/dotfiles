@@ -38,20 +38,11 @@ if $IS_WORK_LAPTOP; then
   rl() { roadie lock "$@"; } # optionally "rl -c" etc
   rlc() { rl -c; }
   ru() { python -m pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
-
   rv() {
-    local CURRENT_DIRECTORY=$(basename $PWD)
-
     # Install latest version of roadie, then rebuild venv to remove any no-longer-used packages
     # https://github.com/recursionpharma/roadie/blob/5a5c6ba44c345c8fd42543db5454b502a4e96863/roadie/cli/virtual.py#L454
     ru && roadie venv --clobber
-
-    # silence out of control watchdog output when working locally
-    if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
-      pip install jupyter
-    fi
   }
-
   skurge() { cd $HOME/Repos/recursionpharma/skurge; }
 
   start() {
