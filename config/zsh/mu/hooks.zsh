@@ -8,8 +8,8 @@ function precmd() {
   eval $PROMPT_COMMAND
 }
 
-# TODO: if I keep tmux at the top, just statically set the prompt command to "echo"
 function preexec() {
+  # TODO: if I keep tmux at the top, just statically set the prompt command to "echo"
   export PROMPT_COMMAND="echo"
   # if cmd is not "clear" (or "c"), print a newline before the next prompt
   # [[ "$1" == "clear" ]] || [[ "$1" == "c" ]] && export PROMPT_COMMAND="" || export PROMPT_COMMAND="echo"
@@ -23,10 +23,9 @@ activate_venv() {
 
   # if there's no pyenv venv for this directory, deactivate any venv sticking from a previous directory and be done
   if [[ ! -d "$PYENV_VENV" ]]; then
-    if [[ $(which python) == *".pyenv"* ]]; then
-      # TODO: deactivate any active pyenv venv without "pyenv shell --unset"
-    fi
-    export VIRTUAL_ENV=''
+    # remove all pyenv paths from PATH (see: https://stackoverflow.com/a/62950499/8802485)
+    export PATH=`echo $PATH | tr ':' '\n' | sed '/pyenv/d' | tr '\n' ':' | sed -r 's/:$/\n/'`
+    unset VIRTUAL_ENV
     export PYTHONPATH=$HOME
     export MYPYPATH=$HOME
     return
@@ -41,14 +40,13 @@ activate_venv() {
   export MYPYPATH=$PWD
 }
 
-# This helps avoid errors in projects that rely on gcloud + enhances the starship prompt
+# This enhances starship + helps prevent silly mistakes in projects that rely on gcloud
 set_gcloud_project_env_var() {
   local CURRENT_DIRECTORY=$(basename $PWD)
 
   case $CURRENT_DIRECTORY in
     dash-phenoapp-v2) export GOOGLE_CLOUD_PROJECT='eng-infrastructure' ;;
     phenoapp)         export GOOGLE_CLOUD_PROJECT='eng-infrastructure' ;;
-    react-app)        export GOOGLE_CLOUD_PROJECT='eng-infrastructure' ;;
     *)                unset GOOGLE_CLOUD_PROJECT ;;
   esac
 }
@@ -58,4 +56,3 @@ activate_venv
 
 # automatically set GOOGLE_CLOUD_PROJECT when zsh first loads (called again in chwpd hook whenever cwd changes)
 set_gcloud_project_env_var
-

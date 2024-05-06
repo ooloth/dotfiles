@@ -1,4 +1,4 @@
-export DEBUG=false
+export DEBUG_DOTFILES=false
 
 export EDITOR=code
 

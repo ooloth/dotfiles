@@ -38,22 +38,11 @@ if $IS_WORK_LAPTOP; then
   rl() { roadie lock "$@"; } # optionally "rl -c" etc
   rlc() { rl -c; }
   ru() { python -m pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
-
   rv() {
-    local CURRENT_DIRECTORY=$(basename $PWD)
-
     # Install latest version of roadie, then rebuild venv to remove any no-longer-used packages
     # https://github.com/recursionpharma/roadie/blob/5a5c6ba44c345c8fd42543db5454b502a4e96863/roadie/cli/virtual.py#L454
     ru && roadie venv --clobber
-
-    # silence out of control watchdog output when working locally
-    if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
-      # see: https://pip.pypa.io/en/stable/cli/pip_uninstall/
-      pip uninstall watchdog -y
-      pip install jupyter
-    fi
   }
-
   skurge() { cd $HOME/Repos/recursionpharma/skurge; }
 
   start() {
@@ -64,9 +53,18 @@ if $IS_WORK_LAPTOP; then
         du ;;
 
       dash-phenoapp-v2)
-        # TODO: automatically rerun rv if any pip packages were updated
+        # TODO: automatically rerun rv if any pip packages were updated?
+        printf "\n🏁 Starting observability stack...\n\n"
         du
-        python phenoapp/app.py ;;
+        printf "\n🏁 Starting flask app...\n\n"
+        CONFIGOME_ENV=dev \
+        FLASK_APP=phenoapp.app.py \
+        FLASK_DEBUG=true \
+        FLASK_ENV=development \
+        FLASK_RUN_PORT=8050 \
+        GOOGLE_CLOUD_PROJECT=eng-infrastructure \
+        PROMETHEUS_MULTIPROC_DIR=./.prom \
+        flask run ;;
 
       genie)
         # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
@@ -77,17 +75,12 @@ if $IS_WORK_LAPTOP; then
 
       # TODO: javascript-template-react)
 
-      phenoapp)
-        pa && python phenoapp/app.py ;;
-
       platelet)
         # see: https://github.com/recursionpharma/platelet/blob/trunk/docs/setup/index.md
-        printf "🏁 Starting platelet...\n"
-        gcpe
-        du ;;
+        GOOGLE_CLOUD_PROJECT=eng-infrastructure du ;;
 
       platelet-ui)
-        printf "🏁 Starting cauldron, genie, skurge, platelet and platelet-ui...\n"
+        printf "\n🏁 Starting cauldron, genie, skurge, platelet and platelet-ui...\n\n"
         cauldron && dud
         genie && dud
         pl && dud
@@ -129,7 +122,7 @@ if $IS_WORK_LAPTOP; then
         dd ;;
 
       platelet-ui)
-        printf "✋ Stopping cauldron, genie, skurge, platelet and platelet-ui...\n"
+        printf "\n✋ Stopping cauldron, genie, skurge, platelet and platelet-ui...\n\n"
         cauldron && dd
         genie && dd
         pl && dd
@@ -186,9 +179,6 @@ if $IS_WORK_LAPTOP; then
   export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
   export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
   export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
-
-  # prometheus (dash-phenoapp-v2 backend server)
-  export PROMETHEUS_MULTIPROC_DIR=./.prom
 
   # sbin
   export PATH="/opt/homebrew/sbin:$PATH"

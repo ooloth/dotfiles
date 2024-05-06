@@ -1,14 +1,11 @@
 // NOTE: format on save disabled via .prettierignore
 
 {
-  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][typescript][typescriptreact][vue][xml][yaml]": {
+  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform"
-  },
-  "[toml]": {
-    "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
   "accessibility.dimUnfocused.enabled": true,
   "accessibility.dimUnfocused.opacity": 0.95,
@@ -455,46 +452,46 @@
 
       // Darker backgrounds
       // see: https://github.com/catppuccin/nvim/blob/main/lua/catppuccin/palettes/mocha.lua
-      "activityBar.background": "#181825",
-      "breadcrumb.background": "#181825",
-      "debugExceptionWidget.background": "#181825",
-      "dropdown.background": "#181825",
-      "editor.background": "#181825",
-      "editorGroupHeader.tabsBackground": "#181825",
-      "editorMarkerNavigation.background": "#181825",
-      "editorMarkerNavigationError.background": "#181825",
-      "editorMarkerNavigationInfo.background": "#181825",
-      "editorMarkerNavigationWarning.background": "#181825",
+      "activityBar.background": "#1A1A28",
+      "breadcrumb.background": "#1A1A28",
+      "debugExceptionWidget.background": "#1A1A28",
+      "dropdown.background": "#1A1A28",
+      "editor.background": "#1A1A28",
+      "editorGroupHeader.tabsBackground": "#1A1A28",
+      "editorMarkerNavigation.background": "#1A1A28",
+      "editorMarkerNavigationError.background": "#1A1A28",
+      "editorMarkerNavigationInfo.background": "#1A1A28",
+      "editorMarkerNavigationWarning.background": "#1A1A28",
       "editorOverviewRuler.background":"#ffffff00",
       "editorOverviewRuler.border":"#ffffff00",
-      "editorWidget.background": "#181825",
-      "editorGutter.background": "#181825",
-      "input.background": "#181825",
-      "list.focusBackground": "#181825",
-      "list.hoverBackground": "#181825",
-      "list.inactiveSelectionBackground": "#181825",
-      "notificationCenterHeader.background": "#181825",
-      "notifications.background": "#181825",
-      "notifications.border": "#181825",
-      "peekViewEditor.background": "#181825",
-      "peekViewResult.background": "#181825",
-      "peekViewTitle.background": "#181825",
-      "pickerGroup.border": "#181825",
-      "pickerGroup.foreground": "#181825",
-      "panel.background": "#181825",
-      "sideBar.background": "#181825",
-      "sideBarSectionHeader.background": "#181825",
+      "editorWidget.background": "#1A1A28",
+      "editorGutter.background": "#1A1A28",
+      "input.background": "#1A1A28",
+      "list.focusBackground": "#1A1A28",
+      "list.hoverBackground": "#1A1A28",
+      "list.inactiveSelectionBackground": "#1A1A28",
+      "notificationCenterHeader.background": "#1A1A28",
+      "notifications.background": "#1A1A28",
+      "notifications.border": "#1A1A28",
+      "peekViewEditor.background": "#1A1A28",
+      "peekViewResult.background": "#1A1A28",
+      "peekViewTitle.background": "#1A1A28",
+      "pickerGroup.border": "#1A1A28",
+      "pickerGroup.foreground": "#1A1A28",
+      "panel.background": "#1A1A28",
+      "sideBar.background": "#1A1A28",
+      "sideBarSectionHeader.background": "#1A1A28",
       "sideBarSectionHeader.border": "#45475a",
-      "statusBar.background": "#181825",
-      "tab.activeBackground": "#181825",
+      "statusBar.background": "#1A1A28",
+      "tab.activeBackground": "#1A1A28",
       "tab.hoverBackground": "#1e1e2e",
-      "tab.inactiveBackground": "#181825",
+      "tab.inactiveBackground": "#1A1A28",
       "tab.lastPinnedBorder": "#00000000",
-      "tab.unfocusedInactiveBackground": "#181825",
-      "terminal.background": "#181825",
-      "titleBar.activeBackground": "#181825",
-      "titleBar.inactiveBackground": "#181825",
-      "walkThrough.embeddedEditorBackground": "#181825"
+      "tab.unfocusedInactiveBackground": "#1A1A28",
+      "terminal.background": "#1A1A28",
+      "titleBar.activeBackground": "#1A1A28",
+      "titleBar.inactiveBackground": "#1A1A28",
+      "walkThrough.embeddedEditorBackground": "#1A1A28"
     },
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
