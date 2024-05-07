@@ -54,9 +54,9 @@ if $IS_WORK_LAPTOP; then
 
       dash-phenoapp-v2)
         # TODO: automatically rerun rv if any pip packages were updated?
-        printf "\n🏁 Starting observability stack...\n\n"
+        printf "\n🏁 Starting observability stack...\n"
         du
-        printf "\n🏁 Starting flask app...\n\n"
+        printf "\n🏁 Starting flask app...\n"
         CONFIGOME_ENV=dev \
         FLASK_APP=phenoapp.app.py \
         FLASK_DEBUG=true \
