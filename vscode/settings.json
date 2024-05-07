@@ -623,10 +623,11 @@
   ],
   "errorLens.codeLensTemplate": "$severity [$source] $message",
   "errorLens.gutterIconSet": "emoji",
-  "errorLens.messageTemplate": "[$source] $message",
+  "errorLens.messageTemplate": "$message [$source]",
   "errorLens.statusBarMessageTemplate": "[$source] $message",
   "errorLens.messageEnabled": true,
   "gitlens.codeLens.recentChange.enabled": false,
   "workbench.activityBar.location": "hidden",
-  "tailwindCSS.emmetCompletions": true
+  "tailwindCSS.emmetCompletions": true,
+  "rust-analyzer.lens.enable": false
 }
