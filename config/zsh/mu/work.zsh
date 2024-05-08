@@ -54,9 +54,9 @@ if $IS_WORK_LAPTOP; then
 
       dash-phenoapp-v2)
         # TODO: automatically rerun rv if any pip packages were updated?
-        printf "\n🏁 Starting observability stack...\n"
+        printf "\n🏁 Starting observability stack...\n\n"
         du
-        printf "\n🏁 Starting flask app...\n"
+        printf "\n🏁 Starting flask app with debugpy...\n\n"
         CONFIGOME_ENV=dev \
         FLASK_APP=phenoapp.app.py \
         FLASK_DEBUG=true \
@@ -64,7 +64,7 @@ if $IS_WORK_LAPTOP; then
         FLASK_RUN_PORT=8050 \
         GOOGLE_CLOUD_PROJECT=eng-infrastructure \
         PROMETHEUS_MULTIPROC_DIR=./.prom \
-        flask run ;;
+        python -m debugpy --listen 5678 -m flask run --no-reload ;;
 
       genie)
         # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
@@ -116,9 +116,6 @@ if $IS_WORK_LAPTOP; then
         dd ;;
 
       genie)
-        dd ;;
-
-      phenoapp)
         dd ;;
 
       platelet-ui)
