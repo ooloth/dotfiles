@@ -12,6 +12,7 @@ if $IS_WORK_LAPTOP; then
   gcpn() { gcloud config set project rp006-prod-49a893d8; }
   genie() { cd $HOME/Repos/recursionpharma/genie }
   gu() { cd $HOME/Repos/recursionpharma/genie/genie-ui; }
+  lowe() { cd $HOME/Repos/recursionpharma/bc-lowe; }
   mp() { cd $HOME/Repos/recursionpharma/mapapp-public; }
   n() { npm install "$@"; }
   nb() { n && npm run build; }
@@ -49,6 +50,45 @@ if $IS_WORK_LAPTOP; then
     local CURRENT_DIRECTORY=$(basename $PWD)
 
     case $CURRENT_DIRECTORY in
+      # NOTE: these only apply if not able to use the dev container; if I am, use it and do this instead:
+      # https://github.com/recursionpharma/bc-lowe/blob/trunk/README.md#quickstart
+      bc-lowe)
+        # See: https://recursion.slack.com/archives/D03LJSVPQ67/p1715265297434329?thread_ts=1715264518.353969&cid=D03LJSVPQ67
+
+        # 1. Point to Docker Desktop's Kubernetes (ensure Docker Desktop is running and Kubernetes is enabled)
+        kubectl config use-context docker-desktop
+
+        # 2. Ensure postgres and redis are not already running locally
+        brew services stop postgresql@14
+        lsof -t -i:5432 | xargs kill -9
+        brew services stop redis
+        lsof -t -i:6379 | xargs kill -9
+
+        # 3. Start postgres instance on port 5432
+        kubectl apply -f deploy/local/postgres.yaml
+        kubectl wait --for=condition=ready pod -l app=postgres
+        kubectl port-forward svc/postgres 5432:5432 & \
+
+        # 4. Start redis instance on port 6479
+        kubectl apply -f deploy/local/redis.yaml
+        kubectl wait --for=condition=ready pod -l app=redis
+        kubectl port-forward svc/redis 6379:6379 & \
+
+        # 5. Start backend via bazel
+        pip_index_url=$(python3 -m pip config get global.index-url)
+        PIP_INDEX_URL=$pip_index_url bazel run //src/api:manage migrate
+        PIP_INDEX_URL=$pip_index_url bazel run //src/api:manage runserver
+
+        # 6. Start worker
+        PIP_INDEX_URL=$pip_index_url bazel run //src/api:worker
+
+        # 7. Start frontend
+        fnm use 20
+        pnpm i
+        NEXT_PUBLIC_LOWE_BACKEND_URL="http://localhost:8000/api/v1" \
+        NEXT_PUBLIC_HARDCODED_JWT="put one here" \
+        pnpm run web:dev ;;
+
       cauldron)
         du ;;
 
@@ -109,6 +149,12 @@ if $IS_WORK_LAPTOP; then
     local CURRENT_DIRECTORY=$(basename $PWD)
 
     case $CURRENT_DIRECTORY in
+      bc-lowe)
+        kubectl delete -f deploy/local/postgres.yaml
+        lsof -t -i:5432 | xargs kill -9
+        kubectl delete -f deploy/local/redis.yaml
+        lsof -t -i:6379 | xargs kill -9 ;;
+
       cauldron)
         dd ;;
 
