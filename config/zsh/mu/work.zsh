@@ -91,11 +91,9 @@ if $IS_WORK_LAPTOP; then
         # 6. Start worker
         PIP_INDEX_URL=$pip_index_url bazel run //src/api:worker
 
-        # 7. Start frontend
+        # 7. Start frontend (ensure necessary environment variables are set in .env.local)
         fnm use 20
         pnpm i
-        NEXT_PUBLIC_LOWE_BACKEND_URL="http://localhost:8000/api/v1" \
-        NEXT_PUBLIC_HARDCODED_JWT="put one here" \
         pnpm run web:dev ;;
 
       cauldron)
