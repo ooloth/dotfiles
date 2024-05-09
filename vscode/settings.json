@@ -567,7 +567,6 @@
   "workbench.layoutControl.enabled": false,
   "workbench.panel.opensMaximized": "preserve",
   "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
-  "workbench.startupEditor": "newUntitledFile",
   "workbench.tree.indent": 14,
   "zenMode.centerLayout": false,
   "zenMode.fullScreen": false,
@@ -611,7 +610,6 @@
   "python.analysis.addImport.heuristics": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "terminal.integrated.tabs.enabled": false,
-  "workbench.panel.defaultLocation": "left",
   "window.zoomLevel": 1,
   "notebook.formatOnSave.enabled": true,
   "errorLens.codeLensEnabled": false,
@@ -629,5 +627,7 @@
   "gitlens.codeLens.recentChange.enabled": false,
   "workbench.activityBar.location": "hidden",
   "tailwindCSS.emmetCompletions": true,
-  "rust-analyzer.lens.enable": false
+  "rust-analyzer.lens.enable": false,
+  "security.promptForLocalFileProtocolHandling": false,
+  "workbench.startupEditor": "newUntitledFile"
 }
