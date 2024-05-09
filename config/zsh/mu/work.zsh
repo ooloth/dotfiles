@@ -39,11 +39,20 @@ if $IS_WORK_LAPTOP; then
   rl() { roadie lock "$@"; } # optionally "rl -c" etc
   rlc() { rl -c; }
   ru() { python -m pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
+
   rv() {
     # Install latest version of roadie, then rebuild venv to remove any no-longer-used packages
     # https://github.com/recursionpharma/roadie/blob/5a5c6ba44c345c8fd42543db5454b502a4e96863/roadie/cli/virtual.py#L454
     ru && roadie venv --clobber
+
+    local CURRENT_DIRECTORY=$(basename $PWD)
+
+    if [[ "$CURRENT_DIRECTORY" == "dash-phenoapp-v2" ]]; then
+      # Install debugpy to support debugging the flask app by attaching to it
+      pip install debugpy
+    fi
   }
+
   skurge() { cd $HOME/Repos/recursionpharma/skurge; }
 
   start() {
@@ -104,6 +113,7 @@ if $IS_WORK_LAPTOP; then
         FLASK_RUN_PORT=8050 \
         GOOGLE_CLOUD_PROJECT=eng-infrastructure \
         PROMETHEUS_MULTIPROC_DIR=./.prom \
+        PYDEVD_DISABLE_FILE_VALIDATION=true \
         python -m debugpy --listen 5678 -m flask run --no-reload ;;
 
       genie)
