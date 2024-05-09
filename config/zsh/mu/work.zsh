@@ -106,7 +106,6 @@ if $IS_WORK_LAPTOP; then
         printf "\n🏁 Starting observability stack...\n\n"
         du
         printf "\n🏁 Starting flask app with debugpy...\n\n"
-        CONFIGOME_ENV=dev \
         FLASK_APP=phenoapp.app.py \
         FLASK_DEBUG=true \
         FLASK_ENV=development \
