@@ -149,7 +149,10 @@ alias t='tmux a'
 
 u() {
   info "✨ Updating tpm plugins"
+  # see: https://github.com/tmux-plugins/tpm/blob/master/docs/managing_plugins_via_cmd_line.md
+  ~/.config/tmux/plugins/tpm/bin/clean_plugins
   ~/.config/tmux/plugins/tpm/bin/install_plugins
+  ~/.config/tmux/plugins/tpm/bin/update_plugins all
 
   info "✨ Updating rust dependencies"
   rustup update
