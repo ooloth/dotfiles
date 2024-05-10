@@ -161,7 +161,11 @@ u() {
   info "✨ Updating Node $(node -v) global npm dependencies"
 	ng
 
+  if $IS_WORK_LAPTOP; then
     info "✨ Updating gcloud components"
+    # The "quiet" flag skips interactive prompts by using the default or erroring (see: https://stackoverflow.com/a/31811541/8802485)
+    gcloud components update --quiet
+  fi
 
 	brew upgrade && brew update && brew cleanup && brew doctor
   info "✨ Updating brew packages"
@@ -169,9 +173,6 @@ u() {
 	if $IS_WORK_LAPTOP; then
 		# TODO: store version in a variable and update it programmatically?
 		printf '\n🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
-
-    printf "\nUpdating gcloud components...\n"
-    gcloud components update
 	fi
 }
 
