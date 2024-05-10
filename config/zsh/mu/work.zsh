@@ -101,9 +101,9 @@ if $IS_WORK_LAPTOP; then
 
       dash-phenoapp-v2)
         # TODO: automatically rerun rv if any pip packages were updated?
-        printf "\n🏁 Starting observability stack...\n\n"
+        info "🚀 Starting observability stack"
         du
-        printf "\n🏁 Starting flask app with debugpy...\n\n"
+        info "🚀 Starting backend server with debugpy listening"
         FLASK_APP=phenoapp.app.py \
         FLASK_DEBUG=true \
         FLASK_ENV=development \
@@ -127,7 +127,7 @@ if $IS_WORK_LAPTOP; then
         GOOGLE_CLOUD_PROJECT=eng-infrastructure du ;;
 
       platelet-ui)
-        printf "\n🏁 Starting cauldron, genie, skurge, platelet and platelet-ui...\n\n"
+        info "🚀 Starting cauldron, genie, skurge, platelet and platelet-ui"
         cauldron && dud
         genie && dud
         pl && dud
@@ -148,7 +148,7 @@ if $IS_WORK_LAPTOP; then
         ns ;;
 
       *)
-        printf "🚨 No 'start' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+        error "🚨 No 'start' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
     esac
   }
 
@@ -172,7 +172,7 @@ if $IS_WORK_LAPTOP; then
         dd ;;
 
       platelet-ui)
-        printf "\n✋ Stopping cauldron, genie, skurge, platelet and platelet-ui...\n\n"
+        info "✋ Stopping cauldron, genie, skurge, platelet and platelet-ui"
         cauldron && dd
         genie && dd
         pl && dd
@@ -183,7 +183,7 @@ if $IS_WORK_LAPTOP; then
         dd ;;
 
       *)
-        echo "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+        error "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}' in work.zsh\n" ;;
     esac
   }
 

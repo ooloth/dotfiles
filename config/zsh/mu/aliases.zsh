@@ -148,18 +148,19 @@ sl() { ln -sfv $1 $2; } # easier symlinking
 alias t='tmux a'
 
 u() {
-  printf "\nUpdating tpm plugins...\n"
+  info "✨ Updating tpm plugins"
   ~/.config/tmux/plugins/tpm/bin/install_plugins
 
-  # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-  printf "\nUpdating global npm packages...\n"
-	ng
-
-  printf "\nUpdating rust dependencies...\n"
+  info "✨ Updating rust dependencies"
   rustup update
 
-  printf "\nUpdating brew packages...\n"
+  # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
+  info "✨ Updating Node $(node -v) global npm dependencies"
+	ng
+
+
 	brew upgrade && brew update && brew cleanup && brew doctor
+  info "✨ Updating brew packages"
 
 	if $IS_WORK_LAPTOP; then
 		# TODO: store version in a variable and update it programmatically?
