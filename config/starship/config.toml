@@ -69,7 +69,7 @@ $all\
 
 [gcloud]
   detect_env_vars = ['GOOGLE_CLOUD_PROJECT']
-
+  disabled = true
   format = '  [$symbol$project]($style)'
   symbol = ''
   # symbol = '󰅟  '
