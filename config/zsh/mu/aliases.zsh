@@ -161,7 +161,7 @@ u() {
   rustup update
 
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-  info "✨ Updating Node $(node -v) global npm dependencies"
+  info "✨ Updating global npm dependencies for Node $(node -v)"
 	ng
 
   if $IS_WORK_LAPTOP; then
