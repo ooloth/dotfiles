@@ -493,8 +493,8 @@
       "titleBar.activeBackground": "#1A1A28",
       "titleBar.inactiveBackground": "#1A1A28",
       "walkThrough.embeddedEditorBackground": "#1A1A28",
+      "welcomePage.background": "#ff0000", // FIXME: doesn't work
       "workbench.emptyBackground": "#1A1A28"
-      "welcomePage.background": "#ff0000" // FIXME: doesn't work
     },
     "[Dracula]": {
       // See: https://github.com/dracula/visual-studio-code/blob/master/src/dracula.yml
@@ -631,7 +631,7 @@
   "workbench.activityBar.location": "hidden",
   "tailwindCSS.emmetCompletions": true,
   "rust-analyzer.lens.enable": false,
-  "editor.lightbulb.enabled": "off"
+  "editor.lightbulb.enabled": "off",
   "security.promptForLocalFileProtocolHandling": false,
   "workbench.startupEditor": "newUntitledFile",
   "terminal.integrated.shellIntegration.enabled": false
