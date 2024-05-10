@@ -170,8 +170,6 @@ u() {
 	brew upgrade && brew update && brew cleanup && brew doctor
   info "✨ Updating brew packages"
 
-	if $IS_WORK_LAPTOP; then
-	fi
   info "🔄 Reloading shell"
   R
 }
