@@ -4,14 +4,13 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
 function banner() {
-  # This function expects three arguments:
-  # 1. message: The message to display in the banner
-  # 2. border_color: The color of the banner border
-  # 3. text_color: The color of the banner text
+  # Args:
+  # $1 message: The message to display
+  # $2 color: The color of the border and text
 
   local message="$1"
   local border_color="${TEXT_NORMAL}$2"
-  local text_color="${TEXT_BRIGHT}$3"
+  local text_color="${TEXT_BRIGHT}$2"
 
   # Calculate the width of the text, adding one extra column per emoji (since they generally occupy two columns onscreen)
   local border_char="="
@@ -32,23 +31,20 @@ function banner() {
 
 function info() {
   local message="$1"
-  local border_color="${TEXT_WHITE}"
-  local text_color="${TEXT_WHITE}"
-  banner "$message" "$border_color" "$text_color"
+  local color="${TEXT_WHITE}"
+  banner "$message" "$color"
 }
 
 function warn() {
   local message="$1"
-  local border_color="${TEXT_YELLOW}"
-  local text_color="${TEXT_YELLOW}"
-  banner "$message" "$border_color" "$text_color"
+  local color="${TEXT_YELLOW}"
+  banner "$message" "$color"
 }
 
 function error() {
   local message="$1"
-  local border_color="${TEXT_RED}"
-  local text_color="${TEXT_RED}"
-  banner "$message" "$border_color" "$text_color"
+  local color="${TEXT_RED}"
+  banner "$message" "$color"
 }
 
 alias c='clear'
