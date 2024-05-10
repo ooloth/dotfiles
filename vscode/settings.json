@@ -630,5 +630,6 @@
   "gitlens.codeLens.recentChange.enabled": false,
   "workbench.activityBar.location": "hidden",
   "tailwindCSS.emmetCompletions": true,
-  "rust-analyzer.lens.enable": false
+  "rust-analyzer.lens.enable": false,
+  "editor.lightbulb.enabled": "off"
 }
