@@ -198,5 +198,15 @@ vv() {
 
 alias x='exit'
 
+# see: https://yazi-rs.github.io/docs/quick-start#shell-wrapper
+function yy() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
 # [z]sh [t]ime: measure how long new shells take to launch
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
