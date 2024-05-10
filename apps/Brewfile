@@ -1,4 +1,4 @@
-# see: https://github.com/Homebrew/homebrew-bundle?tab=readme-ov-file
+# see: https://github.com/Homebrew/homebrew-bundle
 # NOTE: Don't add work-only packages here! Treat them as one-off installs on my work laptop.
 
 # Taps
@@ -17,9 +17,10 @@ brew "commitizen" # for git
 brew "coreutils"
 brew "ctop" # for docker
 brew "eza" # replaces ls
-brew "fd" # replaces find
+brew "fd" # replaces find; used by yazi
+brew "ffmpegthumbnailer" # for yazi
 brew "fnm" # replaces nvm
-brew "fzf"
+brew "fzf" # awesome; used by yazi
 brew "gh"
 brew "git"
 brew "gnu-sed"
@@ -30,17 +31,18 @@ brew "goose" # for go
 brew "hadolint" # for docker
 brew "hashicorp/tap/terraform" # for neovim + vs code
 brew "tidy-html5" # for linting html + xml in neovim
-brew "jq"
+brew "jq" # for parsing json; used by yazi
 brew "kubectl" # for kubernetes
 brew "lazydocker"
 brew "lazygit"
 brew "mas"
 brew "neovim"
+brew "poppler" # for yazi
 brew "postgresql@14"
 brew "powerlevel10k"
 brew "pyenv" # manages python versions
 brew "pyenv-virtualenv" # allow pyenv to manage virtualenvs
-brew "ripgrep" # for telescope
+brew "ripgrep" # for telescope, yazi
 brew "rustup-init" # for rust
 brew "saulpw/vd/visidata"
 brew "starship"
@@ -50,8 +52,11 @@ brew "svn" # for font cask installations
 brew "taplo" # for toml
 brew "tmux"
 brew "trash"
+brew "unar" # for yazi
 brew "vifm"
 brew "wget" # for neovim
+brew "yazi" # terminal file manager
+brew "zoxide" # for yazi
 brew "zsh"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
@@ -83,6 +88,7 @@ cask "wezterm"
 # cask "zoom"
 
 # Fonts
+cask "font-symbols-only-nerd-font" # for yazi
 cask "font-ubuntu-mono"
 cask "font-ubuntu-mono-nerd-font"
 

@@ -3,6 +3,57 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
+function banner() {
+  # Args:
+  # $1 message: The message to display
+  # $2 color: The color of the border and text
+
+  local message="$1"
+  local border_color="${TEXT_NORMAL}$2"
+  local text_color="${TEXT_BRIGHT}$2"
+
+  # Calculate the width of the text, adding one extra column per emoji (since they generally occupy two columns onscreen)
+  local border_char="="
+  local border_char_top_left_corner="╔"
+  local border_char_top_right_corner="╗"
+  local border_char_bottom_right_corner="╝"
+  local border_char_bottom_left_corner="╚"
+  local border_char_horizontal="═"
+  local border_char_vertical="║"
+  local char_count=${#message}
+  local emoji_count=$(echo -n "$message" | python3 -c "import sys, unicodedata; print(sum((unicodedata.category(ch) == 'So') for ch in sys.stdin.read()))")
+  local padding_left=1
+  local padding_right=1
+  local text_cols=$((padding_left + char_count + emoji_count + padding_right))
+
+  # Build the banner
+  local border_top="$border_color$border_char_top_left_corner$(repeat $text_cols; printf $border_char_horizontal)$border_char_top_right_corner"
+  local border_vertical="$border_color$border_char_vertical"
+  local border_bottom="$border_color$border_char_bottom_left_corner$(repeat $text_cols; printf $border_char_horizontal)$border_char_bottom_right_corner"
+  local text="$text_color $message "
+
+  # Output the banner
+  printf "\n$border_top\n$border_vertical$text$border_vertical\n$border_bottom\n\n"
+}
+
+function info() {
+  local message="$1"
+  local color="${TEXT_WHITE}"
+  banner "$message" "$color"
+}
+
+function warn() {
+  local message="$1"
+  local color="${TEXT_YELLOW}"
+  banner "$message" "$color"
+}
+
+function error() {
+  local message="$1"
+  local color="${TEXT_RED}"
+  banner "$message" "$color"
+}
+
 alias c='clear'
 alias cat='bat --paging=never'
 alias cte='EDITOR=vim crontab -e'
@@ -100,26 +151,30 @@ sl() { ln -sfv $1 $2; } # easier symlinking
 alias t='tmux a'
 
 u() {
-  printf "\nUpdating tpm plugins...\n"
+  info "✨ Updating tpm plugins"
+  # see: https://github.com/tmux-plugins/tpm/blob/master/docs/managing_plugins_via_cmd_line.md
+  ~/.config/tmux/plugins/tpm/bin/clean_plugins
   ~/.config/tmux/plugins/tpm/bin/install_plugins
+  ~/.config/tmux/plugins/tpm/bin/update_plugins all
 
-  # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-  printf "\nUpdating global npm packages...\n"
-	ng
-
-  printf "\nUpdating rust dependencies...\n"
+  info "✨ Updating rust dependencies"
   rustup update
 
-  printf "\nUpdating brew packages...\n"
-	brew upgrade && brew update && brew cleanup && brew doctor
+  # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
+  info "✨ Updating global npm dependencies for Node $(node -v)"
+	ng
 
-	if $IS_WORK_LAPTOP; then
-		# TODO: store version in a variable and update it programmatically?
-		printf '\n🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
+  if $IS_WORK_LAPTOP; then
+    info "✨ Updating gcloud components"
+    # The "quiet" flag skips interactive prompts by using the default or erroring (see: https://stackoverflow.com/a/31811541/8802485)
+    gcloud components update --quiet
+  fi
 
-    printf "\nUpdating gcloud components...\n"
-    gcloud components update
-	fi
+  info "✨ Updating brew packages"
+	brew update && brew upgrade && brew autoremove && brew cleanup && brew doctor
+
+  info "🔄 Reloading shell"
+  R
 }
 
 alias v='NVIM_APPNAME=nvim-lazyvim nvim'
@@ -142,6 +197,16 @@ vv() {
 }
 
 alias x='exit'
+
+# see: https://yazi-rs.github.io/docs/quick-start#shell-wrapper
+function yy() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
 
 # [z]sh [t]ime: measure how long new shells take to launch
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }

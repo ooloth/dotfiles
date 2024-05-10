@@ -14,10 +14,10 @@ $character\
 # see: https://starship.rs/advanced-config/#enable-right-prompt
 right_format = """
 $git_branch\
-$nodejs\
-$python\
 $kubernetes\
 $gcloud\
+$nodejs\
+$python\
 $all\
 """
 
@@ -69,7 +69,7 @@ $all\
 
 [gcloud]
   detect_env_vars = ['GOOGLE_CLOUD_PROJECT']
-
+  disabled = true
   format = '  [$symbol$project]($style)'
   symbol = ''
   # symbol = '󰅟  '
@@ -126,8 +126,13 @@ $all\
   detect_files = ['Dockerfile', 'Kubernetesfile', 'docker-compose.yml', 'helmfile.yaml']
   # detect_folders = ['k8s', '.k8s', 'k8s-config', '.k8s-config', 'deploy', '.deploy']
   disabled = false
-  format = '  [$context:$namespace]($style)'
-  symbol = '☸ '
+  format = '  [$context$symbol$namespace]($style)'
+  symbol = ':'                                     # gaming the intended use of "symbol" here so I can remove the colon when namespace is irrelevant
+  # symbol = '☸ '
+
+[[kubernetes.contexts]]
+  context_pattern = 'docker-desktop'
+  symbol = ''
 
 [[kubernetes.contexts]]
   context_alias = 'principal'

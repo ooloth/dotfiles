@@ -43,9 +43,13 @@
   { "key": "ctrl+b", "command": "workbench.action.toggleSidebarVisibility" },
 
   // Panel views
-  { "key": "cmd+ctrl+]", "command": "workbench.action.nextPanelView",     "when": "panelFocus" },
-  { "key": "cmd+ctrl+[", "command": "workbench.action.previousPanelView", "when": "panelFocus" },
-  { "key": "cmd+j",      "command": "-console.log.wrap.json",             "when": "editorTextFocus" }, // unblock cmd+j toggling the panel
+  { "key": "cmd+ctrl+]", "command": "workbench.action.nextPanelView",              "when": "panelFocus" },
+  { "key": "cmd+ctrl+[", "command": "workbench.action.previousPanelView",          "when": "panelFocus" },
+  { "key": "cmd+ctrl+h", "command": "workbench.action.terminal.resizePaneLeft",    "when": "panelFocus" },
+  { "key": "cmd+ctrl+l", "command": "workbench.action.terminal.resizePaneRight",   "when": "panelFocus" },
+  { "key": "cmd+ctrl+j", "command": "workbench.action.terminal.resizePaneDown",    "when": "panelFocus" },
+  { "key": "cmd+ctrl+k", "command": "workbench.action.terminal.resizePaneUp",      "when": "panelFocus" },
+  { "key": "cmd+j",      "command": "-console.log.wrap.json",                      "when": "editorTextFocus" }, // unblock cmd+j toggling the panel
 
   // Terminals
   { "key": "ctrl+t",     "command": "workbench.action.terminal.toggleTerminal",    "when": "terminal.active" },
@@ -56,10 +60,6 @@
   // { "key": "ctrl+l",     "command": "workbench.action.terminal.focusNextPane",     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
   { "key": "ctrl+]",     "command": "workbench.action.terminal.focusNext",         "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
   { "key": "ctrl+[",     "command": "workbench.action.terminal.focusPrevious",     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
-  { "key": "cmd+ctrl+h", "command": "workbench.action.terminal.resizePaneLeft",    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "cmd+ctrl+l", "command": "workbench.action.terminal.resizePaneRight",   "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "cmd+ctrl+j", "command": "workbench.action.terminal.resizePaneDown",    "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
-  { "key": "cmd+ctrl+k", "command": "workbench.action.terminal.resizePaneUp",      "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported" },
 
   // Lists (read-only)
   { "key": "j",      "command": "list.focusDown",       "when": "listFocus && !inputFocus" },
