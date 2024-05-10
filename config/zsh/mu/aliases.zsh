@@ -3,6 +3,54 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
+function banner() {
+  # This function expects three arguments:
+  # 1. message: The message to display in the banner
+  # 2. border_color: The color of the banner border
+  # 3. text_color: The color of the banner text
+
+  local message="$1"
+  local border_color="${TEXT_NORMAL}$2"
+  local text_color="${TEXT_BRIGHT}$3"
+
+  # Calculate the width of the text, adding one extra column per emoji (since they generally occupy two columns onscreen)
+  local border_char="="
+  local char_count=${#message}
+  local emoji_count=$(echo -n "$message" | python3 -c "import sys, unicodedata; print(sum((unicodedata.category(ch) == 'So') for ch in sys.stdin.read()))")
+  local padding_left=2
+  local padding_right=2
+  local text_cols=$((padding_left + char_count + emoji_count + padding_right))
+
+  # Build the banner
+  local border_horizontal="$border_color$(repeat $text_cols; printf $border_char)"
+  local border_vertical="$border_color$border_char"
+  local text="$text_color $message "
+
+  # Output the banner
+  printf "\n$border_horizontal\n$border_vertical$text$border_vertical\n$border_horizontal\n\n"
+}
+
+function info() {
+  local message="$1"
+  local border_color="${TEXT_WHITE}"
+  local text_color="${TEXT_WHITE}"
+  banner "$message" "$border_color" "$text_color"
+}
+
+function warn() {
+  local message="$1"
+  local border_color="${TEXT_YELLOW}"
+  local text_color="${TEXT_YELLOW}"
+  banner "$message" "$border_color" "$text_color"
+}
+
+function error() {
+  local message="$1"
+  local border_color="${TEXT_RED}"
+  local text_color="${TEXT_RED}"
+  banner "$message" "$border_color" "$text_color"
+}
+
 alias c='clear'
 alias cat='bat --paging=never'
 alias cte='EDITOR=vim crontab -e'

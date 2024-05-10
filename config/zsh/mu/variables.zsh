@@ -53,6 +53,21 @@ export SHELL=$(which zsh)
 
 export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 
+# see: https://stackoverflow.com/a/4332530/8802485
+export TEXT_BLACK=$(tput setaf 0)
+export TEXT_RED=$(tput setaf 1)
+export TEXT_GREEN=$(tput setaf 2)
+export TEXT_YELLOW=$(tput setaf 3)
+export TEXT_BLUE=$(tput setaf 4)
+export TEXT_MAGENTA=$(tput setaf 5)
+export TEXT_CYAN=$(tput setaf 6)
+export TEXT_WHITE=$(tput setaf 7)
+export TEXT_BRIGHT=$(tput bold)
+export TEXT_NORMAL=$(tput sgr0)
+export TEXT_BLINK=$(tput blink)
+export TEXT_REVERSE=$(tput smso)
+export TEXT_UNDERLINE=$(tput smul)
+
 # enable vi mode
 bindkey -v
 # restore history search while in vi mode
