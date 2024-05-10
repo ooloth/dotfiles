@@ -46,7 +46,6 @@ set_gcloud_project_env_var() {
 
   case $CURRENT_DIRECTORY in
     dash-phenoapp-v2) export GOOGLE_CLOUD_PROJECT='eng-infrastructure' ;;
-    phenoapp)         export GOOGLE_CLOUD_PROJECT='eng-infrastructure' ;;
     *)                unset GOOGLE_CLOUD_PROJECT ;;
   esac
 }
