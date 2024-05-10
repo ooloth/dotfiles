@@ -174,6 +174,8 @@ u() {
 		# TODO: store version in a variable and update it programmatically?
 		printf '\n🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
 	fi
+  info "🔄 Reloading shell"
+  R
 }
 
 alias v='NVIM_APPNAME=nvim-lazyvim nvim'
