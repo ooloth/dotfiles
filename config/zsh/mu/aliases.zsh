@@ -171,7 +171,7 @@ u() {
   fi
 
   info "✨ Updating brew packages"
-	brew update && brew upgrade && brew autoremove && brew cleanup --prune=all && brew doctor
+	brew update && brew upgrade && brew autoremove && brew cleanup && brew doctor
 
   info "🔄 Reloading shell"
   R
