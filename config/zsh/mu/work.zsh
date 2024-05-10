@@ -64,34 +64,34 @@ if $IS_WORK_LAPTOP; then
       bc-lowe)
         # See: https://recursion.slack.com/archives/D03LJSVPQ67/p1715265297434329?thread_ts=1715264518.353969&cid=D03LJSVPQ67
 
-        # 1. Point to Docker Desktop's Kubernetes (ensure Docker Desktop is running and Kubernetes is enabled)
+        # Ensure Docker Desktop is running and Kubernetes is enabled
+        info "📡 Pointing to Docker Desktop's Kubernetes instance"
         kubectl config use-context docker-desktop
 
-        # 2. Ensure postgres and redis are not already running locally
+        info "🚀 Starting postgres on port 5432"
         brew services stop postgresql@14
         lsof -t -i:5432 | xargs kill -9
-        brew services stop redis
-        lsof -t -i:6379 | xargs kill -9
-
-        # 3. Start postgres instance on port 5432
         kubectl apply -f deploy/local/postgres.yaml
         kubectl wait --for=condition=ready pod -l app=postgres
         kubectl port-forward svc/postgres 5432:5432 & \
 
-        # 4. Start redis instance on port 6479
+        info "🚀 Starting redis on port 6379"
+        brew services stop redis
+        lsof -t -i:6379 | xargs kill -9
         kubectl apply -f deploy/local/redis.yaml
         kubectl wait --for=condition=ready pod -l app=redis
         kubectl port-forward svc/redis 6379:6379 & \
 
-        # 5. Start backend via bazel
+        info "🚀 Starting backend server with bazel"
         pip_index_url=$(python3 -m pip config get global.index-url)
         PIP_INDEX_URL=$pip_index_url bazel run //src/api:manage migrate
         PIP_INDEX_URL=$pip_index_url bazel run //src/api:manage runserver
 
-        # 6. Start worker
+        info "🚀 Starting worker with bazel"
         PIP_INDEX_URL=$pip_index_url bazel run //src/api:worker
 
-        # 7. Start frontend (ensure necessary environment variables are set in .env.local)
+        # Ensure necessary NEXT_PUBLIC_* environment variables are set in .env.local
+        info "🚀 Starting frontend server with pnpm"
         fnm use 20
         pnpm i
         pnpm run web:dev ;;
@@ -139,6 +139,7 @@ if $IS_WORK_LAPTOP; then
         python -m main ;;
 
       react-app)
+        info "🚀 Starting frontend server"
         ns ;;
 
       skurge)
@@ -157,18 +158,24 @@ if $IS_WORK_LAPTOP; then
 
     case $CURRENT_DIRECTORY in
       bc-lowe)
+        info "✋ Stopping postgres instance running on port 5432"
         kubectl delete -f deploy/local/postgres.yaml
         lsof -t -i:5432 | xargs kill -9
+
+        info "✋ Stopping redis instance running on port 6379"
         kubectl delete -f deploy/local/redis.yaml
         lsof -t -i:6379 | xargs kill -9 ;;
 
       cauldron)
+        info "✋ Stopping cauldron"
         dd ;;
 
       dash-phenoapp-v2)
+        info "✋ Stopping observability stack"
         dd ;;
 
       genie)
+        info "✋ Stopping genie"
         dd ;;
 
       platelet-ui)

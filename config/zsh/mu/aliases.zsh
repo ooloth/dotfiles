@@ -158,6 +158,7 @@ u() {
   info "✨ Updating Node $(node -v) global npm dependencies"
 	ng
 
+    info "✨ Updating gcloud components"
 
 	brew upgrade && brew update && brew cleanup && brew doctor
   info "✨ Updating brew packages"
