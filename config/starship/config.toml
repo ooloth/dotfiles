@@ -14,10 +14,10 @@ $character\
 # see: https://starship.rs/advanced-config/#enable-right-prompt
 right_format = """
 $git_branch\
-$nodejs\
-$python\
 $kubernetes\
 $gcloud\
+$nodejs\
+$python\
 $all\
 """
 
