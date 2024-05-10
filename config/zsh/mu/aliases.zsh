@@ -167,8 +167,8 @@ u() {
     gcloud components update --quiet
   fi
 
-	brew upgrade && brew update && brew cleanup && brew doctor
   info "✨ Updating brew packages"
+	brew update && brew upgrade && brew autoremove && brew cleanup --prune=all && brew doctor
 
   info "🔄 Reloading shell"
   R
