@@ -14,19 +14,26 @@ function banner() {
 
   # Calculate the width of the text, adding one extra column per emoji (since they generally occupy two columns onscreen)
   local border_char="="
+  local border_char_top_left_corner="╔"
+  local border_char_top_right_corner="╗"
+  local border_char_bottom_right_corner="╝"
+  local border_char_bottom_left_corner="╚"
+  local border_char_horizontal="═"
+  local border_char_vertical="║"
   local char_count=${#message}
   local emoji_count=$(echo -n "$message" | python3 -c "import sys, unicodedata; print(sum((unicodedata.category(ch) == 'So') for ch in sys.stdin.read()))")
-  local padding_left=2
-  local padding_right=2
+  local padding_left=1
+  local padding_right=1
   local text_cols=$((padding_left + char_count + emoji_count + padding_right))
 
   # Build the banner
-  local border_horizontal="$border_color$(repeat $text_cols; printf $border_char)"
-  local border_vertical="$border_color$border_char"
+  local border_top="$border_color$border_char_top_left_corner$(repeat $text_cols; printf $border_char_horizontal)$border_char_top_right_corner"
+  local border_vertical="$border_color$border_char_vertical"
+  local border_bottom="$border_color$border_char_bottom_left_corner$(repeat $text_cols; printf $border_char_horizontal)$border_char_bottom_right_corner"
   local text="$text_color $message "
 
   # Output the banner
-  printf "\n$border_horizontal\n$border_vertical$text$border_vertical\n$border_horizontal\n\n"
+  printf "\n$border_top\n$border_vertical$text$border_vertical\n$border_bottom\n\n"
 }
 
 function info() {
