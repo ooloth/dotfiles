@@ -223,9 +223,10 @@ if $IS_WORK_LAPTOP; then
   export CONFIGOME_ENV=dev
 
   # kafka
-  # TODO: update versions whenever I run brew update
-  export C_INCLUDE_PATH=/opt/homebrew/Cellar/librdkafka/2.3.0/include
-  export LIBRARY_PATH=/opt/homebrew/Cellar/librdkafka/2.3.0/lib
+  # Get the latest version of librdkafka installed by Homebrew
+  librdkafka_version=$(ls /opt/homebrew/Cellar/librdkafka | sort -V | tail -n 1)
+  export C_INCLUDE_PATH="/opt/homebrew/Cellar/librdkafka/$librdkafka_version/include"
+  export LIBRARY_PATH="/opt/homebrew/Cellar/librdkafka/$librdkafka_version/lib"
 
   # netskope
   # see: https://github.com/recursionpharma/netskope_dev_tools

@@ -171,8 +171,6 @@ u() {
   info "✨ Updating brew packages"
 
 	if $IS_WORK_LAPTOP; then
-		# TODO: store version in a variable and update it programmatically?
-		printf '\n🚨 Run "brew info librdkafka" and manually update the version in .zshrc if it has changed.'
 	fi
   info "🔄 Reloading shell"
   R
