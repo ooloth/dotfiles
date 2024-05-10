@@ -631,5 +631,6 @@
   "tailwindCSS.emmetCompletions": true,
   "rust-analyzer.lens.enable": false,
   "security.promptForLocalFileProtocolHandling": false,
-  "workbench.startupEditor": "newUntitledFile"
+  "workbench.startupEditor": "newUntitledFile",
+  "terminal.integrated.shellIntegration.enabled": false
 }
