@@ -47,7 +47,9 @@ export MYPYPATH=$HOME
 export VIRTUAL_ENV_PROMPT=''
 
 # rust
-export PATH=$HOME/.cargo/bin:$PATH
+export CARGO_HOME=$HOME/.config/cargo
+export RUSTUP_HOME=$HOME/.config/rustup
+export PATH=$HOME/.config/cargo/bin:$PATH
 
 export SHELL=$(which zsh)
 
