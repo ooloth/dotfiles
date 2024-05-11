@@ -1,6 +1,9 @@
 # fnm
 eval "$(fnm env --use-on-cd --log-level=error)"
 
+# fzf
+eval "$(fzf --zsh)"
+
 # prompt
 eval "$(starship init zsh)"
 # source $(brew --prefix)/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme
