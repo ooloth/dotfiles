@@ -151,14 +151,14 @@ sl() { ln -sfv $1 $2; } # easier symlinking
 alias t='tmux a'
 
 u() {
+  info "✨ Updating rust dependencies"
+  rustup update
+
   info "✨ Updating tpm plugins"
   # see: https://github.com/tmux-plugins/tpm/blob/master/docs/managing_plugins_via_cmd_line.md
   ~/.config/tmux/plugins/tpm/bin/clean_plugins
   ~/.config/tmux/plugins/tpm/bin/install_plugins
   ~/.config/tmux/plugins/tpm/bin/update_plugins all
-
-  info "✨ Updating rust dependencies"
-  rustup update
 
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
   info "✨ Updating global npm dependencies for Node $(node -v)"
