@@ -43,7 +43,6 @@ brew "powerlevel10k"
 brew "pyenv" # manages python versions
 brew "pyenv-virtualenv" # allow pyenv to manage virtualenvs
 brew "ripgrep" # for telescope, yazi
-brew "rustup-init" # for rust
 brew "saulpw/vd/visidata"
 brew "starship"
 brew "stern" # for kubectl
