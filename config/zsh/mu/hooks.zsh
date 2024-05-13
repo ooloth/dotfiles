@@ -9,10 +9,8 @@ function precmd() {
 }
 
 function preexec() {
-  # TODO: if I keep tmux at the top, just statically set the prompt command to "echo"
-  export PROMPT_COMMAND="echo"
   # if cmd is not "clear" (or "c"), print a newline before the next prompt
-  # [[ "$1" == "clear" ]] || [[ "$1" == "c" ]] && export PROMPT_COMMAND="" || export PROMPT_COMMAND="echo"
+  [[ "$1" == "clear" ]] || [[ "$1" == "c" ]] && export PROMPT_COMMAND="" || export PROMPT_COMMAND="echo"
 }
 
 activate_venv() {
