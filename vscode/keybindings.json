@@ -55,8 +55,9 @@
   { "key": "ctrl+t",     "command": "workbench.action.terminal.toggleTerminal",    "when": "terminal.active" },
   { "key": "cmd+n",      "command": "workbench.action.terminal.new",               "when": "terminalFocus && terminalProcessSupported || terminalWebExtensionContributedProfile" },
   { "key": "ctrl+\\",    "command": "workbench.action.terminal.split",             "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile" },
-  { "key": "ctrl+h",     "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
-  { "key": "ctrl+l",     "command": "workbench.action.terminal.focusNextPane",     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  // NOTE: these override ability to use these keys to jump in and out of the terminal when panel is on left or right
+  // { "key": "ctrl+h",     "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  // { "key": "ctrl+l",     "command": "workbench.action.terminal.focusNextPane",     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
   { "key": "ctrl+]",     "command": "workbench.action.terminal.focusNext",         "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
   { "key": "ctrl+[",     "command": "workbench.action.terminal.focusPrevious",     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
 
