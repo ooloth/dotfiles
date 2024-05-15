@@ -1,3 +1,5 @@
+# TODO: merge into other files?
+
 if $IS_WORK_LAPTOP; then
 
   bp() { cd $HOME/Repos/recursionpharma/build-pipelines; }
