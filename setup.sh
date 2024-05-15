@@ -375,7 +375,7 @@ set_up_zsh() {
 set_up_node() {
   title "Installing node and general global dependencies..."
 
-  fnm install 21 && fnm default 21 && fnm use 21
+  fnm install 22 && fnm default 22 && fnm use 22
 
   npm i -g @githubnext/github-copilot-cli npm-check tldr
 
