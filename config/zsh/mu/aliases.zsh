@@ -123,8 +123,7 @@ ng() {
   # prefer "-g" over "--location=global" to support older versions of npm
   npm install -g \
     @githubnext/github-copilot-cli \
-    npm-check \
-    tldr \
+    npm-check
 
   # neovim dependencies
   npm install -g \
