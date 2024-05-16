@@ -105,7 +105,7 @@ if $IS_WORK_LAPTOP; then
         # TODO: automatically rerun rv if any pip packages were updated?
         info "🚀 Starting observability stack"
         du
-        info "🚀 Starting backend server with debugpy listening"
+        info "🚀 Starting flask server with debugpy"
         FLASK_APP=phenoapp.app.py \
         FLASK_DEBUG=true \
         FLASK_ENV=development \
@@ -141,7 +141,7 @@ if $IS_WORK_LAPTOP; then
         python -m main ;;
 
       react-app)
-        info "🚀 Starting frontend server"
+        info "🚀 Starting vite server"
         ns ;;
 
       skurge)
