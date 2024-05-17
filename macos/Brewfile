@@ -19,7 +19,6 @@ brew "go"
 brew "yqrashawn/goku/goku" # for karibiner
 brew "goose" # for go
 brew "hadolint" # for docker
-brew "tidy-html5" # for linting html + xml in neovim
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
 brew "kubectl" # for kubernetes
@@ -40,6 +39,7 @@ brew "stylua" # for lua
 brew "svn" # for font cask installations
 brew "taplo" # for toml
 brew "hashicorp/tap/terraform" # for neovim + vs code
+brew "tidy-html5" # for linting html + xml in neovim
 brew "tmux"
 brew "trash"
 brew "unar" # for yazi
@@ -58,6 +58,9 @@ cask "appcleaner"
 # cask "backblaze"
 cask "brave-browser"
 cask "firefox"
+cask "font-symbols-only-nerd-font" # for yazi
+cask "font-ubuntu-mono"
+cask "font-ubuntu-mono-nerd-font"
 # cask "google-chrome"
 # cask "handbrake"
 cask "hyperkey"
@@ -74,11 +77,6 @@ cask "runjs"
 cask "visual-studio-code"
 cask "vlc"
 # cask "zoom"
-
-# Fonts
-cask "font-symbols-only-nerd-font" # for yazi
-cask "font-ubuntu-mono"
-cask "font-ubuntu-mono-nerd-font"
 
 # macOS App Store
 mas "Amphetamine", id: 937984704
