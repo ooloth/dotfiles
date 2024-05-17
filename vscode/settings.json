@@ -634,5 +634,6 @@
   "editor.lightbulb.enabled": "off",
   "security.promptForLocalFileProtocolHandling": false,
   "workbench.startupEditor": "newUntitledFile",
-  "terminal.integrated.shellIntegration.enabled": false
+  "terminal.integrated.shellIntegration.enabled": false,
+  "Lua.hint.arrayIndex": "Disable"
 }
