@@ -1,12 +1,6 @@
 # see: https://github.com/Homebrew/homebrew-bundle
 # NOTE: Don't add work-only packages here! Treat them as one-off installs on my work laptop.
 
-tap "arl/arl" # for gitmux
-tap "goku" # for goku
-tap "hashicorp/tap" # for terraform
-tap "jesseduffield/lazygit"
-tap "jesseduffield/lazydocker"
-
 # Packages
 brew "1password-cli"
 brew "bat" # replaces cat
@@ -20,18 +14,17 @@ brew "fnm" # replaces nvm
 brew "fzf" # awesome; used by yazi
 brew "gh"
 brew "git"
+brew "arl/arl/gitmux" # for tmux
 brew "gnu-sed"
-brew "gitmux" # for tmux
 brew "go"
-brew "goku" # for karibiner
+brew "yqrashawn/goku/goku" # for karibiner
 brew "goose" # for go
 brew "hadolint" # for docker
-brew "hashicorp/tap/terraform" # for neovim + vs code
 brew "tidy-html5" # for linting html + xml in neovim
 brew "jq" # for parsing json; used by yazi
 brew "kubectl" # for kubernetes
-brew "lazydocker"
-brew "lazygit"
+brew "jesseduffield/lazydocker/lazydocker"
+brew "jesseduffield/lazygit/lazygit"
 brew "mas"
 brew "neovim"
 brew "poppler" # for yazi
@@ -46,6 +39,7 @@ brew "stern" # for kubectl
 brew "stylua" # for lua
 brew "svn" # for font cask installations
 brew "taplo" # for toml
+brew "hashicorp/tap/terraform" # for neovim + vs code
 brew "tmux"
 brew "trash"
 brew "unar" # for yazi
