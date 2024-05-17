@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 cd $HOME/Repos/ooloth
 git init tmp-merge-conflict
