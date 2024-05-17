@@ -183,6 +183,8 @@ u() {
   fi
 
   info "✨ Updating brew packages"
+  # Install missing packages, upgrade outdated packages, and remove old versions
+  brew bundle --file=$DOTFILES/macos/Brewfile
 	brew update && brew upgrade && brew autoremove && brew cleanup && brew doctor
 
   info "🔄 Reloading shell"
