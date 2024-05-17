@@ -154,6 +154,9 @@ alias t='tmux a'
 alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 
 u() {
+  info "🔗 Updating symlinks"
+  $DOTFILES/bin/create-symlinks.zsh
+
   info "✨ Updating rust dependencies"
   rustup update
 
