@@ -1,10 +1,9 @@
 #!/usr/bin/env zsh
 
-local dotfiles=$HOME/Repos/ooloth/dotfiles
+# TODO: is the $DOTFILES environment variable available in here?
+# local dotfiles=$HOME/Repos/ooloth/dotfiles
 
-# -s: symbolic - create a symbolic link (not a hard link)
-# -f: force - if the target file already exists, then unlink it so that the link may occur
-# -v: verbose - print file names as they are processed
+# TODO: is the "sl" alias already available in here?
 sl() { ln -sfv $1 $2; } # easier symlinking
 
 #########

@@ -148,6 +148,9 @@ alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/ki
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper='cd $HOME/Repos/ooloth/scraper'
 
+# -s: symbolic - create a symbolic link (not a hard link)
+# -f: force - if the target file already exists, unlink it so the link may occur
+# -v: verbose - print file names as they are processed
 sl() { ln -sfv $1 $2; } # easier symlinking
 
 alias t='tmux a'
