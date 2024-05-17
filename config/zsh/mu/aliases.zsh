@@ -151,6 +151,7 @@ alias scraper='cd $HOME/Repos/ooloth/scraper'
 sl() { ln -sfv $1 $2; } # easier symlinking
 
 alias t='tmux a'
+alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 
 u() {
   info "✨ Updating rust dependencies"
