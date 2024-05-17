@@ -1,9 +1,6 @@
 # see: https://github.com/Homebrew/homebrew-bundle
 # NOTE: Don't add work-only packages here! Treat them as one-off installs on my work laptop.
 
-# Taps
-tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
 tap "arl/arl" # for gitmux
 tap "goku" # for goku
 tap "hashicorp/tap" # for terraform
