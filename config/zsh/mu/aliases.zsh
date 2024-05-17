@@ -144,6 +144,7 @@ alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 pi() { eval "$(pyenv init -)"; }
 alias rm='trash' # see: https://github.com/sindresorhus/trash-cli
 alias R="exec -l $SHELL"
+alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper='cd $HOME/Repos/ooloth/scraper'
 
