@@ -4,6 +4,9 @@
   "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[lua][luau]": {
+    "editor.defaultFormatter": "JohnnyMorganz.stylua"
+  },
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform"
   },
@@ -633,5 +636,6 @@
   "security.promptForLocalFileProtocolHandling": false,
   "workbench.startupEditor": "newUntitledFile",
   "terminal.integrated.shellIntegration.enabled": false,
-  "Lua.hint.arrayIndex": "Disable"
+  "Lua.hint.arrayIndex": "Disable",
+  "Lua.format.enable": false
 }
