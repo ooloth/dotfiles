@@ -79,6 +79,7 @@ alias env='env | sort'
 alias f='vifm'
 alias g='lazygit'
 alias h='cd $HOME'
+image() { kitten icat "$1"; } # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 
 # Kubernetes
 alias k='kubectl'
