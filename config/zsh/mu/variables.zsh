@@ -1,4 +1,5 @@
 export DEBUG_DOTFILES=false
+export DOTFILES=$HOME/Repos/ooloth/dotfiles
 
 export EDITOR=code
 
