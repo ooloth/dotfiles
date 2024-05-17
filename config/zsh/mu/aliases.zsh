@@ -168,7 +168,14 @@ u() {
 
   info "✨ Updating neovim dependencies"
   local vim_kitty_navigator="$HOME/Repos/knubie/vim-kitty-navigator"
-  if [ ! -d $vim_kitty_navigator ]; then git clone knubie/vim-kitty-navigator $vim_kitty_navigator; else git -C $vim_kitty_navigator pull; fi
+  if [ ! -d $vim_kitty_navigator ]; then
+    # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
+    git clone knubie/vim-kitty-navigator $vim_kitty_navigator;
+    sl $vim_kitty_navigator/get_layout.py $HOME/.config/kitty
+    sl $vim_kitty_navigator/pass_keys.py $HOME/.config/kitty
+  else
+    git -C $vim_kitty_navigator pull;
+  fi
 
   # TODO: update lazy.nvim plugins here as well? in all nvim instances? pin dependencies to avoid unwanted updates?
 
