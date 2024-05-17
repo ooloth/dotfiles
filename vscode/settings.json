@@ -165,12 +165,10 @@
   "terraform.languageServer.terraform.path": "/opt/homebrew/bin/terraform",
   "todohighlight.keywords": [
     // see: https://github.com/catppuccin/nvim/blob/main/lua/catppuccin/palettes/mocha.lua
-    { "backgroundColor": "transparent", "color": "#f9e2af", "text": "TODO:" },
     { "backgroundColor": "transparent", "color": "#f38ba8", "text": "FIXME:" },
+    { "backgroundColor": "transparent", "color": "#fab387", "text": "WARN:" },
+    { "backgroundColor": "transparent", "color": "#f9e2af", "text": "TODO:" },
     { "backgroundColor": "transparent", "color": "#a6e3a1", "text": "NOTE:" }
-    // { "backgroundColor": "transparent", "color": "#ffc777", "text": "TODO:" },
-    // { "backgroundColor": "transparent", "color": "#ff757f", "text": "FIXME:" },
-    // { "backgroundColor": "transparent", "color": "#c3e88d", "text": "NOTE:" }
   ],
   "totalTypeScript.hiddenTips": [
     "in-operator-narrowing",
