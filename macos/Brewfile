@@ -1,5 +1,6 @@
 # see: https://github.com/Homebrew/homebrew-bundle
-# NOTE: Don't add work-only packages here! Treat them as one-off installs on my work laptop.
+
+# WARN: Don't add work-only packages here! Treat them as one-off installs on my work laptop.
 
 # Packages
 brew "bat" # replaces cat
@@ -58,9 +59,6 @@ cask "appcleaner"
 # cask "backblaze"
 cask "brave-browser"
 cask "firefox"
-cask "font-symbols-only-nerd-font" # for yazi
-cask "font-ubuntu-mono"
-cask "font-ubuntu-mono-nerd-font"
 # cask "google-chrome"
 # cask "handbrake"
 cask "hyperkey"
@@ -77,6 +75,12 @@ cask "runjs"
 cask "visual-studio-code"
 cask "vlc"
 # cask "zoom"
+
+# Fonts
+# see: https://github.com/Homebrew/homebrew-cask/tree/master/Casks/font
+cask "font-symbols-only-nerd-font" # for yazi
+cask "font-ubuntu-mono"
+cask "font-ubuntu-mono-nerd-font"
 
 # macOS App Store
 mas "Amphetamine", id: 937984704
