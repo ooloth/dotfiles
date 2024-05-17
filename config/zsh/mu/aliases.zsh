@@ -74,6 +74,7 @@ alias dl='dc logs --follow --tail=100'             # see last 100 log lines of o
 alias du='dc up --build --detach --remove-orphans' # recreate and start one or more services (or all services if no args provided)
 alias dud='dc up --detach'                         # start one or more services (or all services if no args provided)
 
+diff() { kitten diff "$1" "$2"; } # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
 alias env='env | sort'
 alias f='vifm'
 alias g='lazygit'
