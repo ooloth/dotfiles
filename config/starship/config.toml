@@ -147,6 +147,7 @@ $all\
   context_pattern = 'gke_rp006-prod-49a893d8_us-central1_rp006-prod'
 
 [lua]
+  disabled = true
   symbol = " "
 
 [memory_usage]
