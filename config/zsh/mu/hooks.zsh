@@ -5,12 +5,12 @@ function chpwd() {
 
 function precmd() {
   # will be set to "echo" if previous command was not "clear" or "c" (see preexec below)
-  eval $PROMPT_COMMAND
+  # eval $PROMPT_COMMAND
 }
 
 function preexec() {
   # if cmd is not "clear" (or "c"), print a newline before the next prompt
-  [[ "$1" == "clear" ]] || [[ "$1" == "c" ]] && export PROMPT_COMMAND="" || export PROMPT_COMMAND="echo"
+  # [[ "$1" == "clear" ]] || [[ "$1" == "c" ]] && export PROMPT_COMMAND="" || export PROMPT_COMMAND="echo"
 }
 
 activate_venv() {
