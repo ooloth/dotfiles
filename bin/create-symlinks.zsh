@@ -12,5 +12,5 @@ sl() { ln -sfv $1 $2; } # easier symlinking
 #########
 
 # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
-sl $dotfiles/config/kitty/vim-kitty-navigator/get_layout.py $HOME/.config/kitty
-sl $dotfiles/config/kitty/vim-kitty-navigator/pass_keys.py $HOME/.config/kitty
+sl $HOME/Repos/knubie/vim-kitty-navigator/get_layout.py $HOME/.config/kitty
+sl $HOME/Repos/knubie/vim-kitty-navigator/pass_keys.py $HOME/.config/kitty
