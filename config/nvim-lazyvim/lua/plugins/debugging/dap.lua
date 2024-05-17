@@ -22,13 +22,12 @@ local attach_debugger = function()
       ['pwa-chrome'] = js_based_languages,
     })
 
-    -- override console in all configurations
     local dap_configurations = require('dap').configurations
 
-    -- override console and justMyCode in all configurations
+    -- override console in all configurations
     for _, config in ipairs(dap_configurations) do
       config.console = 'integratedTerminal'
-      config.justMyCode = true
+      -- config.justMyCode = true  -- NOTE: sometimes it helps to follow code into dependencies we built
     end
 
     -- override pythonPath in all python configurations
