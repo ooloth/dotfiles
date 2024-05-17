@@ -5,6 +5,7 @@ local js_based_languages = { 'typescript', 'typescriptreact', 'javascript', 'jav
 
 local attach_debugger = function()
   -- (re-)reads launch.json if present
+  -- FIXME: fails if comments are present in jsonc file (how to parse jsonc properly?)
   if vim.fn.filereadable('.vscode/launch.json') then
     -- TODO: move launch.json config divider here
     -- for _, language in ipairs(js_based_languages) do

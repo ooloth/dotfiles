@@ -101,6 +101,7 @@ mas "Sip", id: 507257563
 mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
+# VS Code
 # 'vscode --install-extension'
 # TODO: list extensions here (replace custom installation)
 # vscode "GitHub.codespaces"
