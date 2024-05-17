@@ -160,7 +160,7 @@ u() {
   info "✨ Updating rust dependencies"
   rustup update
 
-  info "✨ Updating tpm plugins"
+  info "✨ Updating tmux dependencies"
   # see: https://github.com/tmux-plugins/tpm/blob/master/docs/managing_plugins_via_cmd_line.md
   ~/.config/tmux/plugins/tpm/bin/clean_plugins
   ~/.config/tmux/plugins/tpm/bin/install_plugins
@@ -173,7 +173,8 @@ u() {
   # TODO: update lazy.nvim plugins here as well? in all nvim instances? pin dependencies to avoid unwanted updates?
 
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-  info "✨ Updating global npm dependencies for Node $(node -v)"
+  info "✨ Updating Node $(node -v) global dependencies"
+  # TODO: only if out of date (to avoid wasting time?)
 	ng
 
   if $IS_WORK_LAPTOP; then
