@@ -27,9 +27,6 @@ export IS_WORK_LAPTOP=$( [[ -d "$HOME/Repos/recursionpharma" ]] && echo "true" |
 # homebrew
 export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
 
-# see: https://github.com/Homebrew/homebrew-bundle#versions-and-lockfiles
-export HOMEBREW_BUNDLE_NO_LOCK=1
-
 # k9s
 export K9SCONFIG=$HOME/.config/k9s
 

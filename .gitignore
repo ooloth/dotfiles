@@ -1,3 +1,4 @@
 .nvimlog
 .secrets
 ~/.config/nvim/undo
+Brewfile.lock.json
