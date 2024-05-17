@@ -1,19 +1,14 @@
 -- navigate vim splits (and tmux panes) with <C-hjkl>
 
 return {
-  { 'knubie/vim-kitty-navigator', },
+  'knubie/vim-kitty-navigator',
   event = 'VeryLazy',
+  -- build = ':do cp ./*.py ~/.config/kitty/',
   cmd = {
     'KittyNavigateLeft',
     'KittyNavigateDown',
     'KittyNavigateUp',
     'KittyNavigateRight',
-  },
-  keys = {
-    { '<c-h>', '<cmd><C-U>KittyNavigateLeft<cr>' },
-    { '<c-j>', '<cmd><C-U>KittyNavigateDown<cr>' },
-    { '<c-k>', '<cmd><C-U>KittyNavigateUp<cr>' },
-    { '<c-l>', '<cmd><C-U>KittyNavigateRight<cr>' },
   },
   init = function()
     -- see: https://github.com/knubie/vim-kitty-navigator/issues/43#issuecomment-1906432799
@@ -27,4 +22,10 @@ return {
       vim.api.nvim_set_keymap('n', 'C-l', ':KittyNavigateRight <CR>', { noremap = true, silent = true })
     end
   end,
+  keys = {
+    { '<c-h>', '<cmd><C-U>KittyNavigateLeft<cr>' },
+    { '<c-j>', '<cmd><C-U>KittyNavigateDown<cr>' },
+    { '<c-k>', '<cmd><C-U>KittyNavigateUp<cr>' },
+    { '<c-l>', '<cmd><C-U>KittyNavigateRight<cr>' },
+  },
 }
