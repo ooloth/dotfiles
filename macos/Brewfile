@@ -20,6 +20,7 @@ brew "yqrashawn/goku/goku" # for karibiner
 brew "goose" # for go
 brew "hadolint" # for docker
 brew "tidy-html5" # for linting html + xml in neovim
+brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
 brew "kubectl" # for kubernetes
 brew "jesseduffield/lazydocker/lazydocker"
