@@ -166,6 +166,12 @@ u() {
   ~/.config/tmux/plugins/tpm/bin/install_plugins
   ~/.config/tmux/plugins/tpm/bin/update_plugins all
 
+  info "✨ Updating neovim dependencies"
+  local vim_kitty_navigator="$HOME/Repos/knubie/vim-kitty-navigator"
+  if [ ! -d $vim_kitty_navigator ]; then git clone knubie/vim-kitty-navigator $vim_kitty_navigator; else git -C $vim_kitty_navigator pull; fi
+
+  # TODO: update lazy.nvim plugins here as well? in all nvim instances? pin dependencies to avoid unwanted updates?
+
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
   info "✨ Updating global npm dependencies for Node $(node -v)"
 	ng
