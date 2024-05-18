@@ -223,6 +223,24 @@ vv() {
 
 alias x='exit'
 
+xcode() {
+  xcode-select --install > /dev/null 2>&1
+  # If the command above was successful (returns 0), a new version is available to install
+  if [ $? -eq 0 ]; then
+    sleep 1;
+    osascript <<EOD
+      tell application "System Events"
+        tell process "Install Command Line Developer Tools"
+          keystroke return
+            click button "Agree" of window "License Agreement"
+        end tell
+      end tell
+EOD
+  else
+    echo "Command Line Developer Tools are already installed!"
+  fi
+}
+
 # see: https://yazi-rs.github.io/docs/quick-start#shell-wrapper
 function yy() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
