@@ -195,10 +195,18 @@ u() {
 
   info "✨ Updating brew packages"
   # Install missing packages, upgrade outdated packages, and remove old versions
+  # TODO: maintain separate Brewfiles for work laptop, personal laptop and Mini?
+  # Ok to vary the file name?
+  # If not, can I symlink the Brewfile to the appropriate one based on the $HOSTNAME?
+  # Reference the appropriate one by interpolating the $HOSTNAME?
   brew bundle --file=$DOTFILES/macos/Brewfile
 	brew update && brew upgrade && brew autoremove && brew cleanup && brew doctor
 
-  # TODO: use `softwareupdate` to update macOS software?
+  # Avoid potential issues on work laptop caused by updating macOS too early
+  if ! $IS_WORK_LAPTOP; then
+    info "💻 Updating macOS software"
+    softwareupdate --install --all --agree-to-license --verbose
+  fi
 
   info "🔄 Reloading shell"
   R
