@@ -2,6 +2,14 @@
 
 # WARN: Don't add work-only packages here! Treat them as one-off installs on my work laptop.
 
+# Taps (to avoid warnings when installing from custom taps below)
+tap "arl/arl" # for gitmux
+tap "hashicorp/tap" # for terraform
+tap "jesseduffield/lazydocker"
+tap "jesseduffield/lazygit"
+tap "saulpw/vd" # for visidata
+tap "yqrashawn/goku" # for karabiner
+
 # Packages
 brew "bat" # replaces cat
 brew "btop" # top alternative
