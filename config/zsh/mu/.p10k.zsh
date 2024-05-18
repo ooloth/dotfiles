@@ -58,7 +58,7 @@
     nodenv                  # node.js version from nodenv (https://github.com/nodenv/nodenv)
     nvm                     # node.js version from nvm (https://github.com/nvm-sh/nvm)
     nodeenv                 # node.js environment (https://github.com/ekalinin/nodeenv)
-    # node_version          # node.js version
+    node_version          # node.js version
     # go_version            # go version (https://golang.org)
     # rust_version          # rustc version (https://www.rust-lang.org)
     # dotnet_version        # .NET version (https://dotnet.microsoft.com)
@@ -1025,7 +1025,7 @@
   typeset -g POWERLEVEL9K_NVM_FOREGROUND=2
   # If set to false, hide node version if it's the same as default:
   # $(nvm version current) == $(nvm version default).
-  typeset -g POWERLEVEL9K_NVM_PROMPT_ALWAYS_SHOW=false
+  typeset -g POWERLEVEL9K_NVM_PROMPT_ALWAYS_SHOW=true
   # If set to false, hide node version if it's equal to "system".
   typeset -g POWERLEVEL9K_NVM_SHOW_SYSTEM=true
   # Custom icon.
