@@ -4,6 +4,7 @@
 
 # Packages
 brew "bat" # replaces cat
+brew "btop" # top alternative
 brew "commitizen" # for git
 brew "coreutils"
 brew "ctop" # for docker
@@ -15,11 +16,13 @@ brew "fzf" # awesome; used by yazi
 brew "gh"
 brew "git"
 brew "arl/arl/gitmux" # for tmux
+brew "glances" # top alternative
 brew "gnu-sed"
 brew "go"
 brew "yqrashawn/goku/goku" # for karibiner
 brew "goose" # for go
 brew "hadolint" # for docker
+brew "htop" # top alternative
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
 brew "kubectl" # for kubernetes
