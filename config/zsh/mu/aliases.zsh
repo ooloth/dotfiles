@@ -158,7 +158,8 @@ alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/
 
 u() {
   info "🔗 Updating symlinks"
-  $DOTFILES/bin/create-symlinks.zsh
+  # "sudo" at the beginning to avoid being prompted later
+  sudo $DOTFILES/bin/create-symlinks.zsh
 
   info "✨ Updating rust dependencies"
   rustup update
@@ -204,8 +205,9 @@ u() {
 
   # Avoid potential issues on work laptop caused by updating macOS too early
   if ! $IS_WORK_LAPTOP; then
-    info "💻 Updating macOS software\n(Do not cancel even if seems stalled!)"
-    sudo softwareupdate --install --all --agree-to-license --verbose
+    info "💻 Updating macOS software"
+    warn "⚠️ Do not cancel even if seems stuck!"
+    sudo softwareupdate --install --all --restart --agree-to-license --verbose
   fi
 
   info "🔄 Reloading shell"
