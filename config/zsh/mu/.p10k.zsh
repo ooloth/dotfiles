@@ -1059,7 +1059,8 @@
 
   #################[ rust_version: rustc version (https://www.rust-lang.org) ]##################
   # Rust version color.
-  typeset -g POWERLEVEL9K_RUST_VERSION_FOREGROUND=4
+  # Set to catppuccin mocha "peach" color: https://github.com/catppuccin/nvim/blob/d97387aea8264f484bb5d5e74f2182a06c83e0d8/lua/catppuccin/palettes/mocha.lua
+  typeset -g POWERLEVEL9K_RUST_VERSION_FOREGROUND="fab387"
   # Show rust version only when in a rust project subdirectory.
   typeset -g POWERLEVEL9K_RUST_VERSION_PROJECT_ONLY=true
   # Custom icon.
