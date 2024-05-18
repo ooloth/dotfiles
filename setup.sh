@@ -492,20 +492,17 @@ suggest_restart() {
 
   info "To apply your your preferences, your computer needs to restart.\n\n"
 
-  vared -p "Are you ready to restart now (recommended)? (y/N) " -c restartChoice
+  vared -p "Are you ready to restart now (recommended)? (y/N) " -c restart_choice
 
-  if [[ "$restartChoice" = 'y' ]]; then
+  if [[ "$restart_choice" = 'y' ]]; then
     printf "\nExcellent choice. When you're back, remember to complete the manual follow-up steps in the README.\n"
     printf "\nRestarting..."
     sudo shutdown -r now
   else
-    printf "\nNo worries! Just type 'zsh' to refresh this terminal and enjoy your new Mac!\n"
+    printf "\nNo worries! Your terminal session will now refresh...\n"
+    exec -l $SHELL
 
-    success "\nDone.\n"
-
-    # Reload terminal
-    # TODO: doesn't work
-    # source $HOME/.config/zsh/.zshrc
+    success "\nDone. Enjoy your new Mac!\n"
   fi
 }
 
