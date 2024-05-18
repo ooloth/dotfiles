@@ -26,7 +26,7 @@ setopt HIST_IGNORE_ALL_DUPS
 export IS_WORK_LAPTOP=$( [[ -d "$HOME/Repos/recursionpharma" ]] && echo "true" || echo "false" )
 
 # homebrew
-export PATH=/usr/local/bin:$PATH # Add Homebrew's executable directory to front of PATH
+export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/local/sbin:/bin:/usr/bin:$PATH # Add Homebrew's executable directory to front of PATH
 
 # k9s
 export K9SCONFIG=$HOME/.config/k9s
