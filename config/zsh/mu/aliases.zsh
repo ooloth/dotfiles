@@ -204,7 +204,7 @@ u() {
 
   # Avoid potential issues on work laptop caused by updating macOS too early
   if ! $IS_WORK_LAPTOP; then
-    info "💻 Updating macOS software"
+    info "💻 Updating macOS software\n(Do not cancel even if seems stalled!)"
     sudo softwareupdate --install --all --agree-to-license --verbose
   fi
 
