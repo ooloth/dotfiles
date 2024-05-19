@@ -27,10 +27,16 @@ sl $DOTCONFIG/k9s/skins/dracula.yml $HOMECONFIG/k9s/skins
 mkdir -p $HOMECONFIG/karabiner
 sl $DOTCONFIG/karabiner/karabiner.edn $HOMECONFIG/karabiner
 
-mkdir -p $HOMECONFIG/kitty
-sl $DOTCONFIG/kitty/colorscheme $HOMECONFIG/kitty
+mkdir -p $HOMECONFIG/kitty/colorscheme
+mkdir -p $HOMECONFIG/kitty/startup
+sl $DOTCONFIG/kitty/colorscheme/catppuccin-mocha.conf $HOMECONFIG/kitty/colorscheme
+sl $DOTCONFIG/kitty/colorscheme/dracula.conf $HOMECONFIG/kitty/colorscheme
+sl $DOTCONFIG/kitty/colorscheme/gruvbox-dark-hard.conf $HOMECONFIG/kitty/colorscheme
+sl $DOTCONFIG/kitty/colorscheme/material-ocean.conf $HOMECONFIG/kitty/colorscheme
+sl $DOTCONFIG/kitty/colorscheme/nightfly.conf $HOMECONFIG/kitty/colorscheme
 sl $DOTCONFIG/kitty/kitty.conf $HOMECONFIG/kitty
-sl $DOTCONFIG/kitty/startup $HOMECONFIG/kitty
+sl $DOTCONFIG/kitty/startup/Air.conf $HOMECONFIG/kitty/startup
+sl $DOTCONFIG/kitty/startup/MULO-JQ97NW-MBP.conf $HOMECONFIG/kitty/startup
 # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
 sl $HOME/Repos/knubie/vim-kitty-navigator/get_layout.py $HOMECONFIG/kitty
 sl $HOME/Repos/knubie/vim-kitty-navigator/pass_keys.py $HOMECONFIG/kitty
