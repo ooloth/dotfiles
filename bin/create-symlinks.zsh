@@ -26,6 +26,7 @@ sl $DOTFILES/macos/kitty.environment.plist $HOME/Library/LaunchAgents
 # ZSH #
 #######
 
+sl $DOTFILES/.zshenv $HOME
 sl $DOTFILES/config/zsh/.zprofile $HOME/.config/zsh
 sl $DOTFILES/config/zsh/.zshrc $HOME/.config/zsh
 sl $DOTFILES/config/zsh/mu $HOME/.config/zsh
