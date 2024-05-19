@@ -8,6 +8,10 @@ local sl() { ln -sfv "$1" "$2"; }
 # KITTY #
 #########
 
+sl $DOTFILES/config/kitty/colorscheme $HOME/.config/kitty
+sl $DOTFILES/config/kitty/kitty.conf $HOME/.config/kitty
+sl $DOTFILES/config/kitty/startup $HOME/.config/kitty
+
 # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
 sl $HOME/Repos/knubie/vim-kitty-navigator/get_layout.py $HOME/.config/kitty
 sl $HOME/Repos/knubie/vim-kitty-navigator/pass_keys.py $HOME/.config/kitty
