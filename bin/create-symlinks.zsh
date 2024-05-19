@@ -19,10 +19,10 @@ sl $DOTCONFIG/git/ignore $HOMECONFIG/git
 
 sl $DOTFILES/.hushlogin $HOME
 
-mkdir -p $HOMECONFIG/k9s
+mkdir -p $HOMECONFIG/k9s/skins
 sl $DOTCONFIG/k9s/config.yml $HOMECONFIG/k9s
 sl $DOTCONFIG/k9s/skin.yml $HOMECONFIG/k9s
-sl $DOTCONFIG/k9s/skins $HOMECONFIG/k9s
+sl $DOTCONFIG/k9s/skins/dracula.yml $HOMECONFIG/k9s/skins
 
 mkdir -p $HOMECONFIG/karabiner
 sl $DOTCONFIG/karabiner/karabiner.edn $HOMECONFIG/karabiner
