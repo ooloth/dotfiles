@@ -58,7 +58,7 @@ fileviewer ../ exa --tree --group-directories-first --all --classify --git-ignor
 fileviewer * bat --color always --wrap never --pager never %c -p
 
 " Display file and folder icons
-source ~/.config/vifm/mu/vifm_devicons.vifm
+source ~/.config/vifm/vifm_devicons.vifm
 
 " ------------------------------------------------------------------------------
 " KEYMAPS
