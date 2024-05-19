@@ -902,7 +902,8 @@
   # Context color when running with privileges.
   typeset -g POWERLEVEL9K_CONTEXT_ROOT_FOREGROUND=1
   # Context color in SSH without privileges.
-  typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_FOREGROUND=7
+  # Catppuccin Mocha "mauve": https://github.com/catppuccin/nvim/blob/main/lua/catppuccin/palettes/mocha.lua
+  typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_FOREGROUND="#cba6f7"
   # Default context color (no privileges, no SSH).
   typeset -g POWERLEVEL9K_CONTEXT_FOREGROUND=7
 
