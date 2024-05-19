@@ -59,4 +59,4 @@
 # Context-specific configurations (see https://stackoverflow.com/a/59184292)
 
 [includeIf "gitdir:~/Repos/recursionpharma/"]
-    path = config.recursionpharma
+    path = config.work
