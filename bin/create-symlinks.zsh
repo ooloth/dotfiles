@@ -1,40 +1,102 @@
 #!/usr/bin/env zsh
 
-# In case it helps to redefine these for use during initial laptop setup
 local DOTFILES=$HOME/Repos/ooloth/dotfiles
+local DOTCONFIG=$DOTFILES/config
+local HOMECONFIG=$HOME/.config
+
 local sl() { ln -sfv "$1" "$2"; }
 
-#########
-# KITTY #
-#########
+mkdir -p $HOMECONFIG/alacritty
+sl $DOTCONFIG/alacritty/alacritty.yml $HOMECONFIG/alacritty
 
-sl $DOTFILES/config/kitty/colorscheme $HOME/.config/kitty
-sl $DOTFILES/config/kitty/kitty.conf $HOME/.config/kitty
-sl $DOTFILES/config/kitty/startup $HOME/.config/kitty
+mkdir -p $HOMECONFIG/gh
+sl $DOTCONFIG/gh/config.yml $HOMECONFIG/gh
 
+mkdir -p $HOMECONFIG/git
+sl $DOTCONFIG/git/config $HOMECONFIG/git
+sl $DOTCONFIG/git/config.work $HOMECONFIG/git
+sl $DOTCONFIG/git/ignore $HOMECONFIG/git
+
+sl $DOTFILES/.hushlogin $HOME
+
+mkdir -p $HOMECONFIG/k9s
+sl $DOTCONFIG/k9s/config.yml $HOMECONFIG/k9s
+sl $DOTCONFIG/k9s/skin.yml $HOMECONFIG/k9s
+sl $DOTCONFIG/k9s/skins $HOMECONFIG/k9s
+
+mkdir -p $HOMECONFIG/karabiner
+sl $DOTCONFIG/karabiner/karabiner.edn $HOMECONFIG/karabiner
+
+mkdir -p $HOMECONFIG/kitty
+sl $DOTCONFIG/kitty/colorscheme $HOMECONFIG/kitty
+sl $DOTCONFIG/kitty/kitty.conf $HOMECONFIG/kitty
+sl $DOTCONFIG/kitty/startup $HOMECONFIG/kitty
 # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
-sl $HOME/Repos/knubie/vim-kitty-navigator/get_layout.py $HOME/.config/kitty
-sl $HOME/Repos/knubie/vim-kitty-navigator/pass_keys.py $HOME/.config/kitty
-
+sl $HOME/Repos/knubie/vim-kitty-navigator/get_layout.py $HOMECONFIG/kitty
+sl $HOME/Repos/knubie/vim-kitty-navigator/pass_keys.py $HOMECONFIG/kitty
 # set HOSTNAME for kitty startup config swapping
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-414186903
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-434876639
 # see: https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.startup_session
 sl $DOTFILES/macos/kitty.environment.plist $HOME/Library/LaunchAgents
 
-##########
-# VSCODE #
-##########
+mkdir -p $HOMECONFIG/lazydocker
+sl $DOTCONFIG/lazydocker/config.yml $HOMECONFIG/lazydocker
+
+mkdir -p $HOMECONFIG/lazygit
+sl $DOTCONFIG/lazygit/config.yml $HOMECONFIG/lazygit
+
+sl $DOTFILES/.npmrc $HOME
+
+mkdir -p $HOMECONFIG/nvim
+sl $DOTCONFIG/nvim/init.lua $HOMECONFIG/nvim
+sl $DOTCONFIG/nvim-ide $HOMECONFIG
+sl $DOTCONFIG/nvim-kitty-scrollback $HOMECONFIG
+sl $DOTCONFIG/nvim-lazyvim $HOMECONFIG
+
+mkdir -p $HOMECONFIG/starship
+sl $DOTCONFIG/starship/config.toml $HOMECONFIG/starship
+
+mkdir -p $HOMECONFIG/surfingkeys
+sl $DOTCONFIG/surfingkeys/surfingkeys.js $HOMECONFIG/surfingkeys
+
+mkdir -p $HOMECONFIG/tmux
+sl $DOTCONFIG/tmux/battery.sh $HOMECONFIG/tmux
+sl $DOTCONFIG/tmux/gitmux.conf $HOMECONFIG/tmux
+sl $DOTCONFIG/tmux/tmux.conf $HOMECONFIG/tmux
+
+mkdir -p $HOMECONFIG/vifm
+sl $DOTCONFIG/vifm/colors $HOMECONFIG/vifm
+sl $DOTCONFIG/vifm/mu $HOMECONFIG/vifm
+sl $DOTCONFIG/vifm/vifmrc $HOMECONFIG/vifm
 
 sl $DOTFILES/vscode/settings.json "$HOME/Library/Application Support/Code/User"
 sl $DOTFILES/vscode/keybindings.json "$HOME/Library/Application Support/Code/User"
 sl $DOTFILES/vscode/snippets "$HOME/Library/Application Support/Code/User"
 
-#######
-# ZSH #
-#######
+mkdir -p $HOMECONFIG/wezterm
+sl $DOTCONFIG/wezterm/wezterm.lua $HOMECONFIG/wezterm
+
+mkdir -p $HOMECONFIG/yamllint
+sl $DOTCONFIG/yamllint/config $HOMECONFIG/yamllint
+
+mkdir -p $HOMECONFIG/yazi
+sl $DOTCONFIG/yazi/flavors $HOMECONFIG/yazi
+sl $DOTCONFIG/yazi/keymap.toml $HOMECONFIG/yazi
+sl $DOTCONFIG/yazi/theme.toml $HOMECONFIG/yazi
+sl $DOTCONFIG/yazi/yazi.toml $HOMECONFIG/yazi
 
 sl $DOTFILES/.zshenv $HOME
-sl $DOTFILES/config/zsh/.zprofile $HOME/.config/zsh
-sl $DOTFILES/config/zsh/.zshrc $HOME/.config/zsh
-sl $DOTFILES/config/zsh/mu $HOME/.config/zsh
+sl $DOTCONFIG/zsh/.zprofile $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/.zshrc $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/aliases.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/banners.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/check.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/hooks.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/options.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/p10k.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/plugins.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/start.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/stop.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/test.zsh $HOMECONFIG/zsh
+sl $DOTCONFIG/zsh/update.zsh $HOMECONFIG/zsh
