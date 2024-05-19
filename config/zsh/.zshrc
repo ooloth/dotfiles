@@ -8,6 +8,8 @@ fi
 # NOTE: zshenv loads env vars, zprofile loads PATH, and zshrc loads the rest
 source $HOME/.config/zsh/mu/aliases.zsh
 source $HOME/.config/zsh/mu/update.zsh
+source $HOME/.config/zsh/mu/start.zsh
+source $HOME/.config/zsh/mu/stop.zsh
 source $HOME/.config/zsh/mu/options.zsh
 source $HOME/.config/zsh/mu/hooks.zsh
 source $HOME/.config/zsh/mu/plugins.zsh # source last
