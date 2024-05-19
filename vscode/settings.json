@@ -156,11 +156,11 @@
   // Allows tasks to find zsh, node, etc.
   "terminal.integrated.automationProfile.osx": {
     "args": ["-l", "-i"],
-    "path": "/bin/zsh"
+    "path": "/opt/homebrew/bin/zsh"
   },
   "terminal.integrated.profiles.osx": {
     "bash": null,
-    "zsh": { "path": "/bin/zsh" }
+    "zsh": { "path": "/opt/homebrew/bin/zsh" }
   },
   "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
   "terminal.integrated.lineHeight": 1.35,
