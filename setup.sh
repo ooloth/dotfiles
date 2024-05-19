@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+# TODO: install rust (export RUSTUP_HOME and CARGO_HOME env vars here first to install in ~/.config?)
+
 # shellcheck disable=SC2154
 trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
 
