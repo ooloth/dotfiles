@@ -9,20 +9,16 @@ alias cte='EDITOR=vim crontab -e'
 alias ctl='crontab -l'
 alias con='cd $HOME/Repos/ooloth/content'
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
-
 alias d='lazydocker'
-
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias dash='cd $HOME/Repos/ooloth/dashboard'
 de() { docker container exec -it $1 sh; }
-
 # TODO: improve defaults
 dc() { docker compose "$@"; }
 alias dd='dc down --remove-orphans'                # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
 alias dl='dc logs --follow --tail=100'             # see last 100 log lines of one or more services (or all services if no args provided)
 alias du='dc up --build --detach --remove-orphans' # recreate and start one or more services (or all services if no args provided)
 alias dud='dc up --detach'                         # start one or more services (or all services if no args provided)
-
 diff() { kitten diff "$1" "$2"; } # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
 alias env='env | sort'
 # NOTE: "error" defined in banners.zsh
@@ -32,7 +28,6 @@ alias h='cd $HOME'
 # alias history='history 0'
 # alias h='history | grep'
 image() { kitten icat "$1"; } # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
-
 # NOTE: "info" defined in banners.zsh
 # Kubernetes
 alias k='kubectl'
@@ -51,10 +46,8 @@ alias ks='k scale'
 # Add -c regex to filter by container name
 # see: https://github.com/stern/stern#usage
 alias kl='stern'
-
 # kill process running on given port
 kill() { lsof -t -i:$1 | xargs kill -9; }
-
 # see: https://github.com/eza-community/eza#command-line-options
 # see EZA_* env vars in zsh/mu/variables.zsh
 alias ls='eza --all --group-directories-first --classify' # top level dir + files
@@ -67,8 +60,7 @@ alias md='cd $HOME/Repos/ooloth/media'
 alias mr='sudo shutdown -r now' # restart macos
 alias mini="s michael@mini.local"                         # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
-
-n() { npm install -- $1; }
+n() { npm install "$@"; }
 nb() { n && npm run build; }
 nc() { npm run check; }
 nd() { n && npm run dev; }
@@ -86,18 +78,19 @@ ng() {
     vscode-langservers-extracted
 }
 nk() { npm run types:check; }
+nl() { npm run lint; }
 nlc() { npm run lint:check; }
 nlf() { npm run lint:fix; }
 ns() { n && npm run start; }
+nt() { npm run test "$@"; }
 nu() { n && npm-check -u; }
-
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
-alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 pi() { eval "$(pyenv init -)"; }
-alias rm='trash' # see: https://github.com/sindresorhus/trash-cli
+alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 alias R="exec -l $SHELL"
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
+alias rm='trash' # see: https://github.com/sindresorhus/trash-cli
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper='cd $HOME/Repos/ooloth/scraper'
 sl() { ln -sfv "$1" "$2"; } # easier symlinking
@@ -106,12 +99,10 @@ alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/
 # NOTE: "u" = "update" (see update.zsh)
 alias v='NVIM_APPNAME=nvim-lazyvim nvim'
 alias vim='nvim'
-
-# find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in vs code
+# Find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in VS Code
 vs() {
   code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
 }
-
 vv() {
   # Assumes all configs are in directories named ~/.config/nvim-*
   local config=$(fd --max-depth 1 --glob 'nvim-*' ~/.config | fzf --prompt="Neovim Config > " --height=~50% --layout=reverse --border --exit-0)
@@ -122,10 +113,8 @@ vv() {
   # Open Neovim with the selected config
   NVIM_APPNAME=$(basename $config) nvim $@
 }
-
 # NOTE: "warn" defined in banners.zsh
 alias x='exit'
-
 # see: https://yazi-rs.github.io/docs/quick-start#shell-wrapper
 function yy() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
@@ -135,7 +124,6 @@ function yy() {
 	fi
 	rm -f -- "$tmp"
 }
-
 # [z]sh [t]ime: measure how long new shells take to launch
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
 
@@ -154,17 +142,6 @@ if $IS_WORK_LAPTOP; then
   gu() { cd $HOME/Repos/recursionpharma/genie/genie-ui; }
   lowe() { cd $HOME/Repos/recursionpharma/bc-lowe; }
   mp() { cd $HOME/Repos/recursionpharma/mapapp-public; }
-  n() { npm install "$@"; }
-  nb() { n && npm run build; }
-  nfc() { npm run format:check; }
-  nff() { npm run format:fix; }
-  nk() { npm run typecheck; }
-  nl() { npm run lint; }
-  nlc() { npm run lint:check; }
-  nlf() { npm run lint:fix; }
-  ns() { n && npm run start; }
-  nt() { npm run test "$@"; }
-  nu() { n && npm-check -u; }
   pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2; }
   pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp; }
   paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app; }
@@ -179,7 +156,6 @@ if $IS_WORK_LAPTOP; then
   rl() { roadie lock "$@"; } # optionally "rl -c" etc
   rlc() { rl -c; }
   ru() { python -m pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
-
   rv() {
     # Install latest version of roadie, then rebuild venv to remove any no-longer-used packages
     # https://github.com/recursionpharma/roadie/blob/5a5c6ba44c345c8fd42543db5454b502a4e96863/roadie/cli/virtual.py#L454
@@ -192,9 +168,7 @@ if $IS_WORK_LAPTOP; then
       pip install debugpy
     fi
   }
-
   skurge() { cd $HOME/Repos/recursionpharma/skurge; }
   tech() { cd $HOME/Repos/recursionpharma/tech; }
   zuul() { cd $HOME/Repos/recursionpharma/zuul; }
-
 fi
