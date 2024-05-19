@@ -1,7 +1,6 @@
 u() {
   info "🔗 Updating symlinks"
-  # "sudo" at the beginning to avoid being prompted later
-  sudo $DOTFILES/bin/create-symlinks.zsh
+  $DOTFILES/bin/create-symlinks.zsh
 
   info "✨ Updating rust dependencies"
   rustup update
