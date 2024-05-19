@@ -35,6 +35,6 @@ stop() {
       dd ;;
 
     *)
-      error "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}' in work.zsh\n" ;;
+      error "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}'" ;;
   esac
 }

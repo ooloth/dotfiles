@@ -92,6 +92,6 @@ start() {
       ns ;;
 
     *)
-      error "🚨 No 'start' case defined for '/${CURRENT_DIRECTORY}' in work.zsh" ;;
+      error "🚨 No 'start' case defined for '/${CURRENT_DIRECTORY}'" ;;
   esac
 }
