@@ -34,6 +34,9 @@ export K9SCONFIG=$HOME/.config/k9s
 # Karabiner-Elements
 export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
 
+# NPM
+export NPM_CONFIG_USERCONFIG=$HOME/.config/npm/.npmrc
+
 # OpenSSL
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
