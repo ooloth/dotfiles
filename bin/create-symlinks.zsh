@@ -19,3 +19,11 @@ sl $HOME/Repos/knubie/vim-kitty-navigator/pass_keys.py $HOME/.config/kitty
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-434876639
 # see: https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.startup_session
 sl $DOTFILES/macos/kitty.environment.plist $HOME/Library/LaunchAgents
+
+#######
+# ZSH #
+#######
+
+sl $DOTFILES/config/zsh/.zprofile $HOME/.config/zsh
+sl $DOTFILES/config/zsh/.zshrc $HOME/.config/zsh
+sl $DOTFILES/config/zsh/mu $HOME/.config/zsh
