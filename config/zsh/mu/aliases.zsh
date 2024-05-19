@@ -79,6 +79,8 @@ alias env='env | sort'
 alias f='vifm'
 alias g='lazygit'
 alias h='cd $HOME'
+# alias history='history 0'
+# alias h='history | grep'
 image() { kitten icat "$1"; } # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 
 # Kubernetes

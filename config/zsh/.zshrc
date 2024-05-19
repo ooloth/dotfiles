@@ -5,8 +5,9 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-source $HOME/.config/zsh/mu/variables.zsh
+# NOTE: zshenv loads env vars, zprofile loads PATH, and zshrc loads the rest
 source $HOME/.config/zsh/mu/aliases.zsh
 source $HOME/.config/zsh/mu/work.zsh
 source $HOME/.config/zsh/mu/hooks.zsh
+source $HOME/.config/zsh/mu/options.zsh
 source $HOME/.config/zsh/mu/plugins.zsh # source last

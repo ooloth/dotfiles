@@ -204,46 +204,4 @@ if $IS_WORK_LAPTOP; then
   # TODO: lint() {}
   # TODO: typecheck() {}
 
-  # gcloud
-  # see: https://cloud.google.com/sdk/docs/downloads-interactive
-  # The next line updates PATH for the Google Cloud SDK.
-  if [ -f '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc'; fi
-
-  # The next line enables shell command completion for gcloud.
-  if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
-
-  # see: https://stackoverflow.com/a/47867652/8802485
-  # see: https://cloud.google.com/docs/authentication/application-default-credentials
-  export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
-
-  # grey-havens
-  export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
-  export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1
-
-  # IPG
-  # see: https://app.swimm.io/workspaces/ctl2gE0Uy2okwcN3LfOg/repos/Z2l0aHViJTNBJTNBaXBnLW9yY2hlc3RyYXRvciUzQSUzQXJlY3Vyc2lvbnBoYXJtYQ==/branch/trunk/docs/v0jze
-  export CONFIGOME_ENV=dev
-
-  # kafka
-  # Get the latest version of librdkafka installed by Homebrew
-  librdkafka_version=$(ls /opt/homebrew/Cellar/librdkafka | sort -V | tail -n 1)
-  export C_INCLUDE_PATH="/opt/homebrew/Cellar/librdkafka/$librdkafka_version/include"
-  export LIBRARY_PATH="/opt/homebrew/Cellar/librdkafka/$librdkafka_version/lib"
-
-  # netskope
-  # see: https://github.com/recursionpharma/netskope_dev_tools
-  source "$HOME/.config/netskope/env.sh"
-
-  # openSSL
-  export PATH=/opt/homebrew/opt/openssl@3/bin:$PATH
-  export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
-  export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
-  export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
-
-  # sbin
-  export PATH="/opt/homebrew/sbin:$PATH"
-
-  # vault (griphook)
-  # see: https://github.com/recursionpharma/data-science-onboarding#setting-up-griphook
-  source $HOME/.griphook/env
 fi

@@ -18,3 +18,7 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 # github-copilot-cli
 eval "$(github-copilot-cli alias -- "$0")"
+if $IS_WORK_LAPTOP; then
+  # Gcloud (command completion)
+  if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
+fi
