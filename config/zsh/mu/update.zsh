@@ -15,7 +15,7 @@ u() {
   local vim_kitty_navigator="$HOME/Repos/knubie/vim-kitty-navigator"
   if [ ! -d $vim_kitty_navigator ]; then
     # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
-    gh repo clone knubie/vim-kitty-navigator $vim_kitty_navigator;
+    git clone git@github.com:knubie/vim-kitty-navigator.git $DOTFILES
     sl $vim_kitty_navigator/get_layout.py $HOME/.config/kitty
     sl $vim_kitty_navigator/pass_keys.py $HOME/.config/kitty
   else
