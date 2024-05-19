@@ -1,10 +1,8 @@
 #!/usr/bin/env zsh
 
-# TODO: is the $DOTFILES environment variable available in here?
-# local dotfiles=$HOME/Repos/ooloth/dotfiles
-
-# TODO: is the "sl" alias already available in here?
-sl() { ln -sfv $1 $2; } # easier symlinking
+# In case it helps to redefine these for use during initial laptop setup
+local DOTFILES=$HOME/Repos/ooloth/dotfiles
+local sl() { ln -sfv "$1" "$2"; }
 
 #########
 # KITTY #
