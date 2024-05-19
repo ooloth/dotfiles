@@ -16,7 +16,6 @@ function banner() {
 
   # Calculate the width of the text, adding one extra column per emoji (since they generally occupy two columns onscreen)
   local char_count=${#text}
-  # FIXME: is ⚠️ three columns (i.e. adds two cols, not one below)? is there a way to get the emoji cols instead of emoji count here?
   local emoji_count=$(echo -n "$text" | python3 -c "import sys, unicodedata; print(sum((unicodedata.category(ch) == 'So') for ch in sys.stdin.read()))")
   local padding_left=1
   local padding_right=1
@@ -49,4 +48,3 @@ function error() {
   local color="${TEXT_RED}"
   banner $text $color
 }
-
