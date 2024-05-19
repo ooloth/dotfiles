@@ -49,7 +49,7 @@ alias kl='stern'
 # kill process running on given port
 kill() { lsof -t -i:$1 | xargs kill -9; }
 # see: https://github.com/eza-community/eza#command-line-options
-# see EZA_* env vars in zsh/mu/variables.zsh
+# NOTE: see EZA_* env vars in .zshenv
 alias ls='eza --all --group-directories-first --classify' # top level dir + files
 alias ld='ls --long --no-user --header'                   # top level details
 alias lt='ls --tree --git-ignore -I .git'                 # file tree (all levels)
