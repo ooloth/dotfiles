@@ -424,9 +424,9 @@ set_up_vs_code() {
   printf "\n"
   info "Installing VS Code extensions...\n"
 
+  # TODO: replace with Brewfile
   # Install VS Code extensions from extensions.txt
   cat "$DOTFILES/vscode/extensions.txt" | xargs -L 1 code --install-extension
-  # TODO: replace with Brewfile
 
   success "\nDone setting up VS Code."
 }
