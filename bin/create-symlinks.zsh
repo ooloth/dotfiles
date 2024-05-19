@@ -22,6 +22,14 @@ sl $HOME/Repos/knubie/vim-kitty-navigator/pass_keys.py $HOME/.config/kitty
 # see: https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.startup_session
 sl $DOTFILES/macos/kitty.environment.plist $HOME/Library/LaunchAgents
 
+##########
+# VSCODE #
+##########
+
+sl $DOTFILES/vscode/settings.json "$HOME/Library/Application Support/Code/User"
+sl $DOTFILES/vscode/keybindings.json "$HOME/Library/Application Support/Code/User"
+sl $DOTFILES/vscode/snippets "$HOME/Library/Application Support/Code/User"
+
 #######
 # ZSH #
 #######
