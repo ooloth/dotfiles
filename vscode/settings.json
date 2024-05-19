@@ -82,6 +82,7 @@
     ".eslintrc": "yaml",
     "**/kitty/**/*.conf": "shellscript",
     "*.njk": "nunjucks",
+    "*.plist": "xml",
     ".prettierrc": "yaml",
     "*.vifm": "vimrc",
     "vifmrc": "vimrc",
