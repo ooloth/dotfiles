@@ -54,6 +54,7 @@ brew "hashicorp/tap/terraform" # for neovim + vs code
 brew "tidy-html5" # for linting html + xml in neovim
 brew "tmux"
 brew "trash"
+brew "tree"
 brew "unar" # for yazi
 brew "vifm"
 brew "wget" # for neovim
