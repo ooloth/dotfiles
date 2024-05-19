@@ -33,7 +33,7 @@ function banner() {
   local text="$text_color $text "
 
   # Output the assembled banner
-  printf "\n$border_top\n$border_vertical$text$border_vertical\n$border_bottom\n\n"
+  printf "\n$border_top\n$border_vertical$text$border_vertical\n$border_bottom\n\n${TEXT_NORMAL}"
 }
 
 function info() {
