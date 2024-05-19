@@ -9,5 +9,6 @@ fi
 source $HOME/.config/zsh/mu/aliases.zsh
 source $HOME/.config/zsh/mu/work.zsh
 source $HOME/.config/zsh/mu/hooks.zsh
+source $HOME/.config/zsh/mu/update.zsh
 source $HOME/.config/zsh/mu/options.zsh
 source $HOME/.config/zsh/mu/plugins.zsh # source last
