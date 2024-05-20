@@ -94,6 +94,7 @@ alias rm='trash' # see: https://github.com/sindresorhus/trash-cli
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper='cd $HOME/Repos/ooloth/scraper'
 sl() { ln -sfv "$1" "$2"; } # easier symlinking
+symlinks() { $DOTFILES/bin/create-symlinks.zsh; }
 alias t='tmux a'
 alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 # NOTE: "u" = "update" (see update.zsh)
