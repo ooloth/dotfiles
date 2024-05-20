@@ -50,7 +50,6 @@ export VIRTUAL_ENV_PROMPT=''
 # Rust
 export CARGO_HOME=$HOME/.config/cargo
 export RUSTUP_HOME=$HOME/.config/rustup
-. "$CARGO_HOME/env"
 
 # Shell
 export SHELL=$(which zsh)
