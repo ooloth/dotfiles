@@ -252,6 +252,7 @@ backup_config() {
   success "\nDone backing up your old dotfiles."
 }
 
+# TODO: replace with call to create_symlinks.zsh
 create_symlinks() {
   title "Symlinking dotfiles to home folder"
 
