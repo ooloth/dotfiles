@@ -115,10 +115,9 @@ mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
 # VS Code
-# 'vscode --install-extension'
-# TODO: list extensions here (replace custom installation)
 # TODO: set IS_WORK_LAPTOP in setup.zsh (may need to prompt for y/N)
-vscode "GitHub.codespaces" if system "$IS_WORK_LAPTOP"
+# TODO: if system "$IS_WORK_LAPTOP"
+# TODO: if system "! $IS_WORK_LAPTOP"
 vscode "astro-build.astro-vscode"
 vscode "austenc.tailwind-docs"
 vscode "bradlc.vscode-tailwindcss"
@@ -159,7 +158,6 @@ vscode "patbenatar.advanced-new-file"
 vscode "rangav.vscode-thunder-client"
 vscode "redhat.vscode-yaml"
 vscode "richie5um2.vscode-sort-json"
-vscode "rocketseat.theme-omni"
 vscode "rust-lang.rust-analyzer"
 vscode "sidneys1.gitconfig"
 vscode "sleistner.vscode-fileutils"
