@@ -78,7 +78,6 @@ start() {
       plu && n && du ;;
 
     processing-witch)
-      # TODO: start anything else locally? leverage docker compose?
       python -m main ;;
 
     react-app)
