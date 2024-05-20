@@ -4,5 +4,6 @@
   },
   "evenBetterToml.taplo.configFile.path": ".taplo.toml",
   "Lua.diagnostics.globals": ["O", "vim", "use"],
-  "stylua.configPath": ".stylua.toml"
+  "stylua.configPath": ".stylua.toml",
+  "workbench.panel.opensMaximized": "always"
 }
