@@ -423,13 +423,6 @@ set_up_vs_code() {
   ln -sfv "$DOTFILES/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User"
   ln -sfv "$DOTFILES/vscode/snippets" "$HOME/Library/Application Support/Code/User"
 
-  printf "\n"
-  info "Installing VS Code extensions...\n"
-
-  # TODO: replace with Brewfile
-  # Install VS Code extensions from extensions.txt
-  cat "$DOTFILES/vscode/extensions.txt" | xargs -L 1 code --install-extension
-
   success "\nDone setting up VS Code."
 }
 

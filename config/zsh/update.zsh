@@ -27,10 +27,6 @@ u() {
     gcloud components update --quiet
   fi
 
-  info "✨ Installing VS Code extensions"
-  # TODO: replace with Brewfile
-  cat "$DOTFILES/vscode/extensions.txt" | xargs -L 1 code --install-extension
-
   info "✨ Updating brew packages"
   # Install missing packages, upgrade outdated packages, and remove old versions
   # TODO: maintain separate Brewfiles for work laptop, personal laptop and Mini?
