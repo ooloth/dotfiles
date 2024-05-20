@@ -12,15 +12,7 @@ u() {
   ~/.config/tmux/plugins/tpm/bin/update_plugins all
 
   info "✨ Updating neovim dependencies"
-  local vim_kitty_navigator="$HOME/Repos/knubie/vim-kitty-navigator"
-  if [ ! -d $vim_kitty_navigator ]; then
-    # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
-    git clone git@github.com:knubie/vim-kitty-navigator.git $DOTFILES
-    sl $vim_kitty_navigator/get_layout.py $HOME/.config/kitty
-    sl $vim_kitty_navigator/pass_keys.py $HOME/.config/kitty
-  else
-    git -C $vim_kitty_navigator pull;
-  fi
+  git -C $HOME/Repos/knubie/vim-kitty-navigator pull;
 
   # TODO: update lazy.nvim plugins here as well? in all nvim instances? pin dependencies to avoid unwanted updates?
 
