@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh
 
-local DOTFILES=$HOME/Repos/ooloth/dotfiles
-local DOTCONFIG=$DOTFILES/config
-local HOMECONFIG=$HOME/.config
+local DOTFILES="$HOME/Repos/ooloth/dotfiles"
+local DOTCONFIG="$DOTFILES/config"
+local HOMECONFIG="$HOME/.config"
 
-local sl() { ln -sfv "$1" "$2"; }
+sl() { ln -sfv "$1" "$2"; }
 
 # TODO: start by removing broken symlinks in each target directory?
 
@@ -12,8 +12,8 @@ local sl() { ln -sfv "$1" "$2"; }
 # Target: ~ #
 #############
 
-sl $DOTFILES/.hushlogin $HOME
-sl $DOTFILES/.zshenv $HOME
+sl "$DOTFILES/.hushlogin" "$HOME"
+sl "$DOTFILES/.zshenv" "$HOME"
 
 #####################
 # Target: ~/.config #
@@ -28,9 +28,9 @@ fd --type file . "$DOTCONFIG" | while read file; do
   sl "$file" "$targetdir"; # Symlink the file to the target directory
 done
 
-local clone_and_symlink() {
+clone_and_symlink() {
   local repo="$1"
-  local path="$2"
+  local relpath="$2"
   local target="$3"
 
   if [ ! -d "$HOME/Repos/$repo" ]; then
@@ -38,7 +38,7 @@ local clone_and_symlink() {
     git clone "git@github.com:$repo.git" "$HOME/Repos/$repo"
   fi
 
-  sl "$HOME/Repos/$repo/$path" "$target"
+  sl "$HOME/Repos/$repo/$relpath" "$target"
 }
 
 # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
@@ -61,8 +61,8 @@ local VSCODEUSER="$HOME/Library/Application Support/Code/User"
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-434876639
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-2119054786
 # see: https://derivative.ca/UserGuide/MacOS_Environment_Variables
-sl $DOTFILES/macos/kitty.environment.plist $LAUNCHAGENTS
+sl "$DOTFILES/macos/kitty.environment.plist" "$LAUNCHAGENTS"
 
-sl $DOTFILES/vscode/settings.json $VSCODEUSER
-sl $DOTFILES/vscode/keybindings.json $VSCODEUSER
-sl $DOTFILES/vscode/snippets $VSCODEUSER
+sl "$DOTFILES/vscode/settings.json" "$VSCODEUSER"
+sl "$DOTFILES/vscode/keybindings.json" "$VSCODEUSER"
+sl "$DOTFILES/vscode/snippets" "$VSCODEUSER"
