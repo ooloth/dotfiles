@@ -72,7 +72,7 @@ cask "appcleaner"
 # cask "backblaze"
 cask "brave-browser"
 cask "firefox"
-# cask "google-chrome"
+# cask "google-chrome" NOTE: work may control this app
 # cask "handbrake"
 cask "hyperkey"
 # cask "ishowu-instant"
@@ -80,14 +80,14 @@ cask "karabiner-elements"
 cask "kitty"
 cask "notion"
 cask "obsidian"
-# cask "prepros" - manually download v6 instead
+# cask "prepros" NOTE: manually download v6 instead (just need it for Adam's site)
 cask "raycast"
 cask "rectangle"
 cask "runjs"
 # cask "transmit"
 cask "visual-studio-code"
 cask "vlc"
-# cask "zoom"
+# cask "zoom" NOTE: work may control this app
 
 # Fonts
 # see: https://github.com/Homebrew/homebrew-cask/tree/master/Casks/font
