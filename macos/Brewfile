@@ -1,17 +1,24 @@
+# NOTE: ruby works in this file, so feel free to use it for conditional logic, etc
 # see: https://github.com/Homebrew/homebrew-bundle
 
-# TODO: make Brewfile.common + Brewfile.work + Brewfile.personal + Brewfile.mini?
-# WARN: Don't add work-only packages here! Treat them as one-off installs on my work laptop.
+# Environment variables must begin with HOMEBREW_ to be available in this file
+hostname = ENV['HOMEBREW_HOSTNAME']
 
-# Taps (to avoid warnings when installing from custom taps below)
+########
+# TAPS #
+########
+
 tap "arl/arl" # for gitmux
-tap "hashicorp/tap" # for terraform
+tap "yqrashawn/goku" # for karabiner
 tap "jesseduffield/lazydocker"
 tap "jesseduffield/lazygit"
+tap "hashicorp/tap" # for terraform
 tap "saulpw/vd" # for visidata
-tap "yqrashawn/goku" # for karabiner
 
-# Packages
+############
+# PACKAGES #
+############
+
 brew "bat" # replaces cat
 brew "btop" # top alternative
 brew "commitizen" # for git
@@ -24,6 +31,7 @@ brew "fnm" # replaces nvm
 brew "fzf" # awesome; used by yazi
 brew "gh"
 brew "git"
+brew "git-delta" # for git: https://dandavison.github.io/delta/
 brew "arl/arl/gitmux" # for tmux
 brew "glances" # top alternative
 brew "gnu-sed"
@@ -37,7 +45,10 @@ brew "jq" # for parsing json; used by yazi
 brew "kubectl" # for kubernetes
 brew "jesseduffield/lazydocker/lazydocker"
 brew "jesseduffield/lazygit/lazygit"
+brew "lua" # for neovim: https://www.lua.org/manual/
+brew "luarocks" # lua package manager: https://luarocks.org
 brew "mas"
+brew "m-cli" # macos CLI: https://github.com/rgcr/m-cli
 brew "neovim"
 brew "poppler" # for yazi
 brew "postgresql@14"
@@ -45,7 +56,7 @@ brew "powerlevel10k"
 brew "pyenv" # manages python versions
 brew "pyenv-virtualenv" # allow pyenv to manage virtualenvs
 brew "ripgrep" # for telescope, yazi
-brew "saulpw/vd/visidata"
+brew "shellcheck" # for bash
 brew "starship"
 brew "stern" # for kubectl
 brew "stylua" # for lua
@@ -58,6 +69,7 @@ brew "trash"
 brew "tree"
 brew "unar" # for yazi
 brew "vifm"
+brew "saulpw/vd/visidata"
 brew "wget" # for neovim
 brew "yazi" # terminal file manager
 brew "zoxide" # for yazi
@@ -65,29 +77,9 @@ brew "zsh"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
-# Apps
-cask "1password-cli"
-cask "alfred"
-cask "appcleaner"
-# cask "backblaze"
-cask "brave-browser"
-cask "firefox"
-# cask "google-chrome" NOTE: work may control this app
-# cask "handbrake"
-cask "hyperkey"
-# cask "ishowu-instant"
-cask "karabiner-elements"
-cask "kitty"
-cask "notion"
-cask "obsidian"
-# cask "prepros" NOTE: manually download v6 instead (just need it for Adam's site)
-cask "raycast"
-cask "rectangle"
-cask "runjs"
-# cask "transmit"
-cask "visual-studio-code"
-cask "vlc"
-# cask "zoom" NOTE: work may control this app
+#########
+# FONTS #
+#########
 
 # Fonts
 # see: https://github.com/Homebrew/homebrew-cask/tree/master/Casks/font
@@ -95,29 +87,86 @@ cask "font-symbols-only-nerd-font" # for yazi
 cask "font-ubuntu-mono"
 cask "font-ubuntu-mono-nerd-font"
 
-# macOS App Store
+################
+# APPS (CASKS) #
+################
+
+cask "1password-cli"
+cask "alfred"
+cask "appcleaner"
+cask "hyperkey"
+cask "karabiner-elements"
+cask "kitty"
+cask "raycast"
+cask "rectangle"
+cask "visual-studio-code"
+cask "vlc"
+
+if hostname == "Air"
+  cask "brave-browser"
+  cask "firefox"
+  cask "google-chrome" # NOTE: work may control this app
+  # cask "handbrake"
+  # cask "ishowu-instant"
+  cask "notion"
+  cask "obsidian"
+  # cask "prepros" NOTE: manually download v6 instead (just need it for Adam's site)
+  cask "runjs"
+  # cask "transmit
+  cask "zoom" # NOTE: work may control this app
+elsif hostname == "Mini"
+  cask "backblaze"
+  # cask "handbrake"
+elsif hostname == "MULO-JQ97NW-MBP"
+  cask "brave-browser"
+  cask "firefox"
+  cask "notion"
+  cask "obsidian"
+  cask "runjs"
+end
+
+########################
+# APPS (MAC APP STORE) #
+########################
+
 mas "Amphetamine", id: 937984704
-# mas "Bear", id: 1091189122
-# mas "Contrast", id: 1254981365
-# mas "Fantastical - Calendar", id: 975937182
-mas "Keynote", id: 409183694
-mas "Notion Web Clipper", id: 1559269364 # Safari extension
-mas "Numbers", id: 409203825
-mas "Pages", id: 409201541
-# mas "PiPifier", id: 1160374471
-# mas "Pixave", id: 924891282
-# mas "Pixelmator Pro", id: 1289583905
-mas "Reeder 5.", id: 1529448980
-mas "Sip", id: 507257563
-# mas "Smart Converter Pro", id: 450078312
-# mas "Spark", id: 1176895641
-mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
-# VS Code
-# TODO: set IS_WORK_LAPTOP in setup.zsh (may need to prompt for y/N)
-# TODO: if system "$IS_WORK_LAPTOP"
-# TODO: if system "! $IS_WORK_LAPTOP"
+message = "\📦 Loading additional Mac App Store apps for #{hostname}\n"
+
+if hostname == "Air"
+  # mas "Bear", id: 1091189122
+  # mas "Fantastical - Calendar", id: 975937182
+  mas "Keynote", id: 409183694
+  mas "Numbers", id: 409203825
+  mas "Notion Web Clipper", id: 1559269364 # Safari extension
+  mas "Pages", id: 409201541
+  # mas "PiPifier", id: 1160374471
+  # mas "Pixave", id: 924891282
+  # mas "Pixelmator Pro", id: 1289583905
+  mas "Reeder 5.", id: 1529448980
+  mas "Sip", id: 507257563
+  # mas "Smart Converter Pro", id: 450078312
+  # mas "Spark", id: 1176895641
+  mas "Things 3", id: 904280696
+elsif hostname == "Mini"
+  # mas "Smart Converter Pro", id: 450078312
+elsif hostname == "MULO-JQ97NW-MBP"
+  # mas "Bear", id: 1091189122
+  # mas "Fantastical - Calendar", id: 975937182
+  mas "Keynote", id: 409183694
+  mas "Notion Web Clipper", id: 1559269364 # Safari extension
+  mas "Numbers", id: 409203825
+  mas "Pages", id: 409201541
+  # mas "PiPifier", id: 1160374471
+  mas "Reeder 5.", id: 1529448980
+  # mas "Spark", id: 1176895641
+end
+
+###########
+# VS CODE #
+###########
+
 vscode "astro-build.astro-vscode"
 vscode "austenc.tailwind-docs"
 vscode "bradlc.vscode-tailwindcss"
@@ -140,6 +189,7 @@ vscode "github.vscode-pull-request-github"
 vscode "hashicorp.terraform"
 vscode "hoovercj.vscode-settings-cycler"
 vscode "jdinhlife.gruvbox"
+vscode "johnnymorganz.stylua"
 vscode "malmaud.tmux"
 vscode "mattpocock.ts-error-translator"
 vscode "mechatroner.rainbow-csv"
