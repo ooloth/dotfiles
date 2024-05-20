@@ -17,8 +17,8 @@ export EZA_STRICT=true
 export TIME_STYLE=long-iso
 
 # History
-# TODO: customize HISTORY behavior (validate ideas below + use with fzf?)
-# export HISTORY_IGNORE="git*"
+# see: https://zsh.sourceforge.io/Doc/Release/Parameters.html#Parameters-Used-By-The-Shell
+export HISTORY_IGNORE="git*"
 export HISTSIZE=100000
 export SAVEHIST=$HISTSIZE
 
