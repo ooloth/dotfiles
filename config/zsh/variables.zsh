@@ -1,3 +1,6 @@
+# Device
+export IS_WORK_LAPTOP=$( [[ "$(hostname)" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false" )
+
 # Dotfiles
 export DEBUG_DOTFILES=false
 export DOTFILES=$HOME/Repos/ooloth/dotfiles
@@ -19,9 +22,6 @@ export TIME_STYLE=long-iso
 export HISTSIZE=100000
 export SAVEHIST=$HISTSIZE
 
-# Host
-# NOTE: HOSTNAME set on startup by ~/Library/LaunchAgents/kitty.environment.plist
-export IS_WORK_LAPTOP=$( [[ -d "$HOME/Repos/recursionpharma" ]] && echo "true" || echo "false" )
 # Homebrew
 export HOMEBREW_BUNDLE_FILE="$DOTFILES/macos/Brewfile"
 
