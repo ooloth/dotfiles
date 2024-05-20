@@ -29,7 +29,7 @@ u() {
 
   info "✨ Updating brew packages"
   # Install missing packages, upgrade outdated packages, and remove old versions
-  brew bundle --file="$DOTFILES/macos/Brewfile" --cleanup
+  brew bundle --cleanup
 	brew update && brew upgrade && brew autoremove && brew cleanup && brew doctor
 
   # Avoid potential issues on work laptop caused by updating macOS too early

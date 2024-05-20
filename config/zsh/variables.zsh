@@ -22,6 +22,8 @@ export SAVEHIST=$HISTSIZE
 # Host
 # NOTE: HOSTNAME set on startup by ~/Library/LaunchAgents/kitty.environment.plist
 export IS_WORK_LAPTOP=$( [[ -d "$HOME/Repos/recursionpharma" ]] && echo "true" || echo "false" )
+# Homebrew
+export HOMEBREW_BUNDLE_FILE="$DOTFILES/macos/Brewfile"
 
 # k9s
 export K9SCONFIG=$HOME/.config/k9s
