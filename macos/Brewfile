@@ -1,8 +1,8 @@
 # NOTE: ruby works in this file, so feel free to use it for conditional logic, etc
 # see: https://github.com/Homebrew/homebrew-bundle
 
-# Environment variables must begin with HOMEBREW_ to be available in this file
-hostname = ENV['HOMEBREW_HOSTNAME']
+# Execute the `hostname` command in a subshell and remove the trailing '\n'
+hostname = `hostname`.chomp
 
 ########
 # TAPS #
