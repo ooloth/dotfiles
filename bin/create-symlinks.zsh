@@ -28,22 +28,25 @@ fd --type file . "$DOTCONFIG" | while read file; do
   sl "$file" "$targetdir"; # Symlink the file to the target directory
 done
 
+local clone_and_symlink() {
+  local repo="$1"
+  local path="$2"
+  local target="$3"
+
+  if [ ! -d "$HOME/Repos/$repo" ]; then
+    mkdir -p "$HOME/Repos/$repo"
+    git clone "git@github.com:$repo.git" "$HOME/Repos/$repo"
+  fi
+
+  sl "$HOME/Repos/$repo/$path" "$target"
+}
+
 # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
-local vim_kitty_navigator="knubie/vim-kitty-navigator"
-if [ ! -d "$HOME/Repos/$vim_kitty_navigator" ]; then
-  mkdir -p "$HOME/Repos/$vim_kitty_navigator";
-  git clone "git@github.com:$vim_kitty_navigator.git" "$HOME/Repos/$vim_kitty_navigator";
-fi
-sl "$HOME/Repos/$vim_kitty_navigator/get_layout.py" $HOMECONFIG/kitty
-sl "$HOME/Repos/$vim_kitty_navigator/pass_keys.py" $HOMECONFIG/kitty
+clone_and_symlink "knubie/vim-kitty-navigator" "get_layout.py" "$HOMECONFIG/kitty"
+clone_and_symlink "knubie/vim-kitty-navigator" "pass_keys.py" "$HOMECONFIG/kitty"
 
 # see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
-local yazi_flavors="yazi-rs/flavors"
-if [ ! -d "$HOME/Repos/$yazi_flavors" ]; then
-  mkdir -p "$HOME/Repos/$yazi_flavors";
-  git clone "git@github.com:$yazi_flavors.git" "$HOME/Repos/$yazi_flavors";
-fi
-sl "$HOME/Repos/$yazi_flavors/catppuccin-mocha.yazi" $HOMECONFIG/yazi/flavors
+clone_and_symlink "yazi-rs/flavors" "catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
 
 #####################
 # Target: ~/Library #
