@@ -9,6 +9,7 @@ hostname = ENV['HOMEBREW_HOSTNAME']
 ########
 
 tap "arl/arl" # for gitmux
+tap "candid82/brew" # for joker, for goku
 tap "yqrashawn/goku" # for karabiner
 tap "jesseduffield/lazydocker"
 tap "jesseduffield/lazygit"
