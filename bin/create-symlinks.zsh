@@ -61,8 +61,10 @@ local VSCODEUSER="$HOME/Library/Application Support/Code/User"
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-434876639
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-2119054786
 # see: https://derivative.ca/UserGuide/MacOS_Environment_Variables
+mkdir -p "$LAUNCHAGENTS"
 sl "$DOTFILES/macos/kitty.environment.plist" "$LAUNCHAGENTS"
 
+mkdir -p "$VSCODEUSER"
 sl "$DOTFILES/vscode/settings.json" "$VSCODEUSER"
 sl "$DOTFILES/vscode/keybindings.json" "$VSCODEUSER"
 sl "$DOTFILES/vscode/snippets" "$VSCODEUSER"
