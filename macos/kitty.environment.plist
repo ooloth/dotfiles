@@ -1,5 +1,6 @@
 <!-- set HOSTNAME for kitty startup config swapping -->
 <!-- see: https://derivative.ca/UserGuide/MacOS_Environment_Variables -->
+<!-- see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-2119054786 -->
 <!-- see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-414186903 -->
 <!-- see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-434876639 -->
 <!-- see: https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.startup_session -->
