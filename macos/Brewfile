@@ -25,6 +25,8 @@ brew "btop" # top alternative
 brew "commitizen" # for git
 brew "coreutils"
 brew "ctop" # for docker
+brew "docker"
+brew "docker-credential-helper" # for docker: https://stackoverflow.com/a/78162181/8802485
 brew "eza" # replaces ls
 brew "fd" # replaces find; used by yazi
 brew "ffmpegthumbnailer" # for yazi
