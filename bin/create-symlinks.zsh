@@ -20,7 +20,7 @@ sl "$DOTFILES/.zshenv" "$HOME"
 #####################
 
 # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
-fd --type file . "$DOTCONFIG" | while read file; do
+fd --type file --hidden . "$DOTCONFIG" | while read file; do
   local relpath="${file#$DOTCONFIG/}"; # Get the relative path that follows "$DOTCONFIG/"
   local dirpath="$(dirname "$relpath")"; # Get the directory path by dropping the file name
   local targetdir="$HOMECONFIG/$dirpath"; # Build the absolute path to the target directory
