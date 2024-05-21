@@ -2,14 +2,20 @@ u() {
   info "🔗 Updating symlinks"
   source "$DOTFILES/bin/create-symlinks.zsh"
 
-  info "✨ Updating rust dependencies"
-  rustup update
+  # If rust is installed, update its dependencies
+  if command -v rustup &> /dev/null; then
+    info "✨ Updating rust dependencies"
+    rustup update
+  fi
 
-  info "✨ Updating tmux dependencies"
-  # see: https://github.com/tmux-plugins/tpm/blob/master/docs/managing_plugins_via_cmd_line.md
-  ~/.config/tmux/plugins/tpm/bin/clean_plugins
-  ~/.config/tmux/plugins/tpm/bin/install_plugins
-  ~/.config/tmux/plugins/tpm/bin/update_plugins all
+  # If tpm is installed, update its dependencies
+  if [ -d "$HOME/.config/tmux/plugins/tpm" ]; then
+    info "✨ Updating tmux dependencies"
+    # see: https://github.com/tmux-plugins/tpm/blob/master/docs/managing_plugins_via_cmd_line.md
+    ~/.config/tmux/plugins/tpm/bin/clean_plugins
+    ~/.config/tmux/plugins/tpm/bin/install_plugins
+    ~/.config/tmux/plugins/tpm/bin/update_plugins all
+  fi
 
   info "✨ Updating neovim dependencies"
   git -C "$HOME/Repos/knubie/vim-kitty-navigator" pull;
@@ -21,7 +27,8 @@ u() {
   # TODO: only if out of date (to avoid wasting time?)
 	ng
 
-  if $IS_WORK_LAPTOP; then
+  # If gcloud is installed, update its components
+  if command -v gcloud &> /dev/null; then
     info "✨ Updating gcloud components"
     # The "quiet" flag skips interactive prompts by using the default or erroring (see: https://stackoverflow.com/a/31811541/8802485)
     gcloud components update --quiet
