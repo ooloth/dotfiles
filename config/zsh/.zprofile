@@ -33,4 +33,4 @@ export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
 export PATH="$HOME/.config/cargo/bin:$PATH"
 
 # Homebrew (keep last so will be at front of PATH)
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin/bin:$PATH" # Add Homebrew's executable directory to front of PATH
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:$PATH" # Add Homebrew's executable directory to front of PATH
