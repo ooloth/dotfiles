@@ -8,6 +8,14 @@ u() {
     rustup update
   fi
 
+  info "✨ Updating yazi dependencies"
+  git -C "$HOME/Repos/yazi-rs/flavors" pull;
+
+  info "✨ Updating neovim dependencies"
+  git -C "$HOME/Repos/knubie/vim-kitty-navigator" pull;
+
+  # TODO: update lazy.nvim plugins here as well? in all nvim instances? pin dependencies to avoid unwanted updates?
+
   # If tpm is installed, update its dependencies
   if [ -d "$HOME/.config/tmux/plugins/tpm" ]; then
     info "✨ Updating tmux dependencies"
@@ -16,11 +24,6 @@ u() {
     ~/.config/tmux/plugins/tpm/bin/install_plugins
     ~/.config/tmux/plugins/tpm/bin/update_plugins all
   fi
-
-  info "✨ Updating neovim dependencies"
-  git -C "$HOME/Repos/knubie/vim-kitty-navigator" pull;
-
-  # TODO: update lazy.nvim plugins here as well? in all nvim instances? pin dependencies to avoid unwanted updates?
 
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
   info "✨ Updating Node $(node -v) global dependencies"
