@@ -380,9 +380,10 @@ set_up_node() {
 
   fnm install 22 && fnm default 22 && fnm use 22
 
-  npm i -g @githubnext/github-copilot-cli npm-check
+  # TODO: where should the source of truth for global npm dependencies be? alias? update? separate script?
+  npm i -g npm-check
 
-  info "Enabling corepack to activate yarn"
+  info "Enabling corepack to activate yarn and pnpm"
   # see: https://yarnpkg.com/getting-started/install
   corepack enable
 

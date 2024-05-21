@@ -67,8 +67,6 @@ nfc() { npm run format:check; }
 nff() { npm run format:fix; }
 ng() {
   # prefer "-g" over "--location=global" to support older versions of npm
-  npm install -g \
-    @githubnext/github-copilot-cli \
     npm-check
 
   # neovim dependencies
