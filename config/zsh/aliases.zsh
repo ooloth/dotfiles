@@ -115,8 +115,12 @@ ng() {
     printf "🚀 Updating %s\n" "$package"
   done
 
-  # prefer "-g" over "--location=global" to support older versions of npm
-  npm install -g --loglevel=error "${packages_to_add[@]}" "${packages_to_update[@]}"
+  if [ ${#packages_to_add[@]} -gt 0 ] || [ ${#packages_to_update[@]} -gt 0 ]; then
+    # prefer "-g" over "--location=global" to support older versions of npm
+    npm install -g --loglevel=error "${packages_to_add[@]}" "${packages_to_update[@]}"
+  else
+    echo "🎉 All npm packages are installed and up to date."
+  fi
 }
 nk() { npm run types:check; }
 nl() { npm run lint; }
