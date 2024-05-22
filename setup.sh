@@ -310,7 +310,8 @@ set_up_git() {
 
 install_homebrew() {
   # Run as a login shell (non-interactive) so that the script doesn't pause for user input
-  curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash --login
+  # Use "arch -arm64" to ensure Apple Silicon version installed: https://github.com/orgs/Homebrew/discussions/417#discussioncomment-2684303
+  curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | arch -arm64 /bin/bash --login
 
   eval "$(/opt/homebrew/bin/brew shellenv)"
 
