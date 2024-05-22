@@ -117,7 +117,7 @@ function yy() {
 # [z]sh [t]ime: measure how long new shells take to launch
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
 
-if $IS_WORK_LAPTOP; then
+if $IS_WORK; then
   bp() { cd $HOME/Repos/recursionpharma/build-pipelines; }
   cauldron() { cd $HOME/Repos/recursionpharma/cauldron; }
   eo() { cd $HOME/Repos/recursionpharma/eng-onboarding; }

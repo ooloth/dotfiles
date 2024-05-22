@@ -27,7 +27,6 @@ u() {
 
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
   info "✨ Updating Node $(node -v) global dependencies"
-  # TODO: only if out of date (to avoid wasting time?)
 	ng
 
   # If gcloud is installed, update its components
@@ -43,7 +42,7 @@ u() {
 	brew update && brew upgrade && brew autoremove && brew cleanup && brew doctor
 
   # Avoid potential issues on work laptop caused by updating macOS too early
-  if ! $IS_WORK_LAPTOP; then
+  if ! $IS_WORK; then
     info "💻 Updating macOS software (after password, don't cancel!)"
     sudo softwareupdate --install --all --restart --agree-to-license --verbose
   fi

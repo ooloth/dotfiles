@@ -4,7 +4,7 @@ return {
   dependencies = { 'nvim-lua/plenary.nvim' },
   keys = function()
     local upstream_branch = 'origin/main'
-    if vim.env.IS_WORK_LAPTOP == 'true' then
+    if vim.env.IS_WORK == 'true' then
       upstream_branch = 'origin/trunk'
     end
 

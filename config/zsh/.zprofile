@@ -1,5 +1,7 @@
 # Device
-export IS_WORK_LAPTOP=$( [[ "$(hostname)" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false" )
+export IS_AIR=$( [[ "$(hostname)" == "Air" ]] && echo "true" || echo "false" )
+export IS_MINI=$( [[ "$(hostname)" == "Mini" ]] && echo "true" || echo "false" )
+export IS_WORK=$( [[ "$(hostname)" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false" )
 
 # Dotfiles
 export DEBUG_DOTFILES=false
@@ -65,7 +67,7 @@ export ZDOTDIR=$HOME/.config/zsh
 # PATH #
 ########
 
-if $IS_WORK_LAPTOP; then
+if $IS_WORK; then
   # Gcloud (update PATH for the Google Cloud SDK)
   # see: https://cloud.google.com/sdk/docs/downloads-interactive
   if [ -f '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc'; fi
@@ -89,7 +91,7 @@ export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/opt/local/bin:/opt/local/sbin
 # WORK #
 ########
 
-if $IS_WORK_LAPTOP; then
+if $IS_WORK; then
   # Configome
   # see: https://app.swimm.io/workspaces/ctl2gE0Uy2okwcN3LfOg/repos/Z2l0aHViJTNBJTNBaXBnLW9yY2hlc3RyYXRvciUzQSUzQXJlY3Vyc2lvbnBoYXJtYQ==/branch/trunk/docs/v0jze
   export CONFIGOME_ENV=dev
