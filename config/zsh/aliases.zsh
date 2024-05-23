@@ -149,6 +149,11 @@ if $IS_WORK; then
   rv() {
     # Install latest version of roadie, then rebuild venv to remove any no-longer-used packages
     # https://github.com/recursionpharma/roadie/blob/5a5c6ba44c345c8fd42543db5454b502a4e96863/roadie/cli/virtual.py#L454
+    ru && roadie venv
+  }
+  rvc() {
+    # Install latest version of roadie, then rebuild venv to remove any no-longer-used packages
+    # https://github.com/recursionpharma/roadie/blob/5a5c6ba44c345c8fd42543db5454b502a4e96863/roadie/cli/virtual.py#L454
     ru && roadie venv --clobber
 
     local CURRENT_DIRECTORY=$(basename $PWD)
