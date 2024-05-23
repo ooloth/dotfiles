@@ -1,16 +1,21 @@
 test() {
-  local CURRENT_DIRECTORY=$(basename $PWD)
+  local current_directory=$(basename $PWD)
+  local args=""
 
-  case $CURRENT_DIRECTORY in
+  if [ "$#" -gt 0 ]; then
+    args=" $@"
+  fi
+
+  case $current_directory in
     dash-phenoapp-v2)
-      info "Running pytest"
-      pytest phenoapp ;;
+      info "🧪 Running: pytest$args"
+      pytest phenoapp "$@" ;;
 
     react-app)
-      info "Running vitest"
+      info "🧪 Running: vitest$args"
       npm run test "$@" ;;
 
     *)
-      error "🚨 No 'test' case defined for '/${CURRENT_DIRECTORY}'" ;;
+      error "🚨 No 'test' case defined for '/$current_directory'" ;;
   esac
 }
