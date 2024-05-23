@@ -308,38 +308,11 @@ set_up_git() {
   success "\nDone setting up your git credentials."
 }
 
-install_homebrew() {
-  # Run as a login shell (non-interactive) so that the script doesn't pause for user input
-  # Use "arch -arm64" to ensure Apple Silicon version installed: https://github.com/orgs/Homebrew/discussions/417#discussioncomment-2684303
-  curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | arch -arm64 /bin/bash --login
-
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-
-  success "\nDone installing Homebrew."
-}
-
 set_up_homebrew() {
   title "Setting up Homebrew"
 
-  if test ! "$(command -v brew)"; then
-    info "Homebrew not installed. Installing now..."
-    install_homebrew
-  fi
-
-  # Install brew dependencies from Brewfile
-  # see: https://github.com/Homebrew/homebrew-bundle
-  brew bundle --file="$DOTFILES/macos/Brewfile"
-
-  # Install fzf
-  echo -e
-  title "Installing fzf"
-  "$(brew --prefix)"/opt/fzf/install --key-bindings --completion --no-update-rc --no-bash --no-fish
-
-  printf "\n"
-  info "Updating Homebrew...\n"
-
-  brew update
-  brew upgrade
+  source "$DOTFILES/bin/install/homebrew.zsh"
+  source "$DOTFILES/bin/update/homebrew.zsh"
 
   success "\nDone setting up Homebrew."
 }

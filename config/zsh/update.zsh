@@ -35,10 +35,7 @@ u() {
     gcloud components update --quiet
   fi
 
-  info "✨ Updating brew packages"
-  # Install missing packages, upgrade outdated packages, and remove old versions
-  brew bundle --cleanup
-	brew update && brew upgrade && brew autoremove && brew cleanup && brew doctor
+  source "$DOTFILES/bin/update/homebrew.zsh"
 
   # Avoid potential issues on work laptop caused by updating macOS too early
   if ! $IS_WORK; then
