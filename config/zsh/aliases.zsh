@@ -118,9 +118,9 @@ function yy() {
 zt() { for i in $(seq 1 10); do /usr/bin/time zsh -i -c exit; done }
 
 if $IS_WORK; then
-  bp() { cd $HOME/Repos/recursionpharma/build-pipelines; }
-  cauldron() { cd $HOME/Repos/recursionpharma/cauldron; }
-  eo() { cd $HOME/Repos/recursionpharma/eng-onboarding; }
+  bp() { cd "$HOME/Repos/recursionpharma/build-pipelines"; }
+  cauldron() { cd "$HOME/Repos/recursionpharma/cauldron"; }
+  eo() { cd "$HOME/Repos/recursionpharma/eng-onboarding"; }
   # see: https://stackoverflow.com/a/51563857/8802485
   # see: https://cloud.google.com/docs/authentication/gcloud#gcloud-credentials
   gca() { gcloud auth login; }
@@ -128,21 +128,21 @@ if $IS_WORK; then
   gci() { gcloud init; }
   gcpe() { gcloud config set project eng-infrastructure; }
   gcpn() { gcloud config set project rp006-prod-49a893d8; }
-  genie() { cd $HOME/Repos/recursionpharma/genie }
-  gu() { cd $HOME/Repos/recursionpharma/genie/genie-ui; }
-  lowe() { cd $HOME/Repos/recursionpharma/bc-lowe; }
-  mp() { cd $HOME/Repos/recursionpharma/mapapp-public; }
-  pa() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2; }
-  pab() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp; }
-  paf() { cd $HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app; }
-  pm() { cd $HOME/Repos/recursionpharma/phenomap; }
-  pr() { cd $HOME/Repos/recursionpharma/phenoreader; }
-  psa() { cd $HOME/Repos/recursionpharma/phenoservice-api; }
-  psc() { cd $HOME/Repos/recursionpharma/phenoservice-consumer; }
-  pl() { cd $HOME/Repos/recursionpharma/platelet; }
-  plu() { cd $HOME/Repos/recursionpharma/platelet-ui; }
-  pw() { cd $HOME/Repos/recursionpharma/processing-witch; }
-  r() { cd $HOME/Repos/recursionpharma; }
+  genie() { cd "$HOME/Repos/recursionpharma/genie"; }
+  gu() { cd "$HOME/Repos/recursionpharma/genie/genie-ui"; }
+  lowe() { cd "$HOME/Repos/recursionpharma/bc-lowe"; }
+  mp() { cd "$HOME/Repos/recursionpharma/mapapp-public"; }
+  pa() { cd "$HOME/Repos/recursionpharma/dash-phenoapp-v2"; }
+  pab() { cd "$HOME/Repos/recursionpharma/dash-phenoapp-v2/phenoapp"; }
+  paf() { cd "$HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app"; }
+  pm() { cd "$HOME/Repos/recursionpharma/phenomap"; }
+  pr() { cd "$HOME/Repos/recursionpharma/phenoreader"; }
+  psa() { cd "$HOME/Repos/recursionpharma/phenoservice-api"; }
+  psc() { cd "$HOME/Repos/recursionpharma/phenoservice-consumer"; }
+  pl() { cd "$HOME/Repos/recursionpharma/platelet"; }
+  plu() { cd "$HOME/Repos/recursionpharma/platelet-ui"; }
+  pw() { cd "$HOME/Repos/recursionpharma/processing-witch"; }
+  r() { cd "$HOME/Repos/recursionpharma"; }
   rl() { roadie lock "$@"; } # optionally "rl -c" etc
   rlc() { rl -c; }
   ru() { python -m pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
@@ -159,7 +159,7 @@ if $IS_WORK; then
       pip install debugpy
     fi
   }
-  skurge() { cd $HOME/Repos/recursionpharma/skurge; }
-  tech() { cd $HOME/Repos/recursionpharma/tech; }
-  zuul() { cd $HOME/Repos/recursionpharma/zuul; }
+  skurge() { cd "$HOME/Repos/recursionpharma/skurge"; }
+  tech() { cd "$HOME/Repos/recursionpharma/tech"; }
+  zuul() { cd "$HOME/Repos/recursionpharma/zuul"; }
 fi
