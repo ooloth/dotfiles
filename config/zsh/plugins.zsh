@@ -2,6 +2,7 @@
 eval "$(fnm env --use-on-cd --log-level=error)"
 
 # fzf
+export PATH="$PATH:/opt/homebrew/opt/fzf/bin"
 eval "$(fzf --zsh)"
 
 # powerlevel10k
