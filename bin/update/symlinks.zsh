@@ -1,12 +1,20 @@
 #!/usr/bin/env zsh
 
-local DOTFILES="$HOME/Repos/ooloth/dotfiles"
-local DOTCONFIG="$DOTFILES/config"
-local HOMECONFIG="$HOME/.config"
+################
+# Dependencies #
+################
+
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+DOTCONFIG="$DOTFILES/config"
+HOMECONFIG="$HOME/.config"
+
+source "$DOTCONFIG/zsh/banners.zsh"
 
 sl() { ln -sfv "$1" "$2"; }
 
 # TODO: start by removing broken symlinks in each target directory?
+
+info "🔗 Updating symlinks"
 
 #############
 # Target: ~ #
@@ -52,8 +60,8 @@ clone_and_symlink "yazi-rs/flavors" "catppuccin-mocha.yazi" "$HOMECONFIG/yazi/fl
 # Target: ~/Library #
 #####################
 
-local LAUNCHAGENTS="$HOME/Library/LaunchAgents"
-local VSCODEUSER="$HOME/Library/Application Support/Code/User"
+LAUNCHAGENTS="$HOME/Library/LaunchAgents"
+VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
 # Set HOSTNAME environment variable for device-specific kitty startup sessions
 # see: https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.startup_session
