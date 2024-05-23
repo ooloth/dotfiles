@@ -4,11 +4,11 @@ test() {
   case $CURRENT_DIRECTORY in
     dash-phenoapp-v2)
       info "Running pytest"
-      echo "TODO"
+      pytest phenoapp
 
     react-app)
       info "Running vitest"
-      echo "TODO"
+      npm run test "$@"
 
     *)
       error "🚨 No 'test' case defined for '/${CURRENT_DIRECTORY}'" ;;
