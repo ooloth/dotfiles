@@ -11,6 +11,8 @@ source $HOME/.config/zsh/aliases.zsh
 source $HOME/.config/zsh/update.zsh
 source $HOME/.config/zsh/start.zsh
 source $HOME/.config/zsh/stop.zsh
+source $HOME/.config/zsh/check.zsh
+source $HOME/.config/zsh/test.zsh
 source $HOME/.config/zsh/options.zsh
 source $HOME/.config/zsh/hooks.zsh
 source $HOME/.config/zsh/plugins.zsh # source last

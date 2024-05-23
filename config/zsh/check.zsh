@@ -4,11 +4,11 @@ check() {
   case $CURRENT_DIRECTORY in
     dash-phenoapp-v2)
       info "Formatting, linting and type-checking"
-      echo "TODO"
+      echo "TODO" ;;
 
     react-app)
       info "Formatting, linting and type-checking"
-      echo "TODO"
+      echo "TODO" ;;
 
     *)
       error "🚨 No 'check' case defined for '/${CURRENT_DIRECTORY}'" ;;
