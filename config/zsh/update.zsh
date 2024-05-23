@@ -1,11 +1,6 @@
 u() {
-
-  # If rust is installed, update its dependencies
-  if command -v rustup &> /dev/null; then
-    info "✨ Updating rust dependencies"
-    rustup update
-  fi
   source "$DOTFILES/bin/update/symlinks.zsh"
+  source "$DOTFILES/bin/update/rust.zsh"
 
   info "✨ Updating yazi dependencies"
   git -C "$HOME/Repos/yazi-rs/flavors" pull;

@@ -1,10 +1,5 @@
 #!/usr/bin/env zsh
 
-# TODO: install rust (export RUSTUP_HOME and CARGO_HOME env vars here first to install in ~/.config?)
-
-# shellcheck disable=SC2154
-trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
-
 OS_NAME=$(uname)
 COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
@@ -349,6 +344,14 @@ set_up_zsh() {
   success "\nDone configuring zsh shell."
 }
 
+set_up_rust() {
+  title "Setting up Rust"
+
+  source "$DOTFILES/bin/install/rust.zsh"
+
+  success "\nDone setting up Rust."
+}
+
 set_up_node() {
   title "Installing node and general global dependencies..."
 
@@ -486,6 +489,7 @@ confirm_consent \
   && set_up_git \
   && set_up_homebrew \
   && set_up_zsh \
+  && set_up_rust \
   && set_up_node \
   && set_up_tmux \
   && set_up_neovim \
