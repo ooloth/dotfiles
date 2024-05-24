@@ -31,12 +31,7 @@ u() {
   fi
 
   source "$DOTFILES/bin/update/homebrew.zsh"
-
-  # Avoid potential issues on work laptop caused by updating macOS too early
-  if ! $IS_WORK; then
-    info "💻 Updating macOS software (after password, don't cancel!)"
-    sudo softwareupdate --install --all --restart --agree-to-license --verbose
-  fi
+  source "$DOTFILES/bin/update/macos.zsh"
 
   info "🔄 Reloading shell"
   R
