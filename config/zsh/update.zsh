@@ -1,4 +1,5 @@
 u() {
+  source "$DOTFILES/bin/update/mode.zsh"
   source "$DOTFILES/bin/update/symlinks.zsh"
   source "$DOTFILES/bin/update/rust.zsh"
 
