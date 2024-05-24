@@ -23,13 +23,7 @@ u() {
   info "✨ Updating Node $(node -v) global dependencies"
 	ng
 
-  # If gcloud is installed, update its components
-  if command -v gcloud &> /dev/null; then
-    info "✨ Updating gcloud components"
-    # The "quiet" flag skips interactive prompts by using the default or erroring (see: https://stackoverflow.com/a/31811541/8802485)
-    gcloud components update --quiet
-  fi
-
+  source "$DOTFILES/bin/update/gcloud.zsh"
   source "$DOTFILES/bin/update/homebrew.zsh"
   source "$DOTFILES/bin/update/macos.zsh"
 
