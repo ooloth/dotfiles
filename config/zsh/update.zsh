@@ -19,10 +19,7 @@ u() {
     ~/.config/tmux/plugins/tpm/bin/update_plugins all
   fi
 
-  # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-  info "✨ Updating Node $(node -v) global dependencies"
-	ng
-
+  source "$DOTFILES/bin/update/npm.zsh"
   source "$DOTFILES/bin/update/gcloud.zsh"
   source "$DOTFILES/bin/update/homebrew.zsh"
   source "$DOTFILES/bin/update/macos.zsh"

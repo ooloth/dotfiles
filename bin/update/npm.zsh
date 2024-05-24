@@ -1,5 +1,11 @@
 #!/usr/bin/env zsh
 
+# TODO: install if missing?
+
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+info "✨ Updating Node $(node -v) global dependencies"
+
+# see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
 packages=(
   aocrunner
   bash-language-server # for neovim
