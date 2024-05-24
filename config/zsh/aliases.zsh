@@ -65,7 +65,7 @@ nc() { npm run check; }
 nd() { n && npm run dev; }
 nfc() { npm run format:check; }
 nff() { npm run format:fix; }
-ng() { "$DOTFILES/bin/update_npm_global_packages.zsh"; }
+ng() { "$DOTFILES/bin/update/npm.zsh"; }
 nk() { npm run types:check; }
 nl() { npm run lint; }
 nlc() { npm run lint:check; }
