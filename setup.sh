@@ -341,18 +341,6 @@ set_up_neovim() {
   success "\nDone setting up neovim."
 }
 
-set_up_vs_code() {
-  title "Setting up VS Code"
-
-  info "Symlinking VS Code settings, keybindings and snippets..."
-
-  ln -sfv "$DOTFILES/vscode/settings.json" "$HOME/Library/Application Support/Code/User"
-  ln -sfv "$DOTFILES/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User"
-  ln -sfv "$DOTFILES/vscode/snippets" "$HOME/Library/Application Support/Code/User"
-
-  success "\nDone setting up VS Code."
-}
-
 configure_macos() {
   title "Configuring Mac preferences"
 
@@ -440,7 +428,6 @@ confirm_consent \
   && set_up_node \
   && set_up_tmux \
   && set_up_neovim \
-  && set_up_vs_code \
   && configure_macos \
   && configure_apps \
   && suggest_restart
