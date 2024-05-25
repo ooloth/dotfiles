@@ -335,6 +335,14 @@ set_up_neovim() {
   success "\nDone setting up neovim."
 }
 
+set_up_yazi() {
+  title "Setting up yazi"
+
+  source "$DOTFILES/bin/install/yazi.zsh"
+
+  success "\nDone setting up yazi."
+}
+
 configure_macos() {
   title "Configuring Mac preferences"
 
@@ -422,8 +430,7 @@ confirm_consent \
   && set_up_node \
   && set_up_tmux \
   && set_up_neovim \
+  && set_up_yazi \
   && configure_macos \
   && configure_apps \
   && suggest_restart
-
-# TODO: source install/yazi.zsh
