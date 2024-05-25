@@ -431,3 +431,5 @@ confirm_consent \
   && configure_macos \
   && configure_apps \
   && suggest_restart
+
+# TODO: source install/yazi.zsh

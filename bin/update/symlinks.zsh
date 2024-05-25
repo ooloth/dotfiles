@@ -36,6 +36,7 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   local relpath="${file#$DOTCONFIG/}"; # Get the relative path that follows "$DOTCONFIG/"
   local dirpath="$(dirname "$relpath")"; # Get the directory path by dropping the file name
   local targetdir="$HOMECONFIG/$dirpath"; # Build the absolute path to the target directory
+
   mkdir -p "$targetdir"; # Create the target directory (if it doesn't exist)
   sl "$file" "$targetdir"; # Symlink the file to the target directory
 done
@@ -58,7 +59,7 @@ clone_and_symlink "knubie/vim-kitty-navigator" "get_layout.py" "$HOMECONFIG/kitt
 clone_and_symlink "knubie/vim-kitty-navigator" "pass_keys.py" "$HOMECONFIG/kitty"
 
 # see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
-clone_and_symlink "yazi-rs/flavors" "catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
+sl "$HOME/Repos/yazi-rs/flavors/catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
 
 #####################
 # Target: ~/Library #
