@@ -370,11 +370,7 @@ set_up_node() {
 set_up_tmux() {
   title "Setting up tmux"
 
-  info "Installing tpm..."
-  sh -c 'git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm'
-
-  printf "\n"
-  warning "TODO: open tmux and run "Prefix + I" a few times to install tpm + all other tmux plugins"
+  source "$DOTFILES/bin/install/tpm.zsh"
 
   success "\nDone setting up tmux."
 }
