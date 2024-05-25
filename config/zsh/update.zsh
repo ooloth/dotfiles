@@ -10,6 +10,6 @@ u() {
   source "$DOTFILES/bin/update/homebrew.zsh"
   source "$DOTFILES/bin/update/macos.zsh"
 
-  info "🔄 Reloading shell"
+  info "🐚 Reloading shell"
   exec -l $SHELL
 }
