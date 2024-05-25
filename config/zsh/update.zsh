@@ -6,11 +6,7 @@ u() {
   info "✨ Updating yazi dependencies"
   git -C "$HOME/Repos/yazi-rs/flavors" pull;
 
-  info "✨ Updating neovim dependencies"
-  git -C "$HOME/Repos/knubie/vim-kitty-navigator" pull;
-
-  # TODO: update lazy.nvim plugins here as well? in all nvim instances? pin dependencies to avoid unwanted updates?
-
+  source "$DOTFILES/bin/update/neovim.zsh"
   source "$DOTFILES/bin/update/tpm.zsh"
   source "$DOTFILES/bin/update/npm.zsh"
   source "$DOTFILES/bin/update/gcloud.zsh"
