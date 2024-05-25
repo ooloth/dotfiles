@@ -433,3 +433,4 @@ confirm_consent \
   && suggest_restart
 
 # TODO: source install/yazi.zsh
+# TODO: install/neovim.zsh (plugins, vim-kitty-navigator, etc)
