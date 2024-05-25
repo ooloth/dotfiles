@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-OS_NAME=$(uname)
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
@@ -58,7 +57,8 @@ confirm_macos() {
 
   info "Confirming this is a Mac."
 
-  if [ "$OS_NAME" != "Darwin" ]; then
+  local os=$(uname)
+  if [ "$os" != "Darwin" ]; then
     error "\nOops, it looks like this is a non-UNIX system. This script only works on a Mac.\n\nExiting..."
   fi
 
@@ -164,7 +164,7 @@ configure_ssh() {
     if [[ ! "$replaceKeys" == 'y' ]]; then
       printf "\nMakes sense! Keeping the existing keys.\n"
     else
-      printf "\n You got it! Here we go...\n"
+      printf "\nYou got it! Here we go...\n"
       create_ssh_keys
     fi
   fi
@@ -270,8 +270,7 @@ set_up_zsh() {
 
   title "Configuring zsh shell"
 
-  local shell_path;
-  shell_path="$(command -v zsh)"
+  local shell_path="$(command -v zsh)"
 
   info "Changing your shell to zsh...\n"
 
