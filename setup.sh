@@ -330,13 +330,7 @@ set_up_tmux() {
 set_up_neovim() {
   title "Setting up neovim"
 
-  info "Installing global npm dependencies for neovim..."
-  npm i -g \
-    typescript \
-    vscode-langservers-extracted
-
-  printf "\n"
-  warning "TODO: open vim + save plugins-setup.lua to install plugins"
+  source "$DOTFILES/bin/install/neovim.zsh"
 
   success "\nDone setting up neovim."
 }
@@ -433,4 +427,3 @@ confirm_consent \
   && suggest_restart
 
 # TODO: source install/yazi.zsh
-# TODO: install/neovim.zsh (plugins, vim-kitty-navigator, etc)

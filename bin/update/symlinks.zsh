@@ -41,26 +41,20 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   sl "$file" "$targetdir"; # Symlink the file to the target directory
 done
 
-clone_and_symlink() {
-  local repo="$1"
-  local relpath="$2"
-  local target="$3"
-
-  if [ ! -d "$HOME/Repos/$repo" ]; then
-    mkdir -p "$HOME/Repos/$repo"
-    git clone "git@github.com:$repo.git" "$HOME/Repos/$repo"
-  fi
-
-  sl "$HOME/Repos/$repo/$relpath" "$target"
-}
-
-# see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
-clone_and_symlink "knubie/vim-kitty-navigator" "get_layout.py" "$HOMECONFIG/kitty"
-clone_and_symlink "knubie/vim-kitty-navigator" "pass_keys.py" "$HOMECONFIG/kitty"
 
 # see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
 sl "$HOME/Repos/yazi-rs/flavors/catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
+vim_kitty_navigator="$HOME/Repos/knubie/vim-kitty-navigator"
 
+yazi_flavors="$HOME/Repos/yazi-rs/flavors"
+
+if [ ! -d "$vim_kitty_navigator" ]; then
+  source "$DOTFILES/bin/install/neovim.zsh"
+else
+  # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
+  sl "$vim_kitty_navigator/get_layout.py" "$HOMECONFIG/kitty"
+  sl "$vim_kitty_navigator/pass_keys.py" "$HOMECONFIG/kitty"
+fi
 #####################
 # Target: ~/Library #
 #####################
