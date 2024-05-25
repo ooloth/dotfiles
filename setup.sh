@@ -307,14 +307,7 @@ set_up_rust() {
 set_up_node() {
   title "Installing node and general global dependencies..."
 
-  fnm install 22 && fnm default 22 && fnm use 22
-
-  # TODO: where should the source of truth for global npm dependencies be? alias? update? separate script?
-  npm i -g npm-check
-
-  info "Enabling corepack to activate yarn and pnpm"
-  # see: https://yarnpkg.com/getting-started/install
-  corepack enable
+  source "$DOTFILES/bin/install/node.zsh"
 
   success "\nDone installing node and global dependencies."
 }
