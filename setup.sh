@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
 OS_NAME=$(uname)
-COMMAND_LINE_TOOLS="/Library/Developer/CommandLineTools"
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 COLOR_GRAY="\033[1;38;5;243m"
@@ -54,18 +53,8 @@ confirm_consent() {
   fi
 }
 
-go_home() {
-  info "Moving to home directory."
-
-  cd "$HOME"
-
-  success "\nAhh. So fresh and so clean.\n"
-}
-
 confirm_macos() {
   title "Verifying prerequisites"
-
-  go_home # helps for some reason
 
   info "Confirming this is a Mac."
 
@@ -79,7 +68,8 @@ confirm_macos() {
 confirm_command_line_tools() {
   info "Confirming the Xcode CLI tools are installed."
 
-  if [ ! -d "$COMMAND_LINE_TOOLS" ]; then
+  if [ ! -d "$HOME/Library/Developer/CommanLineTools" ]; then
+    # TODO: is there a way to install these automatically and continue?
     error "Apple's command line developer tools must be installed before running this script. To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
   fi
 
@@ -98,7 +88,6 @@ authenticate() {
 }
 
 run_checks() {
-  go_home
   confirm_macos
   confirm_command_line_tools
   authenticate
