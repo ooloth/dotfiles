@@ -41,11 +41,7 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   sl "$file" "$targetdir"; # Symlink the file to the target directory
 done
 
-
-# see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
-sl "$HOME/Repos/yazi-rs/flavors/catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
 vim_kitty_navigator="$HOME/Repos/knubie/vim-kitty-navigator"
-
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 
 if [ ! -d "$vim_kitty_navigator" ]; then
@@ -55,6 +51,14 @@ else
   sl "$vim_kitty_navigator/get_layout.py" "$HOMECONFIG/kitty"
   sl "$vim_kitty_navigator/pass_keys.py" "$HOMECONFIG/kitty"
 fi
+
+if [ ! -d "$yazi_flavors" ]; then
+  source "$DOTFILES/bin/install/yazi.zsh"
+else
+  # see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
+  sl "$yazi_flavors/catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
+fi
+
 #####################
 # Target: ~/Library #
 #####################
