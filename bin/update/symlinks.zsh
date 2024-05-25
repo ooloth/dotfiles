@@ -20,12 +20,16 @@ info "🔗 Updating symlinks"
 # Target: ~ #
 #############
 
+printf "\n🔗 Creating symlinks in ~/\n"
+
 sl "$DOTFILES/.hushlogin" "$HOME"
 sl "$DOTFILES/.zshenv" "$HOME"
 
 #####################
 # Target: ~/.config #
 #####################
+
+printf "\n🔗 Creating symlinks in ~/.config\n"
 
 # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
 fd --type file --hidden . "$DOTCONFIG" | while read file; do
@@ -59,6 +63,8 @@ clone_and_symlink "yazi-rs/flavors" "catppuccin-mocha.yazi" "$HOMECONFIG/yazi/fl
 #####################
 # Target: ~/Library #
 #####################
+
+printf "\n🔗 Creating symlinks in ~/Library\n"
 
 LAUNCHAGENTS="$HOME/Library/LaunchAgents"
 VSCODEUSER="$HOME/Library/Application Support/Code/User"
