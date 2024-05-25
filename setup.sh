@@ -247,32 +247,12 @@ backup_config() {
   success "\nDone backing up your old dotfiles."
 }
 
-# TODO: replace with call to create_symlinks.zsh
 create_symlinks() {
   title "Symlinking dotfiles to home folder"
 
   source "$DOTFILES/bin/update/symlinks.zsh"
 
   success "\nDone symlinking new dotfiles to the home folder."
-}
-
-set_up_git() {
-  title "Setting up Git"
-
-  info "Please confirm your GitHub credentials (pressing [Enter] accepts the default):\n"
-  defaultName=$(git config user.name)
-  defaultEmail=$(git config user.email)
-  defaultUser=$(git config github.user)
-
-  vared -p "Name (default: $defaultName) " -c name
-  vared -p "Email (default: $defaultEmail) " -c email
-  vared -p "GitHub username (default: $defaultUser) " -c user
-
-  git config -f ~/.config/git/config user.name "${name:-$defaultName}"
-  git config -f ~/.config/git/config user.email "${email:-$defaultEmail}"
-  git config -f ~/.config/git/config github.user "${user:-$defaultUser}"
-
-  success "\nDone setting up your git credentials."
 }
 
 set_up_homebrew() {
@@ -454,7 +434,6 @@ confirm_consent \
   && clone_dotfiles \
   && backup_config \
   && create_symlinks \
-  && set_up_git \
   && set_up_homebrew \
   && set_up_zsh \
   && set_up_rust \
