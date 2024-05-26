@@ -149,12 +149,6 @@ backup_config() {
     cp -R "$HOME/.ssh" "$BACKUP_DIR"
   fi
 
-  # Back up ~/.terminfo folder
-  if [ -d "$HOME/.terminfo" ]; then
-    info "Backing up ~/.terminfo"
-    cp -R "$HOME/.terminfo" "$BACKUP_DIR"
-  fi
-
   success "\nDone backing up your old dotfiles."
 }
 
@@ -167,21 +161,7 @@ set_up_homebrew() {
   source "$DOTFILES/bin/update/homebrew.zsh"
 }
 
-set_up_terminfo() {
-  title "Updating terminfo"
-
-  info "adding tmux.terminfo"
-  tic -x "$DOTFILES/terminfo/tmux.terminfo"
-
-  info "adding xterm-256color-italic.terminfo"
-  tic -x "$DOTFILES/terminfo/xterm-256color-italic.terminfo"
-
-  success "\nDone configuring terminfo settings."
-}
-
 set_up_zsh() {
-  set_up_terminfo
-
   source "$DOTFILES/bin/install/zsh.zsh"
 }
 
