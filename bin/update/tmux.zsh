@@ -18,4 +18,5 @@ info "✨ Updating tmux dependencies"
 "$tpm_path/bin/update_plugins" all
 
 # see: https://github.com/tmux-plugins/tpm?tab=readme-ov-file#installation
+printf "\n🔁 Reloading tmux config\n"
 tmux source ~/.config/tmux/tmux.conf

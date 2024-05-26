@@ -20,7 +20,7 @@ info "🔗 Updating symlinks"
 # Target: ~ #
 #############
 
-printf "\n🔗 Creating symlinks in ~/\n"
+printf "🔗 Creating symlinks in ~/\n\n"
 
 sl "$DOTFILES/.hushlogin" "$HOME"
 sl "$DOTFILES/.zshenv" "$HOME"
@@ -29,7 +29,7 @@ sl "$DOTFILES/.zshenv" "$HOME"
 # Target: ~/.config #
 #####################
 
-printf "\n🔗 Creating symlinks in ~/.config\n"
+printf "\n🔗 Creating symlinks in ~/.config\n\n"
 
 # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
 fd --type file --hidden . "$DOTCONFIG" | while read file; do
@@ -63,7 +63,7 @@ fi
 # Target: ~/Library #
 #####################
 
-printf "\n🔗 Creating symlinks in ~/Library\n"
+printf "\n🔗 Creating symlinks in ~/Library\n\n"
 
 LAUNCHAGENTS="$HOME/Library/LaunchAgents"
 VSCODEUSER="$HOME/Library/Application Support/Code/User"

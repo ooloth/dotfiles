@@ -62,6 +62,6 @@ done
 if [ ${#packages_to_add[@]} -gt 0 ] || [ ${#packages_to_update[@]} -gt 0 ]; then
   # prefer "-g" over "--location=global" to support older versions of npm
   npm install -g --loglevel=error "${packages_to_add[@]}" "${packages_to_update[@]}"
-else
-  printf "🎉 All npm packages are installed and up to date.\n"
 fi
+
+printf "🎉 All npm packages are installed and up to date.\n"
