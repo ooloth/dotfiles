@@ -8,9 +8,8 @@ set -e
 source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
 info "🔑 Adding SSH key pair to GitHub"
 
-ssh_dir="$HOME/.ssh"
-private_key_path="$ssh_dir/id_rsa"
-public_key_path="$private_key_path.pub"
+PRIVATE_KEY="$HOME/.ssh/id_rsa"
+PUBLIC_KEY="$PRIVATE_KEY.pub"
 
 i_can_connect_to_github_via_ssh() {
   ssh -T git@github.com >/dev/null 2>&1
@@ -21,7 +20,7 @@ if i_can_connect_to_github_via_ssh; then
   return
 fi
 
-if [[ ! -s "$private_key_path" || ! -s "$public_key_path" ]]; then
+if [[ ! -s "$PRIVATE_KEY" || ! -s "$PUBLIC_KEY" ]]; then
   printf "\n❌ SSH keys not found. Generating a new key pair...\n"
   source "$HOME/Repos/ooloth/dotfiles/install/ssh.zsh"
 
@@ -34,7 +33,7 @@ fi
 
 printf "\nYour turn!"
 printf "\nPlease visit https://github.com/settings/ssh/new now and add the SSH key that has been copied to your clipboard to your GitHub account."
-pbcopy < "$public_key_path"
+pbcopy < "$PUBLIC_KEY"
 printf "\n⚠️ Actually go do this! This step is required before you'll be able to clone repos via SSH.\n"
 
 vared -p "All set? (y/N)" -c gitHubKeyAdded
