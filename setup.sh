@@ -206,20 +206,7 @@ set_up_terminfo() {
 set_up_zsh() {
   set_up_terminfo
 
-  title "Configuring zsh shell"
-
-  local shell_path="$(command -v zsh)"
-
-  info "Changing your shell to zsh...\n"
-
-  if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
-    laptop_echo "Adding '${shell_path}' to /etc/shells"
-    sudo sh -c "echo ${shell_path} >> /etc/shells"
-  fi
-
-  sudo chsh -s "$shell_path" "$USER"
-
-  success "\nDone configuring zsh shell."
+  source "$DOTFILES/bin/install/zsh.zsh"
 }
 
 set_up_rust() {
