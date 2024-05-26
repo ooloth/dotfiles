@@ -5,6 +5,12 @@
 source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
 info "🍱 Uninstalling terminfo updates and tpm plugins"
 
+# Kill tmux server if running
+if [ -n "$(tmux list-sessions 2>/dev/null)" ]; then
+  printf "🚨 tmux server is running. Please close all tmux sessions before uninstalling\n"
+  exit 1
+fi
+
 ############
 # TERMINFO #
 ############
