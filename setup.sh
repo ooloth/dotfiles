@@ -93,27 +93,11 @@ run_checks() {
   authenticate
 }
 
-configure_ssh() {
-    vared -p "Would you like to replace them with a new key pair (not recommended)? (y/N)" -c replaceKeys
-
-    if [[ ! "$replaceKeys" == 'y' ]]; then
-      printf "\nMakes sense! Keeping the existing keys.\n"
-    else
-      printf "\nYou got it! Here we go...\n"
-      create_ssh_keys
-    fi
-  fi
-
 set_up_ssh_keys() {
   source "$DOTFILES/bin/install/ssh.zsh"
 }
 
-create_missing_directory() {
-  if [ ! -d "$1" ]; then
-    echo -e "Creating $1"
-    mkdir -p "$1"
-  fi
-ssh_to_github() {
+set_up_ssh_to_github() {
   source "$DOTFILES/bin/install/github.zsh"
 }
 
@@ -124,7 +108,7 @@ clone_dotfiles() {
   if [ ! -d "$DOTFILES" ]; then
     info "Cloning a fresh copy of dotfiles"
 
-    create_missing_directory "$HOME/Repos/ooloth"
+    mkdir -p "$HOME/Repos/ooloth"
 
     printf "\n"
     info "If you're asked if you want to continue connecting, type 'yes'...\n"
@@ -145,7 +129,7 @@ backup_config() {
 
   info "Creating backup directory at $BACKUP_DIR"
 
-  create_missing_directory "$BACKUP_DIR"
+  mkdir -p "$BACKUP_DIR"
 
   # Copy ~/.zshenv to backup folder
   if [ -d "$HOME/.config" ]; then
@@ -175,20 +159,12 @@ backup_config() {
 }
 
 create_symlinks() {
-  title "Symlinking dotfiles to home folder"
-
   source "$DOTFILES/bin/update/symlinks.zsh"
-
-  success "\nDone symlinking new dotfiles to the home folder."
 }
 
 set_up_homebrew() {
-  title "Setting up Homebrew"
-
   source "$DOTFILES/bin/install/homebrew.zsh"
   source "$DOTFILES/bin/update/homebrew.zsh"
-
-  success "\nDone setting up Homebrew."
 }
 
 set_up_terminfo() {
@@ -210,43 +186,23 @@ set_up_zsh() {
 }
 
 set_up_rust() {
-  title "Setting up Rust"
-
   source "$DOTFILES/bin/install/rust.zsh"
-
-  success "\nDone setting up Rust."
 }
 
 set_up_node() {
-  title "Installing node and general global dependencies..."
-
   source "$DOTFILES/bin/install/node.zsh"
-
-  success "\nDone installing node and global dependencies."
 }
 
 set_up_tmux() {
-  title "Setting up tmux"
-
   source "$DOTFILES/bin/install/tpm.zsh"
-
-  success "\nDone setting up tmux."
 }
 
 set_up_neovim() {
-  title "Setting up neovim"
-
   source "$DOTFILES/bin/install/neovim.zsh"
-
-  success "\nDone setting up neovim."
 }
 
 set_up_yazi() {
-  title "Setting up yazi"
-
   source "$DOTFILES/bin/install/yazi.zsh"
-
-  success "\nDone setting up yazi."
 }
 
 configure_macos() {
@@ -326,7 +282,8 @@ suggest_restart() {
 
 confirm_consent \
   && run_checks \
-  && configure_ssh \
+  && set_up_ssh_keys \
+  && set_up_ssh_to_github \
   && clone_dotfiles \
   && backup_config \
   && create_symlinks \
