@@ -176,7 +176,6 @@ set_up_node() {
 
 set_up_tmux() {
   source "$DOTFILES/bin/install/tmux.zsh"
-  source "$DOTFILES/bin/update/tmux.zsh"
 }
 
 set_up_neovim() {
@@ -279,3 +278,6 @@ confirm_consent \
   && configure_macos \
   && configure_apps \
   && suggest_restart
+
+# NOTE: can't source local files before cloning dotfiles
+# TODO: source more remote install/*.zsh files prior to the cloning step?

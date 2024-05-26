@@ -4,7 +4,7 @@ DOTCONFIG="$HOME/Repos/ooloth/dotfiles/config"
 HOMECONFIG="$HOME/.config"
 
 source "$DOTCONFIG/zsh/banners.zsh"
-info "🍱 Installing tmux terminfo updates and tpm"
+info "🍱 Installing tmux terminfo updates and tpm plugins"
 
 ############
 # TERMINFO #
@@ -24,16 +24,21 @@ tic -x "$DOTCONFIG/tmux/xterm-256color-italic.terminfo"
 
 TPM="$HOMECONFIG/tmux/plugins/tpm"
 
-# Return if tpm is installed
 if [ -d "$TPM" ]; then
   printf "🍱 tpm is already installed\n"
-  return
+else
+  printf "🍱 Installing tpm\n"
+
+  # see: https://github.com/tmux-plugins/tpm?tab=readme-ov-file#installation
+  git clone "git@github.com:tmux-plugins/tpm.git" "$TPM"
 fi
 
-# Otherwise, install
-printf "🍱 Installing tpm\n"
+###############
+# TPM PLUGINS #
+###############
 
-# see: https://github.com/tmux-plugins/tpm?tab=readme-ov-file#installation
-git clone "git@github.com:tmux-plugins/tpm.git" "$TPM"
+printf "🍱 Installing tpm plugins\n"
 
-printf "\n🚀 Finished installing tpm\n"
+"$TPM/bin/install_plugins"
+
+printf "\n🚀 Finished installing tmux\n"
