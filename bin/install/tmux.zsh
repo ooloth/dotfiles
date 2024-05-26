@@ -1,26 +1,39 @@
 #!/usr/bin/env zsh
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+DOTCONFIG="$HOME/Repos/ooloth/dotfiles/config"
+HOMECONFIG="$HOME/.config"
+
+source "$DOTCONFIG/zsh/banners.zsh"
 info "🍱 Installing tmux terminfo updates and tpm"
 
-printf "\nAdding tmux.terminfo"
-tic -x "$DOTFILES/tmux/tmux.terminfo"
+############
+# TERMINFO #
+############
 
-printf "\nAdding xterm-256color-italic.terminfo"
-tic -x "$DOTFILES/tmux/xterm-256color-italic.terminfo"
+printf "💪 Installing tmux.terminfo\n"
+tic -x "$DOTCONFIG/tmux/tmux.terminfo"
+
+printf "💪 Installing xterm-256color-italic.terminfo\n"
+tic -x "$DOTCONFIG/tmux/xterm-256color-italic.terminfo"
 
 # TODO: confirm success + handle failure
 
+#######
+# TPM #
+#######
+
+TPM="$HOMECONFIG/tmux/plugins/tpm"
+
 # Return if tpm is installed
-if [ -d "$HOME/.config/tmux/plugins/tpm" ]; then
-  printf "\n🍱 tpm is already installed\n"
+if [ -d "$TPM" ]; then
+  printf "🍱 tpm is already installed\n"
   return
 fi
 
 # Otherwise, install
-printf "\n🍱 Installing tpm..."
+printf "🍱 Installing tpm\n"
 
 # see: https://github.com/tmux-plugins/tpm?tab=readme-ov-file#installation
-git clone "git@github.com:tmux-plugins/tpm.git" "$HOME/.config/tmux/plugins/tpm"
+git clone "git@github.com:tmux-plugins/tpm.git" "$TPM"
 
 printf "\n🚀 Finished installing tpm\n"
