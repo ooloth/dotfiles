@@ -93,43 +93,6 @@ run_checks() {
   authenticate
 }
 
-create_ssh_keys() {
-  info "Generating SSH public/private key pair...\n"
-
-  # silent output, "id_rsa", overwrite existing, no password
-  # https://security.stackexchange.com/a/23385
-  # https://stackoverflow.com/a/43235320
-  ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
-
-  printf "\n"
-  info "Adding SSH key pair to ssh-agent and Keychain"
-
-  # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent
-  eval "$(ssh-agent -s)" # confirm the agent is running (if not, this will start it)
-
-  printf "\n"
-  info "Creating SSH config file"
-
-  create_missing_directory "$HOME/.ssh"
-
-  SSH_CONFIG="$HOME/.ssh/config"
-
-  if [ -f "$SSH_CONFIG" ]; then
-    printf "SSH config file already exists. Skipping."
-  else
-    # Use SSH config settings that automatically load keys in ssh-agent and store passphrases in Keychain
-    # https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-    touch "$SSH_CONFIG"
-    printf "Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n  IdentityFile ~/.ssh/id_rsa" >> "$SSH_CONFIG"
-  fi
-
-  printf "\n"
-  info "Adding keys to ssh-agent and Keychain"
-
-  # Add SSH private key to ssh-agent and store the passphrase in Keychain
-  ssh-add -K ~/.ssh/id_rsa
-
-  printf "\n"
   info "Your turn!"
 
   printf "\nPlease open https://github.com/settings/ssh/new now and and the following SSH key to your GitHub account:\n\n"
@@ -149,16 +112,6 @@ create_ssh_keys() {
 }
 
 configure_ssh() {
-  title "Configuring SSH"
-
-  info "Checking for existing SSH keys..."
-
-  if [[ ! -d "$HOME/.ssh" || ! -f "$HOME/.ssh/id_rsa" || ! -f "$HOME/.ssh/id_rsa.pub" ]]; then
-    info "SSH keys not found. Generating new keys..."
-    create_ssh_keys
-  else
-    success "\nSSH keys found.\n"
-
     vared -p "Would you like to replace them with a new key pair (not recommended)? (y/N)" -c replaceKeys
 
     if [[ ! "$replaceKeys" == 'y' ]]; then
@@ -169,7 +122,8 @@ configure_ssh() {
     fi
   fi
 
-  success "\nDone setting up SSH."
+set_up_ssh_keys() {
+  source "$DOTFILES/bin/install/ssh.zsh"
 }
 
 create_missing_directory() {
