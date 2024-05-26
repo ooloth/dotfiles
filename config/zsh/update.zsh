@@ -4,7 +4,7 @@ u() {
   source "$DOTFILES/bin/update/rust.zsh"
   source "$DOTFILES/bin/update/yazi.zsh"
   source "$DOTFILES/bin/update/neovim.zsh"
-  source "$DOTFILES/bin/update/tpm.zsh"
+  source "$DOTFILES/bin/update/tmux.zsh"
   source "$DOTFILES/bin/update/npm.zsh"
   source "$DOTFILES/bin/update/gcloud.zsh"
   source "$DOTFILES/bin/update/homebrew.zsh"

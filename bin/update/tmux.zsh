@@ -5,7 +5,7 @@ dotfiles="$HOME/Repos/ooloth/dotfiles"
 
 # Install if missing
 if [ ! -d "$tpm_path" ]; then
-  source "$dotfiles/bin/install/tpm.zsh"
+  source "$dotfiles/bin/install/tmux.zsh"
 fi
 
 # Then, update
@@ -18,4 +18,4 @@ info "✨ Updating tmux dependencies"
 "$tpm_path/bin/update_plugins" all
 
 # see: https://github.com/tmux-plugins/tpm?tab=readme-ov-file#installation
-tmux source ~/.tmux.conf
+tmux source ~/.config/tmux/tmux.conf
