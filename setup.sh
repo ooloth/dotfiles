@@ -196,6 +196,7 @@ set_up_node() {
 
 set_up_tmux() {
   source "$DOTFILES/bin/install/tpm.zsh"
+  source "$DOTFILES/bin/update/tpm.zsh"
 }
 
 set_up_neovim() {
