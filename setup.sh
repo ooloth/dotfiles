@@ -191,6 +191,7 @@ set_up_rust() {
 
 set_up_node() {
   source "$DOTFILES/bin/install/node.zsh"
+  source "$DOTFILES/bin/update/npm.zsh"
 }
 
 set_up_tmux() {
