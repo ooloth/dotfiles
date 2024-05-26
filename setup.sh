@@ -93,24 +93,6 @@ run_checks() {
   authenticate
 }
 
-  info "Your turn!"
-
-  printf "\nPlease open https://github.com/settings/ssh/new now and and the following SSH key to your GitHub account:\n\n"
-
-  cat "$HOME/.ssh/id_rsa.pub"
-
-  printf "\n"
-  warning "Actually go do this! The next step requires SSH to be working.\n"
-
-  vared -p "All set? (y/N)" -c gitHubKeyAdded
-
-  if [[ ! "$gitHubKeyAdded" == 'y' ]]; then
-    printf "\nYou have chosen...poorly.\n"
-  else
-    printf "\nExcellent!\n"
-  fi
-}
-
 configure_ssh() {
     vared -p "Would you like to replace them with a new key pair (not recommended)? (y/N)" -c replaceKeys
 
@@ -131,6 +113,8 @@ create_missing_directory() {
     echo -e "Creating $1"
     mkdir -p "$1"
   fi
+ssh_to_github() {
+  source "$DOTFILES/bin/install/github.zsh"
 }
 
 clone_dotfiles() {
