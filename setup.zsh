@@ -92,11 +92,14 @@ printf "Yup. That's the password. Have your way with this thing."
 # NOTE: can't source local files before cloning dotfiles
 # TODO: change dotfiles remote to ssh later
 # Check if the repository is already cloned
-if [ ! -d "$DOTFILES" ]; then
-  echo "Cloning repository into $DOTFILES..."
-  git clone https://github.com/ooloth/dotfiles.git "$DOTFILES"
+
+if [ -d "$DOTFILES" ]; then
+  printf "\n✅ $DOTFILES already exists. Pulling latest changes.\n"
+  cd "$DOTFILES"
+  git pull
 else
-  echo "✅ Dotfiles already cloned into $DOTFILES."
+  echo "Cloning dotfiles to $DOTFILES..."
+  git clone https://github.com/myuser/myrepo.git "$DOTFILES"
 fi
 
 ###########
