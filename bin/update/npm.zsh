@@ -1,27 +1,31 @@
 #!/usr/bin/env zsh
 
-# TODO: install if missing?
+# TODO: install node via fnm if missing?
 
 source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
 info "✨ Updating Node $(node -v) global dependencies"
 
 # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-packages=(
+general_dependencies=(
   aocrunner
-  bash-language-server # for neovim
-  cssmodules-language-server # for neovim
-  dockerfile-language-server-nodejs # for neovim
-  emmet-ls # for neovim
-  neovim # for neovim
   npm
   npm-check
-  pug-lint # for neovim
-  svelte-language-server # for neovim
-  tree-sitter-cli # for neovim
-  typescript # for neovim
-  vscode-langservers-extracted # for neovim
 )
 
+neovim_dependencies=(
+  bash-language-server # see: ...
+  cssmodules-language-server # see: ...
+  dockerfile-language-server-nodejs # see: ...
+  emmet-ls # see: ...
+  neovim # see: ...
+  pug-lint # see: ...
+  svelte-language-server # see: ...
+  tree-sitter-cli # see: ...
+  typescript # see: ...
+  vscode-langservers-extracted # see: ...
+)
+
+packages=("${general_dependencies[@]}" "${neovim_dependencies[@]}")
 installed_packages=$(npm list -g --depth=0)
 outdated_packages=$(npm outdated -g)
 
@@ -58,6 +62,6 @@ done
 if [ ${#packages_to_add[@]} -gt 0 ] || [ ${#packages_to_update[@]} -gt 0 ]; then
   # prefer "-g" over "--location=global" to support older versions of npm
   npm install -g --loglevel=error "${packages_to_add[@]}" "${packages_to_update[@]}"
-else
-  echo "🎉 All npm packages are installed and up to date."
 fi
+
+printf "🎉 All npm packages are installed and up to date.\n"

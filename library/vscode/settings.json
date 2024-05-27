@@ -639,5 +639,6 @@
   "workbench.startupEditor": "newUntitledFile",
   "terminal.integrated.shellIntegration.enabled": false,
   "Lua.hint.arrayIndex": "Disable",
-  "Lua.format.enable": false
+  "Lua.format.enable": false,
+  "github.copilot.editor.enableAutoCompletions": true
 }
