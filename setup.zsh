@@ -53,6 +53,7 @@ fi
 
 printf "Verifying prerequisites"
 
+# This is a Mac
 printf "Confirming this is a Mac."
 
 if [ "$(uname)" != "Darwin" ]; then
@@ -62,28 +63,14 @@ fi
 
 printf "\nThis is definitely a Mac. But you knew that already.\n"
 
-printf "Confirming the Xcode CLI tools are installed."
-
-if [ ! -d "$HOME/Library/Developer/CommanLineTools" ]; then
-  # TODO: is there a way to install these automatically and continue?
-  printf "Apple's command line developer tools must be installed before running this script. To install them, run 'xcode-select --install' from the terminal and then follow the prompts. Once the command line tools have been installed, you can try running this script again."
-  exit 1
-fi
-
-printf "\nNice! That's usually the hard part.\n"
-
-################
-# AUTHENTICATE #
-################
-
+# You know this Mac's password
 printf "Confirming you are authorized to install things on this Mac.\n"
 
 sudo -v
 # Keep-alive: update existing `sudo` time stamp until setup has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
-set -e
 
-printf "Yup. That's the password. Have your way with this thing."
+printf "\nYup. That's the password.\n"
 
 # The Command Line Tools are installed
 printf "\nConfirming the Command Line Tools are installed.\n"
