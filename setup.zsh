@@ -2,6 +2,16 @@
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
+handle_error() {
+  local exit_code="$1"
+  local line_number="$2"
+  printf "\nError on line $line_number: Command exited with status $exit_code.\n"
+  exit "$exit_code"
+}
+
+# Trap ERR signals and call handle_error()
+trap 'handle_error $? $LINENO' ERR
+
 ###########
 # CONFIRM #
 ###########
