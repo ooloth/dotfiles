@@ -20,9 +20,22 @@ printf "Welcome to your new Mac!"
 
 printf "This installation will perform the following steps:\n"
 
-printf "1. Back up any existing dotfiles in your home folder\n"
-printf "2. Find your new dotfiles and symlink them where they need to be\n"
-printf "3. TBD...\n\n"
+printf "1. Confirm this is a Mac\n"
+printf "2. Ask you to enter your password\n"
+printf "3. Confirm the Command Line Developer Tools are installed\n"
+printf "4. Clone ooloth/dotfiles\n"
+printf "5. Create your SSH keys\n"
+printf "6. Confirm you can SSH to GitHub\n"
+printf "7. Install homebrew and the packages, casks, App Store apps and VS Code extensions listed in your Brewfile\n"
+printf "8. Configure your Mac to use the Homebrew version of Zsh\n"
+printf "9. Install rust\n"
+printf "10. Install the latest version of Node via fnm and set it as the default\n"
+printf "11. Install global npm dependencies\n"
+printf "12. Install tmux dependencies\n"
+printf "13. Install neovim dependencies\n"
+printf "14. Install yazi flavors\n"
+printf "15. Symlink your dotfiles to your home and library directories\n"
+printf "16. Update macOS system settings\n"
 
 vared -p "Sound good? (y/N) " -c key
 
@@ -91,11 +104,9 @@ fi
 ###########
 
 cd "$DOTFILES/bin/install"
-
 source ssh.zsh
 source github.zsh
-# TODO: move later?
-source "$DOTFILES/bin/update/symlinks.zsh"
+# TODO: update dotfiles remote to ssh version
 source homebrew.zsh
 source "$DOTFILES/bin/update/homebrew.zsh"
 source zsh.zsh
@@ -105,6 +116,7 @@ source "$DOTFILES/bin/update/npm.zsh"
 source tmux.zsh
 source neovim.zsh
 source yazi.zsh
+source "$DOTFILES/bin/update/symlinks.zsh"
 source settings.zsh
 # TODO: configure individual app preferences
 
