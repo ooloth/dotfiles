@@ -76,7 +76,6 @@ printf "\nYup. That's the password.\n"
 printf "\nConfirming the Command Line Tools are installed.\n"
 
 if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
-  # TODO: is there a way to install these automatically and continue?
   printf "Apple's command line developer tools must be installed before running this script. Installing now.\n"
   xcode-select --install
 
@@ -94,10 +93,6 @@ fi
 # CLONE DOTFILES #
 ##################
 
-# NOTE: can't source local files before cloning dotfiles
-# TODO: change dotfiles remote to ssh later
-# Check if the repository is already cloned
-
 if [ -d "$DOTFILES" ]; then
   printf "\n✅ $DOTFILES already exists. Pulling latest changes.\n"
   cd "$DOTFILES"
@@ -114,7 +109,6 @@ fi
 cd "$DOTFILES/bin/install"
 source ssh.zsh
 source github.zsh
-# TODO: update dotfiles remote to ssh version
 source homebrew.zsh
 source "$DOTFILES/bin/update/homebrew.zsh"
 source zsh.zsh
@@ -126,7 +120,7 @@ source neovim.zsh
 source yazi.zsh
 source "$DOTFILES/bin/update/symlinks.zsh"
 source settings.zsh
-# TODO: configure individual app preferences
+# TODO: automate my remaining manual setup steps (e.g. app preferences, etc.)
 
 ###################
 # SUGGEST RESTART #
@@ -142,7 +136,7 @@ printf "\nTo apply your your preferences, your computer needs to restart.\n\n"
 vared -p "Are you ready to restart now (recommended)? (y/N) " -c restart_choice
 
 if [[ "$restart_choice" = 'y' ]]; then
-  printf "\nExcellent choice. When you're back, remember to complete the manual follow-up steps in the README.\n"
+  printf "\nExcellent choice.\n"
   printf "\nRestarting..."
   sudo shutdown -r now
 else
