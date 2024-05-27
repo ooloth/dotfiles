@@ -30,7 +30,7 @@ sudo softwareupdate --install --all --restart
 To set up your Mac, run the following command:
 
 ```sh
-curl -s https://raw.githubusercontent.com/ooloth/dotfiles/master/setup.zsh | zsh
+curl -s https://raw.githubusercontent.com/ooloth/dotfiles/main/setup.zsh | zsh
 ```
 
 ## Inspiration
