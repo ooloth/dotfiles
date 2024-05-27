@@ -4,16 +4,13 @@ It dawned on me to make sure I don't lose these!
 
 ## Disclaimer
 
-The settings here reflect my personal preferences, so...expect lots of changes and experiments. Unless you love surprises, I highly recommend you fork and customize this repo before using it.
+The settings here reflect my personal preferences, so...expect lots of changes and experiments. Unless you love surprises, I highly recommend you fork and customize this repo before you consider using it.
 
 ## Prerequisites
 
 1. Connect to the internet
-
 2. Open System Preferences and sign into iCloud (which will sign you into the App Store for `mas`)
-
 3. Open Terminal.app (you'll probably want to increase the font size)
-
 4. Install Apple's command line tools:
 
 ```sh
@@ -33,7 +30,7 @@ sudo softwareupdate --install --all --restart
 To set up your Mac, run the following command:
 
 ```sh
-curl -s https://raw.githubusercontent.com/ooloth/dotfiles/master/setup.sh | zsh
+curl -s https://raw.githubusercontent.com/ooloth/dotfiles/master/setup.zsh | zsh
 ```
 
 ## Inspiration
