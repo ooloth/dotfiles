@@ -85,6 +85,24 @@ set -e
 
 printf "Yup. That's the password. Have your way with this thing."
 
+# The Command Line Tools are installed
+printf "\nConfirming the Command Line Tools are installed.\n"
+
+if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
+  # TODO: is there a way to install these automatically and continue?
+  printf "Apple's command line developer tools must be installed before running this script. Installing now.\n"
+  xcode-select --install
+
+  if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
+    printf "\nOops, it looks like the Xcode CLI tools are still not installed. Please install and try again.\n"
+    exit 1
+  else
+    printf "\nXcode CLI tools are now installed.\n"
+  fi
+else
+  printf "\nXcode CLI tools are already installed.\n"
+fi
+
 ##################
 # CLONE DOTFILES #
 ##################
