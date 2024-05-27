@@ -55,3 +55,26 @@ else
 fi
 
 printf "\n🚀 Done adding your SSH key pair to GitHub."
+
+#############################################
+# CONVERT DOTFILES REMOTE FROM HTTPS TO SSH #
+#############################################
+
+# Use a subshell to change the directory to avoid impacting the parent script
+(
+  # Navigate to the dotfiles repository directory
+  cd "$HOME/dotfiles"
+
+  # Get the current remote URL
+  REMOTE_URL=$(git config --get remote.origin.url)
+
+  # Check if the remote URL uses the HTTPS protocol
+  if [[ "$REMOTE_URL" == https://github.com/* ]]; then
+    # Convert the HTTPS URL to an SSH URL
+    printf "\n🔗 Converting the dotfiles remote URL from HTTPS to SSH\n"
+    SSH_URL="git@github.com:${REMOTE_URL#https://github.com/}.git"
+
+    # Set the new remote URL
+    git remote set-url origin "$SSH_URL"
+  fi
+)
