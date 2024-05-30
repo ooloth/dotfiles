@@ -253,6 +253,7 @@ vscode "yzhang.markdown-all-in-one"
 
 if hostname == "Air"
   vscode "golang.go"
+  vscode "serayuzgur.crates" # for rust
 elsif hostname == "MULO-JQ97NW-MBP"
   vscode "editorconfig.editorconfig"
   vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
