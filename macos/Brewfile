@@ -254,6 +254,7 @@ vscode "yzhang.markdown-all-in-one"
 if hostname == "Air"
   vscode "golang.go"
   vscode "serayuzgur.crates" # for rust
+  vscode "vadimcn.vscode-lldb" # for debugging rust, go and other compiled languages
 elsif hostname == "MULO-JQ97NW-MBP"
   vscode "editorconfig.editorconfig"
   vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
