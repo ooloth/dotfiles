@@ -75,6 +75,11 @@ printf "\n🚀 Done adding your SSH key pair to GitHub."
     SSH_URL="git@github.com:${REMOTE_URL#https://github.com/}.git"
 
     # Set the new remote URL
+    # see: https://stackoverflow.com/questions/55246165/how-to-ssh-a-git-repository-after-already-cloned-with-https
     git remote set-url origin "$SSH_URL"
   fi
+
+  printf "\nTODO: verify dotfiles remote URL has been updated to use SSH...\n"
 )
+
+printf "\n✅ Dotfiles remote URL has been updated to use SSH\n"
