@@ -35,7 +35,6 @@ brew "git"
 brew "git-delta" # for git: https://dandavison.github.io/delta/
 brew "arl/arl/gitmux" # for tmux
 brew "glances" # top alternative
-brew "gleam"
 brew "gnu-sed"
 brew "go"
 brew "yqrashawn/goku/goku" # for karibiner
@@ -78,11 +77,15 @@ brew "vifm"
 brew "saulpw/vd/visidata"
 brew "wget" # for neovim
 brew "yazi" # terminal file manager
-brew "zig"
 brew "zoxide" # for yazi
 brew "zsh"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
+
+if hostname == "Air"
+  brew "gleam"
+  brew "zig"
+end
 
 if hostname == "MULO-JQ97NW-MBP"
   brew "bazel" # for lowe
