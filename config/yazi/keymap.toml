@@ -1,1 +1,10 @@
 # see: https://yazi-rs.github.io/docs/configuration/keymap
+
+[manager]
+  append_keymap = [
+    # ...
+  ]
+
+  prepend_keymap = [
+    # ...
+  ]
