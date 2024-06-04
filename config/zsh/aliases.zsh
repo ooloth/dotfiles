@@ -21,7 +21,7 @@ alias dud='dc up --detach'                         # start one or more services 
 diff() { kitten diff "$1" "$2"; } # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
 alias env='env | sort'
 # NOTE: "error" defined in banners.zsh
-alias f='vifm'
+alias f='yazi'
 alias g='lazygit'
 alias h='cd $HOME'
 # alias history='history 0'
@@ -105,6 +105,7 @@ vv() {
 }
 # NOTE: "warn" defined in banners.zsh
 alias x='exit'
+# Alternative way to open yazi if you want to change the directory when you exit:
 # see: https://yazi-rs.github.io/docs/quick-start#shell-wrapper
 function yy() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
