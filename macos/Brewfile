@@ -77,6 +77,7 @@ brew "vifm"
 brew "saulpw/vd/visidata"
 brew "wget" # for neovim
 brew "yazi" # terminal file manager
+brew "zig"
 brew "zoxide" # for yazi
 brew "zsh"
 brew "zsh-autosuggestions"
