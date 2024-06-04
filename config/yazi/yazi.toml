@@ -1,5 +1,14 @@
 # see: https://yazi-rs.github.io/docs/configuration/yazi
 
+[manager]
+  linemode = "size"
+  scrolloff = 10
+  show_hidden = true
+  show_symlink = true
+  sort_by = "natural"
+  sort_dir_first = false
+  sort_sensitive = false
+
 # "For users managing network files, it's recommended to disable all previewers and preloaders since
 #  previewing and preloading these files means they need to be downloaded locally."
 # see: https://yazi-rs.github.io/docs/tips#make-yazi-even-faster
