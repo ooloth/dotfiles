@@ -192,7 +192,9 @@
     "as-const-on-object",
     "extract-utility-type",
     "non-null-expression",
-    "generic-slots-in-functions"
+    "generic-slots-in-functions",
+    "mapped-type",
+    "returntype-utility-type"
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
