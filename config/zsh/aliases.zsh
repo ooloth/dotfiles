@@ -143,7 +143,7 @@ if $IS_WORK; then
   plu() { cd "$HOME/Repos/recursionpharma/platelet-ui"; }
   pw() { cd "$HOME/Repos/recursionpharma/processing-witch"; }
   r() { cd "$HOME/Repos/recursionpharma"; }
-  rl() { roadie lock "$@"; } # optionally "rl -c" etc
+  rl() { ru && roadie lock --uv "$@"; } # optionally "rl -c" etc
   rlc() { rl -c; }
   ru() { python -m pip install -U roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
   rv() {
