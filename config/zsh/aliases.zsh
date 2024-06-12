@@ -127,8 +127,17 @@ if $IS_WORK; then
   gca() { gcloud auth login; }
   gcaa() { gcloud auth application-default login; }
   gci() { gcloud init; }
-  gcpe() { gcloud config set project eng-infrastructure; }
-  gcpn() { gcloud config set project rp006-prod-49a893d8; }
+  gcsa() { gcloud config set account michael.uloth@recursionpharma.com; }
+  gcpe() {
+    gcsa;
+    gcloud config set project eng-infrastructure;
+    kubectl config use-context gke_eng-infrastructure_us-east1_principal -n phenoapp;
+  }
+  gcpn() {
+    gcsa;
+    gcloud config set project rp006-prod-49a893d8;
+    kubectl config use-context gke_rp006-prod-49a893d8_us-central1_rp006-prod -n rp006-neuro-phenomap;
+  }
   genie() { cd "$HOME/Repos/recursionpharma/genie"; }
   gu() { cd "$HOME/Repos/recursionpharma/genie/genie-ui"; }
   lowe() { cd "$HOME/Repos/recursionpharma/bc-lowe"; }
