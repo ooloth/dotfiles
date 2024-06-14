@@ -439,7 +439,8 @@
       { "key": "c", "name": "Color themes", "command": "workbench.action.selectTheme", "type": "command" },
       { "key": "f", "name": "Toggle full screen", "command": "workbench.action.toggleFullScreen", "type": "command" },
       { "key": "n", "name": "Toggle line numbers", "command": "settings.cycle.lineNumbers", "type": "command" },
-      { "key": "p", "name": "Toggle prettier", "command": "settings.cycle.prettier", "type": "command" }, // TODO: move somewhere more thematic
+      { "key": "p", "name": "Toggle maximized panel", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
+      { "key": "P", "name": "Toggle prettier", "command": "settings.cycle.prettier", "type": "command" }, // TODO: move somewhere more thematic
       { "key": "r", "name": "Toggle relative line numbers", "command": "settings.cycle.relativeLineNumbers", "type": "command" },
       { "key": "s", "name": "Toggle statusbar", "command": "workbench.action.toggleStatusbarVisibility", "type": "command" },
       { "key": "w", "name": "Toggle word wrapping", "command": "editor.action.toggleWordWrap", "type": "command" },
