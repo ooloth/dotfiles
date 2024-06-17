@@ -1,6 +1,7 @@
---  TODO: lsp?
---  TODO: formatting?
---  TODO: linting?
+-- TODO: https://www.lazyvim.org/extras/lang/sql
+-- TODO: lsp?
+-- TODO: formatting?
+-- TODO: linting?
 
 local extend = require('util').extend
 

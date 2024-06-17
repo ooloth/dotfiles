@@ -1,6 +1,7 @@
---  TODO: lsp?
---  TODO: formatting?
---  TODO: linting?
+-- TODO: https://www.lazyvim.org/extras/lang/toml
+-- TODO: lsp?
+-- TODO: formatting?
+-- TODO: linting?
 
 local extend = require('util').extend
 

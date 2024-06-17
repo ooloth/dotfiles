@@ -1,3 +1,9 @@
+-- TODO: https://www.lazyvim.org/extras/lang/rust
+-- TODO: lsp
+-- TODO: treesitter
+-- TODO: linting
+-- TODO: dap?
+
 return {}
 
 -- install the formatter
@@ -10,8 +16,3 @@ return {}
 --     rust = { 'rustfmt' },
 --   },
 -- })
---
---  TODO: lsp
---  TODO: treesitter
---  TODO: linting
---  TODO: dap?

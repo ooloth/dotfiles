@@ -1,3 +1,5 @@
+-- TODO: https://www.lazyvim.org/extras/lang/vue
+
 local extend = require('util').extend
 
 return {

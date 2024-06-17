@@ -1,9 +1,7 @@
---  TODO: dap
---  TODO: testing: vitest
---  TODO: testing: jest
---  TODO: https://www.lazyvim.org/extras/lang/typescript
-
--- see: https://www.lazyvim.org/extras/lang/typescript
+-- TODO: https://www.lazyvim.org/extras/lang/typescript
+-- TODO: dap
+-- TODO: testing: vitest
+-- TODO: testing: jest
 
 local extend = require('util').extend
 local prefer_node_modules_executable = require('util.prefer_node_modules').prefer_node_modules_executable

@@ -1,3 +1,9 @@
+-- TODO: https://www.lazyvim.org/extras/lang/go
+-- TODO: lsp
+-- TODO: treesitter
+-- TODO: linting
+-- TODO: dap
+
 return {}
 
 -- install all the formatters
@@ -10,8 +16,3 @@ return {}
 --     go = { 'gofumpt', 'goimports', 'gci' },
 --   },
 -- })
---
---  TODO: lsp
---  TODO: treesitter
---  TODO: linting
---  TODO: dap
