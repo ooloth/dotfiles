@@ -1,11 +1,5 @@
 -- see: https://neovim.io/doc/user/autocmd.html
 
--- vim.api.nvim_create_autocmd("VimEnter", {
---   callback = function()
---     require("persistence").load()
---   end,
--- })
-
 vim.cmd([[
   autocmd InsertEnter * set nocursorline
   autocmd InsertLeave * set cursorline
