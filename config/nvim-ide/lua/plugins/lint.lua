@@ -1,3 +1,4 @@
+-- TODO: https://www.lazyvim.org/plugins/linting
 -- see: https://github.com/mfussenegger/nvim-lint
 -- see: https://www.lazyvim.org/plugins/linting#nvim-lint
 
