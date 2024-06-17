@@ -133,7 +133,7 @@ return {
               ['<C-l>'] = actions.cycle_history_next,
             },
           },
-	  sorting_strategy = 'ascending',
+          sorting_strategy = 'ascending',
         },
         pickers = {
           help_tags = {
