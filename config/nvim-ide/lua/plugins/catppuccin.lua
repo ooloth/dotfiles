@@ -7,32 +7,15 @@ return {
   config = function()
     -- see: https://github.com/catppuccin/nvim?tab=readme-ov-file#configuration
     require('catppuccin').setup({
-      flavour = 'mocha', -- latte, frappe, macchiato, mocha
-      transparent_background = true, -- disables setting the background color.
-      show_end_of_buffer = true, -- shows the '~' characters after the end of buffers
+      -- color_overrides = {
+      --   mocha = { base = '#000000', mantle = '#000000', crust = '#000000' },
+      -- },
       dim_inactive = {
         enabled = false, -- dims the background color of inactive window
         shade = 'dark',
         percentage = 0.15, -- percentage of the shade to apply to the inactive window
       },
-      -- styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
-      --   comments = { 'italic' }, -- Change the style of comments
-      --   conditionals = { 'italic' },
-      --   loops = {},
-      --   functions = {},
-      --   keywords = {},
-      --   strings = {},
-      --   variables = {},
-      --   numbers = {},
-      --   booleans = {},
-      --   properties = {},
-      --   types = {},
-      --   operators = {},
-      --   -- miscs = {}, -- Uncomment to turn off hard-coded styles
-      -- },
-      -- color_overrides = {
-      --   mocha = { base = '#000000', mantle = '#000000', crust = '#000000' },
-      -- },
+      flavour = 'mocha', -- latte, frappe, macchiato, mocha
       -- see: https://github.com/catppuccin/nvim#integrations
       integrations = {
         harpoon = true,
@@ -43,9 +26,26 @@ return {
         },
         octo = true,
       },
+      show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
+      transparent_background = true, -- disables setting the background color.
+      -- styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
+      --   booleans = {},
+      --   comments = { 'italic' }, -- Change the style of comments
+      --   conditionals = { 'italic' },
+      --   functions = {},
+      --   keywords = {},
+      --   loops = {},
+      --   numbers = {},
+      --   operators = {},
+      --   -- miscs = {}, -- Uncomment to turn off hard-coded styles
+      -- },
+      --   properties = {},
+      --   strings = {},
+      --   types = {},
+      --   variables = {},
     })
 
-    -- setup must be called before loading
+    -- Must call after setup
     vim.cmd.colorscheme('catppuccin')
   end,
 }
