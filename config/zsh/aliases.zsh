@@ -87,7 +87,7 @@ symlinks() { $DOTFILES/bin/update/symlinks.zsh; }
 alias t='tmux a'
 alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 # NOTE: "u" = "update" (see update.zsh)
-alias v='NVIM_APPNAME=nvim-lazyvim nvim'
+alias v='NVIM_APPNAME=nvim-ide nvim'
 alias vim='nvim'
 # Find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in VS Code
 vs() {
