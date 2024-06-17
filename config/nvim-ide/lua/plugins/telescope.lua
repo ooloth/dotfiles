@@ -46,10 +46,16 @@ return {
             'nvim-telescope/telescope-fzf-native.nvim',
             build = 'make',
             config = function()
+	      -- see: https://github.com/nvim-telescope/telescope-fzy-native.nvim?tab=readme-ov-file#usage
               require('telescope').load_extension('fzf')
             end,
           },
-          { 'nvim-telescope/telescope-fzy-native.nvim' },
+          {
+            'nvim-telescope/telescope-fzy-native.nvim',
+            config = function()
+              require('telescope').load_extension('fzy_native')
+            end,
+          },
         },
       },
       {
@@ -82,12 +88,8 @@ return {
         { '<leader>sb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
         { '<leader>sc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
         { '<leader>sd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
-
-        {
-          -- see: https://github.com/danielfalk/smart-open.nvim?tab=readme-ov-file#options
-          '<leader>sf',
-          '<cmd>lua require("telescope").extensions.smart_open.smart_open({ cwd_only = true })<cr>',
-        },
+        -- see: https://github.com/danielfalk/smart-open.nvim?tab=readme-ov-file#options
+        { '<leader>sf', '<cmd>Telescope smart_open cwd_only=true<cr>' },
         { '<leader>sh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
         { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
         { '<leader>sj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
