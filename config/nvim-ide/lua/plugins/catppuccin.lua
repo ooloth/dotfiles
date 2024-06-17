@@ -1,3 +1,5 @@
+-- TODO: https://www.lazyvim.org/plugins/colorscheme
+
 return {
   'catppuccin/nvim',
   name = 'catppuccin',

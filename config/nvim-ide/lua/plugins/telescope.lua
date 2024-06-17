@@ -1,3 +1,5 @@
+-- TODO: https://www.lazyvim.org/extras/editor/telescope
+
 -- Support opening multiple files in the same picker session:
 -- see: https://github.com/nvim-telescope/telescope.nvim/issues/1048#issuecomment-2142669167
 local select_one_or_multi = function(prompt_bufnr)
@@ -46,7 +48,7 @@ return {
             'nvim-telescope/telescope-fzf-native.nvim',
             build = 'make',
             config = function()
-	      -- see: https://github.com/nvim-telescope/telescope-fzy-native.nvim?tab=readme-ov-file#usage
+              -- see: https://github.com/nvim-telescope/telescope-fzy-native.nvim?tab=readme-ov-file#usage
               require('telescope').load_extension('fzf')
             end,
           },
@@ -133,7 +135,7 @@ return {
               ['<C-l>'] = actions.cycle_history_next,
             },
           },
-	  sorting_strategy = 'ascending',
+          sorting_strategy = 'ascending',
         },
         pickers = {
           help_tags = {

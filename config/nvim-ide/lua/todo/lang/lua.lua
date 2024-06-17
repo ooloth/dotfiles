@@ -1,27 +1,29 @@
--- TODO: set up the `lua_ls` language server:
+-- LazyVim sets up the `lua_ls` language server:
 -- https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
 
--- TODO: lua debugging: https://www.lazyvim.org/extras/dap/nlua
+local extend = require('util').extend
 
 return {
   {
     'williamboman/mason.nvim',
     opts = function(_, opts)
-      vim.list_extend(opts.ensure_installed or {}, { 'stylua' })
+      extend(opts.ensure_installed, { 'stylua' })
     end,
   },
 
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      vim.list_extend(opts.ensure_installed or {}, { 'lua', 'luadoc', 'luap' })
+      extend(opts.ensure_installed, { 'lua', 'luadoc', 'luap' })
     end,
   },
 
   {
     'stevearc/conform.nvim',
     opts = {
-      formatters_by_ft = { lua = { 'stylua' } },
+      formatters_by_ft = {
+        lua = { 'stylua' },
+      },
     },
   },
 
