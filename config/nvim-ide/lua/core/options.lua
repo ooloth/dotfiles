@@ -27,3 +27,9 @@ opt.timeoutlen = 300
 opt.wildmode = 'longest:full,full' -- Command-line completion mode
 opt.winminwidth = 5 -- Minimum window width
 opt.wrap = false -- Disable line wrap
+
+-- checkhealth
+vim.cmd([[
+  let g:loaded_perl_provider = 0
+  let g:loaded_ruby_provider = 0
+]])
