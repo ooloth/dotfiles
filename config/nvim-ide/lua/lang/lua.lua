@@ -1,6 +1,8 @@
 -- TODO: set up the `lua_ls` language server:
 -- https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
 
+-- TODO: lua debugging: https://www.lazyvim.org/extras/dap/nlua
+
 return {
   {
     'williamboman/mason.nvim',
@@ -19,9 +21,7 @@ return {
   {
     'stevearc/conform.nvim',
     opts = {
-      formatters_by_ft = {
-        lua = { 'stylua' },
-      },
+      formatters_by_ft = { lua = { 'stylua' } },
     },
   },
 

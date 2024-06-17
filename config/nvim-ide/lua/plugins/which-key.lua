@@ -1,3 +1,4 @@
+-- TODO: https://www.lazyvim.org/plugins/editor#which-keynvim
 -- TODO: move to relevant files?
 
 return {

@@ -17,7 +17,7 @@ vim.opt.rtp:prepend(lazypath)
 -- see: https://github.com/folke/lazy.nvim?tab=readme-ov-file#-structuring-your-plugins
 require('lazy').setup({
   spec = {
-    { import = 'lang' },
-    { import = 'plugins' },
+    { import = 'lang' }, -- all files in lua/lang
+    { import = 'plugins' }, -- all files in lua/plugins
   },
 })
