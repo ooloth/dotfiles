@@ -1,3 +1,4 @@
+-- TODO: https://www.lazyvim.org/extras/util/dot
 -- TODO: dap?
 -- https://www.reddit.com/r/neovim/comments/xzr6py/nvimdap_bash_debugging/
 -- TODO: testing?
