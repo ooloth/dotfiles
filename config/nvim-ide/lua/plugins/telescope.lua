@@ -1,4 +1,6 @@
 -- TODO: https://www.lazyvim.org/extras/editor/telescope
+-- TODO: how to restrict searches to certain paths?
+-- TODO: how to include/exclude certain file/folder patterns from a search?
 
 -- Support opening multiple files in the same picker session:
 -- see: https://github.com/nvim-telescope/telescope.nvim/issues/1048#issuecomment-2142669167
@@ -30,7 +32,7 @@ return {
     dependencies = {
       {
         'folke/noice.nvim',
-        config = function()
+        init = function()
           require('telescope').load_extension('noice')
         end,
       },
@@ -39,7 +41,7 @@ return {
         -- see: https://github.com/danielfalk/smart-open.nvim?tab=readme-ov-file#installation
         'danielfalk/smart-open.nvim',
         branch = '0.2.x',
-        config = function()
+        init = function()
           require('telescope').load_extension('smart_open')
         end,
         dependencies = {
@@ -54,7 +56,7 @@ return {
           },
           {
             'nvim-telescope/telescope-fzy-native.nvim',
-            config = function()
+            init = function()
               require('telescope').load_extension('fzy_native')
             end,
           },
@@ -62,7 +64,7 @@ return {
       },
       {
         'debugloop/telescope-undo.nvim',
-        config = function()
+        init = function()
           require('telescope').load_extension('undo')
         end,
       },
@@ -79,11 +81,15 @@ return {
       return {
         { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Buffer' },
         { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
+
         { '<leader>gB', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
         { '<leader>gc', '<cmd>Telescope git_commits<cr>', desc = 'Commits' },
         { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Status' },
         { '<leader>gS', '<cmd>Telescope git_stash<cr>', desc = 'Stashes' },
-        -- "search"
+
+        { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
+        { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
+
         { '<leader>s,', '<cmd>Telescope command_history<cr>', desc = 'Command (recent)' },
         { '<leader>sa', '<cmd>Telescope autocommands<cr>', desc = 'Auto command' },
         { '<leader>sb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
@@ -91,10 +97,8 @@ return {
         { '<leader>sd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
         { '<leader>sf', '<cmd>Telescope smart_open cwd_only=true<cr>' },
         { '<leader>sh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
-        { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
         { '<leader>sj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
         { '<leader>sk', '<cmd>Telescope keymaps<cr>', desc = 'Keymap' },
-        { '<leader>k', '<cmd>Telescope keymaps<cr>', desc = 'Keymaps' },
         -- '<leader>sl' = 'Links in buffer' (see urlview.lua)
         { '<leader>sm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
         { '<leader>sM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
@@ -106,7 +110,7 @@ return {
         { '<leader>sw', '<cmd>Telescope grep_string<cr>', desc = 'Word under cursor' },
         { '<leader>su', '<cmd>Telescope undo<cr>', desc = 'Undo history' },
         { '<leader>sz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
-        -- "UI"
+
         { '<leader>uC', '<cmd>Telescope colorscheme enable_preview=true<cr>', desc = 'Colorschemes (with preview)' },
       }
     end,
