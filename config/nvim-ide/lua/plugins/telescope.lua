@@ -47,14 +47,6 @@ return {
         dependencies = {
           'kkharji/sqlite.lua',
           {
-            'nvim-telescope/telescope-fzf-native.nvim',
-            build = 'make',
-            config = function()
-              -- see: https://github.com/nvim-telescope/telescope-fzy-native.nvim?tab=readme-ov-file#usage
-              require('telescope').load_extension('fzf')
-            end,
-          },
-          {
             'nvim-telescope/telescope-fzy-native.nvim',
             init = function()
               require('telescope').load_extension('fzy_native')
@@ -76,6 +68,19 @@ return {
           },
         },
       },
+      --    {
+      --      'neovim/nvim-lspconfig',
+      --      keys = function()
+      --        -- see: https://www.lazyvim.org/extras/editor/telescope#nvim-lspconfig
+      -- -- stylua: ignore
+      -- return {
+      --   { "gd", function() require("telescope.builtin").lsp_definitions({ reuse_win = true }) end, desc = "Goto Definition", has = "definition" },
+      --   { "gr", "<cmd>Telescope lsp_references<cr>", desc = "References", nowait = true },
+      --   { "gI", function() require("telescope.builtin").lsp_implementations({ reuse_win = true }) end, desc = "Goto Implementation" },
+      --   { "gy", function() require("telescope.builtin").lsp_type_definitions({ reuse_win = true }) end, desc = "Goto T[y]pe Definition" },
+      -- }
+      --      end,
+      --    },
     },
     keys = function()
       return {
