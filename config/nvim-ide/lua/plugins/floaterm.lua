@@ -1,5 +1,7 @@
+-- TODO: use FloatermNew instead of FloatermToggle if no "lazygit" window to toggle?
+-- TODO: only apply esc/q keymaps to floaterm windows? e.g. via after/ftplugin/floaterm.lua?
+-- TODO: only apply esc/q keymaps to lazygit window?
 -- TODO: https://github.com/voldikss/vim-floaterm?tab=readme-ov-file#advanced-topics
--- TODO: toggle running lazygit instance instead of quitting and restarting lazygit each time?
 -- TODO: command! Yazi FloatermNew yazi
 
 vim.g.floaterm_borderchars = ''
@@ -13,16 +15,16 @@ return {
     event = 'VeryLazy',
     cmd = 'FloatermNew',
     keys = {
-      -- TODO: use toggle when possible since it loads instantly
-      -- { '<leader>gg', '<cmd>FloatermToggle lazygit<cr>', desc = 'Lazygit' },
-      { '<leader>gg', '<cmd>FloatermNew lazygit<cr>', desc = 'Lazygit' },
+      { '<leader>gg', '<cmd>FloatermToggle lazygit<cr>', desc = 'Lazygit' },
     },
     init = function()
-      -- on startup, start lazygit in a hiddle terminal so it's ready to appear instantly
+      -- On startup, start lazygit in a hiddle terminal so it's ready to appear instantly
+      -- https://github.com/voldikss/vim-floaterm?tab=readme-ov-file#commands
       vim.cmd([[ FloatermNew --silent --name=lazygit lazygit ]])
 
-      -- FIXME: gets to normal mode, but doesn't toggle...
-      -- vim.cmd([[ tmap <Esc> <c-\><c-n> :FloatermToggle<CR> ]])
+      -- Use 'esc' or 'q' to hide floaterm without stopping the process running in it
+      vim.keymap.set('t', '<esc>', '<cmd>FloatermHide<cr>', { desc = 'Hide terminal' })
+      vim.keymap.set('t', 'q', '<cmd>FloatermHide<cr>', { desc = 'Hide terminal' })
     end,
   },
 }
