@@ -24,6 +24,14 @@ set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })
 -- Close all buffers except the current one (like leader-wo does for windows):
 -- https://stackoverflow.com/a/42071865/8802485
 set('n', '<leader>fo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this one' })
+-- terminal
+set('t', '<esc><esc>', '<c-\\><c-n>', { desc = 'Enter Normal Mode' })
+set('t', '<c-h>', '<cmd>wincmd h<cr>', { desc = 'Go to Left Window' })
+set('t', '<c-j>', '<cmd>wincmd j<cr>', { desc = 'Go to Lower Window' })
+set('t', '<c-k>', '<cmd>wincmd k<cr>', { desc = 'Go to Upper Window' })
+set('t', '<c-l>', '<cmd>wincmd l<cr>', { desc = 'Go to Right Window' })
+set('t', '<c-/>', '<cmd>close<cr>', { desc = 'Hide Terminal' })
+set('t', '<c-_>', '<cmd>close<cr>', { desc = 'which_key_ignore' })
 
 ------------------
 -- ALPHABETICAL --
@@ -272,19 +280,3 @@ set("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 -- highlights under cursor
 set("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
 set("n", "<leader>uI", "<cmd>InspectTree<cr>", { desc = "Inspect Tree" })
-
--- floating terminal
--- local lazyterm = function() LazyVim.terminal(nil, { cwd = LazyVim.root() }) end
--- set("n", "<leader>ft", lazyterm, { desc = "Terminal (Root Dir)" })
--- set("n", "<leader>fT", function() LazyVim.terminal() end, { desc = "Terminal (cwd)" })
--- set("n", "<c-/>", lazyterm, { desc = "Terminal (Root Dir)" })
--- set("n", "<c-_>", lazyterm, { desc = "which_key_ignore" })
-
--- Terminal Mappings
-set("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Enter Normal Mode" })
-set("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "Go to Left Window" })
-set("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "Go to Lower Window" })
-set("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Go to Upper Window" })
-set("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Go to Right Window" })
-set("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
-set("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
