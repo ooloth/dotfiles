@@ -49,7 +49,7 @@ set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with
 set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
 set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
--- set('n', '<leader>ff', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
+set('n', '<leader>ee', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 
 -- "git" (see git.lua)
 -- set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
@@ -105,7 +105,7 @@ set('n', '<leader>[', '<cmd>vertical resize -3<cr>', { desc = 'Reduce size' })
 set('n', '<leader>w[', '<cmd>vertical resize -3<cr>', { desc = 'Reduce size' })
 set('n', '<leader>]', '<cmd>vertical resize +3<cr>', { desc = 'Increase size' })
 set('n', '<leader>w]', '<cmd>vertical resize +3<cr>', { desc = 'Increase size' })
-set('n', '<leader>wd', '<C-W>c', { desc = 'Delete Window', remap = true })
+set('n', '<leader>wd', '<c-w>c', { desc = 'Delete Window', remap = true })
 set('n', '<leader>wh', '<c-w>h', { desc = 'Go left one window' })
 set('n', '<leader>wj', '<c-w>j', { desc = 'Go down one window' })
 set('n', '<leader>wk', '<c-w>k', { desc = 'Go up one window' })
@@ -114,7 +114,7 @@ set('n', '<leader>wl', '<c-w>l', { desc = 'Go right one window' })
 -- set("n", "<leader>wm", function() LazyVim.toggle.maximize() end, { desc = "Maximize Toggle" })
 set('n', '<leader>wo', '<c-w>o', { desc = 'Only keep this one' })
 set('n', '<leader>wt', '<cmd>tab split<cr>', { desc = 'Open in new tab' })
-set('n', '<leader>ww', '<C-W>p', { desc = 'Other Window', remap = true })
+set('n', '<leader>ww', '<c-w>p', { desc = 'Other Window', remap = true })
 -- TODO: "leader-ww" = pick window (see nvim-window-picker.lua)?
 
 -- -- overwrite lazyvim mappings with vim-kitty-navigator mappings
