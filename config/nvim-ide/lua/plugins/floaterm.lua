@@ -23,7 +23,7 @@ return {
       vim.cmd([[ FloatermNew --silent --name=lazygit --height=0.9999999999999999 --width=0.9999999999999999 lazygit ]])
 
       -- Use 'esc' or 'q' to hide floaterm without stopping the process running in it
-      vim.keymap.set('t', '<esc>', '<cmd>FloatermHide<cr>', { desc = 'Hide terminal' })
+      -- vim.keymap.set('t', '<esc>', '<cmd>FloatermHide<cr>', { desc = 'Hide terminal' }) -- NOTE: interferes with returning to lazygit sidebar
       vim.keymap.set('t', 'q', '<cmd>FloatermHide<cr>', { desc = 'Hide terminal' })
 
       -- stylua: ignore
