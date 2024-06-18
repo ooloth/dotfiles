@@ -103,7 +103,7 @@ return {
         { '<leader>sr', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
         { '<leader>ss', '<cmd>Telescope live_grep<cr>', desc = 'String' },
         -- '<leader>st' = 'Todo' (see todo-comment.lua)
-        -- { '<leader>sw', Util.telescope('grep_string'), desc = 'Word under cursor' },
+        { '<leader>sw', '<cmd>Telescope grep_string<cr>', desc = 'Word under cursor' },
         { '<leader>su', '<cmd>Telescope undo<cr>', desc = 'Undo history' },
         { '<leader>sz', '<cmd>Telescope resume<cr>', desc = 'Resume last search' },
         -- "UI"
