@@ -97,15 +97,17 @@ set('n', '<leader>[', '<cmd>vertical resize -3<cr>', { desc = 'Reduce size' })
 set('n', '<leader>w[', '<cmd>vertical resize -3<cr>', { desc = 'Reduce size' })
 set('n', '<leader>]', '<cmd>vertical resize +3<cr>', { desc = 'Increase size' })
 set('n', '<leader>w]', '<cmd>vertical resize +3<cr>', { desc = 'Increase size' })
-set('n', '<leader>wc', '<c-w>c', { desc = 'Close' }) -- TODO: make "d" the standard for closing things?
+set('n', '<leader>wd', '<C-W>c', { desc = 'Delete Window', remap = true })
 set('n', '<leader>wh', '<c-w>h', { desc = 'Go left one window' })
 set('n', '<leader>wj', '<c-w>j', { desc = 'Go down one window' })
 set('n', '<leader>wk', '<c-w>k', { desc = 'Go up one window' })
 set('n', '<leader>wl', '<c-w>l', { desc = 'Go right one window' })
--- "leader-wm" = toggle maximize window (see vim-maximizer.lua}
+-- TODO: "leader-wm" = toggle maximize window (see vim-maximizer.lua}
+-- set("n", "<leader>wm", function() LazyVim.toggle.maximize() end, { desc = "Maximize Toggle" })
 set('n', '<leader>wo', '<c-w>o', { desc = 'Only keep this one' })
 set('n', '<leader>wt', '<cmd>tab split<cr>', { desc = 'Open in new tab' })
--- "leader-ww" = pick window (see nvim-window-picker.lua)
+set('n', '<leader>ww', '<C-W>p', { desc = 'Other Window', remap = true })
+-- TODO: "leader-ww" = pick window (see nvim-window-picker.lua)?
 
 -- -- overwrite lazyvim mappings with vim-kitty-navigator mappings
 -- -- see: https://github.com/christoomey/vim-tmux-navigator/blob/master/plugin/tmux_navigator.vim
@@ -286,12 +288,3 @@ set("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Go to Upper Window" })
 set("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Go to Right Window" })
 set("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 set("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
-
--- windows
-set("n", "<leader>ww", "<C-W>p", { desc = "Other Window", remap = true })
-set("n", "<leader>wd", "<C-W>c", { desc = "Delete Window", remap = true })
-set("n", "<leader>w-", "<C-W>s", { desc = "Split Window Below", remap = true })
-set("n", "<leader>w|", "<C-W>v", { desc = "Split Window Right", remap = true })
-set("n", "<leader>-", "<C-W>s", { desc = "Split Window Below", remap = true })
-set("n", "<leader>|", "<C-W>v", { desc = "Split Window Right", remap = true })
--- set("n", "<leader>wm", function() LazyVim.toggle.maximize() end, { desc = "Maximize Toggle" })
