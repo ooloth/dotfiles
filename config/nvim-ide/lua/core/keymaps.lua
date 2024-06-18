@@ -21,9 +21,6 @@ set({ 'n', 'v' }, '<S-l>', '$', { silent = true })
 -- clear search highlights
 set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })
 
--- Close all buffers except the current one (like leader-wo does for windows):
--- https://stackoverflow.com/a/42071865/8802485
-set('n', '<leader>fo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this one' })
 -- terminal
 set('t', '<esc><esc>', '<c-\\><c-n>', { desc = 'Enter Normal Mode' })
 set('t', '<c-h>', '<cmd>wincmd h<cr>', { desc = 'Go to Left Window' })
@@ -50,6 +47,9 @@ set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
 set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
 set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
 set('n', '<leader>ee', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
+-- Close all buffers except the current one (like leader-wo does for windows):
+-- https://stackoverflow.com/a/42071865/8802485
+set('n', '<leader>eo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this one' })
 
 -- "git" (see git.lua)
 -- set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
