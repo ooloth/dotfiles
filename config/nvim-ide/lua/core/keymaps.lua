@@ -22,7 +22,7 @@ set({ 'n', 'v' }, '<S-l>', '$', { silent = true })
 set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })
 
 -- terminal
-set('t', '<esc><esc>', '<c-\\><c-n>', { desc = 'Enter Normal Mode' })
+set('t', '<esc><esc>', '<c-\\><c-n>', { desc = 'Enter Normal Mode' }) -- FIXME: causes a timeoutlen delay closing floaterm buffers; exclude them from this handy shortcut?
 set('t', '<c-h>', '<cmd>wincmd h<cr>', { desc = 'Go to Left Window' })
 set('t', '<c-j>', '<cmd>wincmd j<cr>', { desc = 'Go to Lower Window' })
 set('t', '<c-k>', '<cmd>wincmd k<cr>', { desc = 'Go to Upper Window' })
@@ -40,7 +40,7 @@ set('n', '[c', 'g;', { desc = 'Previous change' }) -- go to next change with g;
 set('n', 'g;', 'g,', { desc = 'Next change' }) -- go to next change with g;
 set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with g;
 
--- "debug" (see debug.lua)
+-- "debugger" (see dap.lua)
 
 -- "editor" (buffer)
 set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
@@ -55,7 +55,11 @@ set('n', '<leader>eo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this one' })
 -- set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
 
 -- "help" (see telescope.lua)
--- "i"
+
+-- "inspect" / "info"
+-- highlights under cursor
+set('n', '<leader>ic', vim.show_pos, { desc = 'Inspect Pos' })
+
 -- "jumps" (see telescope.lua)
 -- "keymaps" (see telescope.lua)
 -- "lazy" / "LSP" (see lsp.lua)
@@ -71,7 +75,10 @@ set('n', '<leader>on', ':ene <BAR> startinsert<cr>', { desc = 'New file' })
 -- '<leader>ot' = 'Terminal' (see vim-floaterm.lua)
 
 -- "pin" (see mini-bufremove.lua + bufferline.lua)
+
 -- "quit"
+set('n', '<leader>qq', '<cmd>qa<cr>', { desc = 'Quit All' })
+
 -- "replace" (see spectre.lua + lsp.lua)
 
 -- "save"
@@ -273,10 +280,3 @@ set('n', '[w', diagnostic_goto(false, 'WARN'), { desc = 'Prev Warning' })
 -- set("n", "<leader>gL", function()
 --   LazyVim.lazygit({ args = { "log" } })
 -- end, { desc = "Lazygit Log (cwd)" })
-
--- quit
-set("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
-
--- highlights under cursor
-set("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
-set("n", "<leader>uI", "<cmd>InspectTree<cr>", { desc = "Inspect Tree" })
