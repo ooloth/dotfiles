@@ -2,8 +2,6 @@
 --  TODO: formatting?
 --  TODO: linting?
 
-local extend = require('util').extend
-
 return {
   -- {
   --   'williamboman/mason.nvim',
@@ -15,7 +13,7 @@ return {
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      extend(opts.ensure_installed, { 'vim', 'vimdoc' })
+      vim.list_extend(opts.ensure_installed or {}, { 'vim', 'vimdoc' })
     end,
   },
 
