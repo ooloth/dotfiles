@@ -79,7 +79,6 @@ return {
       return {
         { '<leader>/', '<cmd>Telescope current_buffer_fuzzy_find<cr>', desc = 'Buffer' },
         { '<leader>,', '<cmd>Telescope command_history<cr>', desc = 'Recent commands' },
-        -- "git"
         { '<leader>gB', '<cmd>Telescope git_branches<cr>', desc = 'Branches' },
         { '<leader>gc', '<cmd>Telescope git_commits<cr>', desc = 'Commits' },
         { '<leader>gs', '<cmd>Telescope git_status<cr>', desc = 'Status' },
@@ -90,7 +89,6 @@ return {
         { '<leader>sb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
         { '<leader>sc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
         { '<leader>sd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
-        -- see: https://github.com/danielfalk/smart-open.nvim?tab=readme-ov-file#options
         { '<leader>sf', '<cmd>Telescope smart_open cwd_only=true<cr>' },
         { '<leader>sh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
         { '<leader>h', '<cmd>Telescope help_tags<cr>', desc = 'Help' },
@@ -103,7 +101,7 @@ return {
         -- '<leader>sn', 'Noice' (see noice.lua)
         { '<leader>so', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
         { '<leader>sr', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
-        -- { '<leader>ss', Util.telescope('live_grep'), desc = 'String' },
+        { '<leader>ss', '<cmd>Telescope live_grep<cr>', desc = 'String' },
         -- '<leader>st' = 'Todo' (see todo-comment.lua)
         -- { '<leader>sw', Util.telescope('grep_string'), desc = 'Word under cursor' },
         { '<leader>su', '<cmd>Telescope undo<cr>', desc = 'Undo history' },
