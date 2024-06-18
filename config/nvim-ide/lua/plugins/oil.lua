@@ -1,4 +1,3 @@
--- TODO: https://github.com/stevearc/oil.nvim
 -- TODO: https://github.com/stevearc/oil.nvim/blob/master/doc/recipes.md#toggle-file-detail-view
 -- TODO: https://github.com/stevearc/oil.nvim/blob/master/doc/recipes.md#hide-gitignored-files
 
@@ -10,8 +9,8 @@ return {
   keys = {
     { '<leader>ff', '<cmd>Oil<cr>', desc = 'Finder (oil)' },
   },
-  -- see: https://github.com/stevearc/oil.nvim?tab=readme-ov-file#options
   opts = {
+    -- see: https://github.com/stevearc/oil.nvim?tab=readme-ov-file#options
     delete_to_trash = true,
     -- Keymaps in oil buffer. Can be any value that `vim.keymap.set` accepts OR a table of keymap
     -- options with a `callback` (e.g. { callback = function() ... end, desc = "", mode = "n" })

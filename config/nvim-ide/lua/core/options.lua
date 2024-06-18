@@ -1,3 +1,6 @@
+-- TODO: move filetype associations to treesitter settings?
+-- https://neovim.io/doc/user/treesitter.html
+
 local opt = vim.opt
 
 opt.clipboard = 'unnamedplus' -- Sync with system clipboard
