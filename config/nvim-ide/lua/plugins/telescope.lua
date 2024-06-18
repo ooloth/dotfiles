@@ -30,42 +30,16 @@ return {
     'nvim-telescope/telescope.nvim',
     tag = '0.1.6',
     dependencies = {
-      {
-        'folke/noice.nvim',
-        init = function()
-          require('telescope').load_extension('noice')
-        end,
-      },
+      'folke/noice.nvim',
       'nvim-lua/plenary.nvim',
+      'debugloop/telescope-undo.nvim',
       {
         -- see: https://github.com/danielfalk/smart-open.nvim?tab=readme-ov-file#installation
         'danielfalk/smart-open.nvim',
         branch = '0.2.x',
-        init = function()
-          require('telescope').load_extension('smart_open')
-        end,
         dependencies = {
           'kkharji/sqlite.lua',
-          {
-            'nvim-telescope/telescope-fzy-native.nvim',
-            init = function()
-              require('telescope').load_extension('fzy_native')
-            end,
-          },
-        },
-      },
-      {
-        'debugloop/telescope-undo.nvim',
-        init = function()
-          require('telescope').load_extension('undo')
-        end,
-      },
-      {
-        'folke/which-key.nvim',
-        opts = {
-          defaults = {
-            ['<leader>s'] = { name = 'Search' },
-          },
+          'nvim-telescope/telescope-fzy-native.nvim',
         },
       },
       --    {
@@ -169,6 +143,11 @@ return {
           },
         },
       })
+
+      -- Load extensions
+      require('telescope').load_extension('noice')
+      require('telescope').load_extension('smart_open')
+      require('telescope').load_extension('undo')
     end,
   },
 }

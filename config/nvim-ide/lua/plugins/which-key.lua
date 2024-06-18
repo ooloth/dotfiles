@@ -17,6 +17,7 @@ return {
       ['<leader>o'] = { name = 'Open' },
       ['<leader>q'] = { name = 'Quit' },
       ['<leader>r'] = { name = 'Refactor' },
+      ['<leader>s'] = { name = 'Search' },
       ['<leader>u'] = { name = 'UI' },
       ['<leader>w'] = { name = 'Window' },
       ['<leader>x'] = { name = 'Diagnostics' },
