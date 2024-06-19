@@ -43,7 +43,7 @@ set('n', 'g:', 'g;', { desc = 'Prev change' }) -- go to previous change with g;
 -- "debugger" (see dap.lua)
 
 -- "editor" (buffer)
-set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next editor' })
+set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next editor' }) -- NOTE: don't add c-[] maps here without solving help keyword navigation
 set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev editor' })
 set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Other editor' }) -- switch to last buffer
 set('n', '<leader>ed', '<cmd>bd<cr>', { desc = 'Close editor' }) -- switch to last buffer
@@ -148,16 +148,6 @@ set('i', '<A-j>', '<esc><cmd>m .+1<cr>==gi', { desc = 'Move Down' })
 set('i', '<A-k>', '<esc><cmd>m .-2<cr>==gi', { desc = 'Move Up' })
 set('v', '<A-j>', ":m '>+1<cr>gv=gv", { desc = 'Move Down' })
 set('v', '<A-k>', ":m '<-2<cr>gv=gv", { desc = 'Move Up' })
-
--- buffers
-set('n', '<S-h>', '<cmd>bprevious<cr>', { desc = 'Prev Buffer' })
-set('n', '<S-l>', '<cmd>bnext<cr>', { desc = 'Next Buffer' })
-set('n', '[b', '<cmd>bprevious<cr>', { desc = 'Prev Buffer' })
-set('n', ']b', '<cmd>bnext<cr>', { desc = 'Next Buffer' })
-set('n', '<leader>bb', '<cmd>e #<cr>', { desc = 'Switch to Other Buffer' })
-set('n', '<leader>`', '<cmd>e #<cr>', { desc = 'Switch to Other Buffer' })
--- set('n', '<leader>bd', LazyVim.ui.bufremove, { desc = 'Delete Buffer' })
-set('n', '<leader>bD', '<cmd>:bd<cr>', { desc = 'Delete Buffer and Window' })
 
 -- Clear search with <esc>
 set({ 'i', 'n' }, '<esc>', '<cmd>noh<cr><esc>', { desc = 'Escape and Clear hlsearch' })
