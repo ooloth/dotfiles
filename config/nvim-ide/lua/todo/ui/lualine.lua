@@ -1,4 +1,6 @@
--- see: https://www.lazyvim.org/plugins/ui#lualinenvim
+-- TODO: -- TODO: https://www.lazyvim.org/plugins/ui#lualinenvim
+-- TODO: https://www.lazyvim.org/plugins/ui#lualinenvim
+-- TODO: show @recording messages in statusline instead of notify pop-ups? https://github.com/folke/noice.nvim/wiki/Configuration-Recipes#show-recording-messages
 
 local Util = require('lazyvim.util')
 local icons = require('lazyvim.config').icons

@@ -1,3 +1,5 @@
+-- NOTE: using mini.files instead
+
 -- TODO: https://github.com/stevearc/oil.nvim/blob/master/doc/recipes.md#toggle-file-detail-view
 -- TODO: https://github.com/stevearc/oil.nvim/blob/master/doc/recipes.md#hide-gitignored-files
 

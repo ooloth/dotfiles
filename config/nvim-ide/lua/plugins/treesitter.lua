@@ -27,17 +27,17 @@ return {
     -- NOTE: must install parsers that ship with nvim to override them and avoid errors
     -- https://github.com/nvim-treesitter/nvim-treesitter#i-get-query-error-invalid-node-type-at-position
     ensure_installed = {
-      'bash',
-      'c',
-      'lua',
-      'markdown',
-      'markdown_inline',
-      'python',
+      'bash', -- TODO: move to its own file
+      'c', -- TODO: move to its own file
+      'lua', -- TODO: move to its own file
+      'markdown', -- TODO: move to its own file
+      'markdown_inline', -- TODO: move to its own file
+      'python', -- TODO: move to its own file
       'query', -- treesitter query language
       'regex',
-      'tmux',
-      'vim',
-      'vimdoc',
+      'tmux', -- TODO: move to its own file
+      'vim', -- TODO: move to its own file
+      'vimdoc', -- TODO: move to its own file
     },
     incremental_selection = {
       -- see: https://github.com/nvim-treesitter/nvim-treesitter?tab=readme-ov-file#incremental-selection
