@@ -63,6 +63,10 @@ return {
       -- use catppuccin mocha "surface1" for float border (same as split border)
       vim.cmd([[ hi FloatermBorder guifg=#45475a ]])
 
+      -- automatically resize floating window if vim is resized
+      -- see: https://github.com/voldikss/vim-floaterm/issues/296#issuecomment-1098841533
+      vim.cmd([[ autocmd VimResized * FloatermUpdate ]])
+
       -- TODO: find an ergonomic way to quit Lazygit without stopping its process?
       -- TODO: just get used to closing with <c-t> as I do with the scratch terminal and did in VS Code?
       -- FIXME: what follows interferes with typing "q" in commit messages...
