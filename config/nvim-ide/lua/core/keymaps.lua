@@ -43,7 +43,8 @@ set('n', 'g:', 'g;', { desc = 'Prev change' }) -- go to previous change with g;
 -- "debugger" (see dap.lua)
 
 -- "editor" (buffer)
-set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next editor' }) -- NOTE: don't add c-[] maps here without solving help keyword navigation
+-- WARN: don't add c-[] maps here (one is Esc, the other navigates help keywords)
+set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next editor' })
 set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev editor' })
 set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Other editor' }) -- switch to last buffer
 set('n', '<leader>ed', '<cmd>bd<cr>', { desc = 'Close editor' }) -- switch to last buffer
