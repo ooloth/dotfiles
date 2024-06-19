@@ -72,9 +72,9 @@ return {
 
         { '<leader>s,', '<cmd>Telescope command_history<cr>', desc = 'Command (recent)' },
         { '<leader>sa', '<cmd>Telescope autocommands<cr>', desc = 'Auto command' },
-        { '<leader>sb', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Buffer' },
         { '<leader>sc', '<cmd>Telescope commands<cr>', desc = 'Command (plugin)' },
         { '<leader>sd', '<cmd>Telescope diagnostics<cr>', desc = 'Diagnostics' },
+        { '<leader>se', '<cmd>Telescope buffers cwd_only=true ignore_current_buffer=true<cr>', desc = 'Editor' },
         { '<leader>sf', '<cmd>Telescope smart_open cwd_only=true<cr>' },
         { '<leader>sh', '<cmd>Telescope help_tags<cr>', desc = 'Help page' },
         { '<leader>sj', '<cmd>Telescope jumplist<cr>', desc = 'Jump' },
