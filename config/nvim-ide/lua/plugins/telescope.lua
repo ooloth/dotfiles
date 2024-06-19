@@ -1,6 +1,7 @@
 -- TODO: https://www.lazyvim.org/extras/editor/telescope
 -- TODO: how to restrict searches to certain paths?
 -- TODO: how to include/exclude certain file/folder patterns from a search?
+-- TODO: use nvim-notify extension? does noice replace that?
 
 -- Support opening multiple files in the same picker session:
 -- see: https://github.com/nvim-telescope/telescope.nvim/issues/1048#issuecomment-2142669167
@@ -81,8 +82,8 @@ return {
         -- '<leader>sl' = 'Links in buffer' (see urlview.lua)
         { '<leader>sm', '<cmd>Telescope marks<cr>', desc = 'Mark' },
         { '<leader>sM', '<cmd>Telescope man_pages<cr>', desc = 'Man page' },
-        -- '<leader>sn', 'Noice' (see noice.lua)
-        { '<leader>so', '<cmd>Telescope vim_options<cr>', desc = 'Option setting' },
+        { '<leader>sn', '<cmd>Telescope noice<cr>', desc = 'Notification (message)' },
+        { '<leader>so', '<cmd>Telescope vim_options<cr>', desc = 'Option (neovim setting)' },
         { '<leader>sr', '<cmd>Telescope lsp_references<cr>', desc = 'References to symbol' },
         { '<leader>ss', '<cmd>Telescope live_grep<cr>', desc = 'String' },
         -- '<leader>st' = 'Todo' (see todo-comment.lua)
@@ -144,7 +145,7 @@ return {
         },
       })
 
-      -- Load extensions
+      -- Load extensions after setup
       require('telescope').load_extension('noice')
       require('telescope').load_extension('smart_open')
       require('telescope').load_extension('undo')
