@@ -7,11 +7,18 @@ return {
     'nvim-tree/nvim-web-devicons',
   },
   keys = {
-    { '<leader>ff', '<cmd>Oil<cr>', desc = 'Finder (oil)' },
+    { '-', '<cmd>Oil<cr>', desc = 'Open file explorer (Oil)' },
+    -- { '-', '<cmd>Oil --float<cr>', desc = 'Open file explorer (Oil)' }, -- NOTE: can't preview in floating window
   },
   opts = {
     -- see: https://github.com/stevearc/oil.nvim?tab=readme-ov-file#options
     delete_to_trash = true,
+    float = {
+      -- Padding around the floating window
+      padding = 3,
+      max_width = 0,
+      max_height = 0,
+    },
     -- Keymaps in oil buffer. Can be any value that `vim.keymap.set` accepts OR a table of keymap
     -- options with a `callback` (e.g. { callback = function() ... end, desc = "", mode = "n" })
     -- Additionally, if it is a string that matches "actions.<name>",
@@ -21,10 +28,8 @@ return {
     keymaps = {
       ['?'] = 'actions.show_help',
       ['<cr>'] = 'actions.select',
-      ['-'] = 'actions.parent',
-      -- ['_'] = 'actions.open_cwd',
-      -- ['`'] = 'actions.cd',
-      -- ['~'] = { 'actions.cd', opts = { scope = 'tab' }, desc = ':tcd to the current oil directory' },
+      ['l'] = 'actions.select',
+      ['h'] = 'actions.parent',
       ['<c-\\>'] = { 'actions.select', opts = { vertical = true }, desc = 'Open the entry in a vertical split' },
       ['<c-->'] = { 'actions.select', opts = { horizontal = true }, desc = 'Open the entry in a horizontal split' },
       ['<c-t>'] = { 'actions.select', opts = { tab = true }, desc = 'Open the entry in new tab' },
@@ -39,18 +44,11 @@ return {
     },
     -- Set to false to disable all of the above keymaps
     use_default_keymaps = true,
-    init = function()
-      vim.keymap.set('n', '-', function()
-        oil.open()
-
-        -- Wait until oil has opened, for a maximum of 1 second.
-        vim.wait(1000, function()
-          return oil.get_cursor_entry() ~= nil
-        end)
-        if oil.get_cursor_entry() then
-          oil.open_preview()
-        end
-      end)
-    end,
+    view_options = {
+      show_hidden = true,
+      is_always_hidden = function(name, bufnr)
+        return name == '.git' or name == '.DS_Store'
+      end,
+    },
   },
 }
