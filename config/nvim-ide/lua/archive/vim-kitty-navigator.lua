@@ -1,4 +1,6 @@
--- navigate vim splits (and tmux panes) with <C-hjkl>
+-- NOTE: I'm using vim-tmux-navigator instead
+
+-- navigate across vim splits and kitty window with <C-hjkl>
 
 return {
   'knubie/vim-kitty-navigator',
@@ -12,7 +14,7 @@ return {
   },
   init = function()
     -- see: https://github.com/knubie/vim-kitty-navigator/issues/43#issuecomment-1906432799
-    if os.getenv("TERM") == "xterm-kitty" then
+    if os.getenv('TERM') == 'xterm-kitty' then
       vim.g.kitty_navigator_no_mappings = 1
       vim.g.tmux_navigator_no_mappings = 1
 
