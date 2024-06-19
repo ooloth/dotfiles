@@ -1,22 +1,24 @@
+-- TODO: toggle maximized for scratch terminal? if I use wintype=split, can I just use the normal leader-em? otherwise: https://github.com/voldikss/vim-floaterm/issues/57
 -- TODO: FloatermNew yazi (more/less ergonomic than mini.files?)
 -- TODO: https://github.com/voldikss/vim-floaterm?tab=readme-ov-file#advanced-topics
 
 vim.g.floaterm_borderchars = ''
-vim.g.floaterm_height = 0.65
 vim.g.floaterm_title = ''
-vim.g.floaterm_width = 0.65
 
 local options = {
   lazygit = {
     '--silent',
-    '--height=0.9999999999999999',
-    '--width=0.9999999999999999',
+    '--height=1.0',
+    '--width=1.0',
     '--name=lazygit',
     'lazygit',
   },
   scratch = {
     '--silent',
-    '--borderchars=─│─│┌┐┘└',
+    '--borderchars=─',
+    '--height=0.33',
+    '--width=1.0',
+    '--position=bottom',
     '--name=scratch',
   },
 }
@@ -24,10 +26,15 @@ local options = {
 -- see: https://github.com/voldikss/vim-floaterm/issues/409#issuecomment-2049837814
 local function toggle_if_running_else_create(name)
   if vim.fn['floaterm#terminal#get_bufnr'](name) < 0 then
-    vim.cmd.FloatermToggle(name)
-  else
     vim.cmd.FloatermNew(options[name])
     vim.cmd.FloatermToggle(name)
+  else
+    vim.cmd.FloatermToggle(name)
+
+    -- reapply options as a way to get the original height back after maximizing
+    if vim.fn['floaterm#terminal#get_bufnr'](name) >= 0 then
+      vim.cmd.FloatermUpdate(options[name])
+    end
   end
 end
 
@@ -41,8 +48,11 @@ return {
       { '<leader>gg', function() toggle_if_running_else_create('lazygit') end, desc = 'Lazygit' },
       { '<c-g>', function() toggle_if_running_else_create('lazygit') end, desc = 'Lazygit' },
       { '<c-g>', mode = 't', '<cmd>FloatermHide<cr>', desc = 'Hide Lazygit' },
-      { '<c-t>', '<cmd>FloatermToggle scratch<cr>', desc = 'Open scratch terminal' },
+      { '<c-t>', function() toggle_if_running_else_create('scratch') end, desc = 'Open scratch terminal' }, -- TODO: toggle most recent terminal instead?
       { '<c-t>', mode = 't', '<cmd>FloatermHide<cr>', desc = 'Hide terminal' },
+      -- TODO: can the same keymap also toggle back if pressed while maximized?
+      -- see: https://github.com/voldikss/vim-floaterm/issues/57#issuecomment-1110320601
+      { '<c-m>', mode = 't', '<cmd>FloatermUpdate --height=1.0<cr>', desc = 'Maximize terminal' }, 
     },
     init = function()
       -- on startup, start hidden terminals so they're ready to appear instantly
@@ -51,6 +61,7 @@ return {
       vim.cmd.FloatermNew(options['scratch'])
 
       -- TODO: find an ergonomic way to quit Lazygit without stopping its process?
+      -- TODO: just get used to closing with <c-t> as I do with the scratch terminal and did in VS Code?
       -- FIXME: what follows interferes with typing "q" in commit messages...
       -- see: https://github.com/voldikss/vim-floaterm?tab=readme-ov-file#autocmd
       -- see: https://neovim.discourse.group/t/new-nvim-create-autocmd-for-user-custom-event-setup/2325
