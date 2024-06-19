@@ -36,20 +36,21 @@ set('t', '<c-_>', '<cmd>close<cr>', { desc = 'which_key_ignore' })
 
 -- "changes"
 set('n', ']c', 'g,', { desc = 'Next change' }) -- go to next change with g;
-set('n', '[c', 'g;', { desc = 'Previous change' }) -- go to next change with g;
+set('n', '[c', 'g;', { desc = 'Prev change' }) -- go to next change with g;
 set('n', 'g;', 'g,', { desc = 'Next change' }) -- go to next change with g;
-set('n', 'g:', 'g;', { desc = 'Previous change' }) -- go to previous change with g;
+set('n', 'g:', 'g;', { desc = 'Prev change' }) -- go to previous change with g;
 
 -- "debugger" (see dap.lua)
 
 -- "editor" (buffer)
-set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
-set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next buffer' })
-set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
-set('n', '<leader>ee', '<cmd>e#<cr>', { desc = 'Last buffer' }) -- switch to last buffer
+set('n', '<tab>', '<cmd>bnext<cr>', { desc = 'Next editor' })
+set('n', '<s-tab>', '<cmd>bprevious<cr>', { desc = 'Prev editor' })
+set('n', '<leader>`', '<cmd>e#<cr>', { desc = 'Other editor' }) -- switch to last buffer
+set('n', '<leader>ed', '<cmd>bd<cr>', { desc = 'Close editor' }) -- switch to last buffer
+set('n', '<leader>ee', '<cmd>e#<cr>', { desc = 'Other editor' }) -- switch to last buffer
 -- Close all buffers except the current one (like leader-wo does for windows):
 -- https://stackoverflow.com/a/42071865/8802485
-set('n', '<leader>eo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this one' })
+set('n', '<leader>eo', '<cmd>%bd|e#<cr>', { desc = 'Only keep this editor' })
 
 -- "git" (see git.lua)
 -- set({ 'n', 'v' }, '<leader>gg', '<cmd>FloatermNew lazygit<cr>', { desc = 'Lazygit' })
@@ -90,8 +91,8 @@ set('n', '[<tab>', '<cmd>tabprevious<cr>', { desc = 'Next tab' })
 set('n', '<leader><tab><tab>', '<cmd>tabnew<cr>', { desc = 'New tab' })
 set('n', '<leader><tab>]', '<cmd>tabnext<cr>', { desc = 'Next tab' })
 set('n', '<leader><tab>n', '<cmd>tabnext<cr>', { desc = 'Next tab' })
-set('n', '<leader><tab>[', '<cmd>tabprevious<cr>', { desc = 'Previous tab' })
-set('n', '<leader><tab>p', '<cmd>tabprevious<cr>', { desc = 'Previous tab' })
+set('n', '<leader><tab>[', '<cmd>tabprevious<cr>', { desc = 'Prev tab' })
+set('n', '<leader><tab>p', '<cmd>tabprevious<cr>', { desc = 'Prev tab' })
 set('n', '<leader><tab>o', '<cmd>tabonly<cr>', { desc = 'Close other tabs' })
 set('n', '<leader><tab>d', '<cmd>tabclose<cr>', { desc = 'Close tab' })
 set('n', '<leader><tab>f', '<cmd>tabfirst<cr>', { desc = 'First tab' })
@@ -124,26 +125,6 @@ set('n', '<leader>wt', '<cmd>tab split<cr>', { desc = 'Open in new tab' })
 set('n', '<leader>ww', '<c-w>p', { desc = 'Other Window', remap = true })
 -- TODO: "leader-ww" = pick window (see nvim-window-picker.lua)?
 
--- -- overwrite lazyvim mappings with vim-kitty-navigator mappings
--- -- see: https://github.com/christoomey/vim-tmux-navigator/blob/master/plugin/tmux_navigator.vim
--- vim.cmd([[
---   noremap <silent> <c-h> :<C-U>KittyNavigateLeft<cr>
---   noremap <silent> <c-j> :<C-U>KittyNavigateDown<cr>
---   noremap <silent> <c-k> :<C-U>KittyNavigateUp<cr>
---   noremap <silent> <c-l> :<C-U>KittyNavigateRight<cr>
---   noremap <silent> <c-\> :<C-U>KittyNavigatePrevious<cr>
--- ]])
-
--- -- overwrite lazyvim mappings with vim-tmux-navigator mappings
--- -- see: https://github.com/christoomey/vim-tmux-navigator/blob/master/plugin/tmux_navigator.vim
-vim.cmd([[
-  noremap <silent> <c-h> :<C-U>TmuxNavigateLeft<cr>
-  noremap <silent> <c-j> :<C-U>TmuxNavigateDown<cr>
-  noremap <silent> <c-k> :<C-U>TmuxNavigateUp<cr>
-  noremap <silent> <c-l> :<C-U>TmuxNavigateRight<cr>
-  noremap <silent> <c-\> :<C-U>TmuxNavigatePrevious<cr>
-]])
---
 -- "x" ("diagnostics")
 -- "y"
 -- "z"
@@ -226,7 +207,7 @@ set('n', '<leader>fn', '<cmd>enew<cr>', { desc = 'New File' })
 set('n', '<leader>xl', '<cmd>lopen<cr>', { desc = 'Location List' })
 set('n', '<leader>xq', '<cmd>copen<cr>', { desc = 'Quickfix List' })
 
-set('n', '[q', vim.cmd.cprev, { desc = 'Previous Quickfix' })
+set('n', '[q', vim.cmd.cprev, { desc = 'Prev Quickfix' })
 set('n', ']q', vim.cmd.cnext, { desc = 'Next Quickfix' })
 
 -- diagnostic
