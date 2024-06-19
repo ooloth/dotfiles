@@ -60,6 +60,9 @@ return {
       vim.cmd.FloatermNew(options['lazygit'])
       vim.cmd.FloatermNew(options['scratch'])
 
+      -- use catppuccin mocha "surface1" for float border (same as split border)
+      vim.cmd([[ hi FloatermBorder guifg=#45475a ]])
+
       -- TODO: find an ergonomic way to quit Lazygit without stopping its process?
       -- TODO: just get used to closing with <c-t> as I do with the scratch terminal and did in VS Code?
       -- FIXME: what follows interferes with typing "q" in commit messages...
