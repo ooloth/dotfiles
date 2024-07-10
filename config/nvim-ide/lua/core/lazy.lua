@@ -19,6 +19,7 @@ require('lazy').setup({
   spec = {
     { import = 'intelligence' }, -- all files in lua/intelligence
     { import = 'lang' }, -- all files in lua/lang
+    { import = 'ui' }, -- all files in lua/ui
     { import = 'plugins' }, -- all files in lua/plugins
   },
 
