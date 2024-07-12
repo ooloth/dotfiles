@@ -133,6 +133,7 @@ return {
         },
         extensions = {
           undo = {
+            -- see: https://github.com/debugloop/telescope-undo.nvim?tab=readme-ov-file#configuration
             use_delta = false,
             -- mappings = {
             --   i = {
