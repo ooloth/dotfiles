@@ -36,13 +36,24 @@ export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
 export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
 
+##########
+# PYTHON #
+##########
+
+# see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
+export PYTHONPATH=$HOME
+
+# Mypy
+export MYPYPATH=$HOME
+
 # Pyenv
 export PYENV_ROOT=$HOME/.pyenv
 
-# Python
-# see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
-export PYTHONPATH=$HOME
-export MYPYPATH=$HOME
+# Rye
+# see: https://rye.astral.sh/guide/installation
+export RYE_HOME=$HOME/.config/rye
+source "$RYE_HOME/env"
+
 # Avoid extra venv at beginning of prompt (see: https://stackoverflow.com/a/72715907/8802485)
 export VIRTUAL_ENV_PROMPT=''
 
