@@ -284,6 +284,7 @@
       { "key": "c", "name": "Continue", "command": "workbench.action.debug.continue", "type": "command" },
       { "key": "d", "name": "Start/Restart", "command": "workbench.action.debug.restart", "type": "command" },
       { "key": "D", "name": "Run without debugging", "command": "workbench.action.debug.run", "type": "command" },
+      { "key": "e", "name": "View open editors", "command": "workbench.action.quickOpenPreviousRecentlyUsedEditor", "type": "command" },
       { "key": "h", "name": "Show hover", "command": "editor.debug.action.showDebugHover", "type": "command" },
       { "key": "j", "name": "Jump to cursor", "command": "debug.jumpToCursor", "type": "command" },
       { "key": "i", "name": "Step into", "command": "workbench.action.debug.stepInto", "type": "command" },
