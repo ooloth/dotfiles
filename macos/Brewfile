@@ -153,7 +153,7 @@ if hostname == "Mini"
 end
 
 if hostname == "MULO-JQ97NW-MBP"
-  cask "meetingbar" # for auto-joining zoom calls
+  # cask "meetingbar" # for auto-joining zoom calls
 end
 
 ########################
