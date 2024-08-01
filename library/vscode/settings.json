@@ -623,7 +623,6 @@
   "python.analysis.addImport.heuristics": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "terminal.integrated.tabs.enabled": false,
-  "window.zoomLevel": 1,
   "notebook.formatOnSave.enabled": true,
   "errorLens.codeLensEnabled": false,
   "errorLens.severityText": [
@@ -648,5 +647,5 @@
   "Lua.hint.arrayIndex": "Disable",
   "Lua.format.enable": false,
   "github.copilot.editor.enableAutoCompletions": true,
-  "workbench.statusBar.visible": false
+  "window.zoomLevel": 1
 }
