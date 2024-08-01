@@ -12,8 +12,6 @@ tap "arl/arl" # for gitmux
 tap "buo/cask-upgrade" # see: https://gist.github.com/ChristopherA/a579274536aab36ea9966f301ff14f3f#best-practices-brew-cask-mas-and-cu
 tap "candid82/brew" # for joker, for goku
 tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
-tap "homebrew/core"
 tap "hashicorp/tap" # for terraform, vault
 tap "jesseduffield/lazydocker"
 tap "jesseduffield/lazygit"
