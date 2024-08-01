@@ -194,7 +194,10 @@
     "non-null-expression",
     "generic-slots-in-functions",
     "mapped-type",
-    "returntype-utility-type"
+    "returntype-utility-type",
+    "type-alias-with-generics",
+    "type-alias-with-multiple-generics",
+    "conditional-type"
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
