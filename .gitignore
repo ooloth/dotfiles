@@ -2,3 +2,6 @@
 .secrets
 ~/.config/nvim/undo
 Brewfile.lock.json
+
+# Work stuff
+config/zsh/work
