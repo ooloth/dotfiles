@@ -4,4 +4,7 @@
 Brewfile.lock.json
 
 # Work stuff
+config/k9s/clusters/gke_eng-infrastructure_us-east1_principal
+config/k9s/clusters/gke_prod-cluster-cc74bd08_us-central1_prod-cluster
+config/k9s/clusters/gke_rp006-prod-49a893d8_us-central1_rp006-prod
 config/zsh/work
