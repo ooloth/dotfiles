@@ -9,7 +9,7 @@ test() {
   case $current_directory in
     dash-phenoapp-v2)
       info "🧪 Running: pytest$args"
-      pytest "$@" ;;
+      CONFIGOME_ENV=test pytest "$@" ;;
 
     react-app)
       info "🧪 Running: vitest$args"
