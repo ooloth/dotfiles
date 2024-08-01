@@ -1,42 +1,4 @@
 k9s:
-  refreshRate: 2
-  maxConnRetry: 5
-  enableMouse: false
-  headless: false
-  logoless: false
-  crumbsless: false
-  readOnly: false
-  noExitOnCtrlC: false
-  noIcons: false
-  logger:
-    tail: 100
-    buffer: 5000
-    sinceSeconds: 60
-    fullScreenLogs: false
-    textWrap: false
-    showTime: false
-  currentContext: principal
-  currentCluster: gke_eng-infrastructure_us-east1_principal
-  clusters:
-    gke_eng-infrastructure_us-east1_principal:
-      namespace:
-        active: phenomap
-        lockFavorites: false
-        favorites:
-          - phenomap
-      view:
-        active: po
-      featureGates:
-        nodeShell: false
-      shellPod:
-        image: busybox:1.35.0
-        command: []
-        args: []
-        namespace: default
-        limits:
-          cpu: 100m
-          memory: 100Mi
-      portForwardAddress: localhost
   thresholds:
     cpu:
       critical: 90

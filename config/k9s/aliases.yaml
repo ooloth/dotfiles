@@ -1,9 +1,7 @@
+# see: https://k9scli.io/topics/aliases/
+
 aliases:
+  ctx: contexts
   dp: deployments
-  sec: v1/secrets
   jo: jobs
-  cr: clusterroles
-  crb: clusterrolebindings
-  ro: roles
-  rb: rolebindings
-  np: networkpolicies
+  sec: v1/secrets
