@@ -20,10 +20,10 @@ k9s:
   clusters:
     gke_eng-infrastructure_us-east1_principal:
       namespace:
-        active: all
+        active: phenomap
         lockFavorites: false
         favorites:
-        - default
+          - phenomap
       view:
         active: po
       featureGates:
@@ -45,3 +45,5 @@ k9s:
       critical: 90
       warn: 70
   screenDumpDir: /var/folders/14/gdbl0cfn09d5mz9js76lfkq04jxnfc/T/k9s-screens-michael.uloth
+  ui:
+    skin: catppuccin-mocha-transparent
