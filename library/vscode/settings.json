@@ -592,7 +592,6 @@
   "workbench.tree.enableStickyScroll": true,
   "notebook.stickyScroll.enabled": true,
   "catppuccin.workbenchMode": "minimal",
-  "catppuccin.italicKeywords": false,
   "window.zoomPerWindow": false,
   "files.autoSaveWhenNoErrors": true,
   "githubPullRequests.focusedMode": "multiDiff",
@@ -647,5 +646,12 @@
   "Lua.hint.arrayIndex": "Disable",
   "Lua.format.enable": false,
   "github.copilot.editor.enableAutoCompletions": true,
-  "window.zoomLevel": 1
+  "window.zoomLevel": 1,
+  "catppuccin.italicKeywords": false,
+  "vscode-kubernetes.log-viewer.follow": true,
+  "vscode-kubernetes.log-viewer.timestamp": true,
+  "vscode-kubernetes.log-viewer.since": -1,
+  "vscode-kubernetes.log-viewer.tail": -1,
+  "vscode-kubernetes.log-viewer.destination": "Webview",
+  "vscode-kubernetes.log-viewer.wrap": false
 }
