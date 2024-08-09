@@ -15,6 +15,7 @@ tap "homebrew/bundle"
 tap "hashicorp/tap" # for terraform, vault
 tap "jesseduffield/lazydocker"
 tap "jesseduffield/lazygit"
+tap "kdash-rs/kdash" # for kdash
 tap "saulpw/vd" # for visidata
 tap "yqrashawn/goku" # for karabiner
 
@@ -47,6 +48,7 @@ brew "htop" # top alternative
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
 brew "k9s" # for kubernetes
+brew "kdash" # for kubernetes
 brew "kubectl" # for kubernetes
 brew "kubectx" # for kubernetes
 brew "jesseduffield/lazydocker/lazydocker"
