@@ -16,6 +16,10 @@ tap "jesseduffield/lazygit"
 tap "hashicorp/tap" # for terraform, vault
 tap "saulpw/vd" # for visidata
 
+if hostname == "Air"
+  tap "modularml/packages" # for mojo
+end
+
 ############
 # PACKAGES #
 ############
@@ -84,6 +88,7 @@ brew "zsh-syntax-highlighting"
 
 if hostname == "Air"
   brew "gleam"
+  brew "modularml/packages/modular" # for mojo
   brew "zig"
 end
 
