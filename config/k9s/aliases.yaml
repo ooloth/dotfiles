@@ -1,0 +1,7 @@
+# see: https://k9scli.io/topics/aliases/
+
+aliases:
+  ctx: contexts
+  dp: deployments
+  jo: jobs
+  sec: v1/secrets

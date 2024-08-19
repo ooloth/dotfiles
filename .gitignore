@@ -2,3 +2,8 @@
 .secrets
 ~/.config/nvim/undo
 Brewfile.lock.json
+
+# Work stuff
+config/k9s/clusters/*
+config/kitty/startup/MULO-JQ97NW-MBP.conf
+config/zsh/work

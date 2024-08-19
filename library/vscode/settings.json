@@ -40,7 +40,7 @@
   "editor.inlineSuggest.enabled": true,
   "editor.linkedEditing": true,
   "editor.lineHeight": 1.35,
-  "editor.lineNumbers": "on",
+  "editor.lineNumbers": "off",
   "editor.matchBrackets": "near",
   "editor.minimap.enabled": false,
   "editor.quickSuggestions": {
@@ -194,7 +194,10 @@
     "non-null-expression",
     "generic-slots-in-functions",
     "mapped-type",
-    "returntype-utility-type"
+    "returntype-utility-type",
+    "type-alias-with-generics",
+    "type-alias-with-multiple-generics",
+    "conditional-type"
   ],
   "totalTypeScript.hideAllTips": false,
   "totalTypeScript.hideBasicTips": true,
@@ -305,6 +308,7 @@
       { "key": "=", "name": "Reset editor group sizes", "command": "workbench.action.evenEditorWidths", "type": "command" },
       { "key": "d", "name": "Close active editor", "command": "workbench.action.closeActiveEditor", "type": "command" },
       { "key": "D", "name": "Close editor group", "command": "workbench.action.closeEditorsInGroup", "type": "command" },
+      { "key": "e", "name": "View open editors", "command": "workbench.action.quickOpenPreviousRecentlyUsedEditor", "type": "command" },
       { "key": "h", "name": "Move editor into left group", "command": "workbench.action.moveEditorToLeftGroup", "type": "command" },
       { "key": "g", "name": "Change editor language mode", "command": "workbench.action.editor.changeLanguageMode", "type": "command" },
       { "key": "j", "name": "Move editor into below group", "command": "workbench.action.moveEditorToBelowGroup", "type": "command" },
@@ -588,7 +592,6 @@
   "workbench.tree.enableStickyScroll": true,
   "notebook.stickyScroll.enabled": true,
   "catppuccin.workbenchMode": "minimal",
-  "catppuccin.italicKeywords": false,
   "window.zoomPerWindow": false,
   "files.autoSaveWhenNoErrors": true,
   "githubPullRequests.focusedMode": "multiDiff",
@@ -619,7 +622,6 @@
   "python.analysis.addImport.heuristics": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "terminal.integrated.tabs.enabled": false,
-  "window.zoomLevel": 1,
   "notebook.formatOnSave.enabled": true,
   "errorLens.codeLensEnabled": false,
   "errorLens.severityText": [
@@ -634,7 +636,7 @@
   "errorLens.statusBarMessageTemplate": "[$source] $message",
   "errorLens.messageEnabled": true,
   "gitlens.codeLens.recentChange.enabled": false,
-  "workbench.activityBar.location": "hidden",
+  "workbench.activityBar.location": "bottom",
   "tailwindCSS.emmetCompletions": true,
   "rust-analyzer.lens.enable": false,
   "editor.lightbulb.enabled": "off",
@@ -643,5 +645,13 @@
   "terminal.integrated.shellIntegration.enabled": false,
   "Lua.hint.arrayIndex": "Disable",
   "Lua.format.enable": false,
-  "github.copilot.editor.enableAutoCompletions": true
+  "github.copilot.editor.enableAutoCompletions": true,
+  "window.zoomLevel": 1,
+  "catppuccin.italicKeywords": false,
+  "vscode-kubernetes.log-viewer.follow": true,
+  "vscode-kubernetes.log-viewer.timestamp": true,
+  "vscode-kubernetes.log-viewer.since": -1,
+  "vscode-kubernetes.log-viewer.tail": -1,
+  "vscode-kubernetes.log-viewer.destination": "Webview",
+  "vscode-kubernetes.log-viewer.wrap": false
 }

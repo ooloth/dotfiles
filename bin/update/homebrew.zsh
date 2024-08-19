@@ -15,5 +15,9 @@ info "🍺 Updating homebrew packages"
 # see: https://github.com/Homebrew/homebrew-bundle
 brew bundle --file="$DOTFILES/macos/Brewfile" --cleanup
 
-# Update brew, upgrade outdated packages, remove old versions and address any issues
-brew update && brew upgrade && brew autoremove && brew cleanup && brew doctor
+brew update # update brew
+brew upgrade # update packages
+brew cu # update casks
+brew autoremove # remove old versions
+brew cleanup # remove junk
+brew doctor # address any issues

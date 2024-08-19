@@ -113,6 +113,7 @@ source homebrew.zsh
 source "$DOTFILES/bin/update/homebrew.zsh"
 source zsh.zsh
 source rust.zsh
+source rye.zsh
 source node.zsh
 source "$DOTFILES/bin/update/npm.zsh"
 source tmux.zsh

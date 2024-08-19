@@ -9,12 +9,15 @@ hostname = `hostname`.chomp
 ########
 
 tap "arl/arl" # for gitmux
+tap "buo/cask-upgrade" # see: https://gist.github.com/ChristopherA/a579274536aab36ea9966f301ff14f3f#best-practices-brew-cask-mas-and-cu
 tap "candid82/brew" # for joker, for goku
-tap "yqrashawn/goku" # for karabiner
+tap "homebrew/bundle"
+tap "hashicorp/tap" # for terraform, vault
 tap "jesseduffield/lazydocker"
 tap "jesseduffield/lazygit"
-tap "hashicorp/tap" # for terraform, vault
+tap "kdash-rs/kdash" # for kdash
 tap "saulpw/vd" # for visidata
+tap "yqrashawn/goku" # for karabiner
 
 if hostname == "Air"
   tap "modularml/packages" # for mojo
@@ -37,6 +40,7 @@ brew "fzf" # awesome; used by yazi
 brew "gh"
 brew "git"
 brew "git-delta" # for git: https://dandavison.github.io/delta/
+brew "github-keygen" # for git ssh
 brew "arl/arl/gitmux" # for tmux
 brew "glances" # top alternative
 brew "gnu-sed"
@@ -48,6 +52,7 @@ brew "htop" # top alternative
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
 brew "k9s" # for kubernetes
+brew "kdash" # for kubernetes
 brew "kubectl" # for kubernetes
 brew "kubectx" # for kubernetes
 brew "jesseduffield/lazydocker/lazydocker"
@@ -92,18 +97,22 @@ if hostname == "Air"
   brew "zig"
 end
 
+if hostname == "Mini"
+  brew "carbon-copy-cloner"
+end
+
 if hostname == "MULO-JQ97NW-MBP"
-  brew "bazel" # for lowe
+  brew "bazel"
+  brew "hashicorp/tap/vault"
   brew "helm" # for kubernetes
   brew "kafka"
   brew "librdkafka" # for kafka
   brew "lzlib"
-  brew "opa" # for opa-bundle
+  brew "opa"
   brew "openjdk" # for java
   brew "skaffold"
-  brew "tcl-tk"
   brew "redis"
-  brew "hashicorp/tap/vault"
+  brew "tcl-tk"
   brew "zlib"
 end
 
@@ -125,35 +134,33 @@ cask "1password-cli"
 cask "alfred"
 cask "appcleaner"
 # NOTE: don't install "docker" cask until Apple Silicon issues resolved
+cask "brave-browser"
+cask "firefox"
 cask "hyperkey"
 cask "karabiner-elements"
 cask "kitty"
+cask "notion"
+cask "obsidian"
 cask "raycast"
 cask "rectangle"
+cask "runjs"
 cask "visual-studio-code"
 cask "vlc"
 
 if hostname == "Air"
-  cask "brave-browser"
-  cask "firefox"
-  cask "google-chrome" # NOTE: work may control this app
-  # cask "handbrake"
-  # cask "ishowu-instant"
-  cask "notion"
-  cask "obsidian"
-  # cask "prepros" NOTE: manually download v6 instead (just need it for Adam's site)
-  cask "runjs"
+  cask "google-chrome" # NOTE: work likely controls installation of this app
+  # NOTE: manually download prepros v6 instead (just need it for Adam's site)
   # cask "transmit
-  cask "zoom" # NOTE: work may control this app
-elsif hostname == "Mini"
+  cask "zoom" # NOTE: work likely controls installation of this app
+end
+
+if hostname == "Mini"
   cask "backblaze"
   # cask "handbrake"
-elsif hostname == "MULO-JQ97NW-MBP"
-  cask "brave-browser"
-  cask "firefox"
-  cask "notion"
-  cask "obsidian"
-  cask "runjs"
+end
+
+if hostname == "MULO-JQ97NW-MBP"
+  # cask "meetingbar" # for auto-joining zoom calls
 end
 
 ########################
@@ -161,6 +168,10 @@ end
 ########################
 
 mas "Amphetamine", id: 937984704
+mas "Notion Web Clipper", id: 1559269364 # Safari extension
+mas "Reeder 5.", id: 1529448980
+mas "Sip", id: 507257563
+mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
 message = "\📦 Loading additional Mac App Store apps for #{hostname}\n"
@@ -170,27 +181,11 @@ if hostname == "Air"
   # mas "Fantastical - Calendar", id: 975937182
   mas "Keynote", id: 409183694
   mas "Numbers", id: 409203825
-  mas "Notion Web Clipper", id: 1559269364 # Safari extension
   mas "Pages", id: 409201541
   # mas "PiPifier", id: 1160374471
   # mas "Pixave", id: 924891282
   # mas "Pixelmator Pro", id: 1289583905
-  mas "Reeder 5.", id: 1529448980
-  mas "Sip", id: 507257563
   # mas "Smart Converter Pro", id: 450078312
-  # mas "Spark", id: 1176895641
-  mas "Things 3", id: 904280696
-elsif hostname == "Mini"
-  # mas "Smart Converter Pro", id: 450078312
-elsif hostname == "MULO-JQ97NW-MBP"
-  # mas "Bear", id: 1091189122
-  # mas "Fantastical - Calendar", id: 975937182
-  mas "Keynote", id: 409183694
-  mas "Notion Web Clipper", id: 1559269364 # Safari extension
-  mas "Numbers", id: 409203825
-  mas "Pages", id: 409201541
-  # mas "PiPifier", id: 1160374471
-  mas "Reeder 5.", id: 1529448980
   # mas "Spark", id: 1176895641
 end
 
@@ -242,6 +237,7 @@ vscode "ms-vscode-remote.remote-ssh-edit"
 vscode "ms-vscode.remote-explorer"
 vscode "ms-vscode.test-adapter-converter"
 vscode "ms-vscode.vscode-speech"
+vscode "mxsdev.typescript-explorer"
 vscode "patbenatar.advanced-new-file"
 vscode "rangav.vscode-thunder-client"
 vscode "redhat.vscode-yaml"
@@ -266,7 +262,9 @@ if hostname == "Air"
   vscode "golang.go"
   vscode "serayuzgur.crates" # for rust
   vscode "vadimcn.vscode-lldb" # for debugging rust, go and other compiled languages
-elsif hostname == "MULO-JQ97NW-MBP"
+end
+
+if hostname == "MULO-JQ97NW-MBP"
   vscode "editorconfig.editorconfig"
   vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
   vscode "ms-python.black-formatter"
