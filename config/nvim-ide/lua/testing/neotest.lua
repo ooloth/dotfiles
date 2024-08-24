@@ -3,6 +3,10 @@
 return {
   'nvim-neotest/neotest',
   dependencies = {
+    -- see: https://github.com/nvim-neotest/neotest?tab=readme-ov-file#installation
+    'nvim-neotest/nvim-nio',
+    'nvim-lua/plenary.nvim',
+    'antoinemadec/FixCursorHold.nvim',
     'nvim-treesitter/nvim-treesitter',
     { 'folke/neodev.nvim', opts = { library = { plugins = { 'neotest' }, types = true } } },
     {
