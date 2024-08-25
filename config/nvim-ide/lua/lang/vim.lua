@@ -4,7 +4,7 @@
 
 return {
   -- {
-  --   'williamboman/mason.nvim',
+  -- 'WhoIsSethDaniel/mason-tool-installer.nvim',
   --   opts = function(_, opts)
   --     extend(opts.ensure_installed, {})
   --   end,

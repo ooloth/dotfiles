@@ -5,7 +5,7 @@
 
 return {
   {
-    'williamboman/mason.nvim',
+    'WhoIsSethDaniel/mason-tool-installer.nvim',
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed or {}, { 'stylua' })
     end,

@@ -49,7 +49,7 @@ end
 
 return {
   {
-    'williamboman/mason.nvim',
+    'WhoIsSethDaniel/mason-tool-installer.nvim',
     opts = function(_, opts)
       extend(opts.ensure_installed, { 'black', 'flake8', 'isort', 'mypy', 'pyright', 'ruff', 'ruff-lsp', 'yapf' })
     end,
