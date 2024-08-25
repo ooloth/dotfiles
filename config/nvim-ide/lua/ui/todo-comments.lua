@@ -11,7 +11,8 @@ return {
       bg = 'NONE', -- The gui style to use for the bg highlight group.
     },
     highlight = {
-      after = '',
+      after = 'fg',
+      -- after = '',
       keyword = 'fg',
       multiline = false,
     },
