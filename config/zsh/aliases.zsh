@@ -89,7 +89,7 @@ alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/
 # NOTE: "u" = "update" (see update.zsh)
 alias v='NVIM_APPNAME=nvim-ide nvim'
 alias vim='nvim'
-alias vk='NVIM_APPNAME="nvim-kickstart" nvim'
+alias vk='NVIM_APPNAME=nvim-ks nvim'
 # Find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in VS Code
 vs() {
   code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
