@@ -28,17 +28,12 @@ require('lazy').setup({
   -- see: https://github.com/folke/lazy.nvim?tab=readme-ov-file#-structuring-your-plugins
   spec = {
     {
-      dir = '~/Repos/ooloth/config.nvim',
+      -- see: https://www.mitchellhanberg.com/create-your-own-neovim-distribution/
+      'ooloth/config.nvim', -- the location on GitHub for our distro
+      dev = true, -- tells lazy.nvim to actually load a local copy
       opts = {},
       import = 'config.plugins', -- the path to your plugins lazy plugin spec
     },
-    -- {
-    --   -- see: https://www.mitchellhanberg.com/create-your-own-neovim-distribution/
-    --   'ooloth/config.nvim', -- the location on GitHub for our distro
-    --   dev = true, -- tells lazy.nvim to actually load a local copy
-    --   name = 'config', -- the name of the plugin
-    --   import = 'config.plugins', -- the path to your plugins lazy plugin spec
-    -- },
   },
 
   change_detection = {
@@ -54,7 +49,13 @@ require('lazy').setup({
     version = '*', -- enable this to try installing the latest stable versions of plugins
   },
 
-  dev = { path = '~/Repos' }, -- the path to where `dev = true` looks for local plugins
+  -- dev = { path = '~/Repos', fallback = true }, -- the path to where `dev = true` looks for local plugins
+  dev = {
+    path = '~/Repos', -- string directory where you store your local plugin projects
+    -- plugins that match these patterns will use your local versions instead of being fetched from GitHub
+    patterns = { 'ooloth' }, -- For example {"folke"}
+    fallback = true, -- Fallback to git when local plugin doesn't exist
+  },
 
   diff = {
     -- diff command <d> can be one of:
