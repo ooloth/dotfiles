@@ -87,7 +87,6 @@ sl() { ln -sfv "$1" "$2"; } # easier symlinking
 symlinks() { $DOTFILES/bin/update/symlinks.zsh; }
 alias t='tmux a'
 alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
-alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias ts='tailscale'
 # NOTE: "u" = "update" (see update.zsh)
 alias vi='NVIM_APPNAME=nvim-ide nvim'
