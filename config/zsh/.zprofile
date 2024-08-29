@@ -86,13 +86,16 @@ fi
 # PATH #
 ########
 
+# Go
+export PATH="$HOME/go/bin:$PATH"
+
+# OpenSSL
+export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
+
 # Pyenv
 # NOTE: do NOT use eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
 # see: https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-
-# OpenSSL
-export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
 
 # Rust
 export PATH="$HOME/.config/cargo/bin:$PATH"
