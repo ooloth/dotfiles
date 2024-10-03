@@ -82,6 +82,7 @@ brew "tmux"
 brew "trash"
 brew "tree"
 brew "unar" # for yazi
+brew "uv" # for python
 brew "vifm"
 brew "saulpw/vd/visidata"
 brew "wget" # for neovim
