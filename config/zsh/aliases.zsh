@@ -57,8 +57,8 @@ alias lt3='lt --level=3'                                  # file tree (3 levels 
 alias lt4='lt --level=4'                                  # file tree (4 levels only)
 alias md='cd $HOME/Repos/ooloth/media'
 alias mr='sudo shutdown -r now' # restart macos
-alias mini="tailscale ssh michael@mini"                         # automatically log in using SSH key pair
-# alias mini="s michael@mini.local"                         # automatically log in using SSH key pair
+alias mini="tailscale ssh michael@mini"                   # automatically log in using SSH key pair
+# alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 n() { npm install "$@"; }
 nb() { n && npm run build; }
@@ -75,6 +75,7 @@ ns() { n && npm run start; }
 nt() { npm run test "$@"; }
 nu() { n && npm-check -u; }
 alias nv='cd $HOME/Repos/ooloth/config.nvim'
+alias nvim='NVIM_APPNAME=nvim-ide nvim'
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 pi() { eval "$(pyenv init -)"; }
@@ -86,13 +87,12 @@ alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper='cd $HOME/Repos/ooloth/scraper'
 sl() { ln -sfv "$1" "$2"; } # easier symlinking
 symlinks() { $DOTFILES/bin/update/symlinks.zsh; }
-alias t='tmux a'
+t() { tmux attach || exec tmux; }
 alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts='tailscale'
 # NOTE: "u" = "update" (see update.zsh)
-alias vi='NVIM_APPNAME=nvim-ide nvim'
 alias vim='nvim'
-alias v='NVIM_APPNAME=nvim-ks nvim'
+alias v='NVIM_APPNAME=nvim-ide nvim'
 # Find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in VS Code
 vs() {
   code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"

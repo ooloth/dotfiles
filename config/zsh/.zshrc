@@ -16,3 +16,9 @@ source $HOME/.config/zsh/test.zsh
 source $HOME/.config/zsh/options.zsh
 source $HOME/.config/zsh/hooks.zsh
 source $HOME/.config/zsh/plugins.zsh # source last
+
+# If not already active, attach to or restore previous tmux session
+if [ -z "$TMUX" ]; then
+# if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
+  tmux attach || exec tmux;
+fi
