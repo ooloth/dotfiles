@@ -75,6 +75,7 @@ ns() { n && npm run start; }
 nt() { npm run test "$@"; }
 nu() { n && npm-check -u; }
 alias nv='cd $HOME/Repos/ooloth/config.nvim'
+alias nvim='NVIM_APPNAME=nvim-ide nvim'
 alias nvm='fnm'
 alias oo='cd $HOME/Repos/ooloth'
 pi() { eval "$(pyenv init -)"; }
