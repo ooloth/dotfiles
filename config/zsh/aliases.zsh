@@ -90,9 +90,8 @@ alias t='tmux a'
 alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts='tailscale'
 # NOTE: "u" = "update" (see update.zsh)
-alias vi='NVIM_APPNAME=nvim-ide nvim'
 alias vim='nvim'
-alias v='NVIM_APPNAME=nvim-ks nvim'
+alias v='NVIM_APPNAME=nvim-ide nvim'
 # Find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in VS Code
 vs() {
   code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
