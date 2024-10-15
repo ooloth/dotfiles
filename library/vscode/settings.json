@@ -636,7 +636,7 @@
   "errorLens.statusBarMessageTemplate": "[$source] $message",
   "errorLens.messageEnabled": true,
   "gitlens.codeLens.recentChange.enabled": false,
-  "workbench.activityBar.location": "bottom",
+  "workbench.activityBar.location": "hidden",
   "tailwindCSS.emmetCompletions": true,
   "rust-analyzer.lens.enable": false,
   "editor.lightbulb.enabled": "off",
