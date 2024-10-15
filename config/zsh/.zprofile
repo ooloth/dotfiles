@@ -4,7 +4,6 @@ export IS_MINI=$( [[ "$(hostname)" == "Mini" ]] && echo "true" || echo "false" )
 export IS_WORK=$( [[ "$(hostname)" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false" )
 
 # Dotfiles
-export DEBUG_DOTFILES=false
 export DOTFILES=$HOME/Repos/ooloth/dotfiles
 
 # Editor

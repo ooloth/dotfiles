@@ -84,6 +84,7 @@ brew "tmux"
 brew "trash"
 brew "tree"
 brew "unar" # for yazi
+brew "uv" # for python
 brew "vifm"
 brew "saulpw/vd/visidata"
 brew "wget" # for neovim
@@ -233,6 +234,7 @@ vscode "ms-python.debugpy"
 vscode "ms-python.mypy-type-checker"
 vscode "ms-python.python"
 vscode "ms-python.vscode-pylance"
+vscode "ms-toolsai.datawrangler"
 vscode "ms-vscode-remote.remote-containers"
 vscode "ms-vscode-remote.remote-ssh"
 vscode "ms-vscode-remote.remote-ssh-edit"
