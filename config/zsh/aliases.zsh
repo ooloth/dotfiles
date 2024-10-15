@@ -57,7 +57,7 @@ alias lt3='lt --level=3'                                  # file tree (3 levels 
 alias lt4='lt --level=4'                                  # file tree (4 levels only)
 alias md='cd $HOME/Repos/ooloth/media'
 alias mr='sudo shutdown -r now' # restart macos
-alias mini="tailscale ssh michael@mini"                         # automatically log in using SSH key pair
+alias mini="tailscale michael@mini"                         # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                         # automatically log in using SSH key pair
 alias mu='cd $HOME/Repos/ooloth/michaeluloth.com'
 n() { npm install "$@"; }
