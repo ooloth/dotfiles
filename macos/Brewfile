@@ -31,7 +31,6 @@ end
 brew "bat" # replaces cat
 brew "btop" # top alternative
 brew "bufbuild/buf/buf" # for buf_lint in neovim
-brew "commitizen" # for git
 brew "coreutils"
 brew "ctop" # for docker
 brew "eza" # replaces ls
@@ -43,7 +42,7 @@ brew "gh"
 brew "git"
 brew "git-delta" # for git: https://dandavison.github.io/delta/
 brew "github-keygen" # for git ssh
-brew "arl/arl/gitmux" # for tmux
+brew "arl/arl/gitmux" # for tmux (status bar)
 brew "glances" # top alternative
 brew "gnu-sed"
 brew "go"
@@ -89,7 +88,7 @@ brew "vifm"
 brew "saulpw/vd/visidata"
 brew "wget" # for neovim
 brew "yazi" # terminal file manager
-brew "zoxide" # for yazi
+brew "zoxide"
 brew "zsh"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
