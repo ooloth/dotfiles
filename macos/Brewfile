@@ -9,6 +9,7 @@ hostname = `hostname`.chomp
 ########
 
 tap "arl/arl" # for gitmux
+tap "bufbuild/buf" # for buf_lint
 tap "buo/cask-upgrade" # see: https://gist.github.com/ChristopherA/a579274536aab36ea9966f301ff14f3f#best-practices-brew-cask-mas-and-cu
 tap "candid82/brew" # for joker, for goku
 tap "homebrew/bundle"
@@ -29,6 +30,7 @@ end
 
 brew "bat" # replaces cat
 brew "btop" # top alternative
+brew "bufbuild/buf/buf" # for buf_lint in neovim
 brew "commitizen" # for git
 brew "coreutils"
 brew "ctop" # for docker
