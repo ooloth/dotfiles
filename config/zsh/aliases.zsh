@@ -86,7 +86,7 @@ alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper='cd $HOME/Repos/ooloth/scraper'
 sl() { ln -sfv "$1" "$2"; } # easier symlinking
 symlinks() { $DOTFILES/bin/update/symlinks.zsh; }
-alias t='tmux a'
+t() { tmux attach || exec tmux; }
 alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts='tailscale'
 # NOTE: "u" = "update" (see update.zsh)
