@@ -10,6 +10,9 @@ eval "$(fzf --zsh)"
 source "/opt/homebrew/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme"
 source "$HOME/.config/zsh/p10k.zsh" # to customize, run `p10k configure` or edit config/zsh/p10k.zsh
 
+# zoxide
+eval "$(zoxide init zsh)"
+
 # zsh-autosuggestions
 source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
