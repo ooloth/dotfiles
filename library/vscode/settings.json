@@ -7,6 +7,14 @@
   "[lua][luau]": {
     "editor.defaultFormatter": "JohnnyMorganz.stylua"
   },
+  "[python]": {
+    // see: https://github.com/astral-sh/ruff-vscode?tab=readme-ov-file#configuring-vs-code
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform"
   },
@@ -125,11 +133,14 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "markdown.preview.fontSize": 0,
   "markdown.updateLinksOnFileMove.enabled": "prompt",
+  "notebook.codeActionsOnSave": {
+    "notebook.source.fixAll": "explicit",
+    "notebook.source.organizeImports": "explicit"
+  },
   "notebook.formatOnSave.enabled": true,
   "notebook.insertFinalNewline": true,
   "notebook.output.scrolling": true,
   "notebook.stickyScroll.enabled": true,
-  "notebook.trimFinalNewlines": true,
   "npm.enableRunFromFolder": true,
   "prettier.documentSelectors": ["**/*.astro"],
   "prettier.requireConfig": true,
