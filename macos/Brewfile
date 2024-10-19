@@ -94,6 +94,7 @@ brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
 if hostname == "Air"
+  brew "deno"
   brew "gleam"
   brew "modularml/packages/modular" # for mojo
   brew "zig"
@@ -262,6 +263,7 @@ vscode "xadillax.viml"
 vscode "yzhang.markdown-all-in-one"
 
 if hostname == "Air"
+  vscode "denoland.vscode-deno" # for deno
   vscode "golang.go"
   vscode "serayuzgur.crates" # for rust
   vscode "vadimcn.vscode-lldb" # for debugging rust, go and other compiled languages
