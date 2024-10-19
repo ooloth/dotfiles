@@ -86,7 +86,9 @@ fi
 ########
 
 # Deno
-export PATH="/opt/homebrew/bin/deno:$PATH"
+if $IS_AIR; then
+  export PATH="/opt/homebrew/bin/deno:$PATH"
+fi
 
 # Go
 export PATH="$HOME/go/bin:$PATH"
