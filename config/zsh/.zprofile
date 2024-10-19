@@ -85,6 +85,9 @@ fi
 # PATH #
 ########
 
+# Deno
+export PATH="/opt/homebrew/bin/deno:$PATH"
+
 # Go
 export PATH="$HOME/go/bin:$PATH"
 
