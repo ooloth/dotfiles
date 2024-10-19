@@ -17,8 +17,8 @@ source $HOME/.config/zsh/options.zsh
 source $HOME/.config/zsh/hooks.zsh
 source $HOME/.config/zsh/plugins.zsh # source last
 
-# If not already active, attach to or restore previous tmux session
-if [ -z "$TMUX" ]; then
-# if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
+# When opening a new terminal in kitty (i.e. not VS Code), attach to
+# or restore the previous tmux session (if it isn't already active).
+if [ -z "$TMUX" ] && [ "$TERM" = "xterm-kitty" ]; then
   tmux attach || exec tmux;
 fi

@@ -7,6 +7,14 @@
   "[lua][luau]": {
     "editor.defaultFormatter": "JohnnyMorganz.stylua"
   },
+  "[python]": {
+    // see: https://github.com/astral-sh/ruff-vscode?tab=readme-ov-file#configuring-vs-code
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
   "[terraform][terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform"
   },
@@ -90,6 +98,8 @@
     "*.webc": "html"
   },
   "files.autoSave": "afterDelay",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
   "files.simpleDialog.enable": true,
   "files.trimTrailingWhitespace": true,
   "git.autofetch": true,
@@ -123,6 +133,14 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "markdown.preview.fontSize": 0,
   "markdown.updateLinksOnFileMove.enabled": "prompt",
+  "notebook.codeActionsOnSave": {
+    "notebook.source.fixAll": "explicit",
+    "notebook.source.organizeImports": "explicit"
+  },
+  "notebook.formatOnSave.enabled": true,
+  "notebook.insertFinalNewline": true,
+  "notebook.output.scrolling": true,
+  "notebook.stickyScroll.enabled": true,
   "npm.enableRunFromFolder": true,
   "prettier.documentSelectors": ["**/*.astro"],
   "prettier.requireConfig": true,
@@ -590,7 +608,6 @@
   "diffEditor.experimental.showMoves": true,
   "multiDiffEditor.experimental.enabled": true,
   "workbench.tree.enableStickyScroll": true,
-  "notebook.stickyScroll.enabled": true,
   "catppuccin.workbenchMode": "minimal",
   "window.zoomPerWindow": false,
   "files.autoSaveWhenNoErrors": true,
@@ -609,7 +626,6 @@
   "terminal.integrated.fontSize": 13,
   "debug.hideLauncherWhileDebugging": true,
   "debug.console.fontSize": 12.5,
-  "notebook.output.scrolling": true,
   "python.analysis.inlayHints.callArgumentNames": "partial",
   "Lua.hint.enable": true,
   "python.analysis.inlayHints.functionReturnTypes": true,
@@ -622,7 +638,6 @@
   "python.analysis.addImport.heuristics": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "terminal.integrated.tabs.enabled": false,
-  "notebook.formatOnSave.enabled": true,
   "errorLens.codeLensEnabled": false,
   "errorLens.severityText": [
     "⛔",
