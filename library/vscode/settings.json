@@ -669,5 +669,7 @@
   "vscode-kubernetes.log-viewer.since": -1,
   "vscode-kubernetes.log-viewer.tail": -1,
   "vscode-kubernetes.log-viewer.destination": "Webview",
-  "vscode-kubernetes.log-viewer.wrap": false
+  "vscode-kubernetes.log-viewer.wrap": false,
+  "workbench.editor.empty.hint": "hidden",
+  "terminal.integrated.initialHint": false
 }
