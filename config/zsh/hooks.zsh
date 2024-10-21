@@ -8,6 +8,7 @@ activate_venv() {
   # assumes venv is named after the current directory
   local PYENV_VENV="${PYENV_ROOT}/versions/${CURRENT_DIRECTORY}"
 
+  # FIXME: support uv projects with a ".venv" directory, which don't require activating the venv
   # if there's no pyenv venv for this directory, deactivate any venv sticking from a previous directory and be done
   if [[ ! -d "$PYENV_VENV" ]]; then
     # remove all pyenv paths from PATH (see: https://stackoverflow.com/a/62950499/8802485)
