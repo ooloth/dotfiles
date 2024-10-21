@@ -93,6 +93,7 @@
     ".npmrc": "ini",
     "*.plist": "xml",
     ".prettierrc": "yaml",
+    ".python-version": "plaintext",
     "*.vifm": "vimrc",
     "vifmrc": "vimrc",
     "*.webc": "html"
