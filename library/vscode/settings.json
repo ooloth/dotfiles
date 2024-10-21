@@ -88,15 +88,16 @@
   "explorer.openEditors.visible": 1,
   "files.associations": {
     ".eslintrc": "yaml",
-    "**/kitty/**/*.conf": "shellscript",
     "*.njk": "nunjucks",
     ".npmrc": "ini",
     "*.plist": "xml",
     ".prettierrc": "yaml",
     ".python-version": "plaintext",
     "*.vifm": "vimrc",
-    "vifmrc": "vimrc",
-    "*.webc": "html"
+    "*.webc": "html",
+    "CODEOWNERS": "plaintext",
+    "**/kitty/**/*.conf": "shellscript",
+    "vifmrc": "vimrc"
   },
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
