@@ -92,10 +92,8 @@
     ".npmrc": "ini",
     "*.plist": "xml",
     ".prettierrc": "yaml",
-    ".python-version": "plaintext",
     "*.vifm": "vimrc",
     "*.webc": "html",
-    "CODEOWNERS": "plaintext",
     "**/kitty/**/*.conf": "shellscript",
     "vifmrc": "vimrc"
   },
@@ -135,6 +133,10 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "markdown.preview.fontSize": 0,
   "markdown.updateLinksOnFileMove.enabled": "prompt",
+  "material-icon-theme.saturation": 0.7,
+  "material-icon-theme.hidesExplorerArrows": true,
+  "material-icon-theme.activeIconPack": "",
+  "material-icon-theme.folders.theme": "classic",
   "notebook.codeActionsOnSave": {
     "notebook.source.fixAll": "explicit",
     "notebook.source.organizeImports": "explicit"
@@ -596,7 +598,7 @@
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.wrapTabs": true,
   "workbench.fontAliasing": "auto",
-  "workbench.iconTheme": "eq-material-theme-icons-palenight",
+  "workbench.iconTheme": "material-icon-theme",
   "workbench.layoutControl.enabled": false,
   "workbench.panel.opensMaximized": "preserve",
   "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
