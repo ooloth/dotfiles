@@ -137,9 +137,9 @@
   "markdown.preview.fontSize": 0,
   "markdown.updateLinksOnFileMove.enabled": "prompt",
   "material-icon-theme.saturation": 0.7,
-  "material-icon-theme.hidesExplorerArrows": true,
+  "material-icon-theme.hidesExplorerArrows": false,
   "material-icon-theme.activeIconPack": "",
-  "material-icon-theme.folders.theme": "classic",
+  "material-icon-theme.folders.theme": "none",
   "notebook.codeActionsOnSave": {
     "notebook.source.fixAll": "explicit",
     "notebook.source.organizeImports": "explicit"
