@@ -1,8 +1,11 @@
 // NOTE: format on save disabled via .prettierignore
 
 {
-  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
+  "[astro][css][graphql][html][javascript][javascriptreact][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[lua][luau]": {
     "editor.defaultFormatter": "JohnnyMorganz.stylua"
