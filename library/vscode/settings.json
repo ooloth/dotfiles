@@ -1,8 +1,11 @@
 // NOTE: format on save disabled via .prettierignore
 
 {
-  "[astro][css][graphql][html][javascript][javascriptreact][json][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
+  "[astro][css][graphql][html][javascript][javascriptreact][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[lua][luau]": {
     "editor.defaultFormatter": "JohnnyMorganz.stylua"
@@ -88,15 +91,14 @@
   "explorer.openEditors.visible": 1,
   "files.associations": {
     ".eslintrc": "yaml",
-    "**/kitty/**/*.conf": "shellscript",
     "*.njk": "nunjucks",
     ".npmrc": "ini",
     "*.plist": "xml",
     ".prettierrc": "yaml",
-    ".python-version": "plaintext",
     "*.vifm": "vimrc",
-    "vifmrc": "vimrc",
-    "*.webc": "html"
+    "*.webc": "html",
+    "**/kitty/**/*.conf": "shellscript",
+    "vifmrc": "vimrc"
   },
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
@@ -134,6 +136,10 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "markdown.preview.fontSize": 0,
   "markdown.updateLinksOnFileMove.enabled": "prompt",
+  "material-icon-theme.saturation": 0.7,
+  "material-icon-theme.hidesExplorerArrows": false,
+  "material-icon-theme.activeIconPack": "",
+  "material-icon-theme.folders.theme": "none",
   "notebook.codeActionsOnSave": {
     "notebook.source.fixAll": "explicit",
     "notebook.source.organizeImports": "explicit"
@@ -595,7 +601,7 @@
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.wrapTabs": true,
   "workbench.fontAliasing": "auto",
-  "workbench.iconTheme": "eq-material-theme-icons-palenight",
+  "workbench.iconTheme": "material-icon-theme",
   "workbench.layoutControl.enabled": false,
   "workbench.panel.opensMaximized": "preserve",
   "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
