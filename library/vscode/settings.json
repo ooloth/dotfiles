@@ -41,7 +41,7 @@
   "editor.fontLigatures": true,
   "editor.fontSize": 13,
   "editor.fontWeight": "normal",
-  "editor.formatOnPaste": true,
+  "editor.formatOnPaste": false,
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
   "editor.formatOnType": true,
