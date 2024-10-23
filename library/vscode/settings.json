@@ -7,6 +7,9 @@
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
   "[lua][luau]": {
     "editor.defaultFormatter": "JohnnyMorganz.stylua"
   },
@@ -71,7 +74,7 @@
       "comments": "#525975"
     }
   },
-  "editor.wordWrapColumn": 120,
+  "editor.wordWrap": "off",
   "emmet.includeLanguages": {
     "javascript": "javascriptreact"
   },
