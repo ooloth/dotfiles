@@ -1,7 +1,8 @@
 // NOTE: format on save disabled via .prettierignore
 
 {
-  "[astro][css][graphql][html][javascript][javascriptreact][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
+   // Assign jsonc to prettier to disable this file from autoformatting on save (which makes the Vim/WhichKey settings unreadable)
+  "[astro][css][graphql][html][javascript][javascriptreact][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[json]": {
