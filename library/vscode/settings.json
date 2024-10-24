@@ -99,6 +99,7 @@
     ".npmrc": "ini",
     "*.plist": "xml",
     ".prettierrc": "yaml",
+    ".python-version": "plaintext",
     "*.vifm": "vimrc",
     "*.webc": "html",
     "**/kitty/**/*.conf": "shellscript",
@@ -601,7 +602,6 @@
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.wrapTabs": true,
   "workbench.fontAliasing": "auto",
-  "workbench.iconTheme": "material-icon-theme",
   "workbench.layoutControl.enabled": false,
   "workbench.panel.opensMaximized": "preserve",
   "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
@@ -670,6 +670,7 @@
   "github.copilot.editor.enableAutoCompletions": true,
   "window.zoomLevel": 1,
   "catppuccin.italicKeywords": false,
+  "terminal.integrated.initialHint": false,
   "vscode-kubernetes.log-viewer.follow": true,
   "vscode-kubernetes.log-viewer.timestamp": true,
   "vscode-kubernetes.log-viewer.since": -1,
@@ -677,5 +678,5 @@
   "vscode-kubernetes.log-viewer.destination": "Webview",
   "vscode-kubernetes.log-viewer.wrap": false,
   "workbench.editor.empty.hint": "hidden",
-  "terminal.integrated.initialHint": false
+  "workbench.iconTheme": "eq-material-theme-icons-palenight"
 }
