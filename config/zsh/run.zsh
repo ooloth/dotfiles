@@ -1,4 +1,4 @@
-stop() {
+run() {
   local CURRENT_DIRECTORY=$(basename $PWD)
 
   case $CURRENT_DIRECTORY in
