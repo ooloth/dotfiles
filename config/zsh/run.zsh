@@ -3,7 +3,7 @@ run() {
 
   case $CURRENT_DIRECTORY in
     advent-of-code)
-      ./bin/run "@" ;;
+      ./bin/run "$@" ;;
 
     *)
       error "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}'" ;;
