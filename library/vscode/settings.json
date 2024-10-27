@@ -100,6 +100,7 @@
     "*.plist": "xml",
     ".prettierrc": "yaml",
     ".python-version": "plaintext",
+    ".shellcheckrc": "plaintext",
     "*.vifm": "vimrc",
     "*.webc": "html",
     "**/kitty/**/*.conf": "shellscript",
@@ -177,6 +178,7 @@
     ]},
     { "id": "relativeLineNumbers", "values": [ { "editor.lineNumbers": "relative", "vim.smartRelativeLine": true }, { "editor.lineNumbers": "on", "vim.smartRelativeLine": false } ] }
   ],
+  "shellcheck.run": "onSave",
   "terminal.external.osxExec": "kitty.app",
   "terminal.integrated.cursorBlinking": false,
   "terminal.integrated.defaultProfile.osx": "zsh",
