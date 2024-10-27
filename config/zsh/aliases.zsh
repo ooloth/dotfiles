@@ -10,6 +10,7 @@ alias cat='bat --paging=never'
 alias cte='EDITOR=vim crontab -e'
 alias ctl='crontab -l'
 alias con='cd $HOME/Repos/ooloth/content'
+alias conf='cd $HOME/Repos/ooloth/config.nvim'
 
 alias dot='cd $HOME/Repos/ooloth/dotfiles'
 alias d='lazydocker'
@@ -85,7 +86,6 @@ nlf() { npm run lint:fix; }
 ns() { n && npm run start; }
 nt() { npm run test "$@"; }
 nu() { n && npm-check -u; }
-alias nv='cd $HOME/Repos/ooloth/config.nvim'
 alias nvim='NVIM_APPNAME=nvim-ide nvim'
 alias nvm='fnm'
 
