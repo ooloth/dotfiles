@@ -3,6 +3,8 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
+alias adv='cd $HOME/Repos/ooloth/advent-of-code'
+
 # NOTE: "banner" defined in utils.zsh
 
 alias c='clear'
