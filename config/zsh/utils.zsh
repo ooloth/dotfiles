@@ -67,16 +67,6 @@ function error() {
 
 
 have() {
-  # Check if a command exists.
-  #
-  # Usage:
-  #   have <command, alias or function>
-  #
-  # Examples:
-  #   if have "command"; then echo "Command exists"; else echo "Command does not exist"; fi
-  #   alias v="vi"; if have "vim"; then alias v="vim"; elseif have "nvim"; then alias v="nvim"; fi
-
-  # Validate inputs
   if [ -z "$1" ]; then
     echo "Usage: have <command, alias or function>";
     return 1;
