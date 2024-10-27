@@ -7,6 +7,8 @@ test() {
   fi
 
   case $current_directory in
+    advent-of-code)
+      bin/test "$@" ;;
     *)
       error "🚨 No 'test' case defined for '/$current_directory'" ;;
   esac
