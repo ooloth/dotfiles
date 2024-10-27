@@ -109,9 +109,12 @@ alias transfer='kitten transfer' # see: https://sw.kovidgoyal.net/kitty/kittens/
 alias ts='tailscale'
 
 # NOTE: "u" = "update" (see update.zsh)
-alias vim='nvim'
-alias v='NVIM_APPNAME=nvim-ide nvim'
 
+v() {
+  if have "nvim"; then nvim "$@";
+  elif have "vim"; then vim "$@";
+  else vi "$@";
+  fi
 }
 
 # NOTE: "warn" defined in utils.zsh
