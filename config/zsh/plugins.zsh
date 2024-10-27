@@ -20,5 +20,5 @@ source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/plugins.zsh"
+  source "$DOTFILES/config/zsh/work/plugins.zsh" 2>/dev/null
 fi

@@ -8,5 +8,5 @@ stop() {
 }
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/stop.zsh"
+  source "$DOTFILES/config/zsh/work/stop.zsh" 2>/dev/null
 fi

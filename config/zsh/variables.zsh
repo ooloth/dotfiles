@@ -69,5 +69,5 @@ export XDG_CONFIG_HOME=$HOME/.config
 export ZDOTDIR=$HOME/.config/zsh
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/variables.zsh"
+  source "$DOTFILES/config/zsh/work/variables.zsh" 2>/dev/null
 fi

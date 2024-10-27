@@ -8,5 +8,5 @@ check() {
 }
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/check.zsh"
+  source "$DOTFILES/config/zsh/work/check.zsh" 2>/dev/null
 fi

@@ -26,5 +26,5 @@ export IS_WORK=$( [[ "$(hostname)" == "MULO-JQ97NW-MBP" ]] && echo "true" || ech
 
 if $IS_WORK; then
   # TODO: port work/zprofile.zsh to work/variables.zsh and work/path.zsh
-  source "$DOTFILES/config/zsh/work/path.zsh"
+  source "$DOTFILES/config/zsh/work/path.zsh" 2>/dev/null
 fi
