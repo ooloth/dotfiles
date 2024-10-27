@@ -27,7 +27,8 @@ diff() { kitten diff "$1" "$2"; }                  # see: https://sw.kovidgoyal.
 alias env='env | sort'
 # NOTE: "error" defined in utils.zsh
 
-alias f='yazi'
+alias f='vifm . .'
+# alias f='yazi' # TODO fix yazi error on launch
 
 alias g='lazygit'
 
