@@ -16,12 +16,12 @@ alias d='lazydocker'
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias dash='cd $HOME/Repos/ooloth/dashboard'
 de() { docker container exec -it $1 sh; }
-dc() { docker compose "$@"; }
+alias dc='docker compose'
 alias dd='dc down --remove-orphans'                # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
 alias dl='dc logs --follow --tail=100'             # see last 100 log lines of one or more services (or all services if no args provided)
 alias du='dc up --build --detach --remove-orphans' # recreate and start one or more services (or all services if no args provided)
 alias dud='dc up --detach'                         # start one or more services (or all services if no args provided)
-diff() { kitten diff "$1" "$2"; } # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
+diff() { kitten diff "$1" "$2"; }                  # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
 
 alias env='env | sort'
 # NOTE: "error" defined in utils.zsh
@@ -34,10 +34,9 @@ alias h='cd $HOME'
 # alias history='history 0'
 # alias h='history | grep'
 
-image() { kitten icat "$1"; } # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 # NOTE: "info" defined in utils.zsh
+alias image='kitten icat' # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 
-# Kubernetes
 alias k='kubectl'
 alias kc='k create'
 alias kcd='k create deployment'
@@ -58,7 +57,7 @@ alias kl='stern'
 kill() { lsof -t -i:$1 | xargs kill -9; }
 
 # see: https://github.com/eza-community/eza#command-line-options
-# NOTE: see EZA_* env vars in .zshenv
+# NOTE: see EZA_* env vars in variables.zsh
 alias ls='eza --all --group-directories-first --classify' # top level dir + files
 alias ld='ls --long --no-user --header'                   # top level details
 alias lt='ls --tree --git-ignore -I .git'                 # file tree (all levels)
@@ -111,36 +110,12 @@ alias ts='tailscale'
 # NOTE: "u" = "update" (see update.zsh)
 alias vim='nvim'
 alias v='NVIM_APPNAME=nvim-ide nvim'
-# Find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in VS Code
-vs() {
-  # Find all directories two levels below ~/Repos, pass them to fzf, and open the selected one in VS Code
-  code "$(fd -t d --max-depth 2 --min-depth 2 . $HOME/Repos | fzf)"
-}
-vv() {
-  # Assumes all configs are in directories named ~/.config/nvim-*
-  local config=$(fd --max-depth 1 --glob 'nvim-*' ~/.config | fzf --prompt="Neovim Config > " --height=~50% --layout=reverse --border --exit-0)
 
-  # If I exit fzf without selecting a config, don't open Neovim
-  [[ -z $config ]] && echo "No config selected" && return
-
-  # Open Neovim with the selected config
-  NVIM_APPNAME=$(basename $config) nvim $@
 }
 
 # NOTE: "warn" defined in utils.zsh
 
 alias x='exit'
-
-function yy() {
-  # Alternative way to open yazi if you want to change the directory when you exit:
-  # see: https://yazi-rs.github.io/docs/quick-start#shell-wrapper
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		cd -- "$cwd"
-	fi
-	rm -f -- "$tmp"
-}
 
 zt() {
   # [z]sh [t]ime: measure how long new shells take to launch
