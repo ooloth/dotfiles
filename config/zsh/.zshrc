@@ -7,6 +7,7 @@ fi
 
 # NOTE: zshenv loads env vars, zprofile loads PATH, and zshrc loads the rest
 source $HOME/.config/zsh/utils.zsh # source first (used by other files)
+source $HOME/.config/zsh/variables.zsh
 source $HOME/.config/zsh/aliases.zsh
 source $HOME/.config/zsh/update.zsh
 source $HOME/.config/zsh/start.zsh
