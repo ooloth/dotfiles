@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Install if missing
-if ! command -v rustup &> /dev/null; then
+if ! have rustup; then
   source "$HOME/Repos/ooloth/dotfiles/bin/install/rust.zsh"
   return
 fi

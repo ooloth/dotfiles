@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Return if installed
-if command -v brew &> /dev/null; then
+if have brew; then
   printf "\n🍺 Homebrew is already installed\n"
   return
 fi

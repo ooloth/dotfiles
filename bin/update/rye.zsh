@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Install if missing
-if ! command -v rye &> /dev/null; then
+if ! have rye; then
   source "$HOME/Repos/ooloth/dotfiles/bin/install/rye.zsh"
   return
 fi

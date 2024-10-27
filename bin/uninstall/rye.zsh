@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Return if not installed
-if command -v rye &> /dev/null; then
+if ! have rye; then
   printf "\n🌾 Rye is not installed\n"
   return
 fi

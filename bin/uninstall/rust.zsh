@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Return if not installed
-if command -v rustup &> /dev/null; then
+if ! have rustup; then
   printf "\n🦀 Rust is not installed\n"
   return
 fi

@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Install if missing
-if ! command -v brew &> /dev/null; then
+if ! have brew; then
   source "$HOME/Repos/ooloth/dotfiles/bin/install/homebrew.zsh"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi

@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Return if installed
-if command -v rye &> /dev/null; then
+if have rye; then
   printf "\n🌾 Rye is already installed\n"
   return
 fi

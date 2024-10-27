@@ -1,7 +1,8 @@
 #!/usr/bin/env zsh
 
 # Return early if not installed
-if ! command -v gcloud &> /dev/null; then
+if ! have gcloud; then
+  printf "\n☁️ gcloud is not installed\n"
   return
 fi
 
