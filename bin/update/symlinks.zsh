@@ -50,15 +50,7 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   local relpath="${file#$DOTCONFIG/}"; # Get the relative path in that follows "$DOTCONFIG/" in $file (which is an absolute path)
   local dirpath="$(dirname "$relpath")"; # Get the directory path by dropping the file name
   local targetdir="$HOMECONFIG/$dirpath"; # Build the absolute path to the target directory
-  # local targetpath="$targetdir/$(basename "$relpath")" # Build the absolute path to the target file
 
-  # # Check if the target path exists and is a symlink pointing to the correct file
-  # if [ -L "$targetpath" ] && [ "$(readlink "$targetpath")" = "$file" ]; then
-  #   echo "Skipping $(basename $relpath) (already exists as a symlink at $targetpath)"
-  #   continue
-  # fi
-
-  # mkdir -p "$targetdir"; # Create the target directory (if it doesn't exist)
   maybe_symlink "$file" "$targetdir"; # Symlink the file to the target directory
 done
 
@@ -89,16 +81,15 @@ info "🔗 Creating symlinks in ~/Library"
 LAUNCHAGENTS="$HOME/Library/LaunchAgents"
 VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
+# TODO: remove this in favor of tmux sessions?
 # Set HOSTNAME environment variable for device-specific kitty startup sessions
 # see: https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.startup_session
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-414186903
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-434876639
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-2119054786
 # see: https://derivative.ca/UserGuide/MacOS_Environment_Variables
-mkdir -p "$LAUNCHAGENTS"
 maybe_symlink "$DOTFILES/library/kitty/kitty.environment.plist" "$LAUNCHAGENTS"
 
-mkdir -p "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/settings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/keybindings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/snippets" "$VSCODEUSER"
