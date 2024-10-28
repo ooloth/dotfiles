@@ -3,7 +3,7 @@
 DOTCONFIG="$HOME/Repos/ooloth/dotfiles/config"
 HOMECONFIG="$HOME/.config"
 
-source "$DOTCONFIG/zsh/banners.zsh"
+source "$DOTCONFIG/zsh/utils.zsh"
 info "🍱 Installing tmux terminfo updates and tpm plugins"
 
 ############

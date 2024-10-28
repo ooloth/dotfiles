@@ -10,7 +10,7 @@ if [ -d "$local_repo" ]; then
 fi
 
 # Otherwise, clone and symlink
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "📂 Installing yazi flavors"
 
 mkdir -p "$local_repo"

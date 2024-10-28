@@ -10,7 +10,7 @@
 # Exit immediately if a command exits with a non-zero status to avoid acting on bad data
 set -e
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🔑 Installing SSH key pair"
 
 ssh_dir="$HOME/.ssh"

@@ -7,7 +7,7 @@ if have rye; then
 fi
 
 # Otherwise, install
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🌾 Installing rye"
 
 # Use custom paths

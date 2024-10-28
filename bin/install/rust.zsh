@@ -7,7 +7,7 @@ if have rustup; then
 fi
 
 # Otherwise, install
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🦀 Installing rust"
 
 # Use custom paths

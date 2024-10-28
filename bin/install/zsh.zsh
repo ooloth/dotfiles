@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🐚 Configuring zsh shell"
 
 # Use the Homebrew version of Zsh

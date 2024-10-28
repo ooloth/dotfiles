@@ -8,7 +8,7 @@ fi
 
 # Then, install and update dependencies
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
-source "$DOTFILES/config/zsh/banners.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🍺 Updating homebrew packages"
 
 # Install all dependencies listed in Brewfile (and remove any that aren't)

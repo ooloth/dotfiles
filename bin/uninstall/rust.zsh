@@ -7,7 +7,7 @@ if ! have rustup; then
 fi
 
 # Otherwise, uninstall
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🦀 Uninstalling rust"
 
 # See: https://www.rust-lang.org/tools/install

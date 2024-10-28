@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🦀 Installing Node via fnm"
 
 latest_version="$(fnm ls-remote | tail -n 1)"

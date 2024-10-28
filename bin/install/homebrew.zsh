@@ -7,7 +7,7 @@ if have brew; then
 fi
 
 # Otherwise, install
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🍺 Installing homebrew"
 
 # See: https://brew.sh

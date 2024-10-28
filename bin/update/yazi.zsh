@@ -9,7 +9,7 @@ if [ ! -d "$local_repo" ]; then
 fi
 
 # Otherwise, update
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "📂 Updating yazi flavors"
 
 git -C "$local_repo" pull;

@@ -7,7 +7,7 @@ if ! have rye; then
 fi
 
 # Otherwise, update
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🌾 Updating rye"
 
 rye self update

@@ -9,7 +9,7 @@ if [ ! -d "$TPM" ]; then
 fi
 
 # Then, update
-source "$DOTFILES/config/zsh/banners.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "✨ Updating tmux dependencies"
 
 # see: https://github.com/tmux-plugins/tpm/blob/master/docs/managing_plugins_via_cmd_line.md

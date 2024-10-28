@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🔋 Updating executable permissions"
 
 # Find all ".zsh" files in $DOTFILES/bin and make them executable

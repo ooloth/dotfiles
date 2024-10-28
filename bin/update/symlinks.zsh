@@ -8,7 +8,7 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 DOTCONFIG="$DOTFILES/config"
 HOMECONFIG="$HOME/.config"
 
-source "$DOTCONFIG/zsh/banners.zsh"
+source "$DOTCONFIG/zsh/utils.zsh"
 
 sl() { ln -sfv "$1" "$2"; }
 

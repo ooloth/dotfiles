@@ -7,7 +7,7 @@ if ! have rye; then
 fi
 
 # Otherwise, uninstall
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🌾 Uninstalling rye"
 
 # See: https://www.rust-lang.org/tools/install

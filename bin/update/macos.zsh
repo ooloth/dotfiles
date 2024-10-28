@@ -6,7 +6,7 @@ if $IS_WORK; then
 fi
 
 # Otherwise, update
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "💻 Updating macOS software (after password, don't cancel!)"
 
 sudo softwareupdate --install --all --restart --agree-to-license --verbose

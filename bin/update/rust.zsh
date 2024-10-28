@@ -7,7 +7,7 @@ if ! have rustup; then
 fi
 
 # Otherwise, update
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🦀 Updating rust dependencies"
 
 rustup update

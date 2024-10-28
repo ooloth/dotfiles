@@ -5,7 +5,7 @@
 
 set -e
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/banners.zsh"
+source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
 info "🔑 Adding SSH key pair to GitHub"
 
 PRIVATE_KEY="$HOME/.ssh/id_rsa"

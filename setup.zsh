@@ -127,7 +127,7 @@ source settings.zsh
 # SUGGEST RESTART #
 ###################
 
-source "$DOTFILES/config/zsh/banners.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🎉 Setup complete!"
 
 printf "\nCongratulations! Your Mac is nearly set up.\n"
