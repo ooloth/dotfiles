@@ -139,7 +139,7 @@
   "http.proxyStrictSSL": false,
   "javascript.preferences.importModuleSpecifier": "relative",
   "javascript.updateImportsOnFileMove.enabled": "always",
-  "markdown.preview.fontSize": 0,
+  "markdown.preview.fontSize": 15,
   "markdown.updateLinksOnFileMove.enabled": "prompt",
   "notebook.codeActionsOnSave": {
     "notebook.source.fixAll": "explicit",
@@ -669,7 +669,6 @@
   "Lua.hint.arrayIndex": "Disable",
   "Lua.format.enable": false,
   "github.copilot.editor.enableAutoCompletions": true,
-  "window.zoomLevel": 1,
   "catppuccin.italicKeywords": false,
   "terminal.integrated.initialHint": false,
   "vscode-kubernetes.log-viewer.follow": true,
@@ -679,5 +678,10 @@
   "vscode-kubernetes.log-viewer.destination": "Webview",
   "vscode-kubernetes.log-viewer.wrap": false,
   "workbench.editor.empty.hint": "hidden",
-  "workbench.iconTheme": "eq-material-theme-icons-palenight"
+  "workbench.iconTheme": "eq-material-theme-icons-palenight",
+  "window.zoomLevel": 1,
+  "markdown-preview-github-styles.darkTheme": "dark_high_contrast",
+  "markdown-preview-github-styles.colorTheme": "dark",
+  "markdown-preview-enhanced.enablePreviewZenMode": true,
+  "markdown-preview-enhanced.enableTypographer": true,
 }
