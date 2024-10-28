@@ -679,5 +679,7 @@
   "vscode-kubernetes.log-viewer.wrap": false,
   "workbench.editor.empty.hint": "hidden",
   "workbench.iconTheme": "eq-material-theme-icons-palenight",
-  "window.zoomLevel": 1
+  "window.zoomLevel": 1,
+  "markdown.preview.markEditorSelection": false,
+  "markdown.preview.typographer": true
 }
