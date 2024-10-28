@@ -10,6 +10,7 @@ unsetopt GLOBAL_RCS
 export ZDOTDIR=$HOME/.config/zsh
 
 # Device
-export IS_AIR=$( [[ "$(hostname)" == "Air" ]] && echo "true" || echo "false" )
-export IS_MINI=$( [[ "$(hostname)" == "Mini" ]] && echo "true" || echo "false" )
-export IS_WORK=$( [[ "$(hostname)" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false" )
+export HOSTNAME=$(networksetup -getcomputername)
+export IS_AIR="$( [[ "$HOSTNAME" == "Air" ]] && echo "true" || echo "false" )"
+export IS_MINI="$( [[ "$HOSTNAME" == "Mini" ]] && echo "true" || echo "false" )"
+export IS_WORK="$( [[ "$HOSTNAME" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false" )"
