@@ -1,13 +1,13 @@
 #!/usr/bin/env zsh
 
-# Return if installed
 if have brew; then
   printf "\n🍺 Homebrew is already installed\n"
-  return
+  source "$DOTFILES/config/zsh/alias.zsh"
+  return_or_exit 0
 fi
 
 # Otherwise, install
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🍺 Installing homebrew"
 
 # See: https://brew.sh

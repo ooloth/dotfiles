@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🧃 Updating neovim dependencies"
 
 printf "😺 Updating vim-kitty-navigator\n"

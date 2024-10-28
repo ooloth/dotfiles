@@ -2,12 +2,13 @@
 
 # Install if missing
 if ! have rye; then
-  source "$HOME/Repos/ooloth/dotfiles/bin/install/rye.zsh"
-  return
+  source "$DOTFILES/bin/install/rye.zsh"
+  source "$DOTFILES/config/zsh/aliases.zsh"
+  return_or_exit 0
 fi
 
 # Otherwise, update
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🌾 Updating rye"
 
 rye self update

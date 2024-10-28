@@ -2,7 +2,8 @@
 
 # NOTE: this reverses the changes made by bin/install/tmux.zsh
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
+
 info "🍱 Uninstalling terminfo updates and tpm plugins"
 
 # Kill tmux server if running

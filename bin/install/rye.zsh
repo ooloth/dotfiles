@@ -1,13 +1,13 @@
 #!/usr/bin/env zsh
 
-# Return if installed
 if have rye; then
   printf "\n🌾 Rye is already installed\n"
-  return
+  source "$DOTFILES/config/zsh/alias.zsh"
+  return_or_exit 0
 fi
 
 # Otherwise, install
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🌾 Installing rye"
 
 # Use custom paths

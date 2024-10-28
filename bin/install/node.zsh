@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
+
 info "🦀 Installing Node via fnm"
 
 latest_version="$(fnm ls-remote | tail -n 1)"
@@ -10,10 +11,10 @@ latest_version_is_installed() {
   echo "$installed_versions" | grep -q "$latest_version"
 }
 
-# Return if installed
 if latest_version_is_installed; then
   printf "\n✅ The latest Node version ($latest_version) is already installed.\n"
-  return
+  source "$DOTFILES/config/zsh/alias.zsh"
+  return_or_exit 0
 fi
 
 # Otherwise, install

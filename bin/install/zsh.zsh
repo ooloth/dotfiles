@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🐚 Configuring zsh shell"
 
 # Use the Homebrew version of Zsh
@@ -9,7 +9,7 @@ shell_path="/opt/homebrew/bin/zsh"
 # Check if Zsh is installed
 if [[ ! -x "$shell_path" ]]; then
   printf "\n❌ Zsh not found at ${shell_path}. Installing Zsh via Homebrew...\n"
-  source "$HOME/Repos/ooloth/dotfiles/bin/install/homebrew.zsh"
+  source "$DOTFILES/bin/install/homebrew.zsh"
 
   # Check if Zsh is now installed
   if [[ ! -x "$shell_path" ]]; then

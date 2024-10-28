@@ -101,6 +101,10 @@ alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 
 alias R="exec -l $SHELL"
 source "$HOME/.config/zsh/restart.zsh"
+return_or_exit() {
+  local code="$1" # The exit code to return or exit with
+  return "$code" 2>/dev/null || exit "$code" # return if script is sourced; exit if run directly
+}
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias rm='trash' # see: https://github.com/sindresorhus/trash-cli
 source "$HOME/.config/zsh/run.zsh"

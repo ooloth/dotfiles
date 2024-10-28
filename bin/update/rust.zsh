@@ -1,13 +1,15 @@
 #!/usr/bin/env zsh
 
+
 # Install if missing
 if ! have rustup; then
-  source "$HOME/Repos/ooloth/dotfiles/bin/install/rust.zsh"
-  return
+  source "$DOTFILES/bin/install/rust.zsh"
+  source "$DOTFILES/config/zsh/aliases.zsh"
+  return_or_exit 0
 fi
 
 # Otherwise, update
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🦀 Updating rust dependencies"
 
 rustup update

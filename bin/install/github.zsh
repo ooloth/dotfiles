@@ -5,7 +5,7 @@
 
 set -e
 
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "🔑 Adding SSH key pair to GitHub"
 
 PRIVATE_KEY="$HOME/.ssh/id_rsa"
@@ -22,7 +22,7 @@ fi
 
 if [[ ! -s "$PRIVATE_KEY" || ! -s "$PUBLIC_KEY" ]]; then
   printf "\n❌ SSH keys not found. Generating a new key pair...\n"
-  source "$HOME/Repos/ooloth/dotfiles/install/ssh.zsh"
+  source "$DOTFILES/install/ssh.zsh"
 
   # Check if the key pair was added to the ssh-agent
   if ! ssh-add -l >/dev/null; then
@@ -40,7 +40,7 @@ vared -p "All set? (y/N)" -c gitHubKeyAdded
 
 if [[ ! "$gitHubKeyAdded" == 'y' ]]; then
   printf "\nYou have chosen...poorly.\n"
-  return 0 || exit 0
+  return_or_exit 0
 else
   printf "\nExcellent!\n"
 fi

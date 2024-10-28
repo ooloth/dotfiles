@@ -16,7 +16,7 @@ activate_venv() {
     unset VIRTUAL_ENV
     export PYTHONPATH=$HOME
     export MYPYPATH=$HOME
-    return
+    return 0
   fi
 
   # its much faster to activate the venv directly instead of using the pyenv shell integration

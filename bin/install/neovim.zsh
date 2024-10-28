@@ -3,14 +3,14 @@
 repo="knubie/vim-kitty-navigator"
 local_repo="$HOME/Repos/$repo"
 
-# Return if installed
 if [ -d "$local_repo" ]; then
   printf "\n📂 vim-kitty-navigator is already installed\n"
-  return
+  source "$DOTFILES/config/zsh/alias.zsh"
+  return_or_exit 0
 fi
 
 # Otherwise, clone and symlink
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "📂 Installing vim-kitty-navigator kitten"
 
 # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty

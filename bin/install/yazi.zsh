@@ -3,14 +3,14 @@
 repo="yazi-rs/flavors"
 local_repo="$HOME/Repos/$repo"
 
-# Return if installed
 if [ -d "$local_repo" ]; then
   printf "\n📂 yazi flavors are already installed\n"
-  return
+  source "$DOTFILES/config/zsh/alias.zsh"
+  return_or_exit 0
 fi
 
 # Otherwise, clone and symlink
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/utils.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 info "📂 Installing yazi flavors"
 
 mkdir -p "$local_repo"
