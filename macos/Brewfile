@@ -2,7 +2,7 @@
 # see: https://github.com/Homebrew/homebrew-bundle
 
 # Execute the `hostname` command in a subshell and remove the trailing '\n'
-hostname = `hostname`.chomp
+hostname = `networksetup -getcomputername`.chomp
 
 ########
 # TAPS #
