@@ -20,7 +20,6 @@ maybe_symlink() {
 
   # Check if the target file exists and is a symlink pointing to the correct source file
   if [ -L "$target_path" ] && [ "$(readlink "$target_path")" = "$source_file" ]; then
-    echo "Skipping $file_name (already exists as a symlink at $target_path)"
     return 0
   fi
 
@@ -30,11 +29,11 @@ maybe_symlink() {
 
 # TODO: start by removing broken symlinks in each target directory?
 
+info "🔗 Updating symlinks"
+
 #############
 # Target: ~ #
 #############
-
-info "🔗 Creating symlinks in ~/"
 
 maybe_symlink "$DOTFILES/.hushlogin" "$HOME"
 maybe_symlink "$DOTFILES/.zshenv" "$HOME"
@@ -42,8 +41,6 @@ maybe_symlink "$DOTFILES/.zshenv" "$HOME"
 #####################
 # Target: ~/.config #
 #####################
-
-info "🔗 Creating symlinks in ~/.config"
 
 # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
 fd --type file --hidden . "$DOTCONFIG" | while read file; do
@@ -76,8 +73,6 @@ fi
 # Target: ~/Library #
 #####################
 
-info "🔗 Creating symlinks in ~/Library"
-
 LAUNCHAGENTS="$HOME/Library/LaunchAgents"
 VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
@@ -89,7 +84,8 @@ VSCODEUSER="$HOME/Library/Application Support/Code/User"
 # see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-2119054786
 # see: https://derivative.ca/UserGuide/MacOS_Environment_Variables
 maybe_symlink "$DOTFILES/library/kitty/kitty.environment.plist" "$LAUNCHAGENTS"
-
 maybe_symlink "$DOTFILES/library/vscode/settings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/keybindings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/snippets" "$VSCODEUSER"
+
+printf "🚀 All symlinks are up to date.\n"

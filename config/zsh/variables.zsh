@@ -1,8 +1,3 @@
-# Device
-export IS_AIR=$( [[ "$(hostname)" == "Air" ]] && echo "true" || echo "false" )
-export IS_MINI=$( [[ "$(hostname)" == "Mini" ]] && echo "true" || echo "false" )
-export IS_WORK=$( [[ "$(hostname)" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false" )
-
 # Dotfiles
 export DOTFILES=$HOME/Repos/ooloth/dotfiles
 

@@ -65,7 +65,6 @@ function error() {
   banner $text $color
 }
 
-
 have() {
   if [ -z "$1" ]; then
     echo "Usage: have <command, alias or function>";
