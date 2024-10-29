@@ -99,7 +99,7 @@ alias oo='cd $HOME/Repos/ooloth'
 pi() { eval "$(pyenv init -)"; }
 alias pilots='cd $HOME/Repos/ooloth/download-pilots'
 
-alias R="exec -l $SHELL"
+alias R="source $HOME/.zshenv && source $HOME/.config/zsh/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
 source "$HOME/.config/zsh/restart.zsh"
 return_or_exit() {
   local code="$1" # The exit code to return or exit with
