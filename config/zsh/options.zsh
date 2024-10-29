@@ -13,6 +13,7 @@ setopt HIST_IGNORE_ALL_DUPS      # Delete an old recorded event if a new event i
 setopt HIST_IGNORE_DUPS          # Do not record an event that was just recorded again.
 setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space.
 setopt HIST_SAVE_NO_DUPS         # Do not write a duplicate event to the history file.
+setopt INC_APPEND_HISTORY        # Record events as soon as they happen instead of waiting until the shell exits (so I can reload the shell without losing history).
 setopt SHARE_HISTORY             # Share history between all sessions.
 
 # enable vi mode
