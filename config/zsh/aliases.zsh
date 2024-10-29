@@ -115,7 +115,7 @@ sl() { ln -sfv "$1" "$2"; } # easier symlinking
 source "$HOME/.config/zsh/start.zsh"
 source "$HOME/.config/zsh/stop.zsh"
 source "$HOME/.config/zsh/submit.zsh"
-symlinks() { "$DOTFILES/bin/update/symlinks.zsh"; }
+alias symlinks="$DOTFILES/bin/update/symlinks.zsh"
 
 t() { tmux attach || exec tmux; }
 source "$HOME/.config/zsh/test.zsh"
@@ -125,10 +125,7 @@ alias ts="tailscale"
 source "$HOME/.config/zsh/update.zsh"
 
 v() {
-  if have "nvim"; then nvim "$@";
-  elif have "vim"; then vim "$@";
-  else vi "$@";
-  fi
+  have "nvim" && nvim "$@" || have "vim" && vim "$@" || vi "$@"
 }
 
 # NOTE: "warn" defined in utils.zsh
