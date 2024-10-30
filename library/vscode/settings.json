@@ -152,13 +152,14 @@
   "notebook.output.scrolling": true,
   "notebook.stickyScroll.enabled": true,
   "npm.enableRunFromFolder": true,
+
   "prettier.documentSelectors": ["**/*.astro"],
   "prettier.requireConfig": true,
   "print-it.default.template": "console.log(\"{{escaped}}:\", {{raw}})",
   "print-it.html.template": "console.log(\"{{escaped}}:\", {{raw}});",
   "print-it.javascript.template": "console.log(\"{{escaped}}:\", {{raw}})",
   "print-it.javascriptreact.template": "console.log('{{escaped}}:', {{raw}})",
-  "print-it.python.template": "print(f\"{{{escaped}}=}\")",
+  "print-it.python.template": "print(f\"{{{raw}}=}\")",
   "print-it.rust.template": "println!(\"{{escaped}}: {:?}\", {{raw}});",
   "print-it.shellscript.template": "echo \"{{escaped}}: ${{raw}}\"",
   "print-it.typescript.template": "console.log(\"{{escaped}}:\", {{raw}})",
@@ -167,6 +168,7 @@
   "problems.showCurrentInStatus": true,
   // "python.testing.autoTestDiscoverOnSaveEnabled": false,
   // "python.testing.unittestEnabled": false,
+
   "redhat.telemetry.enabled": false,
   "references.preferredLocation": "view",
   "scm.inputFontFamily": "editor",
