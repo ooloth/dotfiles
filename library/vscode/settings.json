@@ -174,7 +174,8 @@
     "**/.js.map": true,
     "**/bower_components": true,
     "**/dist": true,
-    "**/tmp": true
+    "**/tmp": true,
+    "/var/**/*": true
   },
   "search.searchEditor.doubleClickBehaviour": "openLocationToSide",
   "search.smartCase": true,
