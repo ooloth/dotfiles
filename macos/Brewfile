@@ -213,6 +213,7 @@ vscode "editorconfig.editorconfig"
 vscode "equinusocio.vsc-material-theme"
 vscode "equinusocio.vsc-material-theme-icons"
 vscode "esbenp.prettier-vscode"
+vscode "fill-labs.dependi"
 vscode "formulahendry.auto-rename-tag"
 vscode "ginfuru.better-nunjucks"
 vscode "github.copilot"
@@ -266,7 +267,6 @@ vscode "xadillax.viml"
 if hostname == "Air"
   vscode "denoland.vscode-deno" # for deno
   vscode "golang.go"
-  vscode "serayuzgur.crates" # for rust
   vscode "vadimcn.vscode-lldb" # for debugging rust, go and other compiled languages
 end
 
