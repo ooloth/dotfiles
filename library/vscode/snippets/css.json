@@ -1,13 +1,9 @@
 {
   "CSS Variables": {
     "prefix": "v",
-    "body": ["var(--$1);"],
+    "body": [
+      "var(--$1);"
+    ],
     "description": "Insert CSS variable"
-  },
-
-  "Styled Components Theme Props": {
-    "prefix": "tp",
-    "body": ["${p => p.theme.$1};"],
-    "description": "Use SC theme props"
   }
 }
