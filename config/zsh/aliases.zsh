@@ -78,18 +78,7 @@ alias mini="tailscale ssh michael@mini"                   # automatically log in
 alias mu="cd $HOME/Repos/ooloth/michaeluloth.com"
 
 n() { npm install "$@"; }
-nb() { n && npm run build; }
-nc() { npm run check; }
-nd() { n && npm run dev; }
-nfc() { npm run format:check; }
-nff() { npm run format:fix; }
 ng() { "$DOTFILES/bin/update/npm.zsh"; }
-nk() { npm run types:check; }
-nl() { npm run lint; }
-nlc() { npm run lint:check; }
-nlf() { npm run lint:fix; }
-ns() { n && npm run start; }
-nt() { npm run test "$@"; }
 nu() { n && npm-check -u; }
 alias nvim="NVIM_APPNAME=nvim-ide nvim"
 alias nvm="fnm"
