@@ -88,4 +88,4 @@ maybe_symlink "$DOTFILES/library/vscode/settings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/keybindings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/snippets" "$VSCODEUSER"
 
-printf "🚀 All dotfiles symlinks are up to date.\n"
+printf "\n🚀 All dotfiles symlinks are up to date.\n"
