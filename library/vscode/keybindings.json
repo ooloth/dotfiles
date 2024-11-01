@@ -110,6 +110,10 @@
   // Trigger suggestion menu
   { "key": "ctrl+s",     "command": "editor.action.triggerSuggest", "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible" },
 
+  // Insert custom print statements for each language
+  { "key": "cmd+l", "command": "print-it.PrintIt", "when": "editorTextFocus" },
+  { "key": "alt+[", "command": "-print-it.PrintIt", "when": "editorTextFocus" },
+
   ///////////////
   // WHICH KEY //
   ///////////////
