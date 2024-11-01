@@ -2,7 +2,7 @@
 
 It's [not possible](https://github.com/gdh1995/vimium-c/issues/563) to sync Vimium-C's settings to a file, so as a workaround, here's a best-effort attempt to document the settings I've customized:
 
-## Custom key mappings
+## 🖐️ Custom key mappings
 
 ```
 map yy copyWindowInfo type="tab" format="[${title}](${url})"
@@ -18,3 +18,9 @@ map H previousTab
 map J goForward
 map K goBack
 ```
+
+## 📚 Resources
+
+- [Wiki](https://github.com/gdh1995/vimium-c/wiki)
+- [Wiki: Style the UI of Vimium C using custom CSS](https://github.com/gdh1995/vimium-c/wiki/Style-the-UI-of-Vimium-C-using-custom-CSS)
+- [Wiki: List of all commands](https://github.com/gdh1995/vimium-c/wiki/List-of-all-commands)
