@@ -28,6 +28,7 @@ end
 # PACKAGES #
 ############
 
+brew "bash"
 brew "bat" # replaces cat
 brew "btop" # top alternative
 brew "bufbuild/buf/buf" # for buf_lint in neovim
@@ -216,6 +217,7 @@ vscode "equinusocio.vsc-material-theme-icons"
 vscode "esbenp.prettier-vscode"
 vscode "fill-labs.dependi"
 vscode "formulahendry.auto-rename-tag"
+vscode "foxundermoon.shell-format"
 vscode "ginfuru.better-nunjucks"
 vscode "github.copilot"
 vscode "github.copilot-chat"
@@ -249,6 +251,7 @@ vscode "patbenatar.advanced-new-file"
 vscode "rangav.vscode-thunder-client"
 vscode "redhat.vscode-yaml"
 vscode "richie5um2.vscode-sort-json"
+vscode "rogalmic.bash-debug"
 vscode "rust-lang.rust-analyzer"
 vscode "sidneys1.gitconfig"
 vscode "sleistner.vscode-fileutils"
