@@ -72,8 +72,8 @@ alias lt3="lt --level=3"                                  # file tree (3 levels 
 alias lt4="lt --level=4"                                  # file tree (4 levels only)
 
 alias md="cd $HOME/Repos/ooloth/media"
-alias mr="sudo shutdown -r now" # restart macos
-alias mini="tailscale ssh michael@mini"                   # automatically log in using SSH key pair
+alias mr="sudo shutdown -r now"         # restart macos
+alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 alias mu="cd $HOME/Repos/ooloth/michaeluloth.com"
 
@@ -88,14 +88,16 @@ alias oo="cd $HOME/Repos/ooloth"
 pi() { eval "$(pyenv init -)"; }
 alias pilots="cd $HOME/Repos/ooloth/download-pilots"
 
+alias r="uv run --project $HOME/Repos/ooloth/scripts -m cli"
+# alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
 alias R="source $HOME/.zshenv && source $HOME/.config/zsh/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
 source "$HOME/.config/zsh/restart.zsh"
 return_or_exit() {
-  local code="$1" # The exit code to return or exit with
+  local code="$1"                            # The exit code to return or exit with
   return "$code" 2>/dev/null || exit "$code" # return if script is sourced; exit if run directly
 }
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
-alias rm="trash" # see: https://github.com/sindresorhus/trash-cli
+alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
 source "$HOME/.config/zsh/run.zsh"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
@@ -124,7 +126,7 @@ alias x="exit"
 zt() {
   # [z]sh [t]ime: measure how long new shells take to launch
   for i in $(seq 1 10); do
-    /usr/bin/time zsh -i -c exit;
+    /usr/bin/time zsh -i -c exit
   done
 }
 
