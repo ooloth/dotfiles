@@ -88,8 +88,8 @@ alias oo="cd $HOME/Repos/ooloth"
 pi() { eval "$(pyenv init -)"; }
 alias pilots="cd $HOME/Repos/ooloth/download-pilots"
 
-alias r="uv run --project $HOME/Repos/ooloth/scripts -m cli"
-# alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
+# Keep 'r' as an alias that can be overridden by alias in work/aliases.zsh
+alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
 alias R="source $HOME/.zshenv && source $HOME/.config/zsh/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
 source "$HOME/.config/zsh/restart.zsh"
 return_or_exit() {
