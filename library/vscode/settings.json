@@ -697,8 +697,7 @@
   "workbench.editor.empty.hint": "hidden",
   "workbench.iconTheme": "eq-material-theme-icons-palenight",
   "workbench.startupEditor": "newUntitledFile",
-
-  // These often change:
-  "window.zoomLevel": 1,
-  "workbench.activityBar.location": "hidden"
+  "workbench.activityBar.location": "hidden",
+  "database-client.autoSync": true,
+  "window.zoomLevel": 1
 }
