@@ -7,10 +7,15 @@ test() {
   fi
 
   case $current_directory in
-    advent-of-code)
-      bin/test "$@" ;;
-    *)
-      error "🚨 No 'test' case defined for '/$current_directory'" ;;
+  advent-of-code)
+    bin/test "$@"
+    ;;
+  scripts)
+    PYTHONPATH=. pytest "$@"
+    ;;
+  *)
+    error "🚨 No 'test' case defined for '/$current_directory'"
+    ;;
   esac
 }
 
