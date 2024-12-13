@@ -119,6 +119,7 @@
   ///////////////
 
   // use shift+shift as leader key fallback everywhere (since it's always available)
+  { "key": "ctrl+,", "command": "whichkey.show" },
   { "key": "shift shift", "command": "whichkey.show" },
 
   // use space as leader key in notebook editors
