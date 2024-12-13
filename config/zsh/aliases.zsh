@@ -36,9 +36,7 @@ alias f="vifm . ."
 alias g="lazygit"
 
 alias h="cd $HOME"
-# alias h='history | grep'
 # NOTE: "have" defined in utils.zsh
-# alias history='history 0'
 
 alias image="kitten icat" # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 # NOTE: "info" defined in utils.zsh
@@ -62,6 +60,7 @@ alias kl="stern"
 # kill process running on given port
 kill() { lsof -t -i:"$1" | xargs kill -9; }
 
+alias lint="check" # I forget I refer to this as "check" sometimes
 # see: https://github.com/eza-community/eza#command-line-options
 # NOTE: see EZA_* env vars in variables.zsh
 alias ls="eza --all --group-directories-first --classify" # top level dir + files

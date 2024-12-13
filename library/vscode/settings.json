@@ -711,4 +711,10 @@
   "database-client.autoSync": true,
   "window.zoomLevel": 1,
   "markdown.preview.doubleClickToSwitchToEditor": false
+  "terminal.integrated.inheritEnv": false,
+  "workbench.editorAssociations": {
+    "*.copilotmd": "vscode.markdown.preview.editor",
+    "file:/**/*.parquet": "jupyter-data-wrangler"
+  },
+  "window.zoomLevel": 1
 }
