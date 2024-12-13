@@ -23,8 +23,9 @@ maybe_symlink() {
     return 0
   fi
 
-  mkdir -p "$target_dir";
-  ln -sfv "$source_file" "$target_dir";
+  mkdir -p "$target_dir"
+  printf "🔗 " # inline prefix for the output of the next line
+  ln -sfv "$source_file" "$target_dir"
 }
 
 # TODO: start by removing broken symlinks in each target directory?
@@ -44,11 +45,11 @@ maybe_symlink "$DOTFILES/.zshenv" "$HOME"
 
 # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
 fd --type file --hidden . "$DOTCONFIG" | while read file; do
-  local relpath="${file#$DOTCONFIG/}"; # Get the relative path in that follows "$DOTCONFIG/" in $file (which is an absolute path)
-  local dirpath="$(dirname "$relpath")"; # Get the directory path by dropping the file name
-  local targetdir="$HOMECONFIG/$dirpath"; # Build the absolute path to the target directory
+  local relpath="${file#$DOTCONFIG/}"    # Get the relative path in that follows "$DOTCONFIG/" in $file (which is an absolute path)
+  local dirpath="$(dirname "$relpath")"  # Get the directory path by dropping the file name
+  local targetdir="$HOMECONFIG/$dirpath" # Build the absolute path to the target directory
 
-  maybe_symlink "$file" "$targetdir"; # Symlink the file to the target directory
+  maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
 done
 
 vim_kitty_navigator="$HOME/Repos/knubie/vim-kitty-navigator"
