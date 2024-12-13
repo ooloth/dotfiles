@@ -699,5 +699,10 @@
   "workbench.startupEditor": "newUntitledFile",
   "workbench.activityBar.location": "hidden",
   "database-client.autoSync": true,
+  "terminal.integrated.inheritEnv": false,
+  "workbench.editorAssociations": {
+    "*.copilotmd": "vscode.markdown.preview.editor",
+    "file:/**/*.parquet": "jupyter-data-wrangler"
+  },
   "window.zoomLevel": 1
 }
