@@ -77,6 +77,7 @@ alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pai
 alias mu="cd $HOME/Repos/ooloth/michaeluloth.com"
 
 n() { npm install "$@"; }
+source "$HOME/.config/zsh/new.zsh"
 ng() { "$DOTFILES/bin/update/npm.zsh"; }
 nu() { n && npm-check -u; }
 alias nvim="NVIM_APPNAME=nvim-ide nvim"
