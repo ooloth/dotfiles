@@ -468,17 +468,27 @@
       { "key": "S", "name": "Search symbols in project", "command": "workbench.action.showAllSymbols", "type": "command" }
     ]},
 
-     { "key": "t", "name": "+Terminal", "type": "bindings", "bindings": [
-      // NOTE: can also use ctrl+[] to navigate terminal groups more quickly
-      { "key": "[", "name": "Focus prev group", "command": "workbench.action.terminal.focusPrevious", "type": "command" },
-      { "key": "]", "name": "Focus prev group", "command": "workbench.action.terminal.focusNext", "type": "command" },
-      { "key": "e", "name": "New terminal in editor", "command": "workbench.action.createTerminalEditor", "type": "command" },
-      { "key": "m", "name": "Toggle maximized panel", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
-      { "key": "n", "name": "New terminal", "command": "workbench.action.terminal.new", "type": "command" },
-      { "key": "t", "name": "Toggle terminal", "command": "workbench.action.terminal.toggleTerminal", "type": "command" },
-      { "key": "y", "name": "Copy output of last command", "command": "workbench.action.terminal.copyLastCommandOutput", "type": "command" },
-      { "key": "Y", "name": "Copy last command and output", "command": "workbench.action.terminal.copyLastCommandAndLastCommandOutput", "type": "command" }
+     { "key": "t", "name": "+Tests", "type": "bindings", "bindings": [
+      { "key": "a", "name": "Run all", "command": "testing.runAll", "type": "command" },
+      { "key": "c", "name": "Run test at cursor", "command": "testing.runAtCursor", "type": "command" },
+      { "key": "d", "name": "Debug test in current file", "command": "testing.debugCurrentFile", "type": "command" },
+      { "key": "e", "name": "Open Test Explorer", "command": "workbench.view.testing.focus", "type": "command" },
+      { "key": "o", "name": "Peek at test output", "command": "testing.openOutputPeek", "type": "command" },
+      { "key": "r", "name": "Refresh tests", "command": "testing.refreshTests", "type": "command" },
+      { "key": "t", "name": "Run tests in current file", "command": "testing.runCurrentFile", "type": "command" }
     ]},
+
+    //  { "key": "t", "name": "+Terminal", "type": "bindings", "bindings": [
+    //   // NOTE: can also use ctrl+[] to navigate terminal groups more quickly
+    //   { "key": "[", "name": "Focus prev group", "command": "workbench.action.terminal.focusPrevious", "type": "command" },
+    //   { "key": "]", "name": "Focus prev group", "command": "workbench.action.terminal.focusNext", "type": "command" },
+    //   { "key": "e", "name": "New terminal in editor", "command": "workbench.action.createTerminalEditor", "type": "command" },
+    //   { "key": "m", "name": "Toggle maximized panel", "command": "workbench.action.toggleMaximizedPanel", "type": "command" },
+    //   { "key": "n", "name": "New terminal", "command": "workbench.action.terminal.new", "type": "command" },
+    //   { "key": "t", "name": "Toggle terminal", "command": "workbench.action.terminal.toggleTerminal", "type": "command" },
+    //   { "key": "y", "name": "Copy output of last command", "command": "workbench.action.terminal.copyLastCommandOutput", "type": "command" },
+    //   { "key": "Y", "name": "Copy last command and output", "command": "workbench.action.terminal.copyLastCommandAndLastCommandOutput", "type": "command" }
+    // ]},
 
     { "key": "u", "name": "+UI", "type": "bindings", "bindings": [
       { "key": "a", "name": "Toggle activity bar", "command": "workbench.action.toggleActivityBarVisibility", "type": "command" },
@@ -699,5 +709,6 @@
   "workbench.startupEditor": "newUntitledFile",
   "workbench.activityBar.location": "hidden",
   "database-client.autoSync": true,
-  "window.zoomLevel": 1
+  "window.zoomLevel": 1,
+  "markdown.preview.doubleClickToSwitchToEditor": false
 }
