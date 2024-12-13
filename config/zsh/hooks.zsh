@@ -12,7 +12,7 @@ activate_venv() {
   # if there's no pyenv venv for this directory, deactivate any venv sticking from a previous directory and be done
   if [[ ! -d "$PYENV_VENV" ]]; then
     # remove all pyenv paths from PATH (see: https://stackoverflow.com/a/62950499/8802485)
-    export PATH=`echo $PATH | tr ':' '\n' | sed '/pyenv/d' | tr '\n' ':' | sed -r 's/:$/\n/'`
+    export PATH=$(echo $PATH | tr ':' '\n' | sed '/pyenv/d' | tr '\n' ':' | sed -r 's/:$/\n/')
     unset VIRTUAL_ENV
     export PYTHONPATH=$HOME
     export MYPYPATH=$HOME
