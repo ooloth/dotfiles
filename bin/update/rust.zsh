@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+if $IS_WORK; then
+  return_or_exit 0
+fi
 
 # Install if missing
 if ! have rustup; then
