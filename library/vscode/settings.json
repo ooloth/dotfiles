@@ -709,8 +709,7 @@
   "workbench.startupEditor": "newUntitledFile",
   "workbench.activityBar.location": "hidden",
   "database-client.autoSync": true,
-  "window.zoomLevel": 1,
-  "markdown.preview.doubleClickToSwitchToEditor": false
+  "markdown.preview.doubleClickToSwitchToEditor": false,
   "terminal.integrated.inheritEnv": false,
   "workbench.editorAssociations": {
     "*.copilotmd": "vscode.markdown.preview.editor",
