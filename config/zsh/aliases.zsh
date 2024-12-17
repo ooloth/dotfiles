@@ -94,7 +94,7 @@ alias R="source $HOME/.zshenv && source $HOME/.config/zsh/.zshrc" # see https://
 source "$HOME/.config/zsh/restart.zsh"
 return_or_exit() {
   local code="$1"                            # The exit code to return or exit with
-  return "$code" 2>/dev/null || exit "$code" # return if script is sourced; exit if run directly
+  return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
 }
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
