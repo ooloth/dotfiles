@@ -5,6 +5,9 @@
   "[astro][css][graphql][html][javascript][javascriptreact][jsonc][markdown][toml][typescript][typescriptreact][vue][xml][yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  },
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
