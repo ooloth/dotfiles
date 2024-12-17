@@ -226,6 +226,7 @@ vscode "github.vscode-github-actions"
 vscode "github.vscode-pull-request-github"
 vscode "hashicorp.terraform"
 vscode "hoovercj.vscode-settings-cycler"
+vscode "humao.rest-client" # alternative to thunder client
 vscode "jasonnutter.vscode-codeowners"
 vscode "jdinhlife.gruvbox"
 vscode "johnnymorganz.stylua"
