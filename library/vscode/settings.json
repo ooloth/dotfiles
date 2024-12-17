@@ -100,10 +100,7 @@
     "*.plist": "xml",
     ".prettierrc": "yaml",
     ".python-version": "plaintext",
-    "*.vifm": "vimrc",
-    "*.webc": "html",
-    "**/kitty/**/*.conf": "shellscript",
-    "vifmrc": "vimrc"
+    "*.webc": "html"
   },
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,

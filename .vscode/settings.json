@@ -3,6 +3,12 @@
     "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
   "evenBetterToml.taplo.configFile.path": ".taplo.toml",
+  "files.associations": {
+    "**/kitty/**/*.conf": "shellscript",
+    "*.vifm": "vimrc",
+    "gitmux.conf": "yaml", // see: https://github.com/arl/gitmux?tab=readme-ov-file#customizing
+    "vifmrc": "vimrc"
+  },
   "Lua.diagnostics.globals": ["O", "vim", "use"],
   "stylua.configPath": ".stylua.toml",
   "workbench.panel.opensMaximized": "always"
