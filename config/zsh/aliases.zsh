@@ -116,7 +116,7 @@ alias ts="tailscale"
 source "$HOME/.config/zsh/update.zsh"
 
 v() {
-  have "nvim" && nvim "$@" || have "vim" && vim "$@" || vi "$@"
+  (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"
 }
 
 # NOTE: "warn" defined in utils.zsh
