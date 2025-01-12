@@ -85,7 +85,9 @@ alias nvm="fnm"
 
 alias oo="cd $HOME/Repos/ooloth"
 
-pi() { eval "$(pyenv init -)"; }
+if $IS_WORK; then
+  pi() { eval "$(pyenv init -)"; }
+fi
 alias pilots="cd $HOME/Repos/ooloth/download-pilots"
 
 # Keep 'r' as an alias that can be overridden by alias in work/aliases.zsh

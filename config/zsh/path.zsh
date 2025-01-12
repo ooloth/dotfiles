@@ -14,7 +14,9 @@ export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
 # Pyenv
 # NOTE: do NOT use eval "$(pyenv init -)" or eval "$(pyenv virtualenv-init -)" (they slow the shell down a lot)
 # see: https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+if $IS_WORK; then
+  command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+fi
 
 # Rust
 export PATH="$HOME/.config/cargo/bin:$PATH"

@@ -40,9 +40,12 @@ export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
 export MYPYPATH="$HOME"
 # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
 export PYTHONPATH="$HOME"
-export PYENV_ROOT="$HOME/.pyenv"
 # Avoid extra venv at beginning of prompt (see: https://stackoverflow.com/a/72715907/8802485)
 export VIRTUAL_ENV_PROMPT=''
+
+if $IS_WORK; then
+  export PYENV_ROOT="$HOME/.pyenv"
+fi
 
 # Rust
 export CARGO_HOME="$HOME/.config/cargo"
