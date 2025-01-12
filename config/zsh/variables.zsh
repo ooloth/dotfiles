@@ -41,8 +41,6 @@ export MYPYPATH="$HOME"
 # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
 export PYTHONPATH="$HOME"
 export PYENV_ROOT="$HOME/.pyenv"
-export RYE_HOME="$HOME/.config/rye"
-source "$RYE_HOME/env"
 # Avoid extra venv at beginning of prompt (see: https://stackoverflow.com/a/72715907/8802485)
 export VIRTUAL_ENV_PROMPT=''
 

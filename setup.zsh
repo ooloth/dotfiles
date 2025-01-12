@@ -68,7 +68,11 @@ printf "Confirming you are authorized to install things on this Mac.\n"
 
 sudo -v
 # Keep-alive: update existing `sudo` time stamp until setup has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do
+  sudo -n true
+  sleep 60
+  kill -0 "$$" || exit
+done 2>/dev/null &
 
 printf "\nYup. That's the password.\n"
 
@@ -113,7 +117,6 @@ source homebrew.zsh
 source "$DOTFILES/bin/update/homebrew.zsh"
 source zsh.zsh
 source rust.zsh
-source rye.zsh
 source node.zsh
 source "$DOTFILES/bin/update/npm.zsh"
 source tmux.zsh
