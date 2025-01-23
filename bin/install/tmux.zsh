@@ -4,17 +4,20 @@ DOTCONFIG="$HOME/Repos/ooloth/dotfiles/config"
 HOMECONFIG="$HOME/.config"
 
 source "$DOTCONFIG/zsh/utils.zsh"
-info "🍱 Installing tmux terminfo updates and tpm plugins"
+info "🍱 Installing tpm and tmux plugins"
+# info "🍱 Installing tmux terminfo updates and tpm plugins"
 
 ############
 # TERMINFO #
 ############
 
-printf "💪 Installing tmux.terminfo\n"
-tic -x "$DOTCONFIG/tmux/tmux.terminfo"
+# TODO: still needed? going to try skipping...
 
-printf "💪 Installing xterm-256color-italic.terminfo\n"
-tic -x "$DOTCONFIG/tmux/xterm-256color-italic.terminfo"
+# printf "💪 Installing tmux.terminfo\n"
+# tic -x "$DOTCONFIG/tmux/tmux.terminfo"
+
+# printf "💪 Installing xterm-256color-italic.terminfo\n"
+# tic -x "$DOTCONFIG/tmux/xterm-256color-italic.terminfo"
 
 # TODO: confirm success + handle failure
 
