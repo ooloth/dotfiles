@@ -48,6 +48,7 @@ else
   else
     printf "\n❌ Failed to generate SSH key pair.\n"
     return 1
+  fi
 fi
 
 ##########################
