@@ -17,25 +17,24 @@ trap 'handle_error $? $LINENO' ERR
 ###########
 
 printf "Welcome to your new Mac!"
-
 printf "This installation will perform the following steps:\n"
-
 printf "1. Confirm this is a Mac\n"
 printf "2. Ask you to enter your password\n"
 printf "3. Confirm the Command Line Developer Tools are installed\n"
 printf "4. Clone ooloth/dotfiles\n"
 printf "5. Create your SSH keys\n"
 printf "6. Confirm you can SSH to GitHub\n"
-printf "7. Install homebrew and the packages, casks, App Store apps and VS Code extensions listed in your Brewfile\n"
-printf "8. Configure your Mac to use the Homebrew version of Zsh\n"
-printf "9. Install rust\n"
-printf "10. Install the latest version of Node via fnm and set it as the default\n"
-printf "11. Install global npm dependencies\n"
-printf "12. Install tmux dependencies\n"
-printf "13. Install neovim dependencies\n"
-printf "14. Install yazi flavors\n"
-printf "15. Symlink your dotfiles to your home and library directories\n"
-printf "16. Update macOS system settings\n"
+printf "7. Install Homebrew\n"
+printf "8. Install the packages, casks, App Store apps and VS Code extensions listed in your Brewfile\n"
+printf "9. Configure your Mac to use the Homebrew version of Zsh\n"
+printf "10. Install rust (if not work computer)\n"
+printf "11. Install the latest version of Node via fnm and set it as the default\n"
+printf "12. Install global npm dependencies\n"
+printf "13. Install tmux dependencies\n"
+printf "14. Install neovim dependencies\n"
+printf "15. Install yazi flavors (if not work computer)\n"
+printf "16. Symlink your dotfiles to your home and library directories\n"
+printf "17. Update macOS system settings\n"
 
 vared -p "Sound good? (y/N) " -c key
 
@@ -61,7 +60,7 @@ if [ "$(uname)" != "Darwin" ]; then
   exit 1
 fi
 
-printf "\nThis is definitely a Mac. But you knew that already.\n"
+printf "\nThis is a Mac. But you knew that already.\n"
 
 # You know this Mac's password
 printf "Confirming you are authorized to install things on this Mac.\n"
@@ -133,9 +132,8 @@ source settings.zsh
 source "$DOTFILES/config/zsh/utils.zsh"
 info "🎉 Setup complete!"
 
-printf "\nCongratulations! Your Mac is nearly set up.\n"
-
-printf "\nTo apply your your preferences, your computer needs to restart.\n\n"
+printf "\nCongratulations! Your Mac is nearly set up.\n\n"
+printf "To apply your your preferences, your computer needs to restart.\n\n"
 
 vared -p "Are you ready to restart now (recommended)? (y/N) " -c restart_choice
 
