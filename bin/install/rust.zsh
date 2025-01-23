@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+if $IS_WORK; then
+  return_or_exit 0
+fi
+
 if have rustup; then
   printf "\n🦀 Rust is already installed\n"
   source "$DOTFILES/config/zsh/alias.zsh"
