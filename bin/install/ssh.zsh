@@ -23,11 +23,11 @@ public_key_path="$ssh_dir/id_rsa.pub"
 
 printf "\n🔍 Checking for existing SSH keys\n"
 
-does_ssh_key_pair_exist() {
+ssh_key_pair_found() {
   [[ -s "$private_key_path" && -s "$public_key_path" ]]
 }
 
-if does_ssh_key_pair_exist; then
+if ssh_key_pair_found; then
   printf "\n✅ SSH key pair found.\n"
 else
   printf "\n👎 No SSH key pair found.\n"
@@ -43,7 +43,7 @@ else
   ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
 
   # Check if the key pair was generated successfully
-  if does_ssh_key_pair_exist; then
+  if ssh_key_pair_found; then
     printf "\n✅ SSH key pair generated successfully.\n"
   else
     printf "\n❌ Failed to generate SSH key pair.\n"
