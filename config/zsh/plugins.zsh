@@ -9,6 +9,10 @@ eval "$(fzf --zsh)"
 source "/opt/homebrew/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme"
 source "$HOME/.config/zsh/p10k.zsh" # to customize, run `p10k configure` or edit config/zsh/p10k.zsh
 
+# uv
+eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
+
 # zoxide
 eval "$(zoxide init zsh)"
 
