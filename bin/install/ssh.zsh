@@ -35,12 +35,12 @@ else
 
   # Generate a 2048-bit RSA SSH key pair
   # -q makes the process quiet (suppresses warnings and prompts)
-  # -N '' sets an empty passphrase for the key - TODO: should I use a passphrase?
+  # -N '' sets an empty passphrase for the key
   # <<< ""$'\n'"y" automatically answers "yes" to the prompt asking to overwrite the existing key
   # 2>&1 >/dev/null redirects standard output and standard error to /dev/null, effectively silencing all output
   # https://security.stackexchange.com/a/23385
   # https://stackoverflow.com/a/43235320
-  ssh-keygen -q -t rsa -b 2048 -N '' <<< ""$'\n'"y" 2>&1 >/dev/null
+  ssh-keygen -q -t rsa -b 2048 -N '' <<<""$'\n'"y" 2>&1 >/dev/null
 
   # Check if the key pair was generated successfully
   if ssh_key_pair_found; then
@@ -68,12 +68,7 @@ settings=("Host *"
 
 write_settings() {
   mkdir -p "$ssh_dir"
-  printf "%s\n" "${settings[@]}" > "$ssh_config"
-}
-
-write_settings() {
-  mkdir -p "$ssh_dir"
-  printf "%s\n" "${settings[@]}" > "$ssh_config"
+  printf "%s\n" "${settings[@]}" >"$ssh_config"
 }
 
 if [ -f "$ssh_config" ]; then
