@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+if $IS_WORK; then
+  return_or_exit 0
+fi
+
 repo="yazi-rs/flavors"
 local_repo="$HOME/Repos/$repo"
 

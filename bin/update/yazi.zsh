@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+if $IS_WORK; then
+  return_or_exit 0
+fi
+
 local_repo="$HOME/Repos/yazi-rs/flavors"
 
 # Install if missing
@@ -13,4 +17,4 @@ fi
 source "$DOTFILES/config/zsh/utils.zsh"
 info "📂 Updating yazi flavors"
 
-git -C "$local_repo" pull;
+git -C "$local_repo" pull
