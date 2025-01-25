@@ -1,0 +1,17 @@
+# Colors
+# see: ghostty +list-themes
+theme = catppuccin-mocha
+background = 1A1A28
+
+# Font
+font-family = UbuntuMono Nerd Font
+font-size = 18
+adjust-cell-height = 25%
+
+macos-titlebar-style = hidden
+window-padding-x = 5,5
+window-padding-y = 5,5
+window-padding-balance = false
+
+# TODO: Quick terminal
+# toggle_quick_terminal
