@@ -1,3 +1,5 @@
+# See: https://ghostty.org/docs/config/reference
+
 # Colors
 # see: ghostty +list-themes
 theme = catppuccin-mocha
@@ -10,9 +12,13 @@ adjust-cell-height = 25%
 
 # Window
 macos-titlebar-style = hidden
-window-padding-x = 7,7
+window-padding-x = 7
 window-padding-y = 3,0
 window-padding-balance = true
+
+# Behavior
+confirm-close-surface = false
+clipboard-paste-protection = false
 
 # TODO: Quick terminal
 # toggle_quick_terminal
