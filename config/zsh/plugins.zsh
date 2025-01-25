@@ -1,3 +1,7 @@
+# Initialize zsh completion before invoking plugin-specific completions below
+# See: https://stackoverflow.com/questions/66338988/complete13-command-not-found-compde
+autoload -Uz compinit && compinit
+
 # fnm
 eval "$(fnm env --use-on-cd --log-level=error)"
 
