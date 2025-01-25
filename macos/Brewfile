@@ -140,7 +140,7 @@ cask "appcleaner"
 # NOTE: don't install "docker" cask until Apple Silicon issues resolved
 cask "brave-browser"
 cask "firefox"
-cash "ghostty"
+cask "ghostty"
 cask "hyperkey"
 cask "karabiner-elements"
 cask "kitty"
