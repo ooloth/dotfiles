@@ -12,7 +12,7 @@ adjust-cell-height = 25%
 macos-titlebar-style = hidden
 window-padding-x = 7,7
 window-padding-y = 3,0
-# window-padding-balance = false
+window-padding-balance = true
 
 # TODO: Quick terminal
 # toggle_quick_terminal
