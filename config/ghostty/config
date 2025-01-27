@@ -13,7 +13,7 @@ adjust-cell-height = 25%
 # Window
 macos-titlebar-style = hidden
 window-padding-x = 7
-window-padding-y = 3,0
+window-padding-y = 2,0
 window-padding-balance = true
 
 # Behavior
