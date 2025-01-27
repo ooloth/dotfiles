@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-
 # Return early if not installed
 if ! have gcloud; then
   source "$DOTFILES/config/zsh/aliases.zsh"
