@@ -8,7 +8,7 @@ background = 1A1A28
 # Font
 font-family = UbuntuMono Nerd Font Mono
 font-size = 15.5
-adjust-cell-height = 25%
+adjust-cell-height = 35%
 
 # Window
 macos-titlebar-style = hidden
