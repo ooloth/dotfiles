@@ -95,16 +95,6 @@ set('n', '<leader>ww', '<cmd>w<cr>', { desc = 'Write' })
 -- clear search highlights
 set('n', '<esc>', '<cmd>nohlsearch<CR><Esc>', { silent = true })
 
--- -- TODO: I'm guessing I'd need to actually install vim-kitty-navigator for this to work...?
--- -- see: https://github.com/christoomey/vim-tmux-navigator/blob/master/plugin/tmux_navigator.vim
--- vim.cmd([[
---   noremap <silent> <c-h> :<C-U>KittyNavigateLeft<cr>
---   noremap <silent> <c-j> :<C-U>KittyNavigateDown<cr>
---   noremap <silent> <c-k> :<C-U>KittyNavigateUp<cr>
---   noremap <silent> <c-l> :<C-U>KittyNavigateRight<cr>
---   noremap <silent> <c-\> :<C-U>KittyNavigatePrevious<cr>
--- ]])
-
 -- see: https://github.com/christoomey/vim-tmux-navigator/blob/master/plugin/tmux_navigator.vim
 vim.cmd([[
   noremap <silent> <c-h> :<C-U>TmuxNavigateLeft<cr>

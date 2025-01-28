@@ -1,7 +1,8 @@
 #!/usr/bin/env zsh
 
-source "$DOTFILES/config/zsh/utils.zsh"
-info "🧃 Updating neovim dependencies"
+# TODO: anything useful to do here?
 
-printf "😺 Updating vim-kitty-navigator\n"
-git -C "$HOME/Repos/knubie/vim-kitty-navigator" pull;
+return
+
+# source "$DOTFILES/config/zsh/utils.zsh"
+# info "🧃 Updating neovim dependencies"

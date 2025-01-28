@@ -52,16 +52,7 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
 done
 
-vim_kitty_navigator="$HOME/Repos/knubie/vim-kitty-navigator"
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
-
-if [ ! -d "$vim_kitty_navigator" ]; then
-  source "$DOTFILES/bin/install/neovim.zsh"
-else
-  # see: https://github.com/knubie/vim-kitty-navigator?tab=readme-ov-file#kitty
-  maybe_symlink "$vim_kitty_navigator/get_layout.py" "$HOMECONFIG/kitty"
-  maybe_symlink "$vim_kitty_navigator/pass_keys.py" "$HOMECONFIG/kitty"
-fi
 
 if [ ! -d "$yazi_flavors" ]; then
   source "$DOTFILES/bin/install/yazi.zsh"
@@ -74,17 +65,7 @@ fi
 # Target: ~/Library #
 #####################
 
-LAUNCHAGENTS="$HOME/Library/LaunchAgents"
 VSCODEUSER="$HOME/Library/Application Support/Code/User"
-
-# TODO: remove this in favor of tmux sessions?
-# Set HOSTNAME environment variable for device-specific kitty startup sessions
-# see: https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.startup_session
-# see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-414186903
-# see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-434876639
-# see: https://github.com/kovidgoyal/kitty/issues/811#issuecomment-2119054786
-# see: https://derivative.ca/UserGuide/MacOS_Environment_Variables
-# maybe_symlink "$DOTFILES/library/kitty/kitty.environment.plist" "$LAUNCHAGENTS"
 
 maybe_symlink "$DOTFILES/library/vscode/settings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/keybindings.json" "$VSCODEUSER"
