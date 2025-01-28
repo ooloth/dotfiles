@@ -5,9 +5,9 @@ function chpwd() {
 
 is_python_project() {
   if [ -d ".venv" ] || [ -f "pyproject.toml" ] || [ -f "requirements.txt" ] || ls *.py &>/dev/null; then
-    return 0 # Return true (success)
+    return 0
   else
-    return 1 # Return false (failure)
+    return 1
   fi
 }
 
@@ -22,6 +22,10 @@ update_python_env_vars() {
 }
 
 activate_pyenv_venv() {
+  if ! have pyenv; then
+    return 0
+  fi
+
   local CURRENT_DIRECTORY=$(basename $PWD)
 
   # assumes venv is named after the current directory
