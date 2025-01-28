@@ -116,6 +116,7 @@ source "$DOTFILES/bin/update/npm.zsh"
 source tmux.zsh
 source neovim.zsh
 source yazi.zsh
+source content.zsh
 source "$DOTFILES/bin/update/symlinks.zsh"
 source settings.zsh
 # TODO: automate my remaining manual setup steps (e.g. app preferences, etc.)
