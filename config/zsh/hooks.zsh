@@ -4,11 +4,22 @@ function chpwd() {
 }
 
 is_python_project() {
-  if [ -d ".venv" ] || [ -f "pyproject.toml" ] || [ -f "requirements.txt" ] || ls *.py &>/dev/null; then
+  # Any known folders or files in the current directory indicating this is a python project?
+  if [ -d ".venv" ] || [ -f "pyproject.toml" ] || [ -f "requirements.txt" ]; then
     return 0
-  else
-    return 1
   fi
+
+  # Handle no glob matches on next line quietly (without an error message if no python files are found)
+  setopt NULL_GLOB
+
+  # Any python files in the current directory?
+  for file in *.py; do
+    if [ -e "$file" ]; then
+      return 0
+    fi
+  done
+
+  return 1
 }
 
 update_python_env_vars() {
