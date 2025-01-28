@@ -137,18 +137,18 @@ cask "font-ubuntu-mono-nerd-font"
 cask "1password-cli"
 cask "alfred"
 cask "appcleaner"
-# NOTE: don't install "docker" cask until Apple Silicon issues resolved
 cask "brave-browser"
+# NOTE: don't install "docker" cask until Apple Silicon issues resolved
 cask "firefox"
 cask "ghostty"
-cask "hyperkey"
+# cask "hyperkey"
 cask "karabiner-elements"
 cask "kitty"
 cask "notion"
 cask "obsidian"
-cask "raycast"
+# cask "raycast"
 cask "rectangle"
-cask "runjs"
+# cask "runjs"
 cask "visual-studio-code"
 cask "vlc"
 
@@ -165,7 +165,7 @@ if hostname == "Mini"
 end
 
 if hostname == "MULO-JQ97NW-MBP"
-  # cask "meetingbar" # for auto-joining zoom calls
+  cask "meetingbar" # for auto-joining zoom calls
 end
 
 ########################
