@@ -97,14 +97,7 @@ fi
 # CLONE DOTFILES #
 ##################
 
-if [ -d "$DOTFILES" ]; then
-  printf "\n✅ $DOTFILES already exists. Pulling latest changes.\n"
-  cd "$DOTFILES"
-  git pull
-else
-  echo "Cloning dotfiles to $DOTFILES..."
-  git clone https://github.com/myuser/myrepo.git "$DOTFILES"
-fi
+source dotfiles.zsh
 
 ###########
 # INSTALL #
