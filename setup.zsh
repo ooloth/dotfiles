@@ -1,6 +1,10 @@
 #!/usr/bin/env zsh
 
-DOTFILES="$HOME/Repos/ooloth/dotfiles"
+export IS_AIR="false"
+export IS_MINI="false"
+export IS_WORK="true"
+
+export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 handle_error() {
   local exit_code="$1"
