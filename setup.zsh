@@ -111,13 +111,13 @@ else
   git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 fi
 
+# Add all the helpers the install scripts below will reference
+source "$DOTFILES/config/zsh/aliases.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
+
 ###########
 # INSTALL #
 ###########
-
-# Add the helpers the install scripts reference
-source "$DOTFILES/config/zsh/aliases.zsh"
-source "$DOTFILES/config/zsh/utils.zsh"
 
 cd "$DOTFILES/bin/install"
 # TODO: reenable these when done with current installation:
