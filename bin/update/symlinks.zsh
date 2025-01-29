@@ -8,6 +8,7 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 DOTCONFIG="$DOTFILES/config"
 HOMECONFIG="$HOME/.config"
 
+source "$DOTCONFIG/zsh/aliases.zsh"
 source "$DOTCONFIG/zsh/utils.zsh"
 
 maybe_symlink() {

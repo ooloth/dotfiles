@@ -1,5 +1,10 @@
 #!/usr/bin/env zsh
 
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
+
 # Install if missing
 if ! have brew; then
   source "$DOTFILES/bin/install/homebrew.zsh"
@@ -7,8 +12,6 @@ if ! have brew; then
 fi
 
 # Then, install and update dependencies
-DOTFILES="$HOME/Repos/ooloth/dotfiles"
-source "$DOTFILES/config/zsh/utils.zsh"
 info "🍺 Updating homebrew packages"
 
 # Install all dependencies listed in Brewfile (and remove any that aren't)

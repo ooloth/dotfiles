@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
 
 info "🦀 Installing Node via fnm"
@@ -13,7 +16,6 @@ latest_version_is_installed() {
 
 if latest_version_is_installed; then
   printf "\n✅ The latest Node version ($latest_version) is already installed.\n"
-  source "$DOTFILES/config/zsh/alias.zsh"
   return_or_exit 0
 fi
 

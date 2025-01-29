@@ -1,13 +1,16 @@
 #!/usr/bin/env zsh
 
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
+
 if have brew; then
   printf "\n🍺 Homebrew is already installed\n"
-  source "$DOTFILES/config/zsh/alias.zsh"
   return_or_exit 0
 fi
 
 # Otherwise, install
-source "$DOTFILES/config/zsh/utils.zsh"
 info "🍺 Installing homebrew"
 
 # See: https://brew.sh

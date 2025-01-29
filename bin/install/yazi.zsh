@@ -4,17 +4,20 @@ if $IS_WORK; then
   return_or_exit 0
 fi
 
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
+
 repo="yazi-rs/flavors"
 local_repo="$HOME/Repos/$repo"
 
 if [ -d "$local_repo" ]; then
   printf "\n📂 yazi flavors are already installed\n"
-  source "$DOTFILES/config/zsh/alias.zsh"
   return_or_exit 0
 fi
 
 # Otherwise, clone and symlink
-source "$DOTFILES/config/zsh/utils.zsh"
 info "📂 Installing yazi flavors"
 
 mkdir -p "$local_repo"

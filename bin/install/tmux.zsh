@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh
 
 DOTCONFIG="$HOME/Repos/ooloth/dotfiles/config"
-HOMECONFIG="$HOME/.config"
 
+source "$DOTCONFIG/zsh/aliases.zsh"
 source "$DOTCONFIG/zsh/utils.zsh"
-info "🍱 Installing tpm and tmux plugins"
+
 # info "🍱 Installing tmux terminfo updates and tpm plugins"
 
 ############
@@ -25,7 +25,9 @@ info "🍱 Installing tpm and tmux plugins"
 # TPM #
 #######
 
-TPM="$HOMECONFIG/tmux/plugins/tpm"
+info "🍱 Installing tpm and tmux plugins"
+
+TPM="$HOME/.config/tmux/plugins/tpm"
 
 if [ -d "$TPM" ]; then
   printf "🍱 tpm is already installed\n"

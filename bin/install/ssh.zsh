@@ -10,7 +10,11 @@
 # Exit immediately if a command exits with a non-zero status to avoid acting on bad data
 set -e
 
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
+
 info "🔑 Installing SSH key pair"
 
 ssh_dir="$HOME/.ssh"

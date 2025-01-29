@@ -5,7 +5,11 @@
 
 set -e
 
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
+
 info "🔑 Adding SSH key pair to GitHub"
 
 PRIVATE_KEY="$HOME/.ssh/id_rsa"

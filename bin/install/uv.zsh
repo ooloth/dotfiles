@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
 
-source "$DOTFILES/config/zsh/alias.zsh"
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
 
 if have uv; then

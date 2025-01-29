@@ -1,6 +1,10 @@
 #!/usr/bin/env zsh
 
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
+
 info "💻 Configuring macOS system settings"
 
 printf "Configuring general settings...\n"

@@ -120,9 +120,8 @@ source "$DOTFILES/config/zsh/utils.zsh"
 ###########
 
 cd "$DOTFILES/bin/install"
-# TODO: reenable these when done with current installation:
-# source ssh.zsh
-# source github.zsh
+source ssh.zsh
+source github.zsh
 source homebrew.zsh
 source "$DOTFILES/bin/update/homebrew.zsh"
 source zsh.zsh

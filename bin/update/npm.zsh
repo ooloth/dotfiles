@@ -2,7 +2,11 @@
 
 # TODO: install node via fnm if missing?
 
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
+
 info "✨ Updating Node $(node -v) global dependencies"
 
 # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
