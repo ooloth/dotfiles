@@ -104,13 +104,12 @@ if [ -d "$DOTFILES" ]; then
   printf "\n📂 Dotfiles are already installed. Pulling latest changes.\n"
   cd "$DOTFILES"
   git pull
-  return
+else
+  # Otherwise, clone via https (will be converted to ssh by install/github.zsh)
+  printf "📂 Installing dotfiles"
+  mkdir -p "$DOTFILES"
+  git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 fi
-
-# Otherwise, clone via https (will be converted to ssh by install/github.zsh)
-printf "📂 Installing dotfiles"
-mkdir -p "$DOTFILES"
-git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 
 ###########
 # INSTALL #
