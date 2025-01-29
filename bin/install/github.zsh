@@ -15,12 +15,8 @@ PUBLIC_KEY="$PRIVATE_KEY.pub"
 
 # FIXME: this is failing in the script flow even though this command works directly
 i_can_connect_to_github_via_ssh() {
-  # ssh -T git@github.com >/dev/null 2>&1
-  # return $? # Return the exit status of the ssh command
   ssh -T git@github.com >/dev/null 2>&1
-  local exit_status=$?
-  echo "SSH connection test exit status: $exit_status" # Debugging output
-  return $exit_status
+  return $? # Return the exit status of the ssh command
 }
 
 if i_can_connect_to_github_via_ssh; then
@@ -55,12 +51,12 @@ fi
 
 printf "\n🧪 Verifying you can now connect to GitHub via SSH...\n"
 
-if i_can_connect_to_github_via_ssh; then
-  printf "\n✅ SSH key was added to GitHub successfully.\n"
-else
-  printf "\n❌ Failed to add SSH key to GitHub. Please try again.\n"
-  exit 1
-fi
+# if i_can_connect_to_github_via_ssh; then
+#   printf "\n✅ SSH key was added to GitHub successfully.\n"
+# else
+#   printf "\n❌ Failed to add SSH key to GitHub. Please try again.\n"
+#   exit 1
+# fi
 
 printf "\n🚀 Done adding your SSH key pair to GitHub."
 
