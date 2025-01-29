@@ -25,6 +25,7 @@ printf "\n🔍 Checking for existing SSH keys\n"
 
 ssh_key_pair_found() {
   [[ -s "$private_key_path" && -s "$public_key_path" ]]
+  return $? # Return the exit status of the test command
 }
 
 if ssh_key_pair_found; then
