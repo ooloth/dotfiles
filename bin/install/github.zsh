@@ -76,7 +76,7 @@ printf "\n🚀 Done adding your SSH key pair to GitHub."
   if [[ "$REMOTE_URL" == https://github.com/* ]]; then
     # Convert the HTTPS URL to an SSH URL
     printf "\n🔗 Converting the dotfiles remote URL from HTTPS to SSH\n"
-    SSH_URL="git@github.com:${REMOTE_URL#https://github.com/}.git"
+    SSH_URL="git@github.com:${REMOTE_URL#https://github.com/}"
 
     # Set the new remote URL
     # see: https://stackoverflow.com/questions/55246165/how-to-ssh-a-git-repository-after-already-cloned-with-https
