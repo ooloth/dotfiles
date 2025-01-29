@@ -31,10 +31,10 @@ if [[ ! -s "$PRIVATE_KEY" || ! -s "$PUBLIC_KEY" ]]; then
   fi
 fi
 
-printf "\nYour turn!"
-printf "\nPlease visit https://github.com/settings/ssh/new now and add the following SSH key to your GitHub account:\n\n"
+printf "Your turn!\n"
+printf "Please visit https://github.com/settings/ssh/new now and add the following SSH key to your GitHub account:\n\n"
 cat "$PUBLIC_KEY"
-printf "\n\nActually go do this! This step is required before you'll be able to clone repos via SSH.\n"
+printf "\nActually go do this! This step is required before you'll be able to clone repos via SSH.\n"
 
 vared -p "All set? (y/N)" -c gitHubKeyAdded
 
