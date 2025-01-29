@@ -11,8 +11,10 @@ info "🔑 Adding SSH key pair to GitHub"
 PRIVATE_KEY="$HOME/.ssh/id_rsa"
 PUBLIC_KEY="$PRIVATE_KEY.pub"
 
+# FIXME: this is failing in the script flow even though this command works directly
 i_can_connect_to_github_via_ssh() {
   ssh -T git@github.com >/dev/null 2>&1
+  return $? # Return the exit status of the ssh command
 }
 
 if i_can_connect_to_github_via_ssh; then
