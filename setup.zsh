@@ -116,8 +116,7 @@ fi
 ###########
 
 cd "$DOTFILES/bin/install"
-# TODO: reenable these when done with current installation:
-# source ssh.zsh
+source ssh.zsh
 source github.zsh
 source homebrew.zsh
 source "$DOTFILES/bin/update/homebrew.zsh"
