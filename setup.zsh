@@ -80,21 +80,21 @@ done 2>/dev/null &
 printf "Yup. That's the password.\n\n"
 
 # The Command Line Tools are installed
-printf "\nConfirming the Command Line Tools are installed.\n"
-
-if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
-  printf "Apple's command line developer tools must be installed before running this script. Installing now.\n"
-  xcode-select --install
-
-  if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
-    printf "\nOops, it looks like the Xcode CLI tools are still not installed. Please install and try again.\n"
-    exit 1
-  else
-    printf "\nXcode CLI tools are now installed.\n"
-  fi
-else
-  printf "\nXcode CLI tools are already installed.\n"
-fi
+# printf "Confirming the Command Line Tools are installed...\n\n"
+#
+# if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
+#   printf "Apple's command line developer tools must be installed before running this script. Installing now.\n"
+#   xcode-select --install
+#
+#   if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
+#     printf "\nOops, it looks like the Xcode CLI tools are still not installed. Please install and try again.\n"
+#     exit 1
+#   else
+#     printf "\nXcode CLI tools are now installed.\n"
+#   fi
+# else
+#   printf "\nXcode CLI tools are already installed.\n"
+# fi
 
 ##################
 # CLONE DOTFILES #
