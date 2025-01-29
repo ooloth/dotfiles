@@ -15,8 +15,12 @@ PUBLIC_KEY="$PRIVATE_KEY.pub"
 
 # FIXME: this is failing in the script flow even though this command works directly
 i_can_connect_to_github_via_ssh() {
-  ssh -T git@github.com
-  return $? # Return the exit status of the ssh command
+  # ssh -T git@github.com >/dev/null 2>&1
+  # return $? # Return the exit status of the ssh command
+  ssh -T git@github.com >/dev/null 2>&1
+  local status=$?
+  echo "SSH connection test exit status: $status" # Debugging output
+  return $status
 }
 
 if i_can_connect_to_github_via_ssh; then
