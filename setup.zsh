@@ -111,13 +111,13 @@ else
   git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 fi
 
-# Symlink once now and reload to apply aliases, then repeat again later
-source "$DOTFILES/bin/update/symlinks.zsh"
-exec -l $SHELL
-
 ###########
 # INSTALL #
 ###########
+
+# Add the helpers the install scripts reference
+source "$DOTFILES/config/zsh/aliases.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
 
 cd "$DOTFILES/bin/install"
 # TODO: reenable these when done with current installation:
