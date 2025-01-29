@@ -1,6 +1,9 @@
 # Dotfiles
 export DOTFILES=$HOME/Repos/ooloth/dotfiles
 
+source "$DOTFILES/config/zsh/aliases.zsh"
+source "$DOTFILES/config/zsh/utils.zsh"
+
 # Editor
 editors_in_desc_order_of_preference=("code" "nvim" "vim" "vi")
 for editor in "${editors_in_desc_order_of_preference[@]}"; do
@@ -48,9 +51,11 @@ if $IS_WORK; then
 fi
 
 # Rust
-export CARGO_HOME="$HOME/.config/cargo"
-export RUSTUP_HOME="$HOME/.config/rustup"
-source "$CARGO_HOME/env"
+if have rustup; then
+  export CARGO_HOME="$HOME/.config/cargo"
+  export RUSTUP_HOME="$HOME/.config/rustup"
+  source "$CARGO_HOME/env"
+fi
 
 # Shell
 export SHELL=$(which zsh)
