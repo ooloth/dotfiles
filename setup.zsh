@@ -101,7 +101,7 @@ printf "Yup. That's the password.\n\n"
 ##################
 
 if [ -d "$DOTFILES" ]; then
-  printf "\n📂 Dotfiles are already installed. Pulling latest changes.\n"
+  printf "📂 Dotfiles are already installed. Pulling latest changes.\n"
   cd "$DOTFILES"
   git pull
 else
@@ -116,8 +116,8 @@ fi
 ###########
 
 cd "$DOTFILES/bin/install"
-source ssh.zsh
-source github.zsh
+# source ssh.zsh
+# source github.zsh
 source homebrew.zsh
 source "$DOTFILES/bin/update/homebrew.zsh"
 source zsh.zsh
