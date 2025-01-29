@@ -111,6 +111,10 @@ else
   git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 fi
 
+# Symlink once now and reload to apply aliases, then repeat again later
+source "$DOTFILES/bin/update/symlinks.zsh"
+exec -l $SHELL
+
 ###########
 # INSTALL #
 ###########
