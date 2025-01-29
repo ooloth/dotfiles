@@ -32,9 +32,9 @@ if [[ ! -s "$PRIVATE_KEY" || ! -s "$PUBLIC_KEY" ]]; then
 fi
 
 printf "\nYour turn!"
-printf "\nPlease visit https://github.com/settings/ssh/new now and add the SSH key that has been copied to your clipboard to your GitHub account."
-pbcopy < "$PUBLIC_KEY"
-printf "\n⚠️ Actually go do this! This step is required before you'll be able to clone repos via SSH.\n"
+printf "\nPlease visit https://github.com/settings/ssh/new now and add the following SSH key to your GitHub account:\n\n"
+cat "$PUBLIC_KEY"
+printf "\n\nActually go do this! This step is required before you'll be able to clone repos via SSH.\n"
 
 vared -p "All set? (y/N)" -c gitHubKeyAdded
 
