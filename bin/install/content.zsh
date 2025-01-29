@@ -5,7 +5,7 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
 
-repo="ooloth/content.nvim"
+repo="ooloth/content"
 local_repo="$HOME/Repos/$repo"
 
 if [ -d "$local_repo" ]; then
