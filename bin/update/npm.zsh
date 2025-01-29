@@ -35,11 +35,13 @@ outdated_packages=$(npm outdated -g)
 is_package_installed() {
   local package="$1"
   echo "$installed_packages" | grep -q " ${package}@"
+  return $? # Return the exit status of the grep command
 }
 
 is_package_outdated() {
   local package="$1"
   echo "$outdated_packages" | grep -q "^${package}"
+  return $? # Return the exit status of the grep command
 }
 
 packages_to_add=()

@@ -12,6 +12,7 @@ installed_versions=$(fnm ls)
 
 latest_version_is_installed() {
   echo "$installed_versions" | grep -q "$latest_version"
+  return $? # Return the exit status of the grep command
 }
 
 if latest_version_is_installed; then
