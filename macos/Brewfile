@@ -104,7 +104,7 @@ if hostname == "Mini"
 end
 
 if hostname == "7385-Y3FH97X-MAC"
-  brew "bazel"
+  # brew "bazel"
   brew "hashicorp/tap/vault"
   brew "helm" # for kubernetes
   brew "kafka"
@@ -149,13 +149,13 @@ cask "obsidian"
 # cask "raycast"
 cask "rectangle"
 # cask "runjs"
-cask "visual-studio-code"
 cask "vlc"
 
 if hostname == "Air"
   cask "google-chrome" # NOTE: work likely controls installation of this app
   # NOTE: manually download prepros v6 instead (just need it for Adam's site)
   # cask "transmit
+  cask "visual-studio-code" # NOTE: work likely controls installation of this app
   cask "zoom" # NOTE: work likely controls installation of this app
 end
 
