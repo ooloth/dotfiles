@@ -20,8 +20,7 @@ trap 'handle_error $? $LINENO' ERR
 # CONFIRM #
 ###########
 
-printf "Welcome to your new Mac!"
-printf "This installation will perform the following steps:\n"
+printf "\nWelcome to your new Mac! This installation will perform the following steps:\n\n"
 printf "1. Confirm this is a Mac\n"
 printf "2. Ask you to enter your password\n"
 printf "3. Confirm the Command Line Developer Tools are installed\n"
@@ -39,7 +38,7 @@ printf "14. Install tmux dependencies\n"
 printf "15. Install neovim dependencies\n"
 printf "16. Install yazi flavors (if not work computer)\n"
 printf "17. Symlink your dotfiles to your home and library directories\n"
-printf "18. Update macOS system settings\n"
+printf "18. Update macOS system settings\n\n"
 
 vared -p "Sound good? (y/N) " -c key
 
@@ -48,27 +47,27 @@ if [[ ! "$key" == 'y' ]]; then
   printf "\nExiting..."
   exit 1
 else
-  printf "\nExcellent! Here we go...\n"
+  printf "\nExcellent! Here we go...\n\n"
 fi
 
 #################
 # PREREQUISITES #
 #################
 
-printf "Verifying prerequisites"
+printf "Verifying prerequisites...\n\n"
 
 # This is a Mac
-printf "Confirming this is a Mac."
+printf "Confirming this is a Mac...\n"
 
 if [ "$(uname)" != "Darwin" ]; then
-  printf "\nOops, it looks like this is a non-UNIX system. This script only works on a Mac.\n\nExiting..."
+  printf "Oops, it looks like this is a non-UNIX system. This script only works on a Mac.\n\nExiting..."
   exit 1
 fi
 
-printf "\nThis is a Mac. But you knew that already.\n"
+printf "This is a Mac. But you knew that already.\n\n"
 
 # You know this Mac's password
-printf "Confirming you are authorized to install things on this Mac.\n"
+printf "Confirming you are authorized to install things on this Mac...\n\n"
 
 sudo -v
 # Keep-alive: update existing `sudo` time stamp until setup has finished
@@ -78,7 +77,7 @@ while true; do
   kill -0 "$$" || exit
 done 2>/dev/null &
 
-printf "\nYup. That's the password.\n"
+printf "Yup. That's the password.\n\n"
 
 # The Command Line Tools are installed
 printf "\nConfirming the Command Line Tools are installed.\n"
