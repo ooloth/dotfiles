@@ -111,9 +111,9 @@ else
   git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 fi
 
-# Add all the helpers the install scripts below will reference
-source "$DOTFILES/config/zsh/aliases.zsh"
-source "$DOTFILES/config/zsh/utils.zsh"
+# # Add all the helpers the install scripts below will reference
+# source "$DOTFILES/config/zsh/aliases.zsh"
+# source "$DOTFILES/config/zsh/utils.zsh"
 
 ###########
 # INSTALL #
