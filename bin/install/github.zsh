@@ -18,9 +18,9 @@ i_can_connect_to_github_via_ssh() {
   # ssh -T git@github.com >/dev/null 2>&1
   # return $? # Return the exit status of the ssh command
   ssh -T git@github.com >/dev/null 2>&1
-  local status=$?
-  echo "SSH connection test exit status: $status" # Debugging output
-  return $status
+  local exit_status=$?
+  echo "SSH connection test exit status: $exit_status" # Debugging output
+  return $exit_status
 }
 
 if i_can_connect_to_github_via_ssh; then
