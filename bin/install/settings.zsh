@@ -42,6 +42,7 @@ chflags nohidden ~/Library
 printf "\n"
 info "Configuring Safari...\n"
 
+# FIXME: didn't work in Jan 2025 on Sonoma
 printf "Enable Safari’s debug menu\n"
 defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
 
