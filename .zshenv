@@ -11,7 +11,6 @@ unsetopt GLOBAL_RCS
 export HOSTNAME=$(networksetup -getcomputername)
 export IS_AIR="$([[ "$HOSTNAME" == "Air" ]] && echo "true" || echo "false")"
 export IS_MINI="$([[ "$HOSTNAME" == "Mini" ]] && echo "true" || echo "false")"
-export IS_WORK="$([[ "$HOSTNAME" == "7385-Y3FH97X-MAC" ]] && echo "true" || echo "false")"
-# export IS_WORK="$( [[ "$HOSTNAME" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false" )"
+export IS_WORK="$([[ "$HOSTNAME" == "7385-Y3FH97X-MAC" || "$HOSTNAME" == "MULO-JQ97NW-MBP" ]] && echo "true" || echo "false")"
 
 export ZDOTDIR=$HOME/.config/zsh
