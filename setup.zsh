@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 
-export IS_AIR="false"
-export IS_MINI="false"
-export IS_WORK="true"
+export IS_AIR=false
+export IS_MINI=false
+export IS_WORK=true
 
 export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
