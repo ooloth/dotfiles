@@ -39,7 +39,7 @@ activate_venv() {
   # Function to find the nearest virtual environment
   find_venv() {
     local dir="$1" # start from the current directory
-    while [ "$dir" != "$HOME/Repos" ]; do # Stop at the root
+    while [ "$dir" != "/" ]; do # don't go past the root directory
       local uv_venv="$dir/.venv"
       local pyenv_venv="$PYENV_ROOT/versions/$(basename "$dir")"
       if [ -f "$uv_venv/bin/activate" ]; then
