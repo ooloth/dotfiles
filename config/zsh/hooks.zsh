@@ -33,32 +33,28 @@ update_python_env_vars() {
 }
 
 activate_venv() {
-  if ! have uv && ! have pyenv; then
-    return 0
-  fi
-
-  local CURRENT_DIRECTORY=$(basename $PWD)
-
-  # assumes venv is named after the current directory
-  local UV_VENV="${PWD}/.venv"
+  local CURRENT_DIRECTORY="$(basename ${PWD})"
   local PYENV_VENV="${PYENV_ROOT}/versions/${CURRENT_DIRECTORY}"
+  local UV_VENV="${PWD}/.venv"
+  local VENV=""
 
-  if [ -d "$UV_VENV" ]; then
-    local VENV="$UV_VENV"
+  if [ -f "${UV_VENV}/bin/activate" ]; then
+    VENV="${UV_VENV}"
+  elif [ -f "${PYENV_VENV}/bin/activate" ]; then
+    VENV="${PYENV_VENV}"
   else
-    local VENV="$PYENV_VENV"
-  fi
-
-  # Deactivate any venv sticking from a previous directory and be done
-  if [[ ! -d "$VENV" ]]; then
+    # Deactivate any venv sticking from a previous directory and be done
+    if [ -n "${VIRTUAL_ENV}" ] && command -v deactivate >/dev/null 2>&1; then
+      deactivate
+    fi
+    unset VIRTUAL_ENV
+    unset VIRTUAL_ENV_PROMPT
     # remove all pyenv paths from PATH (see: https://stackoverflow.com/a/62950499/8802485)
     export PATH=$(echo $PATH | tr ':' '\n' | sed '/pyenv/d' | tr '\n' ':' | sed -r 's/:$/\n/')
-    deactivate
-    unset VIRTUAL_ENV
     return 0
   fi
 
-  # its much faster to activate the venv directly instead of using the pyenv shell integration
+  # It's much faster to activate the new venv directly instead of using the pyenv shell integration
   # see: https://stackoverflow.com/a/74290100/8802485
   # see: https://stackoverflow.com/questions/45554864/why-am-i-getting-permission-denied-when-activating-a-venv
   source "${VENV}/bin/activate"
