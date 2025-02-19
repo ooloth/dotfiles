@@ -33,15 +33,30 @@ update_python_env_vars() {
 }
 
 activate_venv() {
-  local CURRENT_DIRECTORY="$(basename ${PWD})"
-  local PYENV_VENV="${PYENV_ROOT}/versions/${CURRENT_DIRECTORY}"
-  local UV_VENV="${PWD}/.venv"
+  local CURRENT_DIRECTORY="${PWD}"
   local VENV=""
 
-  if [ -f "${UV_VENV}/bin/activate" ]; then
-    VENV="${UV_VENV}"
-  elif [ -f "${PYENV_VENV}/bin/activate" ]; then
-    VENV="${PYENV_VENV}"
+  # Function to find the nearest virtual environment
+  find_venv() {
+    local dir="$1" # start from the current directory
+    while [ "$dir" != "$HOME/Repos" ]; do # Stop at the root
+      local uv_venv="$dir/.venv"
+      local pyenv_venv="$PYENV_ROOT/versions/$(basename "$dir")"
+      if [ -f "$uv_venv/bin/activate" ]; then
+        echo "$uv_venv"
+        return
+      elif [ -f "$pyenv_venv/bin/activate" ]; then
+        echo "$pyenv_venv"
+        return
+      fi
+      dir="$(dirname "$dir")" # move up one directory and try again
+    done
+  }
+
+  VENV=$(find_venv "$CURRENT_DIRECTORY")
+
+  if [ -n "$VENV" ]; then
+    source "${VENV}/bin/activate"
   else
     # Deactivate any venv sticking from a previous directory and be done
     if [ -n "${VIRTUAL_ENV}" ] && command -v deactivate >/dev/null 2>&1; then
@@ -51,15 +66,9 @@ activate_venv() {
     unset VIRTUAL_ENV_PROMPT
     # remove all pyenv paths from PATH (see: https://stackoverflow.com/a/62950499/8802485)
     export PATH=$(echo $PATH | tr ':' '\n' | sed '/pyenv/d' | tr '\n' ':' | sed -r 's/:$/\n/')
-    return 0
   fi
-
-  # It's much faster to activate the new venv directly instead of using the pyenv shell integration
-  # see: https://stackoverflow.com/a/74290100/8802485
-  # see: https://stackoverflow.com/questions/45554864/why-am-i-getting-permission-denied-when-activating-a-venv
-  source "${VENV}/bin/activate"
 }
 
-# automatically activate appropriate venv when zsh first loads (called again in chpwd hook whenever cwd changes)
+# Automatically activate appropriate venv when zsh first loads (called again in chpwd hook whenever cwd changes)
 update_python_env_vars
 activate_venv
