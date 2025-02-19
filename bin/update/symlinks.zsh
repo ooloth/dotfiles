@@ -53,9 +53,6 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
 done
 
-# Lazy-lock.json files (from home -> dotfiles instead of dotfiles -> home)
-maybe_symlink "$HOMECONFIG/nvim-ide/lazy-lock.json" "$DOTFILES/config/nvim-ide"
-
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 
 if [ ! -d "$yazi_flavors" ]; then
