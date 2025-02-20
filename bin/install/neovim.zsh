@@ -19,4 +19,6 @@ info "📂 Installing config.nvim"
 mkdir -p "$local_repo"
 git clone "git@github.com:$repo.git" "$local_repo"
 
-printf "\n📦 TODO: install lazy.nvim plugins + reload as needed for first setup?\n"
+# TODO: does the lockfile need to be symlinked first?
+info "📂 Installing Lazy plugin versions from lazy-lock.json"
+NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
