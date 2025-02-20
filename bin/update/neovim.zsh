@@ -22,6 +22,9 @@ npm i -g @tailwindcss/language-server # see: https://github.com/neovim/nvim-lspc
 # HTML/XML
 brew install tidy-html5 # for linting html + xml
 
+# JSON
+npm i -g vscode-langservers-extracted # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#jsonls
+
 # Lua
 brew install lua-language-server # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls
 brew install stylua # see: https://github.com/JohnnyMorganz/StyLua?tab=readme-ov-file#homebrew
@@ -43,6 +46,9 @@ cargo install --features lsp --locked taplo-cli # see: https://github.com/neovim
 # TypeScript / JavaScript
 npm i -g vscode-langservers-extracted # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#eslint
 npm i -g typescript typescript-language-server # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls
+
+# Vue
+npm i -g vls # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#vuels
 
 # Yaml
 npm i -g yaml-language-server # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#yamlls
