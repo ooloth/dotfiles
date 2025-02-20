@@ -1,9 +1,5 @@
 #!/usr/bin/env zsh
 
-if $IS_WORK; then
-  return_or_exit 0
-fi
-
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 source "$DOTFILES/config/zsh/aliases.zsh"
