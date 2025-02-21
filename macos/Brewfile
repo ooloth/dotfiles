@@ -18,7 +18,7 @@ tap "jesseduffield/lazydocker"
 tap "jesseduffield/lazygit"
 tap "kdash-rs/kdash" # for kdash
 tap "saulpw/vd" # for visidata
-tap "yqrashawn/goku" # for karabiner
+# tap "yqrashawn/goku" # for karabiner (using hyperkey instead)
 
 if hostname == "Air"
   tap "modularml/packages" # for mojo
@@ -47,7 +47,7 @@ brew "arl/arl/gitmux" # for tmux (status bar)
 brew "glances" # top alternative
 brew "gnu-sed"
 brew "go"
-brew "yqrashawn/goku/goku" # for karibiner
+# brew "yqrashawn/goku/goku" # for karabiner (using hyperkey instead)
 brew "goose" # for go
 brew "hadolint" # for docker
 brew "htop" # top alternative
@@ -145,8 +145,8 @@ cask "brave-browser"
 # NOTE: don't install "docker" cask until Apple Silicon issues resolved
 cask "firefox"
 cask "ghostty"
-# cask "hyperkey"
-cask "karabiner-elements"
+cask "hyperkey" # karabiner become impossible to allow on work laptop...
+# cask "karabiner-elements" (using hyperkey instead)
 cask "kitty"
 cask "notion"
 cask "obsidian"
