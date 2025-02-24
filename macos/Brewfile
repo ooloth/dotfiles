@@ -107,7 +107,7 @@ if hostname == "Mini"
   brew "carbon-copy-cloner"
 end
 
-if hostname == "7385-Y3FH97X-MAC"
+if hostname == "7385-Y3FH97X-MAC" or hostname == "MULO-JQ97NW-MBP"
   # brew "bazel"
   brew "hashicorp/tap/vault"
   brew "helm" # for kubernetes
@@ -168,7 +168,7 @@ if hostname == "Mini"
   # cask "handbrake"
 end
 
-if hostname == "7385-Y3FH97X-MAC"
+if hostname == "7385-Y3FH97X-MAC" or hostname == "MULO-JQ97NW-MBP"
   cask "meetingbar" # for auto-joining zoom calls
 end
 
@@ -280,7 +280,7 @@ if hostname == "Air"
   vscode "vadimcn.vscode-lldb" # for debugging rust, go and other compiled languages
 end
 
-if hostname == "7385-Y3FH97X-MAC"
+if hostname == "7385-Y3FH97X-MAC" or hostname == "MULO-JQ97NW-MBP"
   vscode "editorconfig.editorconfig"
   vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
   vscode "ms-python.black-formatter"
