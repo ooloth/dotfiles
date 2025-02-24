@@ -34,7 +34,7 @@
   "plenary.nvim": { "branch": "master", "commit": "857c5ac632080dba10aae49dba902ce3abf91b35" },
   "render-markdown.nvim": { "branch": "main", "commit": "f2bdf9f866671456f7a6119cc94501048d9d172c" },
   "rustaceanvim": { "branch": "master", "commit": "047f9c9d8cd2861745eb9de6c1570ee0875aa795" },
-  "schemastore.nvim": { "branch": "main", "commit": "6c40d8a0874201d7f91599102864573bdd191859" },
+  "schemastore.nvim": { "branch": "main", "commit": "5a2fff7d0a51b79164787ddfc117f7f79784cb55" },
   "snacks.nvim": { "branch": "main", "commit": "76a5dcfb318d623022dada44c66453d9cb9a6eaa" },
   "todo-comments.nvim": { "branch": "main", "commit": "ae0a2afb47cf7395dc400e5dc4e05274bf4fb9e0" },
   "trouble.nvim": { "branch": "main", "commit": "748ca2789044607f19786b1d837044544c55e80a" },
