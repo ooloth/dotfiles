@@ -67,10 +67,15 @@ function error() {
 
 have() {
   if [ -z "$1" ]; then
-    echo "Usage: have <command, alias or function>";
-    return 1;
+    echo "Usage: have <command, alias or function>"
+    return 1 # false
   fi
 
   # Check if a command, alias or function with the provided name exists
-  type "$1" &> /dev/null;
+  if type "$1" &> /dev/null; then
+    return 0  # true
+  else
+    return 1  # false
+  fi
 }
+

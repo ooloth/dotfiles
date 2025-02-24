@@ -1,4 +1,4 @@
-// NOTE: format on save disabled via .prettierignore
+// NOTE: prettier formatting disabled via .prettierignore
 
 {
    // Assign jsonc to prettier to disable this file from autoformatting on save (which makes the Vim/WhichKey settings unreadable)
