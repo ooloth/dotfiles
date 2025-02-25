@@ -21,6 +21,7 @@ npm i -g @tailwindcss/language-server # see: https://github.com/neovim/nvim-lspc
 
 # HTML/XML
 brew install tidy-html5 # for linting html + xml
+npm i -g prettier # for formatting lots of things
 
 # JSON
 npm i -g vscode-langservers-extracted # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#jsonls
