@@ -2,9 +2,9 @@
 
 source "$DOTFILES/config/zsh/utils.zsh"
 
-info "🧃 Installing lsp servers, linters and formatters"
+info "🧃 Updating Neovim lsp servers, linters and formatters"
 
-# TODO: need to add all these tools to the PATH for neovim to find?
+# TODO: need to add any of these tools to the PATH manually for neovim to find?
 
 # Astro
 npm i -g @astrojs/language-server # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#astro
