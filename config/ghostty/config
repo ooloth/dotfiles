@@ -64,9 +64,9 @@ keybind="cmd+shift+;=goto_split:next"
 # NOTE: "\x1b[C" = "right"
 # NOTE: outside of tmux, use `kitten show_key` + tmux shortcut to get escape codes for tmux shortcut I want to trigger
 
-# Tmux sessions (detach, last, pick)
+# Tmux sessions (detach, other, pick)
 keybind="cmd+d=text:\x01d"
-keybind="cmd+l=text:\x01L"
+keybind="cmd+o=text:\x01L"
 keybind="cmd+s=text:\x01T"
 
 # Tmux windows (navigate, create, rename)
