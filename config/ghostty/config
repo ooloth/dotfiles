@@ -49,6 +49,11 @@ keybind="cmd+shift+j=goto_split:down"
 keybind="cmd+shift+k=goto_split:up"
 keybind="cmd+shift+l=goto_split:right"
 keybind="cmd+shift+;=goto_split:next"
+# TODO: zoom (toggle maximize ghostty pane)
+# TODO: zoom (increase/decrease font size)
+# TODO: search scrollback (when feature added)
+# TODO: navigate previous commands and their outputs
+# TODO: select words, lines, urls, etc?
 
 # Tmux
 # NOTE: "\x01" = "ctrl+a" (tmux prefix)
@@ -59,12 +64,12 @@ keybind="cmd+shift+;=goto_split:next"
 # NOTE: "\x1b[C" = "right"
 # NOTE: outside of tmux, use `kitten show_key` + tmux shortcut to get escape codes for tmux shortcut I want to trigger
 
-# Tmux sessions (detach, last, switch)
+# Tmux sessions (detach, last, pick)
 keybind="cmd+d=text:\x01d"
 keybind="cmd+l=text:\x01L"
 keybind="cmd+s=text:\x01T"
 
-# Tmux windows (switch, create, rename)
+# Tmux windows (navigate, create, rename)
 keybind="cmd+]=text:\x01n"
 keybind="cmd+[=text:\x01p"
 keybind="cmd+1=text:\x011"
