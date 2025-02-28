@@ -11,6 +11,7 @@ alias adv="cd $HOME/Repos/ooloth/advent-of-code"
 
 alias c="clear"
 alias cat="bat --paging=never"
+alias cd="z"
 source "$DOTFILES/config/zsh/check.zsh"
 alias cte="EDITOR=vim crontab -e"
 alias ctl="crontab -l"
