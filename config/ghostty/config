@@ -1,14 +1,28 @@
 # See: https://ghostty.org/docs/config/reference
 
+############
+# BEHAVIOR #
+############
+
+clipboard-paste-protection = false
+confirm-close-surface = false
+
+# TODO: Quick terminal
+# toggle_quick_terminal
+
+######
+# UI #
+######
+
 # Colors
 # see: ghostty +list-themes
 theme = catppuccin-mocha
 background = 1A1A28
 
-# Font
+# Typography
+adjust-cell-height = 35%
 font-family = UbuntuMono Nerd Font Mono
 font-size = 15.5
-adjust-cell-height = 35%
 
 # Window
 macos-titlebar-style = hidden
@@ -16,17 +30,11 @@ window-padding-x = 7
 window-padding-y = 2,0
 window-padding-balance = true
 
-# Behavior
-confirm-close-surface = false
-clipboard-paste-protection = false
-
-# TODO: Quick terminal
-# toggle_quick_terminal
-
 ############
-# kEYBINDS #
+# KEYBINDS #
 ############
 
+# See: https://ghostty.org/docs/config/reference#keybind
 # NOTE: "\x01" = "C-a" (tmux prefix)
 
 # Sessions (switch, last, detach)
