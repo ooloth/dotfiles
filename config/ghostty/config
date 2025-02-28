@@ -43,6 +43,7 @@ keybind="cmd+s=text:\x01T"
 keybind="cmd+l=text:\x01L"
 # Ghostty
 keybind="cmd+shift+n=new_window"
+keybind="cmd+shift+r=reload_config"
 
 keybind="cmd+d=text:\x01d"
 
