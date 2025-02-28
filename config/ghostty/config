@@ -38,7 +38,6 @@ window-padding-balance = true
 ############
 
 # See: https://ghostty.org/docs/config/reference#keybind
-# NOTE: "\x01" = "C-a" (tmux prefix)
 
 # Ghostty
 keybind="cmd+shift+\=new_split:right"
@@ -50,6 +49,15 @@ keybind="cmd+shift+j=goto_split:down"
 keybind="cmd+shift+k=goto_split:up"
 keybind="cmd+shift+l=goto_split:right"
 keybind="cmd+shift+;=goto_split:next"
+
+# Tmux
+# NOTE: "\x01" = "ctrl+a" (tmux prefix)
+# NOTE: "\x1b" = "ctrl"
+# NOTE: "\x1b[A" = "up"
+# NOTE: "\x1b[B" = "down"
+# NOTE: "\x1b[D" = "left"
+# NOTE: "\x1b[C" = "right"
+# NOTE: outside of tmux, use `kitten show_key` + tmux shortcut to get escape codes for tmux shortcut I want to trigger
 
 # Tmux sessions (detach, last, switch)
 keybind="cmd+d=text:\x01d"
@@ -71,8 +79,13 @@ keybind="cmd+9=text:\x019"
 keybind="cmd+n=text:\x01c"
 keybind="cmd+r=text:\x01r"
 
-# Tmux panes (split, maximize, close)
+# Tmux panes (split, navigate, maximize, close)
 keybind="cmd+\=text:\x01\\"
 keybind="cmd+-=text:\x01-"
+keybind="cmd+;=text:\x01;"
+keybind="cmd+h=text:\x01\x1b[D"
+keybind="cmd+j=text:\x01\x1b[B"
+keybind="cmd+k=text:\x01\x1b[A"
+keybind="cmd+l=text:\x01\x1b[C"
 keybind="cmd+m=text:\x01z"
 keybind="cmd+x=text:\x01x"
