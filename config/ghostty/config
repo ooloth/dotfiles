@@ -41,7 +41,8 @@ window-padding-balance = true
 
 # Ghostty
 keybind="cmd+shift+\=new_split:right"
-keybind="cmd+shift+-=new_split:down"
+keybind="cmd+shift+plus=increase_font_size:1"
+keybind="cmd+shift+minus=decrease_font_size:1"
 keybind="cmd+shift+n=new_window"
 keybind="cmd+shift+r=reload_config"
 keybind="cmd+shift+h=goto_split:left"
@@ -50,10 +51,9 @@ keybind="cmd+shift+k=goto_split:up"
 keybind="cmd+shift+l=goto_split:right"
 keybind="cmd+shift+;=goto_split:next"
 # TODO: zoom (toggle maximize ghostty pane)
-# TODO: zoom (increase/decrease font size)
-# TODO: search scrollback (when feature added)
 # TODO: navigate previous commands and their outputs
 # TODO: select words, lines, urls, etc?
+# TODO: search scrollback (when feature added)
 
 # Tmux
 # NOTE: "\x01" = "ctrl+a" (tmux prefix)
