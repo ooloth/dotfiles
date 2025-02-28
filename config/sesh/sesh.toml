@@ -1,0 +1,45 @@
+# See: https://github.com/joshmedeski/sesh?tab=readme-ov-file#session-configuration
+
+# Ban specific sessions from appearing in the menu
+# See: https://github.com/joshmedeski/sesh?tab=readme-ov-file#blacklist
+blacklist = []
+
+# Default behavior when creating any session (can be overidden per session below)
+# See: https://github.com/joshmedeski/sesh?tab=readme-ov-file#default-session
+[default_session]
+  preview_command = "eza --all --git --icons --color=always {}"
+  startup_command = "nvim -c 'lua require(\"snacks\").picker.smart({ filter = { cwd = true } })'"
+
+# Configure common sessions
+# https://github.com/joshmedeski/sesh?tab=readme-ov-file#session-configuration
+[[session]]
+  name = "config-nvim"
+  path = "~/Repos/ooloth/config.nvim"
+
+[[session]]
+  name = "dotfiles"
+  path = "~/Repos/ooloth/dotfiles"
+
+[[session]]
+  name = "mu"
+  path = "~/Repos/ooloth/michaeluloth.com"
+
+[[session]]
+  name = "scripts"
+  path = "~/Repos/ooloth/scripts"
+
+[[session]]
+  name = "api"
+  path = "~/Repos/ooloth/media/media/api"
+
+[[session]]
+  name = "media"
+  path = "~/Repos/ooloth/media"
+
+[[session]]
+  name = "mini"
+  startup_command = "mini"
+
+[[session]]
+  name = "content"
+  path = "~/Repos/ooloth/content"
