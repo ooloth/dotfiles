@@ -41,6 +41,9 @@ window-padding-balance = true
 # Tmux sessions (switch, last, detach)
 keybind="cmd+s=text:\x01T"
 keybind="cmd+l=text:\x01L"
+# Ghostty
+keybind="cmd+shift+n=new_window"
+
 keybind="cmd+d=text:\x01d"
 
 # Tmux windows (create, rename, switch)
