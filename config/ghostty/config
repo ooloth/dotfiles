@@ -83,6 +83,7 @@ keybind="cmd+8=text:\x018"
 keybind="cmd+9=text:\x019"
 keybind="cmd+n=text:\x01c"
 keybind="cmd+r=text:\x01r"
+keybind="cmd+w=text:\x01w"
 
 # Tmux panes (split, navigate, maximize, close)
 keybind="cmd+\=text:\x01\\"
