@@ -6,6 +6,7 @@
 
 clipboard-paste-protection = false
 confirm-close-surface = false
+window-inherit-working-directory = true
 
 # TODO: Quick terminal
 # toggle_quick_terminal
