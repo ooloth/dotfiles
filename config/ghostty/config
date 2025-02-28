@@ -88,6 +88,7 @@ keybind="cmd+w=text:\x01w"
 # Tmux panes (split, navigate, maximize, close)
 keybind="cmd+\=text:\x01\\"
 keybind="cmd+-=text:\x01-"
+keybind="cmd+equal=text:\x01="
 keybind="cmd+;=text:\x01;"
 keybind="cmd+h=text:\x01\x1b[D"
 keybind="cmd+j=text:\x01\x1b[B"
