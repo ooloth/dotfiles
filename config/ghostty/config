@@ -41,8 +41,15 @@ window-padding-balance = true
 # NOTE: "\x01" = "C-a" (tmux prefix)
 
 # Ghostty
+keybind="cmd+shift+\=new_split:right"
+keybind="cmd+shift+-=new_split:down"
 keybind="cmd+shift+n=new_window"
 keybind="cmd+shift+r=reload_config"
+keybind="cmd+shift+h=goto_split:left"
+keybind="cmd+shift+j=goto_split:down"
+keybind="cmd+shift+k=goto_split:up"
+keybind="cmd+shift+l=goto_split:right"
+keybind="cmd+shift+;=goto_split:next"
 
 # Tmux sessions (detach, last, switch)
 keybind="cmd+d=text:\x01d"
