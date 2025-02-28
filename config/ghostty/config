@@ -38,18 +38,16 @@ window-padding-balance = true
 # See: https://ghostty.org/docs/config/reference#keybind
 # NOTE: "\x01" = "C-a" (tmux prefix)
 
-# Tmux sessions (switch, last, detach)
-keybind="cmd+s=text:\x01T"
-keybind="cmd+l=text:\x01L"
 # Ghostty
 keybind="cmd+shift+n=new_window"
 keybind="cmd+shift+r=reload_config"
 
+# Tmux sessions (detach, last, switch)
 keybind="cmd+d=text:\x01d"
+keybind="cmd+l=text:\x01L"
+keybind="cmd+s=text:\x01T"
 
-# Tmux windows (create, rename, switch)
-keybind="cmd+n=text:\x01c"
-keybind="cmd+r=text:\x01r"
+# Tmux windows (switch, create, rename)
 keybind="cmd+]=text:\x01n"
 keybind="cmd+[=text:\x01p"
 keybind="cmd+1=text:\x011"
@@ -61,9 +59,11 @@ keybind="cmd+6=text:\x016"
 keybind="cmd+7=text:\x017"
 keybind="cmd+8=text:\x018"
 keybind="cmd+9=text:\x019"
+keybind="cmd+n=text:\x01c"
+keybind="cmd+r=text:\x01r"
 
-# Tmux panes (maximize, split, kill)
-keybind="cmd+m=text:\x01z"
+# Tmux panes (split, maximize, close)
 keybind="cmd+\=text:\x01\\"
 keybind="cmd+-=text:\x01-"
+keybind="cmd+m=text:\x01z"
 keybind="cmd+x=text:\x01x"
