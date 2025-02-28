@@ -22,3 +22,35 @@ clipboard-paste-protection = false
 
 # TODO: Quick terminal
 # toggle_quick_terminal
+
+############
+# kEYBINDS #
+############
+
+# NOTE: "\x01" = "C-a" (tmux prefix)
+
+# Sessions (switch, last, detach)
+keybind="cmd+s=text:\x01T"
+keybind="cmd+l=text:\x01L"
+keybind="cmd+d=text:\x01d"
+
+# Windows (create, rename, switch)
+keybind="cmd+c=text:\x01c"
+keybind="cmd+r=text:\x01r"
+keybind="cmd+]=text:\x01n"
+keybind="cmd+[=text:\x01p"
+keybind="cmd+1=text:\x011"
+keybind="cmd+2=text:\x012"
+keybind="cmd+3=text:\x013"
+keybind="cmd+4=text:\x014"
+keybind="cmd+5=text:\x015"
+keybind="cmd+6=text:\x016"
+keybind="cmd+7=text:\x017"
+keybind="cmd+8=text:\x018"
+keybind="cmd+9=text:\x019"
+
+# Panes (maximize, split, kill)
+keybind="cmd+m=text:\x01z"
+keybind="cmd+\=text:\x01\\"
+keybind="cmd+-=text:\x01-"
+keybind="cmd+x=text:\x01x"
