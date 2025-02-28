@@ -72,6 +72,7 @@ brew "libpq" # for postgres
 brew "powerlevel10k"
 brew "ripgrep" # for telescope, yazi
 brew "ruff" # for python in neovim (for formatting support when not installed in venv)
+brew "sesh" # for tmux
 brew "shellcheck" # for bash in neovim
 brew "speedtest-cli"
 brew "starship"
