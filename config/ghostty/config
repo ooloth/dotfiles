@@ -8,9 +8,6 @@ clipboard-paste-protection = false
 confirm-close-surface = false
 window-inherit-working-directory = true
 
-# TODO: Quick terminal
-# toggle_quick_terminal
-
 ######
 # UI #
 ######
@@ -22,9 +19,9 @@ background = 1A1A28
 cursor-invert-fg-bg = true
 
 # Typography
-adjust-cell-height = 35%
 font-family = UbuntuMono Nerd Font Mono
 font-size = 15.5
+adjust-cell-height = 35%
 
 # Window
 macos-titlebar-style = hidden
