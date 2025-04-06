@@ -74,6 +74,7 @@ brew "ripgrep" # for telescope, yazi
 brew "ruff" # for python in neovim (for formatting support when not installed in venv)
 brew "sesh" # for tmux
 brew "shellcheck" # for bash in neovim
+brew "shfmt" # for bash in neovim
 brew "speedtest-cli"
 brew "starship"
 brew "stern" # for kubectl
@@ -81,6 +82,7 @@ brew "stylua" # for lua
 brew "svn" # for font cask installations
 brew "taplo" # for toml
 brew "tflint" # for terraform linting in neovim
+brew "hashicorp/tap/terraform" # for terraform formatting in neovim
 brew "hashicorp/tap/terraform-ls" # for terraform lsp in neovim + vs code
 brew "tidy-html5" # for linting html + xml in neovim
 brew "tmux"

@@ -5,12 +5,14 @@ source "$DOTFILES/config/zsh/utils.zsh"
 info "🧃 Updating Neovim lsp servers, linters and formatters"
 
 # TODO: need to add any of these tools to the PATH manually for neovim to find?
+# NOTE: all brew installed tools also need to be listed in Brewfile so brew bundle won't remove them
 
 # Astro
 npm i -g @astrojs/language-server # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#astro
 
 # Bash
 brew install shellcheck
+brew install shfmt
 npm i -g bash-language-server # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#bashls
 
 # CSS
@@ -38,7 +40,9 @@ npm i -g pyright
 brew install ruff
 
 # Terraform
-brew install hashicorp/tap/terraform-ls # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#terraformls
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform # see: https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+brew install hashicorp/tap/terraform-ls # see: https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
 brew install tflint # https://github.com/terraform-linters/tflint
 
 # TOML
