@@ -51,11 +51,9 @@ if $IS_WORK; then
 fi
 
 # Rust
-if have rustup; then
-  export CARGO_HOME="$HOME/.config/cargo"
-  export RUSTUP_HOME="$HOME/.config/rustup"
-  source "$CARGO_HOME/env"
-fi
+export CARGO_HOME="$HOME/.config/cargo"
+export RUSTUP_HOME="$HOME/.config/rustup"
+source "$CARGO_HOME/env"
 
 # Shell
 export SHELL=$(which zsh)
