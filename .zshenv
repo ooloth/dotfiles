@@ -9,6 +9,9 @@ unsetopt GLOBAL_RCS
 
 # Device
 export HOSTNAME=$(networksetup -getcomputername)
+
+# When referenced in "if" statements, will execute the true/false unix commands that return 0 or 1
+# When read directly, will contain "true" or "false" strings
 export IS_AIR=false
 export IS_MINI=false
 export IS_WORK=false
