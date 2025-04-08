@@ -28,6 +28,7 @@ end
 # PACKAGES #
 ############
 
+brew "basedpyright" # for python in neovim
 brew "bash"
 brew "bat" # replaces cat
 brew "btop" # top alternative

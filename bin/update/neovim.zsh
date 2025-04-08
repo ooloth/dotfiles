@@ -38,6 +38,7 @@ npm i -g @mdx-js/language-service
 
 # Python
 npm i -g pyright
+brew install basedpyright # see: https://docs.basedpyright.com/latest/installation/command-line-and-language-server/#__tabbed_2_2
 brew install ruff
 
 # Terraform
