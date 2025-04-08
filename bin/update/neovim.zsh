@@ -32,8 +32,9 @@ npm i -g vscode-langservers-extracted # see: https://github.com/neovim/nvim-lspc
 brew install lua-language-server # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls
 brew install stylua # see: https://github.com/JohnnyMorganz/StyLua?tab=readme-ov-file#homebrew
 
-# Markdown
+# Markdown / MDX
 brew install marksman # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#marksman
+npm i -g @mdx-js/language-service
 
 # Python
 npm i -g pyright
