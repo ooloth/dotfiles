@@ -110,7 +110,7 @@ if hostname == "Mini"
   brew "carbon-copy-cloner"
 end
 
-if hostname == "7385-Y3FH97X-MAC" or hostname == "MULO-JQ97NW-MBP"
+if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
   # brew "bazel"
   brew "hashicorp/tap/vault"
   brew "helm" # for kubernetes
@@ -171,7 +171,7 @@ if hostname == "Mini"
   # cask "handbrake"
 end
 
-if hostname == "7385-Y3FH97X-MAC" or hostname == "MULO-JQ97NW-MBP"
+if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
   cask "meetingbar" # for auto-joining zoom calls
 end
 
@@ -250,6 +250,11 @@ vscode "ms-python.mypy-type-checker"
 vscode "ms-python.python"
 vscode "ms-python.vscode-pylance"
 vscode "ms-toolsai.datawrangler"
+vscode "ms-toolsai.jupyter"
+vscode "ms-toolsai.jupyter-keymap"
+vscode "ms-toolsai.jupyter-renderers"
+vscode "ms-toolsai.vscode-jupyter-cell-tags"
+vscode "ms-toolsai.vscode-jupyter-slideshow"
 vscode "ms-vscode-remote.remote-containers"
 vscode "ms-vscode-remote.remote-ssh"
 vscode "ms-vscode-remote.remote-ssh-edit"
@@ -283,17 +288,12 @@ if hostname == "Air"
   vscode "vadimcn.vscode-lldb" # for debugging rust, go and other compiled languages
 end
 
-if hostname == "7385-Y3FH97X-MAC" or hostname == "MULO-JQ97NW-MBP"
+if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
   vscode "editorconfig.editorconfig"
   vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
   vscode "ms-python.black-formatter"
   vscode "ms-python.flake8"
   vscode "ms-python.isort"
-  vscode "ms-toolsai.jupyter"
-  vscode "ms-toolsai.jupyter-keymap"
-  vscode "ms-toolsai.jupyter-renderers"
-  vscode "ms-toolsai.vscode-jupyter-cell-tags"
-  vscode "ms-toolsai.vscode-jupyter-slideshow"
   vscode "swimm.swimm"
   vscode "tsandall.opa"
 end
