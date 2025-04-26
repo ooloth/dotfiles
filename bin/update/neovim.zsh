@@ -34,7 +34,7 @@ brew install stylua # see: https://github.com/JohnnyMorganz/StyLua?tab=readme-ov
 
 # Markdown / MDX
 brew install marksman # see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#marksman
-npm i -g @mdx-js/language-service
+npm i -g @mdx-js/language-service # TS server for MDX: https://github.com/mdx-js/mdx-analyzer/tree/main/packages/typescript-plugin
 
 # Python
 brew install basedpyright # see: https://docs.basedpyright.com/latest/installation/command-line-and-language-server/#__tabbed_2_2
