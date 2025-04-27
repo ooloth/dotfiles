@@ -161,6 +161,7 @@ cask "visual-studio-code"
 cask "vlc"
 
 if hostname == "Air"
+  cask "1password"
   cask "google-chrome" # NOTE: work likely controls installation of this app
   # NOTE: manually download prepros v6 instead (just need it for Adam's site)
   # cask "transmit
@@ -168,6 +169,7 @@ if hostname == "Air"
 end
 
 if hostname == "Mini"
+  cask "1password"
   cask "backblaze"
   # cask "handbrake"
 end
