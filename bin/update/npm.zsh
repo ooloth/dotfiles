@@ -13,6 +13,7 @@ info "✨ Updating Node $(node -v) global dependencies"
 general_dependencies=(
   npm
   npm-check
+  trash-cli
 )
 
 neovim_dependencies=(

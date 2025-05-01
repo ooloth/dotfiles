@@ -86,7 +86,6 @@ brew "hashicorp/tap/terraform" # for terraform formatting in neovim
 brew "hashicorp/tap/terraform-ls" # for terraform lsp in neovim + vs code
 brew "tidy-html5" # for linting html + xml in neovim
 brew "tmux"
-brew "trash"
 brew "tree"
 brew "unar" # for yazi
 brew "uv" # for python
