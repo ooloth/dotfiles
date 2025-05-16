@@ -18,6 +18,7 @@
   "inc-rename.nvim": { "branch": "main", "commit": "f9b9e5b9a75074810f40881b7e254b5bbeaf122e" },
   "lazy.nvim": { "branch": "main", "commit": "6c3bda4aca61a13a9c63f1c1d1b16b9d3be90d7a" },
   "lazydev.nvim": { "branch": "main", "commit": "f59bd14a852ca43db38e3662395354cb2a9b13e0" },
+  "lua-json5": { "branch": "master", "commit": "d8e962a98b9c66bda02b20df02868a72ef4c8803" },
   "mdx.nvim": { "branch": "main", "commit": "464a74be368dce212cff02f6305845dc7f209ab3" },
   "mini.ai": { "branch": "main", "commit": "ebb04799794a7f94628153991e6334c3304961b8" },
   "mini.files": { "branch": "main", "commit": "01001e0cfc1e79f581d055ae3f70fbac96a2f378" },
