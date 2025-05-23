@@ -2,6 +2,9 @@
 # See: https://stackoverflow.com/questions/66338988/complete13-command-not-found-compde
 autoload -Uz compinit && compinit
 
+# docker
+fpath=(/Users/michael.uloth/.docker/completions $fpath)
+
 # fnm
 eval "$(fnm env --use-on-cd --log-level=error)"
 
