@@ -88,7 +88,6 @@ brew "tidy-html5" # for linting html + xml in neovim
 brew "tmux"
 brew "tree"
 brew "unar" # for yazi
-brew "uv" # for python
 brew "vifm"
 brew "saulpw/vd/visidata"
 brew "wget" # for neovim
@@ -102,6 +101,7 @@ if hostname == "Air"
   brew "deno"
   brew "gleam"
   brew "modularml/packages/modular" # for mojo
+  brew "uv" # work handles this installation
   brew "zig"
 end
 

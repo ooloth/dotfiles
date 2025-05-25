@@ -1,0 +1,15 @@
+# see: https://k9scli.io/topics/config/
+
+k9s:
+  cluster: gke_rp006-prod-49a893d8_us-central1_rp006-prod
+  featureGates:
+    # see: https://k9scli.io/topics/shell/
+    nodeShell: true # enable node shell feature
+  namespace:
+    active: rp006-neuro-phenomap
+    lockFavorites: false
+    favorites:
+      - rp006-neuro-phenomap
+  portForwardAddress: localhost
+  view:
+    active: dp
