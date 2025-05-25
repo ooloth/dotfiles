@@ -82,7 +82,7 @@ alias mu="cd $HOME/Repos/ooloth/michaeluloth.com"
 n() { npm install "$@"; }
 source "$DOTFILES/config/zsh/new.zsh"
 ng() { "$DOTFILES/bin/update/npm.zsh"; }
-nu() { n && npm-check -u; }
+# nu() { n && npm-check -u; } -- conflicts with nushell launch command
 alias nvim="NVIM_APPNAME=nvim-ide nvim"
 alias nvm="fnm"
 
