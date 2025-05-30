@@ -28,10 +28,13 @@ psc() { cd "$HOME/Repos/recursionpharma/phenoservice-consumer"; }
 
 alias r="cd $HOME/Repos/recursionpharma"
 ru() { uv tool upgrade rxrx-roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
-rl() { ru && uv tool run roadie lock --uv "$@"; } # optionally "rl -c" etc
-rv() { ru && uv tool run roadie venv --output .venv --uv "$@"; }
+rl() { ru && uvx --python 3.11 roadie lock "$@"; }
+# rl() { ru && roadie lock --python 3.11 "$@"; } # NOTE: will use roadie from local venv instead of global roadie
+rv() { ru && uv pip install -r pyproject.toml --extra dev "$@"; }
+# rv() { ru && uvx roadie venv --output .venv --uv "$@"; }
 rlc() { rl --clobber; }
-rvc() { rv --clobber }
+rvc() { rv --reinstall; }
+# rvc() { rv --clobber; }
 
 tech() { cd "$HOME/Repos/recursionpharma/tech"; }
 

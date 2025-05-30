@@ -150,6 +150,7 @@ cask "ghostty"
 cask "hyperkey" # karabiner become impossible to allow on work laptop...
 # cask "karabiner-elements" (using hyperkey instead)
 cask "kitty"
+cask "neohtop" # see: https://abdenasser.github.io/neohtop/
 cask "notion"
 cask "obsidian"
 # cask "raycast"
