@@ -40,6 +40,7 @@ alias g="lazygit"
 
 alias h="cd $HOME"
 # NOTE: "have" defined in utils.zsh
+alias hub="cd $HOME/Repos/ooloth/hub"
 
 alias image="kitten icat" # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 # NOTE: "info" defined in utils.zsh
