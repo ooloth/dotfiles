@@ -78,6 +78,9 @@ start() {
     skurge)
       du ;;
 
+    spade-app)
+      ./bin/dev.sh "$@" ;;
+
     spade-flows)
       ./bin/dev/start.sh ;;
 
