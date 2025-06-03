@@ -33,13 +33,14 @@ diff() { kitten diff "$1" "$2"; }                  # see: https://sw.kovidgoyal.
 alias env="env | sort"
 # NOTE: "error" defined in utils.zsh
 
-alias f="vifm . ."
-# alias f='yazi' # TODO fix yazi error on launch
+alias f='yazi'
+# alias f="vifm . ."
 
 alias g="lazygit"
 
 alias h="cd $HOME"
 # NOTE: "have" defined in utils.zsh
+alias hub="cd $HOME/Repos/ooloth/hub"
 
 alias image="kitten icat" # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 # NOTE: "info" defined in utils.zsh
