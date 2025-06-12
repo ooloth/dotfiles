@@ -715,6 +715,7 @@
     "*.copilotmd": "vscode.markdown.preview.editor",
     "file:/**/*.parquet": "jupyter-data-wrangler"
   },
-  "window.zoomLevel": 1,
-  "interactiveWindow.executeWithShiftEnter": true
+  "interactiveWindow.executeWithShiftEnter": true,
+  "workbench.editor.showTabs": "single",
+  "window.zoomLevel": 1
 }
