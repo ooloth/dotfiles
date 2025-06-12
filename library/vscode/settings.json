@@ -716,6 +716,7 @@
     "file:/**/*.parquet": "jupyter-data-wrangler"
   },
   "interactiveWindow.executeWithShiftEnter": true,
+  "workbench.statusBar.visible": false,
   "workbench.editor.showTabs": "single",
   "window.zoomLevel": 1
 }
