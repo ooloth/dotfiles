@@ -43,7 +43,6 @@
   "editor.foldingImportsByDefault": true,
   "editor.fontFamily": "'UbuntuMono Nerd Font', 'Ubuntu Mono', Menlo, Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
-  "editor.fontSize": 13,
   "editor.fontWeight": "normal",
   "editor.formatOnPaste": false,
   "editor.formatOnSave": true,
@@ -95,6 +94,8 @@
   ],
   "explorer.confirmDragAndDrop": false,
   "explorer.fileNesting.enabled": false,
+  "explorer.decorations.badges": false,
+  "git.decorations.enabled": false,
   "explorer.openEditors.visible": 1,
   "files.associations": {
     ".eslintrc": "yaml",
@@ -205,7 +206,6 @@
     "bash": null,
     "zsh": { "path": "/opt/homebrew/bin/zsh" }
   },
-  "terminal.integrated.fontFamily": "'UbuntuMono Nerd Font'",
   "terminal.integrated.lineHeight": 1.35,
   "terminal.integrated.scrollback": 15000,
   "terraform.experimentalFeatures.validateOnSave": true,
@@ -217,6 +217,7 @@
     { "backgroundColor": "transparent", "color": "#f9e2af", "text": "TODO" },
     { "backgroundColor": "transparent", "color": "#a6e3a1", "text": "NOTE" }
   ],
+  "workbench.tips.enabled": false,
   "totalTypeScript.hiddenTips": [
     "in-operator-narrowing",
     "passing-generics-to-types",
@@ -505,7 +506,15 @@
   ],
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
+  "custom-ui-style.font.sansSerif": "Ubuntu Mono",
+  "breadcrumbs.enabled": false,
   "workbench.colorCustomizations": {
+    "[Aura Dracula Spirit (Soft)]": {
+      "editorSuggestWidget.selectedBackground": "#3A334B",
+      "sideBar.background": "#191521",
+      "titleBar.activeBackground": "#191521",
+      "titleBar.inactiveBackground": "#191521",
+    },
     "[Catppuccin Mocha]": {
       // Brighter text
       "debugTokenExpression.value": "#9399b2",
@@ -621,8 +630,7 @@
       "walkThrough.embeddedEditorBackground": "#232730"
     }
   },
-  "workbench.colorTheme": "Catppuccin Mocha",
-  "workbench.editor.enablePreview": false,
+  "workbench.colorTheme": "Aura Dracula Spirit (Soft)",
   "workbench.editor.revealIfOpen": true,
   "workbench.editor.tabSizing": "shrink",
   "workbench.editor.wrapTabs": true,
@@ -649,13 +657,13 @@
   "editor.scrollbar.vertical": "hidden",
   "editor.overviewRulerBorder": false,
   "window.density.editorTabHeight": "compact",
-  "window.title": "${rootName}${separator}${activeRepositoryBranchName}",
+  "explorer.compactFolders": false,
+  "window.title": "${activeEditorMedium} • ${activeRepositoryName}/${activeRepositoryBranchName}",
   "editor.scrollbar.horizontal": "hidden",
   "catppuccin.bracketMode": "monochromatic",
   "workbench.editor.editorActionsLocation": "hidden",
   // avoid autoformatting in projects with no explicit .prettierrc (i.e. don't fall back to .editorconfig)
   "prettier.useEditorConfig": false,
-  "terminal.integrated.fontSize": 13,
   "debug.hideLauncherWhileDebugging": true,
   "debug.console.fontSize": 12.5,
   "python.analysis.inlayHints.callArgumentNames": "partial",
@@ -669,7 +677,6 @@
   "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
   "python.analysis.addImport.heuristics": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "terminal.integrated.tabs.enabled": false,
   "gitlens.codeLens.recentChange.enabled": false,
 
   "catppuccin.italicKeywords": false,
@@ -683,8 +690,6 @@
   "errorLens.messageTemplate": "$message [$source]",
   "errorLens.severityText": ["⛔", "🚧", "💡", "🍏"],
   "errorLens.statusBarMessageTemplate": "[$source] $message",
-
-  "github.copilot.editor.enableAutoCompletions": true,
 
   "Lua.format.enable": false,
   "Lua.hint.arrayIndex": "Disable",
@@ -705,8 +710,8 @@
   "vscode-kubernetes.log-viewer.wrap": false,
 
   "workbench.editor.empty.hint": "hidden",
-  "workbench.iconTheme": "eq-material-theme-icons-palenight",
-  "workbench.startupEditor": "newUntitledFile",
+  "workbench.iconTheme": "bearded-icons",
+  "workbench.startupEditor": "none",
   "workbench.activityBar.location": "hidden",
   "database-client.autoSync": true,
   "markdown.preview.doubleClickToSwitchToEditor": false,
@@ -717,6 +722,23 @@
   },
   "interactiveWindow.executeWithShiftEnter": true,
   "workbench.statusBar.visible": false,
-  "workbench.editor.showTabs": "single",
-  "window.zoomLevel": 1
+  "workbench.editor.showTabs": "none",
+  "workbench.editor.enablePreviewFromQuickOpen": true,
+  "workbench.editor.enablePreviewFromCodeNavigation": true,
+  "terminal.integrated.fontLigatures.enabled": true,
+  "catppuccin-icons.hidesExplorerArrows": true,
+  "workbench.tree.renderIndentGuides": "none",
+  "workbench.panel.showLabels": false,
+  "window.confirmSaveUntitledWorkspace": false,
+  "workbench.navigationControl.enabled": false,
+  "chat.commandCenter.enabled": false,
+  "inlineChat.enableV2": true,
+  "editor.codeLens": false,
+  "editor.snippetSuggestions": "top",
+  "window.zoomLevel": 1,
+  "editor.fontSize": 12.5,
+  "terminal.integrated.fontSize": 12.5,
+  "editor.inlayHints.enabled": "offUnlessPressed",
+  "workbench.commandPalette.experimental.suggestCommands": true,
+  "workbench.commandPalette.preserveInput": true
 }
