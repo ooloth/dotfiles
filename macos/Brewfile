@@ -158,6 +158,7 @@ cask "rectangle"
 # cask "runjs"
 cask "visual-studio-code"
 cask "vlc"
+cask "zed"
 
 if hostname == "Air"
   cask "1password"
