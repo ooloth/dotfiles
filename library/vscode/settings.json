@@ -361,7 +361,7 @@
       { "key": "J", "name": "Move editor group down", "command": "workbench.action.moveActiveEditorGroupDown", "type": "command" },
       { "key": "K", "name": "Move editor group up", "command": "workbench.action.moveActiveEditorGroupUp", "type": "command" },
       { "key": "L", "name": "Move editor group right", "command": "workbench.action.moveActiveEditorGroupRight", "type": "command" },
-      { "key": "m", "name": "Maximize editor group (toggle)", "command": "workbench.action.toggleEditorWidths", "type": "command" },
+      { "key": "m", "name": "Maximize editor group (toggle)", "command": "workbench.action.toggleMaximizeEditorGroup", "type": "command" },
       { "key": "M", "name": "Merge all editor groups", "command": "workbench.action.joinAllGroups", "type": "command" },
       { "key": "n", "name": "New untitled editor", "command": "workbench.action.files.newUntitledFile", "type": "command" },
       { "key": "o", "name": "Only this editor (close others)", "commands": ["workbench.action.closeOtherEditors", "workbench.action.closeEditorsInOtherGroups"], "type": "command" },
