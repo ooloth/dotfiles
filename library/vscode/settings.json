@@ -513,7 +513,7 @@
       "editorSuggestWidget.selectedBackground": "#3A334B",
       "sideBar.background": "#191521",
       "titleBar.activeBackground": "#191521",
-      "titleBar.inactiveBackground": "#191521",
+      "titleBar.inactiveBackground": "#191521"
     },
     "[Catppuccin Mocha]": {
       // Brighter text
@@ -739,6 +739,7 @@
   "editor.fontSize": 12.5,
   "terminal.integrated.fontSize": 12.5,
   "editor.inlayHints.enabled": "offUnlessPressed",
+  "workbench.commandPalette.experimental.enableNaturalLanguageSearch": false,
   "workbench.commandPalette.experimental.suggestCommands": true,
   "workbench.commandPalette.preserveInput": true
 }
