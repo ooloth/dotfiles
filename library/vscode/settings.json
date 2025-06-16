@@ -720,10 +720,8 @@
     "*.copilotmd": "vscode.markdown.preview.editor",
     "file:/**/*.parquet": "jupyter-data-wrangler"
   },
-  "window.zoomLevel": 2,
   "interactiveWindow.executeWithShiftEnter": true,
-  "remote.downloadExtensionsLocally": true
-  "interactiveWindow.executeWithShiftEnter": true,
+  "remote.downloadExtensionsLocally": true,
   "workbench.statusBar.visible": false,
   "workbench.editor.showTabs": "none",
   "workbench.editor.enablePreviewFromQuickOpen": true,
