@@ -14,6 +14,9 @@ test() {
       info "🧪 Running: vitest$args"
       npm run test "$@" ;;
 
+    spade-app)
+      ./bin/test.sh "$@" ;;
+
     spade-flows)
       ./bin/dev/test.sh "$@" ;;
 

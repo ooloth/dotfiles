@@ -9,6 +9,9 @@ check() {
       info "Formatting, linting and type-checking"
       npm run lint ;;
 
+    spade-app)
+      ./bin/check.sh "$@" ;;
+
     spade-flows)
       ./bin/dev/check.sh "$@" ;;
 
