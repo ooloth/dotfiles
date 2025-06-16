@@ -23,6 +23,10 @@ if hostname == "Air"
   tap "modularml/packages" # for mojo
 end
 
+if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
+  tap "codefresh-io/cli"
+end
+
 ############
 # PACKAGES #
 ############
@@ -111,6 +115,7 @@ end
 
 if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
   # brew "bazel"
+  brew "codefresh"
   brew "hashicorp/tap/vault"
   brew "helm" # for kubernetes
   brew "kafka"
