@@ -140,7 +140,7 @@
   { "key": "ctrl+r",  "command": "redo", "when": "editorTextFocus && vim.active && vim.mode != 'Insert' && !inDebugRepl" },
 
   // Trigger suggestion menu
-  { "key": "ctrl+s",     "command": "editor.action.triggerSuggest", "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible" },
+  { "key": "ctrl+s", "command": "editor.action.triggerSuggest", "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible" },
 
   // Insert custom print statements for each language
   { "key": "cmd+l", "command": "print-it.PrintIt", "when": "editorTextFocus" },
