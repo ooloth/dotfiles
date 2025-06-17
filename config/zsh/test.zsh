@@ -10,6 +10,9 @@ test() {
   advent-of-code)
     bin/test "$@"
     ;;
+  hub)
+    PYTHONPATH=. pytest "$@"
+    ;;
   scripts)
     PYTHONPATH=. pytest "$@"
     ;;
