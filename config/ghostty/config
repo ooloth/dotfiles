@@ -15,7 +15,9 @@ window-inherit-working-directory = true
 # Colors
 # see: ghostty +list-themes
 theme = catppuccin-mocha
-background = 1A1A28
+background = 181825
+# theme = nord
+# background = 1a1e23
 cursor-invert-fg-bg = true
 
 # Typography
