@@ -718,7 +718,7 @@
   "vscode-kubernetes.log-viewer.wrap": false,
 
   "workbench.editor.empty.hint": "hidden",
-  "workbench.iconTheme": "bearded-icons",
+  "workbench.iconTheme": "catppuccin-mocha",
   "workbench.startupEditor": "none",
   "workbench.activityBar.location": "hidden",
   "database-client.autoSync": true,
@@ -751,5 +751,6 @@
   "workbench.commandPalette.experimental.suggestCommands": true,
   "workbench.commandPalette.preserveInput": true,
   "zenMode.showTabs": "none",
-  "workbench.editor.showTabs": "none"
+  "workbench.editor.showTabs": "none",
+  "catppuccin-icons.specificFolders": false
 }
