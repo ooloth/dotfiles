@@ -731,7 +731,6 @@
   "interactiveWindow.executeWithShiftEnter": true,
   "remote.downloadExtensionsLocally": true,
   "workbench.statusBar.visible": false,
-  "workbench.editor.showTabs": "none",
   "workbench.editor.enablePreviewFromQuickOpen": true,
   "workbench.editor.enablePreviewFromCodeNavigation": true,
   "terminal.integrated.fontLigatures.enabled": true,
@@ -750,5 +749,7 @@
   "editor.inlayHints.enabled": "offUnlessPressed",
   "workbench.commandPalette.experimental.enableNaturalLanguageSearch": false,
   "workbench.commandPalette.experimental.suggestCommands": true,
-  "workbench.commandPalette.preserveInput": true
+  "workbench.commandPalette.preserveInput": true,
+  "zenMode.showTabs": "none",
+  "workbench.editor.showTabs": "none"
 }
