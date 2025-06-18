@@ -15,8 +15,8 @@ window-inherit-working-directory = true
 # Colors
 # see: ghostty +list-themes
 theme = catppuccin-mocha
-background = 12121C
-# background = 181825
+background = 181825
+# background = 12121C
 # theme = aura
 # theme = nord
 # background = 1a1e23
