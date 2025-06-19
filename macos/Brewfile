@@ -88,6 +88,7 @@ brew "taplo" # for toml
 brew "tflint" # for terraform linting in neovim
 brew "hashicorp/tap/terraform" # for terraform formatting in neovim
 brew "hashicorp/tap/terraform-ls" # for terraform lsp in neovim + vs code
+brew "httpie"
 brew "tidy-html5" # for linting html + xml in neovim
 brew "tmux"
 brew "tree"
