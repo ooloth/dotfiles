@@ -105,8 +105,9 @@ assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisit
 2. **Linting** - Run linters after formatting
 3. **Type checking** - Run type checkers
 4. **Tests** - Run relevant tests last
-5. **Final review** - Check `git diff --staged` to review what will be committed
-6. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+5. **Test coverage verification** - Confirm all expected test files are running (see below)
+6. **Final review** - Check `git diff --staged` to review what will be committed
+7. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
 
 ### When Pre-commit Checks Fail
 
@@ -243,6 +244,42 @@ When creating PRs that add new functions/utilities before they're used:
    - Use descriptive function names that indicate future purpose
    - Add comments explaining the intended use case
    - Reference the roadmap/plan if one exists
+
+### Test Coverage Verification
+
+**Always verify that all expected test files are running** when running the test suite:
+
+1. **Count test files manually** vs test runner output:
+   ```bash
+   # Count actual test files
+   find test/ -name "test-*.zsh" -o -name "*test*.zsh" | wc -l
+   
+   # Compare with test runner output: "Found X test file(s) to run"
+   ./test/run-tests.zsh
+   ```
+
+2. **Check for missing test directories**:
+   ```bash
+   # List all test directories
+   find test/ -type d -name "*test*" -o -name "test*"
+   
+   # Verify test runner finds tests in all directories
+   ```
+
+3. **Common test runner issues to watch for**:
+   - Test files missing executable permissions (`chmod +x test-file.zsh`)
+   - Test files not matching expected naming patterns
+   - Directories not being scanned recursively
+   - Test runner configuration excluding certain paths
+
+4. **When test count doesn't match expectations**:
+   - Run `./test/run-tests.zsh` and note "Found X test file(s)" message
+   - Manually count test files and compare
+   - Check if specific test directories or files are being excluded
+   - Verify file permissions and naming conventions
+   - Fix any discrepancies before proceeding
+
+**This prevents regressions where test files exist but aren't being executed.**
 
 When pre-commit checks fail, I'll fix the issues, stage the fixes, and automatically retry the commit to keep the workflow smooth.
 
