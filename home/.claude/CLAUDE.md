@@ -1,0 +1,1 @@
+- Commit unrelated changes separately instead of combining them into one "and" commit
