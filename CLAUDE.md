@@ -227,3 +227,6 @@ When `MACHINE="work"`:
 - Run individual install scripts to isolate issues
 - Use `test-symlinks.zsh` to verify symlink targets
 - Check script permissions (should be executable)
+
+## Project-Specific Git Ignore
+- Use the `.gitignore` file and not the `config/git/ignore` file when adding project-specific ignore rules

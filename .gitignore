@@ -4,6 +4,8 @@
 .secrets
 Brewfile.lock.json
 
+**/.claude/settings.local.json
+
 # Work stuff
 # config/k9s/clusters/*
 # config/zsh/work/*
