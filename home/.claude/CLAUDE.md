@@ -118,4 +118,29 @@ assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisit
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
+### Infrastructure-First PR Guidelines
+
+When creating PRs that add new functions/utilities before they're used:
+
+1. **Add TODO comments** in the code indicating where the function will be used:
+   ```bash
+   # TODO: Use in PR 7 (Error Recovery) for graceful failure handling
+   function handle_installation_error() {
+       ...
+   }
+   ```
+
+2. **Include usage preview** in PR description showing how the code will be used:
+   ```markdown
+   ## Usage Preview
+   This dry-run functionality will be used in future PRs to:
+   - PR 7: Wrap all installation commands with `dry_run_execute`
+   - PR 8: Add dry-run summaries showing what would be installed
+   ```
+
+3. **Mark dead code clearly** so reviewers understand it's intentional:
+   - Use descriptive function names that indicate future purpose
+   - Add comments explaining the intended use case
+   - Reference the roadmap/plan if one exists
+
 When pre-commit checks fail, I'll fix the issues, stage the fixes, and automatically retry the commit to keep the workflow smooth.
