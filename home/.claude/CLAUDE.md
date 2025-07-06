@@ -139,6 +139,33 @@ assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisit
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
+### PR Size and Focus Guidelines
+
+**Prefer small, focused PRs over large ones:**
+
+1. **One responsibility per PR** - Each PR should do exactly one thing
+2. **Easy to review** - Reviewer can understand the entire change quickly
+3. **Easy to rollback** - Can revert without affecting unrelated functionality
+4. **Split by logical boundaries**:
+   - Infrastructure/framework changes separate from usage
+   - Different functional areas separate (homebrew vs ssh vs node)
+   - Setup/configuration separate from implementation
+
+**Examples of good splits:**
+- ✅ PR 1: "Add test infrastructure for installation scripts"
+- ✅ PR 2: "Test homebrew installation with mocks"  
+- ✅ PR 3: "Test SSH key generation and GitHub auth"
+- ✅ PR A: "Refactor install scripts for better testability" → PR B: "Add comprehensive installation testing"
+- ❌ "Test all installation scripts" (too broad)
+- ❌ "Refactor code structure and add new features" (mixed concerns)
+
+**When to split large planned PRs:**
+- If testing multiple unrelated scripts/components
+- If adding infrastructure AND using it extensively
+- If changes span multiple functional domains
+- If the PR would be hard to review in one sitting
+- If structure changes would make behavior changes cleaner (separate refactoring from features)
+
 ### PR Description Maintenance
 
 **Always update the PR description after new commits** that change what the PR includes:
