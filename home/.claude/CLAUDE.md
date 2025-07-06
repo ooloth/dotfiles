@@ -54,13 +54,13 @@ When following Test-Driven Development:
 - The test case should determine what implementation changes belong in the commit
 
 ### Examples of Good Commit Granularity
-- ✅ "Add command line tools validation with test"
-- ✅ "Add network connectivity validation with test"
-- ✅ "Add edge case test for network timeout handling"
-- ✅ "Add macOS version validation with test"
-- ✅ "Add test for unsupported macOS version error message"
+- ✅ "Add input validation with test"
+- ✅ "Add database connectivity validation with test"
+- ✅ "Add edge case test for connection timeout handling"
+- ✅ "Add API version validation with test"
+- ✅ "Add test for unsupported API version error message"
 - ✅ "Add dry-run mode flag parsing with test"
-- ✅ "Add integration test for setup.zsh prerequisite validation"
+- ✅ "Add integration test for service prerequisite validation"
 - ❌ "Add all prerequisite validation tests and implementation" (too broad - multiple test cases)
 - ❌ "Implement multiple validation functions" (unrelated changes)
 - ❌ "Add tests and fix bugs" (unrelated changes)
@@ -70,10 +70,10 @@ When following Test-Driven Development:
 **Always test behavior, not implementation details:**
 
 #### ✅ Good: Test Behavior
-- Test that setup.zsh exits with error when prerequisites fail
+- Test that applications exit with error when prerequisites fail
 - Test that validation returns success when requirements are met
 - Test that dry-run mode logs actions without executing them
-- Test that flag parsing sets the correct environment variables
+- Test that configuration parsing sets the correct values
 
 #### ❌ Bad: Test Implementation Details
 - Test that specific function names exist in files
@@ -88,15 +88,14 @@ When following Test-Driven Development:
 - **Focused**: Tests tell you what the code should do, not how it should do it
 
 #### Examples
-```bash
+```
 # ❌ Brittle implementation test
-if grep -q "run_prerequisite_validation" "$setup_file"; then
-    assert_true "true" "setup.zsh should call specific function"
-fi
+if search_for_function_name("validate_prerequisites", setup_file):
+    assert_true("setup should call specific function")
 
 # ✅ Robust behavioral test  
-setup_exit_code=$(run_setup_with_failed_prerequisites)
-assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisites fail"
+exit_code = run_setup_with_failed_prerequisites()
+assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 ```
 
 ### Pre-commit Checks (in order)
@@ -149,19 +148,19 @@ assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisit
 3. **Easy to rollback** - Can revert without affecting unrelated functionality
 4. **Split by logical boundaries**:
    - Infrastructure/framework changes separate from usage
-   - Different functional areas separate (homebrew vs ssh vs node)
+   - Different functional areas separate (database vs authentication vs UI)
    - Setup/configuration separate from implementation
 
 **Examples of good splits:**
-- ✅ PR 1: "Add test infrastructure for installation scripts"
-- ✅ PR 2: "Test homebrew installation with mocks"  
-- ✅ PR 3: "Test SSH key generation and GitHub auth"
-- ✅ PR A: "Refactor install scripts for better testability" → PR B: "Add comprehensive installation testing"
-- ❌ "Test all installation scripts" (too broad)
+- ✅ PR 1: "Add test infrastructure for backend services"
+- ✅ PR 2: "Test user authentication with mocks"  
+- ✅ PR 3: "Test API endpoint validation"
+- ✅ PR A: "Refactor service layer for better testability" → PR B: "Add comprehensive service testing"
+- ❌ "Test all backend services" (too broad)
 - ❌ "Refactor code structure and add new features" (mixed concerns)
 
 **When to split large planned PRs:**
-- If testing multiple unrelated scripts/components
+- If testing multiple unrelated services/components
 - If adding infrastructure AND using it extensively
 - If changes span multiple functional domains
 - If the PR would be hard to review in one sitting
@@ -178,14 +177,14 @@ assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisit
 - Add new commits to the implementation approach if significant
 
 Example workflow:
-```bash
+```
 # After adding a new feature to the PR
 git push origin feature-branch
-gh pr edit PR_NUMBER --body "updated description..."
+[update PR description via CLI tool or web interface]
 
 # Or when user says they pushed changes
-gh pr view PR_NUMBER  # Check current state
-gh pr edit PR_NUMBER --body "updated description..."
+[check current PR state]
+[update PR description with new changes]
 ```
 
 ### Multi-PR Task Management
@@ -204,20 +203,20 @@ For tasks involving multiple PRs, create and maintain a roadmap file:
 
 Example task file structure:
 ```markdown
-# 2025-07-06-setup-improvements.md
+# 2025-07-06-feature-improvements.md
 
 ## Progress
 - ✅ PR 1: Testing Foundation
-- ✅ PR 2: Machine Detection  
+- ✅ PR 2: Service Authentication  
 - 🔄 PR 3: Error Handling (in review)
 
 ## Key Decisions
 - Using behavioral tests instead of implementation tests
-- File-based approach for Zsh subshell testing
+- Async approach for better performance
 
 ## Next Steps
-- PR 4: Individual Script Testing
-- Need to integrate retry mechanism into homebrew.zsh
+- PR 4: Individual Service Testing
+- Need to integrate retry mechanism into API client
 ```
 
 ### Infrastructure-First PR Guidelines
@@ -225,9 +224,9 @@ Example task file structure:
 When creating PRs that add new functions/utilities before they're used:
 
 1. **Add TODO comments** in the code indicating where the function will be used:
-   ```bash
+   ```
    # TODO: Use in PR 7 (Error Recovery) for graceful failure handling
-   function handle_installation_error() {
+   function handle_error() {
        ...
    }
    ```
@@ -235,9 +234,9 @@ When creating PRs that add new functions/utilities before they're used:
 2. **Include usage preview** in PR description showing how the code will be used:
    ```markdown
    ## Usage Preview
-   This dry-run functionality will be used in future PRs to:
-   - PR 7: Wrap all installation commands with `dry_run_execute`
-   - PR 8: Add dry-run summaries showing what would be installed
+   This validation functionality will be used in future PRs to:
+   - PR 7: Wrap all service calls with `validate_input`
+   - PR 8: Add validation summaries for user feedback
    ```
 
 3. **Mark dead code clearly** so reviewers understand it's intentional:
@@ -249,37 +248,32 @@ When creating PRs that add new functions/utilities before they're used:
 
 **Always verify that all expected test files are running** when running the test suite:
 
-1. **Count test files manually** vs test runner output:
-   ```bash
-   # Count actual test files (exclude lib files and test runner)
-   find test/ -name "test-*.zsh" -perm +111 | grep -v "lib/" | grep -v "run-tests.zsh" | wc -l
-   
-   # Compare with test runner output: "Found X test file(s) to run"
-   ./test/run-tests.zsh
-   ```
+1. **Compare manual count vs test runner output**:
+   - Count test files manually using appropriate commands for the project
+   - Compare with test runner output (usually shows "Found X test(s)" or similar)
+   - Numbers should match for complete coverage
 
 2. **Check for missing test directories**:
-   ```bash
-   # List all test directories
-   find test/ -type d -name "*test*" -o -name "test*"
-   
-   # Verify test runner finds tests in all directories
-   ```
+   - Verify test runner scans all expected test directories
+   - Ensure no test locations are being excluded unintentionally
 
 3. **Common test runner issues to watch for**:
-   - Test files missing executable permissions (`chmod +x test-file.zsh`)
-   - Test files not matching expected naming patterns
-   - Directories not being scanned recursively
-   - Test runner configuration excluding certain paths
+   - Test files missing required permissions or attributes
+   - Test files not matching expected naming patterns or conventions
+   - Directories not being scanned recursively when they should be
+   - Test runner configuration excluding certain paths or file types
+   - Build artifacts or temporary files interfering with test discovery
 
 4. **When test count doesn't match expectations**:
-   - Run `./test/run-tests.zsh` and note "Found X test file(s)" message
-   - Manually count test files and compare
+   - Run the test suite and note how many tests it reports finding
+   - Manually count test files using project-appropriate commands
    - Check if specific test directories or files are being excluded
-   - Verify file permissions and naming conventions
+   - Verify file naming conventions and required attributes
    - Fix any discrepancies before proceeding
 
 **This prevents regressions where test files exist but aren't being executed.**
+
+For project-specific commands and examples, see the project's CLAUDE.md file.
 
 When pre-commit checks fail, I'll fix the issues, stage the fixes, and automatically retry the commit to keep the workflow smooth.
 

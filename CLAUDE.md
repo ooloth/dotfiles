@@ -64,5 +64,25 @@ When making changes to this repository:
 - Test individual install scripts by sourcing them
 - Use `setup.zsh --dry-run` to preview changes
 
+#### Test Coverage Verification Commands
+
+Verify all expected test files are running:
+
+```bash
+# Count actual test files (exclude lib files and test runner)
+find test/ -name "test-*.zsh" -perm +111 | grep -v "lib/" | grep -v "run-tests.zsh" | wc -l
+
+# Compare with test runner output: "Found X test file(s) to run"
+./test/run-tests.zsh
+
+# List all test directories
+find test/ -type d -name "*test*" -o -name "test*"
+
+# List actual test files being counted
+find test/ -name "test-*.zsh" -perm +111 | grep -v "lib/" | grep -v "run-tests.zsh"
+```
+
+The numbers should match to ensure no test files are being missed.
+
 ### Project-Specific Git Ignore
 Use the `.gitignore` file and not the `config/git/ignore` file when adding project-specific ignore rules.
