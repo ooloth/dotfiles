@@ -1,5 +1,26 @@
 # Setup.zsh Improvement Plan
 
+## Progress Tracker
+
+### Completed PRs
+- ✅ **PR 1: Testing Foundation** - Test framework and utilities established
+- ✅ **PR 2: Machine Detection (TDD)** - Dynamic hostname-based detection implemented
+- ✅ **PR 3: Prerequisite Validation (TDD)** - Comprehensive system checks added
+- ✅ **PR 4: Dry-Run Mode (TDD)** - Read-only validation mode implemented
+
+### Key Learnings & Decisions
+1. **Test Behavior, Not Implementation** - Focus on what code does, not how (avoid testing function names, file contents)
+2. **One Test Per Commit** - Each commit contains exactly one test and its implementation together
+3. **Infrastructure-First PRs** - Add TODO comments and usage previews when creating utilities before they're used
+4. **Documentation in Same Commit** - Update README.md, code comments, etc. in the same commit as the feature
+5. **Maintain PR Descriptions** - Update after each commit that changes scope
+
+### Implementation Notes for Future PRs
+- The `dry_run_execute` function is ready to wrap all installation commands
+- Machine detection sets `IS_AIR`, `IS_MINI`, `IS_WORK` and `MACHINE` variables
+- Prerequisite validation runs before any installation begins
+- Test framework supports mocking, environment isolation, and behavioral testing
+
 ## Overview
 
 This document outlines a comprehensive plan to improve the reliability and testability of the dotfiles setup process. The current setup.zsh script often requires debugging on new laptops due to various reliability issues. This plan implements a Test-Driven Development (TDD) approach with multiple small PRs to systematically address these issues.
