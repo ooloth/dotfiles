@@ -10,6 +10,9 @@ ORIGINAL_DOTFILES="$DOTFILES"
 source "$DOTFILES/test/lib/test-utils.zsh"
 source "$DOTFILES/test/lib/mock.zsh"
 
+# Source the prerequisite validation module we're testing
+source "$ORIGINAL_DOTFILES/bin/lib/prerequisite-validation.zsh"
+
 # Test Command Line Tools validation
 test_command_line_tools_validation() {
     test_suite "Command Line Tools Validation"
@@ -19,27 +22,25 @@ test_command_line_tools_validation() {
     init_mocking
     
     test_case "Should detect when Command Line Tools are installed"
-    # Mock xcode-select command to return success
-    mock_command "xcode-select" 0 "/Library/Developer/CommandLineTools"
+    # Create a mock CommandLineTools directory structure in test environment
+    local mock_path="$TEST_TEMP_DIR/CommandLineTools"
+    mkdir -p "$mock_path/usr/bin"
+    touch "$mock_path/usr/bin/git"
     
-    # Test the validation (function doesn't exist yet - expected failure)
-    if command -v validate_command_line_tools >/dev/null 2>&1; then
-        local result=$(validate_command_line_tools)
-        assert_equals "0" "$?" "Should return success when tools are installed"
-    else
-        assert_false "true" "validate_command_line_tools function not implemented yet (expected failure)"
-    fi
+    # Mock xcode-select command to return our test path
+    mock_command "xcode-select" 0 "$mock_path"
+    
+    # Test the validation
+    validate_command_line_tools
+    assert_equals "0" "$?" "Should return success when tools are installed"
     
     test_case "Should detect when Command Line Tools are missing"
     # Mock xcode-select command to return failure
     mock_command "xcode-select" 2 "xcode-select: error: unable to get active developer directory"
     
-    if command -v validate_command_line_tools >/dev/null 2>&1; then
-        local result=$(validate_command_line_tools)
-        assert_not_equals "0" "$?" "Should return failure when tools are missing"
-    else
-        assert_false "true" "validate_command_line_tools function not implemented yet (expected failure)"
-    fi
+    # Test the validation
+    validate_command_line_tools
+    assert_not_equals "0" "$?" "Should return failure when tools are missing"
     
     # Clean up
     cleanup_mocking
@@ -57,26 +58,20 @@ test_network_connectivity_validation() {
     init_mocking
     
     test_case "Should validate GitHub connectivity"
-    # Mock ping command to return success
+    # Mock ping command to return success for all hosts
     mock_command "ping" 0 "PING github.com: 56 data bytes"
     
-    if command -v validate_network_connectivity >/dev/null 2>&1; then
-        local result=$(validate_network_connectivity)
-        assert_equals "0" "$?" "Should return success when GitHub is reachable"
-    else
-        assert_false "true" "validate_network_connectivity function not implemented yet (expected failure)"
-    fi
+    # Test the validation
+    validate_network_connectivity
+    assert_equals "0" "$?" "Should return success when GitHub is reachable"
     
     test_case "Should detect network connectivity issues"
     # Mock ping command to return failure
     mock_command "ping" 1 "ping: cannot resolve github.com: Unknown host"
     
-    if command -v validate_network_connectivity >/dev/null 2>&1; then
-        local result=$(validate_network_connectivity)
-        assert_not_equals "0" "$?" "Should return failure when network is unreachable"
-    else
-        assert_false "true" "validate_network_connectivity function not implemented yet (expected failure)"
-    fi
+    # Test the validation
+    validate_network_connectivity
+    assert_not_equals "0" "$?" "Should return failure when network is unreachable"
     
     # Clean up
     cleanup_mocking
@@ -97,32 +92,23 @@ test_directory_permissions_validation() {
     # Create test directories
     mkdir -p "$TEST_HOME/test-dir"
     
-    if command -v validate_directory_permissions >/dev/null 2>&1; then
-        local result=$(validate_directory_permissions "$TEST_HOME/test-dir")
-        assert_equals "0" "$?" "Should return success when directory exists"
-    else
-        assert_false "true" "validate_directory_permissions function not implemented yet (expected failure)"
-    fi
+    # Test the validation
+    validate_directory_permissions "$TEST_HOME/test-dir"
+    assert_equals "0" "$?" "Should return success when directory exists"
     
     test_case "Should detect missing directories"
-    if command -v validate_directory_permissions >/dev/null 2>&1; then
-        local result=$(validate_directory_permissions "$TEST_HOME/non-existent")
-        assert_not_equals "0" "$?" "Should return failure when directory doesn't exist"
-    else
-        assert_false "true" "validate_directory_permissions function not implemented yet (expected failure)"
-    fi
+    # Test with non-existent directory
+    validate_directory_permissions "$TEST_HOME/non-existent"
+    assert_not_equals "0" "$?" "Should return failure when directory doesn't exist"
     
     test_case "Should validate write permissions"
     # Create a directory with write permissions
     mkdir -p "$TEST_HOME/writable-dir"
     chmod 755 "$TEST_HOME/writable-dir"
     
-    if command -v validate_write_permissions >/dev/null 2>&1; then
-        local result=$(validate_write_permissions "$TEST_HOME/writable-dir")
-        assert_equals "0" "$?" "Should return success when directory is writable"
-    else
-        assert_false "true" "validate_write_permissions function not implemented yet (expected failure)"
-    fi
+    # Test the validation
+    validate_write_permissions "$TEST_HOME/writable-dir"
+    assert_equals "0" "$?" "Should return success when directory is writable"
     
     # Clean up
     cleanup_mocking
@@ -141,25 +127,19 @@ test_macos_version_validation() {
     
     test_case "Should validate supported macOS version"
     # Mock sw_vers command to return supported version
-    mock_command "sw_vers" 0 "ProductVersion: 14.0"
+    mock_command "sw_vers" 0 "14.0"
     
-    if command -v validate_macos_version >/dev/null 2>&1; then
-        local result=$(validate_macos_version)
-        assert_equals "0" "$?" "Should return success for supported macOS version"
-    else
-        assert_false "true" "validate_macos_version function not implemented yet (expected failure)"
-    fi
+    # Test the validation
+    validate_macos_version
+    assert_equals "0" "$?" "Should return success for supported macOS version"
     
     test_case "Should detect unsupported macOS version"
     # Mock sw_vers command to return old version
-    mock_command "sw_vers" 0 "ProductVersion: 10.15"
+    mock_command "sw_vers" 0 "10.15"
     
-    if command -v validate_macos_version >/dev/null 2>&1; then
-        local result=$(validate_macos_version)
-        assert_not_equals "0" "$?" "Should return failure for unsupported macOS version"
-    else
-        assert_false "true" "validate_macos_version function not implemented yet (expected failure)"
-    fi
+    # Test the validation
+    validate_macos_version
+    assert_not_equals "0" "$?" "Should return failure for unsupported macOS version"
     
     # Clean up
     cleanup_mocking
@@ -177,30 +157,29 @@ test_comprehensive_validation() {
     init_mocking
     
     test_case "Should run all prerequisite checks"
-    # Mock all commands to return success
-    mock_command "xcode-select" 0 "/Library/Developer/CommandLineTools"
-    mock_command "ping" 0 "PING github.com: 56 data bytes"
-    mock_command "sw_vers" 0 "ProductVersion: 14.0"
+    # Create mock CommandLineTools directory
+    local mock_path="$TEST_TEMP_DIR/CommandLineTools"
+    mkdir -p "$mock_path/usr/bin"
+    touch "$mock_path/usr/bin/git"
     
-    if command -v run_prerequisite_validation >/dev/null 2>&1; then
-        local result=$(run_prerequisite_validation)
-        assert_equals "0" "$?" "Should return success when all checks pass"
-    else
-        assert_false "true" "run_prerequisite_validation function not implemented yet (expected failure)"
-    fi
+    # Mock all commands to return success
+    mock_command "xcode-select" 0 "$mock_path"
+    mock_command "ping" 0 "PING github.com: 56 data bytes"
+    mock_command "sw_vers" 0 "14.0"
+    
+    # Test the validation
+    run_prerequisite_validation
+    assert_equals "0" "$?" "Should return success when all checks pass"
     
     test_case "Should fail when any prerequisite check fails"
     # Mock one command to fail
     mock_command "xcode-select" 2 "xcode-select: error: unable to get active developer directory"
     mock_command "ping" 0 "PING github.com: 56 data bytes"
-    mock_command "sw_vers" 0 "ProductVersion: 14.0"
+    mock_command "sw_vers" 0 "14.0"
     
-    if command -v run_prerequisite_validation >/dev/null 2>&1; then
-        local result=$(run_prerequisite_validation)
-        assert_not_equals "0" "$?" "Should return failure when any check fails"
-    else
-        assert_false "true" "run_prerequisite_validation function not implemented yet (expected failure)"
-    fi
+    # Test the validation
+    run_prerequisite_validation
+    assert_not_equals "0" "$?" "Should return failure when any check fails"
     
     # Clean up
     cleanup_mocking
