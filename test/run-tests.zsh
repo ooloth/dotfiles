@@ -3,7 +3,10 @@
 # Test runner for dotfiles setup scripts
 # Usage: ./test/run-tests.zsh [test-file-pattern]
 
-set -e
+# Note: Not using set -e to allow test failures without stopping the runner
+
+# Set DOTFILES environment variable
+export DOTFILES="${DOTFILES:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 # Colors for output
 readonly RED='\033[0;31m'
@@ -46,6 +49,9 @@ run_test_file() {
     local test_file="$1"
     
     print_test_file_header "$test_file"
+    
+    # Show progress indicator for potentially slow tests
+    echo -e "   ${BLUE}Running test file...${NC}"
     
     # Source the test file and run it in a subshell to prevent function pollution
     if (source "$test_file") 2>/dev/null; then

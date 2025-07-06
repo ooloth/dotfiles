@@ -10,6 +10,9 @@ init_machine_detection
 source "$DOTFILES/bin/lib/dry-run-utils.zsh"
 parse_dry_run_flags "$@"
 
+# Initialize error handling utilities
+source "$DOTFILES/bin/lib/error-handling.zsh"
+
 handle_error() {
   local exit_code="$1"
   local line_number="$2"
