@@ -3,7 +3,10 @@
 # Test runner for dotfiles setup scripts
 # Usage: ./test/run-tests.zsh [test-file-pattern]
 
-set -e
+# Note: Not using set -e to allow test failures without stopping the runner
+
+# Set DOTFILES environment variable
+export DOTFILES="${DOTFILES:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 # Colors for output
 readonly RED='\033[0;31m'
