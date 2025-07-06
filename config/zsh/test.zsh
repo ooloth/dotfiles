@@ -10,6 +10,9 @@ test() {
   advent-of-code)
     bin/test "$@"
     ;;
+  dotfiles)
+    ./test/run-tests.zsh "$@"
+    ;;
   hub)
     PYTHONPATH=. pytest "$@"
     ;;
