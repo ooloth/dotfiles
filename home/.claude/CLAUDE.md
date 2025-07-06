@@ -160,6 +160,37 @@ gh pr view PR_NUMBER  # Check current state
 gh pr edit PR_NUMBER --body "updated description..."
 ```
 
+### Multi-PR Task Management
+
+For tasks involving multiple PRs, create and maintain a roadmap file:
+
+1. **Create task roadmap file** in `.claude/tasks/YYYY-MM-DD-task-name.md`
+2. **Update throughout development** with progress, learnings, and context
+3. **Include essential information** for future Claudes taking over:
+   - Completed PRs with key outcomes
+   - Current PR status and next steps
+   - Important decisions made and why
+   - Technical patterns established
+   - Any gotchas or lessons learned
+
+Example task file structure:
+```markdown
+# 2025-07-06-setup-improvements.md
+
+## Progress
+- ✅ PR 1: Testing Foundation
+- ✅ PR 2: Machine Detection  
+- 🔄 PR 3: Error Handling (in review)
+
+## Key Decisions
+- Using behavioral tests instead of implementation tests
+- File-based approach for Zsh subshell testing
+
+## Next Steps
+- PR 4: Individual Script Testing
+- Need to integrate retry mechanism into homebrew.zsh
+```
+
 ### Infrastructure-First PR Guidelines
 
 When creating PRs that add new functions/utilities before they're used:
