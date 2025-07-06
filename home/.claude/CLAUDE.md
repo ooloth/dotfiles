@@ -8,6 +8,25 @@
 - Separate refactoring commits from feature commits
 - Use descriptive commit messages that explain the "why" not just the "what"
 
+### Development Commit Frequency
+
+- **Commit early and often** during feature development
+- Make a commit after completing each logical unit of work:
+  - Adding a new function or module
+  - Completing a test suite
+  - Adding documentation for a component
+  - Fixing a specific issue or bug
+- **Never bundle unrelated changes** in a single commit
+- Prefer 5-10 small commits over 1 large commit for a feature
+- Each commit should leave the codebase in a working state
+
+### Examples of Good Commit Granularity
+- ✅ "Add test runner script with basic functionality"
+- ✅ "Add assertion library for test validation"
+- ✅ "Add mocking framework for external commands"
+- ❌ "Add complete testing framework" (too broad)
+- ❌ "Fix tests and add docs" (unrelated changes)
+
 ### Pre-commit Checks (in order)
 
 1. **Formatting** - Run code formatters first (prettier, black, rustfmt, etc.)
