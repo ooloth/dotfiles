@@ -305,3 +305,30 @@ For projects with both README.md and CLAUDE.md files:
 - Focus on development workflow, file structure, and Claude-specific considerations
 - Be kept minimal and accurate - verify file paths and commands exist before referencing them
 - Evolve as the project changes (e.g., update test suite information when tests are added)
+
+### Personal CLAUDE.md Maintenance
+
+**When updating your personal CLAUDE.md:**
+
+1. **Always phrase updates universally** - avoid language-specific, framework-specific, or project-specific examples
+2. **Use generic examples** that apply across programming languages and project types
+3. **Test universal applicability** - ask yourself "Would this apply to a Python web app? A Rust CLI? A JavaScript frontend?"
+4. **Replace specific tools with categories** (e.g., "npm" → "package manager", "setup.zsh" → "main script")
+
+### Project CLAUDE.md Maintenance
+
+**Consider updating the project CLAUDE.md when:**
+
+1. **Learning something that would help future Claudes** working on this specific project
+2. **Making changes that invalidate existing project documentation** (new test commands, file moves, etc.)
+3. **Discovering project-specific patterns or gotchas** that aren't obvious from the code
+4. **Adding new tools, frameworks, or workflows** specific to this project
+
+**Periodic project CLAUDE.md review (before each PR):**
+
+1. **Check for inaccuracies** - verify file paths, commands, and examples still work
+2. **Look for important omissions** - what would have helped you that isn't documented?
+3. **Update outdated information** - remove references to deleted files or changed workflows
+4. **Add new learnings** - document any project-specific insights discovered during development
+
+This ensures project documentation stays current and helpful while keeping personal guidelines universal.
