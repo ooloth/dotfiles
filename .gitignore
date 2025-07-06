@@ -5,6 +5,9 @@
 Brewfile.lock.json
 
 **/.claude/settings.local.json
+**/home/.claude/projects
+**/home/.claude/statsig
+**/home/.claude/todos
 
 # Work stuff
 config/k9s/clusters/*
