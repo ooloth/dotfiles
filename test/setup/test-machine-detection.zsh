@@ -3,6 +3,9 @@
 # Test machine detection functionality
 # This is a failing test that will be implemented in PR 2
 
+# Store original DOTFILES path before any test setup modifies it
+ORIGINAL_DOTFILES="$DOTFILES"
+
 # Source test utilities
 source "$DOTFILES/test/lib/test-utils.zsh"
 source "$DOTFILES/test/lib/mock.zsh"
@@ -82,7 +85,7 @@ test_current_hardcoded_behavior() {
     
     test_case "Should have hardcoded machine variables in setup.zsh"
     # Test that the current setup.zsh has hardcoded variables
-    local setup_file="$DOTFILES/setup.zsh"
+    local setup_file="$ORIGINAL_DOTFILES/setup.zsh"
     
     assert_file_exists "$setup_file" "setup.zsh should exist"
     
