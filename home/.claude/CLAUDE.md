@@ -253,3 +253,24 @@ Use clear, descriptive commit messages without promotional footers:
 - Use conventional commit format when applicable  
 - Do NOT include "Generated with Claude Code" or co-author lines
 - Keep messages concise and professional
+
+## Project Documentation Guidelines
+
+### README.md vs CLAUDE.md
+
+For projects with both README.md and CLAUDE.md files:
+
+**README.md should contain:**
+- General project information that benefits all users
+- Installation and setup instructions
+- Usage examples and documentation
+- Troubleshooting guides
+- Contributing guidelines
+- Any information multiple people would find useful
+
+**Project-level CLAUDE.md should:**
+- Reference README.md for general information: "For installation instructions, see [README.md](README.md)"
+- Only contain Claude-specific guidance and notes
+- Focus on development workflow, file structure, and Claude-specific considerations
+- Be kept minimal and accurate - verify file paths and commands exist before referencing them
+- Evolve as the project changes (e.g., update test suite information when tests are added)
