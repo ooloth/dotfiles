@@ -114,6 +114,8 @@ Example symlinks:
 - `~/.gitconfig` → `$DOTFILES/config/git/.gitconfig`
 - `~/.zshrc` → `$DOTFILES/config/zsh/.zshrc`
 
+**Important for Git commits**: Files in `home/.claude/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `home/.claude/CLAUDE.md` instead of trying to commit outside the repository.
+
 ## Dependencies
 
 ### Core Tools (All Machines)
