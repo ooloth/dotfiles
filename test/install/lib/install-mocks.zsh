@@ -10,10 +10,10 @@ source "$DOTFILES/test/lib/mock.zsh"
 init_install_mocking() {
     init_mocking
     
-    # Create installation-specific mock directories
-    export MOCK_HOMEBREW_DIR="$MOCK_TEMP_DIR/homebrew"
-    export MOCK_SSH_DIR="$MOCK_TEMP_DIR/ssh"
-    export MOCK_GIT_DIR="$MOCK_TEMP_DIR/git"
+    # Create installation-specific mock directories within the test temp dir
+    export MOCK_HOMEBREW_DIR="$TEST_TEMP_DIR/mock/homebrew"
+    export MOCK_SSH_DIR="$TEST_TEMP_DIR/mock/ssh"
+    export MOCK_GIT_DIR="$TEST_TEMP_DIR/mock/git"
     
     mkdir -p "$MOCK_HOMEBREW_DIR"
     mkdir -p "$MOCK_SSH_DIR"
