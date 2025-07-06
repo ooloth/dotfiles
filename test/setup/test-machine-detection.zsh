@@ -220,9 +220,11 @@ test_framework_validation() {
     test_case "Should support command mocking"
     mock_command "test_command" 42 "test output"
     
-    # Test that the mock works
-    local output=$(test_command 2>&1)
+    # Test that the mock works - capture exit code properly
+    local output_file="$TEST_TEMP_DIR/test_output"
+    test_command > "$output_file" 2>&1
     local exit_code=$?
+    local output=$(cat "$output_file")
     
     assert_equals "42" "$exit_code" "Mock should return correct exit code"
     assert_equals "test output" "$output" "Mock should return correct output"
