@@ -21,6 +21,23 @@
 - Prefer 10-20 micro-commits over 3-5 larger commits for a feature
 - Each commit should leave the codebase in a working state
 
+### Documentation Updates
+
+Include necessary documentation updates in the same commit as the code change:
+
+- **Update code comments** when changing function behavior or adding parameters
+- **Update README.md** if adding new setup steps, dependencies, or usage instructions
+- **Update existing examples** that would be invalidated by the change
+- **Skip excessive documentation** that would quickly become outdated
+- **Focus on user-facing changes** that affect how people use the code
+
+Examples:
+- ✅ Adding a new CLI flag? Update README.md usage examples in the same commit
+- ✅ Changing function parameters? Update the function's comment block
+- ✅ Adding a new dependency? Update installation instructions
+- ❌ Don't document internal implementation details that change frequently
+- ❌ Don't add verbose explanations for self-documenting code
+
 ### TDD Commit Strategy
 
 When following Test-Driven Development:
