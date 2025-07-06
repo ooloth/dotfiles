@@ -71,33 +71,47 @@ test_machine_detection() {
     test_suite_end
 }
 
-# Test current hardcoded behavior
-test_current_hardcoded_behavior() {
-    test_suite "Current Hardcoded Behavior"
+# Test dynamic behavior replaces hardcoded behavior
+test_dynamic_behavior() {
+    test_suite "Dynamic Machine Detection Integration"
     
-    test_case "Should have hardcoded machine variables in setup.zsh"
-    # Test that the current setup.zsh has hardcoded variables
+    test_case "Should have removed hardcoded machine variables from setup.zsh"
+    # Test that setup.zsh no longer has hardcoded variables
     local setup_file="$ORIGINAL_DOTFILES/setup.zsh"
     
     assert_file_exists "$setup_file" "setup.zsh should exist"
     
-    # Check for hardcoded variables
+    # Check that hardcoded variables are removed
     if grep -q "export IS_AIR=" "$setup_file"; then
-        assert_true "true" "setup.zsh contains hardcoded IS_AIR variable"
+        assert_false "true" "setup.zsh should not contain hardcoded IS_AIR variable"
     else
-        assert_false "true" "setup.zsh should contain hardcoded IS_AIR variable"
+        assert_true "true" "setup.zsh correctly removed hardcoded IS_AIR variable"
     fi
     
     if grep -q "export IS_MINI=" "$setup_file"; then
-        assert_true "true" "setup.zsh contains hardcoded IS_MINI variable"
+        assert_false "true" "setup.zsh should not contain hardcoded IS_MINI variable"
     else
-        assert_false "true" "setup.zsh should contain hardcoded IS_MINI variable"
+        assert_true "true" "setup.zsh correctly removed hardcoded IS_MINI variable"
     fi
     
     if grep -q "export IS_WORK=" "$setup_file"; then
-        assert_true "true" "setup.zsh contains hardcoded IS_WORK variable"
+        assert_false "true" "setup.zsh should not contain hardcoded IS_WORK variable"
     else
-        assert_false "true" "setup.zsh should contain hardcoded IS_WORK variable"
+        assert_true "true" "setup.zsh correctly removed hardcoded IS_WORK variable"
+    fi
+    
+    test_case "Should use dynamic machine detection"
+    # Check that setup.zsh sources the machine detection module
+    if grep -q "machine-detection.zsh" "$setup_file"; then
+        assert_true "true" "setup.zsh sources machine detection module"
+    else
+        assert_false "true" "setup.zsh should source machine detection module"
+    fi
+    
+    if grep -q "init_machine_detection" "$setup_file"; then
+        assert_true "true" "setup.zsh calls init_machine_detection"
+    else
+        assert_false "true" "setup.zsh should call init_machine_detection"
     fi
     
     test_suite_end
@@ -145,7 +159,7 @@ test_framework_validation() {
 # Run all tests
 main() {
     test_framework_validation
-    test_current_hardcoded_behavior
+    test_dynamic_behavior
     test_machine_detection
 }
 
