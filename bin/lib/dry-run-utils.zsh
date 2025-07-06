@@ -33,5 +33,26 @@ dry_run_log() {
     return 0
 }
 
+# Execute commands conditionally based on dry-run mode
+dry_run_execute() {
+    local command="$1"
+    
+    if [[ -z "$command" ]]; then
+        echo "Error: No command provided to dry_run_execute" >&2
+        return 1
+    fi
+    
+    # Check if we're in dry-run mode
+    if [[ "$DRY_RUN" == "true" ]]; then
+        # In dry-run mode, just log the command
+        dry_run_log "$command"
+        return 0
+    else
+        # In normal mode, execute the command
+        eval "$command"
+        return $?
+    fi
+}
+
 # Export functions for use in other scripts
 # Functions are available when this file is sourced
