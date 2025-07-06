@@ -59,5 +59,37 @@ retry_with_backoff() {
     done
 }
 
+# Provide user-friendly error messages with helpful suggestions
+# TODO: Use throughout installation scripts for common error scenarios
+handle_error() {
+    local command="$1"
+    local error_code="$2"
+    local error_message="${3:-Unknown error}"
+    
+    echo "❌ Error occurred while running: $command" >&2
+    echo "   Error: $error_message" >&2
+    
+    # Provide helpful suggestions based on error type
+    case "$error_code" in
+        "EACCES"|"EPERM")
+            echo "   💡 Suggestion: Try running with sudo or check file permissions" >&2
+            ;;
+        "ENOENT")
+            echo "   💡 Suggestion: Check if the file or directory exists" >&2
+            ;;
+        "ECONNREFUSED"|"ETIMEDOUT")
+            echo "   💡 Suggestion: Check your internet connection or try again later" >&2
+            ;;
+        "ENOSPC")
+            echo "   💡 Suggestion: Free up disk space and try again" >&2
+            ;;
+        *)
+            echo "   💡 Suggestion: Check the command syntax and try again" >&2
+            ;;
+    esac
+    
+    return 1
+}
+
 # Export functions for use in other scripts
 # Functions are available when this file is sourced

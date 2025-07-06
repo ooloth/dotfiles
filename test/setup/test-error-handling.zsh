@@ -99,10 +99,46 @@ EOF
     test_suite_end
 }
 
+# Test user-friendly error messages
+test_user_friendly_errors() {
+    test_suite "User-Friendly Error Messages"
+    
+    # Set up test environment
+    setup_test_environment
+    init_mocking
+    
+    test_case "Should provide helpful error messages with suggestions"
+    
+    # Source the error handling utilities module
+    source "$ORIGINAL_DOTFILES/bin/lib/error-handling.zsh"
+    
+    # Test user-friendly error message
+    local output
+    output=$(handle_error "brew install" "EACCES" "Permission denied" 2>&1)
+    local exit_code=$?
+    
+    # Should return error exit code
+    assert_not_equals "0" "$exit_code" "Should return error exit code"
+    
+    # Should include helpful suggestion
+    if echo "$output" | grep -q "Try running with sudo"; then
+        assert_true "true" "Should suggest using sudo for permission errors"
+    else
+        assert_false "true" "Should suggest using sudo for permission errors"
+    fi
+    
+    # Clean up
+    cleanup_mocking
+    cleanup_test_environment
+    
+    test_suite_end
+}
+
 # Run all tests
 main() {
     test_error_detection
     test_retry_mechanism
+    test_user_friendly_errors
 }
 
 # Execute tests
