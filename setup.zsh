@@ -1,10 +1,10 @@
 #!/usr/bin/env zsh
 
-export IS_AIR=false
-export IS_MINI=false
-export IS_WORK=true
-
 export DOTFILES="$HOME/Repos/ooloth/dotfiles"
+
+# Initialize dynamic machine detection
+source "$DOTFILES/bin/lib/machine-detection.zsh"
+init_machine_detection
 
 handle_error() {
   local exit_code="$1"
