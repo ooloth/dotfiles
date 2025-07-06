@@ -6,6 +6,10 @@ export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 source "$DOTFILES/bin/lib/machine-detection.zsh"
 init_machine_detection
 
+# Initialize dry-run mode utilities
+source "$DOTFILES/bin/lib/dry-run-utils.zsh"
+parse_dry_run_flags "$@"
+
 handle_error() {
   local exit_code="$1"
   local line_number="$2"

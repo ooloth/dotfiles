@@ -144,11 +144,46 @@ test_conditional_execution() {
     test_suite_end
 }
 
+# Test setup.zsh integration with dry-run mode
+test_setup_dry_run_integration() {
+    test_suite "Setup.zsh Dry-Run Integration"
+    
+    # Set up test environment
+    setup_test_environment
+    init_mocking
+    
+    test_case "Should parse dry-run flag in setup.zsh"
+    
+    local setup_file="$ORIGINAL_DOTFILES/setup.zsh"
+    assert_file_exists "$setup_file" "setup.zsh should exist"
+    
+    # Check that setup.zsh sources the dry-run utilities
+    if grep -q "dry-run-utils.zsh" "$setup_file"; then
+        assert_true "true" "setup.zsh should source dry-run utilities"
+    else
+        assert_false "true" "setup.zsh should source dry-run utilities"
+    fi
+    
+    # Check that setup.zsh calls the flag parsing function
+    if grep -q "parse_dry_run_flags" "$setup_file"; then
+        assert_true "true" "setup.zsh should call parse_dry_run_flags"
+    else
+        assert_false "true" "setup.zsh should call parse_dry_run_flags"
+    fi
+    
+    # Clean up
+    cleanup_mocking
+    cleanup_test_environment
+    
+    test_suite_end
+}
+
 # Run all tests
 main() {
     test_dry_run_flag_parsing
     test_dry_run_logging
     test_conditional_execution
+    test_setup_dry_run_integration
 }
 
 # Execute tests
