@@ -66,6 +66,17 @@ fi
 
 printf "This is a Mac. But you knew that already.\n\n"
 
+# Run comprehensive prerequisite validation
+printf "Running comprehensive prerequisite validation...\n\n"
+
+source "$DOTFILES/bin/lib/prerequisite-validation.zsh"
+if ! run_prerequisite_validation; then
+  printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
+  exit 1
+fi
+
+printf "\n✅ All prerequisites validated successfully.\n\n"
+
 # You know this Mac's password
 printf "Confirming you are authorized to install things on this Mac...\n\n"
 
