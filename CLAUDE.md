@@ -11,6 +11,7 @@ See README.md for the complete overview. Key points for Claude:
 
 - Installation scripts are in `bin/install/` (individual .zsh files)
 - Update scripts are in `bin/update/` 
+- **Utility libraries** are in `bin/lib/` (machine detection, prerequisites, dry-run, error handling)
 - Main setup script is `setup.zsh` in project root
 - Configuration files are in `config/` directories
 - Test suite is in `test/` directory with comprehensive testing framework
@@ -24,6 +25,12 @@ For accurate command information, refer to README.md. The actual files in this r
 
 **Update scripts** (`bin/update/`):
 - `homebrew.zsh`, `npm.zsh`, `neovim.zsh`, `tmux.zsh`, `rust.zsh`, `symlinks.zsh`, `ssh.zsh`, `yazi.zsh`, `gcloud.zsh`, `macos.zsh`, `mode.zsh`
+
+**Utility libraries** (`bin/lib/`):
+- `machine-detection.zsh` - Dynamic hostname-based machine type detection
+- `prerequisite-validation.zsh` - System prerequisites validation (CLI tools, network, macOS version)
+- `dry-run-utils.zsh` - Dry-run mode functionality for safe preview
+- `error-handling.zsh` - Error capture, retry mechanisms, and user-friendly messaging
 
 ### Symlink Management
 
@@ -41,6 +48,10 @@ The setup detects machine types based on hostname patterns in `setup.zsh`:
 Work-specific files are conditionally loaded when detected:
 - `config/zsh/work.zsh` - Work-specific aliases and functions
 - `config/git/work.gitconfig` - Work Git configuration
+
+Machine detection logic is in `bin/lib/machine-detection.zsh` and sets these variables:
+- `MACHINE` - "air", "mini", or "work"
+- `IS_AIR`, `IS_MINI`, `IS_WORK` - boolean variables for conditional loading
 
 ### Claude Development Workflow
 
@@ -63,6 +74,21 @@ When making changes to this repository:
 - Run `symlinks` to recreate all symlinks
 - Test individual install scripts by sourcing them
 - Use `setup.zsh --dry-run` to preview changes
+
+#### Test Framework Structure
+
+- `test/setup/` - Tests for setup process (machine detection, prerequisites, dry-run, error handling)
+- `test/install/` - Tests for installation scripts (with specialized testing infrastructure)
+- `test/install/lib/` - Installation-specific test utilities and mocking framework
+- `test/lib/` - Core testing utilities shared across all tests
+
+#### Installation Script Testing
+
+- **Specialized framework** in `test/install/lib/` for testing installation scripts safely
+- **Environment isolation** - tests run in mock directories without affecting host system
+- **Comprehensive mocking** - all external dependencies (brew, git, ssh, curl, etc.) are mocked
+- **Behavioral testing focus** - tests verify installation outcomes, not implementation details
+- See `test/install/README.md` for complete usage examples and available utilities
 
 #### Test Coverage Verification Commands
 
