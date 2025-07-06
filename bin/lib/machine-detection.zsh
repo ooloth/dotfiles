@@ -54,12 +54,8 @@ set_machine_variables() {
             export IS_MINI=true
             export MACHINE="mini"
             ;;
-        "work")
-            export IS_WORK=true
-            export MACHINE="work"
-            ;;
         *)
-            # Default to work for unknown types
+            # Default to work for unknown types (including explicit "work")
             export IS_WORK=true
             export MACHINE="work"
             ;;
