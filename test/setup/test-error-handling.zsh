@@ -45,9 +45,64 @@ test_error_detection() {
     test_suite_end
 }
 
+# Test retry mechanism for transient failures
+test_retry_mechanism() {
+    test_suite "Retry Mechanism"
+    
+    # Set up test environment
+    setup_test_environment
+    init_mocking
+    
+    test_case "Should retry failed commands with backoff"
+    
+    # Source the error handling utilities module
+    source "$ORIGINAL_DOTFILES/bin/lib/error-handling.zsh"
+    
+    # Create a command that fails twice then succeeds using a file counter
+    local counter_file="$TEST_TEMP_DIR/retry_counter"
+    echo "0" > "$counter_file"
+    
+    # Create a test script that uses the counter
+    cat > "$TEST_TEMP_DIR/test_command.sh" << 'EOF'
+#!/usr/bin/env zsh
+counter_file="$1"
+attempt=$(cat "$counter_file")
+((attempt++))
+echo "$attempt" > "$counter_file"
+if [[ $attempt -lt 3 ]]; then
+    exit 1
+fi
+echo "Success on attempt $attempt"
+exit 0
+EOF
+    chmod +x "$TEST_TEMP_DIR/test_command.sh"
+    
+    # Test retry mechanism
+    local output
+    output=$(retry_with_backoff "$TEST_TEMP_DIR/test_command.sh $counter_file" 3 1 2>&1)
+    local exit_code=$?
+    
+    # Should eventually succeed
+    assert_equals "0" "$exit_code" "Should succeed after retries"
+    
+    # Should show success message
+    if echo "$output" | grep -q "Success on attempt 3"; then
+        assert_true "true" "Should execute until success"
+    else
+        assert_false "true" "Should execute until success"
+    fi
+    
+    # Clean up
+    cleanup_mocking
+    cleanup_test_environment
+    
+    test_suite_end
+}
+
 # Run all tests
 main() {
     test_error_detection
+    test_retry_mechanism
 }
 
 # Execute tests
