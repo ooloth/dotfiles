@@ -218,3 +218,11 @@ When creating PRs that add new functions/utilities before they're used:
    - Reference the roadmap/plan if one exists
 
 When pre-commit checks fail, I'll fix the issues, stage the fixes, and automatically retry the commit to keep the workflow smooth.
+
+### Commit Message Format
+
+Use clear, descriptive commit messages without promotional footers:
+- Focus on what changed and why
+- Use conventional commit format when applicable  
+- Do NOT include "Generated with Claude Code" or co-author lines
+- Keep messages concise and professional
