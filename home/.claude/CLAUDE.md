@@ -251,8 +251,8 @@ When creating PRs that add new functions/utilities before they're used:
 
 1. **Count test files manually** vs test runner output:
    ```bash
-   # Count actual test files
-   find test/ -name "test-*.zsh" -o -name "*test*.zsh" | wc -l
+   # Count actual test files (exclude lib files and test runner)
+   find test/ -name "test-*.zsh" -perm +111 | grep -v "lib/" | grep -v "run-tests.zsh" | wc -l
    
    # Compare with test runner output: "Found X test file(s) to run"
    ./test/run-tests.zsh
