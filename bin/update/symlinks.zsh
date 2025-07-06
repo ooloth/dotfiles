@@ -37,8 +37,9 @@ info "🔗 Updating symlinks"
 # Target: ~ #
 #############
 
-maybe_symlink "$DOTFILES/.hushlogin" "$HOME"
-maybe_symlink "$DOTFILES/.zshenv" "$HOME"
+maybe_symlink "$DOTFILES/home/.claude" "$HOME"
+maybe_symlink "$DOTFILES/home/.hushlogin" "$HOME"
+maybe_symlink "$DOTFILES/home/.zshenv" "$HOME"
 
 #####################
 # Target: ~/.config #
