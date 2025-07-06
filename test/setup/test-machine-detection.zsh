@@ -160,6 +160,51 @@ test_machine_variables() {
     test_suite_end
 }
 
+# Test init_machine_detection integration function
+test_init_machine_detection() {
+    test_suite "Machine Detection Initialization"
+    
+    # Set up test environment
+    setup_test_environment
+    init_mocking
+    
+    test_case "Should initialize machine detection and set variables"
+    # Mock hostname command
+    mock_command "hostname" 0 "Michaels-MacBook-Air.local"
+    
+    # Clear any existing variables
+    unset MACHINE IS_AIR IS_MINI IS_WORK
+    
+    # Call the initialization function
+    init_machine_detection
+    
+    # Verify variables are set correctly
+    assert_equals "air" "$MACHINE" "MACHINE should be detected and set"
+    assert_equals "true" "$IS_AIR" "IS_AIR should be set to true"
+    assert_equals "false" "$IS_MINI" "IS_MINI should be set to false"
+    assert_equals "false" "$IS_WORK" "IS_WORK should be set to false"
+    
+    test_case "Should handle missing hostname command gracefully"
+    # Mock hostname command to fail
+    mock_command "hostname" 1 ""
+    
+    # Clear variables
+    unset MACHINE IS_AIR IS_MINI IS_WORK
+    
+    # Should still work using fallback
+    init_machine_detection
+    
+    # Should default to work when hostname fails
+    assert_equals "work" "$MACHINE" "Should default to work when hostname fails"
+    assert_equals "true" "$IS_WORK" "IS_WORK should be true when hostname fails"
+    
+    # Clean up
+    cleanup_mocking
+    cleanup_test_environment
+    
+    test_suite_end
+}
+
 # Test framework validation
 test_framework_validation() {
     test_suite "Test Framework Validation"
@@ -205,6 +250,7 @@ main() {
     test_dynamic_behavior
     test_machine_detection
     test_machine_variables
+    test_init_machine_detection
 }
 
 # Execute tests
