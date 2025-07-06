@@ -42,22 +42,26 @@ Examples:
 
 When following Test-Driven Development:
 - **Group test and implementation in the same commit** for each feature
-- **One test per commit** - exactly one test and its corresponding implementation
-- **One validation/function per commit**:
+- **One test case per commit** - add one test case and the implementation to make it pass
+- **Include necessary documentation updates** in the same commit (without overdocumenting)
+- **Multiple tests per function are fine** - each function may need several test cases for edge cases
+- **Commit structure**:
   - Commit: "Add command line tools validation with test"
-  - Commit: "Add network connectivity validation with test"
-  - Commit: "Add macOS version validation with test"
+  - Commit: "Add network connectivity validation with test"  
+  - Commit: "Add edge case handling for network timeouts with test"
 - This makes each commit focused and easier to review (test and implementation on same screen)
-- Each commit contains exactly one testable behavior
-- Single test should be the determining factor for what belongs in a commit
+- Each commit adds exactly one test case (not necessarily one entire test suite)
+- The test case should determine what implementation changes belong in the commit
 
 ### Examples of Good Commit Granularity
 - ✅ "Add command line tools validation with test"
 - ✅ "Add network connectivity validation with test"
+- ✅ "Add edge case test for network timeout handling"
 - ✅ "Add macOS version validation with test"
+- ✅ "Add test for unsupported macOS version error message"
 - ✅ "Add dry-run mode flag parsing with test"
 - ✅ "Add integration test for setup.zsh prerequisite validation"
-- ❌ "Add all prerequisite validation tests and implementation" (too broad)
+- ❌ "Add all prerequisite validation tests and implementation" (too broad - multiple test cases)
 - ❌ "Implement multiple validation functions" (unrelated changes)
 - ❌ "Add tests and fix bugs" (unrelated changes)
 
