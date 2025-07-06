@@ -219,107 +219,117 @@ This document outlines a comprehensive plan to improve the reliability and testa
 - `bin/install/*.zsh` - Updated error handling
 - `bin/lib/error-handling.zsh` - Error handling utilities
 
-### PR 6: Individual Script Testing
-**Branch**: `feature/script-testing`
-**Goal**: Add comprehensive unit tests for each installation script
+### PR 6: Installation Script Test Infrastructure
+**Branch**: `feature/install-test-infrastructure`
+**Goal**: Create shared testing patterns and utilities for installation script testing
 
 **Tests First**:
-- Test each installation script in isolation
-- Mock external dependencies (brew, git, ssh-keygen)
-- Test different machine states and configurations
-- Test error conditions and edge cases
+- Test installation script test patterns and utilities
+- Test command mocking for external dependencies
+- Test environment isolation for script testing
+- Test validation patterns for installation outcomes
 
 **Implementation**:
-- Create test files for each installation script
-- Implement mocking for external commands
-- Add validation for script outputs and side effects
-- Ensure comprehensive test coverage
+- Create shared test utilities for installation script testing
+- Implement installation-specific mocking patterns
+- Add test patterns for validating installation outcomes
+- Create reusable test environment setup for installation scripts
+
+**Files**:
+- `test/install/lib/install-test-utils.zsh` - Installation testing utilities
+- `test/install/lib/install-mocks.zsh` - Installation-specific mocks
+- `test/install/test-install-framework.zsh` - Test the testing framework itself
+
+### PR 7: Homebrew Installation Testing
+**Branch**: `feature/test-homebrew-install`
+**Goal**: Add comprehensive tests for Homebrew installation script
+
+**Tests First**:
+- Test Homebrew installation detection and setup
+- Test Brewfile processing and package installation
+- Test machine-specific package handling
+- Test error conditions and recovery
+
+**Implementation**:
+- Create comprehensive tests for bin/install/homebrew.zsh
+- Mock brew commands and validate installation behavior
+- Test different machine configurations (air/mini/work)
+- Test error handling and recovery mechanisms
+
+**Files**:
+- `test/install/test-homebrew.zsh` - Homebrew installation tests
+
+### PR 8: SSH Installation Testing  
+**Branch**: `feature/test-ssh-install`
+**Goal**: Add comprehensive tests for SSH setup and GitHub authentication
+
+**Tests First**:
+- Test SSH key generation and setup
+- Test GitHub SSH connection verification
+- Test SSH configuration file management
+- Test error conditions and user guidance
+
+**Implementation**:
+- Create comprehensive tests for bin/install/ssh.zsh and bin/install/github.zsh
+- Mock ssh-keygen, ssh, and GitHub API calls
+- Test SSH key validation and GitHub authentication
+- Test error handling and user guidance
 
 **Files**:
 - `test/install/test-ssh.zsh` - SSH installation tests
-- `test/install/test-homebrew.zsh` - Homebrew installation tests
-- `test/install/test-symlinks.zsh` - Symlink tests
-- `test/install/test-*.zsh` - Tests for all installation scripts
 
-### PR 7: Dependency Validation (TDD)
-**Branch**: `feature/dependency-validation`
-**Goal**: Ensure tools are available before attempting to use them
+### PR 9: Node.js Installation Testing
+**Branch**: `feature/test-nodejs-install`  
+**Goal**: Add comprehensive tests for Node.js and package manager setup
 
 **Tests First**:
-- Test command availability checks
-- Test PATH validation
-- Test dependency resolution order
-- Test tool version compatibility
+- Test fnm (Node.js version manager) installation
+- Test Node.js version installation and configuration
+- Test npm/pnpm global package installation
+- Test machine-specific Node.js configurations
 
 **Implementation**:
-- Add dependency validation before tool usage
-- Implement PATH validation and correction
-- Add tool version compatibility checks
-- Ensure proper dependency resolution order
+- Create comprehensive tests for bin/install/node.zsh
+- Mock fnm, node, npm, pnpm commands
+- Test version management and global package installation
+- Test error handling and recovery
 
 **Files**:
-- `test/setup/test-dependencies.zsh` - Dependency tests
-- `bin/lib/dependency-validation.zsh` - Dependency utilities
-- `bin/install/*.zsh` - Updated with dependency checks
+- `test/install/test-nodejs.zsh` - Node.js installation tests
 
-### PR 8: GitHub SSH Verification Fix (TDD)
-**Branch**: `feature/ssh-verification`
-**Goal**: Fix and improve SSH connection verification
+### PR 10: Additional Installation Script Testing
+**Branch**: `feature/test-remaining-installs`
+**Goal**: Add tests for remaining installation scripts (shell configuration and system settings)
 
 **Tests First**:
-- Test SSH connection verification
-- Test retry logic and timeout handling
-- Test error messages and user guidance
-- Test SSH key setup validation
+- Test shell configuration setup (zsh.zsh)
+- Test system settings configuration (settings.zsh)
+- Test additional installation scripts as needed
+- Test error conditions and validation
 
 **Implementation**:
-- Uncomment and improve SSH connection test in github.zsh
-- Add retry logic with exponential backoff
-- Add better error messages and user guidance
-- Implement SSH key validation
+- Create tests for bin/install/zsh.zsh (shell configuration)
+- Create tests for bin/install/settings.zsh (macOS system preferences)
+- Test remaining installation scripts (tmux.zsh, neovim.zsh, etc.)
+- Test error conditions and validation
+- Ensure comprehensive coverage of all installation steps
 
 **Files**:
-- `test/install/test-github-ssh.zsh` - SSH verification tests
-- `bin/install/github.zsh` - Updated SSH verification
-- `bin/install/ssh.zsh` - Updated SSH key generation
+- `test/install/test-zsh.zsh` - Shell configuration tests
+- `test/install/test-settings.zsh` - System settings tests  
+- `test/install/test-tmux.zsh` - Tmux setup tests
+- `test/install/test-neovim.zsh` - Neovim setup tests
 
-### PR 9: Progress Indicators
-**Branch**: `feature/progress-indicators`
-**Goal**: Add better user feedback and progress reporting
+**Note**: Symlink management is handled by `bin/update/symlinks.zsh` and would be tested separately if needed.
 
-**Tests First**:
-- Test progress reporting functionality
-- Test step-by-step progress tracking
-- Test time estimation and completion status
-- Test error reporting integration
+### Future PRs (After Installation Testing Complete)
 
-**Implementation**:
-- Add progress indicators for long-running operations
-- Implement step-by-step progress reporting
-- Add time estimation and completion status
-- Integrate with error reporting system
+Additional improvements to be implemented in subsequent PRs:
 
-**Files**:
-- `test/setup/test-progress.zsh` - Progress indicator tests
-- `bin/lib/progress.zsh` - Progress reporting utilities
-- `setup.zsh` - Updated with progress indicators
-- `bin/install/*.zsh` - Updated with progress reporting
-
-### PR 10: GitHub Actions Workflow
-**Branch**: `feature/github-actions`
-**Goal**: Add automated testing with smart triggering
-
-**Implementation**:
-- Create GitHub Actions workflow for automated testing
-- Implement path-based triggering for setup-related files only
-- Add manual trigger capability
-- Test complete setup process on fresh macOS runners
-- Add test result reporting and notifications
-
-**Files**:
-- `.github/workflows/test-setup.yml` - GitHub Actions workflow
-- `test/ci/validate-setup.zsh` - CI validation script
-- `test/ci/test-matrix.yml` - Test matrix configuration
+- **Dependency Validation**: Ensure tools are available before attempting to use them
+- **GitHub SSH Verification**: Fix and improve SSH connection verification  
+- **Progress Indicators**: Add better user feedback and progress reporting
+- **GitHub Actions Workflow**: Add automated testing with smart triggering
 
 ## Testing Strategy
 

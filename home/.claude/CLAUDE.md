@@ -54,13 +54,13 @@ When following Test-Driven Development:
 - The test case should determine what implementation changes belong in the commit
 
 ### Examples of Good Commit Granularity
-- ✅ "Add command line tools validation with test"
-- ✅ "Add network connectivity validation with test"
-- ✅ "Add edge case test for network timeout handling"
-- ✅ "Add macOS version validation with test"
-- ✅ "Add test for unsupported macOS version error message"
+- ✅ "Add input validation with test"
+- ✅ "Add database connectivity validation with test"
+- ✅ "Add edge case test for connection timeout handling"
+- ✅ "Add API version validation with test"
+- ✅ "Add test for unsupported API version error message"
 - ✅ "Add dry-run mode flag parsing with test"
-- ✅ "Add integration test for setup.zsh prerequisite validation"
+- ✅ "Add integration test for service prerequisite validation"
 - ❌ "Add all prerequisite validation tests and implementation" (too broad - multiple test cases)
 - ❌ "Implement multiple validation functions" (unrelated changes)
 - ❌ "Add tests and fix bugs" (unrelated changes)
@@ -70,10 +70,10 @@ When following Test-Driven Development:
 **Always test behavior, not implementation details:**
 
 #### ✅ Good: Test Behavior
-- Test that setup.zsh exits with error when prerequisites fail
+- Test that applications exit with error when prerequisites fail
 - Test that validation returns success when requirements are met
 - Test that dry-run mode logs actions without executing them
-- Test that flag parsing sets the correct environment variables
+- Test that configuration parsing sets the correct values
 
 #### ❌ Bad: Test Implementation Details
 - Test that specific function names exist in files
@@ -88,15 +88,14 @@ When following Test-Driven Development:
 - **Focused**: Tests tell you what the code should do, not how it should do it
 
 #### Examples
-```bash
+```
 # ❌ Brittle implementation test
-if grep -q "run_prerequisite_validation" "$setup_file"; then
-    assert_true "true" "setup.zsh should call specific function"
-fi
+if search_for_function_name("validate_prerequisites", setup_file):
+    assert_true("setup should call specific function")
 
 # ✅ Robust behavioral test  
-setup_exit_code=$(run_setup_with_failed_prerequisites)
-assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisites fail"
+exit_code = run_setup_with_failed_prerequisites()
+assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 ```
 
 ### Pre-commit Checks (in order)
@@ -105,8 +104,9 @@ assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisit
 2. **Linting** - Run linters after formatting
 3. **Type checking** - Run type checkers
 4. **Tests** - Run relevant tests last
-5. **Final review** - Check `git diff --staged` to review what will be committed
-6. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+5. **Test coverage verification** - Confirm all expected test files are running (see below)
+6. **Final review** - Check `git diff --staged` to review what will be committed
+7. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
 
 ### When Pre-commit Checks Fail
 
@@ -139,26 +139,63 @@ assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisit
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
+### PR Size and Focus Guidelines
+
+**Prefer small, focused PRs over large ones:**
+
+1. **One responsibility per PR** - Each PR should do exactly one thing
+2. **Easy to review** - Reviewer can understand the entire change quickly
+3. **Easy to rollback** - Can revert without affecting unrelated functionality
+4. **Split by logical boundaries**:
+   - Infrastructure/framework changes separate from usage
+   - Different functional areas separate (database vs authentication vs UI)
+   - Setup/configuration separate from implementation
+
+**Examples of good splits:**
+- ✅ PR 1: "Add test infrastructure for backend services"
+- ✅ PR 2: "Test user authentication with mocks"  
+- ✅ PR 3: "Test API endpoint validation"
+- ✅ PR A: "Refactor service layer for better testability" → PR B: "Add comprehensive service testing"
+- ❌ "Test all backend services" (too broad)
+- ❌ "Refactor code structure and add new features" (mixed concerns)
+
+**When to split large planned PRs:**
+- If testing multiple unrelated services/components
+- If adding infrastructure AND using it extensively
+- If changes span multiple functional domains
+- If the PR would be hard to review in one sitting
+- If structure changes would make behavior changes cleaner (separate refactoring from features)
+
 ### PR Description Maintenance
 
 **Always update the PR description after new commits** that change what the PR includes:
 
-- After you push new commits, update the PR description with `gh pr edit`
+- After you push new commits, update the PR description with available tools
 - After the user pushes commits, check what changed and update the description
 - Keep the "Changes" section current with all modifications
 - Update test plans if new tests were added
 - Add new commits to the implementation approach if significant
 
-Example workflow:
-```bash
-# After adding a new feature to the PR
-git push origin feature-branch
-gh pr edit PR_NUMBER --body "updated description..."
+### PR Commit Pushing
 
-# Or when user says they pushed changes
-gh pr view PR_NUMBER  # Check current state
-gh pr edit PR_NUMBER --body "updated description..."
+**Always push commits to the PR branch immediately after committing and announcing them:**
+
+1. **After making commits to a PR branch** - Push immediately so changes are visible in GitHub
+2. **Don't batch multiple commits** before pushing - push after each commit or small group
+3. **User expects to see changes in GitHub UI** when you announce commits in terminal
+4. **Prevents confusion** between what's committed locally vs what's visible for review
+
+Example workflow:
 ```
+# After adding commits to the PR
+git commit -m "commit message"
+git push origin feature-branch  # ← CRITICAL: Push immediately
+
+# Then update PR description if needed
+[update PR description via CLI tool or web interface]
+```
+
+**Exception**: Only skip pushing if explicitly told not to push or if you're about to make several rapid commits in succession (then push the batch).
 
 ### Multi-PR Task Management
 
@@ -176,20 +213,20 @@ For tasks involving multiple PRs, create and maintain a roadmap file:
 
 Example task file structure:
 ```markdown
-# 2025-07-06-setup-improvements.md
+# 2025-07-06-feature-improvements.md
 
 ## Progress
 - ✅ PR 1: Testing Foundation
-- ✅ PR 2: Machine Detection  
+- ✅ PR 2: Service Authentication  
 - 🔄 PR 3: Error Handling (in review)
 
 ## Key Decisions
 - Using behavioral tests instead of implementation tests
-- File-based approach for Zsh subshell testing
+- Async approach for better performance
 
 ## Next Steps
-- PR 4: Individual Script Testing
-- Need to integrate retry mechanism into homebrew.zsh
+- PR 4: Individual Service Testing
+- Need to integrate retry mechanism into API client
 ```
 
 ### Infrastructure-First PR Guidelines
@@ -197,9 +234,9 @@ Example task file structure:
 When creating PRs that add new functions/utilities before they're used:
 
 1. **Add TODO comments** in the code indicating where the function will be used:
-   ```bash
+   ```
    # TODO: Use in PR 7 (Error Recovery) for graceful failure handling
-   function handle_installation_error() {
+   function handle_error() {
        ...
    }
    ```
@@ -207,15 +244,46 @@ When creating PRs that add new functions/utilities before they're used:
 2. **Include usage preview** in PR description showing how the code will be used:
    ```markdown
    ## Usage Preview
-   This dry-run functionality will be used in future PRs to:
-   - PR 7: Wrap all installation commands with `dry_run_execute`
-   - PR 8: Add dry-run summaries showing what would be installed
+   This validation functionality will be used in future PRs to:
+   - PR 7: Wrap all service calls with `validate_input`
+   - PR 8: Add validation summaries for user feedback
    ```
 
 3. **Mark dead code clearly** so reviewers understand it's intentional:
    - Use descriptive function names that indicate future purpose
    - Add comments explaining the intended use case
    - Reference the roadmap/plan if one exists
+
+### Test Coverage Verification
+
+**Always verify that all expected test files are running** when running the test suite:
+
+1. **Compare manual count vs test runner output**:
+   - Count test files manually using appropriate commands for the project
+   - Compare with test runner output (usually shows "Found X test(s)" or similar)
+   - Numbers should match for complete coverage
+
+2. **Check for missing test directories**:
+   - Verify test runner scans all expected test directories
+   - Ensure no test locations are being excluded unintentionally
+
+3. **Common test runner issues to watch for**:
+   - Test files missing required permissions or attributes
+   - Test files not matching expected naming patterns or conventions
+   - Directories not being scanned recursively when they should be
+   - Test runner configuration excluding certain paths or file types
+   - Build artifacts or temporary files interfering with test discovery
+
+4. **When test count doesn't match expectations**:
+   - Run the test suite and note how many tests it reports finding
+   - Manually count test files using project-appropriate commands
+   - Check if specific test directories or files are being excluded
+   - Verify file naming conventions and required attributes
+   - Fix any discrepancies before proceeding
+
+**This prevents regressions where test files exist but aren't being executed.**
+
+For project-specific commands and examples, see the project's CLAUDE.md file.
 
 When pre-commit checks fail, I'll fix the issues, stage the fixes, and automatically retry the commit to keep the workflow smooth.
 
@@ -226,3 +294,61 @@ Use clear, descriptive commit messages without promotional footers:
 - Use conventional commit format when applicable  
 - Do NOT include "Generated with Claude Code" or co-author lines
 - Keep messages concise and professional
+
+## Project Documentation Guidelines
+
+### README.md vs CLAUDE.md
+
+For projects with both README.md and CLAUDE.md files:
+
+**README.md should contain:**
+- General project information that benefits all users
+- Installation and setup instructions
+- Usage examples and documentation
+- Troubleshooting guides
+- Contributing guidelines
+- Any information multiple people would find useful
+
+**Project-level CLAUDE.md should:**
+- Reference README.md for general information: "For installation instructions, see [README.md](README.md)"
+- Only contain Claude-specific guidance and notes
+- Focus on development workflow, file structure, and Claude-specific considerations
+- Be kept minimal and accurate - verify file paths and commands exist before referencing them
+- Evolve as the project changes (e.g., update test suite information when tests are added)
+
+### Personal CLAUDE.md Maintenance
+
+**When updating your personal CLAUDE.md:**
+
+1. **Always phrase updates universally** - avoid language-specific, framework-specific, or project-specific examples
+2. **Use generic examples** that apply across programming languages and project types
+3. **Test universal applicability** - ask yourself "Would this apply to a Python web app? A Rust CLI? A JavaScript frontend?"
+4. **Replace specific tools with categories** (e.g., "npm" → "package manager", "setup.zsh" → "main script")
+
+### Project CLAUDE.md Maintenance
+
+**Consider updating the project CLAUDE.md when:**
+
+1. **Learning something that would help future Claudes** working on this specific project
+2. **Making changes that invalidate existing project documentation** (new test commands, file moves, etc.)
+3. **Discovering project-specific patterns or gotchas** that aren't obvious from the code
+4. **Adding new tools, frameworks, or workflows** specific to this project
+
+**Periodic project CLAUDE.md review (before each PR):**
+
+1. **Check for inaccuracies** - verify file paths, commands, and examples still work
+2. **Look for important omissions** - what would have helped you that isn't documented?
+3. **Update outdated information** - remove references to deleted files or changed workflows
+4. **Add new learnings** - document any project-specific insights discovered during development
+
+### File Path Verification (Universal)
+
+**Always verify file paths exist before referencing them in any documentation:**
+
+1. **Use directory listing commands** to check actual file names before referencing them
+2. **Don't assume file naming conventions** - check what files actually exist
+3. **Verify correct directories** - files might be in different locations than expected
+4. **Test file paths** before committing documentation that references them
+5. **Common mistake**: Assuming numbered prefixes or specific naming patterns without verification
+
+This prevents documentation that references non-existent files, which creates confusion and reduces trust in the documentation.
