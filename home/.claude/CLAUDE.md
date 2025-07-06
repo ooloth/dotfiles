@@ -172,6 +172,7 @@ For tasks involving multiple PRs, create and maintain a roadmap file:
    - Important decisions made and why
    - Technical patterns established
    - Any gotchas or lessons learned
+4. **When moving files**: If git doesn't detect as a move (due to content changes), explicitly stage both the new file creation AND the old file deletion in the same commit
 
 Example task file structure:
 ```markdown
