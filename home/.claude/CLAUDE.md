@@ -41,16 +41,21 @@ Examples:
 ### TDD Commit Strategy
 
 When following Test-Driven Development:
-- **Group test and implementation in the same commit** for each feature
-- **One test case per commit** - add one test case and the implementation to make it pass
+- **One test case at a time** - write ONE failing test, then implement ONLY enough code to make it pass
+- **Group test and implementation in the same commit** for each test case
 - **Include necessary documentation updates** in the same commit (without overdocumenting)
 - **Multiple tests per function are fine** - each function may need several test cases for edge cases
+- **TDD cycle per commit**:
+  1. Write one failing test case
+  2. Implement minimal code to make it pass
+  3. Refactor if needed
+  4. Commit all changes together
 - **Commit structure**:
   - Commit: "Add command line tools validation with test"
   - Commit: "Add network connectivity validation with test"  
   - Commit: "Add edge case handling for network timeouts with test"
 - This makes each commit focused and easier to review (test and implementation on same screen)
-- Each commit adds exactly one test case (not necessarily one entire test suite)
+- Each commit adds exactly one test case (not all tests first, then all implementation)
 - The test case should determine what implementation changes belong in the commit
 
 ### Examples of Good Commit Granularity
@@ -131,6 +136,7 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Create descriptive branch names (feature/add-metrics, fix/memory-leak, etc.)
 - Keep branches focused on a single feature or fix
 - Use merge commits to integrate branches (avoid rebasing)
+- **Delete merged feature branches** immediately after PR is merged to maintain git hygiene
 
 ### PR Preparation
 
