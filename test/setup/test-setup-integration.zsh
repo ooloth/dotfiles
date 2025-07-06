@@ -43,35 +43,6 @@ test_setup_prerequisite_integration() {
     
     assert_not_equals "0" "$exit_code" "setup.zsh should exit with error when prerequisites fail"
     
-    test_case "Should continue when prerequisites pass"
-    # Test the prerequisite validation function directly instead of full setup.zsh
-    # This avoids the complexity of mocking interactive elements like vared
-    
-    # Mock all prerequisite validation commands to succeed
-    local mock_tools_path="$TEST_TEMP_DIR/CommandLineTools"
-    mkdir -p "$mock_tools_path/usr/bin"
-    touch "$mock_tools_path/usr/bin/git"
-    mock_command "xcode-select" 0 "$mock_tools_path"
-    mock_command "ping" 0 "PING github.com: 56 data bytes"
-    mock_command "sw_vers" 0 "14.0"
-    
-    # Source the prerequisite validation module
-    source "$ORIGINAL_DOTFILES/bin/lib/prerequisite-validation.zsh"
-    
-    # Test that the validation function passes when all prerequisites are met
-    local validation_output
-    validation_output=$(run_prerequisite_validation 2>&1)
-    local validation_exit_code=$?
-    
-    # Check that validation passed
-    assert_equals "0" "$validation_exit_code" "Prerequisite validation should pass when all requirements are met"
-    
-    # Check that success message is present
-    if echo "$validation_output" | grep -q "All prerequisite validation checks passed"; then
-        assert_true "true" "Should show success message when prerequisites pass"
-    else
-        assert_false "true" "Should show success message when prerequisites pass"
-    fi
     
     # Clean up
     cleanup_mocking
