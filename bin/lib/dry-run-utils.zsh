@@ -3,6 +3,10 @@
 # Dry-run utilities for dotfiles setup
 # Provides read-only validation and logging capabilities
 
+# TODO: Use in PR 5 (Enhanced Logging) to integrate with colored output
+# TODO: Use in PR 7 (Error Recovery) to provide safe mode for debugging
+# TODO: Use throughout all installation scripts to wrap commands
+
 # Parse command line arguments for dry-run flags
 parse_dry_run_flags() {
     # Default to false
@@ -18,6 +22,7 @@ parse_dry_run_flags() {
 }
 
 # Log actions in dry-run mode without executing them
+# TODO: Use in PR 5 (Enhanced Logging) to add color coding and log levels
 dry_run_log() {
     local action="$1"
     
@@ -34,6 +39,8 @@ dry_run_log() {
 }
 
 # Execute commands conditionally based on dry-run mode
+# TODO: Use throughout install scripts (homebrew.zsh, node.zsh, etc.) to make all commands conditional
+# TODO: Use in PR 7 (Error Recovery) to add error simulation in dry-run mode
 dry_run_execute() {
     local command="$1"
     
