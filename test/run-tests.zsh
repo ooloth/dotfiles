@@ -50,6 +50,9 @@ run_test_file() {
     
     print_test_file_header "$test_file"
     
+    # Show progress indicator for potentially slow tests
+    echo -e "   ${BLUE}Running test file...${NC}"
+    
     # Source the test file and run it in a subshell to prevent function pollution
     if (source "$test_file") 2>/dev/null; then
         echo -e "   ${GREEN}✓ Test file executed successfully${NC}"
