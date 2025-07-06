@@ -170,22 +170,32 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 
 **Always update the PR description after new commits** that change what the PR includes:
 
-- After you push new commits, update the PR description with `gh pr edit`
+- After you push new commits, update the PR description with available tools
 - After the user pushes commits, check what changed and update the description
 - Keep the "Changes" section current with all modifications
 - Update test plans if new tests were added
 - Add new commits to the implementation approach if significant
 
+### PR Commit Pushing
+
+**Always push commits to the PR branch immediately after committing and announcing them:**
+
+1. **After making commits to a PR branch** - Push immediately so changes are visible in GitHub
+2. **Don't batch multiple commits** before pushing - push after each commit or small group
+3. **User expects to see changes in GitHub UI** when you announce commits in terminal
+4. **Prevents confusion** between what's committed locally vs what's visible for review
+
 Example workflow:
 ```
-# After adding a new feature to the PR
-git push origin feature-branch
-[update PR description via CLI tool or web interface]
+# After adding commits to the PR
+git commit -m "commit message"
+git push origin feature-branch  # ← CRITICAL: Push immediately
 
-# Or when user says they pushed changes
-[check current PR state]
-[update PR description with new changes]
+# Then update PR description if needed
+[update PR description via CLI tool or web interface]
 ```
+
+**Exception**: Only skip pushing if explicitly told not to push or if you're about to make several rapid commits in succession (then push the batch).
 
 ### Multi-PR Task Management
 
