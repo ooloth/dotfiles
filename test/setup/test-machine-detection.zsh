@@ -117,6 +117,49 @@ test_dynamic_behavior() {
     test_suite_end
 }
 
+# Test machine variable setting functionality
+test_machine_variables() {
+    test_suite "Machine Variable Setting"
+    
+    # Set up test environment
+    setup_test_environment
+    init_mocking
+    
+    test_case "Should set IS_AIR=true for air machine type"
+    set_machine_variables "air"
+    assert_equals "true" "$IS_AIR" "IS_AIR should be true for air type"
+    assert_equals "false" "$IS_MINI" "IS_MINI should be false for air type"
+    assert_equals "false" "$IS_WORK" "IS_WORK should be false for air type"
+    assert_equals "air" "$MACHINE" "MACHINE should be set to air"
+    
+    test_case "Should set IS_MINI=true for mini machine type"
+    set_machine_variables "mini"
+    assert_equals "false" "$IS_AIR" "IS_AIR should be false for mini type"
+    assert_equals "true" "$IS_MINI" "IS_MINI should be true for mini type"
+    assert_equals "false" "$IS_WORK" "IS_WORK should be false for mini type"
+    assert_equals "mini" "$MACHINE" "MACHINE should be set to mini"
+    
+    test_case "Should set IS_WORK=true for work machine type"
+    set_machine_variables "work"
+    assert_equals "false" "$IS_AIR" "IS_AIR should be false for work type"
+    assert_equals "false" "$IS_MINI" "IS_MINI should be false for work type"
+    assert_equals "true" "$IS_WORK" "IS_WORK should be true for work type"
+    assert_equals "work" "$MACHINE" "MACHINE should be set to work"
+    
+    test_case "Should default to work for unknown machine type"
+    set_machine_variables "unknown"
+    assert_equals "false" "$IS_AIR" "IS_AIR should be false for unknown type"
+    assert_equals "false" "$IS_MINI" "IS_MINI should be false for unknown type"
+    assert_equals "true" "$IS_WORK" "IS_WORK should be true for unknown type"
+    assert_equals "work" "$MACHINE" "MACHINE should default to work"
+    
+    # Clean up
+    cleanup_mocking
+    cleanup_test_environment
+    
+    test_suite_end
+}
+
 # Test framework validation
 test_framework_validation() {
     test_suite "Test Framework Validation"
@@ -161,6 +204,7 @@ main() {
     test_framework_validation
     test_dynamic_behavior
     test_machine_detection
+    test_machine_variables
 }
 
 # Execute tests
