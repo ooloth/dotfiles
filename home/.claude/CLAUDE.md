@@ -341,4 +341,14 @@ For projects with both README.md and CLAUDE.md files:
 3. **Update outdated information** - remove references to deleted files or changed workflows
 4. **Add new learnings** - document any project-specific insights discovered during development
 
-This ensures project documentation stays current and helpful while keeping personal guidelines universal.
+### File Path Verification (Universal)
+
+**Always verify file paths exist before referencing them in any documentation:**
+
+1. **Use directory listing commands** to check actual file names before referencing them
+2. **Don't assume file naming conventions** - check what files actually exist
+3. **Verify correct directories** - files might be in different locations than expected
+4. **Test file paths** before committing documentation that references them
+5. **Common mistake**: Assuming numbered prefixes or specific naming patterns without verification
+
+This prevents documentation that references non-existent files, which creates confusion and reduces trust in the documentation.

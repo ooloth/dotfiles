@@ -64,6 +64,24 @@ When making changes to this repository:
 5. **Update README.md** for any user-facing changes
 6. **Keep this CLAUDE.md focused** on Claude-specific guidance only
 
+### File Path Verification
+
+**CRITICAL: Always verify file paths exist before referencing them in documentation:**
+
+1. **Use `ls` commands** to check actual file names before referencing them
+2. **Don't assume numbered prefixes** (e.g., `1-ssh.zsh`) - actual files are named `ssh.zsh`, `homebrew.zsh`, etc.
+3. **Check correct directories** - symlinks script is in `bin/update/`, not `bin/install/`
+4. **Verify before updating task docs** - use `ls bin/install/` and `ls bin/update/` to confirm file names
+5. **Common mistake**: Referencing `bin/install/1-ssh.zsh` when actual file is `bin/install/ssh.zsh`
+
+**Before documenting any file path, run:**
+```bash
+ls bin/install/  # Check installation scripts
+ls bin/update/   # Check update scripts  
+ls bin/lib/      # Check utility libraries
+ls test/         # Check test structure
+```
+
 ### Testing and Verification
 
 - Comprehensive test suite exists in `test/` directory

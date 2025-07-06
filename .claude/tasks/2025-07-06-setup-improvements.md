@@ -251,7 +251,7 @@ This document outlines a comprehensive plan to improve the reliability and testa
 - Test error conditions and recovery
 
 **Implementation**:
-- Create comprehensive tests for bin/install/2-homebrew.zsh
+- Create comprehensive tests for bin/install/homebrew.zsh
 - Mock brew commands and validate installation behavior
 - Test different machine configurations (air/mini/work)
 - Test error handling and recovery mechanisms
@@ -270,7 +270,7 @@ This document outlines a comprehensive plan to improve the reliability and testa
 - Test error conditions and user guidance
 
 **Implementation**:
-- Create comprehensive tests for bin/install/1-ssh.zsh
+- Create comprehensive tests for bin/install/ssh.zsh and bin/install/github.zsh
 - Mock ssh-keygen, ssh, and GitHub API calls
 - Test SSH key validation and GitHub authentication
 - Test error handling and user guidance
@@ -289,7 +289,7 @@ This document outlines a comprehensive plan to improve the reliability and testa
 - Test machine-specific Node.js configurations
 
 **Implementation**:
-- Create comprehensive tests for bin/install/3-programming.zsh (Node.js portions)
+- Create comprehensive tests for bin/install/node.zsh
 - Mock fnm, node, npm, pnpm commands
 - Test version management and global package installation
 - Test error handling and recovery
@@ -299,25 +299,28 @@ This document outlines a comprehensive plan to improve the reliability and testa
 
 ### PR 10: Additional Installation Script Testing
 **Branch**: `feature/test-remaining-installs`
-**Goal**: Add tests for remaining installation scripts (shell, symlinks, macOS)
+**Goal**: Add tests for remaining installation scripts (shell configuration and system settings)
 
 **Tests First**:
-- Test shell configuration setup
-- Test symlink creation and management  
-- Test macOS system preference configuration
-- Test app dependency installation
+- Test shell configuration setup (zsh.zsh)
+- Test system settings configuration (settings.zsh)
+- Test additional installation scripts as needed
+- Test error conditions and validation
 
 **Implementation**:
-- Create tests for remaining installation scripts
-- Test shell setup, symlinks, and system preferences
+- Create tests for bin/install/zsh.zsh (shell configuration)
+- Create tests for bin/install/settings.zsh (macOS system preferences)
+- Test remaining installation scripts (tmux.zsh, neovim.zsh, etc.)
 - Test error conditions and validation
 - Ensure comprehensive coverage of all installation steps
 
 **Files**:
-- `test/install/test-shell.zsh` - Shell setup tests
-- `test/install/test-symlinks.zsh` - Symlink tests  
-- `test/install/test-macos.zsh` - macOS configuration tests
-- `test/install/test-app-deps.zsh` - App dependency tests
+- `test/install/test-zsh.zsh` - Shell configuration tests
+- `test/install/test-settings.zsh` - System settings tests  
+- `test/install/test-tmux.zsh` - Tmux setup tests
+- `test/install/test-neovim.zsh` - Neovim setup tests
+
+**Note**: Symlink management is handled by `bin/update/symlinks.zsh` and would be tested separately if needed.
 
 ### Future PRs (After Installation Testing Complete)
 
