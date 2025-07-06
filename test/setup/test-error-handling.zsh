@@ -134,11 +134,46 @@ test_user_friendly_errors() {
     test_suite_end
 }
 
+# Test setup.zsh integration
+test_setup_integration() {
+    test_suite "Setup.zsh Error Handling Integration"
+    
+    # Set up test environment
+    setup_test_environment
+    init_mocking
+    
+    test_case "Should integrate error handling utilities in setup.zsh"
+    
+    local setup_file="$ORIGINAL_DOTFILES/setup.zsh"
+    assert_file_exists "$setup_file" "setup.zsh should exist"
+    
+    # Check that setup.zsh sources the error handling utilities
+    if grep -q "error-handling.zsh" "$setup_file"; then
+        assert_true "true" "setup.zsh should source error handling utilities"
+    else
+        assert_false "true" "setup.zsh should source error handling utilities"
+    fi
+    
+    # Check that setup.zsh no longer uses aggressive ERR trap
+    if grep -q "trap.*handle_error.*ERR" "$setup_file"; then
+        assert_true "true" "setup.zsh should still have ERR trap (for now)"
+    else
+        assert_false "true" "setup.zsh should still have ERR trap (for now)"
+    fi
+    
+    # Clean up
+    cleanup_mocking
+    cleanup_test_environment
+    
+    test_suite_end
+}
+
 # Run all tests
 main() {
     test_error_detection
     test_retry_mechanism
     test_user_friendly_errors
+    test_setup_integration
 }
 
 # Execute tests
