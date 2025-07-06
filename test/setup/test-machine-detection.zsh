@@ -10,6 +10,9 @@ ORIGINAL_DOTFILES="$DOTFILES"
 source "$DOTFILES/test/lib/test-utils.zsh"
 source "$DOTFILES/test/lib/mock.zsh"
 
+# Source the machine detection module we're testing
+source "$ORIGINAL_DOTFILES/bin/lib/machine-detection.zsh"
+
 # Test machine detection functions
 test_machine_detection() {
     test_suite "Machine Detection"
@@ -19,57 +22,46 @@ test_machine_detection() {
     init_mocking
     
     test_case "Should detect Air from hostname"
-    # This test will fail until we implement dynamic detection
-    # For now, it demonstrates the testing framework
-    
     # Mock hostname command
     mock_command "hostname" 0 "Michaels-MacBook-Air.local"
     
-    # Test the detection (this function doesn't exist yet)
-    if command -v detect_machine_type >/dev/null 2>&1; then
-        local machine_type=$(detect_machine_type)
-        assert_equals "air" "$machine_type" "Should detect Air from hostname"
-    else
-        # Expected to fail - function doesn't exist yet
-        assert_false "true" "detect_machine_type function not implemented yet (expected failure)"
-    fi
+    # Clear any existing MACHINE environment variable
+    unset MACHINE
+    
+    # Test the detection
+    local machine_type=$(detect_machine_type)
+    assert_equals "air" "$machine_type" "Should detect Air from hostname"
     
     test_case "Should detect Mini from hostname"
     # Mock hostname command
     mock_command "hostname" 0 "Michaels-Mac-Mini.local"
     
-    if command -v detect_machine_type >/dev/null 2>&1; then
-        local machine_type=$(detect_machine_type)
-        assert_equals "mini" "$machine_type" "Should detect Mini from hostname"
-    else
-        # Expected to fail - function doesn't exist yet
-        assert_false "true" "detect_machine_type function not implemented yet (expected failure)"
-    fi
+    # Clear any existing MACHINE environment variable
+    unset MACHINE
+    
+    # Test the detection
+    local machine_type=$(detect_machine_type)
+    assert_equals "mini" "$machine_type" "Should detect Mini from hostname"
     
     test_case "Should detect Work from unknown hostname"
     # Mock hostname command
     mock_command "hostname" 0 "work-laptop.company.com"
     
-    if command -v detect_machine_type >/dev/null 2>&1; then
-        local machine_type=$(detect_machine_type)
-        assert_equals "work" "$machine_type" "Should default to work for unknown hostnames"
-    else
-        # Expected to fail - function doesn't exist yet
-        assert_false "true" "detect_machine_type function not implemented yet (expected failure)"
-    fi
+    # Clear any existing MACHINE environment variable
+    unset MACHINE
+    
+    # Test the detection
+    local machine_type=$(detect_machine_type)
+    assert_equals "work" "$machine_type" "Should default to work for unknown hostnames"
     
     test_case "Should handle environment variable override"
     # Mock hostname and set environment variable
     mock_command "hostname" 0 "Michaels-MacBook-Air.local"
     export MACHINE="mini"
     
-    if command -v detect_machine_type >/dev/null 2>&1; then
-        local machine_type=$(detect_machine_type)
-        assert_equals "mini" "$machine_type" "Should use environment variable override"
-    else
-        # Expected to fail - function doesn't exist yet
-        assert_false "true" "detect_machine_type function not implemented yet (expected failure)"
-    fi
+    # Test the detection with override
+    local machine_type=$(detect_machine_type)
+    assert_equals "mini" "$machine_type" "Should use environment variable override"
     
     # Clean up
     unset MACHINE
