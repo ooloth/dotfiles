@@ -135,6 +135,27 @@ assert_not_equals "0" "$setup_exit_code" "setup.zsh should exit when prerequisit
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
+### PR Description Maintenance
+
+**Always update the PR description after new commits** that change what the PR includes:
+
+- After you push new commits, update the PR description with `gh pr edit`
+- After the user pushes commits, check what changed and update the description
+- Keep the "Changes" section current with all modifications
+- Update test plans if new tests were added
+- Add new commits to the implementation approach if significant
+
+Example workflow:
+```bash
+# After adding a new feature to the PR
+git push origin feature-branch
+gh pr edit PR_NUMBER --body "updated description..."
+
+# Or when user says they pushed changes
+gh pr view PR_NUMBER  # Check current state
+gh pr edit PR_NUMBER --body "updated description..."
+```
+
 ### Infrastructure-First PR Guidelines
 
 When creating PRs that add new functions/utilities before they're used:
