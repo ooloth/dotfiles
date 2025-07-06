@@ -91,6 +91,9 @@ cd ~/Repos/ooloth/dotfiles
 # Run the setup script
 ./setup.zsh
 
+# Preview what would be installed without making changes
+./setup.zsh --dry-run
+
 # Or run individual installation scripts
 cd bin/install
 source ssh.zsh         # SSH keys and GitHub auth
