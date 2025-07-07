@@ -110,8 +110,29 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 3. **Type checking** - Run type checkers
 4. **Tests** - Run relevant tests last
 5. **Test coverage verification** - Confirm all expected test files are running (see below)
-6. **Final review** - Check `git diff --staged` to review what will be committed
-7. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+6. **All tests must pass** - **CRITICAL**: Fix any failing tests immediately, do not commit/push with failing tests
+7. **Final review** - Check `git diff --staged` to review what will be committed
+8. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+
+### Test Requirements
+
+**All tests must pass before any commit or push:**
+
+1. **Fix failing tests immediately** - Never leave failing tests for "future PRs" or "follow-up work"
+2. **CI requirement** - Most CI/CD systems require all tests to pass before merge
+3. **Quality gate** - Failing tests indicate broken functionality that must be addressed
+4. **No exceptions** - Even if failure seems minor or unrelated, investigate and fix
+
+**When tests fail:**
+- **Investigate the root cause** - Don't just change the test, understand why it's failing
+- **Fix the implementation or test** - Address the actual issue, whether in code or test logic
+- **Verify the fix** - Run the full test suite to ensure no regressions
+- **Document complex fixes** - If the fix was non-obvious, add comments explaining the solution
+
+**Test debugging approach:**
+- Create minimal reproduction scripts when tests fail in complex environments
+- Use mocking frameworks properly to isolate the code being tested
+- Verify test environment setup doesn't interfere with the functionality being tested
 
 ### When Pre-commit Checks Fail
 
@@ -147,30 +168,50 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 
 ### PR Size and Focus Guidelines
 
-**Prefer small, focused PRs over large ones:**
+**Each PR should be a complete bundle of one new behavior:**
 
-1. **One responsibility per PR** - Each PR should do exactly one thing
-2. **Easy to review** - Reviewer can understand the entire change quickly
-3. **Easy to rollback** - Can revert without affecting unrelated functionality
-4. **Split by logical boundaries**:
-   - Infrastructure/framework changes separate from usage
-   - Different functional areas separate (database vs authentication vs UI)
-   - Setup/configuration separate from implementation
+1. **Complete functionality** - Include tests, implementation, and actual usage together
+2. **Avoid dead code** - Don't add functions/utilities without demonstrating their use
+3. **Include documentation updates** - Update code comments, READMEs, CLAUDE.md as needed
+4. **One responsibility per PR** - Each PR should do exactly one thing, but do it completely
 
-**Examples of good splits:**
-- ✅ PR 1: "Add test infrastructure for backend services"
-- ✅ PR 2: "Test user authentication with mocks"  
-- ✅ PR 3: "Test API endpoint validation"
-- ✅ PR A: "Refactor service layer for better testability" → PR B: "Add comprehensive service testing"
-- ❌ "Test all backend services" (too broad)
-- ❌ "Refactor code structure and add new features" (mixed concerns)
+**Size guidelines:**
+- **Target < 100 lines** when possible for easy review
+- **Accept larger PRs (200-400+ lines)** when needed for completeness
+- **Better to have one complete 300-line PR** than three 100-line PRs with dead code
+- **Size is secondary to completeness and logical boundaries**
 
-**When to split large planned PRs:**
-- If testing multiple unrelated services/components
-- If adding infrastructure AND using it extensively
-- If changes span multiple functional domains
-- If the PR would be hard to review in one sitting
-- If structure changes would make behavior changes cleaner (separate refactoring from features)
+**Examples of complete behavior bundles:**
+- ✅ "Add Homebrew detection with tests and integration into installation script"
+- ✅ "Add API validation with tests, error messages, and documentation"
+- ✅ "Add database migration with rollback functionality and admin tools"
+- ❌ "Add Homebrew detection utility" (missing actual usage)
+- ❌ "Add authentication tests" (missing implementation and integration)
+
+**For projects with separate frontend/backend deployments:**
+- ✅ Backend PR: "Add user authentication API endpoints with tests and documentation"
+- ✅ Frontend PR: "Add login UI components using new authentication endpoints" 
+- ✅ Backend PR: "Remove deprecated login endpoints after frontend migration"
+- ❌ "Add user authentication with backend API and frontend UI" (deployment complexity)
+
+**When to split PRs:**
+- **Multiple unrelated behaviors** (authentication vs database vs caching)
+- **Different deployment boundaries** (frontend vs backend in systems with separate deployment pipelines)
+- **Refactoring separate from new features** (clean up existing code vs add new functionality)
+- **Infrastructure changes that enable multiple future features** (but include at least one usage example)
+
+**Deployment-aware PR sequencing:**
+- **Backend-first approach**: Deploy backend changes before frontend changes that depend on them
+- **Graceful migrations**: When replacing functionality, deploy new approach → migrate frontend → remove old approach
+- **Feature flags**: Use feature toggles when backend and frontend changes must be deployed together
+- **Backward compatibility**: Ensure backend changes don't break existing frontend functionality
+
+**Complete behavior includes:**
+- ✅ Tests that validate the behavior works
+- ✅ Implementation that passes the tests
+- ✅ Integration/usage that demonstrates real-world value
+- ✅ Documentation updates for user-facing changes
+- ✅ Code comments for complex logic
 
 ### PR Description Maintenance
 
@@ -346,6 +387,7 @@ For projects with both README.md and CLAUDE.md files:
 2. **Look for important omissions** - what would have helped you that isn't documented?
 3. **Update outdated information** - remove references to deleted files or changed workflows
 4. **Add new learnings** - document any project-specific insights discovered during development
+
 
 ### File Path Verification (Universal)
 

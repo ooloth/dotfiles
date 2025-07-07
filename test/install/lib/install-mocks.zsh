@@ -160,6 +160,15 @@ mock_homebrew_failure() {
     mock_command "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" 1 "Download failed"
 }
 
+# Mock missing Homebrew (not installed)
+mock_homebrew_missing() {
+    # Mock commands to indicate Homebrew is not installed
+    mock_command "command -v brew" 1 ""
+    mock_command "which brew" 1 ""
+    mock_command "brew" 127 "zsh: command not found: brew"
+    mock_command "brew --version" 127 "zsh: command not found: brew"
+}
+
 # Mock successful SSH key generation
 mock_ssh_key_success() {
     setup_ssh_mocks
