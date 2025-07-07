@@ -18,6 +18,7 @@
   - Fixing one specific issue or bug
 - **Never bundle unrelated changes** in a single commit
 - **One behavior per commit** - each commit should implement exactly one piece of functionality
+- **Separate commits even for the same file type** - configuration changes, documentation updates, and code changes should be separate commits even if they modify similar file types
 - Prefer 10-20 micro-commits over 3-5 larger commits for a feature
 - Each commit should leave the codebase in a working state
 
@@ -134,9 +135,12 @@ When following Test-Driven Development:
 - ✅ "Add test for unsupported API version error message"
 - ✅ "Add dry-run mode flag parsing with test"
 - ✅ "Add integration test for service prerequisite validation"
+- ✅ "Update CLAUDE.md with refactoring guidelines"
+- ✅ "Update Claude permissions for development commands"
 - ❌ "Add all prerequisite validation tests and implementation" (too broad - multiple test cases)
 - ❌ "Implement multiple validation functions" (unrelated changes)
 - ❌ "Add tests and fix bugs" (unrelated changes)
+- ❌ "Update CLAUDE.md and settings.json" (unrelated changes - different purposes)
 
 ### Testing Philosophy
 
