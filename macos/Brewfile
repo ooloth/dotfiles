@@ -34,6 +34,7 @@ end
 brew "basedpyright" # for python in neovim
 brew "bash"
 brew "bat" # replaces cat
+brew "bats-core" # for bash testing
 brew "btop" # top alternative
 brew "bufbuild/buf/buf" # for buf_lint in neovim
 brew "coreutils"
