@@ -1,6 +1,6 @@
 ## 💪 What
 
-<!-- What files/functionality changed? What tests were added? What's new/different in this PR? -->
+<!-- What's new/different in this PR? What files/functionality changed? How were those changes tested and documented? -->
 
 ## 🤔 Why
 
@@ -12,9 +12,9 @@
 
 ## 👩‍🔬 How to validate
 
-<!-- For reviewers: step-by-step instructions to manually test that the changes work -->
+<!-- What steps can a reviewer follow to manually confirm the changes work? -->
 
 ## 🔗 Related links
 
-<!-- Issue URLs, related PRs, docs, Slack threads - anything that provides context -->
+<!-- Links to docs, tasks, PRs, issues, Slack threads - any context a reviewer would find helpful -->
 
