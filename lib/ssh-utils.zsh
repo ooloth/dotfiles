@@ -34,16 +34,3 @@ ssh_key_pair_found() {
     return $?
 }
 
-# Get SSH public key content for display or copying
-# Returns: 0 if key exists and content retrieved, 1 otherwise
-get_ssh_public_key() {
-    _get_ssh_key_paths
-    
-    if [[ -s "$SSH_PUBLIC_KEY" ]]; then
-        cat "$SSH_PUBLIC_KEY"
-        return 0
-    else
-        echo "SSH public key not found"
-        return 1
-    fi
-}
