@@ -298,12 +298,14 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 
 ### PR Commit Pushing and Description Updates
 
-**Always push commits to the PR branch immediately after committing and announcing them:**
+**Always commit and push changes immediately after making them:**
 
-1. **After making commits to a PR branch** - Push immediately so changes are visible in GitHub
-2. **Don't batch multiple commits** before pushing - push after each commit or small group
-3. **User expects to see changes in GitHub UI** when you announce commits in terminal
-4. **Prevents confusion** between what's committed locally vs what's visible for review
+1. **After making any file changes** - Commit immediately, don't accumulate changes
+2. **After making commits to a PR branch** - Push immediately so changes are visible in GitHub
+3. **Don't batch multiple commits** before pushing - push after each commit or small group
+4. **User expects to see changes in GitHub UI** when you announce commits in terminal
+5. **Prevents confusion** between what's committed locally vs what's visible for review
+6. **Automatic behavior** - Commit and push should be automatic, not requiring explicit user request
 
 **CRITICAL: Always update PR description after pushing commits with new functionality:**
 
@@ -319,9 +321,11 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 
 Example workflow:
 ```
-# After adding commits to the PR
-git commit -m "commit message"
-git push origin feature-branch  # ← CRITICAL: Push immediately
+# When making any file changes during development
+[make file changes]
+git add [files]
+git commit -m "descriptive commit message"
+git push origin feature-branch  # ← CRITICAL: Always push immediately
 
 # ← CRITICAL: Update PR description if commits add new functionality
 gh pr edit [number] --body "$(cat <<'EOF'
@@ -329,6 +333,12 @@ gh pr edit [number] --body "$(cat <<'EOF'
 EOF
 )"
 ```
+
+**This workflow should be automatic - don't wait for user to ask "commit and push":**
+- When you make file changes, immediately commit and push
+- When you improve documentation, immediately commit and push  
+- When you fix code issues, immediately commit and push
+- The user expects to see changes in GitHub without having to request it
 
 **Exception**: Only skip pushing if explicitly told not to push or if you're about to make several rapid commits in succession (then push the batch).
 
