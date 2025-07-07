@@ -34,6 +34,6 @@
       "NotebookEdit(*)",
       "Write(*)"
     ],
-    "deny": ["Bash(curl:*)", "Bash(git merge:*)", "Bash(git reset:*)"]
+    "deny": ["Bash(curl:*)"]
   }
 }
