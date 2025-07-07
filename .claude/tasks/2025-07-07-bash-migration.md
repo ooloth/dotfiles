@@ -4,7 +4,7 @@
 
 **Task**: Migrate dotfiles installation scripts from custom zsh test framework to industry-standard bash + shellcheck + bats
 **Approach**: Complete 3-phase migration for better tooling, maintainability, and reliability
-**Current**: Phase 1 complete (PR #13 merged), now addressing critical setup.zsh bug (PR #14)
+**Current**: Phase 1 complete (PR #13 merged), critical setup.zsh bug fixed (PR #14 merged), ready for SSH migration
 
 ## Migration Strategy
 
@@ -107,8 +107,8 @@ test/install/test-{component}-installation.bats  # Integration tests
 **Issue**: `setup.zsh` references `$DOTFILES` files via `source` commands before the dotfiles repository is cloned
 **Impact**: Setup process fails on fresh installations
 **Priority**: High - affects core functionality  
-**Status**: PR #14 created with fix - moved all sourcing after git clone (line 128+)
-**Solution**: Basic git check before clone, comprehensive utilities after clone
+**Status**: PR #14 MERGED - fixed dependency ordering issue
+**Solution**: Basic git check before clone, comprehensive utilities after clone (line 128+)
 
 ### Dead Code Prevention
 **Pattern**: Every function/utility must have demonstrated usage in the same PR
@@ -151,13 +151,13 @@ test/install/test-{component}-installation.bats  # Integration tests
 - Feature parity verification required
 - Complete behavior bundle (no dead code)
 
-## Next Steps After PR #13 Review
+## Next Steps
 
-1. **Address Review Feedback**: Incorporate any requested changes
-2. **Fix Critical Setup Bug**: Resolve $DOTFILES dependency issue  
-3. **Continue Phase 1**: SSH installation script migration
-4. **Plan Phase 2**: Define systematic migration order
-5. **Update CI**: Begin migration to bats-based testing
+1. **Continue Phase 1**: SSH installation script migration to bash + bats
+2. **Update CI Workflow**: Migrate from custom zsh runner to bats
+3. **Plan Phase 2**: Define systematic migration order for remaining scripts
+4. **Document Migration Pattern**: Create guide for future script conversions
+5. **Performance Testing**: Compare bash vs zsh test execution times
 
 ---
 
