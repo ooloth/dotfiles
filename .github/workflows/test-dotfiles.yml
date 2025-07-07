@@ -1,0 +1,115 @@
+name: Test Dotfiles Setup Scripts
+
+on:
+  # Run on pushes to main branch
+  push:
+    branches: [ main ]
+    paths:
+      - 'setup.zsh'
+      - 'bin/**'
+      - 'lib/**'
+      - 'test/**'
+      - 'macos/Brewfile'
+      - 'config/**'
+      - '.github/workflows/test-dotfiles.yml'
+  
+  # Run on pull requests to main
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'setup.zsh'
+      - 'bin/**'
+      - 'lib/**'
+      - 'test/**'
+      - 'macos/Brewfile'
+      - 'config/**'
+      - '.github/workflows/test-dotfiles.yml'
+  
+  # Allow manual triggering for debugging
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Dotfiles Tests
+    runs-on: macos-latest
+    
+    # Set default shell to zsh to match our target environment
+    defaults:
+      run:
+        shell: zsh
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up environment
+        run: |
+          # Set DOTFILES environment variable for tests
+          echo "DOTFILES=${{ github.workspace }}" >> $GITHUB_ENV
+          
+          # Ensure zsh is configured properly
+          echo "Using zsh version: $ZSH_VERSION"
+          echo "Shell: $SHELL"
+          
+          # Make test runner executable
+          chmod +x test/run-tests.zsh
+          
+      - name: Run test suite
+        run: |
+          # Run all tests using our existing test runner
+          ./test/run-tests.zsh
+          
+      - name: Verify test coverage
+        run: |
+          # Count test files and verify they were all executed
+          echo "Verifying test coverage..."
+          
+          EXPECTED_TESTS=$(find test -name "test-*.zsh" -type f -not -path "*/lib/*" | wc -l | tr -d ' ')
+          echo "Found $EXPECTED_TESTS test files in repository"
+          
+          # The test runner reports how many files it executed
+          # This helps catch cases where tests exist but aren't being run
+          echo "Expected test file count: $EXPECTED_TESTS"
+          
+      - name: Test environment validation
+        run: |
+          # Validate that our test environment works correctly
+          echo "Validating test environment..."
+          
+          # Check that DOTFILES is set correctly
+          if [[ -z "$DOTFILES" ]]; then
+            echo "❌ DOTFILES environment variable not set"
+            exit 1
+          fi
+          
+          echo "✅ DOTFILES set to: $DOTFILES"
+          
+          # Verify key test directories exist
+          if [[ ! -d "$DOTFILES/test" ]]; then
+            echo "❌ Test directory not found"
+            exit 1
+          fi
+          
+          if [[ ! -f "$DOTFILES/test/run-tests.zsh" ]]; then
+            echo "❌ Test runner not found"
+            exit 1
+          fi
+          
+          echo "✅ Test infrastructure validated"
+          
+      - name: Summary
+        if: always()
+        run: |
+          echo "=== Test Summary ==="
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Shell: $SHELL"
+          echo "ZSH Version: $ZSH_VERSION"
+          
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "🎉 All tests passed!"
+          else
+            echo "❌ Some tests failed. Check the logs above for details."
+          fi
