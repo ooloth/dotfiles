@@ -1,11 +1,11 @@
 # Setup.zsh Improvement Plan
 
-## Current Status (July 6, 2025)
+## Current Status (July 7, 2025)
 
 **Task**: Improve reliability and testability of dotfiles setup process through TDD approach
-**Total PRs Planned**: 10 PRs
-**Completed**: 5 PRs
-**Current**: Working on PR 6
+**Total PRs Planned**: 10 PRs + 2 Infrastructure PRs
+**Completed**: 8 PRs (including SSH Installation Testing)
+**Current**: Working on Infrastructure Improvements (PR 8.1 & 8.2)
 
 ## Completed PRs
 
@@ -37,6 +37,39 @@
 - **Key Files**: `bin/lib/error-handling.zsh`
 - **Functions**: `capture_error`, `retry_with_backoff`, `handle_error`
 - **Integration**: Sourced in setup.zsh, replaces aggressive ERR trap approach
+
+### ✅ PR 6: Installation Script Test Infrastructure (Merged)
+- **Outcome**: Shared testing patterns and utilities for installation script testing
+- **Key Files**: `test/install/lib/install-test-utils.zsh`, `test/install/lib/install-mocks.zsh`
+- **Functions**: Installation-specific mocking, environment isolation, validation patterns
+- **Integration**: Foundation for testing individual installation scripts
+
+### ✅ PR 7: Homebrew Detection Testing (Merged)
+- **Outcome**: Complete behavior bundle for Homebrew installation with detection utilities
+- **Key Files**: `lib/homebrew-utils.zsh`, `test/install/test-homebrew-detection.zsh`
+- **Functions**: `detect_homebrew()`, `homebrew_bundle_available()`, installation script integration
+- **Pattern**: Complete behavior bundle (utilities + tests + integration + actual usage)
+
+### ✅ PR 8: SSH Installation Testing (Merged)
+- **Outcome**: Complete SSH key detection with testing and installation script integration
+- **Key Files**: `lib/ssh-utils.zsh`, `test/install/test-ssh-detection.zsh`, updated `bin/install/ssh.zsh`
+- **Functions**: `detect_ssh_keys()`, `ssh_key_pair_found()`, centralized path configuration
+- **Improvements**: Post-implementation refactoring, dead code elimination, enhanced CLAUDE.md guidelines
+
+## Infrastructure Improvements (In Progress)
+
+### ✅ PR 8.1: Pull Request Template (Completed)
+- **Goal**: Standardize PR descriptions using established patterns from successful PRs
+- **Implementation**: `.github/PULL_REQUEST_TEMPLATE.md` with structured sections
+- **Features**: Summary, changes, testing checkboxes, off-topic commit handling, quality gates
+- **Benefits**: Consistent PR format, reduced cognitive load, captured process learnings
+
+### 🔄 PR 8.2: GitHub Actions CI (In Progress)
+- **Goal**: Automatic test execution on PRs with GitHub UI status indicators
+- **Implementation**: `.github/workflows/test-dotfiles.yml` using existing test infrastructure
+- **Features**: macOS runner, zsh shell, smart path triggering, existing test/run-tests.zsh integration
+- **Benefits**: Visible test status in PR UI, early issue detection, no manual test verification
+- **Status**: Workflow created, ready for testing
 
 ## Key Technical Decisions & Patterns
 
