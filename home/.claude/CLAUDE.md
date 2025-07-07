@@ -316,8 +316,10 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
    - Refactoring or code improvements
    - Documentation updates (like CLAUDE.md changes)
    - Bug fixes or dead code removal
+   - **ANY commits, even off-topic ones** - all commits must be explained for reviewers
 3. **Use `gh pr edit [number] --body "..."` or web interface** to update
 4. **Don't assume changes are obvious** - explicitly document what was added
+5. **Include off-topic commits transparently** - clearly separate them but don't hide them
 
 Example workflow:
 ```
@@ -339,6 +341,13 @@ EOF
 - When you improve documentation, immediately commit and push  
 - When you fix code issues, immediately commit and push
 - The user expects to see changes in GitHub without having to request it
+
+**Handling off-topic commits in PR descriptions:**
+- **Always include all commits** - even those not related to the PR's main purpose
+- **Use clear section separation** - e.g., "Documentation Updates (Claude Development Process)"
+- **Provide context** - explain why off-topic changes are included (e.g., "discovered during development")
+- **Be transparent** - better to over-explain than leave reviewers wondering
+- **Example structure**: Core functionality sections first, then clearly labeled off-topic sections
 
 **Exception**: Only skip pushing if explicitly told not to push or if you're about to make several rapid commits in succession (then push the batch).
 
