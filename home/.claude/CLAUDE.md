@@ -60,44 +60,63 @@ When following Test-Driven Development:
 
 ### Post-Implementation Code Review and Refactoring
 
-**After all tests pass, always look for improvement opportunities:**
+**After all tests pass, always look for improvement opportunities in the new code:**
 
-#### Code Quality Review Checklist
-1. **Duplication elimination** - Look for repeated code patterns, constants, or logic
+#### Scope Guidelines for Refactoring Within PRs
+
+**✅ Include refactoring that improves the current PR:**
+- **New code improvements** - Focus on code you just wrote for this behavior
+- **Localized duplication** - Eliminate repetition within the new functions/files
+- **Interface clarity** - Improve naming and design of new APIs
+- **PR review clarity** - Changes that make the PR easier to understand
+
+**❌ Defer refactoring that expands PR scope:**
+- **Large-scale redesigns** - Major architectural changes to existing systems
+- **Unrelated code cleanup** - Improvements to old code not touched by this PR
+- **Cross-cutting changes** - Modifications that affect many existing files
+- **Breaking changes** - API changes that require updating many call sites
+
+#### Code Quality Review Checklist (for new code)
+1. **Duplication elimination** - Look for repeated patterns in your new code
    - Multiple functions defining the same variables
-   - Similar validation logic across different functions
+   - Similar validation logic within new functions
    - Repeated string constants or configuration values
-   - Identical error handling patterns
+   - Identical error handling patterns in new code
 
-2. **Design improvements** - Consider better abstractions and organization
-   - Extract common functionality into shared utilities
-   - Consolidate configuration into centralized locations  
-   - Improve function naming and interface design
-   - Consider breaking large functions into smaller, focused ones
+2. **Design improvements** - Consider better abstractions for new functionality
+   - Extract common functionality within new utility libraries
+   - Consolidate configuration within new modules  
+   - Improve function naming and interface design for new APIs
+   - Consider breaking large new functions into smaller, focused ones
 
-3. **Maintainability enhancements** - Make future changes easier
-   - Centralize configuration (paths, constants, defaults)
-   - Reduce coupling between components
-   - Improve error messages and user feedback
-   - Add helpful code comments for complex logic
+3. **Maintainability enhancements** - Make the new code easier to change
+   - Centralize configuration for new functionality (paths, constants, defaults)
+   - Improve error messages and user feedback for new features
+   - Add helpful code comments for complex new logic
 
 #### Make It Work, Then Make It Right
 
 **Two-phase approach within each PR:**
 1. **Phase 1: Make it work** - Follow TDD to implement working functionality
-2. **Phase 2: Make it right** - Review and improve the design
+2. **Phase 2: Make it right** - Review and improve the design of new code
 
-**Refactoring commit examples:**
-- "Refactor SSH utilities to eliminate path duplication"
-- "Extract common validation logic into shared function"
-- "Centralize configuration constants for better maintainability"
-- "Improve error handling consistency across installation scripts"
+**Refactoring commit examples (new code focus):**
+- "Refactor SSH utilities to eliminate path duplication" ✅ (within new SSH module)
+- "Extract common validation logic from new auth functions" ✅ (new functionality)
+- "Centralize new API configuration constants" ✅ (new feature scope)
+- "Improve error handling consistency across installation scripts" ❌ (too broad)
 
-**Benefits of post-implementation refactoring:**
-- **Better design** - Can see the full picture after implementation
-- **Reduced technical debt** - Fix issues while they're fresh in mind
-- **Easier future changes** - Well-structured code is easier to modify
-- **Knowledge sharing** - Good design patterns benefit future developers
+**Benefits of focused post-implementation refactoring:**
+- **Better design** - Can see the full picture after implementing new behavior
+- **Easier PR review** - Well-structured new code is easier to understand
+- **Reduced technical debt** - Fix new code issues while they're fresh in mind
+- **Future-ready** - Well-designed new APIs are easier to extend
+
+**When to create separate refactoring PRs:**
+- Large-scale architectural improvements that touch many existing files
+- Breaking changes that require updating multiple existing call sites  
+- Cross-cutting concerns that affect unrelated parts of the codebase
+- Major redesigns that would make the current PR too complex to review
 
 ### Examples of Good Commit Granularity
 - ✅ "Add input validation with test"
