@@ -183,16 +183,28 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 
 **Examples of complete behavior bundles:**
 - ✅ "Add Homebrew detection with tests and integration into installation script"
-- ✅ "Add user authentication with tests, error handling, and UI integration"  
-- ✅ "Add API validation with tests, error messages, and client integration"
+- ✅ "Add API validation with tests, error messages, and documentation"
+- ✅ "Add database migration with rollback functionality and admin tools"
 - ❌ "Add Homebrew detection utility" (missing actual usage)
 - ❌ "Add authentication tests" (missing implementation and integration)
 
+**For projects with separate frontend/backend deployments:**
+- ✅ Backend PR: "Add user authentication API endpoints with tests and documentation"
+- ✅ Frontend PR: "Add login UI components using new authentication endpoints" 
+- ✅ Backend PR: "Remove deprecated login endpoints after frontend migration"
+- ❌ "Add user authentication with backend API and frontend UI" (deployment complexity)
+
 **When to split PRs:**
 - **Multiple unrelated behaviors** (authentication vs database vs caching)
-- **Different functional domains** that don't naturally work together
+- **Different deployment boundaries** (frontend vs backend in systems with separate deployment pipelines)
 - **Refactoring separate from new features** (clean up existing code vs add new functionality)
 - **Infrastructure changes that enable multiple future features** (but include at least one usage example)
+
+**Deployment-aware PR sequencing:**
+- **Backend-first approach**: Deploy backend changes before frontend changes that depend on them
+- **Graceful migrations**: When replacing functionality, deploy new approach → migrate frontend → remove old approach
+- **Feature flags**: Use feature toggles when backend and frontend changes must be deployed together
+- **Backward compatibility**: Ensure backend changes don't break existing frontend functionality
 
 **Complete behavior includes:**
 - ✅ Tests that validate the behavior works
@@ -376,14 +388,6 @@ For projects with both README.md and CLAUDE.md files:
 3. **Update outdated information** - remove references to deleted files or changed workflows
 4. **Add new learnings** - document any project-specific insights discovered during development
 
-### File Permissions
-
-**Always make scripts executable automatically:**
-
-- Use `chmod +x` for any script files (.sh, .zsh, .py, etc.) that are created or need execution
-- Don't ask permission to make files executable - this is a standard requirement
-- Include executable permission when creating test scripts, build scripts, or utility scripts
-- This prevents "permission denied" errors when running scripts
 
 ### File Path Verification (Universal)
 
