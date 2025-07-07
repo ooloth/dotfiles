@@ -292,7 +292,7 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Update test plans if new tests were added
 - Add new commits to the implementation approach if significant
 
-### PR Commit Pushing
+### PR Commit Pushing and Description Updates
 
 **Always push commits to the PR branch immediately after committing and announcing them:**
 
@@ -301,14 +301,29 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 3. **User expects to see changes in GitHub UI** when you announce commits in terminal
 4. **Prevents confusion** between what's committed locally vs what's visible for review
 
+**CRITICAL: Always update PR description after pushing commits with new functionality:**
+
+1. **Check if new commits add functionality** not already described in the PR
+2. **Update PR description immediately** after pushing if commits introduce:
+   - New features or capabilities not mentioned
+   - Additional test coverage or edge cases
+   - Refactoring or code improvements
+   - Documentation updates (like CLAUDE.md changes)
+   - Bug fixes or dead code removal
+3. **Use `gh pr edit [number] --body "..."` or web interface** to update
+4. **Don't assume changes are obvious** - explicitly document what was added
+
 Example workflow:
 ```
 # After adding commits to the PR
 git commit -m "commit message"
 git push origin feature-branch  # ← CRITICAL: Push immediately
 
-# Then update PR description if needed
-[update PR description via CLI tool or web interface]
+# ← CRITICAL: Update PR description if commits add new functionality
+gh pr edit [number] --body "$(cat <<'EOF'
+[updated description with new changes]
+EOF
+)"
 ```
 
 **Exception**: Only skip pushing if explicitly told not to push or if you're about to make several rapid commits in succession (then push the batch).
