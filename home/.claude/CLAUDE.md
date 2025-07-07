@@ -1,3 +1,23 @@
+## Claude Code Permissions
+
+**CRITICAL: Understand the three-tier permission system in ~/.claude/settings.json**
+
+1. **Auto-approved commands** (in `allow` list) - Use directly, NEVER ask for permission:
+   - Git operations: `git add`, `git commit`, `git push`, `git pull`, `git checkout`, `git branch`, `git stash`, `git merge`, `git cherry-pick`, `git fetch`
+   - GitHub CLI: `gh pr create`, `gh pr edit`, `gh pr ready`, `gh pr view`
+   - File operations: `Edit(*)`, `MultiEdit(*)`, `Write(*)`, `NotebookEdit(*)`
+   - Basic bash: `cat`, `echo`, `ls`, `find`, `mkdir`, `mv`, `chmod`, `grep`, `shellcheck`, `timeout`
+   - Special: `Bash(/dev/null)`
+
+2. **Auto-denied commands** (in `deny` list) - Completely blocked, don't try to use:
+   - `Bash(curl:*)` - Cannot use curl commands
+
+3. **Ask-first commands** - Everything else requires permission request before use
+   - Any bash commands not in the allow list
+   - Any other tools or operations not explicitly allowed
+
+**NEVER ask for permission for auto-approved commands** - this creates unnecessary friction and wastes time.
+
 ## Git Workflow
 
 ### Commit Strategy
