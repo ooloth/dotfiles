@@ -307,6 +307,14 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 5. **Prevents confusion** between what's committed locally vs what's visible for review
 6. **Automatic behavior** - Commit and push should be automatic, not requiring explicit user request
 
+**CRITICAL: PRs are not complete until merged:**
+
+- **Never consider a PR "done" or "completed" until it's actually merged**
+- **Don't move to next tasks** while a PR is still open and being iterated on
+- **Stay focused on current PR** until user explicitly says to move on or confirms merge
+- **PR work includes** creation, iteration, addressing feedback, and final merge
+- **Wait for user direction** before considering PR work finished
+
 **CRITICAL: Always update PR description after pushing commits with new functionality:**
 
 1. **Check if new commits add functionality** not already described in the PR
