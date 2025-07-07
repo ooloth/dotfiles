@@ -147,30 +147,38 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 
 ### PR Size and Focus Guidelines
 
-**Prefer small, focused PRs over large ones:**
+**Each PR should be a complete bundle of one new behavior:**
 
-1. **One responsibility per PR** - Each PR should do exactly one thing
-2. **Easy to review** - Reviewer can understand the entire change quickly
-3. **Easy to rollback** - Can revert without affecting unrelated functionality
-4. **Split by logical boundaries**:
-   - Infrastructure/framework changes separate from usage
-   - Different functional areas separate (database vs authentication vs UI)
-   - Setup/configuration separate from implementation
+1. **Complete functionality** - Include tests, implementation, and actual usage together
+2. **Avoid dead code** - Don't add functions/utilities without demonstrating their use
+3. **Include documentation updates** - Update code comments, READMEs, CLAUDE.md as needed
+4. **One responsibility per PR** - Each PR should do exactly one thing, but do it completely
 
-**Examples of good splits:**
-- ✅ PR 1: "Add test infrastructure for backend services"
-- ✅ PR 2: "Test user authentication with mocks"  
-- ✅ PR 3: "Test API endpoint validation"
-- ✅ PR A: "Refactor service layer for better testability" → PR B: "Add comprehensive service testing"
-- ❌ "Test all backend services" (too broad)
-- ❌ "Refactor code structure and add new features" (mixed concerns)
+**Size guidelines:**
+- **Target < 100 lines** when possible for easy review
+- **Accept larger PRs (200-400+ lines)** when needed for completeness
+- **Better to have one complete 300-line PR** than three 100-line PRs with dead code
+- **Size is secondary to completeness and logical boundaries**
 
-**When to split large planned PRs:**
-- If testing multiple unrelated services/components
-- If adding infrastructure AND using it extensively
-- If changes span multiple functional domains
-- If the PR would be hard to review in one sitting
-- If structure changes would make behavior changes cleaner (separate refactoring from features)
+**Examples of complete behavior bundles:**
+- ✅ "Add Homebrew detection with tests and integration into installation script"
+- ✅ "Add user authentication with tests, error handling, and UI integration"  
+- ✅ "Add API validation with tests, error messages, and client integration"
+- ❌ "Add Homebrew detection utility" (missing actual usage)
+- ❌ "Add authentication tests" (missing implementation and integration)
+
+**When to split PRs:**
+- **Multiple unrelated behaviors** (authentication vs database vs caching)
+- **Different functional domains** that don't naturally work together
+- **Refactoring separate from new features** (clean up existing code vs add new functionality)
+- **Infrastructure changes that enable multiple future features** (but include at least one usage example)
+
+**Complete behavior includes:**
+- ✅ Tests that validate the behavior works
+- ✅ Implementation that passes the tests
+- ✅ Integration/usage that demonstrates real-world value
+- ✅ Documentation updates for user-facing changes
+- ✅ Code comments for complex logic
 
 ### PR Description Maintenance
 

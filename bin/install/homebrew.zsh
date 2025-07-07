@@ -4,9 +4,10 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
+source "$DOTFILES/lib/homebrew-utils.zsh"
 
-if have brew; then
-  printf "\n🍺 Homebrew is already installed\n"
+# Check if Homebrew is already installed
+if detect_homebrew; then
   return_or_exit 0
 fi
 
