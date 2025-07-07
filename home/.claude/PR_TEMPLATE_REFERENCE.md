@@ -16,4 +16,4 @@
 
 ## 🔗 Related links
 
-<!-- URLs only: https://example.com - Description of what this link provides -->
+<!-- URLs to docs, tasks, PRs, issues, Slack threads - any context a reviewer would find helpful -->
