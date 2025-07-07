@@ -4,14 +4,14 @@
 
 **Task**: Migrate dotfiles installation scripts from custom zsh test framework to industry-standard bash + shellcheck + bats
 **Approach**: Complete 3-phase migration for better tooling, maintainability, and reliability
-**Current**: Phase 1 - PR #13 (GitHub Installation Testing) in draft review
+**Current**: Phase 1 complete (PR #13 merged), now addressing critical setup.zsh bug (PR #14)
 
 ## Migration Strategy
 
-### Phase 1: Demonstrate Complete Migration Pattern (In Progress)
+### Phase 1: Demonstrate Complete Migration Pattern (COMPLETED)
 **Goal**: Create one complete bash + bats example to establish the migration pattern
 
-#### 🔄 PR #13: GitHub Installation Testing (Draft)
+#### ✅ PR #13: GitHub Installation Testing (MERGED)
 - **Files Created**:
   - `lib/github-utils.bash` - GitHub SSH utilities (shellcheck clean)
   - `bin/install/github.bash` - Bash replacement for github.zsh
@@ -20,7 +20,7 @@
   - `experiment/bash-testing/` - Comparison docs and examples
 - **Test Results**: All 20 tests passing, shellcheck compliance verified
 - **Benefits Demonstrated**: Better error catching, industry-standard tooling, cleaner syntax
-- **Status**: Ready for review, includes CLAUDE.md improvements for PR workflow
+- **Status**: MERGED - established complete migration pattern with 20 passing tests
 
 ### Phase 2: Systematic Script Migration (Pending)
 **Goal**: Migrate remaining installation scripts one-by-one using established pattern
@@ -103,11 +103,12 @@ test/install/test-{component}-installation.bats  # Integration tests
 
 ## Discovered Issues
 
-### Critical Setup.zsh Bug
+### Critical Setup.zsh Bug (FIXED)
 **Issue**: `setup.zsh` references `$DOTFILES` files via `source` commands before the dotfiles repository is cloned
 **Impact**: Setup process fails on fresh installations
-**Priority**: High - affects core functionality
-**Next Steps**: Fix in separate PR after current bash migration PR is reviewed
+**Priority**: High - affects core functionality  
+**Status**: PR #14 created with fix - moved all sourcing after git clone (line 128+)
+**Solution**: Basic git check before clone, comprehensive utilities after clone
 
 ### Dead Code Prevention
 **Pattern**: Every function/utility must have demonstrated usage in the same PR

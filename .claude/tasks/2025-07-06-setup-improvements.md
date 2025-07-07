@@ -3,10 +3,10 @@
 ## Current Status (July 7, 2025)
 
 **Task**: Improve reliability and testability of dotfiles setup process through TDD approach
-**Total PRs Planned**: 10 PRs + 2 Infrastructure PRs
+**Total PRs Planned**: 10 PRs + 2 Infrastructure PRs + 1 Critical Fix
 **Completed**: 8 PRs (including SSH Installation Testing + Infrastructure PRs)
-**Current**: Bash migration experiment (see bash-migration task file)
-**Critical Issue Discovered**: setup.zsh references $DOTFILES files before repo is cloned - needs urgent fix
+**Current**: Critical setup.zsh bug fix (PR #14 in draft) + bash migration experiment
+**Critical Issue**: PR #14 fixes setup.zsh dependency ordering - sourcing files before repo clone
 
 ## Completed PRs
 
@@ -72,6 +72,15 @@
 - **Features**: macOS runner, zsh shell, smart path triggering, existing test/run-tests.zsh integration
 - **Benefits**: Visible test status in PR UI, early issue detection, no manual test verification
 - **Status**: Workflow created, tested, and merged successfully
+
+## Critical Bug Fix
+
+### 🔄 PR #14: Fix Setup.zsh Dependency Ordering (Draft)
+- **Issue**: setup.zsh sourced `$DOTFILES` files before repository was cloned
+- **Impact**: Setup failed immediately on fresh installations - core functionality broken
+- **Solution**: Moved all `source "$DOTFILES/..."` commands after git clone (line 128+)
+- **Changes**: Basic git check before clone, enhanced initialization after clone
+- **Status**: Draft PR created, fixes fundamental setup process ordering
 
 ## Key Technical Decisions & Patterns
 

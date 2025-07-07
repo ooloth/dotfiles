@@ -2,17 +2,7 @@
 
 export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-# Initialize dynamic machine detection
-source "$DOTFILES/bin/lib/machine-detection.zsh"
-init_machine_detection
-
-# Initialize dry-run mode utilities
-source "$DOTFILES/bin/lib/dry-run-utils.zsh"
-parse_dry_run_flags "$@"
-
-# Initialize error handling utilities
-source "$DOTFILES/bin/lib/error-handling.zsh"
-
+# Basic error handling - will be enhanced after dotfiles are available
 handle_error() {
   local exit_code="$1"
   local line_number="$2"
@@ -73,11 +63,20 @@ fi
 
 printf "This is a Mac. But you knew that already.\n\n"
 
-# Run comprehensive prerequisite validation
-printf "Running comprehensive prerequisite validation...\n\n"
+# Basic prerequisite validation (comprehensive validation after clone)
+printf "Running basic prerequisite validation...\n\n"
 
-source "$DOTFILES/bin/lib/prerequisite-validation.zsh"
-if ! run_prerequisite_validation; then
+# Command Line Tools check (critical for git clone)
+if ! command -v git >/dev/null 2>&1; then
+  printf "❌ Git is not installed. Please install Command Line Developer Tools first.\n"
+  printf "Run: xcode-select --install\n"
+  exit 1
+fi
+
+printf "✅ Git is available for cloning dotfiles.\n\n"
+
+# Skip comprehensive validation for now - will run after clone
+if false; then
   printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
   exit 1
 fi
@@ -129,7 +128,32 @@ else
   git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 fi
 
-# # Add all the helpers the install scripts below will reference
+# Initialize dotfiles utilities now that repository is available
+printf "🔧 Initializing dotfiles utilities...\n\n"
+
+# Initialize dynamic machine detection
+source "$DOTFILES/bin/lib/machine-detection.zsh"
+init_machine_detection
+
+# Initialize dry-run mode utilities
+source "$DOTFILES/bin/lib/dry-run-utils.zsh"
+parse_dry_run_flags "$@"
+
+# Initialize enhanced error handling utilities
+source "$DOTFILES/bin/lib/error-handling.zsh"
+
+# Run comprehensive prerequisite validation now that utilities are available
+printf "Running comprehensive prerequisite validation...\n\n"
+
+source "$DOTFILES/bin/lib/prerequisite-validation.zsh"
+if ! run_prerequisite_validation; then
+  printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
+  exit 1
+fi
+
+printf "✅ All prerequisites validated successfully.\n\n"
+
+# Add all the helpers the install scripts below will reference
 # source "$DOTFILES/config/zsh/aliases.zsh"
 # source "$DOTFILES/config/zsh/utils.zsh"
 

@@ -271,7 +271,19 @@ EOF
 - 🤔 Why: Problem solved, business value, timing rationale  
 - 👀 Usage: How to use new functionality (optional for user-facing changes)
 - 👩‍🔬 How to validate: Manual steps for reviewers to confirm changes work
-- 🔗 Related links: Context that helps reviewers (docs, issues, PRs, Slack threads)
+- 🔗 Related links: External context that helps reviewers understand background
+
+**Related links guidelines:**
+- **ONLY include links that provide valuable context NOT already in the PR**
+- **External references**: Documentation, Stack Overflow, RFCs, design docs, external issues
+- **Background PRs**: Previous/related PRs that provide important context
+- **DO NOT include**:
+  - Files in the current PR (reviewers can already see them)
+  - Generic/empty pages (issues page with no relevant issues)
+  - Links that duplicate information already in PR description
+  - Internal project files unless they provide critical background context
+- **If no useful links exist, omit the entire Related links section** - no section is better than empty section
+- **Quality over quantity** - 1-2 highly relevant links better than 5 marginally useful ones
 
 **When to apply:**
 - Creating PRs in repos without templates
