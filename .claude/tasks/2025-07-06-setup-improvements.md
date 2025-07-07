@@ -61,14 +61,16 @@
 ### 🔄 PR 8.1: Pull Request Template (In Progress)
 - **Goal**: Standardize PR descriptions using established patterns from successful PRs
 - **Implementation**: `.github/PULL_REQUEST_TEMPLATE.md` with structured sections
-- **Features**: Summary, changes, testing checkboxes, off-topic commit handling, quality gates
-- **Benefits**: Consistent PR format, reduced cognitive load, captured process learnings
+- **Features**: Clean What/Why/Usage/Validation/Links structure with clear guidance comments
+- **Benefits**: Consistent PR format, reduced cognitive load, cross-project template reference
+- **Status**: Enhanced with emoji headings, refined comments, and CLAUDE.md guidelines
 
-### ⏭️ PR 8.2: GitHub Actions CI (Planned)
+### ✅ PR 8.2: GitHub Actions CI (Completed)
 - **Goal**: Automatic test execution on PRs with GitHub UI status indicators
 - **Implementation**: `.github/workflows/test-dotfiles.yml` using existing test infrastructure
 - **Features**: macOS runner, zsh shell, smart path triggering, existing test/run-tests.zsh integration
 - **Benefits**: Visible test status in PR UI, early issue detection, no manual test verification
+- **Status**: Workflow created, tested, and merged successfully
 
 ## Key Technical Decisions & Patterns
 
