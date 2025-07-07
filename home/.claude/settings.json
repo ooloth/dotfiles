@@ -27,6 +27,7 @@
       "Bash(ls:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
+      "Bash(shellcheck:*)",
       "Bash(timeout:*)",
       "Edit(*)",
       "MultiEdit(*)",

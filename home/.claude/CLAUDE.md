@@ -238,6 +238,24 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
+### PR Creation Requirements
+
+**CRITICAL: Always create PRs in draft mode for review workflows:**
+
+1. **Default to draft mode** - Use `gh pr create --draft` when creating PRs
+2. **Draft allows iteration** - User can review and request changes before marking ready
+3. **Prevents premature merge** - Ensures proper review process is followed
+4. **Only use non-draft PRs** when explicitly instructed or for trivial changes
+5. **Mark ready when told** - User will explicitly say when to convert from draft to ready
+
+**Example PR creation:**
+```bash
+gh pr create --draft --title "Feature Title" --body "$(cat <<'EOF'
+[PR description using template]
+EOF
+)"
+```
+
 ### PR Template Usage
 
 **Always use the high-quality PR template when repositories lack good templates:**
@@ -337,6 +355,8 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - **Stay focused on current PR** until user explicitly says to move on or confirms merge
 - **PR work includes** creation, iteration, addressing feedback, and final merge
 - **Wait for user direction** before considering PR work finished
+- **Never mark PR tasks as completed in todo lists** until the PR is actually merged
+- **Don't update project roadmaps or task trackers** to show PR completion until merge is confirmed
 
 **CRITICAL: Always update PR description after pushing commits with new functionality:**
 
@@ -384,17 +404,32 @@ EOF
 
 ### Multi-PR Task Management
 
+**CRITICAL: Always maintain task roadmap files throughout development**
+
 For tasks involving multiple PRs, create and maintain a roadmap file:
 
 1. **Create task roadmap file** in `.claude/tasks/YYYY-MM-DD-task-name.md`
 2. **Update throughout development** with progress, learnings, and context
-3. **Include essential information** for future Claudes taking over:
+3. **Update after EVERY significant change**:
+   - After creating/merging PRs
+   - After discovering new issues or requirements
+   - After making important technical decisions
+   - After user feedback or direction changes
+   - **Never let task files become stale** - they are critical handoff documentation
+4. **Include essential information** for future Claudes taking over:
    - Completed PRs with key outcomes
    - Current PR status and next steps
    - Important decisions made and why
    - Technical patterns established
    - Any gotchas or lessons learned
-4. **When moving files**: If git doesn't detect as a move (due to content changes), explicitly stage both the new file creation AND the old file deletion in the same commit
+   - Critical issues discovered during development
+5. **When moving files**: If git doesn't detect as a move (due to content changes), explicitly stage both the new file creation AND the old file deletion in the same commit
+
+**Task file maintenance is NOT optional** - these files are essential for:
+- Continuity when conversations end mid-task
+- Context for future development sessions
+- Preventing repeated mistakes and decisions
+- Maintaining project momentum across multiple sessions
 
 Example task file structure:
 ```markdown
