@@ -36,7 +36,7 @@ jobs:
     # Set default shell to zsh to match our target environment
     defaults:
       run:
-        shell: zsh
+        shell: zsh {0}
     
     steps:
       - name: Checkout repository
