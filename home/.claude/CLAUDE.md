@@ -77,19 +77,26 @@ When following Test-Driven Development:
 - **Breaking changes** - API changes that require updating many call sites
 
 #### Code Quality Review Checklist (for new code)
-1. **Duplication elimination** - Look for repeated patterns in your new code
+1. **Dead code elimination** - Remove any unused code you added
+   - Functions or utilities that aren't called anywhere
+   - Parameters that aren't used by any callers
+   - Configuration options that aren't referenced
+   - Helper functions added "just in case" but never used
+   - **Rule**: Every function/utility must have demonstrated usage in the PR
+
+2. **Duplication elimination** - Look for repeated patterns in your new code
    - Multiple functions defining the same variables
    - Similar validation logic within new functions
    - Repeated string constants or configuration values
    - Identical error handling patterns in new code
 
-2. **Design improvements** - Consider better abstractions for new functionality
+3. **Design improvements** - Consider better abstractions for new functionality
    - Extract common functionality within new utility libraries
    - Consolidate configuration within new modules  
    - Improve function naming and interface design for new APIs
    - Consider breaking large new functions into smaller, focused ones
 
-3. **Maintainability enhancements** - Make the new code easier to change
+4. **Maintainability enhancements** - Make the new code easier to change
    - Centralize configuration for new functionality (paths, constants, defaults)
    - Improve error messages and user feedback for new features
    - Add helpful code comments for complex new logic
@@ -102,6 +109,7 @@ When following Test-Driven Development:
 
 **Refactoring commit examples (new code focus):**
 - "Refactor SSH utilities to eliminate path duplication" ✅ (within new SSH module)
+- "Remove unused get_ssh_public_key function" ✅ (eliminate dead code)
 - "Extract common validation logic from new auth functions" ✅ (new functionality)
 - "Centralize new API configuration constants" ✅ (new feature scope)
 - "Improve error handling consistency across installation scripts" ❌ (too broad)
@@ -272,6 +280,7 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - ✅ Integration/usage that demonstrates real-world value
 - ✅ Documentation updates for user-facing changes
 - ✅ Code comments for complex logic
+- ✅ **Only code that is actually used** - no speculative "might be useful" functions
 
 ### PR Description Maintenance
 
