@@ -4,8 +4,9 @@
 
 **Task**: Improve reliability and testability of dotfiles setup process through TDD approach
 **Total PRs Planned**: 10 PRs + 2 Infrastructure PRs
-**Completed**: 8 PRs (including SSH Installation Testing)
-**Current**: Working on Infrastructure Improvements (PR 8.1 & 8.2)
+**Completed**: 8 PRs (including SSH Installation Testing + Infrastructure PRs)
+**Current**: Bash migration experiment (see bash-migration task file)
+**Critical Issue Discovered**: setup.zsh references $DOTFILES files before repo is cloned - needs urgent fix
 
 ## Completed PRs
 
@@ -56,16 +57,16 @@
 - **Functions**: `detect_ssh_keys()`, `ssh_key_pair_found()`, centralized path configuration
 - **Improvements**: Post-implementation refactoring, dead code elimination, enhanced CLAUDE.md guidelines
 
-## Infrastructure Improvements (In Progress)
+## Infrastructure Improvements (Completed)
 
-### 🔄 PR 8.1: Pull Request Template (In Progress)
+### ✅ PR 8.1: Pull Request Template (Merged)
 - **Goal**: Standardize PR descriptions using established patterns from successful PRs
 - **Implementation**: `.github/PULL_REQUEST_TEMPLATE.md` with structured sections
 - **Features**: Clean What/Why/Usage/Validation/Links structure with clear guidance comments
 - **Benefits**: Consistent PR format, reduced cognitive load, cross-project template reference
-- **Status**: Enhanced with emoji headings, refined comments, and CLAUDE.md guidelines
+- **Status**: Enhanced with emoji headings, refined comments, and CLAUDE.md guidelines - merged
 
-### ✅ PR 8.2: GitHub Actions CI (Completed)
+### ✅ PR 8.2: GitHub Actions CI (Merged)
 - **Goal**: Automatic test execution on PRs with GitHub UI status indicators
 - **Implementation**: `.github/workflows/test-dotfiles.yml` using existing test infrastructure
 - **Features**: macOS runner, zsh shell, smart path triggering, existing test/run-tests.zsh integration

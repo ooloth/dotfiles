@@ -404,17 +404,32 @@ EOF
 
 ### Multi-PR Task Management
 
+**CRITICAL: Always maintain task roadmap files throughout development**
+
 For tasks involving multiple PRs, create and maintain a roadmap file:
 
 1. **Create task roadmap file** in `.claude/tasks/YYYY-MM-DD-task-name.md`
 2. **Update throughout development** with progress, learnings, and context
-3. **Include essential information** for future Claudes taking over:
+3. **Update after EVERY significant change**:
+   - After creating/merging PRs
+   - After discovering new issues or requirements
+   - After making important technical decisions
+   - After user feedback or direction changes
+   - **Never let task files become stale** - they are critical handoff documentation
+4. **Include essential information** for future Claudes taking over:
    - Completed PRs with key outcomes
    - Current PR status and next steps
    - Important decisions made and why
    - Technical patterns established
    - Any gotchas or lessons learned
-4. **When moving files**: If git doesn't detect as a move (due to content changes), explicitly stage both the new file creation AND the old file deletion in the same commit
+   - Critical issues discovered during development
+5. **When moving files**: If git doesn't detect as a move (due to content changes), explicitly stage both the new file creation AND the old file deletion in the same commit
+
+**Task file maintenance is NOT optional** - these files are essential for:
+- Continuity when conversations end mid-task
+- Context for future development sessions
+- Preventing repeated mistakes and decisions
+- Maintaining project momentum across multiple sessions
 
 Example task file structure:
 ```markdown
