@@ -18,6 +18,7 @@
   - Fixing one specific issue or bug
 - **Never bundle unrelated changes** in a single commit
 - **One behavior per commit** - each commit should implement exactly one piece of functionality
+- **Separate commits even for the same file type** - configuration changes, documentation updates, and code changes should be separate commits even if they modify similar file types
 - Prefer 10-20 micro-commits over 3-5 larger commits for a feature
 - Each commit should leave the codebase in a working state
 
@@ -46,9 +47,9 @@ When following Test-Driven Development:
 - **Include necessary documentation updates** in the same commit (without overdocumenting)
 - **Multiple tests per function are fine** - each function may need several test cases for edge cases
 - **TDD cycle per commit**:
-  1. Write one failing test case
-  2. Implement minimal code to make it pass
-  3. Refactor if needed
+  1. **Red**: Write one failing test case
+  2. **Green**: Implement minimal code to make it pass
+  3. **Refactor**: Improve code design while keeping tests green
   4. Commit all changes together
 - **Commit structure**:
   - Commit: "Add command line tools validation with test"
@@ -58,6 +59,74 @@ When following Test-Driven Development:
 - Each commit adds exactly one test case (not all tests first, then all implementation)
 - The test case should determine what implementation changes belong in the commit
 
+### Post-Implementation Code Review and Refactoring
+
+**After all tests pass, always look for improvement opportunities in the new code:**
+
+#### Scope Guidelines for Refactoring Within PRs
+
+**✅ Include refactoring that improves the current PR:**
+- **New code improvements** - Focus on code you just wrote for this behavior
+- **Localized duplication** - Eliminate repetition within the new functions/files
+- **Interface clarity** - Improve naming and design of new APIs
+- **PR review clarity** - Changes that make the PR easier to understand
+
+**❌ Defer refactoring that expands PR scope:**
+- **Large-scale redesigns** - Major architectural changes to existing systems
+- **Unrelated code cleanup** - Improvements to old code not touched by this PR
+- **Cross-cutting changes** - Modifications that affect many existing files
+- **Breaking changes** - API changes that require updating many call sites
+
+#### Code Quality Review Checklist (for new code)
+1. **Dead code elimination** - Remove any unused code you added
+   - Functions or utilities that aren't called anywhere
+   - Parameters that aren't used by any callers
+   - Configuration options that aren't referenced
+   - Helper functions added "just in case" but never used
+   - **Rule**: Every function/utility must have demonstrated usage in the PR
+
+2. **Duplication elimination** - Look for repeated patterns in your new code
+   - Multiple functions defining the same variables
+   - Similar validation logic within new functions
+   - Repeated string constants or configuration values
+   - Identical error handling patterns in new code
+
+3. **Design improvements** - Consider better abstractions for new functionality
+   - Extract common functionality within new utility libraries
+   - Consolidate configuration within new modules  
+   - Improve function naming and interface design for new APIs
+   - Consider breaking large new functions into smaller, focused ones
+
+4. **Maintainability enhancements** - Make the new code easier to change
+   - Centralize configuration for new functionality (paths, constants, defaults)
+   - Improve error messages and user feedback for new features
+   - Add helpful code comments for complex new logic
+
+#### Make It Work, Then Make It Right
+
+**Two-phase approach within each PR:**
+1. **Phase 1: Make it work** - Follow TDD to implement working functionality
+2. **Phase 2: Make it right** - Review and improve the design of new code
+
+**Refactoring commit examples (new code focus):**
+- "Refactor SSH utilities to eliminate path duplication" ✅ (within new SSH module)
+- "Remove unused get_ssh_public_key function" ✅ (eliminate dead code)
+- "Extract common validation logic from new auth functions" ✅ (new functionality)
+- "Centralize new API configuration constants" ✅ (new feature scope)
+- "Improve error handling consistency across installation scripts" ❌ (too broad)
+
+**Benefits of focused post-implementation refactoring:**
+- **Better design** - Can see the full picture after implementing new behavior
+- **Easier PR review** - Well-structured new code is easier to understand
+- **Reduced technical debt** - Fix new code issues while they're fresh in mind
+- **Future-ready** - Well-designed new APIs are easier to extend
+
+**When to create separate refactoring PRs:**
+- Large-scale architectural improvements that touch many existing files
+- Breaking changes that require updating multiple existing call sites  
+- Cross-cutting concerns that affect unrelated parts of the codebase
+- Major redesigns that would make the current PR too complex to review
+
 ### Examples of Good Commit Granularity
 - ✅ "Add input validation with test"
 - ✅ "Add database connectivity validation with test"
@@ -66,9 +135,12 @@ When following Test-Driven Development:
 - ✅ "Add test for unsupported API version error message"
 - ✅ "Add dry-run mode flag parsing with test"
 - ✅ "Add integration test for service prerequisite validation"
+- ✅ "Update CLAUDE.md with refactoring guidelines"
+- ✅ "Update Claude permissions for development commands"
 - ❌ "Add all prerequisite validation tests and implementation" (too broad - multiple test cases)
 - ❌ "Implement multiple validation functions" (unrelated changes)
 - ❌ "Add tests and fix bugs" (unrelated changes)
+- ❌ "Update CLAUDE.md and settings.json" (unrelated changes - different purposes)
 
 ### Testing Philosophy
 
@@ -212,6 +284,7 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - ✅ Integration/usage that demonstrates real-world value
 - ✅ Documentation updates for user-facing changes
 - ✅ Code comments for complex logic
+- ✅ **Only code that is actually used** - no speculative "might be useful" functions
 
 ### PR Description Maintenance
 
@@ -223,24 +296,58 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Update test plans if new tests were added
 - Add new commits to the implementation approach if significant
 
-### PR Commit Pushing
+### PR Commit Pushing and Description Updates
 
-**Always push commits to the PR branch immediately after committing and announcing them:**
+**Always commit and push changes immediately after making them:**
 
-1. **After making commits to a PR branch** - Push immediately so changes are visible in GitHub
-2. **Don't batch multiple commits** before pushing - push after each commit or small group
-3. **User expects to see changes in GitHub UI** when you announce commits in terminal
-4. **Prevents confusion** between what's committed locally vs what's visible for review
+1. **After making any file changes** - Commit immediately, don't accumulate changes
+2. **After making commits to a PR branch** - Push immediately so changes are visible in GitHub
+3. **Don't batch multiple commits** before pushing - push after each commit or small group
+4. **User expects to see changes in GitHub UI** when you announce commits in terminal
+5. **Prevents confusion** between what's committed locally vs what's visible for review
+6. **Automatic behavior** - Commit and push should be automatic, not requiring explicit user request
+
+**CRITICAL: Always update PR description after pushing commits with new functionality:**
+
+1. **Check if new commits add functionality** not already described in the PR
+2. **Update PR description immediately** after pushing if commits introduce:
+   - New features or capabilities not mentioned
+   - Additional test coverage or edge cases
+   - Refactoring or code improvements
+   - Documentation updates (like CLAUDE.md changes)
+   - Bug fixes or dead code removal
+   - **ANY commits, even off-topic ones** - all commits must be explained for reviewers
+3. **Use `gh pr edit [number] --body "..."` or web interface** to update
+4. **Don't assume changes are obvious** - explicitly document what was added
+5. **Include off-topic commits transparently** - clearly separate them but don't hide them
 
 Example workflow:
 ```
-# After adding commits to the PR
-git commit -m "commit message"
-git push origin feature-branch  # ← CRITICAL: Push immediately
+# When making any file changes during development
+[make file changes]
+git add [files]
+git commit -m "descriptive commit message"
+git push origin feature-branch  # ← CRITICAL: Always push immediately
 
-# Then update PR description if needed
-[update PR description via CLI tool or web interface]
+# ← CRITICAL: Update PR description if commits add new functionality
+gh pr edit [number] --body "$(cat <<'EOF'
+[updated description with new changes]
+EOF
+)"
 ```
+
+**This workflow should be automatic - don't wait for user to ask "commit and push":**
+- When you make file changes, immediately commit and push
+- When you improve documentation, immediately commit and push  
+- When you fix code issues, immediately commit and push
+- The user expects to see changes in GitHub without having to request it
+
+**Handling off-topic commits in PR descriptions:**
+- **Always include all commits** - even those not related to the PR's main purpose
+- **Use clear section separation** - e.g., "Documentation Updates (Claude Development Process)"
+- **Provide context** - explain why off-topic changes are included (e.g., "discovered during development")
+- **Be transparent** - better to over-explain than leave reviewers wondering
+- **Example structure**: Core functionality sections first, then clearly labeled off-topic sections
 
 **Exception**: Only skip pushing if explicitly told not to push or if you're about to make several rapid commits in succession (then push the batch).
 
