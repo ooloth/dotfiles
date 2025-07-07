@@ -110,8 +110,29 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 3. **Type checking** - Run type checkers
 4. **Tests** - Run relevant tests last
 5. **Test coverage verification** - Confirm all expected test files are running (see below)
-6. **Final review** - Check `git diff --staged` to review what will be committed
-7. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+6. **All tests must pass** - **CRITICAL**: Fix any failing tests immediately, do not commit/push with failing tests
+7. **Final review** - Check `git diff --staged` to review what will be committed
+8. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+
+### Test Requirements
+
+**All tests must pass before any commit or push:**
+
+1. **Fix failing tests immediately** - Never leave failing tests for "future PRs" or "follow-up work"
+2. **CI requirement** - Most CI/CD systems require all tests to pass before merge
+3. **Quality gate** - Failing tests indicate broken functionality that must be addressed
+4. **No exceptions** - Even if failure seems minor or unrelated, investigate and fix
+
+**When tests fail:**
+- **Investigate the root cause** - Don't just change the test, understand why it's failing
+- **Fix the implementation or test** - Address the actual issue, whether in code or test logic
+- **Verify the fix** - Run the full test suite to ensure no regressions
+- **Document complex fixes** - If the fix was non-obvious, add comments explaining the solution
+
+**Test debugging approach:**
+- Create minimal reproduction scripts when tests fail in complex environments
+- Use mocking frameworks properly to isolate the code being tested
+- Verify test environment setup doesn't interfere with the functionality being tested
 
 ### When Pre-commit Checks Fail
 
@@ -354,6 +375,15 @@ For projects with both README.md and CLAUDE.md files:
 2. **Look for important omissions** - what would have helped you that isn't documented?
 3. **Update outdated information** - remove references to deleted files or changed workflows
 4. **Add new learnings** - document any project-specific insights discovered during development
+
+### File Permissions
+
+**Always make scripts executable automatically:**
+
+- Use `chmod +x` for any script files (.sh, .zsh, .py, etc.) that are created or need execution
+- Don't ask permission to make files executable - this is a standard requirement
+- Include executable permission when creating test scripts, build scripts, or utility scripts
+- This prevents "permission denied" errors when running scripts
 
 ### File Path Verification (Universal)
 

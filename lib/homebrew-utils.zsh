@@ -7,7 +7,8 @@
 # Prints informative messages and returns appropriate exit codes
 # Returns: 0 if installed, 1 if not installed
 detect_homebrew() {
-    if command -v brew >/dev/null 2>&1; then
+    # Check if brew command exists and actually works
+    if command -v brew >/dev/null 2>&1 && brew --version >/dev/null 2>&1; then
         printf "🍺 Homebrew is already installed\n"
         return 0
     else

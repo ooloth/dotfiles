@@ -82,11 +82,10 @@ EOF
     
     # Reset mocking to simulate missing Homebrew
     cleanup_install_mocking
-    init_install_mocking
+    init_mocking  # Use base mocking without Homebrew setup
     
-    # Mock missing Homebrew
-    mock_command "command -v brew" 1 ""
-    mock_command "brew" 127 "command not found: brew"
+    # Mock missing Homebrew (don't call init_install_mocking since that sets up successful Homebrew)
+    mock_homebrew_missing
     
     # Test detection with missing Homebrew
     output=$(bash "$test_script" 2>&1)
