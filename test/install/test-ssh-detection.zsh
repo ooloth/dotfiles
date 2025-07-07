@@ -126,9 +126,79 @@ EOF
     test_suite_end
 }
 
+# Test actual installation script integration
+test_ssh_installation_script_integration() {
+    test_suite "SSH Installation Script"
+    
+    # Store the real DOTFILES path BEFORE any test setup
+    local real_dotfiles="$DOTFILES"
+    
+    setup_install_test_environment
+    init_install_mocking
+    
+    test_case "Should skip SSH key generation when keys already exist"
+    
+    # Mock successful SSH key detection
+    mock_ssh_key_success
+    
+    # Create test script that simulates the installation script behavior
+    local test_script="$TEST_TEMP_DIR/install_ssh_test.zsh"
+    cat > "$test_script" << EOF
+#!/usr/bin/env zsh
+export DOTFILES="$real_dotfiles"
+
+# Mock return_or_exit function to track calls
+return_or_exit() {
+    echo "return_or_exit called with code: \$1"
+    exit \$1
+}
+
+# Source required utilities
+source "\$DOTFILES/lib/ssh-utils.zsh"
+
+# Simulate the installation script logic
+if detect_ssh_keys; then
+    return_or_exit 0
+fi
+
+echo "Would proceed with SSH key generation"
+exit 0
+EOF
+    chmod +x "$test_script"
+    
+    # Create mock SSH keys in test environment
+    mkdir -p "$INSTALL_TEST_HOME/.ssh"
+    echo "mock-private-key" > "$INSTALL_TEST_HOME/.ssh/id_rsa"
+    echo "mock-public-key" > "$INSTALL_TEST_HOME/.ssh/id_rsa.pub"
+    
+    # Run with explicit DOTFILES environment variable
+    local output
+    local exit_code
+    export HOME="$INSTALL_TEST_HOME"
+    export DOTFILES="$real_dotfiles"
+    
+    output=$(bash "$test_script" 2>&1)
+    exit_code=$?
+    
+    # Store output for testing
+    echo "$output" > "$TEST_TEMP_DIR/install_output.log"
+    echo "$exit_code" > "$TEST_TEMP_DIR/install_exit_code.log"
+    
+    # Verify script exits early when SSH keys are present
+    assert_installation_successful "install_ssh_test.zsh" "$exit_code"
+    assert_install_output_contains "✅ SSH key pair found."
+    assert_install_output_contains "return_or_exit called with code: 0"
+    
+    cleanup_install_mocking
+    cleanup_install_test_environment
+    
+    test_suite_end
+}
+
 # Run all tests
 main() {
     test_ssh_key_detection
+    test_ssh_installation_script_integration
 }
 
 # Execute tests
