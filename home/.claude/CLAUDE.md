@@ -238,6 +238,24 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
+### PR Creation Requirements
+
+**CRITICAL: Always create PRs in draft mode for review workflows:**
+
+1. **Default to draft mode** - Use `gh pr create --draft` when creating PRs
+2. **Draft allows iteration** - User can review and request changes before marking ready
+3. **Prevents premature merge** - Ensures proper review process is followed
+4. **Only use non-draft PRs** when explicitly instructed or for trivial changes
+5. **Mark ready when told** - User will explicitly say when to convert from draft to ready
+
+**Example PR creation:**
+```bash
+gh pr create --draft --title "Feature Title" --body "$(cat <<'EOF'
+[PR description using template]
+EOF
+)"
+```
+
 ### PR Template Usage
 
 **Always use the high-quality PR template when repositories lack good templates:**
@@ -337,6 +355,8 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - **Stay focused on current PR** until user explicitly says to move on or confirms merge
 - **PR work includes** creation, iteration, addressing feedback, and final merge
 - **Wait for user direction** before considering PR work finished
+- **Never mark PR tasks as completed in todo lists** until the PR is actually merged
+- **Don't update project roadmaps or task trackers** to show PR completion until merge is confirmed
 
 **CRITICAL: Always update PR description after pushing commits with new functionality:**
 
