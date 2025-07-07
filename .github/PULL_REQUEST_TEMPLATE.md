@@ -1,14 +1,14 @@
 ## What
-<!-- Summary of changes, mentioning significant specifics if relevant -->
+<!-- What files/functionality changed? What tests were added? What's new/different in this PR? -->
 
 ## Why
-<!-- What's the point? How does this help? -->
+<!-- What problem does this solve? What's the business value? Why now? -->
 
 ## Usage
-<!-- Optional: If changes are to be manually used, like calling a script -->
+<!-- Optional: For new scripts, CLI commands, APIs - how does someone use the new functionality? -->
 
 ## How to validate
-<!-- Teaching tool: How can a reviewer manually prove the changes work as expected? -->
+<!-- For reviewers: step-by-step instructions to manually test that the changes work -->
 
 ## Related links
-<!-- URLs: issues, other PRs, third party docs, jira tickets, slack threads, etc -->
+<!-- Issue URLs, related PRs, docs, Slack threads - anything that provides context -->
