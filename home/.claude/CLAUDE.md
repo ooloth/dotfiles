@@ -46,9 +46,9 @@ When following Test-Driven Development:
 - **Include necessary documentation updates** in the same commit (without overdocumenting)
 - **Multiple tests per function are fine** - each function may need several test cases for edge cases
 - **TDD cycle per commit**:
-  1. Write one failing test case
-  2. Implement minimal code to make it pass
-  3. Refactor if needed
+  1. **Red**: Write one failing test case
+  2. **Green**: Implement minimal code to make it pass
+  3. **Refactor**: Improve code design while keeping tests green
   4. Commit all changes together
 - **Commit structure**:
   - Commit: "Add command line tools validation with test"
@@ -57,6 +57,47 @@ When following Test-Driven Development:
 - This makes each commit focused and easier to review (test and implementation on same screen)
 - Each commit adds exactly one test case (not all tests first, then all implementation)
 - The test case should determine what implementation changes belong in the commit
+
+### Post-Implementation Code Review and Refactoring
+
+**After all tests pass, always look for improvement opportunities:**
+
+#### Code Quality Review Checklist
+1. **Duplication elimination** - Look for repeated code patterns, constants, or logic
+   - Multiple functions defining the same variables
+   - Similar validation logic across different functions
+   - Repeated string constants or configuration values
+   - Identical error handling patterns
+
+2. **Design improvements** - Consider better abstractions and organization
+   - Extract common functionality into shared utilities
+   - Consolidate configuration into centralized locations  
+   - Improve function naming and interface design
+   - Consider breaking large functions into smaller, focused ones
+
+3. **Maintainability enhancements** - Make future changes easier
+   - Centralize configuration (paths, constants, defaults)
+   - Reduce coupling between components
+   - Improve error messages and user feedback
+   - Add helpful code comments for complex logic
+
+#### Make It Work, Then Make It Right
+
+**Two-phase approach within each PR:**
+1. **Phase 1: Make it work** - Follow TDD to implement working functionality
+2. **Phase 2: Make it right** - Review and improve the design
+
+**Refactoring commit examples:**
+- "Refactor SSH utilities to eliminate path duplication"
+- "Extract common validation logic into shared function"
+- "Centralize configuration constants for better maintainability"
+- "Improve error handling consistency across installation scripts"
+
+**Benefits of post-implementation refactoring:**
+- **Better design** - Can see the full picture after implementation
+- **Reduced technical debt** - Fix issues while they're fresh in mind
+- **Easier future changes** - Well-structured code is easier to modify
+- **Knowledge sharing** - Good design patterns benefit future developers
 
 ### Examples of Good Commit Granularity
 - ✅ "Add input validation with test"
