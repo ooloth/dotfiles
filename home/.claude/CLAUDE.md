@@ -238,6 +238,29 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
+### PR Template Usage
+
+**Always use the high-quality PR template when repositories lack good templates:**
+
+1. **For repos without PR templates** - Use the reference template from `~/.claude/PR_TEMPLATE_REFERENCE.md`
+2. **For repos with overly brief templates** (e.g., just "What" and "Why") - Enhance with the spirit of the reference template
+3. **Bring the template philosophy**: Focus on What/Why/Usage/Validation/Links structure
+4. **Maintain reviewer focus**: Emphasize "How to validate" as teaching tool for reviewers
+5. **Include context**: Always provide related links that help reviewers understand background
+
+**Reference template structure:**
+- 💪 What: What's new/different, files changed, testing/documentation
+- 🤔 Why: Problem solved, business value, timing rationale  
+- 👀 Usage: How to use new functionality (optional for user-facing changes)
+- 👩‍🔬 How to validate: Manual steps for reviewers to confirm changes work
+- 🔗 Related links: Context that helps reviewers (docs, issues, PRs, Slack threads)
+
+**When to apply:**
+- Creating PRs in repos without templates
+- Repos with minimal templates missing key sections
+- Any time PR description would benefit from structured approach
+- Use good judgment - don't force inappropriate structure on simple fixes
+
 ### PR Size and Focus Guidelines
 
 **Each PR should be a complete bundle of one new behavior:**
