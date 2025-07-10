@@ -142,8 +142,46 @@ if [[ "$TOOL_NAME" == "Bash" ]]; then
 
     # Check for download attempts
     if [[ "$COMMAND" =~ (curl|wget|fetch).*(http|https|ftp):// ]]; then
-        if [[ ! "$COMMAND" =~ (localhost|127\.0\.0\.1|::1) ]]; then
-            block_command "External network access attempted" "$COMMAND"
+        # Allow localhost
+        if [[ "$COMMAND" =~ (localhost|127\.0\.0\.1|::1) ]]; then
+            log_command "ALLOWED" "Bash" "$COMMAND (localhost)"
+        else
+            # Extract URL from command
+            URL=$(echo "$COMMAND" | grep -oE "(https?|ftp)://[^[:space:]]+" | head -1)
+            if [[ -n "$URL" ]]; then
+                # Extract domain from URL
+                DOMAIN=$(echo "$URL" | sed -E 's|https?://([^/]+).*|\1|')
+                
+                # Check against allowed domains (same list as WebFetch)
+                ALLOWED_DOMAINS=(
+                    "github.com"
+                    "githubusercontent.com"
+                    "docs.anthropic.com"
+                    "anthropic.com"
+                    "stackoverflow.com"
+                    "developer.mozilla.org"
+                    "rust-lang.org"
+                    "python.org"
+                    "nodejs.org"
+                    "npmjs.com"
+                )
+                
+                ALLOWED=false
+                for allowed in "${ALLOWED_DOMAINS[@]}"; do
+                    if [[ "$DOMAIN" == *"$allowed" ]]; then
+                        ALLOWED=true
+                        break
+                    fi
+                done
+                
+                if [[ "$ALLOWED" != "true" ]]; then
+                    block_command "curl/wget to non-whitelisted domain: $DOMAIN" "$COMMAND"
+                fi
+                
+                log_command "ALLOWED" "Bash" "$COMMAND (allowed domain: $DOMAIN)"
+            else
+                block_command "External network access attempted (could not parse URL)" "$COMMAND"
+            fi
         fi
     fi
 
