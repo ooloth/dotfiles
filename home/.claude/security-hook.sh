@@ -65,22 +65,31 @@ is_yolo_mode() {
         return 0
     fi
     
-    # Method 3: Check for Claude Code environment indicators + hook presence
-    # If we're running as a hook in Claude Code, assume YOLO mode for security
-    if [[ "${CLAUDECODE:-}" == "1" ]] && [[ -n "${CLAUDE_CODE_ENTRYPOINT:-}" ]]; then
-        # We're definitely in Claude Code context
-        # Check if the hook would only be called in YOLO mode scenarios
-        # (This is a reasonable assumption since the hook is configured for security)
+    # Method 3: Manual override file for testing (prioritize this)
+    if [[ -f "$HOME/.claude/yolo-mode-override" ]]; then
         return 0
     fi
     
-    # Method 4: Check for any Claude process with potential YOLO indicators
+    # Method 4: Check for Claude Code environment indicators
+    # If we're running as a hook in Claude Code, assume YOLO mode for security
+    if [[ "${CLAUDECODE:-}" == "1" ]] && [[ -n "${CLAUDE_CODE_ENTRYPOINT:-}" ]]; then
+        return 0
+    fi
+    
+    # Method 5: Check for any Claude process with potential YOLO indicators
     if ps -eo args | grep -q "claude.*skip"; then
         return 0
     fi
     
-    # Method 5: Manual override file for testing
-    if [[ -f "$HOME/.claude/yolo-mode-override" ]]; then
+    # Method 6: Aggressive detection - if we're in a hook context, assume YOLO
+    # This hook is only configured for security, so if it's running, likely need protection
+    if [[ "${CLAUDE_CODE_ENTRYPOINT:-}" == "PreToolUse" ]] || [[ -n "${CLAUDE_CODE_ENTRYPOINT:-}" ]]; then
+        return 0
+    fi
+    
+    # Method 7: Check for any Claude-related processes at all (very aggressive)
+    if pgrep -f "claude" > /dev/null 2>&1; then
+        # If there's any Claude process and we're in a security hook, assume protection needed
         return 0
     fi
     
