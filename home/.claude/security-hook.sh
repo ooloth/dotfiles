@@ -12,8 +12,83 @@ INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name')
 TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input')
 
-# Check if we're in YOLO mode by looking for the flag in process tree
-if ! pgrep -f "claude.*--dangerously-skip-permissions" > /dev/null 2>&1; then
+# Function to show periodic security status
+show_security_status() {
+    local stats_file="$HOME/.claude/security-stats.tmp"
+    local last_shown_file="$HOME/.claude/last-status-shown"
+    local current_hour=$(date +%Y%m%d%H)
+    
+    # Only show status once per hour
+    if [[ -f "$last_shown_file" ]]; then
+        local last_shown=$(cat "$last_shown_file" 2>/dev/null || echo "0")
+        if [[ "$current_hour" == "$last_shown" ]]; then
+            return 0
+        fi
+    fi
+    
+    # Count today's stats (simple approach)
+    local today=$(date +"%a %d %b %Y")
+    local blocked_today=0
+    local total_today=0
+    local allowed_today=0
+    
+    if [[ -f "$HOME/.claude/blocked-commands.log" ]]; then
+        blocked_today=$(grep -c "$today.*BLOCKED" "$HOME/.claude/blocked-commands.log" 2>/dev/null || echo "0")
+    fi
+    
+    if [[ -f "$HOME/.claude/security-audit.log" ]]; then
+        total_today=$(grep -c "$today" "$HOME/.claude/security-audit.log" 2>/dev/null || echo "0")
+    fi
+    
+    allowed_today=$((total_today - blocked_today))
+    
+    # Show status
+    echo "🔒 YOLO Security Active - Enhanced protection engaged" >&2
+    echo "📊 Today: $blocked_today commands blocked, $allowed_today allowed" >&2
+    echo "🛡️  Monitoring: Network, file system, privileges, packages" >&2
+    echo "🚨 Emergency stop: touch ~/.claude/emergency-stop" >&2
+    echo "" >&2
+    
+    # Remember we showed status this hour
+    echo "$current_hour" > "$last_shown_file"
+}
+
+# Function to detect YOLO mode using multiple methods
+is_yolo_mode() {
+    # Method 1: Check process tree for the flag
+    if pgrep -f "claude.*--dangerously-skip-permissions" > /dev/null 2>&1; then
+        return 0
+    fi
+    
+    # Method 2: Check environment variables
+    if [[ "${CLAUDE_YOLO_MODE:-}" == "true" ]]; then
+        return 0
+    fi
+    
+    # Method 3: Check for Claude Code environment indicators + hook presence
+    # If we're running as a hook in Claude Code, assume YOLO mode for security
+    if [[ "${CLAUDECODE:-}" == "1" ]] && [[ -n "${CLAUDE_CODE_ENTRYPOINT:-}" ]]; then
+        # We're definitely in Claude Code context
+        # Check if the hook would only be called in YOLO mode scenarios
+        # (This is a reasonable assumption since the hook is configured for security)
+        return 0
+    fi
+    
+    # Method 4: Check for any Claude process with potential YOLO indicators
+    if ps -eo args | grep -q "claude.*skip"; then
+        return 0
+    fi
+    
+    # Method 5: Manual override file for testing
+    if [[ -f "$HOME/.claude/yolo-mode-override" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# Check if we're in YOLO mode
+if ! is_yolo_mode; then
     # Not in YOLO mode, allow everything
     exit 0
 fi
@@ -100,36 +175,6 @@ show_security_education() {
     echo "   Emergency stop: touch ~/.claude/emergency-stop" >&2
 }
 
-# Function to show periodic security status
-show_security_status() {
-    local stats_file="$HOME/.claude/security-stats.tmp"
-    local last_shown_file="$HOME/.claude/last-status-shown"
-    local current_hour=$(date +%Y%m%d%H)
-    
-    # Only show status once per hour
-    if [[ -f "$last_shown_file" ]]; then
-        local last_shown=$(cat "$last_shown_file" 2>/dev/null || echo "0")
-        if [[ "$current_hour" == "$last_shown" ]]; then
-            return 0
-        fi
-    fi
-    
-    # Count today's stats
-    local today=$(date +"%a %d %b %Y")
-    local blocked_today=$(grep -c "$today.*BLOCKED" "$BLOCKED_LOG" 2>/dev/null || echo "0")
-    local total_today=$(grep -c "$today" "$AUDIT_LOG" 2>/dev/null || echo "0")
-    local allowed_today=$((total_today - blocked_today))
-    
-    # Show status
-    echo "🔒 YOLO Security Active - Enhanced protection engaged" >&2
-    echo "📊 Today: $blocked_today commands blocked, $allowed_today allowed" >&2
-    echo "🛡️  Monitoring: Network, file system, privileges, packages" >&2
-    echo "🚨 Emergency stop: touch ~/.claude/emergency-stop" >&2
-    echo "" >&2
-    
-    # Remember we showed status this hour
-    echo "$current_hour" > "$last_shown_file"
-}
 
 # Function to check if SSH command is to localhost
 is_ssh_localhost() {
