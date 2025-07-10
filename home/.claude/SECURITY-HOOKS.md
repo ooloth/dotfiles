@@ -6,6 +6,8 @@ This document describes the security hook system that protects your system when 
 
 The security hooks provide defense-in-depth protection by intercepting and validating all potentially dangerous operations before they execute. While not as secure as full containerization, this system blocks most accidental damage while maintaining excellent developer experience.
 
+**Important**: These hooks ONLY activate when running Claude Code with the `--dangerously-skip-permissions` flag. Normal Claude Code usage is unaffected.
+
 ## Components
 
 ### 1. Security Hook Script (`~/.claude/security-hook.sh`)

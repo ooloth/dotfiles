@@ -12,6 +12,12 @@ INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name')
 TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input')
 
+# Check if we're in YOLO mode by looking for the flag in process tree
+if ! pgrep -f "claude.*--dangerously-skip-permissions" > /dev/null 2>&1; then
+    # Not in YOLO mode, allow everything
+    exit 0
+fi
+
 # Audit log location
 AUDIT_LOG="$HOME/.claude/security-audit.log"
 BLOCKED_LOG="$HOME/.claude/blocked-commands.log"
