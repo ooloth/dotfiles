@@ -35,5 +35,18 @@
       "Write(*)"
     ],
     "deny": ["Bash(curl:*)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^(Bash|Write|Edit|MultiEdit|WebFetch)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/michael/.claude/security-hook.sh"
+          }
+        ]
+      }
+    ]
   }
 }
