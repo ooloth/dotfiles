@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/michael/.claude/security-hook.sh"
+            "command": "/Users/michael/.claude/security-hook.py"
           }
         ]
       }
