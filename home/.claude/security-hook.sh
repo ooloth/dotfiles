@@ -5,6 +5,12 @@
 
 set -euo pipefail
 
+# Check if we're in YOLO mode first - optimize for early return
+if [[ "${CLAUDE_YOLO_MODE:-}" != "true" ]] && [[ ! -f "$HOME/.claude/yolo-mode-override" ]]; then
+    # Not in YOLO mode, allow everything immediately
+    exit 0
+fi
+
 # Read input from stdin
 INPUT=$(cat)
 
@@ -53,32 +59,7 @@ show_security_status() {
     echo "$current_hour" > "$last_shown_file"
 }
 
-# Function to detect YOLO mode - only activate with clear evidence
-is_yolo_mode() {
-    # Method 1: Check for explicit YOLO environment variable (RECOMMENDED)
-    if [[ "${CLAUDE_YOLO_MODE:-}" == "true" ]]; then
-        return 0
-    fi
-    
-    # Method 2: Manual override file for testing
-    if [[ -f "$HOME/.claude/yolo-mode-override" ]]; then
-        return 0
-    fi
-    
-    # Note: Process-based detection is unreliable because Claude Code
-    # conceals command-line arguments from process inspection.
-    # Use CLAUDE_YOLO_MODE=true environment variable instead.
-    
-    return 1
-}
-
-# Check if we're in YOLO mode
-if ! is_yolo_mode; then
-    # Not in YOLO mode, allow everything
-    exit 0
-fi
-
-# Show periodic security status (Item 9: User Education)
+# We're in YOLO mode - show periodic security status (Item 9: User Education)
 show_security_status
 
 # Audit log location
