@@ -4,12 +4,12 @@
 
 **Task**: Migrate dotfiles installation scripts from custom zsh test framework to industry-standard bash + shellcheck + bats
 **Approach**: Complete 3-phase migration for better tooling, maintainability, and reliability
-**Current**: Phase 1 complete (PR #13 merged), critical setup.zsh bug fixed (PR #14 merged), ready for SSH migration
+**Current**: Phase 1 continuing with SSH migration (PR #15 in draft), 2 of 3 core scripts migrated
 
 ## Migration Strategy
 
-### Phase 1: Demonstrate Complete Migration Pattern (COMPLETED)
-**Goal**: Create one complete bash + bats example to establish the migration pattern
+### Phase 1: Core Script Migration (IN PROGRESS - 2/3 Complete)
+**Goal**: Migrate core installation scripts (GitHub, SSH, Homebrew) to establish patterns
 
 #### ✅ PR #13: GitHub Installation Testing (MERGED)
 - **Files Created**:
@@ -151,10 +151,22 @@ test/install/test-{component}-installation.bats  # Integration tests
 - Feature parity verification required
 - Complete behavior bundle (no dead code)
 
+## Current Work
+
+### 🔄 PR #15: SSH Installation Testing (Draft)
+- **Files Created**:
+  - `lib/ssh-utils.bash` - SSH utilities with comprehensive functionality
+  - `bin/install/ssh.bash` - Bash replacement for ssh.zsh
+  - `test/install/test-ssh-utils.bats` - 14 utility function tests
+  - `test/install/test-ssh-installation.bats` - 7 integration tests
+- **Test Results**: All 21 tests passing, shellcheck compliance verified
+- **Improvements**: Better macOS version detection for ssh-add keychain flag
+- **Status**: Draft PR created, ready for review
+
 ## Next Steps
 
-1. **Continue Phase 1**: SSH installation script migration to bash + bats
-2. **Update CI Workflow**: Migrate from custom zsh runner to bats
+1. **Update CI Workflow**: Migrate from custom zsh runner to bats (after PR #15)
+2. **Continue Phase 1**: Homebrew installation migration to complete core scripts
 3. **Plan Phase 2**: Define systematic migration order for remaining scripts
 4. **Document Migration Pattern**: Create guide for future script conversions
 5. **Performance Testing**: Compare bash vs zsh test execution times
