@@ -22,6 +22,20 @@ fi
 AUDIT_LOG="$HOME/.claude/security-audit.log"
 BLOCKED_LOG="$HOME/.claude/blocked-commands.log"
 
+# Shared configuration
+ALLOWED_DOMAINS=(
+    "github.com"
+    "githubusercontent.com"
+    "docs.anthropic.com"
+    "anthropic.com"
+    "stackoverflow.com"
+    "developer.mozilla.org"
+    "rust-lang.org"
+    "python.org"
+    "nodejs.org"
+    "npmjs.com"
+)
+
 # Emergency stop check
 if [[ -f "$HOME/.claude/emergency-stop" ]]; then
     echo "EMERGENCY STOP: All operations blocked. Remove ~/.claude/emergency-stop to continue." >&2
@@ -47,6 +61,41 @@ block_command() {
     exit 1
 }
 
+# Function to check if SSH command is to localhost
+is_ssh_localhost() {
+    local command="$1"
+    # Extract SSH target (simplified - captures common patterns)
+    if [[ "$command" =~ ssh[[:space:]]+([^[:space:]]+) ]]; then
+        local target="${BASH_REMATCH[1]}"
+        # Check for localhost patterns
+        if [[ "$target" =~ ^(localhost|127\.0\.0\.1|::1|[^@]*@localhost|[^@]*@127\.0\.0\.1)$ ]]; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# Function to extract and validate URL
+extract_and_validate_url() {
+    local command="$1"
+    local url
+    
+    # Extract URL using grep (more reliable than complex bash regex)
+    url=$(echo "$command" | grep -oE "(https?|ftp)://[^[:space:]]+" | head -1)
+    
+    if [[ -z "$url" ]]; then
+        return 1
+    fi
+    
+    # Validate URL format - basic validation
+    if [[ "$url" =~ ^(https?|ftp)://[a-zA-Z0-9.-]+ ]]; then
+        echo "$url"
+        return 0
+    fi
+    
+    return 1
+}
+
 # Check Bash commands
 if [[ "$TOOL_NAME" == "Bash" ]]; then
     COMMAND=$(echo "$TOOL_INPUT" | jq -r '.command // empty')
@@ -54,65 +103,101 @@ if [[ "$TOOL_NAME" == "Bash" ]]; then
     # Log all bash commands
     log_command "ATTEMPT" "Bash" "$COMMAND"
 
-    # Dangerous command patterns
+    # Dangerous command patterns (using word boundaries for precision)
     DANGEROUS_PATTERNS=(
         # Network access
-        "curl[[:space:]]+-[^-]*o" # curl with output
-        "wget[[:space:]]"
-        "nc[[:space:]]"
-        "telnet[[:space:]]"
-        "ssh[[:space:]]+[^l]" # ssh to external (not localhost)
-        "scp[[:space:]]"
-        "rsync[[:space:]]+.*:"
+        "(^|[[:space:]])curl[[:space:]]+(-[^[:space:]]*[oO][^[:space:]]*|.*-o|.*--output)" # curl with output flags
+        "(^|[[:space:]])wget[[:space:]]"
+        "(^|[[:space:]])nc[[:space:]]"
+        "(^|[[:space:]])netcat[[:space:]]"
+        "(^|[[:space:]])telnet[[:space:]]"
+        "(^|[[:space:]])scp[[:space:]]"
+        "(^|[[:space:]])rsync[[:space:]]+[^[:space:]]*:"
+        "(^|[[:space:]])sftp[[:space:]]"
+        "(^|[[:space:]])ftp[[:space:]]"
 
-        # System destruction
-        "rm[[:space:]]+-[^-]*[rf].*/"
-        "dd[[:space:]]+.*of=/dev/"
-        "mkfs"
-        "fdisk"
-        "parted"
+        # System destruction (more comprehensive)
+        "(^|[[:space:]])rm[[:space:]]+(-[^[:space:]]*[rR][fF]?|--recursive.*--force|-rf|-fr|-R.*-f|-f.*-R)[[:space:]]+(/|\$HOME|~|\*)"
+        "(^|[[:space:]])dd[[:space:]]+.*of=/dev/"
+        "(^|[[:space:]])mkfs([[:space:]]|$)"
+        "(^|[[:space:]])fdisk([[:space:]]|$)"
+        "(^|[[:space:]])parted([[:space:]]|$)"
+        "(^|[[:space:]])format([[:space:]]|$)"
+        "(^|[[:space:]])diskutil[[:space:]]+erase"
+        "(^|[[:space:]])shred[[:space:]]"
+        "(^|[[:space:]])wipefs([[:space:]]|$)"
 
         # Privilege escalation
-        "sudo[[:space:]]"
-        "su[[:space:]]"
-        "chroot"
-        "doas"
+        "(^|[[:space:]])sudo[[:space:]]"
+        "(^|[[:space:]])su[[:space:]]+(-|[^[:space:]]*)"
+        "(^|[[:space:]])chroot([[:space:]]|$)"
+        "(^|[[:space:]])doas[[:space:]]"
+        "(^|[[:space:]])runuser[[:space:]]"
 
         # Package management
-        "brew[[:space:]]+install"
-        "brew[[:space:]]+uninstall"
-        "brew[[:space:]]+remove"
-        "apt[[:space:]]+install"
-        "apt-get[[:space:]]+install"
-        "yum[[:space:]]+install"
-        "pip[[:space:]]+install"
-        "npm[[:space:]]+install[[:space:]]+--global"
+        "(^|[[:space:]])brew[[:space:]]+(install|uninstall|remove|cask[[:space:]]+install)"
+        "(^|[[:space:]])apt[[:space:]]+install"
+        "(^|[[:space:]])apt-get[[:space:]]+(install|remove|purge)"
+        "(^|[[:space:]])yum[[:space:]]+(install|remove|erase)"
+        "(^|[[:space:]])dnf[[:space:]]+(install|remove|erase)"
+        "(^|[[:space:]])pip[[:space:]]+install"
+        "(^|[[:space:]])pip3[[:space:]]+install"
+        "(^|[[:space:]])npm[[:space:]]+install[[:space:]]+(-g|--global)"
+        "(^|[[:space:]])gem[[:space:]]+install"
+        "(^|[[:space:]])cargo[[:space:]]+install"
 
         # System services
-        "systemctl[[:space:]]+(start|stop|restart|enable|disable)"
-        "service[[:space:]]"
-        "launchctl[[:space:]]+(load|unload|start|stop)"
+        "(^|[[:space:]])systemctl[[:space:]]+(start|stop|restart|enable|disable|mask)"
+        "(^|[[:space:]])service[[:space:]]+[^[:space:]]+[[:space:]]+(start|stop|restart)"
+        "(^|[[:space:]])launchctl[[:space:]]+(load|unload|start|stop|bootstrap|bootout)"
+        "(^|[[:space:]])initctl[[:space:]]"
 
-        # Dangerous file operations
-        ":>/etc/"
-        ">/etc/"
-        ">>/etc/"
+        # Dangerous file operations (improved patterns)
+        "[[:space:]]*:[[:space:]]*>[[:space:]]*/etc/"
+        "[[:space:]]*>[[:space:]]*/etc/"
+        "[[:space:]]*>>[[:space:]]*/etc/"
+        "(^|[[:space:]])tee[[:space:]]+(/etc/|/usr/|/bin/|/sbin/)"
+        "(^|[[:space:]])dd[[:space:]]+.*of=/etc/"
 
         # Process control
-        "kill[[:space:]]+-9"
-        "killall"
-        "pkill"
+        "(^|[[:space:]])kill[[:space:]]+(-9|-KILL)[[:space:]]"
+        "(^|[[:space:]])killall([[:space:]]|$)"
+        "(^|[[:space:]])pkill([[:space:]]|$)"
+        "(^|[[:space:]])xkill([[:space:]]|$)"
 
         # System modification
-        "crontab[[:space:]]+-[er]"
-        "at[[:space:]]"
-        "visudo"
+        "(^|[[:space:]])crontab[[:space:]]+(-[er]|--edit|--remove)"
+        "(^|[[:space:]])at[[:space:]]+[0-9]"
+        "(^|[[:space:]])visudo([[:space:]]|$)"
+        "(^|[[:space:]])passwd[[:space:]]+[^[:space:]]*"
+        "(^|[[:space:]])chpasswd([[:space:]]|$)"
+        
+        # Kernel and boot
+        "(^|[[:space:]])insmod([[:space:]]|$)"
+        "(^|[[:space:]])rmmod([[:space:]]|$)"
+        "(^|[[:space:]])modprobe[[:space:]]+(-r|--remove)"
+        "(^|[[:space:]])kextload([[:space:]]|$)"
+        "(^|[[:space:]])kextunload([[:space:]]|$)"
+        
+        # Network configuration
+        "(^|[[:space:]])iptables([[:space:]]|$)"
+        "(^|[[:space:]])ip6tables([[:space:]]|$)"
+        "(^|[[:space:]])ufw[[:space:]]"
+        "(^|[[:space:]])firewall-cmd([[:space:]]|$)"
+        "(^|[[:space:]])pfctl([[:space:]]|$)"
     )
 
-    # Check each pattern - only at the beginning of commands
+    # Special handling for SSH before general pattern matching
+    if [[ "$COMMAND" =~ (^|[[:space:]])ssh[[:space:]] ]]; then
+        if ! is_ssh_localhost "$COMMAND"; then
+            block_command "SSH to external host not allowed" "$COMMAND"
+        fi
+    fi
+
+    # Check each dangerous pattern
     for pattern in "${DANGEROUS_PATTERNS[@]}"; do
         # Check if pattern matches at start of command or after common separators
-        if [[ "$COMMAND" =~ ^$pattern ]] || [[ "$COMMAND" =~ [[:space:]\;\|\&]$pattern ]]; then
+        if [[ "$COMMAND" =~ (^|[[:space:];|&])$pattern ]]; then
             block_command "Dangerous command pattern detected: $pattern" "$COMMAND"
         fi
     done
@@ -140,47 +225,41 @@ if [[ "$TOOL_NAME" == "Bash" ]]; then
         fi
     done
 
-    # Check for download attempts
-    if [[ "$COMMAND" =~ (curl|wget|fetch).*(http|https|ftp):// ]]; then
-        # Allow localhost
+    # Check for download attempts with improved URL parsing
+    if [[ "$COMMAND" =~ (^|[[:space:]])(curl|wget|fetch)[[:space:]] ]]; then
+        # Allow localhost first
         if [[ "$COMMAND" =~ (localhost|127\.0\.0\.1|::1) ]]; then
             log_command "ALLOWED" "Bash" "$COMMAND (localhost)"
         else
-            # Extract URL from command
-            URL=$(echo "$COMMAND" | grep -oE "(https?|ftp)://[^[:space:]]+" | head -1)
-            if [[ -n "$URL" ]]; then
-                # Extract domain from URL
-                DOMAIN=$(echo "$URL" | sed -E 's|https?://([^/]+).*|\1|')
-                
-                # Check against allowed domains (same list as WebFetch)
-                ALLOWED_DOMAINS=(
-                    "github.com"
-                    "githubusercontent.com"
-                    "docs.anthropic.com"
-                    "anthropic.com"
-                    "stackoverflow.com"
-                    "developer.mozilla.org"
-                    "rust-lang.org"
-                    "python.org"
-                    "nodejs.org"
-                    "npmjs.com"
-                )
-                
-                ALLOWED=false
-                for allowed in "${ALLOWED_DOMAINS[@]}"; do
-                    if [[ "$DOMAIN" == *"$allowed" ]]; then
-                        ALLOWED=true
-                        break
+            # Extract and validate URL
+            URL=$(extract_and_validate_url "$COMMAND")
+            if [[ $? -eq 0 && -n "$URL" ]]; then
+                # Extract domain from URL with better parsing
+                if [[ "$URL" =~ ^(https?|ftp)://([^/:]+) ]]; then
+                    DOMAIN="${BASH_REMATCH[2]}"
+                    
+                    # Check against allowed domains (using shared list)
+                    ALLOWED=false
+                    for allowed in "${ALLOWED_DOMAINS[@]}"; do
+                        if [[ "$DOMAIN" == *"$allowed" ]]; then
+                            ALLOWED=true
+                            break
+                        fi
+                    done
+                    
+                    if [[ "$ALLOWED" != "true" ]]; then
+                        block_command "Network access to non-whitelisted domain: $DOMAIN" "$COMMAND"
                     fi
-                done
-                
-                if [[ "$ALLOWED" != "true" ]]; then
-                    block_command "curl/wget to non-whitelisted domain: $DOMAIN" "$COMMAND"
+                    
+                    log_command "ALLOWED" "Bash" "$COMMAND (allowed domain: $DOMAIN)"
+                else
+                    block_command "Invalid URL format in network command" "$COMMAND"
                 fi
-                
-                log_command "ALLOWED" "Bash" "$COMMAND (allowed domain: $DOMAIN)"
             else
-                block_command "External network access attempted (could not parse URL)" "$COMMAND"
+                # Check if command has network indicators but couldn't parse URL
+                if [[ "$COMMAND" =~ (http|https|ftp):// ]]; then
+                    block_command "Network access attempted but URL could not be validated" "$COMMAND"
+                fi
             fi
         fi
     fi
@@ -256,32 +335,23 @@ if [[ "$TOOL_NAME" == "WebFetch" ]]; then
 
     log_command "ATTEMPT" "WebFetch" "$URL"
 
-    # Only allow certain domains
-    ALLOWED_DOMAINS=(
-        "github.com"
-        "githubusercontent.com"
-        "docs.anthropic.com"
-        "anthropic.com"
-        "stackoverflow.com"
-        "developer.mozilla.org"
-        "rust-lang.org"
-        "python.org"
-        "nodejs.org"
-        "npmjs.com"
-    )
+    # Only allow certain domains (using shared list)
+    if [[ "$URL" =~ ^(https?|ftp)://([^/:]+) ]]; then
+        DOMAIN="${BASH_REMATCH[2]}"
+        ALLOWED=false
 
-    DOMAIN=$(echo "$URL" | sed -E 's|https?://([^/]+).*|\1|')
-    ALLOWED=false
+        for allowed in "${ALLOWED_DOMAINS[@]}"; do
+            if [[ "$DOMAIN" == *"$allowed" ]]; then
+                ALLOWED=true
+                break
+            fi
+        done
 
-    for allowed in "${ALLOWED_DOMAINS[@]}"; do
-        if [[ "$DOMAIN" == *"$allowed" ]]; then
-            ALLOWED=true
-            break
+        if [[ "$ALLOWED" != "true" ]]; then
+            block_command "WebFetch to non-whitelisted domain: $DOMAIN" "$URL"
         fi
-    done
-
-    if [[ "$ALLOWED" != "true" ]]; then
-        block_command "WebFetch to non-whitelisted domain" "$URL"
+    else
+        block_command "WebFetch URL has invalid format" "$URL"
     fi
 
     log_command "ALLOWED" "WebFetch" "$URL"
