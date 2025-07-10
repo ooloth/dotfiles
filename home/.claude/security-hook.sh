@@ -60,6 +60,7 @@ show_security_status() {
 }
 
 # We're in YOLO mode - show periodic security status (Item 9: User Education)
+# Only show status periodically to avoid performance overhead
 show_security_status
 
 # Audit log location
