@@ -55,7 +55,7 @@ show_security_status() {
 
 # Function to detect YOLO mode - only activate with clear evidence
 is_yolo_mode() {
-    # Method 1: Check for explicit YOLO environment variable
+    # Method 1: Check for explicit YOLO environment variable (RECOMMENDED)
     if [[ "${CLAUDE_YOLO_MODE:-}" == "true" ]]; then
         return 0
     fi
@@ -65,15 +65,9 @@ is_yolo_mode() {
         return 0
     fi
     
-    # Method 3: Check process tree for the actual flag
-    if pgrep -f "claude.*--dangerously-skip-permissions" > /dev/null 2>&1; then
-        return 0
-    fi
-    
-    # Method 4: Check for Claude processes with skip-related flags (exclude grep itself)
-    if ps -eo args | grep -v grep | grep -q "^claude.*--dangerously-skip-permissions"; then
-        return 0
-    fi
+    # Note: Process-based detection is unreliable because Claude Code
+    # conceals command-line arguments from process inspection.
+    # Use CLAUDE_YOLO_MODE=true environment variable instead.
     
     return 1
 }

@@ -6,7 +6,7 @@ This document describes the security hook system that protects your system when 
 
 The security hooks provide defense-in-depth protection by intercepting and validating all potentially dangerous operations before they execute. While not as secure as full containerization, this system blocks most accidental damage while maintaining excellent developer experience.
 
-**Important**: These hooks ONLY activate when running Claude Code with the `--dangerously-skip-permissions` flag. Normal Claude Code usage is unaffected.
+**Important**: These hooks activate when running Claude Code in YOLO mode with the proper environment variable set. Normal Claude Code usage is unaffected.
 
 ## Components
 
@@ -135,13 +135,43 @@ Edit the `PROTECTED_PATHS` or `PROTECTED_PREFIXES` arrays
 ### Modify dangerous patterns:
 Edit the `DANGEROUS_PATTERNS` array
 
+## Usage
+
+The security hooks activate when Claude Code is running in YOLO mode with the proper environment variable set.
+
+### Basic Usage
+
+1. **Normal Claude Code usage** - Security hooks remain inactive
+   ```bash
+   claude
+   ```
+
+2. **YOLO mode with security protection** - Set environment variable to activate hooks
+   ```bash
+   CLAUDE_YOLO_MODE=true claude --dangerously-skip-permissions
+   ```
+
+**Important**: Due to Claude Code's process isolation, the hooks cannot automatically detect YOLO mode from command-line arguments. You must set the `CLAUDE_YOLO_MODE=true` environment variable to activate security protection.
+
+### Alternative Activation Methods
+
+For testing or troubleshooting:
+```bash
+# Manual override (for testing)
+touch ~/.claude/yolo-mode-override
+claude --dangerously-skip-permissions
+
+# Remove override when done
+rm ~/.claude/yolo-mode-override
+```
+
 ## Limitations
 
+- **Manual environment setup required** - Must set CLAUDE_YOLO_MODE=true for activation
 - **Not containerized isolation** - Not as secure as Docker/sandbox environments
 - **Sophisticated bypass potential** - Advanced users could potentially circumvent patterns
 - **Pattern matching limitations** - Complex command obfuscation might evade detection
 - **Minimal performance overhead** - ~1-2ms per tool call (negligible in practice)
-- **YOLO mode only** - No protection in normal Claude Code operation
 
 ## Best Practices
 
