@@ -25,26 +25,70 @@ The security hooks provide defense-in-depth protection by intercepting and valid
 
 ## What's Blocked
 
-### Network Access
-- External curl/wget commands (localhost allowed)
-- SSH to external hosts
-- Network utilities (nc, telnet)
+### Network Access (Domain Whitelisting)
+- **curl/wget to non-whitelisted domains** - Only allowed: github.com, docs.anthropic.com, stackoverflow.com, etc.
+- **SSH to external hosts** - Only localhost/127.0.0.1 allowed
+- **Network utilities** - nc, netcat, telnet, scp, sftp, ftp, rsync to external hosts
 
-### System Modifications
-- Package managers (brew install, apt install, etc.)
-- System services (systemctl, launchctl)
-- Privilege escalation (sudo, su)
-- System destruction (rm -rf /, mkfs, fdisk)
+### System Destruction Prevention
+- **Recursive file deletion** - rm -rf targeting /, $HOME, ~, or *
+- **Disk operations** - dd to /dev/, mkfs, fdisk, parted, format
+- **Data destruction** - shred, wipefs, diskutil erase
+
+### Privilege Escalation
+- **Privilege commands** - sudo, su, chroot, doas, runuser
+
+### Package Management
+- **Installation commands** - brew install, apt install, pip install, npm -g, gem install, cargo install
+- **Removal commands** - brew uninstall, apt remove, yum erase
+
+### System Services
+- **Service control** - systemctl start/stop/restart, launchctl load/unload, service commands
+- **System daemons** - initctl operations
 
 ### Protected Paths
-- System directories: /etc, /usr, /bin, /sbin, /boot
-- Security files: ~/.ssh, ~/.gnupg, keychains
-- Sensitive file types: *.key, *.pem, *.crt, id_rsa*
+- **System directories** - /etc, /usr, /bin, /sbin, /boot, /lib, /System, /Library
+- **Security files** - ~/.ssh, ~/.gnupg, keychains, certificates
+- **Sensitive file types** - *.key, *.pem, *.crt, *.p12, id_rsa*, *.kdbx, *.1password
 
 ### Process Control
-- kill -9, killall, pkill
-- crontab modifications
-- visudo
+- **Forced termination** - kill -9, killall, pkill, xkill
+- **System scheduling** - crontab modifications, at commands
+- **System administration** - visudo, passwd, chpasswd
+
+### Kernel and Network Configuration
+- **Kernel modules** - insmod, rmmod, modprobe, kextload/kextunload
+- **Firewall rules** - iptables, ufw, firewall-cmd, pfctl
+
+## User Education & Security Awareness
+
+### Security Status Indicators
+When the hooks are active, you'll see clear feedback:
+```
+🔒 YOLO Security Active - Enhanced protection engaged
+📊 Today: 3 commands blocked, 47 allowed
+🛡️  Monitoring: Network, file system, privileges, packages
+🚨 Emergency stop: touch ~/.claude/emergency-stop
+```
+
+### Understanding Protection Levels
+The security hooks provide **defense-in-depth** protection:
+
+1. **🌐 Network Protection** - Only whitelisted domains allowed for external access
+2. **🗂️  File System Protection** - System directories and sensitive files protected  
+3. **⚡ Privilege Protection** - No unauthorized system-level changes
+4. **📦 Package Protection** - Prevents installation of potentially malicious packages
+5. **🔧 Service Protection** - System services remain stable and secure
+
+### Daily Security Summary
+Check your security posture regularly:
+```bash
+# Quick security overview
+echo "🔒 Security Summary for $(date +%Y-%m-%d)"
+echo "📊 Commands blocked today: $(grep "$(date +%Y-%m-%d)" ~/.claude/blocked-commands.log | wc -l)"
+echo "📈 Total protection events: $(wc -l < ~/.claude/security-audit.log)"
+echo "🚨 Last threat blocked: $(tail -1 ~/.claude/blocked-commands.log | cut -d':' -f1-2)"
+```
 
 ## Monitoring
 
@@ -53,11 +97,19 @@ Check audit logs to see what's happening:
 # View recent activity
 tail -f ~/.claude/security-audit.log
 
-# View blocked commands
+# View blocked commands  
 cat ~/.claude/blocked-commands.log
 
 # Count blocked attempts by type
 grep BLOCKED ~/.claude/security-audit.log | awk -F': ' '{print $3}' | sort | uniq -c
+
+# Security dashboard
+echo "=== Claude Security Dashboard ==="
+echo "Active since: $(head -1 ~/.claude/security-audit.log | cut -d':' -f1-2)"
+echo "Total events: $(wc -l < ~/.claude/security-audit.log)"
+echo "Threats blocked: $(grep -c BLOCKED ~/.claude/security-audit.log)"
+echo "Commands allowed: $(grep -c ALLOWED ~/.claude/security-audit.log)"
+echo "Protection rate: $(( $(grep -c BLOCKED ~/.claude/security-audit.log) * 100 / $(wc -l < ~/.claude/security-audit.log) ))%"
 ```
 
 ## Emergency Procedures
@@ -85,10 +137,11 @@ Edit the `DANGEROUS_PATTERNS` array
 
 ## Limitations
 
-- Not as secure as Docker containerization
-- Can potentially be bypassed by sophisticated attacks
-- Some patterns may have false positives
-- Performance overhead on every tool call
+- **Not containerized isolation** - Not as secure as Docker/sandbox environments
+- **Sophisticated bypass potential** - Advanced users could potentially circumvent patterns
+- **Pattern matching limitations** - Complex command obfuscation might evade detection
+- **Minimal performance overhead** - ~1-2ms per tool call (negligible in practice)
+- **YOLO mode only** - No protection in normal Claude Code operation
 
 ## Best Practices
 

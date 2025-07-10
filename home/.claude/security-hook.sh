@@ -18,6 +18,9 @@ if ! pgrep -f "claude.*--dangerously-skip-permissions" > /dev/null 2>&1; then
     exit 0
 fi
 
+# Show periodic security status (Item 9: User Education)
+show_security_status
+
 # Audit log location
 AUDIT_LOG="$HOME/.claude/security-audit.log"
 BLOCKED_LOG="$HOME/.claude/blocked-commands.log"
@@ -55,10 +58,77 @@ log_command() {
 block_command() {
     local reason="$1"
     local details="$2"
-    echo "BLOCKED: $reason" >&2
+    echo "🔒 BLOCKED: $reason" >&2
     echo "$(date): $reason - $details" >>"$BLOCKED_LOG"
     log_command "BLOCKED" "$TOOL_NAME" "$details"
+    
+    # Show educational message
+    show_security_education "$reason"
     exit 1
+}
+
+# Function to show security education (Item 9: User Education)
+show_security_education() {
+    local threat_type="$1"
+    
+    case "$threat_type" in
+        *"domain"*|*"network"*)
+            echo "ℹ️  Network Protection: Only whitelisted domains allowed (github.com, docs.anthropic.com, etc.)" >&2
+            echo "   This prevents data exfiltration and malicious downloads." >&2
+            ;;
+        *"sudo"*|*"privilege"*)
+            echo "ℹ️  Privilege Protection: System-level changes blocked in YOLO mode." >&2
+            echo "   This prevents unauthorized system modifications." >&2
+            ;;
+        *"install"*|*"package"*)
+            echo "ℹ️  Package Protection: Software installation blocked in YOLO mode." >&2
+            echo "   This prevents installation of malicious or conflicting packages." >&2
+            ;;
+        *"rm"*|*"delete"*)
+            echo "ℹ️  File Protection: Destructive file operations blocked." >&2
+            echo "   This prevents accidental deletion of important data." >&2
+            ;;
+        *"protected"*)
+            echo "ℹ️  System Protection: Critical system files and directories are protected." >&2
+            echo "   This maintains system integrity and security." >&2
+            ;;
+        *)
+            echo "ℹ️  Security Protection: Potentially dangerous operation blocked." >&2
+            echo "   YOLO mode provides defense-in-depth security." >&2
+            ;;
+    esac
+    echo "   Emergency stop: touch ~/.claude/emergency-stop" >&2
+}
+
+# Function to show periodic security status
+show_security_status() {
+    local stats_file="$HOME/.claude/security-stats.tmp"
+    local last_shown_file="$HOME/.claude/last-status-shown"
+    local current_hour=$(date +%Y%m%d%H)
+    
+    # Only show status once per hour
+    if [[ -f "$last_shown_file" ]]; then
+        local last_shown=$(cat "$last_shown_file" 2>/dev/null || echo "0")
+        if [[ "$current_hour" == "$last_shown" ]]; then
+            return 0
+        fi
+    fi
+    
+    # Count today's stats
+    local today=$(date +"%a %d %b %Y")
+    local blocked_today=$(grep -c "$today.*BLOCKED" "$BLOCKED_LOG" 2>/dev/null || echo "0")
+    local total_today=$(grep -c "$today" "$AUDIT_LOG" 2>/dev/null || echo "0")
+    local allowed_today=$((total_today - blocked_today))
+    
+    # Show status
+    echo "🔒 YOLO Security Active - Enhanced protection engaged" >&2
+    echo "📊 Today: $blocked_today commands blocked, $allowed_today allowed" >&2
+    echo "🛡️  Monitoring: Network, file system, privileges, packages" >&2
+    echo "🚨 Emergency stop: touch ~/.claude/emergency-stop" >&2
+    echo "" >&2
+    
+    # Remember we showed status this hour
+    echo "$current_hour" > "$last_shown_file"
 }
 
 # Function to check if SSH command is to localhost
