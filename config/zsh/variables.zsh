@@ -3,9 +3,11 @@
 # See: https://zsh.sourceforge.io/Doc/Release/Files.html
 source "$HOME/Repos/ooloth/dotfiles/config/zsh/path.zsh"
 
+# TODO: use set_machine_variables instead?
 # Device
 export HOSTNAME=$(networksetup -getcomputername)
 
+# TODO: use set_machine_variables instead?
 # When referenced in "if" statements, will execute the true/false unix commands that return 0 or 1
 # When read directly, will contain "true" or "false" strings
 export IS_AIR=false

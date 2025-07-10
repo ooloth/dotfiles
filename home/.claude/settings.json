@@ -34,6 +34,19 @@
       "NotebookEdit(*)",
       "Write(*)"
     ],
-    "deny": ["Bash(curl:*)", "Bash(git merge:*)", "Bash(git reset:*)"]
+    "deny": ["Bash(curl:*)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^(Bash|Write|Edit|MultiEdit|WebFetch)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/michael/.claude/security-hook.sh"
+          }
+        ]
+      }
+    ]
   }
 }
