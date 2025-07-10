@@ -2,14 +2,14 @@
 
 ## Current Status (July 7, 2025)
 
-**Task**: Migrate dotfiles installation scripts from custom zsh test framework to industry-standard bash + shellcheck + bats
-**Approach**: Complete 3-phase migration for better tooling, maintainability, and reliability
-**Current**: Phase 1 complete (PR #13 merged), critical setup.zsh bug fixed (PR #14 merged), ready for SSH migration
+**Task**: Migrate dotfiles installation infrastructure from custom zsh to industry-standard bash + shellcheck + bats
+**Approach**: Enhanced 3-phase migration with setup.bash at the center for maximum tooling leverage
+**Current**: Phase 1 enhanced scope - migrating setup.bash + core scripts + shared utilities
 
 ## Migration Strategy
 
-### Phase 1: Demonstrate Complete Migration Pattern (COMPLETED)
-**Goal**: Create one complete bash + bats example to establish the migration pattern
+### Phase 1: Setup + Core Infrastructure Migration (IN PROGRESS - Enhanced Scope)
+**Goal**: Migrate setup.bash + core installation scripts + shared utilities for maximum tooling leverage
 
 #### ✅ PR #13: GitHub Installation Testing (MERGED)
 - **Files Created**:
@@ -22,21 +22,19 @@
 - **Benefits Demonstrated**: Better error catching, industry-standard tooling, cleaner syntax
 - **Status**: MERGED - established complete migration pattern with 20 passing tests
 
-### Phase 2: Systematic Script Migration (Pending)
-**Goal**: Migrate remaining installation scripts one-by-one using established pattern
+### Phase 2: Remaining Script Migration (Pending)
+**Goal**: Migrate remaining installation scripts using established three-tier architecture
 
-**Priority Order**:
-1. `bin/install/ssh.bash` - Critical dependency for GitHub operations
-2. `bin/install/homebrew.bash` - Foundation for all other tools
-3. `bin/install/node.bash` - Programming language setup
+**Enhanced Priority Order**:
+1. `setup.bash` - Main entry point with shared utility integration
+2. `bin/lib/*.bash` - All utility libraries (machine-detection, prerequisite-validation, etc.)
+3. `bin/install/homebrew.bash` - Final core script with shared utility extraction
 4. Remaining scripts based on dependency analysis
 
-**Pattern per Script**:
-- Create `lib/{script}-utils.bash` with shellcheck compliance
-- Create comprehensive bats test suite
-- Migrate main installation script to bash
-- Verify feature parity with original zsh version
-- Update integration points
+**Three-Tier Architecture Pattern**:
+1. **Core utilities (bash)**: `lib/*-utils.bash` - Pure logic, shellcheck compliant, fully tested
+2. **Setup orchestration (bash)**: `setup.bash` - Calls utilities directly, professional tooling
+3. **Interactive tools (zsh)**: `bin/update/*.zsh` - Thin wrappers, rich user experience
 
 ### Phase 3: Framework Cleanup (Pending)
 **Goal**: Remove zsh test framework and update CI
@@ -49,15 +47,21 @@
 
 ## Key Decisions Made
 
-### Bash + Shellcheck + Bats Stack
-- **Bash**: Universal, better CI support, consistent behavior
-- **Shellcheck**: Industry-standard linting, catches common errors
+### Enhanced Architecture: Bash Infrastructure + Zsh User Experience
+- **setup.bash**: Main entry point for maximum tooling leverage (shellcheck + bats)
+- **lib/*-utils.bash**: Shared logic for code reuse between setup and updates
+- **bin/update/*.zsh**: Interactive tools stay zsh for rich user shell experience
+- **Reasoning**: Best of both worlds - professional development tools + user-friendly shell
+
+### Bash + Shellcheck + Bats Stack for Infrastructure
+- **Bash**: Universal, better CI support, consistent behavior, fresh machine friendly
+- **Shellcheck**: Industry-standard linting, catches common errors, enforces best practices
 - **Bats**: Mature testing framework, wide adoption, good GitHub Actions support
 
-### Migration Approach: Complete Examples First
-- **Rejected**: Hybrid approach (keep scripts in zsh, tests in bash)
-- **Chosen**: Full migration with complete working examples
-- **Reasoning**: Cleaner long-term solution, better tooling ecosystem
+### Migration Approach: Setup.bash as Forcing Function
+- **Rejected**: Incremental script-by-script migration without setup changes
+- **Chosen**: setup.bash + core scripts + shared utilities as complete system
+- **Reasoning**: Forces architectural consistency, enables code sharing, validates entire approach
 
 ### Test Coverage Standards
 - **Utilities**: Comprehensive unit tests for all functions
@@ -96,10 +100,16 @@ test/install/test-{component}-installation.bats  # Integration tests
 - **Future**: Migrate to bats with better reporting and parallelization
 - **Benefit**: Standard test output format, better integration with GitHub UI
 
-### Existing Zsh Infrastructure
-- **Preserve**: Current zsh configuration and shell setup (user-facing)
-- **Migrate**: Only installation and testing scripts (development tooling)
-- **Benefit**: Users keep familiar shell while development gets better tools
+### Code Sharing Strategy
+- **Extract to utilities**: Shared logic between setup and update scripts goes to `lib/*-utils.bash`
+- **Three-tier reuse**: Core utilities (bash) + Setup orchestration (bash) + Interactive wrappers (zsh)
+- **Maximum leverage**: Shellcheck + bats testing for all shared business logic
+- **Example**: `lib/homebrew-utils.bash` used by both `setup.bash` and `bin/update/homebrew.zsh`
+
+### Enhanced Migration Boundary
+- **→ Bash infrastructure**: setup.bash, bin/install/*.bash, bin/lib/*.bash, shared utilities
+- **← Zsh user experience**: config/zsh/*, bin/update/*.zsh, interactive aliases/functions
+- **Benefit**: Maximum tooling leverage while preserving rich user shell experience
 
 ## Discovered Issues
 
@@ -151,14 +161,37 @@ test/install/test-{component}-installation.bats  # Integration tests
 - Feature parity verification required
 - Complete behavior bundle (no dead code)
 
-## Next Steps
+## Current Work
 
-1. **Continue Phase 1**: SSH installation script migration to bash + bats
-2. **Update CI Workflow**: Migrate from custom zsh runner to bats
-3. **Plan Phase 2**: Define systematic migration order for remaining scripts
-4. **Document Migration Pattern**: Create guide for future script conversions
-5. **Performance Testing**: Compare bash vs zsh test execution times
+### 🔄 PR #15: SSH Installation Testing (Draft)
+- **Files Created**:
+  - `lib/ssh-utils.bash` - SSH utilities with comprehensive functionality
+  - `bin/install/ssh.bash` - Bash replacement for ssh.zsh
+  - `test/install/test-ssh-utils.bats` - 14 utility function tests
+  - `test/install/test-ssh-installation.bats` - 7 integration tests
+- **Test Results**: All 21 tests passing, shellcheck compliance verified
+- **Improvements**: Better macOS version detection for ssh-add keychain flag
+- **Status**: Draft PR created, ready for review
+
+## Next Steps (Enhanced Architecture)
+
+1. **Complete PR #15**: SSH installation migration (current work)
+2. **Extract shared utilities**: Create `lib/homebrew-utils.bash`, `lib/npm-utils.bash`, `lib/symlink-utils.bash`
+3. **Migrate utility libraries**: `bin/lib/*.zsh` → `bin/lib/*.bash` (machine-detection, prerequisite-validation, etc.)
+4. **Create setup.bash**: Main entry point using shared utilities and bash install scripts
+5. **Update bin/update/*.zsh**: Thin wrappers around shared utilities for interactive use
+6. **Migrate CI workflow**: Custom zsh runner → bats with comprehensive test coverage
+7. **Architectural validation**: Verify three-tier system meets all requirements
+
+## Enhanced Development Workflow
+
+**Setup.bash-centered approach**:
+1. **Extract shared logic** to utilities during each script migration
+2. **Validate with setup.bash** to ensure utilities work in real setup context
+3. **Update interactive tools** to use shared utilities (preserving user experience)
+4. **Test comprehensively** with bats for all bash infrastructure
+5. **Maintain compatibility** with existing user shell workflows
 
 ---
 
-*This epic represents a significant infrastructure improvement that will provide better development tools, more reliable testing, and easier maintenance for the dotfiles project.*
+*This epic represents a significant infrastructure improvement that will provide better development tools, more reliable testing, and easier maintenance for the dotfiles project. The enhanced three-tier architecture maximizes shellcheck + bats leverage while preserving rich zsh user experience.*
