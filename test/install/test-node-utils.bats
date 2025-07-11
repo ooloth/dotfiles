@@ -50,3 +50,27 @@ EOF
     run fnm_installed
     [ "$status" -eq 0 ]
 }
+
+@test "get_latest_node_version returns latest version from fnm ls-remote" {
+    # Create mock fnm command that returns version list
+    cat > "$MOCK_BIN/fnm" << 'EOF'
+#!/bin/bash
+if [[ "$1" == "ls-remote" ]]; then
+    cat << 'VERSIONS'
+v18.0.0
+v18.19.0
+v20.0.0
+v20.11.0
+v21.5.0
+VERSIONS
+fi
+EOF
+    chmod +x "$MOCK_BIN/fnm"
+    
+    # Add mock bin to PATH
+    PATH="$MOCK_BIN:$PATH"
+    
+    run get_latest_node_version
+    [ "$status" -eq 0 ]
+    [[ "$output" == "v21.5.0" ]]
+}
