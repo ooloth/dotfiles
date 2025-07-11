@@ -34,3 +34,10 @@ load "../../bin/lib/error-handling.bash"
     [[ "${lines[0]}" == "Output before failure" ]]
     [[ "$output" =~ "Error: Command with output failed" ]]
 }
+
+# Test retry_with_backoff with no command provided
+@test "retry_with_backoff returns error when no command provided" {
+    run retry_with_backoff
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "Error: No command provided to retry_with_backoff" ]]
+}
