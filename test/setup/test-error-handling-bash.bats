@@ -69,3 +69,21 @@ load "../../bin/lib/error-handling.bash"
     [[ "$output" =~ "Error: Custom error message" ]]
     [[ "$output" =~ "💡 Suggestion: Check the command syntax and try again" ]]
 }
+
+# Test handle_error provides permission-specific suggestion
+@test "handle_error provides permission-specific suggestion for EACCES" {
+    run handle_error "test-command" "EACCES" "Permission denied"
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "❌ Error occurred while running: test-command" ]]
+    [[ "$output" =~ "Error: Permission denied" ]]
+    [[ "$output" =~ "💡 Suggestion: Try running with sudo or check file permissions" ]]
+}
+
+# Test handle_error provides file-not-found suggestion
+@test "handle_error provides file-not-found suggestion for ENOENT" {
+    run handle_error "test-command" "ENOENT" "No such file or directory"
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "❌ Error occurred while running: test-command" ]]
+    [[ "$output" =~ "Error: No such file or directory" ]]
+    [[ "$output" =~ "💡 Suggestion: Check if the file or directory exists" ]]
+}
