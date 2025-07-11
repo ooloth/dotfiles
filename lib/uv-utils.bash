@@ -9,3 +9,13 @@ set -euo pipefail
 uv_installed() {
     command -v uv &>/dev/null
 }
+
+# Install UV via Homebrew
+install_uv_via_brew() {
+    brew install uv
+}
+
+# Get UV version
+get_uv_version() {
+    uv --version
+}
