@@ -105,3 +105,31 @@ load "../../bin/lib/error-handling.bash"
     [[ "$output" =~ "Error: No space left on device" ]]
     [[ "$output" =~ "💡 Suggestion: Free up disk space and try again" ]]
 }
+
+# Test retry_with_backoff succeeds on second attempt
+@test "retry_with_backoff succeeds on second attempt after one failure" {
+    # Create a file that tracks attempts
+    local attempt_file=$(mktemp)
+    echo "0" > "$attempt_file"
+    
+    # Command that fails first time, succeeds second time
+    local test_command="
+        current=\$(cat '$attempt_file')
+        next=\$((current + 1))
+        echo \$next > '$attempt_file'
+        [ \$next -eq 2 ]
+    "
+    
+    run retry_with_backoff "$test_command" 3 0
+    [ "$status" -eq 0 ]
+    
+    # Clean up
+    rm -f "$attempt_file"
+}
+
+# Test capture_error with default context
+@test "capture_error uses default context when none provided" {
+    run capture_error "exit 1"
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "Error: Command execution failed" ]]
+}
