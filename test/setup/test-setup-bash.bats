@@ -43,3 +43,15 @@ teardown() {
     [ -f "$(pwd)/setup.bash" ]
     [ -x "$(pwd)/setup.bash" ]
 }
+
+@test "setup.bash sets DOTFILES environment variable" {
+    # Clear DOTFILES to test that setup.bash sets it
+    unset DOTFILES
+    
+    # Run setup.bash in a way that exports variables
+    source "$(pwd)/setup.bash"
+    
+    # Check that DOTFILES is set correctly
+    [ -n "$DOTFILES" ]
+    [[ "$DOTFILES" == "$HOME/Repos/ooloth/dotfiles" ]]
+}
