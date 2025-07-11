@@ -62,16 +62,14 @@ jobs:
       - name: Run shellcheck
         run: |
           # Run shellcheck on all bash scripts (.sh and .bash files)
+          # Configuration is handled by .shellcheckrc file
           echo "Running shellcheck on bash scripts..."
           
           # Find all bash scripts and run shellcheck
-          # We only need minimal exclusions for actual bash files
           # Exclude experiment directory which contains intentionally bad examples
           find . \( -name "*.sh" -o -name "*.bash" \) -type f -not -path "./.*" -not -path "./experiment/*" | while read -r file; do
             echo "Checking: $file"
-            shellcheck -s bash \
-              -e SC1091 \
-              "$file" || exit 1
+            shellcheck -s bash "$file" || exit 1
           done
           
           echo "✅ All bash scripts passed shellcheck"
