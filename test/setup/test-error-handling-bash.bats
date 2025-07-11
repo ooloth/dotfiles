@@ -47,3 +47,9 @@ load "../../bin/lib/error-handling.bash"
     run retry_with_backoff "exit 0"
     [ "$status" -eq 0 ]
 }
+
+# Test retry_with_backoff exhausts all attempts and fails
+@test "retry_with_backoff fails after exhausting max attempts" {
+    run retry_with_backoff "exit 1" 2 0
+    [ "$status" -eq 1 ]
+}
