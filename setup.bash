@@ -51,6 +51,18 @@ main() {
     else
         printf "✓ macOS confirmed.\n\n"
     fi
+    
+    # Clone or update dotfiles
+    if [ -d "$DOTFILES" ]; then
+        printf "📂 Dotfiles are already installed. Pulling latest changes.\n"
+        cd "$DOTFILES"
+        git pull
+    else
+        # Clone via https (will be converted to ssh by install/github.bash)
+        printf "📂 Installing dotfiles\n"
+        mkdir -p "$DOTFILES"
+        git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
+    fi
 }
 
 # Only run main if script is executed directly

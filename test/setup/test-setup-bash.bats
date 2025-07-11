@@ -101,3 +101,25 @@ EOF
     # Check for macOS error message
     [[ "$output" =~ "This script only runs on macOS" ]]
 }
+
+@test "setup.bash pulls latest changes when dotfiles already exist" {
+    # Create mock git command
+    local mock_bin="$TEST_TEMP_DIR/bin"
+    mkdir -p "$mock_bin"
+    cat > "$mock_bin/git" << 'EOF'
+#!/bin/bash
+if [[ "$1" == "pull" ]]; then
+    echo "Already up to date."
+fi
+EOF
+    chmod +x "$mock_bin/git"
+    
+    # Create the dotfiles directory to simulate it already exists
+    mkdir -p "$DOTFILES"
+    
+    # Run setup.bash with mocked git, answering 'y' but then it will fail on platform check
+    PATH="$mock_bin:$PATH" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    
+    # Check that it detected existing dotfiles
+    [[ "$output" =~ "Dotfiles are already installed. Pulling latest changes." ]]
+}
