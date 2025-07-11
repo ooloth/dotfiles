@@ -3,6 +3,8 @@
 # Dotfiles setup script (bash version)
 # Main entry point for dotfiles installation
 
+# shellcheck disable=SC1091  # Don't follow sourced files
+
 # Enable strict error handling
 set -euo pipefail
 
