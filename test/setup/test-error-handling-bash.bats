@@ -11,3 +11,10 @@ load "../../bin/lib/error-handling.bash"
     [ "$status" -eq 1 ]
     [[ "$output" =~ "Error: No command provided to capture_error" ]]
 }
+
+# Test capture_error with successful command
+@test "capture_error executes successful command and returns 0" {
+    run capture_error "echo 'Hello World'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == "Hello World" ]]
+}
