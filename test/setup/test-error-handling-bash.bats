@@ -41,3 +41,9 @@ load "../../bin/lib/error-handling.bash"
     [ "$status" -eq 1 ]
     [[ "$output" =~ "Error: No command provided to retry_with_backoff" ]]
 }
+
+# Test retry_with_backoff with successful command on first try
+@test "retry_with_backoff succeeds on first attempt" {
+    run retry_with_backoff "exit 0"
+    [ "$status" -eq 0 ]
+}
