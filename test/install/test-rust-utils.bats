@@ -74,3 +74,37 @@ EOF
     [[ "$CARGO_HOME" == "$HOME/.config/cargo" ]]
     [[ "$RUSTUP_HOME" == "$HOME/.config/rustup" ]]
 }
+
+@test "install_rust_toolchain uses curl to download rustup installer" {
+    # Create mock curl command that logs its arguments
+    local curl_log="$TEST_TEMP_DIR/curl.log"
+    cat > "$MOCK_BIN/curl" << EOF
+#!/bin/bash
+echo "curl called with: \$@" > "$curl_log"
+# Mock the rustup script response
+cat << 'SCRIPT_EOF'
+#!/bin/sh
+echo "Mock rustup installer executed"
+SCRIPT_EOF
+EOF
+    chmod +x "$MOCK_BIN/curl"
+    
+    # Create mock sh command to capture script execution
+    cat > "$MOCK_BIN/sh" << 'EOF'
+#!/bin/bash
+echo "sh executed"
+EOF
+    chmod +x "$MOCK_BIN/sh"
+    
+    # Add mock bin to PATH
+    PATH="$MOCK_BIN:$PATH"
+    
+    run install_rust_toolchain
+    [ "$status" -eq 0 ]
+    
+    # Check that curl was called with correct arguments
+    [[ -f "$curl_log" ]]
+    local curl_args=$(cat "$curl_log")
+    [[ "$curl_args" =~ "--proto" ]]
+    [[ "$curl_args" =~ "https://sh.rustup.rs" ]]
+}
