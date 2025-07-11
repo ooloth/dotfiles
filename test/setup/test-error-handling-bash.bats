@@ -18,3 +18,11 @@ load "../../bin/lib/error-handling.bash"
     [ "$status" -eq 0 ]
     [[ "$output" == "Hello World" ]]
 }
+
+# Test capture_error with failing command
+@test "capture_error handles failing command and provides context" {
+    run capture_error "exit 42" "Test operation"
+    [ "$status" -eq 42 ]
+    [[ "$output" =~ "Error: Test operation failed (exit code: 42)" ]]
+    [[ "$output" =~ "Command: exit 42" ]]
+}
