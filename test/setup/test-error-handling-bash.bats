@@ -87,3 +87,21 @@ load "../../bin/lib/error-handling.bash"
     [[ "$output" =~ "Error: No such file or directory" ]]
     [[ "$output" =~ "💡 Suggestion: Check if the file or directory exists" ]]
 }
+
+# Test handle_error provides network-specific suggestion
+@test "handle_error provides network-specific suggestion for ECONNREFUSED" {
+    run handle_error "test-command" "ECONNREFUSED" "Connection refused"
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "❌ Error occurred while running: test-command" ]]
+    [[ "$output" =~ "Error: Connection refused" ]]
+    [[ "$output" =~ "💡 Suggestion: Check your internet connection or try again later" ]]
+}
+
+# Test handle_error provides disk-space suggestion
+@test "handle_error provides disk-space suggestion for ENOSPC" {
+    run handle_error "test-command" "ENOSPC" "No space left on device"
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "❌ Error occurred while running: test-command" ]]
+    [[ "$output" =~ "Error: No space left on device" ]]
+    [[ "$output" =~ "💡 Suggestion: Free up disk space and try again" ]]
+}
