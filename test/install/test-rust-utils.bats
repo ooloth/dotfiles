@@ -49,3 +49,18 @@ teardown() {
     run rust_installed
     [ "$status" -eq 1 ]
 }
+
+@test "rust_installed returns true when rustup is found" {
+    # Create mock rustup command
+    cat > "$MOCK_BIN/rustup" << 'EOF'
+#!/bin/bash
+echo "rustup 1.26.0"
+EOF
+    chmod +x "$MOCK_BIN/rustup"
+    
+    # Add mock bin to PATH
+    PATH="$MOCK_BIN:$PATH"
+    
+    run rust_installed
+    [ "$status" -eq 0 ]
+}
