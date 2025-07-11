@@ -73,3 +73,14 @@ EOF
     run "$test_script"
     [ "$status" -ne 0 ]
 }
+
+@test "setup.bash shows welcome message when run directly" {
+    # Run setup.bash with 'n' response to avoid full installation
+    run bash -c "echo 'n' | $(pwd)/setup.bash"
+    
+    # Check that welcome message is shown
+    [[ "$output" =~ "Welcome to your new Mac!" ]]
+    [[ "$output" =~ "Sound good?" ]]
+    [[ "$output" =~ "No worries! Maybe next time." ]]
+    [ "$status" -eq 1 ]
+}
