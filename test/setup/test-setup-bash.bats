@@ -55,3 +55,21 @@ teardown() {
     [ -n "$DOTFILES" ]
     [[ "$DOTFILES" == "$HOME/Repos/ooloth/dotfiles" ]]
 }
+
+@test "setup.bash enables strict error handling" {
+    # Create a test script that sources setup.bash and checks error handling
+    local test_script="$TEST_TEMP_DIR/test_error.sh"
+    cat > "$test_script" << 'EOF'
+#!/bin/bash
+source "$(pwd)/setup.bash"
+
+# Test that undefined variable causes error
+echo "$UNDEFINED_VARIABLE"
+EOF
+    
+    chmod +x "$test_script"
+    
+    # Run the test script - should fail due to undefined variable
+    run "$test_script"
+    [ "$status" -ne 0 ]
+}
