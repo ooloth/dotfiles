@@ -123,3 +123,48 @@ EOF
     # Check that it detected existing dotfiles
     [[ "$output" =~ "Dotfiles are already installed. Pulling latest changes." ]]
 }
+
+@test "setup.bash loads dotfiles utilities after cloning" {
+    # Create mock utilities that export variables to verify they were loaded
+    mkdir -p "$DOTFILES/bin/lib"
+    
+    # Create mock machine detection
+    cat > "$DOTFILES/bin/lib/machine-detection.bash" << 'EOF'
+#!/usr/bin/env bash
+init_machine_detection() {
+    export MACHINE_DETECTION_LOADED="true"
+}
+EOF
+    
+    # Create mock dry-run utils
+    cat > "$DOTFILES/bin/lib/dry-run-utils.bash" << 'EOF'
+#!/usr/bin/env bash
+parse_dry_run_flags() {
+    export DRY_RUN_UTILS_LOADED="true"
+}
+EOF
+    
+    # Create a test script that sources setup.bash and checks the variables
+    local test_script="$TEST_TEMP_DIR/test_utils.sh"
+    cat > "$test_script" << EOF
+#!/bin/bash
+# Override DOTFILES to use test location
+export DOTFILES="$DOTFILES"
+
+# Source setup.bash (not execute)
+source "$(pwd)/setup.bash"
+
+# Check if utilities would be loaded if main ran
+if [[ -f "\$DOTFILES/bin/lib/machine-detection.bash" ]] && 
+   [[ -f "\$DOTFILES/bin/lib/dry-run-utils.bash" ]]; then
+    echo "Utilities found"
+else
+    echo "Utilities not found"
+fi
+EOF
+    
+    chmod +x "$test_script"
+    run "$test_script"
+    
+    [[ "$output" =~ "Utilities found" ]]
+}

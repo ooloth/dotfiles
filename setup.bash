@@ -63,6 +63,31 @@ main() {
         mkdir -p "$DOTFILES"
         git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
     fi
+    
+    # Initialize dotfiles utilities now that repository is available
+    printf "\n🔧 Initializing dotfiles utilities...\n\n"
+    
+    # Initialize dynamic machine detection
+    source "$DOTFILES/bin/lib/machine-detection.bash"
+    init_machine_detection
+    
+    # Initialize dry-run mode utilities
+    source "$DOTFILES/bin/lib/dry-run-utils.bash"
+    parse_dry_run_flags "$@"
+    
+    # Initialize enhanced error handling utilities
+    source "$DOTFILES/bin/lib/error-handling.bash"
+    
+    # Run comprehensive prerequisite validation
+    printf "Running comprehensive prerequisite validation...\n\n"
+    
+    source "$DOTFILES/bin/lib/prerequisite-validation.bash"
+    if ! run_prerequisite_validation; then
+        printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
+        exit 1
+    fi
+    
+    printf "✅ All prerequisites validated successfully.\n\n"
 }
 
 # Only run main if script is executed directly
