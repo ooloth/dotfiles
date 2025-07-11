@@ -189,6 +189,15 @@ test/install/test-{component}-installation.bats  # Integration tests
 
 ## Current Work
 
+### ✅ PR #19: Dry-run and Error Handling Utilities (Ready to Merge)
+- **Files Created**:
+  - `bin/lib/dry-run-utils.bash` - Complete dry-run functionality
+  - `bin/lib/error-handling.bash` - Error handling and retry mechanisms
+  - `test/setup/test-dry-run-utils-bash.bats` - 20 tests for dry-run utilities (all passing)
+- **Test Results**: 20/20 tests passing, zero shellcheck warnings
+- **Status**: Ready to merge
+- **Follow-up needed**: Add comprehensive tests for error-handling.bash utilities
+
 ### 🔄 PR #15: SSH Installation Testing (Draft)
 - **Files Created**:
   - `lib/ssh-utils.bash` - SSH utilities with comprehensive functionality
@@ -201,13 +210,14 @@ test/install/test-{component}-installation.bats  # Integration tests
 
 ## Next Steps (Enhanced Architecture)
 
-1. **Complete PR #15**: SSH installation migration (current work)
-2. **Extract shared utilities**: Create `lib/homebrew-utils.bash`, `lib/npm-utils.bash`, `lib/symlink-utils.bash`
-3. **Migrate utility libraries**: `bin/lib/*.zsh` → `bin/lib/*.bash` (machine-detection, prerequisite-validation, etc.)
-4. **Create setup.bash**: Main entry point using shared utilities and bash install scripts
-5. **Update bin/update/*.zsh**: Thin wrappers around shared utilities for interactive use
-6. **Migrate CI workflow**: Custom zsh runner → bats with comprehensive test coverage
-7. **Architectural validation**: Verify three-tier system meets all requirements
+1. **Add error-handling tests**: Create `test/setup/test-error-handling-bash.bats` with comprehensive tests for all error handling utilities (capture_error, retry_with_backoff, handle_error)
+2. **Complete PR #15**: SSH installation migration (current work)
+3. **Extract shared utilities**: Create `lib/homebrew-utils.bash`, `lib/npm-utils.bash`, `lib/symlink-utils.bash`
+4. **Migrate utility libraries**: `bin/lib/*.zsh` → `bin/lib/*.bash` (machine-detection, prerequisite-validation, etc.)
+5. **Create setup.bash**: Main entry point using shared utilities and bash install scripts
+6. **Update bin/update/*.zsh**: Thin wrappers around shared utilities for interactive use
+7. **Migrate CI workflow**: Custom zsh runner → bats with comprehensive test coverage
+8. **Architectural validation**: Verify three-tier system meets all requirements
 
 ## Enhanced Development Workflow
 
