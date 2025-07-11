@@ -53,3 +53,10 @@ load "../../bin/lib/error-handling.bash"
     run retry_with_backoff "exit 1" 2 0
     [ "$status" -eq 1 ]
 }
+
+# Test handle_error with no command provided
+@test "handle_error returns error when no command provided" {
+    run handle_error
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "Error: No command provided to handle_error" ]]
+}
