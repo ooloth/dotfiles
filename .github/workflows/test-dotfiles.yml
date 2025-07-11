@@ -61,41 +61,20 @@ jobs:
           
       - name: Run shellcheck
         run: |
-          # Run shellcheck on all shell scripts
-          echo "Running shellcheck on shell scripts..."
+          # Run shellcheck on all bash scripts (.sh and .bash files)
+          echo "Running shellcheck on bash scripts..."
           
-          # Find all shell scripts and run shellcheck with bash compatibility
-          # We exclude some common zsh-specific patterns that shellcheck doesn't understand
-          find . -name "*.zsh" -type f -not -path "./.*" | while read -r file; do
+          # Find all bash scripts and run shellcheck
+          # We only need minimal exclusions for actual bash files
+          # Exclude experiment directory which contains intentionally bad examples
+          find . \( -name "*.sh" -o -name "*.bash" \) -type f -not -path "./.*" -not -path "./experiment/*" | while read -r file; do
             echo "Checking: $file"
             shellcheck -s bash \
               -e SC1091 \
-              -e SC2154 \
-              -e SC2164 \
-              -e SC2059 \
-              -e SC2034 \
-              -e SC1090 \
-              -e SC2120 \
-              -e SC2207 \
-              -e SC2119 \
               "$file" || exit 1
           done
           
-          # Also check setup.zsh specifically
-          echo "Checking: setup.zsh"
-          shellcheck -s bash \
-            -e SC1091 \
-            -e SC2154 \
-            -e SC2164 \
-            -e SC2059 \
-            -e SC2034 \
-            -e SC1090 \
-            -e SC2120 \
-            -e SC2207 \
-            -e SC2119 \
-            setup.zsh || exit 1
-          
-          echo "✅ All shell scripts passed shellcheck"
+          echo "✅ All bash scripts passed shellcheck"
           
       - name: Run test suite
         run: |
