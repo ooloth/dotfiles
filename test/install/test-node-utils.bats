@@ -35,3 +35,18 @@ teardown() {
     run fnm_installed
     [ "$status" -eq 1 ]
 }
+
+@test "fnm_installed returns true when fnm is found" {
+    # Create mock fnm command
+    cat > "$MOCK_BIN/fnm" << 'EOF'
+#!/bin/bash
+echo "fnm 1.35.0"
+EOF
+    chmod +x "$MOCK_BIN/fnm"
+    
+    # Add mock bin to PATH
+    PATH="$MOCK_BIN:$PATH"
+    
+    run fnm_installed
+    [ "$status" -eq 0 ]
+}
