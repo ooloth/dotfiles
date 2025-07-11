@@ -41,6 +41,16 @@ main() {
     else
         printf "\nExcellent! Here we go...\n\n"
     fi
+    
+    # Confirm this is a Mac
+    printf "Confirming this is a Mac...\n\n"
+    
+    if [[ "$(uname)" != "Darwin" ]]; then
+        printf "Error: This script only runs on macOS.\n"
+        exit 1
+    else
+        printf "✓ macOS confirmed.\n\n"
+    fi
 }
 
 # Only run main if script is executed directly

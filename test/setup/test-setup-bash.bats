@@ -84,3 +84,20 @@ EOF
     [[ "$output" =~ "No worries! Maybe next time." ]]
     [ "$status" -eq 1 ]
 }
+
+@test "setup.bash checks for macOS platform" {
+    # Create a mock uname command that returns Linux
+    local mock_bin="$TEST_TEMP_DIR/bin"
+    mkdir -p "$mock_bin"
+    cat > "$mock_bin/uname" << 'EOF'
+#!/bin/bash
+echo "Linux"
+EOF
+    chmod +x "$mock_bin/uname"
+    
+    # Run setup.bash with mocked uname
+    PATH="$mock_bin:$PATH" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    
+    # Check for macOS error message
+    [[ "$output" =~ "This script only runs on macOS" ]]
+}
