@@ -65,3 +65,39 @@ EOF
     [[ "$output" =~ "Rust is already installed" ]]
     [ "$status" -eq 0 ]
 }
+
+@test "rust.bash installs rust when not present" {
+    # Create mock curl command that logs execution
+    local install_log="$TEST_TEMP_DIR/install.log"
+    cat > "$MOCK_BIN/curl" << EOF
+#!/bin/bash
+echo "curl executed with: \$@" > "$install_log"
+# Mock the rustup script
+cat << 'SCRIPT_EOF'
+#!/bin/sh
+echo "Mock rustup installer executed"
+SCRIPT_EOF
+EOF
+    chmod +x "$MOCK_BIN/curl"
+    
+    # Create mock sh to capture installation
+    cat > "$MOCK_BIN/sh" << 'EOF'
+#!/bin/bash
+echo "sh executed with rustup installer"
+EOF
+    chmod +x "$MOCK_BIN/sh"
+    
+    # Override PATH to exclude system rustup but keep essential commands
+    PATH="$MOCK_BIN:/usr/bin:/bin"
+    
+    # Run rust installation
+    run bash "$(pwd)/bin/install/rust.bash"
+    
+    # Should indicate installation is happening
+    [[ "$output" =~ "Installing Rust toolchain" ]]
+    [[ "$output" =~ "Finished installing rustup" ]]
+    [ "$status" -eq 0 ]
+    
+    # Verify curl was called
+    [[ -f "$install_log" ]]
+}
