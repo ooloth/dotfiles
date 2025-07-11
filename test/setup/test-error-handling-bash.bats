@@ -60,3 +60,12 @@ load "../../bin/lib/error-handling.bash"
     [ "$status" -eq 1 ]
     [[ "$output" =~ "Error: No command provided to handle_error" ]]
 }
+
+# Test handle_error displays error message and generic suggestion
+@test "handle_error displays error message and generic suggestion" {
+    run handle_error "test-command" "999" "Custom error message"
+    [ "$status" -eq 1 ]
+    [[ "$output" =~ "❌ Error occurred while running: test-command" ]]
+    [[ "$output" =~ "Error: Custom error message" ]]
+    [[ "$output" =~ "💡 Suggestion: Check the command syntax and try again" ]]
+}
