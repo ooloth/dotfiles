@@ -36,11 +36,13 @@
 2. **Setup orchestration (bash)**: `setup.bash` - Calls utilities directly, professional tooling
 3. **Interactive tools (zsh)**: `bin/update/*.zsh` - Thin wrappers, rich user experience
 
-### Phase 3: Framework Cleanup (Pending)
-**Goal**: Remove zsh test framework and update CI
+### Phase 3: Framework Cleanup and CI Enhancement (Pending)
+**Goal**: Remove zsh test framework, update CI, and add shellcheck validation
 
 **Tasks**:
 - Update `.github/workflows/test-dotfiles.yml` to use bats instead of custom runner
+- Add shellcheck step to CI pipeline for all bash scripts
+- Configure shellcheck with appropriate exclusions (e.g., SC1091 for sourced files)
 - Remove `test/run-tests.zsh` and custom zsh test utilities
 - Update documentation to reflect bash-first approach
 - Archive zsh test framework with migration notes
@@ -79,6 +81,25 @@ test/install/test-{component}-utils.bats     # Unit tests
 test/install/test-{component}-installation.bats  # Integration tests
 ```
 
+### Shellcheck CI Configuration (Planned)
+```yaml
+# .github/workflows/shellcheck.yml
+- name: Run ShellCheck
+  uses: ludeeus/action-shellcheck@master
+  with:
+    scandir: '.'
+    check_together: 'yes'
+    ignore_paths: 'test/install/lib'  # Mock scripts
+    severity: 'error'
+    format: 'gcc'
+```
+
+**Shellcheck Standards**:
+- All bash scripts must pass with zero warnings
+- Use inline directives sparingly (prefer fixing the issue)
+- Document any necessary exclusions (e.g., SC1091 for sourced files)
+- Configure `.shellcheckrc` for project-wide settings if needed
+
 ### Bash Script Standards
 - `#!/usr/bin/env bash` shebang
 - `set -euo pipefail` strict mode
@@ -98,7 +119,11 @@ test/install/test-{component}-installation.bats  # Integration tests
 ### CI/CD Pipeline
 - GitHub Actions currently uses custom zsh test runner
 - **Future**: Migrate to bats with better reporting and parallelization
-- **Benefit**: Standard test output format, better integration with GitHub UI
+- **Future**: Add shellcheck validation step for all bash scripts
+- **Benefits**: 
+  - Standard test output format, better integration with GitHub UI
+  - Automated code quality enforcement via shellcheck
+  - Catch shell scripting issues before merge
 
 ### Code Sharing Strategy
 - **Extract to utilities**: Shared logic between setup and update scripts goes to `lib/*-utils.bash`
@@ -157,9 +182,10 @@ test/install/test-{component}-installation.bats  # Integration tests
 
 ### Quality Gates
 - All bats tests must pass
-- Zero shellcheck warnings allowed
+- Zero shellcheck warnings allowed (enforced in CI)
 - Feature parity verification required
 - Complete behavior bundle (no dead code)
+- CI shellcheck validation must pass
 
 ## Current Work
 
