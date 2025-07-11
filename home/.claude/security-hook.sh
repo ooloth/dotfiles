@@ -20,20 +20,22 @@ TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input')
 
 # Function to show periodic security status
 show_security_status() {
-    local stats_file="$HOME/.claude/security-stats.tmp"
     local last_shown_file="$HOME/.claude/last-status-shown"
-    local current_hour=$(date +%Y%m%d%H)
+    local current_hour
+    current_hour=$(date +%Y%m%d%H)
     
     # Only show status once per hour
     if [[ -f "$last_shown_file" ]]; then
-        local last_shown=$(cat "$last_shown_file" 2>/dev/null || echo "0")
+        local last_shown
+        last_shown=$(cat "$last_shown_file" 2>/dev/null || echo "0")
         if [[ "$current_hour" == "$last_shown" ]]; then
             return 0
         fi
     fi
     
     # Count today's stats (simple approach)
-    local today=$(date +"%a %d %b %Y")
+    local today
+    today=$(date +"%a %d %b %Y")
     local blocked_today=0
     local total_today=0
     local allowed_today=0

@@ -54,6 +54,26 @@ jobs:
           # Make test runner executable
           chmod +x test/run-tests.zsh
           
+      - name: Install shellcheck
+        run: |
+          # Install shellcheck for static analysis
+          brew install shellcheck
+          
+      - name: Run shellcheck
+        run: |
+          # Run shellcheck on all bash scripts (.sh and .bash files)
+          # Configuration is handled by .shellcheckrc file
+          echo "Running shellcheck on bash scripts..."
+          
+          # Find all bash scripts and run shellcheck
+          # Exclude experiment directory which contains intentionally bad examples
+          find . \( -name "*.sh" -o -name "*.bash" \) -type f -not -path "./.*" -not -path "./experiment/*" | while read -r file; do
+            echo "Checking: $file"
+            shellcheck -s bash "$file" || exit 1
+          done
+          
+          echo "✅ All bash scripts passed shellcheck"
+          
       - name: Run test suite
         run: |
           # Run all tests using our existing test runner
