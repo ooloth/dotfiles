@@ -9,3 +9,9 @@ set -euo pipefail
 rust_installed() {
     command -v rustup &>/dev/null
 }
+
+# Set up Rust environment variables
+setup_rust_environment() {
+    export CARGO_HOME="$HOME/.config/cargo"
+    export RUSTUP_HOME="$HOME/.config/rustup"
+}

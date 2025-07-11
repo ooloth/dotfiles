@@ -64,3 +64,13 @@ EOF
     run rust_installed
     [ "$status" -eq 0 ]
 }
+
+@test "setup_rust_environment sets CARGO_HOME and RUSTUP_HOME" {
+    run setup_rust_environment
+    [ "$status" -eq 0 ]
+    
+    # Source the function and check the variables
+    setup_rust_environment
+    [[ "$CARGO_HOME" == "$HOME/.config/cargo" ]]
+    [[ "$RUSTUP_HOME" == "$HOME/.config/rustup" ]]
+}
