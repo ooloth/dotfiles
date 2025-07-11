@@ -54,6 +54,49 @@ jobs:
           # Make test runner executable
           chmod +x test/run-tests.zsh
           
+      - name: Install shellcheck
+        run: |
+          # Install shellcheck for static analysis
+          brew install shellcheck
+          
+      - name: Run shellcheck
+        run: |
+          # Run shellcheck on all shell scripts
+          echo "Running shellcheck on shell scripts..."
+          
+          # Find all shell scripts and run shellcheck with bash compatibility
+          # We exclude some common zsh-specific patterns that shellcheck doesn't understand
+          find . -name "*.zsh" -type f -not -path "./.*" | while read -r file; do
+            echo "Checking: $file"
+            shellcheck -s bash \
+              -e SC1091 \
+              -e SC2154 \
+              -e SC2164 \
+              -e SC2059 \
+              -e SC2034 \
+              -e SC1090 \
+              -e SC2120 \
+              -e SC2207 \
+              -e SC2119 \
+              "$file" || exit 1
+          done
+          
+          # Also check setup.zsh specifically
+          echo "Checking: setup.zsh"
+          shellcheck -s bash \
+            -e SC1091 \
+            -e SC2154 \
+            -e SC2164 \
+            -e SC2059 \
+            -e SC2034 \
+            -e SC1090 \
+            -e SC2120 \
+            -e SC2207 \
+            -e SC2119 \
+            setup.zsh || exit 1
+          
+          echo "✅ All shell scripts passed shellcheck"
+          
       - name: Run test suite
         run: |
           # Run all tests using our existing test runner
