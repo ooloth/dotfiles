@@ -46,3 +46,55 @@ teardown() {
     [ -f "$(pwd)/bin/install/node.bash" ]
     [ -x "$(pwd)/bin/install/node.bash" ]
 }
+
+@test "node.bash skips installation when latest version already installed" {
+    # Create mock fnm with latest version installed
+    cat > "$MOCK_BIN/fnm" << 'EOF'
+#!/bin/bash
+case "$1" in
+    "ls-remote")
+        echo "v21.5.0"
+        ;;
+    "ls")
+        echo "v21.5.0"
+        ;;
+esac
+EOF
+    chmod +x "$MOCK_BIN/fnm"
+    
+    PATH="$MOCK_BIN:$PATH"
+    
+    run bash "$(pwd)/bin/install/node.bash"
+    
+    [[ "$output" =~ "The latest Node version (v21.5.0) is already installed" ]]
+    [ "$status" -eq 0 ]
+}
+
+@test "node.bash installs latest version when not present" {
+    # Create mock fnm with older version installed
+    local log_file="$TEST_TEMP_DIR/fnm.log"
+    cat > "$MOCK_BIN/fnm" << EOF
+#!/bin/bash
+echo "fnm \$@" >> "$log_file"
+case "\$1" in
+    "ls-remote")
+        echo "v21.5.0"
+        ;;
+    "ls")
+        echo "v20.11.0"
+        ;;
+esac
+EOF
+    chmod +x "$MOCK_BIN/fnm"
+    
+    PATH="$MOCK_BIN:$PATH"
+    
+    run bash "$(pwd)/bin/install/node.bash"
+    
+    [[ "$output" =~ "Installing Node.js v21.5.0" ]]
+    [[ "$output" =~ "Finished installing Node v21.5.0" ]]
+    [ "$status" -eq 0 ]
+    
+    # Verify fnm commands were called
+    grep -q "fnm install v21.5.0 --corepack-enabled" "$log_file"
+}
