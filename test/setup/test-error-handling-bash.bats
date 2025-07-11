@@ -26,3 +26,11 @@ load "../../bin/lib/error-handling.bash"
     [[ "$output" =~ "Error: Test operation failed (exit code: 42)" ]]
     [[ "$output" =~ "Command: exit 42" ]]
 }
+
+# Test capture_error preserves command output before showing error
+@test "capture_error shows command output before error message" {
+    run capture_error "echo 'Output before failure' && exit 1" "Command with output"
+    [ "$status" -eq 1 ]
+    [[ "${lines[0]}" == "Output before failure" ]]
+    [[ "$output" =~ "Error: Command with output failed" ]]
+}
