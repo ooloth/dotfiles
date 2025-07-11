@@ -1,17 +1,19 @@
 # Bash Migration Epic
 
-## Current Status (July 7, 2025)
+## Current Status (July 11, 2025)
 
 **Task**: Migrate dotfiles installation infrastructure from custom zsh to industry-standard bash + shellcheck + bats
 **Approach**: Enhanced 3-phase migration with setup.bash at the center for maximum tooling leverage
-**Current**: Phase 1 enhanced scope - migrating setup.bash + core scripts + shared utilities
+**Current**: Phase 1 nearing completion - core utilities and 4 installation scripts migrated, setup.bash pending
 
 ## Migration Strategy
 
 ### Phase 1: Setup + Core Infrastructure Migration (IN PROGRESS - Enhanced Scope)
 **Goal**: Migrate setup.bash + core installation scripts + shared utilities for maximum tooling leverage
 
-#### ✅ PR #13: GitHub Installation Testing (MERGED)
+#### Completed PRs
+
+##### ✅ PR #13: GitHub Installation Testing (MERGED)
 - **Files Created**:
   - `lib/github-utils.bash` - GitHub SSH utilities (shellcheck clean)
   - `bin/install/github.bash` - Bash replacement for github.zsh
@@ -21,6 +23,46 @@
 - **Test Results**: All 20 tests passing, shellcheck compliance verified
 - **Benefits Demonstrated**: Better error catching, industry-standard tooling, cleaner syntax
 - **Status**: MERGED - established complete migration pattern with 20 passing tests
+
+##### ✅ PR #15: SSH Installation Testing (MERGED)
+- **Files Created**:
+  - `lib/ssh-utils.bash` - SSH utilities with comprehensive functionality
+  - `bin/install/ssh.bash` - Bash replacement for ssh.zsh
+  - `test/install/test-ssh-utils.bats` - 14 utility function tests
+  - `test/install/test-ssh-installation.bats` - 7 integration tests
+- **Test Results**: All 21 tests passing, shellcheck compliance verified
+- **Improvements**: Better macOS version detection for ssh-add keychain flag
+- **Status**: MERGED - SSH installation fully migrated to bash
+
+##### ✅ PR #17: Homebrew Utilities Migration (MERGED)
+- **Files Created**:
+  - `lib/homebrew-utils.bash` - Homebrew shared utilities
+  - `bin/install/homebrew.bash` - Bash replacement for homebrew.zsh
+  - `test/install/test-homebrew-utils.bats` - Comprehensive utility tests
+- **Status**: MERGED - Homebrew installation fully migrated with shared utilities
+
+##### ✅ PR #18: Core Utility Libraries Migration (MERGED)
+- **Files Migrated**:
+  - `bin/lib/machine-detection.bash` - Dynamic hostname-based machine detection
+  - `bin/lib/prerequisite-validation.bash` - System prerequisites validation
+  - Test files for all core utilities
+- **Status**: MERGED - Core utilities successfully migrated to bash
+
+##### ✅ PR #19: Dry-run and Error Handling Utilities (MERGED)
+- **Files Created**:
+  - `bin/lib/dry-run-utils.bash` - Complete dry-run functionality
+  - `bin/lib/error-handling.bash` - Error handling and retry mechanisms
+  - `test/setup/test-dry-run-utils-bash.bats` - 20 tests for dry-run utilities
+- **Test Results**: 20/20 tests passing, zero shellcheck warnings
+- **Status**: MERGED - Dry-run and error handling utilities in bash
+- **Note**: Error handling tests still needed
+
+##### ✅ PR #20: Symlink Utilities Extraction (MERGED)
+- **Files Created**:
+  - `lib/symlink-utils.bash` - Symlink management utilities
+  - `bin/install/symlinks.bash` - Bash replacement for symlinks installation
+  - `test/setup/test-symlink-utils-bash.bats` - Comprehensive symlink tests
+- **Status**: MERGED - Symlink functionality fully migrated to bash
 
 ### Phase 2: Remaining Script Migration (Pending)
 **Goal**: Migrate remaining installation scripts using established three-tier architecture

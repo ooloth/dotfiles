@@ -1,0 +1,18 @@
+# ShellCheck Configuration
+# 
+# This file configures shellcheck for both local development and CI.
+# ShellCheck will automatically find and use this configuration file.
+
+# Disable SC1091: Not following sourced files
+# This is expected behavior for our setup - we source utility libraries
+# that shellcheck cannot always locate in the correct context
+disable=SC1091
+
+# Enable external sources to allow shellcheck to follow sourced files
+# when they are available in the project structure
+external-sources=true
+
+# Add source paths for our utility libraries
+source-path=bin/lib
+source-path=test/lib
+source-path=test/install/lib
