@@ -88,6 +88,32 @@ main() {
     fi
     
     printf "✅ All prerequisites validated successfully.\n\n"
+    
+    # Run installation scripts
+    printf "Running installations...\n\n"
+    
+    cd "$DOTFILES/bin/install"
+    
+    # Run bash installation scripts if they exist
+    if [[ -f "ssh.bash" ]]; then
+        source ssh.bash
+    fi
+    
+    if [[ -f "github.bash" ]]; then
+        source github.bash
+    fi
+    
+    if [[ -f "homebrew.bash" ]]; then
+        source homebrew.bash
+    fi
+    
+    if [[ -f "symlinks.bash" ]]; then
+        source symlinks.bash
+    fi
+    
+    # TODO: Add remaining installation scripts as they are migrated to bash
+    
+    printf "\n🎉 Setup complete!\n"
 }
 
 # Only run main if script is executed directly

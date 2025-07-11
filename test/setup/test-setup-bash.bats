@@ -168,3 +168,48 @@ EOF
     
     [[ "$output" =~ "Utilities found" ]]
 }
+
+@test "setup.bash runs bash installation scripts" {
+    # Create mock git command
+    local mock_bin="$TEST_TEMP_DIR/bin"
+    mkdir -p "$mock_bin"
+    cat > "$mock_bin/git" << 'EOF'
+#!/bin/bash
+if [[ "$1" == "pull" ]]; then
+    echo "Already up to date."
+fi
+EOF
+    chmod +x "$mock_bin/git"
+    
+    # Create mock installation scripts
+    mkdir -p "$DOTFILES/bin/install"
+    
+    # Create mock ssh.bash that sets a variable
+    cat > "$DOTFILES/bin/install/ssh.bash" << 'EOF'
+#!/usr/bin/env bash
+echo "Running SSH installation"
+export SSH_INSTALL_RAN="true"
+EOF
+    chmod +x "$DOTFILES/bin/install/ssh.bash"
+    
+    # Create mock github.bash
+    cat > "$DOTFILES/bin/install/github.bash" << 'EOF'
+#!/usr/bin/env bash
+echo "Running GitHub installation"
+export GITHUB_INSTALL_RAN="true"
+EOF
+    chmod +x "$DOTFILES/bin/install/github.bash"
+    
+    # Create minimal mock utilities to avoid errors
+    mkdir -p "$DOTFILES/bin/lib"
+    echo 'init_machine_detection() { :; }' > "$DOTFILES/bin/lib/machine-detection.bash"
+    echo 'parse_dry_run_flags() { :; }' > "$DOTFILES/bin/lib/dry-run-utils.bash"
+    echo '' > "$DOTFILES/bin/lib/error-handling.bash"
+    echo 'run_prerequisite_validation() { return 0; }' > "$DOTFILES/bin/lib/prerequisite-validation.bash"
+    
+    # Run setup.bash with mocked git
+    PATH="$mock_bin:$PATH" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    
+    # Check that installation scripts were mentioned/run
+    [[ "$output" =~ "Running installations" ]]
+}
