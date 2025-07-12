@@ -1,15 +1,49 @@
 # Bash Migration Epic
 
-## Current Status (July 11, 2025)
+## Current Status (July 12, 2025)
 
 **Task**: Migrate dotfiles installation infrastructure from custom zsh to industry-standard bash + shellcheck + bats
-**Approach**: Enhanced 3-phase migration with setup.bash at the center for maximum tooling leverage
-**Current**: Phase 1 nearing completion - core utilities and 4 installation scripts migrated, setup.bash pending
+**Approach**: Parallel development - building complete bash setup system alongside existing zsh system
+**Current**: Phase 1 nearly complete - setup.bash + 7 installation scripts + all core utilities migrated
+
+### Parallel System Status
+
+**Bash setup system** (`setup.bash`):
+- ✅ Core utilities: machine-detection, prerequisite-validation, dry-run, error-handling
+- ✅ Installation scripts: ssh, github, homebrew, rust, node, neovim, symlinks  
+- ✅ Test coverage: 50+ comprehensive tests across all components
+- ✅ Quality: Zero shellcheck warnings across all bash files
+- ✅ Integration: setup.bash orchestrates all available bash scripts
+
+**Zsh setup system** (`setup.zsh`):
+- ✅ Fully functional and unchanged
+- ✅ Still the primary/production setup method
+- ✅ Uses some shared bash utilities (machine-detection, etc.)
+- ✅ Independent operation - no dependency on bash migration progress
 
 ## Migration Strategy
 
+**CRITICAL: Parallel Development Approach**
+
+This migration uses a **parallel development strategy** - we are building a complete bash-based setup flow alongside the existing zsh setup, NOT replacing it incrementally:
+
+- **Existing system**: `setup.zsh` + `bin/install/*.zsh` (continues to work, unchanged)
+- **New parallel system**: `setup.bash` + `bin/install/*.bash` (being built independently)
+- **Shared utilities**: `bin/lib/*.bash` (used by both systems during transition)
+
+**Why parallel?**
+- Zero disruption to existing workflows during development
+- Complete system validation before any replacement
+- Easy rollback if issues discovered
+- Allows thorough testing of new approach
+
+**Integration points**:
+- `setup.bash` sources bash installation scripts as they become available
+- Missing bash scripts fall back to zsh versions during transition
+- Both systems can coexist indefinitely until cutover decision
+
 ### Phase 1: Setup + Core Infrastructure Migration (IN PROGRESS - Enhanced Scope)
-**Goal**: Migrate setup.bash + core installation scripts + shared utilities for maximum tooling leverage
+**Goal**: Build complete bash setup system + core installation scripts + shared utilities for maximum tooling leverage
 
 #### Completed PRs
 
@@ -63,6 +97,34 @@
   - `bin/install/symlinks.bash` - Bash replacement for symlinks installation
   - `test/setup/test-symlink-utils-bash.bats` - Comprehensive symlink tests
 - **Status**: MERGED - Symlink functionality fully migrated to bash
+
+##### ✅ PR #22: Setup.bash Entry Point (MERGED)
+- **Files Created**:
+  - `setup.bash` - Main entry point for bash setup system
+- **Status**: MERGED - Parallel bash setup system established
+
+##### ✅ PR #23: Rust Installation Migration (MERGED)
+- **Files Created**:
+  - `bin/install/rust.bash` - Bash replacement for rust.zsh
+  - `lib/rust-utils.bash` - Rust installation utilities  
+  - Comprehensive test suite with 7 tests
+- **Status**: MERGED - Rust installation fully migrated to bash
+
+##### ✅ PR #24: Node.js Installation Migration (MERGED)
+- **Files Created**:
+  - `bin/install/node.bash` - Bash replacement for node.zsh
+  - `lib/node-utils.bash` - Node/fnm installation utilities
+  - Comprehensive test suite with 7 tests
+- **Status**: MERGED - Node.js installation fully migrated to bash
+
+##### 🔄 PR #25: Neovim Installation Migration (IN REVIEW)
+- **Files Created**:
+  - `bin/install/neovim.bash` - Bash replacement for neovim.zsh
+  - `lib/neovim-utils.bash` - Neovim configuration utilities
+  - Comprehensive test suite with 7 tests
+- **Files Updated**:
+  - `setup.bash` - Added integration for rust.bash, node.bash, neovim.bash
+- **Status**: Ready for merge - Neovim installation migrated + setup.bash integration complete
 
 ### Phase 2: Remaining Script Migration (Pending)
 **Goal**: Migrate remaining installation scripts using established three-tier architecture
@@ -173,10 +235,23 @@ test/install/test-{component}-installation.bats  # Integration tests
 - **Maximum leverage**: Shellcheck + bats testing for all shared business logic
 - **Example**: `lib/homebrew-utils.bash` used by both `setup.bash` and `bin/update/homebrew.zsh`
 
-### Enhanced Migration Boundary
-- **→ Bash infrastructure**: setup.bash, bin/install/*.bash, bin/lib/*.bash, shared utilities
-- **← Zsh user experience**: config/zsh/*, bin/update/*.zsh, interactive aliases/functions
-- **Benefit**: Maximum tooling leverage while preserving rich user shell experience
+### Parallel System Boundaries
+
+**Bash setup system** (new, being built):
+- `setup.bash` - Main entry point with comprehensive error handling and validation
+- `bin/install/*.bash` - Installation scripts with shellcheck compliance and bats testing
+- `bin/lib/*.bash` - Shared utilities used by both setup systems
+- **Benefits**: Professional tooling (shellcheck + bats), better error handling, consistent behavior
+
+**Zsh setup system** (existing, unchanged):
+- `setup.zsh` - Original entry point, continues to work
+- `bin/install/*.zsh` - Original installation scripts, still functional
+- `config/zsh/*`, `bin/update/*.zsh` - Interactive user experience (unchanged)
+- **Benefits**: Rich shell features, established workflows, user familiarity
+
+**Shared components** (used by both):
+- `bin/lib/*.bash` - Core utilities (machine detection, prerequisites, etc.)
+- Configuration files and symlink targets (unchanged)
 
 ## Discovered Issues
 
