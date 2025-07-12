@@ -104,6 +104,39 @@ When following Test-Driven Development:
 - Each commit adds exactly one test case (not all tests first, then all implementation)
 - The test case should determine what implementation changes belong in the commit
 
+### TDD with Legacy Code
+
+When modifying hard-to-test existing code, follow this specialized workflow:
+
+**Assessment phase:**
+- Identify why current code is hard to test (tight coupling, mixed concerns, dependencies, etc.)
+- Determine if refactoring would make it more testable
+- Plan the safest refactoring approach
+
+**Legacy TDD workflow:**
+1. **Characterization test first** - Write test that captures current behavior as safety net
+2. **Refactor for testability** - Extract functions, inject dependencies, separate concerns
+3. **Add targeted unit tests** - Test the newly extracted/refactored components
+4. **TDD for new behavior** - Follow normal red-green-refactor cycle for new functionality
+
+**Commit sequence example:**
+- "Add characterization test for user authentication flow"
+- "Extract password validation into separate function"
+- "Add unit test for password validation logic"
+- "Add password strength requirements with test"
+
+**Key principles:**
+- Never refactor without a safety net (characterization test)
+- Make smallest possible changes to enable testing
+- Focus refactoring on the specific area you need to modify
+- Use Michael Feathers "Legacy Code Dilemma" techniques when needed
+
+**When to use this approach:**
+- Modifying existing untested code
+- Code with hard-to-mock dependencies
+- Tightly coupled functions that mix multiple concerns
+- Legacy code that wasn't designed with testing in mind
+
 ### Post-Implementation Code Review and Refactoring
 
 **After all tests pass, always look for improvement opportunities in the new code:**
