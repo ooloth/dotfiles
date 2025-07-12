@@ -129,6 +129,10 @@ main() {
         source tmux.bash
     fi
     
+    if [[ -f "content.bash" ]]; then
+        source content.bash
+    fi
+    
     if [[ -f "symlinks.bash" ]]; then
         source symlinks.bash
     fi
