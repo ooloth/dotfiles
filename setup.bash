@@ -109,6 +109,18 @@ main() {
         source homebrew.bash
     fi
     
+    if [[ -f "rust.bash" ]]; then
+        source rust.bash
+    fi
+    
+    if [[ -f "node.bash" ]]; then
+        source node.bash
+    fi
+    
+    if [[ -f "neovim.bash" ]]; then
+        source neovim.bash
+    fi
+    
     if [[ -f "symlinks.bash" ]]; then
         source symlinks.bash
     fi
