@@ -121,6 +121,10 @@ main() {
         source neovim.bash
     fi
     
+    if [[ -f "tmux.bash" ]]; then
+        source tmux.bash
+    fi
+    
     if [[ -f "symlinks.bash" ]]; then
         source symlinks.bash
     fi
