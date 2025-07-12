@@ -30,7 +30,7 @@ Create a draft pull request from the current branch to the main branch.
      - 💪 **What**: What's new/different, direct changes to project behavior, testing/documentation status, implementation details
      - 🤔 **Why**: Problem solved, business value, timing rationale
      - 👀 **Usage**: How to use new functionality (if user-facing)
-     - 👩‍🔬 **How to validate**: Manual steps for reviewers to test changes
+     - 👩‍🔬 **How to validate**: Manual steps for reviewers to exercise the code and observe outcomes (teach reviewers how to prove the changes work by using the functionality - never tell them to run tests or checks, as CI handles that)
      - 🔗 **Related links**: External context with real URLs (only if valuable, omit if none)
    - **Append missing valuable sections** from the high-quality template if not covered by project template
    - **Focus on reviewer experience** - provide context that helps reviewers understand and validate changes
