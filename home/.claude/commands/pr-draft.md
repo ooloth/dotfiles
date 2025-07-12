@@ -35,6 +35,7 @@ Create a draft pull request from the current branch to the main branch.
    - **Append missing valuable sections** from the high-quality template if not covered by project template
    - **Focus on reviewer experience** - provide context that helps reviewers understand and validate changes
    - **"What" vs "Why" clarity**: "What" describes direct changes/impacts, "Why" explains benefits and rationale
+   - **Format requirements**: Start "What" with flat bullet list of primary behavior changes/takeaways, format "Why" as flat bullet list
    - **Reference related issues/plans** - link to GitHub issues, project plans, or task files this PR addresses
 9. Create the draft PR with descriptive title and structured body
 
