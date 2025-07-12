@@ -27,7 +27,7 @@ Create a draft pull request from the current branch to the main branch.
    - **Check for existing PR template** in `.github/pull_request_template.md` or `.github/PULL_REQUEST_TEMPLATE.md`
    - **If project has PR template**: Follow it, but enhance with the spirit of the high-quality template
    - **If no project template**: Use the high-quality template structure (ONLY these sections):
-     - 💪 **What**: What's new/different, direct changes to project behavior, testing/documentation status, implementation details
+     - 💪 **What**: What's new/different, direct changes to project behavior, testing/documentation status, implementation details (use present tense: "Adds", "Updates", "Removes", "Fixes")
      - 🤔 **Why**: Problem solved, business value, timing rationale
      - 👀 **Usage**: How to use new functionality (if user-facing)
      - 👩‍🔬 **How to validate**: Manual steps for reviewers to exercise the code and observe outcomes (teach reviewers how to prove the changes work by using the functionality - never tell them to run tests or checks, as CI handles that)
@@ -35,11 +35,17 @@ Create a draft pull request from the current branch to the main branch.
    - **Append missing valuable sections** from the high-quality template if not covered by project template
    - **Focus on reviewer experience** - provide context that helps reviewers understand and validate changes
    - **"What" vs "Why" clarity**: "What" describes direct changes/impacts, "Why" explains benefits and rationale
-   - **Format requirements**: Start "What" with flat bullet list of primary behavior changes/takeaways, format "Why" as flat bullet list
+   - **Format requirements**: Start "What" with flat bullet list of primary behavior changes/takeaways using present tense verbs (Adds, Updates, Removes, Fixes), format "Why" as flat bullet list
    - **Avoid file listings**: Don't include "New Files" sections - reviewers will see files in the PR, focus on what the PR accomplishes
    - **Link formatting**: Use markdown links for external URLs, raw URLs for GitHub PRs/issues (GitHub formats them nicely), format Related links as bullet list
    - **"Why" tone**: Make salient points about why changes help this specific project, avoid overly broad statements or overselling
    - **Reference related issues/plans** - link to GitHub issues, project plans, or task files this PR addresses
+
+**Verb tense consistency:**
+- **Always use present tense** in "What" section: "Adds", "Updates", "Removes", "Fixes", "Improves"
+- **Never use past tense**: Avoid "Added", "Updated", "Removed", "Fixed"  
+- **Examples**: "Adds user authentication", "Updates error handling", "Removes deprecated functions", "Fixes memory leak"
+- **Rationale**: Present tense describes what the PR does when merged, not what was done during development
 
 **Related links guidelines:**
 - **ONLY include links that provide valuable context NOT already in the PR**
