@@ -299,59 +299,6 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
-### PR Creation Requirements
-
-**CRITICAL: Always create PRs in draft mode for review workflows:**
-
-1. **Default to draft mode** - Use `gh pr create --draft` when creating PRs
-2. **Draft allows iteration** - User can review and request changes before marking ready
-3. **Prevents premature merge** - Ensures proper review process is followed
-4. **Only use non-draft PRs** when explicitly instructed or for trivial changes
-5. **Mark ready when told** - User will explicitly say when to convert from draft to ready
-
-**Example PR creation:**
-```bash
-gh pr create --draft --title "Feature Title" --body "$(cat <<'EOF'
-[PR description using template]
-EOF
-)"
-```
-
-### PR Template Usage
-
-**Always use the high-quality PR template when repositories lack good templates:**
-
-1. **For repos without PR templates** - Use the reference template from `~/.claude/PR_TEMPLATE_REFERENCE.md`
-2. **For repos with overly brief templates** (e.g., just "What" and "Why") - Enhance with the spirit of the reference template
-3. **Bring the template philosophy**: Focus on What/Why/Usage/Validation/Links structure
-4. **Maintain reviewer focus**: Emphasize "How to validate" as teaching tool for reviewers
-5. **Include context**: Always provide related links that help reviewers understand background
-
-**Reference template structure:**
-- 💪 What: What's new/different, files changed, testing/documentation
-- 🤔 Why: Problem solved, business value, timing rationale  
-- 👀 Usage: How to use new functionality (optional for user-facing changes)
-- 👩‍🔬 How to validate: Manual steps for reviewers to confirm changes work
-- 🔗 Related links: External context that helps reviewers understand background
-
-**Related links guidelines:**
-- **ONLY include links that provide valuable context NOT already in the PR**
-- **External references**: Documentation, Stack Overflow, RFCs, design docs, external issues
-- **Background PRs**: Previous/related PRs that provide important context
-- **DO NOT include**:
-  - Files in the current PR (reviewers can already see them)
-  - Generic/empty pages (issues page with no relevant issues)
-  - Links that duplicate information already in PR description
-  - Internal project files unless they provide critical background context
-- **If no useful links exist, omit the entire Related links section** - no section is better than empty section
-- **Quality over quantity** - 1-2 highly relevant links better than 5 marginally useful ones
-
-**When to apply:**
-- Creating PRs in repos without templates
-- Repos with minimal templates missing key sections
-- Any time PR description would benefit from structured approach
-- Use good judgment - don't force inappropriate structure on simple fixes
-
 ### PR Size and Focus Guidelines
 
 **Each PR should be a complete bundle of one new behavior:**
@@ -374,106 +321,39 @@ EOF
 - ❌ "Add Homebrew detection utility" (missing actual usage)
 - ❌ "Add authentication tests" (missing implementation and integration)
 
-**For projects with separate frontend/backend deployments:**
-- ✅ Backend PR: "Add user authentication API endpoints with tests and documentation"
-- ✅ Frontend PR: "Add login UI components using new authentication endpoints" 
-- ✅ Backend PR: "Remove deprecated login endpoints after frontend migration"
-- ❌ "Add user authentication with backend API and frontend UI" (deployment complexity)
-
 **When to split PRs:**
 - **Multiple unrelated behaviors** (authentication vs database vs caching)
 - **Different deployment boundaries** (frontend vs backend in systems with separate deployment pipelines)
 - **Refactoring separate from new features** (clean up existing code vs add new functionality)
 - **Infrastructure changes that enable multiple future features** (but include at least one usage example)
 
-**Deployment-aware PR sequencing:**
-- **Backend-first approach**: Deploy backend changes before frontend changes that depend on them
-- **Graceful migrations**: When replacing functionality, deploy new approach → migrate frontend → remove old approach
-- **Feature flags**: Use feature toggles when backend and frontend changes must be deployed together
-- **Backward compatibility**: Ensure backend changes don't break existing frontend functionality
+### PR Creation Requirements
 
-**Complete behavior includes:**
-- ✅ Tests that validate the behavior works
-- ✅ Implementation that passes the tests
-- ✅ Integration/usage that demonstrates real-world value
-- ✅ Documentation updates for user-facing changes
-- ✅ Code comments for complex logic
-- ✅ **Only code that is actually used** - no speculative "might be useful" functions
+For detailed PR creation workflow, use the `/pr-draft` command.
 
-### PR Description Maintenance
+Key principles:
+- Always create PRs in draft mode for review workflows
+- Use structured PR templates for clear communication
+- Focus on complete functionality bundles (see sizing guidelines above)
 
-**Always update the PR description after new commits** that change what the PR includes:
+See `/pr-draft` command for complete workflow and template guidelines.
 
-- After you push new commits, update the PR description with available tools
-- After the user pushes commits, check what changed and update the description
-- Keep the "Changes" section current with all modifications
-- Update test plans if new tests were added
-- Add new commits to the implementation approach if significant
+### PR Workflow Requirements
 
-### PR Commit Pushing and Description Updates
+**CRITICAL commit and push behavior:**
+- Commit and push changes immediately after making them
+- Update PR description after pushing commits with new functionality
+- Never consider PRs "done" until actually merged
+- Stay focused on current PR until user confirms completion
 
-**Always commit and push changes immediately after making them:**
+**Key principles:**
+- User expects to see changes in GitHub UI immediately
+- All commits must be explained in PR descriptions
+- Include off-topic commits transparently
+- Wait for user direction before considering PR work finished
 
-1. **After making any file changes** - Commit immediately, don't accumulate changes
-2. **After making commits to a PR branch** - Push immediately so changes are visible in GitHub
-3. **Don't batch multiple commits** before pushing - push after each commit or small group
-4. **User expects to see changes in GitHub UI** when you announce commits in terminal
-5. **Prevents confusion** between what's committed locally vs what's visible for review
-6. **Automatic behavior** - Commit and push should be automatic, not requiring explicit user request
+See `/pr-draft` and `/pr-review` commands for detailed workflow guidance.
 
-**CRITICAL: PRs are not complete until merged:**
-
-- **Never consider a PR "done" or "completed" until it's actually merged**
-- **Don't move to next tasks** while a PR is still open and being iterated on
-- **Stay focused on current PR** until user explicitly says to move on or confirms merge
-- **PR work includes** creation, iteration, addressing feedback, and final merge
-- **Wait for user direction** before considering PR work finished
-- **Never mark PR tasks as completed in todo lists** until the PR is actually merged
-- **Don't update project roadmaps or task trackers** to show PR completion until merge is confirmed
-
-**CRITICAL: Always update PR description after pushing commits with new functionality:**
-
-1. **Check if new commits add functionality** not already described in the PR
-2. **Update PR description immediately** after pushing if commits introduce:
-   - New features or capabilities not mentioned
-   - Additional test coverage or edge cases
-   - Refactoring or code improvements
-   - Documentation updates (like CLAUDE.md changes)
-   - Bug fixes or dead code removal
-   - **ANY commits, even off-topic ones** - all commits must be explained for reviewers
-3. **Use `gh pr edit [number] --body "..."` or web interface** to update
-4. **Don't assume changes are obvious** - explicitly document what was added
-5. **Include off-topic commits transparently** - clearly separate them but don't hide them
-
-Example workflow:
-```
-# When making any file changes during development
-[make file changes]
-git add [files]
-git commit -m "descriptive commit message"
-git push origin feature-branch  # ← CRITICAL: Always push immediately
-
-# ← CRITICAL: Update PR description if commits add new functionality
-gh pr edit [number] --body "$(cat <<'EOF'
-[updated description with new changes]
-EOF
-)"
-```
-
-**This workflow should be automatic - don't wait for user to ask "commit and push":**
-- When you make file changes, immediately commit and push
-- When you improve documentation, immediately commit and push  
-- When you fix code issues, immediately commit and push
-- The user expects to see changes in GitHub without having to request it
-
-**Handling off-topic commits in PR descriptions:**
-- **Always include all commits** - even those not related to the PR's main purpose
-- **Use clear section separation** - e.g., "Documentation Updates (Claude Development Process)"
-- **Provide context** - explain why off-topic changes are included (e.g., "discovered during development")
-- **Be transparent** - better to over-explain than leave reviewers wondering
-- **Example structure**: Core functionality sections first, then clearly labeled off-topic sections
-
-**Exception**: Only skip pushing if explicitly told not to push or if you're about to make several rapid commits in succession (then push the batch).
 
 ### Multi-PR Task Management
 

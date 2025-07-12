@@ -40,6 +40,31 @@ Create a draft pull request from the current branch to the main branch.
    - **Link formatting**: Use markdown links for external URLs, raw URLs for GitHub PRs/issues (GitHub formats them nicely), format Related links as bullet list
    - **"Why" tone**: Make salient points about why changes help this specific project, avoid overly broad statements or overselling
    - **Reference related issues/plans** - link to GitHub issues, project plans, or task files this PR addresses
+
+**Related links guidelines:**
+- **ONLY include links that provide valuable context NOT already in the PR**
+- **External references**: Documentation, Stack Overflow, RFCs, design docs, external issues
+- **Background PRs**: Previous/related PRs that provide important context
+- **DO NOT include**:
+  - Files in the current PR (reviewers can already see them)
+  - Generic/empty pages (issues page with no relevant issues)
+  - Links that duplicate information already in PR description
+  - Internal project files unless they provide critical background context
+- **If no useful links exist, omit the entire Related links section** - no section is better than empty section
+- **Quality over quantity** - 1-2 highly relevant links better than 5 marginally useful ones
+
+**When to apply template:**
+- Creating PRs in repos without templates
+- Repos with minimal templates missing key sections
+- Any time PR description would benefit from structured approach
+- Use good judgment - don't force inappropriate structure on simple fixes
+
+**Draft mode requirements:**
+- **Always create PRs in draft mode** for review workflows
+- **Draft allows iteration** - User can review and request changes before marking ready
+- **Prevents premature merge** - Ensures proper review process is followed
+- **Only use non-draft PRs** when explicitly instructed or for trivial changes
+
 9. Create the draft PR with descriptive title and structured body
 
 **GitHub CLI commands to use:**
