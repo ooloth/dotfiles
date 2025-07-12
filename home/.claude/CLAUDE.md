@@ -43,6 +43,45 @@
 
 **Key behavioral change**: Make TDD consideration automatic, not optional.
 
+## Automatic Commit Workflow
+
+### Pre-commit Checks (in order)
+
+**CRITICAL: Always run these checks before any commit:**
+
+1. **Formatting** - Run code formatters first (prettier, black, rustfmt, etc.)
+2. **Linting** - Run linters after formatting
+3. **Type checking** - Run type checkers
+4. **Tests** - Run relevant tests last
+5. **Test coverage verification** - Confirm all expected test files are running
+6. **All tests must pass** - **CRITICAL**: Fix any failing tests immediately, do not commit/push with failing tests
+7. **Final review** - Check `git diff --staged` to review what will be committed
+8. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+
+### Test Requirements
+
+**All tests must pass before any commit or push:**
+
+1. **Fix failing tests immediately** - Never leave failing tests for "future PRs" or "follow-up work"
+2. **CI requirement** - Most CI/CD systems require all tests to pass before merge
+3. **Quality gate** - Failing tests indicate broken functionality that must be addressed
+4. **No exceptions** - Even if failure seems minor or unrelated, investigate and fix
+
+**When tests fail:**
+- **Investigate the root cause** - Don't just change the test, understand why it's failing
+- **Fix the implementation or test** - Address the actual issue, whether in code or test logic
+- **Verify the fix** - Run the full test suite to ensure no regressions
+- **Document complex fixes** - If the fix was non-obvious, add comments explaining the solution
+
+### When Pre-commit Checks Fail
+
+- **Formatting failures**: Auto-fix and stage the formatted changes, then retry commit
+- **Linting failures**: Fix the issues, stage the fixes, then retry commit
+- **Type checking failures**: Fix type errors, stage the fixes, then retry commit
+- **Test failures**: Fix failing tests, stage the fixes, then retry commit
+- If any check fails twice, report the issue and ask for guidance
+- Always include auto-fixes in the same commit when possible
+
 ## Git Workflow
 
 ### Commit Strategy
@@ -107,71 +146,23 @@ See `/tdd` command for complete legacy code workflow, assessment guidance, and c
 
 ### Post-Implementation Code Review and Refactoring
 
-**After all tests pass, always look for improvement opportunities in the new code:**
+**After all tests pass, always consider refactoring opportunities in new code.**
 
-#### Scope Guidelines for Refactoring Within PRs
+**Key principles:**
+- Focus refactoring on code you just wrote for this behavior
+- Eliminate dead code and duplication within new functionality
+- Make design improvements before finalizing PR
+- Use `/refactor` command for systematic refactoring workflow
 
-**✅ Include refactoring that improves the current PR:**
-- **New code improvements** - Focus on code you just wrote for this behavior
-- **Localized duplication** - Eliminate repetition within the new functions/files
-- **Interface clarity** - Improve naming and design of new APIs
-- **PR review clarity** - Changes that make the PR easier to understand
+**Scope guidelines:**
+- **✅ Include refactoring that improves the current PR** (new code, localized improvements)
+- **❌ Defer refactoring that expands PR scope** (large-scale redesigns, unrelated cleanup)
 
-**❌ Defer refactoring that expands PR scope:**
-- **Large-scale redesigns** - Major architectural changes to existing systems
-- **Unrelated code cleanup** - Improvements to old code not touched by this PR
-- **Cross-cutting changes** - Modifications that affect many existing files
-- **Breaking changes** - API changes that require updating many call sites
+**Two-phase approach:**
+1. **Make it work** - Follow TDD to implement working functionality
+2. **Make it right** - Use `/refactor` to systematically improve design
 
-#### Code Quality Review Checklist (for new code)
-1. **Dead code elimination** - Remove any unused code you added
-   - Functions or utilities that aren't called anywhere
-   - Parameters that aren't used by any callers
-   - Configuration options that aren't referenced
-   - Helper functions added "just in case" but never used
-   - **Rule**: Every function/utility must have demonstrated usage in the PR
-
-2. **Duplication elimination** - Look for repeated patterns in your new code
-   - Multiple functions defining the same variables
-   - Similar validation logic within new functions
-   - Repeated string constants or configuration values
-   - Identical error handling patterns in new code
-
-3. **Design improvements** - Consider better abstractions for new functionality
-   - Extract common functionality within new utility libraries
-   - Consolidate configuration within new modules  
-   - Improve function naming and interface design for new APIs
-   - Consider breaking large new functions into smaller, focused ones
-
-4. **Maintainability enhancements** - Make the new code easier to change
-   - Centralize configuration for new functionality (paths, constants, defaults)
-   - Improve error messages and user feedback for new features
-   - Add helpful code comments for complex new logic
-
-#### Make It Work, Then Make It Right
-
-**Two-phase approach within each PR:**
-1. **Phase 1: Make it work** - Follow TDD to implement working functionality
-2. **Phase 2: Make it right** - Review and improve the design of new code
-
-**Refactoring commit examples (new code focus):**
-- "Refactor SSH utilities to eliminate path duplication" ✅ (within new SSH module)
-- "Remove unused get_ssh_public_key function" ✅ (eliminate dead code)
-- "Extract common validation logic from new auth functions" ✅ (new functionality)
-- "Centralize new API configuration constants" ✅ (new feature scope)
-- "Improve error handling consistency across installation scripts" ❌ (too broad)
-
-**Benefits of focused post-implementation refactoring:**
-- **Better design** - Can see the full picture after implementing new behavior
-- **Easier PR review** - Well-structured new code is easier to understand
-- **Reduced technical debt** - Fix new code issues while they're fresh in mind
-- **Future-ready** - Well-designed new APIs are easier to extend
-
-**When to create separate refactoring PRs:**
-- Large-scale architectural improvements that touch many existing files
-- Breaking changes that require updating multiple existing call sites  
-- Cross-cutting concerns that affect unrelated parts of the codebase
-- Major redesigns that would make the current PR too complex to review
+See `/refactor` command for detailed code quality checklist and improvement techniques.
 
 ### Examples of Good Commit Granularity
 - ✅ "Add input validation with test"
@@ -221,45 +212,6 @@ exit_code = run_setup_with_failed_prerequisites()
 assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 ```
 
-### Pre-commit Checks (in order)
-
-1. **Formatting** - Run code formatters first (prettier, black, rustfmt, etc.)
-2. **Linting** - Run linters after formatting
-3. **Type checking** - Run type checkers
-4. **Tests** - Run relevant tests last
-5. **Test coverage verification** - Confirm all expected test files are running (see below)
-6. **All tests must pass** - **CRITICAL**: Fix any failing tests immediately, do not commit/push with failing tests
-7. **Final review** - Check `git diff --staged` to review what will be committed
-8. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
-
-### Test Requirements
-
-**All tests must pass before any commit or push:**
-
-1. **Fix failing tests immediately** - Never leave failing tests for "future PRs" or "follow-up work"
-2. **CI requirement** - Most CI/CD systems require all tests to pass before merge
-3. **Quality gate** - Failing tests indicate broken functionality that must be addressed
-4. **No exceptions** - Even if failure seems minor or unrelated, investigate and fix
-
-**When tests fail:**
-- **Investigate the root cause** - Don't just change the test, understand why it's failing
-- **Fix the implementation or test** - Address the actual issue, whether in code or test logic
-- **Verify the fix** - Run the full test suite to ensure no regressions
-- **Document complex fixes** - If the fix was non-obvious, add comments explaining the solution
-
-**Test debugging approach:**
-- Create minimal reproduction scripts when tests fail in complex environments
-- Use mocking frameworks properly to isolate the code being tested
-- Verify test environment setup doesn't interfere with the functionality being tested
-
-### When Pre-commit Checks Fail
-
-- **Formatting failures**: Auto-fix and stage the formatted changes, then retry commit
-- **Linting failures**: Fix the issues, stage the fixes, then retry commit
-- **Type checking failures**: Fix type errors, stage the fixes, then retry commit
-- **Test failures**: Fix failing tests, stage the fixes, then retry commit
-- If any check fails twice, report the issue and ask for guidance
-- Always include auto-fixes in the same commit when possible
 
 ### Multi-commit Guidelines
 
