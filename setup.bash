@@ -109,6 +109,10 @@ main() {
         source homebrew.bash
     fi
     
+    if [[ -f "zsh.bash" ]]; then
+        source zsh.bash
+    fi
+    
     if [[ -f "rust.bash" ]]; then
         source rust.bash
     fi
@@ -127,6 +131,10 @@ main() {
     
     if [[ -f "tmux.bash" ]]; then
         source tmux.bash
+    fi
+    
+    if [[ -f "yazi.bash" ]]; then
+        source yazi.bash
     fi
     
     if [[ -f "symlinks.bash" ]]; then
