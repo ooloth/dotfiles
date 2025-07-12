@@ -4,14 +4,14 @@
 
 **Task**: Migrate dotfiles installation infrastructure from custom zsh to industry-standard bash + shellcheck + bats
 **Approach**: Parallel development - building complete bash setup system alongside existing zsh system
-**Current**: Phase 1 nearly complete - setup.bash + 8 installation scripts + all core utilities migrated
+**Current**: Phase 1 complete - setup.bash + 9 installation scripts + all core utilities migrated
 
 ### Parallel System Status
 
 **Bash setup system** (`setup.bash`):
 - ✅ Core utilities: machine-detection, prerequisite-validation, dry-run, error-handling
-- ✅ Installation scripts: ssh, github, homebrew, rust, node, neovim, tmux, symlinks  
-- ✅ Test coverage: 57+ comprehensive tests across all components
+- ✅ Installation scripts: ssh, github, homebrew, rust, uv, node, neovim, tmux, symlinks  
+- ✅ Test coverage: 63+ comprehensive tests across all components
 - ✅ Quality: Zero shellcheck warnings across all bash files
 - ✅ Integration: setup.bash orchestrates all available bash scripts
 
@@ -42,7 +42,7 @@ This migration uses a **parallel development strategy** - we are building a comp
 - Missing bash scripts fall back to zsh versions during transition
 - Both systems can coexist indefinitely until cutover decision
 
-### Phase 1: Setup + Core Infrastructure Migration (IN PROGRESS - Enhanced Scope)
+### Phase 1: Setup + Core Infrastructure Migration (COMPLETE)
 **Goal**: Build complete bash setup system + core installation scripts + shared utilities for maximum tooling leverage
 
 #### Completed PRs
@@ -126,14 +126,25 @@ This migration uses a **parallel development strategy** - we are building a comp
   - `setup.bash` - Added integration for rust.bash, node.bash, neovim.bash
 - **Status**: MERGED - Neovim installation migrated + setup.bash integration complete
 
-##### 🔄 PR #26: Tmux Installation Migration (IN REVIEW)
+##### ✅ PR #26: Tmux Installation Migration (MERGED)
 - **Files Created**:
   - `bin/install/tmux.bash` - Bash replacement for tmux.zsh
   - `lib/tmux-utils.bash` - Tmux/TPM utility functions
   - Comprehensive test suite with 7 tests
 - **Files Updated**:
   - `setup.bash` - Added tmux.bash integration
-- **Status**: Draft PR created, ready for merge - Tmux installation with TPM support
+- **Status**: MERGED - Tmux installation with TPM support
+
+##### ✅ PR #27: UV Installation Migration (MERGED)
+- **Files Created**:
+  - `bin/install/uv.bash` - Bash replacement for uv.zsh
+  - `lib/uv-utils.bash` - UV utility functions
+  - `test/install/test-uv-utils.bats` - 4 utility function tests
+  - `test/install/test-uv.bats` - 2 integration tests
+- **Files Updated**:
+  - `setup.bash` - Added uv.bash integration
+- **Test Results**: All 6 tests passing, zero shellcheck warnings
+- **Status**: MERGED - UV installation fully migrated to bash
 
 ### Phase 2: Remaining Script Migration (Pending)
 **Goal**: Migrate remaining installation scripts using established three-tier architecture

@@ -113,6 +113,10 @@ main() {
         source rust.bash
     fi
     
+    if [[ -f "uv.bash" ]]; then
+        source uv.bash
+    fi
+    
     if [[ -f "node.bash" ]]; then
         source node.bash
     fi
