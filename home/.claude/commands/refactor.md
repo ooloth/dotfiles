@@ -25,13 +25,35 @@ If arguments provided:
    - Identify the scope and boundaries
    - Run tests to ensure current behavior is captured
 
-2. **Analyze for improvements**:
-   - Dead code elimination
-   - Duplication removal
-   - Design improvements
-   - Maintainability enhancements
+2. **Impact assessment**:
+   - **High impact**: Code changed frequently + complex logic + poor readability
+   - **Medium impact**: Code changed occasionally + moderate complexity  
+   - **Low impact**: Stable code + simple logic + already readable
 
-3. **Make incremental changes**:
+3. **Risk assessment**:
+   - **Low risk**: Well-tested code, simple changes
+   - **Medium risk**: Some test coverage, moderate changes
+   - **High risk**: Poor test coverage, complex changes → require characterization tests first
+
+4. **Code smell detection**:
+   - **Long functions** (>20 lines) with multiple responsibilities
+   - **Deep nesting** (>3 levels) indicating complex control flow
+   - **Magic numbers/strings** without named constants
+   - **Feature envy** (functions accessing other objects' data excessively)
+   - **Shotgun surgery** (small changes requiring edits across many files)
+
+5. **ROI prioritization**:
+   - **Immediate value**: Code being actively modified
+   - **Future value**: Code likely to change soon
+   - **Team value**: Code that confuses multiple developers
+   - **Maintenance value**: Code with frequent bugs
+
+6. **Context integration**:
+   - Review recent commits for patterns needing improvement
+   - Check PR feedback for recurring refactoring suggestions
+   - Identify code that slows down current feature development
+
+7. **Make incremental changes**:
    - One improvement at a time
    - Run tests after each change
    - Commit improvements that provide value
