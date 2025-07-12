@@ -149,7 +149,7 @@ mock_homebrew_success() {
     mkdir -p "$MOCK_HOMEBREW_DIR/etc"
     
     # Create mock brew binary
-    echo '#!/bin/bash\necho "Homebrew mocked successfully"' > "$MOCK_HOMEBREW_DIR/bin/brew"
+    printf '#!/bin/bash\necho "Homebrew mocked successfully"' > "$MOCK_HOMEBREW_DIR/bin/brew"
     chmod +x "$MOCK_HOMEBREW_DIR/bin/brew"
 }
 
