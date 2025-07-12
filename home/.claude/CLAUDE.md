@@ -299,6 +299,34 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Split large changes into multiple PRs when possible
 - Include context about why changes were made, not just what changed
 
+### PR Size and Focus Guidelines
+
+**Each PR should be a complete bundle of one new behavior:**
+
+1. **Complete functionality** - Include tests, implementation, and actual usage together
+2. **Avoid dead code** - Don't add functions/utilities without demonstrating their use
+3. **Include documentation updates** - Update code comments, READMEs, CLAUDE.md as needed
+4. **One responsibility per PR** - Each PR should do exactly one thing, but do it completely
+
+**Size guidelines:**
+- **Target < 100 lines** when possible for easy review
+- **Accept larger PRs (200-400+ lines)** when needed for completeness
+- **Better to have one complete 300-line PR** than three 100-line PRs with dead code
+- **Size is secondary to completeness and logical boundaries**
+
+**Examples of complete behavior bundles:**
+- ✅ "Add Homebrew detection with tests and integration into installation script"
+- ✅ "Add API validation with tests, error messages, and documentation"
+- ✅ "Add database migration with rollback functionality and admin tools"
+- ❌ "Add Homebrew detection utility" (missing actual usage)
+- ❌ "Add authentication tests" (missing implementation and integration)
+
+**When to split PRs:**
+- **Multiple unrelated behaviors** (authentication vs database vs caching)
+- **Different deployment boundaries** (frontend vs backend in systems with separate deployment pipelines)
+- **Refactoring separate from new features** (clean up existing code vs add new functionality)
+- **Infrastructure changes that enable multiple future features** (but include at least one usage example)
+
 ### PR Creation Requirements
 
 For detailed PR creation workflow, use the `/pr-draft` command.
@@ -306,10 +334,9 @@ For detailed PR creation workflow, use the `/pr-draft` command.
 Key principles:
 - Always create PRs in draft mode for review workflows
 - Use structured PR templates for clear communication
-- Focus on complete functionality bundles
-- Include tests, implementation, and documentation together
+- Focus on complete functionality bundles (see sizing guidelines above)
 
-See `/pr-draft` command for complete workflow, template guidelines, and sizing recommendations.
+See `/pr-draft` command for complete workflow and template guidelines.
 
 ### PR Workflow Requirements
 

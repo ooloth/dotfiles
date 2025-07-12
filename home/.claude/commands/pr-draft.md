@@ -59,15 +59,6 @@ Create a draft pull request from the current branch to the main branch.
 - Any time PR description would benefit from structured approach
 - Use good judgment - don't force inappropriate structure on simple fixes
 
-**PR Size and Focus Guidelines:**
-- **Complete functionality** - Include tests, implementation, and actual usage together
-- **Avoid dead code** - Don't add functions/utilities without demonstrating their use
-- **Include documentation updates** - Update code comments, READMEs, CLAUDE.md as needed
-- **One responsibility per PR** - Each PR should do exactly one thing, but do it completely
-- **Target < 100 lines** when possible for easy review
-- **Accept larger PRs (200-400+ lines)** when needed for completeness
-- **Better to have one complete 300-line PR** than three 100-line PRs with dead code
-
 **Draft mode requirements:**
 - **Always create PRs in draft mode** for review workflows
 - **Draft allows iteration** - User can review and request changes before marking ready
