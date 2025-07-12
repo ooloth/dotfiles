@@ -251,6 +251,21 @@ assert_not_equals(0, exit_code, "setup should exit when prerequisites fail")
 - Use merge commits to integrate branches (avoid rebasing)
 - **Delete merged feature branches** immediately after PR is merged to maintain git hygiene
 
+### Post-Merge Workflow
+
+**CRITICAL: Always execute these steps immediately after merging any PR:**
+
+1. **Switch to main branch** - `git checkout main` (or `master`/`trunk` depending on repository)
+2. **Pull latest changes** - `git pull` or `git pull origin main` 
+3. **Delete merged feature branch** - `git branch -d feature-branch-name` (use `-D` if needed)
+4. **Automatic execution** - These steps should be automatic after every merge, not requiring user request
+
+**This workflow ensures:**
+- Local repository stays current with merged changes
+- Merged feature branches are cleaned up immediately
+- Ready to start new work from updated main branch
+- Prevents branch pollution and confusion
+
 ### PR Preparation
 
 - Before pushing, review the full diff with `git diff main...HEAD`

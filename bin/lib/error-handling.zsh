@@ -51,7 +51,7 @@ retry_with_backoff() {
         
         # Wait before retry with exponential backoff
         echo "Attempt $attempt failed, retrying in ${delay}s..." >&2
-        sleep $delay
+        sleep "$delay"
         
         # Increase delay for next attempt
         delay=$((delay * 2))
