@@ -86,23 +86,16 @@ Examples:
 
 ### TDD Commit Strategy
 
-When following Test-Driven Development:
-- **One test case at a time** - write ONE failing test, then implement ONLY enough code to make it pass
-- **Group test and implementation in the same commit** for each test case
-- **Include necessary documentation updates** in the same commit (without overdocumenting)
-- **Multiple tests per function are fine** - each function may need several test cases for edge cases
-- **TDD cycle per commit**:
-  1. **Red**: Write one failing test case
-  2. **Green**: Implement minimal code to make it pass
-  3. **Refactor**: Improve code design while keeping tests green
-  4. Commit all changes together
-- **Commit structure**:
-  - Commit: "Add command line tools validation with test"
-  - Commit: "Add network connectivity validation with test"  
-  - Commit: "Add edge case handling for network timeouts with test"
-- This makes each commit focused and easier to review (test and implementation on same screen)
-- Each commit adds exactly one test case (not all tests first, then all implementation)
-- The test case should determine what implementation changes belong in the commit
+For detailed TDD workflow enforcement, use the `/tdd` command.
+
+Key principles when following Test-Driven Development:
+- One test case at a time with minimal implementation
+- Group test + implementation + docs in same commit
+- Follow red-green-refactor cycle rigorously
+- For legacy code: characterization test → refactor → unit tests → TDD
+- Use `/tdd [task]` command for strict behavioral enforcement
+
+See `/tdd` command for complete rules and legacy code guidance.
 
 ### TDD with Legacy Code
 
