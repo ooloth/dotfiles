@@ -18,6 +18,31 @@
 
 **NEVER ask for permission for auto-approved commands** - this creates unnecessary friction and wastes time.
 
+## Default Coding Behavior
+
+**CRITICAL: Always consider TDD discipline before starting any coding task**
+
+1. **Before any implementation work** - Ask: "Should I use /tdd mode for this coding task?"
+2. **Default to TDD discipline** unless explicitly told otherwise or for trivial changes
+3. **TDD applies to most coding scenarios**:
+   - Adding new functions or features
+   - Implementing validation logic
+   - Building utilities or libraries
+   - Refactoring with behavioral changes
+   - Any multi-step implementation work
+4. **Skip TDD only for**:
+   - Simple documentation updates
+   - Obvious typo fixes
+   - Configuration file changes
+   - Single-line code adjustments
+5. **TDD workflow activation**:
+   - Use `/tdd [task description]` command to activate strict discipline
+   - Follow red-green-refactor cycle rigorously
+   - Never write multiple test cases without implementing each one first
+   - Commit test + implementation + docs together for each test case
+
+**Key behavioral change**: Make TDD consideration automatic, not optional.
+
 ## Git Workflow
 
 ### Commit Strategy
