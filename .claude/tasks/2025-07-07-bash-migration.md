@@ -4,14 +4,14 @@
 
 **Task**: Migrate dotfiles installation infrastructure from custom zsh to industry-standard bash + shellcheck + bats
 **Approach**: Parallel development - building complete bash setup system alongside existing zsh system
-**Current**: Phase 1 nearly complete - setup.bash + 7 installation scripts + all core utilities migrated
+**Current**: Phase 1 nearly complete - setup.bash + 8 installation scripts + all core utilities migrated
 
 ### Parallel System Status
 
 **Bash setup system** (`setup.bash`):
 - ✅ Core utilities: machine-detection, prerequisite-validation, dry-run, error-handling
-- ✅ Installation scripts: ssh, github, homebrew, rust, node, neovim, symlinks  
-- ✅ Test coverage: 50+ comprehensive tests across all components
+- ✅ Installation scripts: ssh, github, homebrew, rust, node, neovim, tmux, symlinks  
+- ✅ Test coverage: 57+ comprehensive tests across all components
 - ✅ Quality: Zero shellcheck warnings across all bash files
 - ✅ Integration: setup.bash orchestrates all available bash scripts
 
@@ -117,14 +117,23 @@ This migration uses a **parallel development strategy** - we are building a comp
   - Comprehensive test suite with 7 tests
 - **Status**: MERGED - Node.js installation fully migrated to bash
 
-##### 🔄 PR #25: Neovim Installation Migration (IN REVIEW)
+##### ✅ PR #25: Neovim Installation Migration (MERGED)
 - **Files Created**:
   - `bin/install/neovim.bash` - Bash replacement for neovim.zsh
   - `lib/neovim-utils.bash` - Neovim configuration utilities
   - Comprehensive test suite with 7 tests
 - **Files Updated**:
   - `setup.bash` - Added integration for rust.bash, node.bash, neovim.bash
-- **Status**: Ready for merge - Neovim installation migrated + setup.bash integration complete
+- **Status**: MERGED - Neovim installation migrated + setup.bash integration complete
+
+##### 🔄 PR #26: Tmux Installation Migration (IN REVIEW)
+- **Files Created**:
+  - `bin/install/tmux.bash` - Bash replacement for tmux.zsh
+  - `lib/tmux-utils.bash` - Tmux/TPM utility functions
+  - Comprehensive test suite with 7 tests
+- **Files Updated**:
+  - `setup.bash` - Added tmux.bash integration
+- **Status**: Draft PR created, ready for merge - Tmux installation with TPM support
 
 ### Phase 2: Remaining Script Migration (Pending)
 **Goal**: Migrate remaining installation scripts using established three-tier architecture
