@@ -27,13 +27,14 @@ Create a draft pull request from the current branch to the main branch.
    - **Check for existing PR template** in `.github/pull_request_template.md` or `.github/PULL_REQUEST_TEMPLATE.md`
    - **If project has PR template**: Follow it, but enhance with the spirit of the high-quality template
    - **If no project template**: Use the high-quality template structure (ONLY these sections):
-     - 💪 **What**: What's new/different, impact on project behavior, testing/documentation status, implementation details
+     - 💪 **What**: What's new/different, direct changes to project behavior, testing/documentation status, implementation details
      - 🤔 **Why**: Problem solved, business value, timing rationale
      - 👀 **Usage**: How to use new functionality (if user-facing)
      - 👩‍🔬 **How to validate**: Manual steps for reviewers to test changes
      - 🔗 **Related links**: External context (only if valuable, omit if none)
    - **Append missing valuable sections** from the high-quality template if not covered by project template
    - **Focus on reviewer experience** - provide context that helps reviewers understand and validate changes
+   - **"What" vs "Why" clarity**: "What" describes direct changes/impacts, "Why" explains benefits and rationale
    - **Reference related issues/plans** - link to GitHub issues, project plans, or task files this PR addresses
 9. Create the draft PR with descriptive title and structured body
 
