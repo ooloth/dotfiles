@@ -31,13 +31,13 @@ Create a draft pull request from the current branch to the main branch.
      - 🤔 **Why**: Problem solved, business value, timing rationale
      - 👀 **Usage**: How to use new functionality (if user-facing)
      - 👩‍🔬 **How to validate**: Manual steps for reviewers to exercise the code and observe outcomes (teach reviewers how to prove the changes work by using the functionality - never tell them to run tests or checks, as CI handles that)
-     - 🔗 **Related links**: External context with real URLs (only if valuable, omit if none)
+     - 🔗 **Related links**: External context as markdown links (only if valuable, omit if none)
    - **Append missing valuable sections** from the high-quality template if not covered by project template
    - **Focus on reviewer experience** - provide context that helps reviewers understand and validate changes
    - **"What" vs "Why" clarity**: "What" describes direct changes/impacts, "Why" explains benefits and rationale
    - **Format requirements**: Start "What" with flat bullet list of primary behavior changes/takeaways, format "Why" as flat bullet list
    - **Avoid file listings**: Don't include "New Files" sections - reviewers will see files in the PR, focus on what the PR accomplishes
-   - **Link formatting**: Use markdown links for external URLs, raw URLs for GitHub PRs/issues (GitHub formats them nicely)
+   - **Link formatting**: Use markdown links for external URLs, raw URLs for GitHub PRs/issues (GitHub formats them nicely), format Related links as bullet list
    - **"Why" tone**: Make salient points about why changes help this specific project, avoid overly broad statements or overselling
    - **Reference related issues/plans** - link to GitHub issues, project plans, or task files this PR addresses
 9. Create the draft PR with descriptive title and structured body
