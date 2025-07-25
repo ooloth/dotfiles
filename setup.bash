@@ -43,17 +43,17 @@ main() {
     else
         printf "\nExcellent! Here we go...\n\n"
     fi
-    
+
     # Confirm this is a Mac
     printf "Confirming this is a Mac...\n\n"
-    
+
     if [[ "$(uname)" != "Darwin" ]]; then
         printf "Error: This script only runs on macOS.\n"
         exit 1
     else
         printf "✓ macOS confirmed.\n\n"
     fi
-    
+
     # Clone or update dotfiles
     if [ -d "$DOTFILES" ]; then
         printf "📂 Dotfiles are already installed. Pulling latest changes.\n"
@@ -65,84 +65,88 @@ main() {
         mkdir -p "$DOTFILES"
         git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
     fi
-    
+
     # Initialize dotfiles utilities now that repository is available
     printf "\n🔧 Initializing dotfiles utilities...\n\n"
-    
+
     # Initialize dynamic machine detection
     source "$DOTFILES/bin/lib/machine-detection.bash"
     init_machine_detection
-    
+
     # Initialize dry-run mode utilities
     source "$DOTFILES/bin/lib/dry-run-utils.bash"
     parse_dry_run_flags "$@"
-    
+
     # Initialize enhanced error handling utilities
     source "$DOTFILES/bin/lib/error-handling.bash"
-    
+
     # Run comprehensive prerequisite validation
     printf "Running comprehensive prerequisite validation...\n\n"
-    
+
     source "$DOTFILES/bin/lib/prerequisite-validation.bash"
     if ! run_prerequisite_validation; then
         printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
         exit 1
     fi
-    
+
     printf "✅ All prerequisites validated successfully.\n\n"
-    
+
     # Run installation scripts
     printf "Running installations...\n\n"
-    
+
     cd "$DOTFILES/bin/install"
-    
+
     # Run bash installation scripts if they exist
     if [[ -f "ssh.bash" ]]; then
         source ssh.bash
     fi
-    
+
     if [[ -f "github.bash" ]]; then
         source github.bash
     fi
-    
+
     if [[ -f "homebrew.bash" ]]; then
         source homebrew.bash
     fi
-    
+
     if [[ -f "zsh.bash" ]]; then
         source zsh.bash
     fi
-    
+
     if [[ -f "rust.bash" ]]; then
         source rust.bash
     fi
-    
+
     if [[ -f "uv.bash" ]]; then
         source uv.bash
     fi
-    
+
     if [[ -f "node.bash" ]]; then
         source node.bash
     fi
-    
+
     if [[ -f "neovim.bash" ]]; then
         source neovim.bash
     fi
-    
+
     if [[ -f "tmux.bash" ]]; then
         source tmux.bash
     fi
-    
+
+    if [[ -f "content.bash" ]]; then
+        source content.bash
+    fi
+
     if [[ -f "yazi.bash" ]]; then
         source yazi.bash
     fi
-    
+
     if [[ -f "symlinks.bash" ]]; then
         source symlinks.bash
     fi
-    
+
     # TODO: Add remaining installation scripts as they are migrated to bash
-    
+
     printf "\n🎉 Setup complete!\n"
 }
 
@@ -150,3 +154,4 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
+
