@@ -3,8 +3,6 @@
 # Node.js installation script (bash version)
 # Installs latest Node.js version via fnm
 
-# shellcheck disable=SC1091  # Don't follow sourced files
-
 set -euo pipefail
 
 # Load Node.js utilities

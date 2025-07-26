@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source utilities
-source "$SCRIPT_DIR/lib/macos-utils.bash"
+source "$SCRIPT_DIR/core/detection/macos.bash"
 
 echo "💻 Updating macOS software (after password, don't cancel!)"
 

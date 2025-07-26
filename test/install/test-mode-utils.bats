@@ -3,7 +3,7 @@
 # Test suite for mode-utils.bash
 
 # Load the mode utilities
-load "../../lib/mode-utils.bash"
+load "../../core/permissions/utils.bash"
 
 setup() {
   # Create temporary directory for each test

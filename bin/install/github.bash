@@ -11,7 +11,6 @@ PRIVATE_KEY="$HOME/.ssh/id_rsa"
 PUBLIC_KEY="$PRIVATE_KEY.pub"
 
 # Load utilities
-# shellcheck source=../../lib/github-utils.bash
 source "$DOTFILES/lib/github-utils.bash"
 
 # All needed utilities are now available in github-utils.bash
