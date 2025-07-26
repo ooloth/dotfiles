@@ -2,6 +2,8 @@
 
 ### Development Workflow: Use Agents for Everything
 
+**CRITICAL: Default to agent delegation for ALL operations. Manual execution should be the rare exception, not the default.**
+
 **Primary Agents (use proactively):**
 - **software-engineer**: For coordinated feature implementation, refactoring, and coding tasks (collaborates with design-architect, test-designer, git-workflow, researcher, and data-analyst)
 - **code-reviewer**: After writing/modifying code
@@ -13,7 +15,7 @@
 - **performance-optimizer**: For performance improvements (consults data-analyst for data performance)
 - **researcher**: For documentation lookup, API research, and best practices investigation
 - **data-analyst**: For data processing optimization, DataFrame operations, and database performance
-- **git-workflow**: For commits, branches, PRs
+- **git-workflow**: For ALL git operations - commits, branches, PRs, merges, pushes, pulls (NEVER perform git operations manually)
 - **pr-writer**: For commit messages and PR descriptions
 - **doc-maintainer**: For documentation updates
 - **task-manager**: For multi-PR coordination
@@ -48,6 +50,16 @@
 **PLAN-*** (Strategy & Design)
 - `/plan-feature` - Architecture and test strategy for new features
 - `/plan-refactor` - Refactoring strategy and approach
+
+### Git Operations Delegation Rules
+
+**MANDATORY: All git operations MUST be delegated to git-workflow agent:**
+- **"commit"**, **"push"**, **"pull"**, **"merge"** → Always use git-workflow agent
+- **"merge pr"**, **"merge pull request"**, **"merge the pr"** → Always use git-workflow agent  
+- **"branch"**, **"checkout"**, **"rebase"** → Always use git-workflow agent
+- **ANY GitHub CLI operations** (gh pr merge, gh pr create, etc.) → Always use git-workflow agent
+
+**Never perform git operations manually with direct tool calls.**
 
 ### Key Behavioral Changes
 
