@@ -85,6 +85,22 @@ For each test case, provide:
 - Test data needed
 - Mocking requirements
 
+## Agent Collaboration
+
+**Consult `researcher` for:**
+- Testing framework documentation and best practices
+- Specific testing patterns for frameworks (React Testing Library, Jest, pytest, etc.)
+- Mocking strategies and tools for complex integrations
+- Performance testing approaches and tools
+- Testing examples for specific technologies or patterns
+
+**Consult `data-analyst` for:**
+- Testing strategies for data pipelines and ETL processes
+- Data quality testing approaches
+- Performance testing for data processing workflows
+- Test data generation for large datasets
+- Database testing patterns and validation
+
 Remember to:
 - Focus on high-value tests first
 - Balance thoroughness with maintainability
@@ -92,3 +108,4 @@ Remember to:
 - Think about future regression prevention
 - Design tests that serve as documentation
 - Account for test execution time
+- Leverage specialist knowledge for domain-specific testing strategies
