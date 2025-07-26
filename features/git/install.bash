@@ -15,23 +15,22 @@ set -euo pipefail
 DOTFILES="${DOTFILES:-$HOME/Repos/ooloth/dotfiles}"
 
 # Load utilities
-# shellcheck source=features/git/utils.bash
 source "$DOTFILES/features/git/utils.bash"
 
 main() {
     echo "🔧 Installing Git configuration..."
     echo ""
-    
+
     # Check if Git is available
     if ! command -v git >/dev/null 2>&1; then
         echo "❌ Git is not installed. Please install Git first."
         return 1
     fi
-    
+
     # Configure Git global settings
     echo "🔧 Configuring Git global settings..."
     local git_config="$DOTFILES/features/git/config/config"
-    
+
     if [[ -f "$git_config" ]]; then
         if configure_git_global "$git_config"; then
             echo "✅ Git global configuration applied"
@@ -43,12 +42,12 @@ main() {
         echo "❌ Git config file not found at $git_config"
         return 1
     fi
-    
+
     # Configure work-specific settings if on work machine
     if [[ "${IS_WORK:-false}" == "true" ]]; then
         echo "🏢 Configuring work-specific Git settings..."
         local work_config="$DOTFILES/features/git/config/config.work"
-        
+
         if [[ -f "$work_config" ]]; then
             if configure_git_work "$work_config"; then
                 echo "✅ Work-specific Git configuration applied"
@@ -59,11 +58,11 @@ main() {
             echo "⚠️  Work Git config file not found at $work_config"
         fi
     fi
-    
+
     # Configure global Git ignore
     echo "🚫 Configuring global Git ignore..."
     local ignore_file="$DOTFILES/features/git/config/ignore"
-    
+
     if [[ -f "$ignore_file" ]]; then
         if configure_git_ignore "$ignore_file"; then
             echo "✅ Global Git ignore configured"
@@ -73,7 +72,7 @@ main() {
     else
         echo "⚠️  Git ignore file not found at $ignore_file"
     fi
-    
+
     # Validate configuration
     echo "🔍 Validating Git configuration..."
     if validate_git_configuration; then
@@ -81,7 +80,7 @@ main() {
     else
         echo "⚠️  Git configuration validation failed"
     fi
-    
+
     echo ""
     echo "🔧 Git configuration completed"
 }
@@ -90,3 +89,4 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
+
