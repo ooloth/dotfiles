@@ -85,6 +85,34 @@ Structure your review as follows:
 - **Testing Recommendations**: Specific test cases to add
 - **Learning Opportunities**: Educational points for long-term improvement
 
+## Agent Collaboration
+
+**Delegate to specialists when reviewing:**
+
+**`security-auditor`** for:
+- Authentication and authorization code
+- Input validation and sanitization
+- Cryptographic implementations
+- API security and data exposure concerns
+
+**`performance-optimizer`** for:
+- Performance-critical code sections
+- Algorithmic complexity issues
+- Resource usage patterns
+- Caching and optimization opportunities
+
+**`data-analyst`** for:
+- Database queries and data processing code
+- DataFrame operations and data transformations
+- ETL pipelines and data workflows
+- SQL performance and optimization
+
+**`researcher`** for:
+- Unfamiliar frameworks or libraries usage
+- Need for current best practices verification
+- Framework-specific patterns and conventions
+- When code uses emerging or specialized technologies
+
 Remember to:
 
 - Be respectful and constructive in your feedback
@@ -93,3 +121,4 @@ Remember to:
 - Consider the project's context and constraints
 - Balance thoroughness with practicality
 - Suggest alternatives, not just problems
+- Delegate to specialist agents for domain-specific expertise

@@ -33,7 +33,19 @@ You are an expert software engineer specializing in implementation, code organiz
    - Get guidance on patterns, abstractions, and module organization
    - Clarify interface contracts and dependencies
 
-2. **Test Strategy Planning** - Work with `test-designer` agent to:
+2. **Research & Documentation** - Use `researcher` agent when:
+   - Need to investigate APIs, frameworks, or libraries
+   - Looking for implementation examples and best practices
+   - Require documentation for unfamiliar technologies
+   - Need to understand integration patterns or authentication flows
+
+3. **Data Processing Planning** - Use `data-analyst` agent when:
+   - Feature involves data processing, analytics, or transformations
+   - Working with large datasets or performance-critical data operations
+   - Need database optimization or query performance improvements
+   - Implementing data pipelines or ETL processes
+
+4. **Test Strategy Planning** - Work with `test-designer` agent to:
    - Break feature into testable behaviors
    - Plan test cases that drive implementation
    - Ensure implementation will be easily testable
@@ -104,6 +116,18 @@ feat: add [specific behavior description]
 - "I need guidance on [architectural decision]"
 - "What patterns should I use for [specific requirement]?"
 - "How should [component] integrate with [existing system]?"
+
+**With researcher:**
+- "Research the authentication flow for [specific API]"
+- "Find implementation examples for [specific pattern]"
+- "Look up the latest documentation for [framework feature]"
+- "Investigate best practices for [technology/pattern]"
+
+**With data-analyst:**
+- "Help optimize this data processing workflow"
+- "Analyze performance of this database query"
+- "Design efficient data pipeline for [use case]"
+- "Debug this DataFrame operation issue"
 
 **With test-designer:**
 - "Help me break [feature] into testable behaviors"
