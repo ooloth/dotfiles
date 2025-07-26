@@ -6,7 +6,11 @@
 # Disable SC1091: Not following sourced files
 # This is expected behavior for our setup - we source utility libraries
 # that shellcheck cannot always locate in the correct context
-disable=SC1091
+#
+# Disable SC1090: ShellCheck can't follow non-constant source
+# Our feature discovery system uses dynamic paths which are validated
+# before sourcing, so this warning is safe to ignore
+disable=SC1091,SC1090
 
 # Enable external sources to allow shellcheck to follow sourced files
 # when they are available in the project structure
