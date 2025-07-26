@@ -1,6 +1,6 @@
 ---
 description: Design and create comprehensive test suite for specified functionality
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write]
+allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Task]
 ---
 
 Create comprehensive test suite with proper coverage and design.

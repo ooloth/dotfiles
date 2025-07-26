@@ -1,6 +1,6 @@
 ---
 description: Implement new feature with proper testing and integration
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash]
+allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash, Task]
 ---
 
 Implement new feature with comprehensive development workflow.

@@ -1,6 +1,6 @@
 ---
 description: Test coverage analysis and execution verification
-allowed-tools: [Read, Grep, Glob, Bash]
+allowed-tools: [Read, Grep, Glob, Bash, Task]
 ---
 
 Execute tests and verify comprehensive coverage.

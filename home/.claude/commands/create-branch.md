@@ -1,6 +1,6 @@
 ---
 description: Create new feature or fix branch with proper naming and setup
-allowed-tools: [Bash, Read]
+allowed-tools: [Bash, Read, Task]
 ---
 
 Create a new Git branch with proper naming conventions and setup.

@@ -1,6 +1,6 @@
 ---
 description: Comprehensive security analysis and vulnerability assessment
-allowed-tools: [Read, Grep, Glob, Bash]
+allowed-tools: [Read, Grep, Glob, Bash, Task]
 ---
 
 Conduct a thorough security audit of the codebase or specified component.

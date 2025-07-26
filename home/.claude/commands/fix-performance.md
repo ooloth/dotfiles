@@ -1,6 +1,6 @@
 ---
 description: Identify and resolve performance bottlenecks
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash]
+allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash, Task]
 ---
 
 Analyze and fix performance issues in the specified component.

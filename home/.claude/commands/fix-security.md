@@ -1,6 +1,6 @@
 ---
 description: Identify and resolve security vulnerabilities
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash]
+allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash, Task]
 ---
 
 Analyze and fix security vulnerabilities in the specified component.
