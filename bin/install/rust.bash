@@ -3,8 +3,6 @@
 # Rust installation script (bash version)
 # Installs Rust toolchain using rustup if not already installed
 
-# shellcheck disable=SC1091  # Don't follow sourced files
-
 set -euo pipefail
 
 # Load Rust utilities

@@ -8,6 +8,7 @@ on:
       - 'setup.zsh'
       - 'bin/**'
       - 'lib/**'
+      - 'core/**'
       - 'test/**'
       - 'macos/Brewfile'
       - 'config/**'
@@ -20,6 +21,7 @@ on:
       - 'setup.zsh'
       - 'bin/**'
       - 'lib/**'
+      - 'core/**'
       - 'test/**'
       - 'macos/Brewfile'
       - 'config/**'
@@ -78,6 +80,13 @@ jobs:
         run: |
           # Run all tests using our existing test runner
           ./test/run-tests.zsh
+          
+      - name: Test symlink verification
+        run: |
+          echo "Testing symlink creation and verification..."
+          ./bin/install/symlinks.bash create
+          ./bin/install/symlinks.bash verify
+          echo "✅ Symlink verification passed"
           
       - name: Verify test coverage
         run: |

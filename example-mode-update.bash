@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source utilities
-source "$SCRIPT_DIR/lib/mode-utils.bash"
+source "$SCRIPT_DIR/core/permissions/utils.bash"
 source "$SCRIPT_DIR/bin/lib/dry-run-utils.bash"
 
 echo "🔋 Updating executable permissions"
