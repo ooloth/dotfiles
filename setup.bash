@@ -21,12 +21,10 @@ run_installer() {
     # Try new feature location first
     if [[ -f "$feature_path" ]]; then
         printf "  → Using feature-based installer: %s\n" "$feature_path"
-        # shellcheck source=/dev/null
         source "$feature_path"
     # Fall back to old location
     elif [[ -f "$legacy_path" ]]; then
         printf "  → Using legacy installer: %s\n" "$legacy_path"
-        # shellcheck source=/dev/null
         source "$legacy_path"
     else
         printf "  ⚠️  No installer found for %s\n" "$feature_name"
