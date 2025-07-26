@@ -1,11 +1,12 @@
 # Bash Migration Epic
 
-## Current Status (July 12, 2025 - Session Complete)
+## Current Status (July 26, 2025 - Architecture Revision)
 
 **Task**: Migrate dotfiles installation infrastructure from custom zsh to industry-standard bash + shellcheck + bats
 **Approach**: Parallel development - building complete bash setup system alongside existing zsh system
 **Current**: Phase 1 & 2 complete - setup.bash + all remaining installation scripts + comprehensive utility libraries migrated
 **Achievement**: 8 draft PRs created with 148+ new tests, ready for review and merge
+**New Direction**: Adopting feature-based folder architecture for better organization and discoverability
 
 ### Parallel System Status
 
@@ -242,7 +243,83 @@ This migration uses a **parallel development strategy** - we are building a comp
 2. **Setup orchestration (bash)**: `setup.bash` - Calls utilities directly, professional tooling
 3. **Interactive tools (zsh)**: `bin/update/*.zsh` - Thin wrappers, rich user experience
 
-### Phase 3: Framework Cleanup and CI Enhancement (Pending)
+### Phase 3: Feature-Based Architecture Migration (NEW - July 26, 2025)
+**Goal**: Reorganize bash infrastructure into feature-based folders for better discoverability and maintainability
+
+**Architecture Vision**:
+```
+dotfiles/
+├── setup.bash              # Main entry point
+├── setup.zsh               # Legacy entry point (during transition)
+├── core/                   # Cross-cutting infrastructure
+│   ├── detection/          # Machine/environment detection
+│   ├── prerequisites/      # System validation  
+│   ├── dry-run/           # Safe execution mode
+│   └── errors/            # Error handling
+├── features/              # One folder per tool (flat structure)
+│   ├── homebrew/
+│   │   ├── install.bash
+│   │   ├── update.bash
+│   │   ├── utils.bash
+│   │   ├── config/        # Brewfile, etc.
+│   │   └── tests/
+│   ├── ssh/
+│   │   ├── install.bash
+│   │   ├── update.bash  
+│   │   ├── utils.bash
+│   │   ├── config/        # SSH configs
+│   │   └── tests/
+│   ├── git/
+│   ├── github/
+│   ├── neovim/
+│   ├── tmux/
+│   ├── node/
+│   ├── rust/
+│   ├── uv/
+│   ├── zsh/
+│   ├── starship/
+│   ├── kitty/
+│   ├── yazi/
+│   └── [etc...]           # Each tool gets its own folder
+├── platform/              # Platform-specific
+│   └── macos/
+│       ├── defaults.bash
+│       ├── settings.bash
+│       └── Brewfile
+└── legacy/                # Current structure during migration
+    ├── bin/
+    ├── lib/
+    └── config/
+```
+
+**Key Benefits**:
+- **Screaming Architecture**: Immediately obvious what tools are available
+- **Feature Cohesion**: All files for a feature together (install, update, config, tests)
+- **Flat Structure**: No category nesting - each feature directly under /features
+- **Migration Path**: Can eventually move features/ contents to root level
+- **Separation**: Clear boundary between new bash system and existing zsh files
+
+**Migration Tasks**:
+1. Create /features directory structure
+2. Move bash files to feature folders as proof of concept (start with SSH)
+3. Update setup.bash to discover and use feature folders
+4. Create symlinks from old locations during transition
+5. Move configs to their feature folders
+6. Update tests to live with their features
+7. Document standard feature structure
+
+**Standard Feature Structure**:
+```
+features/{tool}/
+├── install.bash      # Installation logic
+├── update.bash       # Update logic (if applicable)
+├── utils.bash        # Shared utilities
+├── config/           # Tool-specific configs to symlink
+├── tests/            # Feature-specific tests
+└── README.md         # Feature documentation (optional)
+```
+
+### Phase 4: Framework Cleanup and CI Enhancement (Previously Phase 3)
 **Goal**: Remove zsh test framework, update CI, and add shellcheck validation
 
 **Tasks**:
@@ -386,7 +463,13 @@ test/install/test-{component}-installation.bats  # Integration tests
 - ✅ Zero shellcheck warnings across all new bash scripts
 - ✅ Three-tier architecture fully demonstrated
 
-### Phase 3 (FUTURE)
+### Phase 3 (IN PLANNING - Feature Architecture)
+- [ ] Feature-based folder structure created
+- [ ] SSH migrated as proof of concept
+- [ ] setup.bash updated for feature discovery
+- [ ] Migration path documented
+
+### Phase 4 (FUTURE - Framework Cleanup)
 - [ ] CI pipeline updated to use bats
 - [ ] Custom zsh test framework removed
 - [ ] Clean codebase with single testing approach
@@ -430,16 +513,43 @@ test/install/test-{component}-installation.bats  # Integration tests
 - **Improvements**: Better macOS version detection for ssh-add keychain flag
 - **Status**: Draft PR created, ready for review
 
-## Next Steps (Enhanced Architecture)
+## Next Steps (Feature-Based Architecture)
 
-1. **Add error-handling tests**: Create `test/setup/test-error-handling-bash.bats` with comprehensive tests for all error handling utilities (capture_error, retry_with_backoff, handle_error)
-2. **Complete PR #15**: SSH installation migration (current work)
-3. **Extract shared utilities**: Create `lib/homebrew-utils.bash`, `lib/npm-utils.bash`, `lib/symlink-utils.bash`
-4. **Migrate utility libraries**: `bin/lib/*.zsh` → `bin/lib/*.bash` (machine-detection, prerequisite-validation, etc.)
-5. **Create setup.bash**: Main entry point using shared utilities and bash install scripts
-6. **Update bin/update/*.zsh**: Thin wrappers around shared utilities for interactive use
-7. **Migrate CI workflow**: Custom zsh runner → bats with comprehensive test coverage
-8. **Architectural validation**: Verify three-tier system meets all requirements
+### Phase 3 Implementation Plan
+
+1. **Create feature structure for SSH** (Proof of Concept):
+   - Create `features/ssh/` directory
+   - Move `bin/install/ssh.bash` → `features/ssh/install.bash`
+   - Move `lib/ssh-utils.bash` → `features/ssh/utils.bash`
+   - Move SSH tests to `features/ssh/tests/`
+   - Create symlinks from old locations
+
+2. **Update setup.bash for feature discovery**:
+   - Add feature detection logic
+   - Support both old and new paths during transition
+   - Implement automatic feature loading
+
+3. **Document migration pattern**:
+   - Create migration script template
+   - Document symlink strategy
+   - Update CLAUDE.md with new structure
+
+4. **Migrate remaining features** (in order):
+   - homebrew (has dependencies from many features)
+   - git/github (core developer tools)
+   - node, rust, uv (language toolchains)
+   - neovim, tmux (editor/terminal)
+   - remaining tools
+
+5. **Move configurations**:
+   - Relocate configs to their feature folders
+   - Update symlink creation logic
+   - Test all symlinks still work
+
+6. **Cleanup and optimize**:
+   - Remove empty legacy directories
+   - Update all documentation
+   - Consider moving features/ to root
 
 ## Enhanced Development Workflow
 
@@ -449,6 +559,32 @@ test/install/test-{component}-installation.bats  # Integration tests
 3. **Update interactive tools** to use shared utilities (preserving user experience)
 4. **Test comprehensively** with bats for all bash infrastructure
 5. **Maintain compatibility** with existing user shell workflows
+
+---
+
+## Architecture Benefits Summary
+
+### Why Feature-Based Architecture?
+
+**Current Pain Points**:
+- Files scattered across `bin/install/`, `lib/`, `config/`, `test/install/`
+- Hard to see what tools are available at a glance
+- Difficult to understand dependencies between components
+- Tests separated from the code they test
+
+**Feature Architecture Benefits**:
+- **Discoverability**: `ls features/` shows all available tools
+- **Cohesion**: Everything for SSH in `features/ssh/`
+- **Independence**: Each feature is self-contained
+- **Testability**: Tests live with the code they test
+- **Flexibility**: Easy to add/remove features
+- **Migration-Friendly**: Clear separation of bash (features/) from zsh (legacy/)
+
+**Future Vision**:
+- Eventually move contents of `features/` to root level
+- Each tool becomes a top-level directory
+- Maximum clarity and simplicity
+- Similar to how many modern CLIs organize (e.g., kubectl plugins)
 
 ---
 
