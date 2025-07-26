@@ -145,6 +145,10 @@ main() {
         source symlinks.bash
     fi
 
+    if [[ -f "settings.bash" ]]; then
+        source settings.bash
+    fi
+
     # TODO: Add remaining installation scripts as they are migrated to bash
 
     printf "\n🎉 Setup complete!\n"
@@ -154,4 +158,3 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
-
