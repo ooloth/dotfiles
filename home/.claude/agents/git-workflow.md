@@ -47,16 +47,38 @@ When handling Git operations, you will:
 
 **CRITICAL: Always commit AND push together - never commit without pushing**
 
-1. **Formatting** - Run code formatters first (prettier, black, rustfmt, etc.)
-2. **Linting** - Run linters after formatting
-3. **Type checking** - Run type checkers
-4. **Tests** - Run relevant tests last
-5. **Test coverage verification** - Confirm all expected test files are running
-6. **All tests must pass** - Fix any failing tests immediately, do not commit/push with failing tests
-7. **Final review** - Check `git diff --staged` to review what will be committed
-8. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
-9. **Commit** - Create the commit with descriptive message
-10. **Push immediately** - `git push origin <branch-name>` right after committing
+### Phase 1: Analyze Changes for Logical Grouping
+
+**Before staging anything, analyze all modified files and group them by logical concern:**
+
+1. **Check git status** - See all modified/untracked files
+2. **Analyze file relationships** - Group files by:
+   - **Feature/functionality** (e.g., authentication module files)
+   - **Bug fix scope** (e.g., fixing one specific issue)
+   - **Refactoring boundary** (e.g., renaming across related files)
+   - **Documentation updates** (e.g., README changes for new features)
+3. **Identify commit boundaries** - Ask yourself:
+   - Can each group be reverted independently?
+   - Does each group represent one conceptual change?
+   - Are there unrelated improvements mixed in?
+4. **Plan commit sequence** - Order commits logically (e.g., tests before implementation, core before dependent changes)
+
+### Phase 2: Execute Commits (Repeat for Each Logical Group)
+
+**For each logical group of changes:**
+
+1. **Stage only related files** - `git add` only files for this specific change
+2. **Formatting** - Run code formatters first (prettier, black, rustfmt, etc.)
+3. **Linting** - Run linters after formatting
+4. **Type checking** - Run type checkers
+5. **Tests** - Run relevant tests last
+6. **Test coverage verification** - Confirm all expected test files are running
+7. **All tests must pass** - Fix any failing tests immediately, do not commit/push with failing tests
+8. **Final review** - Check `git diff --staged` to review what will be committed
+9. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+10. **Commit** - Create the commit with descriptive message for this specific change
+11. **Push immediately** - `git push origin <branch-name>` right after committing
+12. **Repeat** - Move to next logical group
 
 **Why commit + push together:**
 - Prevents incomplete work from being merged if PR is approved early
@@ -86,6 +108,22 @@ When handling Git operations, you will:
 - **Descriptive commit messages** explaining "why" not just "what"
 - **Conventional commit format** when applicable
 - **No promotional footers** - no "Generated with Claude Code" or co-author lines
+
+### Common Commit Separation Patterns
+
+**SEPARATE commits for:**
+- **Different features** - Auth system vs. logging system
+- **Unrelated bug fixes** - Database issue vs. UI issue  
+- **Infrastructure vs. features** - Build config vs. business logic
+- **Agent/tool improvements vs. project code** - Claude agent updates vs. application code
+- **Different file types with different purposes** - Tests vs. documentation vs. implementation (unless tightly coupled)
+
+**COMBINE in same commit:**
+- **Function + its tests** - When implementing new behavior
+- **Feature + its documentation** - When adding user-facing functionality  
+- **Refactoring + test updates** - When changing how something works
+- **Bug fix + test that catches it** - When fixing specific issues
+- **Configuration + code that requires it** - When changes depend on each other
 
 ## Test Requirements
 
