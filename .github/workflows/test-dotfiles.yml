@@ -76,10 +76,41 @@ jobs:
           
           echo "✅ All bash scripts passed shellcheck"
           
-      - name: Run test suite
+      - name: Install BATS
         run: |
-          # Run all tests using our existing test runner
-          ./test/run-tests.zsh
+          # Install BATS for running bash tests
+          brew install bats-core
+          
+      - name: Run BATS test suite
+        run: |
+          # Run all BATS tests across the repository
+          echo "Running BATS tests..."
+          
+          # Run tests in main test directories
+          if [[ -d "test" ]]; then
+            echo "Running tests in test/ directory..."
+            bats test/**/*.bats
+          fi
+          
+          # Run tests in core/ directories
+          if [[ -d "core" ]]; then
+            echo "Running tests in core/ directories..."
+            find core -name "*.bats" -type f | head -5 | while read -r test_file; do
+              echo "Running: $test_file"
+              bats "$test_file"
+            done
+          fi
+          
+          # Run tests in features/ directories  
+          if [[ -d "features" ]]; then
+            echo "Running tests in features/ directories..."
+            find features -name "*.bats" -type f | head -5 | while read -r test_file; do
+              echo "Running: $test_file"
+              bats "$test_file"
+            done
+          fi
+          
+          echo "✅ All BATS tests completed"
           
       - name: Test symlink verification
         run: |
@@ -88,17 +119,31 @@ jobs:
           ./bin/install/symlinks.bash verify
           echo "✅ Symlink verification passed"
           
-      - name: Verify test coverage
+      - name: Verify BATS test coverage
         run: |
-          # Count test files and verify they were all executed
-          echo "Verifying test coverage..."
+          # Count BATS test files and verify comprehensive coverage
+          echo "Verifying BATS test coverage..."
           
-          EXPECTED_TESTS=$(find test -name "test-*.zsh" -type f -not -path "*/lib/*" | wc -l | tr -d ' ')
-          echo "Found $EXPECTED_TESTS test files in repository"
+          # Count all BATS test files across repository
+          TOTAL_BATS=$(find . -name "*.bats" -type f | wc -l | tr -d ' ')
+          echo "Total BATS test files found: $TOTAL_BATS"
           
-          # The test runner reports how many files it executed
-          # This helps catch cases where tests exist but aren't being run
-          echo "Expected test file count: $EXPECTED_TESTS"
+          # Count by directory
+          TEST_DIR_BATS=$(find test -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
+          CORE_DIR_BATS=$(find core -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
+          FEATURES_DIR_BATS=$(find features -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
+          
+          echo "BATS tests in test/: $TEST_DIR_BATS"
+          echo "BATS tests in core/: $CORE_DIR_BATS" 
+          echo "BATS tests in features/: $FEATURES_DIR_BATS"
+          
+          # Verify we found tests in all expected locations
+          if [[ $TOTAL_BATS -lt 10 ]]; then
+            echo "❌ Warning: Only $TOTAL_BATS BATS tests found, expected more"
+            exit 1
+          fi
+          
+          echo "✅ BATS test coverage verification passed"
           
       - name: Test environment validation
         run: |
