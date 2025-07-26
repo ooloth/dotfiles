@@ -1,0 +1,5 @@
+[init]
+	defaultBranch = trunk
+
+[user]
+	email = michael.uloth@recursion.com

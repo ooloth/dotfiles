@@ -3,8 +3,6 @@
 # Neovim installation script (bash version)
 # Clones Neovim configuration and restores plugins
 
-# shellcheck disable=SC1091  # Don't follow sourced files
-
 set -euo pipefail
 
 # Load Neovim utilities

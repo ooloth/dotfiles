@@ -3,7 +3,7 @@
 # Test suite for macos-utils.bash
 
 # Load the macos utilities
-load "../../lib/macos-utils.bash"
+load "../../core/detection/macos.bash"
 
 setup() {
   # Create temporary directory for each test
