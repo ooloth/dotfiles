@@ -1,6 +1,6 @@
 ---
 description: Plan architecture and test strategy for new feature implementation
-allowed-tools: [Read, Grep, Glob]
+allowed-tools: [Read, Grep, Glob, Task]
 ---
 
 Plan comprehensive approach for implementing a new feature.

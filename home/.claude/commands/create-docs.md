@@ -1,6 +1,6 @@
 ---
 description: Create or update documentation for specified functionality
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write]
+allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Task]
 ---
 
 Create comprehensive documentation for the specified component or feature.

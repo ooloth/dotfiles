@@ -3,6 +3,7 @@
 ### Development Workflow: Use Agents for Everything
 
 **Primary Agents (use proactively):**
+- **software-engineer**: For coordinated feature implementation, refactoring, and coding tasks (collaborates with design-architect, test-designer, and git-workflow)
 - **code-reviewer**: After writing/modifying code
 - **design-architect**: For architecture decisions and patterns
 - **debugger**: For errors, bugs, and troubleshooting
@@ -11,6 +12,7 @@
 - **security-auditor**: For security analysis
 - **performance-optimizer**: For performance improvements
 - **git-workflow**: For commits, branches, PRs
+- **pr-writer**: For commit messages and PR descriptions
 - **doc-maintainer**: For documentation updates
 - **task-manager**: For multi-PR coordination
 

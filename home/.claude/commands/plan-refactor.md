@@ -1,6 +1,6 @@
 ---
 description: Plan refactoring strategy and architecture improvements
-allowed-tools: [Read, Grep, Glob]
+allowed-tools: [Read, Grep, Glob, Task]
 ---
 
 Plan systematic refactoring approach for improving code design.

@@ -1,6 +1,6 @@
 ---
 description: Improve code quality through refactoring and design improvements
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash]
+allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash, Task]
 ---
 
 Improve code quality and design for the specified component.

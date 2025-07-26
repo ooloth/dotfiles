@@ -1,6 +1,6 @@
 ---
 description: Comprehensive code quality review and improvement recommendations
-allowed-tools: [Read, Grep, Glob, Bash]
+allowed-tools: [Read, Grep, Glob, Bash, Task]
 ---
 
 Conduct thorough code review for quality, bugs, and improvement opportunities.

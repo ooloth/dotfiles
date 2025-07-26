@@ -1,6 +1,6 @@
 ---
 description: Systematic bug investigation and resolution
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash]
+allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash, Task]
 ---
 
 Systematically investigate and fix the specified bug or error.

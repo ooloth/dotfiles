@@ -1,6 +1,6 @@
 ---
 description: Create commit with proper workflow including pre-commit checks
-allowed-tools: [Bash, Read, Grep]
+allowed-tools: [Bash, Read, Grep, Task]
 ---
 
 Execute full commit workflow with comprehensive pre-commit checks.

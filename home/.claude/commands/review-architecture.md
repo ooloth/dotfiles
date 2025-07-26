@@ -1,6 +1,6 @@
 ---
 description: Architecture assessment and design improvement recommendations
-allowed-tools: [Read, Grep, Glob, Bash]
+allowed-tools: [Read, Grep, Glob, Bash, Task]
 ---
 
 Evaluate code architecture and recommend design improvements.

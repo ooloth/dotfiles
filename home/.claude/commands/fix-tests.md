@@ -1,6 +1,6 @@
 ---
 description: Fix failing tests and improve test coverage
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash]
+allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash, Task]
 ---
 
 Resolve test failures and improve test coverage for specified component.

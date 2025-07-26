@@ -1,6 +1,6 @@
 ---
 description: Performance analysis and optimization recommendations
-allowed-tools: [Read, Grep, Glob, Bash]
+allowed-tools: [Read, Grep, Glob, Bash, Task]
 ---
 
 Analyze performance characteristics and identify optimization opportunities.

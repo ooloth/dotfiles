@@ -1,6 +1,6 @@
 ---
 description: Comprehensive quality audit combining code, security, and performance analysis
-allowed-tools: [Read, Grep, Glob, Bash]
+allowed-tools: [Read, Grep, Glob, Bash, Task]
 ---
 
 Conduct full quality assessment covering all quality dimensions.
