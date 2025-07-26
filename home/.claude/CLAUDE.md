@@ -290,6 +290,28 @@ Key principles:
 
 See `/pr-draft` command for complete workflow and template guidelines.
 
+### GitHub Issue Tracking and Progress
+
+**CRITICAL: Prefer GitHub Issues over markdown files for plans and tracking**
+
+**General Planning**:
+- **✅ PREFERRED**: Create GitHub Issues for plans, epics, and multi-step tasks
+- **❌ AVOID**: Using markdown files in `.claude/tasks/` for tracking active work
+- **Benefits**: Better discoverability, cross-PR linking, public visibility, built-in progress tracking
+- **Exception**: Use markdown files only for session notes or detailed technical context
+
+**Progress Updates**:
+- **✅ PREFERRED**: Edit the main issue description to update checkboxes and status
+- **❌ AVOID**: Adding progress comments that restate the roadmap
+- **Benefits**: Single source of truth, cleaner issue thread, easier to scan progress
+- **Exception**: Add comments for significant discoveries, blockers, or changes to the plan
+
+**Example**:
+```
+✅ DO: Create GitHub issue for the plan, edit description to check off "- [x] PR #45: Foundation"
+❌ DON'T: Maintain parallel markdown docs + add comments "PR #45 is complete, here's what's next..."
+```
+
 ### PR Workflow Requirements
 
 **CRITICAL commit and push behavior:**
