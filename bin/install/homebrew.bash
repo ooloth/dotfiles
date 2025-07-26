@@ -9,7 +9,6 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dotfiles_root="$(cd "$script_dir/../.." && pwd)"
 
-# shellcheck source=../../lib/homebrew-utils.bash
 source "$dotfiles_root/lib/homebrew-utils.bash"
 
 # Main installation function
