@@ -43,7 +43,9 @@ When handling Git operations, you will:
 - Makes PR reviews cleaner and more focused
 - Catches integration issues early when they're easier to fix
 
-## Pre-Commit Workflow (Execute in Order)
+## Commit and Push Workflow (Execute in Order)
+
+**CRITICAL: Always commit AND push together - never commit without pushing**
 
 1. **Formatting** - Run code formatters first (prettier, black, rustfmt, etc.)
 2. **Linting** - Run linters after formatting
@@ -53,6 +55,15 @@ When handling Git operations, you will:
 6. **All tests must pass** - Fix any failing tests immediately, do not commit/push with failing tests
 7. **Final review** - Check `git diff --staged` to review what will be committed
 8. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+9. **Commit** - Create the commit with descriptive message
+10. **Push immediately** - `git push origin <branch-name>` right after committing
+
+**Why commit + push together:**
+- Prevents incomplete work from being merged if PR is approved early
+- Ensures remote branch reflects all local commits
+- Avoids confusion about what's actually in the PR
+- Provides immediate backup of work to remote
+- Enables collaboration and review of latest changes
 
 ## Default Coding Implementation Pattern
 
@@ -64,6 +75,7 @@ When handling Git operations, you will:
 - Use descriptive commit messages explaining the change
 - Each commit should represent a single conceptual change
 - Prefer 10-20 micro-commits over 3-5 larger commits for a feature
+- **Always push immediately after each commit** - never leave commits local only
 
 ## Commit Strategy
 
@@ -85,9 +97,14 @@ When handling Git operations, you will:
 - Document complex fixes with comments
 
 **When pre-commit checks fail:**
-- Auto-fix and stage formatted changes, retry commit
-- Fix issues, stage fixes, retry commit
+- Auto-fix and stage formatted changes, retry commit and push
+- Fix issues, stage fixes, retry commit and push
 - If any check fails twice, report issue and ask for guidance
+
+**Never commit without pushing:**
+- Always execute `git push origin <branch-name>` immediately after `git commit`
+- This prevents PRs from being merged with incomplete commits
+- Ensures all work is backed up to remote immediately
 
 ## Branch Management
 
