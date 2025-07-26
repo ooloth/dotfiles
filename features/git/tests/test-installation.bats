@@ -3,8 +3,11 @@
 # Integration tests for GitHub installation script
 # Tests the complete workflow including error handling and user interactions
 
-# Load the GitHub installation script (for testing main function logic)
-load "../../bin/install/github.bash"
+# Load test helper functions
+load "../../../test/lib/test-helper.bash"
+
+# Load the utils we're testing
+load "../utils.bash"
 
 setup() {
     # Create temporary directory for each test
@@ -31,80 +34,78 @@ teardown() {
     fi
 }
 
-@test "convert_dotfiles_remote_to_ssh handles missing dotfiles directory gracefully" {
-    # Set up fake environment
-    export DOTFILES="$TEST_TEMP_DIR/nonexistent_dotfiles"
+@test "configure_git_global applies settings from config file" {
+    # Create a test config file
+    local test_config="$TEST_TEMP_DIR/test.gitconfig"
+    cat > "$test_config" <<EOF
+[user]
+    name = Test User
+    email = test@example.com
+EOF
     
-    run convert_dotfiles_remote_to_ssh
+    run configure_git_global "$test_config"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Dotfiles directory not found"* ]]
+    
+    # Verify the config was applied
+    local include_path
+    include_path=$(git config --global --get include.path)
+    [ "$include_path" = "$test_config" ]
 }
 
-@test "convert_dotfiles_remote_to_ssh handles non-git directory gracefully" {
-    # Create fake dotfiles directory (not a git repo)
-    export DOTFILES="$TEST_TEMP_DIR/fake_dotfiles"
-    mkdir -p "$DOTFILES"
-    
-    run convert_dotfiles_remote_to_ssh
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"Could not get git remote URL"* ]]
-}
-
-@test "convert_dotfiles_remote_to_ssh converts HTTPS remote to SSH" {
-    # Create fake dotfiles git repository with HTTPS remote
-    export DOTFILES="$TEST_TEMP_DIR/fake_dotfiles"
-    mkdir -p "$DOTFILES"
-    cd "$DOTFILES"
-    git init
-    git remote add origin "https://github.com/user/dotfiles.git"
-    
-    run convert_dotfiles_remote_to_ssh
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"Converting the dotfiles remote URL from HTTPS to SSH"* ]]
-    [[ "$output" == *"Dotfiles remote URL has been updated to use SSH"* ]]
-    
-    # Verify the remote was actually updated
-    local new_url
-    new_url=$(git config --get remote.origin.url)
-    [ "$new_url" = "git@github.com:user/dotfiles.git" ]
-}
-
-@test "convert_dotfiles_remote_to_ssh leaves SSH remote unchanged" {
-    # Create fake dotfiles git repository with SSH remote
-    export DOTFILES="$TEST_TEMP_DIR/fake_dotfiles"
-    mkdir -p "$DOTFILES"
-    cd "$DOTFILES"
-    git init
-    git remote add origin "git@github.com:user/dotfiles.git"
-    
-    run convert_dotfiles_remote_to_ssh
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"Dotfiles remote URL already uses SSH"* ]]
-    
-    # Verify the remote wasn't changed
-    local url
-    url=$(git config --get remote.origin.url)
-    [ "$url" = "git@github.com:user/dotfiles.git" ]
-}
-
-@test "script can be loaded without errors" {
-    # Simple test to verify the script loads properly
-    run bash -c "source bin/install/github.bash && echo 'Script loaded successfully'"
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"Script loaded successfully"* ]]
-}
-
-@test "main function detects missing SSH keys" {
-    # Create fake environment with no SSH keys
-    export HOME="$TEST_TEMP_DIR/fake_home"
-    mkdir -p "$HOME/.ssh"
-    
-    # Mock github_ssh_connection_works to return failure
-    github_ssh_connection_works() {
-        return 1
-    }
-    
-    run bash -c "source bin/install/github.bash; main"
+@test "configure_git_global handles missing config file" {
+    run configure_git_global "/nonexistent/config"
     [ "$status" -eq 1 ]
-    [[ "$output" == *"SSH keys not found"* ]]
+    [[ "$output" == *"Config file not found"* ]]
 }
+
+@test "configure_git_work applies work-specific settings" {
+    # Create a test work config
+    local work_config="$TEST_TEMP_DIR/work.gitconfig"
+    cat > "$work_config" <<EOF
+[user]
+    email = work@company.com
+EOF
+    
+    run configure_git_work "$work_config"
+    [ "$status" -eq 0 ]
+    
+    # Verify the includeIf was set
+    local include_if
+    include_if=$(git config --global --get includeIf."gitdir:~/Repos/recursionpharma/".path)
+    [ "$include_if" = "$work_config" ]
+}
+
+@test "configure_git_ignore sets global excludesfile" {
+    # Create a test ignore file
+    local ignore_file="$TEST_TEMP_DIR/test.gitignore"
+    echo "*.log" > "$ignore_file"
+    
+    run configure_git_ignore "$ignore_file"
+    [ "$status" -eq 0 ]
+    
+    # Verify the excludesfile was set
+    local excludes
+    excludes=$(git config --global --get core.excludesfile)
+    [ "$excludes" = "$ignore_file" ]
+}
+
+@test "validate_git_configuration checks required settings" {
+    # Clear git config for test
+    git config --global --unset user.name || true
+    git config --global --unset user.email || true
+    
+    # Should fail with missing config
+    run validate_git_configuration
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"user.name not configured"* ]]
+    [[ "$output" == *"user.email not configured"* ]]
+    
+    # Set required config
+    git config --global user.name "Test User"
+    git config --global user.email "test@example.com"
+    
+    # Should pass now
+    run validate_git_configuration
+    [ "$status" -eq 0 ]
+}
+
