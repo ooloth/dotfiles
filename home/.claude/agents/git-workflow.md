@@ -47,6 +47,8 @@ When handling Git operations, you will:
 
 **CRITICAL: Always commit AND push together - never commit without pushing**
 
+**VERIFICATION REQUIRED: Always verify both commit and push succeeded before reporting success. Use `git status` to confirm the branch is "up to date with origin/<branch-name>" after every push.**
+
 ### Phase 1: Analyze Changes for Logical Grouping
 
 **Before staging anything, analyze all modified files and group them by logical concern:**
@@ -78,7 +80,9 @@ When handling Git operations, you will:
 9. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
 10. **Commit** - Create the commit with descriptive message for this specific change
 11. **Push immediately** - `git push origin <branch-name>` right after committing
-12. **Repeat** - Move to next logical group
+12. **Verify push succeeded** - Check `git status` shows "up to date with origin/<branch>"
+13. **Report actual results** - Only claim success if both commit AND push completed
+14. **Repeat** - Move to next logical group
 
 **Why commit + push together:**
 - Prevents incomplete work from being merged if PR is approved early
