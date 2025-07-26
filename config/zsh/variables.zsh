@@ -42,7 +42,7 @@ export EZA_STRICT=true
 export TIME_STYLE=long-iso
 
 # Homebrew
-export HOMEBREW_BUNDLE_FILE="$DOTFILES/macos/Brewfile"
+export HOMEBREW_BUNDLE_FILE="$DOTFILES/features/homebrew/config/Brewfile"
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # k9s

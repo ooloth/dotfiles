@@ -4,7 +4,7 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
-source "$DOTFILES/lib/homebrew-utils.zsh"
+source "$DOTFILES/features/homebrew/utils.zsh"
 
 # Check if Homebrew is already installed
 if detect_homebrew; then

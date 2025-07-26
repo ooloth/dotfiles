@@ -9,8 +9,8 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dotfiles_root="$(cd "$script_dir/../.." && pwd)"
 
-# shellcheck source=../../lib/homebrew-utils.bash
-source "$dotfiles_root/lib/homebrew-utils.bash"
+# shellcheck source=../../features/homebrew/utils.bash
+source "$dotfiles_root/features/homebrew/utils.bash"
 
 # Main installation function
 install_homebrew() {
@@ -60,7 +60,7 @@ install_homebrew() {
 
 # Install packages from Brewfile if it exists
 install_brewfile_packages() {
-    local brewfile_path="$dotfiles_root/macos/Brewfile"
+    local brewfile_path="$dotfiles_root/features/homebrew/config/Brewfile"
     
     if [[ -f "$brewfile_path" ]]; then
         echo "📦 Installing packages from Brewfile..."
