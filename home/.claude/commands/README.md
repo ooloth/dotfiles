@@ -1,24 +1,24 @@
 # Claude Code Slash Commands
 
-This directory contains slash commands that provide convenient shortcuts for common development workflows. These commands follow a **thin wrapper philosophy** - they are simple routing mechanisms to expert agents rather than containing detailed implementation instructions.
+This directory contains slash commands that provide convenient shortcuts for common development workflows. These commands follow a **streamlined approach** - they provide structured prompts that guide main Claude through expert consultation patterns.
 
 ## Philosophy
 
-### Agents-First Approach
+### Streamlined Implementation Approach
 
-All detailed workflow logic, processes, and expertise reside in the specialized agents located in `~/.claude/agents/`. The slash commands serve three purposes:
+Main Claude handles implementation, coordination, and communication while consulting specialists when beneficial. The slash commands serve three purposes:
 
 1. **Discovery** - Help users find the right functionality through intuitive command names
-2. **Convenience** - Provide quick shortcuts without needing to remember agent names
-3. **Routing** - Direct requests to the appropriate expert agent(s)
+2. **Structure** - Provide clear problem analysis frameworks and consultation patterns
+3. **Guidance** - Direct main Claude to consider relevant specialist perspectives
 
-### Thin Wrapper Design
+### Structured Prompt Design
 
 Each command:
-- Contains minimal logic (just agent delegation)
-- Includes comments explaining its purpose as a wrapper
-- Passes arguments directly to the expert agent
-- Does NOT duplicate functionality from agents
+- Contains focused problem analysis frameworks
+- Includes guidance on when to consult specialists
+- Provides clear structure for systematic approaches
+- Encourages efficient expert consultation patterns
 
 ## Command Categories
 
@@ -32,26 +32,25 @@ Each command:
 - `review-quality` → comprehensive quality assessment with specialist consultation
 
 ### Create Commands (`/create-*`)
-- `create-tests` → test-designer agent
-- `create-docs` → comprehensive documentation creation
-- `create-branch` → git-workflow agent
-- `create-commit` → git-workflow agent  
-- `create-pr` → git-workflow agent
-
+- `create-tests` → structured test creation with test-designer consultation
+- `create-docs` → systematic documentation creation
+- `create-branch` → git-workflow agent delegation
+- `create-commit` → git-workflow agent delegation
+- `create-pr` → git-workflow agent delegation
 
 ### Fix Commands (`/fix-*`)
-- `fix-bug` → systematic debugging and resolution
-- `fix-performance` → design-architect agent (performance optimization)
-- `fix-security` → design-architect agent (security fixes)
-- `fix-tests` → test-designer agent (test fixes and coverage)
-- `fix-code` → comprehensive code improvement with expert consultation
+- `fix-bug` → systematic debugging and resolution framework
+- `fix-performance` → performance optimization with design-architect consultation
+- `fix-security` → security fixes with design-architect consultation
+- `fix-tests` → test fixes with test-designer consultation
+- `fix-code` → comprehensive code improvement with specialist consultation
 
 ### Plan Commands
-- `plan` → intelligent problem analysis with expert coordination
+- `plan` → systematic problem analysis with specialist consultation
 
 ## Usage
 
-Commands can be invoked with `/command-name [arguments]`. Arguments are passed to the underlying agent as context.
+Commands can be invoked with `/command-name [arguments]`. Arguments provide context for the structured analysis framework.
 
 Examples:
 ```bash
@@ -61,17 +60,17 @@ Examples:
 /plan "how to implement user authentication"
 ```
 
-## Automatic Agent Delegation
+## Specialist Consultation Guidance
 
-While these commands provide convenient shortcuts, Claude Code's sub-agent system is designed to automatically delegate to appropriate agents based on user intent. The commands exist as a backup and for explicit direction when needed.
+While these commands provide structured workflows, main Claude can also consult specialists directly based on context. The commands exist to provide clear frameworks and ensure comprehensive analysis when needed.
 
 ## Maintenance
 
 When modifying commands:
-1. Keep them as thin wrappers
-2. All detailed instructions belong in agent system prompts
-3. Include comments explaining the wrapper purpose
-4. Ensure argument passing works correctly
-5. Test that the target agent handles the workflow properly
+1. Keep them as structured prompts
+2. Focus on problem analysis frameworks
+3. Include guidance on specialist consultation
+4. Ensure clear workflow structure
+5. Test that the framework leads to comprehensive solutions
 
-For adding new commands, first ensure the underlying agent capability exists, then create a simple wrapper that routes to that agent.
+For adding new commands, identify common workflow patterns that benefit from structure, then create frameworks that guide systematic analysis with appropriate specialist consultation.
