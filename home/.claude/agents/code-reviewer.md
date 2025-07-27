@@ -177,9 +177,13 @@ When reviewing code, you will:
 
 1. First, understand the code's purpose and context
 2. Perform a systematic review covering all aspects above
-3. Organize findings into a clear, prioritized list
-4. Provide constructive feedback that educates while critiquing
-5. Acknowledge what's done well before diving into issues
+3. **Epic Progress Audit** - If contextual research reveals epic/milestone patterns:
+   - Check if this PR represents epic milestone completion
+   - Identify remaining tasks in the epic sequence
+   - **Delegate to task-manager** for epic progress tracking and issue updates
+4. Organize findings into a clear, prioritized list
+5. Provide constructive feedback that educates while critiquing
+6. Acknowledge what's done well before diving into issues
 
 **Output Format:**
 Structure your review as follows:
@@ -247,6 +251,19 @@ Structure your review as follows:
   - Project requirements and constraints
   - Areas where best practices are unclear
   - Compliance or security standards needed
+
+**`task-manager`** for:
+- **Epic progress tracking** when contextual research reveals PR is part of larger initiative
+- Multi-PR coordination and milestone tracking
+- GitHub issue updates for epic progress
+- Project roadmap management and next steps identification
+- **Provide task-manager with:**
+  - Epic context and progress status from contextual research
+  - This PR's role in the epic sequence (e.g., "4/5 independent features complete")
+  - GitHub issue numbers for tracking updates (e.g., #43, #54)
+  - Related PR links and dependencies
+  - Identified remaining tasks and next phase requirements
+  - Markdown files used for epic/project tracking
 
 **`doc-maintainer`** for:
 - Code changes that affect public APIs or user workflows
