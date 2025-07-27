@@ -164,6 +164,13 @@ Structure your review as follows:
 - Framework-specific patterns and conventions
 - When code uses emerging or specialized technologies
 
+**`doc-maintainer`** for:
+- Code changes that affect public APIs or user workflows
+- Missing or outdated code comments in complex functions
+- New features that need README updates
+- Configuration or setup changes that affect documentation
+- When code review reveals documentation gaps or inconsistencies
+
 Remember to:
 
 - Be respectful and constructive in your feedback

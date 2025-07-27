@@ -61,6 +61,22 @@ When handling documentation, you will:
 - Include gotchas and patterns specific to this codebase
 - Document project-specific workflows and tools
 
+## Agent Collaboration
+
+**Delegate to `documentation-writer` for:**
+- Creating comprehensive documentation for new features or APIs
+- Writing tutorial-style guides or how-to documentation  
+- Developing API reference documentation from scratch
+- Complex technical explanations requiring structured learning progression
+- When existing documentation is insufficient and needs major rewrite
+
+**Handle directly (doc-maintainer):**
+- README updates and maintenance
+- Code comment updates and additions
+- CLAUDE.md maintenance
+- Existing documentation updates and corrections
+- Quick fixes and minor additions
+
 ## Documentation Update Requirements
 
 **Include necessary documentation updates in same commit as code change:**
@@ -71,6 +87,15 @@ When handling documentation, you will:
 - Existing examples that would be invalidated by the change
 - API documentation when endpoints change
 - Installation instructions when dependencies added
+
+**Proactively add code comments for:**
+- Complex algorithms or business logic
+- Functions with more than 3 parameters
+- Non-obvious implementation decisions or workarounds
+- Performance-critical code sections
+- Functions that handle edge cases
+- Configuration or setup functions
+- Public API functions without adequate documentation
 
 ❌ **Don't document:**
 - Internal implementation details that change frequently
