@@ -4,6 +4,23 @@ description: Improve type safety and type annotations
 
 ## Systematic Type Safety Improvement Process
 
+### Phase 0: Planning & Strategy Assessment
+**Before adding types, confirm approach:**
+- **Have you planned your typing strategy?** If not, start here:
+  1. **Quick assessment** - Is this adding a few types or comprehensive typing?
+  2. **Consider alternatives**:
+     - Gradual typing (add types incrementally, low risk)
+     - Full type coverage (comprehensive typing, high effort)
+     - Type checking only (add types without runtime changes)
+     - Runtime validation (add types + runtime checks)
+     - Documentation only (comments instead of types)
+  3. **Choose optimal approach** based on:
+     - Project maturity and stability
+     - Team TypeScript/typing experience
+     - Existing type coverage
+     - Performance requirements
+  4. **Plan rollout strategy** - Which files/modules to type first?
+
 ### Phase 1: Type Analysis
 1. **Identify missing types** - Functions without return types, untyped parameters
 2. **Find type errors** - Runtime type mismatches, unsafe casts

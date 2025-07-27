@@ -4,6 +4,23 @@ description: Improve code architecture and design patterns
 
 ## Systematic Architecture Improvement Process
 
+### Phase 0: Planning & Strategy Assessment
+**Before making architectural changes, confirm approach:**
+- **Have you planned your refactoring strategy?** If not, start here:
+  1. **Quick assessment** - Is this a small refactor or major restructuring?
+  2. **Consider alternatives**:
+     - Incremental refactoring (safe, gradual improvement)
+     - Big bang refactor (complete restructure - high risk)
+     - Extract service/module (isolate problematic code)
+     - Rewrite component (when refactoring is harder than starting over)
+     - Leave as-is (if working and low-maintenance)
+  3. **Choose optimal approach** based on:
+     - Risk tolerance (production impact)
+     - Time available 
+     - Team familiarity with the code
+     - Existing test coverage
+  4. **Plan migration strategy** - How to deploy changes safely?
+
 ### Phase 1: Structural Analysis
 1. **Identify design issues** - Tight coupling, complex dependencies, unclear boundaries
 2. **Assess complexity** - Cyclomatic complexity, deep nesting, large functions/classes

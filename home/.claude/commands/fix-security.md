@@ -4,6 +4,23 @@ description: Identify and resolve security vulnerabilities
 
 ## Systematic Security Remediation Process
 
+### Phase 0: Planning & Strategy Assessment
+**Before fixing security issues, confirm approach:**
+- **Have you planned your security remediation strategy?** If not, start here:
+  1. **Quick assessment** - Is this immediate threat or long-term hardening?
+  2. **Consider alternatives**:
+     - Immediate mitigation (quick fix to block exploit)
+     - Comprehensive fix (address root cause thoroughly)
+     - Defense in depth (multiple security layers)
+     - Accept risk (if impact is low and fix is expensive)
+     - External help (security experts for complex issues)
+  3. **Choose optimal approach** based on:
+     - Severity and exploitability of vulnerability
+     - Available time and security expertise
+     - System criticality and data sensitivity
+     - Compliance and regulatory requirements
+  4. **Plan rollout** - How to deploy fixes without creating new vulnerabilities?
+
 ### Phase 1: Vulnerability Assessment
 1. **Identify the threat** - What's the attack vector?
 2. **Assess impact** - What could an attacker do?

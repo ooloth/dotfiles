@@ -4,6 +4,23 @@ description: Identify and resolve performance bottlenecks
 
 ## Systematic Performance Optimization Process
 
+### Phase 0: Planning & Strategy Assessment
+**Before optimizing performance, confirm approach:**
+- **Have you planned your optimization strategy?** If not, start here:
+  1. **Quick assessment** - Is this micro-optimization or major performance issue?
+  2. **Consider alternatives**:
+     - Profile first (measure before optimizing - recommended)
+     - Quick wins (obvious improvements like caching, indexing)
+     - Algorithmic changes (better data structures/algorithms)
+     - Infrastructure scaling (more CPU/memory/servers)
+     - Requirements review (do we really need this performance?)
+  3. **Choose optimal approach** based on:
+     - Performance requirements and current metrics
+     - Development time vs infrastructure cost
+     - User impact and business priority
+     - Team expertise with optimization techniques
+  4. **Set performance targets** - What's good enough? Measure success.
+
 ### Phase 1: Measurement & Profiling
 1. **Establish baseline** - Current performance metrics
 2. **Profile the code** - Identify actual bottlenecks

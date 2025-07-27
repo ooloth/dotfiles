@@ -4,6 +4,23 @@ description: Improve general code quality and maintainability
 
 ## Systematic Code Quality Improvement Process
 
+### Phase 0: Planning & Strategy Assessment
+**Before improving code quality, confirm approach:**
+- **Have you planned your quality improvement strategy?** If not, start here:
+  1. **Quick assessment** - Is this minor cleanup or major quality overhaul?
+  2. **Consider alternatives**:
+     - Focused improvement (specific issues like naming/formatting)
+     - Comprehensive cleanup (full quality audit and fixes)
+     - Automated tooling (linters, formatters, code analysis)
+     - Documentation only (explain existing complex code)
+     - Rewrite (when improvement costs more than starting over)
+  3. **Choose optimal approach** based on:
+     - Code importance and frequency of changes
+     - Available time and resources
+     - Existing technical debt level
+     - Team coding standards
+  4. **Prioritize improvements** - What order provides most value?
+
 ### Phase 1: Quality Assessment
 1. **Review naming** - Variables, functions, classes use clear, descriptive names
 2. **Identify duplication** - Repeated code blocks, similar logic patterns
