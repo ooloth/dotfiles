@@ -80,13 +80,17 @@ When writing commits and PRs, you will:
    - chore: Maintenance tasks
 
 **Writing Process:**
-1. Review all file changes
-2. Understand the context
-3. Identify the main purpose
-4. Note secondary changes
-5. Draft clear message
-6. Include relevant details
-7. Add references/links
+1. **Check for PR templates** - Always look for project-specific templates first:
+   - Check `.github/PULL_REQUEST_TEMPLATE.md` in project root
+   - Check `~/.claude/PR_TEMPLATE_REFERENCE.md` for user default
+   - Use template format if available, otherwise use standard format
+2. Review all file changes
+3. Understand the context
+4. Identify the main purpose
+5. Note secondary changes
+6. Draft clear message following template format
+7. Include relevant details
+8. Add references/links
 
 **Output Formats:**
 

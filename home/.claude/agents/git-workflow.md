@@ -239,8 +239,12 @@ When handling Git operations, you will:
 4. **Ensure branch is pushed** to remote
 5. **Analyze commit history** - Review commits since branching to understand scope
 6. **Check related issues** - Look for related GitHub issues, project roadmaps, task tracking files
-7. **Generate PR description** - Use pr-writer agent to craft clear, comprehensive description
-8. **Create draft PR** with descriptive title and structured body
+7. **Check for PR templates** - Look for project PR template:
+   - Check `.github/PULL_REQUEST_TEMPLATE.md`
+   - Check `~/.claude/PR_TEMPLATE_REFERENCE.md` for user default
+   - Use project template format if available
+8. **Generate PR description** - Use pr-writer agent to craft clear, comprehensive description following template format
+9. **Create draft PR** with descriptive title and structured body
 
 **PR creation commands:**
 - `git branch --show-current` - Get current branch
