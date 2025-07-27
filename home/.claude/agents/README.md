@@ -103,11 +103,17 @@ This enables the same expert to help you both plan your own work and review othe
 - GitHub issue tracking, roadmap coordination, epic management
 - Triggers: task, roadmap, multi-PR, tracking, epic
 
+**`problem-solver`** - Domain-agnostic problem analysis and expert coordination
+- Intelligent routing to appropriate specialists based on problem type
+- Structured alternative analysis and trade-off evaluation
+- Triggers: "how should I", "best way to", "help me plan", "what are my options", "I need to solve"
+
 ## Agent Collaboration
 
 Agents explicitly coordinate through documented collaboration patterns:
 
 **Unified Expert Coordination:**
+- **problem-solver** serves as intelligent front door, routing to appropriate specialists based on problem domain
 - **software-engineer** coordinates with design-architect (architecture + security + performance), test-designer (testing strategy + execution), git-workflow
 - **code-reviewer** collaborates with design-architect (architectural/security/performance analysis), test-designer (test quality), data-analyst (data code review)
 - **debugger** consults data-analyst for data issues, researcher for framework problems

@@ -16,10 +16,11 @@
 - **pr-writer**: For commit messages and PR descriptions
 - **doc-maintainer**: For documentation updates
 - **task-manager**: For multi-PR coordination
+- **problem-solver**: For intelligent problem analysis and expert coordination
 
 ### Slash Commands for Structured Workflows
 
-**Discovery pattern:** Type `/review-[TAB]`, `/create-[TAB]`, `/fix-[TAB]`, or `/plan-[TAB]`
+**Discovery pattern:** Type `/review-[TAB]`, `/create-[TAB]`, `/fix-[TAB]`, or use `/plan`
 
 **REVIEW-*** (Analysis & Verification)
 - `/review-code` - Comprehensive code quality review
@@ -44,9 +45,8 @@
 - `/fix-tests` - Test failure resolution
 - `/fix-code` - Code quality improvements and refactoring
 
-**PLAN-*** (Strategy & Design)
-- `/plan-feature` - Architecture and test strategy for new features
-- `/plan-refactor` - Refactoring strategy and approach
+**PLANNING (Strategy & Design)
+- `/plan` - Intelligent problem analysis with expert coordination for any domain
 
 ### Git Operations Delegation Rules
 
