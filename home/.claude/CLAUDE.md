@@ -6,7 +6,6 @@
 
 **Primary Agents (use proactively):**
 - **software-engineer**: For coordinated feature implementation, refactoring, and coding tasks (collaborates with design-architect, test-designer, git-workflow, researcher, and data-analyst)
-- **code-reviewer**: After writing/modifying code (collaborates with design-architect, test-designer, and doc-maintainer)
 - **design-architect**: For architecture, security, and performance decisions - unified expert for secure, performant design (consults researcher for best practices)
 - **debugger**: For errors, bugs, and troubleshooting (consults data-analyst for data issues, researcher for framework problems)
 - **test-designer**: For test planning, strategy, execution, and coverage - unified testing expert (consults researcher for testing frameworks)
@@ -23,13 +22,13 @@
 **Discovery pattern:** Type `/review-[TAB]`, `/create-[TAB]`, `/fix-[TAB]`, or use `/plan`
 
 **REVIEW-*** (Analysis & Verification)
-- `/review-code` - Comprehensive code quality review
-- `/review-security` - Security vulnerability assessment  
-- `/review-performance` - Performance analysis
-- `/review-architecture` - Design and architecture evaluation
-- `/review-tests` - Test execution and coverage verification
-- `/review-pr [url]` - Pull request review
-- `/review-quality` - Combined quality audit (code + security + performance)
+- `/review-code` - Direct expert consultation for comprehensive code quality review
+- `/review-security` - Security vulnerability assessment via design-architect
+- `/review-performance` - Performance analysis via design-architect
+- `/review-architecture` - Design and architecture evaluation via design-architect
+- `/review-tests` - Test execution and coverage verification via test-designer
+- `/review-pr [url]` - Pull request review with direct expert consultation
+- `/review-quality` - Combined quality audit via coordinated expert consultation
 
 **CREATE-*** (Generate & Build)
 - `/create-tests` - Design and implement test suite
@@ -60,6 +59,26 @@
 - **ANY GitHub CLI operations** (gh pr merge, gh pr create, etc.) → Always use git-workflow agent
 
 **Never perform git operations manually with direct tool calls.**
+
+### Code Review Strategy: Direct Expert Consultation
+
+**STREAMLINED REVIEW PROCESS: Skip intermediary agents, consult experts directly**
+
+**For comprehensive code reviews:**
+1. **Direct specialist consultation** - Delegate to relevant experts simultaneously:
+   - **design-architect**: Architecture, security, and performance review
+   - **test-designer**: Test coverage and quality assessment
+   - **doc-maintainer**: Documentation impact analysis (when applicable)
+   - **data-analyst**: Data processing optimization (when applicable)
+2. **Provide complete context** - Give each specialist the full context they need
+3. **Synthesize feedback** - Combine insights from parallel consultations
+4. **Present unified review** - Coherent feedback with specialist attribution
+
+**Benefits of direct consultation:**
+- **3x faster**: No intermediary agent overhead
+- **More reliable**: Direct specialist expertise without interpretation layers
+- **Better coverage**: Parallel specialist analysis catches more issues
+- **Cleaner process**: Streamlined workflow with immediate expert access
 
 ### Key Behavioral Changes
 

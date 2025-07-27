@@ -37,10 +37,6 @@ This enables the same expert to help you both plan your own work and review othe
 - Collaborates with design-architect, test-designer, git-workflow agents
 - Triggers: implement, add feature, create function, refactor, write code
 
-**`code-reviewer`** - Code quality analysis (inherently review-focused)
-- Comprehensive code reviews with prioritized recommendations
-- Collaborates with design-architect, test-designer, data-analyst
-- Triggers: implemented, added, created, written, refactored, modified, finished
 
 **`design-architect`** - Unified architecture, security, and performance expert
 - **Planning Mode**: Design secure, performant architectures from the ground up
@@ -115,7 +111,6 @@ Agents explicitly coordinate through documented collaboration patterns:
 **Unified Expert Coordination:**
 - **problem-solver** serves as intelligent front door, routing to appropriate specialists based on problem domain
 - **software-engineer** coordinates with design-architect (architecture + security + performance), test-designer (testing strategy + execution), git-workflow
-- **code-reviewer** collaborates with design-architect (architectural/security/performance analysis), test-designer (test quality), data-analyst (data code review)
 - **debugger** consults data-analyst for data issues, researcher for framework problems
 - **All agents** can delegate to researcher for external knowledge needs
 

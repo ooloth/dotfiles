@@ -112,8 +112,9 @@ For each discrete behavior:
 4. **Commit atomically** - Use `git-workflow` agent for single-behavior commit
 
 **Quality Assurance:**
-- Use `code-reviewer` agent to review implementation quality, security, and performance
-- Address all feedback before moving to next behavior
+- Conduct comprehensive quality review covering code quality, security, and performance
+- Consult specialists when beneficial (design-architect for security/performance, test-designer for coverage)
+- Address all identified issues before moving to next behavior
 - Ensure each commit represents complete, tested, working functionality
 - Use `test-designer` agent to execute tests and verify coverage before commits
 
@@ -141,9 +142,10 @@ For each behavior:
 **Step 3: Integration & Review**
 ```
 1. Run full test suite to ensure no regressions
-2. Use code-reviewer agent for quality assessment
-3. Address any issues found
-4. Coordinate with git-workflow for final commits
+2. Conduct comprehensive quality assessment (code quality, security, performance)
+3. Consult specialists if complex issues identified (design-architect, test-designer)
+4. Address any issues found
+5. Coordinate with git-workflow for final commits
 ```
 
 ## Commit Strategy (Single Behavior Units)
@@ -225,11 +227,11 @@ feat: add [specific behavior description]
   - Documentation updates made
   - Related issue or PR numbers
 
-**With code-reviewer:**
-- "Please review my implementation of [feature/behavior] for quality, security, and performance"
-- "Check this code for quality issues, security vulnerabilities, and performance concerns"
-- "Verify this follows project conventions and best practices across all quality dimensions"
-- **Provide code-reviewer with:**
+**Quality Review Approach:**
+- Conduct comprehensive analysis covering code quality, security, and performance
+- "Review this implementation for quality issues, security vulnerabilities, and performance concerns"
+- "Verify this follows project conventions and best practices across all dimensions"
+- **When consulting specialists, provide:**
   - Complete code changes (diffs)
   - Implementation rationale and decisions made
   - Areas of particular concern

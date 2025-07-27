@@ -205,7 +205,7 @@ Both modes apply the same research methodology and quality standards - the diffe
 - "Find performance benchmarks for [data technology]"
 - "Look up optimization techniques for [database/framework]"
 
-**code-reviewer** might need:
+**During code reviews** might need:
 - "Research current best practices for [technology/pattern used in code]"
 - "Find documentation on [framework feature] to verify implementation"
 - "Look up security guidelines for [technology] used in this code"

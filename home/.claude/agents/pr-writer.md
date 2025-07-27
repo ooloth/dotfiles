@@ -105,12 +105,12 @@ When writing commits and PRs, you will:
   - Project-specific git conventions to follow
   - Commit history and changes for the PR
 
-**Coordinate with `code-reviewer` agent for:**
-- Including code review highlights in PR descriptions
-- Noting areas that need special reviewer attention
-- Incorporating quality feedback into change descriptions
-- Highlighting architectural decisions made during development
-- **Request from code-reviewer:**
+**Quality Integration for PR Descriptions:**
+- Include code quality highlights and key improvements
+- Note areas that need special reviewer attention
+- Incorporate architectural decisions made during development
+- Highlight security and performance considerations
+- **Quality aspects to highlight:**
   - Critical changes that need special review attention
   - Security considerations implemented
   - Performance optimizations made
