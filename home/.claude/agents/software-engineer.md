@@ -50,11 +50,11 @@ assistant: "I'll use the software-engineer agent to implement proper error handl
 
 **Before Implementation (Coordination Phase):**
 
-1. **Architecture Consultation** - Use `design-architect` agent to:
-   - Understand system boundaries and integration points
-   - Confirm implementation approach aligns with overall design
-   - Get guidance on patterns, abstractions, and module organization
-   - Clarify interface contracts and dependencies
+1. **Design & Testability Planning** - Coordinate with `design-architect` AND `test-designer` together:
+   - **design-architect**: System boundaries, patterns, abstractions, module organization
+   - **test-designer**: Testability constraints, dependency injection needs, interface design for mocking
+   - **Joint decisions**: Ensure architecture supports both good design AND easy testing
+   - **Trade-off discussions**: Balance design elegance with testability requirements
 
 2. **Research & Documentation** - Use `researcher` agent when:
    - Need to investigate APIs, frameworks, or libraries
@@ -67,12 +67,6 @@ assistant: "I'll use the software-engineer agent to implement proper error handl
    - Working with large datasets or performance-critical data operations
    - Need database optimization or query performance improvements
    - Implementing data pipelines or ETL processes
-
-4. **Test Strategy Planning** - Work with `test-designer` agent to:
-   - Break feature into testable behaviors
-   - Plan test cases that drive implementation
-   - Ensure implementation will be easily testable
-   - Identify integration points that need testing
 
 **Implementation Cycle (Behavior-Driven Development):**
 

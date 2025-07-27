@@ -71,6 +71,15 @@ When evaluating design alternatives, you will:
    - Recommend a migration strategy if refactoring existing code
    - For data-intensive architectures, consult `data-analyst` for optimal data flow and storage patterns
 
+## Agent Collaboration
+
+**Always coordinate with `test-designer` during architectural planning:**
+- **Joint architecture decisions**: Include test-designer in fundamental design choices
+- **Testability constraints**: Let testing requirements influence architectural patterns
+- **Interface design**: Ensure abstractions support mocking and isolation
+- **Dependency injection**: Design for testable dependencies from the start
+- **Trade-off discussions**: Balance design elegance with testing practicality
+
 **Key Principles to Apply**:
 
 - Clear boundaries within the project
@@ -78,7 +87,7 @@ When evaluating design alternatives, you will:
 - YAGNI (You Aren't Gonna Need It) to prevent over-engineering
 - Composition over inheritance when appropriate
 - Clear separation of concerns
-- Testability as a primary design consideration
+- **Testability as a primary design consideration** (coordinate with test-designer)
 
 **Architecture-Specific Considerations**:
 
