@@ -1,47 +1,62 @@
-## Core Principle: Delegate to Expert Agents and Commands
+## Workflow Philosophy: Natural Conversation with Optional Power Tools
 
-### Development Workflow: Use Agents for Everything
+### For Users: How to Work with Claude
 
-**STREAMLINED: Main Claude handles implementation, coordination, and communication. Consult specialists for deep expertise when beneficial.**
+**Primary Approach: Natural Conversation**
+- Simply describe what you need: "fix this bug", "implement user auth", "review my code"
+- Claude follows best practices automatically and consults specialists when valuable
+- No need to memorize commands or worry about "the right way" to ask
 
-**Specialist Agents (consult when beneficial):**
-- **design-architect**: For architecture, security, and performance analysis - deep expertise for secure, performant design
-- **test-designer**: For test planning, strategy, execution, and coverage - specialized testing expertise  
-- **researcher**: For documentation lookup, API research, and best practices investigation
-- **data-analyst**: For data processing optimization, DataFrame operations, and database performance
-- **git-workflow**: For ALL git operations - commits, branches, PRs, merges, pushes, pulls (NEVER perform git operations manually)
-- **pr-writer**: For commit messages and PR descriptions (maintains consistent templates and formatting)
+**Slash Commands: Optional Power Tools**
+- Use when you want guaranteed systematic methodology
+- Helpful for complex tasks: `/plan` for big decisions, `/fix-bug` for tricky debugging  
+- Think of them as "expert mode" - same outcome, more structured process
+
+### For Claude: How to Handle Requests
+
+**Default Behavior:**
+1. **Handle implementation directly** - You're the primary coordinator
+2. **Follow best practices naturally** - Test-first development, atomic commits, documentation
+3. **Consult specialists when valuable** - Don't delegate unnecessarily
+4. **Apply technology preferences** - Via specialist fast-path knowledge
+
+**High-Value Specialists (use when beneficial):**
+- **git-workflow**: MANDATORY for ALL git operations (commits, branches, PRs, merges)
+- **pr-writer**: For commit messages and PR descriptions (maintains opinionated templates)
+- **design-architect**: For complex architecture, security, and performance analysis
+- **researcher**: For "what's the best X?" questions and documentation lookups
 - **task-manager**: For multi-PR coordination and GitHub issue tracking
 
-### Slash Commands for Structured Workflows
+### Slash Commands: Optional Systematic Approaches
 
-**Discovery pattern:** Type `/review-[TAB]`, `/create-[TAB]`, `/fix-[TAB]`, or use `/plan`
+**When to use:** For complex tasks where you want guaranteed systematic methodology  
+**When to skip:** For routine tasks where natural conversation works fine
 
-**REVIEW-*** (Analysis & Verification)
-- `/review-code` - Direct expert consultation for comprehensive code quality review
-- `/review-security` - Security vulnerability assessment via design-architect
-- `/review-performance` - Performance analysis via design-architect
-- `/review-architecture` - Design and architecture evaluation via design-architect
-- `/review-tests` - Test execution and coverage verification via test-designer
-- `/review-pr [url]` - Pull request review with direct expert consultation
-- `/review-quality` - Combined quality audit via coordinated expert consultation
+**REVIEW Commands** (Systematic analysis when you need thoroughness)
+- `/review-code` - Structured code review with quality checklist
+- `/review-security` - Systematic security vulnerability assessment
+- `/review-performance` - Methodical performance analysis  
+- `/review-architecture` - Comprehensive design evaluation
+- `/review-tests` - Complete test coverage verification
+- `/review-pr [url]` - Structured PR review process
+- `/review-quality` - Full quality audit checklist
 
-**CREATE-*** (Generate & Build)
-- `/create-tests` - Design and implement test suite
-- `/create-docs` - Create/update documentation
-- `/create-branch` - New Git branch with proper naming
-- `/create-commit` - Full commit workflow with checks
-- `/create-pr` - Draft pull request creation
+**CREATE Commands** (Structured creation workflows)
+- `/create-tests` - Systematic test design and implementation
+- `/create-docs` - Comprehensive documentation creation
+- `/create-branch` → Delegates to git-workflow agent
+- `/create-commit` → Delegates to git-workflow agent
+- `/create-pr` → Delegates to git-workflow agent
 
-**FIX-*** (Solve & Improve)
-- `/fix-bug` - Systematic debugging and resolution
-- `/fix-performance` - Performance optimization
-- `/fix-security` - Security vulnerability fixes
-- `/fix-tests` - Test failure resolution
-- `/fix-code` - Code quality improvements and refactoring
+**FIX Commands** (Methodical problem resolution)
+- `/fix-bug` - 6-step systematic debugging process
+- `/fix-performance` - Structured optimization workflow
+- `/fix-security` - Systematic vulnerability remediation
+- `/fix-tests` - Methodical test failure resolution
+- `/fix-code` - Structured refactoring process
 
-**PLANNING (Strategy & Design)
-- `/plan` - Intelligent problem analysis with expert coordination for any domain
+**PLANNING** (Structured decision making)
+- `/plan` - 4-phase problem analysis framework
 
 ### Git Operations Delegation Rules
 
@@ -58,11 +73,10 @@
 **STREAMLINED REVIEW PROCESS: Skip intermediary agents, consult experts directly**
 
 **For comprehensive code reviews:**
-1. **Direct specialist consultation** - Delegate to relevant experts simultaneously:
+1. **Direct specialist consultation** - Delegate to relevant experts when beneficial:
    - **design-architect**: Architecture, security, and performance review
-   - **test-designer**: Test coverage and quality assessment
+   - **researcher**: Best practices and documentation verification
    - **Documentation updates**: When code changes affect user workflows or APIs
-   - **data-analyst**: Data processing optimization (when applicable)
 2. **Provide complete context** - Give each specialist the full context they need
 3. **Synthesize feedback** - Combine insights from parallel consultations
 4. **Present unified review** - Coherent feedback with specialist attribution
