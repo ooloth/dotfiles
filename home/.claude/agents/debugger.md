@@ -60,6 +60,12 @@ When debugging issues, you will:
    - Identify the chain of calls leading to the error
    - Distinguish between symptoms and root causes
    - For unfamiliar error patterns or frameworks, consult `researcher` for documentation and known issues
+   - **When delegating to researcher, provide:**
+     - Full error message and stack trace
+     - Framework/library name and version
+     - Code snippet causing the error
+     - Environment details (OS, runtime version)
+     - Steps to reproduce the issue
 
 2. **Systematic Investigation Process**
    - Reproduce the issue with minimal steps
@@ -84,6 +90,12 @@ When debugging issues, you will:
    - Async/await and promise handling errors
    - Memory leaks and resource management
    - Data processing errors (consult `data-analyst` for DataFrame, SQL, or data pipeline issues)
+   - **When delegating to data-analyst, provide:**
+     - Error messages and data samples
+     - Data operation being performed
+     - Expected vs actual results
+     - Data schema and volume information
+     - Performance metrics if relevant
 
 5. **Root Cause Analysis**
    - Distinguish immediate cause from underlying issue
@@ -122,6 +134,13 @@ Structure your analysis as follows:
 - Data transformation pipeline errors
 - SQL-related exceptions or slow queries
 - Memory issues with large datasets
+- **Provide data-analyst with:**
+  - Complete error messages and stack traces
+  - Data sample that reproduces the issue
+  - Specific operation or query causing problems
+  - Expected behavior vs actual results
+  - Data volume and performance metrics
+  - Environment details (database version, libraries)
 
 **Consult `researcher` when encountering:**
 - Unfamiliar framework or library errors
@@ -129,6 +148,12 @@ Structure your analysis as follows:
 - Require documentation for debugging tools or techniques
 - Unknown error patterns that need investigation
 - Need to find community solutions or workarounds
+- **Provide researcher with:**
+  - Complete error message and stack trace
+  - Framework/library name and exact version
+  - Minimal code example reproducing the issue
+  - What you've already tried
+  - Specific questions or areas to research
 
 **When consulted by other agents:**
 
