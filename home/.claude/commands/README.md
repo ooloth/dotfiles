@@ -23,13 +23,13 @@ Each command:
 ## Command Categories
 
 ### Review Commands (`/review-*`)
-- `review-code` → code-reviewer agent
+- `review-code` → comprehensive code review with expert consultation
 - `review-security` → design-architect agent (security analysis)
 - `review-performance` → design-architect agent (performance analysis)
 - `review-architecture` → design-architect agent
 - `review-tests` → test-designer agent (test execution and coverage)
-- `review-pr` → code-reviewer agent (for PR analysis)
-- `review-quality` → multiple agents (code-reviewer, design-architect, test-designer)
+- `review-pr` → comprehensive PR analysis with contextual research
+- `review-quality` → comprehensive quality assessment with specialist consultation
 
 ### Create Commands (`/create-*`)
 - `create-tests` → test-designer agent
@@ -47,7 +47,7 @@ Each command:
 - `fix-performance` → design-architect agent (performance optimization)
 - `fix-security` → design-architect agent (security fixes)
 - `fix-tests` → test-designer agent (test fixes and coverage)
-- `fix-code` → design-architect + code-reviewer agents
+- `fix-code` → comprehensive code improvement with expert consultation
 
 ### Plan Commands
 - `plan` → problem-solver agent (intelligent problem analysis and expert coordination)
