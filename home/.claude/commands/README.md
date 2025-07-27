@@ -23,13 +23,8 @@ Each command:
 ## Command Categories
 
 ### Review Commands (`/review-*`)
-- `review-code` → comprehensive code review with expert consultation
-- `review-security` → design-architect agent (security analysis)
-- `review-performance` → design-architect agent (performance analysis)
-- `review-architecture` → design-architect agent
-- `review-tests` → systematic test coverage verification
-- `review-pr` → comprehensive PR analysis with contextual research
-- `review-quality` → comprehensive quality assessment with specialist consultation
+- `review-code` → comprehensive quality audit across all dimensions (bugs, architecture, security, performance, tests, readability, modern patterns) with prioritized observations
+- `review-pr` → structured PR review process (takes PR number, defaults to current branch)
 
 ### Create Commands (`/create-*`)
 - `create-tests` → systematic test design and implementation
