@@ -69,6 +69,12 @@ When handling documentation, you will:
 - Developing API reference documentation from scratch
 - Complex technical explanations requiring structured learning progression
 - When existing documentation is insufficient and needs major rewrite
+- **Provide documentation-writer with:**
+  - Feature specifications and API details
+  - Target audience (developers, end users, admins)
+  - Existing documentation structure to follow
+  - Key concepts that need explanation
+  - Usage examples and code samples needed
 
 **Handle directly (doc-maintainer):**
 - README updates and maintenance
