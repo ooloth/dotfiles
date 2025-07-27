@@ -1,43 +1,92 @@
 ---
-description: Fix failing tests and improve test coverage
+description: Comprehensive test improvement, creation, and coverage enhancement
 ---
 
-## Systematic Test Fixing Process
+## Comprehensive Test Enhancement Process
 
 ### Phase 0: Planning & Strategy Assessment
-**Before fixing test issues, confirm approach:**
-- **Have you planned your test fixing strategy?** If not, start here:
-  1. **Quick assessment** - Are these isolated failures or systematic issues?
+**Before working on tests, confirm approach:**
+- **Have you planned your test strategy?** If not, start here:
+  1. **Quick assessment** - Fixing failing tests, adding coverage, or designing new tests?
   2. **Consider alternatives**:
      - Direct fix (simple test logic errors)
      - Update tests (behavior changed legitimately)
      - Improve test design (flaky/brittle tests)
      - Add missing coverage (gaps in test scenarios)
-     - Test infrastructure (environment/setup issues)
+     - Create comprehensive test suite (new functionality)
+     - Test infrastructure improvements (setup, tools, CI)
   3. **Choose optimal approach** based on:
+     - Current test coverage and quality
      - Whether code behavior changed intentionally
-     - Test quality and maintainability
-     - Urgency of getting tests passing
-     - Root cause of failures
-  4. **Plan test strategy** - How to prevent similar failures?
+     - Risk level of untested code
+     - Team testing standards and tools
+  4. **Plan test architecture** - How to prevent issues and ensure maintainability?
 
-### Phase 1: Test Analysis
+### Phase 1: Test Analysis & Assessment
+
+#### 🔍 **Test Coverage Analysis**
+1. **Run coverage reports** - Identify gaps in line, branch, and function coverage
+2. **Analyze test quality** - Meaningful assertions, edge cases, error scenarios
+3. **Identify missing test types** - Unit, integration, end-to-end coverage
+4. **Assess test architecture** - Organization, maintainability, speed
+
+#### 🐛 **Failure Analysis** (if tests are failing)
 1. **Identify failures** - Run tests and capture error messages
-2. **Analyze root cause** - Determine if it's test issue or code issue
+2. **Analyze root cause** - Test issue vs code behavior change
 3. **Categorize problems**:
    - Flaky tests (environment/timing dependent)
-   - Broken assertions (code behavior changed)
+   - Broken assertions (code behavior changed legitimately)
    - Setup/teardown issues
-   - Missing coverage gaps
-4. **Fix systematically** - Address root causes, not symptoms
-5. **Verify fixes** - Run tests multiple times to ensure stability
-6. **Improve test quality** - Refactor for clarity and maintainability
+   - Missing coverage for new functionality
 
-### Common Test Issues:
-- Timing dependencies → Add proper waits or mocks
-- Environment dependencies → Use test fixtures
-- Brittle selectors → Use data attributes
-- Over-mocking → Test real behavior when possible
-- Under-specified assertions → Be explicit about expectations
+### Phase 2: Test Design & Creation
 
-Test issue: $ARGUMENTS
+#### 📋 **Test Design Strategy**
+1. **Identify test scenarios** - Happy paths, edge cases, error conditions
+2. **Choose test types** - Unit tests for logic, integration tests for interactions
+3. **Design test structure** - Arrange-Act-Assert pattern, clear naming
+4. **Plan test data** - Fixtures, factories, mocks vs real data
+
+#### ✅ **Test Implementation Principles**
+- **Test behavior, not implementation** - Focus on what code does
+- **One assertion per test** when possible for clarity
+- **Descriptive test names** - Explain expected behavior clearly
+- **Independent tests** - No dependencies between test cases
+- **Fast execution** - Unit tests should run quickly
+
+### Phase 3: Implementation & Quality Improvement
+
+#### 🔧 **Fix Existing Test Issues**
+- **Timing dependencies** → Add proper waits, async handling, or mocks
+- **Environment dependencies** → Use test fixtures and isolation
+- **Brittle selectors** → Use data attributes for UI testing
+- **Over-mocking** → Test real behavior when possible
+- **Under-specified assertions** → Be explicit about expectations
+- **Flaky tests** → Identify and eliminate non-deterministic behavior
+
+#### 🏗️ **Create Missing Tests**
+- **Unit tests** - Test individual functions/methods in isolation
+- **Integration tests** - Test component interactions
+- **End-to-end tests** - Test complete user workflows
+- **Error handling tests** - Test exception scenarios
+- **Edge case tests** - Boundary conditions and unusual inputs
+
+#### 📊 **Test Quality Enhancements**
+- **Improve assertions** - More specific, meaningful checks
+- **Add test documentation** - Explain complex test scenarios
+- **Refactor test code** - Remove duplication, improve readability
+- **Optimize test performance** - Faster setup, parallel execution
+- **Update test tools** - Modern testing frameworks and utilities
+
+### Phase 4: Verification & Maintenance
+- **Run full test suite** - Ensure all tests pass consistently
+- **Verify coverage targets** - Meet project coverage requirements
+- **Test performance** - Ensure test suite runs efficiently
+- **Update CI/CD** - Integrate new tests into automated pipelines
+- **Document test strategy** - Clear guidance for future testing
+
+### When to consult specialists:
+- **researcher**: Testing patterns for specific frameworks
+- **design-architect**: Testing architectural components and complex integrations
+
+Test target (issue to fix, feature to test, or coverage to improve): $ARGUMENTS
