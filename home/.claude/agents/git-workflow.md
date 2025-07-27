@@ -86,21 +86,23 @@ When handling Git operations, you will:
 
 **VERIFICATION REQUIRED: Always verify both commit and push succeeded before reporting success. Use `git status` to confirm the branch is "up to date with origin/<branch-name>" after every push.**
 
-### Phase 1: Analyze Changes for Logical Grouping
+### Phase 1: MANDATORY Analysis for Small Commits
 
-**Before staging anything, analyze all modified files and group them by logical concern:**
+**NEVER stage all files at once. ALWAYS analyze for logical grouping first:**
 
 1. **Check git status** - See all modified/untracked files
-2. **Analyze file relationships** - Group files by:
-   - **Feature/functionality** (e.g., authentication module files)
-   - **Bug fix scope** (e.g., fixing one specific issue)
-   - **Refactoring boundary** (e.g., renaming across related files)
-   - **Documentation updates** (e.g., README changes for new features)
-3. **Identify commit boundaries** - Ask yourself:
-   - Can each group be reverted independently?
-   - Does each group represent one conceptual change?
-   - Are there unrelated improvements mixed in?
-4. **Plan commit sequence** - Order commits logically (e.g., tests before implementation, core before dependent changes)
+2. **ENFORCE small commits** - Group files by SINGLE logical concerns:
+   - **Related file pairs** (e.g., component + its test, API endpoint + its documentation)
+   - **Single feature boundaries** (e.g., login function + test + README section)
+   - **Single bug fix scope** (e.g., fix in auth.js + test that catches it)
+   - **Single refactoring unit** (e.g., rename function + update all its call sites)
+   - **Tightly coupled changes** (e.g., database migration + code that uses new schema)
+3. **REJECT large commits** - If staging multiple unrelated files, STOP:
+   - **NO "update all X" commits** - Each logical unit gets its own commit
+   - **NO mixed concern commits** - Keep different purposes separate
+   - **NO accumulation commits** - Don't save up multiple completed changes
+4. **Plan micro-commit sequence** - Create 10-20 small commits instead of 3-5 large ones
+5. **COMMIT EACH CHANGE IMMEDIATELY** - Don't accumulate multiple logical changes
 
 ### Phase 2: Execute Commits (Repeat for Each Logical Group)
 
@@ -140,15 +142,25 @@ When handling Git operations, you will:
 - Prefer 10-20 micro-commits over 3-5 larger commits for a feature
 - **Always push immediately after each commit** - never leave commits local only
 
-## Commit Strategy
+## Commit Strategy - MICRO-COMMITS MANDATORY
 
-- **Logical, atomic commits** that can be reviewed independently
-- **One behavior per commit** - each commit implements exactly one piece of functionality
-- **Related changes together** (function + tests + documentation)
-- **Separate refactoring from feature commits**
-- **Descriptive commit messages** explaining "why" not just "what"
+**ABSOLUTE RULE: Many small commits, never large ones**
+
+- **Micro-commits preferred** - 10-20 tiny commits over 3-5 large ones
+- **One file per commit when possible** - Each changed file gets its own commit
+- **One concept per commit** - Single logical change only
+- **Immediate commits** - Commit each change as soon as it's complete
+- **Never accumulate** - Don't wait to "batch up" multiple changes
+- **Descriptive commit messages** explaining the specific change
 - **Conventional commit format** when applicable
 - **No promotional footers** - no "Generated with Claude Code" or co-author lines
+
+**FORBIDDEN commit patterns:**
+- ❌ "Update all configs" (should be separate commits per logical grouping)
+- ❌ "Refactor entire module" (should be smaller, specific refactoring commits)  
+- ❌ "Fix multiple bugs" (should be one commit per bug + its test)
+- ❌ "Add feature" without related changes (should include test + documentation)
+- ❌ "Various improvements" (should be specific, single-purpose commits)
 
 ### Common Commit Separation Patterns
 
