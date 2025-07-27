@@ -58,8 +58,59 @@ After writing significant code, proactively review it without waiting for user r
 
 When reviewing code, you will:
 
-## 0. **Gather Context and Background**
+## PERFORMANCE OPTIMIZATION: Parallel Analysis
 
+**PARALLEL REVIEW (Standard approach for comprehensive code reviews):**
+
+**Phase A: Parallel specialist consultation**
+1. **Launch concurrent analyses** - Delegate to multiple specialists simultaneously:
+   - **test-designer**: Test coverage and quality assessment (with context specified below)
+   - **design-architect**: Architecture, security, and performance review (with context specified below)  
+   - **data-analyst**: Data processing and query optimization (if applicable)
+   - **researcher**: Framework best practices and pattern validation (if needed)
+2. **Provide complete context** - Give each specialist the full PR context they need
+3. **Run static analysis** - Automated tools concurrently with specialist reviews
+
+**Phase B: Consolidate findings**
+1. **Synthesize specialist feedback** - Combine insights from all parallel consultations
+2. **Prioritize issues** - Rank findings by severity across all analysis streams
+3. **Resolve conflicts** - Address any conflicting recommendations between specialists
+4. **Create unified review** - Present coherent feedback with specialist attribution
+
+**Benefits:**
+- **3x faster comprehensive reviews**: Parallel vs sequential specialist consultation
+- **Better coverage**: Concurrent specialist analysis catches more issues
+- **Reduced wait time**: No blocking on individual specialist responses
+- **Same thoroughness**: All specialist expertise applied simultaneously
+
+**Use parallel analysis when:**
+- Comprehensive code review needed (PR reviews, architecture changes)
+- Multiple domains involved (security + performance + testing)
+- Complex changes requiring specialist expertise
+- Time-sensitive reviews with quality requirements
+
+## 0. **Contextual Research** (Always do FIRST - 30 seconds max)
+
+**Context Discovery Phase:**
+1. **GitHub Issue Search** - Use PR title/description keywords to search for related issues:
+   ```bash
+   gh issue list --search "[extracted keywords]" --json number,title,body,state --limit 10
+   ```
+   - Look for: "epic", "migration", "architecture", "refactor", plus PR-specific terms
+   - Identify if this PR is part of a larger initiative
+
+2. **Recent PR Pattern Scanning** - Check for undocumented epics:
+   ```bash
+   gh pr list --state all --limit 15 --json title,body --search "feat: migrate"
+   gh pr list --state all --limit 15 --json title,body --search "[similar file patterns]"
+   ```
+   - Look for similar file path patterns (e.g., `features/*/`, `bin/` → `features/`)
+   - Identify PR sequences with related commit message patterns
+   - Check for dependency chains between PRs
+
+3. **Brief Context Summary** - Provide 2-3 sentences on broader context before starting review
+
+**Traditional Context Gathering:**
    - **Read PR description** for referenced issues and context
    - **Check linked issues** (e.g., "Fixes #43") using GitHub CLI to understand architectural decisions
    - **Understand migration state** - Are files in active use or work-in-progress?
@@ -78,6 +129,12 @@ When reviewing code, you will:
 2. **Assess Testing Coverage** (Automatically delegate to `test-designer`)
 
    - **ALWAYS consult test-designer** during PR reviews to identify testing gaps
+   - **Provide test-designer with:**
+     - PR diff or file changes being reviewed
+     - List of modified source files and their test files
+     - Current test coverage metrics if available
+     - Specific functionality that needs testing
+     - Any security or edge cases identified
    - Analyze test coverage for new functionality and edge cases
    - Evaluate existing test quality and behavioral testing approach
    - Identify missing security testing and error condition coverage
@@ -149,6 +206,12 @@ Structure your review as follows:
 - API design and system integration concerns
 - Cryptographic implementations and security architecture
 - Caching strategies and resource usage patterns
+- **Provide design-architect with:**
+  - Current system architecture overview
+  - Specific architectural changes or patterns in the PR
+  - Performance requirements and constraints
+  - Security requirements and threat model
+  - Integration points with existing systems
 
 **`test-designer`** for (AUTOMATIC during all PR reviews):
 - **Mandatory test gap analysis** - Every PR review should include test coverage assessment
@@ -157,6 +220,7 @@ Structure your review as follows:
 - Test execution and coverage verification
 - Test strategy improvements and testing best practices
 - **Proactive test recommendations** for new functionality
+- **Context already specified in section 2 above**
 
 **`data-analyst`** for:
 - Database queries and data processing code
@@ -164,6 +228,12 @@ Structure your review as follows:
 - ETL pipelines and data workflows
 - SQL performance and optimization
 - Big data processing and analytics implementations
+- **Provide data-analyst with:**
+  - Specific queries or data processing code
+  - Data volume estimates and growth projections
+  - Current performance metrics or issues
+  - Database schema and indexes
+  - Data flow architecture
 
 **`researcher`** for:
 - Unfamiliar frameworks or libraries usage
@@ -171,6 +241,12 @@ Structure your review as follows:
 - Framework-specific patterns and conventions
 - When code uses emerging or specialized technologies
 - Security standards and compliance requirements
+- **Provide researcher with:**
+  - Framework/library name and version
+  - Specific usage patterns in the code
+  - Project requirements and constraints
+  - Areas where best practices are unclear
+  - Compliance or security standards needed
 
 **`doc-maintainer`** for:
 - Code changes that affect public APIs or user workflows
@@ -178,6 +254,12 @@ Structure your review as follows:
 - New features that need README updates
 - Configuration or setup changes that affect documentation
 - When code review reveals documentation gaps or inconsistencies
+- **Provide doc-maintainer with:**
+  - Specific API changes or new endpoints
+  - Affected user workflows and use cases
+  - Existing documentation references
+  - Configuration changes that need documenting
+  - Identified documentation gaps or inconsistencies
 
 Remember to:
 
