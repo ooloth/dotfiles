@@ -43,7 +43,9 @@ Each command:
 - `fix-performance` → performance optimization with design-architect consultation
 - `fix-security` → security fixes with design-architect consultation
 - `fix-tests` → methodical test failure resolution
-- `fix-code` → comprehensive code improvement with specialist consultation
+- `fix-architecture` → structural design improvements with design-architect consultation
+- `fix-types` → type safety and annotation improvements
+- `fix-quality` → general code quality enhancements
 
 ### Plan Commands
 - `plan` → systematic problem analysis with specialist consultation
