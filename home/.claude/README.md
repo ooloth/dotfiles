@@ -170,12 +170,12 @@ home/.claude/
 └── commands/           # Slash commands with systematic methodologies
     ├── plan.md         # 4-phase problem analysis
     ├── fix-bug.md      # 6-step debugging process
-    ├── fix-architecture.md  # Structural design improvements
-    ├── fix-types.md    # Type safety improvements
-    ├── fix-quality.md  # General code quality
+    ├── fix-code.md     # Comprehensive code improvement
+    ├── fix-types.md    # Domain-driven type design
+    ├── fix-tests.md    # Test creation and improvement
+    ├── fix-docs.md     # Documentation creation and improvement
     ├── review-code.md  # Comprehensive quality audit
-    ├── review-pr.md    # PR review process
-    └── create-*.md     # Systematic creation processes
+    └── review-pr.md    # PR review process
 ```
 
 ---
