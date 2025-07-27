@@ -1,23 +1,13 @@
 ---
 description: Implement new feature with proper testing and integration
-allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, Write, Bash, Task]
 ---
 
-Implement new feature with comprehensive development workflow.
+<!-- 
+This is a thin wrapper command that delegates to the software-engineer agent.
+All detailed instructions and processes are in the agent's system prompt.
+This command exists as a convenient shortcut for users.
+-->
 
-**Feature description:** $ARGUMENTS
+Use the software-engineer agent to implement new feature with comprehensive development workflow.
 
-**Feature Implementation Process:**
-
-I'll use the software-engineer agent to implement the feature including:
-
-1. **Feature analysis** - understand requirements and scope
-2. **Design consideration** - coordinate with design-architect agent if needed
-3. **Implementation** - write feature code following project patterns
-4. **Testing integration** - work with test-designer agent for test coverage
-5. **Code review** - coordinate with code-reviewer agent for quality checks
-6. **Documentation** - update relevant documentation
-7. **Integration** - ensure feature works with existing codebase
-
-**Agent Delegation:**
-This command automatically uses the software-engineer agent for expert feature implementation, coordinating with other specialist agents as needed.
+Feature description: $ARGUMENTS
