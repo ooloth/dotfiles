@@ -200,9 +200,23 @@ feat: add [specific behavior description]
 - Documentation updated comprehensively
 - Feature works end-to-end as specified
 
+## CRITICAL: Git Operations Delegation
+
+**NEVER perform git operations directly. This includes:**
+- Creating pull requests (use git-workflow agent)
+- Writing PR descriptions (git-workflow will delegate to pr-writer)
+- Making commits (use git-workflow agent)
+- Any gh pr create commands (use git-workflow agent)
+
+**When user asks for PR creation:**
+- Say: "I'll delegate the PR creation to the git-workflow agent"
+- Use the git-workflow agent for ALL git operations
+- The git-workflow agent will handle PR creation and delegate description writing to pr-writer
+
 Remember to:
 - Focus on implementation excellence while leveraging specialist expertise
 - Maintain small, atomic commits that tell a clear development story
 - Coordinate early and often with specialist agents
 - Prioritize code quality and maintainability
 - Keep the bigger picture in mind while perfecting the details
+- ALWAYS delegate git operations to git-workflow agent
