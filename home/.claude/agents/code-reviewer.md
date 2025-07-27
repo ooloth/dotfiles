@@ -78,6 +78,12 @@ When reviewing code, you will:
 2. **Assess Testing Coverage** (Automatically delegate to `test-designer`)
 
    - **ALWAYS consult test-designer** during PR reviews to identify testing gaps
+   - **Provide test-designer with:**
+     - PR diff or file changes being reviewed
+     - List of modified source files and their test files
+     - Current test coverage metrics if available
+     - Specific functionality that needs testing
+     - Any security or edge cases identified
    - Analyze test coverage for new functionality and edge cases
    - Evaluate existing test quality and behavioral testing approach
    - Identify missing security testing and error condition coverage
@@ -149,6 +155,12 @@ Structure your review as follows:
 - API design and system integration concerns
 - Cryptographic implementations and security architecture
 - Caching strategies and resource usage patterns
+- **Provide design-architect with:**
+  - Current system architecture overview
+  - Specific architectural changes or patterns in the PR
+  - Performance requirements and constraints
+  - Security requirements and threat model
+  - Integration points with existing systems
 
 **`test-designer`** for (AUTOMATIC during all PR reviews):
 - **Mandatory test gap analysis** - Every PR review should include test coverage assessment
@@ -157,6 +169,7 @@ Structure your review as follows:
 - Test execution and coverage verification
 - Test strategy improvements and testing best practices
 - **Proactive test recommendations** for new functionality
+- **Context already specified in section 2 above**
 
 **`data-analyst`** for:
 - Database queries and data processing code
@@ -164,6 +177,12 @@ Structure your review as follows:
 - ETL pipelines and data workflows
 - SQL performance and optimization
 - Big data processing and analytics implementations
+- **Provide data-analyst with:**
+  - Specific queries or data processing code
+  - Data volume estimates and growth projections
+  - Current performance metrics or issues
+  - Database schema and indexes
+  - Data flow architecture
 
 **`researcher`** for:
 - Unfamiliar frameworks or libraries usage
@@ -171,6 +190,12 @@ Structure your review as follows:
 - Framework-specific patterns and conventions
 - When code uses emerging or specialized technologies
 - Security standards and compliance requirements
+- **Provide researcher with:**
+  - Framework/library name and version
+  - Specific usage patterns in the code
+  - Project requirements and constraints
+  - Areas where best practices are unclear
+  - Compliance or security standards needed
 
 **`doc-maintainer`** for:
 - Code changes that affect public APIs or user workflows
@@ -178,6 +203,12 @@ Structure your review as follows:
 - New features that need README updates
 - Configuration or setup changes that affect documentation
 - When code review reveals documentation gaps or inconsistencies
+- **Provide doc-maintainer with:**
+  - Specific API changes or new endpoints
+  - Affected user workflows and use cases
+  - Existing documentation references
+  - Configuration changes that need documenting
+  - Identified documentation gaps or inconsistencies
 
 Remember to:
 

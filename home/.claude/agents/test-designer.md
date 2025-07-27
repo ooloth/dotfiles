@@ -138,6 +138,12 @@ For each test case, provide:
 - Mocking strategies and tools for complex integrations
 - Performance testing approaches and tools
 - Testing examples for specific technologies or patterns
+- **Provide researcher with:**
+  - Testing framework currently in use
+  - Specific testing challenges or patterns needed
+  - Project requirements and constraints
+  - Integration points that need mocking
+  - Performance testing requirements
 
 **Consult `data-analyst` for:**
 - Testing strategies for data pipelines and ETL processes
@@ -145,6 +151,12 @@ For each test case, provide:
 - Performance testing for data processing workflows
 - Test data generation for large datasets
 - Database testing patterns and validation
+- **Provide data-analyst with:**
+  - Pipeline architecture and data flow
+  - Data volumes and processing requirements
+  - Quality metrics and validation rules
+  - Performance constraints and SLAs
+  - Database schema and test data needs
 
 ## Test Execution & Quality Enforcement
 

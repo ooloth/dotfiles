@@ -135,18 +135,36 @@ feat: add [specific behavior description]
 - "What patterns should I use for [specific requirement] that are secure and performant?"
 - "How should [component] integrate with [existing system] while maintaining security?"
 - "Review this architecture for security vulnerabilities and performance bottlenecks"
+- **Provide design-architect with:**
+  - Current implementation approach and alternatives considered
+  - System boundaries and integration points
+  - Performance requirements and constraints
+  - Security requirements and threat model
+  - Existing architecture and patterns in use
 
 **With researcher:**
 - "Research the authentication flow for [specific API]"
 - "Find implementation examples for [specific pattern]"
 - "Look up the latest documentation for [framework feature]"
 - "Investigate best practices for [technology/pattern]"
+- **Provide researcher with:**
+  - Specific API/framework name and version
+  - Use case and implementation context
+  - Integration requirements
+  - Specific questions or areas of uncertainty
+  - Project constraints (compatibility, performance)
 
 **With data-analyst:**
 - "Help optimize this data processing workflow"
 - "Analyze performance of this database query"
 - "Design efficient data pipeline for [use case]"
 - "Debug this DataFrame operation issue"
+- **Provide data-analyst with:**
+  - Current data processing code or queries
+  - Data volume and growth projections
+  - Performance requirements and SLAs
+  - Database schema and indexes
+  - Specific bottlenecks or issues observed
 
 **With test-designer:**
 - "Help me break [feature] into testable behaviors with security test coverage"
@@ -154,16 +172,34 @@ feat: add [specific behavior description]
 - "How should I test [complex interaction] and what security tests are needed?"
 - "Execute tests and verify coverage before I commit this behavior"
 - "Run the test suite and analyze any failures"
+- **Provide test-designer with:**
+  - Feature specifications and requirements
+  - Implementation approach and dependencies
+  - Existing test infrastructure and patterns
+  - Quality goals and coverage targets
+  - Specific areas of concern (edge cases, security)
 
 **With git-workflow:**
 - "Ready to commit [behavior] - please handle workflow"
 - "Need branch management for [feature development]"
 - "Time for atomic commit of [test + implementation + docs]"
+- **Provide git-workflow with:**
+  - Files changed (implementation, tests, docs)
+  - Feature/behavior implemented
+  - Test status (all passing)
+  - Documentation updates made
+  - Related issue or PR numbers
 
 **With code-reviewer:**
 - "Please review my implementation of [feature/behavior] for quality, security, and performance"
 - "Check this code for quality issues, security vulnerabilities, and performance concerns"
 - "Verify this follows project conventions and best practices across all quality dimensions"
+- **Provide code-reviewer with:**
+  - Complete code changes (diffs)
+  - Implementation rationale and decisions made
+  - Areas of particular concern
+  - Performance considerations addressed
+  - Security measures implemented
 
 ## Code Organization Principles
 
