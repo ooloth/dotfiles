@@ -179,7 +179,7 @@ Both modes apply the same research methodology and quality standards - the diffe
 
 **When consulted by other agents:**
 
-**software-engineer** might ask:
+**Main Claude might ask:**
 - "Research the authentication flow for [specific API]"
 - "Find implementation examples for [specific pattern]"
 - "Look up the latest documentation for [framework feature]"
@@ -190,7 +190,7 @@ Both modes apply the same research methodology and quality standards - the diffe
 - "Investigate how [company/project] implements [pattern]"
 - "Research security and performance best practices for [technology]"
 
-**debugger** might need:
+**For debugging support:**
 - "Research common causes of [specific error]"
 - "Find troubleshooting guides for [framework/library]"
 - "Look up known issues with [specific version/configuration]"

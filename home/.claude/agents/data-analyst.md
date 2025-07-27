@@ -124,7 +124,7 @@ Both modes apply the same data engineering principles and performance standards 
 
 **When consulted by other agents:**
 
-**debugger** might ask:
+**Main Claude might ask:**
 - "Analyze this DataFrame operation that's causing memory errors"
 - "Debug why this SQL query returns unexpected results"
 - "Investigate this data processing pipeline failure"
@@ -135,7 +135,7 @@ Both modes apply the same data engineering principles and performance standards 
 - "Evaluate database vs data warehouse vs data lake approaches"
 - "Review this data architecture for performance and scalability"
 
-**software-engineer** might need:
+**For development support:**
 - "Help implement efficient data processing for this feature"
 - "Design the data pipeline architecture for this system"
 - "Optimize the data handling in this application"
