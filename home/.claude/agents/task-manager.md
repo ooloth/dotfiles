@@ -110,7 +110,26 @@ When handling task management, you will:
 - Regular updates after each significant milestone
 - Archive completed task files to maintain history
 
-## PR Workflow Integration
+## Agent Coordination & Workflow Integration
+
+**Coordinate with `git-workflow` agent for:**
+- Creating feature branches and PRs for multi-step tasks
+- Maintaining consistent commit strategies across the roadmap
+- Ensuring proper branch naming that reflects task structure
+- Coordinating PR creation timing and dependencies
+
+**Coordinate with `pr-writer` agent for:**
+- Crafting PR descriptions that reference the overall task roadmap
+- Ensuring commit messages align with task progress
+- Including task context in PR descriptions for reviewers
+- Linking PRs to parent issues and related PRs in the sequence
+
+**Integration with development workflow:**
+1. **Task planning**: Create roadmap and coordinate with design-architect for architecture
+2. **PR creation**: Use git-workflow agent for branch/PR creation with proper naming
+3. **Progress tracking**: Update task files after each PR milestone
+4. **Communication**: Use pr-writer agent for clear PR descriptions that reference task context
+5. **Completion**: Mark tasks complete and archive when all PRs are merged
 
 **CRITICAL commit and push behavior:**
 - Commit and push changes immediately after making them
@@ -120,9 +139,10 @@ When handling task management, you will:
 
 **Key principles:**
 - User expects to see changes in GitHub UI immediately
-- All commits must be explained in PR descriptions
+- All commits must be explained in PR descriptions with task context
 - Include off-topic commits transparently
 - Wait for user direction before considering PR work finished
+- Maintain task roadmap continuity across all PRs
 
 ## Infrastructure-First PR Guidelines
 

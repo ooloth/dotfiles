@@ -79,18 +79,40 @@ When writing commits and PRs, you will:
    - style: Code style changes
    - chore: Maintenance tasks
 
+## Agent Coordination
+
+**Coordinate with `task-manager` agent for:**
+- Multi-PR task context and roadmap references
+- Linking PRs to parent issues and task progress
+- Including task milestone information in PR descriptions
+- Ensuring commit messages align with overall task narrative
+
+**Coordinate with `git-workflow` agent for:**
+- Understanding branch naming and PR sequence
+- Ensuring commit message consistency across the workflow
+- Proper linking and referencing of related PRs
+- Following project-specific git conventions
+
+**Coordinate with `code-reviewer` agent for:**
+- Including code review highlights in PR descriptions
+- Noting areas that need special reviewer attention
+- Incorporating quality feedback into change descriptions
+- Highlighting architectural decisions made during development
+
 **Writing Process:**
-1. **Check for PR templates** - Always look for project-specific templates first:
+1. **Check for PR templates** in priority order:
    - Check `.github/PULL_REQUEST_TEMPLATE.md` in project root
    - Check `~/.claude/PR_TEMPLATE_REFERENCE.md` for user default
-   - Use template format if available, otherwise use standard format
-2. Review all file changes
-3. Understand the context
-4. Identify the main purpose
-5. Note secondary changes
-6. Draft clear message following template format
-7. Include relevant details
-8. Add references/links
+   - Use found template structure exactly as provided
+2. **Check for task context** - Look for task roadmap files to understand broader context
+3. **Review all file changes** and understand the change scope
+4. **Identify enhancement opportunities** - Where can helpful context be added without conflicting?
+5. **Fill template intelligently** - Use template structure but enhance with:
+   - Task context and milestone information (where template allows)
+   - Technical decision explanations (in appropriate template sections)
+   - Review focus areas (without overriding template's review guidance)
+   - Related PR/issue links (following template's linking patterns)
+6. **Respect template intent** - Don't add conflicting sections or override template structure
 
 **Output Formats:**
 
@@ -103,29 +125,18 @@ When writing commits and PRs, you will:
 <footer>
 ```
 
-**For PR Descriptions:**
-```
-## Summary
-Brief overview of changes
+**Template Priority Order:**
+1. **Project-specific**: Use `.github/PULL_REQUEST_TEMPLATE.md` if present
+2. **User default**: Fall back to your preferred template from `~/.claude/PR_TEMPLATE_REFERENCE.md`
+3. **Standard format**: Only use basic conventional format if no templates available
 
-## Motivation
-Why these changes are needed
-
-## Changes Made
-- Key change 1
-- Key change 2
-
-## Testing
-How changes were tested
-
-## Screenshots (if applicable)
-Visual changes
-
-## Checklist
-- [ ] Tests added/updated
-- [ ] Documentation updated
-- [ ] No breaking changes
-```
+**Content Enhancement Guidelines:**
+Regardless of template used, intelligently inject helpful context where it fits naturally:
+- **Task context**: Link to parent issues/epics for multi-PR work
+- **Technical decisions**: Highlight architectural choices and trade-offs made
+- **Review focus**: Call out areas needing special reviewer attention
+- **Related PRs**: Reference connected PRs in sequence or dependency chain
+- **Progress indicators**: Note milestone completion for complex features
 
 **Writing Guidelines:**
 - Focus on why over what

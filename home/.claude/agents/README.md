@@ -22,6 +22,14 @@ Agents are designed to be automatically invoked by Claude Code based on user int
 
 ## Agent Architecture
 
+### Context-Aware Expertise
+
+All agents are **context-aware**, adapting their behavior based on whether you're:
+- **Creating new code** (planning/implementation mode)
+- **Reviewing existing code** (analysis/assessment mode)
+
+This enables the same expert to help you both plan your own work and review other people's code with consistent standards and expertise.
+
 ### Core Development Agents
 
 **`software-engineer`** - Feature implementation and refactoring coordinator
@@ -29,41 +37,37 @@ Agents are designed to be automatically invoked by Claude Code based on user int
 - Collaborates with design-architect, test-designer, git-workflow agents
 - Triggers: implement, add feature, create function, refactor, write code
 
-**`code-reviewer`** - Code quality and security analysis
+**`code-reviewer`** - Code quality analysis (inherently review-focused)
 - Comprehensive code reviews with prioritized recommendations
-- Collaborates with security-auditor, performance-optimizer, data-analyst
+- Collaborates with design-architect, test-designer, data-analyst
 - Triggers: implemented, added, created, written, refactored, modified, finished
 
-**`design-architect`** - Architecture decisions and patterns
-- Design pattern evaluation and architectural guidance
-- Consults researcher for best practices
-- Triggers: "how should I", "what's the best way", architecture, design, pattern
+**`design-architect`** - Unified architecture, security, and performance expert
+- **Planning Mode**: Design secure, performant architectures from the ground up
+- **Review Mode**: Analyze existing code for architectural, security, and performance issues
+- Triggers: architecture, design, security, authentication, performance, optimization, scaling
 
 ### Specialized Domain Agents
 
-**`debugger`** - Error analysis and troubleshooting
-- Systematic debugging methodology and root cause analysis
-- Consults data-analyst for data issues, researcher for framework problems
+**`test-designer`** - Unified testing expert for strategy and execution
+- **Planning Mode**: Design test strategies, identify edge cases, plan coverage
+- **Execution Mode**: Run tests, analyze failures, verify coverage before commits
+- Triggers: test, testing, coverage, TDD, test cases, "run tests"
+
+**`debugger`** - Context-aware debugging and error prevention
+- **Planning Mode**: Design for debuggability, prevent common pitfalls, robust error handling
+- **Investigation Mode**: Systematic debugging, root cause analysis, issue resolution
 - Triggers: error, bug, crash, not working, broken, fails, exception, debug
 
-**`security-auditor`** - Security vulnerability assessment
-- OWASP compliance, authentication, input validation, data protection
-- Consults researcher for security best practices
-- Triggers: security, authentication, authorization, vulnerability, login, user input
+**`data-analyst`** - Data processing optimization and analysis
+- **Planning Mode**: Design efficient data architectures and processing pipelines
+- **Review Mode**: Analyze existing data code for performance and quality issues
+- Triggers: dataframe, pandas, data processing, slow query, big data, SQL optimization
 
-**`performance-optimizer`** - Performance analysis and optimization
-- Algorithmic complexity, memory usage, caching, scaling analysis
-- Consults data-analyst for data performance
-- Triggers: slow, performance, optimize, speed up, latency, memory usage, bottleneck
-
-**`test-designer`** - Test strategy and comprehensive coverage
-- Test planning, edge case identification, behavioral testing
-- Consults researcher for testing frameworks
-- Triggers: test, testing, coverage, TDD, test cases, "how should I test"
-
-**`test-runner`** - Test execution and verification
-- Test suite execution, coverage verification, failure analysis
-- Triggers: test, coverage, testing, run tests
+**`researcher`** - Technology research and best practices
+- **Planning Mode**: Research technologies and best practices for informed decisions
+- **Analysis Mode**: Evaluate existing implementations against current standards
+- Triggers: "documentation for", "how does X work", API reference, research, look up
 
 ### Support and Integration Agents
 
@@ -103,10 +107,17 @@ Agents are designed to be automatically invoked by Claude Code based on user int
 
 Agents explicitly coordinate through documented collaboration patterns:
 
-- **software-engineer** coordinates with design-architect, test-designer, git-workflow
-- **code-reviewer** collaborates with security-auditor, performance-optimizer, data-analyst  
+**Unified Expert Coordination:**
+- **software-engineer** coordinates with design-architect (architecture + security + performance), test-designer (testing strategy + execution), git-workflow
+- **code-reviewer** collaborates with design-architect (architectural/security/performance analysis), test-designer (test quality), data-analyst (data code review)
 - **debugger** consults data-analyst for data issues, researcher for framework problems
 - **All agents** can delegate to researcher for external knowledge needs
+
+**Context-Aware Workflows:**
+- Same agents work for both creating your code and reviewing others' code
+- Consistent expertise and standards across creation and review contexts
+- Intelligent adaptation based on whether you're planning or analyzing
+- Eliminates coordination overhead between separate creation/review specialists
 
 ## Agent Metadata
 

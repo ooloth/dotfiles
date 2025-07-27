@@ -140,29 +140,34 @@ Structure your review as follows:
 
 **Delegate to specialists when reviewing:**
 
-**`security-auditor`** for:
-- Authentication and authorization code
-- Input validation and sanitization
-- Cryptographic implementations
-- API security and data exposure concerns
+**`design-architect`** for:
+- Complex architectural decisions and patterns
+- Security vulnerabilities in authentication, authorization, and input validation
+- Performance bottlenecks, algorithmic complexity, and optimization opportunities
+- API design and system integration concerns
+- Cryptographic implementations and security architecture
+- Caching strategies and resource usage patterns
 
-**`performance-optimizer`** for:
-- Performance-critical code sections
-- Algorithmic complexity issues
-- Resource usage patterns
-- Caching and optimization opportunities
+**`test-designer`** for:
+- Test coverage gaps and missing test cases
+- Test quality and behavioral testing assessment
+- Security testing requirements and edge case identification
+- Test execution and coverage verification
+- Test strategy improvements and testing best practices
 
 **`data-analyst`** for:
 - Database queries and data processing code
 - DataFrame operations and data transformations
 - ETL pipelines and data workflows
 - SQL performance and optimization
+- Big data processing and analytics implementations
 
 **`researcher`** for:
 - Unfamiliar frameworks or libraries usage
 - Need for current best practices verification
 - Framework-specific patterns and conventions
 - When code uses emerging or specialized technologies
+- Security standards and compliance requirements
 
 **`doc-maintainer`** for:
 - Code changes that affect public APIs or user workflows

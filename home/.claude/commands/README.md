@@ -24,12 +24,12 @@ Each command:
 
 ### Review Commands (`/review-*`)
 - `review-code` → code-reviewer agent
-- `review-security` → security-auditor agent  
-- `review-performance` → performance-optimizer agent
+- `review-security` → design-architect agent (security analysis)
+- `review-performance` → design-architect agent (performance analysis)
 - `review-architecture` → design-architect agent
-- `review-tests` → test-runner agent
+- `review-tests` → test-designer agent (test execution and coverage)
 - `review-pr` → code-reviewer agent (for PR analysis)
-- `review-quality` → multiple agents (comprehensive audit)
+- `review-quality` → multiple agents (code-reviewer, design-architect, test-designer)
 
 ### Create Commands (`/create-*`)
 - `create-tests` → test-designer agent
@@ -41,9 +41,9 @@ Each command:
 
 ### Fix Commands (`/fix-*`)
 - `fix-bug` → debugger agent
-- `fix-performance` → performance-optimizer agent
-- `fix-security` → security-auditor agent
-- `fix-tests` → test-runner + test-designer agents
+- `fix-performance` → design-architect agent (performance optimization)
+- `fix-security` → design-architect agent (security fixes)
+- `fix-tests` → test-designer agent (test fixes and coverage)
 - `fix-code` → design-architect + code-reviewer agents
 
 ### Plan Commands (`/plan-*`)

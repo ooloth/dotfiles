@@ -6,13 +6,10 @@
 
 **Primary Agents (use proactively):**
 - **software-engineer**: For coordinated feature implementation, refactoring, and coding tasks (collaborates with design-architect, test-designer, git-workflow, researcher, and data-analyst)
-- **code-reviewer**: After writing/modifying code
-- **design-architect**: For architecture decisions and patterns (consults researcher for best practices)
+- **code-reviewer**: After writing/modifying code (collaborates with design-architect, test-designer, and doc-maintainer)
+- **design-architect**: For architecture, security, and performance decisions - unified expert for secure, performant design (consults researcher for best practices)
 - **debugger**: For errors, bugs, and troubleshooting (consults data-analyst for data issues, researcher for framework problems)
-- **test-designer**: For test planning and strategy (consults researcher for testing frameworks)
-- **test-runner**: For test execution and coverage
-- **security-auditor**: For security analysis (consults researcher for security best practices)
-- **performance-optimizer**: For performance improvements (consults data-analyst for data performance)
+- **test-designer**: For test planning, strategy, execution, and coverage - unified testing expert (consults researcher for testing frameworks)
 - **researcher**: For documentation lookup, API research, and best practices investigation
 - **data-analyst**: For data processing optimization, DataFrame operations, and database performance
 - **git-workflow**: For ALL git operations - commits, branches, PRs, merges, pushes, pulls (NEVER perform git operations manually)
