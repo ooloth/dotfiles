@@ -117,12 +117,24 @@ When handling task management, you will:
 - Maintaining consistent commit strategies across the roadmap
 - Ensuring proper branch naming that reflects task structure
 - Coordinating PR creation timing and dependencies
+- **Provide git-workflow with:**
+  - Task roadmap and PR sequence
+  - Branch naming requirements for the task
+  - PR dependencies and merge order
+  - Milestone checkpoints from the roadmap
+  - Related issue numbers for linking
 
 **Coordinate with `pr-writer` agent for:**
 - Crafting PR descriptions that reference the overall task roadmap
 - Ensuring commit messages align with task progress
 - Including task context in PR descriptions for reviewers
 - Linking PRs to parent issues and related PRs in the sequence
+- **Provide pr-writer with:**
+  - Task roadmap file location (.claude/tasks/YYYY-MM-DD-task.md)
+  - Parent issue/epic numbers
+  - Current PR position in the sequence
+  - Completed milestones and remaining work
+  - Key decisions and context from the roadmap
 
 **Integration with development workflow:**
 1. **Task planning**: Create roadmap and coordinate with design-architect for architecture
