@@ -2,20 +2,16 @@
 
 ### Development Workflow: Use Agents for Everything
 
-**CRITICAL: Default to agent delegation for ALL operations. Manual execution should be the rare exception, not the default.**
+**STREAMLINED: Main Claude handles implementation, coordination, and communication. Consult specialists for deep expertise when beneficial.**
 
-**Primary Agents (use proactively):**
-- **software-engineer**: For coordinated feature implementation, refactoring, and coding tasks (collaborates with design-architect, test-designer, git-workflow, researcher, and data-analyst)
-- **design-architect**: For architecture, security, and performance decisions - unified expert for secure, performant design (consults researcher for best practices)
-- **debugger**: For errors, bugs, and troubleshooting (consults data-analyst for data issues, researcher for framework problems)
-- **test-designer**: For test planning, strategy, execution, and coverage - unified testing expert (consults researcher for testing frameworks)
+**Specialist Agents (consult when beneficial):**
+- **design-architect**: For architecture, security, and performance analysis - deep expertise for secure, performant design
+- **test-designer**: For test planning, strategy, execution, and coverage - specialized testing expertise  
 - **researcher**: For documentation lookup, API research, and best practices investigation
 - **data-analyst**: For data processing optimization, DataFrame operations, and database performance
 - **git-workflow**: For ALL git operations - commits, branches, PRs, merges, pushes, pulls (NEVER perform git operations manually)
-- **pr-writer**: For commit messages and PR descriptions
-- **doc-maintainer**: For documentation updates (TRIGGER: "readme", "README", "documentation", "docs")
-- **task-manager**: For multi-PR coordination
-- **problem-solver**: For intelligent problem analysis and expert coordination
+- **pr-writer**: For commit messages and PR descriptions (maintains consistent templates and formatting)
+- **task-manager**: For multi-PR coordination and GitHub issue tracking
 
 ### Slash Commands for Structured Workflows
 
@@ -48,9 +44,6 @@
 - `/plan` - Intelligent problem analysis with expert coordination for any domain
 
 ### Git Operations Delegation Rules
-
-**MANDATORY: Documentation operations MUST be delegated to doc-maintainer agent:**
-- **"readme"**, **"README"**, **"documentation"**, **"docs"** → Always use doc-maintainer agent
 
 **MANDATORY: All git operations MUST be delegated to git-workflow agent:**
 - **"commit"**, **"push"**, **"pull"**, **"merge"** → Always use git-workflow agent
