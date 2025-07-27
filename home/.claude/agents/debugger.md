@@ -157,7 +157,7 @@ Structure your analysis as follows:
 
 **When consulted by other agents:**
 
-**code-reviewer** might request:
+**During code reviews** might request:
 - "Analyze this code for potential runtime errors and edge cases"
 - "Review this error handling implementation for robustness"
 - "Identify debugging challenges in this complex logic"

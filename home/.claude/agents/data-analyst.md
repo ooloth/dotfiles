@@ -147,7 +147,7 @@ Both modes apply the same data engineering principles and performance standards 
 - "Plan testing for data quality and consistency"
 - "Review test coverage for data processing workflows"
 
-**code-reviewer** might request:
+**During code reviews** might request:
 - "Analyze this data processing code for performance issues"
 - "Review this SQL implementation for optimization opportunities"
 - "Assess this DataFrame operation for efficiency and best practices"
