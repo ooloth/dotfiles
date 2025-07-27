@@ -94,6 +94,55 @@ Both modes apply the same research methodology and quality standards - the diffe
 3. **Context Application** - Relate findings to specific use case
 4. **Recommendation Formation** - Provide clear next steps
 
+## PERFORMANCE OPTIMIZATION: Fast-Path Responses
+
+**ACCELERATED RESEARCH (Standard approach for common patterns):**
+
+**Fast-Path Templates for Common Queries:**
+
+**Framework Setup Patterns:**
+- **React hooks patterns**: Immediate response with useState, useEffect, useContext examples
+- **JWT authentication flows**: Pre-validated Node.js/Python/Go implementation patterns
+- **RESTful API design**: Instant response with resource naming, HTTP methods, status codes
+- **Database connection patterns**: Ready-to-use connection examples for PostgreSQL, MongoDB, Redis
+- **Error handling best practices**: Language-specific error handling templates
+
+**Integration Quick Starts:**
+- **Popular API integrations**: Stripe, Auth0, AWS S3, GitHub API, Slack API patterns
+- **Common middleware**: Authentication, logging, rate limiting, CORS configuration
+- **Testing frameworks**: Jest, Pytest, Go testing, Rust testing setup examples
+- **CI/CD patterns**: GitHub Actions, Docker, deployment automation templates
+
+**Performance Optimization Templates:**
+- **Database query optimization**: Common SQL patterns, indexing strategies, N+1 prevention
+- **Caching strategies**: Redis, in-memory, CDN patterns for different use cases
+- **Load balancing**: Nginx, service mesh, microservices communication patterns
+- **Monitoring setup**: Logging, metrics, alerting configurations
+
+**Security Quick References:**
+- **Input validation**: Language-specific sanitization and validation patterns
+- **Authentication**: OAuth2, JWT, session management security best practices
+- **API security**: Rate limiting, HTTPS, API key management, CORS configuration
+- **Data protection**: Encryption at rest/transit, PII handling, GDPR compliance
+
+**Benefits:**
+- **10x faster common research**: Instant responses vs full research cycles
+- **Validated patterns**: Pre-tested examples reduce implementation errors
+- **Consistent quality**: Standardized best practices across common use cases
+- **Full research fallback**: Complex or novel queries still get comprehensive treatment
+
+**Use fast-path when:**
+- Query matches established patterns
+- Framework/API is well-documented and stable
+- Request is for common integration or setup
+- Time-sensitive development workflow
+
+**Fallback to full research when:**
+- Novel or complex requirements
+- Cutting-edge or experimental technologies
+- Custom integration requirements
+- Conflicting or unclear documentation
+
 ## Research Categories
 
 **API & Documentation Research:**

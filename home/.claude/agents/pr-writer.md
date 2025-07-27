@@ -86,18 +86,36 @@ When writing commits and PRs, you will:
 - Linking PRs to parent issues and task progress
 - Including task milestone information in PR descriptions
 - Ensuring commit messages align with overall task narrative
+- **Request from task-manager:**
+  - Task roadmap file location (.claude/tasks/YYYY-MM-DD-task.md)
+  - Parent issue/epic numbers for linking
+  - Current milestone status and completed work
+  - Related PR numbers in the sequence
+  - Key technical decisions from the roadmap
 
 **Coordinate with `git-workflow` agent for:**
 - Understanding branch naming and PR sequence
 - Ensuring commit message consistency across the workflow
 - Proper linking and referencing of related PRs
 - Following project-specific git conventions
+- **Request from git-workflow:**
+  - Branch naming conventions used in the project
+  - PR sequence and dependencies for multi-PR tasks
+  - Merge order requirements
+  - Project-specific git conventions to follow
+  - Commit history and changes for the PR
 
 **Coordinate with `code-reviewer` agent for:**
 - Including code review highlights in PR descriptions
 - Noting areas that need special reviewer attention
 - Incorporating quality feedback into change descriptions
 - Highlighting architectural decisions made during development
+- **Request from code-reviewer:**
+  - Critical changes that need special review attention
+  - Security considerations implemented
+  - Performance optimizations made
+  - Architectural decisions and trade-offs
+  - Areas with complex logic needing careful review
 
 **Writing Process:**
 1. **Check for PR templates** in priority order:
