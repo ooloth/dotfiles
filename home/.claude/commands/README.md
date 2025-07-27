@@ -33,24 +33,21 @@ Each command:
 
 ### Create Commands (`/create-*`)
 - `create-tests` → test-designer agent
-- `create-docs` → documentation-writer agent
+- `create-docs` → comprehensive documentation creation
 - `create-branch` → git-workflow agent
 - `create-commit` → git-workflow agent  
 - `create-pr` → git-workflow agent
-- `create-feature` → software-engineer agent
 
-### Planning and Problem-Solving
-- `plan` → problem-solver agent (domain-agnostic problem analysis with intelligent expert coordination)
 
 ### Fix Commands (`/fix-*`)
-- `fix-bug` → debugger agent
+- `fix-bug` → systematic debugging and resolution
 - `fix-performance` → design-architect agent (performance optimization)
 - `fix-security` → design-architect agent (security fixes)
 - `fix-tests` → test-designer agent (test fixes and coverage)
 - `fix-code` → comprehensive code improvement with expert consultation
 
 ### Plan Commands
-- `plan` → problem-solver agent (intelligent problem analysis and expert coordination)
+- `plan` → intelligent problem analysis with expert coordination
 
 ## Usage
 

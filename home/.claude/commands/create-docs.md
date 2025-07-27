@@ -2,6 +2,6 @@
 description: Create or update documentation for specified functionality
 ---
 
-Use the documentation-writer agent to create comprehensive documentation.
+Create comprehensive documentation covering usage, examples, and implementation details. Focus on clear explanations and practical examples for users.
 
 Target: $ARGUMENTS

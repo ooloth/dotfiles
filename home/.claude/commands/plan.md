@@ -3,11 +3,11 @@ description: Intelligent problem analysis and solution planning with expert coor
 ---
 
 <!-- 
-This is a thin wrapper command that delegates to the problem-solver agent.
-All detailed instructions and processes are in the agent's system prompt.
-This command exists as a convenient shortcut for users.
+This command performs intelligent problem analysis and solution planning.
+Analyzes the problem systematically and coordinates with relevant experts when beneficial.
+Provides structured solution recommendations with clear next steps.
 -->
 
-Use the problem-solver agent to analyze the problem, coordinate with relevant experts, and provide structured solution recommendations.
+Analyze the problem systematically, break it down into manageable components, and develop structured solution recommendations. Coordinate with relevant specialists when beneficial (design-architect for architecture, test-designer for testing strategy, etc.).
 
 Challenge: $ARGUMENTS
