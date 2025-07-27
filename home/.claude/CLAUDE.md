@@ -68,6 +68,11 @@
 
 **Never perform git operations manually with direct tool calls.**
 
+**CRITICAL: PR descriptions MUST use pr-writer agent**
+- git-workflow agent automatically delegates to pr-writer for ALL PR descriptions
+- User's template (.github/PULL_REQUEST_TEMPLATE.md) must be used exactly
+- Generic Claude PR descriptions are forbidden - this has been debugged dozens of times
+
 ### Code Review Strategy: Direct Expert Consultation
 
 **STREAMLINED REVIEW PROCESS: Skip intermediary agents, consult experts directly**
