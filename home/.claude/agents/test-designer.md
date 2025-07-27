@@ -183,7 +183,41 @@ For each test case, provide:
 ### Execution Mode Test Operations
 **When running tests and verifying quality:**
 
-1. **Test Execution Requirements**
+**PERFORMANCE OPTIMIZATION: Batch Test Execution**
+
+**BATCH TESTING (Standard approach for development cycles):**
+
+**Phase A: Comprehensive test run at start**
+1. **Run full test suite once** - Complete regression testing upfront
+2. **Fix all failing tests** - Address all issues before proceeding with development
+3. **Verify coverage** - Ensure all test files are discovered and running
+4. **Establish baseline** - Confirm all tests pass and coverage is acceptable
+
+**Phase B: Fast iterative testing during development**
+- For each behavior/change:
+  1. **Run targeted tests** - Only tests related to current changes
+  2. **Quick feedback loop** - Fast validation of specific functionality
+  3. **Security check** - Verify behavior doesn't break critical tests
+  4. **Commit when ready** - All targeted tests pass
+
+**Phase C: Final verification before completion**
+1. **Run full test suite again** - Comprehensive regression testing
+2. **Coverage verification** - Ensure no gaps introduced during development
+3. **Performance check** - Verify no degradation in test execution time
+
+**Benefits:**
+- **5x faster development cycles**: One full run + fast targeted tests vs multiple full runs
+- **Better development flow**: Quick feedback without waiting for full suite
+- **Same quality assurance**: Comprehensive testing at key checkpoints
+- **Fail-fast approach**: Fix issues early in development cycle
+
+**Use batch testing when:**
+- Multiple changes planned in development session
+- Iterative development with frequent testing needs
+- Large test suite that takes significant time to run
+- Working on interconnected features requiring frequent validation
+
+**1. LEGACY: Test Execution Requirements (for single changes)**
    - **All tests must pass before any commit or push** - Never leave failing tests for "future PRs"
    - **Fix failing tests immediately** - Don't just change the test, understand why it's failing
    - **Run full test suite** - Ensure no regressions after changes
