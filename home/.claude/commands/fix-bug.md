@@ -19,6 +19,6 @@ description: Systematic bug investigation and resolution
 
 ### When to consult specialists:
 - **researcher**: Unfamiliar frameworks, known issues, documentation
-- **data-analyst**: DataFrame errors, database issues, data pipeline problems
+- **design-architect**: Performance issues, architectural problems, data design
 
 Bug description: $ARGUMENTS
