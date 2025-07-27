@@ -150,6 +150,14 @@ Before any git operation (commits, PR creation, etc.):
 
 **ABSOLUTELY REQUIRED: If there are more than 3-4 modified files, you MUST break into multiple commits. NO EXCEPTIONS.**
 
+**PERFORMANCE OPTIMIZATION: Batch checks for speed and reliability**
+
+**ALWAYS use BATCH CHECKS approach:**
+- **Phase A**: Run full checks once on ALL files before any commits
+- **Phase B**: Fast commit loop with no redundant checks
+- **Benefits**: Faster, cleaner process, better error handling
+- **No file type exceptions**: Full quality checks regardless of .md, .js, etc.
+
 **GIANT COMMIT PREVENTION:**
 
 - **REFUSE** to commit if `git status` shows many modified files
@@ -184,22 +192,48 @@ Before any git operation (commits, PR creation, etc.):
 
 **IMPORTANT: This process applies to ALL git operations, including PR creation**
 
-**For each logical group of changes:**
+**For each logical group of changes (after Phase A checks completed):**
 
 1. **Stage only related files** - `git add` only files for this specific change
-2. **Formatting** - Run code formatters first (prettier, black, rustfmt, etc.)
-3. **Linting** - Run linters after formatting
-4. **Type checking** - Run type checkers
-5. **Tests** - Run relevant tests last
-6. **Test coverage verification** - Confirm all expected test files are running
-7. **All tests must pass** - Fix any failing tests immediately, do not commit/push with failing tests
-8. **Final review** - Check `git diff --staged` to review what will be committed
-9. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
-10. **Commit** - Create the commit with descriptive message for this specific change
-11. **Push immediately** - `git push origin <branch-name>` right after committing
-12. **Verify push succeeded** - Check `git status` shows "up to date with origin/<branch>"
-13. **Report actual results** - Only claim success if both commit AND push completed
-14. **Repeat** - Move to next logical group
+2. **Security check** - Verify no sensitive information (keys, tokens, passwords) is included
+3. **Commit** - Create the commit with descriptive message for this specific change
+4. **Push immediately** - `git push origin <branch-name>` right after committing
+5. **Verify push succeeded** - Check `git status` shows "up to date with origin/<branch>"
+6. **Report actual results** - Only claim success if both commit AND push completed
+7. **Repeat** - Move to next logical group
+
+**BATCH CHECKS (Standard approach for all commits):**
+
+**Phase A: Run checks once upfront on ALL changed files**
+1. **Formatting** - Run code formatters on all modified code files at once
+2. **Linting** - Run linters on all code files in one batch  
+3. **Type checking** - Run type checkers on entire codebase once
+4. **Tests** - Run full test suite once for all changes
+5. **Fix any issues found** - Address all formatting, linting, type, and test failures before proceeding
+
+**Phase B: Fast commit loop (no per-commit checks)**
+- For each logical commit:
+  1. **Stage only related files** - `git add` specific files for this commit
+  2. **Security check** - Verify no sensitive information 
+  3. **Commit** - Create commit with descriptive message
+  4. **Push immediately** - `git push origin <branch-name>`
+  5. **Repeat** - Next logical group
+
+**Benefits:**
+- **5x faster**: One test run vs N test runs for N commits
+- **Better failure handling**: Fix all issues upfront vs per-commit failures
+- **Cleaner process**: Separate quality assurance from commit organization
+
+**Why batch checks work better:**
+- **Always faster**: One test run instead of N test runs
+- **Better error handling**: Fix all issues upfront vs stopping mid-commit
+- **Cleaner git history**: Separate quality assurance from logical organization
+- **More reliable**: All commits pass quality checks by construction
+
+**COMMIT ORGANIZATION:**
+- **Group by logical themes** - Related files that tell a complete story
+- **Process commits in dependency order** - Infrastructure before features that use it
+- **Maintain atomic commits** - Each commit should be independently reviewable and revertible
 
 **Why commit + push together:**
 
