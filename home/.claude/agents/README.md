@@ -30,26 +30,17 @@ All agents are **context-aware**, adapting their behavior based on whether you'r
 
 This enables the same expert to help you both plan your own work and review other people's code with consistent standards and expertise.
 
-### Specialist Agents
+### High-Value Specialist Agents
 
 **`design-architect`** - Unified architecture, security, and performance expert
 - **Planning Mode**: Design secure, performant architectures from the ground up
 - **Review Mode**: Analyze existing code for architectural, security, and performance issues
 - Triggers: architecture, design, security, authentication, performance, optimization, scaling
 
-**`test-designer`** - Unified testing expert for strategy and execution
-- **Planning Mode**: Design test strategies, identify edge cases, plan coverage
-- **Execution Mode**: Run tests, analyze failures, verify coverage before commits
-- Triggers: test, testing, coverage, TDD, test cases, "run tests"
-
-**`data-analyst`** - Data processing optimization and analysis
-- **Planning Mode**: Design efficient data architectures and processing pipelines
-- **Review Mode**: Analyze existing data code for performance and quality issues
-- Triggers: dataframe, pandas, data processing, slow query, big data, SQL optimization
-
 **`researcher`** - Technology research and best practices
 - **Planning Mode**: Research technologies and best practices for informed decisions
 - **Analysis Mode**: Evaluate existing implementations against current standards
+- **Fast-path responses**: Immediate answers for common tool/framework questions
 - Triggers: "documentation for", "how does X work", API reference, research, look up
 
 ### Support and Integration Agents

@@ -23,27 +23,15 @@ Each command:
 ## Command Categories
 
 ### Review Commands (`/review-*`)
-- `review-code` → comprehensive code review with expert consultation
-- `review-security` → design-architect agent (security analysis)
-- `review-performance` → design-architect agent (performance analysis)
-- `review-architecture` → design-architect agent
-- `review-tests` → test-designer agent (test execution and coverage)
-- `review-pr` → comprehensive PR analysis with contextual research
-- `review-quality` → comprehensive quality assessment with specialist consultation
-
-### Create Commands (`/create-*`)
-- `create-tests` → structured test creation with test-designer consultation
-- `create-docs` → systematic documentation creation
-- `create-branch` → git-workflow agent delegation
-- `create-commit` → git-workflow agent delegation
-- `create-pr` → git-workflow agent delegation
+- `review-code` → comprehensive quality audit across all dimensions (bugs, architecture, security, performance, tests, readability, modern patterns) with prioritized observations
+- `review-pr` → structured PR review process (takes PR number, defaults to current branch)
 
 ### Fix Commands (`/fix-*`)
 - `fix-bug` → systematic debugging and resolution framework
-- `fix-performance` → performance optimization with design-architect consultation
-- `fix-security` → security fixes with design-architect consultation
-- `fix-tests` → test fixes with test-designer consultation
-- `fix-code` → comprehensive code improvement with specialist consultation
+- `fix-code` → comprehensive code improvement (architecture, performance, security, quality) with planning phase
+- `fix-types` → domain-driven type design and safety improvements
+- `fix-tests` → test creation, improvement, and coverage enhancement
+- `fix-docs` → documentation creation and improvement
 
 ### Plan Commands
 - `plan` → systematic problem analysis with specialist consultation

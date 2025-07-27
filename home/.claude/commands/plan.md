@@ -17,8 +17,8 @@ Provides structured solution recommendations with clear next steps.
 4. **Define success criteria** - Measurable outcomes
 
 ### Phase 2: Expert Coordination (when beneficial)
-- **Technical problems:** design-architect + test-designer + researcher
-- **Data problems:** data-analyst + design-architect + researcher
+- **Technical problems:** design-architect + researcher
+- **Data problems:** design-architect + researcher (for data architecture)
 - **Process problems:** task-manager + researcher  
 - **Complex problems:** Coordinate multiple specialists in parallel
 

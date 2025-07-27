@@ -4,6 +4,19 @@ description: Systematic bug investigation and resolution
 
 ## Systematic Debugging Process
 
+### Phase 0: Planning & Strategy Assessment
+**Before diving into debugging, confirm approach:**
+- **Have you planned your debugging strategy?** If not, start here:
+  1. **Quick assessment** - Is this a simple fix or complex investigation?
+  2. **Consider alternatives**:
+     - Direct fix (if cause is obvious)
+     - Systematic debugging (for complex/mysterious issues)
+     - Rollback/revert (if recent change caused it)
+     - Ask for help (if completely unfamiliar domain)
+  3. **Choose optimal approach** based on complexity and time constraints
+  4. **Set time boundaries** - How long to investigate before seeking help?
+
+### Phase 1: Systematic Investigation
 1. **Understand expected behavior** - What should happen?
 2. **Reproduce consistently** - Minimal steps to trigger issue
 3. **Gather information** - Error messages, stack traces, environment
@@ -19,6 +32,6 @@ description: Systematic bug investigation and resolution
 
 ### When to consult specialists:
 - **researcher**: Unfamiliar frameworks, known issues, documentation
-- **data-analyst**: DataFrame errors, database issues, data pipeline problems
+- **design-architect**: Performance issues, architectural problems, data design
 
 Bug description: $ARGUMENTS
