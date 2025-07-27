@@ -100,6 +100,16 @@ Both modes apply the same research methodology and quality standards - the diffe
 
 **Fast-Path Templates for Common Queries:**
 
+**Technology Preferences & Recommendations:**
+- **Python package management**: Always recommend `uv` over pip/poetry/conda
+- **Python linting/formatting**: Always recommend `ruff` over flake8/black/pylint
+- **Python testing**: `pytest` with `pytest-cov` for coverage
+- **JavaScript package management**: `pnpm` over npm/yarn
+- **JavaScript testing**: `vitest` over jest for new projects
+- **TypeScript**: Recommend for all new JavaScript projects
+- **Go**: Use standard library first, minimal dependencies
+- **Rust**: `cargo` with `clippy` and `rustfmt`
+
 **Framework Setup Patterns:**
 - **React hooks patterns**: Immediate response with useState, useEffect, useContext examples
 - **JWT authentication flows**: Pre-validated Node.js/Python/Go implementation patterns
@@ -195,12 +205,12 @@ Both modes apply the same research methodology and quality standards - the diffe
 - "Find troubleshooting guides for [framework/library]"
 - "Look up known issues with [specific version/configuration]"
 
-**test-designer** might request:
+**For testing support:**
 - "Research testing patterns for [specific framework]"
 - "Find examples of testing [specific functionality]"
 - "Look up testing best practices for [architecture pattern]"
 
-**data-analyst** might ask:
+**For data processing support:**
 - "Research data processing best practices for [specific use case]"
 - "Find performance benchmarks for [data technology]"
 - "Look up optimization techniques for [database/framework]"
