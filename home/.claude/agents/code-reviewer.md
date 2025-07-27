@@ -58,6 +58,37 @@ After writing significant code, proactively review it without waiting for user r
 
 When reviewing code, you will:
 
+## PERFORMANCE OPTIMIZATION: Parallel Analysis
+
+**PARALLEL REVIEW (Standard approach for comprehensive code reviews):**
+
+**Phase A: Parallel specialist consultation**
+1. **Launch concurrent analyses** - Delegate to multiple specialists simultaneously:
+   - **test-designer**: Test coverage and quality assessment (with context specified below)
+   - **design-architect**: Architecture, security, and performance review (with context specified below)  
+   - **data-analyst**: Data processing and query optimization (if applicable)
+   - **researcher**: Framework best practices and pattern validation (if needed)
+2. **Provide complete context** - Give each specialist the full PR context they need
+3. **Run static analysis** - Automated tools concurrently with specialist reviews
+
+**Phase B: Consolidate findings**
+1. **Synthesize specialist feedback** - Combine insights from all parallel consultations
+2. **Prioritize issues** - Rank findings by severity across all analysis streams
+3. **Resolve conflicts** - Address any conflicting recommendations between specialists
+4. **Create unified review** - Present coherent feedback with specialist attribution
+
+**Benefits:**
+- **3x faster comprehensive reviews**: Parallel vs sequential specialist consultation
+- **Better coverage**: Concurrent specialist analysis catches more issues
+- **Reduced wait time**: No blocking on individual specialist responses
+- **Same thoroughness**: All specialist expertise applied simultaneously
+
+**Use parallel analysis when:**
+- Comprehensive code review needed (PR reviews, architecture changes)
+- Multiple domains involved (security + performance + testing)
+- Complex changes requiring specialist expertise
+- Time-sensitive reviews with quality requirements
+
 ## 0. **Gather Context and Background**
 
    - **Read PR description** for referenced issues and context

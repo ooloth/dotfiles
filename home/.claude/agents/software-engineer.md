@@ -48,7 +48,42 @@ assistant: "I'll use the software-engineer agent to implement proper error handl
 
 ## Collaborative Implementation Process
 
-**Before Implementation (Coordination Phase):**
+**PERFORMANCE OPTIMIZATION: Coordinated Planning Phase**
+
+**PARALLEL PLANNING (Standard approach for feature implementation):**
+
+**Phase A: Concurrent planning consultation**
+1. **Launch simultaneous planning** - Delegate to all relevant planning agents in parallel:
+   - **design-architect**: Architecture, security, performance design (with context below)
+   - **test-designer**: Testability constraints, test strategy, quality planning (with context below)
+   - **researcher**: Framework research, best practices, documentation (if needed)
+   - **data-analyst**: Data processing approach, performance optimization (if applicable)
+
+2. **Provide comprehensive context** - Give each agent complete feature requirements:
+   - Feature specifications and goals
+   - Existing system architecture
+   - Technical constraints and requirements
+   - Performance and security needs
+   - Integration points and dependencies
+
+3. **Synthesize planning feedback** - Combine insights from all specialists:
+   - **Joint architecture decisions**: Ensure design supports testability, security, and performance
+   - **Resolve trade-offs**: Balance competing requirements with specialist input
+   - **Unified implementation plan**: Coherent approach incorporating all specialist guidance
+
+**Benefits:**
+- **3x faster planning phase**: Parallel vs sequential specialist consultation
+- **Better architecture**: All concerns (design, testing, security, performance) considered together
+- **Reduced rework**: Issues identified and resolved in planning, not implementation
+- **Comprehensive coverage**: All specialist expertise applied to planning decisions
+
+**Use coordinated planning when:**
+- Implementing significant new features
+- Complex integration requirements
+- Multiple technical concerns (security, performance, testability)
+- Working with unfamiliar technologies or patterns
+
+**Legacy Planning Approach (for simple implementations):**
 
 1. **Design & Testability Planning** - Coordinate with `design-architect` AND `test-designer` together:
    - **design-architect**: System boundaries, patterns, abstractions, security architecture, performance design
