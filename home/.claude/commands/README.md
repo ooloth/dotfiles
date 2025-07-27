@@ -27,12 +27,12 @@ Each command:
 - `review-security` → design-architect agent (security analysis)
 - `review-performance` → design-architect agent (performance analysis)
 - `review-architecture` → design-architect agent
-- `review-tests` → test-designer agent (test execution and coverage)
+- `review-tests` → systematic test coverage verification
 - `review-pr` → comprehensive PR analysis with contextual research
 - `review-quality` → comprehensive quality assessment with specialist consultation
 
 ### Create Commands (`/create-*`)
-- `create-tests` → structured test creation with test-designer consultation
+- `create-tests` → systematic test design and implementation
 - `create-docs` → systematic documentation creation
 - `create-branch` → git-workflow agent delegation
 - `create-commit` → git-workflow agent delegation
@@ -42,7 +42,7 @@ Each command:
 - `fix-bug` → systematic debugging and resolution framework
 - `fix-performance` → performance optimization with design-architect consultation
 - `fix-security` → security fixes with design-architect consultation
-- `fix-tests` → test fixes with test-designer consultation
+- `fix-tests` → methodical test failure resolution
 - `fix-code` → comprehensive code improvement with specialist consultation
 
 ### Plan Commands
