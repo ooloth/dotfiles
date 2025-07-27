@@ -161,7 +161,21 @@ When handling Git operations, you will:
 1. **Switch to main branch** - `git checkout main`
 2. **Pull latest changes** - `git pull origin main`
 3. **Delete merged feature branch** - `git branch -d feature-branch-name`
-4. **Ready for next work** from updated main branch
+4. **Handle related GitHub issues:**
+   - **Extract issue references** from PR description and commit messages:
+     - Look for patterns like `#123`, `fixes #123`, `closes #123`, `resolves #123`
+     - Use `gh pr view <pr-number> --json body,commits` to get PR details
+   - **For each referenced issue:**
+     - **Check issue type** - `gh issue view <issue-number> --json title,labels,body`
+     - **If tracking/epic issue** (has labels like "epic", "tracking", "meta"):
+       - Add progress comment: `gh issue comment <issue-number> --body "Progress update: PR #<pr-number> merged..."`
+       - Include what was completed and suggest next steps
+       - Keep issue open for ongoing tracking
+     - **If specific issue resolved by PR**:
+       - Close the issue: `gh issue close <issue-number> --comment "Resolved by PR #<pr-number>"`
+       - GitHub may auto-close if commit messages included "fixes #123" syntax
+   - **No manual intervention** - automate issue handling based on context
+5. **Ready for next work** from updated main branch
 
 ## PR Strategy
 
