@@ -169,6 +169,9 @@ home/.claude/
 └── commands/           # Slash commands with systematic methodologies
     ├── plan.md         # 4-phase problem analysis
     ├── fix-bug.md      # 6-step debugging process
+    ├── fix-architecture.md  # Structural design improvements
+    ├── fix-types.md    # Type safety improvements
+    ├── fix-quality.md  # General code quality
     ├── review-*.md     # Comprehensive review checklists
     └── create-*.md     # Systematic creation processes
 ```

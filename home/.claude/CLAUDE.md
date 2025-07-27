@@ -53,7 +53,9 @@
 - `/fix-performance` - Structured optimization workflow
 - `/fix-security` - Systematic vulnerability remediation
 - `/fix-tests` - Methodical test failure resolution
-- `/fix-code` - Structured refactoring process
+- `/fix-architecture` - Structural design improvements
+- `/fix-types` - Type safety and annotation improvements
+- `/fix-quality` - General code quality enhancements
 
 **PLANNING** (Structured decision making)
 - `/plan` - 4-phase problem analysis framework
