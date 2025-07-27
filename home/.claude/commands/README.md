@@ -39,6 +39,9 @@ Each command:
 - `create-pr` → git-workflow agent
 - `create-feature` → software-engineer agent
 
+### Planning and Problem-Solving
+- `plan` → problem-solver agent (domain-agnostic problem analysis with intelligent expert coordination)
+
 ### Fix Commands (`/fix-*`)
 - `fix-bug` → debugger agent
 - `fix-performance` → design-architect agent (performance optimization)
@@ -46,9 +49,8 @@ Each command:
 - `fix-tests` → test-designer agent (test fixes and coverage)
 - `fix-code` → design-architect + code-reviewer agents
 
-### Plan Commands (`/plan-*`)
-- `plan-feature` → design-architect agent
-- `plan-refactor` → design-architect agent
+### Plan Commands
+- `plan` → problem-solver agent (intelligent problem analysis and expert coordination)
 
 ## Usage
 
@@ -59,7 +61,7 @@ Examples:
 /review-code auth.py
 /create-tests user-authentication
 /fix-bug "TypeError in login function"
-/plan-feature "notification system"
+/plan "how to implement user authentication"
 ```
 
 ## Automatic Agent Delegation
