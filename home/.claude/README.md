@@ -173,7 +173,8 @@ home/.claude/
     ├── fix-architecture.md  # Structural design improvements
     ├── fix-types.md    # Type safety improvements
     ├── fix-quality.md  # General code quality
-    ├── review-*.md     # Comprehensive review checklists
+    ├── review-code.md  # Comprehensive quality audit
+    ├── review-pr.md    # PR review process
     └── create-*.md     # Systematic creation processes
 ```
 

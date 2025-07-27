@@ -33,13 +33,8 @@
 **When to skip:** For routine tasks where natural conversation works fine
 
 **REVIEW Commands** (Systematic analysis when you need thoroughness)
-- `/review-code` - Structured code review with quality checklist
-- `/review-security` - Systematic security vulnerability assessment
-- `/review-performance` - Methodical performance analysis  
-- `/review-architecture` - Comprehensive design evaluation
-- `/review-tests` - Complete test coverage verification
-- `/review-pr [url]` - Structured PR review process
-- `/review-quality` - Full quality audit checklist
+- `/review-code` - Comprehensive quality audit across all dimensions (bugs, architecture, security, performance, tests, readability, modern patterns)
+- `/review-pr [number]` - Structured PR review process (defaults to current branch if no number given)
 
 **CREATE Commands** (Structured creation workflows)
 - `/create-tests` - Systematic test design and implementation
