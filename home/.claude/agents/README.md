@@ -1,6 +1,6 @@
 # Claude Code Specialized Agents
 
-This directory contains specialized sub-agents that implement expert workflows for software development. These agents embody the **agents-first philosophy** where all detailed instructions, processes, and expertise reside in agent system prompts rather than being scattered across commands or manual processes.
+This directory contains specialized sub-agents that provide deep expertise for software development. These agents support the **streamlined approach** where main Claude handles implementation, coordination, and communication while consulting specialists for focused expertise when beneficial.
 
 ## Philosophy
 
@@ -12,13 +12,13 @@ Each agent is the definitive source for its domain expertise:
 - **Complete workflows** from start to finish in one place
 - **Coordinated behavior** through explicit agent collaboration
 
-### Proactive Automatic Delegation
+### Specialist Consultation Model
 
-Agents are designed to be automatically invoked by Claude Code based on user intent:
-- Descriptions use "Use PROACTIVELY to..." phrasing for automatic triggering
-- Trigger keywords are explicitly listed for pattern matching
-- Examples in system prompts guide Claude on when to delegate
-- "MUST BE USED" language ensures critical workflows aren't missed
+Specialist agents provide focused expertise when main Claude determines it would be beneficial:
+- Deep domain knowledge without coordination overhead
+- Clean isolation for complex analysis
+- Specialized tools and workflows
+- Expert perspective on specific technical domains
 
 ## Agent Architecture
 
@@ -30,30 +30,17 @@ All agents are **context-aware**, adapting their behavior based on whether you'r
 
 This enables the same expert to help you both plan your own work and review other people's code with consistent standards and expertise.
 
-### Core Development Agents
-
-**`software-engineer`** - Feature implementation and refactoring coordinator
-- Implements features with architecture and testing coordination
-- Collaborates with design-architect, test-designer, git-workflow agents
-- Triggers: implement, add feature, create function, refactor, write code
-
+### Specialist Agents
 
 **`design-architect`** - Unified architecture, security, and performance expert
 - **Planning Mode**: Design secure, performant architectures from the ground up
 - **Review Mode**: Analyze existing code for architectural, security, and performance issues
 - Triggers: architecture, design, security, authentication, performance, optimization, scaling
 
-### Specialized Domain Agents
-
 **`test-designer`** - Unified testing expert for strategy and execution
 - **Planning Mode**: Design test strategies, identify edge cases, plan coverage
 - **Execution Mode**: Run tests, analyze failures, verify coverage before commits
 - Triggers: test, testing, coverage, TDD, test cases, "run tests"
-
-**`debugger`** - Context-aware debugging and error prevention
-- **Planning Mode**: Design for debuggability, prevent common pitfalls, robust error handling
-- **Investigation Mode**: Systematic debugging, root cause analysis, issue resolution
-- Triggers: error, bug, crash, not working, broken, fails, exception, debug
 
 **`data-analyst`** - Data processing optimization and analysis
 - **Planning Mode**: Design efficient data architectures and processing pipelines
@@ -72,53 +59,31 @@ This enables the same expert to help you both plan your own work and review othe
 - MANDATORY for ALL git operations - never perform git operations manually
 - Triggers: commit, branch, merge, push, pull, "merge pr", checkout, rebase, gh commands
 
-**`researcher`** - Documentation and best practices investigation
-- API research, framework documentation, best practices lookup
-- Supports other agents with external knowledge
-- Triggers: "documentation for", "how does X work", API reference, research, look up, find examples
-
-**`data-analyst`** - Data processing and database optimization
-- DataFrame operations, SQL optimization, data pipeline performance
-- Supports performance-optimizer and debugger for data issues
-- Triggers: dataframe, pandas, data processing, slow query, big data, SQL optimization
-
 **`pr-writer`** - Commit messages and PR descriptions
-- Clear, informative commit messages and PR descriptions
-- Works with git-workflow agent
+- Clear, informative commit messages and PR descriptions with consistent templates
+- Works with git-workflow agent for structured PR creation
 - Triggers: creating commits, pushing changes, creating PRs
-
-**`doc-maintainer`** - Documentation maintenance
-- README updates, API documentation maintenance
-- Triggers: documentation, README, docs, after code changes affecting usage
-
-**`documentation-writer`** - Comprehensive technical documentation
-- New feature documentation, usage guides, API references
-- Triggers: after creating features, APIs, libraries
 
 **`task-manager`** - Multi-PR coordination and project management
 - GitHub issue tracking, roadmap coordination, epic management
+- Supports main Claude with project-level organization
 - Triggers: task, roadmap, multi-PR, tracking, epic
 
-**`problem-solver`** - Domain-agnostic problem analysis and expert coordination
-- Intelligent routing to appropriate specialists based on problem type
-- Structured alternative analysis and trade-off evaluation
-- Triggers: "how should I", "best way to", "help me plan", "what are my options", "I need to solve"
+## Specialist Consultation Patterns
 
-## Agent Collaboration
+Main Claude coordinates with specialists through focused consultation:
 
-Agents explicitly coordinate through documented collaboration patterns:
+**Direct Expert Access:**
+- Main Claude handles implementation, coordination, and communication
+- Specialists provide deep expertise without intermediary layers
+- Parallel consultation when multiple domains are relevant
+- Clean handoff of specific technical analysis
 
-**Unified Expert Coordination:**
-- **problem-solver** serves as intelligent front door, routing to appropriate specialists based on problem domain
-- **software-engineer** coordinates with design-architect (architecture + security + performance), test-designer (testing strategy + execution), git-workflow
-- **debugger** consults data-analyst for data issues, researcher for framework problems
-- **All agents** can delegate to researcher for external knowledge needs
-
-**Context-Aware Workflows:**
-- Same agents work for both creating your code and reviewing others' code
-- Consistent expertise and standards across creation and review contexts
-- Intelligent adaptation based on whether you're planning or analyzing
-- Eliminates coordination overhead between separate creation/review specialists
+**Context-Aware Expertise:**
+- Same specialists support both creation and review workflows
+- Consistent expertise standards across different contexts
+- Focused analysis without broader project coordination overhead
+- Efficient specialist knowledge without context pollution
 
 ## Agent Metadata
 
@@ -133,32 +98,31 @@ Each agent includes:
 
 ### When Creating New Agents
 1. **Single responsibility** - Focus on one domain of expertise
-2. **Complete workflows** - Include everything needed from start to finish
-3. **Proactive language** - Use "Use PROACTIVELY to..." patterns
-4. **Clear triggers** - List specific keywords that should invoke the agent
-5. **Collaboration plans** - Define which other agents to work with
-6. **Examples** - Include usage examples in the system prompt
+2. **Deep specialization** - Provide expertise main Claude can't efficiently handle
+3. **Clean isolation** - Work independently without coordination overhead
+4. **Clear value** - Solve specific problems that benefit from specialist focus
+5. **Context efficiency** - Avoid duplicating main Claude's general capabilities
 
 ### When Modifying Existing Agents
-1. **Preserve completeness** - Keep workflows self-contained
-2. **Update triggers** - Ensure description matches capabilities
-3. **Maintain collaboration** - Update coordination patterns if needed
-4. **Test delegation** - Verify automatic delegation still works
+1. **Preserve specialization** - Keep focus on unique expertise
+2. **Maintain independence** - Ensure agents can work without extensive coordination
+3. **Update capabilities** - Reflect current specialist knowledge
+4. **Test consultation** - Verify main Claude can effectively use specialist output
 
-## Testing Agent Behavior
+## Testing Specialist Consultation
 
-To verify agents work correctly:
-1. Use trigger keywords in conversations
-2. Check that Claude automatically delegates to appropriate agents
-3. Verify agents coordinate properly with each other
-4. Ensure slash commands route to agents correctly
+To verify specialists work correctly:
+1. Test specialist expertise in isolation
+2. Verify main Claude can effectively interpret specialist output
+3. Ensure clean handoff without coordination overhead
+4. Confirm specialists provide unique value over main Claude capabilities
 
 ## Maintenance
 
-The agents-first architecture requires:
-- **Regular review** of agent descriptions for optimal auto-delegation
-- **Consolidation** of any duplicated logic back into agents
-- **Updates** to trigger keywords as patterns evolve
-- **Collaboration updates** when new agents are added
+The streamlined specialist architecture requires:
+- **Regular review** of specialist scope and unique value
+- **Elimination** of any overlap with main Claude capabilities
+- **Updates** to specialist expertise as domains evolve
+- **Efficiency monitoring** to ensure consultation adds clear value
 
-This approach ensures expertise stays centralized, reduces duplication, and provides consistent, high-quality development workflows.
+This approach ensures specialists provide focused expertise while main Claude handles coordination, implementation, and communication for optimal efficiency.
