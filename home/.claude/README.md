@@ -108,6 +108,7 @@ These are applied automatically when Claude consults researcher for "which tool 
 - **Preserve power when needed** - Systematic approaches available
 - **Natural workflow** - Conversation feels normal
 - **Reliable outcomes** - Good practices built-in
+- **Planning-first fixes** - All `/fix-*` commands start with strategy assessment
 
 ### For Future Claude Development
 - **Natural conversation is primary** - Don't force users into commands
