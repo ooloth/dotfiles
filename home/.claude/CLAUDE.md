@@ -14,7 +14,7 @@
 - **data-analyst**: For data processing optimization, DataFrame operations, and database performance
 - **git-workflow**: For ALL git operations - commits, branches, PRs, merges, pushes, pulls (NEVER perform git operations manually)
 - **pr-writer**: For commit messages and PR descriptions
-- **doc-maintainer**: For documentation updates
+- **doc-maintainer**: For documentation updates (TRIGGER: "readme", "README", "documentation", "docs")
 - **task-manager**: For multi-PR coordination
 - **problem-solver**: For intelligent problem analysis and expert coordination
 
@@ -49,6 +49,9 @@
 - `/plan` - Intelligent problem analysis with expert coordination for any domain
 
 ### Git Operations Delegation Rules
+
+**MANDATORY: Documentation operations MUST be delegated to doc-maintainer agent:**
+- **"readme"**, **"README"**, **"documentation"**, **"docs"** → Always use doc-maintainer agent
 
 **MANDATORY: All git operations MUST be delegated to git-workflow agent:**
 - **"commit"**, **"push"**, **"pull"**, **"merge"** → Always use git-workflow agent
