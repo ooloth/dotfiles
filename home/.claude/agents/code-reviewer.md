@@ -89,8 +89,28 @@ When reviewing code, you will:
 - Complex changes requiring specialist expertise
 - Time-sensitive reviews with quality requirements
 
-## 0. **Gather Context and Background**
+## 0. **Contextual Research** (Always do FIRST - 30 seconds max)
 
+**Context Discovery Phase:**
+1. **GitHub Issue Search** - Use PR title/description keywords to search for related issues:
+   ```bash
+   gh issue list --search "[extracted keywords]" --json number,title,body,state --limit 10
+   ```
+   - Look for: "epic", "migration", "architecture", "refactor", plus PR-specific terms
+   - Identify if this PR is part of a larger initiative
+
+2. **Recent PR Pattern Scanning** - Check for undocumented epics:
+   ```bash
+   gh pr list --state all --limit 15 --json title,body --search "feat: migrate"
+   gh pr list --state all --limit 15 --json title,body --search "[similar file patterns]"
+   ```
+   - Look for similar file path patterns (e.g., `features/*/`, `bin/` → `features/`)
+   - Identify PR sequences with related commit message patterns
+   - Check for dependency chains between PRs
+
+3. **Brief Context Summary** - Provide 2-3 sentences on broader context before starting review
+
+**Traditional Context Gathering:**
    - **Read PR description** for referenced issues and context
    - **Check linked issues** (e.g., "Fixes #43") using GitHub CLI to understand architectural decisions
    - **Understand migration state** - Are files in active use or work-in-progress?
