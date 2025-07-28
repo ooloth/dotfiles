@@ -9,18 +9,17 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dotfiles_root="$(cd "$script_dir/../.." && pwd)"
 
-# shellcheck source=../../lib/homebrew-utils.bash
-source "$dotfiles_root/lib/homebrew-utils.bash"
+source "$dotfiles_root/features/homebrew/utils.bash"
 
 # Main installation function
 install_homebrew() {
     echo "🍺 Setting up Homebrew..."
-    
+
     # Check if Homebrew is already installed
     if detect_homebrew; then
         # Ensure it's properly configured
         ensure_homebrew_in_path
-        
+
         # Validate the installation
         if validate_homebrew_installation; then
             echo "✅ Homebrew is already installed and functional"
@@ -30,27 +29,27 @@ install_homebrew() {
         fi
     else
         echo "📦 Installing Homebrew..."
-        
+
         # Install Homebrew using official installation script
         if ! /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
             echo "❌ Failed to install Homebrew" >&2
             return 1
         fi
-        
+
         echo "✅ Homebrew installation completed"
     fi
-    
+
     # Ensure Homebrew is in PATH after installation
     ensure_homebrew_in_path
-    
+
     # Final validation
     if validate_homebrew_installation; then
         echo "✅ Homebrew installation and configuration successful"
-        
+
         # Display version information
         echo "🔍 Homebrew information:"
         get_homebrew_version
-        
+
         return 0
     else
         echo "❌ Homebrew installation failed validation" >&2
@@ -60,11 +59,11 @@ install_homebrew() {
 
 # Install packages from Brewfile if it exists
 install_brewfile_packages() {
-    local brewfile_path="$dotfiles_root/macos/Brewfile"
-    
+    local brewfile_path="$dotfiles_root/features/homebrew/config/Brewfile"
+
     if [[ -f "$brewfile_path" ]]; then
         echo "📦 Installing packages from Brewfile..."
-        
+
         # Use brew bundle to install packages
         if brew bundle --file="$brewfile_path"; then
             echo "✅ Brewfile packages installed successfully"
@@ -80,7 +79,7 @@ install_brewfile_packages() {
 # Update Homebrew and installed packages
 update_homebrew() {
     echo "🔄 Updating Homebrew and packages..."
-    
+
     if brew update && brew upgrade; then
         echo "✅ Homebrew update completed"
     else
@@ -92,29 +91,29 @@ update_homebrew() {
 # Main execution
 main() {
     local action="${1:-install}"
-    
+
     case "$action" in
-        "install")
-            install_homebrew
-            install_brewfile_packages
-            ;;
-        "update")
-            # Ensure Homebrew is available first
-            ensure_homebrew_in_path
-            update_homebrew
-            ;;
-        "packages")
-            # Ensure Homebrew is available first
-            ensure_homebrew_in_path
-            install_brewfile_packages
-            ;;
-        *)
-            echo "Usage: $0 [install|update|packages]" >&2
-            echo "  install  - Install Homebrew and packages (default)" >&2
-            echo "  update   - Update Homebrew and packages" >&2
-            echo "  packages - Install only Brewfile packages" >&2
-            exit 1
-            ;;
+    "install")
+        install_homebrew
+        install_brewfile_packages
+        ;;
+    "update")
+        # Ensure Homebrew is available first
+        ensure_homebrew_in_path
+        update_homebrew
+        ;;
+    "packages")
+        # Ensure Homebrew is available first
+        ensure_homebrew_in_path
+        install_brewfile_packages
+        ;;
+    *)
+        echo "Usage: $0 [install|update|packages]" >&2
+        echo "  install  - Install Homebrew and packages (default)" >&2
+        echo "  update   - Update Homebrew and packages" >&2
+        echo "  packages - Install only Brewfile packages" >&2
+        exit 1
+        ;;
     esac
 }
 
@@ -122,3 +121,4 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
+

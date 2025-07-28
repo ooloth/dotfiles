@@ -2,11 +2,20 @@
 # 
 # This file configures shellcheck for both local development and CI.
 # ShellCheck will automatically find and use this configuration file.
+#
+# IMPORTANT: This is the SINGLE SOURCE OF TRUTH for shellcheck configuration.
+# Do NOT add inline shellcheck comments to files (# shellcheck disable=...).
+# All shellcheck configuration should be managed here centrally.
+# This policy prevents comment proliferation and ensures consistent rules.
 
 # Disable SC1091: Not following sourced files
 # This is expected behavior for our setup - we source utility libraries
 # that shellcheck cannot always locate in the correct context
-disable=SC1091
+#
+# Disable SC1090: ShellCheck can't follow non-constant source
+# Our feature discovery system uses dynamic paths which are validated
+# before sourcing, so this warning is safe to ignore
+disable=SC1091,SC1090
 
 # Enable external sources to allow shellcheck to follow sourced files
 # when they are available in the project structure
@@ -14,5 +23,6 @@ external-sources=true
 
 # Add source paths for our utility libraries
 source-path=bin/lib
+source-path=core
 source-path=test/lib
 source-path=test/install/lib

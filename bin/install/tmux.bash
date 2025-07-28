@@ -3,8 +3,6 @@
 # Tmux installation script (bash version)
 # Installs Tmux Plugin Manager and plugins
 
-# shellcheck disable=SC1091  # Don't follow sourced files
-
 set -euo pipefail
 
 # Load Tmux utilities

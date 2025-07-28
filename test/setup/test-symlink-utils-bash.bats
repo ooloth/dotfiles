@@ -4,7 +4,7 @@
 # Tests the bash version of symlink management functionality
 
 # Load the symlink utilities
-load "../../lib/symlink-utils.bash"
+load "../../core/symlinks/utils.bash"
 
 setup() {
     # Create temporary directory for each test

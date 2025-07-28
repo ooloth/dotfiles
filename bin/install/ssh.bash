@@ -15,7 +15,6 @@ set -euo pipefail
 DOTFILES="${DOTFILES:-$HOME/Repos/ooloth/dotfiles}"
 
 # Load utilities
-# shellcheck source=lib/ssh-utils.bash
 source "$DOTFILES/lib/ssh-utils.bash"
 
 main() {
