@@ -107,6 +107,7 @@
       "Bash(gcc -Wall *)",
       "Bash(gdb *)",
       "Bash(gdb -q *)",
+      "Bash(gh issue list *)",
       "Bash(git add *)",
       "Bash(git add -A*)",
       "Bash(git add -u*)",
@@ -134,6 +135,9 @@
       "Bash(git log --oneline*)",
       "Bash(git log*)",
       "Bash(git merge *)",
+      "Bash(git merge-base HEAD origin/main)",
+      "Bash(git merge-base HEAD origin/master)",
+      "Bash(git merge-base HEAD origin/trunk)",
       "Bash(git pull origin *)",
       "Bash(git pull*)",
       "Bash(git push -u origin *)",
@@ -145,6 +149,8 @@
       "Bash(git remote add *)",
       "Bash(git remote set-url *)",
       "Bash(git reset *)",
+      "Bash(git restore *)",
+      "Bash(git rev-parse HEAD)",
       "Bash(git show *)",
       "Bash(git stash list*)",
       "Bash(git stash pop*)",
@@ -222,6 +228,7 @@
       "Bash(realpath *)",
       "Bash(rm *)",
       "Bash(rm -r *)",
+      "Bash(ruff *)",
       "Bash(sbcl --eval *)",
       "Bash(sbcl --script *)",
       "Bash(sbcl*)",
@@ -403,7 +410,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/michael/.claude/security-hook.sh"
+            "command": "~/.claude/security-hook.sh"
           }
         ]
       }
