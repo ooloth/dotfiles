@@ -4,7 +4,7 @@
 # Tests individual utility functions in isolation
 
 # Load test helper functions
-load "../../../test/lib/test-helper.bash"
+load "../../../core/testing/bats-helper.bash"
 
 # Load the utils we're testing
 load "../utils.bash"
