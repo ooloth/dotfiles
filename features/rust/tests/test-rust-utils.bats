@@ -71,7 +71,7 @@ teardown() {
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\nrustup "$@"' > "$fake_bin/rustup"
     chmod +x "$fake_bin/rustup"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run validate_rustup_installation
     [ "$status" -eq 0 ]
@@ -93,7 +93,7 @@ teardown() {
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\necho "rustc 1.70.0 (fake version)"' > "$fake_bin/rustc"
     chmod +x "$fake_bin/rustc"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run validate_rust_installation
     [ "$status" -eq 1 ]
@@ -111,7 +111,7 @@ teardown() {
     echo '#!/bin/bash\necho "cargo 1.70.0 (fake version)"' > "$fake_bin/cargo"
     chmod +x "$fake_bin/cargo"
     
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run validate_rust_installation
     [ "$status" -eq 0 ]
@@ -125,7 +125,7 @@ teardown() {
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\necho "rustc 1.70.0 (90c541806 2023-05-31)"' > "$fake_bin/rustc"
     chmod +x "$fake_bin/rustc"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run get_current_rust_version
     [ "$status" -eq 0 ]
@@ -145,7 +145,7 @@ teardown() {
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\necho "rustup 1.26.0 (5af9b9484 2023-04-05)"' > "$fake_bin/rustup"
     chmod +x "$fake_bin/rustup"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run get_rustup_version
     [ "$status" -eq 0 ]
@@ -175,7 +175,7 @@ teardown() {
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\nrustup "$@"' > "$fake_bin/rustup"
     chmod +x "$fake_bin/rustup"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run is_rust_installed
     [ "$status" -eq 0 ]
@@ -206,7 +206,7 @@ teardown() {
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\nrustup "$@"' > "$fake_bin/rustup"
     chmod +x "$fake_bin/rustup"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run list_rust_toolchains
     [ "$status" -eq 0 ]
@@ -234,7 +234,7 @@ teardown() {
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\nrustup "$@"' > "$fake_bin/rustup"
     chmod +x "$fake_bin/rustup"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run get_default_rust_toolchain
     [ "$status" -eq 0 ]
@@ -385,7 +385,7 @@ teardown() {
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\nrustup "$@"' > "$fake_bin/rustup"
     chmod +x "$fake_bin/rustup"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run update_rust
     [ "$status" -eq 0 ]

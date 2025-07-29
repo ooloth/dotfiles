@@ -48,7 +48,7 @@ teardown() {
 
 @test "main returns 1 when fnm is not available" {
     # Ensure fnm is not in PATH
-    export PATH="/nonexistent:$PATH"
+    PATH="/usr/bin:/bin"
     
     run main
     [ "$status" -eq 1 ]
@@ -60,7 +60,7 @@ teardown() {
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run main
     [ "$status" -eq 0 ]
@@ -73,7 +73,7 @@ echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Override utils to return that version is already installed
     cat > "$DOTFILES/features/node/utils.bash" << 'EOF'
@@ -95,7 +95,7 @@ EOF
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Override utils to make validation fail
     cat > "$DOTFILES/features/node/utils.bash" << 'EOF'
@@ -113,7 +113,7 @@ EOF
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Override utils to make version retrieval fail
     cat > "$DOTFILES/features/node/utils.bash" << 'EOF'
@@ -132,7 +132,7 @@ EOF
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Override utils to make installation fail
     cat > "$DOTFILES/features/node/utils.bash" << 'EOF'
@@ -153,7 +153,7 @@ EOF
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Override utils to make setting default fail
     cat > "$DOTFILES/features/node/utils.bash" << 'EOF'
@@ -175,7 +175,7 @@ EOF
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Override utils to make validation warn but not fail
     cat > "$DOTFILES/features/node/utils.bash" << 'EOF'
@@ -202,7 +202,7 @@ EOF
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Source the script (simulating being loaded as a library)
     # This should not execute main automatically

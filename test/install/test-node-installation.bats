@@ -62,7 +62,7 @@ esac
 EOF
     chmod +x "$MOCK_BIN/fnm"
     
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run bash "$(pwd)/bin/install/node.bash"
     
@@ -87,7 +87,7 @@ esac
 EOF
     chmod +x "$MOCK_BIN/fnm"
     
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run bash "$(pwd)/bin/install/node.bash"
     

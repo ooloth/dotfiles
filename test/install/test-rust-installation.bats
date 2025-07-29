@@ -56,7 +56,7 @@ EOF
     chmod +x "$MOCK_BIN/rustup"
     
     # Add mock bin to PATH
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Run rust installation
     run bash "$(pwd)/bin/install/rust.bash"

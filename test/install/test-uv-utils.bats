@@ -45,7 +45,7 @@ EOF
     chmod +x "$MOCK_BIN/uv"
     
     # Add mock bin to PATH
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run uv_installed
     [ "$status" -eq 0 ]
@@ -64,7 +64,7 @@ fi
 EOF
     chmod +x "$MOCK_BIN/brew"
     
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run install_uv_via_brew
     [ "$status" -eq 0 ]
@@ -85,7 +85,7 @@ fi
 EOF
     chmod +x "$MOCK_BIN/uv"
     
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_uv_version
     [ "$status" -eq 0 ]

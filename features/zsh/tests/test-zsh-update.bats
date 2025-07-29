@@ -88,7 +88,7 @@ esac
 exit 1
 EOF
     chmod +x "$TEST_TEMP_DIR/mock-bin/brew"
-    export PATH="$TEST_TEMP_DIR/mock-bin:$PATH"
+    PATH="$TEST_TEMP_DIR/mock-bin:/usr/bin:/bin"
 }
 
 # Helper function to create mock zsh installation
@@ -107,7 +107,7 @@ EOF
     # Also create it in system PATH for command -v checks
     mkdir -p "$TEST_TEMP_DIR/system-bin"
     cp /tmp/mock-homebrew/bin/zsh "$TEST_TEMP_DIR/system-bin/"
-    export PATH="$TEST_TEMP_DIR/system-bin:$PATH"
+    PATH="$TEST_TEMP_DIR/system-bin:/usr/bin:/bin"
 }
 
 @test "update handles successful zsh upgrade" {
