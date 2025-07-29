@@ -25,7 +25,7 @@
 - **pr-writer**: For commit messages and PR descriptions (maintains opinionated templates)
 - **design-architect**: For complex architecture, security, and performance analysis
 - **researcher**: For "what's the best X?" questions and documentation lookups
-- **task-manager**: For multi-PR coordination and GitHub issue tracking
+- **task-manager**: MANDATORY for breaking down complex work into actionable GitHub issues. Use proactively for any non-trivial work.
 
 ### Slash Commands: Optional Systematic Approaches
 
@@ -45,6 +45,54 @@
 
 **PLANNING** (Structured decision making)
 - `/plan` - 4-phase problem analysis framework
+
+### GitHub-First Project Organization
+
+**MANDATORY: Use task-manager for systematic issue breakdown**
+
+**WHEN TO CREATE GITHUB ISSUES (Default: Always for non-trivial work):**
+- Any feature requiring more than one commit
+- Bug fixes that aren't obvious one-liners
+- Research or investigation tasks
+- Refactoring affecting multiple files
+- Performance optimizations or security improvements
+- Testing additions beyond simple test fixes
+
+**ISSUE CREATION PRINCIPLES:**
+- **Immediately actionable**: Any Claude instance can pick up and execute
+- **Self-contained**: All context and requirements in the issue
+- **Atomic**: One focused outcome per issue
+- **Linked**: References to related issues and epics
+- **Testable**: Clear acceptance criteria
+
+**PROJECT ORGANIZATION EXAMPLES:**
+
+**✅ GOOD: Systematic Issue Breakdown**
+```
+Epic: Add Dark Mode Support (#100)
+├── #101: Create theme context and provider
+├── #102: Add theme toggle component
+├── #103: Update color system for dark variants
+├── #104: Migrate existing components to use theme
+└── #105: Add theme persistence and system detection
+```
+
+**❌ BAD: Monolithic Epic Description**
+```
+Epic: Add Dark Mode Support (#100)
+- Implement theme switching
+- Update colors
+- Fix components
+- Add persistence
+[All details buried in epic description]
+```
+
+**BENEFITS OF ISSUES-FIRST APPROACH:**
+- **Immediate pickup**: Any Claude can start work without research
+- **Parallel development**: Multiple issues can be worked simultaneously  
+- **Clear progress**: Visual tracking through GitHub interface
+- **Automatic linking**: PRs automatically reference and close issues
+- **Session continuity**: No archaeological research needed
 
 ### Git Operations Delegation Rules
 
@@ -79,6 +127,37 @@
 - **More reliable**: Direct specialist expertise without interpretation layers
 - **Better coverage**: Parallel specialist analysis catches more issues
 - **Cleaner process**: Streamlined workflow with immediate expert access
+
+### Issues-First Workflow Example
+
+**Typical complex feature request workflow:**
+
+1. **User**: "I want to add user authentication with Google OAuth"
+
+2. **Claude**: "I'll use task-manager to break this into actionable issues"
+   - **task-manager creates**:
+     - Epic #200: User Authentication with Google OAuth
+     - Issue #201: Set up Google OAuth configuration
+     - Issue #202: Create authentication service
+     - Issue #203: Add login/logout UI components  
+     - Issue #204: Protect routes with auth middleware
+     - Issue #205: Add user profile management
+
+3. **Implementation**: Work on Issue #201 first
+   - **git-workflow**: Creates branch `feature/201-google-oauth-config`
+   - **Implementation**: Add OAuth config and environment setup
+   - **pr-writer**: Creates PR description referencing Issue #201
+   - **git-workflow**: Merges PR, automatically closes Issue #201
+
+4. **Progress tracking**: Issue #201 marked complete in Epic #200
+
+5. **Continue**: Move to Issue #202, repeat process
+
+**Key advantages:**
+- Any Claude instance can immediately pick up Issue #202 without context switching
+- Progress is visible in GitHub interface
+- Each PR has focused scope and clear acceptance criteria
+- Epic shows overall progress automatically
 
 ### Expert Coordination Strategy
 
