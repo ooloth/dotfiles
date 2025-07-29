@@ -130,3 +130,28 @@ setup_yazi_theme() {
         return 1
     fi
 }
+
+# Update yazi flavors repository
+update_yazi_flavors() {
+    if [[ ! -d "$YAZI_FLAVORS_PATH" ]]; then
+        echo "❌ Yazi flavors not installed at: $YAZI_FLAVORS_PATH" >&2
+        return 1
+    fi
+    
+    echo "🔄 Updating yazi flavors repository..."
+    
+    # Check if directory is a git repository
+    if [[ ! -d "$YAZI_FLAVORS_PATH/.git" ]]; then
+        echo "❌ Yazi flavors directory is not a git repository" >&2
+        return 1
+    fi
+    
+    # Update the repository
+    if git -C "$YAZI_FLAVORS_PATH" pull; then
+        echo "✅ Yazi flavors updated successfully"
+        return 0
+    else
+        echo "❌ Failed to update yazi flavors repository" >&2
+        return 1
+    fi
+}
