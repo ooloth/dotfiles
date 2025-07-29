@@ -45,7 +45,7 @@ EOF
     chmod +x "$MOCK_BIN/fnm"
     
     # Add mock bin to PATH
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run fnm_installed
     [ "$status" -eq 0 ]
@@ -68,7 +68,7 @@ EOF
     chmod +x "$MOCK_BIN/fnm"
     
     # Add mock bin to PATH
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_latest_node_version
     [ "$status" -eq 0 ]
@@ -89,7 +89,7 @@ fi
 EOF
     chmod +x "$MOCK_BIN/fnm"
     
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run check_node_version_installed "v21.5.0"
     [ "$status" -eq 0 ]
@@ -104,7 +104,7 @@ echo "fnm \$@" >> "$log_file"
 EOF
     chmod +x "$MOCK_BIN/fnm"
     
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run install_node_version "v21.5.0"
     [ "$status" -eq 0 ]

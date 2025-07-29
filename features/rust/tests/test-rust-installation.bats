@@ -80,7 +80,7 @@ echo "cargo 1.70.0 (boat)"
 EOF
     chmod +x "$fake_bin/cargo"
     
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
 }
 
 # Helper function to mock successful rustup installation
@@ -111,7 +111,7 @@ chmod +x "$CARGO_HOME/bin/cargo" "$CARGO_HOME/bin/rustc" "$CARGO_HOME/bin/rustup
 
 # Create cargo env file
 cat > "$CARGO_HOME/env" << 'CARGO_ENV'
-export PATH="$CARGO_HOME/bin:$PATH"
+PATH="$CARGO_HOME/bin:/usr/bin:/bin"
 CARGO_ENV
 EOF
                 chmod +x "$fake_installer"
@@ -126,7 +126,7 @@ EOF
     # Mock source command for cargo env
     source() {
         if [[ "$1" == *"cargo/env" ]]; then
-            export PATH="$CARGO_HOME/bin:$PATH"
+            PATH="$CARGO_HOME/bin:/usr/bin:/bin"
         fi
         return 0
     }
@@ -261,7 +261,7 @@ EOF
     mkdir -p "$fake_bin"
     echo '#!/bin/bash\nrustup "$@"' > "$fake_bin/rustup"
     chmod +x "$fake_bin/rustup"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run bash "$DOTFILES/features/rust/update.bash"
     [ "$status" -eq 1 ]

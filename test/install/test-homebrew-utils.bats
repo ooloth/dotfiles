@@ -35,7 +35,7 @@ teardown() {
     echo '#!/bin/bash
 echo "arm64"' > "$TEST_TEMP_DIR/uname"
     chmod +x "$TEST_TEMP_DIR/uname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_homebrew_prefix
     [ "$status" -eq 0 ]
@@ -47,7 +47,7 @@ echo "arm64"' > "$TEST_TEMP_DIR/uname"
     echo '#!/bin/bash
 echo "x86_64"' > "$TEST_TEMP_DIR/uname"
     chmod +x "$TEST_TEMP_DIR/uname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_homebrew_prefix
     [ "$status" -eq 0 ]
@@ -59,7 +59,7 @@ echo "x86_64"' > "$TEST_TEMP_DIR/uname"
     echo '#!/bin/bash
 echo "unknown"' > "$TEST_TEMP_DIR/uname"
     chmod +x "$TEST_TEMP_DIR/uname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_homebrew_prefix
     [ "$status" -eq 0 ]
@@ -73,7 +73,7 @@ echo "unknown"' > "$TEST_TEMP_DIR/uname"
     echo '#!/bin/bash
 echo "arm64"' > "$TEST_TEMP_DIR/uname"
     chmod +x "$TEST_TEMP_DIR/uname"
-    export PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Function modifies PATH, so we need to source and check in same shell
     ensure_homebrew_in_path
@@ -87,7 +87,7 @@ echo "arm64"' > "$TEST_TEMP_DIR/uname"
     echo '#!/bin/bash
 echo "arm64"' > "$TEST_TEMP_DIR/uname"
     chmod +x "$TEST_TEMP_DIR/uname"
-    export PATH="/opt/homebrew/bin:$TEST_TEMP_DIR:/usr/bin:/bin"
+    PATH="/opt/homebrew/bin:$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run ensure_homebrew_in_path
     [ "$status" -eq 0 ]
@@ -107,7 +107,7 @@ if [[ "$1" == "list" && "$2" == "--formula" ]]; then
     echo "python@3.11"
 fi' > "$TEST_TEMP_DIR/brew"
     chmod +x "$TEST_TEMP_DIR/brew"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_homebrew_package_installed "git"
     [ "$status" -eq 0 ]
@@ -121,7 +121,7 @@ if [[ "$1" == "list" && "$2" == "--formula" ]]; then
     echo "python@3.11"
 fi' > "$TEST_TEMP_DIR/brew"
     chmod +x "$TEST_TEMP_DIR/brew"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_homebrew_package_installed "git"
     [ "$status" -eq 1 ]
@@ -133,7 +133,7 @@ fi' > "$TEST_TEMP_DIR/brew"
 echo "Error: No such command" >&2
 exit 1' > "$TEST_TEMP_DIR/brew"
     chmod +x "$TEST_TEMP_DIR/brew"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_homebrew_package_installed "git"
     [ "$status" -eq 1 ]

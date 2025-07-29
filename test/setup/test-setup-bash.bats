@@ -96,7 +96,7 @@ EOF
     chmod +x "$mock_bin/uname"
     
     # Run setup.bash with mocked uname
-    PATH="$mock_bin:$PATH" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
     
     # Check for macOS error message
     [[ "$output" =~ "This script only runs on macOS" ]]
@@ -118,7 +118,7 @@ EOF
     mkdir -p "$DOTFILES"
     
     # Run setup.bash with mocked git, answering 'y' but then it will fail on platform check
-    PATH="$mock_bin:$PATH" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
     
     # Check that it detected existing dotfiles
     [[ "$output" =~ "Dotfiles are already installed. Pulling latest changes." ]]
@@ -208,7 +208,7 @@ EOF
     echo 'run_prerequisite_validation() { return 0; }' > "$DOTFILES/bin/lib/prerequisite-validation.bash"
     
     # Run setup.bash with mocked git
-    PATH="$mock_bin:$PATH" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
     
     # Check that installation scripts were mentioned/run
     [[ "$output" =~ "Running installations" ]]

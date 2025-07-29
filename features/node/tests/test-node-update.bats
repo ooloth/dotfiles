@@ -53,7 +53,7 @@ if [[ "$1" == "list" && "$2" == "-g" && "$3" == "--depth=0" ]]; then
     echo "└── trash-cli@5.0.0"
 fi' > "$TEST_TEMP_DIR/npm"
     chmod +x "$TEST_TEMP_DIR/npm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_npm_package_installed "npm"
     [ "$status" -eq 0 ]
@@ -67,7 +67,7 @@ if [[ "$1" == "list" && "$2" == "-g" && "$3" == "--depth=0" ]]; then
     echo "└── trash-cli@5.0.0"
 fi' > "$TEST_TEMP_DIR/npm"
     chmod +x "$TEST_TEMP_DIR/npm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_npm_package_installed "typescript"
     [ "$status" -eq 1 ]
@@ -79,7 +79,7 @@ fi' > "$TEST_TEMP_DIR/npm"
 echo "Error: npm command failed" >&2
 exit 1' > "$TEST_TEMP_DIR/npm"
     chmod +x "$TEST_TEMP_DIR/npm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_npm_package_installed "npm"
     [ "$status" -eq 1 ]
@@ -101,7 +101,7 @@ if [[ "$1" == "outdated" && "$2" == "-g" ]]; then
     echo "npm      10.1.0   10.2.0  10.2.0  global"
 fi' > "$TEST_TEMP_DIR/npm"
     chmod +x "$TEST_TEMP_DIR/npm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_npm_package_outdated "npm"
     [ "$status" -eq 0 ]
@@ -115,7 +115,7 @@ if [[ "$1" == "outdated" && "$2" == "-g" ]]; then
     # No packages listed = all up to date
 fi' > "$TEST_TEMP_DIR/npm"
     chmod +x "$TEST_TEMP_DIR/npm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_npm_package_outdated "npm"
     [ "$status" -eq 1 ]
@@ -127,7 +127,7 @@ fi' > "$TEST_TEMP_DIR/npm"
 echo "Error: npm command failed" >&2
 exit 1' > "$TEST_TEMP_DIR/npm"
     chmod +x "$TEST_TEMP_DIR/npm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_npm_package_outdated "npm"
     [ "$status" -eq 1 ]
@@ -140,7 +140,7 @@ exit 1' > "$TEST_TEMP_DIR/npm"
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run update_node_version
     [ "$status" -eq 0 ]
@@ -153,7 +153,7 @@ echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     echo '#!/bin/bash
 echo "fnm command executed with args: $@"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Override utils to show latest version is already installed
     cat > "$DOTFILES/features/node/utils.bash" << 'EOF'
@@ -203,7 +203,7 @@ if [[ "$1" == "--version" ]]; then
 fi' > "$TEST_TEMP_DIR/node"
     chmod +x "$TEST_TEMP_DIR/node"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run update_npm_packages
     [ "$status" -eq 0 ]
@@ -213,7 +213,7 @@ fi' > "$TEST_TEMP_DIR/node"
 
 @test "update_npm_packages returns 1 when npm is not available" {
     # Ensure npm is not in PATH
-    export PATH="/nonexistent:$PATH"
+    PATH="/usr/bin:/bin"
     
     run update_npm_packages
     [ "$status" -eq 1 ]
@@ -240,7 +240,7 @@ if [[ "$1" == "--version" ]]; then
 fi' > "$TEST_TEMP_DIR/node"
     chmod +x "$TEST_TEMP_DIR/node"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run update_npm_packages
     [ "$status" -eq 0 ]
@@ -253,7 +253,7 @@ fi' > "$TEST_TEMP_DIR/node"
 
 @test "main returns 1 when fnm is not available" {
     # Ensure fnm is not in PATH
-    export PATH="/nonexistent:$PATH"
+    PATH="/usr/bin:/bin"
     
     run main
     [ "$status" -eq 1 ]
@@ -282,7 +282,7 @@ if [[ "$1" == "--version" ]]; then
 fi' > "$TEST_TEMP_DIR/node"
     chmod +x "$TEST_TEMP_DIR/node"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run main
     [ "$status" -eq 0 ]
@@ -295,7 +295,7 @@ fi' > "$TEST_TEMP_DIR/node"
     echo '#!/bin/bash
 echo "fnm command executed"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Override utils to make update fail
     cat > "$DOTFILES/features/node/utils.bash" << 'EOF'
@@ -314,7 +314,7 @@ EOF
     echo '#!/bin/bash
 echo "fnm command executed"' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Don't create npm command (will fail)
     
