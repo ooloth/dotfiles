@@ -112,8 +112,9 @@ jobs:
           FAILED_TESTS=""
           TOTAL_TESTS=0
           
-          # Find all BATS test files across the repository
-          ALL_BATS_TESTS=$(find test core features -name "*.bats" -type f 2>/dev/null | sort)
+          # Find all BATS test files in core/ and features/ directories only
+          # Ignore deprecated tests in test/ directory which will be cleaned up soon
+          ALL_BATS_TESTS=$(find core features -name "*.bats" -type f 2>/dev/null | sort)
           
           if [[ -z "$ALL_BATS_TESTS" ]]; then
             echo "No BATS test files found"
