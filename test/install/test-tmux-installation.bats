@@ -86,7 +86,7 @@ fi
 EOF
     chmod +x "$MOCK_BIN/git"
     
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run bash "$(pwd)/bin/install/tmux.bash"
     

@@ -88,7 +88,7 @@ esac
 exit 1
 EOF
     chmod +x "$TEST_TEMP_DIR/mock-bin/brew"
-    export PATH="$TEST_TEMP_DIR/mock-bin:$PATH"
+    PATH="$TEST_TEMP_DIR/mock-bin:/usr/bin:/bin"
 }
 
 @test "install_zsh_via_homebrew succeeds when brew is available" {

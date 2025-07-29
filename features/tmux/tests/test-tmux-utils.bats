@@ -14,7 +14,7 @@ setup() {
     mkdir -p "$HOME/.config/tmux/plugins"
     
     # Mock commands
-    export PATH="$BATS_TEST_DIRNAME/mocks:$PATH"
+    PATH="$BATS_TEST_DIRNAME/mocks:/usr/bin:/bin"
     
     # Source the utils for testing
     source "$DOTFILES/features/tmux/utils.bash"

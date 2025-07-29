@@ -64,7 +64,7 @@ exit 0
 EOF
     chmod +x "$fake_bin/nvim"
     
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
 }
 
 # Helper function to create mock config repository
@@ -153,7 +153,7 @@ exit 0
 EOF
     chmod +x "$fake_bin/cargo"
     
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
 }
 
 @test "install script fails when Neovim is not installed" {
@@ -259,7 +259,7 @@ esac
 exit 0
 EOF
     chmod +x "$fake_bin/nvim"
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run bash "$DOTFILES/features/neovim/install.bash"
     [ "$status" -eq 1 ]
@@ -346,7 +346,7 @@ exit 0
 EOF
     chmod +x "$fake_bin/brew"
     
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
     
     run bash "$DOTFILES/features/neovim/update.bash"
     [ "$status" -eq 0 ]

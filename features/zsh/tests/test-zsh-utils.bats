@@ -128,7 +128,7 @@ teardown() {
     mkdir -p "$TEST_TEMP_DIR/bin"
     echo "#!/bin/bash" > "$TEST_TEMP_DIR/bin/brew"
     chmod +x "$TEST_TEMP_DIR/bin/brew"
-    export PATH="$TEST_TEMP_DIR/bin:$PATH"
+    PATH="$TEST_TEMP_DIR/bin:/usr/bin:/bin"
     
     run homebrew_is_installed
     [ "$status" -eq 0 ]

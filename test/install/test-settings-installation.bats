@@ -38,56 +38,174 @@ teardown() {
 }
 
 @test "settings installation runs on macOS with required commands" {
-  # Mock all required functions to succeed
-  uname() { echo "Darwin"; }
-  command() {
-    if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
-      return 0
-    else
-      command "$@"
-    fi
-  }
-  
-  # Mock settings configuration functions
-  configure_general_settings() {
-    echo "Configuring general settings..."
+  # Create mock script that sources our libraries but mocks the external commands
+  cat > "$TEST_TEMP_DIR/test_settings.bash" << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Mock external commands
+uname() { echo "Darwin"; }
+command() {
+  if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
     return 0
-  }
+  else
+    /usr/bin/command "$@"
+  fi
+}
+defaults() { echo "Mock defaults: $@"; }
+chflags() { echo "Mock chflags: $@"; }
+export -f uname command defaults chflags
+
+# Source the actual script content
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$1"
+
+# Source utilities
+source "$DOTFILES/lib/settings-utils.bash"
+source "$DOTFILES/bin/lib/dry-run-utils.bash"
+
+echo "💻 Configuring macOS system settings"
+
+# Validate environment
+if ! validate_macos_environment; then
+  exit 1
+fi
+
+# Apply settings based on mode
+if is_dry_run; then
+  echo ""
+  echo "[DRY RUN] Would configure the following macOS settings:"
+  echo ""
+  echo "General Settings:"
+  echo "  - Expand save dialog by default"
+  echo "  - Enable full keyboard access for all controls"
+  echo "  - Enable subpixel font rendering on non-Apple LCDs"
+  echo ""
+  echo "Finder Settings:"
+  echo "  - Show all filename extensions"
+  echo "  - Hide hidden files by default"
+  echo "  - Use current directory as default search scope"
+  echo "  - Show Path bar and Status bar"
+  echo "  - Unhide ~/Library folder"
+  echo ""
+  echo "Safari Settings:"
+  echo "  - Enable Safari's debug menu"
+else
+  # Configure general settings
+  if ! configure_general_settings; then
+    echo "❌ Failed to configure general settings"
+    exit 1
+  fi
   
-  configure_finder_settings() {
-    echo "Configuring Finder settings..."
-    return 0
-  }
+  # Configure Finder settings
+  if ! configure_finder_settings; then
+    echo "❌ Failed to configure Finder settings"
+    exit 1
+  fi
   
-  configure_safari_settings() {
-    echo "Configuring Safari settings..."
-    return 0
-  }
+  # Configure Safari settings
+  if ! configure_safari_settings; then
+    echo "❌ Failed to configure Safari settings"
+    exit 1
+  fi
   
-  run bash "bin/install/settings.bash"
+  echo ""
+  echo "🚀 Done configuring Mac system preferences."
+fi
+EOF
+  chmod +x "$TEST_TEMP_DIR/test_settings.bash"
+  
+  run bash "$TEST_TEMP_DIR/test_settings.bash" "$DOTFILES"
   [ "$status" -eq 0 ]
   [[ "$output" == *"💻 Configuring macOS system settings"* ]]
   [[ "$output" == *"Configuring general settings..."* ]]
-  [[ "$output" == *"Configuring Finder settings..."* ]]
-  [[ "$output" == *"Configuring Safari settings..."* ]]
+  [[ "$output" == *"🔍 Configuring Finder..."* ]]
+  [[ "$output" == *"🌐 Configuring Safari..."* ]]
   [[ "$output" == *"🚀 Done configuring Mac system preferences."* ]]
 }
 
 @test "settings installation handles dry run mode" {
-  # Set dry run mode
-  export DRY_RUN=1
+  # Create mock script with dry run mode
+  cat > "$TEST_TEMP_DIR/test_settings_dry.bash" << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Set dry run mode
+export DRY_RUN=1
+
+# Mock external commands
+uname() { echo "Darwin"; }
+command() {
+  if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
+    return 0
+  else
+    /usr/bin/command "$@"
+  fi
+}
+defaults() { echo "Mock defaults: $@"; }
+chflags() { echo "Mock chflags: $@"; }
+export -f uname command defaults chflags
+
+# Source the actual script content
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$1"
+
+# Source utilities
+source "$DOTFILES/lib/settings-utils.bash"
+source "$DOTFILES/bin/lib/dry-run-utils.bash"
+
+echo "💻 Configuring macOS system settings"
+
+# Validate environment
+if ! validate_macos_environment; then
+  exit 1
+fi
+
+# Apply settings based on mode
+if is_dry_run; then
+  echo ""
+  echo "[DRY RUN] Would configure the following macOS settings:"
+  echo ""
+  echo "General Settings:"
+  echo "  - Expand save dialog by default"
+  echo "  - Enable full keyboard access for all controls"
+  echo "  - Enable subpixel font rendering on non-Apple LCDs"
+  echo ""
+  echo "Finder Settings:"
+  echo "  - Show all filename extensions"
+  echo "  - Hide hidden files by default"
+  echo "  - Use current directory as default search scope"
+  echo "  - Show Path bar and Status bar"
+  echo "  - Unhide ~/Library folder"
+  echo ""
+  echo "Safari Settings:"
+  echo "  - Enable Safari's debug menu"
+else
+  # Configure general settings
+  if ! configure_general_settings; then
+    echo "❌ Failed to configure general settings"
+    exit 1
+  fi
   
-  # Mock environment validation
-  uname() { echo "Darwin"; }
-  command() {
-    if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
-      return 0
-    else
-      command "$@"
-    fi
-  }
+  # Configure Finder settings
+  if ! configure_finder_settings; then
+    echo "❌ Failed to configure Finder settings"
+    exit 1
+  fi
   
-  run bash "bin/install/settings.bash"
+  # Configure Safari settings
+  if ! configure_safari_settings; then
+    echo "❌ Failed to configure Safari settings"
+    exit 1
+  fi
+  
+  echo ""
+  echo "🚀 Done configuring Mac system preferences."
+fi
+EOF
+  chmod +x "$TEST_TEMP_DIR/test_settings_dry.bash"
+  
+  run bash "$TEST_TEMP_DIR/test_settings_dry.bash" "$DOTFILES"
   [ "$status" -eq 0 ]
   [[ "$output" == *"[DRY RUN] Would configure the following macOS settings:"* ]]
   [[ "$output" == *"General Settings:"* ]]
@@ -99,119 +217,292 @@ teardown() {
 }
 
 @test "settings installation fails on non-macOS systems" {
-  # Mock uname to return non-Darwin
-  uname() { echo "Linux"; }
+  # Create mock script for non-macOS
+  cat > "$TEST_TEMP_DIR/test_settings_linux.bash" << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Mock uname to return non-Darwin
+uname() { echo "Linux"; }
+export -f uname
+
+# Source the actual script content
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$1"
+
+# Source utilities
+source "$DOTFILES/lib/settings-utils.bash"
+source "$DOTFILES/bin/lib/dry-run-utils.bash"
+
+echo "💻 Configuring macOS system settings"
+
+# Validate environment
+if ! validate_macos_environment; then
+  exit 1
+fi
+EOF
+  chmod +x "$TEST_TEMP_DIR/test_settings_linux.bash"
   
-  run bash "bin/install/settings.bash"
+  run bash "$TEST_TEMP_DIR/test_settings_linux.bash" "$DOTFILES"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ macOS system settings can only be applied on macOS"* ]]
 }
 
 @test "settings installation fails when defaults command unavailable" {
-  # Mock macOS but missing defaults command
-  uname() { echo "Darwin"; }
-  command() {
-    if [[ "$1" == "-v" && "$2" == "defaults" ]]; then
-      return 1
-    elif [[ "$1" == "-v" && "$2" == "chflags" ]]; then
-      return 0
-    else
-      command "$@"
-    fi
-  }
+  # Create mock script for missing defaults
+  cat > "$TEST_TEMP_DIR/test_settings_no_defaults.bash" << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Mock macOS but missing defaults command
+uname() { echo "Darwin"; }
+command() {
+  if [[ "$1" == "-v" && "$2" == "defaults" ]]; then
+    return 1
+  elif [[ "$1" == "-v" && "$2" == "chflags" ]]; then
+    return 0
+  else
+    /usr/bin/command "$@"
+  fi
+}
+export -f uname command
+
+# Source the actual script content
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$1"
+
+# Source utilities
+source "$DOTFILES/lib/settings-utils.bash"
+source "$DOTFILES/bin/lib/dry-run-utils.bash"
+
+echo "💻 Configuring macOS system settings"
+
+# Validate environment
+if ! validate_macos_environment; then
+  exit 1
+fi
+EOF
+  chmod +x "$TEST_TEMP_DIR/test_settings_no_defaults.bash"
   
-  run bash "bin/install/settings.bash"
+  run bash "$TEST_TEMP_DIR/test_settings_no_defaults.bash" "$DOTFILES"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ defaults command not available"* ]]
 }
 
 @test "settings installation fails when chflags command unavailable" {
-  # Mock macOS but missing chflags command
-  uname() { echo "Darwin"; }
-  command() {
-    if [[ "$1" == "-v" && "$2" == "defaults" ]]; then
-      return 0
-    elif [[ "$1" == "-v" && "$2" == "chflags" ]]; then
-      return 1
-    else
-      command "$@"
-    fi
-  }
+  # Create mock script for missing chflags
+  cat > "$TEST_TEMP_DIR/test_settings_no_chflags.bash" << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Mock macOS but missing chflags command
+uname() { echo "Darwin"; }
+command() {
+  if [[ "$1" == "-v" && "$2" == "defaults" ]]; then
+    return 0
+  elif [[ "$1" == "-v" && "$2" == "chflags" ]]; then
+    return 1
+  else
+    /usr/bin/command "$@"
+  fi
+}
+export -f uname command
+
+# Source the actual script content
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$1"
+
+# Source utilities
+source "$DOTFILES/lib/settings-utils.bash"
+source "$DOTFILES/bin/lib/dry-run-utils.bash"
+
+echo "💻 Configuring macOS system settings"
+
+# Validate environment
+if ! validate_macos_environment; then
+  exit 1
+fi
+EOF
+  chmod +x "$TEST_TEMP_DIR/test_settings_no_chflags.bash"
   
-  run bash "bin/install/settings.bash"
+  run bash "$TEST_TEMP_DIR/test_settings_no_chflags.bash" "$DOTFILES"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ chflags command not available"* ]]
 }
 
 @test "settings installation handles general settings failure" {
-  # Mock environment validation to succeed
-  uname() { echo "Darwin"; }
-  command() {
-    if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
-      return 0
-    else
-      command "$@"
-    fi
-  }
-  
-  # Mock configure_general_settings to fail
-  configure_general_settings() {
-    echo "General settings failed"
+  # Create mock script with failing general settings
+  cat > "$TEST_TEMP_DIR/test_settings_fail_general.bash" << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Mock external commands
+uname() { echo "Darwin"; }
+command() {
+  if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
+    return 0
+  else
+    /usr/bin/command "$@"
+  fi
+}
+defaults() {
+  # Make defaults fail for general settings
+  if [[ "$2" == "NSNavPanelExpandedStateForSaveMode" || "$2" == "AppleKeyboardUIMode" || "$2" == "AppleFontSmoothing" ]]; then
     return 1
-  }
+  fi
+  echo "Mock defaults: $@"
+}
+chflags() { echo "Mock chflags: $@"; }
+export -f uname command defaults chflags
+
+# Source the actual script content
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$1"
+
+# Source utilities
+source "$DOTFILES/lib/settings-utils.bash"
+source "$DOTFILES/bin/lib/dry-run-utils.bash"
+
+echo "💻 Configuring macOS system settings"
+
+# Validate environment
+if ! validate_macos_environment; then
+  exit 1
+fi
+
+# Configure general settings
+if ! configure_general_settings; then
+  echo "❌ Failed to configure general settings"
+  exit 1
+fi
+EOF
+  chmod +x "$TEST_TEMP_DIR/test_settings_fail_general.bash"
   
-  configure_finder_settings() { return 0; }
-  configure_safari_settings() { return 0; }
-  
-  run bash "bin/install/settings.bash"
+  run bash "$TEST_TEMP_DIR/test_settings_fail_general.bash" "$DOTFILES"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Failed to configure general settings"* ]]
 }
 
 @test "settings installation handles finder settings failure" {
-  # Mock environment validation to succeed
-  uname() { echo "Darwin"; }
-  command() {
-    if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
-      return 0
-    else
-      command "$@"
-    fi
-  }
-  
-  # Mock configure_finder_settings to fail
-  configure_general_settings() { return 0; }
-  configure_finder_settings() {
-    echo "Finder settings failed"
+  # Create mock script with failing finder settings
+  cat > "$TEST_TEMP_DIR/test_settings_fail_finder.bash" << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Mock external commands
+uname() { echo "Darwin"; }
+command() {
+  if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
+    return 0
+  else
+    /usr/bin/command "$@"
+  fi
+}
+defaults() {
+  # Make defaults fail for Finder settings
+  if [[ "$1" == "NSGlobalDomain" && "$2" == "AppleShowAllExtensions" ]]; then
     return 1
-  }
-  configure_safari_settings() { return 0; }
+  fi
+  echo "Mock defaults: $@"
+}
+chflags() { echo "Mock chflags: $@"; }
+export -f uname command defaults chflags
+
+# Source the actual script content
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$1"
+
+# Source utilities
+source "$DOTFILES/lib/settings-utils.bash"
+source "$DOTFILES/bin/lib/dry-run-utils.bash"
+
+echo "💻 Configuring macOS system settings"
+
+# Validate environment
+if ! validate_macos_environment; then
+  exit 1
+fi
+
+# Configure general settings (should succeed)
+if ! configure_general_settings; then
+  echo "❌ Failed to configure general settings"
+  exit 1
+fi
+
+# Configure Finder settings (should fail)
+if ! configure_finder_settings; then
+  echo "❌ Failed to configure Finder settings"
+  exit 1
+fi
+EOF
+  chmod +x "$TEST_TEMP_DIR/test_settings_fail_finder.bash"
   
-  run bash "bin/install/settings.bash"
+  run bash "$TEST_TEMP_DIR/test_settings_fail_finder.bash" "$DOTFILES"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Failed to configure Finder settings"* ]]
 }
 
 @test "settings installation handles safari settings failure" {
-  # Mock environment validation to succeed
-  uname() { echo "Darwin"; }
-  command() {
-    if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
-      return 0
-    else
-      command "$@"
-    fi
-  }
-  
-  # Mock configure_safari_settings to fail
-  configure_general_settings() { return 0; }
-  configure_finder_settings() { return 0; }
-  configure_safari_settings() {
-    echo "Safari settings failed"
+  # Create mock script with failing safari settings
+  cat > "$TEST_TEMP_DIR/test_settings_fail_safari.bash" << 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Mock external commands
+uname() { echo "Darwin"; }
+command() {
+  if [[ "$1" == "-v" && ("$2" == "defaults" || "$2" == "chflags") ]]; then
+    return 0
+  else
+    /usr/bin/command "$@"
+  fi
+}
+defaults() {
+  # Make defaults fail for Safari settings
+  if [[ "$1" == "com.apple.Safari" && "$2" == "IncludeInternalDebugMenu" ]]; then
     return 1
-  }
+  fi
+  echo "Mock defaults: $@"
+}
+chflags() { echo "Mock chflags: $@"; }
+export -f uname command defaults chflags
+
+# Source the actual script content
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$1"
+
+# Source utilities
+source "$DOTFILES/lib/settings-utils.bash"
+source "$DOTFILES/bin/lib/dry-run-utils.bash"
+
+echo "💻 Configuring macOS system settings"
+
+# Validate environment
+if ! validate_macos_environment; then
+  exit 1
+fi
+
+# Configure general settings (should succeed)
+if ! configure_general_settings; then
+  echo "❌ Failed to configure general settings"
+  exit 1
+fi
+
+# Configure Finder settings (should succeed)
+if ! configure_finder_settings; then
+  echo "❌ Failed to configure Finder settings"
+  exit 1
+fi
+
+# Configure Safari settings (should fail)
+if ! configure_safari_settings; then
+  echo "❌ Failed to configure Safari settings"
+  exit 1
+fi
+EOF
+  chmod +x "$TEST_TEMP_DIR/test_settings_fail_safari.bash"
   
-  run bash "bin/install/settings.bash"
+  run bash "$TEST_TEMP_DIR/test_settings_fail_safari.bash" "$DOTFILES"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Failed to configure Safari settings"* ]]
 }
