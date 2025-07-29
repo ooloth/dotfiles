@@ -3,10 +3,6 @@
 # See: https://zsh.sourceforge.io/Doc/Release/Files.html
 source "$HOME/Repos/ooloth/dotfiles/config/zsh/path.zsh"
 
-# See: https://docs.anthropic.com/en/docs/claude-code/settings#environment-variables
-# See: https://docs.anthropic.com/en/docs/about-claude/models/overview#model-names
-export ANTHROPIC_MODEL="claude-sonnet-4-20250514"
-
 # TODO: use set_machine_variables instead?
 # Device
 export HOSTNAME=$(networksetup -getcomputername)
@@ -21,6 +17,12 @@ export IS_WORK=false
 [[ "$HOSTNAME" == "Air" ]] && IS_AIR=true
 [[ "$HOSTNAME" == "Mini" ]] && IS_MINI=true
 [[ "$HOSTNAME" == "7385-Y3FH97X-MAC" || "$HOSTNAME" == "MULO-JQ97NW-MBP" ]] && IS_WORK=true
+
+# See: https://docs.anthropic.com/en/docs/claude-code/settings#environment-variables
+# See: https://docs.anthropic.com/en/docs/about-claude/models/overview#model-names
+if ! $IS_WORK; then
+  export ANTHROPIC_MODEL="claude-sonnet-4-20250514"
+fi
 
 # Dotfiles
 export DOTFILES=$HOME/Repos/ooloth/dotfiles
