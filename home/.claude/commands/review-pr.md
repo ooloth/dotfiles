@@ -13,7 +13,7 @@ description: Review a pull request with structured feedback
 
 ### Phase 1: Context Research
 1. **Fetch PR details** using GitHub CLI (`gh pr view <number> --json body,commits,files`)
-2. **Review linked issues** for requirements and context
+2. **Read GitHub issues mentioned in PR description** for requirements and context
 3. **Check epic/project context** if part of larger initiative
 4. **Understand the "why"** behind the changes
 
