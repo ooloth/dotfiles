@@ -130,18 +130,21 @@ The numbers should match to ensure no test files are being missed.
 
 ### Shellcheck Standards
 
-**IMPORTANT: Always use `.shellcheckrc` for configuration, never inline comments**
+**CRITICAL REQUIREMENT: NEVER use inline shellcheck directives - Always use `.shellcheckrc`**
+
+**ABSOLUTE POLICY**: This repository has a strict policy against inline shellcheck comments. Any use of `# shellcheck disable=` or similar inline directives is FORBIDDEN and must be removed immediately.
 
 When working with bash scripts in this repository:
 
 1. **Fix issues, don't ignore them** - If shellcheck reports an issue, fix the code rather than adding ignore directives
-2. **Use `.shellcheckrc` for project-wide settings** - All shellcheck configuration should be centralized in the `.shellcheckrc` file
-3. **Never use inline shellcheck directives** - Don't add comments like `# shellcheck disable=SC2155`
-4. **Common fixes**:
+2. **MANDATORY: Use `.shellcheckrc` for ALL configuration** - All shellcheck configuration must be centralized in the `.shellcheckrc` file
+3. **FORBIDDEN: Never use inline shellcheck directives** - Comments like `# shellcheck disable=SC2155` are strictly prohibited
+4. **If you must disable a check**: Add it to `.shellcheckrc` with proper documentation explaining why
+5. **Common fixes**:
    - SC2155: Separate variable declaration from assignment when using command substitution
    - Example: Change `local var="$(command)"` to `local var` then `var="$(command)"`
 
-All bash scripts must pass shellcheck with zero warnings before merging.
+**ENFORCEMENT**: All bash scripts must pass shellcheck with zero warnings before merging. Any PR containing inline shellcheck directives will be rejected.
 
 ### Project-Specific Git Ignore
 Use the `.gitignore` file and not the `config/git/ignore` file when adding project-specific ignore rules.
