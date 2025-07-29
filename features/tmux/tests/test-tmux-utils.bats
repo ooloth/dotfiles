@@ -2,7 +2,7 @@
 
 # Tests for tmux utility functions
 
-load "../../git/tests/test_helper"
+load "../../../core/testing/bats-helper.bash"
 
 setup() {
     # Create temporary directories for testing

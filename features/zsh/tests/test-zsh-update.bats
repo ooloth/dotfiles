@@ -4,7 +4,7 @@
 # Focuses on update-specific logic and validation
 
 # Load test helper functions
-load "../../../test/lib/test-helper.bash"
+load "../../../core/testing/bats-helper.bash"
 
 # Load the utils we're testing
 load "../utils.bash"
