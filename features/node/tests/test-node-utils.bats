@@ -36,7 +36,9 @@ if [[ "$1" == "--version" ]]; then
     exit 0
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    
+    # Use restrictive PATH that excludes system package manager paths
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_fnm_installation
     [ "$status" -eq 0 ]
@@ -44,8 +46,8 @@ fi' > "$TEST_TEMP_DIR/fnm"
 }
 
 @test "validate_fnm_installation returns 1 when fnm is not found" {
-    # Ensure fnm is not in PATH
-    export PATH="/nonexistent:$PATH"
+    # Use restrictive PATH without fnm
+    PATH="/usr/bin:/bin"
     
     run validate_fnm_installation
     [ "$status" -eq 1 ]
