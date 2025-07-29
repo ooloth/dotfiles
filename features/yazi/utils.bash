@@ -115,7 +115,8 @@ setup_yazi_theme() {
     
     # Create backup of existing target if it's not a symlink
     if [[ -e "$theme_target" && ! -L "$theme_target" ]]; then
-        local backup_path="${theme_target}.backup.$(date +%s)"
+        local backup_path
+        backup_path="${theme_target}.backup.$(date +%s)"
         echo "📦 Backing up existing target to: $backup_path"
         mv "$theme_target" "$backup_path"
     fi
