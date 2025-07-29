@@ -1,6 +1,7 @@
 ---
 name: pr-writer
 description: Use PROACTIVELY to create PRs and write PR descriptions. MUST BE USED when: creating PRs, or user mentions "draft pr", "open pr", "create pr". EXCLUSIVELY handles all PR creation operations.
+color: purple
 ---
 
 ## Usage Examples
@@ -221,4 +222,3 @@ Remember to:
 - Facilitate rollback if needed
 - Support release note generation
 - Help with debugging later
-
