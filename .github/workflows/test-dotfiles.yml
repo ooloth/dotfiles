@@ -112,8 +112,9 @@ jobs:
           FAILED_TESTS=""
           TOTAL_TESTS=0
           
-          # Find all BATS test files across the repository
-          ALL_BATS_TESTS=$(find test core features -name "*.bats" -type f 2>/dev/null | sort)
+          # Find all BATS test files in core/ and features/ directories only
+          # Ignore deprecated tests in test/ directory which will be cleaned up soon
+          ALL_BATS_TESTS=$(find core features -name "*.bats" -type f 2>/dev/null | sort)
           
           if [[ -z "$ALL_BATS_TESTS" ]]; then
             echo "No BATS test files found"
@@ -175,16 +176,15 @@ jobs:
           # Count BATS test files and verify comprehensive coverage
           echo "Verifying test coverage..."
           
-          # Count all BATS test files across repository
-          TOTAL_BATS=$(find test core features -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
+          # Count BATS test files in core/ and features/ directories only
+          # Ignore deprecated tests in test/ directory which will be cleaned up soon
+          TOTAL_BATS=$(find core features -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
           echo "Total BATS test files found: $TOTAL_BATS"
           
           # Count by directory
-          TEST_DIR_BATS=$(find test -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
           CORE_DIR_BATS=$(find core -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
           FEATURES_DIR_BATS=$(find features -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
           
-          echo "BATS tests in test/: $TEST_DIR_BATS"
           echo "BATS tests in core/: $CORE_DIR_BATS" 
           echo "BATS tests in features/: $FEATURES_DIR_BATS"
           
@@ -196,7 +196,6 @@ jobs:
           
           # Log test distribution for visibility
           echo "Test distribution:"
-          echo "  - test/: $TEST_DIR_BATS tests"
           echo "  - core/: $CORE_DIR_BATS tests"
           echo "  - features/: $FEATURES_DIR_BATS tests"
           
