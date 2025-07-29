@@ -1,9 +1,9 @@
 name: Test Dotfiles Setup Scripts
 
 on:
-  # Run on pushes to main branch and feature branches
+  # Run on pushes to main branch only (for direct commits to main)
   push:
-    branches: [ main, 'feature/**', 'fix/**' ]
+    branches: [ main ]
     paths:
       - 'setup.zsh'
       - 'setup.bash'
@@ -16,7 +16,7 @@ on:
       - 'config/**'
       - '.github/workflows/test-dotfiles.yml'
   
-  # Run on pull requests to main
+  # Run on pull requests to main (covers feature branch testing)
   pull_request:
     branches: [ main ]
     paths:
