@@ -130,20 +130,9 @@ jobs:
             if [[ -n "$test_file" ]]; then
               echo "Running: $test_file"
               ((TOTAL_TESTS++))
-              
-              # Run the test and capture output
-              if test_output=$(bats "$test_file" 2>&1); then
-                echo "✅ Passed: $test_file"
-              else
-                # Check if failure is due to missing deprecated test helper
-                if [[ "$test_output" == *"Could not find"*"test/lib/test-helper.bash"* ]] || 
-                   [[ "$test_output" == *"Could not find"*"test_helper"* ]]; then
-                  echo "⏭️  Skipped: $test_file (uses deprecated test helpers - will be cleaned up soon)"
-                else
-                  echo "❌ Failed: $test_file"
-                  echo "$test_output"
-                  FAILED_TESTS="$FAILED_TESTS$test_file\n"
-                fi
+              if ! bats "$test_file"; then
+                echo "❌ Failed: $test_file"
+                FAILED_TESTS="$FAILED_TESTS$test_file\n"
               fi
               echo ""
             fi
