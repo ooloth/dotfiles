@@ -4,6 +4,9 @@
 
 # Set up test environment
 setup() {
+    # Save original environment
+    export ORIGINAL_PATH="$PATH"
+    
     # Create temporary test directory
     export TEST_DIR="$(mktemp -d)"
     export DOTFILES="$TEST_DIR/dotfiles"
@@ -27,6 +30,8 @@ EOF
 
 # Clean up after tests
 teardown() {
+    # Restore original environment
+    export PATH="$ORIGINAL_PATH"
     cd /
     rm -rf "$TEST_DIR"
 }
@@ -39,7 +44,9 @@ teardown() {
 echo "uv 0.1.0"
 EOF
     chmod +x "$TEST_DIR/uv"
-    export PATH="$TEST_DIR:$PATH"
+    
+    # Use restrictive PATH that excludes system package manager paths
+    PATH="$TEST_DIR:/usr/bin:/bin"
     
     # Run installation
     run "$DOTFILES/features/uv/install.bash"
@@ -68,7 +75,9 @@ echo "Unknown brew command: $*" >&2
 exit 1
 EOF
     chmod +x "$TEST_DIR/brew"
-    export PATH="$TEST_DIR:$PATH"
+    
+    # Use restrictive PATH that excludes system package manager paths
+    PATH="$TEST_DIR:/usr/bin:/bin"
     
     # Run installation
     run "$DOTFILES/features/uv/install.bash"
@@ -81,8 +90,8 @@ EOF
 
 # Test: Installation fails without Homebrew
 @test "installation fails when Homebrew is not available" {
-    # Ensure brew is not in PATH but keep basic commands
-    export PATH="/bin:/usr/bin"
+    # Use restrictive PATH without brew (same pattern as other tests)
+    PATH="/usr/bin:/bin"
     
     # Run installation
     run "$DOTFILES/features/uv/install.bash"
