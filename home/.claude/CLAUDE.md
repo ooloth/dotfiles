@@ -186,5 +186,12 @@ Epic: Add Dark Mode Support (#100)
 **Permissions:**
 Auto-approved commands in `~/.claude/settings.json` - use directly without asking.
 
+**CRITICAL REMINDER: Task Completion Policy**
+NEVER declare a task complete or successful until ALL CHECKS ARE CONFIRMED PASSING. This means:
+- Do not say "task completed" or "successfully finished" until CI shows green
+- Do not claim victory until you have verified that all tests pass
+- Always wait for and confirm actual passing status before declaring success
+- If CI is failing, the task is NOT complete regardless of what you implemented
+
 **Project Guidelines:**
 See project-specific CLAUDE.md files for additional local guidance.
