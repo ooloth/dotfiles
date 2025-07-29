@@ -46,7 +46,8 @@ install_tpm() {
     echo "🍱 Installing tpm..."
     
     # Create plugins directory if it doesn't exist
-    local plugins_dir="$(dirname "$TPM_DIR")"
+    local plugins_dir
+    plugins_dir="$(dirname "$TPM_DIR")"
     if [[ ! -d "$plugins_dir" ]]; then
         mkdir -p "$plugins_dir"
     fi
