@@ -65,7 +65,7 @@ exit 0
 EOF
     chmod +x "$fake_bin/nvim"
     
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
 }
 
 # Helper function to create mock config repository
@@ -131,7 +131,7 @@ exit 0
 EOF
     chmod +x "$fake_bin/cargo"
     
-    export PATH="$fake_bin:$PATH"
+    PATH="$fake_bin:/usr/bin:/bin"
 }
 
 @test "command_exists returns 0 for existing commands" {

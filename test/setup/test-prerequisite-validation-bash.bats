@@ -41,7 +41,7 @@ fi' > "$TEST_TEMP_DIR/xcode-select"
     mkdir -p "$TEST_TEMP_DIR/Developer/usr/bin"
     touch "$TEST_TEMP_DIR/Developer/usr/bin/git"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_command_line_tools
     [ "$status" -eq 0 ]
@@ -53,7 +53,7 @@ fi' > "$TEST_TEMP_DIR/xcode-select"
 exit 1' > "$TEST_TEMP_DIR/xcode-select"
     chmod +x "$TEST_TEMP_DIR/xcode-select"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_command_line_tools
     [ "$status" -eq 1 ]
@@ -71,7 +71,7 @@ fi' > "$TEST_TEMP_DIR/xcode-select"
     # Create directory but don't include git
     mkdir -p "$TEST_TEMP_DIR/Developer/usr/bin"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_command_line_tools
     [ "$status" -eq 1 ]
@@ -86,7 +86,7 @@ fi' > "$TEST_TEMP_DIR/xcode-select"
 exit 0' > "$TEST_TEMP_DIR/ping"
     chmod +x "$TEST_TEMP_DIR/ping"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_network_connectivity
     [ "$status" -eq 0 ]
@@ -102,7 +102,7 @@ else
 fi' > "$TEST_TEMP_DIR/ping"
     chmod +x "$TEST_TEMP_DIR/ping"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_network_connectivity
     [ "$status" -eq 1 ]
@@ -116,7 +116,7 @@ fi' > "$TEST_TEMP_DIR/ping"
 exit 1' > "$TEST_TEMP_DIR/ping"
     chmod +x "$TEST_TEMP_DIR/ping"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_network_connectivity
     [ "$status" -eq 1 ]
@@ -176,7 +176,7 @@ if [[ "$1" == "-productVersion" ]]; then
 fi' > "$TEST_TEMP_DIR/sw_vers"
     chmod +x "$TEST_TEMP_DIR/sw_vers"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_macos_version
     [ "$status" -eq 0 ]
@@ -190,7 +190,7 @@ if [[ "$1" == "-productVersion" ]]; then
 fi' > "$TEST_TEMP_DIR/sw_vers"
     chmod +x "$TEST_TEMP_DIR/sw_vers"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_macos_version
     [ "$status" -eq 1 ]
@@ -256,7 +256,7 @@ fi' > "$TEST_TEMP_DIR/sw_vers"
     mkdir -p "$TEST_TEMP_DIR/Developer/usr/bin"
     touch "$TEST_TEMP_DIR/Developer/usr/bin/git"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run run_prerequisite_validation
     [ "$status" -eq 0 ]
@@ -273,7 +273,7 @@ fi' > "$TEST_TEMP_DIR/sw_vers"
 exit 1' > "$TEST_TEMP_DIR/xcode-select"
     chmod +x "$TEST_TEMP_DIR/xcode-select"
     
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run run_prerequisite_validation
     [ "$status" -eq 1 ]

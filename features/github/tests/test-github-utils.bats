@@ -56,7 +56,7 @@ teardown() {
 echo "gh version 2.0.0"
 EOF
     chmod +x gh
-    export PATH="$TEST_DIR:$PATH"
+    PATH="$TEST_DIR:/usr/bin:/bin"
     
     is_github_cli_installed
 }

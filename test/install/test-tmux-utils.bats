@@ -57,7 +57,7 @@ fi
 EOF
     chmod +x "$mock_bin/git"
     
-    PATH="$mock_bin:$PATH"
+    PATH="$mock_bin:/usr/bin:/bin"
     
     run install_tpm
     [ "$status" -eq 0 ]
