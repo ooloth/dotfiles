@@ -3,12 +3,17 @@
 # Test suite for macOS utilities
 
 setup() {
+    # Save original environment
+    export ORIGINAL_PATH="$PATH"
+    
     source "${BATS_TEST_DIRNAME}/../utils.bash"
     export TEST_DIR="$(mktemp -d)"
     cd "$TEST_DIR"
 }
 
 teardown() {
+    # Restore original environment
+    export PATH="$ORIGINAL_PATH"
     cd /
     rm -rf "$TEST_DIR"
 }
@@ -40,13 +45,16 @@ teardown() {
 echo "Software Update Tool"
 EOF
     chmod +x softwareupdate
-    export PATH="$TEST_DIR:$PATH"
+    
+    # Use restrictive PATH that excludes system package manager paths
+    PATH="$TEST_DIR:/usr/bin:/bin"
     
     is_softwareupdate_available
 }
 
 @test "is_softwareupdate_available returns false when missing" {
-    export PATH="/bin:/usr/bin"
+    # Use restrictive PATH without softwareupdate
+    PATH="/usr/bin:/bin"
     
     ! is_softwareupdate_available
 }

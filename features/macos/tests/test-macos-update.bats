@@ -3,6 +3,9 @@
 # Test suite for macOS update
 
 setup() {
+    # Save original environment
+    export ORIGINAL_PATH="$PATH"
+    
     export TEST_DIR="$(mktemp -d)"
     export DOTFILES="$TEST_DIR/dotfiles"
     
@@ -33,6 +36,8 @@ EOF
 }
 
 teardown() {
+    # Restore original environment
+    export PATH="$ORIGINAL_PATH"
     cd /
     rm -rf "$TEST_DIR"
 }
@@ -72,16 +77,17 @@ EOF
     # Create mock sudo that just runs the command
     cat > "$TEST_DIR/sudo" << 'EOF'
 #!/bin/bash
-shift  # Remove 'sudo' from arguments
-exec "$@"
+# Run the command with all its arguments (the first arg after sudo is the command)
+"$@"
 EOF
     chmod +x "$TEST_DIR/sudo"
     
-    export PATH="$TEST_DIR:$PATH"
+    # Use restrictive PATH that excludes system package manager paths
+    PATH="$TEST_DIR:/usr/bin:/bin"
     
     run "$DOTFILES/features/macos/update.bash"
     
     [[ "$status" -eq 0 ]]
     [[ "$output" =~ "Machine type: air" ]]
-    [[ "$output" =~ "macOS update process complete" ]]
+    [[ "$output" =~ "🎉 macOS update process complete!" ]]
 }
