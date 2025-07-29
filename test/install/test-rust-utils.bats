@@ -59,7 +59,7 @@ EOF
     chmod +x "$MOCK_BIN/rustup"
     
     # Add mock bin to PATH
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run rust_installed
     [ "$status" -eq 0 ]
@@ -97,7 +97,7 @@ EOF
     chmod +x "$MOCK_BIN/sh"
     
     # Add mock bin to PATH
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run install_rust_toolchain
     [ "$status" -eq 0 ]

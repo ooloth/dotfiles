@@ -60,7 +60,9 @@ fi' > "$TEST_TEMP_DIR/fnm"
 echo "Error: command failed" >&2
 exit 1' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    
+    # Use restrictive PATH that excludes system package manager paths
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_fnm_installation
     [ "$status" -eq 1 ]
@@ -78,7 +80,9 @@ if [[ "$1" == "ls-remote" ]]; then
     echo "v21.1.0"
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    
+    # Use restrictive PATH that excludes system package manager paths
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_latest_node_version
     [ "$status" -eq 0 ]
@@ -86,8 +90,8 @@ fi' > "$TEST_TEMP_DIR/fnm"
 }
 
 @test "get_latest_node_version returns 1 when fnm not available" {
-    # Ensure fnm is not in PATH
-    export PATH="/nonexistent:$PATH"
+    # Use restrictive PATH without fnm
+    PATH="/usr/bin:/bin"
     
     run get_latest_node_version
     [ "$status" -eq 1 ]
@@ -102,7 +106,7 @@ if [[ "$1" == "ls-remote" ]]; then
     exit 1
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_latest_node_version
     [ "$status" -eq 1 ]
@@ -119,7 +123,7 @@ if [[ "$1" == "ls" ]]; then
     echo "v20.10.0"
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_node_version_installed "v20.10.0"
     [ "$status" -eq 0 ]
@@ -133,7 +137,7 @@ if [[ "$1" == "ls" ]]; then
     echo "v20.10.0"
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run is_node_version_installed "v21.1.0"
     [ "$status" -eq 1 ]
@@ -147,7 +151,7 @@ fi' > "$TEST_TEMP_DIR/fnm"
 
 @test "is_node_version_installed returns 1 when fnm not available" {
     # Ensure fnm is not in PATH
-    export PATH="/nonexistent:$PATH"
+    PATH="/usr/bin:/bin"
     
     run is_node_version_installed "v20.10.0"
     [ "$status" -eq 1 ]
@@ -163,7 +167,7 @@ if [[ "$1" == "install" && "$2" == "v20.10.0" && "$3" == "--corepack-enabled" ]]
     exit 0
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run install_node_version "v20.10.0"
     [ "$status" -eq 0 ]
@@ -177,7 +181,7 @@ if [[ "$1" == "install" ]]; then
     exit 1
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run install_node_version "v20.10.0"
     [ "$status" -eq 1 ]
@@ -199,7 +203,7 @@ if [[ "$1" == "default" && "$2" == "v20.10.0" ]]; then
     exit 0
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run set_default_node_version "v20.10.0"
     [ "$status" -eq 0 ]
@@ -213,7 +217,7 @@ if [[ "$1" == "default" ]]; then
     exit 1
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run set_default_node_version "v20.10.0"
     [ "$status" -eq 1 ]
@@ -230,7 +234,7 @@ if [[ "$1" == "--version" ]]; then
     exit 0
 fi' > "$TEST_TEMP_DIR/node"
     chmod +x "$TEST_TEMP_DIR/node"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_node_installation
     [ "$status" -eq 0 ]
@@ -239,7 +243,7 @@ fi' > "$TEST_TEMP_DIR/node"
 
 @test "validate_node_installation returns 1 when node is not found" {
     # Ensure node is not in PATH
-    export PATH="/nonexistent:$PATH"
+    PATH="/usr/bin:/bin"
     
     run validate_node_installation
     [ "$status" -eq 1 ]
@@ -252,7 +256,7 @@ fi' > "$TEST_TEMP_DIR/node"
 echo "Error: command failed" >&2
 exit 1' > "$TEST_TEMP_DIR/node"
     chmod +x "$TEST_TEMP_DIR/node"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run validate_node_installation
     [ "$status" -eq 1 ]
@@ -269,7 +273,7 @@ if [[ "$1" == "--version" ]]; then
     exit 0
 fi' > "$TEST_TEMP_DIR/node"
     chmod +x "$TEST_TEMP_DIR/node"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_current_node_version
     [ "$status" -eq 0 ]
@@ -278,7 +282,7 @@ fi' > "$TEST_TEMP_DIR/node"
 
 @test "get_current_node_version returns 1 when node is not available" {
     # Ensure node is not in PATH
-    export PATH="/nonexistent:$PATH"
+    PATH="/usr/bin:/bin"
     
     run get_current_node_version
     [ "$status" -eq 1 ]
@@ -295,7 +299,7 @@ if [[ "$1" == "--version" ]]; then
     exit 0
 fi' > "$TEST_TEMP_DIR/fnm"
     chmod +x "$TEST_TEMP_DIR/fnm"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run get_fnm_version
     [ "$status" -eq 0 ]
@@ -304,7 +308,7 @@ fi' > "$TEST_TEMP_DIR/fnm"
 
 @test "get_fnm_version returns message when fnm is not available" {
     # Ensure fnm is not in PATH
-    export PATH="/nonexistent:$PATH"
+    PATH="/usr/bin:/bin"
     
     run get_fnm_version
     [ "$status" -eq 1 ]

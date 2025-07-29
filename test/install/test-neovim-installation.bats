@@ -77,7 +77,7 @@ echo "nvim $@"
 EOF
     chmod +x "$MOCK_BIN/nvim"
     
-    PATH="$MOCK_BIN:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run bash "$(pwd)/bin/install/neovim.bash"
     
