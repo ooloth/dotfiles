@@ -16,4 +16,5 @@
 
 ## 🔗 Related links
 
-<!-- URLs to docs, tasks, PRs, issues, Slack threads - any context a reviewer would find helpful -->
+<!-- Markdown links pointing to the URLs for related github issues, PRs, docs, tasks, Slack threads - any additional context a reviewer would find helpful -->
+
