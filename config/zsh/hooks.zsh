@@ -43,6 +43,7 @@ activate_venv() {
       local uv_venv_default="$dir/.venv"
       local uv_venv_roadie="$dir/venv"
       local pyenv_venv="$PYENV_ROOT/versions/$(basename "$dir")"
+
       if [ -f "$uv_venv_default/bin/activate" ]; then
         echo "$uv_venv_default"
         return
