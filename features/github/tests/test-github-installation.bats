@@ -44,7 +44,7 @@ teardown() {
 echo "gh version 2.0.0"
 EOF
     chmod +x "$TEST_DIR/gh"
-    export PATH="$TEST_DIR:$PATH"
+    PATH="$TEST_DIR:/usr/bin:/bin"
     
     # Mock SSH connection success
     function ssh() {
@@ -73,7 +73,7 @@ EOF
 echo "gh version 2.0.0"
 EOF
     chmod +x "$TEST_DIR/gh"
-    export PATH="$TEST_DIR:$PATH"
+    PATH="$TEST_DIR:/usr/bin:/bin"
     
     # Mock SSH connection failure
     function ssh() {
@@ -98,7 +98,7 @@ EOF
 echo "gh version 2.0.0"
 EOF
     chmod +x "$TEST_DIR/gh"
-    export PATH="$TEST_DIR:$PATH"
+    PATH="$TEST_DIR:/usr/bin:/bin"
     
     # Mock SSH connection success
     function ssh() {
