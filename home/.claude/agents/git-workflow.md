@@ -393,9 +393,14 @@ Use separate thematic commits:
    - **No manual intervention** - automate issue handling based on context
 5. **Ready for next work** from updated main branch
 
-## PR Creation Workflow
+## PR Preparation and Delegation Workflow
 
-**Before creating PR:**
+**SCOPE LIMITATION: git-workflow does NOT create PRs directly**
+- ⛔ **PR creation is NOT your responsibility** - Delegate to pr-writer agent
+- ✅ **Your role**: Prepare commits and hand off to pr-writer for PR creation
+- ⛔ **You do NOT have `gh pr create` capability** - Only pr-writer does
+
+**PR Preparation Process:**
 
 1. **Check current branch** - Must not be main/master
 2. **Handle uncommitted changes** - Review each change:
@@ -407,43 +412,43 @@ Use separate thematic commits:
 4. **Ensure branch is pushed** to remote
 5. **Analyze commit history** - Review commits since branching to understand scope
 6. **Check related issues** - Look for related GitHub issues, project roadmaps, task tracking files
-7. **Check for PR templates** - Look for project PR template:
-   - Check `.github/PULL_REQUEST_TEMPLATE.md`
-   - Check `~/.claude/PR_TEMPLATE_REFERENCE.md` for user default
-   - Use project template format if available
-8. **MANDATORY: Delegate PR description to pr-writer agent**
-   - ⛔ **NEVER write PR descriptions directly** - This is FORBIDDEN
-   - ✅ **ALWAYS announce**: "I'll use the pr-writer agent to craft the PR description"
-   - ✅ **Provide pr-writer with complete context**:
-     - Full commit history (`git log main..HEAD`)
-     - File changes (`git diff main...HEAD --name-only`)
-     - Template location (`.github/PULL_REQUEST_TEMPLATE.md` or `~/.claude/PR_TEMPLATE_REFERENCE.md`)
-     - Any related issues or context
-   - ⛔ **NEVER proceed without pr-writer's response**
-9. **Create draft PR** using EXACTLY the description from pr-writer agent
+7. **MANDATORY HANDOFF: Delegate PR creation to pr-writer agent**
 
-**CRITICAL PR Creation Process - FOLLOW EXACTLY:**
-1. ⛔ **STOP if tempted to write PR description yourself** - This is FORBIDDEN
-2. ✅ **ANNOUNCE delegation**: "I'll use the pr-writer agent to craft the PR description"
-3. ✅ **DELEGATE to pr-writer agent** with complete context  
-4. ⏸️ **WAIT for pr-writer's response** - Do not proceed without it
-5. ✅ **USE pr-writer's exact output verbatim** for the PR body
-6. ✅ **CREATE the PR** with pr-writer's description only
-7. ⛔ **NEVER modify or "improve" pr-writer's description**
+**MANDATORY DELEGATION PROCESS - NO BYPASS ALLOWED:**
 
-**FAIL-SAFE REMINDER:**
-Before running `gh pr create`, ask: "Did pr-writer write this description?"
-If NO → STOP and delegate to pr-writer immediately
+1. ✅ **ANNOUNCE HANDOFF**: "Commits are complete and pushed. Delegating PR creation to pr-writer agent."
+2. ✅ **USE TASK TOOL TO DELEGATE**: 
+   ```
+   Task(
+     subagent_type="pr-writer", 
+     description="Create PR with description",
+     prompt="[Complete context - see below]"
+   )
+   ```
+3. ✅ **PROVIDE COMPLETE CONTEXT** to pr-writer:
+   - Current branch name
+   - Full commit history (`git log main..HEAD`)
+   - File changes (`git diff main...HEAD --name-only`)  
+   - Template location (`.github/PULL_REQUEST_TEMPLATE.md` or `~/.claude/PR_TEMPLATE_REFERENCE.md`)
+   - Any related issues or context
+   - Target branch (usually main)
+4. ⏸️ **STOP AND WAIT** - Do not proceed further, pr-writer handles PR creation
+5. ✅ **REPORT SUCCESS** - Only report the PR URL that pr-writer returns
 
-**PR creation commands:**
+**WHAT YOU CANNOT DO:**
+- ⛔ **Write PR descriptions** - Not your capability
+- ⛔ **Run `gh pr create`** - Not available to you
+- ⛔ **Format PR content** - pr-writer's responsibility
+- ⛔ **Make PR creation decisions** - Delegate everything to pr-writer
+
+**PR preparation commands (ONLY for context gathering):**
 
 - `git branch --show-current` - Get current branch
-- `git fetch origin` - Get latest remote changes
+- `git fetch origin` - Get latest remote changes  
 - `git merge-base HEAD origin/main` - Check if up to date
 - `git log main..HEAD --oneline` - See commits since branching
 - `git diff main...HEAD --name-only` - See changed files
 - `gh issue list` - Check for related GitHub issues
-- `gh pr create --draft` - Create draft PR
 
 ## PR Strategy
 
