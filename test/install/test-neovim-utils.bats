@@ -59,7 +59,7 @@ fi
 EOF
     chmod +x "$mock_bin/git"
     
-    PATH="$mock_bin:$PATH"
+    PATH="$mock_bin:/usr/bin:/bin"
     
     run clone_neovim_config
     [ "$status" -eq 0 ]
@@ -80,7 +80,7 @@ echo "nvim \$@" > "$log_file"
 EOF
     chmod +x "$mock_bin/nvim"
     
-    PATH="$mock_bin:$PATH"
+    PATH="$mock_bin:/usr/bin:/bin"
     
     run restore_neovim_plugins
     [ "$status" -eq 0 ]

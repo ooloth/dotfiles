@@ -3,6 +3,10 @@
 # See: https://zsh.sourceforge.io/Doc/Release/Files.html
 source "$HOME/Repos/ooloth/dotfiles/config/zsh/path.zsh"
 
+# See: https://docs.anthropic.com/en/docs/claude-code/settings#environment-variables
+# See: https://docs.anthropic.com/en/docs/about-claude/models/overview#model-names
+export ANTHROPIC_MODEL="claude-sonnet-4-20250514"
+
 # TODO: use set_machine_variables instead?
 # Device
 export HOSTNAME=$(networksetup -getcomputername)

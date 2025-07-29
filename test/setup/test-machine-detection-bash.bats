@@ -52,7 +52,7 @@ teardown() {
     echo '#!/bin/bash
 echo "MacBook-Air-2023"' > "$TEST_TEMP_DIR/hostname"
     chmod +x "$TEST_TEMP_DIR/hostname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run detect_machine_type
     [ "$status" -eq 0 ]
@@ -64,7 +64,7 @@ echo "MacBook-Air-2023"' > "$TEST_TEMP_DIR/hostname"
     echo '#!/bin/bash
 echo "Mac-Mini-Server"' > "$TEST_TEMP_DIR/hostname"
     chmod +x "$TEST_TEMP_DIR/hostname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run detect_machine_type
     [ "$status" -eq 0 ]
@@ -76,7 +76,7 @@ echo "Mac-Mini-Server"' > "$TEST_TEMP_DIR/hostname"
     echo '#!/bin/bash
 echo "MacBook-Pro-Work"' > "$TEST_TEMP_DIR/hostname"
     chmod +x "$TEST_TEMP_DIR/hostname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run detect_machine_type
     [ "$status" -eq 0 ]
@@ -107,7 +107,7 @@ echo "MacBook-Pro-Work"' > "$TEST_TEMP_DIR/hostname"
     echo '#!/bin/bash
 echo "unknown-machine"' > "$TEST_TEMP_DIR/hostname"
     chmod +x "$TEST_TEMP_DIR/hostname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     run detect_machine_type
     [ "$status" -eq 0 ]
@@ -167,7 +167,7 @@ echo "unknown-machine"' > "$TEST_TEMP_DIR/hostname"
     echo '#!/bin/bash
 echo "MacBook-Air-Personal"' > "$TEST_TEMP_DIR/hostname"
     chmod +x "$TEST_TEMP_DIR/hostname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     
     # Function sets variables in current shell, don't use run
     init_machine_detection
@@ -184,7 +184,7 @@ echo "MacBook-Air-Personal"' > "$TEST_TEMP_DIR/hostname"
     echo '#!/bin/bash
 echo "Mini-Server"' > "$TEST_TEMP_DIR/hostname"
     chmod +x "$TEST_TEMP_DIR/hostname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     export DEBUG_MACHINE_DETECTION="true"
     
     run init_machine_detection
@@ -197,7 +197,7 @@ echo "Mini-Server"' > "$TEST_TEMP_DIR/hostname"
     echo '#!/bin/bash
 echo "MacBook-Pro-Work"' > "$TEST_TEMP_DIR/hostname"
     chmod +x "$TEST_TEMP_DIR/hostname"
-    export PATH="$TEST_TEMP_DIR:$PATH"
+    PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
     export DEBUG_MACHINE_DETECTION="false"
     
     run init_machine_detection
