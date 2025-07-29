@@ -75,3 +75,66 @@ EOF
     [[ "$output" =~ "Machine type: air" ]]
     [[ "$output" =~ "Yazi setup complete" ]]
 }
+
+@test "installation handles existing flavors gracefully" {
+    # Set non-work machine
+    export IS_WORK="false"
+    export MACHINE="air"
+    
+    # Pre-create flavors directory with theme
+    mkdir -p "$HOME/Repos/yazi-rs/flavors/catppuccin-mocha.yazi"
+    
+    run "$DOTFILES/features/yazi/install.bash"
+    
+    [[ "$status" -eq 0 ]]
+    [[ "$output" =~ "Yazi flavors are already installed" ]]
+    [[ "$output" =~ "Yazi setup complete" ]]
+}
+
+@test "installation fails on git clone failure" {
+    # Set non-work machine
+    export IS_WORK="false"
+    export MACHINE="air"
+    
+    # Create mock git that fails
+    cat > "$TEST_DIR/git" << 'EOF'
+#!/bin/bash
+if [[ "$1" == "clone" ]]; then
+    echo "Git clone failed"
+    exit 1
+fi
+command git "$@"
+EOF
+    chmod +x "$TEST_DIR/git"
+    export PATH="$TEST_DIR:$PATH"
+    
+    run "$DOTFILES/features/yazi/install.bash"
+    
+    [[ "$status" -eq 1 ]]
+    [[ "$output" =~ "Failed to install yazi flavors" ]]
+}
+
+@test "installation fails on theme setup failure" {
+    # Set non-work machine
+    export IS_WORK="false"
+    export MACHINE="air"
+    
+    # Create mock git that creates flavors but not the theme
+    cat > "$TEST_DIR/git" << 'EOF'
+#!/bin/bash
+if [[ "$1" == "clone" ]]; then
+    mkdir -p "$3"
+    echo "Cloned repository without theme"
+    exit 0
+fi
+command git "$@"
+EOF
+    chmod +x "$TEST_DIR/git"
+    export PATH="$TEST_DIR:$PATH"
+    
+    run "$DOTFILES/features/yazi/install.bash"
+    
+    [[ "$status" -eq 1 ]]
+    # Check for validation error from utils.bash instead
+    [[ "$output" =~ "Expected theme not found in cloned repository" ]]
+}
