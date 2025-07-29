@@ -2,8 +2,6 @@
 
 # Test suite for UV utilities
 
-# Load BATS test helpers
-load "../../../core/testing/bats-helper.bash"
 # Set up test environment
 setup() {
     # Source the utilities

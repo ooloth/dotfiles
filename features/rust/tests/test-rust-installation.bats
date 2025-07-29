@@ -2,8 +2,6 @@
 
 # Test Rust installation and update scripts
 # Tests the main installation flow and update functionality
-# Load BATS test helpers
-load "../../../core/testing/bats-helper.bash"
 
 # Load testing helpers
 setup() {

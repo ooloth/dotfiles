@@ -4,7 +4,7 @@
 # Tests the complete workflow including error handling and system interactions
 
 # Load test helper functions
-load "../../../core/testing/bats-helper.bash"
+load "../../../test/lib/test-helper.bash"
 
 # Load the utils we're testing
 load "../utils.bash"

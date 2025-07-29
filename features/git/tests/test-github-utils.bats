@@ -2,8 +2,6 @@
 
 # Test GitHub utility functions
 # Tests both utility functions and integration with installation workflow
-# Load BATS test helpers
-load "../../../core/testing/bats-helper.bash"
 
 # Load the GitHub utilities
 load "../utils.bash"

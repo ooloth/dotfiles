@@ -2,8 +2,6 @@
 
 # Test Rust utility functions
 # Tests command detection, installation validation, version checking, and environment setup
-# Load BATS test helpers
-load "../../../core/testing/bats-helper.bash"
 
 # Load the Rust utilities
 load "../utils.bash"

@@ -2,8 +2,6 @@
 
 # Integration tests for SSH installation script
 # Tests the complete workflow including key generation, config, and agent setup
-# Load BATS test helpers
-load "../../../core/testing/bats-helper.bash"
 
 # Load the SSH installation script (for testing main function logic)
 load "../install.bash"

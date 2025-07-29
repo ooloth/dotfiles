@@ -2,8 +2,6 @@
 
 # Test suite for macOS update
 
-# Load BATS test helpers
-load "../../../core/testing/bats-helper.bash"
 setup() {
     # Save original environment
     export ORIGINAL_PATH="$PATH"

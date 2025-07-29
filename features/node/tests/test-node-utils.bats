@@ -2,8 +2,6 @@
 
 # Node.js utility functions tests
 # Tests the core Node.js and fnm utility functions
-# Load BATS test helpers
-load "../../../core/testing/bats-helper.bash"
 
 # Load the Node.js utilities
 load "../utils.bash"
