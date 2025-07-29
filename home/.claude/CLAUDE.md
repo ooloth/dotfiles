@@ -25,7 +25,7 @@
 - **pr-writer**: For commit messages and PR descriptions (maintains opinionated templates)
 - **design-architect**: For complex architecture, security, and performance analysis
 - **researcher**: For "what's the best X?" questions and documentation lookups
-- **task-manager**: For multi-PR coordination and GitHub issue tracking
+- **task-manager**: MANDATORY for breaking down complex work into actionable GitHub issues. Use proactively for any non-trivial work.
 
 ### Slash Commands: Optional Systematic Approaches
 
@@ -45,6 +45,54 @@
 
 **PLANNING** (Structured decision making)
 - `/plan` - 4-phase problem analysis framework
+
+### GitHub-First Project Organization
+
+**MANDATORY: Use task-manager for systematic issue breakdown**
+
+**WHEN TO CREATE GITHUB ISSUES (Default: Always for non-trivial work):**
+- Any feature requiring more than one commit
+- Bug fixes that aren't obvious one-liners
+- Research or investigation tasks
+- Refactoring affecting multiple files
+- Performance optimizations or security improvements
+- Testing additions beyond simple test fixes
+
+**ISSUE CREATION PRINCIPLES:**
+- **Immediately actionable**: Any Claude instance can pick up and execute
+- **Self-contained**: All context and requirements in the issue
+- **Atomic**: One focused outcome per issue
+- **Linked**: References to related issues and epics
+- **Testable**: Clear acceptance criteria
+
+**PROJECT ORGANIZATION EXAMPLES:**
+
+**✅ GOOD: Systematic Issue Breakdown**
+```
+Epic: Add Dark Mode Support (#100)
+├── #101: Create theme context and provider
+├── #102: Add theme toggle component
+├── #103: Update color system for dark variants
+├── #104: Migrate existing components to use theme
+└── #105: Add theme persistence and system detection
+```
+
+**❌ BAD: Monolithic Epic Description**
+```
+Epic: Add Dark Mode Support (#100)
+- Implement theme switching
+- Update colors
+- Fix components
+- Add persistence
+[All details buried in epic description]
+```
+
+**BENEFITS OF ISSUES-FIRST APPROACH:**
+- **Immediate pickup**: Any Claude can start work without research
+- **Parallel development**: Multiple issues can be worked simultaneously  
+- **Clear progress**: Visual tracking through GitHub interface
+- **Automatic linking**: PRs automatically reference and close issues
+- **Session continuity**: No archaeological research needed
 
 ### Git Operations Delegation Rules
 
