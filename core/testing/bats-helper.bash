@@ -94,3 +94,63 @@ assert_output_not_contains() {
         return 1
     fi
 }
+
+# BATS-style assert_output function with --partial support
+assert_output() {
+    local expected
+    local partial=false
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --partial)
+                partial=true
+                shift
+                ;;
+            *)
+                expected="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    if [[ "$partial" == "true" ]]; then
+        # Partial match
+        if [[ "$output" != *"$expected"* ]]; then
+            echo "Expected output to contain: $expected"
+            echo "Actual output: $output"
+            return 1
+        fi
+    else
+        # Exact match
+        if [[ "$output" != "$expected" ]]; then
+            echo "Expected output: $expected"
+            echo "Actual output: $output"
+            return 1
+        fi
+    fi
+}
+
+# BATS-style assert_equal function
+assert_equal() {
+    local expected="$1"
+    local actual="$2"
+    
+    if [[ "$actual" != "$expected" ]]; then
+        echo "Expected: $expected"
+        echo "Actual: $actual"
+        return 1
+    fi
+}
+
+# BATS-style assert_not_equal function
+assert_not_equal() {
+    local expected="$1"
+    local actual="$2"
+    
+    if [[ "$actual" == "$expected" ]]; then
+        echo "Expected NOT to equal: $expected"
+        echo "Actual: $actual"
+        return 1
+    fi
+}

@@ -2,6 +2,8 @@
 
 # Test SSH utility functions
 # Tests key detection, generation, config management, and agent operations
+# Load BATS test helpers
+load "../../../core/testing/bats-helper.bash"
 
 # Load the SSH utilities
 load "../utils.bash"

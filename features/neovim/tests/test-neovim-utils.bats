@@ -3,6 +3,9 @@
 # Test Neovim utility functions
 # Tests all utility functions in utils.bash
 
+# Load BATS test helpers
+load "../../../core/testing/bats-helper.bash"
+
 # Load testing helpers
 setup() {
     # Create temporary directory for each test

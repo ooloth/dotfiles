@@ -13,6 +13,9 @@ setup() {
     # Create tmux config directory structure
     mkdir -p "$HOME/.config/tmux/plugins"
     
+    # Create mocks directory for test commands
+    mkdir -p "$BATS_TEST_DIRNAME/mocks"
+    
     # Mock tmux command
     PATH="$BATS_TEST_DIRNAME/mocks:/usr/bin:/bin"
     
@@ -24,6 +27,11 @@ teardown() {
     # Clean up test environment
     if [[ -n "${TEST_HOME:-}" && -d "$TEST_HOME" ]]; then
         rm -rf "$TEST_HOME"
+    fi
+    
+    # Clean up mocks directory
+    if [[ -d "$BATS_TEST_DIRNAME/mocks" ]]; then
+        rm -rf "$BATS_TEST_DIRNAME/mocks"
     fi
 }
 

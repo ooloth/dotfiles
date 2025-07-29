@@ -2,6 +2,8 @@
 
 # Homebrew utility functions tests
 # Tests the core Homebrew detection and validation functions
+# Load BATS test helpers
+load "../../../core/testing/bats-helper.bash"
 
 # Load the Homebrew utilities
 load "../utils.bash"

@@ -2,6 +2,8 @@
 
 # Test suite for Yazi installation
 
+# Load BATS test helpers
+load "../../../core/testing/bats-helper.bash"
 setup() {
     export TEST_DIR="$(mktemp -d)"
     export HOME="$TEST_DIR/home"

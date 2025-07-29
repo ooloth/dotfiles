@@ -3,6 +3,9 @@
 # Node.js installation script tests
 # Tests the main Node.js installation workflow
 
+# Load BATS test helpers
+load "../../../core/testing/bats-helper.bash"
+
 # Load the installation script
 load "../install.bash"
 

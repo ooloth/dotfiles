@@ -2,6 +2,8 @@
 
 # Test suite for GitHub installation
 
+# Load BATS test helpers
+load "../../../core/testing/bats-helper.bash"
 # Set up test environment
 setup() {
     # Create temporary test directory

@@ -2,6 +2,8 @@
 
 # Node.js update script tests
 # Tests the main Node.js update workflow including npm package management
+# Load BATS test helpers
+load "../../../core/testing/bats-helper.bash"
 
 # Load the update script
 load "../update.bash"
