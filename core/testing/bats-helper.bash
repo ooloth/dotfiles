@@ -61,7 +61,12 @@ mock_command() {
 }
 
 # Assert helpers for BATS
+# Note: $status and $output are built-in BATS variables
 assert_success() {
+    # Declare BATS built-in variables for shellcheck
+    local status="${status:-}"
+    local output="${output:-}"
+    
     if [[ "$status" -ne 0 ]]; then
         echo "Expected success but got exit code: $status"
         echo "Output: $output"
@@ -70,6 +75,10 @@ assert_success() {
 }
 
 assert_failure() {
+    # Declare BATS built-in variables for shellcheck
+    local status="${status:-}"
+    local output="${output:-}"
+    
     if [[ "$status" -eq 0 ]]; then
         echo "Expected failure but got success"
         echo "Output: $output"
