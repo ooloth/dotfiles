@@ -208,6 +208,14 @@ Both modes apply the same research methodology and quality standards - the diffe
 
 ## Agent Collaboration
 
+**CRITICAL: Loop Prevention**
+
+**NEVER delegate research tasks to other agents when you ARE the research specialist.** Always use direct tools:
+- WebFetch for web research and documentation
+- Read for local file analysis  
+- Grep for code searching
+- Glob for file discovery
+
 **When consulted by other agents:**
 
 **Main Claude might ask:**
@@ -327,6 +335,7 @@ Both modes apply the same research methodology and quality standards - the diffe
 
 Remember to:
 
+- **USE DIRECT TOOLS ONLY** - Never delegate to Task/Agent tools when you are the research specialist
 - Always cite authoritative sources
 - Focus on current, maintained technologies
 - Provide practical, implementable guidance

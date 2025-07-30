@@ -49,6 +49,13 @@ retry_with_backoff() {
         return 1
     fi
     
+    # Validate max_attempts is positive
+    if [[ $max_attempts -le 0 ]]; then
+        echo "Error: Command failed after $max_attempts attempts" >&2
+        echo "Command: $command" >&2
+        return 1
+    fi
+    
     while [[ $attempt -le $max_attempts ]]; do
         # Try the command
         if eval "$command" 2>/dev/null; then

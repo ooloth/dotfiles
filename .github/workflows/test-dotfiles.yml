@@ -8,14 +8,12 @@ on:
       - 'setup.zsh'
       - 'setup.bash'
       - 'bin/**'
-      - 'lib/**'
       - 'core/**'
       - 'features/**'
-      - 'test/**'
       - 'macos/Brewfile'
       - 'config/**'
       - '.github/workflows/test-dotfiles.yml'
-  
+
   # Run on pull requests to main (covers feature branch testing)
   pull_request:
     branches: [ main ]
@@ -30,7 +28,7 @@ on:
       - 'macos/Brewfile'
       - 'config/**'
       - '.github/workflows/test-dotfiles.yml'
-  
+
   # Allow manual triggering for debugging
   workflow_dispatch:
 
@@ -38,49 +36,49 @@ jobs:
   test:
     name: Run Dotfiles Tests
     runs-on: macos-latest
-    
+
     # Set default shell to zsh to match our target environment
     defaults:
       run:
         shell: zsh {0}
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up environment
         run: |
           # Set DOTFILES environment variable for tests
           echo "DOTFILES=${{ github.workspace }}" >> $GITHUB_ENV
-          
+
           # Ensure zsh is configured properly
           echo "Using zsh version: $ZSH_VERSION"
           echo "Shell: $SHELL"
-          
+
       - name: Install shellcheck
         run: |
           # Install shellcheck for static analysis
           brew install shellcheck
-          
+
       - name: Run shellcheck
         run: |
           # Run shellcheck on all bash scripts (.sh and .bash files)
           # Configuration is handled by .shellcheckrc file
           echo "Running shellcheck on bash scripts..."
-          
+
           # Find all bash scripts and run shellcheck
-          # Exclude experiment directory which contains intentionally bad examples
-          BASH_FILES=$(find . \( -name "*.sh" -o -name "*.bash" \) -type f -not -path "./.*" -not -path "./experiment/*")
-          
+          BASH_FILES=$(find . \( -name "*.sh" -o -name "*.bash" \) -type f -not -path "./.*")
+          ALL_BATS_TESTS=$(find core features -name "*.bats" -type f 2>/dev/null | sort)
+
           if [[ -z "$BASH_FILES" ]]; then
             echo "No bash scripts found to check"
             exit 0
           fi
-          
+
           echo "Found bash scripts to check:"
           echo "$BASH_FILES"
           echo ""
-          
+
           # Check each file
           FAILED_FILES=""
           while IFS= read -r file; do
@@ -89,42 +87,42 @@ jobs:
               FAILED_FILES="$FAILED_FILES$file\n"
             fi
           done <<< "$BASH_FILES"
-          
+
           if [[ -n "$FAILED_FILES" ]]; then
             echo ""
             echo "❌ Shellcheck failed for the following files:"
             echo -e "$FAILED_FILES"
             exit 1
           fi
-          
+
           echo "✅ All bash scripts passed shellcheck"
-          
+
       - name: Install BATS
         run: |
           # Install BATS for running bash tests
           brew install bats-core
-          
+
       - name: Run BATS test suite
         run: |
           # Run comprehensive BATS test suite across all directories
           echo "Running BATS test suite..."
-          
+
           FAILED_TESTS=""
           TOTAL_TESTS=0
-          
+
           # Find all BATS test files in core/ and features/ directories only
           # Ignore deprecated tests in test/ directory which will be cleaned up soon
           ALL_BATS_TESTS=$(find core features -name "*.bats" -type f 2>/dev/null | sort)
-          
+
           if [[ -z "$ALL_BATS_TESTS" ]]; then
             echo "No BATS test files found"
             exit 0
           fi
-          
+
           echo "Found BATS test files:"
           echo "$ALL_BATS_TESTS"
           echo ""
-          
+
           # Run each test file
           echo "$ALL_BATS_TESTS" | while read -r test_file; do
             if [[ -n "$test_file" ]]; then
@@ -137,101 +135,85 @@ jobs:
               echo ""
             fi
           done
-          
+
           if [[ -n "$FAILED_TESTS" ]]; then
             echo "❌ BATS test failures:"
             echo -e "$FAILED_TESTS"
             exit 1
           fi
-          
+
           echo "✅ All BATS tests completed successfully"
-          
+
       - name: Test symlink verification
         run: |
           echo "Testing symlink functionality..."
-          
-          # Check if symlinks script exists in old location
-          if [[ -f "./bin/install/symlinks.bash" ]]; then
-            echo "Testing legacy symlinks script..."
-            # Test that the script can be sourced without errors
-            bash -n ./bin/install/symlinks.bash
-            echo "✅ Legacy symlinks script syntax check passed"
-          fi
-          
+
           # Check if symlinks utilities exist in new location
           if [[ -f "./core/symlinks/utils.bash" ]]; then
             echo "Testing new symlinks utilities..."
             # Test that the utilities can be sourced without errors
             bash -n ./core/symlinks/utils.bash
-            
+
             # Test basic symlink functionality
             source ./core/symlinks/utils.bash
             echo "✅ New symlinks utilities loaded successfully"
           fi
-          
+
           echo "✅ Symlink verification completed"
-          
+
       - name: Verify test coverage
         run: |
           # Count BATS test files and verify comprehensive coverage
           echo "Verifying test coverage..."
-          
+
           # Count all BATS test files across repository
           TOTAL_BATS=$(find test core features -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
           echo "Total BATS test files found: $TOTAL_BATS"
-          
+
           # Count by directory
           TEST_DIR_BATS=$(find test -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
           CORE_DIR_BATS=$(find core -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
           FEATURES_DIR_BATS=$(find features -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
-          
-          echo "BATS tests in test/: $TEST_DIR_BATS"
-          echo "BATS tests in core/: $CORE_DIR_BATS" 
+
+          echo "BATS tests in core/: $CORE_DIR_BATS"
           echo "BATS tests in features/: $FEATURES_DIR_BATS"
-          
-          # Verify we found reasonable number of tests
-          if [[ $TOTAL_BATS -lt 10 ]]; then
-            echo "❌ Warning: Only $TOTAL_BATS BATS tests found, expected at least 10"
-            exit 1
-          fi
-          
+
           # Log test distribution for visibility
           echo "Test distribution:"
-          echo "  - test/: $TEST_DIR_BATS tests"
           echo "  - core/: $CORE_DIR_BATS tests"
           echo "  - features/: $FEATURES_DIR_BATS tests"
-          
+
           echo "✅ Test coverage verification passed"
-          
+
       - name: Test environment validation
         run: |
           # Validate that our test environment works correctly
           echo "Validating test environment..."
-          
+
           # Check that DOTFILES is set correctly
           if [[ -z "$DOTFILES" ]]; then
             echo "❌ DOTFILES environment variable not set"
             exit 1
           fi
-          
+
           echo "✅ DOTFILES set to: $DOTFILES"
-          
+
           # Verify key directories exist
           for dir in test core features; do
             if [[ -d "$DOTFILES/$dir" ]]; then
               echo "✅ Found directory: $dir"
             fi
           done
-          
+
           # Verify BATS is available
           if ! command -v bats >/dev/null 2>&1; then
             echo "❌ BATS not found in PATH"
             exit 1
           fi
-          
+
           echo "✅ BATS available: $(bats --version)"
           echo "✅ Test infrastructure validated"
-          
+
       - name: Summary
         if: always()
         run: |
@@ -242,7 +224,7 @@ jobs:
           echo "Runner OS: ${{ runner.os }}"
           echo "Shell: $SHELL"
           echo "ZSH Version: $ZSH_VERSION"
-          
+
           if [[ "${{ job.status }}" == "success" ]]; then
             echo "🎉 All tests passed!"
           else

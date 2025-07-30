@@ -13,24 +13,22 @@ description: Review a pull request with structured feedback
 
 ### Phase 1: Context Research
 1. **Fetch PR details** using GitHub CLI (`gh pr view <number> --json body,commits,files`)
-2. **Read GitHub issues mentioned in PR description** for requirements and context
+2. **Fetch any GitHub issues mentioned in PR description** for requirements and context
 3. **Check epic/project context** if part of larger initiative
-4. **Understand the "why"** behind the changes
+4. **Understand the "why"** behind the changes - ask questions as needed
 
 ### Phase 2: Code Analysis
 1. **Diff review** - Understand all changes made (`gh pr diff <number>`)
-2. **Quality assessment** - Style, clarity, maintainability
-3. **Bug detection** - Logic errors, edge cases
-4. **Test coverage** - New tests for new functionality
+2. **Bug detection** - Logic errors, edge cases
+3. **Test coverage** - New tests for new functionality
+4. **Quality assessment** - Style, clarity, maintainability
 5. **Documentation** - Updated docs for changed behavior
+6. **Security implications** - New vulnerabilities
+7. **Performance impact** - Bottlenecks, missed opportunities
+8. **Architectural changes** - Structural issues and inconsistencies
+9. **Best practices** - Modern framework and language usage; consult researcher agent as needed
 
-### Phase 3: Specialized Review (consult when beneficial)
-- **Security implications** → design-architect for vulnerabilities
-- **Performance impact** → design-architect for bottlenecks
-- **Architectural changes** → design-architect for design review
-- **Best practices** → researcher for framework patterns
-
-### Phase 4: Actionable Feedback
+### Phase 3: Actionable Feedback
 - **Must fix**: Bugs, security issues, broken tests
 - **Should fix**: Performance issues, poor patterns
 - **Consider**: Style improvements, refactoring opportunities

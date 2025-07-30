@@ -9,16 +9,23 @@ For general project information, installation instructions, and usage details, s
 ### File Structure Reference
 See README.md for the complete overview. Key points for Claude:
 
+**Current Active Structure:**
 - Installation scripts are in `bin/install/` (individual .zsh files)
-- Update scripts are in `bin/update/` 
-- **Utility libraries** are in `bin/lib/` (machine detection, prerequisites, dry-run, error handling)
+- Update scripts are in `bin/update/`
 - Main setup script is `setup.zsh` in project root
 - Configuration files are in `config/` directories
-- Test suite is in `test/` directory with comprehensive testing framework
+
+**Future Bash Structure (In Development - Not Yet Active):**
+- Core functionality being built in `core/` (bash modules for shared logic)
+- Feature-specific code being built in `features/` (individual feature directories with bash scripts)
+- Future main setup script will be `setup.bash`
+- **Note**: These bash files are not yet functional or ready for use
 
 ### Available Commands and Scripts
 
 For accurate command information, refer to README.md. The actual files in this repository are:
+
+**Current Active Scripts:**
 
 **Installation scripts** (`bin/install/`):
 - `ssh.zsh`, `github.zsh`, `homebrew.zsh`, `zsh.zsh`, `rust.zsh`, `uv.zsh`, `node.zsh`, `tmux.zsh`, `neovim.zsh`, `yazi.zsh`, `content.zsh`, `settings.zsh`
@@ -26,17 +33,26 @@ For accurate command information, refer to README.md. The actual files in this r
 **Update scripts** (`bin/update/`):
 - `homebrew.zsh`, `npm.zsh`, `neovim.zsh`, `tmux.zsh`, `rust.zsh`, `symlinks.zsh`, `ssh.zsh`, `yazi.zsh`, `gcloud.zsh`, `macos.zsh`, `mode.zsh`
 
-**Utility libraries** (`bin/lib/`):
-- `machine-detection.zsh` - Dynamic hostname-based machine type detection
-- `prerequisite-validation.zsh` - System prerequisites validation (CLI tools, network, macOS version)
-- `dry-run-utils.zsh` - Dry-run mode functionality for safe preview
-- `error-handling.zsh` - Error capture, retry mechanisms, and user-friendly messaging
+**Future Bash Structure (In Development - Do Not Use):**
+
+**Core modules** (`core/`) - Under construction:
+- `detection/` - Machine and macOS detection logic
+- `dry-run/` - Dry run utilities
+- `errors/` - Error handling
+- `permissions/` - Permission utilities
+- `prerequisites/` - Installation prerequisites validation
+- `symlinks/` - Symlink management
+- `testing/` - Testing utilities and test suite
+
+**Feature modules** (`features/`) - Under construction:
+- Each feature directory contains `install.bash`, `update.bash`, `utils.bash`, and `README.md`
+- Features being developed: `content`, `git`, `github`, `homebrew`, `macos`, `neovim`, `node`, `rust`, `settings`, `ssh`, `tmux`, `uv`, `yazi`, `zsh`
 
 ### Symlink Management
 
 **Important for Git commits**: Files in `home/.claude/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `home/.claude/CLAUDE.md` instead of trying to commit outside the repository.
 
-The symlink creation logic is in `bin/update/symlinks.zsh`.
+The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `core/symlinks/` is under development and not yet functional).
 
 ### Machine Detection
 
@@ -78,55 +94,14 @@ When making changes to this repository:
 ```bash
 ls bin/install/  # Check installation scripts
 ls bin/update/   # Check update scripts  
-ls bin/lib/      # Check utility libraries
-ls test/         # Check test structure
 ```
 
 ### Testing and Verification
 
-- Comprehensive test suite exists in `test/` directory
-- Run all tests: `./test/run-tests.zsh`
-- Run specific tests: `./test/run-tests.zsh <pattern>`
-- Test framework includes mocking, assertions, and isolated environments
 - See `test/README.md` for detailed testing documentation
 - Run `symlinks` to recreate all symlinks
 - Test individual install scripts by sourcing them
 - Use `setup.zsh --dry-run` to preview changes
-
-#### Test Framework Structure
-
-- `test/setup/` - Tests for setup process (machine detection, prerequisites, dry-run, error handling)
-- `test/install/` - Tests for installation scripts (with specialized testing infrastructure)
-- `test/install/lib/` - Installation-specific test utilities and mocking framework
-- `test/lib/` - Core testing utilities shared across all tests
-
-#### Installation Script Testing
-
-- **Specialized framework** in `test/install/lib/` for testing installation scripts safely
-- **Environment isolation** - tests run in mock directories without affecting host system
-- **Comprehensive mocking** - all external dependencies (brew, git, ssh, curl, etc.) are mocked
-- **Behavioral testing focus** - tests verify installation outcomes, not implementation details
-- See `test/install/README.md` for complete usage examples and available utilities
-
-#### Test Coverage Verification Commands
-
-Verify all expected test files are running:
-
-```bash
-# Count actual test files (exclude lib files and test runner)
-find test/ -name "test-*.zsh" -perm +111 | grep -v "lib/" | grep -v "run-tests.zsh" | wc -l
-
-# Compare with test runner output: "Found X test file(s) to run"
-./test/run-tests.zsh
-
-# List all test directories
-find test/ -type d -name "*test*" -o -name "test*"
-
-# List actual test files being counted
-find test/ -name "test-*.zsh" -perm +111 | grep -v "lib/" | grep -v "run-tests.zsh"
-```
-
-The numbers should match to ensure no test files are being missed.
 
 ### Shellcheck Standards
 
@@ -140,6 +115,8 @@ When working with bash scripts in this repository:
 4. **Common fixes**:
    - SC2155: Separate variable declaration from assignment when using command substitution
    - Example: Change `local var="$(command)"` to `local var` then `var="$(command)"`
+
+- **Always add shellcheck directives to `.shellcheckrc`, not as individual comments**
 
 All bash scripts must pass shellcheck with zero warnings before merging.
 
