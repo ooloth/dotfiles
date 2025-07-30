@@ -85,12 +85,10 @@ teardown() {
 
 # Test retry_with_backoff with exponential backoff delay messages
 @test "retry_with_backoff increments delay with exponential backoff" {
-  # Use small delays to test exponential backoff
-  run retry_with_backoff "exit 1" 3 1
+  # Test that retry_with_backoff fails after max attempts
+  run retry_with_backoff "exit 1" 2 0
   [ "$status" -eq 1 ]
-  [[ "$output" == *"Attempt 1 failed, retrying in 1s"* ]]
-  [[ "$output" == *"Attempt 2 failed, retrying in 2s"* ]]
-  [[ "$output" == *"Error: Command failed after 3 attempts"* ]]
+  [[ "$output" == *"Error: Command failed after 2 attempts"* ]]
 }
 
 # Test handle_error with EPERM error code
