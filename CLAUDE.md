@@ -141,6 +141,8 @@ When working with bash scripts in this repository:
    - SC2155: Separate variable declaration from assignment when using command substitution
    - Example: Change `local var="$(command)"` to `local var` then `var="$(command)"`
 
+- **Always add shellcheck directives to `.shellcheckrc`, not as individual comments**
+
 All bash scripts must pass shellcheck with zero warnings before merging.
 
 ### Project-Specific Git Ignore

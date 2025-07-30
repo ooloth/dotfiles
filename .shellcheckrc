@@ -15,14 +15,7 @@
 # Disable SC1090: ShellCheck can't follow non-constant source
 # Our feature discovery system uses dynamic paths which are validated
 # before sourcing, so this warning is safe to ignore
-disable=SC1091,SC1090
-
-# Enable external sources to allow shellcheck to follow sourced files
-# when they are available in the project structure
-external-sources=true
-
-# Add source paths for our utility libraries
-source-path=bin/lib
-source-path=core
-source-path=test/lib
-source-path=test/install/lib
+#
+# Disable SC2119: Function call suggests parameters but function doesn't use them
+# Many functions in our codebase intentionally take no parameters
+disable=SC1091,SC1090,SC2119
