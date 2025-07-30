@@ -376,6 +376,9 @@ teardown() {
 }
 
 @test "update_dotfiles_script_permissions fails when bin directory missing" {
+  # Remove the bin directory that setup() created
+  rm -rf "$TEST_TEMP_DIR/bin"
+  
   run update_dotfiles_script_permissions "$TEST_TEMP_DIR" "false"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Dotfiles bin directory not found:"* ]]
