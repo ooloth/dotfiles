@@ -2,34 +2,42 @@
 
 This directory contains cross-cutting utilities used by multiple features. These are infrastructure-level concerns that don't belong to any single feature.
 
-## Structure
+## Architecture
 
 ```
 core/
-├── detection/       # Machine and environment detection
-├── prerequisites/   # System requirement validation
-├── dry-run/        # Safe execution mode utilities
-└── errors/         # Error handling and recovery
+├── {helper}/
+│   ├── utils.bash   # Shared utilities
+│   ├── tests/       # Feature-specific tests
+│   └── README.md    # Helper documentation (optional)
+```
+
+```
+
 ```
 
 ## Utilities
 
 ### Detection
+
 - Machine type detection (personal, work, server)
 - OS and version detection
 - Environment variable validation
 
-### Prerequisites  
+### Prerequisites
+
 - Command availability checks
 - Network connectivity validation
 - System requirement verification
 
 ### Dry Run
+
 - Safe mode execution
 - Command preview without execution
 - Change simulation
 
 ### Errors
+
 - Error capture and logging
 - Retry mechanisms with backoff
 - User-friendly error messaging
@@ -47,7 +55,9 @@ source "$DOTFILES/core/errors/handling.bash"
 ## Standards
 
 All core utilities must:
+
 - Pass shellcheck with zero warnings
 - Have comprehensive bats tests
 - Work independently (no cross-dependencies)
 - Be well-documented with examples
+

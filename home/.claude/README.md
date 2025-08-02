@@ -10,18 +10,20 @@ This directory contains a streamlined Claude Code configuration optimized for na
 
 ```
 "Fix this authentication bug"
-"Review my pull request" 
+"Review my pull request"
 "Implement user login functionality"
 "Help me optimize this slow query"
 ```
 
 **Why this works:**
+
 - Claude brings fresh perspective without preconceived constraints
 - Full context awareness for better decision-making
 - Natural problem-solving flow
 - No cognitive overhead about "the right way" to ask
 
 **Trade-offs:**
+
 - ✅ Most flexible and intuitive
 - ✅ Claude can see solutions you might not consider
 - ✅ Fastest for routine tasks
@@ -39,12 +41,14 @@ This directory contains a streamlined Claude Code configuration optimized for na
 ```
 
 **Why slash commands exist:**
+
 - Proven methodologies for complex scenarios
 - Ensure nothing gets missed in systematic analysis
 - Consistent approach across conversations
 - Battle-tested frameworks for debugging, planning, reviewing
 
 **Trade-offs:**
+
 - ✅ Guaranteed systematic coverage
 - ✅ Consistent methodology every time
 - ✅ Comprehensive for complex tasks
@@ -54,6 +58,7 @@ This directory contains a streamlined Claude Code configuration optimized for na
 ## Decision Framework: When to Use Each
 
 ### Use Natural Conversation When:
+
 - **Exploring solutions** - "How should I implement this?"
 - **Routine tasks** - "Add error handling to this function"
 - **Quick fixes** - "This test is failing"
@@ -61,6 +66,7 @@ This directory contains a streamlined Claude Code configuration optimized for na
 - **You trust Claude's judgment** - Most scenarios
 
 ### Use Slash Commands When:
+
 - **Complex debugging** - `/fix-bug` for systematic 6-step process
 - **Important reviews** - `/review-quality` for comprehensive audit
 - **Strategic planning** - `/plan` for 4-phase analysis framework
@@ -72,6 +78,7 @@ This directory contains a streamlined Claude Code configuration optimized for na
 The system includes focused specialists that main Claude consults when beneficial:
 
 ### High-Value Specialists (Context isolation provides clear benefit)
+
 - **`git-workflow`** - MANDATORY for git operations (syntax precision)
 - **`pr-writer`** - Maintains your opinionated PR templates (AUTOMATICALLY used by git-workflow)
 - **`design-architect`** - Complex architecture/security/performance analysis
@@ -79,12 +86,13 @@ The system includes focused specialists that main Claude consults when beneficia
 - **`task-manager`** - Multi-PR coordination and GitHub issue tracking
 
 ### Critical: PR Description Enforcement
+
 **Problem**: Claude often writes generic PR descriptions instead of using your template
 **Solution**: git-workflow agent automatically delegates to pr-writer for ALL PR creation
-**Your template**: `.github/PULL_REQUEST_TEMPLATE.md` (💪 What / 🤔 Why / 👀 Usage / 👩‍🔬 Validate / 🔗 Links)
 **If this breaks again**: The git-workflow agent has multiple fail-safes to prevent this
 
 ### Why Some Agents Were Removed
+
 - **`test-designer`** - Testing benefits from full system context
 - **`data-analyst`** - Debugging needs complete understanding
 - **`software-engineer`** - Coordination overhead outweighed benefits
@@ -104,6 +112,7 @@ These are applied automatically when Claude consults researcher for "which tool 
 ## Design Intentions
 
 ### For Users
+
 - **Remove cognitive load** - No "right way" to ask
 - **Preserve power when needed** - Systematic approaches available
 - **Natural workflow** - Conversation feels normal
@@ -111,6 +120,7 @@ These are applied automatically when Claude consults researcher for "which tool 
 - **Planning-first fixes** - All `/fix-*` commands start with strategy assessment
 
 ### For Future Claude Development
+
 - **Natural conversation is primary** - Don't force users into commands
 - **Slash commands preserve methodology** - Don't dilute systematic approaches
 - **Specialists provide clear value** - Only keep agents that work better in isolation
@@ -119,15 +129,17 @@ These are applied automatically when Claude consults researcher for "which tool 
 ## Common Patterns
 
 ### Debugging Workflow
+
 ```
 Natural: "This test is failing with a timeout error"
 → Claude investigates and fixes naturally
 
-Power: "/fix-bug authentication test timeout" 
+Power: "/fix-bug authentication test timeout"
 → 6-step systematic debugging process
 ```
 
 ### Code Review Workflow
+
 ```
 Natural: "Review this PR"
 → Claude does thorough review with context
@@ -137,6 +149,7 @@ Power: "/review-pr #123"
 ```
 
 ### Planning Workflow
+
 ```
 Natural: "How should I implement user sessions?"
 → Claude suggests approaches naturally
@@ -181,3 +194,4 @@ home/.claude/
 ---
 
 **Remember**: Start with natural conversation. Use slash commands when you want guaranteed systematic coverage. Both approaches lead to good outcomes, but with different characteristics. Choose based on the situation and your preferences.
+

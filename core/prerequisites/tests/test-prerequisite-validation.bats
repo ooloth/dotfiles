@@ -4,14 +4,14 @@
 # Tests the bash version of prerequisite validation functionality
 
 # Load the prerequisite validation utilities
-load "../../../core/prerequisites/validation.bash"
-load "../bats-helper.bash"
+load "../validation.bash"
+load "../../testing/bats-helper.bash"
 
 setup() {
     # Create temporary directory for each test
     export TEST_TEMP_DIR
     TEST_TEMP_DIR="$(mktemp -d)"
-    
+
     # Save original environment
     export ORIGINAL_HOME="$HOME"
     export ORIGINAL_PATH="$PATH"
@@ -21,7 +21,7 @@ teardown() {
     # Restore original environment
     export HOME="$ORIGINAL_HOME"
     export PATH="$ORIGINAL_PATH"
-    
+
     # Clean up temporary directory
     if [[ -n "${TEST_TEMP_DIR:-}" && -d "$TEST_TEMP_DIR" ]]; then
         rm -rf "$TEST_TEMP_DIR"
@@ -35,15 +35,15 @@ teardown() {
     echo '#!/bin/bash
 if [[ "$1" == "-p" ]]; then
     echo "'"$TEST_TEMP_DIR"'/Developer"
-fi' > "$TEST_TEMP_DIR/xcode-select"
+fi' >"$TEST_TEMP_DIR/xcode-select"
     chmod +x "$TEST_TEMP_DIR/xcode-select"
-    
+
     # Create fake developer directory structure
     mkdir -p "$TEST_TEMP_DIR/Developer/usr/bin"
     touch "$TEST_TEMP_DIR/Developer/usr/bin/git"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run validate_command_line_tools
     [ "$status" -eq 0 ]
 }
@@ -51,11 +51,11 @@ fi' > "$TEST_TEMP_DIR/xcode-select"
 @test "validate_command_line_tools fails when xcode-select fails" {
     # Create fake xcode-select that fails
     echo '#!/bin/bash
-exit 1' > "$TEST_TEMP_DIR/xcode-select"
+exit 1' >"$TEST_TEMP_DIR/xcode-select"
     chmod +x "$TEST_TEMP_DIR/xcode-select"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run validate_command_line_tools
     [ "$status" -eq 1 ]
     [[ "$output" == *"Command Line Tools not found"* ]]
@@ -66,14 +66,14 @@ exit 1' > "$TEST_TEMP_DIR/xcode-select"
     echo '#!/bin/bash
 if [[ "$1" == "-p" ]]; then
     echo "'"$TEST_TEMP_DIR"'/Developer"
-fi' > "$TEST_TEMP_DIR/xcode-select"
+fi' >"$TEST_TEMP_DIR/xcode-select"
     chmod +x "$TEST_TEMP_DIR/xcode-select"
-    
+
     # Create directory but don't include git
     mkdir -p "$TEST_TEMP_DIR/Developer/usr/bin"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run validate_command_line_tools
     [ "$status" -eq 1 ]
     [[ "$output" == *"appears incomplete"* ]]
@@ -84,11 +84,11 @@ fi' > "$TEST_TEMP_DIR/xcode-select"
 @test "validate_network_connectivity passes when all hosts are reachable" {
     # Create fake ping that always succeeds
     echo '#!/bin/bash
-exit 0' > "$TEST_TEMP_DIR/ping"
+exit 0' >"$TEST_TEMP_DIR/ping"
     chmod +x "$TEST_TEMP_DIR/ping"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run validate_network_connectivity
     [ "$status" -eq 0 ]
 }
@@ -100,11 +100,11 @@ if [[ "$*" == *"github.com"* ]]; then
     exit 1
 else
     exit 0
-fi' > "$TEST_TEMP_DIR/ping"
+fi' >"$TEST_TEMP_DIR/ping"
     chmod +x "$TEST_TEMP_DIR/ping"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run validate_network_connectivity
     [ "$status" -eq 1 ]
     [[ "$output" == *"Network connectivity failed"* ]]
@@ -114,11 +114,11 @@ fi' > "$TEST_TEMP_DIR/ping"
 @test "validate_network_connectivity fails when all hosts unreachable" {
     # Create fake ping that always fails
     echo '#!/bin/bash
-exit 1' > "$TEST_TEMP_DIR/ping"
+exit 1' >"$TEST_TEMP_DIR/ping"
     chmod +x "$TEST_TEMP_DIR/ping"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run validate_network_connectivity
     [ "$status" -eq 1 ]
     [[ "$output" == *"github.com"* ]]
@@ -129,7 +129,7 @@ exit 1' > "$TEST_TEMP_DIR/ping"
 
 @test "validate_directory_permissions passes for existing directory" {
     mkdir -p "$TEST_TEMP_DIR/test_dir"
-    
+
     run validate_directory_permissions "$TEST_TEMP_DIR/test_dir"
     [ "$status" -eq 0 ]
 }
@@ -150,7 +150,7 @@ exit 1' > "$TEST_TEMP_DIR/ping"
 
 @test "validate_write_permissions passes for writable directory" {
     mkdir -p "$TEST_TEMP_DIR/writable"
-    
+
     run validate_write_permissions "$TEST_TEMP_DIR/writable"
     [ "$status" -eq 0 ]
 }
@@ -174,11 +174,11 @@ exit 1' > "$TEST_TEMP_DIR/ping"
     echo '#!/bin/bash
 if [[ "$1" == "-productVersion" ]]; then
     echo "14.0"
-fi' > "$TEST_TEMP_DIR/sw_vers"
+fi' >"$TEST_TEMP_DIR/sw_vers"
     chmod +x "$TEST_TEMP_DIR/sw_vers"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run validate_macos_version
     [ "$status" -eq 0 ]
 }
@@ -188,11 +188,11 @@ fi' > "$TEST_TEMP_DIR/sw_vers"
     echo '#!/bin/bash
 if [[ "$1" == "-productVersion" ]]; then
     echo "10.15"
-fi' > "$TEST_TEMP_DIR/sw_vers"
+fi' >"$TEST_TEMP_DIR/sw_vers"
     chmod +x "$TEST_TEMP_DIR/sw_vers"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run validate_macos_version
     [ "$status" -eq 1 ]
     [[ "$output" == *"Unsupported macOS version"* ]]
@@ -204,7 +204,7 @@ fi' > "$TEST_TEMP_DIR/sw_vers"
     mkdir -p "$TEST_TEMP_DIR/empty"
     # Then use empty PATH to make sw_vers unavailable
     export PATH="$TEST_TEMP_DIR/empty"
-    
+
     run validate_macos_version
     [ "$status" -eq 1 ]
     [[ "$output" == *"Unable to determine macOS version"* ]]
@@ -216,7 +216,7 @@ fi' > "$TEST_TEMP_DIR/sw_vers"
     # Create fake HOME directory
     mkdir -p "$TEST_TEMP_DIR/home"
     export HOME="$TEST_TEMP_DIR/home"
-    
+
     run validate_essential_directories
     [ "$status" -eq 0 ]
 }
@@ -224,7 +224,7 @@ fi' > "$TEST_TEMP_DIR/sw_vers"
 @test "validate_essential_directories fails when HOME does not exist" {
     # Set HOME to non-existent directory
     export HOME="$TEST_TEMP_DIR/nonexistent_home"
-    
+
     run validate_essential_directories
     [ "$status" -eq 1 ]
     [[ "$output" == *"Essential directory validation failed"* ]]
@@ -236,29 +236,29 @@ fi' > "$TEST_TEMP_DIR/sw_vers"
     # Set up environment for successful validation
     mkdir -p "$TEST_TEMP_DIR/home"
     export HOME="$TEST_TEMP_DIR/home"
-    
+
     # Create fake commands that succeed
     echo '#!/bin/bash
 if [[ "$1" == "-p" ]]; then
     echo "'"$TEST_TEMP_DIR"'/Developer"
-fi' > "$TEST_TEMP_DIR/xcode-select"
-    
+fi' >"$TEST_TEMP_DIR/xcode-select"
+
     echo '#!/bin/bash
-exit 0' > "$TEST_TEMP_DIR/ping"
-    
+exit 0' >"$TEST_TEMP_DIR/ping"
+
     echo '#!/bin/bash
 if [[ "$1" == "-productVersion" ]]; then
     echo "14.0"
-fi' > "$TEST_TEMP_DIR/sw_vers"
-    
+fi' >"$TEST_TEMP_DIR/sw_vers"
+
     chmod +x "$TEST_TEMP_DIR/xcode-select" "$TEST_TEMP_DIR/ping" "$TEST_TEMP_DIR/sw_vers"
-    
+
     # Create developer directory structure
     mkdir -p "$TEST_TEMP_DIR/Developer/usr/bin"
     touch "$TEST_TEMP_DIR/Developer/usr/bin/git"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run run_prerequisite_validation
     [ "$status" -eq 0 ]
     [[ "$output" == *"All prerequisite validation checks passed"* ]]
@@ -268,15 +268,16 @@ fi' > "$TEST_TEMP_DIR/sw_vers"
     # Set up environment for failed validation (missing tools)
     mkdir -p "$TEST_TEMP_DIR/home"
     export HOME="$TEST_TEMP_DIR/home"
-    
+
     # Create fake xcode-select that fails
     echo '#!/bin/bash
-exit 1' > "$TEST_TEMP_DIR/xcode-select"
+exit 1' >"$TEST_TEMP_DIR/xcode-select"
     chmod +x "$TEST_TEMP_DIR/xcode-select"
-    
+
     PATH="$TEST_TEMP_DIR:/usr/bin:/bin"
-    
+
     run run_prerequisite_validation
     [ "$status" -eq 1 ]
     [[ "$output" == *"Prerequisite validation failed"* ]]
 }
+

@@ -5,6 +5,22 @@ color: purple
 tools: [Bash, Read, Glob, Grep, LS, TodoWrite, Task]
 ---
 
+## Usage Examples
+
+<example>
+Context: About to commit changes.
+user: "I've finished implementing the feature, let's commit"
+assistant: "I'll use the git-workflow agent to craft as many clear, thematic commits for these changes as makes sense"
+<commentary>User ready to commit - automatically use git-workflow for the commit message.</commentary>
+</example>
+
+<example>
+Context: After code changes.
+assistant: "I've implemented the requested changes to the API"
+assistant: "Let me use the git-workflow agent to describe these changes for the commit"
+<commentary>After making changes, proactively use git-workflow for commit message.</commentary>
+</example>
+
 ## CRITICAL: Task Tool Usage Validation
 
 **YOU ARE THE git-workflow AGENT - STRICT DELEGATION RULES**
@@ -51,7 +67,6 @@ else:
 **WHY THIS MATTERS:**
 
 - User has strong opinions about PR description format and style
-- User's template (.github/PULL_REQUEST_TEMPLATE.md) must be used exactly
 - Generic Claude PR descriptions are explicitly unwanted
 - This rule exists because it's been broken repeatedly
 
@@ -427,8 +442,7 @@ Use separate thematic commits:
    - Current branch name
    - Full commit history (`git log main..HEAD`)
    - File changes (`git diff main...HEAD --name-only`)
-   - Template location (`.github/PULL_REQUEST_TEMPLATE.md` or `~/.claude/PR_TEMPLATE_REFERENCE.md`)
-   - Any related issues or context
+   - Any related issues, PRs or other URLs
    - Target branch (usually main)
 4. ⏸️ **STOP AND WAIT** - Do not proceed further, pr-writer handles PR creation
 5. ✅ **REPORT SUCCESS** - Only report the PR URL that pr-writer returns

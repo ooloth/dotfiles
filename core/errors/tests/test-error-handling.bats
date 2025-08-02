@@ -3,8 +3,8 @@
 # Test error handling utilities (bash implementation)
 
 # Load the error handling utilities
-load "../../../core/errors/handling.bash"
-load "../bats-helper.bash"
+load "../handling.bash"
+load "../../testing/bats-helper.bash"
 
 # Test capture_error with no command provided
 @test "capture_error returns error when no command provided" {
@@ -111,8 +111,8 @@ load "../bats-helper.bash"
 @test "retry_with_backoff succeeds on second attempt after one failure" {
     # Create a file that tracks attempts
     local attempt_file=$(mktemp)
-    echo "0" > "$attempt_file"
-    
+    echo "0" >"$attempt_file"
+
     # Command that fails first time, succeeds second time
     local test_command="
         current=\$(cat '$attempt_file')
@@ -120,10 +120,10 @@ load "../bats-helper.bash"
         echo \$next > '$attempt_file'
         [ \$next -eq 2 ]
     "
-    
+
     run retry_with_backoff "$test_command" 3 0
     [ "$status" -eq 0 ]
-    
+
     # Clean up
     rm -f "$attempt_file"
 }
@@ -134,3 +134,4 @@ load "../bats-helper.bash"
     [ "$status" -eq 1 ]
     [[ "$output" =~ "Error: Command execution failed" ]]
 }
+

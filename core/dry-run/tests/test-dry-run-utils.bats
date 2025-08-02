@@ -4,17 +4,17 @@
 # Tests the bash version of dry-run functionality
 
 # Load the dry-run utilities
-load "../../../core/dry-run/utils.bash"
-load "../bats-helper.bash"
+load "../utils.bash"
+load "../../testing/bats-helper.bash"
 
 setup() {
     # Create temporary directory for each test
     export TEST_TEMP_DIR
     TEST_TEMP_DIR="$(mktemp -d)"
-    
+
     # Save original environment
     export ORIGINAL_DRY_RUN="${DRY_RUN:-}"
-    
+
     # Clear dry-run environment variables for clean testing
     unset DRY_RUN
 }
@@ -26,7 +26,7 @@ teardown() {
     else
         unset DRY_RUN
     fi
-    
+
     # Clean up temporary directory
     if [[ -n "${TEST_TEMP_DIR:-}" && -d "$TEST_TEMP_DIR" ]]; then
         rm -rf "$TEST_TEMP_DIR"
@@ -95,7 +95,7 @@ teardown() {
 
 @test "dry_run_execute logs command in dry-run mode" {
     export DRY_RUN="true"
-    
+
     run dry_run_execute "echo 'test command'"
     [ "$status" -eq 0 ]
     [[ "$output" == "DRY RUN: echo 'test command'" ]]
@@ -103,7 +103,7 @@ teardown() {
 
 @test "dry_run_execute executes command in normal mode" {
     export DRY_RUN="false"
-    
+
     run dry_run_execute "echo 'actual output'"
     [ "$status" -eq 0 ]
     [[ "$output" == "actual output" ]]
@@ -111,7 +111,7 @@ teardown() {
 
 @test "dry_run_execute executes command when DRY_RUN not set" {
     unset DRY_RUN
-    
+
     run dry_run_execute "echo 'default behavior'"
     [ "$status" -eq 0 ]
     [[ "$output" == "default behavior" ]]
@@ -119,14 +119,14 @@ teardown() {
 
 @test "dry_run_execute returns command exit code in normal mode" {
     export DRY_RUN="false"
-    
+
     run dry_run_execute "exit 42"
     [ "$status" -eq 42 ]
 }
 
 @test "dry_run_execute returns 0 in dry-run mode regardless of command" {
     export DRY_RUN="true"
-    
+
     run dry_run_execute "exit 42"
     [ "$status" -eq 0 ]
     [[ "$output" == "DRY RUN: exit 42" ]]
@@ -148,7 +148,7 @@ teardown() {
 
 @test "dry_run_execute with complex command in dry-run mode" {
     export DRY_RUN="true"
-    
+
     run dry_run_execute "mkdir -p /tmp/test && echo 'directory created'"
     [ "$status" -eq 0 ]
     [[ "$output" == "DRY RUN: mkdir -p /tmp/test && echo 'directory created'" ]]
@@ -156,7 +156,7 @@ teardown() {
 
 @test "dry_run_execute with complex command in normal mode" {
     export DRY_RUN="false"
-    
+
     # Use test temp dir for actual execution
     run dry_run_execute "mkdir -p '$TEST_TEMP_DIR/test' && echo 'directory created'"
     [ "$status" -eq 0 ]
@@ -168,15 +168,15 @@ teardown() {
 @test "workflow integration: parse flags then execute commands" {
     # Parse --dry-run flag
     parse_dry_run_flags "--dry-run" "--verbose"
-    
+
     # Verify dry-run mode was set
     [ "$DRY_RUN" = "true" ]
-    
+
     # Execute commands in dry-run mode
     run dry_run_execute "echo 'first command'"
     [ "$status" -eq 0 ]
     [[ "$output" == "DRY RUN: echo 'first command'" ]]
-    
+
     run dry_run_execute "mkdir /tmp/testdir"
     [ "$status" -eq 0 ]
     [[ "$output" == "DRY RUN: mkdir /tmp/testdir" ]]
@@ -185,12 +185,13 @@ teardown() {
 @test "workflow integration: parse normal flags then execute commands" {
     # Parse flags without --dry-run
     parse_dry_run_flags "--verbose" "--force"
-    
+
     # Verify normal mode was set
     [ "$DRY_RUN" = "false" ]
-    
+
     # Execute commands in normal mode
     run dry_run_execute "echo 'actual execution'"
     [ "$status" -eq 0 ]
     [[ "$output" == "actual execution" ]]
 }
+
