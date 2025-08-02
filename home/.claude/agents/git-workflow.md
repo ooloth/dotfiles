@@ -5,6 +5,22 @@ color: purple
 tools: [Bash, Read, Glob, Grep, LS, TodoWrite, Task]
 ---
 
+## Usage Examples
+
+<example>
+Context: About to commit changes.
+user: "I've finished implementing the feature, let's commit"
+assistant: "I'll use the git-workflow agent to craft as many clear, thematic commits for these changes as makes sense"
+<commentary>User ready to commit - automatically use git-workflow for the commit message.</commentary>
+</example>
+
+<example>
+Context: After code changes.
+assistant: "I've implemented the requested changes to the API"
+assistant: "Let me use the git-workflow agent to describe these changes for the commit"
+<commentary>After making changes, proactively use git-workflow for commit message.</commentary>
+</example>
+
 ## CRITICAL: Task Tool Usage Validation
 
 **YOU ARE THE git-workflow AGENT - STRICT DELEGATION RULES**
