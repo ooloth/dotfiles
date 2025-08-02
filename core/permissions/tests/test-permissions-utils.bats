@@ -3,14 +3,14 @@
 # Test suite for mode-utils.bash
 
 # Load the permissions utilities
-load "../../../core/permissions/utils.bash"
-load "../bats-helper.bash"
+load "../utils.bash"
+load "../../testing/bats-helper.bash"
 
 setup() {
   # Create temporary directory for each test
   export TEST_TEMP_DIR
   TEST_TEMP_DIR="$(mktemp -d)"
-  
+
   # Create test file structure
   mkdir -p "$TEST_TEMP_DIR/bin/install"
   mkdir -p "$TEST_TEMP_DIR/bin/update"
@@ -33,7 +33,7 @@ teardown() {
       command "$@"
     fi
   }
-  
+
   run is_fd_available
   [ "$status" -eq 0 ]
 }
@@ -47,7 +47,7 @@ teardown() {
       command "$@"
     fi
   }
-  
+
   run is_fd_available
   [ "$status" -ne 0 ]
 }
@@ -62,7 +62,7 @@ teardown() {
       command "$@"
     fi
   }
-  
+
   run is_find_available
   [ "$status" -eq 0 ]
 }
@@ -76,7 +76,7 @@ teardown() {
       command "$@"
     fi
   }
-  
+
   run is_find_available
   [ "$status" -ne 0 ]
 }
@@ -91,7 +91,7 @@ teardown() {
       command "$@"
     fi
   }
-  
+
   run is_chmod_available
   [ "$status" -eq 0 ]
 }
@@ -102,7 +102,7 @@ teardown() {
   local test_file="$TEST_TEMP_DIR/test.sh"
   touch "$test_file"
   chmod 644 "$test_file"
-  
+
   # Mock chmod
   chmod() {
     if [[ "$1" == "+x" ]]; then
@@ -113,7 +113,7 @@ teardown() {
       command chmod "$@"
     fi
   }
-  
+
   run make_file_executable "$test_file"
   [ "$status" -eq 0 ]
   [[ "$output" == *"CHMOD: +x $test_file"* ]]
@@ -130,7 +130,7 @@ teardown() {
   # Create test file
   local test_file="$TEST_TEMP_DIR/test.sh"
   touch "$test_file"
-  
+
   # Mock chmod to fail
   chmod() {
     if [[ "$1" == "+x" ]]; then
@@ -139,7 +139,7 @@ teardown() {
       command chmod "$@"
     fi
   }
-  
+
   run make_file_executable "$test_file"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Failed to make file executable:"* ]]
@@ -151,7 +151,7 @@ teardown() {
   local test_file="$TEST_TEMP_DIR/test.sh"
   touch "$test_file"
   chmod +x "$test_file"
-  
+
   run is_file_executable "$test_file"
   [ "$status" -eq 0 ]
 }
@@ -161,7 +161,7 @@ teardown() {
   local test_file="$TEST_TEMP_DIR/test.sh"
   touch "$test_file"
   chmod 644 "$test_file"
-  
+
   run is_file_executable "$test_file"
   [ "$status" -ne 0 ]
 }
@@ -170,7 +170,7 @@ teardown() {
 @test "find_files_by_extension_fd uses fd to find files" {
   # Mock is_fd_available
   is_fd_available() { return 0; }
-  
+
   # Mock fd command
   fd() {
     if [[ "$2" == "$TEST_TEMP_DIR" && "$4" == "zsh" ]]; then
@@ -178,7 +178,7 @@ teardown() {
       echo "$TEST_TEMP_DIR/script2.zsh"
     fi
   }
-  
+
   run find_files_by_extension_fd "$TEST_TEMP_DIR" "zsh"
   [ "$status" -eq 0 ]
   [[ "$output" == *"script1.zsh"* ]]
@@ -188,7 +188,7 @@ teardown() {
 @test "find_files_by_extension_fd fails when fd unavailable" {
   # Mock is_fd_available to return false
   is_fd_available() { return 1; }
-  
+
   run find_files_by_extension_fd "$TEST_TEMP_DIR" "zsh"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ fd command not available"* ]]
@@ -198,7 +198,7 @@ teardown() {
 @test "find_files_by_extension_find uses find to locate files" {
   # Mock is_find_available
   is_find_available() { return 0; }
-  
+
   # Mock find command
   find() {
     if [[ "$1" == "$TEST_TEMP_DIR" && "$3" == "*.zsh" ]]; then
@@ -206,7 +206,7 @@ teardown() {
       echo "$TEST_TEMP_DIR/script2.zsh"
     fi
   }
-  
+
   run find_files_by_extension_find "$TEST_TEMP_DIR" "zsh"
   [ "$status" -eq 0 ]
   [[ "$output" == *"script1.zsh"* ]]
@@ -216,7 +216,7 @@ teardown() {
 @test "find_files_by_extension_find fails when find unavailable" {
   # Mock is_find_available to return false
   is_find_available() { return 1; }
-  
+
   run find_files_by_extension_find "$TEST_TEMP_DIR" "zsh"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ find command not available"* ]]
@@ -227,17 +227,17 @@ teardown() {
   # Mock fd available
   is_fd_available() { return 0; }
   is_find_available() { return 0; }
-  
+
   # Mock fd command
   fd() {
     echo "FD_RESULT: $*"
   }
-  
+
   # Mock find command (should not be called)
   find() {
     echo "FIND_RESULT: $*"
   }
-  
+
   run find_files_by_extension "$TEST_TEMP_DIR" "zsh"
   [ "$status" -eq 0 ]
   [[ "$output" == *"FD_RESULT:"* ]]
@@ -248,12 +248,12 @@ teardown() {
   # Mock fd unavailable, find available
   is_fd_available() { return 1; }
   is_find_available() { return 0; }
-  
+
   # Mock find command
   find() {
     echo "FIND_FALLBACK: $*"
   }
-  
+
   run find_files_by_extension "$TEST_TEMP_DIR" "zsh"
   [ "$status" -eq 0 ]
   [[ "$output" == *"FIND_FALLBACK:"* ]]
@@ -263,7 +263,7 @@ teardown() {
   # Mock both unavailable
   is_fd_available() { return 1; }
   is_find_available() { return 1; }
-  
+
   run find_files_by_extension "$TEST_TEMP_DIR" "zsh"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Neither fd nor find command available"* ]]
@@ -276,16 +276,16 @@ teardown() {
   touch "$TEST_TEMP_DIR/script2.zsh"
   chmod 644 "$TEST_TEMP_DIR/script1.zsh"
   chmod +x "$TEST_TEMP_DIR/script2.zsh"
-  
+
   # Mock dependencies
   is_chmod_available() { return 0; }
-  
+
   # Mock find_files_by_extension
   find_files_by_extension() {
     echo "$TEST_TEMP_DIR/script1.zsh"
     echo "$TEST_TEMP_DIR/script2.zsh"
   }
-  
+
   # Mock chmod
   chmod() {
     if [[ "$1" == "+x" ]]; then
@@ -295,7 +295,7 @@ teardown() {
       command chmod "$@"
     fi
   }
-  
+
   run make_extension_executable "$TEST_TEMP_DIR" "zsh" "false"
   [ "$status" -eq 0 ]
   [[ "$output" == *"🔍 Finding .zsh files"* ]]
@@ -310,16 +310,16 @@ teardown() {
   touch "$TEST_TEMP_DIR/script2.zsh"
   chmod 644 "$TEST_TEMP_DIR/script1.zsh"
   chmod +x "$TEST_TEMP_DIR/script2.zsh"
-  
+
   # Mock dependencies
   is_chmod_available() { return 0; }
-  
+
   # Mock find_files_by_extension
   find_files_by_extension() {
     echo "$TEST_TEMP_DIR/script1.zsh"
     echo "$TEST_TEMP_DIR/script2.zsh"
   }
-  
+
   run make_extension_executable "$TEST_TEMP_DIR" "zsh" "true"
   [ "$status" -eq 0 ]
   [[ "$output" == *"[DRY RUN] Would make executable: $TEST_TEMP_DIR/script1.zsh"* ]]
@@ -340,30 +340,30 @@ teardown() {
   touch "$TEST_TEMP_DIR/bin/script1.zsh"
   touch "$TEST_TEMP_DIR/bin/script2.bash"
   touch "$TEST_TEMP_DIR/bin/script3.sh"
-  
+
   # Mock find_files_by_extension to return different files for different extensions
   find_files_by_extension() {
     local dir="$1"
     local ext="$2"
-    
+
     case "$ext" in
-      "zsh")
-        echo "$dir/script1.zsh"
-        ;;
-      "bash")
-        echo "$dir/script2.bash"
-        ;;
-      "sh")
-        echo "$dir/script3.sh"
-        ;;
+    "zsh")
+      echo "$dir/script1.zsh"
+      ;;
+    "bash")
+      echo "$dir/script2.bash"
+      ;;
+    "sh")
+      echo "$dir/script3.sh"
+      ;;
     esac
   }
-  
+
   # Mock make_extension_executable
   make_extension_executable() {
     echo "MAKE_EXECUTABLE: $1 $2 $3"
   }
-  
+
   run update_dotfiles_script_permissions "$TEST_TEMP_DIR" "false"
   [ "$status" -eq 0 ]
   [[ "$output" == *"🔋 Updating executable permissions for dotfiles scripts"* ]]
@@ -378,7 +378,7 @@ teardown() {
 @test "update_dotfiles_script_permissions fails when bin directory missing" {
   # Remove the bin directory that setup() created
   rm -rf "$TEST_TEMP_DIR/bin"
-  
+
   run update_dotfiles_script_permissions "$TEST_TEMP_DIR" "false"
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Dotfiles bin directory not found:"* ]]
@@ -390,7 +390,7 @@ teardown() {
   local test_file="$TEST_TEMP_DIR/test.sh"
   touch "$test_file"
   chmod +x "$test_file"
-  
+
   # Mock ls command
   ls() {
     if [[ "$1" == "-l" ]]; then
@@ -399,7 +399,7 @@ teardown() {
       command ls "$@"
     fi
   }
-  
+
   run check_file_permissions "$test_file"
   [ "$status" -eq 0 ]
   [[ "$output" == *"File: $test_file"* ]]
@@ -419,7 +419,7 @@ teardown() {
   is_chmod_available() { return 0; }
   is_fd_available() { return 0; }
   is_find_available() { return 0; }
-  
+
   run validate_permission_environment
   [ "$status" -eq 0 ]
   [[ "$output" == *"✅ Using fd for file discovery"* ]]
@@ -430,7 +430,7 @@ teardown() {
   is_chmod_available() { return 0; }
   is_fd_available() { return 1; }
   is_find_available() { return 0; }
-  
+
   run validate_permission_environment
   [ "$status" -eq 0 ]
   [[ "$output" == *"⚠️  Using find as fallback"* ]]
@@ -441,7 +441,7 @@ teardown() {
   is_chmod_available() { return 1; }
   is_fd_available() { return 0; }
   is_find_available() { return 0; }
-  
+
   run validate_permission_environment
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ chmod command not available"* ]]
@@ -452,8 +452,9 @@ teardown() {
   is_chmod_available() { return 0; }
   is_fd_available() { return 1; }
   is_find_available() { return 1; }
-  
+
   run validate_permission_environment
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Neither fd nor find command available"* ]]
 }
+
