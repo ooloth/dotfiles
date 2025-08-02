@@ -1,21 +1,19 @@
 ## 💪 What
 
-<!-- What's new/different in this PR? What files/functionality changed? How were those changes tested and documented? -->
+<!-- A bullet list summarizing what behavior this PR changes at a high-level. If both primary and secondary changes are included, use subheadings to group them. Be concise and factual. Do not mention every file that changed or every accompanying test or documentation update. Give reviewers a high-level understanding of the intended changes so they will understand what they're looking at when they look at the diff. -->
 
 ## 🤔 Why
 
-<!-- What problem does this solve? What's the business value? Why now? -->
+<!-- A bullet list explaining what problem these changes solve and why the change is worth making. Be concise and objective and do not sell. -->
 
 ## 👀 Usage
 
-<!-- Optional: For new scripts, CLI commands, APIs - how does someone use the new functionality? -->
+<!-- A numbered list and/or code block(s) documenting how to invoke any new user-facing behaviour. Omit section if not applicable. -->
 
 ## 👩‍🔬 How to validate
 
-<!-- What steps can a reviewer follow to manually confirm the changes work? -->
+<!-- A numbered list and/or code blocks teaching a new reviewer what steps to follow to manually confirm the changes work as intended -->
 
 ## 🔗 Related links
 
-<!-- URLs to docs, tasks, PRs, issues, Slack threads - any context a reviewer would find helpful -->
-
-<!-- This section should ONLY contain a bullet list of actual links to URLs. There should be no standalone commentary here. If there are no relevant URLs, omit this section rather than adding a paragraph with no links. -->
+<!-- A bullet list of links to URLs that would be helpful for reviewing: e.g. third party docs, related PRs, related Issues, etc. Omit section if no such URLs exist. Do not include explanations that are not directly related to a linked URL. -->
