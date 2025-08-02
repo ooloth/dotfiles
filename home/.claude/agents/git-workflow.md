@@ -67,7 +67,6 @@ else:
 **WHY THIS MATTERS:**
 
 - User has strong opinions about PR description format and style
-- User's template (.github/PULL_REQUEST_TEMPLATE.md) must be used exactly
 - Generic Claude PR descriptions are explicitly unwanted
 - This rule exists because it's been broken repeatedly
 
@@ -443,8 +442,7 @@ Use separate thematic commits:
    - Current branch name
    - Full commit history (`git log main..HEAD`)
    - File changes (`git diff main...HEAD --name-only`)
-   - Template location (`.github/PULL_REQUEST_TEMPLATE.md` or `~/.claude/PR_TEMPLATE_REFERENCE.md`)
-   - Any related issues or context
+   - Any related issues, PRs or other URLs
    - Target branch (usually main)
 4. ⏸️ **STOP AND WAIT** - Do not proceed further, pr-writer handles PR creation
 5. ✅ **REPORT SUCCESS** - Only report the PR URL that pr-writer returns
