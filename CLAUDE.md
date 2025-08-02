@@ -2,7 +2,7 @@
 
 This file provides Claude-specific guidance when working with this dotfiles repository.
 
-For general project information, installation instructions, and usage details, see [README.md](README.md).
+For general project information, installation instructions, and usage details, see the [README](./README.md).
 
 ## Claude-Specific Notes
 
