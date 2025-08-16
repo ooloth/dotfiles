@@ -56,29 +56,33 @@ show_help() {
     cat << EOF
 Usage: update.bash [feature]
 
-Update dotfiles components. If no feature is specified, updates all components.
+Update dotfiles components. If no feature is specified, updates frequently-changing components.
 
-Available features:
+Available features (frequent updates):
+  mode        - Update mode/environment settings
+  symlinks    - Update symlinks
+  rust        - Update Rust toolchain
+  yazi        - Update yazi flavors
+  neovim      - Update Neovim plugins
+  tmux        - Update tmux plugins
+  node        - Update Node.js and global npm packages
+  gcloud      - Update Google Cloud SDK
   homebrew    - Update Homebrew packages and casks
   macos       - Update macOS system software
-  neovim      - Update Neovim plugins
-  node        - Update Node.js via fnm
-  npm         - Update global npm packages
-  rust        - Update Rust toolchain
-  tmux        - Update tmux plugins
-  yazi        - Update yazi flavors
-  symlinks    - Update symlinks
+
+Available features (manual updates):
   ssh         - Update SSH configuration
   git         - Update git configuration
   github      - Update GitHub CLI
   uv          - Update uv Python package manager
   content     - Update content repository
   settings    - Update macOS settings
+  node        - Update Node.js via fnm
 
 Examples:
-  update.bash           # Update everything
+  update.bash           # Update all frequent-update components
   update.bash homebrew  # Update only Homebrew
-  update.bash neovim    # Update only Neovim
+  update.bash ssh       # Manually update SSH (not included in full update)
 
 EOF
 }
@@ -106,34 +110,27 @@ main() {
         return 0
     fi
     
-    # Otherwise, update everything
-    printf "🔄 Updating all dotfiles components...\n\n"
+    # Otherwise, update frequently-changing components (matching legacy approach)
+    printf "🔄 Updating frequently-changing dotfiles components...\n\n"
     
-    # Update order matters for some dependencies
-    printf "📦 Updating package managers...\n"
-    run_updater "homebrew"
+    # Update in the same order as legacy config/zsh/update.zsh
+    run_updater "mode"
+    run_updater "symlinks"
     run_updater "rust"
-    run_updater "node"
-    run_updater "uv"
-    
-    printf "\n🛠️  Updating development tools...\n"
-    run_updater "npm"
+    run_updater "yazi"
     run_updater "neovim"
     run_updater "tmux"
-    run_updater "yazi"
-    
-    printf "\n⚙️  Updating configurations...\n"
-    run_updater "ssh"
-    run_updater "git"
-    run_updater "github"
-    run_updater "symlinks"
-    run_updater "content"
-    
-    printf "\n💻 Updating system settings...\n"
+    run_updater "node"
+    run_updater "gcloud"
+    run_updater "homebrew"
     run_updater "macos"
-    run_updater "settings"
     
-    printf "\n✅ All updates complete!\n"
+    printf "\n✅ All frequent updates complete!\n"
+    printf "\nNote: Some components require manual updates:\n"
+    printf "  - SSH keys/config: ./update.bash ssh\n"
+    printf "  - Git configuration: ./update.bash git\n"
+    printf "  - System settings: ./update.bash settings\n"
+    printf "  - Content repositories: ./update.bash content\n"
 }
 
 # Only run main if script is executed directly
