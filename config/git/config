@@ -4,7 +4,6 @@
 [core]
   editor = nvim
   # editor = code --wait
-  excludesfile = ~/.config/git/ignore
   pager="bat"
 
 [credential]
@@ -14,8 +13,8 @@
   colorMoved = true
   tool = vscode
 
-[difftool "vscode"]
-  cmd = code --wait --diff $LOCAL $REMOTE
+# [difftool "vscode"]
+  # cmd = code --wait --diff $LOCAL $REMOTE
 
 [fetch]
   prune = true
@@ -27,11 +26,11 @@
 [init]
 	defaultBranch = main
 
-[merge]
-  tool = vscode
+# [merge]
+  # tool = vscode
 
-[mergetool "vscode"]
-  cmd = code --wait $MERGED
+# [mergetool "vscode"]
+  # cmd = code --wait $MERGED
 
 [pull]
   rebase = false
