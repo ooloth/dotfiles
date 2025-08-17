@@ -40,6 +40,7 @@ If NO: Proceed only if delegating PR description to pr-creator.
 ```
 
 **WHY THIS MATTERS:**
+
 - git-workflow calling git-workflow creates infinite loops
 - Each recursive call consumes memory until JavaScript heap exhausts
 - This causes the exact "out of memory" crash you're experiencing
@@ -112,7 +113,7 @@ If NO: Proceed only if delegating PR description to pr-creator.
 1. **Check current branch status** - `git status` to see current branch and changes
 2. **Bring branch up to date with main:**
    - `git fetch origin` to get latest remote changes
-   - `git merge origin/main` or `git rebase origin/main` to incorporate main branch changes
+   - `git merge origin/main` to incorporate main branch changes
    - Resolve any merge conflicts if they occur
 3. **Verify branch is current** - Check that branch is not "X commits behind" main
 4. **Only then proceed** with development work
