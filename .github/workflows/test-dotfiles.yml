@@ -3,31 +3,21 @@ name: Test Dotfiles Setup Scripts
 on:
   # Run on pushes to main branch only (for direct commits to main)
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'setup.zsh'
-      - 'setup.bash'
-      - 'bin/**'
-      - 'core/**'
-      - 'features/**'
-      - 'macos/Brewfile'
-      - 'config/**'
-      - '.github/workflows/test-dotfiles.yml'
+      - "**/*.bash"
+      - "core/**"
+      - "features/**"
+      - ".github/workflows/test-dotfiles.yml"
 
   # Run on pull requests to main (covers feature branch testing)
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'setup.zsh'
-      - 'setup.bash'
-      - 'bin/**'
-      - 'lib/**'
-      - 'core/**'
-      - 'features/**'
-      - 'test/**'
-      - 'macos/Brewfile'
-      - 'config/**'
-      - '.github/workflows/test-dotfiles.yml'
+      - "**/*.bash"
+      - "core/**"
+      - "features/**"
+      - ".github/workflows/test-dotfiles.yml"
 
   # Allow manual triggering for debugging
   workflow_dispatch:
@@ -102,6 +92,35 @@ jobs:
           # Install BATS for running bash tests
           brew install bats-core
 
+      - name: Test environment validation
+        run: |
+          # Validate that our test environment works correctly
+          echo "Validating test environment..."
+
+          # Check that DOTFILES is set correctly
+          if [[ -z "$DOTFILES" ]]; then
+            echo "❌ DOTFILES environment variable not set"
+            exit 1
+          fi
+
+          echo "✅ DOTFILES set to: $DOTFILES"
+
+          # Verify key directories exist
+          for dir in test core features; do
+            if [[ -d "$DOTFILES/$dir" ]]; then
+              echo "✅ Found directory: $dir"
+            fi
+          done
+
+          # Verify BATS is available
+          if ! command -v bats >/dev/null 2>&1; then
+            echo "❌ BATS not found in PATH"
+            exit 1
+          fi
+
+          echo "✅ BATS available: $(bats --version)"
+          echo "✅ Test infrastructure validated"
+
       - name: Run BATS test suite
         run: |
           # Run comprehensive BATS test suite across all directories
@@ -144,6 +163,7 @@ jobs:
 
           echo "✅ All BATS tests completed successfully"
 
+      # TODO: does this make sense? what's it doing?
       - name: Test symlink verification
         run: |
           echo "Testing symlink functionality..."
@@ -160,59 +180,6 @@ jobs:
           fi
 
           echo "✅ Symlink verification completed"
-
-      - name: Verify test coverage
-        run: |
-          # Count BATS test files and verify comprehensive coverage
-          echo "Verifying test coverage..."
-
-          # Count all BATS test files across repository
-          TOTAL_BATS=$(find test core features -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
-          echo "Total BATS test files found: $TOTAL_BATS"
-
-          # Count by directory
-          TEST_DIR_BATS=$(find test -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
-          CORE_DIR_BATS=$(find core -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
-          FEATURES_DIR_BATS=$(find features -name "*.bats" -type f 2>/dev/null | wc -l | tr -d ' ')
-
-          echo "BATS tests in core/: $CORE_DIR_BATS"
-          echo "BATS tests in features/: $FEATURES_DIR_BATS"
-
-          # Log test distribution for visibility
-          echo "Test distribution:"
-          echo "  - core/: $CORE_DIR_BATS tests"
-          echo "  - features/: $FEATURES_DIR_BATS tests"
-
-          echo "✅ Test coverage verification passed"
-
-      - name: Test environment validation
-        run: |
-          # Validate that our test environment works correctly
-          echo "Validating test environment..."
-
-          # Check that DOTFILES is set correctly
-          if [[ -z "$DOTFILES" ]]; then
-            echo "❌ DOTFILES environment variable not set"
-            exit 1
-          fi
-
-          echo "✅ DOTFILES set to: $DOTFILES"
-
-          # Verify key directories exist
-          for dir in test core features; do
-            if [[ -d "$DOTFILES/$dir" ]]; then
-              echo "✅ Found directory: $dir"
-            fi
-          done
-
-          # Verify BATS is available
-          if ! command -v bats >/dev/null 2>&1; then
-            echo "❌ BATS not found in PATH"
-            exit 1
-          fi
-
-          echo "✅ BATS available: $(bats --version)"
-          echo "✅ Test infrastructure validated"
 
       - name: Summary
         if: always()
