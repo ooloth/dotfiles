@@ -2,7 +2,6 @@
 
 export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-# Basic error handling - will be enhanced after dotfiles are available
 handle_error() {
   local exit_code="$1"
   local line_number="$2"
@@ -63,9 +62,6 @@ fi
 
 printf "This is a Mac. But you knew that already.\n\n"
 
-# Basic prerequisite validation (comprehensive validation after clone)
-printf "Running basic prerequisite validation...\n\n"
-
 # Command Line Tools check (critical for git clone)
 if ! command -v git >/dev/null 2>&1; then
   printf "❌ Git is not installed. Please install Command Line Developer Tools first.\n"
@@ -74,14 +70,6 @@ if ! command -v git >/dev/null 2>&1; then
 fi
 
 printf "✅ Git is available for cloning dotfiles.\n\n"
-
-# Skip comprehensive validation for now - will run after clone
-if false; then
-  printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
-  exit 1
-fi
-
-printf "\n✅ All prerequisites validated successfully.\n\n"
 
 # You know this Mac's password
 printf "Confirming you are authorized to install things on this Mac...\n\n"
@@ -95,23 +83,6 @@ while true; do
 done 2>/dev/null &
 
 printf "Yup. That's the password.\n\n"
-
-# The Command Line Tools are installed
-# printf "Confirming the Command Line Tools are installed...\n\n"
-#
-# if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
-#   printf "Apple's command line developer tools must be installed before running this script. Installing now.\n"
-#   xcode-select --install
-#
-#   if [ ! -d "$HOME/Library/Developer/CommandLineTools" ]; then
-#     printf "\nOops, it looks like the Xcode CLI tools are still not installed. Please install and try again.\n"
-#     exit 1
-#   else
-#     printf "\nXcode CLI tools are now installed.\n"
-#   fi
-# else
-#   printf "\nXcode CLI tools are already installed.\n"
-# fi
 
 ##################
 # CLONE DOTFILES #
@@ -127,31 +98,6 @@ else
   mkdir -p "$DOTFILES"
   git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 fi
-
-# Initialize dotfiles utilities now that repository is available
-printf "🔧 Initializing dotfiles utilities...\n\n"
-
-# Initialize dynamic machine detection
-source "$DOTFILES/bin/lib/machine-detection.zsh"
-init_machine_detection
-
-# Initialize dry-run mode utilities
-source "$DOTFILES/bin/lib/dry-run-utils.zsh"
-parse_dry_run_flags "$@"
-
-# Initialize enhanced error handling utilities
-source "$DOTFILES/bin/lib/error-handling.zsh"
-
-# Run comprehensive prerequisite validation now that utilities are available
-printf "Running comprehensive prerequisite validation...\n\n"
-
-source "$DOTFILES/bin/lib/prerequisite-validation.zsh"
-if ! run_prerequisite_validation; then
-  printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
-  exit 1
-fi
-
-printf "✅ All prerequisites validated successfully.\n\n"
 
 # Add all the helpers the install scripts below will reference
 # source "$DOTFILES/config/zsh/aliases.zsh"
