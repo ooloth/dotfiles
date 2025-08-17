@@ -211,8 +211,9 @@ Both modes apply the same research methodology and quality standards - the diffe
 **CRITICAL: Loop Prevention**
 
 **NEVER delegate research tasks to other agents when you ARE the research specialist.** Always use direct tools:
+
 - WebFetch for web research and documentation
-- Read for local file analysis  
+- Read for local file analysis
 - Grep for code searching
 - Glob for file discovery
 
@@ -223,13 +224,6 @@ Both modes apply the same research methodology and quality standards - the diffe
 - "Research the authentication flow for [specific API]"
 - "Find implementation examples for [specific pattern]"
 - "Look up the latest documentation for [framework feature]"
-
-**design-architect** might request:
-
-- "Research architectural patterns for [specific use case]"
-- "Find best practices for [system design decision]"
-- "Investigate how [company/project] implements [pattern]"
-- "Research security and performance best practices for [technology]"
 
 **For debugging support:**
 
@@ -344,4 +338,3 @@ Remember to:
 - Keep research focused on the specific need
 - Evaluate existing implementations against current standards
 - Identify modernization opportunities in legacy code
-

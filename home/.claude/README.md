@@ -81,7 +81,6 @@ The system includes focused specialists that main Claude consults when beneficia
 
 - **`atomic-committer`** - Creates small, thematic git commits
 - **`pr-creator`** - Writes PR descriptions in your opinionated style
-- **`design-architect`** - Complex architecture/security/performance analysis
 - **`researcher`** - "What's the best X?" questions + technology preferences
 - **`task-manager`** - Multi-PR coordination and GitHub issue tracking
 
@@ -162,20 +161,7 @@ home/.claude/
 ├── CLAUDE.md           # Core workflow philosophy and behaviors
 ├── README.md           # This guide (system intentions and usage)
 ├── agents/             # Specialist agents for focused expertise
-│   ├── design-architect.md
-│   ├── git-workflow.md
-│   ├── pr-creator.md
-│   ├── researcher.md
-│   └── task-manager.md
 └── commands/           # Slash commands with systematic methodologies
-    ├── plan.md         # 4-phase problem analysis
-    ├── fix-bug.md      # 6-step debugging process
-    ├── fix-code.md     # Comprehensive code improvement
-    ├── fix-types.md    # Domain-driven type design
-    ├── fix-tests.md    # Test creation and improvement
-    ├── fix-docs.md     # Documentation creation and improvement
-    ├── review-code.md  # Comprehensive quality audit
-    └── review-pr.md    # PR review process
 ```
 
 ---

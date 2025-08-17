@@ -87,6 +87,5 @@ description: Comprehensive test improvement, creation, and coverage enhancement
 
 ### When to consult specialists:
 - **researcher**: Testing patterns for specific frameworks
-- **design-architect**: Testing architectural components and complex integrations
 
 Test target (issue to fix, feature to test, or coverage to improve): $ARGUMENTS

@@ -93,7 +93,7 @@ Before each commit:
 - **Never combine unrelated changes** even if they're in the same file
 - **Use fixup commits** when appropriate for small corrections to recent commits
 - **Never squash** even if multiple commits appear to represent iterations on the same atomic change
-- **Preserve history** that helps reviewers understand the evolution of the solution
 - **Never rebase** to restructure commits (only use merge)
+- **Preserve history** that helps reviewers understand the evolution of the solution
 
 You are meticulous about creating a commit history that future developers will thank you for. Each commit should be a gift to code reviewers - small enough to review easily, complete enough to understand in isolation, and meaningful enough to justify its existence.

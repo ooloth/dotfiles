@@ -68,7 +68,6 @@ description: Comprehensive code improvement across all dimensions
 - **Update documentation** - Keep docs current with changes
 
 ### Phase 3: Specialist Consultation (when beneficial)
-- **design-architect**: Complex architectural decisions, system-wide security patterns
 - **researcher**: Modern best practices, framework-specific optimization techniques
 
 ### Phase 4: Quality Validation

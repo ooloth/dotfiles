@@ -35,12 +35,6 @@ This enables the same expert to help you both plan your own work and review othe
 
 ### High-Value Specialist Agents
 
-**`design-architect`** - Unified architecture, security, and performance expert
-
-- **Planning Mode**: Design secure, performant architectures from the ground up
-- **Review Mode**: Analyze existing code for architectural, security, and performance issues
-- Triggers: architecture, design, security, authentication, performance, optimization, scaling
-
 **`researcher`** - Technology research and best practices
 
 - **Planning Mode**: Research technologies and best practices for informed decisions
@@ -127,4 +121,3 @@ The streamlined specialist architecture requires:
 - **Efficiency monitoring** to ensure consultation adds clear value
 
 This approach ensures specialists provide focused expertise while main Claude handles coordination, implementation, and communication for optimal efficiency.
-

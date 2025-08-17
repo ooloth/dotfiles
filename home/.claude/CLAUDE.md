@@ -27,7 +27,6 @@
 
 - **atomic-committer**: MANDATORY for ALL git commit operations
 - **pr-creator**: MANDATORY for creating PR descriptions (maintains opinionated templates)
-- **design-architect**: For complex architecture, security, and performance analysis
 - **researcher**: For "what's the best X?" questions and documentation lookups
 - **task-manager**: MANDATORY for breaking down complex work into actionable GitHub issues. Use proactively for any non-trivial work.
 
@@ -113,7 +112,6 @@ Epic: Add Dark Mode Support (#100)
 **For comprehensive code reviews:**
 
 1. **Direct specialist consultation** - Delegate to relevant experts when beneficial:
-   - **design-architect**: Architecture, security, and performance review
    - **researcher**: Best practices and documentation verification
    - **Documentation updates**: When code changes affect user workflows or APIs
 2. **Provide complete context** - Give each specialist the full context they need

@@ -32,6 +32,5 @@ description: Systematic bug investigation and resolution
 
 ### When to consult specialists:
 - **researcher**: Unfamiliar frameworks, known issues, documentation
-- **design-architect**: Performance issues, architectural problems, data design
 
 Bug description: $ARGUMENTS
