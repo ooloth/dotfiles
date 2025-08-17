@@ -25,7 +25,7 @@
 
 **High-Value Specialists (use when beneficial):**
 
-- **git-workflow**: MANDATORY for ALL git operations EXCEPT creating PRs (e.g. commits, branches, merges)
+- **atomic-committer**: MANDATORY for ALL git commit operations
 - **pr-creator**: MANDATORY for creating PR descriptions (maintains opinionated templates)
 - **design-architect**: For complex architecture, security, and performance analysis
 - **researcher**: For "what's the best X?" questions and documentation lookups
@@ -105,22 +105,6 @@ Epic: Add Dark Mode Support (#100)
 - **Clear progress**: Visual tracking through GitHub interface
 - **Automatic linking**: PRs automatically reference and close issues
 - **Session continuity**: No archaeological research needed
-
-### Git Operations Delegation Rules
-
-**MANDATORY: All git operations MUST be delegated to git-workflow agent:**
-
-- **"commit"**, **"push"**, **"pull"**, **"merge"** → Always use git-workflow agent
-- **"merge pr"**, **"merge pull request"**, **"merge the pr"** → Always use git-workflow agent
-- **"branch"**, **"checkout"**, **"rebase"** → Always use git-workflow agent
-- **ANY GitHub CLI operations** (gh pr merge, gh pr create, etc.) → Always use git-workflow agent
-
-**Never perform git operations manually with direct tool calls.**
-
-**CRITICAL: PR descriptions MUST use pr-creator agent**
-
-- git-workflow agent automatically delegates to pr-creator for ALL PR descriptions
-- Generic Claude PR descriptions are forbidden - this has been debugged dozens of times
 
 ### Code Review Strategy: Direct Expert Consultation
 

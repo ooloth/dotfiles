@@ -26,9 +26,7 @@ When writing PRs, you will analyze code changes and...
 
 ## Complete PR Creation Workflow
 
-**WHEN DELEGATED PR CREATION (from git-workflow or other agents):**
-
-1. **Receive Context** - git-workflow provides you with:
+1. **Receive Context** - the main agent provides you with:
    - Current branch name
    - Full commit history (`git log main..HEAD`)
    - File changes (`git diff main...HEAD --name-only`)

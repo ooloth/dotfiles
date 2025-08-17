@@ -79,24 +79,11 @@ The system includes focused specialists that main Claude consults when beneficia
 
 ### High-Value Specialists (Context isolation provides clear benefit)
 
-- **`git-workflow`** - MANDATORY for git operations (syntax precision)
-- **`pr-creator`** - Maintains your opinionated PR templates (AUTOMATICALLY used by git-workflow)
+- **`atomic-committer`** - Creates small, thematic git commits
+- **`pr-creator`** - Writes PR descriptions in your opinionated style
 - **`design-architect`** - Complex architecture/security/performance analysis
 - **`researcher`** - "What's the best X?" questions + technology preferences
 - **`task-manager`** - Multi-PR coordination and GitHub issue tracking
-
-### Critical: PR Description Enforcement
-
-**Problem**: Claude often writes generic PR descriptions instead of using your template
-**Solution**: git-workflow agent automatically delegates to pr-creator for ALL PR creation
-**If this breaks again**: The git-workflow agent has multiple fail-safes to prevent this
-
-### Why Some Agents Were Removed
-
-- **`test-designer`** - Testing benefits from full system context
-- **`data-analyst`** - Debugging needs complete understanding
-- **`software-engineer`** - Coordination overhead outweighed benefits
-- **`problem-solver`** - Main Claude handles this naturally
 
 ## Technology Preferences
 
@@ -192,6 +179,3 @@ home/.claude/
 ```
 
 ---
-
-**Remember**: Start with natural conversation. Use slash commands when you want guaranteed systematic coverage. Both approaches lead to good outcomes, but with different characteristics. Choose based on the situation and your preferences.
-
