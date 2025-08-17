@@ -51,12 +51,6 @@ This enables the same expert to help you both plan your own work and review othe
 - Clear, informative commit messages and PR descriptions with consistent templates
 - Triggers: creating commits, pushing changes, creating PRs
 
-**`task-manager`** - Multi-PR coordination and project management
-
-- GitHub issue tracking, roadmap coordination, epic management
-- Supports main Claude with project-level organization
-- Triggers: task, roadmap, multi-PR, tracking, epic
-
 ## Specialist Consultation Patterns
 
 Main Claude coordinates with specialists through focused consultation:

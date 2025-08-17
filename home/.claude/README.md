@@ -82,7 +82,6 @@ The system includes focused specialists that main Claude consults when beneficia
 - **`atomic-committer`** - Creates small, thematic git commits
 - **`pr-creator`** - Writes PR descriptions in your opinionated style
 - **`researcher`** - "What's the best X?" questions + technology preferences
-- **`task-manager`** - Multi-PR coordination and GitHub issue tracking
 
 ## Technology Preferences
 

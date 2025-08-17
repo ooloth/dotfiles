@@ -28,7 +28,6 @@
 - **atomic-committer**: MANDATORY for ALL git commit operations
 - **pr-creator**: MANDATORY for creating PR descriptions (maintains opinionated templates)
 - **researcher**: For "what's the best X?" questions and documentation lookups
-- **task-manager**: MANDATORY for breaking down complex work into actionable GitHub issues. Use proactively for any non-trivial work.
 
 ### Slash Commands: Optional Systematic Approaches
 
@@ -53,27 +52,6 @@
 - `/plan` - 4-phase problem analysis framework
 
 ### GitHub-First Project Organization
-
-**MANDATORY: Use task-manager for systematic issue breakdown**
-
-**WHEN TO CREATE GITHUB ISSUES (Default: Always for non-trivial work):**
-
-- Any feature requiring more than one commit
-- Bug fixes that aren't obvious one-liners
-- Research or investigation tasks
-- Refactoring affecting multiple files
-- Performance optimizations or security improvements
-- Testing additions beyond simple test fixes
-
-**ISSUE CREATION PRINCIPLES:**
-
-- **Immediately actionable**: Any Claude instance can pick up and execute
-- **Self-contained**: All context and requirements in the issue
-- **Atomic**: One focused outcome per issue
-- **Linked**: References to related issues and epics
-- **Testable**: Clear acceptance criteria
-
-**PROJECT ORGANIZATION EXAMPLES:**
 
 **✅ GOOD: Systematic Issue Breakdown**
 
