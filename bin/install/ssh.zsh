@@ -14,7 +14,6 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 source "$DOTFILES/config/zsh/aliases.zsh"
 source "$DOTFILES/config/zsh/utils.zsh"
-source "$DOTFILES/lib/ssh-utils.zsh"
 
 info "🔑 Installing SSH key pair"
 
@@ -28,10 +27,16 @@ public_key_path="$ssh_dir/id_rsa.pub"
 
 printf "\n🔍 Checking for existing SSH keys\n"
 
-if detect_ssh_keys; then
-  # Keys found, exit early
+ssh_key_pair_found() {
+  [[ -s "$private_key_path" && -s "$public_key_path" ]]
+  return $? # Return the exit status of the test command
+}
+
+if ssh_key_pair_found; then
+  printf "\n✅ SSH key pair found.\n"
   return_or_exit 0
 else
+  printf "\n👎 No SSH key pair found.\n"
   printf "\n✨ Generating a new 2048-bit RSA SSH public/private key pair.\n"
 
   # Generate a 2048-bit RSA SSH key pair
