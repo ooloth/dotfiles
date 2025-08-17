@@ -26,7 +26,7 @@
 **High-Value Specialists (use when beneficial):**
 
 - **git-workflow**: MANDATORY for ALL git operations EXCEPT creating PRs (e.g. commits, branches, merges)
-- **pr-writer**: MANDATORY for creating PR descriptions (maintains opinionated templates)
+- **pr-creator**: MANDATORY for creating PR descriptions (maintains opinionated templates)
 - **design-architect**: For complex architecture, security, and performance analysis
 - **researcher**: For "what's the best X?" questions and documentation lookups
 - **task-manager**: MANDATORY for breaking down complex work into actionable GitHub issues. Use proactively for any non-trivial work.
@@ -117,9 +117,9 @@ Epic: Add Dark Mode Support (#100)
 
 **Never perform git operations manually with direct tool calls.**
 
-**CRITICAL: PR descriptions MUST use pr-writer agent**
+**CRITICAL: PR descriptions MUST use pr-creator agent**
 
-- git-workflow agent automatically delegates to pr-writer for ALL PR descriptions
+- git-workflow agent automatically delegates to pr-creator for ALL PR descriptions
 - Generic Claude PR descriptions are forbidden - this has been debugged dozens of times
 
 ### Code Review Strategy: Direct Expert Consultation

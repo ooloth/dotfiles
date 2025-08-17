@@ -271,13 +271,13 @@ Phase 2: Integration (Issues #XX-#XX)
   - Dependency information from linked issues
   - Epic context when relevant
 
-**Coordinate with `pr-writer` agent for:**
+**Coordinate with `pr-creator` agent for:**
 
 - Crafting PR descriptions that reference the specific GitHub issue
 - Ensuring commit messages align with issue acceptance criteria
 - Including issue context and acceptance criteria in PR descriptions
 - Linking PRs to parent epics and related issues
-- **Provide pr-writer with:**
+- **Provide pr-creator with:**
   - GitHub issue number and title
   - Issue acceptance criteria
   - Parent epic number (if applicable)
@@ -356,4 +356,3 @@ Remember to:
 - Update progress in real-time through GitHub
 - Use GitHub's linking features extensively
 - Focus on making work immediately resumable by any Claude instance
-

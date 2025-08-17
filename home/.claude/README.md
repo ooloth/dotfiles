@@ -80,7 +80,7 @@ The system includes focused specialists that main Claude consults when beneficia
 ### High-Value Specialists (Context isolation provides clear benefit)
 
 - **`git-workflow`** - MANDATORY for git operations (syntax precision)
-- **`pr-writer`** - Maintains your opinionated PR templates (AUTOMATICALLY used by git-workflow)
+- **`pr-creator`** - Maintains your opinionated PR templates (AUTOMATICALLY used by git-workflow)
 - **`design-architect`** - Complex architecture/security/performance analysis
 - **`researcher`** - "What's the best X?" questions + technology preferences
 - **`task-manager`** - Multi-PR coordination and GitHub issue tracking
@@ -88,7 +88,7 @@ The system includes focused specialists that main Claude consults when beneficia
 ### Critical: PR Description Enforcement
 
 **Problem**: Claude often writes generic PR descriptions instead of using your template
-**Solution**: git-workflow agent automatically delegates to pr-writer for ALL PR creation
+**Solution**: git-workflow agent automatically delegates to pr-creator for ALL PR creation
 **If this breaks again**: The git-workflow agent has multiple fail-safes to prevent this
 
 ### Why Some Agents Were Removed
@@ -177,7 +177,7 @@ home/.claude/
 ├── agents/             # Specialist agents for focused expertise
 │   ├── design-architect.md
 │   ├── git-workflow.md
-│   ├── pr-writer.md
+│   ├── pr-creator.md
 │   ├── researcher.md
 │   └── task-manager.md
 └── commands/           # Slash commands with systematic methodologies

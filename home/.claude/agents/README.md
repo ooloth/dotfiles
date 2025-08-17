@@ -50,7 +50,7 @@ This enables the same expert to help you both plan your own work and review othe
 - MANDATORY for ALL git operations - never perform git operations manually
 - Triggers: commit, branch, merge, push, pull, "merge pr", checkout, rebase, gh commands
 
-**`pr-writer`** - Commit messages and PR descriptions
+**`pr-creator`** - Commit messages and PR descriptions
 - Clear, informative commit messages and PR descriptions with consistent templates
 - Works with git-workflow agent for structured PR creation
 - Triggers: creating commits, pushing changes, creating PRs
