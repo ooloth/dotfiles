@@ -25,8 +25,8 @@
 
 **High-Value Specialists (use when beneficial):**
 
-- **git-workflow**: MANDATORY for ALL git operations (commits, branches, PRs, merges)
-- **pr-writer**: For commit messages and PR descriptions (maintains opinionated templates)
+- **git-workflow**: MANDATORY for ALL git operations EXCEPT creating PRs (e.g. commits, branches, merges)
+- **pr-writer**: MANDATORY for creating PR descriptions (maintains opinionated templates)
 - **design-architect**: For complex architecture, security, and performance analysis
 - **researcher**: For "what's the best X?" questions and documentation lookups
 - **task-manager**: MANDATORY for breaking down complex work into actionable GitHub issues. Use proactively for any non-trivial work.
@@ -211,4 +211,3 @@ Auto-approved commands in `~/.claude/settings.json` - use directly without askin
 
 **Project Guidelines:**
 See project-specific CLAUDE.md files for additional local guidance.
-

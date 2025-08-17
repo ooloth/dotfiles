@@ -204,11 +204,18 @@ EOF
     chmod +x "$DOTFILES/bin/install/github.bash"
     
     # Create minimal mock utilities to avoid errors
-    mkdir -p "$DOTFILES/bin/lib"
-    echo 'init_machine_detection() { :; }' > "$DOTFILES/bin/lib/machine-detection.bash"
-    echo 'parse_dry_run_flags() { :; }' > "$DOTFILES/bin/lib/dry-run-utils.bash"
-    echo '' > "$DOTFILES/bin/lib/error-handling.bash"
-    echo 'run_prerequisite_validation() { return 0; }' > "$DOTFILES/bin/lib/prerequisite-validation.bash"
+    # Note: setup.bash sources from core/ not bin/lib/
+    mkdir -p "$DOTFILES/core/detection"
+    mkdir -p "$DOTFILES/core/dry-run"
+    mkdir -p "$DOTFILES/core/errors"
+    mkdir -p "$DOTFILES/core/prerequisites"
+    mkdir -p "$DOTFILES/core/testing"
+    
+    echo 'init_machine_detection() { :; }' > "$DOTFILES/core/detection/machine.bash"
+    echo 'parse_dry_run_flags() { :; }' > "$DOTFILES/core/dry-run/utils.bash"
+    echo '' > "$DOTFILES/core/errors/handling.bash"
+    echo 'run_prerequisite_validation() { return 0; }' > "$DOTFILES/core/prerequisites/validation.bash"
+    echo 'run_installer() { echo "Installing $1..."; }' > "$DOTFILES/core/testing/bats-helper.bash"
     
     # Run setup.bash with mocked git
     PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
