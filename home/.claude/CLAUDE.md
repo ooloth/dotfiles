@@ -27,7 +27,7 @@
 
 - **atomic-committer**: MANDATORY for ALL git commit operations
 - **pr-creator**: MANDATORY for creating PR descriptions (maintains opinionated templates)
-- **researcher**: For "what's the best X?" questions and documentation lookups
+- **type-error-fixer**: MANDATORY for fixing all type errors
 
 ### Slash Commands: Optional Systematic Approaches
 
@@ -82,43 +82,6 @@ Epic: Add Dark Mode Support (#100)
 - **Clear progress**: Visual tracking through GitHub interface
 - **Automatic linking**: PRs automatically reference and close issues
 - **Session continuity**: No archaeological research needed
-
-### Code Review Strategy: Direct Expert Consultation
-
-**STREAMLINED REVIEW PROCESS: Skip intermediary agents, consult experts directly**
-
-**For comprehensive code reviews:**
-
-1. **Direct specialist consultation** - Delegate to relevant experts when beneficial:
-   - **researcher**: Best practices and documentation verification
-   - **Documentation updates**: When code changes affect user workflows or APIs
-2. **Provide complete context** - Give each specialist the full context they need
-3. **Synthesize feedback** - Combine insights from parallel consultations
-4. **Present unified review** - Coherent feedback with specialist attribution
-
-**Benefits of direct consultation:**
-
-- **3x faster**: No intermediary agent overhead
-- **More reliable**: Direct specialist expertise without interpretation layers
-- **Better coverage**: Parallel specialist analysis catches more issues
-- **Cleaner process**: Streamlined workflow with immediate expert access
-
-### Expert Coordination Strategy
-
-**PARALLEL CONSULTATION (for complex problems):**
-
-1. **Identify all needed specialists** upfront
-2. **Launch simultaneous consultations** with complete context
-3. **Enable cross-referencing** between specialist responses
-4. **Synthesize insights** as responses arrive
-
-**Benefits:** 3x faster than sequential consultation, better solution quality, comprehensive coverage
-
-**Use parallel consultation when:**
-
-- Problem spans multiple domains (architecture + testing + performance)
-- Complex trade-offs require specialized input
-- Time-sensitive decisions need comprehensive analysis
 
 ### Key Behavioral Changes
 

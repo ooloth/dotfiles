@@ -92,10 +92,6 @@ description: Comprehensive code quality audit across all dimensions
 - [Good pattern] in [location] - keep this approach
 ```
 
-### Phase 3: Specialist Consultation (when beneficial)
-
-- **researcher**: Modern best practices, framework-specific patterns
-
 ### Phase 4: Actionable Recommendations
 
 **For each observation, provide:**

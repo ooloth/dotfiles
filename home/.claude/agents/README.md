@@ -22,36 +22,7 @@ Specialist agents provide focused expertise when main Claude determines it would
 - Specialized tools and workflows
 - Expert perspective on specific technical domains
 
-## Agent Architecture
-
-### Context-Aware Expertise
-
-All agents are **context-aware**, adapting their behavior based on whether you're:
-
-- **Creating new code** (planning/implementation mode)
-- **Reviewing existing code** (analysis/assessment mode)
-
-This enables the same expert to help you both plan your own work and review other people's code with consistent standards and expertise.
-
-### High-Value Specialist Agents
-
-**`researcher`** - Technology research and best practices
-
-- **Planning Mode**: Research technologies and best practices for informed decisions
-- **Analysis Mode**: Evaluate existing implementations against current standards
-- **Fast-path responses**: Immediate answers for common tool/framework questions
-- Triggers: "documentation for", "how does X work", API reference, research, look up
-
-### Support and Integration Agents
-
-**`atomic-committer`** - Small, focused commits
-
-**`pr-creator`** - Commit messages and PR descriptions
-
-- Clear, informative commit messages and PR descriptions with consistent templates
-- Triggers: creating commits, pushing changes, creating PRs
-
-## Specialist Consultation Patterns
+### Specialist Consultation Patterns
 
 Main Claude coordinates with specialists through focused consultation:
 

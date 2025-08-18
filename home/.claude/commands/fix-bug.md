@@ -5,7 +5,9 @@ description: Systematic bug investigation and resolution
 ## Systematic Debugging Process
 
 ### Phase 0: Planning & Strategy Assessment
+
 **Before diving into debugging, confirm approach:**
+
 - **Have you planned your debugging strategy?** If not, start here:
   1. **Quick assessment** - Is this a simple fix or complex investigation?
   2. **Consider alternatives**:
@@ -17,6 +19,7 @@ description: Systematic bug investigation and resolution
   4. **Set time boundaries** - How long to investigate before seeking help?
 
 ### Phase 1: Systematic Investigation
+
 1. **Understand expected behavior** - What should happen?
 2. **Reproduce consistently** - Minimal steps to trigger issue
 3. **Gather information** - Error messages, stack traces, environment
@@ -25,12 +28,11 @@ description: Systematic bug investigation and resolution
 6. **Implement solution** - Address root cause, not just symptoms
 
 ### Error Analysis Patterns:
+
 - Parse error messages for key information
 - Trace stack traces to exact failure points
 - Distinguish symptoms from root causes
 - Check environmental factors (versions, configs)
 
-### When to consult specialists:
-- **researcher**: Unfamiliar frameworks, known issues, documentation
-
 Bug description: $ARGUMENTS
+

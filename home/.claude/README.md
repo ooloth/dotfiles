@@ -81,35 +81,7 @@ The system includes focused specialists that main Claude consults when beneficia
 
 - **`atomic-committer`** - Creates small, thematic git commits
 - **`pr-creator`** - Writes PR descriptions in your opinionated style
-- **`researcher`** - "What's the best X?" questions + technology preferences
-
-## Technology Preferences
-
-Preferences are embedded in the `researcher` agent's fast-path responses:
-
-**Python**: `uv` > pip/poetry, `ruff` > black/flake8, `pytest` + `pytest-cov`
-**JavaScript**: `pnpm` > npm/yarn, `vitest` > jest (new projects), TypeScript by default
-**Go**: Standard library first, minimal dependencies
-**Rust**: `cargo` + `clippy` + `rustfmt`
-
-These are applied automatically when Claude consults researcher for "which tool should I use?" questions.
-
-## Design Intentions
-
-### For Users
-
-- **Remove cognitive load** - No "right way" to ask
-- **Preserve power when needed** - Systematic approaches available
-- **Natural workflow** - Conversation feels normal
-- **Reliable outcomes** - Good practices built-in
-- **Planning-first fixes** - All `/fix-*` commands start with strategy assessment
-
-### For Future Claude Development
-
-- **Natural conversation is primary** - Don't force users into commands
-- **Slash commands preserve methodology** - Don't dilute systematic approaches
-- **Specialists provide clear value** - Only keep agents that work better in isolation
-- **Technology preferences stay current** - Update researcher agent, not giant CLAUDE.md
+- **`type-error-fixer`** - Fixes type errors without resorting to "any" or ignore comments
 
 ## Common Patterns
 
@@ -150,8 +122,7 @@ When modifying this system:
 1. **Preserve the core philosophy** - Natural conversation primary, slash commands optional
 2. **Add specialists judiciously** - Only when context isolation provides clear benefit
 3. **Keep methodologies in commands** - Don't move systematic frameworks back to agents
-4. **Update technology preferences in researcher** - Not in main CLAUDE.md
-5. **Test both workflows** - Ensure natural and systematic approaches both work
+4. **Test both workflows** - Ensure natural and systematic approaches both work
 
 ## File Organization
 

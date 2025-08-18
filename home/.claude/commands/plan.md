@@ -19,10 +19,7 @@ Provides structured solution recommendations with clear next steps.
 
 ### Phase 2: Expert Coordination (when beneficial)
 
-- **Technical problems:** researcher
-- **Data problems:** researcher (for data architecture)
-- **Process problems:** researcher
-- **Complex problems:** Coordinate multiple specialists in parallel
+...
 
 ### Phase 3: Solution Development
 
