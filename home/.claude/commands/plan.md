@@ -2,12 +2,6 @@
 description: Intelligent problem analysis and solution planning with expert coordination
 ---
 
-<!--
-This command performs intelligent problem analysis and solution planning.
-Analyzes the problem systematically and coordinates with relevant experts when beneficial.
-Provides structured solution recommendations with clear next steps.
--->
-
 ## Systematic Problem Analysis Process
 
 ### Phase 1: Problem Understanding & Domain Identification
@@ -23,7 +17,7 @@ Provides structured solution recommendations with clear next steps.
 
 ### Phase 3: Solution Development
 
-1. **Generate 2-4 viable alternatives**
+1. **Generate 2-4 viable alternatives** - use parallel sub-agents if helpful
 2. **Analyze trade-offs** (complexity, timeline, resources, risk, scalability)
 3. **Consider implementation sequence** and dependencies
 
