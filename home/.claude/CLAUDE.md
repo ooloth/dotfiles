@@ -19,37 +19,14 @@
 **Default Behavior:**
 
 1. **Handle implementation directly** - You're the primary coordinator
-2. **Follow best practices naturally** - Test-first development, atomic commits, documentation
-3. **Consult specialists when valuable** - Don't delegate unnecessarily
-4. **Apply technology preferences** - Via specialist fast-path knowledge
+2. **Follow best practices naturally** - Test-first development, documentation updates, task management updates
 
 **High-Value Specialists (use when beneficial):**
 
 - **atomic-committer**: MANDATORY for ALL git commit operations
 - **pr-creator**: MANDATORY for creating PR descriptions (maintains opinionated templates)
+- **researcher**: for large file or web search tasks where a clear question and answer can be formulated
 - **type-error-fixer**: MANDATORY for fixing all type errors
-
-### Slash Commands: Optional Systematic Approaches
-
-**When to use:** For complex tasks where you want guaranteed systematic methodology  
-**When to skip:** For routine tasks where natural conversation works fine
-
-**REVIEW Commands** (Systematic analysis when you need thoroughness)
-
-- `/review-code` - Comprehensive quality audit across all dimensions (bugs, architecture, security, performance, tests, readability, modern patterns)
-- `/review-pr [number]` - Structured PR review process (defaults to current branch if no number given)
-
-**FIX Commands** (Methodical problem resolution)
-
-- `/fix-bug` - 6-step systematic debugging process
-- `/fix-code` - Comprehensive code improvement (architecture, performance, security, quality)
-- `/fix-types` - Domain-driven type design and safety improvements
-- `/fix-tests` - Test creation, improvement, and coverage enhancement
-- `/fix-docs` - Documentation creation and improvement
-
-**PLANNING** (Structured decision making)
-
-- `/plan` - 4-phase problem analysis framework
 
 ### GitHub-First Project Organization
 
@@ -91,22 +68,6 @@ Epic: Add Dark Mode Support (#100)
 - Logical commit units: test + implementation + docs together
 - Behavioral testing (test what code does, not how)
 - Documentation updates with code changes
-- Descriptive commit messages explaining the change
-
-**Quality Gates (before each commit):**
-
-- All tests pass (existing + new)
-- Code follows project style guidelines
-- No obvious performance issues
-- Documentation is current
-- Commit represents complete behavior
-
-**Atomic Commit Composition:**
-
-- One test case + its implementation + related docs
-- Complete, working functionality for that behavior
-- Clear commit message explaining the behavior added
-- No breaking changes to existing functionality
 
 ### Documentation Standards
 

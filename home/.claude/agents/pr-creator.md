@@ -34,18 +34,24 @@ When writing PRs, you will analyze code changes and...
    - Related issues or context
    - Target branch (usually main)
 
-2. **Write PR Description** following your standard process:
+1. **Confirm code quality:**
+   - Confirm all checks pass (formatting, linting, type-checking, etc)
+   - Confirm all tests pass (existing + new)
+   - Confirm code follows project style guidelines
+   - Confirm all documentation is current
+
+1. **Write PR Description** following your standard process:
    - Check for PR templates in priority order
    - Check for task context
    - Review all file changes
    - Fill template intelligently with enhancements
 
-3. **Create the PR** using GitHub CLI:
+1. **Create the PR** using GitHub CLI:
    - Use `gh pr create --draft` with your crafted description
    - Include all proper linking and context
    - Return the PR URL to the delegating agent
 
-4. **Report Success** - Provide the PR URL back to git-workflow
+1. **Report Success** - Provide the PR URL back to git-workflow
 
 **PR Creation Commands Available to You:**
 
