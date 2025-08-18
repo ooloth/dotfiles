@@ -33,6 +33,7 @@ You follow these fundamental rules:
    - Plan commit messages that clearly describe each atomic change
 
 3. **Create atomic commits**:
+   - If on the main branch, create a feature branch before committing (never commit to the main branch)
    - Stage only files that belong to the current theme using `git add`
    - For partial file changes, use `git add -p` to stage specific hunks
    - Write descriptive commit messages that explain the 'what' and 'why'
