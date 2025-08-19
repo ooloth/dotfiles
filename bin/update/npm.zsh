@@ -71,4 +71,4 @@ if [ ${#packages_to_add[@]} -gt 0 ] || [ ${#packages_to_update[@]} -gt 0 ]; then
   npm install -g --loglevel=error "${packages_to_add[@]}" "${packages_to_update[@]}"
 fi
 
-printf "🎉 All npm packages are installed and up to date.\n"
+printf "🎉 All npm packages are installed and up to date\n"

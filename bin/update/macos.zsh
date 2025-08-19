@@ -12,3 +12,5 @@ source "$DOTFILES/config/zsh/utils.zsh"
 info "💻 Updating macOS software (after password, don't cancel!)"
 
 sudo softwareupdate --install --all --restart --agree-to-license --verbose
+
+printf "🎉 All macOS software is up to date\n"

@@ -24,4 +24,4 @@ if pgrep -q tmux; then
   tmux source ~/.config/tmux/tmux.conf
 fi
 
-printf "\n🚀 Done updating tpm plugins\n"
+printf "\n🎉 All tpm plugins are up to date\n"

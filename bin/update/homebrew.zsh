@@ -24,3 +24,5 @@ brew cu # update casks
 brew autoremove # remove old versions
 brew cleanup # remove junk
 brew doctor # address any issues
+
+printf "🎉 All homebrew packages are up to date\n"

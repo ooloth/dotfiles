@@ -15,3 +15,5 @@ fi
 info "🦀 Updating rust dependencies"
 
 rustup update
+
+printf "🎉 All neovim dependencies are up to date\n"

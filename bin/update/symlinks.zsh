@@ -73,4 +73,4 @@ maybe_symlink "$DOTFILES/library/vscode/settings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/keybindings.json" "$VSCODEUSER"
 maybe_symlink "$DOTFILES/library/vscode/snippets" "$VSCODEUSER"
 
-printf "\n🚀 All dotfiles symlinks are up to date.\n"
+printf "🎉 All symlinks are up to date\n"

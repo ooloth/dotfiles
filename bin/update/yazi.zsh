@@ -18,3 +18,5 @@ source "$DOTFILES/config/zsh/utils.zsh"
 info "📂 Updating yazi flavors"
 
 git -C "$local_repo" pull
+
+printf "\n🎉 All yazi flavors are up to date\n"
