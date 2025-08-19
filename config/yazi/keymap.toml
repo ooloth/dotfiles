@@ -1,6 +1,6 @@
 # see: https://yazi-rs.github.io/docs/configuration/keymap
 
-[manager]
+[mgr]
   append_keymap = [
     # ...
   ]

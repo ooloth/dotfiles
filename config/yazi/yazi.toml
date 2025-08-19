@@ -1,6 +1,6 @@
 # see: https://yazi-rs.github.io/docs/configuration/yazi
 
-[manager]
+[mgr]
   linemode = "size"
   scrolloff = 10
   show_hidden = true
