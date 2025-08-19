@@ -11,8 +11,7 @@ alias adv="cd $HOME/Repos/ooloth/advent-of-code"
 
 alias c="clear"
 alias cat="bat --paging=never"
-alias cc="claude"                                                         # Claude Code
-alias ccy="CLAUDE_YOLO_MODE=true claude --dangerously-skip-permissions"   # Claude Code YOLO (with security hooks)
+alias cc="CLAUDE_YOLO_MODE=true claude --dangerously-skip-permissions"   # Claude Code YOLO (with security hooks)
 alias cd="z"
 source "$DOTFILES/config/zsh/check.zsh"
 alias cte="EDITOR=vim crontab -e"

@@ -90,20 +90,20 @@ main() {
     printf "\n🔧 Initializing dotfiles utilities...\n\n"
 
     # Initialize dynamic machine detection
-    source "$DOTFILES/bin/lib/machine-detection.bash"
+    source "$DOTFILES/core/detection/machine.bash"
     init_machine_detection
 
     # Initialize dry-run mode utilities
-    source "$DOTFILES/bin/lib/dry-run-utils.bash"
+    source "$DOTFILES/core/dry-run/utils.bash"
     parse_dry_run_flags "$@"
 
     # Initialize enhanced error handling utilities
-    source "$DOTFILES/bin/lib/error-handling.bash"
+    source "$DOTFILES/core/errors/handling.bash"
 
     # Run comprehensive prerequisite validation
     printf "Running comprehensive prerequisite validation...\n\n"
 
-    source "$DOTFILES/bin/lib/prerequisite-validation.bash"
+    source "$DOTFILES/core/prerequisites/validation.bash"
     if ! run_prerequisite_validation; then
         printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
         exit 1
@@ -114,9 +114,6 @@ main() {
     # Run installation scripts
     printf "Running installations...\n\n"
 
-    cd "$DOTFILES/bin/install"
-
-    # Run bash installation scripts if they exist
     # Run installers using feature discovery
     run_installer "ssh"
     run_installer "github"

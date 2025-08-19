@@ -5,7 +5,9 @@ description: Comprehensive code improvement across all dimensions
 ## Systematic Code Improvement Process
 
 ### Phase 0: Planning & Strategy Assessment
+
 **Before improving code, confirm approach:**
+
 - **Have you planned your improvement strategy?** If not, start here:
   1. **Quick assessment** - Minor cleanup or major overhaul?
   2. **Consider alternatives**:
@@ -24,6 +26,7 @@ description: Comprehensive code improvement across all dimensions
 ### Phase 1: Multi-Dimensional Analysis
 
 #### 🏗️ **Architecture & Design**
+
 - **Structural issues** - Tight coupling, complex dependencies, unclear boundaries
 - **Design patterns** - Overused, misused, or missing patterns
 - **Responsibility** - Single responsibility principle, separation of concerns
@@ -31,6 +34,7 @@ description: Comprehensive code improvement across all dimensions
 - **Module boundaries** - Clear interfaces, proper encapsulation
 
 #### ⚡ **Performance Optimization**
+
 - **Algorithm efficiency** - O(n) complexity analysis, better data structures
 - **Resource usage** - Memory leaks, connection pooling, resource management
 - **Database optimization** - N+1 problems, missing indexes, query efficiency
@@ -38,6 +42,7 @@ description: Comprehensive code improvement across all dimensions
 - **I/O optimization** - Async operations, batch processing, streaming
 
 #### 🔒 **Security Hardening**
+
 - **Input validation** - All user inputs sanitized and validated
 - **Authentication/authorization** - Proper access controls and session management
 - **Data protection** - Sensitive data encryption, PII handling
@@ -45,6 +50,7 @@ description: Comprehensive code improvement across all dimensions
 - **Dependency security** - Known vulnerabilities in third-party packages
 
 #### 📖 **Code Quality & Maintainability**
+
 - **Naming conventions** - Clear, descriptive, searchable names
 - **Code organization** - Logical structure, consistent formatting
 - **Duplication removal** - DRY principle, extract common logic
@@ -54,6 +60,7 @@ description: Comprehensive code improvement across all dimensions
 ### Phase 2: Implementation Strategy
 
 #### 🎯 **Prioritized Improvement Plan**
+
 1. **Critical fixes first** - Security vulnerabilities, major performance issues
 2. **Architectural foundation** - Structural improvements for maintainability
 3. **Quality improvements** - Readability, documentation, error handling
@@ -61,17 +68,15 @@ description: Comprehensive code improvement across all dimensions
 5. **Nice-to-have enhancements** - Style improvements, minor optimizations
 
 #### 🔧 **Implementation Approach**
+
 - **Make incremental changes** - Small, testable improvements
 - **Preserve existing behavior** - Unless fixing bugs
 - **Add tests for changes** - Prevent regressions
 - **Commit logical units** - Each improvement as separate commit
 - **Update documentation** - Keep docs current with changes
 
-### Phase 3: Specialist Consultation (when beneficial)
-- **design-architect**: Complex architectural decisions, system-wide security patterns
-- **researcher**: Modern best practices, framework-specific optimization techniques
-
 ### Phase 4: Quality Validation
+
 - **Test all changes** - Ensure functionality preserved
 - **Performance benchmarks** - Measure improvement impact
 - **Security review** - Verify security enhancements
@@ -81,6 +86,7 @@ description: Comprehensive code improvement across all dimensions
 ### Common Code Improvements:
 
 #### **Architecture Refactoring:**
+
 - Extract service classes from controllers
 - Implement repository pattern for data access
 - Add command/query separation (CQRS)
@@ -88,6 +94,7 @@ description: Comprehensive code improvement across all dimensions
 - Use dependency injection for loose coupling
 
 #### **Performance Optimization:**
+
 - Replace O(n²) algorithms with efficient alternatives
 - Add appropriate database indexes
 - Implement caching at the right layers
@@ -95,6 +102,7 @@ description: Comprehensive code improvement across all dimensions
 - Optimize image and asset loading
 
 #### **Security Enhancements:**
+
 - Add input validation and sanitization
 - Implement proper authentication flows
 - Use parameterized queries
@@ -102,6 +110,7 @@ description: Comprehensive code improvement across all dimensions
 - Encrypt sensitive data at rest and in transit
 
 #### **Quality Improvements:**
+
 - Extract magic numbers into named constants
 - Replace comments with self-explanatory code
 - Add guard clauses to reduce nesting
@@ -109,3 +118,4 @@ description: Comprehensive code improvement across all dimensions
 - Implement consistent error handling patterns
 
 Code improvement target: $ARGUMENTS
+

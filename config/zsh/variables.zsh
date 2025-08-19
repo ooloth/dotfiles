@@ -18,15 +18,6 @@ export IS_WORK=false
 [[ "$HOSTNAME" == "Mini" ]] && IS_MINI=true
 [[ "$HOSTNAME" == "7385-Y3FH97X-MAC" || "$HOSTNAME" == "MULO-JQ97NW-MBP" ]] && IS_WORK=true
 
-# Claude
-# See: https://docs.anthropic.com/en/docs/claude-code/settings#environment-variables
-# See: https://docs.anthropic.com/en/docs/about-claude/models/overview#model-names
-# NOTE: negating IS_WORK always results in true, even if IS_WORK is true, so we avoid negation here
-if $IS_WORK; then
-else
-  export ANTHROPIC_MODEL="claude-sonnet-4-20250514"
-fi
-
 # Dotfiles
 export DOTFILES=$HOME/Repos/ooloth/dotfiles
 
