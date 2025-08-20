@@ -19,21 +19,21 @@ HOMECONFIG="$HOME/.config"
 # Main symlink creation function
 create_dotfiles_symlinks() {
     echo "🔗 Creating dotfiles symlinks..."
-    
+
     # Remove broken symlinks first
     echo "🧹 Cleaning up broken symlinks..."
     remove_broken_symlinks "$HOME"
     remove_broken_symlinks "$HOMECONFIG"
-    
+
     echo "🏠 Creating home directory symlinks..."
-    
+
     # Create symlinks for home directory files
     local home_files=(
         "$DOTFILES/home/.claude"
-        "$DOTFILES/home/.hushlogin" 
+        "$DOTFILES/home/.hushlogin"
         "$DOTFILES/home/.zshenv"
     )
-    
+
     for file in "${home_files[@]}"; do
         if [[ -e "$file" ]]; then
             maybe_symlink "$file" "$HOME"
@@ -41,20 +41,20 @@ create_dotfiles_symlinks() {
             echo "⚠️  Skipping missing file: $file"
         fi
     done
-    
+
     echo "⚙️  Creating config directory symlinks..."
-    
+
     # Create symlinks for all config files
     create_config_symlinks
-    
+
     echo "📚 Creating Library symlinks..."
-    
+
     # Create VS Code symlinks
     create_vscode_symlinks
-    
+
     # Create Yazi symlinks if available
     create_yazi_symlinks
-    
+
     echo "✅ All dotfiles symlinks created successfully"
 }
 
@@ -62,7 +62,7 @@ create_dotfiles_symlinks() {
 create_config_symlinks() {
     # Ensure config directory exists
     mkdir -p "$HOMECONFIG"
-    
+
     # Find all files in config directory and create symlinks
     if command -v fd >/dev/null 2>&1; then
         # Use fd if available (faster and more reliable)
@@ -71,7 +71,7 @@ create_config_symlinks() {
             local dirpath
             dirpath="$(dirname "$relpath")"
             local targetdir="$HOMECONFIG/$dirpath"
-            
+
             maybe_symlink "$file" "$targetdir"
         done < <(fd --type file --hidden . "$DOTCONFIG" --print0 2>/dev/null)
     else
@@ -81,7 +81,7 @@ create_config_symlinks() {
             local dirpath
             dirpath="$(dirname "$relpath")"
             local targetdir="$HOMECONFIG/$dirpath"
-            
+
             maybe_symlink "$file" "$targetdir"
         done < <(find "$DOTCONFIG" -type f -print0 2>/dev/null)
     fi
@@ -90,19 +90,19 @@ create_config_symlinks() {
 # Create VS Code symlinks
 create_vscode_symlinks() {
     local vscode_user="$HOME/Library/Application Support/Code/User"
-    
+
     # Check if VS Code directory exists
     if [[ ! -d "$vscode_user" ]]; then
         echo "📝 VS Code not found, skipping VS Code symlinks"
         return 0
     fi
-    
+
     local vscode_files=(
         "$DOTFILES/library/vscode/settings.json"
         "$DOTFILES/library/vscode/keybindings.json"
         "$DOTFILES/library/vscode/snippets"
     )
-    
+
     for file in "${vscode_files[@]}"; do
         if [[ -e "$file" ]]; then
             maybe_symlink "$file" "$vscode_user"
@@ -115,12 +115,12 @@ create_vscode_symlinks() {
 # Create Yazi symlinks if available
 create_yazi_symlinks() {
     local yazi_flavors="$HOME/Repos/yazi-rs/flavors"
-    
+
     if [[ ! -d "$yazi_flavors" ]]; then
         echo "🗂️  Yazi flavors not found, skipping Yazi symlinks"
         return 0
     fi
-    
+
     # Create symlink for Catppuccin Mocha theme
     local catppuccin_theme="$yazi_flavors/catppuccin-mocha.yazi"
     if [[ -d "$catppuccin_theme" ]]; then
@@ -133,20 +133,20 @@ create_yazi_symlinks() {
 # Verify symlinks were created correctly
 verify_symlinks() {
     echo "🔍 Verifying symlinks..."
-    
+
     local verification_failed=false
-    
+
     # Check critical symlinks
     local critical_symlinks=(
         "$HOME/.zshenv:$DOTFILES/home/.zshenv"
         "$HOMECONFIG/nvim/init.lua:$DOTFILES/config/nvim/init.lua"
         "$HOMECONFIG/tmux/tmux.conf:$DOTFILES/config/tmux/tmux.conf"
     )
-    
+
     for symlink_check in "${critical_symlinks[@]}"; do
         local symlink_path="${symlink_check%:*}"
         local expected_target="${symlink_check#*:}"
-        
+
         if [[ -e "$expected_target" ]]; then
             if is_symlink_correct "$symlink_path" "$expected_target"; then
                 echo "✅ $symlink_path → $expected_target"
@@ -156,7 +156,7 @@ verify_symlinks() {
             fi
         fi
     done
-    
+
     if [[ "$verification_failed" == "true" ]]; then
         echo "⚠️  Some symlinks verification failed"
         return 1
@@ -169,27 +169,27 @@ verify_symlinks() {
 # Main execution
 main() {
     local action="${1:-create}"
-    
+
     case "$action" in
-        "create")
-            create_dotfiles_symlinks
-            ;;
-        "verify")
-            verify_symlinks
-            ;;
-        "clean")
-            echo "🧹 Cleaning broken symlinks..."
-            remove_broken_symlinks "$HOME"
-            remove_broken_symlinks "$HOMECONFIG"
-            echo "✅ Cleanup completed"
-            ;;
-        *)
-            echo "Usage: $0 [create|verify|clean]" >&2
-            echo "  create - Create all dotfiles symlinks (default)" >&2
-            echo "  verify - Verify critical symlinks are correct" >&2
-            echo "  clean  - Remove broken symlinks only" >&2
-            exit 1
-            ;;
+    "create")
+        create_dotfiles_symlinks
+        ;;
+    "verify")
+        verify_symlinks
+        ;;
+    "clean")
+        echo "🧹 Cleaning broken symlinks..."
+        remove_broken_symlinks "$HOME"
+        remove_broken_symlinks "$HOMECONFIG"
+        echo "✅ Cleanup completed"
+        ;;
+    *)
+        echo "Usage: $0 [create|verify|clean]" >&2
+        echo "  create - Create all dotfiles symlinks (default)" >&2
+        echo "  verify - Verify critical symlinks are correct" >&2
+        echo "  clean  - Remove broken symlinks only" >&2
+        exit 1
+        ;;
     esac
 }
 
@@ -197,3 +197,4 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
+
