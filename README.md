@@ -132,7 +132,7 @@ To customize for your machines, edit the detection logic in `setup.zsh` or set t
 
 ### Key Files to Customize
 
-1. **Git Configuration**: Edit `config/git/config` with your information
+1. **Git Configuration**: Edit `git/config` with your information
 2. **Shell Aliases**: Modify `config/zsh/aliases.zsh`
 3. **Neovim**: Customize `config/nvim/init.lua`
 4. **Homebrew Packages**: Edit `@common/Brewfile`
@@ -209,4 +209,3 @@ MIT - See [LICENSE.md](LICENSE.md)
 - [Dotfiles community](https://dotfiles.github.io/)
 - [Nick Nisi's dotfiles](https://github.com/nicknisi/dotfiles)
 - The many developers who share their configurations publicly
-
