@@ -57,7 +57,8 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
 done
 
-TODO: recursively symlink any file in [tool}/config (but not /config itself)
+# TODO: recursively symlink any file in [tool}/config (but not /config itself)?
+# Or just source {tool}/symlink.bash files that each define their own commands?
 maybe_symlink "$DOTFILES/gh/config/config.yml" "$HOMECONFIG/gh"
 maybe_symlink "$DOTFILES/ghostty/config/config" "$HOMECONFIG/ghostty"
 maybe_symlink "$DOTFILES/git/config/config" "$HOMECONFIG/git"
