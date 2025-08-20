@@ -7,7 +7,7 @@ set -euo pipefail
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 main() {
-  printf "🥁 Installing X...\n"
+  printf "🔗 Symlinking X configuration files...\n"
 
   # TODO: Install if missing
   # TODO: Otherwise, install
@@ -15,7 +15,7 @@ main() {
   # TODO: Symlink configuration files
   # TODO: Validate configuration
 
-  printf "🎉 X is installed and configured\n"
+  printf "🎉 X configuration files are symlinked\n"
 }
 
 main "$@"
