@@ -752,5 +752,6 @@
   "workbench.commandPalette.preserveInput": true,
   "zenMode.showTabs": "none",
   "workbench.editor.showTabs": "none",
-  "catppuccin-icons.specificFolders": false
+  "catppuccin-icons.specificFolders": false,
+  "github.copilot.nextEditSuggestions.enabled": true
 }
