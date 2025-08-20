@@ -57,6 +57,8 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
 done
 
+maybe_symlink "$DOTFILES/gh/config/config.yml" "$HOMECONFIG/gh"
+
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 
 if [ ! -d "$yazi_flavors" ]; then
