@@ -37,7 +37,10 @@ info "🔗 Updating symlinks"
 # Target: ~ #
 #############
 
-maybe_symlink "$DOTFILES/home/.claude" "$HOME"
+maybe_symlink "$DOTFILES/features/claude/config/agents" "$HOME/.claude"
+maybe_symlink "$DOTFILES/features/claude/config/CLAUDE.md" "$HOME/.claude"
+maybe_symlink "$DOTFILES/features/claude/config/commands" "$HOME/.claude"
+maybe_symlink "$DOTFILES/features/claude/config/settings.json" "$HOME/.claude"
 maybe_symlink "$DOTFILES/features/zsh/config/.hushlogin" "$HOME"
 maybe_symlink "$DOTFILES/features/zsh/config/.zshenv" "$HOME"
 

@@ -39,7 +39,7 @@ See README.md for the complete overview. Key points for Claude:
 
 ### Symlink Management
 
-**Important for Git commits**: Files in `home/.claude/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `home/.claude/CLAUDE.md` instead of trying to commit outside the repository.
+**Important for Git commits**: Files in `features/claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `features/claude/config/CLAUDE.md` instead of trying to commit outside the repository.
 
 The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `@common/symlinks/` is under development and not yet functional).
 

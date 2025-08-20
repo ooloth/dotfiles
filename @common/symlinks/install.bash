@@ -25,19 +25,12 @@ create_dotfiles_symlinks() {
     echo "🏠 Creating home directory symlinks..."
 
     # Create symlinks for home directory files
-    local home_files=(
-        "$DOTFILES/home/.claude"
-        "$DOTFILES/features/zsh/config/.hushlogin"
-        "$DOTFILES/features/zsh/config/.zshenv"
-    )
-
-    for file in "${home_files[@]}"; do
-        if [[ -e "$file" ]]; then
-            maybe_symlink "$file" "$HOME"
-        else
-            echo "⚠️  Skipping missing file: $file"
-        fi
-    done
+    maybe_symlink "${DOTFILES}/features/claude/config/agents" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/features/claude/config/CLAUDE.md" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/features/claude/config/commands" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/features/claude/config/settings.json" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/features/zsh/config/.hushlogin" "${HOME}"
+    maybe_symlink "${DOTFILES}/features/zsh/config/.zshenv" "${HOME}"
 
     echo "⚙️  Creating config directory symlinks..."
 
