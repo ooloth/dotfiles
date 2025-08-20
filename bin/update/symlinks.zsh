@@ -57,10 +57,16 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
   maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
 done
 
+TODO: recursively symlink any file in [tool}/config (but not /config itself)
 maybe_symlink "$DOTFILES/gh/config/config.yml" "$HOMECONFIG/gh"
 maybe_symlink "$DOTFILES/ghostty/config/config" "$HOMECONFIG/ghostty"
 maybe_symlink "$DOTFILES/git/config/config" "$HOMECONFIG/git"
 maybe_symlink "$DOTFILES/git/config/config.work" "$HOMECONFIG/git"
+maybe_symlink "$DOTFILES/k9s/config/aliases.yaml" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/k9s/config/clusters" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/k9s/config/config.yaml" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/k9s/config/hotkeys.yaml" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/k9s/config/skins" "$HOMECONFIG/k9s"
 
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 

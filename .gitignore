@@ -7,6 +7,6 @@ Brewfile.lock.json
 **/.claude/settings.local.json
 
 # Work stuff
-config/k9s/clusters/*
+k9s/config/clusters/*
 config/zsh/work/*
 !config/zsh/work/.gitkeep
