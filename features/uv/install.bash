@@ -11,12 +11,12 @@ DOTFILES="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Source utilities
 source "$SCRIPT_DIR/utils.bash"
-source "$DOTFILES/core/errors/handling.bash"
+source "$DOTFILES/@common/errors/handling.bash"
 
 main() {
     echo "⚡️ Setting up UV (Python package manager)"
     echo ""
-    
+
     # Check if UV is already installed
     if is_uv_installed; then
         local version
@@ -24,14 +24,14 @@ main() {
         echo "✅ UV is already installed: $version"
         return 0
     fi
-    
+
     # Install UV
     echo "📦 UV not found, installing..."
     if ! install_uv; then
         echo "❌ Failed to install UV"
         exit 1
     fi
-    
+
     # Verify installation
     echo ""
     echo "🧪 Verifying installation..."
@@ -43,10 +43,11 @@ main() {
         echo "❌ UV installation verification failed"
         exit 1
     fi
-    
+
     echo ""
     echo "🎉 UV setup complete!"
 }
 
 # Run main function
 main "$@"
+

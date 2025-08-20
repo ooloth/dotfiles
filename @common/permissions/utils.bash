@@ -218,4 +218,3 @@ validate_permission_environment() {
     echo "⚠️  Using find as fallback (fd preferred but not available)"
   fi
 }
-

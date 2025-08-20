@@ -15,7 +15,7 @@ run_installer() {
     local feature_name="$1"
     local feature_path="$DOTFILES/features/$feature_name/install.bash"
     local legacy_path="$feature_name.bash"
-    
+
     # Try new feature location first
     if [[ -f "$feature_path" ]]; then
         printf "  → Using feature-based installer: %s\n" "$feature_path"
@@ -90,20 +90,20 @@ main() {
     printf "\n🔧 Initializing dotfiles utilities...\n\n"
 
     # Initialize dynamic machine detection
-    source "$DOTFILES/core/detection/machine.bash"
+    source "$DOTFILES/@common/detection/machine.bash"
     init_machine_detection
 
     # Initialize dry-run mode utilities
-    source "$DOTFILES/core/dry-run/utils.bash"
+    source "$DOTFILES/@common/dry-run/utils.bash"
     parse_dry_run_flags "$@"
 
     # Initialize enhanced error handling utilities
-    source "$DOTFILES/core/errors/handling.bash"
+    source "$DOTFILES/@common/errors/handling.bash"
 
     # Run comprehensive prerequisite validation
     printf "Running comprehensive prerequisite validation...\n\n"
 
-    source "$DOTFILES/core/prerequisites/validation.bash"
+    source "$DOTFILES/@common/prerequisites/validation.bash"
     if ! run_prerequisite_validation; then
         printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
         exit 1

@@ -105,13 +105,6 @@ jobs:
 
           echo "✅ DOTFILES set to: $DOTFILES"
 
-          # Verify key directories exist
-          for dir in test core features; do
-            if [[ -d "$DOTFILES/$dir" ]]; then
-              echo "✅ Found directory: $dir"
-            fi
-          done
-
           # Verify BATS is available
           if ! command -v bats >/dev/null 2>&1; then
             echo "❌ BATS not found in PATH"
@@ -169,13 +162,13 @@ jobs:
           echo "Testing symlink functionality..."
 
           # Check if symlinks utilities exist in new location
-          if [[ -f "./core/symlinks/utils.bash" ]]; then
+          if [[ -f "./@common/symlinks/utils.bash" ]]; then
             echo "Testing new symlinks utilities..."
             # Test that the utilities can be sourced without errors
-            bash -n ./core/symlinks/utils.bash
+            bash -n ./@common/symlinks/utils.bash
 
             # Test basic symlink functionality
-            source ./core/symlinks/utils.bash
+            source ./@common/symlinks/utils.bash
             echo "✅ New symlinks utilities loaded successfully"
           fi
 

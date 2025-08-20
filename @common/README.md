@@ -1,11 +1,11 @@
-# Core Utilities
+# Common Utilities
 
 This directory contains cross-cutting utilities used by multiple features. These are infrastructure-level concerns that don't belong to any single feature.
 
 ## Architecture
 
 ```
-core/
+@common/
 ├── {helper}/
 │   ├── utils.bash   # Shared utilities
 │   ├── tests/       # Feature-specific tests
@@ -44,20 +44,19 @@ core/
 
 ## Usage
 
-Core utilities are sourced by features as needed:
+Common utilities are sourced by features as needed:
 
 ```bash
 # In a feature's install.bash
-source "$DOTFILES/core/detection/machine.bash"
-source "$DOTFILES/core/errors/handling.bash"
+source "$DOTFILES/@common/detection/machine.bash"
+source "$DOTFILES/@common/errors/handling.bash"
 ```
 
 ## Standards
 
-All core utilities must:
+All common utilities must:
 
 - Pass shellcheck with zero warnings
 - Have comprehensive bats tests
 - Work independently (no cross-dependencies)
 - Be well-documented with examples
-

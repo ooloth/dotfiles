@@ -94,4 +94,3 @@ is_symlink_correct() {
         return 1
     fi
 }
-

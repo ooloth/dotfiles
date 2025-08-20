@@ -10,7 +10,7 @@ This feature manages macOS system software updates with machine detection.
 
 ## Dependencies
 
-- **Core Detection**: Uses `core/detection/machine.bash` for machine type detection
+- **Common Detection**: Uses `@common/detection/machine.bash` for machine type detection
 - **macOS**: Only runs on macOS systems
 - **Admin Access**: Requires sudo privileges for software updates
 
@@ -33,3 +33,4 @@ bats features/macos/tests/
 ## Note
 
 This feature only provides an update script, no installation script is needed as macOS is the base system.
+

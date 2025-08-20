@@ -17,12 +17,12 @@ See README.md for the complete overview. Key points for Claude:
 
 **Future Bash Structure (In Development - Not Yet Active):**
 
-- Core functionality being built in `core/` (bash modules for shared logic)
+- Common functionality being built in `@common/` (bash modules for shared logic)
 - Feature-specific code being built in `features/` (individual feature directories with bash scripts)
 - Future main setup script will be `setup.bash`
 - **Note**: These bash files are not yet functional or ready for use
 
-**Future Bash Core Modules** (`core/`) - Under construction:
+**Future Bash Common Modules** (`common/`) - Under construction:
 
 - `detection/` - Machine and macOS detection logic
 - `dry-run/` - Dry run utilities
@@ -41,7 +41,7 @@ See README.md for the complete overview. Key points for Claude:
 
 **Important for Git commits**: Files in `home/.claude/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `home/.claude/CLAUDE.md` instead of trying to commit outside the repository.
 
-The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `core/symlinks/` is under development and not yet functional).
+The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `@common/symlinks/` is under development and not yet functional).
 
 ### Claude Development Workflow
 

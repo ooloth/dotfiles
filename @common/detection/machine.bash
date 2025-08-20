@@ -75,4 +75,3 @@ init_machine_detection() {
         echo "Detected machine type: $MACHINE" >&2
     fi
 }
-

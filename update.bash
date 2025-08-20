@@ -93,13 +93,13 @@ main() {
     feature=$(parse_arguments "$@")
 
     # Initialize utilities
-    if [[ -f "$DOTFILES/core/detection/machine.bash" ]]; then
-        source "$DOTFILES/core/detection/machine.bash"
+    if [[ -f "$DOTFILES/@common/detection/machine.bash" ]]; then
+        source "$DOTFILES/@common/detection/machine.bash"
         init_machine_detection
     fi
 
-    if [[ -f "$DOTFILES/core/errors/handling.bash" ]]; then
-        source "$DOTFILES/core/errors/handling.bash"
+    if [[ -f "$DOTFILES/@common/errors/handling.bash" ]]; then
+        source "$DOTFILES/@common/errors/handling.bash"
     fi
 
     # If a specific feature was requested, update only that

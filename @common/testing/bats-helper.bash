@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# BATS test helper functions for feature tests
-# Provides common utilities and setup for core/ and features/ tests
-
 set -euo pipefail
 
 # Setup test environment
@@ -12,15 +9,15 @@ setup_test_env() {
         export TEST_TEMP_DIR
         TEST_TEMP_DIR="$(mktemp -d)"
     fi
-    
+
     # Save original environment
     export ORIGINAL_HOME="${HOME:-}"
     export ORIGINAL_DOTFILES="${DOTFILES:-}"
-    
+
     # Set up isolated test environment
     export HOME="$TEST_TEMP_DIR/fake_home"
     export DOTFILES="$TEST_TEMP_DIR/fake_dotfiles"
-    
+
     # Create basic directory structure
     mkdir -p "$HOME"
     mkdir -p "$DOTFILES"
@@ -32,13 +29,13 @@ cleanup_test_env() {
     if [[ -n "${ORIGINAL_HOME:-}" ]]; then
         export HOME="$ORIGINAL_HOME"
     fi
-    
+
     if [[ -n "${ORIGINAL_DOTFILES:-}" ]]; then
         export DOTFILES="$ORIGINAL_DOTFILES"
     else
         unset DOTFILES
     fi
-    
+
     # Clean up temporary directory
     if [[ -n "${TEST_TEMP_DIR:-}" && -d "$TEST_TEMP_DIR" ]]; then
         rm -rf "$TEST_TEMP_DIR"
@@ -51,7 +48,7 @@ mock_command() {
     local cmd="$1"
     local exit_code="${2:-0}"
     local output="${3:-}"
-    
+
     eval "$cmd() { 
         if [[ -n '$output' ]]; then
             echo '$output'
@@ -66,7 +63,7 @@ assert_success() {
     # Declare BATS built-in variables for shellcheck
     local status="${status:-}"
     local output="${output:-}"
-    
+
     if [[ "$status" -ne 0 ]]; then
         echo "Expected success but got exit code: $status"
         echo "Output: $output"
@@ -78,7 +75,7 @@ assert_failure() {
     # Declare BATS built-in variables for shellcheck
     local status="${status:-}"
     local output="${output:-}"
-    
+
     if [[ "$status" -eq 0 ]]; then
         echo "Expected failure but got success"
         echo "Output: $output"
@@ -108,21 +105,21 @@ assert_output_not_contains() {
 assert_output() {
     local expected
     local partial=false
-    
+
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --partial)
-                partial=true
-                shift
-                ;;
-            *)
-                expected="$1"
-                shift
-                ;;
+        --partial)
+            partial=true
+            shift
+            ;;
+        *)
+            expected="$1"
+            shift
+            ;;
         esac
     done
-    
+
     if [[ "$partial" == "true" ]]; then
         # Partial match
         if [[ "$output" != *"$expected"* ]]; then
@@ -144,7 +141,7 @@ assert_output() {
 assert_equal() {
     local expected="$1"
     local actual="$2"
-    
+
     if [[ "$actual" != "$expected" ]]; then
         echo "Expected: $expected"
         echo "Actual: $actual"
@@ -156,10 +153,11 @@ assert_equal() {
 assert_not_equal() {
     local expected="$1"
     local actual="$2"
-    
+
     if [[ "$actual" == "$expected" ]]; then
         echo "Expected NOT to equal: $expected"
         echo "Actual: $actual"
         return 1
     fi
 }
+
