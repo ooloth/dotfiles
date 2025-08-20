@@ -1,1 +1,0 @@
-/Users/michael/Repos/ooloth/dotfiles/features/claude/config/CLAUDE.md
