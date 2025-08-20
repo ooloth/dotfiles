@@ -74,6 +74,7 @@ curl -s https://raw.githubusercontent.com/ooloth/dotfiles/main/setup.zsh | zsh
 ```
 
 This will:
+
 1. Clone this repository to `~/Repos/ooloth/dotfiles`
 2. Run all installation scripts in sequence
 3. Set up symlinks for all configurations
@@ -122,6 +123,7 @@ source settings.zsh    # macOS preferences
 ### Machine-Specific Configuration
 
 The setup automatically detects machine type based on hostname:
+
 - Machines with "Air" in the name → Personal laptop configuration
 - Machines with "Mini" in the name → Home server configuration
 - All others → Work machine configuration
@@ -130,15 +132,15 @@ To customize for your machines, edit the detection logic in `setup.zsh` or set t
 
 ### Key Files to Customize
 
-1. **Git Configuration**: Edit `config/git/config` with your information
+1. **Git Configuration**: Edit `git/config` with your information
 2. **Shell Aliases**: Modify `config/zsh/aliases.zsh`
 3. **Neovim**: Customize `config/nvim/init.lua`
-4. **Homebrew Packages**: Edit `macos/Brewfile`
+4. **Homebrew Packages**: Edit `@common/Brewfile`
 5. **macOS Preferences**: Adjust `macos/macos-defaults`
 
 ### Adding Your Own Tools
 
-1. Add Homebrew packages to `macos/Brewfile`
+1. Add Homebrew packages to `@common/Brewfile`
 2. Add configuration files to `config/<tool-name>/`
 3. Add symlinks in `bin/update/symlinks.zsh`
 4. Run `symlinks` to create the links
@@ -165,6 +167,7 @@ The `u` function runs all updates and reloads your shell.
 ### Symlinks Already Exist
 
 The installation preserves existing files. To replace them:
+
 1. Back up the existing file
 2. Remove it manually
 3. Run `symlinks`
@@ -182,6 +185,7 @@ Ensure `/opt/homebrew/bin` (Apple Silicon) or `/usr/local/bin` (Intel) is in you
 ### Machine Detection Not Working
 
 Set the environment variables manually in your shell:
+
 ```sh
 export IS_WORK=true   # or false
 export IS_AIR=true    # or false

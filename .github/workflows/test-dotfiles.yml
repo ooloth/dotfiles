@@ -6,8 +6,8 @@ on:
     branches: [main]
     paths:
       - "**/*.bash"
-      - "core/**"
-      - "features/**"
+      - "**/*.bats"
+      - "**/*.sh"
       - ".github/workflows/test-dotfiles.yml"
 
   # Run on pull requests to main (covers feature branch testing)
@@ -15,8 +15,8 @@ on:
     branches: [main]
     paths:
       - "**/*.bash"
-      - "core/**"
-      - "features/**"
+      - "**/*.bats"
+      - "**/*.sh"
       - ".github/workflows/test-dotfiles.yml"
 
   # Allow manual triggering for debugging
@@ -58,7 +58,7 @@ jobs:
 
           # Find all bash scripts and run shellcheck
           BASH_FILES=$(find . \( -name "*.sh" -o -name "*.bash" \) -type f -not -path "./.*")
-          ALL_BATS_TESTS=$(find core features -name "*.bats" -type f 2>/dev/null | sort)
+          ALL_BATS_TESTS=$(find -name "*.bats" -type f 2>/dev/null | sort)
 
           if [[ -z "$BASH_FILES" ]]; then
             echo "No bash scripts found to check"
@@ -105,13 +105,6 @@ jobs:
 
           echo "✅ DOTFILES set to: $DOTFILES"
 
-          # Verify key directories exist
-          for dir in test core features; do
-            if [[ -d "$DOTFILES/$dir" ]]; then
-              echo "✅ Found directory: $dir"
-            fi
-          done
-
           # Verify BATS is available
           if ! command -v bats >/dev/null 2>&1; then
             echo "❌ BATS not found in PATH"
@@ -129,9 +122,8 @@ jobs:
           FAILED_TESTS=""
           TOTAL_TESTS=0
 
-          # Find all BATS test files in core/ and features/ directories only
-          # Ignore deprecated tests in test/ directory which will be cleaned up soon
-          ALL_BATS_TESTS=$(find core features -name "*.bats" -type f 2>/dev/null | sort)
+          # Find all BATS test files 
+          ALL_BATS_TESTS=$(find -name "*.bats" -type f 2>/dev/null | sort)
 
           if [[ -z "$ALL_BATS_TESTS" ]]; then
             echo "No BATS test files found"
@@ -169,13 +161,13 @@ jobs:
           echo "Testing symlink functionality..."
 
           # Check if symlinks utilities exist in new location
-          if [[ -f "./core/symlinks/utils.bash" ]]; then
+          if [[ -f "./@common/symlinks/utils.bash" ]]; then
             echo "Testing new symlinks utilities..."
             # Test that the utilities can be sourced without errors
-            bash -n ./core/symlinks/utils.bash
+            bash -n ./@common/symlinks/utils.bash
 
             # Test basic symlink functionality
-            source ./core/symlinks/utils.bash
+            source ./@common/symlinks/utils.bash
             echo "✅ New symlinks utilities loaded successfully"
           fi
 

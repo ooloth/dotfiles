@@ -5,12 +5,8 @@
 Brewfile.lock.json
 
 **/.claude/settings.local.json
-**/home/.claude/projects
-**/home/.claude/shell-snapshots
-**/home/.claude/statsig
-**/home/.claude/todos
 
 # Work stuff
-config/k9s/clusters/*
+k9s/config/clusters/*
 config/zsh/work/*
 !config/zsh/work/.gitkeep

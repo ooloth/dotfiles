@@ -37,9 +37,12 @@ info "🔗 Updating symlinks"
 # Target: ~ #
 #############
 
-maybe_symlink "$DOTFILES/home/.claude" "$HOME"
-maybe_symlink "$DOTFILES/home/.hushlogin" "$HOME"
-maybe_symlink "$DOTFILES/home/.zshenv" "$HOME"
+maybe_symlink "$DOTFILES/claude/config/agents" "$HOME/.claude"
+maybe_symlink "$DOTFILES/claude/config/CLAUDE.md" "$HOME/.claude"
+maybe_symlink "$DOTFILES/claude/config/commands" "$HOME/.claude"
+maybe_symlink "$DOTFILES/claude/config/settings.json" "$HOME/.claude"
+maybe_symlink "$DOTFILES/zsh/config/.hushlogin" "$HOME"
+maybe_symlink "$DOTFILES/zsh/config/.zshenv" "$HOME"
 
 #####################
 # Target: ~/.config #
@@ -53,6 +56,20 @@ fd --type file --hidden . "$DOTCONFIG" | while read file; do
 
   maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
 done
+
+# TODO: recursively symlink any file in [tool}/config (but not /config itself)?
+# Or just source {tool}/symlink.bash files that each define their own commands?
+maybe_symlink "$DOTFILES/gh/config/config.yml" "$HOMECONFIG/gh"
+maybe_symlink "$DOTFILES/ghostty/config/config" "$HOMECONFIG/ghostty"
+maybe_symlink "$DOTFILES/git/config/config" "$HOMECONFIG/git"
+maybe_symlink "$DOTFILES/git/config/config.work" "$HOMECONFIG/git"
+maybe_symlink "$DOTFILES/k9s/config/aliases.yaml" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/k9s/config/clusters" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/k9s/config/config.yaml" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/k9s/config/hotkeys.yaml" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/k9s/config/skins" "$HOMECONFIG/k9s"
+maybe_symlink "$DOTFILES/kitty/config/colorscheme" "$HOMECONFIG/kitty"
+maybe_symlink "$DOTFILES/kitty/config/kitty.conf" "$HOMECONFIG/kitty"
 
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 
@@ -69,8 +86,8 @@ fi
 
 VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
-maybe_symlink "$DOTFILES/library/vscode/settings.json" "$VSCODEUSER"
-maybe_symlink "$DOTFILES/library/vscode/keybindings.json" "$VSCODEUSER"
-maybe_symlink "$DOTFILES/library/vscode/snippets" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/vscode/config/keybindings.json" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/vscode/config/settings.json" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/vscode/config/snippets" "$VSCODEUSER"
 
 printf "🎉 All symlinks are up to date\n"

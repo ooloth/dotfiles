@@ -13,9 +13,9 @@ export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 # Tries new feature location first, falls back to old location
 run_updater() {
     local feature_name="$1"
-    local feature_path="$DOTFILES/features/$feature_name/update.bash"
+    local feature_path="$DOTFILES/$feature_name/update.bash"
     local legacy_path="$DOTFILES/bin/update/${feature_name}.zsh"
-    
+
     # Try new feature location first
     if [[ -f "$feature_path" ]]; then
         printf "  → Using feature-based updater: %s\n" "$feature_path"
@@ -34,26 +34,26 @@ run_updater() {
 # Parse command line arguments
 parse_arguments() {
     local feature=""
-    
+
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --help|-h)
-                show_help
-                exit 0
-                ;;
-            *)
-                feature="$1"
-                shift
-                ;;
+        --help | -h)
+            show_help
+            exit 0
+            ;;
+        *)
+            feature="$1"
+            shift
+            ;;
         esac
     done
-    
+
     echo "$feature"
 }
 
 # Show help message
 show_help() {
-    cat << EOF
+    cat <<EOF
 Usage: update.bash [feature]
 
 Update dotfiles components. If no feature is specified, updates frequently-changing components.
@@ -91,17 +91,17 @@ EOF
 main() {
     local feature
     feature=$(parse_arguments "$@")
-    
+
     # Initialize utilities
-    if [[ -f "$DOTFILES/core/detection/machine.bash" ]]; then
-        source "$DOTFILES/core/detection/machine.bash"
+    if [[ -f "$DOTFILES/@common/detection/machine.bash" ]]; then
+        source "$DOTFILES/@common/detection/machine.bash"
         init_machine_detection
     fi
-    
-    if [[ -f "$DOTFILES/core/errors/handling.bash" ]]; then
-        source "$DOTFILES/core/errors/handling.bash"
+
+    if [[ -f "$DOTFILES/@common/errors/handling.bash" ]]; then
+        source "$DOTFILES/@common/errors/handling.bash"
     fi
-    
+
     # If a specific feature was requested, update only that
     if [[ -n "$feature" ]]; then
         printf "🔄 Updating %s...\n\n" "$feature"
@@ -109,10 +109,10 @@ main() {
         printf "\n✅ Update complete!\n"
         return 0
     fi
-    
-    # Otherwise, update frequently-changing components (matching legacy approach)
+
+    # Otherwise, update frequently-changing components
     printf "🔄 Updating frequently-changing dotfiles components...\n\n"
-    
+
     # Update in the same order as legacy config/zsh/update.zsh
     run_updater "mode"
     run_updater "symlinks"
@@ -124,7 +124,7 @@ main() {
     run_updater "gcloud"
     run_updater "homebrew"
     run_updater "macos"
-    
+
     printf "\n✅ All frequent updates complete!\n"
     printf "\nNote: Some components require manual updates:\n"
     printf "  - SSH keys/config: ./update.bash ssh\n"
@@ -133,7 +133,8 @@ main() {
     printf "  - Content repositories: ./update.bash content\n"
 }
 
-# Only run main if script is executed directly
+# If executed directly, run main; otherwise (i.e. if sourced), make the functions
+# and variables available in the current shell but don't execute any logic
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
