@@ -2,6 +2,9 @@
 
 # Test suite for mode-utils.bash
 
+# Support mocking functions
+# shellcheck disable=SC2329
+
 # Load the permissions utilities
 load "../utils.bash"
 load "../../testing/bats-helper.bash"
@@ -98,11 +101,6 @@ teardown() {
 
 # Test make_file_executable
 @test "make_file_executable makes file executable" {
-  # Create test file
-  local test_file="$TEST_TEMP_DIR/test.sh"
-  touch "$test_file"
-  chmod 644 "$test_file"
-
   # Mock chmod
   chmod() {
     if [[ "$1" == "+x" ]]; then
@@ -113,6 +111,11 @@ teardown() {
       command chmod "$@"
     fi
   }
+
+  # Create test file
+  local test_file="$TEST_TEMP_DIR/test.sh"
+  touch "$test_file"
+  chmod 644 "$test_file"
 
   run make_file_executable "$test_file"
   [ "$status" -eq 0 ]
@@ -377,7 +380,7 @@ teardown() {
 
 @test "update_dotfiles_script_permissions fails when bin directory missing" {
   # Remove the bin directory that setup() created
-  rm -rf "$TEST_TEMP_DIR/bin"
+  rm -rf "${TEST_TEMP_DIR:?}/bin"
 
   run update_dotfiles_script_permissions "$TEST_TEMP_DIR" "false"
   [ "$status" -ne 0 ]
@@ -457,4 +460,3 @@ teardown() {
   [ "$status" -ne 0 ]
   [[ "$output" == *"❌ Neither fd nor find command available"* ]]
 }
-
