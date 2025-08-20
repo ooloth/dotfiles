@@ -27,8 +27,8 @@ create_dotfiles_symlinks() {
     # Create symlinks for home directory files
     local home_files=(
         "$DOTFILES/home/.claude"
-        "$DOTFILES/home/.hushlogin"
-        "$DOTFILES/home/.zshenv"
+        "$DOTFILES/features/zsh/config/.hushlogin"
+        "$DOTFILES/features/zsh/config/.zshenv"
     )
 
     for file in "${home_files[@]}"; do
@@ -135,7 +135,7 @@ verify_symlinks() {
 
     # Check critical symlinks
     local critical_symlinks=(
-        "$HOME/.zshenv:$DOTFILES/home/.zshenv"
+        "$HOME/.zshenv:$DOTFILES/features/zsh/config/.zshenv"
         "$HOMECONFIG/nvim/init.lua:$DOTFILES/config/nvim/init.lua"
         "$HOMECONFIG/tmux/tmux.conf:$DOTFILES/config/tmux/tmux.conf"
     )
