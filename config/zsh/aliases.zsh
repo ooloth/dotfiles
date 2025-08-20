@@ -22,6 +22,7 @@ alias conf="cd $HOME/Repos/ooloth/config.nvim"
 alias dot="cd $DOTFILES"
 alias d="lazydocker"
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias db="docker build ."
 alias dash="cd $HOME/Repos/ooloth/dashboard"
 de() { docker container exec -it $1 sh; }
 alias dc="docker compose"
