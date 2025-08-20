@@ -1,0 +1,9 @@
+{
+  "CSS Variables": {
+    "prefix": "v",
+    "body": [
+      "var(--$1);"
+    ],
+    "description": "Insert CSS variable"
+  }
+}

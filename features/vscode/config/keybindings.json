@@ -1,0 +1,164 @@
+// NOTE: format on save disabled via .prettierignore
+
+// see: https://code.visualstudio.com/api/references/when-clause-contexts
+
+[
+  ///////////
+  // SPACE //
+  ///////////
+
+  ///////////
+  // COMMA //
+  ///////////
+
+  /////////
+  // CMD //
+  /////////
+
+  //////////
+  // CTRL //
+  //////////
+
+  ////////////
+  // CTRL-A //
+  ////////////
+
+  /////////////////
+  // SHIFT-SHIFT //
+  /////////////////
+
+  /////////////////
+  // COMMA-COMMA //
+  /////////////////
+
+  /////////////////////////
+  // SEMICOLON-SEMICOLON //
+  /////////////////////////
+
+  ////////
+  // AI //
+  ////////
+
+  { "key": "ctrl+v", "command": "workbench.action.chat.startVoiceChat",         "when": "!editorTextFocus && !voiceChatInProgress" },
+  { "key": "ctrl+v", "command": "workbench.action.chat.stopListeningAndSubmit", "when": "!editorTextFocus && voiceChatInProgress" },
+
+  ////////////////
+  // NAVIGATING //
+  ////////////////
+
+  // Previous locations
+  { "key": "ctrl+i", "command": "workbench.action.navigateForward", "when": "canNavigateForward" },
+  { "key": "ctrl+o", "command": "workbench.action.navigateBack",    "when": "canNavigateBack" },
+
+  // UI sections
+  { "key": "ctrl+h", "command": "workbench.action.navigateLeft" },
+  { "key": "ctrl+l", "command": "workbench.action.navigateRight" },
+  { "key": "ctrl+j", "command": "workbench.action.navigateDown" },
+  { "key": "ctrl+k", "command": "workbench.action.navigateUp" },
+
+  // Editors
+  { "key": "cmd+1",   "command": "workbench.action.openEditorAtIndex1" },
+  { "key": "cmd+2",   "command": "workbench.action.openEditorAtIndex2" },
+  { "key": "cmd+3",   "command": "workbench.action.openEditorAtIndex3" },
+  { "key": "cmd+4",   "command": "workbench.action.openEditorAtIndex4" },
+  { "key": "cmd+5",   "command": "workbench.action.openEditorAtIndex5" },
+  { "key": "cmd+6",   "command": "workbench.action.openEditorAtIndex6" },
+  { "key": "cmd+7",   "command": "workbench.action.openEditorAtIndex7" },
+  { "key": "cmd+8",   "command": "workbench.action.openEditorAtIndex8" },
+  { "key": "cmd+9",   "command": "workbench.action.openEditorAtIndex9" },
+  { "key": "ctrl+]",  "command": "workbench.action.nextEditor",         "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+[",  "command": "workbench.action.previousEditor",     "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+\\", "command": "workbench.action.splitEditor",        "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+  { "key": "ctrl+m",  "command": "workbench.action.toggleEditorWidths", "when": "editorFocus || inKeybindings || inSettingsEditor || terminalEditorFocus" },
+
+  // Sidebar
+  { "key": "ctrl+b", "command": "workbench.action.toggleSidebarVisibility" },
+
+  // Panel views
+  { "key": "cmd+ctrl+]", "command": "workbench.action.nextPanelView",              "when": "panelFocus" },
+  { "key": "cmd+ctrl+[", "command": "workbench.action.previousPanelView",          "when": "panelFocus" },
+  { "key": "cmd+ctrl+h", "command": "workbench.action.terminal.resizePaneLeft",    "when": "panelFocus" },
+  { "key": "cmd+ctrl+l", "command": "workbench.action.terminal.resizePaneRight",   "when": "panelFocus" },
+  { "key": "cmd+ctrl+j", "command": "workbench.action.terminal.resizePaneDown",    "when": "panelFocus" },
+  { "key": "cmd+ctrl+k", "command": "workbench.action.terminal.resizePaneUp",      "when": "panelFocus" },
+  { "key": "cmd+j",      "command": "-console.log.wrap.json",                      "when": "editorTextFocus" }, // unblock cmd+j toggling the panel
+
+  // Terminals
+  { "key": "ctrl+t",     "command": "workbench.action.terminal.toggleTerminal",    "when": "terminal.active" },
+  { "key": "cmd+n",      "command": "workbench.action.terminal.new",               "when": "terminalFocus && terminalProcessSupported || terminalWebExtensionContributedProfile" },
+  { "key": "ctrl+\\",    "command": "workbench.action.terminal.split",             "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile" },
+  // NOTE: these override ability to use these keys to jump in and out of the terminal when panel is on left or right
+  // { "key": "ctrl+h",     "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  // { "key": "ctrl+l",     "command": "workbench.action.terminal.focusNextPane",     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  { "key": "ctrl+]",     "command": "workbench.action.terminal.focusNext",         "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+  { "key": "ctrl+[",     "command": "workbench.action.terminal.focusPrevious",     "when": "terminalFocus && terminalHasBeenCreated && !terminalEditorFocus || terminalFocus && terminalProcessSupported && !terminalEditorFocus" },
+
+  // Lists (read-only)
+  { "key": "j",      "command": "list.focusDown",       "when": "listFocus && !inputFocus" },
+  { "key": "k",      "command": "list.focusUp",         "when": "listFocus && !inputFocus" },
+  { "key": "ctrl+j", "command": "list.focusDown",       "when": "listFocus && !inputFocus" },
+  { "key": "ctrl+k", "command": "list.focusUp",         "when": "listFocus && !inputFocus" },
+  { "key": "l",      "command": "list.select",          "when": "listFocus && !inputFocus" },
+  { "key": "h",      "command": "list.collapse",        "when": "listFocus && !inputFocus" },
+  { "key": "j",      "command": "selectNextCodeAction", "when": "codeActionMenuVisible" },
+  { "key": "k",      "command": "selectPrevCodeAction", "when": "codeActionMenuVisible" },
+  { "key": "ctrl+j", "command": "selectNextCodeAction", "when": "codeActionMenuVisible" },
+  { "key": "ctrl+k", "command": "selectPrevCodeAction", "when": "codeActionMenuVisible" },
+
+  // Lists (filterable)
+  { "key": "ctrl+j", "command": "cursorDown",                               "when": "textInputFocus" },
+  { "key": "ctrl+k", "command": "cursorUp",                                 "when": "textInputFocus" },
+  { "key": "j",      "command": "workbench.action.quickOpenSelectNext",     "when": "inQuickOpen && !inputFocus && !whichkeyVisible" },
+  { "key": "k",      "command": "workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen && !inputFocus && !whichkeyVisible" },
+  { "key": "ctrl+j", "command": "workbench.action.quickOpenSelectNext",     "when": "inQuickOpen" },
+  { "key": "ctrl+k", "command": "workbench.action.quickOpenSelectPrevious", "when": "inQuickOpen" },
+  { "key": "ctrl+j", "command": "selectNextSuggestion",                     "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
+  { "key": "ctrl+k", "command": "selectPrevSuggestion",                     "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus || suggestWidgetVisible && textInputFocus && !suggestWidgetHasFocusedSuggestion" },
+  { "key": "ctrl+j", "command": "showNextParameterHint",                    "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+  { "key": "ctrl+k", "command": "showPrevParameterHint",                    "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible" },
+
+  // Diffs
+  { "key": "] c", "command": "workbench.action.compareEditor.nextChange",     "when": "editorTextFocus && textCompareEditorActive" },
+  { "key": "[ c", "command": "workbench.action.compareEditor.previousChange", "when": "editorTextFocus && textCompareEditorActive" },
+
+  // Search results
+  { "key": "ctrl+k",    "command": "search.action.focusSearchFromResults", "when": "accessibilityModeEnabled && searchViewletVisible || firstMatchFocus && searchViewletVisible" },
+  { "key": "ctrl+k",    "command": "search.action.focusQueryEditorWidget", "when": "inSearchEditor" },
+  { "key": "ctrl+j",    "command": "search.focus.nextInputBox",            "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
+  { "key": "ctrl+k",    "command": "search.focus.previousInputBox",        "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible && !searchInputBoxFocus" },
+  { "key": "cmd+enter", "command": "search.action.replaceAll",             "when": "replaceActive && searchViewletVisible && !findWidgetVisible" },
+
+  /////////////
+  // EDITING //
+  /////////////
+
+  // Create new file (when in a terminal, this shortcut creates a new terminal instead; see above)
+  { "key": "cmd+n", "command": "extension.advancedNewFile", "when": "!terminalFocus" },
+
+  // Redo (undo the undo)
+  { "key": "shift+u", "command": "redo", "when": "editorTextFocus && vim.active && vim.mode != 'Insert' && !inDebugRepl" },
+  { "key": "ctrl+r",  "command": "redo", "when": "editorTextFocus && vim.active && vim.mode != 'Insert' && !inDebugRepl" },
+
+  // Trigger suggestion menu
+  { "key": "ctrl+s", "command": "editor.action.triggerSuggest", "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible" },
+
+  // Insert custom print statements for each language
+  { "key": "cmd+l", "command": "print-it.PrintIt", "when": "editorTextFocus" },
+  { "key": "alt+[", "command": "-print-it.PrintIt", "when": "editorTextFocus" },
+
+  ///////////////
+  // WHICH KEY //
+  ///////////////
+
+  // use shift+shift as leader key fallback everywhere (since it's always available)
+  { "key": "ctrl+,", "command": "whichkey.show" },
+  { "key": "shift shift", "command": "whichkey.show" },
+
+  // use space as leader key in notebook editors
+  { "key": "space", "command": "whichkey.show", "when": "notebookEditorFocused && !inputFocus && !notebookOutputInputFocused"},
+
+  // go back a level with ctrl+h, ctrl+u, or backspace
+  { "key": "ctrl+h",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
+  { "key": "ctrl+u",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
+  { "key": "backspace", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
+]
