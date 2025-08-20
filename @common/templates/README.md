@@ -20,9 +20,9 @@ The new-feature template directory groups all the related files for a particular
 
 1. **Feature Cohesion**: Everything related to a tool lives in one folder
 2. **Self-Contained**: Each feature can be understood in isolation
-3. **Discoverable**: `ls features/` shows all available tools
+3. **Discoverable**: The root level shows all available tools
 4. **Testable**: Tests live with the code they test
-5. **No Nesting**: Features are directly under `/features`, not in category subfolders
+5. **No Nesting**: Features are all at the root level, not in category subfolders
 
 ## Adding a New Feature
 

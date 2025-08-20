@@ -13,7 +13,7 @@ export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 # Tries new feature location first, falls back to old location
 run_installer() {
     local feature_name="$1"
-    local feature_path="$DOTFILES/features/$feature_name/install.bash"
+    local feature_path="$DOTFILES/$feature_name/install.bash"
     local legacy_path="$feature_name.bash"
 
     # Try new feature location first

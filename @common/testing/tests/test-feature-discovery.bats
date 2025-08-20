@@ -10,16 +10,16 @@ setup() {
     # Save current directory
     export ORIGINAL_PWD="$PWD"
     export ORIGINAL_DOTFILES="${DOTFILES:-}"
-    
+
     # Create test directory structure
     export TEST_DIR="$(mktemp -d)"
     export DOTFILES="$TEST_DIR/dotfiles"
-    
+
     # Create mock dotfiles structure
     mkdir -p "$DOTFILES/bin/install"
-    mkdir -p "$DOTFILES/features/ssh"
-    mkdir -p "$DOTFILES/features/git"
-    
+    mkdir -p "$DOTFILES/ssh"
+    mkdir -p "$DOTFILES/git"
+
     # Change to install directory (as setup.bash does)
     cd "$DOTFILES/bin/install"
 }
@@ -32,7 +32,7 @@ teardown() {
     else
         unset DOTFILES
     fi
-    
+
     # Clean up test directory
     rm -rf "$TEST_DIR"
 }
@@ -40,17 +40,17 @@ teardown() {
 # Source the run_installer function from setup.bash
 load_run_installer() {
     # Extract just the run_installer function from setup.bash
-    sed -n '/^run_installer()/,/^}/p' "$ORIGINAL_PWD/setup.bash" > "$TEST_DIR/run_installer.bash"
+    sed -n '/^run_installer()/,/^}/p' "$ORIGINAL_PWD/setup.bash" >"$TEST_DIR/run_installer.bash"
     source "$TEST_DIR/run_installer.bash"
 }
 
 @test "run_installer: prefers feature location over legacy location" {
     load_run_installer
-    
+
     # Create both locations
-    echo 'echo "FEATURE"' > "$DOTFILES/features/ssh/install.bash"
-    echo 'echo "LEGACY"' > "ssh.bash"
-    
+    echo 'echo "FEATURE"' >"$DOTFILES/ssh/install.bash"
+    echo 'echo "LEGACY"' >"ssh.bash"
+
     # Should use feature location
     output=$(run_installer "ssh" 2>&1)
     [[ "$output" == *"Using feature-based installer"* ]]
@@ -60,10 +60,10 @@ load_run_installer() {
 
 @test "run_installer: falls back to legacy location when feature missing" {
     load_run_installer
-    
+
     # Create only legacy location
-    echo 'echo "LEGACY"' > "github.bash"
-    
+    echo 'echo "LEGACY"' >"github.bash"
+
     # Should use legacy location
     output=$(run_installer "github" 2>&1)
     [[ "$output" == *"Using legacy installer"* ]]
@@ -72,7 +72,7 @@ load_run_installer() {
 
 @test "run_installer: handles missing installer gracefully" {
     load_run_installer
-    
+
     # Don't create any installer
     output=$(run_installer "missing" 2>&1)
     [[ "$output" == *"No installer found for missing"* ]]
@@ -80,22 +80,23 @@ load_run_installer() {
 
 @test "run_installer: shows correct paths in output" {
     load_run_installer
-    
+
     # Create feature location
-    echo 'echo "TEST"' > "$DOTFILES/features/git/install.bash"
-    
+    echo 'echo "TEST"' >"$DOTFILES/git/install.bash"
+
     # Check path is shown
     output=$(run_installer "git" 2>&1)
-    [[ "$output" == *"$DOTFILES/features/git/install.bash"* ]]
+    [[ "$output" == *"$DOTFILES/git/install.bash"* ]]
 }
 
 @test "SSH uses feature location when available" {
     load_run_installer
-    
+
     # Verify SSH is in features
-    echo 'echo "SSH FEATURE"' > "$DOTFILES/features/ssh/install.bash"
-    
+    echo 'echo "SSH FEATURE"' >"$DOTFILES/ssh/install.bash"
+
     output=$(run_installer "ssh" 2>&1)
     [[ "$output" == *"Using feature-based installer"* ]]
     [[ "$output" == *"SSH FEATURE"* ]]
 }
+

@@ -18,11 +18,12 @@ See README.md for the complete overview. Key points for Claude:
 **Future Bash Structure (In Development - Not Yet Active):**
 
 - Common functionality being built in `@common/` (bash modules for shared logic)
-- Feature-specific code being built in `features/` (individual feature directories with bash scripts)
-- Future main setup script will be `setup.bash`
+- Feature-specific code being built in root-level `{tool}/` folders (individual feature directories with bash scripts)
+- Future main setup script will be `./setup.bash`
+- Future main update script will be `./update.bash`
 - **Note**: These bash files are not yet functional or ready for use
 
-**Future Bash Common Modules** (`common/`) - Under construction:
+**Future Bash Common Modules** (`@common/`) - Under construction:
 
 - `detection/` - Machine and macOS detection logic
 - `dry-run/` - Dry run utilities
@@ -32,14 +33,15 @@ See README.md for the complete overview. Key points for Claude:
 - `symlinks/` - Symlink management
 - `testing/` - Testing utilities and test suite
 
-**Future Bash Feature Modules** (`features/`) - Under construction:
+**Future Bash Feature Modules** (`./{tool}/`) - Under construction:
 
-- Each feature directory contains `install.bash`, `update.bash`, `utils.bash`, and `README.md`
-- Features being developed: `content`, `git`, `github`, `homebrew`, `macos`, `neovim`, `node`, `rust`, `settings`, `ssh`, `tmux`, `uv`, `yazi`, `zsh`
+- See `@common/templates/new-feature` for an example of the files in each folder
+- See `@common/templates/README.md` for an explanation of the feature folder approach
+- See `./neovim` for an full example
 
 ### Symlink Management
 
-**Important for Git commits**: Files in `features/claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `features/claude/config/CLAUDE.md` instead of trying to commit outside the repository.
+**Important for Git commits**: Files in `claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `claude/config/CLAUDE.md` instead of trying to commit outside the repository.
 
 The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `@common/symlinks/` is under development and not yet functional).
 

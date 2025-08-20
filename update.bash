@@ -13,7 +13,7 @@ export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 # Tries new feature location first, falls back to old location
 run_updater() {
     local feature_name="$1"
-    local feature_path="$DOTFILES/features/$feature_name/update.bash"
+    local feature_path="$DOTFILES/$feature_name/update.bash"
     local legacy_path="$DOTFILES/bin/update/${feature_name}.zsh"
 
     # Try new feature location first

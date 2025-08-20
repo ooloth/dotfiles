@@ -25,12 +25,12 @@ create_dotfiles_symlinks() {
     echo "🏠 Creating home directory symlinks..."
 
     # Create symlinks for home directory files
-    maybe_symlink "${DOTFILES}/features/claude/config/agents" "${HOME}/.claude"
-    maybe_symlink "${DOTFILES}/features/claude/config/CLAUDE.md" "${HOME}/.claude"
-    maybe_symlink "${DOTFILES}/features/claude/config/commands" "${HOME}/.claude"
-    maybe_symlink "${DOTFILES}/features/claude/config/settings.json" "${HOME}/.claude"
-    maybe_symlink "${DOTFILES}/features/zsh/config/.hushlogin" "${HOME}"
-    maybe_symlink "${DOTFILES}/features/zsh/config/.zshenv" "${HOME}"
+    maybe_symlink "${DOTFILES}/claude/config/agents" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/claude/config/CLAUDE.md" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/claude/config/commands" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/claude/config/settings.json" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/zsh/config/.hushlogin" "${HOME}"
+    maybe_symlink "${DOTFILES}/zsh/config/.zshenv" "${HOME}"
 
     echo "⚙️  Creating config directory symlinks..."
 
@@ -128,7 +128,7 @@ verify_symlinks() {
 
     # Check critical symlinks
     local critical_symlinks=(
-        "$HOME/.zshenv:$DOTFILES/features/zsh/config/.zshenv"
+        "$HOME/.zshenv:$DOTFILES/zsh/config/.zshenv"
         "$HOMECONFIG/nvim/init.lua:$DOTFILES/config/nvim/init.lua"
         "$HOMECONFIG/tmux/tmux.conf:$DOTFILES/config/tmux/tmux.conf"
     )

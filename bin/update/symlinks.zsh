@@ -37,12 +37,12 @@ info "🔗 Updating symlinks"
 # Target: ~ #
 #############
 
-maybe_symlink "$DOTFILES/features/claude/config/agents" "$HOME/.claude"
-maybe_symlink "$DOTFILES/features/claude/config/CLAUDE.md" "$HOME/.claude"
-maybe_symlink "$DOTFILES/features/claude/config/commands" "$HOME/.claude"
-maybe_symlink "$DOTFILES/features/claude/config/settings.json" "$HOME/.claude"
-maybe_symlink "$DOTFILES/features/zsh/config/.hushlogin" "$HOME"
-maybe_symlink "$DOTFILES/features/zsh/config/.zshenv" "$HOME"
+maybe_symlink "$DOTFILES/claude/config/agents" "$HOME/.claude"
+maybe_symlink "$DOTFILES/claude/config/CLAUDE.md" "$HOME/.claude"
+maybe_symlink "$DOTFILES/claude/config/commands" "$HOME/.claude"
+maybe_symlink "$DOTFILES/claude/config/settings.json" "$HOME/.claude"
+maybe_symlink "$DOTFILES/zsh/config/.hushlogin" "$HOME"
+maybe_symlink "$DOTFILES/zsh/config/.zshenv" "$HOME"
 
 #####################
 # Target: ~/.config #
@@ -72,8 +72,8 @@ fi
 
 VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
-maybe_symlink "$DOTFILES/features/vscode/config/keybindings.json" "$VSCODEUSER"
-maybe_symlink "$DOTFILES/features/vscode/config/settings.json" "$VSCODEUSER"
-maybe_symlink "$DOTFILES/features/vscode/config/snippets" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/vscode/config/keybindings.json" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/vscode/config/settings.json" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/vscode/config/snippets" "$VSCODEUSER"
 
 printf "🎉 All symlinks are up to date\n"
