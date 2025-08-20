@@ -59,6 +59,8 @@ done
 
 maybe_symlink "$DOTFILES/gh/config/config.yml" "$HOMECONFIG/gh"
 maybe_symlink "$DOTFILES/ghostty/config/config" "$HOMECONFIG/ghostty"
+maybe_symlink "$DOTFILES/git/config/config" "$HOMECONFIG/git"
+maybe_symlink "$DOTFILES/git/config/config.work" "$HOMECONFIG/git"
 
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 
