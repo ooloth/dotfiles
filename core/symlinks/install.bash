@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Symlink Installation Script
-# Creates symbolic links for all dotfiles configurations
-
 set -euo pipefail
 
 # Source utility functions
