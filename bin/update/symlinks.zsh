@@ -69,8 +69,8 @@ fi
 
 VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
-maybe_symlink "$DOTFILES/library/vscode/settings.json" "$VSCODEUSER"
-maybe_symlink "$DOTFILES/library/vscode/keybindings.json" "$VSCODEUSER"
-maybe_symlink "$DOTFILES/library/vscode/snippets" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/features/vscode/config/keybindings.json" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/features/vscode/config/settings.json" "$VSCODEUSER"
+maybe_symlink "$DOTFILES/features/vscode/config/snippets" "$VSCODEUSER"
 
 printf "🎉 All symlinks are up to date\n"
