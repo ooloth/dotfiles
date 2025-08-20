@@ -404,20 +404,9 @@
       "Bash(wget http://169.254.169.254/*)"
     ]
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "^(Bash|Write|Edit|MultiEdit|WebFetch)$",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/security-hook.sh"
-          }
-        ]
-      }
-    ]
-  },
+  "hooks": {},
   "feedbackSurveyState": {
     "lastShownTime": 1754054339526
   }
 }
+
