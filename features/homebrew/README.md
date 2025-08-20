@@ -40,6 +40,6 @@ Homebrew packages are defined in `config/Brewfile` which includes:
 ## Migration Status
 
 This feature is being migrated to the new architecture. During the transition:
-- Old location: `lib/homebrew-utils.bash`, `lib/homebrew-utils.zsh`, `macos/Brewfile`
+- Old location: `lib/homebrew-utils.bash`, `lib/homebrew-utils.zsh`, `@common/Brewfile`
 - New location: `features/homebrew/`
 - Both locations work during migration

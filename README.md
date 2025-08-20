@@ -135,12 +135,12 @@ To customize for your machines, edit the detection logic in `setup.zsh` or set t
 1. **Git Configuration**: Edit `config/git/config` with your information
 2. **Shell Aliases**: Modify `config/zsh/aliases.zsh`
 3. **Neovim**: Customize `config/nvim/init.lua`
-4. **Homebrew Packages**: Edit `macos/Brewfile`
+4. **Homebrew Packages**: Edit `@common/Brewfile`
 5. **macOS Preferences**: Adjust `macos/macos-defaults`
 
 ### Adding Your Own Tools
 
-1. Add Homebrew packages to `macos/Brewfile`
+1. Add Homebrew packages to `@common/Brewfile`
 2. Add configuration files to `config/<tool-name>/`
 3. Add symlinks in `bin/update/symlinks.zsh`
 4. Run `symlinks` to create the links
