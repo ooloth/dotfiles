@@ -86,9 +86,6 @@ export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#user-config
 export XDG_CONFIG_HOME=$HOME/.config
 
-# Zsh
-export ZDOTDIR=$HOME/.config/zsh
-
 if $IS_WORK; then
   source "$DOTFILES/zsh/config/work/variables.zsh" 2>/dev/null
 fi
