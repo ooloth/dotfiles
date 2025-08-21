@@ -117,6 +117,7 @@ main() {
     run_updater "mode"
     run_updater "symlinks"
     run_updater "rust"
+    run_updater "uv"
     run_updater "yazi"
     run_updater "neovim"
     run_updater "tmux"
