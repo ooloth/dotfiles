@@ -16,7 +16,7 @@ info "🍺 Updating homebrew packages"
 
 # Install all dependencies listed in Brewfile (and remove any that aren't)
 # see: https://github.com/Homebrew/homebrew-bundle
-brew bundle --file="$DOTFILES/@common/Brewfile" --cleanup
+brew bundle --file="$DOTFILES/homebrew/config/Brewfile" --cleanup
 
 brew update # update brew
 brew upgrade # update packages
