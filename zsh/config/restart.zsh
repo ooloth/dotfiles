@@ -8,5 +8,5 @@ restart() {
 }
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/restart.zsh" 2>/dev/null
+  source "$DOTFILES/zsh/config/work/restart.zsh" 2>/dev/null
 fi

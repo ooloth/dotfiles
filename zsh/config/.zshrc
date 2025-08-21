@@ -5,10 +5,12 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+
 # NOTE: zshenv loads PATH + env vars and this file loads the rest
-source $HOME/.config/zsh/utils.zsh # source first (used by other files)
-source $HOME/.config/zsh/variables.zsh
-source $HOME/.config/zsh/aliases.zsh
-source $HOME/.config/zsh/options.zsh
-source $HOME/.config/zsh/hooks.zsh
-source $HOME/.config/zsh/plugins.zsh # source last
+source "${DOTFILES}/zsh/config/utils.zsh" # source first (used by other files)
+source "${DOTFILES}/zsh/config/variables.zsh"
+source "${DOTFILES}/zsh/config/aliases.zsh"
+source "${DOTFILES}/zsh/config/options.zsh"
+source "${DOTFILES}/zsh/config/hooks.zsh"
+source "${DOTFILES}/zsh/config/plugins.zsh" # source last

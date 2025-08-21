@@ -133,7 +133,7 @@ To customize for your machines, edit the detection logic in `setup.zsh` or set t
 ### Key Files to Customize
 
 1. **Git Configuration**: Edit `git/config` with your information
-2. **Shell Aliases**: Modify `config/zsh/aliases.zsh`
+2. **Shell Aliases**: Modify `zsh/config/aliases.zsh`
 3. **Neovim**: Customize `config/nvim/init.lua`
 4. **Homebrew Packages**: Edit `homebrew/config/Brewfile`
 5. **macOS Preferences**: Adjust `macos/macos-defaults`

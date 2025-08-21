@@ -2,8 +2,8 @@
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-source "$DOTFILES/config/zsh/aliases.zsh"
-source "$DOTFILES/config/zsh/utils.zsh"
+source "$DOTFILES/zsh/config/aliases.zsh"
+source "$DOTFILES/zsh/config/utils.zsh"
 
 repo="ooloth/content"
 local_repo="$HOME/Repos/$repo"

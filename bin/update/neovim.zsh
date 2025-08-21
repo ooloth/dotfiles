@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source "$DOTFILES/config/zsh/utils.zsh"
+source "$DOTFILES/zsh/config/utils.zsh"
 
 info "🧃 Updating Neovim lsp servers, linters and formatters"
 

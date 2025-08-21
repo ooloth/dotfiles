@@ -26,5 +26,5 @@ export PATH="$HOME/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/local/bi
 
 if $IS_WORK; then
   # TODO: port work/zprofile.zsh to work/variables.zsh and work/path.zsh
-  source "$DOTFILES/config/zsh/work/path.zsh" 2>/dev/null
+  source "$DOTFILES/zsh/config/work/path.zsh" 2>/dev/null
 fi

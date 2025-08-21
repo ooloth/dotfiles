@@ -1,9 +1,9 @@
 #!/usr/bin/env zsh
 
-DOTCONFIG="$HOME/Repos/ooloth/dotfiles/config"
+DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-source "$DOTCONFIG/zsh/aliases.zsh"
-source "$DOTCONFIG/zsh/utils.zsh"
+source "$DOTFILES/zsh/config/aliases.zsh"
+source "$DOTFILES/zsh/config/utils.zsh"
 
 # info "🍱 Installing tmux terminfo updates and tpm plugins"
 

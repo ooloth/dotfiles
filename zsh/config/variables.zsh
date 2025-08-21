@@ -1,7 +1,7 @@
 # This file is sourced first. Setting PATH here ensures that it will apply to all zsh scripts, login shells, and interactive shells.
 # See: https://news.ycombinator.com/item?id=39508793
 # See: https://zsh.sourceforge.io/Doc/Release/Files.html
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/path.zsh"
+source "$HOME/Repos/ooloth/dotfiles/zsh/config/path.zsh"
 
 # TODO: use set_machine_variables instead?
 # Device
@@ -21,8 +21,8 @@ export IS_WORK=false
 # Dotfiles
 export DOTFILES=$HOME/Repos/ooloth/dotfiles
 
-source "$DOTFILES/config/zsh/aliases.zsh"
-source "$DOTFILES/config/zsh/utils.zsh"
+source "$DOTFILES/zsh/config/aliases.zsh"
+source "$DOTFILES/zsh/config/utils.zsh"
 
 # Editor
 editors_in_desc_order_of_preference=("code" "nvim" "vim" "vi")
@@ -90,5 +90,5 @@ export XDG_CONFIG_HOME=$HOME/.config
 export ZDOTDIR=$HOME/.config/zsh
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/variables.zsh" 2>/dev/null
+  source "$DOTFILES/zsh/config/work/variables.zsh" 2>/dev/null
 fi

@@ -14,7 +14,7 @@ eval "$(fzf --zsh)"
 # powerlevel10k
 # see: https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#homebrew
 source "/opt/homebrew/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme"
-source "$DOTFILES/powerlevel10k/config/p10k.zsh" # to customize, run `p10k configure` or edit config/zsh/p10k.zsh
+source "$DOTFILES/powerlevel10k/config/p10k.zsh" # to customize, run `p10k configure` or edit zsh/config/p10k.zsh
 
 # uv
 eval "$(uv generate-shell-completion zsh)"
@@ -30,5 +30,5 @@ source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/plugins.zsh" 2>/dev/null
+  source "$DOTFILES/zsh/config/work/plugins.zsh" 2>/dev/null
 fi

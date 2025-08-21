@@ -14,7 +14,7 @@ alias cat="bat --paging=never"
 alias cc="claude"                                                         # Claude Code
 alias ccy="CLAUDE_YOLO_MODE=true claude --dangerously-skip-permissions"   # Claude Code YOLO (with security hooks)
 alias cd="z"
-source "$DOTFILES/config/zsh/check.zsh"
+source "$DOTFILES/zsh/config/check.zsh"
 alias cte="EDITOR=vim crontab -e"
 alias ctl="crontab -l"
 alias con="cd $HOME/Repos/ooloth/content"
@@ -24,6 +24,7 @@ alias dot="cd $DOTFILES"
 alias d="lazydocker"
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias dash="cd $HOME/Repos/ooloth/dashboard"
+alias db="docker build ."
 de() { docker container exec -it $1 sh; }
 alias dc="docker compose"
 alias dd="dc down --remove-orphans"                # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
@@ -83,7 +84,7 @@ alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pai
 alias mu="cd $HOME/Repos/ooloth/michaeluloth.com"
 
 n() { npm install "$@"; }
-source "$DOTFILES/config/zsh/new.zsh"
+source "$DOTFILES/zsh/config/new.zsh"
 ng() { "$DOTFILES/bin/update/npm.zsh"; }
 # nu() { n && npm-check -u; } -- conflicts with nushell launch command
 alias nvim="NVIM_APPNAME=nvim-ide nvim"
@@ -99,29 +100,29 @@ alias pilots="cd $HOME/Repos/ooloth/download-pilots"
 # Keep 'r' as an alias that can be overridden by alias in work/aliases.zsh
 alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
 alias R="source $HOME/.zshenv && source $HOME/.config/zsh/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
-source "$DOTFILES/config/zsh/restart.zsh"
+source "$DOTFILES/zsh/config/restart.zsh"
 return_or_exit() {
   local code="$1"                            # The exit code to return or exit with
   return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
 }
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
-source "$DOTFILES/config/zsh/run.zsh"
+source "$DOTFILES/zsh/config/run.zsh"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper="cd $HOME/Repos/ooloth/scraper"
 sl() { ln -sfv "$1" "$2"; } # easier symlinking
-source "$DOTFILES/config/zsh/start.zsh"
-source "$DOTFILES/config/zsh/stop.zsh"
-source "$DOTFILES/config/zsh/submit.zsh"
+source "$DOTFILES/zsh/config/start.zsh"
+source "$DOTFILES/zsh/config/stop.zsh"
+source "$DOTFILES/zsh/config/submit.zsh"
 alias symlinks="$DOTFILES/bin/update/symlinks.zsh"
 
 t() { tmux attach || exec tmux; }
-source "$DOTFILES/config/zsh/test.zsh"
+source "$DOTFILES/zsh/config/test.zsh"
 alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
-source "$DOTFILES/config/zsh/update.zsh"
+source "$DOTFILES/zsh/config/update.zsh"
 
 v() {
   (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"
@@ -139,5 +140,5 @@ zt() {
 }
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/aliases.zsh" 2>/dev/null
+  source "$DOTFILES/zsh/config/work/aliases.zsh" 2>/dev/null
 fi

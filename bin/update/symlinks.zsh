@@ -8,8 +8,8 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 DOTCONFIG="$DOTFILES/config"
 HOMECONFIG="$HOME/.config"
 
-source "$DOTCONFIG/zsh/aliases.zsh"
-source "$DOTCONFIG/zsh/utils.zsh"
+source "$DOTFILES/zsh/config/aliases.zsh"
+source "$DOTFILES/zsh/config/utils.zsh"
 
 maybe_symlink() {
   # Both arguments should be absolute paths
@@ -43,6 +43,7 @@ maybe_symlink "$DOTFILES/claude/config/commands" "$HOME/.claude"
 maybe_symlink "$DOTFILES/claude/config/settings.json" "$HOME/.claude"
 maybe_symlink "$DOTFILES/zsh/config/.hushlogin" "$HOME"
 maybe_symlink "$DOTFILES/zsh/config/.zshenv" "$HOME"
+maybe_symlink "$DOTFILES/zsh/config/.zshrc" "$HOME"
 
 #####################
 # Target: ~/.config #
