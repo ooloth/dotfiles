@@ -49,15 +49,6 @@ maybe_symlink "$DOTFILES/zsh/config/.zshrc" "$HOME"
 # Target: ~/.config #
 #####################
 
-# Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
-fd --type file --hidden . "$DOTCONFIG" | while read file; do
-  local relpath="${file#$DOTCONFIG/}"    # Get the relative path in that follows "$DOTCONFIG/" in $file (which is an absolute path)
-  local dirpath="$(dirname "$relpath")"  # Get the directory path by dropping the file name
-  local targetdir="$HOMECONFIG/$dirpath" # Build the absolute path to the target directory
-
-  maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
-done
-
 # TODO: recursively symlink any file in [tool}/config (but not /config itself)?
 # Or just source {tool}/symlink.bash files that each define their own commands?
 maybe_symlink "$DOTFILES/gh/config/config.yml" "$HOMECONFIG/gh"
@@ -100,6 +91,15 @@ else
   # see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
   maybe_symlink "$yazi_flavors/catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
 fi
+
+# # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
+# fd --type file --hidden . "$DOTCONFIG" | while read file; do
+#   local relpath="${file#$DOTCONFIG/}"    # Get the relative path in that follows "$DOTCONFIG/" in $file (which is an absolute path)
+#   local dirpath="$(dirname "$relpath")"  # Get the directory path by dropping the file name
+#   local targetdir="$HOMECONFIG/$dirpath" # Build the absolute path to the target directory
+#
+#   maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
+# done
 
 #####################
 # Target: ~/Library #
