@@ -16,8 +16,6 @@ tap "hashicorp/tap" # for terraform, vault
 tap "jesseduffield/lazydocker"
 tap "jesseduffield/lazygit"
 tap "kdash-rs/kdash" # for kdash
-tap "saulpw/vd" # for visidata
-# tap "yqrashawn/goku" # for karabiner (using hyperkey instead)
 
 if hostname == "Air"
   tap "modularml/packages" # for mojo
@@ -52,7 +50,6 @@ brew "arl/arl/gitmux" # for tmux (status bar)
 brew "glances" # top alternative
 brew "gnu-sed"
 brew "go"
-# brew "yqrashawn/goku/goku" # for karabiner (using hyperkey instead)
 brew "goose" # for go
 brew "hadolint" # for docker
 brew "htop" # top alternative
@@ -64,9 +61,7 @@ brew "kubectl" # for kubernetes
 brew "kubectx" # for kubernetes
 brew "jesseduffield/lazydocker/lazydocker"
 brew "jesseduffield/lazygit/lazygit"
-# brew "lua" # for neovim: https://www.lua.org/manual/
 brew "lua-language-server" # for lua in neovim
-# brew "luarocks" # lua package manager: https://luarocks.org
 brew "mas"
 brew "m-cli" # macos CLI: https://github.com/rgcr/m-cli
 brew "marksman" # for markdown lsp in neovim
@@ -95,7 +90,6 @@ brew "tmux"
 brew "tree"
 brew "unar" # for yazi
 brew "vifm"
-brew "saulpw/vd/visidata"
 brew "wget" # for neovim
 brew "yazi" # terminal file manager
 brew "zoxide"
@@ -116,7 +110,6 @@ if hostname == "Mini"
 end
 
 if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
-  # brew "bazel"
   brew "codefresh"
   brew "hashicorp/tap/vault"
   brew "helm" # for kubernetes
@@ -125,9 +118,6 @@ if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
   brew "lzlib"
   brew "opa"
   brew "openjdk" # for java
-  # brew "pyenv" # manages python versions
-  # brew "pyenv-virtualenv" # allow pyenv to manage virtualenvs
-  # brew "skaffold"
   brew "redis"
   brew "tcl-tk"
   brew "zlib"
@@ -155,14 +145,12 @@ cask "brave-browser"
 cask "firefox"
 cask "ghostty"
 cask "hyperkey" # karabiner become impossible to allow on work laptop...
-# cask "karabiner-elements" (using hyperkey instead)
 cask "kitty"
 cask "neohtop" # see: https://abdenasser.github.io/neohtop/
 cask "notion"
 cask "obsidian"
 # cask "raycast"
 cask "rectangle"
-# cask "runjs"
 cask "visual-studio-code"
 cask "vlc"
 cask "zed"
@@ -200,15 +188,9 @@ message = "\📦 Loading additional Mac App Store apps for #{hostname}\n"
 
 if hostname == "Air"
   # mas "Bear", id: 1091189122
-  # mas "Fantastical - Calendar", id: 975937182
   mas "Keynote", id: 409183694
   mas "Numbers", id: 409203825
   mas "Pages", id: 409201541
-  # mas "PiPifier", id: 1160374471
-  # mas "Pixave", id: 924891282
-  # mas "Pixelmator Pro", id: 1289583905
-  # mas "Smart Converter Pro", id: 450078312
-  # mas "Spark", id: 1176895641
 end
 
 ###########

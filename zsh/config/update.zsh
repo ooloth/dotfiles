@@ -2,6 +2,7 @@ u() {
   source "$DOTFILES/bin/update/mode.zsh"
   source "$DOTFILES/bin/update/symlinks.zsh"
   source "$DOTFILES/bin/update/rust.zsh"
+  source "$DOTFILES/bin/update/uv.zsh"
   source "$DOTFILES/bin/update/yazi.zsh"
   source "$DOTFILES/bin/update/neovim.zsh"
   source "$DOTFILES/bin/update/tmux.zsh"

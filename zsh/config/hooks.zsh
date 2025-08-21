@@ -42,15 +42,11 @@ activate_venv() {
     while [ "$dir" != "/" ]; do # don't go past the root directory
       local uv_venv_default="$dir/.venv"
       local uv_venv_roadie="$dir/venv"
-      local pyenv_venv="$PYENV_ROOT/versions/$(basename "$dir")"
       if [ -f "$uv_venv_default/bin/activate" ]; then
         echo "$uv_venv_default"
         return
       elif [ -f "$uv_venv_roadie/bin/activate" ]; then
         echo "$uv_venv_roadie"
-        return
-      elif [ -f "$pyenv_venv/bin/activate" ]; then
-        echo "$pyenv_venv"
         return
       fi
       dir="$(dirname "$dir")" # move up one directory and try again

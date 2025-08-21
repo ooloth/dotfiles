@@ -8,8 +8,8 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 DOTCONFIG="$DOTFILES/config"
 HOMECONFIG="$HOME/.config"
 
-source "$DOTCONFIG/zsh/aliases.zsh"
-source "$DOTCONFIG/zsh/utils.zsh"
+source "$DOTFILES/zsh/config/aliases.zsh"
+source "$DOTFILES/zsh/config/utils.zsh"
 
 maybe_symlink() {
   # Both arguments should be absolute paths
@@ -43,19 +43,11 @@ maybe_symlink "$DOTFILES/claude/config/commands" "$HOME/.claude"
 maybe_symlink "$DOTFILES/claude/config/settings.json" "$HOME/.claude"
 maybe_symlink "$DOTFILES/zsh/config/.hushlogin" "$HOME"
 maybe_symlink "$DOTFILES/zsh/config/.zshenv" "$HOME"
+maybe_symlink "$DOTFILES/zsh/config/.zshrc" "$HOME"
 
 #####################
 # Target: ~/.config #
 #####################
-
-# Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
-fd --type file --hidden . "$DOTCONFIG" | while read file; do
-  local relpath="${file#$DOTCONFIG/}"    # Get the relative path in that follows "$DOTCONFIG/" in $file (which is an absolute path)
-  local dirpath="$(dirname "$relpath")"  # Get the directory path by dropping the file name
-  local targetdir="$HOMECONFIG/$dirpath" # Build the absolute path to the target directory
-
-  maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
-done
 
 # TODO: recursively symlink any file in [tool}/config (but not /config itself)?
 # Or just source {tool}/symlink.bash files that each define their own commands?
@@ -70,6 +62,26 @@ maybe_symlink "$DOTFILES/k9s/config/hotkeys.yaml" "$HOMECONFIG/k9s"
 maybe_symlink "$DOTFILES/k9s/config/skins" "$HOMECONFIG/k9s"
 maybe_symlink "$DOTFILES/kitty/config/colorscheme" "$HOMECONFIG/kitty"
 maybe_symlink "$DOTFILES/kitty/config/kitty.conf" "$HOMECONFIG/kitty"
+maybe_symlink "$DOTFILES/lazydocker/config/config.yml" "$HOMECONFIG/lazydocker"
+maybe_symlink "$DOTFILES/lazygit/config/config.yml" "$HOMECONFIG/lazygit"
+maybe_symlink "$DOTFILES/neovim/config/nvim/init.lua" "$HOMECONFIG/nvim"
+maybe_symlink "$DOTFILES/neovim/config/nvim-ide/init.lua" "$HOMECONFIG/nvim-ide"
+maybe_symlink "$DOTFILES/neovim/config/nvim-ide/lazy-lock.json" "$HOMECONFIG/nvim-ide"
+maybe_symlink "$DOTFILES/neovim/config/nvim-kitty-scrollback/init.lua" "$HOMECONFIG/nvim-kitty-scrollback"
+maybe_symlink "$DOTFILES/node/config/.npmrc" "$HOMECONFIG/npm"
+maybe_symlink "$DOTFILES/powerlevel10k/config/p10k.zsh" "$HOMECONFIG/powerlevel10k"
+maybe_symlink "$DOTFILES/sesh/config/sesh.toml" "$HOMECONFIG/sesh"
+maybe_symlink "$DOTFILES/surfingkeys/config/surfingkeys.js" "$HOMECONFIG/surfingkeys"
+maybe_symlink "$DOTFILES/tmux/config/battery.sh" "$HOMECONFIG/tmux"
+maybe_symlink "$DOTFILES/tmux/config/gitmux.conf" "$HOMECONFIG/tmux"
+maybe_symlink "$DOTFILES/tmux/config/tmux.conf" "$HOMECONFIG/tmux"
+maybe_symlink "$DOTFILES/tmux/config/tmux.terminfo" "$HOMECONFIG/tmux"
+maybe_symlink "$DOTFILES/tmux/config/xterm-256color-italic.terminfo" "$HOMECONFIG/tmux"
+maybe_symlink "$DOTFILES/visidata/config/config.py" "$HOMECONFIG/visidata"
+maybe_symlink "$DOTFILES/yazi/config/flavors" "$HOMECONFIG/yazi"
+maybe_symlink "$DOTFILES/yazi/config/yazi.toml" "$HOMECONFIG/yazi"
+maybe_symlink "$DOTFILES/yazi/config/theme.toml" "$HOMECONFIG/yazi"
+maybe_symlink "$DOTFILES/yazi/config/keymap.toml" "$HOMECONFIG/yazi"
 
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 
@@ -79,6 +91,15 @@ else
   # see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
   maybe_symlink "$yazi_flavors/catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
 fi
+
+# # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
+# fd --type file --hidden . "$DOTCONFIG" | while read file; do
+#   local relpath="${file#$DOTCONFIG/}"    # Get the relative path in that follows "$DOTCONFIG/" in $file (which is an absolute path)
+#   local dirpath="$(dirname "$relpath")"  # Get the directory path by dropping the file name
+#   local targetdir="$HOMECONFIG/$dirpath" # Build the absolute path to the target directory
+#
+#   maybe_symlink "$file" "$targetdir" # Symlink the file to the target directory
+# done
 
 #####################
 # Target: ~/Library #

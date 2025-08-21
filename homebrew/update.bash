@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
 
-# Homebrew update script
-# Updates Homebrew itself and all installed packages and casks
-#
-# This script:
-# 1. Ensures Homebrew is installed and in PATH
-# 2. Updates Homebrew itself
-# 3. Installs/removes packages according to Brewfile
-# 4. Updates all installed packages and casks
-# 5. Cleans up old versions and cached files
-# 6. Runs brew doctor to check for issues
+# See: https://docs.brew.sh/Brew-Bundle-and-Brewfile
 
 set -euo pipefail
 

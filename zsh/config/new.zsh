@@ -12,5 +12,5 @@ new() {
 }
 
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/new.zsh" 2>/dev/null
+  source "$DOTFILES/zsh/config/work/new.zsh" 2>/dev/null
 fi

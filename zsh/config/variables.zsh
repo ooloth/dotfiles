@@ -1,7 +1,7 @@
 # This file is sourced first. Setting PATH here ensures that it will apply to all zsh scripts, login shells, and interactive shells.
 # See: https://news.ycombinator.com/item?id=39508793
 # See: https://zsh.sourceforge.io/Doc/Release/Files.html
-source "$HOME/Repos/ooloth/dotfiles/config/zsh/path.zsh"
+source "$HOME/Repos/ooloth/dotfiles/zsh/config/path.zsh"
 
 # TODO: use set_machine_variables instead?
 # Device
@@ -21,8 +21,8 @@ export IS_WORK=false
 # Dotfiles
 export DOTFILES=$HOME/Repos/ooloth/dotfiles
 
-source "$DOTFILES/config/zsh/aliases.zsh"
-source "$DOTFILES/config/zsh/utils.zsh"
+source "$DOTFILES/zsh/config/aliases.zsh"
+source "$DOTFILES/zsh/config/utils.zsh"
 
 # Editor
 editors_in_desc_order_of_preference=("code" "nvim" "vim" "vi")
@@ -42,7 +42,6 @@ export EZA_STRICT=true
 export TIME_STYLE=long-iso
 
 # Homebrew
-export HOMEBREW_BUNDLE_FILE="$DOTFILES/@common/Brewfile"
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # k9s
@@ -59,16 +58,15 @@ export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
 export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
 
+# Powerlevel10k
+export POWERLEVEL9K_CONFIG_FILE="${HOME}/.config/powerlevel10k/p10k.zsh"
+
 # Python
 export MYPYPATH="$HOME"
 # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
 export PYTHONPATH="$HOME"
 # Avoid extra venv at beginning of prompt (see: https://stackoverflow.com/a/72715907/8802485)
 export VIRTUAL_ENV_PROMPT=''
-
-if $IS_WORK; then
-  export PYENV_ROOT="$HOME/.pyenv"
-fi
 
 # Rust
 export CARGO_HOME="$HOME/.config/cargo"
@@ -84,9 +82,6 @@ export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#user-config
 export XDG_CONFIG_HOME=$HOME/.config
 
-# Zsh
-export ZDOTDIR=$HOME/.config/zsh
-
 if $IS_WORK; then
-  source "$DOTFILES/config/zsh/work/variables.zsh" 2>/dev/null
+  source "$DOTFILES/zsh/config/work/variables.zsh" 2>/dev/null
 fi

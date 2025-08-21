@@ -113,10 +113,11 @@ main() {
     # Otherwise, update frequently-changing components
     printf "🔄 Updating frequently-changing dotfiles components...\n\n"
 
-    # Update in the same order as legacy config/zsh/update.zsh
+    # Update in the same order as legacy zsh/config/update.zsh
     run_updater "mode"
     run_updater "symlinks"
     run_updater "rust"
+    run_updater "uv"
     run_updater "yazi"
     run_updater "neovim"
     run_updater "tmux"
