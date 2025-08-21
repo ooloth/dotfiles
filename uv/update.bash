@@ -12,7 +12,7 @@ main() {
   # TODO: Install if missing
 
   # Otherwise, update
-  uv self upgrade
+  uv self update
   uv tool upgrade --all
 
   # TODO: Validate update (e.g. command is available, version is correct)
