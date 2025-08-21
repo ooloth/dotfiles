@@ -2,15 +2,21 @@ check() {
   local CURRENT_DIRECTORY=$(basename $PWD)
 
   case $CURRENT_DIRECTORY in
-    dash-phenoapp-v2)
+    mapapp)
+      ./bin/check.sh "$@" ;;
+
+    mapapp-1)
+      ./bin/check.sh "$@" ;;
+
+    mapapp-2)
+      ./bin/check.sh "$@" ;;
+
+    mapapp-3)
       ./bin/check.sh "$@" ;;
 
     react-app)
       info "Formatting, linting and type-checking"
       npm run lint ;;
-
-    spade-app)
-      ./bin/check.sh "$@" ;;
 
     spade-flows)
       ./bin/dev/check.sh "$@" ;;

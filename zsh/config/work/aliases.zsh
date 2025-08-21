@@ -1,5 +1,8 @@
-bp() { cd "$HOME/Repos/recursionpharma/build-pipelines"; }
-cauldron() { cd "$HOME/Repos/recursionpharma/cauldron"; }
+alias bp ="cd ${HOME}/Repos/recursionpharma/build-pipelines"
+
+# see: https://recursion.slack.com/archives/CV1G8MHKK/p1752594420668499?thread_ts=1752594134.745739&cid=CV1G8MHKK
+alias db="docker build --secret id=gcp_adc,src=${HOME}/.config/gcloud/application_default_credentials.json ."
+
 eo() { cd "$HOME/Repos/recursionpharma/eng-onboarding"; }
 # see: https://stackoverflow.com/a/51563857/8802485
 # see: https://cloud.google.com/docs/authentication/gcloud#gcloud-credentials
@@ -28,13 +31,10 @@ psc() { cd "$HOME/Repos/recursionpharma/phenoservice-consumer"; }
 
 alias r="cd $HOME/Repos/recursionpharma"
 ru() { uv tool upgrade rxrx-roadie; } # see: https://pip.pypa.io/en/stable/cli/pip_install/#options
-rl() { ru && uvx --python 3.11 roadie lock "$@"; }
-# rl() { ru && roadie lock --python 3.11 "$@"; } # NOTE: will use roadie from local venv instead of global roadie
-rv() { ru && uv pip install -r pyproject.toml --extra dev "$@"; }
-# rv() { ru && uvx roadie venv --output .venv --uv "$@"; }
+rl() { ru && uvx roadie lock "$@"; } # optionally "rl -c" etc
+rv() { ru && uvx roadie venv --output .venv "$@"; }
 rlc() { rl --clobber; }
-rvc() { rv --reinstall; }
-# rvc() { rv --clobber; }
+rvc() { rv --clobber }
 
 tech() { cd "$HOME/Repos/recursionpharma/tech"; }
 

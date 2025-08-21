@@ -15,12 +15,24 @@ stop() {
       info "✋ Stopping cauldron"
       dd ;;
 
-    dash-phenoapp-v2)
+    genie)
+      info "✋ Stopping genie"
+      dd ;;
+
+    mapapp)
       info "✋ Stopping observability stack"
       dd ;;
 
-    genie)
-      info "✋ Stopping genie"
+    mapapp-1)
+      info "✋ Stopping observability stack"
+      dd ;;
+
+    mapapp-2)
+      info "✋ Stopping observability stack"
+      dd ;;
+
+    mapapp-3)
+      info "✋ Stopping observability stack"
       dd ;;
 
     platelet-ui)
@@ -41,3 +53,4 @@ stop() {
       error "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}'" ;;
   esac
 }
+

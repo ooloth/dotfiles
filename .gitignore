@@ -8,5 +8,5 @@ Brewfile.lock.json
 
 # Work stuff
 k9s/config/clusters/*
-zsh/config/work/*
-!zsh/config/work/.gitkeep
+# zsh/config/work/*
+# !zsh/config/work/.gitkeep

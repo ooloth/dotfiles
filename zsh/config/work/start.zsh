@@ -42,10 +42,6 @@ start() {
     cauldron)
       du ;;
 
-    dash-phenoapp-v2)
-      # TODO: automatically rerun rv if any pip packages were updated?
-      ./bin/debug.sh ;;
-
     genie)
       # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
       du ;;
@@ -53,7 +49,17 @@ start() {
     grey-havens)
       ./run-local.sh ;;
 
-    # TODO: javascript-template-react)
+    mapapp)
+      ./bin/dev.sh ;;
+
+    mapapp-1)
+      ./bin/dev.sh ;;
+
+    mapapp-2)
+      ./bin/dev.sh ;;
+
+    mapapp-3)
+      ./bin/dev.sh ;;
 
     platelet)
       # see: https://github.com/recursionpharma/platelet/blob/trunk/docs/setup/index.md
@@ -78,9 +84,6 @@ start() {
     skurge)
       du ;;
 
-    spade-app)
-      ./bin/dev.sh "$@" ;;
-
     spade-flows)
       ./bin/dev/start.sh ;;
 
@@ -91,3 +94,4 @@ start() {
       error "🚨 No 'start' case defined for '/${CURRENT_DIRECTORY}'" ;;
   esac
 }
+

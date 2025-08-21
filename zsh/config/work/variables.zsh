@@ -1,3 +1,11 @@
+
+# Claude Code
+# See: https://docs.google.com/document/d/1jaU6-4AyCo3Mn5OoIPz6zOvwEy6i6MilyPG2J7GOjOA/edit?tab=t.0
+export ANTHROPIC_VERTEX_PROJECT_ID=vertexai-sandbox-e8a925d0
+export CLAUDE_CODE_USE_VERTEX=1
+export CLOUD_ML_REGION=us-east5
+export DISABLE_PROMPT_CACHING=1
+
 # Configome
 # see: https://app.swimm.io/workspaces/ctl2gE0Uy2okwcN3LfOg/repos/Z2l0aHViJTNBJTNBaXBnLW9yY2hlc3RyYXRvciUzQSUzQXJlY3Vyc2lvbnBoYXJtYQ==/branch/trunk/docs/v0jze
 export CONFIGOME_ENV=dev
