@@ -6,8 +6,7 @@ alias db="docker build --secret id=gcp_adc,src=${HOME}/.config/gcloud/applicatio
 
 # see: https://stackoverflow.com/a/51563857/8802485
 # see: https://cloud.google.com/docs/authentication/gcloud#gcloud-credentials
-gca() { gcloud auth login --update-adc && gcloud auth application-default set-quota-project eng-infrastructure; }
-gci() { gcloud init; }
+alias gca="gcloud auth login --update-adc && gcloud auth application-default set-quota-project eng-infrastructure"
 gcsa() { gcloud config set account michael.uloth@recursionpharma.com; }
 gcpe() {
   gcsa
@@ -19,10 +18,8 @@ gcpn() {
   gcloud config set project rp006-prod-49a893d8
   kubectl config use-context gke_rp006-prod-49a893d8_us-central1_rp006-prod -n rp006-neuro-phenomap
 }
-mp() { cd "$HOME/Repos/recursionpharma/mapapp-public"; }
 
-pa() { cd "$HOME/Repos/recursionpharma/dash-phenoapp-v2"; }
-paf() { cd "$HOME/Repos/recursionpharma/dash-phenoapp-v2/react-app"; }
+alias maf="cd react-app"
 alias pom='griphook pomerium login' # generate a pomerium token that expires in 12 hours (so I can pass it in requests to internal services that require it)
 
 alias r="cd $HOME/Repos/recursionpharma"
