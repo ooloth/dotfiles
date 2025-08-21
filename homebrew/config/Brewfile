@@ -125,9 +125,6 @@ if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
   brew "lzlib"
   brew "opa"
   brew "openjdk" # for java
-  # brew "pyenv" # manages python versions
-  # brew "pyenv-virtualenv" # allow pyenv to manage virtualenvs
-  # brew "skaffold"
   brew "redis"
   brew "tcl-tk"
   brew "zlib"

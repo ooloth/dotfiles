@@ -68,10 +68,6 @@ export PYTHONPATH="$HOME"
 # Avoid extra venv at beginning of prompt (see: https://stackoverflow.com/a/72715907/8802485)
 export VIRTUAL_ENV_PROMPT=''
 
-if $IS_WORK; then
-  export PYENV_ROOT="$HOME/.pyenv"
-fi
-
 # Rust
 export CARGO_HOME="$HOME/.config/cargo"
 export RUSTUP_HOME="$HOME/.config/rustup"
