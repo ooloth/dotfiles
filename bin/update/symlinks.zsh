@@ -73,6 +73,7 @@ maybe_symlink "$DOTFILES/kitty/config/kitty.conf" "$HOMECONFIG/kitty"
 maybe_symlink "$DOTFILES/lazydocker/config/config.yml" "$HOMECONFIG/lazydocker"
 maybe_symlink "$DOTFILES/lazygit/config/config.yml" "$HOMECONFIG/lazygit"
 maybe_symlink "$DOTFILES/node/config/.npmrc" "$HOMECONFIG/npm"
+maybe_symlink "$DOTFILES/powerlevel10k/config/p10k.zsh" "$HOMECONFIG/powerlevel10k"
 maybe_symlink "$DOTFILES/sesh/config/sesh.toml" "$HOMECONFIG/sesh"
 
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"

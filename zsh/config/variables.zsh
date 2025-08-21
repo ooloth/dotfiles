@@ -58,6 +58,9 @@ export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
 export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
 
+# Powerlevel10k
+export POWERLEVEL9K_CONFIG_FILE="${HOME}/.config/powerlevel10k/p10k.zsh"
+
 # Python
 export MYPYPATH="$HOME"
 # see: https://github.com/recursionpharma/data-science-onboarding#cloning-some-internal-repos
