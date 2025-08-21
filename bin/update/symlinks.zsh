@@ -78,6 +78,10 @@ maybe_symlink "$DOTFILES/powerlevel10k/config/p10k.zsh" "$HOMECONFIG/powerlevel1
 maybe_symlink "$DOTFILES/sesh/config/sesh.toml" "$HOMECONFIG/sesh"
 maybe_symlink "$DOTFILES/surfingkeys/config/surfingkeys.js" "$HOMECONFIG/surfingkeys"
 maybe_symlink "$DOTFILES/visidata/config/config.py" "$HOMECONFIG/visidata"
+maybe_symlink "$DOTFILES/yazi/config/flavors" "$HOMECONFIG/yazi"
+maybe_symlink "$DOTFILES/yazi/config/yazi.toml" "$HOMECONFIG/yazi"
+maybe_symlink "$DOTFILES/yazi/config/theme.toml" "$HOMECONFIG/yazi"
+maybe_symlink "$DOTFILES/yazi/config/keymap.toml" "$HOMECONFIG/yazi"
 
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 
