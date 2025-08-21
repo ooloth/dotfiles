@@ -40,6 +40,7 @@ alias f='yazi'
 # alias f="vifm . ."
 
 alias g="lazygit"
+alias grep="rg"
 
 alias h="cd $HOME"
 # NOTE: "have" defined in utils.zsh
