@@ -16,7 +16,6 @@ tap "hashicorp/tap" # for terraform, vault
 tap "jesseduffield/lazydocker"
 tap "jesseduffield/lazygit"
 tap "kdash-rs/kdash" # for kdash
-tap "saulpw/vd" # for visidata
 # tap "yqrashawn/goku" # for karabiner (using hyperkey instead)
 
 if hostname == "Air"
@@ -95,7 +94,6 @@ brew "tmux"
 brew "tree"
 brew "unar" # for yazi
 brew "vifm"
-brew "saulpw/vd/visidata"
 brew "wget" # for neovim
 brew "yazi" # terminal file manager
 brew "zoxide"

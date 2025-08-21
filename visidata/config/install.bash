@@ -7,14 +7,16 @@ set -euo pipefail
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 main() {
-  printf "🥁 Installing X...\n"
+  printf "🥁 Installing visidata as a uv tool...\n"
 
   # TODO: Install if missing
   # TODO: Validate installation (e.g. command is available, version is correct)
   # TODO: Symlink configuration files
   # TODO: Validate configuration
 
-  printf "🎉 X is installed and configured\n"
+  uv tool install visidata
+
+  printf "🎉 visidata is installed and configured\n"
 }
 
 main "$@"
