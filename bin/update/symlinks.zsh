@@ -77,6 +77,7 @@ maybe_symlink "$DOTFILES/node/config/.npmrc" "$HOMECONFIG/npm"
 maybe_symlink "$DOTFILES/powerlevel10k/config/p10k.zsh" "$HOMECONFIG/powerlevel10k"
 maybe_symlink "$DOTFILES/sesh/config/sesh.toml" "$HOMECONFIG/sesh"
 maybe_symlink "$DOTFILES/surfingkeys/config/surfingkeys.js" "$HOMECONFIG/surfingkeys"
+maybe_symlink "$DOTFILES/visidata/config/config.py" "$HOMECONFIG/visidata"
 
 yazi_flavors="$HOME/Repos/yazi-rs/flavors"
 
