@@ -1,4 +1,5 @@
-alias bp ="cd ${HOME}/Repos/recursionpharma/build-pipelines"
+alias bp="cd ${HOME}/Repos/recursionpharma/build-pipelines"
+alias bqq="bq query --use_legacy_sql=false --project_id=datalake-prod-ef49c0c9 --format=prettyjson"
 
 # see: https://recursion.slack.com/archives/CV1G8MHKK/p1752594420668499?thread_ts=1752594134.745739&cid=CV1G8MHKK
 alias db="docker build --secret id=gcp_adc,src=${HOME}/.config/gcloud/application_default_credentials.json ."
