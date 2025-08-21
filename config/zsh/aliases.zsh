@@ -105,7 +105,6 @@ return_or_exit() {
   return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
 }
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
-alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
 source "$DOTFILES/config/zsh/run.zsh"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
