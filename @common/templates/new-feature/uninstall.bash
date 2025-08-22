@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 
-# Enable strict error handling
-set -euo pipefail
+# TODO: Skip if no longer present
+# TODO: Delete configuration file symlinks (NOT the dotfiles)
+# TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
 
-# Set up environment
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+set -euo pipefail
 
 main() {
   printf "🗑️ Uninstalling X...\n"
 
-  # TODO: Uninstall if present
-  # TODO: Delete configuration file symlinks (NOT the dotfiles)
-  # TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
+  # TODO: uninstall commands
 
   printf "🎉 X has been uninstalled\n"
 }

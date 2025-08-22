@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 
-# Enable strict error handling
-set -euo pipefail
+# TODO: Skip if already found and up to date
+# TODO: Install otherwise
+# TODO: Validate installation (e.g. command is available, version is correct)
+# TODO: Symlink configuration files
+# TODO: Validate configuration
 
-# Set up environment
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+set -euo pipefail
 
 main() {
   printf "🥁 Installing X...\n"
 
-  # TODO: Install if missing
-  # TODO: Validate installation (e.g. command is available, version is correct)
-  # TODO: Symlink configuration files
-  # TODO: Validate configuration
+  # TODO: install command
 
   printf "🎉 X is installed and configured\n"
 }
