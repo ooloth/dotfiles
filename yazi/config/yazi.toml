@@ -13,5 +13,13 @@
 #  previewing and preloading these files means they need to be downloaded locally."
 # see: https://yazi-rs.github.io/docs/tips#make-yazi-even-faster
 [plugin]
-  preloaders = []
-  previewers = []
+  prepend_preloaders = [
+    { mime = "image/*", run = "noop" },
+    { name = "*.pdf", run = "noop" },
+    { mime = "video/*", run = "noop" },
+  ]
+  prepend_previewers = [
+    { mime = "image/*", run = "noop" },
+    { name = "*.pdf", run = "noop" },
+    { mime = "video/*", run = "noop" },
+  ]
