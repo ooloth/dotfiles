@@ -101,7 +101,6 @@ if hostname == "Air"
   brew "deno"
   brew "gleam"
   brew "modularml/packages/modular" # for mojo
-  brew "uv" # work handles this installation
   brew "zig"
 end
 
