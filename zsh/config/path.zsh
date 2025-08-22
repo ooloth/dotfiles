@@ -16,7 +16,3 @@ export PATH="${HOME}/.config/cargo/bin:${PATH}"
 
 # Homebrew (keep last so will be at front of PATH)
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH" # Add Homebrew's executable directory to front of PATH
-
-if $IS_WORK; then
-  source "${DOTFILES}/zsh/config/work/path.zsh" 2>/dev/null
-fi
