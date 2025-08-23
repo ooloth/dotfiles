@@ -27,11 +27,11 @@ alias dash="cd $HOME/Repos/ooloth/dashboard"
 alias db="docker build ."
 de() { docker container exec -it $1 sh; }
 alias dc="docker compose"
-alias dd="dc down --remove-orphans"                # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
-alias dl="dc logs --follow --tail=100"             # see last 100 log lines of one or more services (or all services if no args provided)
-alias du="dc up --build --detach --remove-orphans" # recreate and start one or more services (or all services if no args provided)
-alias dud="dc up --detach"                         # start one or more services (or all services if no args provided)
-diff() { kitten diff "$1" "$2"; }                  # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
+alias dd="dc down --remove-orphans && docker system prune --force"  # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
+alias dl="dc logs --follow --tail=100"                              # see last 100 log lines of one or more services (or all services if no args provided)
+alias du="dc up --build --detach --remove-orphans"                  # recreate and start one or more services (or all services if no args provided)
+alias dud="dc up --detach"                                          # start one or more services (or all services if no args provided)
+diff() { kitten diff "$1" "$2"; }                                   # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
 
 alias env="env | sort"
 # NOTE: "error" defined in utils.zsh
