@@ -15,11 +15,11 @@
 [plugin]
   prepend_preloaders = [
     { mime = "image/*", run = "noop" },
-    { name = "*.pdf", run = "noop" },
     { mime = "video/*", run = "noop" },
+    { name = "*.pdf", run = "noop" },
   ]
   prepend_previewers = [
     { mime = "image/*", run = "noop" },
-    { name = "*.pdf", run = "noop" },
     { mime = "video/*", run = "noop" },
+    { name = "*.pdf", run = "noop" },
   ]
