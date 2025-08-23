@@ -58,7 +58,6 @@ Available features (frequent updates):
   mode        - Update mode/environment settings
   symlinks    - Update symlinks
   rust        - Update Rust toolchain
-  yazi        - Update yazi flavors
   neovim      - Update Neovim plugins
   tmux        - Update tmux plugins
   node        - Update Node.js and global npm packages
@@ -116,7 +115,6 @@ main() {
     run_updater "harlequin"
     run_updater "visidata"
     run_updater "rust"
-    run_updater "yazi"
     run_updater "neovim"
     run_updater "tmux"
     run_updater "node"

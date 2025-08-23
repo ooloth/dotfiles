@@ -49,9 +49,8 @@ main() {
     printf "13. Install global npm dependencies\n"
     printf "14. Install tmux dependencies\n"
     printf "15. Install neovim dependencies\n"
-    printf "16. Install yazi flavors (if not work computer)\n"
-    printf "17. Symlink your dotfiles to your home and library directories\n"
-    printf "18. Update macOS system settings\n\n"
+    printf "16. Symlink your dotfiles to your home and library directories\n"
+    printf "17. Update macOS system settings\n\n"
 
     printf "Sound good? (y/N) "
     read -r key
@@ -125,7 +124,6 @@ main() {
     run_installer "neovim"
     run_installer "tmux"
     run_installer "content"
-    run_installer "yazi"
     run_installer "symlinks"
     run_installer "settings"
 

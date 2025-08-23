@@ -106,7 +106,6 @@ source uv.zsh          # Python package manager
 source node.zsh        # Node.js via fnm
 source tmux.zsh        # tmux plugins
 source neovim.zsh      # Neovim plugins
-source yazi.zsh        # File manager plugins
 source content.zsh     # Personal content repos
 source settings.zsh    # macOS preferences
 ```

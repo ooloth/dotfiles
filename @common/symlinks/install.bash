@@ -10,7 +10,6 @@ source "$dotfiles_root/@common/symlinks/utils.bash"
 
 # Configuration paths
 DOTFILES="$dotfiles_root"
-DOTCONFIG="$DOTFILES/config"
 HOMECONFIG="$HOME/.config"
 
 # Main symlink creation function
@@ -32,49 +31,12 @@ create_dotfiles_symlinks() {
     maybe_symlink "${DOTFILES}/zsh/config/.hushlogin" "${HOME}"
     maybe_symlink "${DOTFILES}/zsh/config/.zshenv" "${HOME}"
 
-    echo "⚙️  Creating config directory symlinks..."
-
-    # Create symlinks for all config files
-    create_config_symlinks
-
     echo "📚 Creating Library symlinks..."
 
     # Create VS Code symlinks
     create_vscode_symlinks
 
-    # Create Yazi symlinks if available
-    create_yazi_symlinks
-
     echo "✅ All dotfiles symlinks created successfully"
-}
-
-# Create symlinks for config directory files
-create_config_symlinks() {
-    # Ensure config directory exists
-    mkdir -p "$HOMECONFIG"
-
-    # Find all files in config directory and create symlinks
-    if command -v fd >/dev/null 2>&1; then
-        # Use fd if available (faster and more reliable)
-        while IFS= read -r -d '' file; do
-            local relpath="${file#"$DOTCONFIG"/}"
-            local dirpath
-            dirpath="$(dirname "$relpath")"
-            local targetdir="$HOMECONFIG/$dirpath"
-
-            maybe_symlink "$file" "$targetdir"
-        done < <(fd --type file --hidden . "$DOTCONFIG" --print0 2>/dev/null)
-    else
-        # Fallback to find command
-        while IFS= read -r -d '' file; do
-            local relpath="${file#"$DOTCONFIG"/}"
-            local dirpath
-            dirpath="$(dirname "$relpath")"
-            local targetdir="$HOMECONFIG/$dirpath"
-
-            maybe_symlink "$file" "$targetdir"
-        done < <(find "$DOTCONFIG" -type f -print0 2>/dev/null)
-    fi
 }
 
 # Create VS Code symlinks
@@ -100,24 +62,6 @@ create_vscode_symlinks() {
             echo "⚠️  Skipping missing VS Code file: $file"
         fi
     done
-}
-
-# Create Yazi symlinks if available
-create_yazi_symlinks() {
-    local yazi_flavors="$HOME/Repos/yazi-rs/flavors"
-
-    if [[ ! -d "$yazi_flavors" ]]; then
-        echo "🗂️  Yazi flavors not found, skipping Yazi symlinks"
-        return 0
-    fi
-
-    # Create symlink for Catppuccin Mocha theme
-    local catppuccin_theme="$yazi_flavors/catppuccin-mocha.yazi"
-    if [[ -d "$catppuccin_theme" ]]; then
-        maybe_symlink "$catppuccin_theme" "$HOMECONFIG/yazi/flavors"
-    else
-        echo "⚠️  Catppuccin Mocha theme not found at $catppuccin_theme"
-    fi
 }
 
 # Verify symlinks were created correctly

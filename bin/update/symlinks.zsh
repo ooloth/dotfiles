@@ -77,19 +77,9 @@ maybe_symlink "$DOTFILES/tmux/config/tmux.conf" "$HOMECONFIG/tmux"
 maybe_symlink "$DOTFILES/tmux/config/tmux.terminfo" "$HOMECONFIG/tmux"
 maybe_symlink "$DOTFILES/tmux/config/xterm-256color-italic.terminfo" "$HOMECONFIG/tmux"
 maybe_symlink "$DOTFILES/visidata/config/config.py" "$HOMECONFIG/visidata"
-maybe_symlink "$DOTFILES/yazi/config/flavors" "$HOMECONFIG/yazi"
-maybe_symlink "$DOTFILES/yazi/config/yazi.toml" "$HOMECONFIG/yazi"
-maybe_symlink "$DOTFILES/yazi/config/theme.toml" "$HOMECONFIG/yazi"
 maybe_symlink "$DOTFILES/yazi/config/keymap.toml" "$HOMECONFIG/yazi"
-
-yazi_flavors="$HOME/Repos/yazi-rs/flavors"
-
-if [ ! -d "$yazi_flavors" ]; then
-  source "$DOTFILES/bin/install/yazi.zsh"
-else
-  # see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
-  maybe_symlink "$yazi_flavors/catppuccin-mocha.yazi" "$HOMECONFIG/yazi/flavors"
-fi
+maybe_symlink "$DOTFILES/yazi/config/theme.toml" "$HOMECONFIG/yazi"
+maybe_symlink "$DOTFILES/yazi/config/yazi.toml" "$HOMECONFIG/yazi"
 
 # # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
 # fd --type file --hidden . "$DOTCONFIG" | while read file; do

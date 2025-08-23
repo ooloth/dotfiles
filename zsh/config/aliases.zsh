@@ -37,7 +37,6 @@ alias env="env | sort"
 # NOTE: "error" defined in utils.zsh
 
 alias f='yazi'
-# alias f="vifm . ."
 
 alias g="lazygit"
 alias grep="rg"

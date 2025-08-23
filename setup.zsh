@@ -32,9 +32,8 @@ printf "12. Install the latest version of Node via fnm and set it as the default
 printf "13. Install global npm dependencies\n"
 printf "14. Install tmux dependencies\n"
 printf "15. Install neovim dependencies\n"
-printf "16. Install yazi flavors (if not work computer)\n"
-printf "17. Symlink your dotfiles to your home and library directories\n"
-printf "18. Update macOS system settings\n\n"
+printf "16. Symlink your dotfiles to your home and library directories\n"
+printf "17. Update macOS system settings\n\n"
 
 vared -p "Sound good? (y/N) " -c key
 
@@ -119,7 +118,6 @@ source node.zsh
 source "$DOTFILES/bin/update/npm.zsh"
 source tmux.zsh
 source neovim.zsh
-source yazi.zsh
 source content.zsh
 source "$DOTFILES/bin/update/symlinks.zsh"
 source settings.zsh

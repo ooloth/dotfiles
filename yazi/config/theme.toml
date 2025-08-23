@@ -1,6 +1,1 @@
 # see: https://yazi-rs.github.io/docs/configuration/theme
-
-# see: https://yazi-rs.github.io/docs/flavors/overview
-[flavor]
-  # see: https://github.com/yazi-rs/flavors/tree/main/catppuccin-mocha.yazi
-  # use = "catppuccin-mocha"
