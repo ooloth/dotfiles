@@ -1,10 +1,17 @@
 #!/usr/bin/env zsh
 
-source "$DOTFILES/zsh/config/utils.zsh"
+source "${DOTFILES}/zsh/config/utils.zsh"
 
-info "🔋 Updating executable permissions"
+main() {
+  info "🔋 Updating executable permissions"
 
-# Find all ".zsh" files in $DOTFILES/bin and make them executable
-fd . "$HOME/Repos/ooloth/dotfiles/bin" -e zsh -X chmod +x
+  # Make all ".bash" and ".sh" and ".zsh" files in $DOTFILES/bin executable
+  fd . "${DOTFILES}/bin" --type f -e bash -e sh -e zsh -X chmod +x
 
-printf "🚀 All scripts are executable\n"
+  # Make all files with no extension (inferred from no "." in name) in $DOTFILES/bin executable
+  fd --type f --regex '^[^.]+$' "${DOTFILES}/bin" -X chmod +x
+
+  printf "🚀 All scripts are executable\n"
+}
+
+main "$@"
