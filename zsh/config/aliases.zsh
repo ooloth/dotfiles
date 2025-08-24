@@ -95,7 +95,7 @@ alias oo="cd $HOME/Repos/ooloth"
 alias pilots="cd $HOME/Repos/ooloth/download-pilots"
 
 # Keep 'r' as an alias that can be overridden by alias in work/aliases.zsh
-alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
+# alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
 alias R="source ${HOME}/.zshenv && source ${HOME}/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
 source "$DOTFILES/zsh/config/restart.zsh"
 return_or_exit() {
