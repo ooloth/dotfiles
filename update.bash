@@ -27,37 +27,16 @@ run_updater() {
   fi
 }
 
-# Show help message
 show_help() {
   cat <<EOF
 Usage: update.bash [feature]
 
 Update dotfiles components. If no feature is specified, updates frequently-changing components.
 
-Available features (frequent updates):
-  mode        - Update mode/environment settings
-  symlinks    - Update symlinks
-  rust        - Update Rust toolchain
-  neovim      - Update Neovim plugins
-  tmux        - Update tmux plugins
-  node        - Update Node.js and global npm packages
-  gcloud      - Update Google Cloud SDK
-  homebrew    - Update Homebrew packages and casks
-  macos       - Update macOS system software
-
-Available features (manual updates):
-  ssh         - Update SSH configuration
-  git         - Update git configuration
-  github      - Update GitHub CLI
-  uv          - Update uv Python package manager
-  content     - Update content repository
-  settings    - Update macOS settings
-  node        - Update Node.js via fnm
-
 Examples:
   update.bash           # Update all frequent-update components
   update.bash homebrew  # Update only Homebrew
-  update.bash ssh       # Manually update SSH (not included in full update)
+  update.bash ssh       # Manually update SSH (not usually included in full update)
 
 EOF
 }
