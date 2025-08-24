@@ -1,74 +1,85 @@
 #!/usr/bin/env zsh
 
-# TODO: install node via fnm if missing?
+set -euo pipefail
 
-DOTFILES="$HOME/Repos/ooloth/dotfiles"
+source "${DOTFILES}/zsh/config/utils.zsh"
 
-source "$DOTFILES/zsh/config/aliases.zsh"
-source "$DOTFILES/zsh/config/utils.zsh"
+main() {
+  # TODO: install node via fnm if npm command is missing?
 
-info "✨ Updating Node $(node -v) global dependencies"
+  info "✨ Updating Node $(node -v) global dependencies"
 
-# see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-general_dependencies=(
-  @anthropic-ai/claude-code
-  npm
-  npm-check
-  trash-cli
-)
+  # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
+  general_dependencies=(
+    @anthropic-ai/claude-code
+    npm
+    npm-check
+    trash-cli
+  )
 
-neovim_dependencies=(
-  bash-language-server              # see: ...
-  cssmodules-language-server        # see: ...
-  dockerfile-language-server-nodejs # see: ...
-  emmet-ls                          # see: ...
-  neovim                            # see: ...
-  pug-lint                          # see: ...
-  svelte-language-server            # see: ...
-  tree-sitter-cli                   # see: ...
-  typescript                        # see: ...
-  vscode-langservers-extracted      # see: ...
-)
+  neovim_dependencies=(
+    @astrojs/language-server
+    @mdx-js/language-service
+    bash-language-server
+    css-variables-language-server
+    cssmodules-language-server
+    dockerfile-language-server-nodejs
+    emmet-ls
+    neovim
+    prettier
+    pug-lint
+    svelte-language-server
+    @tailwindcss/language-server
+    tree-sitter-cli
+    typescript-language-server
+    typescript
+    vls
+    vscode-langservers-extracted
+    yaml-language-server
+  )
 
-packages=("${general_dependencies[@]}" "${neovim_dependencies[@]}")
-installed_packages=$(npm list -g --depth=0)
-outdated_packages=$(npm outdated -g)
+  packages=("${general_dependencies[@]}" "${neovim_dependencies[@]}")
+  installed_packages=$(npm list -g --depth=0 || true)
+  outdated_packages=$(npm outdated -g || true)
 
-is_package_installed() {
-  local package="$1"
-  echo "$installed_packages" | grep -q " ${package}@"
-  return $? # Return the exit status of the grep command
-}
+  is_package_installed() {
+    local package="$1"
+    echo "$installed_packages" | grep -q " ${package}@"
+    return $? # Return the exit status of the grep command
+  }
 
-is_package_outdated() {
-  local package="$1"
-  echo "$outdated_packages" | grep -q "^${package}"
-  return $? # Return the exit status of the grep command
-}
+  is_package_outdated() {
+    local package="$1"
+    echo "$outdated_packages" | grep -q "^${package}"
+    return $? # Return the exit status of the grep command
+  }
 
-packages_to_add=()
-packages_to_update=()
+  packages_to_add=()
+  packages_to_update=()
 
-for package in "${packages[@]}"; do
-  if ! is_package_installed "$package"; then
-    packages_to_add+=("$package")
-  elif is_package_outdated "$package"; then
-    packages_to_update+=("$package")
+  for package in "${packages[@]}"; do
+    if ! is_package_installed "$package"; then
+      packages_to_add+=("$package")
+    elif is_package_outdated "$package"; then
+      packages_to_update+=("$package")
+    fi
+  done
+
+  echo
+  for package in "${packages_to_add[@]}"; do
+    printf "📦 Installing %s\n" "$package"
+  done
+
+  for package in "${packages_to_update[@]}"; do
+    printf "🚀 Updating %s\n" "$package"
+  done
+
+  if [ ${#packages_to_add[@]} -gt 0 ] || [ ${#packages_to_update[@]} -gt 0 ]; then
+    # prefer "-g" over "--location=global" to support older versions of npm
+    npm install -g --loglevel=error "${packages_to_add[@]}" "${packages_to_update[@]}"
   fi
-done
 
-echo
-for package in "${packages_to_add[@]}"; do
-  printf "📦 Installing %s\n" "$package"
-done
+  printf "🎉 All npm packages are installed and up to date\n"
+}
 
-for package in "${packages_to_update[@]}"; do
-  printf "🚀 Updating %s\n" "$package"
-done
-
-if [ ${#packages_to_add[@]} -gt 0 ] || [ ${#packages_to_update[@]} -gt 0 ]; then
-  # prefer "-g" over "--location=global" to support older versions of npm
-  npm install -g --loglevel=error "${packages_to_add[@]}" "${packages_to_update[@]}"
-fi
-
-printf "🎉 All npm packages are installed and up to date\n"
+main "$@"
