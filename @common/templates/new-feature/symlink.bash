@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO: {feature}/install.bash and {feature}/update.bash should both source this file
+
 set -euo pipefail
 
 main() {

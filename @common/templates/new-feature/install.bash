@@ -13,6 +13,9 @@ main() {
 
   # TODO: install command
 
+  printf "🔗 Configuring X...\n"
+  source "$(dirname "${BASH_SOURCE[0]}")/symlink.bash"
+
   printf "🎉 X is installed and configured\n"
 }
 

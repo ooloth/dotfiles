@@ -13,6 +13,9 @@ main() {
 
   # TODO: update command
 
+  printf "🔗 Configuring X...\n"
+  source "$(dirname "${BASH_SOURCE[0]}")/symlink.bash"
+
   printf "🎉 X is up to date\n"
 }
 
