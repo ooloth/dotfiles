@@ -119,7 +119,7 @@ source "$DOTFILES/zsh/config/test.zsh"
 alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
-source "$DOTFILES/zsh/config/update.zsh"
+u() { zsh "${DOTFILES}/update.zsh"; }
 
 v() {
   (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"
