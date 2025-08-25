@@ -5,7 +5,7 @@ source "${DOTFILES}/tools/zsh/config/utils.zsh"
 
 main() {
   source "${DOTFILES}/features/update/zsh/mode.zsh"
-  source "${DOTFILES}/features/update/zsh/symlinks.zsh"
+  source "${DOTFILES}/features/symlink/link.zsh"
   source "${DOTFILES}/features/update/zsh/rust.zsh"
   source "${DOTFILES}/features/update/zsh/uv.zsh"
   source "${DOTFILES}/features/update/zsh/neovim.zsh"

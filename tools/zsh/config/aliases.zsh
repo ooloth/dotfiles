@@ -119,7 +119,7 @@ sl() {
 source "${DOTFILES}/tools/zsh/config/start.zsh"
 source "${DOTFILES}/tools/zsh/config/stop.zsh"
 source "${DOTFILES}/tools/zsh/config/submit.zsh"
-alias symlinks="zsh ${DOTFILES}/features/update/zsh/symlinks.zsh"
+alias symlinks="zsh ${DOTFILES}/features/symlink/link.zsh"
 
 t() { tmux attach || exec tmux; }
 source "${DOTFILES}/tools/zsh/config/test.zsh"
