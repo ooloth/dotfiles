@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/bash/utils.zsh"
+source "${DOTFILES}/tools/bash/utils.bash"
 
 main() {
   source "${DOTFILES}/features/update/bash/mode.bash"
