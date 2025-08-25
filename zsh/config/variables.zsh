@@ -25,13 +25,7 @@ source "$DOTFILES/zsh/config/aliases.zsh"
 source "$DOTFILES/zsh/config/utils.zsh"
 
 # Editor
-editors_in_desc_order_of_preference=("code" "nvim" "vim" "vi")
-for editor in "${editors_in_desc_order_of_preference[@]}"; do
-  if have "$editor"; then
-    export EDITOR="$editor"
-    break
-  fi
-done
+EDITOR=$(command -v nvim || command -v vim || command -v vi || command -v code)
 
 # Eza
 # see: https://github.com/eza-community/eza/blob/main/man/eza.1.md#environment-variables
