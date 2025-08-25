@@ -1,17 +1,11 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
+# TODO: uninstall commands
 # TODO: Skip if no longer present
 # TODO: Delete configuration file symlinks (NOT the dotfiles)
 # TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
 
-set -euo pipefail
+printf "🗑️ Uninstalling X...\n"
 
-main() {
-  printf "🗑️ Uninstalling X...\n"
-
-  # TODO: uninstall commands
-
-  printf "🎉 X has been uninstalled\n"
-}
-
-main "$@"
+printf "🎉 X has been uninstalled\n"
