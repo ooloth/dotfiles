@@ -8,20 +8,20 @@ export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 # Feature discovery function for updates
 # Tries new feature location first, falls back to old location
 run_updater() {
-  local feature_name="$1"
-  local feature_path="$DOTFILES/$feature_name/update.bash"
-  local legacy_path="$DOTFILES/bin/update/${feature_name}.zsh"
+  local tool_name="$1"
+  local tool_path="${DOTFILES}/tools/${tool_name}/update.bash"
+  local legacy_path="${DOTFILES}/bin/update/${tool_name}.zsh"
 
   # Try new feature location first
-  if [[ -f "$feature_path" ]]; then
-    printf "  → Using feature-based updater: %s\n" "$feature_path"
-    source "$feature_path"
+  if [[ -f "$tool_path" ]]; then
+    printf "  → Using tool-based updater: %s\n" "$tool_path"
+    source "$tool_path"
   # Fall back to old location
   elif [[ -f "$legacy_path" ]]; then
     printf "  → Using legacy updater: %s\n" "$legacy_path"
     source "$legacy_path"
   else
-    printf "  ⚠️  No updater found for %s\n" "$feature_name"
+    printf "  ⚠️  No updater found for %s\n" "$tool_name"
     # Don't fail, just warn - not all features need update scripts
     return 0
   fi
@@ -29,14 +29,14 @@ run_updater() {
 
 show_help() {
   cat <<EOF
-Usage: update.bash [feature]
+Usage: features/update/update.bash [feature]
 
-Update dotfiles components. If no feature is specified, updates frequently-changing components.
+Update dotfiles components. If no tool is specified, updates frequently-changing tools.
 
 Examples:
-  update.bash           # Update all frequent-update components
-  update.bash homebrew  # Update only Homebrew
-  update.bash ssh       # Manually update SSH (not usually included in full update)
+  features/update/update.bash           # Update all frequent-update components
+  features/update/update.bash homebrew  # Update only Homebrew
+  features/update/update.bash ssh       # Manually update SSH (not usually included in full update)
 
 EOF
 }
@@ -80,9 +80,9 @@ main() {
   fi
 
   # Otherwise, update frequently-changing components
-  printf "🔄 Updating frequently-changing dotfiles components...\n\n"
+  printf "🔄 Updating frequently-changing components...\n\n"
 
-  # Update in the same order as legacy zsh/config/update.zsh
+  # Update in the same order as legacy tools/zsh/config/update.zsh
   run_updater "mode"
   run_updater "symlinks"
   run_updater "uv"

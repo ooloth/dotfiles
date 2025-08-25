@@ -32,8 +32,8 @@ The @new template directory groups all the related files for a particular tool/u
 
 1. Duplicate and rename the `@new` template directory at the root level of `/tools`
 1. Update or delete each example file
-1. Reference `{tool}/update.bash` in `update.bash` - _automate?_
-1. Reference `{tool}/install.bash` in `setup.bash` - _automate?_
+1. Reference `{tool}/install.bash` in `features/setup/setup.bash` - _automate?_
+1. Reference `{tool}/update.bash` in `features/update/update.bash` - _automate?_
 
 ## Deprecating a Tool
 

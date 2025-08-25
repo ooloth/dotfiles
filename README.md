@@ -70,7 +70,7 @@ The setup is intentionally opinionated and may include experimental configuratio
 ### Quick Install (Recommended)
 
 ```sh
-curl -s https://raw.githubusercontent.com/ooloth/dotfiles/main/setup.zsh | zsh
+curl -s https://raw.githubusercontent.com/ooloth/dotfiles/main/features/setup/setup.zsh | zsh
 ```
 
 This will:
@@ -90,24 +90,10 @@ git clone https://github.com/ooloth/dotfiles.git ~/Repos/ooloth/dotfiles
 cd ~/Repos/ooloth/dotfiles
 
 # Run the setup script
-./setup.zsh
+./features/setup/setup.zsh
 
 # Preview what would be installed without making changes
-./setup.zsh --dry-run
-
-# Or run individual installation scripts
-cd bin/install
-source ssh.zsh         # SSH keys and GitHub auth
-source github.zsh      # GitHub CLI setup
-source homebrew.zsh    # Homebrew and packages
-source zsh.zsh         # Shell configuration
-source rust.zsh        # Rust toolchain
-source uv.zsh          # Python package manager
-source node.zsh        # Node.js via fnm
-source tmux.zsh        # tmux plugins
-source neovim.zsh      # Neovim plugins
-source content.zsh     # Personal content repos
-source settings.zsh    # macOS preferences
+./features/setup/setup.zsh --dry-run
 ```
 
 ## After Installation
@@ -127,7 +113,7 @@ The setup automatically detects machine type based on hostname:
 - Machines with "Mini" in the name → Home server configuration
 - All others → Work machine configuration
 
-To customize for your machines, edit the detection logic in `setup.zsh` or set the environment variables manually.
+To customize for your machines, edit the detection logic in `features/setup/setup.zsh` or set the environment variables manually.
 
 ### Key Files to Customize
 

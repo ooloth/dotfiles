@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# Test setup.bash main entry point
+# Test features/setup/setup.bash main entry point
 
 # Load test helpers
 load "../bats-helper.bash"
@@ -41,30 +41,30 @@ teardown() {
     fi
 }
 
-@test "setup.bash exists and is executable" {
-    # Check if setup.bash exists in the real dotfiles location
-    [ -f "$(pwd)/setup.bash" ]
-    [ -x "$(pwd)/setup.bash" ]
+@test "features/setup/setup.bash exists and is executable" {
+    # Check if features/setup/setup.bash exists in the real dotfiles location
+    [ -f "$(pwd)/features/setup/setup.bash" ]
+    [ -x "$(pwd)/features/setup/setup.bash" ]
 }
 
-@test "setup.bash sets DOTFILES environment variable" {
-    # Clear DOTFILES to test that setup.bash sets it
+@test "features/setup/setup.bash sets DOTFILES environment variable" {
+    # Clear DOTFILES to test that features/setup/setup.bash sets it
     unset DOTFILES
 
-    # Run setup.bash in a way that exports variables
-    source "$(pwd)/setup.bash"
+    # Run features/setup/setup.bash in a way that exports variables
+    source "$(pwd)/features/setup/setup.bash"
 
     # Check that DOTFILES is set correctly
     [ -n "$DOTFILES" ]
     [[ "$DOTFILES" == "$HOME/Repos/ooloth/dotfiles" ]]
 }
 
-@test "setup.bash enables strict error handling" {
-    # Create a test script that sources setup.bash and checks error handling
+@test "features/setup/setup.bash enables strict error handling" {
+    # Create a test script that sources features/setup/setup.bash and checks error handling
     local test_script="$TEST_TEMP_DIR/test_error.sh"
     cat >"$test_script" <<'EOF'
 #!/bin/bash
-source "$(pwd)/setup.bash"
+source "$(pwd)/features/setup/setup.bash"
 
 # Test that undefined variable causes error
 echo "$UNDEFINED_VARIABLE"
@@ -77,9 +77,9 @@ EOF
     [ "$status" -ne 0 ]
 }
 
-@test "setup.bash shows welcome message when run directly" {
-    # Run setup.bash with 'n' response to avoid full installation
-    run bash -c "echo 'n' | $(pwd)/setup.bash"
+@test "features/setup/setup.bash shows welcome message when run directly" {
+    # Run features/setup/setup.bash with 'n' response to avoid full installation
+    run bash -c "echo 'n' | $(pwd)/features/setup/setup.bash"
 
     # Check that welcome message is shown
     [[ "$output" =~ "Welcome to your new Mac!" ]]
@@ -88,7 +88,7 @@ EOF
     [ "$status" -eq 1 ]
 }
 
-@test "setup.bash checks for macOS platform" {
+@test "features/setup/setup.bash checks for macOS platform" {
     # Create a mock uname command that returns Linux
     local mock_bin="$TEST_TEMP_DIR/bin"
     mkdir -p "$mock_bin"
@@ -98,14 +98,14 @@ echo "Linux"
 EOF
     chmod +x "$mock_bin/uname"
 
-    # Run setup.bash with mocked uname
-    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    # Run features/setup/setup.bash with mocked uname
+    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/features/setup/setup.bash 2>&1 || true"
 
     # Check for macOS error message
     [[ "$output" =~ "This script only runs on macOS" ]]
 }
 
-@test "setup.bash pulls latest changes when dotfiles already exist" {
+@test "features/setup/setup.bash pulls latest changes when dotfiles already exist" {
     # Create mock git command
     local mock_bin="$TEST_TEMP_DIR/bin"
     mkdir -p "$mock_bin"
@@ -120,14 +120,14 @@ EOF
     # Create the dotfiles directory to simulate it already exists
     mkdir -p "$DOTFILES"
 
-    # Run setup.bash with mocked git, answering 'y' but then it will fail on platform check
-    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    # Run features/setup/setup.bash with mocked git, answering 'y' but then it will fail on platform check
+    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/features/setup/setup.bash 2>&1 || true"
 
     # Check that it detected existing dotfiles
     [[ "$output" =~ "Dotfiles are already installed. Pulling latest changes." ]]
 }
 
-@test "setup.bash runs bash installation scripts" {
+@test "features/setup/setup.bash runs bash installation scripts" {
     # Create mock git command
     local mock_bin="$TEST_TEMP_DIR/bin"
     mkdir -p "$mock_bin"
@@ -171,8 +171,8 @@ EOF
     echo 'run_prerequisite_validation() { return 0; }' >"$DOTFILES/features/common/prerequisites/validation.bash"
     echo 'run_installer() { echo "Installing $1..."; }' >"$DOTFILES/features/common/testing/bats-helper.bash"
 
-    # Run setup.bash with mocked git
-    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
+    # Run features/setup/setup.bash with mocked git
+    PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/features/setup/setup.bash 2>&1 || true"
 
     # Check that installation scripts were mentioned/run
     [[ "$output" =~ "Running installations" ]]

@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# Test feature discovery functionality in setup.bash
+# Test feature discovery functionality in features/setup/features/setup/setup.bash
 # Verifies that both old and new paths are discovered correctly
 
 # Load test helpers
@@ -20,7 +20,7 @@ setup() {
     mkdir -p "${DOTFILES}/tools/ssh"
     mkdir -p "${DOTFILES}/tools/git"
 
-    # Change to install directory (as setup.bash does)
+    # Change to install directory (as features/setup/setup.bash does)
     cd "$DOTFILES/bin/install"
 }
 
@@ -37,10 +37,10 @@ teardown() {
     rm -rf "$TEST_DIR"
 }
 
-# Source the run_installer function from setup.bash
+# Source the run_installer function from features/setup/setup.bash
 load_run_installer() {
-    # Extract just the run_installer function from setup.bash
-    sed -n '/^run_installer()/,/^}/p' "$ORIGINAL_PWD/setup.bash" >"$TEST_DIR/run_installer.bash"
+    # Extract just the run_installer function from features/setup/setup.bash
+    sed -n '/^run_installer()/,/^}/p' "$ORIGINAL_PWD/features/setup/setup.bash" >"$TEST_DIR/run_installer.bash"
     source "$TEST_DIR/run_installer.bash"
 }
 
@@ -99,4 +99,3 @@ load_run_installer() {
     [[ "$output" == *"Using feature-based installer"* ]]
     [[ "$output" == *"SSH FEATURE"* ]]
 }
-

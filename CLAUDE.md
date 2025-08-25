@@ -12,18 +12,19 @@ See README.md for the complete overview. Key points for Claude:
 
 - Installation scripts are in `bin/install/` (individual .zsh files)
 - Update scripts are in `bin/update/`
-- Main setup script is `setup.zsh` in project root
-- Configuration files are in `config/` directories
+- Main setup script is `features/setup/setup.zsh`
+- Configuration files are in `tools/{tool}/config/` directories
 
-**Future Bash Structure (In Development - Not Yet Active):**
+**Folder Structure**
 
 - Common functionality being built in `features/common/` (bash modules for shared logic)
-- Feature-specific code being built in root-level `{tool}/` folders (individual feature directories with bash scripts)
-- Future main setup script will be `./setup.bash`
-- Future main update script will be `./update.bash`
+- Tool-specific logic is in `tools/{tool}/` folders
+- Feature-specific code (leveraging one or more tools) is in `features/{feature}/` folders
+- Future main setup script will be `features/setup/setup.bash`
+- Future main update script will be `features/update/update.bash`
 - **Note**: These bash files are not yet functional or ready for use
 
-**Future Bash Common Modules** (`features/common/`) - Under construction:
+**Self-Contained Feature Modules** (`features/common/`) - Under construction:
 
 - `detection/` - Machine and macOS detection logic
 - `dry-run/` - Dry run utilities
@@ -33,15 +34,14 @@ See README.md for the complete overview. Key points for Claude:
 - `symlinks/` - Symlink management
 - `testing/` - Testing utilities and test suite
 
-**Future Bash Feature Modules** (`./{tool}/`) - Under construction:
+**Self-Contained Tool Modules** (`tools/{tool}/`)
 
-- See `features/common/templates/new-feature` for an example of the files in each folder
-- See `features/common/templates/README.md` for an explanation of the feature folder approach
-- See `./neovim` for an full example
+- See `tools/@new` for an example of the files in each folder
+- See `tools/README.md` for an explanation of the feature folder approach
 
 ### Symlink Management
 
-**Important for Git commits**: Files in `claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `claude/config/CLAUDE.md` instead of trying to commit outside the repository.
+**Important for Git commits**: Files in `tools/claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `tools/claude/config/CLAUDE.md` instead of trying to commit outside the repository.
 
 The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `features/common/symlinks/` is under development and not yet functional).
 
@@ -58,6 +58,5 @@ When making changes to this repository:
 
 - All bash scripts must pass `shellcheck` and `bats` checks in order to pass CI
 - **Use `.shellcheckrc` for project-wide settings** - centralized configuration in the `.shellcheckrc` file instead of using disable comments
-- See `test/README.md` for detailed testing documentation
-- Run `symlinks` to recreate all symlinks
+- Run `symlinks` alias to recreate all symlinks
 - Test individual scripts by sourcing them
