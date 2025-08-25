@@ -7,7 +7,6 @@
 DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 HOMECONFIG="${HOME}/.config"
 
-source "${DOTFILES}/zsh/config/aliases.zsh"
 source "${DOTFILES}/zsh/config/utils.zsh"
 
 symlink() {
