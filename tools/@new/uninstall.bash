@@ -12,4 +12,4 @@ source "${DOTFILES}/X/shell/variables.zsh"
 printf "🗑️ Unlinking X configuration files...\n"
 source "${DOTFILES}/X/symlinks/unlink.bash"
 
-printf "🎉 X has been uninstalled\n"
+printf "\n🚀 X has been uninstalled\n"

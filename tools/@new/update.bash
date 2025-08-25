@@ -13,4 +13,4 @@ source "${DOTFILES}/X/shell/variables.zsh"
 printf "🔗 Symlinking X configuration files...\n"
 source "${DOTFILES}/X/symlinks/link.bash"
 
-printf "🎉 X is up to date\n"
+printf "\n🚀 X is up to date\n"
