@@ -89,20 +89,20 @@ main() {
     printf "\n🔧 Initializing dotfiles utilities...\n\n"
 
     # Initialize dynamic machine detection
-    source "$DOTFILES/@common/detection/machine.bash"
+    source "$DOTFILES/features/common/detection/machine.bash"
     init_machine_detection
 
     # Initialize dry-run mode utilities
-    source "$DOTFILES/@common/dry-run/utils.bash"
+    source "$DOTFILES/features/common/dry-run/utils.bash"
     parse_dry_run_flags "$@"
 
     # Initialize enhanced error handling utilities
-    source "$DOTFILES/@common/errors/handling.bash"
+    source "$DOTFILES/features/common/errors/handling.bash"
 
     # Run comprehensive prerequisite validation
     printf "Running comprehensive prerequisite validation...\n\n"
 
-    source "$DOTFILES/@common/prerequisites/validation.bash"
+    source "$DOTFILES/features/common/prerequisites/validation.bash"
     if ! run_prerequisite_validation; then
         printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
         exit 1

@@ -11,8 +11,8 @@ DOTFILES="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Source utilities
 source "$SCRIPT_DIR/utils.bash"
-source "$DOTFILES/@common/detection/machine.bash"
-source "$DOTFILES/@common/errors/handling.bash"
+source "$DOTFILES/features/common/detection/machine.bash"
+source "$DOTFILES/features/common/errors/handling.bash"
 
 main() {
     echo "🍎 macOS System Update"
@@ -54,4 +54,3 @@ main() {
 
 # Run main function
 main "$@"
-

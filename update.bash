@@ -66,8 +66,8 @@ main() {
   feature=$(parse_arguments "$@")
 
   # Initialize utilities
-  source "$DOTFILES/@common/detection/machine.bash"
-  source "$DOTFILES/@common/errors/handling.bash"
+  source "$DOTFILES/features/common/detection/machine.bash"
+  source "$DOTFILES/features/common/errors/handling.bash"
 
   init_machine_detection
 

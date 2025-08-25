@@ -11,7 +11,7 @@ DOTFILES="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Source utilities
 source "$SCRIPT_DIR/utils.bash"
-source "$DOTFILES/@common/errors/handling.bash"
+source "$DOTFILES/features/common/errors/handling.bash"
 
 main() {
     echo "⚡️ Setting up UV (Python package manager)"

@@ -5,7 +5,7 @@ This directory contains cross-cutting utilities used by multiple features. These
 ## Architecture
 
 ```
-@common/
+features/common/
 ├── {helper}/
 │   ├── utils.bash   # Shared utilities
 │   ├── tests/       # Feature-specific tests
@@ -48,8 +48,8 @@ Common utilities are sourced by features as needed:
 
 ```bash
 # In a feature's install.bash
-source "$DOTFILES/@common/detection/machine.bash"
-source "$DOTFILES/@common/errors/handling.bash"
+source "$DOTFILES/features/common/detection/machine.bash"
+source "$DOTFILES/features/common/errors/handling.bash"
 ```
 
 ## Standards

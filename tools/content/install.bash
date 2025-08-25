@@ -10,7 +10,7 @@ DOTFILES="${DOTFILES:-$HOME/Repos/ooloth/dotfiles}"
 
 # Load utilities
 source "${DOTFILES}/tools/content/utils.bash"
-source "${DOTFILES}/@common/errors/handling.bash"
+source "${DOTFILES}/features/common/errors/handling.bash"
 
 main() {
     echo "📂 Installing content repository"

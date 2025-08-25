@@ -10,8 +10,8 @@ DOTFILES="${DOTFILES:-$HOME/Repos/ooloth/dotfiles}"
 
 # Load utilities
 source "${DOTFILES}/tools/settings/utils.bash"
-source "${DOTFILES}/@common/detection/macos.bash"
-source "${DOTFILES}/@common/errors/handling.bash"
+source "${DOTFILES}/features/common/detection/macos.bash"
+source "${DOTFILES}/features/common/errors/handling.bash"
 
 main() {
     echo "💻 Configuring macOS system settings"

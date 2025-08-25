@@ -17,13 +17,13 @@ See README.md for the complete overview. Key points for Claude:
 
 **Future Bash Structure (In Development - Not Yet Active):**
 
-- Common functionality being built in `@common/` (bash modules for shared logic)
+- Common functionality being built in `features/common/` (bash modules for shared logic)
 - Feature-specific code being built in root-level `{tool}/` folders (individual feature directories with bash scripts)
 - Future main setup script will be `./setup.bash`
 - Future main update script will be `./update.bash`
 - **Note**: These bash files are not yet functional or ready for use
 
-**Future Bash Common Modules** (`@common/`) - Under construction:
+**Future Bash Common Modules** (`features/common/`) - Under construction:
 
 - `detection/` - Machine and macOS detection logic
 - `dry-run/` - Dry run utilities
@@ -35,15 +35,15 @@ See README.md for the complete overview. Key points for Claude:
 
 **Future Bash Feature Modules** (`./{tool}/`) - Under construction:
 
-- See `@common/templates/new-feature` for an example of the files in each folder
-- See `@common/templates/README.md` for an explanation of the feature folder approach
+- See `features/common/templates/new-feature` for an example of the files in each folder
+- See `features/common/templates/README.md` for an explanation of the feature folder approach
 - See `./neovim` for an full example
 
 ### Symlink Management
 
 **Important for Git commits**: Files in `claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `claude/config/CLAUDE.md` instead of trying to commit outside the repository.
 
-The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `@common/symlinks/` is under development and not yet functional).
+The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `features/common/symlinks/` is under development and not yet functional).
 
 ### Claude Development Workflow
 

@@ -159,17 +159,17 @@ EOF
     chmod +x "$DOTFILES/bin/install/github.bash"
 
     # Create minimal mock utilities to avoid errors
-    mkdir -p "$DOTFILES/@common/detection"
-    mkdir -p "$DOTFILES/@common/dry-run"
-    mkdir -p "$DOTFILES/@common/errors"
-    mkdir -p "$DOTFILES/@common/prerequisites"
-    mkdir -p "$DOTFILES/@common/testing"
+    mkdir -p "$DOTFILES/features/common/detection"
+    mkdir -p "$DOTFILES/features/common/dry-run"
+    mkdir -p "$DOTFILES/features/common/errors"
+    mkdir -p "$DOTFILES/features/common/prerequisites"
+    mkdir -p "$DOTFILES/features/common/testing"
 
-    echo 'init_machine_detection() { :; }' >"$DOTFILES/@common/detection/machine.bash"
-    echo 'parse_dry_run_flags() { :; }' >"$DOTFILES/@common/dry-run/utils.bash"
-    echo '' >"$DOTFILES/@common/errors/handling.bash"
-    echo 'run_prerequisite_validation() { return 0; }' >"$DOTFILES/@common/prerequisites/validation.bash"
-    echo 'run_installer() { echo "Installing $1..."; }' >"$DOTFILES/@common/testing/bats-helper.bash"
+    echo 'init_machine_detection() { :; }' >"$DOTFILES/features/common/detection/machine.bash"
+    echo 'parse_dry_run_flags() { :; }' >"$DOTFILES/features/common/dry-run/utils.bash"
+    echo '' >"$DOTFILES/features/common/errors/handling.bash"
+    echo 'run_prerequisite_validation() { return 0; }' >"$DOTFILES/features/common/prerequisites/validation.bash"
+    echo 'run_installer() { echo "Installing $1..."; }' >"$DOTFILES/features/common/testing/bats-helper.bash"
 
     # Run setup.bash with mocked git
     PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/setup.bash 2>&1 || true"
