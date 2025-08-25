@@ -1,21 +1,9 @@
 #!/usr/bin/env bash
-
-# Zsh installation script
-# Configures Zsh as the default shell with Homebrew installation
-#
-# This script:
-# 1. Installs Zsh via Homebrew if not present
-# 2. Adds Zsh to /etc/shells if not already listed
-# 3. Changes user's default shell to Zsh
-# 4. Validates the installation
-
 set -euo pipefail
 
-# Configuration
 DOTFILES="${DOTFILES:-$HOME/Repos/ooloth/dotfiles}"
 
-# Load utilities
-source "${DOTFILES}/tools/zsh/utils.bash"
+source "${DOTFILES}/tools/zsh/bash/utils.bash"
 
 main() {
     echo "🐚 Installing and configuring Zsh shell..."
@@ -29,7 +17,7 @@ main() {
         print_success "Zsh is already installed at $shell_path"
     else
         print_info "Zsh not found at $shell_path. Installing via Homebrew..."
-        
+
         # Check if Homebrew is available
         if ! homebrew_is_installed; then
             print_error "Homebrew is required but not installed. Please install Homebrew first."
@@ -39,7 +27,7 @@ main() {
         # Install Zsh via Homebrew
         if install_zsh_via_homebrew; then
             print_success "Zsh installed successfully"
-            
+
             # Verify installation worked
             if ! zsh_is_installed; then
                 print_error "Zsh installation failed - executable not found at $shell_path"

@@ -1,20 +1,11 @@
 #!/usr/bin/env bash
-
-# Zsh update script
-# Updates Zsh and refreshes configuration
-#
-# This script:
-# 1. Updates Zsh via Homebrew
-# 2. Validates the updated installation
-# 3. Refreshes Zsh configuration if needed
-
 set -euo pipefail
 
 # Configuration
 DOTFILES="${DOTFILES:-$HOME/Repos/ooloth/dotfiles}"
 
 # Load utilities
-source "${DOTFILES}/tools/zsh/utils.bash"
+source "${DOTFILES}/tools/zsh/bash/utils.bash"
 
 main() {
     echo "🔄 Updating Zsh..."
@@ -43,7 +34,7 @@ main() {
 
     # Ensure Zsh is still properly configured after update
     print_info "Verifying Zsh configuration after update..."
-    
+
     # Re-add to /etc/shells if needed (update might have changed path)
     if add_zsh_to_shells "$shell_path"; then
         print_success "Zsh path verified in /etc/shells"
@@ -79,14 +70,14 @@ main() {
 
     echo ""
     print_success "Zsh update completed"
-    
+
     # Show current version information
     if command -v zsh >/dev/null 2>&1; then
         local zsh_version
         zsh_version=$(zsh --version 2>/dev/null | head -n1 || echo "Unknown")
         print_info "Zsh version: $zsh_version"
     fi
-    
+
     print_info "Zsh location: $shell_path"
     print_info "Current shell: $SHELL"
 }
