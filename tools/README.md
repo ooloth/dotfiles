@@ -26,7 +26,7 @@ The @new template directory groups all the related files for a particular tool/u
 1. **Feature Cohesion**: Everything related to a tool lives in one folder
 2. **Self-Contained**: Each feature can be understood in isolation + deleted without affecting other tools
 3. **Discoverable**: The root level of `/tools` shows all available tools
-4. **No Nesting**: Features are all at the root level, not in category subfolders
+4. **Automatic integration**: Tools are automatically integrated with install and update features
 
 ## Adding a New Tool
 
