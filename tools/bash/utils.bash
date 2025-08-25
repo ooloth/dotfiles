@@ -25,19 +25,19 @@ have() {
 
 # Text colors
 # see: https://stackoverflow.com/a/4332530/8802485
-TEXT_BLACK=$(tput setaf 0)
 TEXT_RED=$(tput setaf 1)
-TEXT_GREEN=$(tput setaf 2)
 TEXT_YELLOW=$(tput setaf 3)
-TEXT_BLUE=$(tput setaf 4)
-TEXT_MAGENTA=$(tput setaf 5)
-TEXT_CYAN=$(tput setaf 6)
 TEXT_WHITE=$(tput setaf 7)
 TEXT_BRIGHT=$(tput bold)
 TEXT_NORMAL=$(tput sgr0)
-TEXT_BLINK=$(tput blink)
-TEXT_REVERSE=$(tput smso)
-TEXT_UNDERLINE=$(tput smul)
+# TEXT_BLACK=$(tput setaf 0)
+# TEXT_GREEN=$(tput setaf 2)
+# TEXT_BLUE=$(tput setaf 4)
+# TEXT_MAGENTA=$(tput setaf 5)
+# TEXT_CYAN=$(tput setaf 6)
+# TEXT_BLINK=$(tput blink)
+# TEXT_REVERSE=$(tput smso)
+# TEXT_UNDERLINE=$(tput smul)
 
 function banner() {
   # Capture the text and color arguments
