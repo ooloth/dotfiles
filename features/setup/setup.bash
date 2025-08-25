@@ -1,29 +1,16 @@
 #!/usr/bin/env bash
-
-# Dotfiles setup script (bash version)
-# Main entry point for dotfiles installation
-
-# Enable strict error handling
 set -euo pipefail
 
-# Set up environment
 export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-# Feature discovery function
-# Tries new feature location first, falls back to old location
-run_installer() {
+# Tool discovery function
+install_tool() {
     local tool_name="$1"
     local tool_path="${DOTFILES}/tools/${tool_name}/install.bash"
-    local legacy_path="${tool_name}.bash"
 
     # Try new feature location first
     if [[ -f "$tool_path" ]]; then
-        printf "  → Using tool-based installer: %s\n" "$tool_path"
         source "$tool_path"
-    # Fall back to old location
-    elif [[ -f "$legacy_path" ]]; then
-        printf "  → Using legacy installer: %s\n" "$legacy_path"
-        source "$legacy_path"
     else
         printf "  ⚠️  No installer found for %s\n" "$tool_name"
         # Don't fail, just warn
@@ -114,25 +101,22 @@ main() {
     printf "Running installations...\n\n"
 
     # Run installers using feature discovery
-    run_installer "ssh"
-    run_installer "github"
-    run_installer "homebrew"
-    run_installer "zsh"
-    run_installer "rust"
-    run_installer "uv"
-    run_installer "node"
-    run_installer "neovim"
-    run_installer "tmux"
-    run_installer "content"
-    run_installer "symlinks"
-    run_installer "settings"
+    install_tool "ssh"
+    install_tool "github"
+    install_tool "homebrew"
+    install_tool "zsh"
+    install_tool "rust"
+    install_tool "uv"
+    install_tool "node"
+    install_tool "neovim"
+    install_tool "tmux"
+    install_tool "content"
+    install_tool "symlinks"
+    install_tool "settings"
 
     # TODO: Add remaining installation scripts as they are migrated to bash
 
     printf "\n🎉 Setup complete!\n"
 }
 
-# Only run main if script is executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
-fi
+main "$@"
