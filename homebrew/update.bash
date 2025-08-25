@@ -2,6 +2,8 @@
 
 # See: https://docs.brew.sh/Brew-Bundle-and-Brewfile
 
+# TODO: https://stackoverflow.com/questions/12946505/how-can-i-tell-which-homebrew-formulae-are-upgradable
+
 set -euo pipefail
 
 # Configuration
@@ -157,4 +159,3 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
-
