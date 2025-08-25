@@ -7,9 +7,9 @@ set -euo pipefail
 # TODO: Symlink configuration files
 # TODO: Validate configuration
 
-printf "🥁 Installing X...\n"
+printf "🥁 Installing and configuring X...\n"
 
-printf "🔗 Configuring X...\n"
-source "$(dirname "${BASH_SOURCE[0]}")/symlink.bash"
+printf "🔗 Symlinking X configuration files...\n"
+source "${DOTFILES}/X/symlink.bash"
 
 printf "🎉 X is installed and configured\n"
