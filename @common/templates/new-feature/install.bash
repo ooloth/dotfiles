@@ -11,6 +11,6 @@ printf "🥁 Installing and configuring X...\n"
 source "${DOTFILES}/X/shell/variables.zsh"
 
 printf "🔗 Symlinking X configuration files...\n"
-source "${DOTFILES}/X/symlink.bash"
+source "${DOTFILES}/X/symlinks/link.bash"
 
 printf "🎉 X is installed and configured\n"
