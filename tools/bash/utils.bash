@@ -118,3 +118,8 @@ function error() {
   local color="${TEXT_RED}"
   banner "${text}" "${color}"
 }
+
+function debug() {
+  local text="$1"
+  printf "\n%s\n" "$text"
+}

@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # TODO: Validate installation (e.g. command is available, version is correct)
 # TODO: Symlink configuration files
 # TODO: Validate configuration
 
-# See: https://harlequin.sh/docs/getting-started/index
+info "🤡 Installing harlequin as a uv tool"
 
-set -euo pipefail
+uv tool install harlequin
 
-main() {
-  printf "🥁 Installing harlequin...\n"
-
-  uv tool install harlequin
-
-  printf "🎉 harleuin is installed and configured\n"
-}
-
-main "$@"
+debug "🚀 Harlequin is installed and configured"

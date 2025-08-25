@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # TODO: Skip if found
 # TODO: Otherwise, update
@@ -6,14 +7,8 @@
 # TODO: Symlink configuration files (overkill? might as well?)
 # TODO: Validate configuration (e.g. options are still valid)
 
-set -euo pipefail
+info "🤡 Updating harlequin"
 
-main() {
-  printf "\🥁 Updating harlequin...\n"
+uv tool upgrade harlequin
 
-  uv tool upgrade harlequin
-
-  printf "\n🚀 Harlequin is up to date\n"
-}
-
-main "$@"
+debug "🚀 Harlequin is up to date"

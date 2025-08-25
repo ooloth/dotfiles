@@ -1,18 +1,11 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # TODO: Delete configuration file symlinks (NOT the dotfiles copy)
 # TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
 
-# See: https://harlequin.sh/docs/getting-started/index
+info "🤡 Uninstalling harlequin"
 
-set -euo pipefail
+uv tool uninstall harlequin
 
-main() {
-  printf "🗑️ Uninstalling harlequin...\n"
-
-  uv tool uninstall harlequin
-
-  printf "🎉 harlequin has been uninstalled\n"
-}
-
-main "$@"
+debug "🚀 Harlequin has been uninstalled"
