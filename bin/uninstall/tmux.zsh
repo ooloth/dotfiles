@@ -2,7 +2,7 @@
 
 # NOTE: this reverses the changes made by bin/install/tmux.zsh
 
-source "$DOTFILES/zsh/config/utils.zsh"
+source "$DOTFILES/tools/zsh/config/utils.zsh"
 
 info "🍱 Uninstalling terminfo updates and tpm plugins"
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source "${DOTFILES}/zsh/config/utils.zsh"
+source "${DOTFILES}/tools/zsh/config/utils.zsh"
 
 main() {
   info "🔋 Updating executable permissions"

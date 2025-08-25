@@ -12,8 +12,8 @@ set -e
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-source "$DOTFILES/zsh/config/aliases.zsh"
-source "$DOTFILES/zsh/config/utils.zsh"
+source "$DOTFILES/tools/zsh/config/aliases.zsh"
+source "$DOTFILES/tools/zsh/config/utils.zsh"
 
 info "🔑 Installing SSH key pair"
 

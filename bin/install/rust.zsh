@@ -2,8 +2,8 @@
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-source "$DOTFILES/zsh/config/aliases.zsh"
-source "$DOTFILES/zsh/config/utils.zsh"
+source "$DOTFILES/tools/zsh/config/aliases.zsh"
+source "$DOTFILES/tools/zsh/config/utils.zsh"
 
 if have rustup; then
   printf "\n🦀 Rust is already installed\n"

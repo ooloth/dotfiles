@@ -17,8 +17,8 @@ setup() {
 
     # Create mock dotfiles structure
     mkdir -p "$DOTFILES/bin/install"
-    mkdir -p "$DOTFILES/ssh"
-    mkdir -p "$DOTFILES/git"
+    mkdir -p "${DOTFILES}/tools/ssh"
+    mkdir -p "${DOTFILES}/tools/git"
 
     # Change to install directory (as setup.bash does)
     cd "$DOTFILES/bin/install"
@@ -48,7 +48,7 @@ load_run_installer() {
     load_run_installer
 
     # Create both locations
-    echo 'echo "FEATURE"' >"$DOTFILES/ssh/install.bash"
+    echo 'echo "FEATURE"' >"${DOTFILES}/tools/ssh/install.bash"
     echo 'echo "LEGACY"' >"ssh.bash"
 
     # Should use feature location
@@ -82,18 +82,18 @@ load_run_installer() {
     load_run_installer
 
     # Create feature location
-    echo 'echo "TEST"' >"$DOTFILES/git/install.bash"
+    echo 'echo "TEST"' >"${DOTFILES}/tools/git/install.bash"
 
     # Check path is shown
     output=$(run_installer "git" 2>&1)
-    [[ "$output" == *"$DOTFILES/git/install.bash"* ]]
+    [[ "$output" == *"${DOTFILES}/tools/git/install.bash"* ]]
 }
 
 @test "SSH uses feature location when available" {
     load_run_installer
 
     # Verify SSH is in features
-    echo 'echo "SSH FEATURE"' >"$DOTFILES/ssh/install.bash"
+    echo 'echo "SSH FEATURE"' >"${DOTFILES}/tools/ssh/install.bash"
 
     output=$(run_installer "ssh" 2>&1)
     [[ "$output" == *"Using feature-based installer"* ]]

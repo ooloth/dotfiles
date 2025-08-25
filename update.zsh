@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-source "${DOTFILES}/zsh/config/utils.zsh"
+source "${DOTFILES}/tools/zsh/config/utils.zsh"
 
 main() {
   source "${DOTFILES}/bin/update/mode.zsh"

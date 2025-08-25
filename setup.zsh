@@ -99,8 +99,8 @@ else
 fi
 
 # Add all the helpers the install scripts below will reference
-# source "$DOTFILES/zsh/config/aliases.zsh"
-# source "$DOTFILES/zsh/config/utils.zsh"
+# source "$DOTFILES/tools/zsh/config/aliases.zsh"
+# source "$DOTFILES/tools/zsh/config/utils.zsh"
 
 ###########
 # INSTALL #
@@ -127,7 +127,7 @@ source settings.zsh
 # SUGGEST RESTART #
 ###################
 
-source "$DOTFILES/zsh/config/utils.zsh"
+source "$DOTFILES/tools/zsh/config/utils.zsh"
 info "🎉 Setup complete!"
 
 printf "\nCongratulations! Your Mac is nearly set up.\n\n"

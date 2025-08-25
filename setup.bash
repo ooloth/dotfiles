@@ -12,20 +12,20 @@ export DOTFILES="$HOME/Repos/ooloth/dotfiles"
 # Feature discovery function
 # Tries new feature location first, falls back to old location
 run_installer() {
-    local feature_name="$1"
-    local feature_path="$DOTFILES/$feature_name/install.bash"
-    local legacy_path="$feature_name.bash"
+    local tool_name="$1"
+    local tool_path="${DOTFILES}/tools/${tool_name}/install.bash"
+    local legacy_path="${tool_name}.bash"
 
     # Try new feature location first
-    if [[ -f "$feature_path" ]]; then
-        printf "  → Using feature-based installer: %s\n" "$feature_path"
-        source "$feature_path"
+    if [[ -f "$tool_path" ]]; then
+        printf "  → Using tool-based installer: %s\n" "$tool_path"
+        source "$tool_path"
     # Fall back to old location
     elif [[ -f "$legacy_path" ]]; then
         printf "  → Using legacy installer: %s\n" "$legacy_path"
         source "$legacy_path"
     else
-        printf "  ⚠️  No installer found for %s\n" "$feature_name"
+        printf "  ⚠️  No installer found for %s\n" "$tool_name"
         # Don't fail, just warn
         return 0
     fi

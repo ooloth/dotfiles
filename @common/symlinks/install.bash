@@ -24,12 +24,12 @@ create_dotfiles_symlinks() {
     echo "🏠 Creating home directory symlinks..."
 
     # Create symlinks for home directory files
-    maybe_symlink "${DOTFILES}/claude/config/agents" "${HOME}/.claude"
-    maybe_symlink "${DOTFILES}/claude/config/CLAUDE.md" "${HOME}/.claude"
-    maybe_symlink "${DOTFILES}/claude/config/commands" "${HOME}/.claude"
-    maybe_symlink "${DOTFILES}/claude/config/settings.json" "${HOME}/.claude"
-    maybe_symlink "${DOTFILES}/zsh/config/.hushlogin" "${HOME}"
-    maybe_symlink "${DOTFILES}/zsh/config/.zshenv" "${HOME}"
+    maybe_symlink "${DOTFILES}/tools/claude/config/agents" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/tools/claude/config/CLAUDE.md" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/tools/claude/config/commands" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/tools/claude/config/settings.json" "${HOME}/.claude"
+    maybe_symlink "${DOTFILES}/tools/zsh/config/.hushlogin" "${HOME}"
+    maybe_symlink "${DOTFILES}/tools/zsh/config/.zshenv" "${HOME}"
 
     echo "📚 Creating Library symlinks..."
 
@@ -50,9 +50,9 @@ create_vscode_symlinks() {
     fi
 
     local vscode_files=(
-        "$DOTFILES/library/vscode/settings.json"
-        "$DOTFILES/library/vscode/keybindings.json"
-        "$DOTFILES/library/vscode/snippets"
+        "$DOTFILES/tools/vscode/settings.json"
+        "$DOTFILES/tools/vscode/keybindings.json"
+        "$DOTFILES/tools/vscode/snippets"
     )
 
     for file in "${vscode_files[@]}"; do
@@ -72,9 +72,9 @@ verify_symlinks() {
 
     # Check critical symlinks
     local critical_symlinks=(
-        "$HOME/.zshenv:$DOTFILES/zsh/config/.zshenv"
-        "$HOMECONFIG/nvim/init.lua:$DOTFILES/config/nvim/init.lua"
-        "$HOMECONFIG/tmux/tmux.conf:$DOTFILES/config/tmux/tmux.conf"
+        "$HOME/.zshenv:$DOTFILES/tools/zsh/config/.zshenv"
+        "$HOMECONFIG/nvim-ide/init.lua:$DOTFILES/tools/nvim/config/nvim-ide/init.lua"
+        "$HOMECONFIG/tmux/tmux.conf:$DOTFILES/tools/tmux/config/tmux.conf"
     )
 
     for symlink_check in "${critical_symlinks[@]}"; do
