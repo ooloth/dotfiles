@@ -23,6 +23,6 @@ brew upgrade # update packages
 brew cu # update casks
 brew autoremove # remove old versions
 brew cleanup # remove junk
-brew doctor # address any issues
+brew doctor || true # address any issues (but don't exit)
 
 printf "\n🎉 All homebrew packages are up to date\n"
