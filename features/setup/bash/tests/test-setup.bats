@@ -2,7 +2,7 @@
 
 # Test features/setup/setup.bash main entry point
 
-load "../../../common/testing/bats-helper.bash"
+load "../../../common/testing.bash"
 
 setup() {
     # Save original environment
@@ -169,7 +169,7 @@ EOF
     echo 'parse_dry_run_flags() { :; }' >"$DOTFILES/features/common/dry-run/utils.bash"
     echo '' >"$DOTFILES/features/common/errors/handling.bash"
     echo 'run_prerequisite_validation() { return 0; }' >"$DOTFILES/features/common/prerequisites/validation.bash"
-    echo 'run_installer() { echo "Installing $1..."; }' >"$DOTFILES/features/common/testing/bats-helper.bash"
+    echo 'run_installer() { echo "Installing $1..."; }' >"$DOTFILES/features/common/testing.bash"
 
     # Run features/setup/setup.bash with mocked git
     PATH="$mock_bin:/usr/bin:/bin" run bash -c "echo 'y' | $(pwd)/features/setup/setup.bash 2>&1 || true"

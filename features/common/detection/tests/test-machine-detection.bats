@@ -5,7 +5,7 @@
 
 # Load the machine detection utilities
 load "../machine.bash"
-load "../../testing/bats-helper.bash"
+load "../../testing.bash"
 
 setup() {
     # Create temporary directory for each test
@@ -205,4 +205,3 @@ echo "MacBook-Pro-Work"' >"$TEST_TEMP_DIR/hostname"
     assert_success
     [ -z "$output" ]
 }
-

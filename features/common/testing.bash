@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
+
+# DOCS: https://bats-core.readthedocs.io/en/stable/writing-tests.html
 
 # Setup test environment
 setup_test_env() {
@@ -160,4 +161,3 @@ assert_not_equal() {
         return 1
     fi
 }
-
