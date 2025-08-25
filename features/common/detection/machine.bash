@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-
-# Machine detection utilities for dotfiles setup
-# Dynamically detects machine type based on hostname patterns
-
 set -euo pipefail
 
 # Detect machine type based on hostname
@@ -69,9 +65,4 @@ init_machine_detection() {
     local detected_type
     detected_type=$(detect_machine_type)
     set_machine_variables "$detected_type"
-
-    # Optional: print detection result for debugging
-    if [[ "${DEBUG_MACHINE_DETECTION:-false}" == "true" ]]; then
-        echo "Detected machine type: $MACHINE" >&2
-    fi
 }

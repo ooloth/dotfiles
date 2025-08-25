@@ -121,7 +121,7 @@ To customize for your machines, edit the detection logic in `features/setup/setu
 2. **Shell Aliases**: Modify `zsh/config/aliases.zsh`
 3. **Neovim**: Customize `config/nvim/init.lua`
 4. **Homebrew Packages**: Edit `homebrew/config/Brewfile`
-5. **macOS Preferences**: Adjust `macos/macos-defaults`
+5. **macOS Preferences**: Adjust `macos/config/macos-defaults`
 
 ### Adding Your Own Tools
 
