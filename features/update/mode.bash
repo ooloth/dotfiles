@@ -14,7 +14,6 @@ files_names=(
 
 # Make all *.bash, *.sh or *.zsh files in any DOTFILES subfolder with a name listed in files_names executable
 for name in "${files_names[@]}"; do
-  printf "🔋 Making files executable: %s.{bash|sh|zsh}\n" "${name}"
   fd "${name}.*" "${DOTFILES}" --type f -e bash -e sh -e zsh -X chmod +x
 done
 
