@@ -108,18 +108,25 @@ source "$DOTFILES/zsh/config/run.zsh"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper="cd $HOME/Repos/ooloth/scraper"
-sl() { ln -sfv "$1" "$2"; } # easier symlinking
+sl() {
+  local source_file="$1"
+  local target_dir="$2"
+
+  mkdir -p "$target_dir"
+  printf "🔗 " # inline prefix for the output of the next line
+  ln -fsvw "$source_file" "$target_dir";
+}
 source "$DOTFILES/zsh/config/start.zsh"
 source "$DOTFILES/zsh/config/stop.zsh"
 source "$DOTFILES/zsh/config/submit.zsh"
-alias symlinks="$DOTFILES/bin/update/symlinks.zsh"
+alias symlinks="zsh ${DOTFILES}/bin/update/symlinks.zsh"
 
 t() { tmux attach || exec tmux; }
 source "$DOTFILES/zsh/config/test.zsh"
 alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
-u() { zsh "${DOTFILES}/update.zsh"; }
+alias u="zsh ${DOTFILES}/update.zsh"
 
 v() {
   (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"

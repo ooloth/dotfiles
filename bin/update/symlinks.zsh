@@ -4,9 +4,8 @@
 # Dependencies #
 ################
 
-DOTFILES="$HOME/Repos/ooloth/dotfiles"
-DOTCONFIG="$DOTFILES/config"
-HOMECONFIG="$HOME/.config"
+DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+HOMECONFIG="${HOME}/.config"
 
 source "$DOTFILES/zsh/config/aliases.zsh"
 source "$DOTFILES/zsh/config/utils.zsh"
@@ -26,7 +25,7 @@ symlink() {
 
   mkdir -p "$target_dir"
   printf "🔗 " # inline prefix for the output of the next line
-  ln -sfv "$source_file" "$target_dir"
+  ln -fsvw "$source_file" "$target_dir"
 }
 
 # TODO: start by removing broken symlinks in each target directory?
@@ -37,13 +36,13 @@ info "🔗 Updating symlinks"
 # Target: ~ #
 #############
 
-symlink "$DOTFILES/claude/config/agents" "$HOME/.claude"
-symlink "$DOTFILES/claude/config/CLAUDE.md" "$HOME/.claude"
-symlink "$DOTFILES/claude/config/commands" "$HOME/.claude"
-symlink "$DOTFILES/claude/config/settings.json" "$HOME/.claude"
-symlink "$DOTFILES/zsh/config/.hushlogin" "$HOME"
-symlink "$DOTFILES/zsh/config/.zshenv" "$HOME"
-symlink "$DOTFILES/zsh/config/.zshrc" "$HOME"
+symlink "${DOTFILES}/claude/config/agents" "${HOME}/.claude"
+symlink "${DOTFILES}/claude/config/CLAUDE.md" "${HOME}/.claude"
+symlink "${DOTFILES}/claude/config/commands" "${HOME}/.claude"
+symlink "${DOTFILES}/claude/config/settings.json" "${HOME}/.claude"
+symlink "${DOTFILES}/zsh/config/.hushlogin" "${HOME}"
+symlink "${DOTFILES}/zsh/config/.zshenv" "${HOME}"
+symlink "${DOTFILES}/zsh/config/.zshrc" "${HOME}"
 
 #####################
 # Target: ~/.config #
