@@ -1,28 +1,18 @@
 #!/usr/bin/env bash
-
-# See: https://docs.astral.sh/uv/getting-started/installation/#uninstallation
-
 set -euo pipefail
 
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+# TODO: Uninstall if present
+# TODO: Delete configuration file symlinks (NOT the dotfiles)
+# TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
 
-main() {
-  printf "🐍 Uninstalling uv...\n"
+info "🐍 Uninstalling uv"
 
-  # TODO: Uninstall if present
+debug "🧼 Cleaning uv cache and other stored data..."
+uv cache clean
+rm -r "$(uv python dir)"
+rm -r "$(uv tool dir)"
 
-  printf "Cleaning uv cache and other stored data...\n"
-  uv cache clean
-  rm -r "$(uv python dir)"
-  rm -r "$(uv tool dir)"
+debug "🧼 Uninstalling the uv and uvx binaries..."
+rm ~/.local/bin/uv ~/.local/bin/uvx
 
-  printf "Uninstalling the uv and uvx binaries...\n"
-  rm ~/.local/bin/uv ~/.local/bin/uvx
-
-  # TODO: Delete configuration file symlinks (NOT the dotfiles)
-  # TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
-
-  printf "🎉 uv has been uninstalled\n"
-}
-
-main "$@"
+debug "🚀 uv has been uninstalled"
