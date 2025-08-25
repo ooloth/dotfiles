@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
-
-# Zsh utility functions for installation and configuration
-# Provides reusable functionality for Zsh setup and management
-
 set -euo pipefail
-
-# ============================================================================
-# Zsh Installation Functions
-# ============================================================================
 
 # Check if Zsh is installed and available
 zsh_is_installed() {
@@ -187,4 +179,3 @@ print_error() {
     local message="$1"
     echo "❌ $message"
 }
-

@@ -263,4 +263,3 @@ teardown() {
     [ -L "$TEST_TARGET_DIR/new.txt" ]
     [ "$(readlink "$TEST_TARGET_DIR/new.txt")" = "$TEST_SOURCE_DIR/new.txt" ]
 }
-
