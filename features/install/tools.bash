@@ -3,11 +3,16 @@ set -euo pipefail
 
 DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
-# Find all update.bash files
-update_files=$(find "${DOTFILES}/tools" -type f -name "update.*.bash")
+main() {
+  # Find all install.bash files
+  install_files=$(find "${DOTFILES}/tools" -type f -name "install.bash")
 
-# Iterate over the files and execute them
-for file in $update_files; do
-  printf "🔄 Running %s\n" "$file"
-  bash "$file"
-done
+  # Iterate over the files and execute them
+  for file in $install_files; do
+    printf "🔄 Running %s\n" "$file"
+    printf "Careful! Enable actual command only if you're sure.\n"
+    # bash "$file"
+  done
+}
+
+main "$@"
