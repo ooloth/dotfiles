@@ -8,6 +8,7 @@ set -euo pipefail
 # TODO: Validate configuration
 
 printf "🥁 Installing and configuring X...\n"
+source "${DOTFILES}/X/shell/variables.zsh"
 
 printf "🔗 Symlinking X configuration files...\n"
 source "${DOTFILES}/X/symlink.bash"

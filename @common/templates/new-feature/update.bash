@@ -8,6 +8,7 @@ set -euo pipefail
 # TODO: Validate configuration (e.g. options are still valid)
 
 printf "🥁 Updating X...\n"
+source "${DOTFILES}/X/shell/variables.zsh"
 
 printf "🔗 Symlinking X configuration files...\n"
 source "${DOTFILES}/X/symlink.bash"

@@ -7,5 +7,6 @@ set -euo pipefail
 # TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
 
 printf "🗑️ Uninstalling X...\n"
+source "${DOTFILES}/X/shell/variables.zsh"
 
 printf "🎉 X has been uninstalled\n"
