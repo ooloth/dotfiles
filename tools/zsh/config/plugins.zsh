@@ -1,3 +1,23 @@
+#!/usr/bin/env zsh
+# set -euo pipefail
+
+##########
+# PROMPT #
+##########
+
+# fnm
+eval "$(fnm env --use-on-cd --log-level=error)"
+
+# FIXME: crashes terminal if set -e is enabled
+# powerlevel10k
+# see: https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#homebrew
+source "/opt/homebrew/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme"
+source "${DOTFILES}/tools/powerlevel10k/config/p10k.zsh" # to customize, run `p10k configure` or edit zsh/config/p10k.zsh
+
+###############
+# COMPLETIONS #
+###############
+
 # Initialize zsh completion before invoking plugin-specific completions below
 # See: https://stackoverflow.com/questions/66338988/complete13-command-not-found-compde
 autoload -Uz compinit && compinit
@@ -5,16 +25,8 @@ autoload -Uz compinit && compinit
 # docker
 fpath=(/Users/michael.uloth/.docker/completions $fpath)
 
-# fnm
-eval "$(fnm env --use-on-cd --log-level=error)"
-
 # fzf
 eval "$(fzf --zsh)"
-
-# powerlevel10k
-# see: https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#homebrew
-source "/opt/homebrew/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme"
-source "${DOTFILES}/tools/powerlevel10k/config/p10k.zsh" # to customize, run `p10k configure` or edit zsh/config/p10k.zsh
 
 # uv
 eval "$(uv generate-shell-completion zsh)"
@@ -32,3 +44,4 @@ source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 if is_work; then
   source "${DOTFILES}/tools/zsh/config/work/plugins.zsh" 2>/dev/null
 fi
+

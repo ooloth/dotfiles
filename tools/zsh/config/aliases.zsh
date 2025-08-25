@@ -1,8 +1,10 @@
 #!/usr/bin/env zsh
+# set -euo pipefail
 
 # TODO: find all {tool|feature}/shell/aliases.zsh files and source them
 source "${DOTFILES}/tools/macos/shell/aliases.zsh"
 source "${DOTFILES}/tools/zsh/utils.zsh"
+source "${DOTFILES}/features/update/shell/aliases.zsh"
 
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -10,8 +12,6 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
 alias adv="cd $HOME/Repos/ooloth/advent-of-code"
-
-# NOTE: "banner" defined in utils.zsh
 
 alias c="clear"
 alias cat="bat --paging=never"
@@ -38,7 +38,6 @@ alias dud="dc up --detach"                                          # start one 
 diff() { kitten diff "$1" "$2"; }                                   # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
 
 alias env="env | sort"
-# NOTE: "error" defined in utils.zsh
 
 alias f='yazi'
 
@@ -46,11 +45,9 @@ alias g="lazygit"
 alias grep="rg"
 
 alias h="cd $HOME"
-# NOTE: "have" defined in utils.zsh
 alias hub="cd $HOME/Repos/ooloth/hub"
 
 alias image="kitten icat" # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
-# NOTE: "info" defined in utils.zsh
 
 alias k="kubectl"
 alias kc="k create"
@@ -130,16 +127,9 @@ source "${DOTFILES}/tools/zsh/config/test.zsh"
 alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
-u() {
-  bash "${DOTFILES}/features/update/mode.bash";
-  zsh "${DOTFILES}/features/update/tools.zsh";
-}
-
 v() {
   (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"
 }
-
-# NOTE: "warn" defined in utils.zsh
 
 alias x="exit"
 

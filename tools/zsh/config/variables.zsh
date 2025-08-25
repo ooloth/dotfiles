@@ -6,10 +6,7 @@
 # PREREQUISITE VARIABLES #
 ##########################
 
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
-
 source "${DOTFILES}/tools/macos/shell/variables.zsh" # sets COMPUTER
-source "${DOTFILES}/tools/macos/shell/aliases.zsh" # sets is_air, is_mini, is_work
 source "${DOTFILES}/tools/zsh/config/path.zsh" # sets PATH
 
 # Editor

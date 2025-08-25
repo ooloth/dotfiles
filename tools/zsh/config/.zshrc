@@ -4,10 +4,12 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+
+source "${DOTFILES}/tools/macos/shell/aliases.zsh" # sets is_air, is_mini, is_work
+source "${DOTFILES}/tools/zsh/utils.zsh" # sets have, info, warn, error
 
 # NOTE: zshenv loads PATH + env vars and this file loads the rest
-source "${DOTFILES}/tools/zsh/utils.zsh" # source first (used by other files)
 source "${DOTFILES}/tools/zsh/config/variables.zsh"
 source "${DOTFILES}/tools/zsh/config/aliases.zsh"
 source "${DOTFILES}/tools/zsh/config/options.zsh"
