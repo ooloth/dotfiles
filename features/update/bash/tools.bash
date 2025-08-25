@@ -58,7 +58,7 @@ main() {
 
   # Initialize utilities
   source "$DOTFILES/features/common/detection/machine.bash"
-  source "$DOTFILES/features/common/errors/handling.bash"
+  source "$DOTFILES/features/common/errors.bash"
 
   init_machine_detection
 

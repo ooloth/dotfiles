@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-
-# UV installation script
-# Handles UV (Python package manager) installation
-
 set -euo pipefail
 
 # Get the directory of this script
@@ -11,7 +7,7 @@ DOTFILES="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Source utilities
 source "$SCRIPT_DIR/utils.bash"
-source "$DOTFILES/features/common/errors/handling.bash"
+source "$DOTFILES/features/common/errors.bash"
 
 main() {
     echo "⚡️ Setting up UV (Python package manager)"
@@ -50,4 +46,3 @@ main() {
 
 # Run main function
 main "$@"
-

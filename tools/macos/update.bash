@@ -12,7 +12,7 @@ DOTFILES="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # Source utilities
 source "$SCRIPT_DIR/utils.bash"
 source "$DOTFILES/features/common/detection/machine.bash"
-source "$DOTFILES/features/common/errors/handling.bash"
+source "$DOTFILES/features/common/errors.bash"
 
 main() {
     echo "🍎 macOS System Update"

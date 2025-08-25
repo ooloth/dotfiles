@@ -84,7 +84,7 @@ main() {
     parse_dry_run_flags "$@"
 
     # Initialize enhanced error handling utilities
-    source "$DOTFILES/features/common/errors/handling.bash"
+    source "$DOTFILES/features/common/errors.bash"
 
     # Run comprehensive prerequisite validation
     printf "Running comprehensive prerequisite validation...\n\n"

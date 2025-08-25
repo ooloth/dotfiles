@@ -3,8 +3,8 @@
 # Test error handling utilities (bash implementation)
 
 # Load the error handling utilities
-load "../handling.bash"
-load "../../testing.bash"
+load "../errors.bash"
+load "../testing.bash"
 
 # Test capture_error with no command provided
 @test "capture_error returns error when no command provided" {
@@ -134,4 +134,3 @@ load "../../testing.bash"
     [ "$status" -eq 1 ]
     [[ "$output" =~ "Error: Command execution failed" ]]
 }
-

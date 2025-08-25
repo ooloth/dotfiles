@@ -167,7 +167,7 @@ EOF
 
     echo 'init_machine_detection() { :; }' >"$DOTFILES/features/common/detection/machine.bash"
     echo 'parse_dry_run_flags() { :; }' >"$DOTFILES/features/common/dry-run/utils.bash"
-    echo '' >"$DOTFILES/features/common/errors/handling.bash"
+    echo '' >"$DOTFILES/features/common/errors.bash"
     echo 'run_prerequisite_validation() { return 0; }' >"$DOTFILES/features/common/prerequisites/validation.bash"
     echo 'run_installer() { echo "Installing $1..."; }' >"$DOTFILES/features/common/testing.bash"
 
