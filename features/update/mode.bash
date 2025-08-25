@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "${DOTFILES}/features/common/logging.bash"
+source "${DOTFILES}/tools/bash/utils.bash"
 
 info "🔋 Updating executable permissions"
 
@@ -17,4 +17,4 @@ for name in "${files_names[@]}"; do
   fd "${name}.*" "${DOTFILES}" --type f -e bash -e sh -e zsh -X chmod +x
 done
 
-printf "\n🚀 All scripts are executable\n"
+printf "🚀 All scripts are executable\n"
