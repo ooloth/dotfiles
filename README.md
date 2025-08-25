@@ -127,7 +127,7 @@ To customize for your machines, edit the detection logic in `features/setup/setu
 
 1. Add Homebrew packages to `homebrew/config/Brewfile`
 2. Add configuration files to `config/<tool-name>/`
-3. Add symlinks in `features/symlink/link.zsh`
+3. Add symlinks in `features/update/symlinks.zsh`
 4. Run `symlinks` to create the links
 
 ## Updating
@@ -142,7 +142,7 @@ $DOTFILES/features/update/zsh/npm.zsh        # Update global npm packages
 $DOTFILES/features/update/zsh/neovim.zsh     # Update Neovim plugins
 $DOTFILES/features/update/zsh/tmux.zsh       # Update tmux plugins
 $DOTFILES/features/update/zsh/rust.zsh       # Update Rust toolchain
-$DOTFILES/features/symlink/link.zsh          # Recreate symlinks
+$DOTFILES/features/update/symlinks.zs        # Recreate symlinks
 ```
 
 The `u` function runs all updates and reloads your shell.
