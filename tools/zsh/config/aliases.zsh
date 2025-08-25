@@ -85,7 +85,7 @@ alias mu="cd $HOME/Repos/ooloth/michaeluloth.com"
 
 n() { npm install "$@"; }
 source "${DOTFILES}/tools/zsh/config/new.zsh"
-ng() { "$DOTFILES/bin/update/npm.zsh"; }
+ng() { "$DOTFILES/features/update/zsh/npm.zsh"; }
 # nu() { n && npm-check -u; } -- conflicts with nushell launch command
 alias nvim="NVIM_APPNAME=nvim-ide nvim"
 alias nvm="fnm"
@@ -119,7 +119,7 @@ sl() {
 source "${DOTFILES}/tools/zsh/config/start.zsh"
 source "${DOTFILES}/tools/zsh/config/stop.zsh"
 source "${DOTFILES}/tools/zsh/config/submit.zsh"
-alias symlinks="zsh ${DOTFILES}/bin/update/symlinks.zsh"
+alias symlinks="zsh ${DOTFILES}/features/update/zsh/symlinks.zsh"
 
 t() { tmux attach || exec tmux; }
 source "${DOTFILES}/tools/zsh/config/test.zsh"

@@ -5,20 +5,20 @@ set -euo pipefail
 source "${DOTFILES}/tools/zsh/config/utils.zsh"
 
 main() {
-  source "${DOTFILES}/bin/update/mode.zsh"
-  source "${DOTFILES}/bin/update/symlinks.zsh"
-  source "${DOTFILES}/bin/update/rust.zsh"
-  source "${DOTFILES}/bin/update/uv.zsh"
-  source "${DOTFILES}/bin/update/neovim.zsh"
-  source "${DOTFILES}/bin/update/tmux.zsh"
-  source "${DOTFILES}/bin/update/npm.zsh"
-  source "${DOTFILES}/bin/update/gcloud.zsh"
-  source "${DOTFILES}/bin/update/homebrew.zsh"
-  source "${DOTFILES}/bin/update/macos.zsh"
+  source "${DOTFILES}/features/update/zsh/mode.zsh"
+  source "${DOTFILES}/features/update/zsh/symlinks.zsh"
+  source "${DOTFILES}/features/update/zsh/rust.zsh"
+  source "${DOTFILES}/features/update/zsh/uv.zsh"
+  source "${DOTFILES}/features/update/zsh/neovim.zsh"
+  source "${DOTFILES}/features/update/zsh/tmux.zsh"
+  source "${DOTFILES}/features/update/zsh/npm.zsh"
+  source "${DOTFILES}/features/update/zsh/gcloud.zsh"
+  source "${DOTFILES}/features/update/zsh/homebrew.zsh"
+  source "${DOTFILES}/features/update/zsh/macos.zsh"
 
   info "🐚 Reloading zsh"
   exec -l "${SHELL}"
 }
 
-# TODO: support updating specific features?
+# TODO: support updating individual tools?
 main "$@"

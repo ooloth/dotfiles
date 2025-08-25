@@ -16,7 +16,7 @@ setup() {
 
   # Create test file structure
   mkdir -p "$TEST_TEMP_DIR/bin/install"
-  mkdir -p "$TEST_TEMP_DIR/bin/update"
+  mkdir -p "$TEST_TEMP_DIR/features/update/zsh"
 }
 
 teardown() {

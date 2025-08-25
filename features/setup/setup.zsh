@@ -110,16 +110,16 @@ cd "$DOTFILES/bin/install"
 source ssh.zsh
 source github.zsh
 source homebrew.zsh
-source "$DOTFILES/bin/update/homebrew.zsh"
+source "$DOTFILES/features/update/zsh/homebrew.zsh"
 source zsh.zsh
 source rust.zsh
 source uv.zsh
 source node.zsh
-source "$DOTFILES/bin/update/npm.zsh"
+source "$DOTFILES/features/update/zsh/npm.zsh"
 source tmux.zsh
 source neovim.zsh
 source content.zsh
-source "$DOTFILES/bin/update/symlinks.zsh"
+source "$DOTFILES/features/update/zsh/symlinks.zsh"
 source settings.zsh
 # TODO: automate my remaining manual setup steps (e.g. app preferences, etc.)
 

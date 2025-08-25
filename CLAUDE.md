@@ -11,7 +11,7 @@ See README.md for the complete overview. Key points for Claude:
 **Current Active Structure:**
 
 - Installation scripts are in `bin/install/` (individual .zsh files)
-- Update scripts are in `bin/update/`
+- Update scripts are in `features/update/zsh/`
 - Main setup script is `features/setup/setup.zsh`
 - Configuration files are in `tools/{tool}/config/` directories
 
@@ -43,7 +43,7 @@ See README.md for the complete overview. Key points for Claude:
 
 **Important for Git commits**: Files in `tools/claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `tools/claude/config/CLAUDE.md` instead of trying to commit outside the repository.
 
-The symlink creation logic is in `bin/update/symlinks.zsh`. (Note: `features/common/symlinks/` is under development and not yet functional).
+The symlink creation logic is in `features/update/zsh/symlinks.zsh`. (Note: `features/common/symlinks/` is under development and not yet functional).
 
 ### Claude Development Workflow
 
