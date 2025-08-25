@@ -128,7 +128,7 @@ alias ts="tailscale"
 
 u() {
   bash "${DOTFILES}/features/update/mode.bash";
-  zsh "${DOTFILES}/features/update/update.zsh";
+  zsh "${DOTFILES}/features/update/tools.zsh";
 }
 
 v() {
