@@ -6,10 +6,8 @@ fi
 
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
-source "${DOTFILES}/tools/macos/shell/aliases.zsh" # sets is_air, is_mini, is_work
-source "${DOTFILES}/tools/zsh/utils.zsh" # sets have, info, warn, error
-
-# NOTE: zshenv loads PATH + env vars and this file loads the rest
+source "${DOTFILES}/tools/macos/shell/aliases.zsh" # is_air, is_mini, is_work
+source "${DOTFILES}/tools/zsh/utils.zsh" # have, info, warn, error
 source "${DOTFILES}/tools/zsh/config/variables.zsh"
 source "${DOTFILES}/tools/zsh/config/aliases.zsh"
 source "${DOTFILES}/tools/zsh/config/options.zsh"

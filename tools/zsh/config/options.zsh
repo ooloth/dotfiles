@@ -3,6 +3,7 @@
 # see: https://www.reddit.com/r/zsh/comments/wy0sm6/what_is_your_history_configuration/
 # see: https://zsh.sourceforge.io/Doc/Release/Parameters.html#Parameters-Used-By-The-Shell
 # NOTE: keep these particular env vars here (they only work when loaded in .zshrc)
+export HISTFILE="${HOME}/.zsh_history"
 export HISTORY_IGNORE="git*"
 export HISTSIZE=100000
 export SAVEHIST=$HISTSIZE
