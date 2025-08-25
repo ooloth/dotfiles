@@ -9,11 +9,11 @@
 set -euo pipefail
 
 main() {
-  printf "🥁 Updating harlequin...\n"
+  printf "\🥁 Updating harlequin...\n"
 
   uv tool upgrade harlequin
 
-  printf "🎉 harlequin is up to date\n"
+  printf "\n🚀 Harlequin is up to date\n"
 }
 
 main "$@"

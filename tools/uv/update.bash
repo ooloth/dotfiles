@@ -7,7 +7,7 @@ set -euo pipefail
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 main() {
-  printf "🐍 Updating uv and its tools...\n"
+  printf "\🐍 Updating uv and its tools...\n"
 
   # TODO: Install if missing
 
