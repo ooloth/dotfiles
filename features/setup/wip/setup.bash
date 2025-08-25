@@ -8,7 +8,6 @@ install_tool() {
     local tool_name="$1"
     local tool_path="${DOTFILES}/tools/${tool_name}/install.bash"
 
-    # Try new feature location first
     if [[ -f "$tool_path" ]]; then
         source "$tool_path"
     else
@@ -75,21 +74,17 @@ main() {
     # Initialize dotfiles utilities now that repository is available
     printf "\n🔧 Initializing dotfiles utilities...\n\n"
 
-    # Initialize dynamic machine detection
-    source "$DOTFILES/features/common/detection/machine.bash"
-    init_machine_detection
+    source "${DOTFILES}/tools/macos/shell/aliases.zsh" # is_air, is_mini, is_work
+    source "${DOTFILES}/tools/zsh/utils.zsh"           # have, info, warn, error
 
     # Initialize dry-run mode utilities
-    source "$DOTFILES/features/common/dry-run/utils.bash"
+    source "$DOTFILES/features/setup/wip/dry-run.bash"
     parse_dry_run_flags "$@"
-
-    # Initialize enhanced error handling utilities
-    source "$DOTFILES/features/common/errors.bash"
 
     # Run comprehensive prerequisite validation
     printf "Running comprehensive prerequisite validation...\n\n"
 
-    source "$DOTFILES/features/common/prerequisites/validation.bash"
+    source "$DOTFILES/features/setup/wip/prerequisites.bash"
     if ! run_prerequisite_validation; then
         printf "\n❌ Prerequisite validation failed. Please address the issues above and try again.\n"
         exit 1
