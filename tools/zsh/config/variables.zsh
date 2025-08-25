@@ -20,6 +20,12 @@ export EZA_ICON_SPACING=2
 export EZA_STRICT=true
 export TIME_STYLE=long-iso
 
+# History
+export HISTFILE="${HOME}/.zsh_history"
+export HISTORY_IGNORE="git*"
+export HISTSIZE=100000
+export SAVEHIST=$HISTSIZE
+
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
