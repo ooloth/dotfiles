@@ -19,7 +19,7 @@ export IS_WORK=false
 [[ "$HOSTNAME" == "7385-Y3FH97X-MAC" || "$HOSTNAME" == "MULO-JQ97NW-MBP" ]] && IS_WORK=true
 
 # Dotfiles
-export DOTFILES=$HOME/Repos/ooloth/dotfiles
+export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 source "$DOTFILES/zsh/config/aliases.zsh"
 source "$DOTFILES/zsh/config/utils.zsh"
