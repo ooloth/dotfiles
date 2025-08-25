@@ -4,8 +4,8 @@ set -euo pipefail
 DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 main() {
-  # Find all install.bash files
-  install_files=$(find "${DOTFILES}/tools" -type f -name "install.bash")
+  # Find all install.bash files at the root level of each tool directory except @new and @archive
+  install_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "install.bash" -print)
 
   # Iterate over the files and execute them
   for file in $install_files; do
