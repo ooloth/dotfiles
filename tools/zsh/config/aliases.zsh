@@ -1,4 +1,4 @@
-DOTFILES="$HOME/Repos/ooloth/dotfiles"
+DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -126,7 +126,10 @@ source "${DOTFILES}/tools/zsh/config/test.zsh"
 alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
-alias u="zsh ${DOTFILES}/features/update/update.zsh"
+u() {
+  bash "${DOTFILES}/features/update/mode.bash";
+  zsh "${DOTFILES}/features/update/update.zsh";
+}
 
 v() {
   (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"
