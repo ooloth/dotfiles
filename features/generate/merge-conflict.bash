@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-cd $HOME/Repos/ooloth
+cd "${HOME}/Repos/ooloth" || exit 1
 git init tmp-merge-conflict
-cd tmp-merge-conflict
+cd tmp-merge-conflict || exit 1
 
 cat <<EOF >poem.txt
 twas bri1lig, and the slithy toves
