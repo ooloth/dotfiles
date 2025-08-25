@@ -55,9 +55,6 @@ source "$CARGO_HOME/env"
 # Shell
 export SHELL=$(which zsh)
 
-# Starship
-export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
-
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#user-config
 export XDG_CONFIG_HOME=$HOME/.config
 
