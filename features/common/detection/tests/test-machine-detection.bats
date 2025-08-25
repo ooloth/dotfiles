@@ -5,7 +5,7 @@
 
 # Load the machine detection utilities
 load "../machine.bash"
-load "../../testing.bash"
+load "../../../../tools/bats/utils.bash"
 
 setup() {
     # Create temporary directory for each test

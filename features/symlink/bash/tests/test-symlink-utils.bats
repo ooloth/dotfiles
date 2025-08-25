@@ -5,7 +5,7 @@
 
 # Load the symlink utilities
 load "../utils.bash"
-load "../../../common/testing.bash"
+load "../../../../tools/bats/utils.bash"
 
 setup() {
     # Create temporary directory for each test

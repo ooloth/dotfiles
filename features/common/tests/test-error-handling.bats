@@ -4,7 +4,7 @@
 
 # Load the error handling utilities
 load "../errors.bash"
-load "../testing.bash"
+load "../../../tools/bats/utils.bash"
 
 # Test capture_error with no command provided
 @test "capture_error returns error when no command provided" {
