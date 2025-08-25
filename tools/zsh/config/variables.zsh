@@ -1,7 +1,12 @@
 # This file is sourced first. Setting PATH here ensures that it will apply to all zsh scripts, login shells, and interactive shells.
 # See: https://news.ycombinator.com/item?id=39508793
 # See: https://zsh.sourceforge.io/Doc/Release/Files.html
-source "$HOME/Repos/ooloth/dotfiles/zsh/config/path.zsh"
+
+export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+
+source "${DOTFILES}/tools/zsh/config/path.zsh"
+source "${DOTFILES}/tools/zsh/config/aliases.zsh"
+source "${DOTFILES}/tools/zsh/config/utils.zsh"
 
 # TODO: use set_machine_variables instead?
 # Device
@@ -17,12 +22,6 @@ export IS_WORK=false
 [[ "$HOSTNAME" == "Air" ]] && IS_AIR=true
 [[ "$HOSTNAME" == "Mini" ]] && IS_MINI=true
 [[ "$HOSTNAME" == "7385-Y3FH97X-MAC" || "$HOSTNAME" == "MULO-JQ97NW-MBP" ]] && IS_WORK=true
-
-# Dotfiles
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
-
-source "${DOTFILES}/tools/zsh/config/aliases.zsh"
-source "${DOTFILES}/tools/zsh/config/utils.zsh"
 
 # Editor
 EDITOR=$(command -v nvim || command -v vim || command -v vi || command -v code)
