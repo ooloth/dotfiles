@@ -1,22 +1,13 @@
 #!/usr/bin/env bash
-
-# Enable strict error handling
 set -euo pipefail
 
-# Set up environment
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+# TODO: Install if missing
+# TODO: Validate installation (e.g. command is available, version is correct)
+# TODO: Symlink configuration files
+# TODO: Validate configuration
 
-main() {
-  printf "\🥁 Installing visidata as a uv tool...\n"
+info "📊 Installing visidata as a uv tool"
 
-  # TODO: Install if missing
-  # TODO: Validate installation (e.g. command is available, version is correct)
-  # TODO: Symlink configuration files
-  # TODO: Validate configuration
+uv tool install visidata
 
-  uv tool install visidata
-
-  printf "\🎉 Visidata is installed and configured\n"
-}
-
-main "$@"
+debug "🚀 Visidata is installed and configured"
