@@ -7,6 +7,6 @@ stop() {
   esac
 }
 
-if $IS_WORK; then
+if is_work; then
   source "${DOTFILES}/tools/zsh/config/work/stop.zsh" 2>/dev/null
 fi

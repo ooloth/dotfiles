@@ -2,7 +2,7 @@
 
 
 # Return early on work laptop to avoid issues caused by updating too early
-if $IS_WORK; then
+if is_work; then
   source "${DOTFILES}/tools/zsh/config/aliases.zsh"
   return_or_exit 0
 fi

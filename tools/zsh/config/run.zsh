@@ -10,6 +10,6 @@ run() {
   esac
 }
 
-if $IS_WORK; then
+if is_work; then
   source "${DOTFILES}/tools/zsh/config/work/run.zsh" 2>/dev/null
 fi

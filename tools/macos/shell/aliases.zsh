@@ -1,3 +1,7 @@
 #!/usr/bin/env zsh
 
-# TODO: zsh/aliases.zsh should find all shell/aliases.zsh files and source them
+source "${DOTFILES}/tools/macos/shell/variables.zsh"
+
+is_air() { [[ "$COMPUTER" == "air" ]]; }
+is_mini() { [[ "$COMPUTER" == "mini" ]]; }
+is_work() { [[ "$COMPUTER" == "work" ]]; }

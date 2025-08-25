@@ -2,26 +2,15 @@
 # See: https://news.ycombinator.com/item?id=39508793
 # See: https://zsh.sourceforge.io/Doc/Release/Files.html
 
+##########################
+# PREREQUISITE VARIABLES #
+##########################
+
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
-source "${DOTFILES}/tools/zsh/config/path.zsh"
-source "${DOTFILES}/tools/zsh/config/aliases.zsh"
-source "${DOTFILES}/tools/zsh/config/utils.zsh"
-
-# TODO: use set_machine_variables instead?
-# Device
-export HOSTNAME=$(networksetup -getcomputername)
-
-# TODO: use set_machine_variables instead?
-# When referenced in "if" statements, will execute the true/false unix commands that return 0 or 1
-# When read directly, will contain "true" or "false" strings
-export IS_AIR=false
-export IS_MINI=false
-export IS_WORK=false
-
-[[ "$HOSTNAME" == "Air" ]] && IS_AIR=true
-[[ "$HOSTNAME" == "Mini" ]] && IS_MINI=true
-[[ "$HOSTNAME" == "7385-Y3FH97X-MAC" || "$HOSTNAME" == "MULO-JQ97NW-MBP" ]] && IS_WORK=true
+source "${DOTFILES}/tools/macos/shell/variables.zsh" # sets COMPUTER
+source "${DOTFILES}/tools/macos/shell/aliases.zsh" # sets is_air, is_mini, is_work
+source "${DOTFILES}/tools/zsh/config/path.zsh" # sets PATH
 
 # Editor
 EDITOR=$(command -v nvim || command -v vim || command -v vi || command -v code)
@@ -75,6 +64,6 @@ export STARSHIP_CONFIG=$HOME/.config/starship/config.toml
 # see: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#user-config
 export XDG_CONFIG_HOME=$HOME/.config
 
-if $IS_WORK; then
+if is_work; then
   source "${DOTFILES}/tools/zsh/config/work/variables.zsh" 2>/dev/null
 fi
