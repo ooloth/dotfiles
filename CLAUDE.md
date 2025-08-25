@@ -21,7 +21,7 @@ See README.md for the complete overview. Key points for Claude:
 - Tool-specific logic is in `tools/{tool}/` folders
 - Feature-specific code (leveraging one or more tools) is in `features/{feature}/` folders
 - Future main setup script will be `features/setup/setup.bash`
-- Future main update script will be `features/update/update.bash`
+- Future main update script will be `features/update/bash/tools.bash`
 - **Note**: These bash files are not yet functional or ready for use
 
 **Self-Contained Feature Modules** (`features/common/`) - Under construction:

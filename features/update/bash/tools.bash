@@ -20,14 +20,14 @@ run_updater() {
 
 show_help() {
   cat <<EOF
-Usage: features/update/update.bash [feature]
+Usage: features/update/tools.bash [feature]
 
 Update dotfiles components. If no tool is specified, updates frequently-changing tools.
 
 Examples:
-  features/update/update.bash           # Update all frequent-update components
-  features/update/update.bash homebrew  # Update only Homebrew
-  features/update/update.bash ssh       # Manually update SSH (not usually included in full update)
+  features/update/tools.bash           # Update all frequent-update components
+  features/update/tools.bash homebrew  # Update only Homebrew
+  features/update/tools.bash ssh       # Manually update SSH (not usually included in full update)
 
 EOF
 }
