@@ -108,7 +108,7 @@ DOTUPDATE="${DOTFILES}/features/update/zsh"
 
 # Add all the helpers the install scripts below will reference
 # source "${DOTFILES}/tools/zsh/config/aliases.zsh"
-# source "${DOTFILES}/tools/zsh/config/utils.zsh"
+# source "${DOTFILES}/tools/zsh/utils.zsh"
 
 source "${DOTINSTALL}/ssh.zsh"
 source "${DOTINSTALL}/github.zsh"
@@ -131,7 +131,7 @@ source "${DOTINSTALL}/settings.zsh"
 # SUGGEST RESTART #
 ###################
 
-source "$DOTFILES/tools/zsh/config/utils.zsh"
+source "$DOTFILES/tools/zsh/utils.zsh"
 info "🎉 Setup complete!"
 
 printf "\nCongratulations! Your Mac is nearly set up.\n\n"

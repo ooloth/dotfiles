@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-source "$DOTFILES/tools/zsh/config/utils.zsh"
+source "$DOTFILES/tools/zsh/utils.zsh"
 
 info "🐍 Updating uv and its tools..."
 

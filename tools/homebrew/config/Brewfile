@@ -1,8 +1,8 @@
 # NOTE: ruby works in this file, so feel free to use it for conditional logic, etc
 # see: https://github.com/Homebrew/homebrew-bundle
 
-# Execute the `hostname` command in a subshell and remove the trailing '\n'
-hostname = `networksetup -getcomputername`.chomp
+# Execute the `networksetup` command in a subshell and remove the trailing '\n'
+computer_name = `networksetup -getcomputername`.chomp
 
 ########
 # TAPS #
@@ -16,11 +16,11 @@ tap "hashicorp/tap" # for terraform, vault
 tap "jesseduffield/lazydocker"
 tap "kdash-rs/kdash" # for kdash
 
-if hostname == "Air"
+if computer_name == "Air"
   tap "modularml/packages" # for mojo
 end
 
-if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
+if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
   tap "codefresh-io/cli"
 end
 
@@ -96,14 +96,14 @@ brew "zsh"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
-if hostname == "Air"
+if computer_name == "Air"
   brew "deno"
   brew "gleam"
   brew "modularml/packages/modular" # for mojo
   brew "zig"
 end
 
-if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
+if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
   brew "codefresh"
   brew "hashicorp/tap/vault"
   brew "helm" # for kubernetes
@@ -149,7 +149,7 @@ cask "visual-studio-code"
 cask "vlc"
 cask "zed"
 
-if hostname == "Air"
+if computer_name == "Air"
   cask "1password"
   cask "google-chrome" # NOTE: work likely controls installation of this app
   # NOTE: manually download prepros v6 instead (just need it for Adam's site)
@@ -157,14 +157,14 @@ if hostname == "Air"
   cask "zoom" # NOTE: work likely controls installation of this app
 end
 
-if hostname == "Mini"
+if computer_name == "Mini"
   cask "1password"
   cask "backblaze"
   cask "carbon-copy-cloner"
   # cask "handbrake"
 end
 
-if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
+if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
   cask "meetingbar" # for auto-joining zoom calls
 end
 
@@ -179,9 +179,9 @@ mas "Sip", id: 507257563
 mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
-message = "\📦 Loading additional Mac App Store apps for #{hostname}\n"
+message = "\📦 Loading additional Mac App Store apps for #{computer_name}\n"
 
-if hostname == "Air"
+if computer_name == "Air"
   # mas "Bear", id: 1091189122
   mas "Keynote", id: 409183694
   mas "Numbers", id: 409203825
@@ -272,13 +272,13 @@ vscode "vspacecode.whichkey"
 vscode "wayou.vscode-todo-highlight"
 vscode "xadillax.viml"
 
-if hostname == "Air"
+if computer_name == "Air"
   vscode "denoland.vscode-deno" # for deno
   vscode "golang.go"
   vscode "vadimcn.vscode-lldb" # for debugging rust, go and other compiled languages
 end
 
-if hostname == "7385-Y3FH97X-MAC" || hostname == "MULO-JQ97NW-MBP"
+if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
   vscode "editorconfig.editorconfig"
   vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
   vscode "ms-python.black-formatter"

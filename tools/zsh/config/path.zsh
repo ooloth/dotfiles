@@ -1,5 +1,3 @@
-# PATH configuration (defined separately so it can be sourced by .zprofile)
-
 # Default
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:${PATH}" # Default system paths
 export PATH="/opt/local/bin:/opt/local/sbin:${PATH}" # Add MacPorts to PATH

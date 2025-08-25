@@ -1,3 +1,25 @@
+##############
+# INSPECTING #
+##############
+
+have() {
+  if [ -z "$1" ]; then
+    echo "Usage: have <command, alias or function>"
+    return 1 # false
+  fi
+
+  # Check if a command, alias or function with the provided name exists
+  if type "$1" &> /dev/null; then
+    return 0  # true
+  else
+    return 1  # false
+  fi
+}
+
+###########
+# LOGGING #
+###########
+
 # Text colors
 # see: https://stackoverflow.com/a/4332530/8802485
 TEXT_BLACK=$(tput setaf 0)
@@ -63,19 +85,5 @@ function error() {
   local text="$1"
   local color="${TEXT_RED}"
   banner $text $color
-}
-
-have() {
-  if [ -z "$1" ]; then
-    echo "Usage: have <command, alias or function>"
-    return 1 # false
-  fi
-
-  # Check if a command, alias or function with the provided name exists
-  if type "$1" &> /dev/null; then
-    return 0  # true
-  else
-    return 1  # false
-  fi
 }
 

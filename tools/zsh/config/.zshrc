@@ -7,7 +7,7 @@ fi
 DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 # NOTE: zshenv loads PATH + env vars and this file loads the rest
-source "${DOTFILES}/tools/zsh/config/utils.zsh" # source first (used by other files)
+source "${DOTFILES}/tools/zsh/utils.zsh" # source first (used by other files)
 source "${DOTFILES}/tools/zsh/config/variables.zsh"
 source "${DOTFILES}/tools/zsh/config/aliases.zsh"
 source "${DOTFILES}/tools/zsh/config/options.zsh"

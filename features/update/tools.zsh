@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-source "${DOTFILES}/tools/zsh/config/utils.zsh"
+source "${DOTFILES}/tools/zsh/utils.zsh"
 
 main() {
   source "${DOTFILES}/features/symlink/link.zsh"

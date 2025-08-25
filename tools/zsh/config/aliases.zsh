@@ -1,4 +1,8 @@
-DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+#!/usr/bin/env zsh
+
+# TODO: find all {tool|feature}/shell/aliases.zsh files and source them
+source "${DOTFILES}/tools/macos/shell/aliases.zsh"
+source "${DOTFILES}/tools/zsh/utils.zsh"
 
 alias ..='cd ..'
 alias ...='cd ../..'

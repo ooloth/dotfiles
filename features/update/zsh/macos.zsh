@@ -8,7 +8,7 @@ if $IS_WORK; then
 fi
 
 # Otherwise, update
-source "${DOTFILES}/tools/zsh/config/utils.zsh"
+source "${DOTFILES}/tools/zsh/utils.zsh"
 info "💻 Updating macOS software (after password, don't cancel!)"
 
 sudo softwareupdate --install --all --restart --agree-to-license --verbose
