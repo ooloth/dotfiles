@@ -5,7 +5,7 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 # Install if missing
 if [ ! -d "$TPM" ]; then
-  source "$DOTFILES/bin/install/tmux.zsh"
+  source "$DOTFILES/features/install/zsh/tmux.zsh"
 fi
 
 # Then, update

@@ -10,7 +10,7 @@ See README.md for the complete overview. Key points for Claude:
 
 **Current Active Structure:**
 
-- Installation scripts are in `bin/install/` (individual .zsh files)
+- Installation scripts are in `features/install/zsh/` (individual .zsh files)
 - Update scripts are in `features/update/zsh/`
 - Main setup script is `features/setup/setup.zsh`
 - Configuration files are in `tools/{tool}/config/` directories

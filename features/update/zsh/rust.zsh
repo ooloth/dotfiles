@@ -7,7 +7,7 @@ source "$DOTFILES/tools/zsh/config/utils.zsh"
 
 # Install if missing
 if ! have rustup; then
-  source "$DOTFILES/bin/install/rust.zsh"
+  source "$DOTFILES/features/install/zsh/rust.zsh"
   return_or_exit 0
 fi
 

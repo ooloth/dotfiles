@@ -26,7 +26,7 @@ fi
 
 if [[ ! -s "$PRIVATE_KEY" || ! -s "$PUBLIC_KEY" ]]; then
   printf "\n❌ SSH keys not found. Generating a new key pair...\n"
-  source "$DOTFILES/bin/install/ssh.zsh"
+  source "$DOTFILES/features/install/zsh/ssh.zsh"
 
   # Check if the key pair was added to the ssh-agent
   if ! ssh-add -l >/dev/null; then

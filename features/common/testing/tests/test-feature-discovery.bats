@@ -16,12 +16,12 @@ setup() {
     export DOTFILES="$TEST_DIR/dotfiles"
 
     # Create mock dotfiles structure
-    mkdir -p "$DOTFILES/bin/install"
+    mkdir -p "$DOTFILES/features/install/zsh"
     mkdir -p "${DOTFILES}/tools/ssh"
     mkdir -p "${DOTFILES}/tools/git"
 
     # Change to install directory (as features/setup/setup.bash does)
-    cd "$DOTFILES/bin/install"
+    cd "$DOTFILES/features/install/zsh"
 }
 
 teardown() {

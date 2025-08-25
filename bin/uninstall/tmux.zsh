@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# NOTE: this reverses the changes made by bin/install/tmux.zsh
+# NOTE: this reverses the changes made by features/install/zsh/tmux.zsh
 
 source "$DOTFILES/tools/zsh/config/utils.zsh"
 

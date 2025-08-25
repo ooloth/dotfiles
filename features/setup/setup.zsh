@@ -98,29 +98,33 @@ else
   git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"
 fi
 
+
+####################
+# INSTALL + UPDATE #
+####################
+
+DOTINSTALL="${DOTFILES}/features/install/zsh"
+DOTUPDATE="${DOTFILES}/features/update/zsh"
+
 # Add all the helpers the install scripts below will reference
-# source "$DOTFILES/tools/zsh/config/aliases.zsh"
-# source "$DOTFILES/tools/zsh/config/utils.zsh"
+# source "${DOTFILES}/tools/zsh/config/aliases.zsh"
+# source "${DOTFILES}/tools/zsh/config/utils.zsh"
 
-###########
-# INSTALL #
-###########
+source "${DOTINSTALL}/ssh.zsh"
+source "${DOTINSTALL}/github.zsh"
+source "${DOTINSTALL}/homebrew.zsh"
+source "${DOTUPDATE}/homebrew.zsh"
+source "${DOTINSTALL}/zsh.zsh"
+source "${DOTINSTALL}/rust.zsh"
+source "${DOTINSTALL}/uv.zsh"
+source "${DOTINSTALL}/node.zsh"
+source "${DOTUPDATE}/npm.zsh"
+source "${DOTINSTALL}/tmux.zsh"
+source "${DOTINSTALL}/neovim.zsh"
+source "${DOTINSTALL}/content.zsh"
+source "${DOTUPDATE}/symlinks.zsh"
+source "${DOTINSTALL}/settings.zsh"
 
-cd "$DOTFILES/bin/install"
-source ssh.zsh
-source github.zsh
-source homebrew.zsh
-source "$DOTFILES/features/update/zsh/homebrew.zsh"
-source zsh.zsh
-source rust.zsh
-source uv.zsh
-source node.zsh
-source "$DOTFILES/features/update/zsh/npm.zsh"
-source tmux.zsh
-source neovim.zsh
-source content.zsh
-source "$DOTFILES/features/update/zsh/symlinks.zsh"
-source settings.zsh
 # TODO: automate my remaining manual setup steps (e.g. app preferences, etc.)
 
 ###################

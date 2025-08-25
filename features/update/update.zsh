@@ -1,5 +1,4 @@
 #!/usr/bin/env zsh
-
 set -euo pipefail
 
 source "${DOTFILES}/tools/zsh/config/utils.zsh"

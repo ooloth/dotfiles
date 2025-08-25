@@ -15,7 +15,7 @@ setup() {
   TEST_TEMP_DIR="$(mktemp -d)"
 
   # Create test file structure
-  mkdir -p "$TEST_TEMP_DIR/bin/install"
+  mkdir -p "$TEST_TEMP_DIR/features/install/zsh"
   mkdir -p "$TEST_TEMP_DIR/features/update/zsh"
 }
 

@@ -7,7 +7,7 @@ source "${DOTFILES}/tools/zsh/config/utils.zsh"
 
 # Install if missing
 if ! have brew; then
-  source "$DOTFILES/bin/install/homebrew.zsh"
+  source "$DOTFILES/features/install/zsh/homebrew.zsh"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 

@@ -139,24 +139,25 @@ fi
 EOF
     chmod +x "$mock_bin/git"
 
-    # Create mock installation scripts
-    mkdir -p "$DOTFILES/bin/install"
+    # Create mock installation script directories
+    mkdir -p "$DOTFILES/tools/ssh"
+    mkdir -p "$DOTFILES/tools/github"
 
-    # Create mock ssh.bash that sets a variable
-    cat >"$DOTFILES/bin/install/ssh.bash" <<'EOF'
+    # Create mock ssh/install.bash that sets a variable
+    cat >"$DOTFILES/tools/ssh/install.bash" <<'EOF'
 #!/usr/bin/env bash
 echo "Running SSH installation"
 export SSH_INSTALL_RAN="true"
 EOF
-    chmod +x "$DOTFILES/bin/install/ssh.bash"
+    chmod +x "$DOTFILES/tools/ssh/install.bash"
 
-    # Create mock github.bash
-    cat >"$DOTFILES/bin/install/github.bash" <<'EOF'
+    # Create mock github/install.bash
+    cat >"$DOTFILES/tools/github/install.bash" <<'EOF'
 #!/usr/bin/env bash
 echo "Running GitHub installation"
 export GITHUB_INSTALL_RAN="true"
 EOF
-    chmod +x "$DOTFILES/bin/install/github.bash"
+    chmod +x "$DOTFILES/tools/github/install.bash"
 
     # Create minimal mock utilities to avoid errors
     mkdir -p "$DOTFILES/features/common/detection"
