@@ -4,7 +4,7 @@ A highly opinionated development environment configuration for macOS.
 
 ## ⚠️ Disclaimer
 
-I change these configurations all the time as my preferences change. Don't expect stability! Use this repo as inspiration and feel free to fork it and make it your own.
+I update these configurations often as my preferences change. Don't expect stability! Use this repo as inspiration and feel free to fork and customize it.
 
 ## What's Included
 
@@ -51,7 +51,6 @@ tools/
    ```sh
    sudo softwareupdate --install --all --restart
    ```
-   Repeat until fully updated.
 
 ## Installation
 
@@ -78,11 +77,11 @@ The `u` function runs all updates and reloads your shell.
 
 ## Contributing
 
-Since these are personal dotfiles, I'm not accepting pull requests for feature additions. However, please feel free to...
+I'm not accepting pull requests, but please feel free to...
 
 - Open issues to discuss bugs, questions or suggestions
-- Fork and customize this project for your own use
-- Share improvement demonstrations using your fork
+- Fork and customize this project however you like
+- Demonstrate improvement opportunities using your fork
 
 ## Inspiration
 
