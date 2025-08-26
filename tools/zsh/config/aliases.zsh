@@ -131,6 +131,7 @@ alias ts="tailscale"
 v() {
   (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"
 }
+alias vscode="code"
 
 alias x="exit"
 

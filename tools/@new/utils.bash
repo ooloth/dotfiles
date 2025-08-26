@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="x"
 export TOOL_UPPER="X"
+export TOOL_COMMAND="x"
 export TOOL_PACKAGE="x"
 export TOOL_EMOJI="🤪"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

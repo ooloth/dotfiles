@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="visidata"
 export TOOL_UPPER="VisiData"
+export TOOL_COMMAND="vd"
 export TOOL_PACKAGE="visidata"
 export TOOL_EMOJI="📊"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

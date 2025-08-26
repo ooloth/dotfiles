@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="git"
 export TOOL_UPPER="Git"
+export TOOL_COMMAND="git"
 export TOOL_PACKAGE="git"
 export TOOL_EMOJI="🌳"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

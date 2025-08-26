@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="zsh"
 export TOOL_UPPER="Zsh"
+export TOOL_COOMAND="zsh"
 export TOOL_PACKAGE="zsh"
 export TOOL_EMOJI="🐚"
 export TOOL_CONFIG_DIR="${HOME}"

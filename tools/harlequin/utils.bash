@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="harlequin"
 export TOOL_UPPER="Harlequin"
+export TOOL_COMMAND="harlequin"
 export TOOL_PACKAGE="harlequin"
 export TOOL_EMOJI="🤡"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="tmux"
 export TOOL_UPPER="Tmux"
+export TOOL_COMMAND="tmux"
 export TOOL_PACKAGE="tmux"
 export TOOL_EMOJI="🪟"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

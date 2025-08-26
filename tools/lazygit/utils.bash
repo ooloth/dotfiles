@@ -2,7 +2,8 @@
 set -euo pipefail
 
 export TOOL_LOWER="lazygit"
-export TOOL_UPPER="lazygit"
+export TOOL_UPPER="Lazygit"
+export TOOL_COMMAND="lazygit"
 export TOOL_PACKAGE="lazygit"
 export TOOL_EMOJI="🌳"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

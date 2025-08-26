@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="lazydocker"
 export TOOL_UPPER="lazydocker"
+export TOOL_COMMAND="lazydocker"
 export TOOL_PACKAGE="lazydocker"
 export TOOL_EMOJI="📦"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

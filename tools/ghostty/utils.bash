@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="ghostty"
 export TOOL_UPPER="Ghostty"
+export TOOL_COMMAND="ghostty"
 export TOOL_PACKAGE="ghostty"
 export TOOL_EMOJI="👻"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

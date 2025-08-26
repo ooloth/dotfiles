@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="sesh"
 export TOOL_UPPER="Sesh"
+export TOOL_COMMAND="sesh"
 export TOOL_PACKAGE="sesh"
 export TOOL_EMOJI="🪟"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

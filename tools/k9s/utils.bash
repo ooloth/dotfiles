@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="k9s"
 export TOOL_UPPER="K9s"
+export TOOL_COMMAND="k9s"
 export TOOL_PACKAGE="k9s"
 export TOOL_EMOJI="🚛"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"

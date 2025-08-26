@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="gemini"
 export TOOL_UPPER="Gemini CLI"
+export TOOL_COMMAND="gemini"
 export TOOL_PACKAGE="gemini-cli"
 export TOOL_EMOJI="💎"
 

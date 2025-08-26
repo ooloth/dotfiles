@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="neovim"
 export TOOL_UPPER="Neovim"
+export TOOL_COMMAND="nvim"
 export TOOL_PACKAGE="neovim"
 export TOOL_EMOJI="🦸"
 export TOOL_CONFIG_DIR="${HOME}/.config/nvim"

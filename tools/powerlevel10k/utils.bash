@@ -3,6 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="powerlevel10k"
 export TOOL_UPPER="Powerlevel10k"
+export TOOL_COMMAND="p10k"
 export TOOL_PACKAGE="powerlevel10k"
 export TOOL_EMOJI="💫"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"
