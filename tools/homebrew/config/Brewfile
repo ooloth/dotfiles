@@ -51,7 +51,6 @@ brew "gnu-sed"
 brew "go"
 brew "goose" # for go
 brew "hadolint" # for docker
-brew "htop" # top alternative
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
 brew "k9s" # for kubernetes
