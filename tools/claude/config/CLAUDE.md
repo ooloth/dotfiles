@@ -2,6 +2,8 @@
 
 When analyzing large codebases or multiple files that might exceed context limits, use the Gemini CLI with `gemini -p` to take advantage of its massive context window.
 
+<!-- Reference: https://www.reddit.com/r/ChatGPTCoding/comments/1lm3fxq/gemini_cli_is_awesome_but_only_when_you_make/ -->
+
 ### When to Use Gemini CLI
 
 Use `gemini -p` when:
