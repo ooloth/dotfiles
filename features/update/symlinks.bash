@@ -37,9 +37,6 @@ main() {
 
   debug "🔗 Creating manual symlinks"
 
-  symlink "${DOTFILES}/tools/yazi/config/keymap.toml" "${HOMECONFIG}/yazi"
-  symlink "${DOTFILES}/tools/yazi/config/theme.toml" "${HOMECONFIG}/yazi"
-  symlink "${DOTFILES}/tools/yazi/config/yazi.toml" "${HOMECONFIG}/yazi"
   symlink "${DOTFILES}/tools/vscode/config/keybindings.json" "${VSCODEUSER}"
   symlink "${DOTFILES}/tools/vscode/config/settings.json" "${VSCODEUSER}"
   symlink "${DOTFILES}/tools/vscode/config/snippets" "${VSCODEUSER}"
