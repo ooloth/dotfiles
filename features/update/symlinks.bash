@@ -22,13 +22,7 @@ done
 
 # TODO: make this dynamic
 
-#############
-# Target: ~ #
-#############
-
-symlink "${DOTFILES}/tools/zsh/config/.hushlogin" "${HOME}"
-symlink "${DOTFILES}/tools/zsh/config/.zshenv" "${HOME}"
-symlink "${DOTFILES}/tools/zsh/config/.zshrc" "${HOME}"
+source "${DOTFILES}/tools/zsh/symlinks/link.bash"
 source "${DOTFILES}/tools/claude/symlinks/link.bash"
 
 #####################
