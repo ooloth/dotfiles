@@ -6,7 +6,7 @@ source "${DOTFILES}/tools/@new/utils.bash"
 source "${DOTFILES}/features/update/utils.bash"
 
 # TODO: change update command + version command
-update_or_install_and_symlink \
+update_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
   "${TOOL_EMOJI}" \
