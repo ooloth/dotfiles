@@ -37,7 +37,6 @@ main() {
 
   debug "🔗 Creating manual symlinks"
 
-  symlink "${DOTFILES}/tools/surfingkeys/config/surfingkeys.js" "${HOMECONFIG}/surfingkeys"
   symlink "${DOTFILES}/tools/tmux/config/battery.sh" "${HOMECONFIG}/tmux"
   symlink "${DOTFILES}/tools/tmux/config/gitmux.conf" "${HOMECONFIG}/tmux"
   symlink "${DOTFILES}/tools/tmux/config/tmux.conf" "${HOMECONFIG}/tmux"
