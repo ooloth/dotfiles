@@ -37,10 +37,6 @@ main() {
 
   debug "🔗 Creating manual symlinks"
 
-  symlink "${DOTFILES}/tools/neovim/config/nvim/init.lua" "${HOMECONFIG}/nvim"
-  symlink "${DOTFILES}/tools/neovim/config/nvim-ide/init.lua" "${HOMECONFIG}/nvim-ide"
-  symlink "${DOTFILES}/tools/neovim/config/nvim-ide/lazy-lock.json" "${HOMECONFIG}/nvim-ide"
-  symlink "${DOTFILES}/tools/neovim/config/nvim-kitty-scrollback/init.lua" "${HOMECONFIG}/nvim-kitty-scrollback"
   symlink "${DOTFILES}/tools/node/config/.npmrc" "${HOMECONFIG}/npm"
   symlink "${DOTFILES}/tools/powerlevel10k/config/p10k.zsh" "${HOMECONFIG}/powerlevel10k"
   symlink "${DOTFILES}/tools/sesh/config/sesh.toml" "${HOMECONFIG}/sesh"
