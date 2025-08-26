@@ -161,8 +161,7 @@ update_dotfiles_script_permissions() {
     echo "Processing .$ext files..."
 
     # Count files before processing
-    local file_count
-    file_count=$(find_files_by_extension "$bin_dir" "$ext" | wc -l)
+    local file_count=$(find_files_by_extension "$bin_dir" "$ext" | wc -l)
 
     if [[ "$file_count" -gt 0 ]]; then
       make_extension_executable "$bin_dir" "$ext" "$dry_run"
@@ -185,8 +184,7 @@ check_file_permissions() {
     return 1
   fi
 
-  local permissions
-  permissions=$(stat -c '%A' "$file_path" 2>/dev/null || stat -f '%Sp' "$file_path" 2>/dev/null || echo "unknown")
+  local permissions=$(stat -c '%A' "$file_path" 2>/dev/null || stat -f '%Sp' "$file_path" 2>/dev/null || echo "unknown")
 
   echo "File: $file_path"
   echo "Permissions: $permissions"

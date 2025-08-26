@@ -66,22 +66,19 @@ main() {
     echo "🔗 Checking dotfiles remote URL..."
 
     # Save current directory
-    local current_dir
-    current_dir=$(pwd)
+    local current_dir=$(pwd)
 
     # Change to dotfiles directory
     cd "$DOTFILES" || exit 1
 
     # Get current remote URL
-    local remote_url
-    remote_url=$(get_git_remote_url "origin")
+    local remote_url=$(get_git_remote_url "origin")
 
     if [[ -z "$remote_url" ]]; then
         echo "⚠️  No remote URL found for origin"
     elif is_https_url "$remote_url"; then
         echo "📝 Converting remote URL from HTTPS to SSH..."
-        local ssh_url
-        ssh_url=$(convert_github_https_to_ssh "$remote_url")
+        local ssh_url=$(convert_github_https_to_ssh "$remote_url")
 
         if [[ "$ssh_url" != "$remote_url" ]]; then
             set_git_remote_url "origin" "$ssh_url"

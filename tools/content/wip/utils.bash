@@ -22,8 +22,7 @@ install_content_repo() {
     echo "📦 Cloning content repository..."
     
     # Create parent directory
-    local parent_dir
-    parent_dir="$(dirname "$CONTENT_LOCAL_PATH")"
+    local parent_dir="$(dirname "$CONTENT_LOCAL_PATH")"
     mkdir -p "$parent_dir"
     
     # Try SSH first, fallback to HTTPS

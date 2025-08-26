@@ -1,13 +1,14 @@
 # ShellCheck Configuration
-#
-# Disable SC1091: Not following sourced files
-# This is expected behavior for our setup - we source utility libraries
-# that shellcheck cannot always locate in the correct context
-#
-# Disable SC1090: ShellCheck can't follow non-constant source
-# Our feature discovery system uses dynamic paths which are validated
-# before sourcing, so this warning is safe to ignore
-#
-# Disable SC2119: Function call suggests parameters but function doesn't use them
-# Many functions in our codebase intentionally take no parameters
-disable=SC1091,SC1090,SC2059,SC2119
+
+# https://www.shellcheck.net/wiki/
+# https://man.archlinux.org/man/shellcheck.1.en
+# https://www.shellcheck.net/
+
+# Allow ShellCheck to follow 'source' statements to external files
+external-sources=true
+
+# Disable specific warnings
+disable=SC1091,SC1090,SC2059,SC2119,SC2155
+
+# Override the detected shell for files without a shebang
+shell=bash

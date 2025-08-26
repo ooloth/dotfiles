@@ -43,8 +43,7 @@ symlink() {
     return 1
   fi
 
-  local file_name
-  file_name="$(basename "$source_file")"
+  local file_name="$(basename "$source_file")"
   local target_path="$target_dir/$file_name"
 
   # Check if the target file exists and is a symlink pointing to the correct source file
@@ -121,17 +120,14 @@ function banner() {
   local border_char_vertical="║"
 
   # Calculate the width of the text, adding one extra column per emoji (since they generally occupy two columns onscreen)
-  local emoji_count
-  emoji_count=$(echo -n "$text" | python3 -c "import sys, unicodedata; print(sum((unicodedata.category(ch) == 'So') for ch in sys.stdin.read()))")
+  local emoji_count=$(echo -n "$text" | python3 -c "import sys, unicodedata; print(sum((unicodedata.category(ch) == 'So') for ch in sys.stdin.read()))")
   local char_count=${#text}
   local padding_left=1
   local padding_right=1
   local text_cols=$((padding_left + char_count + emoji_count + padding_right))
 
   # Build the banner components
-  local horizontal_line
-  horizontal_line=$(for _char in $(seq $text_cols); do printf "${border_char_horizontal}"; done)
-
+  local horizontal_line=$(for _char in $(seq $text_cols); do printf "${border_char_horizontal}"; done)
   local border_top="$border_color$border_char_top_left_corner$horizontal_line$border_char_top_right_corner"
   local border_bottom="$border_color$border_char_bottom_left_corner$horizontal_line$border_char_bottom_right_corner"
   local border_vertical="$border_color$border_char_vertical"
