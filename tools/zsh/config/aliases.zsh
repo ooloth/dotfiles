@@ -95,6 +95,7 @@ alias nvm="fnm"
 alias oo="cd $HOME/Repos/ooloth"
 
 alias pilots="cd $HOME/Repos/ooloth/download-pilots"
+alias powerlevel10k="p10k"
 
 # Keep 'r' as an alias that can be overridden by alias in work/aliases.zsh
 # alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
