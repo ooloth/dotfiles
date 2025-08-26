@@ -4,10 +4,11 @@ set -euo pipefail
 source "${DOTFILES}/features/update/utils.bash"
 
 # TODO: update names
-tool_lower="visidata"
-tool_upper="Visidata"
+tool_lower="x"
+tool_upper="X"
 
 parse_version() {
+  # Grab the first line after the prefix
   local raw_version="$1"
   printf "${raw_version#harlequin, version }" | head -n 1
 }
