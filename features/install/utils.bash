@@ -26,7 +26,7 @@ install_and_symlink() {
   fi
 
   # Symlink config files
-  source "${symlink_script_path}"
+  bash -c "VERBOSE=true ${symlink_script_path}"
 
   # Confirm installation
   "${SHELL}" -lc "exit"

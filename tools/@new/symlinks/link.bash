@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-printf "✅ No configuration files to symlink\n"
+if [ "${VERBOSE:-false}" = true ]; then
+  printf "✅ No configuration files to symlink\n"
+fi
 
 # source "${DOTFILES}/tools/@new/utils.bash"
 # source "${DOTFILES}/tools/bash/utils.bash"

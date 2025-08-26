@@ -6,6 +6,6 @@ source "${DOTFILES}/tools/bash/utils.bash"
 
 if is_work; then
   symlink "${DOTFILES}/tools/node/config/.npmrc" "${HOME}/.config/npm"
-else
+elif [ "${VERBOSE:-false}" = true ]; then
   printf "✅ No configuration files to symlink\n"
 fi

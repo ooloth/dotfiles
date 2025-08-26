@@ -35,10 +35,10 @@ update_and_symlink() {
     else
       debug "⬆️ Updated from version ${current_version} to ${new_version}"
     fi
-  fi
 
-  # Symlink config files
-  source "${symlink_script_path}"
+    # Symlink config files
+    bash -c "VERBOSE=true ${symlink_script_path}"
+  fi
 
   debug "🚀 ${tool_upper} is up to date"
 }
