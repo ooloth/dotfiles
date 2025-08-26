@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "${DOTFILES}/tools/bash/utils.bash"
+
 tool_lower="harlequin"
 tool_upper="Harlequin"
 

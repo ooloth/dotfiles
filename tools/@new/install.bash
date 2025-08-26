@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "${DOTFILES}/tools/bash/utils.bash"
+
 # TODO: update names
 tool_lower="x"
 tool_upper="X"
