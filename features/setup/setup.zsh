@@ -122,7 +122,7 @@ source "${DOTUPDATE}/npm.zsh"
 source "${DOTINSTALL}/tmux.zsh"
 source "${DOTINSTALL}/neovim.zsh"
 source "${DOTINSTALL}/content.zsh"
-source "${DOTUPDATE}/symlinks.zsh"
+source "${DOTUPDATE}/symlinks.zsh" # deprecated (update now uses symlinks.bash)
 source "${DOTINSTALL}/settings.zsh"
 
 # TODO: automate my remaining manual setup steps (e.g. app preferences, etc.)

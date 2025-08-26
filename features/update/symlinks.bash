@@ -24,8 +24,8 @@ done
 
 source "${DOTFILES}/tools/zsh/symlinks/link.bash"
 source "${DOTFILES}/tools/claude/symlinks/link.bash"
+source "${DOTFILES}/tools/gh/symlinks/link.bash"
 
-symlink "${DOTFILES}/tools/gh/config/config.yml" "${HOMECONFIG}/gh"
 symlink "${DOTFILES}/tools/ghostty/config/config" "${HOMECONFIG}/ghostty"
 symlink "${DOTFILES}/tools/git/config/config" "${HOMECONFIG}/git"
 symlink "${DOTFILES}/tools/git/config/config.work" "${HOMECONFIG}/git"
