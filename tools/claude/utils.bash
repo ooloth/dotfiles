@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export TOOL_LOWER="x"
-export TOOL_UPPER="X"
-export TOOL_PACKAGE="x"
-export TOOL_EMOJI="🤪"
-export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"
+export TOOL_CONFIG_DIR="${HOME}/.claude"
+export TOOL_EMOJI="🫟"
+export TOOL_LOWER="claude"
+export TOOL_PACKAGE="@anthropic-ai/claude-code"
+export TOOL_UPPER="Claude Code"
 
 parse_version() {
   local raw_version="${1}"
