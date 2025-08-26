@@ -5,4 +5,4 @@ source "${DOTFILES}/tools/yazi/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
 
 debug "🔗 Removing symlinked config files"
-rm -r "${TOOL_CONFIG_DIR}"
+rm "${TOOL_CONFIG_DIR}"

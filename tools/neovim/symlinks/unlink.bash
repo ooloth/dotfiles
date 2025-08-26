@@ -6,6 +6,6 @@ source "${DOTFILES}/tools/bash/utils.bash"
 
 debug "🔗 Removing symlinked config files"
 
-rm -f "${HOMECONFIG}/nvim"
-rm -f "${HOMECONFIG}/nvim-ide"
-rm -f "${HOMECONFIG}/nvim-kitty-scrollback"
+rm "${HOMECONFIG}/nvim"
+rm "${HOMECONFIG}/nvim-ide"
+rm "${HOMECONFIG}/nvim-kitty-scrollback"
