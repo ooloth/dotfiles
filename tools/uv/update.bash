@@ -22,7 +22,7 @@ else
   new_version="$(get_version)"
 
   if [ "$current_version" == "$new_version" ]; then
-    debug "✅ Already at the latest version ($new_version)"
+    debug "✅ Already using the latest version ($new_version)"
   else
     debug "⬆️ Updated from version $current_version to $new_version"
   fi
