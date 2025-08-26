@@ -2,7 +2,7 @@
 set -euo pipefail
 
 main() {
-  local tool="$1"
+  local tool="${1:-}"
 
   # If a specific tool is provided as an argument, update only that tool
   if [[ ! -z "$tool" ]]; then
