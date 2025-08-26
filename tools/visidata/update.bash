@@ -3,17 +3,21 @@ set -euo pipefail
 
 source "${DOTFILES}/features/update/utils.bash"
 
-parse_visidata_version() {
+tool_lower="visidata"
+tool_upper="Visidata"
+
+parse_version() {
+  # Drop the prefix
   local raw_version="$1"
   printf "${raw_version#saul.pw/VisiData v}"
 }
 
 install_or_update \
-  "visidata" \
-  "Visidata" \
+  "${tool_lower}" \
+  "${tool_upper}" \
   "📊" \
-  "uv tool upgrade visidata" \
-  "${DOTFILES}/tools/visidata/symlinks/link.bash" \
-  "${DOTFILES}/tools/visidata/install.bash" \
-  "vd -v" \
-  "parse_visidata_version"
+  "uv tool upgrade ${tool_lower}" \
+  "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash" \
+  "${DOTFILES}/tools/${tool_lower}/install.bash" \
+  "${tool_lower} --version" \
+  "parse_version"
