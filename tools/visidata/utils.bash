@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly TOOL_LOWER="visidata"
-readonly TOOL_UPPER="Visidata"
-readonly TOOL_EMOJI="📊"
-
-export TOOL_EMOJI TOOL_LOWER TOOL_UPPER
+export TOOL_LOWER="visidata"
+export TOOL_UPPER="VisiData"
+export TOOL_PACKAGE="visidata"
+export TOOL_EMOJI="📊"
 
 parse_version() {
-  # Drop the prefix
-  local raw_version="$1"
-  printf "${raw_version#saul.pw/VisiData v}"
+  local raw_version="${1}"
+  local prefix="saul.pw/${TOOL_UPPER} v"
+
+  # Grab everything after the prefix
+  printf "${raw_version#"${prefix}"}"
 }

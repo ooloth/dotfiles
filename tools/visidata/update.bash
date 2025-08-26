@@ -8,8 +8,8 @@ update_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
   "${TOOL_EMOJI}" \
-  "uv tool upgrade ${TOOL_LOWER}" \
+  "uv tool upgrade ${TOOL_PACKAGE}" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
-  "${TOOL_LOWER} --version" \
+  "${TOOL_PACKAGE} --version" \
   "parse_version"
