@@ -4,6 +4,9 @@ set -euo pipefail
 # In case this file is sourced before shell variables have been symlinked
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
+# Include is_air, is_mini, is_work in this commonly-sourced file
+source "${DOTFILES}/tools/macos/shell/aliases.zsh"
+
 ##############
 # INSPECTING #
 ##############
