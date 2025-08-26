@@ -10,15 +10,16 @@ source "${DOTFILES}/tools/bash/utils.bash"
 install_and_symlink() {
   local tool_lower="${1}"
   local tool_upper="${2}"
-  local tool_emoji="${3}"
-  local install_command="${4}"
-  local symlink_script_path="${5}"
-  local version_command="${6}"
-  local version_parsing_function="${7}"
+  local tool_command="${3}"
+  local tool_emoji="${4}"
+  local install_command="${5}"
+  local symlink_script_path="${6}"
+  local version_command="${7}"
+  local version_parsing_function="${8}"
 
   info "${tool_emoji} Installing ${tool_lower}"
 
-  if have "${tool_lower}"; then
+  if have "${tool_command}"; then
     local current_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
     printf "✅ ${tool_upper} ${current_version} is already installed\n"
   else
@@ -31,8 +32,8 @@ install_and_symlink() {
   # Confirm installation
   "${SHELL}" -lc "exit"
 
-  if ! have "${tool_lower}"; then
-    error "❌ ${tool_lower} command not found"
+  if ! have "${tool_command}"; then
+    error "❌ ${tool_command} command not found"
     return 1
   fi
 

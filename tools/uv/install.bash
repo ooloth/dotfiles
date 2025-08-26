@@ -8,6 +8,7 @@ source "${DOTFILES}/features/install/utils.bash"
 install_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
+  "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "curl -LsSf https://astral.sh/uv/install.sh | sh" \
   "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash" \

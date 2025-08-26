@@ -8,6 +8,7 @@ source "${DOTFILES}/features/install/utils.bash"
 install_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
+  "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "brew install --formula ${TOOL_PACKAGE}" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
