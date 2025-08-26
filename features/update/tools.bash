@@ -12,8 +12,8 @@ main() {
     bash "$file"
   done
 
-  # Find all update.bash files at the root level of each tool directory except @new and @archive
-  update_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "update.bash" -print)
+  # Find all update.bash files at the root level of each tool directory (except @new and @archive) and sort by parent directory name
+  update_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "update.bash" -print | sort -t/ -k5)
 
   # Filter out priority files from the list
   for priority in "${priority_files[@]}"; do
