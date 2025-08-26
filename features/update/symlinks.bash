@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+DOTFILES="${DOTFILES:-${HOME}/Repos/ooloth/dotfiles}"
+
 source "${DOTFILES}/tools/bash/utils.bash"
 
 HOMECONFIG="${HOME}/.config"
