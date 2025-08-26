@@ -2,54 +2,42 @@
 
 A highly opinionated development environment configuration for macOS.
 
-## ⚠️ Important Disclaimer
+## ⚠️ Disclaimer
 
-**This repository represents my personal preferences and workflow.** It's constantly evolving based on my needs and experiments. I strongly encourage you to:
-
-- **Fork this repo** and customize it to your preferences
-- **Browse and borrow** individual configurations that interest you
-- **Use it as inspiration** for your own dotfiles
-
-Unless you share my exact preferences (unlikely!), directly using this configuration will probably frustrate you. You've been warned! 😊
-
-## Philosophy
-
-These dotfiles reflect years of iteration on my development workflow. They're optimized for:
-
-- Keyboard-driven workflows (minimal mouse usage)
-- Terminal-first development
-- Fast navigation and editing
-- Consistent keybindings across tools
-- Reducing context switching
-
-The setup is intentionally opinionated and may include experimental configurations.
+I change these configurations all the time as my preferences change. Don't expect stability! Use this repo as inspiration and feel free to fork it and make it your own.
 
 ## What's Included
 
-### Core Tools
-
-- **Shell**: [zsh](https://www.zsh.org/) with [Starship](https://starship.rs/) prompt
-- **Terminal Multiplexer**: [tmux](https://github.com/tmux/tmux) with custom keybindings
-- **Editor**: [Neovim](https://neovim.io/) with extensive plugin configuration
-- **Terminal Emulators**: [Kitty](https://sw.kovidgoyal.net/kitty/), [Alacritty](https://alacritty.org/), [Ghostty](https://ghostty.org/)
-- **Version Control**: Git with [lazygit](https://github.com/jesseduffield/lazygit) and [delta](https://github.com/dandavison/delta)
-- **File Manager**: [yazi](https://github.com/sxyazi/yazi)
-- **Package Management**: [Homebrew](https://brew.sh/) for macOS packages
-
-### Development Tools
-
-- **Languages**: Node.js (via [fnm](https://github.com/Schniz/fnm)), Rust, Python (via [uv](https://github.com/astral-sh/uv)), Go
-- **Containers**: Docker with [lazydocker](https://github.com/jesseduffield/lazydocker)
-- **Kubernetes**: kubectl with [k9s](https://k9scli.io/)
-- **Search**: [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [fzf](https://github.com/junegunn/fzf)
-
-### Additional Features
-
-- Machine-specific configurations (Personal Air, Mac Mini, Work machines)
-- Automated installation and update scripts
-- macOS system preferences configuration
-- VS Code settings and extensions
-- Custom keyboard layout (Kinesis Advantage 2)
+```
+features/
+├── install/  # install one or more tools
+├── setup/    # bootstrap a new machine
+├── update/   # update one or more tools
+tools/
+├── bash/
+├── eza/
+├── gh/
+├── ghostty/
+├── git/
+├── homebrew/
+├── kitty/
+├── lazydocker/
+├── lazygit/
+├── macos/
+├── neovim/
+├── node/
+├── powerlevel10k/
+├── rust/
+├── sesh/
+├── ssh/
+├── surfingkeys/
+├── tmux/
+├── uv/
+├── visidata/
+├── vscode/
+├── yazi/
+└── zsh/
+```
 
 ## Prerequisites
 
@@ -67,8 +55,6 @@ The setup is intentionally opinionated and may include experimental configuratio
 
 ## Installation
 
-### Quick Install (Recommended)
-
 ```sh
 curl -s https://raw.githubusercontent.com/ooloth/dotfiles/main/features/setup/setup.zsh | zsh
 ```
@@ -80,114 +66,23 @@ This will:
 3. Set up symlinks for all configurations
 4. Configure macOS system preferences
 
-### Manual Installation
-
-If you prefer more control:
-
-```sh
-# Clone the repository
-git clone https://github.com/ooloth/dotfiles.git ~/Repos/ooloth/dotfiles
-cd ~/Repos/ooloth/dotfiles
-
-# Run the setup script
-./features/setup/setup.zsh
-
-# Preview what would be installed without making changes
-./features/setup/setup.zsh --dry-run
-```
-
-## After Installation
-
-1. **Restart your terminal** for all changes to take effect
-2. **Open tmux** and install plugins: Press `prefix + I` (default prefix is `Ctrl-a`)
-3. **Open Neovim** and wait for plugins to install automatically
-4. **Sign into applications** that require authentication
-
-## Customization Guide (After Forking)
-
-### Machine-Specific Configuration
-
-The setup automatically detects machine type based on hostname:
-
-- Machines with "Air" in the name → Personal laptop configuration
-- Machines with "Mini" in the name → Home server configuration
-- All others → Work machine configuration
-
-To customize for your machines, edit the detection logic in `features/setup/setup.zsh` or set the environment variables manually.
-
-### Key Files to Customize
-
-1. **Git Configuration**: Edit `git/config` with your information
-2. **Shell Aliases**: Modify `zsh/config/aliases.zsh`
-3. **Neovim**: Customize `config/nvim/init.lua`
-4. **Homebrew Packages**: Edit `homebrew/config/Brewfile`
-5. **macOS Preferences**: Adjust `macos/config/macos-defaults`
-
-### Adding Your Own Tools
-
-1. Add Homebrew packages to `homebrew/config/Brewfile`
-2. Add configuration files to `config/<tool-name>/`
-3. Add symlinks in `features/update/symlinks.zsh`
-4. Run `symlinks` to create the links
-
 ## Updating
 
 ```sh
-# Update everything (recommended)
-u
-
-# Or run individual update scripts directly
-$DOTFILES/features/update/zsh/homebrew.zsh   # Update Homebrew packages
-$DOTFILES/features/update/zsh/npm.zsh        # Update global npm packages
-$DOTFILES/features/update/zsh/neovim.zsh     # Update Neovim plugins
-$DOTFILES/features/update/zsh/tmux.zsh       # Update tmux plugins
-$DOTFILES/features/update/zsh/rust.zsh       # Update Rust toolchain
-$DOTFILES/features/update/symlinks.zs        # Recreate symlinks
+u             # update everything
+u "homebrew"  # update one tool
+symlinks      # update symlinks
 ```
 
 The `u` function runs all updates and reloads your shell.
 
-## Troubleshooting
-
-### Symlinks Already Exist
-
-The installation preserves existing files. To replace them:
-
-1. Back up the existing file
-2. Remove it manually
-3. Run `symlinks`
-
-### Command Not Found
-
-Ensure `/opt/homebrew/bin` (Apple Silicon) or `/usr/local/bin` (Intel) is in your PATH.
-
-### Neovim Plugins Not Loading
-
-1. Open Neovim
-2. Run `:Lazy sync`
-3. Restart Neovim
-
-### Machine Detection Not Working
-
-Set the environment variables manually in your shell:
-
-```sh
-export IS_WORK=true   # or false
-export IS_AIR=true    # or false
-export IS_MINI=true   # or false
-```
-
 ## Contributing
 
-Since these are personal dotfiles, I'm not accepting pull requests for feature additions. However, please feel free to:
+Since these are personal dotfiles, I'm not accepting pull requests for feature additions. However, please feel free to...
 
-- Open issues for bugs or questions
-- Fork and customize for your own use
-- Share your own improvements in your fork
-
-## License
-
-MIT - See [LICENSE.md](LICENSE.md)
+- Open issues to discuss bugs, questions or suggestions
+- Fork and customize this project for your own use
+- Share improvement demonstrations using your fork
 
 ## Inspiration
 
