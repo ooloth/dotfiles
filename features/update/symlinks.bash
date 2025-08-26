@@ -8,21 +8,28 @@ VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
 info "🔗 Updating symlinks"
 
-remove_broken_symlinks "$HOME"
-remove_broken_symlinks "$HOMECONFIG"
-remove_broken_symlinks "$VSCODEUSER"
+##########
+# Remove #
+##########
+
+for dir in "${HOME}" "${HOMECONFIG}" "${VSCODEUSER}"; do
+  remove_broken_symlinks "$dir"
+done
+
+##########
+# Create #
+##########
+
+# TODO: make this dynamic
 
 #############
 # Target: ~ #
 #############
 
-symlink "${DOTFILES}/tools/claude/config/agents" "${HOME}/.claude"
-symlink "${DOTFILES}/tools/claude/config/CLAUDE.md" "${HOME}/.claude"
-symlink "${DOTFILES}/tools/claude/config/commands" "${HOME}/.claude"
-symlink "${DOTFILES}/tools/claude/config/settings.json" "${HOME}/.claude"
 symlink "${DOTFILES}/tools/zsh/config/.hushlogin" "${HOME}"
 symlink "${DOTFILES}/tools/zsh/config/.zshenv" "${HOME}"
 symlink "${DOTFILES}/tools/zsh/config/.zshrc" "${HOME}"
+source "${DOTFILES}/tools/claude/symlinks/link.bash"
 
 #####################
 # Target: ~/.config #
