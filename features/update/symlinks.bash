@@ -37,7 +37,6 @@ main() {
 
   debug "🔗 Creating manual symlinks"
 
-  symlink "${DOTFILES}/tools/lazygit/config/config.yml" "${HOMECONFIG}/lazygit"
   symlink "${DOTFILES}/tools/neovim/config/nvim/init.lua" "${HOMECONFIG}/nvim"
   symlink "${DOTFILES}/tools/neovim/config/nvim-ide/init.lua" "${HOMECONFIG}/nvim-ide"
   symlink "${DOTFILES}/tools/neovim/config/nvim-ide/lazy-lock.json" "${HOMECONFIG}/nvim-ide"
