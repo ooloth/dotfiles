@@ -25,10 +25,24 @@ have() {
 
 symlink() {
   # Both arguments should be absolute paths
-  local source_file="$1"
-  local target_dir="$2"
+  local source_file="${1:-}"
+  local target_dir="${2:-}"
 
-  # TODO: start by removing broken symlinks in each target directory?
+  if [[ -z "$source_file" ]]; then
+    echo "Error: Source file path is required" >&2
+    return 1
+  fi
+
+  if [[ -z "$target_dir" ]]; then
+    echo "Error: Target directory path is required" >&2
+    return 1
+  fi
+
+  if [[ ! -e "$source_file" ]]; then
+    echo "Error: Source file does not exist: $source_file" >&2
+    return 1
+  fi
+
   local file_name
   file_name="$(basename "$source_file")"
   local target_path="$target_dir/$file_name"
@@ -40,9 +54,35 @@ symlink() {
   fi
 
   mkdir -p "$target_dir"
+
   printf "🔗 " # inline prefix for the output of the next line
   ln -fsvw "$source_file" "$target_dir"
+}
 
+remove_broken_symlinks() {
+  local directory="${1:-}"
+
+  if [[ -z "$directory" ]]; then
+    echo "Error: Directory path is required" >&2
+    return 1
+  fi
+
+  if [[ ! -d "$directory" ]]; then
+    echo "Directory does not exist: $directory" >&2
+    return 0
+  fi
+
+  # Find all symlinks in directory and check if they're broken
+  local symlink
+  while IFS= read -r -d '' symlink; do
+    # Check if symlink target exists
+    if [[ ! -e "$symlink" ]]; then
+      echo "Removing broken symlink: $symlink"
+      rm "$symlink"
+    fi
+  done < <(find "$directory" -maxdepth 1 -type l -print0 2>/dev/null)
+
+  return 0
 }
 
 ###########

@@ -4,14 +4,13 @@ set -euo pipefail
 source "${DOTFILES}/tools/bash/utils.bash"
 
 HOMECONFIG="${HOME}/.config"
-
-#######################
-# REMOVE BROKEN LINKS #
-#######################
-
-# TODO: start by removing broken symlinks in each target directory?
+VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
 info "🔗 Updating symlinks"
+
+remove_broken_symlinks "$HOME"
+remove_broken_symlinks "$HOMECONFIG"
+remove_broken_symlinks "$VSCODEUSER"
 
 #############
 # Target: ~ #
@@ -73,8 +72,6 @@ symlink "${DOTFILES}/tools/yazi/config/yazi.toml" "${HOMECONFIG}/yazi"
 #####################
 # Target: ~/Library #
 #####################
-
-VSCODEUSER="$HOME/Library/Application Support/Code/User"
 
 symlink "${DOTFILES}/tools/vscode/config/keybindings.json" "${VSCODEUSER}"
 symlink "${DOTFILES}/tools/vscode/config/settings.json" "${VSCODEUSER}"
