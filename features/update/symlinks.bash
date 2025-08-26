@@ -35,13 +35,7 @@ main() {
     bash "$file"
   done
 
-  debug "🔗 Creating manual symlinks"
-
-  symlink "${DOTFILES}/tools/vscode/config/keybindings.json" "${VSCODEUSER}"
-  symlink "${DOTFILES}/tools/vscode/config/settings.json" "${VSCODEUSER}"
-  symlink "${DOTFILES}/tools/vscode/config/snippets" "${VSCODEUSER}"
-
-  debug "🎉 All symlinks are up to date"
+  debug "🚀 All symlinks are up to date"
 }
 
 main "$@"
