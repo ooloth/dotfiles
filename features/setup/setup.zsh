@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # In case this file is sourced before shell variables have been symlinked
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles}"
+export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 handle_error() {
   local exit_code="$1"

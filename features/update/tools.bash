@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # In case this file is sourced before shell variables have been symlinked
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles}"
+export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 main() {
   local tool="${1:-}"
