@@ -1,6 +1,9 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
+# In case this file is sourced before shell variables have been symlinked
+export DOTFILES="${HOME}/Repos/ooloth/dotfiles}"
+
 source "${DOTFILES}/tools/zsh/utils.zsh"
 
 main() {

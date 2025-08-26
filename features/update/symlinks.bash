@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOTFILES="${DOTFILES:-${HOME}/Repos/ooloth/dotfiles}"
+# In case this file is sourced before shell variables have been symlinked
+export DOTFILES="${HOME}/Repos/ooloth/dotfiles}"
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
