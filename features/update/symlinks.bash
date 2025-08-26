@@ -37,10 +37,6 @@ main() {
 
   debug "🔗 Creating manual symlinks"
 
-  symlink "${DOTFILES}/tools/k9s/config/aliases.yaml" "${HOMECONFIG}/k9s"
-  symlink "${DOTFILES}/tools/k9s/config/config.yaml" "${HOMECONFIG}/k9s"
-  symlink "${DOTFILES}/tools/k9s/config/hotkeys.yaml" "${HOMECONFIG}/k9s"
-  symlink "${DOTFILES}/tools/k9s/config/skins" "${HOMECONFIG}/k9s"
   symlink "${DOTFILES}/tools/kitty/config/colorscheme" "${HOMECONFIG}/kitty"
   symlink "${DOTFILES}/tools/kitty/config/kitty.conf" "${HOMECONFIG}/kitty"
   symlink "${DOTFILES}/tools/lazydocker/config/config.yml" "${HOMECONFIG}/lazydocker"
