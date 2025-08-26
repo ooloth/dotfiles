@@ -5,7 +5,7 @@ set -euo pipefail
 source "${DOTFILES}/tools/@new/utils.bash"
 source "${DOTFILES}/features/uninstall/utils.bash"
 
-# TODO: change install command + version command
+# TODO: change uninstall command
 uninstall_and_unlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
