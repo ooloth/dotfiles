@@ -10,8 +10,8 @@ update_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
   "${TOOL_EMOJI}" \
-  "uv tool upgrade ${TOOL_LOWER}" \
+  "brew upgrade --formula ${TOOL_PACKAGE}" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
-  "${TOOL_LOWER} --version" \
+  "brew list --version ${TOOL_PACKAGE}" \
   "parse_version"

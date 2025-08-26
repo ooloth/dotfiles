@@ -10,7 +10,7 @@ install_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
   "${TOOL_EMOJI}" \
-  "uv tool install ${TOOL_LOWER}" \
+  "brew install --formula ${TOOL_PACKAGE}" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
-  "${TOOL_LOWER} --version" \
+  "brew list --version ${TOOL_PACKAGE}" \
   "parse_version"

@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly TOOL_LOWER="x"
-readonly TOOL_UPPER="X"
-readonly TOOL_EMOJI="🤪"
-
-export TOOL_EMOJI TOOL_LOWER TOOL_UPPER
+export TOOL_LOWER="x"
+export TOOL_UPPER="X"
+export TOOL_PACKAGE="x-cli"
+export TOOL_EMOJI="🤪"
 
 parse_version() {
-  # Grab the first line after the prefix
-  local raw_version="$1"
-  printf "${raw_version#harlequin, version }" | head -n 1
+  local raw_version="${1}"
+  local prefix_brew_formula="${TOOL_PACKAGE} "
+  local prefix_uv_tool="$(printf "${raw_version}" | awk '{print $2}')"
+  local prefix="${TOOL_PACKAGE}, version "
+
+  # Grab everything after the prefix
+  printf "${raw_version#"${prefix_brew_formula}"}"
+
+  # Grab the second word
+  printf "${raw_version#"${prefix_uv_tool}"}"
+
+  # Grab everything after the prefix on the first line only
+  printf "${raw_version#"${prefix}"}" | head -n 1
 }
