@@ -1,34 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "${DOTFILES}/features/update/utils.bash"
 
-get_version() {
-  local version
-  version="$(uv --version | awk '{print $2}')"
-  printf "${version}"
+tool_lower="uv"
+tool_upper="uv"
+
+parse_version() {
+  # Grab the second word
+  local raw_version="$1"
+  printf "$(echo "$raw_version" | awk '{print $2}')"
 }
 
-# Install or update
-if ! have uv; then
-  source "${DOTFILES}/tools/uv/install.bash"
-  new_version="$(get_version)"
-  debug "✅ Installed uv $new_version"
-else
-  info "🐍 Updating uv"
-  current_version="$(get_version)"
-
-  uv self update
-  new_version="$(get_version)"
-
-  if [ "$current_version" == "$new_version" ]; then
-    debug "✅ Already using the latest version ($new_version)"
-  else
-    debug "⬆️ Updated from version $current_version to $new_version"
-  fi
-fi
-
-# Symlink config files
-source "${DOTFILES}/tools/uv/symlinks/link.bash"
-
-debug "🚀 uv is up to date"
+install_or_update \
+  "${tool_lower}" \
+  "${tool_upper}" \
+  "🐍" \
+  "uv self update" \
+  "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash" \
+  "${DOTFILES}/tools/${tool_lower}/install.bash" \
+  "${tool_lower} --version" \
+  "parse_version"
