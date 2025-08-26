@@ -88,6 +88,7 @@ n() { npm install "$@"; }
 source "${DOTFILES}/tools/zsh/config/new.zsh"
 ng() { "$DOTFILES/features/update/zsh/npm.zsh"; }
 # nu() { n && npm-check -u; } -- conflicts with nushell launch command
+alias neovim="nvim"
 alias nvim="NVIM_APPNAME=nvim-ide nvim"
 alias nvm="fnm"
 
