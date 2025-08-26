@@ -13,8 +13,8 @@ main() {
     bash "$file"
   done
 
-  # Find all install.bash files at the root level of each tool directory except @new and @archive
-  install_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "install.bash" -print)
+  # Find all install.bash files at the root level of each tool directory (except @new and @archive) and sort by parent directory name
+  install_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "install.bash" -print | sort -t/ -k5)
 
   # Filter out priority files from the list
   for priority in "${priority_files[@]}"; do
