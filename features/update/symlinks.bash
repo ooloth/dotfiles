@@ -20,17 +20,11 @@ done
 # Create #
 ##########
 
-# TODO: make this dynamic
+# TODO: source all tools/{tool}/symlinks/link.bash files
 
 source "${DOTFILES}/tools/zsh/symlinks/link.bash"
 source "${DOTFILES}/tools/claude/symlinks/link.bash"
 
-#####################
-# Target: ~/.config #
-#####################
-
-# TODO: recursively symlink any file in [tool}/config (but not /config itself)?
-# Or just source {tool}/symlink.bash files that each define their own commands?
 symlink "${DOTFILES}/tools/gh/config/config.yml" "${HOMECONFIG}/gh"
 symlink "${DOTFILES}/tools/ghostty/config/config" "${HOMECONFIG}/ghostty"
 symlink "${DOTFILES}/tools/git/config/config" "${HOMECONFIG}/git"
@@ -60,19 +54,6 @@ symlink "${DOTFILES}/tools/visidata/config/config.py" "${HOMECONFIG}/visidata"
 symlink "${DOTFILES}/tools/yazi/config/keymap.toml" "${HOMECONFIG}/yazi"
 symlink "${DOTFILES}/tools/yazi/config/theme.toml" "${HOMECONFIG}/yazi"
 symlink "${DOTFILES}/tools/yazi/config/yazi.toml" "${HOMECONFIG}/yazi"
-
-# # Find all files at any level under $DOTCONFIG (see: https://github.com/sharkdp/fd)
-# fd --type file --hidden . "$DOTCONFIG" | while read file; do
-#   local relpath="${file#$DOTCONFIG/}"    # Get the relative path in that follows "$DOTCONFIG/" in $file (which is an absolute path)
-#   local dirpath="$(dirname "$relpath")"  # Get the directory path by dropping the file name
-#   local targetdir="${HOMECONFIG}/$dirpath" # Build the absolute path to the target directory
-#
-#   symlink "$file" "$targetdir" # Symlink the file to the target directory
-# done
-
-#####################
-# Target: ~/Library #
-#####################
 
 symlink "${DOTFILES}/tools/vscode/config/keybindings.json" "${VSCODEUSER}"
 symlink "${DOTFILES}/tools/vscode/config/settings.json" "${VSCODEUSER}"
