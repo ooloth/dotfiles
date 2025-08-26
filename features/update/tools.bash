@@ -3,7 +3,7 @@ set -euo pipefail
 
 main() {
   priority_files=(
-    "${DOTFILES}/features/update/bash/mode.bash"
+    "${DOTFILES}/features/update/mode.bash"
     "${DOTFILES}/tools/uv/update.bash"
   )
 
