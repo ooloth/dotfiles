@@ -7,7 +7,7 @@ tool_upper="uv"
 source "${DOTFILES}/tools/${tool_lower}/utils.bash"
 source "${DOTFILES}/features/update/utils.bash"
 
-install_or_update \
+update_or_install_and_symlink \
   "${tool_lower}" \
   "${tool_upper}" \
   "🐍" \

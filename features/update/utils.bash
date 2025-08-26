@@ -18,7 +18,7 @@ get_tool_version() {
   fi
 }
 
-install_or_update() {
+update_or_install_and_symlink() {
   local tool_lower="$1"
   local tool_upper="$2"
   local tool_emoji="$3"

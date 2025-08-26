@@ -17,4 +17,5 @@ install_or_update \
   "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash" \
   "${DOTFILES}/tools/${tool_lower}/install.bash" \
   "${tool_lower} --version" \
+update_or_install_and_symlink \
   "parse_version"
