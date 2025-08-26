@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
 # set -euo pipefail
 
+alias symlinks="bash ${DOTFILES}/features/update/symlinks.bash"
+
 u() {
   local tool="$1"
 

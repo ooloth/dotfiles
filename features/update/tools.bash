@@ -13,6 +13,7 @@ main() {
   # Otherwise, update all tools with an update.bash script
   priority_files=(
     "${DOTFILES}/features/update/mode.bash"
+    "${DOTFILES}/features/update/symlinks.bash"
     "${DOTFILES}/tools/uv/update.bash"
   )
 

@@ -35,7 +35,7 @@ symlink() {
 
   # Check if the target file exists and is a symlink pointing to the correct source file
   if [ -L "$target_path" ] && [ "$(readlink "$target_path")" = "$source_file" ]; then
-    printf "✅ $file_name symlinked to $target_dir\n"
+    printf "✅ $file_name → $target_dir\n"
     return 0
   fi
 

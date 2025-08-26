@@ -4,7 +4,6 @@ set -euo pipefail
 source "${DOTFILES}/tools/zsh/utils.zsh"
 
 main() {
-  source "${DOTFILES}/features/update/symlinks.zsh"
   source "${DOTFILES}/features/update/zsh/rust.zsh"
   source "${DOTFILES}/features/update/zsh/neovim.zsh"
   source "${DOTFILES}/features/update/zsh/tmux.zsh"
