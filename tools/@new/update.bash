@@ -11,7 +11,7 @@ tool_upper="X"
 get_version() {
   local version
   version="$("$tool_lower" --version)"
-  printf "${version#saul.pw/VisiData v}"
+  printf "${version#harlequin, version }" | head -n 1
 }
 
 # Install or update
