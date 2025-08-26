@@ -1,12 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Validate installation (e.g. command is available, version is correct)
-# TODO: Symlink configuration files
-# TODO: Validate configuration
+tool_lower="harlequin"
+tool_upper="Harlequin"
 
-info "🤡 Installing harlequin as a uv tool"
+info "📊 Installing ${tool_lower} as a uv tool"
 
-uv tool install harlequin
+if have "$tool_lower"; then
+  info "✅ ${tool_upper} is already installed"
+  exit 0
+else
+  uv tool install "$tool_lower"
+fi
 
-debug "🚀 Harlequin is installed and configured"
+# Symlink config files
+source "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash"
+
+# Confirm installation
+exec "${SHELL}" -l
+
+if ! have "$tool_lower"; then
+  error "❌ $tool_upper command not found"
+  exit 1
+fi
+
+debug "🚀 ${tool_upper} is installed"

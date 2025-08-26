@@ -1,14 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Skip if found
-# TODO: Otherwise, update
-# TODO: Validate update (e.g. command is available, version is correct)
-# TODO: Symlink configuration files (overkill? might as well?)
-# TODO: Validate configuration (e.g. options are still valid)
+source "${DOTFILES}/tools/bash/utils.bash"
 
-info "🤡 Updating harlequin"
+tool_lower="harlequin"
+tool_upper="Harlequin"
 
-uv tool upgrade harlequin
+get_version() {
+  local version
+  version="$("$tool_lower" --version)"
+  printf "${version#harlequin, version }" | head -n 1
+}
 
-debug "🚀 Harlequin is up to date"
+# Install or update
+if ! have "$tool_lower"; then
+  source "${DOTFILES}/tools/$tool_lower/install.bash"
+  new_version="$(get_version)"
+  debug "✅ Installed $tool_lower $new_version"
+else
+  info "🤡 Updating $tool_lower"
+  current_version="$(get_version)"
+
+  uv tool upgrade "$tool_lower"
+  new_version="$(get_version)"
+
+  if [ "$current_version" == "$new_version" ]; then
+    debug "✅ Already at the latest version ($new_version)"
+  else
+    debug "⬆️ Updated from version $current_version to $new_version"
+  fi
+fi
+
+# Symlink config files
+source "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash"
+
+debug "🚀 $tool_upper is up to date"

@@ -1,11 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Delete configuration file symlinks (NOT the dotfiles copy)
-# TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
+tool_lower="harlequin"
+tool_upper="Harlequin"
 
-info "🤡 Uninstalling harlequin"
+info "🗑️ Uninstalling $tool_lower"
 
-uv tool uninstall harlequin
+uv tool uninstall "$tool_lower"
 
-debug "🚀 Harlequin has been uninstalled"
+# Remove symlinks
+source "${DOTFILES}/tools/${tool_lower}/symlinks/unlink.bash"
+
+# Confirm uninstallation
+exec "${SHELL}" -l
+
+if have "$tool_lower"; then
+  error "❌ $tool_upper command still found"
+  exit 1
+fi
+
+debug "🚀 $tool_upper has been uninstalled"
