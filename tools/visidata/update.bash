@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-tool_lower="visidata"
-tool_upper="Visidata"
-
-source "${DOTFILES}/tools/${tool_lower}/utils.bash"
+source "${DOTFILES}/tools/visidata/utils.bash"
 source "${DOTFILES}/features/update/utils.bash"
 
 update_or_install_and_symlink \
-  "${tool_lower}" \
-  "${tool_upper}" \
-  "📊" \
-  "uv tool upgrade ${tool_lower}" \
-  "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash" \
-  "${DOTFILES}/tools/${tool_lower}/install.bash" \
-  "${tool_lower} --version" \
+  "${TOOL_LOWER}" \
+  "${TOOL_UPPER}" \
+  "${TOOL_EMOJI}" \
+  "uv tool upgrade ${TOOL_LOWER}" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
+  "${TOOL_LOWER} --version" \
   "parse_version"
