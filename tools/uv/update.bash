@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/update/utils.bash"
-
 tool_lower="uv"
 tool_upper="uv"
 
-parse_version() {
-  # Grab the second word
-  local raw_version="$1"
-  printf "$(echo "$raw_version" | awk '{print $2}')"
-}
+source "${DOTFILES}/tools/${tool_lower}/utils.bash"
+source "${DOTFILES}/features/update/utils.bash"
 
 install_or_update \
   "${tool_lower}" \

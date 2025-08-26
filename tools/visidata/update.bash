@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/update/utils.bash"
-
 tool_lower="visidata"
 tool_upper="Visidata"
 
-parse_version() {
-  # Drop the prefix
-  local raw_version="$1"
-  printf "${raw_version#saul.pw/VisiData v}"
-}
+source "${DOTFILES}/tools/${tool_lower}/utils.bash"
+source "${DOTFILES}/features/update/utils.bash"
 
 install_or_update \
   "${tool_lower}" \

@@ -1,18 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/update/utils.bash"
-
 tool_lower="harlequin"
 tool_upper="Harlequin"
 
-parse_version() {
-  # Grab the first line after the prefix
-  local raw_version="$1"
-  printf "${raw_version#harlequin, version }" | head -n 1
-}
+source "${DOTFILES}/tools/${tool_lower}/utils.bash"
+source "${DOTFILES}/features/update/utils.bash"
 
-# TODO: update emoji + update command + version command
 install_or_update \
   "${tool_lower}" \
   "${tool_upper}" \
