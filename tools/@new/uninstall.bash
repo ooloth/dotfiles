@@ -1,15 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: uninstall commands
-# TODO: Skip if no longer present
-# TODO: Delete configuration file symlinks (NOT the dotfiles)
-# TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
+# TODO: update names
+tool_lower="x"
+tool_upper="X"
 
-printf "🗑️ Uninstalling X...\n"
-source "${DOTFILES}/X/shell/variables.zsh"
+info "🗑️ Uninstalling $tool_lower"
 
-printf "🗑️ Unlinking X configuration files...\n"
-source "${DOTFILES}/X/symlinks/unlink.bash"
+# TODO: update uninstall command
+uv tool uninstall "$tool_lower"
 
-printf "\n🚀 X has been uninstalled\n"
+# Remove symlinks
+source "${DOTFILES}/tools/${tool_lower}/symlinks/unlink.bash"
+
+# Confirm uninstallation
+exec "${SHELL}" -l
+
+if have "$tool_lower"; then
+  error "❌ $tool_upper command still found"
+  exit 1
+fi
+
+debug "🚀 $tool_upper has been uninstalled"

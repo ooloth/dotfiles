@@ -1,13 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Install if missing
-# TODO: Validate installation (e.g. command is available, version is correct)
-# TODO: Symlink configuration files
-# TODO: Validate configuration
+tool_lower="visidata"
+tool_upper="Visidata"
 
-info "📊 Installing visidata as a uv tool"
+info "📊 Installing ${tool_lower} as a uv tool"
 
-uv tool install visidata
+if have "$tool_lower"; then
+  info "📦 ${tool_upper} is already installed, skipping"
+  exit 0
+else
+  uv tool install "$tool_lower"
+fi
 
-debug "🚀 Visidata is installed and configured"
+# Confirm installation
+exec "${SHELL}" -l
+
+if ! have vd; then
+  error "❌ Visidata command not found"
+  exit 1
+fi
+
+# Symlink config files
+source "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash"
+
+debug "🚀 ${tool_upper} is installed"

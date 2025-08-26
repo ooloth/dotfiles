@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Delete configuration file symlinks (NOT the dotfiles)
-# TODO: Validate uninstallation (e.g. command is unavailable, symlinks are gone)
+tool_lower="visidata"
+tool_upper="Visidata"
 
-info "🗑️ Uninstalling visidata"
+info "🗑️ Uninstalling $tool_lower"
 
-uv tool uninstall visidata
+uv tool uninstall "$tool_lower"
+
+# Remove symlinks
+source "${DOTFILES}/tools/${tool_lower}/symlinks/unlink.bash"
 
 # Confirm uninstallation
 exec "${SHELL}" -l
 
-if have vd; then
-  error "❌ Visidata command still found"
+if have "$tool_lower"; then
+  error "❌ $tool_upper command still found"
   exit 1
 fi
 
-# Remove symlinks
-source "${DOTFILES}/tools/visidata/symlinks/unlink.bash"
-
-debug "🚀 Visidata has been uninstalled"
+debug "🚀 $tool_upper has been uninstalled"

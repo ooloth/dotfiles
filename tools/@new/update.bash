@@ -10,7 +10,7 @@ tool_upper="X"
 # TODO: update version finding logic
 get_version() {
   local version
-  version="$("$tool_lower" -v)"
+  version="$("$tool_lower" --version)"
   printf "${version#saul.pw/VisiData v}"
 }
 

@@ -1,16 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Install command
-# TODO: Skip if already found and up to date
-# TODO: Validate installation (e.g. command is available, version is correct)
-# TODO: Symlink configuration files
-# TODO: Validate configuration
+# TODO: update names
+tool_lower="x"
+tool_upper="X"
 
-printf "🥁 Installing and configuring X...\n"
-source "${DOTFILES}/X/shell/variables.zsh"
+info "📊 Installing ${tool_lower}"
 
-printf "🔗 Symlinking X configuration files...\n"
-source "${DOTFILES}/X/symlinks/link.bash"
+if have "$tool_lower"; then
+  info "✅ ${tool_upper} is already installed"
+  exit 0
+else
+  TODO: update install command
+  uv tool install "$tool_lower"
+fi
 
-printf "\n🚀 X is installed and configured\n"
+# Symlink config files
+source "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash"
+
+# Confirm installation
+exec "${SHELL}" -l
+
+if ! have "$tool_lower"; then
+  error "❌ $tool_upper command not found"
+  exit 1
+fi
+
+debug "🚀 ${tool_upper} is installed"
