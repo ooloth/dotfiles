@@ -1,30 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
-
 # TODO: update names
 tool_lower="x"
 tool_upper="X"
 
-info "📊 Installing ${tool_lower}"
+source "${DOTFILES}/tools/${tool_lower}/utils.bash"
+source "${DOTFILES}/features/install/utils.bash"
 
-if have "$tool_lower"; then
-  info "✅ ${tool_upper} is already installed"
-else
-  # TODO: update install command
-  uv tool install "$tool_lower"
-fi
-
-# Symlink config files
-source "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash"
-
-# Confirm installation
-exec "${SHELL}" -l
-
-if ! have "$tool_lower"; then
-  error "❌ $tool_upper command not found"
-  exit 1
-fi
-
-debug "🚀 ${tool_upper} is installed"
+# TODO: update emoji + install command + version command
+install_and_symlink \
+  "${tool_lower}" \
+  "${tool_upper}" \
+  "🤪" \
+  "uv tool install ${tool_lower}" \
+  "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash" \
+  "${tool_lower} --version" \
+  "parse_version"
