@@ -37,7 +37,6 @@ main() {
 
   debug "🔗 Creating manual symlinks"
 
-  symlink "${DOTFILES}/tools/ghostty/config/config" "${HOMECONFIG}/ghostty"
   symlink "${DOTFILES}/tools/git/config/config" "${HOMECONFIG}/git"
   symlink "${DOTFILES}/tools/git/config/config.work" "${HOMECONFIG}/git"
   symlink "${DOTFILES}/tools/k9s/config/aliases.yaml" "${HOMECONFIG}/k9s"
