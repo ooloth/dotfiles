@@ -2,6 +2,15 @@
 set -euo pipefail
 
 main() {
+  local tool="$1"
+
+  # If a specific tool is provided as an argument, update only that tool
+  if [[ ! -z "$tool" ]]; then
+    bash "${DOTFILES}/tools/${tool}/update.bash"
+    return 0
+  fi
+
+  # Otherwise, update all tools with an update.bash script
   priority_files=(
     "${DOTFILES}/features/update/mode.bash"
     "${DOTFILES}/tools/uv/update.bash"
@@ -26,5 +35,4 @@ main() {
   done
 }
 
-# TODO: support updating individual tools?
 main "$@"
