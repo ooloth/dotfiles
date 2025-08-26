@@ -37,8 +37,6 @@ main() {
 
   debug "🔗 Creating manual symlinks"
 
-  symlink "${DOTFILES}/tools/kitty/config/colorscheme" "${HOMECONFIG}/kitty"
-  symlink "${DOTFILES}/tools/kitty/config/kitty.conf" "${HOMECONFIG}/kitty"
   symlink "${DOTFILES}/tools/lazydocker/config/config.yml" "${HOMECONFIG}/lazydocker"
   symlink "${DOTFILES}/tools/lazygit/config/config.yml" "${HOMECONFIG}/lazygit"
   symlink "${DOTFILES}/tools/neovim/config/nvim/init.lua" "${HOMECONFIG}/nvim"
