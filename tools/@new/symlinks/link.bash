@@ -5,4 +5,5 @@ printf "✅ No configuration files to symlink\n"
 
 # source "${DOTFILES}/tools/@new/utils.bash"
 # source "${DOTFILES}/tools/bash/utils.bash"
-# symlink "${DOTFILES}/tools/@new/config/config.yaml" "${TOOL_CONFIG_DIR}"
+
+# symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/config.yaml" "${TOOL_CONFIG_DIR}"
