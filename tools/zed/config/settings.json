@@ -1,0 +1,77 @@
+{
+  "agent": {
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "gpt-4.1"
+    },
+    "model_parameters": [],
+    "version": "2"
+  },
+  "agent_font_size": 19,
+  "buffer_font_size": 15,
+  "collaboration_panel": {
+    "button": false,
+    "dock": "right"
+  },
+  "diagnostics": {
+    "enabled": true
+  },
+  "tab_bar": {
+    "show": true
+  },
+  "toolbar": {
+    "breadcrumbs": false,
+    "quick_actions": false
+  },
+  "bottom_dock_layout": null,
+  "experimental.theme_overrides": {
+    "background": "#181825",
+    "editor.gutter.background": "#181825",
+    "editor.background": "#181825",
+    "tab.active_background": "#181825",
+    "syntax": {
+      "comment": {
+        "font_style": "italic"
+      },
+      "comment.doc": {
+        "font_style": "italic"
+      }
+    }
+  },
+  "git_panel": {
+    "dock": "right"
+  },
+  "gutter": {
+    "line_numbers": false
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "buffer_line_height": "standard",
+  "project_panel": {
+    "dock": "right",
+    "indent_guides": {
+      "show": "never"
+    }
+  },
+  "telemetry": {
+    "metrics": false
+  },
+  "terminal": {
+    "button": false,
+    "font_family": "UbuntuMono Nerd Font"
+  },
+  "theme": {
+    "dark": "Catppuccin Mocha",
+    "light": "Catppuccin Latte",
+    "mode": "dark"
+  },
+  "ui_font_size": 18,
+  "vim": {
+    "use_multiline_find": true,
+    "use_smartcase_find": true
+  },
+  "vim_mode": true,
+  "ui_font_family": "Ubuntu Mono",
+  "buffer_font_family": "UbuntuMono Nerd Font"
+}
