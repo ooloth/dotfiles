@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: update names
-tool_lower="x"
-tool_upper="X"
-
-source "${DOTFILES}/tools/${tool_lower}/utils.bash"
+# TODO: change tool name + update TOOL_* variables in utils.bash
+source "${DOTFILES}/tools/@new/utils.bash"
 source "${DOTFILES}/features/install/utils.bash"
 
-# TODO: update emoji + install command + version command
+# TODO: change install command + version command
 install_and_symlink \
-  "${tool_lower}" \
-  "${tool_upper}" \
-  "🤪" \
-  "uv tool install ${tool_lower}" \
-  "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash" \
-  "${tool_lower} --version" \
+  "${TOOL_LOWER}" \
+  "${TOOL_UPPER}" \
+  "${TOOL_EMOJI}" \
+  "uv tool install ${TOOL_LOWER}" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
+  "${TOOL_LOWER} --version" \
   "parse_version"
