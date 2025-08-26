@@ -15,11 +15,10 @@ if ! have uv; then
   new_version="$(get_version)"
   debug "✅ Installed uv $new_version"
 else
-  info "🐍 Updating uv and its tools"
+  info "🐍 Updating uv"
   current_version="$(get_version)"
 
-  uv self update --quiet
-  uv tool upgrade --all
+  uv self update
   new_version="$(get_version)"
 
   if [ "$current_version" == "$new_version" ]; then
@@ -32,4 +31,4 @@ fi
 # Symlink config files
 source "${DOTFILES}/tools/uv/symlinks/link.bash"
 
-debug "🚀 uv and its tools are up to date"
+debug "🚀 uv is up to date"
