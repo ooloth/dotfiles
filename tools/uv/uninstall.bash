@@ -15,4 +15,15 @@ rm -r "$(uv tool dir)"
 debug "🧼 Uninstalling the uv and uvx binaries..."
 rm ~/.local/bin/uv ~/.local/bin/uvx
 
+# Remove symlinks
+source "${DOTFILES}/tools/uv/symlinks/unlink.bash"
+
+# Confirm uninstallation
+exec "${SHELL}" -l
+
+if have uv; then
+  error "❌ uv command still found"
+  exit 1
+fi
+
 debug "🚀 uv has been uninstalled"
