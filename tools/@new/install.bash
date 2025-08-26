@@ -9,7 +9,6 @@ info "📊 Installing ${tool_lower}"
 
 if have "$tool_lower"; then
   info "✅ ${tool_upper} is already installed"
-  exit 0
 else
   # TODO: update install command
   uv tool install "$tool_lower"

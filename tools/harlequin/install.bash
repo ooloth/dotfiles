@@ -8,7 +8,6 @@ info "📊 Installing ${tool_lower} as a uv tool"
 
 if have "$tool_lower"; then
   info "✅ ${tool_upper} is already installed"
-  exit 0
 else
   uv tool install "$tool_lower"
 fi
