@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly TOOL_LOWER="harlequin"
-readonly TOOL_UPPER="Harlequin"
-readonly TOOL_EMOJI="🤡"
-
-export TOOL_EMOJI TOOL_LOWER TOOL_UPPER
+export TOOL_LOWER="harlequin"
+export TOOL_UPPER="Harlequin"
+export TOOL_PACKAGE="harlequin"
+export TOOL_EMOJI="🤡"
 
 parse_version() {
-  # Grab the first line after the prefix
   local raw_version="$1"
-  printf "${raw_version#harlequin, version }" | head -n 1
+  local prefix="${TOOL_PACKAGE}, version "
+
+  # Grab everything after the prefix on the first line only
+  printf "${raw_version#"${prefix}"}" | head -n 1
 }
