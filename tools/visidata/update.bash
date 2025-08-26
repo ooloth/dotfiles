@@ -1,29 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Skip installation if found
-# TODO: Validate update (e.g. command is available, version is correct)
-# TODO: Symlink configuration files (overkill? might as well?)
-# TODO: Validate configuration (e.g. options are still valid)
-
 source "${DOTFILES}/tools/bash/utils.bash"
+
+tool_lower="visidata"
+tool_upper="Visidata"
 
 get_version() {
   local version
-  version="$(vd -v)"
+  version="$("$tool_lower" -v)"
   printf "${version#saul.pw/VisiData v}"
 }
 
-current_version="$(get_version)"
-
-info "📊 Updating visidata"
-
-uv tool upgrade visidata
-
-new_version="$(get_version)"
-
-if [ "$current_version" != "$new_version" ]; then
-  debug "🚀 Visidata updated from version $current_version to $new_version"
+# Install or update
+if ! have "$tool_lower"; then
+  source "${DOTFILES}/tools/$tool_lower/install.bash"
+  new_version="$(get_version)"
+  debug "✅ Installed $tool_lower $new_version"
 else
-  debug "🚀 Visidata $new_version is already up to date"
+  info "📊 Updating $tool_lower"
+  current_version="$(get_version)"
+
+  uv tool upgrade "$tool_lower"
+  new_version="$(get_version)"
+
+  if [ "$current_version" == "$new_version" ]; then
+    debug "✅ Already at the latest version ($new_version)"
+  else
+    debug "⬆️ Updated from version $current_version to $new_version"
+  fi
 fi
+
+# Symlink config files
+source "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash"
+
+debug "🚀 $tool_upper is up to date"
