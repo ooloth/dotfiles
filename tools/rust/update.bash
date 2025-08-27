@@ -13,5 +13,5 @@ update_and_symlink \
   "rustup update" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
-  "rustc --version" \
+  "${TOOL_COMMAND} --version" \
   "parse_version"

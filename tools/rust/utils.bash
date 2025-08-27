@@ -3,7 +3,7 @@ set -euo pipefail
 
 export TOOL_LOWER="rust"
 export TOOL_UPPER="Rust"
-export TOOL_COMMAND="rustup"
+export TOOL_COMMAND="rustc" # cargo + rustup are installed too, but rustc is the main command
 export TOOL_PACKAGE="rustup"
 export TOOL_EMOJI="🦀"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"
