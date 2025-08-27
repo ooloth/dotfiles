@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source "${DOTFILES}/tools/rust/utils.bash"
-source "${DOTFILES}/tools/rust/shell/variables.bash"
+source "${DOTFILES}/tools/rust/shell/variables.zsh"
 source "${DOTFILES}/features/install/utils.bash"
 
 # See: https://www.rust-lang.org/tools/install

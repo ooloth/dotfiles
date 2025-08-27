@@ -23,8 +23,6 @@ uninstall_and_unlink() {
   bash -c "${unlink_script_path}"
 
   # Confirm uninstallation
-  "${SHELL}" -lc "exit"
-
   if have "${tool_command}"; then
     error "❌ ${tool_command} command still found"
     return 1

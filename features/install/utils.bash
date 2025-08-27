@@ -30,8 +30,6 @@ install_and_symlink() {
   bash -c "VERBOSE=true ${symlink_script_path}"
 
   # Confirm installation
-  "${SHELL}" -lc "exit"
-
   if ! have "${tool_command}"; then
     error "❌ ${tool_command} command not found"
     return 1
