@@ -12,7 +12,6 @@ main() {
   source "${DOTFILES}/features/update/zsh/npm.zsh"
   source "${DOTFILES}/features/update/zsh/gcloud.zsh"
   source "${DOTFILES}/features/update/zsh/homebrew.zsh"
-  source "${DOTFILES}/features/update/zsh/macos.zsh"
 
   info "🐚 Reloading zsh"
   exec -l "${SHELL}"
