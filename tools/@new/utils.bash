@@ -14,12 +14,12 @@ parse_version() {
   local second_word="$(printf "${raw_version}" | awk '{print $2}')"
   local prefix="${TOOL_PACKAGE}, version "
 
-  # Grab everything after the prefix
+  # Everything after the prefix
   printf "${raw_version#"${prefix_brew_formula}"}"
 
-  # Grab the second word
+  # Just the second word
   printf "${second_word}"
 
-  # Grab everything after the prefix on the first line only
+  # Everything after the prefix on the first line only
   printf "${raw_version#"${prefix}"}" | head -n 1
 }
