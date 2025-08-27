@@ -6,6 +6,7 @@ source "${DOTFILES}/features/update/utils.bash"
 
 # # Install tpm if missing
 # if [ ! -d "$TPM_DIR" ]; then
+#   mkdir -p "${TOOL_PLUGINS_DIR}"
 #   git clone "git@github.com:tmux-plugins/tpm.git" "${TPM_DIR}"
 # fi
 
