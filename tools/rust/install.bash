@@ -15,5 +15,5 @@ install_and_symlink \
   "${TOOL_EMOJI}" \
   "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
-  "${TOOL_COMMAND} --version" \
+  "rustc --version" \
   "parse_version"
