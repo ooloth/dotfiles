@@ -4,9 +4,8 @@
 i() {
   local tool="$1"
 
-  if [[ ! -z "$tool" ]]; then
-    bash "${DOTFILES}/features/install/tools.bash" "$tool";
-  else
-    bash "${DOTFILES}/features/install/tools.bash";
-  fi
+  bash "${DOTFILES}/features/install/tools.bash" "$tool";
+
+  printf "🔁 Reloading shell\n"
+  exec -l "${SHELL}"
 }

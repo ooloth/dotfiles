@@ -33,11 +33,10 @@ main() {
 
   # Execute each install.bash file
   for file in $install_files; do
-    printf "🔄 Running %s\n" "$file"
-    printf "Careful! Enable actual command only if you're sure.\n"
+    printf "\n🔄 Running %s\n" "$file"
+    printf "\n⚠️ Careful! Enable actual command only if you're sure.\n"
     # bash "$file"
   done
 }
 
-# TODO: support installing individual tools?
 main "$@"
