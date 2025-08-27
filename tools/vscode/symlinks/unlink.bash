@@ -8,4 +8,4 @@ debug "🔗 Removing symlinked config files"
 
 rm "${TOOL_CONFIG_DIR}/keybindings.json"
 rm "${TOOL_CONFIG_DIR}/settings.json"
-rm "${TOOL_CONFIG_DIR}/snippets"
+rm -rf "${TOOL_CONFIG_DIR}/snippets"
