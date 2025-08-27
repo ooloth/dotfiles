@@ -59,11 +59,6 @@ export MYPYPATH="${HOME}"
 export PYTHONPATH="${HOME}"
 export VIRTUAL_ENV_PROMPT='' # avoid extra (venv) prompt prefix
 
-# Rust
-export CARGO_HOME="$HOME/.config/cargo"
-export RUSTUP_HOME="$HOME/.config/rustup"
-source "$CARGO_HOME/env"
-
 if is_work; then
   source "${DOTFILES}/tools/zsh/config/work/variables.zsh" 2>/dev/null
 fi

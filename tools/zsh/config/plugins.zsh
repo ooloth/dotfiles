@@ -18,6 +18,10 @@ source "${DOTFILES}/tools/powerlevel10k/config/p10k.zsh" # to customize, run `p1
 # COMPLETIONS #
 ###############
 
+# Must come before compinit to support rust tab completions
+# See: https://rust-lang.github.io/rustup/installation/index.html
+fpath+=~/.zfunc
+
 # Initialize zsh completion before invoking plugin-specific completions below
 # See: https://stackoverflow.com/questions/66338988/complete13-command-not-found-compde
 autoload -Uz compinit && compinit
