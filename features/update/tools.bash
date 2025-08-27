@@ -6,10 +6,16 @@ export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 main() {
   local tool="${1:-}"
+  local file_name="update.bash"
 
   # If a specific tool is provided as an argument, update only that tool
   if [[ ! -z "$tool" ]]; then
-    bash "${DOTFILES}/tools/${tool}/update.bash"
+    if [[ ! -f "${DOTFILES}/tools/${tool}/${file_name}" ]]; then
+      echo "❌ No ${file_name} script found for tool: ${tool}"
+      return 1
+    fi
+
+    bash "${DOTFILES}/tools/${tool}/${file_name}"
     return 0
   fi
 
@@ -17,7 +23,7 @@ main() {
   priority_files=(
     "${DOTFILES}/features/update/mode.bash"
     "${DOTFILES}/features/update/symlinks.bash"
-    "${DOTFILES}/tools/uv/update.bash"
+    "${DOTFILES}/tools/uv/${file_name}"
   )
 
   # Run priority files first
@@ -26,11 +32,11 @@ main() {
   done
 
   # Find all update.bash files at the root level of each tool directory (except @new and @archive) and sort by parent directory name
-  update_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "update.bash" -print | sort -t/ -k5)
+  update_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "${file_name}" -print | sort -t/ -k5)
 
   # Filter out priority files from the list
-  for priority in "${priority_files[@]}"; do
-    update_files=$(echo "$update_files" | grep -v "^$priority$")
+  for file in "${priority_files[@]}"; do
+    update_files=$(echo "$update_files" | grep -v "^$file$")
   done
 
   # Execute the remaining update.bash files
