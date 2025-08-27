@@ -4,8 +4,10 @@ set -euo pipefail
 source "${DOTFILES}/tools/neovim/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
 
+HOMECONFIG="${HOME}/.config"
+
 debug "🔗 Removing symlinked config files"
 
-rm "${HOMECONFIG}/nvim"
-rm "${HOMECONFIG}/nvim-ide"
-rm "${HOMECONFIG}/nvim-kitty-scrollback"
+rm -rf "${HOMECONFIG}/nvim"
+rm -rf "${HOMECONFIG}/nvim-ide"
+rm -rf "${HOMECONFIG}/nvim-kitty-scrollback"

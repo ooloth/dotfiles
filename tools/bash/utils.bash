@@ -83,7 +83,7 @@ remove_broken_symlinks() {
     # Check if symlink target exists
     if [[ ! -e "$symlink" ]]; then
       echo "Removing broken symlink: $symlink"
-      rm "$symlink"
+      rm -rf "$symlink"
     fi
   done < <(find "$directory" -maxdepth 1 -type l -print0 2>/dev/null)
 
