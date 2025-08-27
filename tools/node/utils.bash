@@ -16,19 +16,46 @@ parse_version() {
   printf "${raw_version}"
 }
 
-# WARN: all helpers below are speculative (not used yet)
-
 is_global_npm_package_installed() {
   local package="$1"
   npm list -g --depth=0 2>/dev/null | grep -q " ${package}@"
   return $? # Return the exit status of the grep command
 }
 
+ensure_global_npm_package_installed() {
+  local package="${1}"
+
+  if ! is_global_npm_package_installed "${package}"; then
+    debug "📦 Installing ${package}"
+    npm install -g "${package}"
+  else
+    printf "✅ ${package} is already installed\n"
+  fi
+}
+
 is_global_npm_package_outdated() {
-  local package="$1"
+  local package="${1}"
   npm outdated -g 2>/dev/null | grep -q "^${package}[[:space:]]"
   return $? # Return the exit status of the grep command
 }
+
+ensure_global_npm_package_updated() {
+  local package="${1}"
+
+  if ! is_global_npm_package_installed "${package}"; then
+    info "📦 Installing ${package}"
+    npm install -g "${package}"
+  else
+    if is_global_npm_package_outdated "${package}"; then
+      info "📦 Updating ${package}"
+      npm install -g "${package}"
+    else
+      printf "✅ ${package} is already up-to-date\n"
+    fi
+  fi
+}
+
+# WARN: all helpers below are speculative (not used yet)
 
 get_missing_global_npm_packages() {
   local packages=("$@")
@@ -54,15 +81,4 @@ get_outdated_global_npm_packages() {
   done
 
   printf '%s\n' "${outdated_packages[@]}"
-}
-
-install_global_npm_package_if_missing() {
-  local package="$1"
-
-  if ! is_global_npm_package_installed "$package"; then
-    info "➕ Installing missing package: ${package}"
-    npm install -g "$package"
-  else
-    debug "✅ ${TOOL_UPPER} package already installed: ${package}"
-  fi
 }
