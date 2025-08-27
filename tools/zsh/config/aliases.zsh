@@ -4,6 +4,7 @@
 # TODO: find all {tool|feature}/shell/aliases.zsh files and source them
 source "${DOTFILES}/tools/macos/shell/aliases.zsh"
 source "${DOTFILES}/tools/zsh/utils.zsh"
+source "${DOTFILES}/features/install/shell/aliases.zsh"
 source "${DOTFILES}/features/update/shell/aliases.zsh"
 
 alias ..='cd ..'
