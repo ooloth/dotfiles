@@ -29,4 +29,7 @@ uninstall_and_unlink() {
   fi
 
   debug "🚀 ${tool_upper} has been uninstalled"
+
+  debug "🔁 Reloading shell"
+  exec -l "${SHELL}"
 }
