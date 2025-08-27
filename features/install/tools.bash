@@ -5,6 +5,15 @@ set -euo pipefail
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 main() {
+  local tool="${1:-}"
+
+  # If a specific tool is provided as an argument, install only that tool
+  if [[ ! -z "$tool" ]]; then
+    bash "${DOTFILES}/tools/${tool}/install.bash"
+    return 0
+  fi
+
+  # Otherwise, update all tools with an install.bash script
   priority_files=(
     # TODO: populate with files that need to run first
   )
