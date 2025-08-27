@@ -1,23 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# WARN: all helpers below are speculative (not used yet)
-
-# Example usage:
+# Check if a Homebrew formula is installed
 #
-# # Check if a package needs updating (fast)
-# if is_formula_outdated "git"; then
-#     echo "git is outdated, upgrading..."
-#     brew upgrade --formula git
-# else
-#     echo "git is up to date"
-# fi
+# Usage: is_brew_formula_installed "package-name"
+# Returns: 0 if installed, 1 if not installed
+is_brew_formula_installed() {
+    local formula="$1"
+
+    if [[ -z "$formula" ]]; then
+        echo "Error: Package name required" >&2
+        return 1
+    fi
+
+    if ! brew list --formula "$formula" &>/dev/null; then
+        return 1
+    fi
+
+    return 0
+}
 
 # Ensure brew update has been run recently.
 #
 # Usage: ensure_brew_updated [hours] (default: 24)
 # Returns: 0 if update is recent or was run, 1 if update failed
-ensure_brew_updated() {
+ensure_brew_recently_updated() {
     local max_age_hours="${1:-24}"
     local timestamp_file="${TMPDIR:-/tmp}/.brew_last_update"
     local current_time
@@ -47,9 +54,10 @@ ensure_brew_updated() {
 }
 
 # Check if a formula is outdated (needs updating)
+#
 # Usage: is_formula_outdated "package-name"
 # Returns: 0 if outdated, 1 if up-to-date, 2 if not installed
-is_formula_outdated() {
+is_brew_formula_outdated() {
     local formula="$1"
 
     if [[ -z "$formula" ]]; then
@@ -58,12 +66,12 @@ is_formula_outdated() {
     fi
 
     # Check if formula is installed
-    if ! brew list --formula "$formula" &>/dev/null; then
+    if ! is_brew_formula_installed "$formula"; then
         return 2 # Not installed
     fi
 
     # Ensure brew is updated recently
-    ensure_brew_updated || return 2
+    ensure_brew_recently_updated || return 2
 
     # Use brew outdated with JSON for fastest checking
     local outdated_json=$(brew outdated --json=v2 --formula "$formula" 2>/dev/null) || return 2

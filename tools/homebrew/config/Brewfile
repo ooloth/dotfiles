@@ -63,7 +63,6 @@ brew "lua-language-server" # for lua in neovim
 brew "mas"
 brew "m-cli" # macos CLI: https://github.com/rgcr/m-cli
 brew "marksman" # for markdown lsp in neovim
-brew "neovim"
 brew "poppler" # for yazi
 brew "postgresql@14"
 brew "libpq" # for postgres
