@@ -26,11 +26,15 @@ fpath+=~/.zfunc
 # See: https://stackoverflow.com/questions/66338988/complete13-command-not-found-compde
 autoload -Uz compinit && compinit
 
+# TODO: find all shell/integration.zsh files and source them
+source "${DOTFILES}/tools/television/shell/integration.zsh"
+
 # docker
 fpath=(/Users/michael.uloth/.docker/completions $fpath)
 
+# NOTE: replaced by tv
 # fzf
-eval "$(fzf --zsh)"
+# eval "$(fzf --zsh)"
 
 # uv
 eval "$(uv generate-shell-completion zsh)"

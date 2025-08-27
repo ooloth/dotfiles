@@ -1,0 +1,214 @@
+# See: https://alexpasmantier.github.io/television/docs/Users/configuration
+
+default_channel = "files"
+history_size = 200
+tick_rate = 50
+
+[ui]
+  ui_scale = 100 # % of screen
+  # What orientation should tv be (landscape or portrait)
+  orientation = "landscape"
+  theme = "default"         # see: https://alexpasmantier.github.io/television/docs/Users/themes/
+
+# Feature-specific configurations
+# Each feature can have its own configuration section
+[ui.input_bar]
+  # Where to place the input bar in the UI (top or bottom)
+  position = "top"
+  # The input prompt string (defaults to ">" if not specified)
+  prompt = ">"
+  # header = "{}"
+  # padding = {"left": 0, "right": 0, "top": 0, "bottom": 0}
+  border_type = "rounded" # https://docs.rs/ratatui/latest/ratatui/widgets/block/enum.BorderType.html#variants
+
+[ui.status_bar]
+  # Status bar separators (bubble):
+  #separator_open = ""
+  #separator_close = ""
+  # Status bar separators (box):
+  hidden = false
+  separator_close = ""
+  separator_open = ""
+
+[ui.results_panel]
+  border_type = "rounded"
+  # padding = {"left": 0, "right": 0, "top": 0, "bottom": 0}
+
+[ui.preview_panel]
+  # Preview panel size (percentage of screen width/height)
+  size = 50
+  #header = ""
+  #footer = ""
+  border_type = "rounded"
+  scrollbar = true
+  # padding = {"left": 0, "right": 0, "top": 0, "bottom": 0}
+  hidden = false
+
+[ui.help_panel]
+  # Whether to split the help panel by categories
+  hidden = true
+  show_categories = true
+
+[ui.remote_control]
+  # Whether to show channel descriptions in remote control mode
+  show_channel_descriptions = true
+  # Whether to sort channels alphabetically
+  sort_alphabetically = true
+  # disabled = false
+
+  # Theme color overrides
+  # ---------------------
+  # You can override specific colors from the selected theme by adding them here.
+  # This allows you to customize the appearance without creating a full theme file.
+  # Colors can be specified as ANSI color names (e.g., "red", "bright-blue") or
+  # as hex values (e.g., "#ff0000", "#1e1e2e").
+  #
+  # Example overrides:
+  # [ui.theme_overrides]
+  # background = "#000000"
+  # text_fg = "#ffffff"
+  # selection_bg = "#444444"
+  # match_fg = "#ff0000"
+  # The default size of the preview panel (in percentage of the screen)
+
+# Keybindings and Events
+# ----------------------------------------------------------------------------
+#
+# NEW CONFIGURATION FORMAT:
+# -------------------------
+# The keybindings are now structured as Key -> Action mappings
+# This provides better discoverability and eliminates configuration complexity
+#
+[keybindings]
+  # Application control
+  # ------------------
+  ctrl-c = "quit"
+  esc = "quit"
+
+  # Navigation and selection
+  # -----------------------
+  ctrl-j = "select_next_entry"
+  ctrl-k = "select_prev_entry"
+  ctrl-n = "select_next_entry"
+  ctrl-p = "select_prev_entry"
+  down = "select_next_entry"
+  up = "select_prev_entry"
+
+  # History navigation
+  # -----------------
+  ctrl-down = "select_next_history"
+  ctrl-up = "select_prev_history"
+
+  # Multi-selection
+  # --------------
+  backtab = "toggle_selection_up"
+  enter = "confirm_selection"
+  tab = "toggle_selection_down"
+
+  # Preview panel control
+  # --------------------
+  pagedown = "scroll_preview_half_page_down"
+  pageup = "scroll_preview_half_page_up"
+
+  # Data operations
+  # --------------
+  ctrl-r = "reload_source"
+  ctrl-s = "cycle_sources"
+  ctrl-y = "copy_entry_to_clipboard"
+
+  # UI Features
+  # ----------
+  ctrl-h = "toggle_help"
+  ctrl-o = "toggle_preview"
+  ctrl-t = "toggle_remote_control"
+  f12 = "toggle_status_bar"
+
+  # Input field actions
+  # ----------------------------------------
+  backspace = "delete_prev_char"
+  ctrl-a = "go_to_input_start"
+  ctrl-e = "go_to_input_end"
+  ctrl-u = "delete_line"
+  ctrl-w = "delete_prev_word"
+  delete = "delete_next_char"
+  end = "go_to_input_end"
+  home = "go_to_input_start"
+  left = "go_to_prev_char"
+  right = "go_to_next_char"
+
+# Event bindings
+# ----------------------------------------------------------------------------
+# Event bindings map non-keyboard events to actions
+# This includes mouse events, resize events, and custom events
+[events]
+  # Mouse events
+  # -----------
+  mouse-scroll-down = "scroll_preview_down"
+  mouse-scroll-up = "scroll_preview_up"
+
+  # Shell integration
+  # ----------------------------------------------------------------------------
+  #
+  # The shell integration feature allows you to use television as a picker for
+  # your shell commands (as well as your shell history with <CTRL-R>).
+  # E.g. typing `git checkout <CTRL-T>` will open television with a list of
+  # branches to choose from.
+
+[shell_integration]
+  # This specifies the default fallback channel if no other channel is matched.
+  fallback_channel = "files"
+
+[shell_integration.channel_triggers]
+  # Add your channel triggers here. Each key is a channel that will be triggered
+  # by the corresponding commands.
+  # Example: say you want the following commands to trigger the following channels
+  # when pressing <CTRL-T>:
+  #          `git checkout`  should trigger the `git-branches` channel
+  #          `ls`            should trigger the `dirs` channel
+  #          `cat` and `cp`  should trigger the `files` channel
+  #
+  # You would add the following to your configuration file:
+  # ```
+  # [shell_integration.channel_triggers]
+  # "git-branches" = ["git checkout"]
+  # "dirs" = ["ls"]
+  # "files" = ["cat", "cp"]
+  # ```
+  "alias" = ["alias", "unalias"]
+  "dirs" = ["cd", "ls", "rmdir"]
+  "docker-images" = ["docker run"]
+  "env" = ["export", "unset"]
+  "files" = [
+    "bat",
+    "cat",
+    "chmod",
+    "chown",
+    "cp",
+    "gunzip",
+    "gzip",
+    "head",
+    "less",
+    "ln",
+    "mv",
+    "nano",
+    "rm",
+    "tail",
+    "tar",
+    "touch",
+    "unzip",
+    "vim",
+    "xz",
+    "zip",
+  ]
+  "git-branch" = ["git branch", "git checkout", "git merge", "git pull", "git push", "git rebase"]
+  "git-diff" = ["git add", "git restore"]
+  "git-log" = ["git log", "git show"]
+  "git-repos" = ["code", "git clone", "hx", "nvim"]
+
+[shell_integration.keybindings]
+  # controls which key binding should trigger tv
+  # for shell autocomplete
+  "smart_autocomplete" = "ctrl-t"
+  # controls which keybinding should trigger tv
+  # for command history
+  "command_history" = "ctrl-r"
