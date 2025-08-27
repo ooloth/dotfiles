@@ -5,22 +5,6 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 source "$DOTFILES/tools/zsh/config/aliases.zsh"
 source "$DOTFILES/tools/zsh/utils.zsh"
 
-# info "🍱 Installing tmux terminfo updates and tpm plugins"
-
-############
-# TERMINFO #
-############
-
-# TODO: still needed? going to try skipping...
-
-# printf "💪 Installing tmux.terminfo\n"
-# tic -x "$DOTCONFIG/tmux/tmux.terminfo"
-
-# printf "💪 Installing xterm-256color-italic.terminfo\n"
-# tic -x "$DOTCONFIG/tmux/xterm-256color-italic.terminfo"
-
-# TODO: confirm success + handle failure
-
 #######
 # TPM #
 #######
