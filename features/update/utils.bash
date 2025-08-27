@@ -18,28 +18,29 @@ update_and_symlink() {
   local version_command="${8}"
   local version_parsing_function="${9}"
 
+  # If command not found, install + symlink instead of updating
   if ! have "${tool_command}"; then
-    # Install if command not found
-    bash -c "${install_script_path}"
+    bash "${install_script_path}"
     local new_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
-    debug "✅ Installed ${tool_lower} ${new_version}"
-  else
-    # Update if command found
-    info "${tool_emoji} Updating ${tool_lower}"
-    local current_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
-
-    bash -c "${update_command}"
-    local new_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
-
-    if [ "${current_version}" == "${new_version}" ]; then
-      debug "✅ Already using the latest ${tool_lower} version (${new_version})"
-    else
-      debug "⬆️ Updated ${tool_lower} from version ${current_version} to ${new_version}"
-    fi
-
-    # Symlink config files
-    bash -c "VERBOSE=true ${symlink_script_path}"
+    debug "🚀 Installed ${tool_lower} ${new_version}"
+    return 0
   fi
+
+  # Otherwise, update + symlink
+  info "${tool_emoji} Updating ${tool_lower}"
+  local current_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
+
+  bash -c "${update_command}"
+  local new_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
+
+  if [ "${current_version}" == "${new_version}" ]; then
+    debug "✅ Already using the latest ${tool_lower} version (${new_version})"
+  else
+    debug "⬆️ Updated ${tool_lower} from version ${current_version} to ${new_version}"
+  fi
+
+  # Symlink config files
+  bash -c "VERBOSE=true ${symlink_script_path}"
 
   debug "🚀 ${tool_upper} is up to date"
 }
