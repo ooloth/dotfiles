@@ -1,12 +1,8 @@
-# This file is sourced first. Setting PATH here ensures that it will apply to all zsh scripts, login shells, and interactive shells.
-# See: https://news.ycombinator.com/item?id=39508793
-# See: https://zsh.sourceforge.io/Doc/Release/Files.html
-
 #################
 # PREREQUISITES #
 #################
 
-source "${DOTFILES}/tools/macos/shell/variables.zsh" # sets COMPUTER
+source "${DOTFILES}/tools/macos/shell/aliases.zsh" # sets is_air, is_mini, is_work
 source "${DOTFILES}/tools/zsh/config/path.zsh" # sets PATH
 
 ###########
@@ -43,9 +39,6 @@ export TIME_STYLE=long-iso
 # k9s
 export K9SCONFIG=$HOME/.config/k9s
 
-# NPM
-export NPM_CONFIG_USERCONFIG=$HOME/.config/npm/.npmrc
-
 # OpenSSL
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
@@ -60,5 +53,8 @@ export PYTHONPATH="${HOME}"
 export VIRTUAL_ENV_PROMPT='' # avoid extra (venv) prompt prefix
 
 if is_work; then
+  # NPM
+  export NPM_CONFIG_USERCONFIG=${HOME}/.config/npm/.npmrc
+
   source "${DOTFILES}/tools/zsh/config/work/variables.zsh" 2>/dev/null
 fi
