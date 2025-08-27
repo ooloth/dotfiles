@@ -1,19 +1,6 @@
 #!/usr/bin/env zsh
 # set -euo pipefail
 
-##########
-# PROMPT #
-##########
-
-# fnm
-eval "$(fnm env --use-on-cd --log-level=error)"
-
-# FIXME: crashes terminal if set -e is enabled
-# powerlevel10k
-# see: https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#homebrew
-source "/opt/homebrew/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme"
-source "${DOTFILES}/tools/powerlevel10k/config/p10k.zsh" # to customize, run `p10k configure` or edit zsh/config/p10k.zsh
-
 ###############
 # COMPLETIONS #
 ###############
@@ -26,21 +13,42 @@ fpath+=~/.zfunc
 # See: https://stackoverflow.com/questions/66338988/complete13-command-not-found-compde
 autoload -Uz compinit && compinit
 
-# TODO: find all shell/integration.zsh files and source them
-source "${DOTFILES}/tools/television/shell/integration.zsh"
+#############
+# AUTOMATIC #
+#############
+
+# Find all integration.bash files in each tool directory (except @new and @archive)
+shell_integration_files=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "integration.zsh" -print))
+
+for file in "${shell_integration_files[@]}"; do
+  source "${file}"
+done
+
+##########
+# MANUAL #
+##########
+
+# FIXME: crashes terminal if set -e is enabled
+# powerlevel10k
+# see: https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#homebrew
+source "/opt/homebrew/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme"
+source "${DOTFILES}/tools/powerlevel10k/config/p10k.zsh" # to customize, run `p10k configure` or edit zsh/config/p10k.zsh
 
 # docker
 fpath=(/Users/michael.uloth/.docker/completions $fpath)
+
+# fnm
+eval "$(fnm env --use-on-cd --log-level=error)"
 
 # NOTE: replaced by tv
 # fzf
 # eval "$(fzf --zsh)"
 
+# zoxide
 # uv
 eval "$(uv generate-shell-completion zsh)"
 eval "$(uvx --generate-shell-completion zsh)"
 
-# zoxide
 eval "$(zoxide init zsh)"
 
 # zsh-autosuggestions
