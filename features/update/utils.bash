@@ -32,9 +32,9 @@ update_and_symlink() {
     local new_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
 
     if [ "${current_version}" == "${new_version}" ]; then
-      debug "✅ Already using the latest version (${new_version})"
+      debug "✅ Already using the latest ${tool_lower} version (${new_version})"
     else
-      debug "⬆️ Updated from version ${current_version} to ${new_version}"
+      debug "⬆️ Updated ${tool_lower} from version ${current_version} to ${new_version}"
     fi
 
     # Symlink config files
