@@ -22,11 +22,10 @@ install_and_symlink() {
   if have "${tool_command}"; then
     local current_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
     printf "✅ ${tool_upper} ${current_version} is already installed\n"
-  else
-    bash -c "${install_command}"
+    return 0
   fi
 
-  # Symlink config files
+  bash -c "${install_command}"
   bash -c "VERBOSE=true ${symlink_script_path}"
 
   # Confirm installation
