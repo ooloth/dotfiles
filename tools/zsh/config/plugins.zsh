@@ -40,9 +40,8 @@ fpath=(/Users/michael.uloth/.docker/completions $fpath)
 # fnm
 eval "$(fnm env --use-on-cd --log-level=error)"
 
-# NOTE: replaced by tv
 # fzf
-# eval "$(fzf --zsh)"
+eval "$(fzf --zsh)"
 
 # zoxide
 # uv
