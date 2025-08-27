@@ -12,6 +12,6 @@ parse_version() {
   local raw_version="${1}"
   local prefix_brew_formula="${TOOL_PACKAGE} "
 
-  # Grab everything after the prefix
+  # Everything after the prefix
   printf "${raw_version#"${prefix_brew_formula}"}"
 }

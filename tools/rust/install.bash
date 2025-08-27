@@ -7,6 +7,7 @@ source "${DOTFILES}/features/install/utils.bash"
 export CARGO_HOME="${HOME}/.config/cargo"
 export RUSTUP_HOME="${HOME}/.config/rustup"
 
+# TODO: confirm cargo and rustc commands work too?
 # See: https://www.rust-lang.org/tools/install
 install_and_symlink \
   "${TOOL_LOWER}" \

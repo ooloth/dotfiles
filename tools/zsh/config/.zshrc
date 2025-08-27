@@ -4,10 +4,15 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+#################
+# PREREQUISITES #
+#################
+
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 source "${DOTFILES}/tools/macos/shell/aliases.zsh" # is_air, is_mini, is_work
-source "${DOTFILES}/tools/zsh/utils.zsh" # have, info, warn, error
+source "${DOTFILES}/tools/zsh/utils.zsh" # have, info, warn, error - TODO: deprecate in favor of bash one?
+
 source "${DOTFILES}/tools/zsh/config/variables.zsh"
 source "${DOTFILES}/tools/zsh/config/aliases.zsh"
 source "${DOTFILES}/tools/zsh/config/options.zsh"
