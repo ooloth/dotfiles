@@ -6,16 +6,16 @@ export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
-HOMECONFIG="${HOME}/.config"
-VSCODEUSER="$HOME/Library/Application Support/Code/User"
-
 main() {
   local tool="${1:-}"
 
   info "🔗 Updating symlinks"
 
+  local home_config="${HOME}/.config"
+  local vscode_config="$HOME/Library/Application Support/Code/User"
+
   # Remove broken symlinks first
-  for dir in "${HOME}" "${HOMECONFIG}" "${VSCODEUSER}"; do
+  for dir in "${HOME}" "${home_config}" "${vscode_config}"; do
     remove_broken_symlinks "$dir"
   done
 
