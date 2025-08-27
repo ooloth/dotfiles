@@ -1,3 +1,18 @@
+## Remembering
+
+- Work in three phases: research, plan, implement
+- Create a new subfolder in the project's `.claude/specs/` folder (create as needed) with a `research.md` and `plan.md` to store clear information as you go
+- The research phase should produce a `research.md`
+- The plan phase should produce a `plan.md`
+- Assume you may need to hand off key findings to a new Claude at any time
+- Use markdown files to transfer all details to the next Claude
+
+## Managing your context window
+
+- You do best when you have less in your context rather than more
+- Minimize context usage by using my custom agents (`tools/claude/config/agents`) or creating your own ephemeral ones
+- Ensure sub-agents write down their key findings in the relevant markdown file as well
+
 ## Using Gemini CLI for Large Codebase Analysis
 
 When analyzing large codebases or multiple files that might exceed context limits, use the Gemini CLI with `gemini -p` to take advantage of its massive context window.
