@@ -4,13 +4,12 @@ set -euo pipefail
 source "${DOTFILES}/tools/tmux/utils.bash"
 source "${DOTFILES}/features/update/utils.bash"
 
-TPM="${TOOL_CONFIG_DIR}/plugins/tpm/bin"
+# # Install tpm if missing
+# if [ ! -d "$TPM_DIR" ]; then
+#   git clone "git@github.com:tmux-plugins/tpm.git" "${TPM_DIR}"
+# fi
 
-# Install if missing
-if [ ! -d "$TPM" ]; then
-  source "$DOTFILES/features/install/zsh/tmux.zsh"
-fi
-
+# Update tmux + tpm + all tpm plugins
 update_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
@@ -22,9 +21,9 @@ update_and_symlink \
   "brew list --version ${TOOL_PACKAGE}" \
   "parse_version"
 
-# Reload tmux config automatically if it's running
+# Reload tmux if it's running
 if pgrep -q tmux; then
   # see: https://github.com/tmux-plugins/tpm?tab=readme-ov-file#installation
-  printf "\n🔁 Reloading tmux config\n"
+  printf "\n🔁 Reloading tmux\n"
   tmux source ~/.config/tmux/tmux.conf
 fi
