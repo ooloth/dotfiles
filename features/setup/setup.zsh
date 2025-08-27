@@ -107,10 +107,6 @@ fi
 DOTINSTALL="${DOTFILES}/features/install/zsh"
 DOTUPDATE="${DOTFILES}/features/update/zsh"
 
-# Add all the helpers the install scripts below will reference
-# source "${DOTFILES}/tools/zsh/config/aliases.zsh"
-# source "${DOTFILES}/tools/zsh/utils.zsh"
-
 source "${DOTINSTALL}/ssh.zsh"
 source "${DOTINSTALL}/github.zsh"
 source "${DOTINSTALL}/homebrew.zsh"
