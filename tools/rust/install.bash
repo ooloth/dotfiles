@@ -2,12 +2,9 @@
 set -euo pipefail
 
 source "${DOTFILES}/tools/rust/utils.bash"
+source "${DOTFILES}/tools/rust/shell/variables.bash"
 source "${DOTFILES}/features/install/utils.bash"
 
-export CARGO_HOME="${HOME}/.config/cargo"
-export RUSTUP_HOME="${HOME}/.config/rustup"
-
-# TODO: confirm cargo and rustup commands work too?
 # See: https://www.rust-lang.org/tools/install
 # See: https://users.rust-lang.org/t/how-can-i-cleanup-changes-in-profile/67012
 # See: https://rust-lang.github.io/rustup/installation/index.html
