@@ -9,6 +9,3 @@ source "${DOTFILES}/features/update/zsh/gcloud.zsh"
 source "${DOTFILES}/features/update/zsh/homebrew.zsh"
 source "${DOTFILES}/features/update/zsh/npm.zsh"
 source "${DOTFILES}/features/update/zsh/neovim.zsh"
-
-printf "\n🔁 Reloading shell"
-exec -l "${SHELL}"
