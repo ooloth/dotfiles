@@ -7,9 +7,10 @@ source "${DOTFILES}/features/update/utils.bash"
 update_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
+  "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
-  "${TOOL_PACKAGE} self update" \
+  "${TOOL_COMMAND} self update" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
-  "${TOOL_PACKAGE} --version" \
+  "${TOOL_COMMAND} --version" \
   "parse_version"

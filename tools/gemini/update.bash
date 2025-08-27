@@ -7,6 +7,7 @@ source "${DOTFILES}/features/update/utils.bash"
 update_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
+  "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "brew upgrade --formula ${TOOL_PACKAGE}" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \

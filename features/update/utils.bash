@@ -10,16 +10,17 @@ source "${DOTFILES}/tools/bash/utils.bash"
 update_and_symlink() {
   local tool_lower="${1}"
   local tool_upper="${2}"
-  local tool_emoji="${3}"
-  local update_command="${4}"
-  local symlink_script_path="${5}"
-  local install_script_path="${6}"
-  local version_command="${7}"
-  local version_parsing_function="${8}"
+  local tool_command="${3}"
+  local tool_emoji="${4}"
+  local update_command="${5}"
+  local symlink_script_path="${6}"
+  local install_script_path="${7}"
+  local version_command="${8}"
+  local version_parsing_function="${9}"
 
-  if ! have "${tool_lower}"; then
+  if ! have "${tool_command}"; then
     # Install if command not found
-    source "${install_script_path}"
+    bash -c "${install_script_path}"
     local new_version="$(get_tool_version "${version_command}" "${version_parsing_function}")"
     debug "✅ Installed ${tool_lower} ${new_version}"
   else
