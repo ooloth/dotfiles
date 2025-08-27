@@ -9,8 +9,5 @@ export PATH="${HOME}/go/bin:${PATH}"
 # OpenSSL
 export PATH="/opt/homebrew/opt/openssl@3/bin:${PATH}"
 
-# Rust
-export PATH="${HOME}/.config/cargo/bin:${PATH}"
-
 # Homebrew (keep last so will be at front of PATH)
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH" # Add Homebrew's executable directory to front of PATH

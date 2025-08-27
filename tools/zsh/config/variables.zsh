@@ -24,6 +24,7 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 # TODO: make dynamic
 
 source "${DOTFILES}/tools/homebrew/shell/variables.zsh"
+source "${DOTFILES}/tools/rust/shell/variables.zsh"
 
 # Zsh: History
 export HISTFILE="${HOME}/.zsh_history"
