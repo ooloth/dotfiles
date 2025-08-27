@@ -11,18 +11,21 @@ if ! have brew; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# Then, install and update dependencies
-info "🍺 Updating homebrew packages"
-
-# Install all dependencies listed in Brewfile (and remove any that aren't)
-# see: https://github.com/Homebrew/homebrew-bundle
-brew bundle --file="${DOTFILES}/tools/homebrew/config/Brewfile" --cleanup
+info "🍺 Updating homebrew"
 
 brew update # update brew
-brew upgrade # update packages
-brew cu # update casks
 brew autoremove # remove old versions
 brew cleanup # remove junk
 brew doctor || true # address any issues (but don't exit)
 
-printf "\n🎉 All homebrew packages are up to date\n"
+# Then, install and update dependencies
+info "🍺 Updating homebrew packages"
+
+# WARN: don't include "--cleanup" flag now that some packages are installed individually instead of via brew bundle
+# Install all dependencies listed in Brewfile
+# see: https://github.com/Homebrew/homebrew-bundle
+brew bundle --file="${DOTFILES}/tools/homebrew/config/Brewfile" # install missing packages
+brew upgrade --formula # update formulae only
+brew cu --all --include-mas --yes # update casks only, including casks with their own auto-updater
+
+printf "\n🚀 Homebrew and its packages are up to date\n"
