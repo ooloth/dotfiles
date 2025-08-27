@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+source "${DOTFILES}/tools/zsh/utils.zsh"
+
 main() {
   # Return early if not installed
   if ! have gcloud; then
