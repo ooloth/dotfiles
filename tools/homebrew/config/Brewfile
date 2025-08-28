@@ -118,6 +118,7 @@ cask "notion"
 cask "obsidian"
 cask "raycast"
 cask "rectangle"
+cask "sip-app"
 cask "visual-studio-code"
 cask "vlc"
 cask "zed"
@@ -148,7 +149,6 @@ end
 mas "Amphetamine", id: 937984704
 mas "Notion Web Clipper", id: 1559269364 # Safari extension
 mas "Reeder 5.", id: 1529448980
-mas "Sip", id: 507257563
 mas "Things 3", id: 904280696
 mas "Vimari", id: 1480933944
 
