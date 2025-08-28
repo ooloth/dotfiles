@@ -6,27 +6,22 @@ source "${DOTFILES}/tools/node/utils.bash"
 source "${DOTFILES}/features/install/utils.bash"
 source "${DOTFILES}/tools/neovim/utils.bash" # source last to avoid env var overrides
 
-install_and_symlink \
+uninstall_and_unlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
-  "brew install --formula ${TOOL_PACKAGE}" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
-  "brew list --version ${TOOL_PACKAGE}" \
-  "parse_version"
+  "brew uninstall --formula ${TOOL_PACKAGE}" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/unlink.bash"
 
 info "${TOOL_EMOJI} Installing ${TOOL_LOWER} homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
-  ensure_brew_formula_installed "${formula}"
+  brew uninstall --formula "${formula}"
 done
 
 info "${TOOL_EMOJI} Installing ${TOOL_LOWER} npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
-  ensure_global_npm_package_installed "${package}"
+  npm uninstall -g "${package}"
 done
 
-info "${TOOL_EMOJI} Restoring locked Lazy plugin versions"
-NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
-
-debug "🚀 All ${TOOL_UPPER} dependencies have been installed"
+debug "🚀 All ${TOOL_UPPER} dependencies have been uninstalled"
