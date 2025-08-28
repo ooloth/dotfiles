@@ -50,10 +50,6 @@ if have uv; then
   eval "$(uvx --generate-shell-completion zsh)"
 fi
 
-if have zoxide; then
-  eval "$(zoxide init zsh)"
-fi
-
 if have brew; then
   source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
   source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
