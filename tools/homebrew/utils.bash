@@ -46,9 +46,10 @@ get_seconds_since_last_brew_update() {
   printf "$update_age_sec"
 }
 
-# Refresh the cached list of outdated formulae
+# Refresh the cached list of outdated brew formulae
 # Called each time brew update is run
 cache_brew_outdated_formula_list() {
+  printf "🍺 Refreshing cached outdated brew formulae\n"
   brew outdated --formula --json=v2 >"${BREW_OUTDATED_LIST_CACHE_FILE}" || return 1
 }
 
