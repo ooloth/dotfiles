@@ -11,6 +11,6 @@ install_and_symlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "curl -LsSf https://astral.sh/uv/install.sh | sh" \
-  "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash" \
   "${TOOL_PACKAGE} --version" \
-  "parse_version"
+  "parse_version" \
+  "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash"

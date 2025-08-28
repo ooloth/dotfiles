@@ -12,9 +12,9 @@ install_and_symlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "brew install --formula ${TOOL_PACKAGE}" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
   "brew list --version ${TOOL_PACKAGE}" \
-  "parse_version"
+  "parse_version" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
 info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do

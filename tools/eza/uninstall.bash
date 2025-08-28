@@ -9,5 +9,4 @@ uninstall_and_unlink \
   "${TOOL_UPPER}" \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
-  "brew uninstall --formula ${TOOL_PACKAGE}" \
-  ""
+  "brew uninstall --formula ${TOOL_PACKAGE}"

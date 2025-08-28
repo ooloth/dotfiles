@@ -10,6 +10,5 @@ install_and_symlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "brew install --formula ${TOOL_PACKAGE}" \
-  "" \
   "brew list --version ${TOOL_PACKAGE}" \
   "parse_version"

@@ -13,9 +13,9 @@ install_and_symlink() {
   local tool_command="${3}"
   local tool_emoji="${4}"
   local install_command="${5}"
-  local symlink_script_path="${6}"
-  local version_command="${7}"
-  local version_parsing_function="${8}"
+  local version_command="${6}"
+  local version_parsing_function="${7}"
+  local symlink_script_path="${8}"
 
   info "${tool_emoji} Installing ${tool_lower}"
 

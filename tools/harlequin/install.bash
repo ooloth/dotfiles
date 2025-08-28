@@ -10,6 +10,6 @@ install_and_symlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "uv tool install ${TOOL_PACKAGE}" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
   "${TOOL_PACKAGE} --version" \
-  "parse_version"
+  "parse_version" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
