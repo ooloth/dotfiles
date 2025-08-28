@@ -1,11 +1,24 @@
 #!/usr/bin/env zsh
 # set -euo pipefail
 
-# TODO: find all {tool|feature}/shell/aliases.zsh files and source them
-source "${DOTFILES}/tools/macos/shell/aliases.zsh"
-source "${DOTFILES}/tools/zsh/utils.zsh"
-source "${DOTFILES}/features/install/shell/aliases.zsh"
-source "${DOTFILES}/features/update/shell/aliases.zsh"
+source "${DOTFILES}/tools/zsh/utils.zsh" # is_work
+
+#########
+# TOOLS #
+#########
+
+# Find all integration.bash files in each tool directory (except @new and @archive and zsh)
+shell_aliases_in_features=($(find "${DOTFILES}/features" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "aliases.zsh" -print))
+shell_aliases_in_tools=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" -o -name "zsh" \) -prune -o -type f -name "aliases.zsh" -print))
+shell_aliases_files=("${shell_aliases_in_features[@]}" "${shell_aliases_in_tools[@]}")
+
+for file in "${shell_aliases_files[@]}"; do
+  source "${file}"
+done
+
+##########
+# MANUAL #
+##########
 
 alias ..='cd ..'
 alias ...='cd ../..'
