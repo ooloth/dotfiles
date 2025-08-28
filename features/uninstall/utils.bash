@@ -20,7 +20,9 @@ uninstall_and_unlink() {
   fi
 
   # Unlink config files
-  bash -c "VERBOSE=true ${unlink_script_path}"
+  if [ -f "${unlink_script_path}" ]; then
+    bash -c "VERBOSE=true ${unlink_script_path}"
+  fi
 
   # Confirm uninstallation
   if have "${tool_command}"; then
