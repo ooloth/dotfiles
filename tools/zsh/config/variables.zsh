@@ -20,23 +20,17 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 # TOOLS #
 #########
 
-# TODO: make dynamic
-
-#############
-# AUTOMATIC #
-#############
-
-# Find all integration.bash files in each tool directory (except @new and @archive)
-shell_variables_files=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "variables.zsh" -print))
+# Find all integration.bash files in each tool directory (except @new and @archive and zsh)
+shell_variables_files=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" -o -name "zsh" \) -prune -o -type f -name "variables.zsh" -print))
 
 for file in "${shell_variables_files[@]}"; do
-  printf "Sourcing %s\n" "${file}"
+  # printf "Sourcing %s\n" "${file}"
   source "${file}"
 done
 
-# source "${DOTFILES}/tools/claude/shell/variables.zsh"
-# source "${DOTFILES}/tools/homebrew/shell/variables.zsh"
-# source "${DOTFILES}/tools/rust/shell/variables.zsh"
+##########
+# MANUAL #
+##########
 
 # Zsh: History
 export HISTFILE="${HOME}/.zsh_history"
@@ -58,11 +52,6 @@ export PYTHONPATH="${HOME}"
 export VIRTUAL_ENV_PROMPT='' # avoid extra (venv) prompt prefix
 
 if is_work; then
-  # NPM
-  export NPM_CONFIG_USERCONFIG=${HOME}/.config/npm/.npmrc
-
-  source "${DOTFILES}/tools/zsh/config/work/variables.zsh" 2>/dev/null
-
   # Configome
   export CONFIGOME_ENV=dev
 
@@ -92,6 +81,12 @@ if is_work; then
   # Netskope
   # see: https://github.com/recursionpharma/netskope_dev_tools
   source "$HOME/.config/netskope/env.sh"
+
+  # NPM
+  export NPM_CONFIG_USERCONFIG=${HOME}/.config/npm/.npmrc
+
+  # OpenSSL
+  export PATH="/opt/homebrew/opt/openssl@3/bin:${PATH}"
 
   # Roadie
   export ROADIE_BANNER=false
