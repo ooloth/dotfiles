@@ -24,18 +24,24 @@ export TOOL_HOMEBREW_DEPENDENCIES=(
 )
 
 export TOOL_NPM_DEPENDENCIES=(
-  @astrojs/language-server      # astro: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#astro
-  @mdx-js/language-service      # mdx: https://github.com/mdx-js/mdx-analyzer/tree/main/packages/typescript-plugin
-  @tailwindcss/language-server  # tailwind: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#tailwindcss
-  bash-language-server          # bash: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#bashls
-  css-variables-language-server # css: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#css_variables
-  cssmodules-language-server    # css modules: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#cssmodules_ls
-  prettier                      # many languages: ...
-  typescript                    # ts: ...
-  typescript-language-server    # ts: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls
-  vls                           # vue: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#vuels
-  vscode-langservers-extracted  # astro/eslint/json: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
-  yaml-language-server          # yaml: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#yamlls
+  @astrojs/language-server          # astro: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#astro
+  @mdx-js/language-service          # mdx: https://github.com/mdx-js/mdx-analyzer/tree/main/packages/typescript-plugin
+  @olrtg/emmet-language-server      # emmet: ...
+  @tailwindcss/language-server      # tailwind: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#tailwindcss
+  bash-language-server              # bash: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#bashls
+  css-variables-language-server     # css: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#css_variables
+  cssmodules-language-server        # css modules: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#cssmodules_ls
+  dockerfile-language-server-nodejs # dockerfile: ...
+  neovim                            # neovim: ...
+  prettier                          # many languages: ...
+  pug-linter                        # pug: ...
+  svelte-language-server            # svelte: ...
+  tree-sitter-cli                   # tree-sitter: ...
+  typescript                        # ts: ...
+  typescript-language-server        # ts: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls
+  vls                               # vue: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#vuels
+  vscode-langservers-extracted      # astro/eslint/json: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
+  yaml-language-server              # yaml: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#yamlls
 )
 
 parse_version() {

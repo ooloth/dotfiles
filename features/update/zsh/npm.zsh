@@ -10,35 +10,13 @@ main() {
   info "✨ Updating Node $(node -v) global dependencies"
 
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
-  general_dependencies=(
+  packages=(
     @anthropic-ai/claude-code
     npm
     npm-check
     trash-cli
   )
 
-  neovim_dependencies=(
-    @astrojs/language-server
-    @mdx-js/language-service
-    bash-language-server
-    css-variables-language-server
-    cssmodules-language-server
-    dockerfile-language-server-nodejs
-    emmet-ls
-    neovim
-    prettier
-    pug-lint
-    svelte-language-server
-    @tailwindcss/language-server
-    tree-sitter-cli
-    typescript-language-server
-    typescript
-    vls
-    vscode-langservers-extracted
-    yaml-language-server
-  )
-
-  packages=("${general_dependencies[@]}" "${neovim_dependencies[@]}")
   installed_packages=$(npm list -g --depth=0 || true)
   outdated_packages=$(npm outdated -g || true)
 
