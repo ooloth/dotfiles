@@ -9,7 +9,6 @@ computer_name = `networksetup -getcomputername`.chomp
 ########
 
 tap "buo/cask-upgrade" # see: https://gist.github.com/ChristopherA/a579274536aab36ea9966f301ff14f3f#best-practices-brew-cask-mas-and-cu
-tap "candid82/brew" # for joker, for goku
 tap "jesseduffield/lazydocker"
 tap "kdash-rs/kdash" # for kdash
 
@@ -30,11 +29,10 @@ brew "bat" # replaces cat
 brew "bats-core" # for bash testing
 brew "btop" # top alternative
 brew "coreutils"
-brew "ctop" # for docker
 brew "eza" # replaces ls
 brew "fd" # replaces find; used by yazi
 brew "ffmpegthumbnailer" # for yazi
-brew "fnm" # replaces nvm
+brew "fnm" # for node
 brew "fzf" # awesome; used by yazi
 brew "gh"
 brew "git"
@@ -83,7 +81,6 @@ end
 
 if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
   brew "codefresh"
-  brew "hashicorp/tap/vault"
   brew "helm" # for kubernetes
   brew "kafka"
   brew "librdkafka" # for kafka
