@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "${DOTFILES}/features/update/utils.bash"
+source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/tmux/utils.bash"
 
 # Update tmux + tpm + all tpm plugins
@@ -16,6 +17,11 @@ update_and_symlink \
   "brew list --version ${TOOL_PACKAGE}" \
   "parse_version"
 
+info "${TOOL_EMOJI} Updating ${TOOL_LOWER}'s homebrew dependencies"
+for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
+  ensure_brew_formula_updated "${formula}"
+done
+
 info "${TOOL_EMOJI} Updating ${TOOL_LOWER} plugins"
 "${TPM}/clean_plugins"
 "${TPM}/install_plugins"
@@ -28,4 +34,4 @@ if pgrep -q tmux; then
   tmux source "${TOOL_CONFIG_DIR}/tmux.conf"
 fi
 
-printf "\n🚀 All ${TOOL_UPPER} plugins are up-to-date\n"
+printf "\n🚀 All ${TOOL_UPPER} dependencies are up-to-date\n"

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "${DOTFILES}/features/install/utils.bash"
+source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/tmux/utils.bash"
 
 install_and_symlink \
@@ -15,11 +16,16 @@ install_and_symlink \
   "parse_version"
 
 if [[ ! -d "${TPM_DIR}" ]]; then
-  info "${TOOL_EMOJI} Installing tmux's plugin manager"
+  info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s plugin manager"
   git clone "git@github.com:tmux-plugins/tpm.git" "${TPM_DIR}"
 fi
 
-info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s plugins"
+info "${TOOL_EMOJI} Installing ${TOOL_LOWER} plugins"
 "${TPM}/install_plugins"
 
-printf "\n🚀 All ${TOOL_UPPER} plugins have been installed\n"
+info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s homebrew dependencies"
+for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
+  ensure_brew_formula_installed "${formula}"
+done
+
+printf "\n🚀 All ${TOOL_UPPER} dependencies have been installed\n"

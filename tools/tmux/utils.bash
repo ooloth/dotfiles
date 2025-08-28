@@ -12,6 +12,13 @@ export TOOL_PLUGINS_DIR="${TOOL_CONFIG_DIR}/plugins"
 export TPM_DIR="${TOOL_PLUGINS_DIR}/tpm"
 export TPM="${TPM_DIR}/bin"
 
+# TODO: need to install these taps too?
+# brew tap "arl/arl" # for gitmux
+
+export TOOL_HOMEBREW_DEPENDENCIES=(
+  arl/arl/gitmux # git info in status line: ...
+)
+
 parse_version() {
   local raw_version="${1}"
   local prefix_brew_formula="${TOOL_PACKAGE} "
