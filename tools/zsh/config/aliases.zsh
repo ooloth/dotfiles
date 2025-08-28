@@ -58,8 +58,8 @@ alias f='yazi'
 alias g="lazygit"
 alias grep="rg"
 
-alias h="cd $HOME"
-alias hub="cd $HOME/Repos/ooloth/hub"
+alias h="cd ${HOME}"
+alias hub="cd ${HOME}/Repos/ooloth/hub"
 
 alias image="kitten icat" # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 
