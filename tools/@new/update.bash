@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # TODO: change tool name + update TOOL_* variables in utils.bash
-source "${DOTFILES}/tools/@new/utils.bash"
 source "${DOTFILES}/features/update/utils.bash"
+source "${DOTFILES}/tools/@new/utils.bash" # source last to avoid env var overrides
 
 # TODO: change update command + version command
 update_and_symlink \
