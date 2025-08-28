@@ -8,8 +8,15 @@ run() {
     *)
       error "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}'" ;;
   esac
+
+  if is_work; then
+    case $CURRENT_DIRECTORY in
+      spade-flows)
+        ./bin/dev/run.sh "$@" ;;
+
+      *)
+        error "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}'" ;;
+    esac
+  fi
 }
 
-if is_work; then
-  source "${DOTFILES}/tools/zsh/config/work/run.zsh" 2>/dev/null
-fi

@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 check() {
   local CURRENT_DIRECTORY=$(basename $PWD)
 
@@ -5,8 +7,31 @@ check() {
     *)
       error "🚨 No 'check' case defined for '/${CURRENT_DIRECTORY}'" ;;
   esac
+
+  if is_work; then
+    case $CURRENT_DIRECTORY in
+      mapapp)
+        ./bin/check.sh "$@" ;;
+
+      mapapp-1)
+        ./bin/check.sh "$@" ;;
+
+      mapapp-2)
+        ./bin/check.sh "$@" ;;
+
+      mapapp-3)
+        ./bin/check.sh "$@" ;;
+
+      react-app)
+        info "Formatting, linting and type-checking"
+        npm run lint ;;
+
+      spade-flows)
+        ./bin/dev/check.sh "$@" ;;
+
+      *)
+        error "🚨 No 'check' case defined for '/${CURRENT_DIRECTORY}'" ;;
+    esac
+  fi
 }
 
-if is_work; then
-  source "${DOTFILES}/tools/zsh/config/work/check.zsh" 2>/dev/null
-fi

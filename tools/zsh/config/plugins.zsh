@@ -57,6 +57,7 @@ source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 if is_work; then
-  source "${DOTFILES}/tools/zsh/config/work/plugins.zsh" 2>/dev/null
+  # Gcloud
+  if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
 fi
 
