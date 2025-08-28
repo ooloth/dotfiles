@@ -6,6 +6,6 @@ i() {
 
   bash "${DOTFILES}/features/install/tools.bash" "$tool";
 
-  printf "🔁 Reloading shell\n"
+  printf "\n🔁 Reloading shell\n"
   exec -l "${SHELL}"
 }

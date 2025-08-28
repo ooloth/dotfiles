@@ -141,7 +141,7 @@ function banner() {
   local text="$text_color $text "
 
   # Output the assembled banner
-  printf "\n${border_top}\n${border_vertical}${text}${border_vertical}\n${border_bottom}\n\n${TEXT_NORMAL}"
+  printf "\n${border_top}\n${border_vertical}${text}${border_vertical}\n${border_bottom}\n\n${TEXT_NORMAL}" >&2
 }
 
 function info() {
@@ -164,5 +164,5 @@ function error() {
 
 function debug() {
   local text="$1"
-  printf "\n%s\n" "$text"
+  printf "\n%s\n" "$text" >&2
 }
