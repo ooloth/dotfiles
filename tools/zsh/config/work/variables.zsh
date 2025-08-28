@@ -1,10 +1,4 @@
 
-# Claude Code
-# See: https://docs.anthropic.com/en/docs/claude-code/settings#environment-variables
-export ANTHROPIC_VERTEX_PROJECT_ID=vertexai-sandbox-e8a925d0
-export CLAUDE_CODE_USE_VERTEX=1
-export CLOUD_ML_REGION=us-east5
-export DISABLE_PROMPT_CACHING=1
 
 # Configome
 export CONFIGOME_ENV=dev
