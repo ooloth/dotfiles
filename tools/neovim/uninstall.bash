@@ -14,12 +14,12 @@ uninstall_and_unlink \
   "brew uninstall --formula ${TOOL_PACKAGE}" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/unlink.bash"
 
-info "${TOOL_EMOJI} Installing ${TOOL_LOWER} homebrew dependencies"
+info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   brew uninstall --formula "${formula}"
 done
 
-info "${TOOL_EMOJI} Installing ${TOOL_LOWER} npm dependencies"
+info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   npm uninstall -g "${package}"
 done

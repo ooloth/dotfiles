@@ -16,12 +16,12 @@ install_and_symlink \
   "brew list --version ${TOOL_PACKAGE}" \
   "parse_version"
 
-info "${TOOL_EMOJI} Installing ${TOOL_LOWER} homebrew dependencies"
+info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   ensure_brew_formula_installed "${formula}"
 done
 
-info "${TOOL_EMOJI} Installing ${TOOL_LOWER} npm dependencies"
+info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   ensure_global_npm_package_installed "${package}"
 done
