@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+BREW_LAST_UPDATE_TIME_FILE="${TMPDIR:-/tmp}/.brew_last_update"
+BREW_OUTDATED_LIST_CACHE_FILE="${TMPDIR:-/tmp}/.brew_outdated_list"
+
 # Check if a Homebrew formula is installed
 #
 # Usage: is_brew_formula_installed "package-name"
@@ -31,32 +34,42 @@ ensure_brew_formula_installed() {
   fi
 }
 
+# Get the number of seconds since the last brew update
+# Returns: seconds since last update, or a large number if not found
+get_seconds_since_last_brew_update() {
+  [[ ! -f "${BREW_LAST_UPDATE_TIME_FILE}" ]] && echo "999999" && return
+
+  local current_time_sec=$(date +%s)
+  local last_update_sec=$(cat "${BREW_LAST_UPDATE_TIME_FILE}" 2>/dev/null || echo "0")
+  local update_age_sec=$((current_time_sec - last_update_sec))
+
+  printf "$update_age_sec"
+}
+
+# Refresh the cached list of outdated formulae
+# Called each time brew update is run
+cache_brew_outdated_formula_list() {
+  brew outdated --formula --json=v2 >"${BREW_OUTDATED_LIST_CACHE_FILE}" || return 1
+}
+
 # Ensure brew update has been run recently.
 #
-# Usage: ensure_brew_updated [hours] (default: 24)
 # Returns: 0 if update is recent or was run, 1 if update failed
 ensure_brew_recently_updated() {
-  local max_age_hours="${1:-24}"
-  local timestamp_file="${TMPDIR:-/tmp}/.brew_last_update"
-  local current_time
-  current_time=$(date +%s)
+  local age_limit_hrs=24
+  local age_limit_sec=86400
 
-  # Check if timestamp file exists and is recent enough
-  if [[ -f "$timestamp_file" ]]; then
-    local last_update
-    last_update=$(cat "$timestamp_file" 2>/dev/null || echo "0")
-    local age_seconds=$((current_time - last_update))
-    local max_age_seconds=$((max_age_hours * 3600))
-
-    if [[ $age_seconds -lt $max_age_seconds ]]; then
-      return 0 # Update is recent enough
-    fi
+  if get_seconds_since_last_brew_update -lt $age_limit_sec; then
+    debug "🍺 Brew was updated recently"
+    return 0 # Update is recent enough
   fi
 
-  # Run brew update and record timestamp
-  debug "🍺 Running brew update (last update was more than ${max_age_hours}h ago)" >&2
+  # Run brew update and cache timestamp + outdated list
+  debug "🍺 Running brew update (last update was > ${age_limit_hrs}h ago)" >&2
   if brew update >/dev/null 2>&1; then
-    echo "$current_time" >"$timestamp_file"
+    local current_time_sec=$(date +%s)
+    printf "$current_time_sec" >"${BREW_LAST_UPDATE_TIME_FILE}"
+    cache_brew_outdated_formula_list
     return 0
   else
     echo "⚠️ Warning: brew update failed" >&2
@@ -64,34 +77,27 @@ ensure_brew_recently_updated() {
   fi
 }
 
+# Get the cached list of outdated formulae, creating it if needed
+get_brew_outdated_formula_list() {
+  if [[ ! -f "${BREW_OUTDATED_LIST_CACHE_FILE}" ]]; then
+    ensure_brew_recently_updated || return 1
+  fi
+
+  cat "${BREW_OUTDATED_LIST_CACHE_FILE}" 2>/dev/null || return 1
+}
+
 # Check if a formula is outdated (needs updating)
 #
 # Usage: is_formula_outdated "package-name"
-# Returns: 0 if outdated, 1 if up-to-date, 2 if not installed
+# Returns: 0 if outdated, 1 if up-to-date or not installed
 is_brew_formula_outdated() {
-  local formula="$1"
-
-  if [[ -z "$formula" ]]; then
-    echo "Error: Formula name required" >&2
-    return 2
-  fi
-
-  # # Check if formula is installed
-  # if ! is_brew_formula_installed "$formula"; then
-  #   return 2 # Not installed
-  # fi
-
-  # Ensure brew is updated recently
-  ensure_brew_recently_updated || return 2
-
-  # Use brew outdated with JSON for fastest checking
-  local outdated_json=$(brew outdated --json=v2 --formula "$formula" 2>/dev/null) || return 2
+  local formula="${1}"
 
   # If formula appears in outdated list, it needs updating
-  if echo "${outdated_json}" | jq -e ".formulae[] | select(.name == \"$formula\")" &>/dev/null; then
+  if get_brew_outdated_formula_list | jq -e ".formulae[] | select(.name == \"${formula}\")" &>/dev/null; then
     return 0 # Outdated
   else
-    return 1 # Up-to-date
+    return 1 # Up-to-date or not installed
   fi
 }
 
