@@ -61,7 +61,6 @@ ensure_brew_recently_updated() {
   local age_limit_sec=86400
 
   if get_seconds_since_last_brew_update -lt $age_limit_sec; then
-    debug "🍺 Brew was updated recently"
     return 0 # Update is recent enough
   fi
 

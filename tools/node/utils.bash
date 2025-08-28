@@ -109,11 +109,11 @@ ensure_global_npm_package_updated() {
   local package="${1}"
 
   if ! is_global_npm_package_installed "${package}"; then
-    info "📦 Installing ${package}"
+    debug "📦 Installing ${package}"
     npm install -g "${package}@latest"
   else
     if is_global_npm_package_outdated "${package}"; then
-      info "📦 Updating ${package}"
+      debug "📦 Updating ${package}"
       npm install -g "${package}@latest"
     else
       printf "✅ ${package} is already up-to-date\n"
