@@ -116,7 +116,7 @@ cask "kitty"
 cask "neohtop" # see: https://abdenasser.github.io/neohtop/
 cask "notion"
 cask "obsidian"
-# cask "raycast"
+cask "raycast"
 cask "rectangle"
 cask "visual-studio-code"
 cask "vlc"
