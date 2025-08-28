@@ -120,6 +120,7 @@ cask "raycast"
 cask "rectangle"
 cask "sip-app"
 cask "visual-studio-code"
+cask "vladdoster/formulae/vimari" # Safari extension (for vim keybindings in Safari)
 cask "vlc"
 cask "zed"
 
@@ -150,7 +151,6 @@ mas "Amphetamine", id: 937984704
 mas "Notion Web Clipper", id: 1559269364 # Safari extension
 mas "Reeder 5.", id: 1529448980
 mas "Things 3", id: 904280696
-mas "Vimari", id: 1480933944
 
 message = "\📦 Loading additional Mac App Store apps for #{computer_name}\n"
 
