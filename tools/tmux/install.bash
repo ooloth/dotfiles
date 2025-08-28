@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/tmux/utils.bash"
 source "${DOTFILES}/features/install/utils.bash"
+source "${DOTFILES}/tools/tmux/utils.bash"
 
 install_and_symlink \
   "${TOOL_LOWER}" \
@@ -21,3 +21,5 @@ fi
 
 info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s plugins"
 "${TPM}/install_plugins"
+
+printf "\n🚀 All ${TOOL_UPPER} plugins have been installed\n"
