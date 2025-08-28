@@ -92,8 +92,6 @@ n() { npm install "$@"; }
 source "${DOTFILES}/tools/zsh/config/new.zsh"
 ng() { "$DOTFILES/features/update/zsh/npm.zsh"; }
 # nu() { n && npm-check -u; } -- conflicts with nushell launch command
-alias neovim="nvim"
-alias nvim="NVIM_APPNAME=nvim-ide nvim"
 alias nvm="fnm"
 
 alias oo="cd $HOME/Repos/ooloth"
@@ -123,9 +121,6 @@ source "${DOTFILES}/tools/zsh/config/test.zsh"
 alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
-v() {
-  (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"
-}
 alias vscode="code"
 
 if is_work; then
