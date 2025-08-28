@@ -64,4 +64,4 @@ npm i -g yaml-language-server # see: https://github.com/neovim/nvim-lspconfig/bl
 info "🧃 Restoring Lazy plugin versions from lazy-lock.json"
 NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
 
-printf "\n🚀 All neovim dependencies are up to date\n"
+printf "\n\n🚀 All neovim dependencies are up to date\n"

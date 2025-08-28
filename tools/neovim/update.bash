@@ -30,4 +30,4 @@ done
 info "${TOOL_EMOJI} Restoring locked Lazy plugin versions"
 NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
 
-debug "🚀 All ${TOOL_UPPER} dependencies are up-to-date"
+debug "\n🚀 All ${TOOL_UPPER} dependencies are up-to-date"
