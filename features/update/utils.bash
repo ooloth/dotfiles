@@ -42,5 +42,5 @@ update_and_symlink() {
   # Symlink config files
   bash -c "VERBOSE=true ${symlink_script_path}"
 
-  debug "🚀 ${tool_upper} is up to date"
+  debug "🚀 ${tool_upper} is up-to-date"
 }
