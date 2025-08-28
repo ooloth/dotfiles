@@ -9,10 +9,8 @@ computer_name = `networksetup -getcomputername`.chomp
 ########
 
 tap "arl/arl" # for gitmux
-tap "bufbuild/buf" # for buf_lint
 tap "buo/cask-upgrade" # see: https://gist.github.com/ChristopherA/a579274536aab36ea9966f301ff14f3f#best-practices-brew-cask-mas-and-cu
 tap "candid82/brew" # for joker, for goku
-tap "hashicorp/tap" # for terraform, vault
 tap "jesseduffield/lazydocker"
 tap "kdash-rs/kdash" # for kdash
 
@@ -28,12 +26,10 @@ end
 # PACKAGES #
 ############
 
-brew "basedpyright" # for python in neovim
 brew "bash"
 brew "bat" # replaces cat
 brew "bats-core" # for bash testing
 brew "btop" # top alternative
-brew "bufbuild/buf/buf" # for buf_lint in neovim
 brew "coreutils"
 brew "ctop" # for docker
 brew "eza" # replaces ls
@@ -50,7 +46,6 @@ brew "glances" # top alternative
 brew "gnu-sed"
 brew "go"
 brew "goose" # for go
-brew "hadolint" # for docker
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
 brew "k9s" # for kubernetes
@@ -59,35 +54,23 @@ brew "kubectl" # for kubernetes
 brew "kubectx" # for kubernetes
 brew "jesseduffield/lazydocker/lazydocker"
 brew "lazygit"
-brew "lua-language-server" # for lua in neovim
 brew "mas"
 brew "m-cli" # macos CLI: https://github.com/rgcr/m-cli
-brew "marksman" # for markdown lsp in neovim
 brew "poppler" # for yazi
 brew "postgresql@14"
 brew "libpq" # for postgres
 brew "powerlevel10k"
 brew "ripgrep" # for telescope, yazi
-brew "ruff" # for python in neovim (for formatting support when not installed in venv)
 brew "sesh" # for tmux
-brew "shellcheck" # for bash in neovim
-brew "shfmt" # for bash in neovim
 brew "speedtest-cli"
 brew "starship"
 brew "stern" # for kubectl
-brew "stylua" # for lua
 brew "svn" # for font cask installations
-brew "taplo" # for toml
-brew "tflint" # for terraform linting in neovim
-brew "hashicorp/tap/terraform" # for terraform formatting in neovim
-brew "hashicorp/tap/terraform-ls" # for terraform lsp in neovim + vs code
 brew "httpie"
-brew "tidy-html5" # for linting html + xml in neovim
 brew "tmux"
 brew "tree"
 brew "unar" # for yazi
 brew "vifm"
-brew "wget" # for neovim
 brew "yazi" # terminal file manager
 brew "zoxide"
 brew "zsh"
