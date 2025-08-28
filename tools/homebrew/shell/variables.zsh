@@ -2,7 +2,8 @@
 
 source "${DOTFILES}/tools/zsh/utils.zsh"
 
-export HOMEBREW_NO_INSTALL_CLEANUP=1  # don't auto-remove old versions after every install/upgrade
+export HOMEBREW_NO_AUTO_UPDATE=1      # I'll update manually (don't slow down individual install/upgrade commands)
+export HOMEBREW_NO_INSTALL_CLEANUP=1  # I'll clean up manually (don't slow down individual install/upgrade commands)
 
 if have brew; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
