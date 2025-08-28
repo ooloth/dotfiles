@@ -67,13 +67,16 @@ symlink() {
 remove_broken_symlinks() {
   local directory="${1:-}"
 
-  if [[ -z "$directory" ]]; then
-    echo "Error: Directory path is required" >&2
+  # Remove broken symlinks at the top level of ~/.config subdirectories too
+  local max_depth=$([[ "${directory}" == *".config"* ]] && echo 2 || echo 1)
+
+  if [[ -z "${directory}" ]]; then
+    echo "🚨 Error: Directory path is required" >&2
     return 1
   fi
 
-  if [[ ! -d "$directory" ]]; then
-    echo "Directory does not exist: $directory" >&2
+  if [[ ! -d "${directory}" ]]; then
+    printf "⚠️ Directory does not exist: ${directory}\n" >&2
     return 0
   fi
 
@@ -81,11 +84,11 @@ remove_broken_symlinks() {
   local symlink
   while IFS= read -r -d '' symlink; do
     # Check if symlink target exists
-    if [[ ! -e "$symlink" ]]; then
-      echo "Removing broken symlink: $symlink"
-      rm -rf "$symlink"
+    if [[ ! -e "${symlink}" ]]; then
+      printf "🧼 Removing broken symlink: ${symlink}\n"
+      rm -rf "${symlink}"
     fi
-  done < <(find "$directory" -maxdepth 1 -type l -print0 2>/dev/null)
+  done < <(find "${directory}" -maxdepth "${max_depth}" -type l -print0 2>/dev/null)
 
   return 0
 }
