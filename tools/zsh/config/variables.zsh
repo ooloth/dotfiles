@@ -1,9 +1,12 @@
-#################
-# PREREQUISITES #
-#################
+#!/usr/bin/env zsh
 
-source "${DOTFILES}/tools/macos/shell/aliases.zsh" # sets is_air, is_mini, is_work
-source "${DOTFILES}/tools/zsh/config/path.zsh" # sets PATH
+############
+# PRIORITY #
+############
+
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:${PATH}" # Default system paths
+export PATH="/opt/local/bin:/opt/local/sbin:${PATH}" # Add MacPorts to PATH
+export PATH="${HOME}/.local/bin:${PATH}" # Add local bin to PATH
 
 ###########
 # GENERAL #
