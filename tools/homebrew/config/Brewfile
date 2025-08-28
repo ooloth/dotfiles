@@ -121,7 +121,6 @@ cask "rectangle"
 cask "sip-app"
 cask "thingsmacsandboxhelper" # enables Things 3 "Quick Entry with Autofill" feature: https://formulae.brew.sh/cask/thingsmacsandboxhelper
 cask "visual-studio-code"
-cask "vladdoster/formulae/vimari" # Safari extension (for vim keybindings in Safari)
 cask "vlc"
 cask "zed"
 
