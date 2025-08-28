@@ -10,7 +10,7 @@ update_and_symlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "${TOOL_COMMAND} self update" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "${TOOL_COMMAND} --version" \
-  "parse_version"
+  "parse_version" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"

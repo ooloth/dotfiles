@@ -13,10 +13,10 @@ update_and_symlink() {
   local tool_command="${3}"
   local tool_emoji="${4}"
   local update_command="${5}"
-  local symlink_script_path="${6}"
-  local install_script_path="${7}"
-  local version_command="${8}"
-  local version_parsing_function="${9}"
+  local version_command="${6}"
+  local version_parsing_function="${7}"
+  local install_script_path="${8}"
+  local symlink_script_path="${9:-}"
 
   # If command not found, install + symlink instead of updating
   if ! have "${tool_command}"; then

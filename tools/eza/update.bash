@@ -10,7 +10,6 @@ update_and_symlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "brew upgrade --formula ${TOOL_PACKAGE}" \
-  "" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "brew list --version ${TOOL_PACKAGE}" \
-  "parse_version"
+  "parse_version" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash"

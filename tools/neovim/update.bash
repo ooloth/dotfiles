@@ -12,10 +12,10 @@ update_and_symlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "brew upgrade --formula ${TOOL_PACKAGE}" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "brew list --version ${TOOL_PACKAGE}" \
-  "parse_version"
+  "parse_version" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
 info "${TOOL_EMOJI} Updating ${TOOL_LOWER}'s homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
