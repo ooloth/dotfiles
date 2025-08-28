@@ -31,7 +31,6 @@ done
 
 alias adv="cd $HOME/Repos/ooloth/advent-of-code"
 
-alias c="clear"
 alias cat="bat --paging=never"
 alias cd="z"
 source "${DOTFILES}/tools/zsh/config/check.zsh"

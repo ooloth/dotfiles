@@ -5,6 +5,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
+alias c="clear"
 alias env="env | sort"
 
 # kill process running on given port
