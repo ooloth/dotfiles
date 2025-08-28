@@ -69,8 +69,9 @@ if is_work; then
   export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1
 
   # Griphook
+  # TODO: still need this?
   # see: https://github.com/recursionpharma/data-science-onboarding#setting-up-griphook
-  source "${HOME}/.griphook/env"
+  # source "${HOME}/.griphook/env"
 
   # Kafka
   # Get the latest version of librdkafka installed by Homebrew
