@@ -1,44 +1,30 @@
 ## Remembering
 
-- Work in three phases: research, plan, implement
-- Create a new subfolder in the project's `.claude/specs/` folder (create as needed) with a `research.md` and `plan.md` to store clear information as you go
-- The research phase should produce a `research.md`
-- The plan phase should produce a `plan.md`
-- Assume you may need to hand off key findings to a new Claude at any time
-- Use markdown files to transfer all details to the next Claude
+- Plan in these phases: clarify -> explore -> plan -> document plan in a `.claude/specs/<task>.md`
+- The plan phase should produce a `<task>.md` for me to review and help improve
+- Keep the `<task>.md` up-to-date as things change and ensure remove any out-of-date information is removed promptly
+- Assume you will need to hand off this plan to a DIFFERENT agent for implementation
+- Optimize for the future agent's understanding by including all essential details and omitting everything else
 
 ## Managing your context window
 
-- You do best when you have less in your context rather than more
-- Minimize context usage by using my custom agents (`tools/claude/config/agents`) or creating your own ephemeral ones
-- Ensure sub-agents write down their key findings in the relevant markdown file as well
+- You do best thinking when you have less in your context rather than more
+- Minimize your context usage by delegating tasks that are straight-forward to describe and report back about but may require lots of exploration to complete to my custom agents (`tools/claude/config/agents`) or ephemeral Task agents you create
+- Ensure any agents you delegate to know exactly what you want them to report back, and what details to include
+- Update the `<task>.md` with any helpful findings
 
 ## Using Gemini CLI for Large Codebase Analysis
 
-When analyzing large codebases or multiple files that might exceed context limits, use the Gemini CLI with `gemini -p` to take advantage of its massive context window.
+When analyzing large amounts of information, consider using the Gemini CLI with `gemini -p` to take advantage of its massive free context window.
 
 <!-- Reference: https://www.reddit.com/r/ChatGPTCoding/comments/1lm3fxq/gemini_cli_is_awesome_but_only_when_you_make/ -->
-
-### When to Use Gemini CLI
-
-Use `gemini -p` when:
-
-- Analyzing entire codebases or large directories
-- Comparing multiple large files
-- Need to understand project-wide patterns or architecture
-- Current context window is insufficient for the task
-- Working with files totaling more than 100KB
-- Checking for the presence of certain coding patterns across the entire codebase
-- Verifying if specific features, patterns, or security measures are implemented
 
 ### Important Notes
 
 - Use the `@` syntax to include files and directories in your Gemini prompts. The paths should be relative to WHERE you run the `gemini` command:
 - Paths in `@` syntax are relative to your current working directory when invoking `gemini`
 - The CLI will include file contents directly in the context
-- No need for `--yolo` flag for read-only analysis
-- Gemini's context window can handle entire codebases that would overflow Claude's context
-- When checking implementations, be specific about what you're looking for to get accurate results
+- No need for the `--yolo` flag for read-only analysis
 
 ### File Analysis Examples
 
