@@ -8,7 +8,7 @@ export TOOL_PACKAGE="neovim"
 export TOOL_EMOJI="🦸"
 export TOOL_CONFIG_DIR="${HOME}/.config/nvim"
 
-# TODO: need to install  these taps too?
+# TODO: need to install these taps too?
 # brew tap "bufbuild/buf" # for buf_lint
 # brew tap "hashicorp/tap" # for terraform
 
