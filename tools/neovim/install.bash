@@ -26,7 +26,19 @@ for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   ensure_global_npm_package_installed "${package}"
 done
 
-info "${TOOL_EMOJI} Restoring locked Lazy plugin versions"
+info "${TOOL_EMOJI} Installing config.nvim"
+
+CONFIG_REPO="ooloth/config.nvim"
+LOCAL_REPO_PATH="$HOME/Repos/$CONFIG_REPO"
+
+if [ ! -d "${LOCAL_REPO_PATH}" ]; then
+  mkdir -p "${LOCAL_REPO_PATH}"
+  git clone "git@github.com:${CONFIG_REPO}.git" "${LOCAL_REPO_PATH}"
+else
+  printf "✅ config.nvim is already installed\n"
+fi
+
+info "${TOOL_EMOJI} Installing Lazy plugin versions"
 NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
 
-debug "🚀 All ${TOOL_UPPER} dependencies have been installed"
+printf "\n\n🚀 All ${TOOL_UPPER} dependencies have been installed\n"
