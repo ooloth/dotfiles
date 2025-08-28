@@ -17,8 +17,8 @@ autoload -Uz compinit && compinit
 # AUTOMATIC #
 #############
 
-# Find all integration.bash files in each tool directory (except @new and @archive)
-shell_integration_files=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "integration.zsh" -print))
+# Find all shell/integration.bash files in each tool directory (except @new and @archive)
+shell_integration_files=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell/integration.zsh" -print))
 
 for file in "${shell_integration_files[@]}"; do
   source "${file}"
