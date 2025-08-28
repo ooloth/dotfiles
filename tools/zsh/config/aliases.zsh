@@ -3,16 +3,25 @@
 
 source "${DOTFILES}/tools/zsh/utils.zsh" # is_work
 
+############
+# FEATURES #
+############
+
+# Find all shell/aliases.bash files in each feature directory (except @new and @archive)
+shell_aliases_in_features=($(find "${DOTFILES}/features" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell/aliases.zsh" -print))
+
+for file in "${shell_aliases_in_features[@]}"; do
+  source "${file}"
+done
+
 #########
 # TOOLS #
 #########
 
-# Find all integration.bash files in each tool directory (except @new and @archive and zsh)
-shell_aliases_in_features=($(find "${DOTFILES}/features" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "aliases.zsh" -print))
-shell_aliases_in_tools=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" -o -name "zsh" \) -prune -o -type f -name "aliases.zsh" -print))
-shell_aliases_files=("${shell_aliases_in_features[@]}" "${shell_aliases_in_tools[@]}")
+# Find all shell/aliases.bash files in each tool directory (except @new and @archive and zsh)
+shell_aliases_in_tools=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell/aliases.zsh" -print))
 
-for file in "${shell_aliases_files[@]}"; do
+for file in "${shell_aliases_in_tools[@]}"; do
   source "${file}"
 done
 
