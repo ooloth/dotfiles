@@ -29,20 +29,12 @@ done
 # MANUAL #
 ##########
 
-alias adv="cd $HOME/Repos/ooloth/advent-of-code"
-
 alias cat="bat --paging=never"
-alias cd="z"
 source "${DOTFILES}/tools/zsh/config/check.zsh"
 alias cte="EDITOR=vim crontab -e"
 alias ctl="crontab -l"
-alias con="cd $HOME/Repos/ooloth/content"
-alias conf="cd $HOME/Repos/ooloth/config.nvim"
-
-alias dot="cd $DOTFILES"
 alias d="lazydocker"
 alias da='docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"'
-alias dash="cd $HOME/Repos/ooloth/dashboard"
 alias db="docker build ."
 de() { docker container exec -it $1 sh; }
 alias dc="docker compose"
@@ -56,9 +48,6 @@ alias f='yazi'
 
 alias g="lazygit"
 alias grep="rg"
-
-alias h="cd ${HOME}"
-alias hub="cd ${HOME}/Repos/ooloth/hub"
 
 alias image="kitten icat" # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 
@@ -81,11 +70,9 @@ alias kl="stern"
 
 alias lint="check" # I forget I refer to this as "check" sometimes
 
-alias md="cd $HOME/Repos/ooloth/media"
 alias mr="sudo shutdown -r now"         # restart macos
 alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
-alias mu="cd $HOME/Repos/ooloth/michaeluloth.com"
 
 n() { npm install "$@"; }
 source "${DOTFILES}/tools/zsh/config/new.zsh"
@@ -93,9 +80,6 @@ ng() { "$DOTFILES/features/update/zsh/npm.zsh"; }
 # nu() { n && npm-check -u; } -- conflicts with nushell launch command
 alias nvm="fnm"
 
-alias oo="cd $HOME/Repos/ooloth"
-
-alias pilots="cd $HOME/Repos/ooloth/download-pilots"
 alias powerlevel10k="p10k"
 
 source "${DOTFILES}/tools/zsh/config/restart.zsh"
@@ -110,7 +94,6 @@ alias rm="trash"                       # see: https://github.com/sindresorhus/tr
 source "${DOTFILES}/tools/zsh/config/run.zsh"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
-alias scraper="cd $HOME/Repos/ooloth/scraper"
 source "${DOTFILES}/tools/zsh/config/start.zsh"
 source "${DOTFILES}/tools/zsh/config/stop.zsh"
 source "${DOTFILES}/tools/zsh/config/submit.zsh"
@@ -123,7 +106,6 @@ alias ts="tailscale"
 alias vscode="code"
 
 if is_work; then
-  alias bp="cd ${HOME}/Repos/recursionpharma/build-pipelines"
   alias bqq="bq query --use_legacy_sql=false --project_id=datalake-prod-ef49c0c9 --format=prettyjson"
 
   # see: https://recursion.slack.com/archives/CV1G8MHKK/p1752594420668499?thread_ts=1752594134.745739&cid=CV1G8MHKK
@@ -144,15 +126,11 @@ if is_work; then
     kubectl config use-context gke_rp006-prod-49a893d8_us-central1_rp006-prod -n rp006-neuro-phenomap
   }
 
-  alias maf="cd react-app"
   alias pom='griphook pomerium login' # generate a pomerium token that expires in 12 hours (so I can pass it in requests to internal services that require it)
 
-  alias r="cd $HOME/Repos/recursionpharma"
   ru() { uv tool upgrade rxrx-roadie; }
   rl() { ru && uvx roadie lock "$@"; }
   rv() { ru && uvx roadie venv --output .venv "$@"; }
   rlc() { rl --clobber; }
   rvc() { rv --clobber }
-
-  tech() { cd "$HOME/Repos/recursionpharma/tech"; }
 fi
