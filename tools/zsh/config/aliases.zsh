@@ -29,11 +29,6 @@ done
 # MANUAL #
 ##########
 
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-
 alias adv="cd $HOME/Repos/ooloth/advent-of-code"
 
 alias c="clear"
@@ -57,8 +52,6 @@ alias dl="dc logs --follow --tail=100"                              # see last 1
 alias du="dc up --build --detach --remove-orphans"                  # recreate and start one or more services (or all services if no args provided)
 alias dud="dc up --detach"                                          # start one or more services (or all services if no args provided)
 diff() { kitten diff "$1" "$2"; }                                   # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
-
-alias env="env | sort"
 
 alias f='yazi'
 
@@ -86,8 +79,6 @@ alias ks="k scale"
 # Add -c regex to filter by container name
 # see: https://github.com/stern/stern#usage
 alias kl="stern"
-# kill process running on given port
-kill() { lsof -t -i:"$1" | xargs kill -9; }
 
 alias lint="check" # I forget I refer to this as "check" sometimes
 
@@ -110,28 +101,19 @@ alias oo="cd $HOME/Repos/ooloth"
 alias pilots="cd $HOME/Repos/ooloth/download-pilots"
 alias powerlevel10k="p10k"
 
-# Keep 'r' as an alias that can be overridden by alias in work/aliases.zsh
-# alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
-alias R="source ${HOME}/.zshenv && source ${HOME}/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
 source "${DOTFILES}/tools/zsh/config/restart.zsh"
+
 return_or_exit() {
   local code="$1"                            # The exit code to return or exit with
   return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
 }
+
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
 source "${DOTFILES}/tools/zsh/config/run.zsh"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias scraper="cd $HOME/Repos/ooloth/scraper"
-sl() {
-  local source_file="$1"
-  local target_dir="$2"
-
-  mkdir -p "$target_dir"
-  printf "🔗 " # inline prefix for the output of the next line
-  ln -fsvw "$source_file" "$target_dir";
-}
 source "${DOTFILES}/tools/zsh/config/start.zsh"
 source "${DOTFILES}/tools/zsh/config/stop.zsh"
 source "${DOTFILES}/tools/zsh/config/submit.zsh"
@@ -145,15 +127,6 @@ v() {
   (have "nvim" && nvim "$@") || (have "vim" && vim "$@") || vi "$@"
 }
 alias vscode="code"
-
-alias x="exit"
-
-zt() {
-  # [z]sh [t]ime: measure how long new shells take to launch
-  for i in $(seq 1 10); do
-    /usr/bin/time zsh -i -c exit
-  done
-}
 
 if is_work; then
   alias bp="cd ${HOME}/Repos/recursionpharma/build-pipelines"
