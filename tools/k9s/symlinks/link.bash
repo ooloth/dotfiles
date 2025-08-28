@@ -8,3 +8,7 @@ symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/aliases.yaml" "${TOOL_CONFIG_DIR
 symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/config.yaml" "${TOOL_CONFIG_DIR}"
 symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/hotkeys.yaml" "${TOOL_CONFIG_DIR}"
 symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/skins" "${TOOL_CONFIG_DIR}"
+
+if is_work; then
+  symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/clusters" "${TOOL_CONFIG_DIR}"
+fi

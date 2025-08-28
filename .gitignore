@@ -1,12 +1,9 @@
+# Theirs
 .DS_Store
 *.log
 .nvimlog
+
+# Mine
+**/.claude/settings.local.json
 .secrets
 Brewfile.lock.json
-
-**/.claude/settings.local.json
-
-# Work stuff
-k9s/config/clusters/*
-# zsh/config/work/*
-# !zsh/config/work/.gitkeep

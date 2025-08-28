@@ -43,7 +43,6 @@ brew "go"
 brew "goose" # for go
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
-brew "k9s" # for kubernetes
 brew "kdash" # for kubernetes
 brew "kubectl" # for kubernetes
 brew "kubectx" # for kubernetes

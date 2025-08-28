@@ -41,9 +41,6 @@ export HISTORY_IGNORE="git*"
 export HISTSIZE=100000
 export SAVEHIST=$HISTSIZE
 
-# k9s
-export K9SCONFIG=$HOME/.config/k9s
-
 # OpenSSL
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
