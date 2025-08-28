@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/tmux/utils.bash"
 source "${DOTFILES}/features/update/utils.bash"
-
-# # Install tpm if missing
-# if [ ! -d "$TPM_DIR" ]; then
-#   mkdir -p "${TOOL_PLUGINS_DIR}"
-#   git clone "git@github.com:tmux-plugins/tpm.git" "${TPM_DIR}"
-# fi
+source "${DOTFILES}/tools/tmux/utils.bash"
 
 # Update tmux + tpm + all tpm plugins
 update_and_symlink \
@@ -16,15 +10,22 @@ update_and_symlink \
   "${TOOL_UPPER}" \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
-  "brew upgrade --formula ${TOOL_PACKAGE} && ${TPM}/clean_plugins && ${TPM}/install_plugins && ${TPM}/update_plugins all" \
+  "brew upgrade --formula ${TOOL_PACKAGE} " \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "brew list --version ${TOOL_PACKAGE}" \
   "parse_version"
 
+info "${TOOL_EMOJI} Updating ${TOOL_LOWER} plugins"
+"${TPM}/clean_plugins"
+"${TPM}/install_plugins"
+"${TPM}/update_plugins" all
+
 # Reload tmux if it's running
 if pgrep -q tmux; then
   # see: https://github.com/tmux-plugins/tpm?tab=readme-ov-file#installation
-  printf "\n🔁 Reloading tmux\n"
-  tmux source ~/.config/tmux/tmux.conf
+  printf "\n🔁 Reloading ${TOOL_LOWER}\n"
+  tmux source "${TOOL_CONFIG_DIR}/tmux.conf"
 fi
+
+printf "\n🚀 All ${TOOL_UPPER} plugins are up-to-date\n"
