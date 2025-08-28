@@ -29,7 +29,6 @@ brew "bat" # replaces cat
 brew "bats-core" # for bash testing
 brew "btop" # top alternative
 brew "coreutils"
-brew "eza" # replaces ls
 brew "fd" # replaces find; used by yazi
 brew "ffmpegthumbnailer" # for yazi
 brew "fnm" # for node

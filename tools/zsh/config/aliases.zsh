@@ -68,14 +68,6 @@ alias kl="stern"
 kill() { lsof -t -i:"$1" | xargs kill -9; }
 
 alias lint="check" # I forget I refer to this as "check" sometimes
-# see: https://github.com/eza-community/eza#command-line-options
-# NOTE: see EZA_* env vars in variables.zsh
-alias ls="eza --all --group-directories-first --classify" # top level dir + files
-alias ld="ls --long --no-user --header"                   # top level details
-alias lt="ls --tree --git-ignore -I .git"                 # file tree (all levels)
-alias lt2="lt --level=2"                                  # file tree (2 levels only)
-alias lt3="lt --level=3"                                  # file tree (3 levels only)
-alias lt4="lt --level=4"                                  # file tree (4 levels only)
 
 alias md="cd $HOME/Repos/ooloth/media"
 alias mr="sudo shutdown -r now"         # restart macos

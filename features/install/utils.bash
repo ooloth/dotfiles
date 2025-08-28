@@ -26,7 +26,10 @@ install_and_symlink() {
   fi
 
   bash -c "${install_command}"
-  bash -c "VERBOSE=true ${symlink_script_path}"
+
+  if [ -f "${symlink_script_path}" ]; then
+    bash -c "VERBOSE=true ${symlink_script_path}"
+  fi
 
   # Confirm installation
   if ! have "${tool_command}"; then

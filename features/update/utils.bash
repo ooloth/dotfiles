@@ -40,7 +40,9 @@ update_and_symlink() {
   fi
 
   # Symlink config files
-  bash -c "VERBOSE=true ${symlink_script_path}"
+  if [ -f "${symlink_script_path}" ]; then
+    bash -c "VERBOSE=true ${symlink_script_path}"
+  fi
 
   debug "🚀 ${tool_upper} is up-to-date"
 }
