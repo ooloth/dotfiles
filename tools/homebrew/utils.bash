@@ -66,7 +66,6 @@ get_seconds_since_last_brew_update() {
 cache_brew_outdated_formula_list() {
   printf "🍺 Refreshing cached outdated brew formulae\n"
   brew outdated --formula --json=v2 | jq -r '.formulae[].name' >"${BREW_OUTDATED_LIST_CACHE_FILE}" || return 1
-
 }
 
 # Ensure brew update has been run recently.
