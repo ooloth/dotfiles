@@ -29,6 +29,6 @@ for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
 done
 
 debug "📦 Restoring Lazy plugin versions"
-NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
+NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa >/dev/null 2>&1
 
 debug "🚀 All ${TOOL_UPPER} dependencies are up-to-date"
