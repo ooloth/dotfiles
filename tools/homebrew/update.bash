@@ -5,7 +5,6 @@ source "${DOTFILES}/features/update/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
 source "${DOTFILES}/tools/homebrew/utils.bash" # source last to avoid env var overrides
 
-# TODO: change update command + version command
 # Update brew + remove old versions + remove old downloads
 update_and_symlink \
   "${TOOL_LOWER}" \
@@ -13,7 +12,7 @@ update_and_symlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "brew update" \
-  "brew list --version ${TOOL_PACKAGE}" \
+  "${TOOL_COMMAND} --version" \
   "parse_version" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash"
 
