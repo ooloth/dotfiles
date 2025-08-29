@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-new() {
-  local CURRENT_DIRECTORY=$(basename $PWD)
+source "${DOTFILES}/tools/bash/utils.bash"
 
-  case $CURRENT_DIRECTORY in
-  advent-of-code)
-    ./bin/new "$@"
-    ;;
-  *)
-    error "🚨 No 'new' case defined for '/${CURRENT_DIRECTORY}'"
-    ;;
-  esac
-}
+current_dir=$(basename "${PWD}")
+error_msg="🚨 No 'new' case defined for '/${current_dir}'"
+
+case "${current_dir}" in
+advent-of-code)
+  ./bin/new "$@"
+  ;;
+
+*)
+  error "${error_msg}"
+  ;;
+esac

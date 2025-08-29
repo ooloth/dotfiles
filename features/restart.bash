@@ -1,24 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-restart() {
-  local CURRENT_DIRECTORY=$(basename "${PWD}")
+source "${DOTFILES}/tools/bash/utils.bash"
 
-  case $CURRENT_DIRECTORY in
+current_dir=$(basename "${PWD}")
+error_msg="🚨 No 'restart' case defined for '/${current_dir}'"
+
+if is_work; then
+  case "${current_dir}" in
+  spade-flows)
+    ./bin/dev/restart.sh "$@"
+    ;;
+
   *)
-    error "🚨 No 'restart' case defined for '/${CURRENT_DIRECTORY}'"
+    error "${error_msg}"
     ;;
   esac
-
-  if is_work; then
-    case $CURRENT_DIRECTORY in
-    spade-flows)
-      ./bin/dev/restart.sh "$@"
-      ;;
-
-    *)
-      error "🚨 No 'restart' case defined for '/${CURRENT_DIRECTORY}'"
-      ;;
-    esac
-  fi
-}
+else
+  error "${error_msg}"
+fi

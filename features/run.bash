@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-run() {
-  local CURRENT_DIRECTORY=$(basename $PWD)
+source "${DOTFILES}/tools/bash/utils.bash"
 
-  case $CURRENT_DIRECTORY in
+current_dir=$(basename "${PWD}")
+error_msg="🚨 No 'run' case defined for '/${current_dir}'"
+
+if is_work; then
+  case "${current_dir}" in
+  spade-flows)
+    ./bin/dev/run.sh "$@"
+    ;;
+
+  *)
+    error "${error_msg}"
+    ;;
+  esac
+else
+  case "${current_dir}" in
   advent-of-code)
     ./bin/run "$@"
     ;;
 
   *)
-    error "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}'"
+    error "${error_msg}"
     ;;
   esac
-
-  if is_work; then
-    case $CURRENT_DIRECTORY in
-    spade-flows)
-      ./bin/dev/run.sh "$@"
-      ;;
-
-    *)
-      error "🚨 No 'run' case defined for '/${CURRENT_DIRECTORY}'"
-      ;;
-    esac
-  fi
-}
+fi

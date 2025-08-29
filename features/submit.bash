@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-submit() {
-  local CURRENT_DIRECTORY=$(basename $PWD)
+source "${DOTFILES}/tools/bash/utils.bash"
 
-  case $CURRENT_DIRECTORY in
-  advent-of-code)
-    bin/submit "$@"
-    ;;
-  *)
-    error "🚨 No 'submit' case defined for '/${CURRENT_DIRECTORY}'"
-    ;;
-  esac
-}
+current_dir=$(basename "${PWD}")
+error_msg="🚨 No 'submit' case defined for '/${current_dir}'"
+
+case "${current_dir}" in
+advent-of-code)
+  bin/submit "$@"
+  ;;
+*)
+  error "${error_msg}"
+  ;;
+esac

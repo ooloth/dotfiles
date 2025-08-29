@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-check() {
-  local current_dir=$(basename "${PWD}")
-  local error_msg="🚨 No 'check' case defined for '/${current_dir}'"
+source "${DOTFILES}/tools/bash/utils.bash"
 
-  if is_work; then
-    case $current_dir in
-    mapapp-1 | mapapp-2 | mapapp-3)
-      ./bin/check.sh "$@"
-      ;;
+current_dir=$(basename "${PWD}")
+error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
-    react-app)
-      info "Formatting, linting and type-checking"
-      npm run lint
-      ;;
+if is_work; then
+  case $current_dir in
+  mapapp-1 | mapapp-2 | mapapp-3)
+    ./bin/check.sh "$@"
+    ;;
 
-    spade-flows)
-      ./bin/dev/check.sh "$@"
-      ;;
+  react-app)
+    info "Formatting, linting and type-checking"
+    npm run lint
+    ;;
 
-    *)
-      error "${error_msg}"
-      ;;
-    esac
-  else
+  spade-flows)
+    ./bin/dev/check.sh "$@"
+    ;;
+
+  *)
     error "${error_msg}"
-  fi
-}
+    ;;
+  esac
+else
+  error "${error_msg}"
+fi

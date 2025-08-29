@@ -1,62 +1,59 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-stop() {
-  local CURRENT_DIRECTORY=$(basename $PWD)
+source "${DOTFILES}/tools/bash/utils.bash"
 
-  case $CURRENT_DIRECTORY in
+current_dir=$(basename "${PWD}")
+error_msg="🚨 No 'stop' case defined for '/${current_dir}'"
+
+if is_work; then
+  case "${current_dir}" in
+  cauldron)
+    info "✋ Stopping cauldron"
+    dd
+    ;;
+
+  genie)
+    info "✋ Stopping genie"
+    dd
+    ;;
+
+  mapapp-1)
+    info "✋ Stopping observability stack"
+    dd
+    ;;
+
+  mapapp-2)
+    info "✋ Stopping observability stack"
+    dd
+    ;;
+
+  mapapp-3)
+    info "✋ Stopping observability stack"
+    dd
+    ;;
+
+  platelet-ui)
+    info "✋ Stopping cauldron, genie, skurge, platelet and platelet-ui"
+    cauldron && dd
+    genie && dd
+    pl && dd
+    skurge && dd
+    plu && dd
+    ;;
+
+  skurge)
+    dd
+    ;;
+
+  spade-flows)
+    ./bin/dev/stop.sh
+    ;;
+
   *)
-    error "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}'"
+    error "${error_msg}"
     ;;
   esac
-
-  if is_work; then
-    case $CURRENT_DIRECTORY in
-    cauldron)
-      info "✋ Stopping cauldron"
-      dd
-      ;;
-
-    genie)
-      info "✋ Stopping genie"
-      dd
-      ;;
-
-    mapapp-1)
-      info "✋ Stopping observability stack"
-      dd
-      ;;
-
-    mapapp-2)
-      info "✋ Stopping observability stack"
-      dd
-      ;;
-
-    mapapp-3)
-      info "✋ Stopping observability stack"
-      dd
-      ;;
-
-    platelet-ui)
-      info "✋ Stopping cauldron, genie, skurge, platelet and platelet-ui"
-      cauldron && dd
-      genie && dd
-      pl && dd
-      skurge && dd
-      plu && dd
-      ;;
-
-    skurge)
-      dd
-      ;;
-
-    spade-flows)
-      ./bin/dev/stop.sh
-      ;;
-
-    *)
-      error "🚨 No 'stop' case defined for '/${CURRENT_DIRECTORY}'"
-      ;;
-    esac
-  fi
-}
+else
+  error "${error_msg}"
+fi

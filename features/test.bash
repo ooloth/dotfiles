@@ -1,51 +1,51 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-test() {
-  local args=""
-  local current_dir=$(basename "${PWD}")
-  local error_msg="🚨 No 'test' case defined for '/${current_dir}'"
+source "${DOTFILES}/tools/bash/utils.bash"
 
-  if [ "$#" -gt 0 ]; then
-    args=" ${*}"
-  fi
+args=""
+current_dir=$(basename "${PWD}")
+error_msg="🚨 No 'test' case defined for '/${current_dir}'"
 
-  if is_work; then
-    case "${current_dir}" in
-    mapapp-1 | mapapp-2 | mapapp-3)
-      ./bin/test.sh "$@"
-      ;;
+if [ "$#" -gt 0 ]; then
+  args=" ${*}"
+fi
 
-    react-app)
-      info "🧪 Running: vitest$args"
-      npm run test "$@"
-      ;;
+if is_work; then
+  case "${current_dir}" in
+  mapapp-1 | mapapp-2 | mapapp-3)
+    ./bin/test.sh "$@"
+    ;;
 
-    spade-flows)
-      ./bin/dev/test.sh "$@"
-      ;;
+  react-app)
+    info "🧪 Running: vitest$args"
+    npm run test "$@"
+    ;;
 
-    *)
-      error "${error_msg}"
-      ;;
-    esac
-  else
-    case "${current_dir}" in
-    advent-of-code)
-      ./bin/test "$@"
-      ;;
+  spade-flows)
+    ./bin/dev/test.sh "$@"
+    ;;
 
-    hub)
-      PYTHONPATH=. pytest "$@"
-      ;;
+  *)
+    error "${error_msg}"
+    ;;
+  esac
+else
+  case "${current_dir}" in
+  advent-of-code)
+    ./bin/test "$@"
+    ;;
 
-    scripts)
-      PYTHONPATH=. pytest "$@"
-      ;;
+  hub)
+    PYTHONPATH=. pytest "$@"
+    ;;
 
-    *)
-      error "${error_msg}"
-      ;;
-    esac
-  fi
-}
+  scripts)
+    PYTHONPATH=. pytest "$@"
+    ;;
+
+  *)
+    error "${error_msg}"
+    ;;
+  esac
+fi
