@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 check() {
-  local current_dir=$(basename $PWD)
+  local current_dir=$(basename "${PWD}")
   local error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
   if is_work; then

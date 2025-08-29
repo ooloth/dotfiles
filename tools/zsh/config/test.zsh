@@ -1,6 +1,6 @@
 test() {
   local args=""
-  local current_dir=$(basename $PWD)
+  local current_dir=$(basename "${PWD}")
   local error_msg="🚨 No 'test' case defined for '/${current_dir}'"
 
   if [ "$#" -gt 0 ]; then
@@ -25,10 +25,7 @@ test() {
   else
     case "${current_dir}" in
       advent-of-code)
-        bin/test "$@" ;;
-
-      dotfiles)
-        ./test/run-tests.zsh "$@" ;;
+        ./bin/test "$@" ;;
 
       hub)
         PYTHONPATH=. pytest "$@" ;;
