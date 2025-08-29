@@ -1,41 +1,15 @@
 test() {
-  local current_directory=$(basename $PWD)
   local args=""
+  local current_dir=$(basename $PWD)
+  local error_msg="🚨 No 'test' case defined for '/${current_dir}'"
 
   if [ "$#" -gt 0 ]; then
     args=" $@"
   fi
 
-  case $current_directory in
-    advent-of-code)
-      bin/test "$@"
-      ;;
-    dotfiles)
-      ./test/run-tests.zsh "$@"
-      ;;
-    hub)
-      PYTHONPATH=. pytest "$@"
-      ;;
-    scripts)
-      PYTHONPATH=. pytest "$@"
-      ;;
-    *)
-      error "🚨 No 'test' case defined for '/$current_directory'"
-      ;;
-  esac
-
   if is_work; then
-    case $current_directory in
-      mapapp)
-        ./bin/test.sh "$@" ;;
-
-      mapapp-1)
-        ./bin/test.sh "$@" ;;
-
-      mapapp-2)
-        ./bin/test.sh "$@" ;;
-
-      mapapp-3)
+    case "${current_dir}" in
+      mapapp-1|mapapp-2|mapapp-3)
         ./bin/test.sh "$@" ;;
 
       react-app)
@@ -46,7 +20,24 @@ test() {
         ./bin/dev/test.sh "$@" ;;
 
       *)
-        error "🚨 No 'test' case defined for '/$current_directory'" ;;
+        error "${error_msg}" ;;
+    esac
+  else
+    case "${current_dir}" in
+      advent-of-code)
+        bin/test "$@" ;;
+
+      dotfiles)
+        ./test/run-tests.zsh "$@" ;;
+
+      hub)
+        PYTHONPATH=. pytest "$@" ;;
+
+      scripts)
+        PYTHONPATH=. pytest "$@" ;;
+
+      *)
+        error "${error_msg}" ;;
     esac
   fi
 }

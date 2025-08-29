@@ -1,25 +1,12 @@
 #!/usr/bin/env zsh
 
 check() {
-  local CURRENT_DIRECTORY=$(basename $PWD)
-
-  case $CURRENT_DIRECTORY in
-    *)
-      error "🚨 No 'check' case defined for '/${CURRENT_DIRECTORY}'" ;;
-  esac
+  local current_dir=$(basename $PWD)
+  local error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
   if is_work; then
-    case $CURRENT_DIRECTORY in
-      mapapp)
-        ./bin/check.sh "$@" ;;
-
-      mapapp-1)
-        ./bin/check.sh "$@" ;;
-
-      mapapp-2)
-        ./bin/check.sh "$@" ;;
-
-      mapapp-3)
+    case $current_dir in
+      mapapp-1|mapapp-2|mapapp-3)
         ./bin/check.sh "$@" ;;
 
       react-app)
@@ -30,8 +17,10 @@ check() {
         ./bin/dev/check.sh "$@" ;;
 
       *)
-        error "🚨 No 'check' case defined for '/${CURRENT_DIRECTORY}'" ;;
+        error "${error_msg}" ;;
     esac
+  else
+    error "${error_msg}"
   fi
 }
 
