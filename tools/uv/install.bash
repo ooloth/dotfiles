@@ -4,6 +4,8 @@ set -euo pipefail
 source "${DOTFILES}/features/install/utils.bash"
 source "${DOTFILES}/tools/uv/utils.bash"
 
+debug "⚠️ Using work's custom ${TOOL_LOWER} install command"
+
 install_and_symlink \
   "${TOOL_LOWER}" \
   "${TOOL_UPPER}" \

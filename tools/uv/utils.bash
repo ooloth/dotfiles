@@ -14,7 +14,6 @@ export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"
 export TOOL_INSTALL_COMMAND="curl -LsSf https://astral.sh/uv/install.sh | sh"
 
 if is_work; then
-  debug "⚠️ Using work's custom ${TOOL_LOWER} install command"
   # See: https://python.prod.rxrx.io/UV-Adoption-Guide
   export TOOL_INSTALL_COMMAND="curl -LsSf https://python.prod.rxrx.io/rxrx-setup-uv.sh | sh"
 fi
