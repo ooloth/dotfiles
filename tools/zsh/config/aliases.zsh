@@ -30,7 +30,7 @@ done
 ##########
 
 alias cat="bat --paging=never"
-source "${DOTFILES}/features/check.bash"
+alias check="${DOTFILES}/features/check.bash"
 alias cte="EDITOR=vim crontab -e"
 alias ctl="crontab -l"
 alias d="lazydocker"
@@ -75,14 +75,14 @@ alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pai
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 
 n() { npm install "$@"; }
-source "${DOTFILES}/features/new.bash"
-ng() { "$DOTFILES/features/update/zsh/npm.zsh"; }
+alias new="${DOTFILES}/features/new.bash"
+alias ng="${DOTFILES}/features/update/zsh/npm.zsh"
 # nu() { n && npm-check -u; } -- conflicts with nushell launch command
 alias nvm="fnm"
 
 alias powerlevel10k="p10k"
 
-source "${DOTFILES}/features/restart.bash"
+alias restart="${DOTFILES}/features/restart.bash"
 
 return_or_exit() {
   local code="$1"                            # The exit code to return or exit with
@@ -91,15 +91,15 @@ return_or_exit() {
 
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
-source "${DOTFILES}/features/run.bash"
+alias run="${DOTFILES}/features/run.bash"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
-source "${DOTFILES}/features/start.bash"
-source "${DOTFILES}/features/stop.bash"
-source "${DOTFILES}/features/submit.bash"
+alias start="${DOTFILES}/features/start.bash"
+alias stop="${DOTFILES}/features/stop.bash"
+alias submit="${DOTFILES}/features/submit.bash"
 
 t() { tmux attach || exec tmux; }
-source "${DOTFILES}/features/test.bash"
+alias test="${DOTFILES}/features/test.bash"
 alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
