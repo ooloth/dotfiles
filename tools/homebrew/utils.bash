@@ -61,11 +61,12 @@ get_seconds_since_last_brew_update() {
   printf "$update_age_sec"
 }
 
-# Refresh the cached list of outdated brew formulae
+# Populate the cached list of outdated brew formulae, one package name per line
 # Called each time brew update is run
 cache_brew_outdated_formula_list() {
   printf "🍺 Refreshing cached outdated brew formulae\n"
-  brew outdated --formula --json=v2 >"${BREW_OUTDATED_LIST_CACHE_FILE}" || return 1
+  brew outdated --formula --json=v2 | jq -r '.formulae[].name' >"${BREW_OUTDATED_LIST_CACHE_FILE}" || return 1
+
 }
 
 # Ensure brew update has been run recently.
@@ -94,10 +95,23 @@ ensure_brew_recently_updated() {
 
 # Get the cached list of outdated formulae, creating it if needed
 get_brew_outdated_formula_list() {
-  if [[ ! -f "${BREW_OUTDATED_LIST_CACHE_FILE}" ]]; then
-    ensure_brew_recently_updated || return 1
+  if [[ ! -f "${NPM_OUTDATED_LIST_CACHE_FILE}" ]]; then
+    # If the cache file doesn't exist, create it
+    ensure_brew_recently_updated | return 1
+  else
+    # Check the age of the cache file
+    local current_time_sec=$(date +%s)
+    local last_modified_sec=$(stat -f %m "${NPM_OUTDATED_LIST_CACHE_FILE}")
+    local cache_age_sec=$((current_time_sec - last_modified_sec))
+    local age_limit_sec=86400
+
+    # If the cache file is older than the age limit, refresh it
+    if ((cache_age_sec > age_limit_sec)); then
+      cache_brew_outdated_formula_list || return 1
+    fi
   fi
 
+  # Return the contents of the cached outdated list
   cat "${BREW_OUTDATED_LIST_CACHE_FILE}" 2>/dev/null || return 1
 }
 
@@ -109,7 +123,7 @@ is_brew_formula_outdated() {
   local formula="${1}"
 
   # If formula appears in outdated list, it needs updating
-  if get_brew_outdated_formula_list | jq -e ".formulae[] | select(.name == \"${formula}\")" &>/dev/null; then
+  if get_brew_outdated_formula_list | grep -Fxq "$formula"; then
     return 0 # Outdated
   else
     return 1 # Up-to-date or not installed
