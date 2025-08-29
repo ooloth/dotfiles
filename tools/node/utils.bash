@@ -52,11 +52,11 @@ ensure_global_npm_package_installed() {
   fi
 }
 
-# Refresh the cached list of outdated global npm packages
+# Populate the cached list of outdated global npm packages, one package name per line
 # Called each time brew update is run
 cache_global_npm_outdated_list() {
   printf "📦 Refreshing cached outdated global npm packages\n"
-  npm outdated --global --json >"${NPM_OUTDATED_LIST_CACHE_FILE}" || return 1
+  npm outdated --global --json | jq -r 'keys[]' >"${NPM_OUTDATED_LIST_CACHE_FILE}" || return 1
 }
 
 # Get the cached list of outdated global npm packages
@@ -92,13 +92,12 @@ get_global_npm_outdated_list() {
 is_global_npm_package_outdated() {
   local package="${1}"
 
-  # If package appears as a top-level key in the outdated list, it needs updating
-  if get_global_npm_outdated_list | jq -e "has(\"${package}\")" &>/dev/null; then
+  # If package appears in the outdated list, it needs updating
+  if get_global_npm_outdated_list | grep -Fxq "$package"; then
     return 0 # Outdated
   else
     return 1 # Up-to-date or not installed
   fi
-
 }
 
 # Check if a global npm package is up-to-date, installing or updating it as needed
