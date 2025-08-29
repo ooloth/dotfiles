@@ -9,7 +9,7 @@ shell_path="/opt/homebrew/bin/zsh"
 # Check if Zsh is installed
 if [[ ! -x "$shell_path" ]]; then
   printf "\n❌ Zsh not found at ${shell_path}. Installing Zsh via Homebrew...\n"
-  source "$DOTFILES/features/install/zsh/homebrew.zsh"
+  source "$DOTFILES/features/install/zsh/deprecated/homebrew.zsh"
 
   # Check if Zsh is now installed
   if [[ ! -x "$shell_path" ]]; then

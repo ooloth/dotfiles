@@ -109,7 +109,7 @@ DOTUPDATE="${DOTFILES}/features/update/zsh"
 
 source "${DOTINSTALL}/ssh.zsh"
 source "${DOTINSTALL}/github.zsh"
-source "${DOTINSTALL}/homebrew.zsh"
+source "${DOTINSTALL}/deprecated/homebrew.zsh"
 source "${DOTUPDATE}/homebrew.zsh"
 source "${DOTINSTALL}/zsh.zsh"
 source "${DOTINSTALL}/deprecated/rust.zsh"

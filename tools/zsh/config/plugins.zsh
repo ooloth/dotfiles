@@ -50,11 +50,6 @@ if have uv; then
   eval "$(uvx --generate-shell-completion zsh)"
 fi
 
-if have brew; then
-  source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-fi
-
 if is_work; then
   if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
 fi
