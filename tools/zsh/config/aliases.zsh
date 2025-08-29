@@ -30,7 +30,7 @@ done
 ##########
 
 alias cat="bat --paging=never"
-source "${DOTFILES}/tools/zsh/config/check.zsh"
+source "${DOTFILES}/features/check.zsh"
 alias cte="EDITOR=vim crontab -e"
 alias ctl="crontab -l"
 alias d="lazydocker"
@@ -75,14 +75,14 @@ alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pai
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 
 n() { npm install "$@"; }
-source "${DOTFILES}/tools/zsh/config/new.zsh"
+source "${DOTFILES}/features/new.zsh"
 ng() { "$DOTFILES/features/update/zsh/npm.zsh"; }
 # nu() { n && npm-check -u; } -- conflicts with nushell launch command
 alias nvm="fnm"
 
 alias powerlevel10k="p10k"
 
-source "${DOTFILES}/tools/zsh/config/restart.zsh"
+source "${DOTFILES}/features/restart.zsh"
 
 return_or_exit() {
   local code="$1"                            # The exit code to return or exit with
@@ -91,15 +91,15 @@ return_or_exit() {
 
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
-source "${DOTFILES}/tools/zsh/config/run.zsh"
+source "${DOTFILES}/features/run.zsh"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
-source "${DOTFILES}/tools/zsh/config/start.zsh"
-source "${DOTFILES}/tools/zsh/config/stop.zsh"
-source "${DOTFILES}/tools/zsh/config/submit.zsh"
+source "${DOTFILES}/features/start.zsh"
+source "${DOTFILES}/features/stop.zsh"
+source "${DOTFILES}/features/submit.zsh"
 
 t() { tmux attach || exec tmux; }
-source "${DOTFILES}/tools/zsh/config/test.zsh"
+source "${DOTFILES}/features/test.zsh"
 alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
