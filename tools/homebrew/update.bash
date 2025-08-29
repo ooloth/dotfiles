@@ -20,8 +20,8 @@ update_and_symlink \
 debug "${TOOL_EMOJI} Caching updated list of outdated formulae"
 cache_brew_outdated_formula_list
 
-debug "${TOOL_EMOJI} Removing orphaned subdependencies"
+printf "${TOOL_EMOJI} Removing orphaned subdependencies\n"
 brew autoremove
 
-debug "${TOOL_EMOJI} Removing old downloads"
+printf "${TOOL_EMOJI} Removing old downloads\n"
 brew cleanup --quiet
