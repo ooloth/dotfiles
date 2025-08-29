@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "${DOTFILES}/features/update/utils.bash"
+source "${DOTFILES}/tools/bash/utils.bash"
 source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/node/utils.bash"
-source "${DOTFILES}/features/update/utils.bash"
 source "${DOTFILES}/tools/neovim/utils.bash" # source last to avoid env var overrides
 
 update_and_symlink \
@@ -17,17 +18,17 @@ update_and_symlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
-info "${TOOL_EMOJI} Updating ${TOOL_LOWER}'s homebrew dependencies"
+debug "${TOOL_EMOJI} Updating all homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   ensure_brew_formula_updated "${formula}"
 done
 
-info "${TOOL_EMOJI} Updating ${TOOL_LOWER}'s npm dependencies"
+debug "${TOOL_EMOJI} Updating all npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   ensure_global_npm_package_updated "${package}"
 done
 
-info "${TOOL_EMOJI} Restoring locked Lazy plugin versions"
+debug "${TOOL_EMOJI} Restoring Lazy plugin versions"
 NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
 
-printf "\n\n🚀 All ${TOOL_UPPER} dependencies are up-to-date\n"
+debug "🚀 All ${TOOL_UPPER} dependencies are up-to-date"

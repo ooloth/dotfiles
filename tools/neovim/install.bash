@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "${DOTFILES}/features/install/utils.bash"
+source "${DOTFILES}/tools/bash/utils.bash"
 source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/node/utils.bash"
-source "${DOTFILES}/features/install/utils.bash"
 source "${DOTFILES}/tools/neovim/utils.bash" # source last to avoid env var overrides
 
 install_and_symlink \
@@ -16,17 +17,17 @@ install_and_symlink \
   "parse_version" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
-info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s homebrew dependencies"
+debug "${TOOL_EMOJI} Installing all homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   ensure_brew_formula_installed "${formula}"
 done
 
-info "${TOOL_EMOJI} Installing ${TOOL_LOWER}'s npm dependencies"
+debug "${TOOL_EMOJI} Installing all npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   ensure_global_npm_package_installed "${package}"
 done
 
-info "${TOOL_EMOJI} Installing config.nvim"
+debug "${TOOL_EMOJI} Installing config.nvim"
 
 CONFIG_REPO="ooloth/config.nvim"
 LOCAL_REPO_PATH="$HOME/Repos/$CONFIG_REPO"
@@ -38,7 +39,7 @@ else
   printf "✅ config.nvim is already installed\n"
 fi
 
-info "${TOOL_EMOJI} Installing Lazy plugin versions"
+debug "${TOOL_EMOJI} Installing Lazy plugin versions"
 NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
 
-printf "\n\n🚀 All ${TOOL_UPPER} dependencies have been installed\n"
+debug "🚀 All ${TOOL_UPPER} dependencies have been installed"
