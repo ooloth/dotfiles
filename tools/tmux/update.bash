@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "${DOTFILES}/features/update/utils.bash"
+source "${DOTFILES}/tools/bash/utils.bash"
 source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/tmux/utils.bash"
 
@@ -17,12 +18,12 @@ update_and_symlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
-info "${TOOL_EMOJI} Updating ${TOOL_LOWER}'s homebrew dependencies"
+debug "${TOOL_EMOJI} Updating all homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   ensure_brew_formula_updated "${formula}"
 done
 
-info "${TOOL_EMOJI} Updating ${TOOL_LOWER} plugins"
+debug "${TOOL_EMOJI} Updating all tpm plugins"
 "${TPM}/clean_plugins"
 "${TPM}/install_plugins"
 "${TPM}/update_plugins" all
@@ -30,8 +31,8 @@ info "${TOOL_EMOJI} Updating ${TOOL_LOWER} plugins"
 # Reload tmux if it's running
 if pgrep -q tmux; then
   # see: https://github.com/tmux-plugins/tpm?tab=readme-ov-file#installation
-  printf "\n🔁 Reloading ${TOOL_LOWER}\n"
+  debug "🔁 Reloading ${TOOL_LOWER}"
   tmux source "${TOOL_CONFIG_DIR}/tmux.conf"
 fi
 
-printf "\n🚀 All ${TOOL_UPPER} dependencies are up-to-date\n"
+debug "🚀 All ${TOOL_UPPER} dependencies are up-to-date"
