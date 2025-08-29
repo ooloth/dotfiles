@@ -31,7 +31,6 @@ brew "btop" # top alternative
 brew "coreutils"
 brew "fd" # replaces find; used by yazi
 brew "ffmpegthumbnailer" # for yazi
-brew "fnm" # for node
 brew "fzf" # awesome; used by yazi
 brew "gh"
 brew "git"
