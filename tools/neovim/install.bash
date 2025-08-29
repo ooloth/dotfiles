@@ -17,12 +17,12 @@ install_and_symlink \
   "parse_version" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
-debug "${TOOL_EMOJI} Installing all homebrew dependencies"
+debug "📦 Installing homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   ensure_brew_formula_installed "${formula}"
 done
 
-debug "${TOOL_EMOJI} Installing all npm dependencies"
+debug "📦 Installing global npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   ensure_global_npm_package_installed "${package}"
 done
@@ -39,7 +39,7 @@ else
   printf "✅ config.nvim is already installed\n"
 fi
 
-debug "${TOOL_EMOJI} Installing Lazy plugin versions"
+debug "📦 Installing Lazy plugin versions"
 NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
 
 debug "🚀 All ${TOOL_UPPER} dependencies have been installed"

@@ -18,17 +18,17 @@ update_and_symlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
-debug "${TOOL_EMOJI} Updating all homebrew dependencies"
+debug "📦 Updating homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   ensure_brew_formula_updated "${formula}"
 done
 
-debug "${TOOL_EMOJI} Updating all npm dependencies"
+debug "📦 Updating global npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   ensure_global_npm_package_updated "${package}"
 done
 
-debug "${TOOL_EMOJI} Restoring Lazy plugin versions"
+debug "📦 Restoring Lazy plugin versions"
 NVIM_APPNAME=nvim-ide nvim --headless "+Lazy! restore" +qa
 
 debug "🚀 All ${TOOL_UPPER} dependencies are up-to-date"
