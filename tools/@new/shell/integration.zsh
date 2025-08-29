@@ -1,10 +1,9 @@
 #!/usr/bin/env zsh
 
-# source "${DOTFILES}/tools/@new/utils.bash"
 # source "${DOTFILES}/tools/zsh/utils.zsh"
 
-# if have "${TOOL_COMMAND}"; then
-#   # TODO: replace command
-#   eval "$("${TOOL_COMMAND}" init zsh)"
+# TODO: replace command
+# if have tool_command; then
+#   eval "$(tool_command init zsh)"
 # fi
 
