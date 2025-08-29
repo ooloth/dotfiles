@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/television/utils.bash"
 source "${DOTFILES}/features/update/utils.bash"
+source "${DOTFILES}/tools/@archive/television/utils.bash"
 
 update_and_symlink \
   "${TOOL_LOWER}" \

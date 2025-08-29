@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source "${DOTFILES}/tools/television/utils.bash"
-source "${DOTFILES}/features/install/utils.bash"
+source "${DOTFILES}/features/@archive/install/utils.bash"
 
 # See: https://alexpasmantier.github.io/television/docs/Users/installation/
 install_and_symlink \

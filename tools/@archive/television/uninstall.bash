@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source "${DOTFILES}/tools/television/utils.bash"
-source "${DOTFILES}/features/uninstall/utils.bash"
+source "${DOTFILES}/features/@archive/uninstall/utils.bash"
 
 uninstall_and_unlink \
   "${TOOL_LOWER}" \
