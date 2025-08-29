@@ -15,4 +15,4 @@ brew bundle --file="${DOTFILES}/tools/homebrew/config/Brewfile" # install missin
 debug "🍺 Updating casks"
 brew cu --all --include-mas --no-brew-update --yes # update casks only, including casks with their own auto-updater
 
-debug "🚀 Homebrew and its packages are up to date"
+debug "🚀 All Homebrew packages are up to date"

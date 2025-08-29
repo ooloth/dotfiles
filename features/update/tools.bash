@@ -24,6 +24,7 @@ main() {
     "${DOTFILES}/features/update/mode.bash"
     "${DOTFILES}/features/update/symlinks.bash"
     "${DOTFILES}/tools/uv/${file_name}"
+    "${DOTFILES}/tools/homebrew/${file_name}"
   )
 
   # Run priority files first
