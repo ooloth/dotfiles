@@ -18,12 +18,12 @@ update_and_symlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
-debug "${TOOL_EMOJI} Updating all homebrew dependencies"
+debug "📦 Updating homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   ensure_brew_formula_updated "${formula}"
 done
 
-debug "${TOOL_EMOJI} Updating all tpm plugins"
+debug "📦 Updating tpm plugins"
 "${TPM}/clean_plugins"
 "${TPM}/install_plugins"
 "${TPM}/update_plugins" all

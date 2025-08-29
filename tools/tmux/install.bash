@@ -17,14 +17,14 @@ install_and_symlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
 if [[ ! -d "${TPM_DIR}" ]]; then
-  debug "${TOOL_EMOJI} Installing tpm plugin manager"
+  debug "📦 Installing tpm plugin manager"
   git clone "git@github.com:tmux-plugins/tpm.git" "${TPM_DIR}"
 fi
 
-debug "${TOOL_EMOJI} Installing all tpm plugins"
+debug "📦 Installing tpm plugins"
 "${TPM}/install_plugins"
 
-debug "${TOOL_EMOJI} Installing all homebrew dependencies"
+debug "📦 Installing homebrew dependencies"
 for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
   ensure_brew_formula_installed "${formula}"
 done
