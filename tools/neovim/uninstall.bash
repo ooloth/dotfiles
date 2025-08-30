@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/node/utils.bash"
 source "${DOTFILES}/features/install/utils.bash"
 source "${DOTFILES}/tools/neovim/utils.bash" # source last to avoid env var overrides
@@ -15,7 +14,7 @@ uninstall_and_unlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/unlink.bash"
 
 debug "📦 Uninstalling homebrew dependencies"
-for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
+brew bundle list --file="${DOTFILES}/tools/${TOOL_LOWER}/Brewfile" | while IFS= read -r formula; do
   brew uninstall --formula "${formula}"
 done
 
