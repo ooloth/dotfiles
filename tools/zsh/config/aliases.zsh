@@ -86,7 +86,6 @@ return_or_exit() {
 }
 
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
-alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
 alias run="bash ${DOTFILES}/features/run.bash"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
