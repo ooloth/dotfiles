@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/node/utils.bash"
 source "${DOTFILES}/features/install/utils.bash"
+source "${DOTFILES}/tools/node/utils.bash"
 source "${DOTFILES}/tools/neovim/utils.bash" # source last to avoid env var overrides
 
 uninstall_and_unlink \
