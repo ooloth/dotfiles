@@ -74,10 +74,7 @@ alias mr="sudo shutdown -r now"         # restart macos
 alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 
-n() { npm install "$@"; }
 alias new="bash ${DOTFILES}/features/new.bash"
-alias ng="zsh ${DOTFILES}/features/update/zsh/npm.zsh"
-# nu() { n && npm-check -u; } -- conflicts with nushell launch command
 
 alias powerlevel10k="p10k"
 
