@@ -47,6 +47,7 @@ diff() { kitten diff "$1" "$2"; }                                   # see: https
 alias f='yazi'
 
 alias g="lazygit"
+alias grep="rg"
 
 alias image="kitten icat" # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 
