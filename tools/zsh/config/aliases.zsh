@@ -80,11 +80,6 @@ alias powerlevel10k="p10k"
 
 alias restart="bash ${DOTFILES}/features/restart.bash"
 
-return_or_exit() {
-  local code="$1"                            # The exit code to return or exit with
-  return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
-}
-
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias run="bash ${DOTFILES}/features/run.bash"
 
