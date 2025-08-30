@@ -6,6 +6,6 @@ source "${DOTFILES}/tools/bash/utils.bash"
 
 debug "🔗 Removing symlinked config files"
 
-rm "${TOOL_CONFIG_DIR}/.hushlogin"
-rm "${TOOL_CONFIG_DIR}/.zshenv"
-rm "${TOOL_CONFIG_DIR}/.zshrc"
+trash "${TOOL_CONFIG_DIR}/.hushlogin"
+trash "${TOOL_CONFIG_DIR}/.zshenv"
+trash "${TOOL_CONFIG_DIR}/.zshrc"

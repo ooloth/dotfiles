@@ -8,6 +8,6 @@ HOMECONFIG="${HOME}/.config"
 
 debug "🔗 Removing symlinked config files"
 
-rm -rf "${HOMECONFIG}/nvim"
-rm -rf "${HOMECONFIG}/nvim-ide"
-rm -rf "${HOMECONFIG}/nvim-kitty-scrollback"
+trash "${HOMECONFIG}/nvim"
+trash "${HOMECONFIG}/nvim-ide"
+trash "${HOMECONFIG}/nvim-kitty-scrollback"

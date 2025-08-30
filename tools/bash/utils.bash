@@ -86,7 +86,7 @@ remove_broken_symlinks() {
     # Check if symlink target exists
     if [[ ! -e "${symlink}" ]]; then
       printf "🧼 Removing broken symlink: ${symlink}\n"
-      rm -rf "${symlink}"
+      trash "${symlink}"
     fi
   done < <(find "${directory}" -maxdepth "${max_depth}" -type l -print0 2>/dev/null)
 
