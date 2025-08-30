@@ -19,9 +19,7 @@ update_and_symlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
 debug "📦 Updating homebrew dependencies"
-for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
-  ensure_brew_formula_updated "${formula}"
-done
+brew bundle --file="${DOTFILES}/tools/tmux/Brewfile"
 
 debug "📦 Updating tpm plugins"
 "${TPM}/clean_plugins"

@@ -3,7 +3,6 @@ set -euo pipefail
 
 source "${DOTFILES}/features/install/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
-source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/tmux/utils.bash"
 
 install_and_symlink \
@@ -25,8 +24,6 @@ debug "📦 Installing tpm plugins"
 "${TPM}/install_plugins"
 
 debug "📦 Installing homebrew dependencies"
-for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
-  ensure_brew_formula_installed "${formula}"
-done
+brew bundle --file="${DOTFILES}/tools/tmux/Brewfile"
 
 debug "🚀 All ${TOOL_UPPER} dependencies have been installed"
