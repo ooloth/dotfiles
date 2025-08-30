@@ -26,7 +26,7 @@ NPM_OUTDATED_LIST_CACHE_FILE="${TMPDIR:-/tmp}/.npm_outdated_list"
 is_global_npm_package_installed() {
   local package="${1}"
 
-  if [[ -z "$formula" ]]; then
+  if [[ -z "${package}" ]]; then
     echo "Error: Package name required" >&2
     return 1
   fi
