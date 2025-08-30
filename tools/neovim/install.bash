@@ -3,7 +3,6 @@ set -euo pipefail
 
 source "${DOTFILES}/features/install/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
-source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/node/utils.bash"
 source "${DOTFILES}/tools/neovim/utils.bash" # source last to avoid env var overrides
 
@@ -18,9 +17,7 @@ install_and_symlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
 
 debug "📦 Installing homebrew dependencies"
-for formula in "${TOOL_HOMEBREW_DEPENDENCIES[@]}"; do
-  ensure_brew_formula_installed "${formula}"
-done
+brew bundle --file="${DOTFILES}/tools/neovim/Brewfile"
 
 debug "📦 Installing global npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
