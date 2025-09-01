@@ -3,6 +3,7 @@ set -euo pipefail
 
 source "${DOTFILES}/features/update/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
+source "${DOTFILES}/tools/homebrew/utils.bash"
 source "${DOTFILES}/tools/tmux/utils.bash"
 
 # Update tmux + tpm + all tpm plugins
