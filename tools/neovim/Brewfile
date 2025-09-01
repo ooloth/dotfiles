@@ -2,17 +2,28 @@
 # brew tap "bufbuild/buf" # for buf_lint
 # brew tap "hashicorp/tap" # for terraform
 
-brew "basedpyright"               # python (lsp): https://docs.basedpyright.com/latest/installation/command-line-and-language-server/
-brew "bufbuild/buf/buf"           # protobuf: ...
-brew "hadolint"                   # dockerfile: ...
-brew "hashicorp/tap/terraform"    # terraform (formatting): https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
-brew "hashicorp/tap/terraform-ls" # terraform (lsp): https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
-brew "lua-language-server"        # lua: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls
-brew "marksman"                   # markdown: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#marksman
-brew "ruff"                       # python: ...
-brew "shellcheck"                 # bash: ...
-brew "shfmt"                      # bash: ...
-brew "stylua"                     # lua (formatting): https://github.com/JohnnyMorganz/StyLua?tab=readme-ov-file#homebrew
-brew "taplo"                      # toml (lsp): https://taplo.tamasfe.dev/cli/installation/homebrew.html
-brew "tflint"                     # terraform (linting): https://github.com/terraform-linters/tflint
-brew "tidy-html5"                 # html/xml (linting): ...
+brew "basedpyright"                 # python (lsp): https://docs.basedpyright.com/latest/installation/command-line-and-language-server/
+brew "bash-language-server"         # bash: https://formulae.brew.sh/formula/bash-language-server
+brew "bufbuild/buf/buf"             # protobuf: ...
+brew "dockerfile-language-server"   # dockerfile: https://formulae.brew.sh/formula/dockerfile-language-server
+brew "hadolint"                     # dockerfile: ...
+brew "hashicorp/tap/terraform"      # terraform (formatting): https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+brew "hashicorp/tap/terraform-ls"   # terraform (lsp): https://github.com/hashicorp/terraform-ls/blob/main/docs/installation.md
+brew "lua-language-server"          # lua: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls
+brew "marksman"                     # markdown: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#marksman
+brew "prettier"                     # css/html/javascript/json: https://formulae.brew.sh/formula/prettier
+brew "ruff"                         # python: ...
+brew "shellcheck"                   # bash: ...
+brew "shfmt"                        # bash: ...
+brew "sql-language-server"          # sql: https://formulae.brew.sh/formula/sql-language-server
+brew "stylua"                       # lua (formatting): https://github.com/JohnnyMorganz/StyLua?tab=readme-ov-file#homebrew
+brew "tailwindcss-language-server"  # tailwindcss: https://formulae.brew.sh/formula/tailwindcss-language-server
+brew "taplo"                        # toml (lsp): https://taplo.tamasfe.dev/cli/installation/homebrew.html
+brew "tflint"                       # terraform (linting): https://github.com/terraform-linters/tflint
+brew "tidy-html5"                   # html/xml (linting): ...
+brew "tree-sitter-cli"              # tree-sitter: https://tree-sitter.github.io/tree-sitter/creating-parsers#installation
+brew "typescript"                   # typescript/javascript: https://formulae.brew.sh/formula/typescript
+brew "typescript-language-server"   # typescript/javascript: https://formulae.brew.sh/formula/typescript-language-server
+brew "vscode-langservers-extracted" # css/eslint/html/json: https://formulae.brew.sh/formula/vscode-langservers-extracted
+brew "vue-language-server"          # vue: https://formulae.brew.sh/formula/vue-language-server
+brew "yaml-language-server"         # yaml: https://formulae.brew.sh/formula/yaml-language-server
