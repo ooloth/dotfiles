@@ -55,15 +55,6 @@ if is_work; then
   # Configome
   export CONFIGOME_ENV=dev
 
-  # Gcloud
-  # see: https://stackoverflow.com/a/47867652/8802485
-  # see: https://cloud.google.com/docs/authentication/application-default-credentials
-  export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
-
-  # Gcloud (update PATH for the Google Cloud SDK)
-  # see: https://cloud.google.com/sdk/docs/downloads-interactive
-  if [ -f '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/path.zsh.inc'; fi
-
   # grey-havens
   export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
   export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1

@@ -46,7 +46,3 @@ if have uv; then
   eval "$(uvx --generate-shell-completion zsh)"
 fi
 
-if is_work; then
-  if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
-fi
-
