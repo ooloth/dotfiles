@@ -37,7 +37,6 @@ brew "m-cli" # macos CLI: https://github.com/rgcr/m-cli
 brew "postgresql@14"
 brew "libpq" # for postgres
 brew "powerlevel10k"
-brew "sesh" # for tmux
 brew "speedtest-cli"
 brew "stern" # for kubectl
 brew "svn" # for font cask installations

@@ -1,0 +1,5 @@
+# See: https://github.com/joshmedeski/sesh?tab=readme-ov-file#how-to-use
+
+brew "fzf"
+brew "sesh"
+brew "zoxide"
