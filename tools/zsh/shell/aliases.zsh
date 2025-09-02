@@ -12,9 +12,8 @@ alias env="env | sort"
 # kill process running on given port
 kill() { lsof -t -i:"$1" | xargs kill -9; }
 
-# Keep 'r' as an alias that can be overridden by alias in work/aliases.zsh
-# alias r="PYTHONPATH=$HOME/Repos/ooloth/scripts uv run --project $HOME/Repos/ooloth/scripts -m cli"
-alias R="source ${HOME}/.zshenv && source ${HOME}/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
+alias r="source ${HOME}/.zshenv && source ${HOME}/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
+alias R="r"
 
 sl() {
   local source_file="$1"
