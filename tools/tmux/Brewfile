@@ -1,5 +1,3 @@
-# TODO: need to install these taps too?
-# brew tap "arl/arl" # for gitmux
-
+brew "tmux"
 brew "arl/arl/gitmux"  # git info in status line: https://github.com/arl/gitmux
 
