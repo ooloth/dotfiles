@@ -10,15 +10,6 @@ computer_name = `networksetup -getcomputername`.chomp
 
 tap "buo/cask-upgrade" # see: https://gist.github.com/ChristopherA/a579274536aab36ea9966f301ff14f3f#best-practices-brew-cask-mas-and-cu
 tap "jesseduffield/lazydocker"
-tap "kdash-rs/kdash" # for kdash
-
-if computer_name == "Air"
-  tap "modularml/packages" # for mojo
-end
-
-if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
-  tap "codefresh-io/cli"
-end
 
 ############
 # PACKAGES #
@@ -42,7 +33,6 @@ brew "go"
 brew "goose" # for go
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json; used by yazi
-brew "kdash" # for kubernetes
 brew "kubectl" # for kubernetes
 brew "kubectx" # for kubernetes
 brew "jesseduffield/lazydocker/lazydocker"
