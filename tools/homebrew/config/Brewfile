@@ -48,7 +48,6 @@ brew "stern" # for kubectl
 brew "svn" # for font cask installations
 brew "httpie"
 brew "tree"
-brew "vifm"
 brew "zoxide"
 brew "zsh"
 brew "zsh-autosuggestions"
