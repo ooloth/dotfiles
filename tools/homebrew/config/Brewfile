@@ -20,9 +20,8 @@ brew "bat" # replaces cat
 brew "bats-core" # for bash testing
 brew "btop" # top alternative
 brew "coreutils"
-brew "fd" # replaces find; used by yazi
-brew "ffmpegthumbnailer" # for yazi
-brew "fzf" # awesome; used by yazi
+brew "fd" # replaces find
+brew "fzf"
 brew "gh"
 brew "git"
 brew "git-delta" # for git: https://dandavison.github.io/delta/
@@ -32,27 +31,24 @@ brew "gnu-sed"
 brew "go"
 brew "goose" # for go
 brew "imagemagick" # for kitty's icat image support
-brew "jq" # for parsing json; used by yazi
+brew "jq" # for parsing json
 brew "kubectl" # for kubernetes
 brew "kubectx" # for kubernetes
 brew "jesseduffield/lazydocker/lazydocker"
 brew "lazygit"
 brew "mas"
 brew "m-cli" # macos CLI: https://github.com/rgcr/m-cli
-brew "poppler" # for yazi
 brew "postgresql@14"
 brew "libpq" # for postgres
 brew "powerlevel10k"
-brew "ripgrep" # for telescope, yazi
+brew "ripgrep" # for telescope
 brew "sesh" # for tmux
 brew "speedtest-cli"
 brew "stern" # for kubectl
 brew "svn" # for font cask installations
 brew "httpie"
 brew "tree"
-brew "unar" # for yazi
 brew "vifm"
-brew "yazi" # terminal file manager
 brew "zoxide"
 brew "zsh"
 brew "zsh-autosuggestions"
@@ -84,7 +80,7 @@ end
 
 # Fonts
 # see: https://github.com/Homebrew/homebrew-cask/tree/master/Casks/font
-cask "font-symbols-only-nerd-font" # for yazi
+cask "font-symbols-only-nerd-font"
 cask "font-ubuntu-mono"
 cask "font-ubuntu-mono-nerd-font"
 

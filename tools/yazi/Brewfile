@@ -1,0 +1,15 @@
+# see: https://yazi-rs.github.io/docs/installation/
+
+brew "fd"
+brew "ffmpeg"
+brew "ffmpegthumbnailer"
+brew "fzf"
+brew "jq"
+brew "poppler"
+brew "resvg"
+brew "ripgrep"
+brew "unar"
+brew "yazi"
+brew "zoxide"
+
+cask "font-symbols-only-nerd-font"
