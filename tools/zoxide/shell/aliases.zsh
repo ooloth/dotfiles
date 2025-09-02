@@ -17,7 +17,6 @@ alias scraper="z ${HOME}/Repos/ooloth/scraper"
 if is_work; then
   alias bp="z ${HOME}/Repos/recursionpharma/build-pipelines"
   alias maf="z react-app"
-  alias r="z ${HOME}/Repos/recursionpharma"
   alias tech="z ${HOME}/Repos/recursionpharma/tech"
 fi
 

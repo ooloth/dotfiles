@@ -12,15 +12,15 @@ main() {
   info "🔗 Updating symlinks"
 
   local home_config="${HOME}/.config"
-  local vscode_config="$HOME/Library/Application Support/Code/User"
+  local vscode_config="${HOME}/Library/Application Support/Code/User"
 
   # Remove broken symlinks first
   for dir in "${HOME}" "${home_config}" "${vscode_config}"; do
-    remove_broken_symlinks "$dir"
+    remove_broken_symlinks "${dir}"
   done
 
   # If a specific tool is provided as an argument, symlink only that tool's configs
-  if [[ ! -z "$tool" ]]; then
+  if [[ ! -z "${tool}" ]]; then
     bash "${DOTFILES}/tools/${tool}/symlinks/link.bash"
     return 0
   fi

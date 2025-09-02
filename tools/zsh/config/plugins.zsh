@@ -37,10 +37,6 @@ source "${DOTFILES}/tools/powerlevel10k/config/p10k.zsh" # to customize, run `p1
 # docker
 fpath=(/Users/michael.uloth/.docker/completions $fpath)
 
-if have fnm;then
-  eval "$(fnm env --use-on-cd --log-level=error)"
-fi
-
 if have fzf; then
   eval "$(fzf --zsh)"
 fi
@@ -48,9 +44,5 @@ fi
 if have uv; then
   eval "$(uv generate-shell-completion zsh)"
   eval "$(uvx --generate-shell-completion zsh)"
-fi
-
-if is_work; then
-  if [ -f '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/michael.uloth/google-cloud-sdk/completion.zsh.inc'; fi
 fi
 

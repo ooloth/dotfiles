@@ -39,7 +39,7 @@ cleanup_test_env() {
 
     # Clean up temporary directory
     if [[ -n "${TEST_TEMP_DIR:-}" && -d "$TEST_TEMP_DIR" ]]; then
-        rm -rf "$TEST_TEMP_DIR"
+        trash "$TEST_TEMP_DIR"
         unset TEST_TEMP_DIR
     fi
 }

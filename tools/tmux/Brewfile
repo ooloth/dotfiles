@@ -1,0 +1,3 @@
+brew "tmux"
+brew "arl/arl/gitmux"  # git info in status line: https://github.com/arl/gitmux
+

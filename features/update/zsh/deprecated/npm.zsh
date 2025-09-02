@@ -11,8 +11,6 @@ main() {
 
   # see: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
   packages=(
-    npm
-    npm-check
     trash-cli
   )
 

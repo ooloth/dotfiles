@@ -3,38 +3,6 @@
 // see: https://code.visualstudio.com/api/references/when-clause-contexts
 
 [
-  ///////////
-  // SPACE //
-  ///////////
-
-  ///////////
-  // COMMA //
-  ///////////
-
-  /////////
-  // CMD //
-  /////////
-
-  //////////
-  // CTRL //
-  //////////
-
-  ////////////
-  // CTRL-A //
-  ////////////
-
-  /////////////////
-  // SHIFT-SHIFT //
-  /////////////////
-
-  /////////////////
-  // COMMA-COMMA //
-  /////////////////
-
-  /////////////////////////
-  // SEMICOLON-SEMICOLON //
-  /////////////////////////
-
   ////////
   // AI //
   ////////
@@ -161,4 +129,36 @@
   { "key": "ctrl+h",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
   { "key": "ctrl+u",    "command": "whichkey.undoKey", "when": "whichkeyVisible" },
   { "key": "backspace", "command": "whichkey.undoKey", "when": "whichkeyVisible" }
+
+  ///////////
+  // SPACE //
+  ///////////
+
+  ///////////
+  // COMMA //
+  ///////////
+
+  /////////
+  // CMD //
+  /////////
+
+  //////////
+  // CTRL //
+  //////////
+
+  ////////////
+  // CTRL-A //
+  ////////////
+
+  /////////////////
+  // SHIFT-SHIFT //
+  /////////////////
+
+  /////////////////
+  // COMMA-COMMA //
+  /////////////////
+
+  /////////////////////////
+  // SEMICOLON-SEMICOLON //
+  /////////////////////////
 ]

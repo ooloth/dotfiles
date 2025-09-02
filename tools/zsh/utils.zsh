@@ -6,9 +6,9 @@ export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 # Include is_air, is_mini, is_work in this commonly-sourced file
 source "${DOTFILES}/tools/macos/shell/aliases.zsh"
 
-##############
-# INSPECTING #
-##############
+###########
+# GENERAL #
+###########
 
 have() {
   if [ -z "$1" ]; then
@@ -22,6 +22,11 @@ have() {
   else
     return 1  # false
   fi
+}
+
+return_or_exit() {
+  local code="$1"                            # The exit code to return or exit with
+  return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
 }
 
 ###########

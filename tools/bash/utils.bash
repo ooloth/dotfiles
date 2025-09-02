@@ -25,6 +25,20 @@ have() {
   fi
 }
 
+is_sourced() {
+  # Returns 0 if sourced, 1 if executed
+  [[ "${BASH_SOURCE[0]}" != "$0" ]]
+}
+
+return_or_exit() {
+  local code="${1:-0}"
+  if is_sourced; then
+    return "$code"
+  else
+    exit "$code"
+  fi
+}
+
 ##############
 # SYMLINKING #
 ##############
@@ -86,7 +100,7 @@ remove_broken_symlinks() {
     # Check if symlink target exists
     if [[ ! -e "${symlink}" ]]; then
       printf "🧼 Removing broken symlink: ${symlink}\n"
-      rm -rf "${symlink}"
+      trash "${symlink}"
     fi
   done < <(find "${directory}" -maxdepth "${max_depth}" -type l -print0 2>/dev/null)
 

@@ -74,23 +74,13 @@ alias mr="sudo shutdown -r now"         # restart macos
 alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 
-n() { npm install "$@"; }
 alias new="bash ${DOTFILES}/features/new.bash"
-alias ng="zsh ${DOTFILES}/features/update/zsh/npm.zsh"
-# nu() { n && npm-check -u; } -- conflicts with nushell launch command
-alias nvm="fnm"
 
 alias powerlevel10k="p10k"
 
 alias restart="bash ${DOTFILES}/features/restart.bash"
 
-return_or_exit() {
-  local code="$1"                            # The exit code to return or exit with
-  return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
-}
-
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
-alias rm="trash"                       # see: https://github.com/sindresorhus/trash-cli
 alias run="bash ${DOTFILES}/features/run.bash"
 
 alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
@@ -107,24 +97,6 @@ alias vscode="code"
 
 if is_work; then
   alias bqq="bq query --use_legacy_sql=false --project_id=datalake-prod-ef49c0c9 --format=prettyjson"
-
-  # see: https://recursion.slack.com/archives/CV1G8MHKK/p1752594420668499?thread_ts=1752594134.745739&cid=CV1G8MHKK
-  alias db="docker build --secret id=gcp_adc,src=${HOME}/.config/gcloud/application_default_credentials.json ."
-
-  # see: https://stackoverflow.com/a/51563857/8802485
-  # see: https://cloud.google.com/docs/authentication/gcloud#gcloud-credentials
-  alias gca="gcloud auth login --update-adc && gcloud auth application-default set-quota-project eng-infrastructure"
-  gcsa() { gcloud config set account michael.uloth@recursionpharma.com; }
-  gcpe() {
-    gcsa
-    gcloud config set project eng-infrastructure
-    kubectl config use-context gke_eng-infrastructure_us-east1_principal -n phenoapp
-  }
-  gcpn() {
-    gcsa
-    gcloud config set project rp006-prod-49a893d8
-    kubectl config use-context gke_rp006-prod-49a893d8_us-central1_rp006-prod -n rp006-neuro-phenomap
-  }
 
   alias pom='griphook pomerium login' # generate a pomerium token that expires in 12 hours (so I can pass it in requests to internal services that require it)
 

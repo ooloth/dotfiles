@@ -744,7 +744,6 @@
   "editor.codeLens": false,
   "editor.snippetSuggestions": "top",
   "window.zoomLevel": 1,
-  "editor.fontSize": 12.5,
   "terminal.integrated.fontSize": 12.5,
   "editor.inlayHints.enabled": "offUnlessPressed",
   "workbench.commandPalette.experimental.enableNaturalLanguageSearch": false,
@@ -753,5 +752,6 @@
   "zenMode.showTabs": "none",
   "workbench.editor.showTabs": "none",
   "catppuccin-icons.specificFolders": false,
-  "github.copilot.nextEditSuggestions.enabled": true
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "editor.fontSize": 13
 }

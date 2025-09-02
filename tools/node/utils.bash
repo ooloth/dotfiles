@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# NOTE: node vs npm vs fnm...?
-export TOOL_LOWER="npm"
-export TOOL_UPPER="npm"
-export TOOL_COMMAND="npm"
-export TOOL_PACKAGE="npm"
-export TOOL_EMOJI="📦"
+export TOOL_LOWER="node"
+export TOOL_UPPER="Node"
+export TOOL_COMMAND="node"
+export TOOL_PACKAGE="node"
+export TOOL_EMOJI="🟢"
 export TOOL_CONFIG_DIR="${HOME}/.config/${TOOL_LOWER}"
 
 parse_version() {
   local raw_version="${1}"
+  local prefix="v"
 
-  # No edits needed for "npm --version"
-  printf "${raw_version}"
+  # Everything after the prefix
+  printf "${raw_version#"${prefix}"}"
+
 }
 
 NPM_OUTDATED_LIST_CACHE_FILE="${TMPDIR:-/tmp}/.npm_outdated_list"
@@ -25,7 +26,7 @@ NPM_OUTDATED_LIST_CACHE_FILE="${TMPDIR:-/tmp}/.npm_outdated_list"
 is_global_npm_package_installed() {
   local package="${1}"
 
-  if [[ -z "$formula" ]]; then
+  if [[ -z "${package}" ]]; then
     echo "Error: Package name required" >&2
     return 1
   fi
@@ -38,6 +39,7 @@ is_global_npm_package_installed() {
 }
 
 # Check if a global npm package is installed, and install it if not
+# See: https://docs.npmjs.com/cli/v9/commands/npm-update?v=true#updating-globally-installed-packages
 #
 # Usage: ensure_global_npm_package_installed <package-name>
 # Returns 0 if installed or successfully installed, 1 on error

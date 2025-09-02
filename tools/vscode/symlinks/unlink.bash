@@ -6,6 +6,6 @@ source "${DOTFILES}/tools/bash/utils.bash"
 
 debug "🔗 Removing symlinked config files"
 
-rm "${TOOL_CONFIG_DIR}/keybindings.json"
-rm "${TOOL_CONFIG_DIR}/settings.json"
-rm -rf "${TOOL_CONFIG_DIR}/snippets"
+trash "${TOOL_CONFIG_DIR}/keybindings.json"
+trash "${TOOL_CONFIG_DIR}/settings.json"
+trash "${TOOL_CONFIG_DIR}/snippets"
