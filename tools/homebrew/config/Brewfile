@@ -47,7 +47,6 @@ brew "speedtest-cli"
 brew "stern" # for kubectl
 brew "svn" # for font cask installations
 brew "httpie"
-brew "tree"
 brew "zoxide"
 brew "zsh"
 brew "zsh-autosuggestions"
@@ -56,12 +55,10 @@ brew "zsh-syntax-highlighting"
 if computer_name == "Air"
   brew "deno"
   brew "gleam"
-  brew "modularml/packages/modular" # for mojo
   brew "zig"
 end
 
 if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
-  brew "codefresh"
   brew "helm" # for kubernetes
   brew "kafka"
   brew "librdkafka" # for kafka
