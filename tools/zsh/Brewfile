@@ -1,13 +1,12 @@
-brew "zsh"
-brew "zsh-autosuggestions"
-brew "zsh-syntax-highlighting"
-
 # TODO: move to separate tool folders?
 brew "bat" # replaces cat
 brew "bottom" # top alternative
 brew "btop" # top alternative
 brew "fd" # replaces find
-brew "ripgrep" # for telescope
 brew "gnu-sed"
+brew "ripgrep" # for telescope
 brew "zoxide"
+brew "zsh"
+brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
 
