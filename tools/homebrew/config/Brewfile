@@ -56,7 +56,6 @@ brew "powerlevel10k"
 brew "ripgrep" # for telescope, yazi
 brew "sesh" # for tmux
 brew "speedtest-cli"
-brew "starship"
 brew "stern" # for kubectl
 brew "svn" # for font cask installations
 brew "httpie"
