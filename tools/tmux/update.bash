@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/update/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
 source "${DOTFILES}/tools/tmux/utils.bash"
 
