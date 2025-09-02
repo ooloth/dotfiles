@@ -23,9 +23,9 @@ brew "gh"
 brew "git"
 brew "git-delta" # for git: https://dandavison.github.io/delta/
 brew "github-keygen" # for git ssh
-brew "glances" # top alternative
 brew "go"
 brew "goose" # for go
+brew "httpie"
 brew "imagemagick" # for kitty's icat image support
 brew "jq" # for parsing json
 brew "kubectl" # for kubernetes
@@ -41,7 +41,6 @@ brew "sesh" # for tmux
 brew "speedtest-cli"
 brew "stern" # for kubectl
 brew "svn" # for font cask installations
-brew "httpie"
 
 if computer_name == "Air"
   brew "deno"
