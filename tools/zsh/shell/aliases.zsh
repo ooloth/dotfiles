@@ -5,6 +5,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
+alias bottom="btm"
 alias c="clear"
 alias env="env | sort"
 

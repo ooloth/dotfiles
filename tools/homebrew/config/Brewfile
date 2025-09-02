@@ -16,18 +16,14 @@ tap "jesseduffield/lazydocker"
 ############
 
 brew "bash"
-brew "bat" # replaces cat
 brew "bats-core" # for bash testing
-brew "btop" # top alternative
 brew "coreutils"
-brew "fd" # replaces find
 brew "fzf"
 brew "gh"
 brew "git"
 brew "git-delta" # for git: https://dandavison.github.io/delta/
 brew "github-keygen" # for git ssh
 brew "glances" # top alternative
-brew "gnu-sed"
 brew "go"
 brew "goose" # for go
 brew "imagemagick" # for kitty's icat image support
@@ -41,16 +37,11 @@ brew "m-cli" # macos CLI: https://github.com/rgcr/m-cli
 brew "postgresql@14"
 brew "libpq" # for postgres
 brew "powerlevel10k"
-brew "ripgrep" # for telescope
 brew "sesh" # for tmux
 brew "speedtest-cli"
 brew "stern" # for kubectl
 brew "svn" # for font cask installations
 brew "httpie"
-brew "zoxide"
-brew "zsh"
-brew "zsh-autosuggestions"
-brew "zsh-syntax-highlighting"
 
 if computer_name == "Air"
   brew "deno"
