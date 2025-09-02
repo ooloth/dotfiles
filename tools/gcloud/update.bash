@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Return early if not installed
+source "${DOTFILES}/tools/bash/utils.bash" # source last to avoid env var overrides
+
+# Return early if not installed (I don't always want it)
 if ! have gcloud; then
-  return 0
+  exit 0
 fi
 
 source "${DOTFILES}/features/update/utils.bash"

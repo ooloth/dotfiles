@@ -25,6 +25,20 @@ have() {
   fi
 }
 
+is_sourced() {
+  # Returns 0 if sourced, 1 if executed
+  [[ "${BASH_SOURCE[0]}" != "$0" ]]
+}
+
+return_or_exit() {
+  local code="${1:-0}"
+  if is_sourced; then
+    return "$code"
+  else
+    exit "$code"
+  fi
+}
+
 ##############
 # SYMLINKING #
 ##############

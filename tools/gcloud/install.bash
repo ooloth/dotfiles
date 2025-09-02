@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "${DOTFILES}/tools/bash/utils.bash"
+
 debug "⚠️ Must install gcloud manually via https://cloud.google.com/sdk/docs/install#mac"
 
 # TODO: confirm this works smoothly
