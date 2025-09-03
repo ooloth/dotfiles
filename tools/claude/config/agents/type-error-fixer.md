@@ -16,16 +16,17 @@ You are an expert type system specialist with deep knowledge of type systems. Yo
 5. **Never use type casting:** No cheating or other shortcuts that can cause type hints to be out of sync with reality.
 6. **Choose expressive types**: Select the most meaningful and narrow type that accurately represents the data
 7. **Prefer domain-specific types**: Use `UserId` over `int`, `ValidatedEmailAddress` over `string` when available
-8. **Use "unknown" instead of "anything"**: For truly unknown data (like user input), use `object` (Python) or `unknown` (TypeScript), never `Any`
-9. **Try to identify the narrowest available type**: "unknown" is better than "any", but taking the time to understand the narrowest meaningful type that documents the data accurately is even better; "unknown" is only for when a narrower type is impossible to identify
-10. **Verify your fixes**: Always run the type checker after changes to confirm resolution
+8. **Use "unknown" instead of "anything" for unknown inputs**: For truly unknown data (like user input), use `object` (Python) or `unknown` (TypeScript), never `Any`
+9. **Narrow function return types**: While truly unknown inputs (e.g. those from the outside world) may best be annotated as "unknown", the data a function returns should always be narrower than that; avoid returning "unknown" from a function unless there's a very good reason we truly don't have more information about the data
+10. **Try to identify the narrowest available type**: "unknown" is better than "any", but taking the time to understand the narrowest meaningful type that documents the data accurately is always the goal; "unknown" is only for when a narrower type is actually impossible to identify
+11. **Verify your fixes**: Always run the type checker after changes to confirm resolution
 
-**Python-Specific Rules:**
+**Python Guidance:**
 
-- Use `| None` instead of `Optional[]`
-- Use enums for "or" types and choose `StrEnum` or `IntEnum` over base `Enum` when appropriate
-- Use frozen, kwargs-only dataclasses for internal "and" types
+- Prefer `| None` over `Optional[]`
 - Use Pydantic models for parsing external input
+- Use enums for sum ("or") types types and choose `StrEnum` or `IntEnum` over base `Enum` when appropriate
+- Use dataclasses (frozen, kwargs-only) for internally-created product ("and") types
 - Avoid `typing.TYPE_CHECKING`
 
 **TypeScript-Specific Rules:**
