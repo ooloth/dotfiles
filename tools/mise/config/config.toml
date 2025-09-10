@@ -1,0 +1,5 @@
+# See: https://mise.jdx.dev/configuration.html#global-config-config-mise-config-toml
+
+[settings]
+  # https://mise.jdx.dev/configuration.html#idiomatic-version-files
+  idiomatic_version_file_enable_tools = ['ruby']
