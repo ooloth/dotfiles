@@ -4,6 +4,7 @@
 
 # TODO: disable basedpyright and ruff
 
+options.color_default = "white on transparent"
 options.default_width = 20
 
 Sheet.addCommand(
