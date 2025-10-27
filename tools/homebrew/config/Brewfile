@@ -115,11 +115,14 @@ end
 # APPS (MAC APP STORE) #
 ########################
 
+if computer_name != "Mini"
+  mas "Feedbin", id: 1444961766 # required for the Safari extension
+  mas "Notion Web Clipper", id: 1559269364 # Safari extension
+  mas "Reeder 5.", id: 1529448980
+  mas "Things 3", id: 904280696
+end
+
 mas "Amphetamine", id: 937984704
-mas "Feedbin", id: 1444961766 # required for the Safari extension
-mas "Notion Web Clipper", id: 1559269364 # Safari extension
-mas "Reeder 5.", id: 1529448980
-mas "Things 3", id: 904280696
 
 message = "\📦 Loading additional Mac App Store apps for #{computer_name}\n"
 
