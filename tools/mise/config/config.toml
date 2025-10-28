@@ -3,3 +3,6 @@
 [settings]
   # https://mise.jdx.dev/configuration.html#idiomatic-version-files
   idiomatic_version_file_enable_tools = ['ruby']
+
+[tools]
+ruby = "3"
