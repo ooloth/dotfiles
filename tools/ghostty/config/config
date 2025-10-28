@@ -14,7 +14,7 @@ window-inherit-working-directory = true
 
 # Colors
 # see: ghostty +list-themes
-theme = catppuccin-mocha
+theme = Catppuccin Mocha
 background = 181825
 # background = 12121C
 # theme = aura
@@ -90,10 +90,11 @@ keybind="cmd+n=text:\x01c"
 keybind="cmd+r=text:\x01r"
 keybind="cmd+w=text:\x01w"
 
+# TODO: resize w cmd+shift instead of navigating?
 # Panes (split, navigate, maximize, close)
 keybind="cmd+\=text:\x01\\"
 keybind="cmd+-=text:\x01-"
-keybind="cmd+equal=text:\x01="
+# keybind="cmd+equal=text:\x01=" # FIXME: ghostty config error.InvalidFormat (not sure why)
 keybind="cmd+;=text:\x01;"
 keybind="cmd+h=text:\x01\x1b[D"
 keybind="cmd+j=text:\x01\x1b[B"
