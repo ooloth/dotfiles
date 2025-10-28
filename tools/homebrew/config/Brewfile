@@ -116,7 +116,8 @@ end
 ########################
 
 if computer_name != "Mini"
-  mas "Feedbin", id: 1444961766 # required for the Safari extension
+  # FIXME: feedbin id not found
+  # mas "Feedbin", id: 1444961766 # required for the Safari extension
   mas "Notion Web Clipper", id: 1559269364 # Safari extension
   mas "Reeder 5.", id: 1529448980
   mas "Things 3", id: 904280696
