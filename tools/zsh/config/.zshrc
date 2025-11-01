@@ -24,6 +24,5 @@ source "${DOTFILES}/tools/zsh/utils.zsh" # have, info, warn, error - TODO: depre
 source "${DOTFILES}/tools/zsh/config/options.zsh"
 source "${DOTFILES}/tools/zsh/config/completions.zsh"
 source "${DOTFILES}/tools/zsh/config/hooks.zsh"
-source "${DOTFILES}/tools/zsh/config/variables.zsh" # legacy? or still correct for zsh itself?
-source "${DOTFILES}/tools/zsh/config/aliases.zsh" # legacy? or still correct for zsh itself?
+source "${DOTFILES}/tools/zsh/config/aliases.zsh" # TODO: remove (legacy)
 source "${DOTFILES}/tools/zsh/config/tools.zsh" # source last
