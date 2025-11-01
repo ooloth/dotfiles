@@ -8,10 +8,6 @@ source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work
 # ALIASES #
 ###########
 
-if have lazydocker; then
-  alias d="lazydocker"
-fi
-
 if have docker; then
   # Docker
   da() { docker container ls --all --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"; }  # list all containers
