@@ -5,4 +5,5 @@ fpath+=~/.zfunc
 # Initialize zsh completion before invoking tool-specific completions
 # See: https://stackoverflow.com/questions/66338988/complete13-command-not-found-compde
 autoload -Uz compinit && compinit
+autoload -Uz bashcompinit && bashcompinit
 
