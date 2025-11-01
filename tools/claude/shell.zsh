@@ -2,6 +2,10 @@
 
 source "${DOTFILES}/tools/zsh/utils.zsh"
 
+########################
+# ENVIROMENT VARIABLES #
+########################
+
 # See: https://docs.anthropic.com/en/docs/claude-code/settings#environment-variables
 # See: https://docs.anthropic.com/en/docs/about-claude/models/overview#model-names
 export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-1-20250805
@@ -21,3 +25,15 @@ if is_work; then
   export CLOUD_ML_REGION=us-east5
   export DISABLE_PROMPT_CACHING=1
 fi
+
+###########
+# ALIASES #
+###########
+
+alias cc="claude"
+alias ccy="claude --dangerously-skip-permissions"
+
+###############
+# INTEGRATION #
+###############
+
