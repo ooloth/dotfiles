@@ -9,9 +9,7 @@ source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work
 ###########
 
 if have kitten; then
-  diff() {
-    # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
-    kitten diff "$1" "$2";
-  }
+  diff() { kitten diff "${1}" "${2}"; } # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
+  image() { kitten icat "$@"; } # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
 fi
 

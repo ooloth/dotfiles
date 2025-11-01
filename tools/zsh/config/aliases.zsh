@@ -13,8 +13,6 @@ alias f='yazi'
 alias g="lazygit"
 alias grep="rg"
 
-alias image="kitten icat" # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
-
 alias k="kubectl"
 alias kc="k create"
 alias kcd="k create deployment"
