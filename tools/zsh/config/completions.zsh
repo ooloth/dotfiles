@@ -1,6 +1,3 @@
-#!/usr/bin/env zsh
-set -euo pipefail
-
 # Must come before compinit to support rust tab completions
 # See: https://rust-lang.github.io/rustup/installation/index.html
 fpath+=~/.zfunc

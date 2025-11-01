@@ -1,6 +1,3 @@
-#!/usr/bin/env zsh
-# set -euo pipefail
-
 source "${DOTFILES}/tools/zsh/utils.zsh" # is_work
 
 ############
