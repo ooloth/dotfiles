@@ -33,8 +33,8 @@ update_python_env_vars() {
 }
 
 activate_venv() {
-  local CURRENT_DIRECTORY="${PWD}"
-  local VENV=""
+  local current_directory="${PWD}"
+  local venv=""
 
   # Function to find the nearest virtual environment
   find_venv() {
@@ -53,18 +53,23 @@ activate_venv() {
     done
   }
 
-  VENV=$(find_venv "$CURRENT_DIRECTORY")
+  venv=$(find_venv "$current_directory")
 
-  if [ -n "$VENV" ]; then
-    source "${VENV}/bin/activate"
+  if [ -n "${venv}" ]; then
+    source "${venv}/bin/activate"
   else
     # Deactivate any venv sticking from a previous directory and be done
-    if [ -n "${VIRTUAL_ENV}" ] && command -v deactivate >/dev/null 2>&1; then
-      deactivate
+    # Don't assume VIRTUAL_ENV is set or deactivate command exists
+    if [ -n "${VIRTUAL_ENV:-}" ]; then
+      if type deactivate >/dev/null 2>&1; then
+        deactivate
+      fi
     fi
+
     unset VIRTUAL_ENV
     unset VIRTUAL_ENV_PROMPT
-    # remove all pyenv paths from PATH (see: https://stackoverflow.com/a/62950499/8802485)
+
+    # Remove all pyenv paths from PATH (see: https://stackoverflow.com/a/62950499/8802485)
     export PATH=$(echo $PATH | tr ':' '\n' | sed '/pyenv/d' | tr '\n' ':' | sed -r 's/:$/\n/')
   fi
 }
