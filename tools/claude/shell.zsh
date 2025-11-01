@@ -1,6 +1,4 @@
-#!/usr/bin/env zsh
-
-source "${DOTFILES}/tools/zsh/utils.zsh"
+source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work
 
 ########################
 # ENVIROMENT VARIABLES #
@@ -32,8 +30,4 @@ fi
 
 alias cc="claude"
 alias ccy="claude --dangerously-skip-permissions"
-
-###############
-# COMPLETIONS #
-###############
 
