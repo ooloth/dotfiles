@@ -4,7 +4,6 @@ source "${DOTFILES}/tools/zsh/utils.zsh" # is_work
 # ONE-OFF #
 ###########
 
-alias cat="bat --paging=never"
 alias check="bash ${DOTFILES}/features/check.bash"
 alias cte="EDITOR=vim crontab -e"
 alias ctl="crontab -l"
