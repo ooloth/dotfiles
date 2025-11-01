@@ -15,6 +15,13 @@ done
 # LEGACY: SHELL/VARIABLES.ZSH FILES #
 #####################################
 
+# Find all shell/variables.bash files in each tool directory (except @new and @archive and zsh)
+shell_variables_files=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell/variables.zsh" -print))
+
+for file in "${shell_variables_files[@]}"; do
+  source "${file}"
+done
+
 ###################################
 # LEGACY: SHELL/ALIASES.ZSH FILES #
 ###################################
@@ -31,8 +38,16 @@ for file in "${shell_integration_files[@]}"; do
 done
 
 ###################################
-# LEGACY: MANUAL COMPLETION SETUP #
+# LEGACY: ONE-OFF VARIABLES SETUP #
 ###################################
+
+#################################
+# LEGACY: ONE-OFF ALIASES SETUP #
+#################################
+
+####################################
+# LEGACY: ONE-OFF COMPLETION SETUP #
+####################################
 
 # FIXME: crashes terminal if set -e is enabled
 # powerlevel10k
