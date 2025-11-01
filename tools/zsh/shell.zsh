@@ -30,6 +30,11 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
 alias c="clear"
+
+# Crontab
+alias cte="EDITOR=nvim crontab -e"
+alias ctl="crontab -l"
+
 alias env="env | sort"
 
 kill() {

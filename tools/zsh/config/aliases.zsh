@@ -5,8 +5,6 @@ source "${DOTFILES}/tools/zsh/utils.zsh" # is_work
 ###########
 
 alias check="bash ${DOTFILES}/features/check.bash"
-alias cte="EDITOR=vim crontab -e"
-alias ctl="crontab -l"
 
 alias f='yazi'
 
