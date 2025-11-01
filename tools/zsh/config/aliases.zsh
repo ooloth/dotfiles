@@ -8,7 +8,6 @@ alias check="bash ${DOTFILES}/features/check.bash"
 
 alias f='yazi'
 
-alias g="lazygit"
 alias grep="rg"
 
 alias lint="check" # I forget I refer to this as "check" sometimes
