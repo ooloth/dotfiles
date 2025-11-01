@@ -13,17 +13,6 @@ alias f='yazi'
 alias g="lazygit"
 alias grep="rg"
 
-alias k="kubectl"
-alias kc="k create"
-alias kcd="k create deployment"
-alias kd="k describe"
-alias ke="k expose"
-alias kg="k get"
-alias kgw="kg -o wide"
-alias kgy="kg -o yaml"
-alias ka="kg all"
-alias kr="k run"
-alias ks="k scale"
 # Use stern as a replacement for kubectl logs
 # Tails a pod regex or "resource/name" and shows logs for any containers that match the regex
 # Add -c regex to filter by container name
