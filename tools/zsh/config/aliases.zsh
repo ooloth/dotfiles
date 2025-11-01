@@ -31,7 +31,6 @@ alias submit="bash ${DOTFILES}/features/submit.bash"
 
 t() { tmux attach || exec tmux; }
 alias test="bash ${DOTFILES}/features/test.bash"
-alias transfer="kitten transfer" # see: https://sw.kovidgoyal.net/kitty/kittens/transfer/
 alias ts="tailscale"
 
 alias vscode="code"
