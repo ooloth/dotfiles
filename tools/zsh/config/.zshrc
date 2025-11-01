@@ -17,4 +17,5 @@ source "${DOTFILES}/tools/zsh/config/variables.zsh"
 source "${DOTFILES}/tools/zsh/config/aliases.zsh"
 source "${DOTFILES}/tools/zsh/config/options.zsh"
 source "${DOTFILES}/tools/zsh/config/hooks.zsh"
+source "${DOTFILES}/tools/zsh/config/completions.zsh"
 source "${DOTFILES}/tools/zsh/config/plugins.zsh" # source last
