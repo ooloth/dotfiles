@@ -26,6 +26,20 @@ done
 # LEGACY: SHELL/ALIASES.ZSH FILES #
 ###################################
 
+# Find all shell/aliases.bash files in each feature directory (except @new and @archive)
+shell_aliases_in_features=($(find "${DOTFILES}/features" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell/aliases.zsh" -print))
+
+for file in "${shell_aliases_in_features[@]}"; do
+  source "${file}"
+done
+
+# Find all shell/aliases.bash files in each tool directory (except @new and @archive and zsh)
+shell_aliases_in_tools=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell/aliases.zsh" -print))
+
+for file in "${shell_aliases_in_tools[@]}"; do
+  source "${file}"
+done
+
 #######################################
 # LEGACY: SHELL/INTEGRATION.ZSH FILES #
 #######################################
