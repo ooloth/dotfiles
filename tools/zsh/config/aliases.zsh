@@ -8,9 +8,6 @@ alias check="bash ${DOTFILES}/features/check.bash"
 alias cte="EDITOR=vim crontab -e"
 alias ctl="crontab -l"
 
-diff() { kitten diff "$1" "$2"; }                              # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
-
-
 alias f='yazi'
 
 alias g="lazygit"
