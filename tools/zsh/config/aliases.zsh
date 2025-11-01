@@ -25,7 +25,6 @@ alias restart="bash ${DOTFILES}/features/restart.bash"
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 alias run="bash ${DOTFILES}/features/run.bash"
 
-alias s="kitten ssh" # see: https://sw.kovidgoyal.net/kitty/kittens/ssh/
 alias start="bash ${DOTFILES}/features/start.bash"
 alias stop="bash ${DOTFILES}/features/stop.bash"
 alias submit="bash ${DOTFILES}/features/submit.bash"
