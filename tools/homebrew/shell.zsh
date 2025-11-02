@@ -17,13 +17,3 @@ fi
 # ALIASES #
 ###########
 
-###############
-# COMPLETIONS #
-###############
-
-# TODO: try enabling if completions for brew-installed tools aren't working
-# See: https://github.com/eza-community/eza/blob/main/INSTALL.md#for-zsh-with-homebrew
-# if have brew; then
-#     FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
-# fi
-

@@ -22,5 +22,9 @@ if have docker; then
   du() { dc up --build --detach --remove-orphans "$@"; }              # recreate and start one or more services (or all services if no args provided)
 fi
 
-fpath=("${HOME}/.docker/completions" $fpath)
+###############
+# COMPLETIONS #
+###############
+
+fpath+="~/.docker/completions"
 
