@@ -73,9 +73,6 @@ if have brew; then
   export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig"
 fi
 
-# Powerlevel10k
-export POWERLEVEL9K_CONFIG_FILE="${HOME}/.config/powerlevel10k/p10k.zsh"
-
 # Python
 export MYPYPATH="${HOME}"
 export PYTHONPATH="${HOME}"
@@ -116,13 +113,6 @@ fi
 ####################################
 # LEGACY: ONE-OFF COMPLETION SETUP #
 ####################################
-
-# powerlevel10k
-# see: https://github.com/romkatv/powerlevel10k?tab=readme-ov-file#homebrew
-if have brew; then
-  source "/opt/homebrew/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme"
-  source "${DOTFILES}/tools/powerlevel10k/config/p10k.zsh" # to customize, run `p10k configure` or edit zsh/config/p10k.zsh
-fi
 
 # docker
 fpath=("${HOME}/.docker/completions" $fpath)
