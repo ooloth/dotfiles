@@ -127,9 +127,6 @@ fi
 # docker
 fpath=("${HOME}/.docker/completions" $fpath)
 
-if have fzf; then
-  eval "$(fzf --zsh)"
-fi
 
 if have uv; then
   eval "$(uv generate-shell-completion zsh)"
