@@ -14,8 +14,7 @@ fi
 
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
-source "${DOTFILES}/tools/macos/shell/aliases.zsh" # is_air, is_mini, is_work
-source "${DOTFILES}/tools/zsh/utils.zsh" # have, info, warn, error - TODO: deprecate in favor of bash one?
+source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work, info, etc
 
 ##########
 # CONFIG #
@@ -24,5 +23,4 @@ source "${DOTFILES}/tools/zsh/utils.zsh" # have, info, warn, error - TODO: depre
 source "${DOTFILES}/tools/zsh/config/options.zsh"
 source "${DOTFILES}/tools/zsh/config/completions.zsh"
 source "${DOTFILES}/tools/zsh/config/hooks.zsh"
-source "${DOTFILES}/tools/zsh/config/aliases.zsh" # TODO: remove (legacy)
 source "${DOTFILES}/tools/zsh/config/tools.zsh" # source last
