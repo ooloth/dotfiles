@@ -18,9 +18,6 @@ alias grep="rg"
 
 alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
-
-
-t() { tmux attach || exec tmux; }
 alias ts="tailscale"
 
 if is_work; then
