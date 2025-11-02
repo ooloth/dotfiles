@@ -1,5 +1,8 @@
-#!/usr/bin/env zsh
-# set -euo pipefail
+source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work
+
+###########
+# ALIASES #
+###########
 
 alias symlinks="bash ${DOTFILES}/features/update/symlinks.bash"
 

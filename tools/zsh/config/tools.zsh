@@ -5,9 +5,16 @@
 ############################
 
 # Find all shell.zsh files in each tool directory (except @new and @archive)
-shell_files=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell.zsh" -print))
+shell_files_in_features=($(find "${DOTFILES}/features" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell.zsh" -print))
 
-for file in "${shell_files[@]}"; do
+for file in "${shell_files_in_features[@]}"; do
+  source "${file}"
+done
+
+# Find all shell.zsh files in each tool directory (except @new and @archive)
+shell_files_in_tools=($(find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell.zsh" -print))
+
+for file in "${shell_files_in_tools[@]}"; do
   source "${file}"
 done
 
