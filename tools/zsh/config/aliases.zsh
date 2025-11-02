@@ -19,7 +19,6 @@ alias grep="rg"
 alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 
-alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
 
 t() { tmux attach || exec tmux; }
 alias ts="tailscale"
