@@ -26,8 +26,6 @@ alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/ki
 t() { tmux attach || exec tmux; }
 alias ts="tailscale"
 
-alias vscode="code"
-
 if is_work; then
   alias bqq="bq query --use_legacy_sql=false --project_id=datalake-prod-ef49c0c9 --format=prettyjson"
 
