@@ -14,8 +14,6 @@ alias stop="bash ${DOTFILES}/features/stop.bash"
 alias submit="bash ${DOTFILES}/features/submit.bash"
 alias test="bash ${DOTFILES}/features/test.bash"
 
-alias ts="tailscale"
-
 if is_work; then
   alias bqq="bq query --use_legacy_sql=false --project_id=datalake-prod-ef49c0c9 --format=prettyjson"
 
