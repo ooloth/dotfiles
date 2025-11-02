@@ -14,7 +14,7 @@ is_python_project() {
 
   # Any python files in the current directory?
   for file in *.py; do
-    if [ -e "$file" ]; then
+    if [ -e "${file}" ]; then
       return 0
     fi
   done
@@ -24,11 +24,11 @@ is_python_project() {
 
 update_python_env_vars() {
   if is_python_project; then
-    export PYTHONPATH="$PWD"
-    export MYPYPATH="$PWD"
+    export PYTHONPATH="${PWD}"
+    export MYPYPATH="${PWD}"
   else
-    export PYTHONPATH="$HOME"
-    export MYPYPATH="$HOME"
+    export PYTHONPATH="${HOME}"
+    export MYPYPATH="${HOME}"
   fi
 }
 
@@ -39,38 +39,35 @@ activate_venv() {
   # Function to find the nearest virtual environment
   find_venv() {
     local dir="$1" # start from the current directory
-    while [ "$dir" != "/" ]; do # don't go past the root directory
-      local uv_venv_default="$dir/.venv"
-      local uv_venv_roadie="$dir/venv"
-      if [ -f "$uv_venv_default/bin/activate" ]; then
-        echo "$uv_venv_default"
+
+    while [ "${dir}" != "/" ]; do # don't go past the root directory
+      local uv_venv_default="${dir}/.venv"
+      local uv_venv_roadie="${dir}/venv"
+
+      if [ -f "${uv_venv_default}/bin/activate" ]; then
+        echo "${uv_venv_default}"
         return
-      elif [ -f "$uv_venv_roadie/bin/activate" ]; then
-        echo "$uv_venv_roadie"
+      elif [ -f "${uv_venv_roadie}/bin/activate" ]; then
+        echo "${uv_venv_roadie}"
         return
       fi
-      dir="$(dirname "$dir")" # move up one directory and try again
+
+      dir="$(dirname "${dir}")" # move up one directory and try again
     done
   }
 
-  venv=$(find_venv "$current_directory")
+  venv=$(find_venv "${current_directory}")
 
   if [ -n "${venv}" ]; then
     source "${venv}/bin/activate"
   else
     # Deactivate any venv sticking from a previous directory and be done
-    # Don't assume VIRTUAL_ENV is set or deactivate command exists
-    if [ -n "${VIRTUAL_ENV:-}" ]; then
-      if type deactivate >/dev/null 2>&1; then
-        deactivate
-      fi
+    if have deactivate; then
+      deactivate
     fi
 
     unset VIRTUAL_ENV
     unset VIRTUAL_ENV_PROMPT
-
-    # Remove all pyenv paths from PATH (see: https://stackoverflow.com/a/62950499/8802485)
-    export PATH=$(echo $PATH | tr ':' '\n' | sed '/pyenv/d' | tr '\n' ':' | sed -r 's/:$/\n/')
   fi
 }
 
