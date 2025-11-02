@@ -110,13 +110,7 @@ fi
 # LEGACY: ONE-OFF ALIASES SETUP #
 #################################
 
-####################################
-# LEGACY: ONE-OFF COMPLETION SETUP #
-####################################
 
 
-if have uv; then
-  eval "$(uv generate-shell-completion zsh)"
-  eval "$(uvx --generate-shell-completion zsh)"
 fi
 
