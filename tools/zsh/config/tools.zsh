@@ -114,9 +114,6 @@ fi
 # LEGACY: ONE-OFF COMPLETION SETUP #
 ####################################
 
-# docker
-fpath=("${HOME}/.docker/completions" $fpath)
-
 
 if have uv; then
   eval "$(uv generate-shell-completion zsh)"
