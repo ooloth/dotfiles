@@ -14,8 +14,6 @@ alias stop="bash ${DOTFILES}/features/stop.bash"
 alias submit="bash ${DOTFILES}/features/submit.bash"
 alias test="bash ${DOTFILES}/features/test.bash"
 
-alias grep="rg"
-
 alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 alias ts="tailscale"
