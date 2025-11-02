@@ -5,32 +5,25 @@ source "${DOTFILES}/tools/zsh/utils.zsh" # is_work
 ###########
 
 alias check="bash ${DOTFILES}/features/check.bash"
+alias lint="check" # I forget I refer to this as "check" sometimes
+alias new="bash ${DOTFILES}/features/new.bash"
+alias restart="bash ${DOTFILES}/features/restart.bash"
+alias run="bash ${DOTFILES}/features/run.bash"
+alias start="bash ${DOTFILES}/features/start.bash"
+alias stop="bash ${DOTFILES}/features/stop.bash"
+alias submit="bash ${DOTFILES}/features/submit.bash"
+alias test="bash ${DOTFILES}/features/test.bash"
 
 alias f='yazi'
 
 alias grep="rg"
 
-alias lint="check" # I forget I refer to this as "check" sometimes
-
-alias mr="sudo shutdown -r now"         # restart macos
 alias mini="tailscale ssh michael@mini" # automatically log in using SSH key pair
 # alias mini="s michael@mini.local"                       # automatically log in using SSH key pair
 
-alias new="bash ${DOTFILES}/features/new.bash"
-
-alias powerlevel10k="p10k"
-
-alias restart="bash ${DOTFILES}/features/restart.bash"
-
 alias rg="rg --hyperlink-format=kitty" # see: https://sw.kovidgoyal.net/kitty/kittens/hyperlinked_grep/
-alias run="bash ${DOTFILES}/features/run.bash"
-
-alias start="bash ${DOTFILES}/features/start.bash"
-alias stop="bash ${DOTFILES}/features/stop.bash"
-alias submit="bash ${DOTFILES}/features/submit.bash"
 
 t() { tmux attach || exec tmux; }
-alias test="bash ${DOTFILES}/features/test.bash"
 alias ts="tailscale"
 
 alias vscode="code"
