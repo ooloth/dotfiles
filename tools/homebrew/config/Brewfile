@@ -48,13 +48,13 @@ if computer_name == "Air"
 end
 
 if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
-  brew "helm" # for kubernetes
-  brew "kafka"
-  brew "librdkafka" # for kafka
+  # brew "helm" # for kubernetes
+  # brew "kafka"
+  # brew "librdkafka" # for kafka
   brew "lzlib"
   brew "opa"
   brew "openjdk" # for java
-  brew "redis"
+  # brew "redis"
   brew "tcl-tk"
   brew "zlib"
 end
