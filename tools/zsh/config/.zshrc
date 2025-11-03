@@ -4,6 +4,8 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+
 source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work, info, etc
 source "${DOTFILES}/tools/zsh/config/options.zsh"
 source "${DOTFILES}/tools/zsh/config/completions.zsh"
