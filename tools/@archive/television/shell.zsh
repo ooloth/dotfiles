@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+# See: https://alexpasmantier.github.io/television/docs/Users/cli/
 
 source "${DOTFILES}/tools/zsh/utils.zsh"
 
@@ -7,7 +7,7 @@ source "${DOTFILES}/tools/zsh/utils.zsh"
 
 # Enables ctrl-r for command history
 # See: https://alexpasmantier.github.io/television/docs/Users/shell-integration
-# if have tv; then
-#   eval "$(tv init zsh)"
-# fi
+if have tv; then
+  eval "$(tv init zsh)"
+fi
 

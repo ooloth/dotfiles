@@ -1,5 +1,3 @@
-#!/usr/bin/env zsh
-
-# Karabiner-Elements
+# Goku
 export GOKU_EDN_CONFIG_FILE=$HOME/.config/karabiner/karabiner.edn
 
