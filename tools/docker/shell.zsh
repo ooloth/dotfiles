@@ -1,7 +1,7 @@
 source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work
 
 if ! have docker; then
-  return
+  return 0
 fi
 
 ########################
