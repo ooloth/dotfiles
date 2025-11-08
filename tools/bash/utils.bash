@@ -162,6 +162,7 @@ function banner() {
 }
 
 # TODO: use "h1", "h2", "h3" functions for different logging header designs? h2 being maybe just the bold + underline? h3 being just bold? info/warn/error being normal text but colored? and maybe prefixed?
+# TODO: migrate logging behaviour from bash/utils.bash into bash/logging/banner.bash, bash/logging/h1.bash, etc and source all those files in bash/utils.bash?
 function info() {
   local text="$1"
   local color="${TEXT_WHITE}"
