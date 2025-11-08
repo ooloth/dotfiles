@@ -161,6 +161,7 @@ function banner() {
   printf "\n${border_top}\n${border_vertical}${text}${border_vertical}\n${border_bottom}\n\n${TEXT_NORMAL}" >&2
 }
 
+# TODO: use "h1", "h2", "h3" functions for different logging header designs? h2 being maybe just the bold + underline? h3 being just bold? info/warn/error being normal text but colored? and maybe prefixed?
 function info() {
   local text="$1"
   local color="${TEXT_WHITE}"
