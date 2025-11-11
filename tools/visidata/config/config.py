@@ -7,12 +7,14 @@
 options.color_default = "white on transparent"
 options.default_width = 20
 
+# FIXME: doesn't work yet
+Sheet.addCommand("0", "go-leftmost")
+
 Sheet.addCommand(
     "^D",
     "scroll-halfpage-down",
     "cursorDown(nScreenRows//2); sheet.topRowIndex += nScreenRows//2",
 )
-
 Sheet.addCommand(
     "^U",
     "scroll-halfpage-up",
