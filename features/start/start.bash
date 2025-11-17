@@ -17,10 +17,6 @@ if is_work; then
     du
     ;;
 
-  grey-havens)
-    ./run-local.sh
-    ;;
-
   mapapp-1)
     ./bin/dev.sh
     ;;
@@ -30,6 +26,10 @@ if is_work; then
     ;;
 
   mapapp-3)
+    ./bin/dev.sh
+    ;;
+
+  mapapp-4)
     ./bin/dev.sh
     ;;
 
