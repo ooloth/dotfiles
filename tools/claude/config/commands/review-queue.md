@@ -49,7 +49,7 @@ Fetch all open PRs where I'm requested as a reviewer across all relevant repos a
                commits(last: 1) {
                   nodes {
                      commit {
-                        statuscheckrollup {
+                        statusCheckRollup {
                            state
                         }
                      }
