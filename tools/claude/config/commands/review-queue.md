@@ -107,6 +107,9 @@ Based on the above output, process and display all PRs waiting for review:
    - Track viewing history in `~/.claude/.cache/review-queue-history.json` to show "🆕" indicators
 
 5. **Display formatted results:**
+   - Run the Python script via Bash to process PRs and save cache files
+   - **IMPORTANT**: Display the script output inline in your text response (not just in tool output)
+   - The formatted output should be your complete message - no additional commentary
    - Present all PRs using the exact format template (see "Output Formatting" section)
    - Show available commands at the end
 
@@ -115,26 +118,31 @@ Based on the above output, process and display all PRs waiting for review:
 After Phase 1 completes, enter interactive mode.
 
 **What the user should see:**
-- Formatted PR list (from your code execution in Phase 1)
+
+- Formatted PR list (displayed inline in your text response)
 - [You waiting silently for input]
 
 **What the user should NOT see:**
+
 - Summaries ("You have 9 PRs waiting...")
 - Prompts ("What would you like to do?")
 - Commentary about the PRs (the formatted output is self-explanatory)
 
-The tool output from Phase 1 IS your complete response. Wait for user input.
+**IMPORTANT**: The formatted PR list must be displayed inline in your text response, not just in collapsed tool output. Users need to see the list immediately without expanding anything.
 
 **User input options:**
+
 - Type a number (e.g., "7") to review that specific PR
 - Type "list" to redisplay the PR queue
 
 **When user types a number:**
+
 - Read the mapping from `~/.claude/.cache/review-queue.json`
 - Parse the repo and PR number
 - Launch `/pr-review <number> --repo <org>/<repo>`
 
 **After each PR review completes:**
+
 - Update the cache with review completion timestamp
 - Calculate remaining PRs and next PR in sequence
 - Prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
@@ -304,7 +312,6 @@ These examples highlight specific formatting requirements:
 
 Commands:
 - Type a number (1-11) to review that PR (e.g., "3" to review frontend-app#42)
-- Type 'approve-all-deps' to approve all 4 passing dependabot PRs
 - After each review, I'll prompt: "Continue? (y/n/list/number)" to review more PRs
 
 💡 Interactive workflow: Type a number → review PR → prompted for next → repeat until done
@@ -317,7 +324,6 @@ This command works best when you've configured Memory with your preferences:
 **Example Memory facts:**
 
 - "When reviewing PRs: prioritize failing CI and stale PRs (>30 days old) first"
-- "Dependabot PRs: batch-approve if CI passes and version bumps are minor/patch only"
 
 ## Cache File Lifecycle
 
