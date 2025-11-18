@@ -120,6 +120,40 @@ Fetch all open PRs where I'm requested as a reviewer across all relevant recursi
      - number → Jump to specific PR
    - Type "approve-all-deps" to batch-approve all passing dependabot PRs
 
+## Required Output Format Template
+
+Use this exact template for each PR. Preserve spacing, emojis, and structure precisely:
+
+```
+{number}. {new_badge}{repo_short}#{pr_number} - "{title}" [+{additions} -{deletions}, {files} files] {time_estimate}
+   By: @{author}
+   Age: {age_str} | CI: {ci_status} | Review: {review_status} | {conflict_status}
+   💬 {summary}
+   {engagement_line}
+   {urgency_line}
+   {url}
+
+```
+
+**Field definitions:**
+- `{new_badge}`: "🆕 " if PR not in history, otherwise empty string
+- `{repo_short}`: Repository name without "recursionpharma/" prefix
+- `{time_estimate}`: "~5 min", "~10 min", "~20 min", "~30 min", or "~45 min"
+- `{author}`: Author's GitHub username (omit "By:" line for dependabot PRs)
+- `{ci_status}`: "✅ passing", "❌ failing", "⏸️ draft", or "⏳ pending"
+- `{review_status}`: Format varies:
+  - Simple: "✅ Approved", "🔍 Review required", "⚠️ Changes requested"
+  - With reviews: "👥 {count} reviews (✅ {approved_count} approved, 💬 {commented_count} commented)"
+    - Include emoji prefix (✅, ⚠️, 💬) before each count type
+- `{conflict_status}`: "No conflicts ✅", "Conflicts ⚠️", or "Unknown"
+- `{summary}`: First meaningful line from PR description (omit line if empty)
+- `{engagement_line}`: Your engagement status (omit line if none):
+  - "   💬 You commented {age} ago"
+  - "   ✅ You approved {age} ago"
+  - "   ⚠️ You requested changes {age} ago"
+- `{urgency_line}`: Reason for urgency in ACTION REQUIRED section (omit elsewhere):
+  - "   ⚠️ {reason} - needs immediate attention"
+
 ## Example Output Format
 
 ```
