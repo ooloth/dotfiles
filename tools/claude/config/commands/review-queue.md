@@ -26,6 +26,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
              changedFiles
              mergeable
              reviewDecision
+             bodyText
              reviews(last: 10) {
                totalCount
                nodes {
@@ -101,6 +102,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    - **Review status** (e.g., "✅ Approved", "🔍 Review required", "⚠️ Changes requested")
    - **Conflict status** (e.g., "No conflicts ✅", "Conflicts ⚠️", "Unknown")
    - CI status: ✅ passing, ❌ failing, ⏸️ draft, ⏳ pending
+   - **Brief summary** (first line or sentence from PR description, if available)
    - Link
 
 6. **Number PRs consecutively:**
@@ -125,12 +127,14 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 1. perturbseq-map#94 - "feat: a first pass script to prepare an scVI embedding for mapapp perusal" [+88 -335, 11 files] ~20 min
    By: @dmaljovec
    Age: 1y ago | CI: ✅ passing | Review: 🔍 Review required | Conflicts ⚠️
+   💬 Adds preprocessing script to generate scVI embeddings for visualization in mapapp
    ⚠️ Very old PR with conflicts - close or ask author to update
    https://github.com/recursionpharma/perturbseq-map/pull/94
 
 2. phenomics-potency-prediction#2 - "chore: switch sourcing Python packages from Nexus to GAR" [+45 -32, 5 files] ~5 min
    By: @dmaljovec
    Age: 8mo ago | CI: ❌ failing | Review: 🔍 Review required | No conflicts ✅
+   💬 Updates Python package repository from Nexus to Google Artifact Registry
    ⚠️ Failing CI for 8 months - needs immediate attention
    https://github.com/recursionpharma/phenomics-potency-prediction/pull/2
 
@@ -190,17 +194,18 @@ This command works best when you've configured Memory with your preferences:
 ## Implementation Details
 
 The command uses a Python script to:
-1. Fetch PRs via GitHub GraphQL API (with additions, deletions, changedFiles, mergeable, reviewDecision, reviews)
+1. Fetch PRs via GitHub GraphQL API (with additions, deletions, changedFiles, mergeable, reviewDecision, reviews, bodyText)
 2. Calculate human-readable ages from ISO timestamps
 3. Calculate review time estimates based on total lines changed for each PR
 4. Calculate total estimated review time across all PRs
 5. Parse CI status from statusCheckRollup
 6. Parse review status from reviewDecision (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
 7. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
-8. Filter out build-pipelines repo
-9. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
-10. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
-11. Assign consecutive numbers (1-N) across all PRs for easy reference
-12. Store PR lookup mapping (number → repo#pr) for quick access
-13. Format output with total time, size info, time estimates, review status, conflict status, urgency reasons, emojis, and status indicators
-14. Display available commands (review by number, batch approve dependabot)
+8. Extract brief summary from bodyText (first line/sentence, max ~100 chars)
+9. Filter out build-pipelines repo
+10. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
+11. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
+12. Assign consecutive numbers (1-N) across all PRs for easy reference
+13. Store PR lookup mapping (number → repo#pr) for quick access
+14. Format output with total time, size info, time estimates, review status, conflict status, summaries, urgency reasons, emojis, and status indicators
+15. Display available commands (review by number, batch approve dependabot)
