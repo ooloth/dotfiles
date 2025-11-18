@@ -1,6 +1,6 @@
 # Review Queue - Find PRs waiting for my review
 
-Fetch all open PRs where I'm requested as a reviewer across all relevant recursionpharma repos and present them in priority order to be reviewed.
+Fetch all open PRs where I'm requested as a reviewer across all relevant repos and present them in priority order to be reviewed.
 
 ## Context
 
@@ -139,8 +139,9 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 ```
 
 **Field definitions:**
+
 - `{new_badge}`: "🆕 " if PR not in history, otherwise empty string
-- `{repo_short}`: Repository name without "recursionpharma/" prefix
+- `{repo_short}`: Repository name without organization prefix
 - `{time_estimate}`: "~5 min", "~10 min", "~20 min", "~30 min", or "~45 min"
 - `{author}`: Author's GitHub username (omit "By:" line for dependabot PRs)
 - `{ci_status}`: "✅ passing", "❌ failing", "⏸️ draft", or "⏳ pending"
@@ -151,72 +152,123 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 - `{conflict_status}`: "No conflicts ✅", "Conflicts ⚠️", or "Unknown"
 - `{summary}`: First meaningful line from PR description (omit line if empty)
 - `{engagement_line}`: Your engagement status (omit line if none):
-  - "   💬 You commented {age} ago"
-  - "   ✅ You approved {age} ago"
-  - "   ⚠️ You requested changes {age} ago"
+  - " 💬 You commented {age} ago"
+  - " ✅ You approved {age} ago"
+  - " ⚠️ You requested changes {age} ago"
 - `{urgency_line}`: Reason for urgency in ACTION REQUIRED section (omit elsewhere):
-  - "   ⚠️ {reason} - needs immediate attention"
+  - " ⚠️ {reason} - needs immediate attention"
+
+## Annotated Format Examples
+
+These examples highlight specific formatting requirements:
+
+**Review status with multiple reviews** - Note the required emoji prefixes:
+
+```
+Review: 👥 3 reviews (✅ 1 approved, 💬  2 commented)
+                      ^^              ^^
+                    Required emoji prefixes for each count type
+```
+
+**Complete PR entry** - Note spacing and optional lines:
+
+```
+4. 🆕 frontend-app#42 - "Add user authentication" [+127 -45, 4 files] ~10 min
+   By: @alice
+   Age: 1d ago | CI: ✅ passing | Review: 🔍 Required | 👥 3 reviews (✅ 1 approved, 💬 2 commented) | No conflicts ✅
+   💬 Implements JWT-based authentication for API endpoints
+   💬 You commented 4h ago
+   https://github.com/myorg/frontend-app/pull/42
+
+↑ New badge (conditional)
+  ↑ Summary line (omit if empty)
+    ↑ Engagement line (omit if none)
+      ↑ No urgency line (only in ACTION REQUIRED)
+```
+
+**Dependabot PR** - Note the omitted "By:" line:
+
+```
+8. backend-api#156 - "Bump lodash from 4.17.20 to 4.17.21" [+2 -2, 1 files] ~5 min
+   Age: 5d ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
+   https://github.com/myorg/backend-api/pull/156
+
+↑ No "By:" line for dependabot
+  ↑ No summary line (dependabot PRs typically have verbose auto-generated descriptions)
+```
 
 ## Example Output Format
 
 ```
+📋 PRs waiting for your review: 11 found | Est. total time: ~2h 15min (filtered out 3 from ignored-repo)
 
-📋 PRs waiting for your review: 13 found | Est. total time: ~2h 30min (filtered out 7 from build-pipelines)
+⚠️ ACTION REQUIRED (2):
 
-⚠️ ACTION REQUIRED (3):
-
-1. perturbseq-map#94 - "feat: a first pass script to prepare an scVI embedding for mapapp perusal" [+88 -335, 11 files] ~20 min
-   By: @dmaljovec
+1. data-pipeline#47 - "feat: add data validation layer" [+88 -335, 11 files] ~20 min
+   By: @bob
    Age: 1y ago | CI: ✅ passing | Review: 🔍 Review required | Conflicts ⚠️
-   💬 Adds preprocessing script to generate scVI embeddings for visualization in mapapp
+   💬 Adds validation middleware for incoming data streams
    ⚠️ Very old PR with conflicts - close or ask author to update
-   https://github.com/recursionpharma/perturbseq-map/pull/94
+   https://github.com/myorg/data-pipeline/pull/47
 
-2. phenomics-potency-prediction#2 - "chore: switch sourcing Python packages from Nexus to GAR" [+45 -32, 5 files] ~5 min
-   By: @dmaljovec
+2. backend-api#23 - "chore: update dependency management configuration" [+45 -32, 5 files] ~5 min
+   By: @charlie
    Age: 8mo ago | CI: ❌ failing | Review: 🔍 Review required | No conflicts ✅
-   💬 Updates Python package repository from Nexus to Google Artifact Registry
+   💬 Migrates from legacy dependency manager to modern tooling
    ⚠️ Failing CI for 8 months - needs immediate attention
-   https://github.com/recursionpharma/phenomics-potency-prediction/pull/2
+   https://github.com/myorg/backend-api/pull/23
 
-3. dash-phenoapp-v2#1498 - "Bump react-toastify from 7.0.4 to 11.0.5 in /react-app" [+9 -16, 2 files] ~5 min
-   Age: 8mo ago | CI: ✅ passing | Review: 🔍 Review required | Conflicts ⚠️
-   ⚠️ Old dependabot PR with conflicts - likely stale, consider closing
-   https://github.com/recursionpharma/dash-phenoapp-v2/pull/1498
+🎯 HIGH PRIORITY - Feature/Bug PRs (3):
 
-🎯 HIGH PRIORITY - Feature/Bug PRs (2):
-
-4. 🆕 cell-sight#39 - "Add cell neighborhood table" [+127 -45, 4 files] ~10 min
-   By: @marianna-trapotsi-rxrx
+3. 🆕 frontend-app#42 - "Add user authentication" [+127 -45, 4 files] ~10 min
+   By: @alice
    Age: 1d ago | CI: ✅ passing | Review: 🔍 Required | 👥 3 reviews (✅ 1 approved, 💬 2 commented) | No conflicts ✅
+   💬 Implements JWT-based authentication for API endpoints
    💬 You commented 4h ago
-   https://github.com/recursionpharma/cell-sight/pull/39
+   https://github.com/myorg/frontend-app/pull/42
 
-5. spade-flows#144 - "Use prototype trekseq" [+89 -12, 2 files] ~5 min
-   By: @isaacks123
+4. data-service#89 - "Fix memory leak in cache layer" [+89 -12, 2 files] ~5 min
+   By: @david
    Age: 4d ago | CI: ✅ passing | Review: ✅ Approved | 👥 2 reviews (✅ 2 approved) | No conflicts ✅
-   https://github.com/recursionpharma/spade-flows/pull/144
+   https://github.com/myorg/data-service/pull/89
 
-🤖 DEPENDABOT - Dependency Updates (5):
+5. mobile-app#156 - "Update navigation system" [+234 -156, 8 files] ~20 min
+   By: @eve
+   Age: 2d ago | CI: ✅ passing | Review: 🔍 Review required | No conflicts ✅
+   💬 Refactors navigation to use latest routing library
+   https://github.com/myorg/mobile-app/pull/156
 
-5. dash-phenoapp-v2#1839 - "Bump the npm_and_yarn group across 1 directory with 2 updates" [+12 -8, 2 files] ~5 min
+🤖 DEPENDABOT - Dependency Updates (4):
+
+6. frontend-app#178 - "Bump lodash from 4.17.20 to 4.17.21" [+12 -8, 2 files] ~5 min
    Age: 3d ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
-   https://github.com/recursionpharma/dash-phenoapp-v2/pull/1839
+   https://github.com/myorg/frontend-app/pull/178
 
-6. dash-phenoapp-v2#1821 - "Bump @types/node from 22.17.2 to 24.9.2" [+9 -9, 2 files] ~5 min
-   Age: 20d ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
-   https://github.com/recursionpharma/dash-phenoapp-v2/pull/1821
+7. backend-api#201 - "Bump express from 4.18.0 to 4.18.2" [+9 -9, 2 files] ~5 min
+   Age: 1w ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
+   https://github.com/myorg/backend-api/pull/201
 
 [... more dependabot PRs ...]
 
-Commands:
+🔧 CHORES - Infrastructure/Config (2):
 
-- Type a number (1-11) to review that PR (e.g., "7" to review cell-sight#39)
-- Type 'approve-all-deps' to approve all 5 passing dependabot PRs
+10. infra-config#34 - "chore: update CI pipeline configuration" [+156 -89, 7 files] ~20 min
+    By: @frank
+    Age: 5d ago | CI: ✅ passing | Review: 🔍 Review required | No conflicts ✅
+    💬 Modernizes GitHub Actions workflows and adds caching
+    https://github.com/myorg/infra-config/pull/34
+
+11. deployment-scripts#12 - "chore: refactor deployment scripts" [+67 -43, 3 files] ~10 min
+    By: @grace
+    Age: 1w ago | CI: ✅ passing | Review: 🔍 Review required | No conflicts ✅
+    https://github.com/myorg/deployment-scripts/pull/12
+
+Commands:
+- Type a number (1-11) to review that PR (e.g., "3" to review frontend-app#42)
+- Type 'approve-all-deps' to approve all 4 passing dependabot PRs
 - After each review, I'll prompt: "Continue? (y/n/list/number)" to review more PRs
 
 💡 Interactive workflow: Type a number → review PR → prompted for next → repeat until done
-
 ```
 
 ## Integration with Memory
@@ -225,7 +277,6 @@ This command works best when you've configured Memory with your preferences:
 
 **Example Memory facts:**
 
-- "For PR reviews at recursionpharma: I ignore PRs from recursionpharma/build-pipelines (always filtered out)"
 - "When reviewing PRs: prioritize failing CI and stale PRs (>30 days old) first"
 - "Dependabot PRs: batch-approve if CI passes and version bumps are minor/patch only"
 
@@ -256,8 +307,8 @@ This command works best when you've configured Memory with your preferences:
 ## Notes
 
 - This command is **global** - run it from any directory
-- It searches across **all recursionpharma repos**
-- **Automatically filters out** recursionpharma/build-pipelines PRs
+- It searches across **all organization repos**
+- **Automatically filters out** repos specified in the query (e.g., myorg/ignored-repo)
 - Uses GraphQL API for private repo access (not `gh search prs`)
 - Groups PRs by type: Feature/Bug → Dependabot → Chores
 - Works seamlessly with the existing `/pr-review <number> --repo <org>/<repo>` command
@@ -280,7 +331,7 @@ The command uses a Python script to:
      - Show "💬 You commented 2d ago" or "✅ You approved 3d ago" with most recent timestamp
 7. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
 8. Extract brief summary from bodyText (first line/sentence, max ~100 chars)
-9. Filter out build-pipelines repo
+9. Filter out ignored repos as specified in query
 10. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
 11. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
 12. Assign consecutive numbers (1-N) across all PRs for easy reference
@@ -291,7 +342,7 @@ The command uses a Python script to:
 
     ```json
     {
-      "recursionpharma/cell-sight#39": {
+      "myorg/frontend-app#42": {
         "first_seen": "2025-11-18T10:00:00Z",
         "last_seen": "2025-11-18T12:00:00Z"
       }
@@ -303,10 +354,10 @@ The command uses a Python script to:
     - Used when user types a number to lookup which PR to review
     ```json
     {
-      "1": "recursionpharma/rp006-brnaseq-analysis-flow#2",
-      "2": "recursionpharma/template-javascript-react#63",
+      "1": "myorg/data-pipeline#47",
+      "2": "myorg/backend-api#23",
       ...
-      "total": 12,
+      "total": 11,
       "generated_at": "2025-11-18T17:00:49Z"
     }
     ```
