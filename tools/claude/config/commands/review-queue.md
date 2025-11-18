@@ -27,13 +27,23 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
              mergeable
              reviewDecision
              bodyText
-             reviews(last: 10) {
+             comments(last: 20) {
+               totalCount
+               nodes {
+                 author {
+                   login
+                 }
+                 createdAt
+               }
+             }
+             reviews(last: 20) {
                totalCount
                nodes {
                  state
                  author {
                    login
                  }
+                 submittedAt
                }
              }
              repository {
@@ -153,9 +163,10 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 
 🎯 HIGH PRIORITY - Feature/Bug PRs (2):
 
-1. cell-sight#39 - "Add cell neighborhood table" [+127 -45, 4 files] ~10 min
+4. 🆕 cell-sight#39 - "Add cell neighborhood table" [+127 -45, 4 files] ~10 min
    By: @marianna-trapotsi-rxrx
    Age: 1d ago | CI: ✅ passing | Review: 🔍 Required | 👥 3 reviews (✅ 1 approved, 💬 2 commented) | No conflicts ✅
+   💬 You commented 4h ago
    https://github.com/recursionpharma/cell-sight/pull/39
 
 2. spade-flows#144 - "Use prototype trekseq" [+89 -12, 2 files] ~5 min
@@ -235,13 +246,28 @@ The command uses a Python script to:
    - Overall status (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
    - Individual reviewer actions (who approved, requested changes, commented)
    - Review engagement summary (e.g., "3 reviews: 1 approved, 2 commented")
+   - **Your engagement**: Check if you (ooloth) have commented or reviewed
+     - Show "💬 You commented 2d ago" or "✅ You approved 3d ago" with most recent timestamp
 7. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
 8. Extract brief summary from bodyText (first line/sentence, max ~100 chars)
 9. Filter out build-pipelines repo
 10. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
 11. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
 12. Assign consecutive numbers (1-N) across all PRs for easy reference
-13. Store PR lookup mapping in ~/.claude/.cache/review-queue.json:
+13. Track PR viewing history in ~/.claude/.cache/review-queue-history.json:
+    - **Updated (not overwritten)** - Persists your interaction history
+    - Records when you first saw each PR and your engagement
+    - Used to show "🆕 New" indicator for unseen PRs
+    ```json
+    {
+      "recursionpharma/cell-sight#39": {
+        "first_seen": "2025-11-18T10:00:00Z",
+        "last_seen": "2025-11-18T12:00:00Z"
+      }
+    }
+    ```
+
+14. Store PR lookup mapping in ~/.claude/.cache/review-queue.json:
     - **Overwritten on each run** - Always has fresh PR data (list changes over time)
     - Used when user types a number to lookup which PR to review
     ```json
@@ -253,9 +279,12 @@ The command uses a Python script to:
       "generated_at": "2025-11-18T17:00:49Z"
     }
     ```
-14. Format output with total time, size info, time estimates, review status, conflict status, summaries, urgency reasons, emojis, and status indicators
-15. Display available commands and explain interactive workflow
-16. When user types a number:
+15. Format output with total time, size info, time estimates, review status, conflict status, summaries, urgency reasons, emojis, and status indicators
+    - **🆕 indicator** for PRs not in history (never seen before)
+    - **Your engagement**: "💬 You commented 2d ago" if you have comments/reviews
+16. Update history file with current timestamp for all displayed PRs
+17. Display available commands and explain interactive workflow
+18. When user types a number:
     - Read mapping from cache file
     - Parse repo and PR number
     - Launch `/pr-review <number> --repo <org>/<repo>`
