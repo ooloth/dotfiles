@@ -88,6 +88,8 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    - 501-1000 lines: ~30 min
    - 1000+ lines: ~45 min
 
+   Also calculate total estimated time across all PRs for planning purposes.
+
 5. **Present results with key details:**
 
    For each PR show:
@@ -116,7 +118,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 ## Example Output Format
 
 ```
-📋 PRs waiting for your review: 11 found (filtered out 8 from build-pipelines)
+📋 PRs waiting for your review: 13 found | Est. total time: ~2h 30min (filtered out 7 from build-pipelines)
 
 ⚠️ ACTION REQUIRED (3):
 
@@ -190,14 +192,15 @@ This command works best when you've configured Memory with your preferences:
 The command uses a Python script to:
 1. Fetch PRs via GitHub GraphQL API (with additions, deletions, changedFiles, mergeable, reviewDecision, reviews)
 2. Calculate human-readable ages from ISO timestamps
-3. Calculate review time estimates based on total lines changed
-4. Parse CI status from statusCheckRollup
-5. Parse review status from reviewDecision (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
-6. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
-7. Filter out build-pipelines repo
-8. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
-9. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
-10. Assign consecutive numbers (1-N) across all PRs for easy reference
-11. Store PR lookup mapping (number → repo#pr) for quick access
-12. Format output with size info, time estimates, review status, conflict status, urgency reasons, emojis, and status indicators
-13. Display available commands (review by number, batch approve dependabot)
+3. Calculate review time estimates based on total lines changed for each PR
+4. Calculate total estimated review time across all PRs
+5. Parse CI status from statusCheckRollup
+6. Parse review status from reviewDecision (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
+7. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
+8. Filter out build-pipelines repo
+9. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
+10. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
+11. Assign consecutive numbers (1-N) across all PRs for easy reference
+12. Store PR lookup mapping (number → repo#pr) for quick access
+13. Format output with total time, size info, time estimates, review status, conflict status, urgency reasons, emojis, and status indicators
+14. Display available commands (review by number, batch approve dependabot)
