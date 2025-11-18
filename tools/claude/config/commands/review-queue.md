@@ -168,10 +168,25 @@ After Phase 1 completes, enter interactive mode.
 📋 PRs waiting for your review: 8 remaining | Est. time: ~1h 30min
 
 ⚠️ ACTION REQUIRED (2):
-[... abbreviated list ...]
+
+ 1. **"Bump jinja2 from 3.1.4 to 3.1.6" • template-javascript-react • @dependabot**
+   • 📅 8 months old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +2  🔴 -2  📄 2 files  ⏱️ ~5 min
+   • 🔗 https://github.com/recursionpharma/template-javascript-react/pull/63
+
+ 2. **"Introduce Docker-less dev environment" • rp006-brnaseq-analysis-flow • @jackdhaynes**
+   • 💬 Replaces the existing Docker compose-based dev environment setup with a Docker-less one
+   • 📅 5 months old • ⏸️ Draft • 👀 Review required • ⚠️ Conflicts
+   • 🟢 +16  🔴 -225  📄 11 files  ⏱️ ~20 min
+   • 🔗 https://github.com/recursionpharma/rp006-brnaseq-analysis-flow/pull/2
 
 🎯 HIGH PRIORITY - Feature/Bug PRs (1):
-[... abbreviated list ...]
+
+ 4. **"Add cell neighborhood table" • cell-sight • @marianna-trapotsi-rxrx**
+   • 💬 Added patient-derived information; cell neighborhood table
+   • 📅 1 day old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +76  🔴 -45  📄 6 files  ⏱️ ~10 min
+   • 🔗 https://github.com/recursionpharma/cell-sight/pull/39
 
 🤖 DEPENDABOT - Dependency Updates (5):
 [... abbreviated list ...]
@@ -195,11 +210,11 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 
 ```
  {number}. {new_badge}**"{title}" • {repo_short} • @{author}**
-   • [+{additions} -{deletions}, {files} files] {time_estimate}
    • 💬 {summary}
    • {age_str} • {ci_status} • {review_status} • {conflict_status}
    • {engagement_line}
    • {urgency_line}
+   • 🟢 +{additions}  🔴 -{deletions}  📄 {files} files  ⏱️ {time_estimate}
    • 🔗 {url}
 
 ```
@@ -213,8 +228,11 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 - `{repo_short}`: Repository name without organization prefix (no #PR_NUMBER)
 - `{author}`: Author's GitHub username with @ prefix (always include, even for dependabot PRs which will show "@dependabot")
 - First line must be wrapped in `**bold**` markdown
-- `{time_estimate}`: "~5 min", "~10 min", "~20 min", "~30 min", or "~45 min"
-- `{summary}`: First meaningful line from PR description (omit line if empty) - now appears FIRST in bullet list
+- `{summary}`: First meaningful line from PR description (omit line if empty) - appears first in bullet list
+- `{additions}`: Number of lines added (shown with 🟢 emoji)
+- `{deletions}`: Number of lines deleted (shown with 🔴 emoji)
+- `{files}`: Number of files changed (shown with 📄 emoji)
+- `{time_estimate}`: "~5 min", "~10 min", "~20 min", "~30 min", or "~45 min" (shown with ⏱️ emoji)
 - `{age_str}`: Natural phrasing with emoji: "📅 1 day old", "📅 4 days old", "📅 5 months old", "📅 1 week old", etc.
 - `{ci_status}`: Natural phrasing with emoji: "✅ CI passing", "❌ CI failing", "⏸️ Draft", or "⏳ CI pending"
 - `{review_status}`: Natural phrasing with emoji, format varies:
@@ -245,18 +263,18 @@ These examples highlight specific formatting requirements:
 
 ```
  4. 🆕 **"Add user authentication" • frontend-app • @alice**
-   • [+127 -45, 4 files] ~10 min
    • 💬 Implements JWT-based authentication for API endpoints
    • 📅 1 day old • ✅ CI passing • 👀 Review required • 👥 3 reviews • ✅ No conflicts
    • 💬 You commented 4 hours ago
+   • 🟢 +127  🔴 -45  📄 4 files  ⏱️ ~10 min
    • 🔗 https://github.com/myorg/frontend-app/pull/42
 
 ↑ First line is bold with title, repo (no #PR), and author
   ↑ Space before number prevents markdown list parsing
-    ↑ Diff stats and time estimate on second line
-      ↑ Summary is FIRST bullet (omit line if empty)
-        ↑ Metadata line with emoji-first natural phrasing (full words not abbreviations)
-          ↑ Engagement line (omit if none)
+    ↑ Summary appears first (omit line if empty)
+      ↑ Metadata line with emoji-first natural phrasing (full words not abbreviations)
+        ↑ Engagement line (omit if none)
+          ↑ Diff stats with color emojis, second to last
             ↑ URL line with link emoji (terminal auto-colors blue)
 ```
 
@@ -264,14 +282,15 @@ These examples highlight specific formatting requirements:
 
 ```
  8. **"Bump lodash from 4.17.20 to 4.17.21" • backend-api • @dependabot**
-   • [+2 -2, 1 files] ~5 min
    • 📅 5 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +2  🔴 -2  📄 1 files  ⏱️ ~5 min
    • 🔗 https://github.com/myorg/backend-api/pull/156
 
 ↑ Dependabot PRs show @dependabot as author
   ↑ First line still bold
     ↑ No summary line (dependabot PRs typically have verbose auto-generated descriptions)
-      ↑ Metadata line with emoji-first natural phrasing
+      ↑ Metadata line comes first after title
+        ↑ Diff stats line, second to last
 ```
 
 ## Example Output Format
@@ -282,49 +301,49 @@ These examples highlight specific formatting requirements:
 ⚠️ ACTION REQUIRED (2):
 
  1. **"feat: add data validation layer" • data-pipeline • @bob**
-   • [+88 -335, 11 files] ~20 min
    • 💬 Adds validation middleware for incoming data streams
    • 📅 1 year old • ✅ CI passing • 👀 Review required • ⚠️ Conflicts
    • ⚠️ Very old PR with conflicts - close or ask author to update
+   • 🟢 +88  🔴 -335  📄 11 files  ⏱️ ~20 min
    • 🔗 https://github.com/myorg/data-pipeline/pull/47
 
  2. **"chore: update dependency management configuration" • backend-api • @charlie**
-   • [+45 -32, 5 files] ~5 min
    • 💬 Migrates from legacy dependency manager to modern tooling
    • 📅 8 months old • ❌ CI failing • 👀 Review required • ✅ No conflicts
    • ⚠️ Failing CI for 8 months - needs immediate attention
+   • 🟢 +45  🔴 -32  📄 5 files  ⏱️ ~5 min
    • 🔗 https://github.com/myorg/backend-api/pull/23
 
 🎯 HIGH PRIORITY - Feature/Bug PRs (3):
 
  3. 🆕 **"Add user authentication" • frontend-app • @alice**
-   • [+127 -45, 4 files] ~10 min
    • 💬 Implements JWT-based authentication for API endpoints
    • 📅 1 day old • ✅ CI passing • 👀 Review required • 👥 3 reviews • ✅ No conflicts
    • 💬 You commented 4 hours ago
+   • 🟢 +127  🔴 -45  📄 4 files  ⏱️ ~10 min
    • 🔗 https://github.com/myorg/frontend-app/pull/42
 
  4. **"Fix memory leak in cache layer" • data-service • @david**
-   • [+89 -12, 2 files] ~5 min
    • 📅 4 days old • ✅ CI passing • ✅ Approved • 👥 2 reviews • ✅ No conflicts
+   • 🟢 +89  🔴 -12  📄 2 files  ⏱️ ~5 min
    • 🔗 https://github.com/myorg/data-service/pull/89
 
  5. **"Update navigation system" • mobile-app • @eve**
-   • [+234 -156, 8 files] ~20 min
    • 💬 Refactors navigation to use latest routing library
    • 📅 2 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +234  🔴 -156  📄 8 files  ⏱️ ~20 min
    • 🔗 https://github.com/myorg/mobile-app/pull/156
 
 🤖 DEPENDABOT - Dependency Updates (4):
 
  6. **"Bump lodash from 4.17.20 to 4.17.21" • frontend-app • @dependabot**
-   • [+12 -8, 2 files] ~5 min
    • 📅 3 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +12  🔴 -8  📄 2 files  ⏱️ ~5 min
    • 🔗 https://github.com/myorg/frontend-app/pull/178
 
  7. **"Bump express from 4.18.0 to 4.18.2" • backend-api • @dependabot**
-   • [+9 -9, 2 files] ~5 min
    • 📅 1 week old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +9  🔴 -9  📄 2 files  ⏱️ ~5 min
    • 🔗 https://github.com/myorg/backend-api/pull/201
 
 [... more dependabot PRs ...]
@@ -332,14 +351,14 @@ These examples highlight specific formatting requirements:
 🔧 CHORES - Infrastructure/Config (2):
 
  10. **"chore: update CI pipeline configuration" • infra-config • @frank**
-    • [+156 -89, 7 files] ~20 min
     • 💬 Modernizes GitHub Actions workflows and adds caching
     • 📅 5 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+    • 🟢 +156  🔴 -89  📄 7 files  ⏱️ ~20 min
     • 🔗 https://github.com/myorg/infra-config/pull/34
 
  11. **"chore: refactor deployment scripts" • deployment-scripts • @grace**
-    • [+67 -43, 3 files] ~10 min
     • 📅 1 week old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+    • 🟢 +67  🔴 -43  📄 3 files  ⏱️ ~10 min
     • 🔗 https://github.com/myorg/deployment-scripts/pull/12
 
 Commands:
@@ -442,6 +461,8 @@ The command uses a Python script to:
 15. Format output with total time, size info, time estimates, review status, conflict status, summaries, urgency reasons, emojis, and status indicators
     - **🆕 indicator** for PRs not in history (never seen before)
     - **Your engagement**: "💬 You commented 2d ago" if you have comments/reviews
+    - **Diff stats**: Color-coded with 🟢 for additions, 🔴 for deletions, 📄 for files, ⏱️ for time estimate
+    - **Line order**: Summary (if present), metadata, engagement (if present), urgency (if present), diff stats, URL
 16. Update history file with current timestamp for all displayed PRs
 17. Display available commands and explain interactive workflow
 18. When user types a number:
