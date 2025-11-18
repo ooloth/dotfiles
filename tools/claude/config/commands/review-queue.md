@@ -112,27 +112,38 @@ Based on the above output, process and display all PRs waiting for review:
 
 ## Phase 2: Interactive Session
 
-After displaying the PR list, enter an interactive loop. Do NOT exit after displaying - wait for user input and respond accordingly:
+After Phase 1 completes, enter interactive mode.
 
-1. **Wait for user input** - The user can:
-   - Type a number (e.g., "7") to review that specific PR
-   - Type "list" to redisplay the PR queue
+**What the user should see:**
+- Formatted PR list (from your code execution in Phase 1)
+- [You waiting silently for input]
 
-2. **When user types a number:**
-   - Read the mapping from `~/.claude/.cache/review-queue.json`
-   - Parse the repo and PR number
-   - Launch `/pr-review <number> --repo <org>/<repo>`
+**What the user should NOT see:**
+- Summaries ("You have 9 PRs waiting...")
+- Prompts ("What would you like to do?")
+- Commentary about the PRs (the formatted output is self-explanatory)
 
-3. **After each PR review completes:**
-   - Update the cache with review completion timestamp
-   - Calculate remaining PRs and next PR in sequence
-   - Prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
-     - "y" → Review next PR in sequence
-     - "n" → Exit interactive session
-     - "list" → Redisplay abbreviated PR list
-     - number → Jump to specific PR by number
+The tool output from Phase 1 IS your complete response. Wait for user input.
 
-4. **Continue the loop** until user chooses to exit with "n"
+**User input options:**
+- Type a number (e.g., "7") to review that specific PR
+- Type "list" to redisplay the PR queue
+
+**When user types a number:**
+- Read the mapping from `~/.claude/.cache/review-queue.json`
+- Parse the repo and PR number
+- Launch `/pr-review <number> --repo <org>/<repo>`
+
+**After each PR review completes:**
+- Update the cache with review completion timestamp
+- Calculate remaining PRs and next PR in sequence
+- Prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
+  - "y" → Review next PR in sequence
+  - "n" → Exit interactive session
+  - "list" → Redisplay abbreviated PR list
+  - number → Jump to specific PR by number
+
+**Continue the loop** until user chooses to exit with "n"
 
 ## Output Formatting
 
