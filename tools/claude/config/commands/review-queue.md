@@ -21,6 +21,9 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
              url
              createdAt
              isDraft
+             additions
+             deletions
+             changedFiles
              repository {
                nameWithOwner
              }
@@ -64,17 +67,27 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    - Failing CI first
    - Then by age (oldest first for stale reviews)
 
-4. **Present results with key details:**
+4. **Calculate review time estimates:**
+
+   Based on total lines changed (additions + deletions):
+   - 0-50 lines: ~5 min
+   - 51-200 lines: ~10 min
+   - 201-500 lines: ~20 min
+   - 501-1000 lines: ~30 min
+   - 1000+ lines: ~45 min
+
+5. **Present results with key details:**
 
    For each PR show:
    - Repo name (without "recursionpharma/" prefix)
    - PR number and title
+   - **Size and time estimate** (e.g., "[+127 -45, 4 files] ~10 min")
    - Author login
    - Age (human-readable: "2d ago", "3mo ago", "1y ago")
    - CI status: ✅ passing, ❌ failing, ⏸️ draft, ⏳ pending
    - Link
 
-5. **Offer next actions:**
+6. **Offer next actions:**
 
    Ask user which PR they want to review, then:
    - Use the existing `/pr-review <number> --repo recursionpharma/<repo>` for full analysis
@@ -87,24 +100,24 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 
 🎯 HIGH PRIORITY - Feature/Bug PRs (3):
 
-1. cell-sight#39 - "Add cell neighborhood table"
+1. cell-sight#39 - "Add cell neighborhood table" [+127 -45, 4 files] ~10 min
    By: @marianna-trapotsi-rxrx
    Age: 1d ago | Status: ✅ passing
    https://github.com/recursionpharma/cell-sight/pull/39
 
-2. spade-flows#144 - "Use prototype trekseq"
+2. spade-flows#144 - "Use prototype trekseq" [+89 -12, 2 files] ~5 min
    By: @isaacks123
    Age: 4d ago | Status: ✅ passing
    https://github.com/recursionpharma/spade-flows/pull/144
 
-3. rp006-brnaseq-analysis-flow#2 - "Introduce Docker-less dev environment"
+3. rp006-brnaseq-analysis-flow#2 - "Introduce Docker-less dev environment" [+2,340 -890, 23 files] ~45 min
    By: @jackdhaynes
    Age: 5mo ago | Status: ⏸️ draft
    https://github.com/recursionpharma/rp006-brnaseq-analysis-flow/pull/2
 
 🤖 DEPENDABOT - Dependency Updates (7):
 
-1. dash-phenoapp-v2#1839 - "Bump the npm_and_yarn group across 1 directory with 2 updates"
+1. dash-phenoapp-v2#1839 - "Bump the npm_and_yarn group across 1 directory with 2 updates" [+12 -8, 2 files] ~5 min
    Age: 3d ago | Status: ✅ passing
    https://github.com/recursionpharma/dash-phenoapp-v2/pull/1839
 
@@ -112,7 +125,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 
 🔧 CHORES - Infrastructure/Config (1):
 
-1. phenomics-potency-prediction#2 - "chore: switch sourcing Python packages from Nexus to GAR"
+1. phenomics-potency-prediction#2 - "chore: switch sourcing Python packages from Nexus to GAR" [+45 -32, 5 files] ~5 min
    By: @dmaljovec
    Age: 8mo ago | Status: ❌ failing
    https://github.com/recursionpharma/phenomics-potency-prediction/pull/2
@@ -142,9 +155,10 @@ This command works best when you've configured Memory with your preferences:
 ## Implementation Details
 
 The command uses a Python script to:
-1. Fetch PRs via GitHub GraphQL API
+1. Fetch PRs via GitHub GraphQL API (with additions, deletions, changedFiles)
 2. Calculate human-readable ages from ISO timestamps
-3. Parse CI status from statusCheckRollup
-4. Filter out build-pipelines repo
-5. Group by author (dependabot) and title prefix (chore:)
-6. Format output with emojis and status indicators
+3. Calculate review time estimates based on total lines changed
+4. Parse CI status from statusCheckRollup
+5. Filter out build-pipelines repo
+6. Group by author (dependabot) and title prefix (chore:)
+7. Format output with size info, time estimates, emojis, and status indicators
