@@ -147,12 +147,12 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 
 1. cell-sight#39 - "Add cell neighborhood table" [+127 -45, 4 files] ~10 min
    By: @marianna-trapotsi-rxrx
-   Age: 1d ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
+   Age: 1d ago | CI: ✅ passing | Review: 🔍 Required | 👥 3 reviews (✅ 1 approved, 💬 2 commented) | No conflicts ✅
    https://github.com/recursionpharma/cell-sight/pull/39
 
 2. spade-flows#144 - "Use prototype trekseq" [+89 -12, 2 files] ~5 min
    By: @isaacks123
-   Age: 4d ago | CI: ✅ passing | Review: ✅ Approved | No conflicts ✅
+   Age: 4d ago | CI: ✅ passing | Review: ✅ Approved | 👥 2 reviews (✅ 2 approved) | No conflicts ✅
    https://github.com/recursionpharma/spade-flows/pull/144
 
 🤖 DEPENDABOT - Dependency Updates (5):
@@ -199,7 +199,10 @@ The command uses a Python script to:
 3. Calculate review time estimates based on total lines changed for each PR
 4. Calculate total estimated review time across all PRs
 5. Parse CI status from statusCheckRollup
-6. Parse review status from reviewDecision (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
+6. Parse review status from reviewDecision and individual reviews:
+   - Overall status (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
+   - Individual reviewer actions (who approved, requested changes, commented)
+   - Review engagement summary (e.g., "3 reviews: 1 approved, 2 commented")
 7. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
 8. Extract brief summary from bodyText (first line/sentence, max ~100 chars)
 9. Filter out build-pipelines repo
