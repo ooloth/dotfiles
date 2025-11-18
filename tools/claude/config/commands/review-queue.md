@@ -145,7 +145,7 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 ```
 {number}. {new_badge}{repo_short}#{pr_number} - "{title}" [+{additions} -{deletions}, {files} files] {time_estimate}
    By: @{author}
-   Age: {age_str} | CI: {ci_status} | Review: {review_status} | {conflict_status}
+   Age: {age_str} • CI: {ci_status} • Status: {review_status} • Mergeable: {conflict_status}
    💬 {summary}
    {engagement_line}
    {urgency_line}
@@ -159,12 +159,13 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 - `{repo_short}`: Repository name without organization prefix
 - `{time_estimate}`: "~5 min", "~10 min", "~20 min", "~30 min", or "~45 min"
 - `{author}`: Author's GitHub username (omit "By:" line for dependabot PRs)
+- `{age_str}`: "📅 5mo ago", "📅 1d ago", etc. (include 📅 emoji prefix)
 - `{ci_status}`: "✅ passing", "❌ failing", "⏸️ draft", or "⏳ pending"
 - `{review_status}`: Format varies:
-  - Simple: "✅ Approved", "🔍 Review required", "⚠️ Changes requested"
+  - Simple: "✅ Approved", "🔍 Required", "⚠️ Changes requested"
   - With reviews: "👥 {count} reviews (✅ {approved_count} approved, 💬 {commented_count} commented)"
     - Include emoji prefix (✅, ⚠️, 💬) before each count type
-- `{conflict_status}`: "No conflicts ✅", "Conflicts ⚠️", or "Unknown"
+- `{conflict_status}`: "✅ No conflicts", "⚠️ Conflicts", or "Unknown"
 - `{summary}`: First meaningful line from PR description (omit line if empty)
 - `{engagement_line}`: Your engagement status (omit line if none):
   - " 💬 You commented {age} ago"
@@ -180,9 +181,9 @@ These examples highlight specific formatting requirements:
 **Review status with multiple reviews** - Note the required emoji prefixes:
 
 ```
-Review: 👥 3 reviews (✅ 1 approved, 💬  2 commented)
-                      ^^              ^^
-                    Required emoji prefixes for each count type
+👥 3 reviews (✅ 1 approved, 💬 2 commented)
+              ^^             ^^
+            Required emoji prefixes for each count type
 ```
 
 **Complete PR entry** - Note spacing and optional lines:
@@ -190,22 +191,23 @@ Review: 👥 3 reviews (✅ 1 approved, 💬  2 commented)
 ```
 4. 🆕 frontend-app#42 - "Add user authentication" [+127 -45, 4 files] ~10 min
    By: @alice
-   Age: 1d ago | CI: ✅ passing | Review: 🔍 Required | 👥 3 reviews (✅ 1 approved, 💬 2 commented) | No conflicts ✅
+   Age: 📅 1d ago • CI: ✅ passing • Status: 🔍 Required • 👥 3 reviews (✅ 1 approved, 💬 2 commented) • Mergeable: ✅ No conflicts
    💬 Implements JWT-based authentication for API endpoints
    💬 You commented 4h ago
    https://github.com/myorg/frontend-app/pull/42
 
 ↑ New badge (conditional)
-  ↑ Summary line (omit if empty)
-    ↑ Engagement line (omit if none)
-      ↑ No urgency line (only in ACTION REQUIRED)
+  ↑ Metadata with labels and bullet separators
+    ↑ Summary line (omit if empty)
+      ↑ Engagement line (omit if none)
+        ↑ No urgency line (only in ACTION REQUIRED)
 ```
 
 **Dependabot PR** - Note the omitted "By:" line:
 
 ```
 8. backend-api#156 - "Bump lodash from 4.17.20 to 4.17.21" [+2 -2, 1 files] ~5 min
-   Age: 5d ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
+   Age: 📅 5d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
    https://github.com/myorg/backend-api/pull/156
 
 ↑ No "By:" line for dependabot
@@ -221,14 +223,14 @@ Review: 👥 3 reviews (✅ 1 approved, 💬  2 commented)
 
 1. data-pipeline#47 - "feat: add data validation layer" [+88 -335, 11 files] ~20 min
    By: @bob
-   Age: 1y ago | CI: ✅ passing | Review: 🔍 Review required | Conflicts ⚠️
+   Age: 📅 1y ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ⚠️ Conflicts
    💬 Adds validation middleware for incoming data streams
    ⚠️ Very old PR with conflicts - close or ask author to update
    https://github.com/myorg/data-pipeline/pull/47
 
 2. backend-api#23 - "chore: update dependency management configuration" [+45 -32, 5 files] ~5 min
    By: @charlie
-   Age: 8mo ago | CI: ❌ failing | Review: 🔍 Review required | No conflicts ✅
+   Age: 📅 8mo ago • CI: ❌ failing • Status: 🔍 Required • Mergeable: ✅ No conflicts
    💬 Migrates from legacy dependency manager to modern tooling
    ⚠️ Failing CI for 8 months - needs immediate attention
    https://github.com/myorg/backend-api/pull/23
@@ -237,30 +239,30 @@ Review: 👥 3 reviews (✅ 1 approved, 💬  2 commented)
 
 3. 🆕 frontend-app#42 - "Add user authentication" [+127 -45, 4 files] ~10 min
    By: @alice
-   Age: 1d ago | CI: ✅ passing | Review: 🔍 Required | 👥 3 reviews (✅ 1 approved, 💬 2 commented) | No conflicts ✅
+   Age: 📅 1d ago • CI: ✅ passing • Status: 🔍 Required • 👥 3 reviews (✅ 1 approved, 💬 2 commented) • Mergeable: ✅ No conflicts
    💬 Implements JWT-based authentication for API endpoints
    💬 You commented 4h ago
    https://github.com/myorg/frontend-app/pull/42
 
 4. data-service#89 - "Fix memory leak in cache layer" [+89 -12, 2 files] ~5 min
    By: @david
-   Age: 4d ago | CI: ✅ passing | Review: ✅ Approved | 👥 2 reviews (✅ 2 approved) | No conflicts ✅
+   Age: 📅 4d ago • CI: ✅ passing • Status: ✅ Approved • 👥 2 reviews (✅ 2 approved) • Mergeable: ✅ No conflicts
    https://github.com/myorg/data-service/pull/89
 
 5. mobile-app#156 - "Update navigation system" [+234 -156, 8 files] ~20 min
    By: @eve
-   Age: 2d ago | CI: ✅ passing | Review: 🔍 Review required | No conflicts ✅
+   Age: 📅 2d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
    💬 Refactors navigation to use latest routing library
    https://github.com/myorg/mobile-app/pull/156
 
 🤖 DEPENDABOT - Dependency Updates (4):
 
 6. frontend-app#178 - "Bump lodash from 4.17.20 to 4.17.21" [+12 -8, 2 files] ~5 min
-   Age: 3d ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
+   Age: 📅 3d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
    https://github.com/myorg/frontend-app/pull/178
 
 7. backend-api#201 - "Bump express from 4.18.0 to 4.18.2" [+9 -9, 2 files] ~5 min
-   Age: 1w ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
+   Age: 📅 1w ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
    https://github.com/myorg/backend-api/pull/201
 
 [... more dependabot PRs ...]
@@ -269,13 +271,13 @@ Review: 👥 3 reviews (✅ 1 approved, 💬  2 commented)
 
 10. infra-config#34 - "chore: update CI pipeline configuration" [+156 -89, 7 files] ~20 min
     By: @frank
-    Age: 5d ago | CI: ✅ passing | Review: 🔍 Review required | No conflicts ✅
+    Age: 📅 5d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
     💬 Modernizes GitHub Actions workflows and adds caching
     https://github.com/myorg/infra-config/pull/34
 
 11. deployment-scripts#12 - "chore: refactor deployment scripts" [+67 -43, 3 files] ~10 min
     By: @grace
-    Age: 1w ago | CI: ✅ passing | Review: 🔍 Review required | No conflicts ✅
+    Age: 📅 1w ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
     https://github.com/myorg/deployment-scripts/pull/12
 
 Commands:
