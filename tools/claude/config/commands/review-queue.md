@@ -86,19 +86,18 @@ Fetch all open PRs where I'm requested as a reviewer across all relevant recursi
 
    Also calculate total estimated time across all PRs for planning purposes.
 
-3. **Present results with key details:**
+3. **Extract data for each PR:**
 
-   For each PR show:
-   - Repo name (without "recursionpharma/" prefix)
-   - PR number and title
-   - **Size and time estimate** (e.g., "[+127 -45, 4 files] ~10 min")
+   For each PR, extract:
+   - Repo name, PR number, title, URL
    - Author login
-   - Age (human-readable: "2d ago", "3mo ago", "1y ago")
-   - **Review status** (e.g., "✅ Approved", "🔍 Review required", "⚠️ Changes requested")
-   - **Conflict status** (e.g., "No conflicts ✅", "Conflicts ⚠️", "Unknown")
-   - CI status: ✅ passing, ❌ failing, ⏸️ draft, ⏳ pending
-   - **Brief summary** (first line or sentence from PR description, if available)
-   - Link
+   - Size metrics (additions, deletions, changed files)
+   - Age (calculate from createdAt)
+   - Review status (from reviewDecision and reviews)
+   - Conflict status (from mergeable)
+   - CI status (from statusCheckRollup)
+   - Brief summary (first meaningful line from bodyText)
+   - Your engagement (check if ooloth has commented or reviewed)
 
 4. **Number PRs consecutively:**
 
@@ -119,6 +118,10 @@ Fetch all open PRs where I'm requested as a reviewer across all relevant recursi
      - "list" → Show abbreviated PR list again
      - number → Jump to specific PR
    - Type "approve-all-deps" to batch-approve all passing dependabot PRs
+
+## Output Formatting
+
+Present all results using the exact template structure shown below. The template defines the required format, spacing, emojis, and field order for each PR entry. Do not improvise variations.
 
 ## Required Output Format Template
 
