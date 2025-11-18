@@ -101,11 +101,17 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    - CI status: ✅ passing, ❌ failing, ⏸️ draft, ⏳ pending
    - Link
 
-6. **Offer next actions:**
+6. **Number PRs consecutively:**
 
-   Ask user which PR they want to review, then:
-   - Use the existing `/pr-review <number> --repo recursionpharma/<repo>` for full analysis
-   - OR offer to batch-approve multiple dependabot PRs if appropriate
+   Assign sequential numbers (1, 2, 3...) across all PRs in all sections for easy reference.
+   Store the mapping of number → (repo, PR number) for quick lookup.
+
+7. **Offer next actions:**
+
+   Show available commands:
+   - Type a number (e.g., "3") to review that specific PR
+   - Type "approve-all-deps" to batch-approve all passing dependabot PRs
+   - Type a repo/PR combo for direct access (e.g., "cell-sight#39")
 
 ## Example Output Format
 
@@ -143,22 +149,21 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    Age: 4d ago | CI: ✅ passing | Review: ✅ Approved | No conflicts ✅
    https://github.com/recursionpharma/spade-flows/pull/144
 
-🤖 DEPENDABOT - Dependency Updates (7):
+🤖 DEPENDABOT - Dependency Updates (5):
 
-1. dash-phenoapp-v2#1839 - "Bump the npm_and_yarn group across 1 directory with 2 updates" [+12 -8, 2 files] ~5 min
+5. dash-phenoapp-v2#1839 - "Bump the npm_and_yarn group across 1 directory with 2 updates" [+12 -8, 2 files] ~5 min
    Age: 3d ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
    https://github.com/recursionpharma/dash-phenoapp-v2/pull/1839
 
+6. dash-phenoapp-v2#1821 - "Bump @types/node from 22.17.2 to 24.9.2" [+9 -9, 2 files] ~5 min
+   Age: 20d ago | CI: ✅ passing | Review: 🔍 Required | No conflicts ✅
+   https://github.com/recursionpharma/dash-phenoapp-v2/pull/1821
+
 [... more dependabot PRs ...]
 
-🔧 CHORES - Infrastructure/Config (1):
-
-1. phenomics-potency-prediction#2 - "chore: switch sourcing Python packages from Nexus to GAR" [+45 -32, 5 files] ~5 min
-   By: @dmaljovec
-   Age: 8mo ago | CI: ❌ failing | Review: ⚠️ Changes requested | No conflicts ✅
-   https://github.com/recursionpharma/phenomics-potency-prediction/pull/2
-
-Which PR would you like to review?
+Commands:
+- Type a number (1-11) to review that PR
+- Type 'approve-all-deps' to approve all 5 passing dependabot PRs
 ```
 
 ## Integration with Memory
@@ -192,4 +197,7 @@ The command uses a Python script to:
 7. Filter out build-pipelines repo
 8. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
 9. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
-10. Format output with size info, time estimates, review status, conflict status, urgency reasons, emojis, and status indicators
+10. Assign consecutive numbers (1-N) across all PRs for easy reference
+11. Store PR lookup mapping (number → repo#pr) for quick access
+12. Format output with size info, time estimates, review status, conflict status, urgency reasons, emojis, and status indicators
+13. Display available commands (review by number, batch approve dependabot)
