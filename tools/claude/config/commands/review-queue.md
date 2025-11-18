@@ -145,8 +145,8 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 ```
  {number}. {new_badge}**"{title}" • {repo_short} • @{author}**
    • [+{additions} -{deletions}, {files} files] {time_estimate}
-   • Age: {age_str} • CI: {ci_status} • Status: {review_status} • Mergeable: {conflict_status}
    • 💬 {summary}
+   • {age_str} • {ci_status} • {review_status} • {conflict_status}
    • {engagement_line}
    • {urgency_line}
    • 🔗 {url}
@@ -163,14 +163,13 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 - `{author}`: Author's GitHub username with @ prefix (always include, even for dependabot PRs which will show "@dependabot")
 - First line must be wrapped in `**bold**` markdown
 - `{time_estimate}`: "~5 min", "~10 min", "~20 min", "~30 min", or "~45 min"
-- `{age_str}`: "📅 5mo ago", "📅 1d ago", etc. (include 📅 emoji prefix)
-- `{ci_status}`: "✅ passing", "❌ failing", "⏸️ draft", or "⏳ pending"
-- `{review_status}`: Format varies:
-  - Simple: "✅ Approved", "🔍 Required", "⚠️ Changes requested"
-  - With reviews: "👥 {count} reviews (✅ {approved_count} approved, 💬 {commented_count} commented)"
-    - Include emoji prefix (✅, ⚠️, 💬) before each count type
-- `{conflict_status}`: "✅ No conflicts", "⚠️ Conflicts", or "Unknown"
-- `{summary}`: First meaningful line from PR description (omit line if empty)
+- `{summary}`: First meaningful line from PR description (omit line if empty) - now appears FIRST in bullet list
+- `{age_str}`: Natural phrasing with emoji: "📅 1 day old", "📅 4 days old", "📅 5 months old", "📅 1 week old", etc.
+- `{ci_status}`: Natural phrasing with emoji: "✅ CI passing", "❌ CI failing", "⏸️ Draft", or "⏳ CI pending"
+- `{review_status}`: Natural phrasing with emoji, format varies:
+  - Simple: "✅ Approved", "👀 Review required", "⚠️ Changes requested"
+  - With reviews: "👥 {count} reviews" (e.g., "👥 2 reviews", "👥 3 reviews")
+- `{conflict_status}`: Natural phrasing with emoji: "✅ No conflicts" or "⚠️ Conflicts"
 - `{engagement_line}`: Your engagement status (omit line if none):
   - " 💬 You commented {age} ago"
   - " ✅ You approved {age} ago"
@@ -196,16 +195,16 @@ These examples highlight specific formatting requirements:
 ```
  4. 🆕 **"Add user authentication" • frontend-app • @alice**
    • [+127 -45, 4 files] ~10 min
-   • Age: 📅 1d ago • CI: ✅ passing • Status: 🔍 Required • 👥 3 reviews (✅ 1 approved, 💬 2 commented) • Mergeable: ✅ No conflicts
    • 💬 Implements JWT-based authentication for API endpoints
-   • 💬 You commented 4h ago
+   • 📅 1 day old • ✅ CI passing • 👀 Review required • 👥 3 reviews • ✅ No conflicts
+   • 💬 You commented 4 hours ago
    • 🔗 https://github.com/myorg/frontend-app/pull/42
 
 ↑ First line is bold with title, repo (no #PR), and author
   ↑ Space before number prevents markdown list parsing
     ↑ Diff stats and time estimate on second line
-      ↑ Each bullet line starts with 3 regular spaces
-        ↑ Summary line (omit if empty)
+      ↑ Summary is FIRST bullet (omit line if empty)
+        ↑ Metadata line with emoji-first natural phrasing (full words not abbreviations)
           ↑ Engagement line (omit if none)
             ↑ URL line with link emoji (terminal auto-colors blue)
 ```
@@ -215,12 +214,13 @@ These examples highlight specific formatting requirements:
 ```
  8. **"Bump lodash from 4.17.20 to 4.17.21" • backend-api • @dependabot**
    • [+2 -2, 1 files] ~5 min
-   • Age: 📅 5d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+   • 📅 5 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
    • 🔗 https://github.com/myorg/backend-api/pull/156
 
 ↑ Dependabot PRs show @dependabot as author
   ↑ First line still bold
     ↑ No summary line (dependabot PRs typically have verbose auto-generated descriptions)
+      ↑ Metadata line with emoji-first natural phrasing
 ```
 
 ## Example Output Format
@@ -232,15 +232,15 @@ These examples highlight specific formatting requirements:
 
  1. **"feat: add data validation layer" • data-pipeline • @bob**
    • [+88 -335, 11 files] ~20 min
-   • Age: 📅 1y ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ⚠️ Conflicts
    • 💬 Adds validation middleware for incoming data streams
+   • 📅 1 year old • ✅ CI passing • 👀 Review required • ⚠️ Conflicts
    • ⚠️ Very old PR with conflicts - close or ask author to update
    • 🔗 https://github.com/myorg/data-pipeline/pull/47
 
  2. **"chore: update dependency management configuration" • backend-api • @charlie**
    • [+45 -32, 5 files] ~5 min
-   • Age: 📅 8mo ago • CI: ❌ failing • Status: 🔍 Required • Mergeable: ✅ No conflicts
    • 💬 Migrates from legacy dependency manager to modern tooling
+   • 📅 8 months old • ❌ CI failing • 👀 Review required • ✅ No conflicts
    • ⚠️ Failing CI for 8 months - needs immediate attention
    • 🔗 https://github.com/myorg/backend-api/pull/23
 
@@ -248,32 +248,32 @@ These examples highlight specific formatting requirements:
 
  3. 🆕 **"Add user authentication" • frontend-app • @alice**
    • [+127 -45, 4 files] ~10 min
-   • Age: 📅 1d ago • CI: ✅ passing • Status: 🔍 Required • 👥 3 reviews (✅ 1 approved, 💬 2 commented) • Mergeable: ✅ No conflicts
    • 💬 Implements JWT-based authentication for API endpoints
-   • 💬 You commented 4h ago
+   • 📅 1 day old • ✅ CI passing • 👀 Review required • 👥 3 reviews • ✅ No conflicts
+   • 💬 You commented 4 hours ago
    • 🔗 https://github.com/myorg/frontend-app/pull/42
 
  4. **"Fix memory leak in cache layer" • data-service • @david**
    • [+89 -12, 2 files] ~5 min
-   • Age: 📅 4d ago • CI: ✅ passing • Status: ✅ Approved • 👥 2 reviews (✅ 2 approved) • Mergeable: ✅ No conflicts
+   • 📅 4 days old • ✅ CI passing • ✅ Approved • 👥 2 reviews • ✅ No conflicts
    • 🔗 https://github.com/myorg/data-service/pull/89
 
  5. **"Update navigation system" • mobile-app • @eve**
    • [+234 -156, 8 files] ~20 min
-   • Age: 📅 2d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
    • 💬 Refactors navigation to use latest routing library
+   • 📅 2 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
    • 🔗 https://github.com/myorg/mobile-app/pull/156
 
 🤖 DEPENDABOT - Dependency Updates (4):
 
  6. **"Bump lodash from 4.17.20 to 4.17.21" • frontend-app • @dependabot**
    • [+12 -8, 2 files] ~5 min
-   • Age: 📅 3d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+   • 📅 3 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
    • 🔗 https://github.com/myorg/frontend-app/pull/178
 
  7. **"Bump express from 4.18.0 to 4.18.2" • backend-api • @dependabot**
    • [+9 -9, 2 files] ~5 min
-   • Age: 📅 1w ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+   • 📅 1 week old • ✅ CI passing • 👀 Review required • ✅ No conflicts
    • 🔗 https://github.com/myorg/backend-api/pull/201
 
 [... more dependabot PRs ...]
@@ -282,13 +282,13 @@ These examples highlight specific formatting requirements:
 
  10. **"chore: update CI pipeline configuration" • infra-config • @frank**
     • [+156 -89, 7 files] ~20 min
-    • Age: 📅 5d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
     • 💬 Modernizes GitHub Actions workflows and adds caching
+    • 📅 5 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
     • 🔗 https://github.com/myorg/infra-config/pull/34
 
  11. **"chore: refactor deployment scripts" • deployment-scripts • @grace**
     • [+67 -43, 3 files] ~10 min
-    • Age: 📅 1w ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+    • 📅 1 week old • ✅ CI passing • 👀 Review required • ✅ No conflicts
     • 🔗 https://github.com/myorg/deployment-scripts/pull/12
 
 Commands:
