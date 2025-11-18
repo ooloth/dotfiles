@@ -143,15 +143,47 @@ After Phase 1 completes, enter interactive mode.
 
 **After each PR review completes:**
 
-- Update the cache with review completion timestamp
-- Calculate remaining PRs and next PR in sequence
-- Prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
-  - "y" → Review next PR in sequence
-  - "n" → Exit interactive session
-  - "list" → Redisplay abbreviated PR list
-  - number → Jump to specific PR by number
+1. Update the cache with review completion timestamp
+2. Calculate remaining PRs and next PR in sequence
+3. Display the abbreviated PR list inline (not in collapsed tool output)
+4. End your message with the navigation prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
+
+**Response options:**
+- "y" → Review next PR in sequence
+- "n" → Exit interactive session
+- "list" → Redisplay full PR list
+- number → Jump to specific PR by number
 
 **Continue the loop** until user chooses to exit with "n"
+
+**Example post-review response:**
+
+```
+## PR Review: #144 "Use prototype trekseq"
+
+[... your review content ...]
+
+---
+
+📋 PRs waiting for your review: 8 remaining | Est. time: ~1h 30min
+
+⚠️ ACTION REQUIRED (2):
+[... abbreviated list ...]
+
+🎯 HIGH PRIORITY - Feature/Bug PRs (1):
+[... abbreviated list ...]
+
+🤖 DEPENDABOT - Dependency Updates (5):
+[... abbreviated list ...]
+
+---
+
+**Review complete.** 8 remaining. Next: #4 "Add cell neighborhood table"
+
+Continue? (y/n/list/number)
+```
+
+Note: The navigation prompt at the end allows the user to easily continue to the next PR, jump to a specific PR, or redisplay the full list.
 
 ## Output Formatting
 
