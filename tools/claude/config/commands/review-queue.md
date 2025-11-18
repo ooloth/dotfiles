@@ -1,84 +1,69 @@
 # Review Queue - Find PRs waiting for my review
 
-Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma repos, filter by repos I care about, and present them in priority order.
+Fetch all open PRs where I'm requested as a reviewer across all relevant recursionpharma repos and present them in priority order to be reviewed.
 
-## Steps
+## Context
 
-1. **Fetch PRs using GraphQL API:**
-
-   The `gh search prs` command doesn't work with private repos, so use GraphQL instead:
-
-   ```bash
-   gh api graphql -f query='
-   query {
-     search(query: "is:pr is:open archived:false user:recursionpharma review-requested:ooloth sort:created-desc", type: ISSUE, first: 50) {
-       issueCount
-       edges {
+- My PR review requests: !`gh api graphql -f query='query {
+   search(query: "is:pr is:open archived:false user:recursionpharma review-requested:ooloth -repo:recursionpharma/build-pipelines sort:created-desc", type: ISSUE, first: 50) {
+      issueCount
+      edges {
          node {
-           ... on PullRequest {
-             number
-             title
-             url
-             createdAt
-             isDraft
-             additions
-             deletions
-             changedFiles
-             mergeable
-             reviewDecision
-             bodyText
-             comments(last: 20) {
-               totalCount
-               nodes {
-                 author {
-                   login
-                 }
-                 createdAt
+            ... on PullRequest {
+               number
+               title
+               url
+               createdAt
+               isDraft
+               additions
+               deletions
+               changedFiles
+               mergeable
+               reviewDecision
+               bodyText
+               comments(last: 20) {
+                  totalCount
+                  nodes {
+                     author {
+                        login
+                     }
+                     createdAt
+                  }
                }
-             }
-             reviews(last: 20) {
-               totalCount
-               nodes {
-                 state
-                 author {
-                   login
-                 }
-                 submittedAt
-               }
-             }
-             repository {
-               nameWithOwner
-             }
-             author {
-               login
-             }
-             commits(last: 1) {
-               nodes {
-                 commit {
-                   statusCheckRollup {
+               reviews(last: 20) {
+                  totalCount
+                  nodes {
                      state
-                   }
-                 }
+                     author {
+                        login
+                     }
+                     submittedAt
+                  }
                }
-             }
-           }
+               repository {
+                  nameWithOwner
+               }
+               author {
+                  login
+               }
+               commits(last: 1) {
+                  nodes {
+                     commit {
+                        statuscheckrollup {
+                           state
+                        }
+                     }
+                  }
+               }
+            }
          }
-       }
-     }
-   }'
-   ```
+      }
+   }
+}'`
 
-2. **Filter to repos I care about:**
+## Your task
 
-   IGNORE these repos (don't show PRs from here):
-   - recursionpharma/build-pipelines
-   - demo-repos
-   - archived-*
-   - legacy-*
-
-   Check Memory for additional repo preferences.
-
-3. **Group and prioritize PRs:**
+1. **Group and prioritize PRs:**
 
    Group PRs into categories:
    - **ACTION REQUIRED** - Urgent items (failing CI, very old >6mo, conflicts on old PRs)
@@ -90,7 +75,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    - Failing CI first
    - Then by age (oldest first for stale reviews)
 
-4. **Calculate review time estimates:**
+2. **Calculate review time estimates:**
 
    Based on total lines changed (additions + deletions):
    - 0-50 lines: ~5 min
@@ -101,7 +86,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 
    Also calculate total estimated time across all PRs for planning purposes.
 
-5. **Present results with key details:**
+3. **Present results with key details:**
 
    For each PR show:
    - Repo name (without "recursionpharma/" prefix)
@@ -115,16 +100,16 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    - **Brief summary** (first line or sentence from PR description, if available)
    - Link
 
-6. **Number PRs consecutively:**
+4. **Number PRs consecutively:**
 
    Assign sequential numbers (1, 2, 3...) across all PRs in all sections for easy reference.
    Store the mapping of number → (repo, PR number) for quick lookup.
 
-7. **Store PR mapping for interactive use:**
+5. **Store PR mapping for interactive use:**
 
    Save the PR number mapping to `~/.cache/claude-review-queue.json` for quick lookup when user types a number.
 
-8. **Offer next actions:**
+6. **Offer next actions:**
 
    Show available commands:
    - Type a number (e.g., "7") to review that specific PR → launches `/pr-review`
@@ -138,6 +123,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 ## Example Output Format
 
 ```
+
 📋 PRs waiting for your review: 13 found | Est. total time: ~2h 30min (filtered out 7 from build-pipelines)
 
 ⚠️ ACTION REQUIRED (3):
@@ -169,7 +155,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    💬 You commented 4h ago
    https://github.com/recursionpharma/cell-sight/pull/39
 
-2. spade-flows#144 - "Use prototype trekseq" [+89 -12, 2 files] ~5 min
+5. spade-flows#144 - "Use prototype trekseq" [+89 -12, 2 files] ~5 min
    By: @isaacks123
    Age: 4d ago | CI: ✅ passing | Review: ✅ Approved | 👥 2 reviews (✅ 2 approved) | No conflicts ✅
    https://github.com/recursionpharma/spade-flows/pull/144
@@ -187,11 +173,13 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 [... more dependabot PRs ...]
 
 Commands:
+
 - Type a number (1-11) to review that PR (e.g., "7" to review cell-sight#39)
 - Type 'approve-all-deps' to approve all 5 passing dependabot PRs
 - After each review, I'll prompt: "Continue? (y/n/list/number)" to review more PRs
 
 💡 Interactive workflow: Type a number → review PR → prompted for next → repeat until done
+
 ```
 
 ## Integration with Memory
@@ -199,6 +187,7 @@ Commands:
 This command works best when you've configured Memory with your preferences:
 
 **Example Memory facts:**
+
 - "For PR reviews at recursionpharma: I ignore PRs from recursionpharma/build-pipelines (always filtered out)"
 - "When reviewing PRs: prioritize failing CI and stale PRs (>30 days old) first"
 - "Dependabot PRs: batch-approve if CI passes and version bumps are minor/patch only"
@@ -208,17 +197,20 @@ This command works best when you've configured Memory with your preferences:
 **Location:** `~/.claude/.cache/review-queue.json`
 
 **Behavior:**
+
 - **Created/Overwritten** every time you run `/review-queue`
 - Fresh PR data each run (list changes as PRs are merged/created)
 - **Read** when you type a number to lookup which PR to review
 - Not deleted - persists between runs for quick lookups
 
 **Why overwrite?**
+
 - PR list changes constantly (new PRs, merged PRs, status changes)
 - Always want fresh data when starting a review session
 - Stale cache from yesterday would show wrong PRs
 
 **Example flow:**
+
 1. Monday 9am: `/review-queue` → Creates cache with 12 PRs
 2. You type "7" → Reads cache → Reviews PR #7
 3. Monday 2pm: `/review-queue` → **Overwrites** cache with 11 PRs (one merged)
@@ -237,6 +229,7 @@ This command works best when you've configured Memory with your preferences:
 ## Implementation Details
 
 The command uses a Python script to:
+
 1. Fetch PRs via GitHub GraphQL API (with additions, deletions, changedFiles, mergeable, reviewDecision, reviews, bodyText)
 2. Calculate human-readable ages from ISO timestamps
 3. Calculate review time estimates based on total lines changed for each PR
@@ -258,6 +251,7 @@ The command uses a Python script to:
     - **Updated (not overwritten)** - Persists your interaction history
     - Records when you first saw each PR and your engagement
     - Used to show "🆕 New" indicator for unseen PRs
+
     ```json
     {
       "recursionpharma/cell-sight#39": {
