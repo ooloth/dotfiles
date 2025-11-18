@@ -144,12 +144,12 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 
 ```
 {number}. {new_badge}{repo_short}#{pr_number} - "{title}" [+{additions} -{deletions}, {files} files] {time_estimate}
-   By: @{author}
-   Age: {age_str} • CI: {ci_status} • Status: {review_status} • Mergeable: {conflict_status}
-   💬 {summary}
-   {engagement_line}
-   {urgency_line}
-   {url}
+   • By: @{author}
+   • Age: {age_str} • CI: {ci_status} • Status: {review_status} • Mergeable: {conflict_status}
+   • 💬 {summary}
+   • {engagement_line}
+   • {urgency_line}
+   • {url}
 
 ```
 
@@ -190,14 +190,14 @@ These examples highlight specific formatting requirements:
 
 ```
 4. 🆕 frontend-app#42 - "Add user authentication" [+127 -45, 4 files] ~10 min
-   By: @alice
-   Age: 📅 1d ago • CI: ✅ passing • Status: 🔍 Required • 👥 3 reviews (✅ 1 approved, 💬 2 commented) • Mergeable: ✅ No conflicts
-   💬 Implements JWT-based authentication for API endpoints
-   💬 You commented 4h ago
-   https://github.com/myorg/frontend-app/pull/42
+   • By: @alice
+   • Age: 📅 1d ago • CI: ✅ passing • Status: 🔍 Required • 👥 3 reviews (✅ 1 approved, 💬 2 commented) • Mergeable: ✅ No conflicts
+   • 💬 Implements JWT-based authentication for API endpoints
+   • 💬 You commented 4h ago
+   • https://github.com/myorg/frontend-app/pull/42
 
 ↑ New badge (conditional)
-  ↑ Metadata with labels and bullet separators
+  ↑ Each line starts with bullet aligned to repo name
     ↑ Summary line (omit if empty)
       ↑ Engagement line (omit if none)
         ↑ No urgency line (only in ACTION REQUIRED)
@@ -207,8 +207,8 @@ These examples highlight specific formatting requirements:
 
 ```
 8. backend-api#156 - "Bump lodash from 4.17.20 to 4.17.21" [+2 -2, 1 files] ~5 min
-   Age: 📅 5d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
-   https://github.com/myorg/backend-api/pull/156
+   • Age: 📅 5d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+   • https://github.com/myorg/backend-api/pull/156
 
 ↑ No "By:" line for dependabot
   ↑ No summary line (dependabot PRs typically have verbose auto-generated descriptions)
@@ -222,63 +222,63 @@ These examples highlight specific formatting requirements:
 ⚠️ ACTION REQUIRED (2):
 
 1. data-pipeline#47 - "feat: add data validation layer" [+88 -335, 11 files] ~20 min
-   By: @bob
-   Age: 📅 1y ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ⚠️ Conflicts
-   💬 Adds validation middleware for incoming data streams
-   ⚠️ Very old PR with conflicts - close or ask author to update
-   https://github.com/myorg/data-pipeline/pull/47
+   • By: @bob
+   • Age: 📅 1y ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ⚠️ Conflicts
+   • 💬 Adds validation middleware for incoming data streams
+   • ⚠️ Very old PR with conflicts - close or ask author to update
+   • https://github.com/myorg/data-pipeline/pull/47
 
 2. backend-api#23 - "chore: update dependency management configuration" [+45 -32, 5 files] ~5 min
-   By: @charlie
-   Age: 📅 8mo ago • CI: ❌ failing • Status: 🔍 Required • Mergeable: ✅ No conflicts
-   💬 Migrates from legacy dependency manager to modern tooling
-   ⚠️ Failing CI for 8 months - needs immediate attention
-   https://github.com/myorg/backend-api/pull/23
+   • By: @charlie
+   • Age: 📅 8mo ago • CI: ❌ failing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+   • 💬 Migrates from legacy dependency manager to modern tooling
+   • ⚠️ Failing CI for 8 months - needs immediate attention
+   • https://github.com/myorg/backend-api/pull/23
 
 🎯 HIGH PRIORITY - Feature/Bug PRs (3):
 
 3. 🆕 frontend-app#42 - "Add user authentication" [+127 -45, 4 files] ~10 min
-   By: @alice
-   Age: 📅 1d ago • CI: ✅ passing • Status: 🔍 Required • 👥 3 reviews (✅ 1 approved, 💬 2 commented) • Mergeable: ✅ No conflicts
-   💬 Implements JWT-based authentication for API endpoints
-   💬 You commented 4h ago
-   https://github.com/myorg/frontend-app/pull/42
+   • By: @alice
+   • Age: 📅 1d ago • CI: ✅ passing • Status: 🔍 Required • 👥 3 reviews (✅ 1 approved, 💬 2 commented) • Mergeable: ✅ No conflicts
+   • 💬 Implements JWT-based authentication for API endpoints
+   • 💬 You commented 4h ago
+   • https://github.com/myorg/frontend-app/pull/42
 
 4. data-service#89 - "Fix memory leak in cache layer" [+89 -12, 2 files] ~5 min
-   By: @david
-   Age: 📅 4d ago • CI: ✅ passing • Status: ✅ Approved • 👥 2 reviews (✅ 2 approved) • Mergeable: ✅ No conflicts
-   https://github.com/myorg/data-service/pull/89
+   • By: @david
+   • Age: 📅 4d ago • CI: ✅ passing • Status: ✅ Approved • 👥 2 reviews (✅ 2 approved) • Mergeable: ✅ No conflicts
+   • https://github.com/myorg/data-service/pull/89
 
 5. mobile-app#156 - "Update navigation system" [+234 -156, 8 files] ~20 min
-   By: @eve
-   Age: 📅 2d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
-   💬 Refactors navigation to use latest routing library
-   https://github.com/myorg/mobile-app/pull/156
+   • By: @eve
+   • Age: 📅 2d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+   • 💬 Refactors navigation to use latest routing library
+   • https://github.com/myorg/mobile-app/pull/156
 
 🤖 DEPENDABOT - Dependency Updates (4):
 
 6. frontend-app#178 - "Bump lodash from 4.17.20 to 4.17.21" [+12 -8, 2 files] ~5 min
-   Age: 📅 3d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
-   https://github.com/myorg/frontend-app/pull/178
+   • Age: 📅 3d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+   • https://github.com/myorg/frontend-app/pull/178
 
 7. backend-api#201 - "Bump express from 4.18.0 to 4.18.2" [+9 -9, 2 files] ~5 min
-   Age: 📅 1w ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
-   https://github.com/myorg/backend-api/pull/201
+   • Age: 📅 1w ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+   • https://github.com/myorg/backend-api/pull/201
 
 [... more dependabot PRs ...]
 
 🔧 CHORES - Infrastructure/Config (2):
 
 10. infra-config#34 - "chore: update CI pipeline configuration" [+156 -89, 7 files] ~20 min
-    By: @frank
-    Age: 📅 5d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
-    💬 Modernizes GitHub Actions workflows and adds caching
-    https://github.com/myorg/infra-config/pull/34
+    • By: @frank
+    • Age: 📅 5d ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+    • 💬 Modernizes GitHub Actions workflows and adds caching
+    • https://github.com/myorg/infra-config/pull/34
 
 11. deployment-scripts#12 - "chore: refactor deployment scripts" [+67 -43, 3 files] ~10 min
-    By: @grace
-    Age: 📅 1w ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
-    https://github.com/myorg/deployment-scripts/pull/12
+    • By: @grace
+    • Age: 📅 1w ago • CI: ✅ passing • Status: 🔍 Required • Mergeable: ✅ No conflicts
+    • https://github.com/myorg/deployment-scripts/pull/12
 
 Commands:
 - Type a number (1-11) to review that PR (e.g., "3" to review frontend-app#42)
