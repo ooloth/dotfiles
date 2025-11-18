@@ -61,7 +61,9 @@ Fetch all open PRs where I'm requested as a reviewer across all relevant repos a
    }
 }'`
 
-## Your task
+## Phase 1: Display PRs
+
+Based on the above output, process and display all PRs waiting for review:
 
 1. **Group and prioritize PRs:**
 
@@ -99,25 +101,38 @@ Fetch all open PRs where I'm requested as a reviewer across all relevant repos a
    - Brief summary (first meaningful line from bodyText)
    - Your engagement (check if ooloth has commented or reviewed)
 
-4. **Number PRs consecutively:**
+4. **Number PRs and store mapping:**
+   - Assign sequential numbers (1, 2, 3...) across all PRs in all sections for easy reference
+   - Save the PR number mapping to `~/.claude/.cache/review-queue.json` for quick lookup
+   - Track viewing history in `~/.claude/.cache/review-queue-history.json` to show "🆕" indicators
 
-   Assign sequential numbers (1, 2, 3...) across all PRs in all sections for easy reference.
-   Store the mapping of number → (repo, PR number) for quick lookup.
+5. **Display formatted results:**
+   - Present all PRs using the exact format template (see "Output Formatting" section)
+   - Show available commands at the end
 
-5. **Store PR mapping for interactive use:**
+## Phase 2: Interactive Session
 
-   Save the PR number mapping to `~/.cache/claude-review-queue.json` for quick lookup when user types a number.
+After displaying the PR list, enter an interactive loop. Do NOT exit after displaying - wait for user input and respond accordingly:
 
-6. **Offer next actions:**
+1. **Wait for user input** - The user can:
+   - Type a number (e.g., "7") to review that specific PR
+   - Type "list" to redisplay the PR queue
 
-   Show available commands:
-   - Type a number (e.g., "7") to review that specific PR → launches `/pr-review`
-   - After each review, prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
+2. **When user types a number:**
+   - Read the mapping from `~/.claude/.cache/review-queue.json`
+   - Parse the repo and PR number
+   - Launch `/pr-review <number> --repo <org>/<repo>`
+
+3. **After each PR review completes:**
+   - Update the cache with review completion timestamp
+   - Calculate remaining PRs and next PR in sequence
+   - Prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
      - "y" → Review next PR in sequence
-     - "n" → Exit
-     - "list" → Show abbreviated PR list again
-     - number → Jump to specific PR
-   - Type "approve-all-deps" to batch-approve all passing dependabot PRs
+     - "n" → Exit interactive session
+     - "list" → Redisplay abbreviated PR list
+     - number → Jump to specific PR by number
+
+4. **Continue the loop** until user chooses to exit with "n"
 
 ## Output Formatting
 
