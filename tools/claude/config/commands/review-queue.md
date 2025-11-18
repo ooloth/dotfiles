@@ -70,6 +70,7 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 3. **Group and prioritize PRs:**
 
    Group PRs into categories:
+   - **ACTION REQUIRED** - Urgent items (failing CI, very old >6mo, conflicts on old PRs)
    - **HIGH PRIORITY** - Feature/Bug PRs (not chores, not dependabot)
    - **DEPENDABOT** - Automated dependency updates
    - **CHORES** - Infrastructure/config changes (title starts with "chore:")
@@ -111,7 +112,26 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
 ```
 📋 PRs waiting for your review: 11 found (filtered out 8 from build-pipelines)
 
-🎯 HIGH PRIORITY - Feature/Bug PRs (3):
+⚠️ ACTION REQUIRED (3):
+
+1. perturbseq-map#94 - "feat: a first pass script to prepare an scVI embedding for mapapp perusal" [+88 -335, 11 files] ~20 min
+   By: @dmaljovec
+   Age: 1y ago | CI: ✅ passing | Review: 🔍 Review required | Conflicts ⚠️
+   ⚠️ Very old PR with conflicts - close or ask author to update
+   https://github.com/recursionpharma/perturbseq-map/pull/94
+
+2. phenomics-potency-prediction#2 - "chore: switch sourcing Python packages from Nexus to GAR" [+45 -32, 5 files] ~5 min
+   By: @dmaljovec
+   Age: 8mo ago | CI: ❌ failing | Review: 🔍 Review required | No conflicts ✅
+   ⚠️ Failing CI for 8 months - needs immediate attention
+   https://github.com/recursionpharma/phenomics-potency-prediction/pull/2
+
+3. dash-phenoapp-v2#1498 - "Bump react-toastify from 7.0.4 to 11.0.5 in /react-app" [+9 -16, 2 files] ~5 min
+   Age: 8mo ago | CI: ✅ passing | Review: 🔍 Review required | Conflicts ⚠️
+   ⚠️ Old dependabot PR with conflicts - likely stale, consider closing
+   https://github.com/recursionpharma/dash-phenoapp-v2/pull/1498
+
+🎯 HIGH PRIORITY - Feature/Bug PRs (2):
 
 1. cell-sight#39 - "Add cell neighborhood table" [+127 -45, 4 files] ~10 min
    By: @marianna-trapotsi-rxrx
@@ -122,11 +142,6 @@ Fetch all open PRs where I'm requested as a reviewer across ALL recursionpharma 
    By: @isaacks123
    Age: 4d ago | CI: ✅ passing | Review: ✅ Approved | No conflicts ✅
    https://github.com/recursionpharma/spade-flows/pull/144
-
-3. rp006-brnaseq-analysis-flow#2 - "Introduce Docker-less dev environment" [+2,340 -890, 23 files] ~45 min
-   By: @jackdhaynes
-   Age: 5mo ago | CI: ⏸️ draft | Review: 🔍 Required | Conflicts ⚠️
-   https://github.com/recursionpharma/rp006-brnaseq-analysis-flow/pull/2
 
 🤖 DEPENDABOT - Dependency Updates (7):
 
@@ -175,5 +190,6 @@ The command uses a Python script to:
 5. Parse review status from reviewDecision (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
 6. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
 7. Filter out build-pipelines repo
-8. Group by author (dependabot) and title prefix (chore:)
-9. Format output with size info, time estimates, review status, conflict status, emojis, and status indicators
+8. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
+9. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
+10. Format output with size info, time estimates, review status, conflict status, urgency reasons, emojis, and status indicators
