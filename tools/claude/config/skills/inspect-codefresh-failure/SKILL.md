@@ -136,7 +136,7 @@ Returns markdown-formatted analysis ready to include in PR reviews or bug report
 **Build**: python/library (failed after 5m 2s)
 **Failed step**: Check Code with Ruff
 **Branch**: legion-2025-03-04-f8ef390a
-**Commit**: 30c64522355a1616d6e3d0a7a4307625ccc38452
+**Commit**: abc1234...
 
 ### Errors Found (10 total)
 
