@@ -107,48 +107,35 @@ def calculate_age(created_at_str: str) -> Tuple[str, int]:
     if days == 0:
         hours = delta.seconds // 3600
         if hours == 0:
-            return "📅 Just now", 0
-        elif hours == 1:
-            return "📅 1 hour old", 0
+            return "📅 <1h", 0
         else:
-            return f"📅 {hours} hours old", 0
-    elif days == 1:
-        return "📅 1 day old", 1
+            return f"📅 {hours}h", 0
     elif days < 7:
-        return f"📅 {days} days old", days
+        return f"📅 {days}d", days
     elif days < 30:
         weeks = days // 7
-        if weeks == 1:
-            return "📅 1 week old", days
-        else:
-            return f"📅 {weeks} weeks old", days
+        return f"📅 {weeks}w", days
     elif days < 365:
         months = days // 30
-        if months == 1:
-            return "📅 1 month old", days
-        else:
-            return f"📅 {months} months old", days
+        return f"📅 {months}mo", days
     else:
         years = days // 365
-        if years == 1:
-            return "📅 1 year old", days
-        else:
-            return f"📅 {years} years old", days
+        return f"📅 {years}y", days
 
 
 def calculate_time_estimate(additions: int, deletions: int) -> str:
     """Calculate review time estimate based on total lines changed."""
     total_lines = additions + deletions
     if total_lines <= 50:
-        return "~5 min"
+        return "5m"
     elif total_lines <= 200:
-        return "~10 min"
+        return "10m"
     elif total_lines <= 500:
-        return "~20 min"
+        return "20m"
     elif total_lines <= 1000:
-        return "~30 min"
+        return "30m"
     else:
-        return "~45 min"
+        return "45m"
 
 
 def get_ci_status(pr: Dict[str, Any]) -> str:
@@ -236,7 +223,7 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
     my_engagement = None
     if my_latest_review and my_latest_timestamp:
         age_str, _ = calculate_age(my_latest_timestamp)
-        age = age_str.replace("📅 ", "").replace(" old", "")
+        age = age_str.replace("📅 ", "")
         if my_latest_review == "APPROVED":
             my_engagement = f"✅ You approved {age} ago"
         elif my_latest_review == "CHANGES_REQUESTED":
@@ -250,7 +237,7 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
         for comment in comments:
             if comment.get("author", {}).get("login") == my_username:
                 age_str, _ = calculate_age(comment.get("createdAt"))
-                age = age_str.replace("📅 ", "").replace(" old", "")
+                age = age_str.replace("📅 ", "")
                 my_engagement = f"💬 You commented {age} ago"
                 break
 
@@ -388,7 +375,7 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         pr_mapping[str(idx)] = f"{pr['repo_full']}#{pr['number']}"
 
         # Calculate total time
-        mins = int(pr["time_estimate"].replace("~", "").replace(" min", ""))
+        mins = int(pr["time_estimate"].replace("m", ""))
         total_time_mins += mins
 
     # Calculate total time in hours and minutes
@@ -416,8 +403,8 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         lines = []
         new_badge = "🆕 " if pr["is_new"] else ""
 
-        # Title line with diff stats (non-breaking space at start to prevent list formatting)
-        lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**@{pr['author']} • \"{pr['title']}\"** • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
+        # Title line (non-breaking space at start to prevent list formatting)
+        lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**@{pr['author']} • \"{pr['title']}\"**")
 
         # Review activity line (reviewers + my engagement) - first line after title
         review_activity_parts = []
@@ -428,8 +415,9 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         if review_activity_parts:
             lines.append(f"   • {' • '.join(review_activity_parts)}")
 
-        # Metadata line
-        metadata_parts = [pr['age_str'], pr['ci_status'], pr['conflict_status']]
+        # Metadata line: age, time estimate, diff stats, CI status, conflict status
+        diff_stats = f"🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']}"
+        metadata_parts = [pr['age_str'], f"⏱️ {pr['time_estimate']}", diff_stats, pr['ci_status'], pr['conflict_status']]
         lines.append(f"   • {' • '.join(metadata_parts)}")
 
         # URL
