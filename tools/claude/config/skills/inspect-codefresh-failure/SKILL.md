@@ -8,6 +8,17 @@ allowed-tools: [Bash, Read]
 
 Analyzes Codefresh CI failures for recursionpharma organization repositories and provides detailed failure reports with specific errors and root cause analysis.
 
+## Prerequisites
+
+**Required:**
+- `codefresh` CLI must be installed (typically via Homebrew: `brew install codefresh`)
+- User must be authenticated with Codefresh (check with `codefresh auth current-context`)
+
+**If prerequisites are missing:**
+- Inform the user that the Codefresh CLI is not available
+- Suggest they install it: `brew install codefresh`
+- Provide alternative: manually check the Codefresh build URL in the browser
+
 ## When to Use This Skill
 
 Use this skill when:
@@ -91,8 +102,28 @@ codefresh get builds <build-id> -o json
 # Get full logs
 codefresh logs <build-id>
 
-# Search for errors (most efficient)
-codefresh logs <build-id> | grep -B 10 -A 20 -i "error\|fail\|found.*errors"
+# Search for errors (most efficient - use multiple patterns)
+codefresh logs <build-id> | grep -B 10 -A 20 -i "error\|fail\|found.*error"
+
+# Common error patterns to look for:
+# - "Found N errors" (linting/type checking)
+# - "FAILED" or "FAILURE" (test results)
+# - "Error:" or "ERROR:" (build errors)
+# - "exit code" (non-zero exit codes)
+```
+
+## Error Handling
+
+If the `codefresh` command is not available:
+
+```bash
+# Check if codefresh is installed
+which codefresh || echo "Codefresh CLI not installed"
+
+# If not installed, inform user and provide fallback:
+# "The codefresh CLI is not installed. You can:
+# 1. Install it: brew install codefresh
+# 2. View the build in browser: [build URL from status check]"
 ```
 
 ## Expected Output Format
@@ -137,11 +168,13 @@ Request changes - fix the 5 undefined `random_seed` errors before merging (criti
 
 - **Only works for recursionpharma org repos** - Codefresh is their CI system
 - **Build IDs are unique** - Each build has a unique 24-character hex ID
-- **Logs can be large** - Use grep patterns to find relevant errors quickly
+- **Logs can be large** - Use grep patterns to find relevant errors quickly (logs can exceed 30k lines)
 - **Context matters** - Always distinguish PR-introduced errors from pre-existing issues
-- **Common error patterns**:
-  - Linting errors (Ruff, Flake8, Black)
-  - Type errors (mypy, pyright)
-  - Test failures (pytest, unittest)
-  - Build failures (missing dependencies, import errors)
-  - Security scans (dependency vulnerabilities)
+- **Tested and verified** - Commands tested against build `67c7469b3275b6f1b9f96f69` (recursionpharma/phenomics-potency-prediction#2)
+
+**Common error patterns:**
+- Linting errors (Ruff, Flake8, Black) - Look for "Found N errors"
+- Type errors (mypy, pyright) - Look for "error:" in output
+- Test failures (pytest, unittest) - Look for "FAILED" or "FAILURE"
+- Build failures (missing dependencies, import errors) - Look for "Error:" or "exit code"
+- Security scans (dependency vulnerabilities) - Check specific security step logs
