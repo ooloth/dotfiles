@@ -237,7 +237,9 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 - `{ci_status}`: Natural phrasing with emoji: "✅ CI passing", "❌ CI failing", "⏸️ Draft", or "⏳ CI pending"
 - `{review_status}`: Natural phrasing with emoji, format varies:
   - Simple: "✅ Approved", "👀 Review required", "⚠️ Changes requested"
-  - With reviews: "👥 {count} reviews" (e.g., "👥 2 reviews", "👥 3 reviews")
+  - With reviewers: "👥 {count} reviewers" (e.g., "👥 2 reviewers", "👥 3 reviewers")
+  - Count represents unique human reviewers (excluding bots)
+  - Breakdown shows each reviewer's most recent review state (e.g., "👥 3 reviewers (✅ 1 approved, 💬  2 commented)")
 - `{conflict_status}`: Natural phrasing with emoji: "✅ No conflicts" or "⚠️ Conflicts"
 - `{engagement_line}`: Your engagement status (omit line if none):
   - " 💬 You commented {age} ago"
@@ -251,12 +253,13 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
 
 These examples highlight specific formatting requirements:
 
-**Review status with multiple reviews** - Note the required emoji prefixes:
+**Review status with multiple reviewers** - Note the required emoji prefixes and unique reviewer count:
 
 ```
-👥 3 reviews (✅ 1 approved, 💬 2 commented)
-              ^^             ^^
-            Required emoji prefixes for each count type
+👥 3 reviewers (✅ 1 approved, 💬 2 commented)
+                ^^             ^^
+              Required emoji prefixes for each count type
+              Breakdown shows each reviewer's most recent state
 ```
 
 **Complete PR entry** - Note spacing and optional lines:
@@ -264,7 +267,7 @@ These examples highlight specific formatting requirements:
 ```
  4. 🆕 **"Add user authentication" • frontend-app • @alice**
    • 💬 Implements JWT-based authentication for API endpoints
-   • 📅 1 day old • ✅ CI passing • 👀 Review required • 👥 3 reviews • ✅ No conflicts
+   • 📅 1 day old • ✅ CI passing • 👀 Review required • 👥 3 reviewers • ✅ No conflicts
    • 💬 You commented 4 hours ago
    • 🟢 +127  🔴 -45  📄 4 files  ⏱️ ~10 min
    • 🔗 https://github.com/myorg/frontend-app/pull/42
@@ -318,13 +321,13 @@ These examples highlight specific formatting requirements:
 
  3. 🆕 **"Add user authentication" • frontend-app • @alice**
    • 💬 Implements JWT-based authentication for API endpoints
-   • 📅 1 day old • ✅ CI passing • 👀 Review required • 👥 3 reviews • ✅ No conflicts
+   • 📅 1 day old • ✅ CI passing • 👀 Review required • 👥 3 reviewers • ✅ No conflicts
    • 💬 You commented 4 hours ago
    • 🟢 +127  🔴 -45  📄 4 files  ⏱️ ~10 min
    • 🔗 https://github.com/myorg/frontend-app/pull/42
 
  4. **"Fix memory leak in cache layer" • data-service • @david**
-   • 📅 4 days old • ✅ CI passing • ✅ Approved • 👥 2 reviews • ✅ No conflicts
+   • 📅 4 days old • ✅ CI passing • ✅ Approved • 👥 2 reviewers • ✅ No conflicts
    • 🟢 +89  🔴 -12  📄 2 files  ⏱️ ~5 min
    • 🔗 https://github.com/myorg/data-service/pull/89
 
@@ -422,8 +425,9 @@ The command uses a Python script to:
 5. Parse CI status from statusCheckRollup
 6. Parse review status from reviewDecision and individual reviews:
    - Overall status (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
-   - Individual reviewer actions (who approved, requested changes, commented)
-   - Review engagement summary (e.g., "3 reviews: 1 approved, 2 commented")
+   - Count unique human reviewers (excluding bots like copilot-pull-request-reviewer)
+   - For each reviewer, determine their most recent review state (approved, changes requested, or commented)
+   - Review engagement summary shows unique reviewers and their latest states (e.g., "👥 3 reviewers (✅ 1 approved, 💬 2 commented)")
    - **Your engagement**: Check if you (ooloth) have commented or reviewed
      - Show "💬 You commented 2d ago" or "✅ You approved 3d ago" with most recent timestamp
 7. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
