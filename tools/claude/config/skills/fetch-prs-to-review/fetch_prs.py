@@ -169,6 +169,7 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
     """
     review_decision = pr.get("reviewDecision")
     reviews = pr.get("reviews", {}).get("nodes", [])
+    pr_author = pr.get("author", {}).get("login", "")
 
     # Track unique reviewers and their most recent state
     reviewer_states = {}  # {username: latest_state}
@@ -180,22 +181,28 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
         state = review.get("state")
         submitted_at = review.get("submittedAt")
 
-        # Skip bot reviews
-        if author_login == "copilot-pull-request-reviewer":
+        # Skip bot reviews and PR author (authors replying to comments aren't reviewers)
+        if author_login == "copilot-pull-request-reviewer" or author_login == pr_author:
             continue
 
-        # Track my engagement
+        # Track my engagement (PENDING reviews take priority as they're unfinished)
         if author_login == my_username:
-            if my_latest_timestamp is None or submitted_at > my_latest_timestamp:
+            if state == "PENDING":
+                # PENDING reviews are always most important (not yet submitted)
+                my_latest_timestamp = None
+                my_latest_review = state
+            elif my_latest_review != "PENDING" and submitted_at and (my_latest_timestamp is None or submitted_at > my_latest_timestamp):
+                # Only update if we haven't found a PENDING review
                 my_latest_timestamp = submitted_at
                 my_latest_review = state
 
         # Track each reviewer's most recent state
-        if author_login not in reviewer_states or submitted_at > reviewer_states[author_login]["timestamp"]:
-            reviewer_states[author_login] = {
-                "state": state,
-                "timestamp": submitted_at
-            }
+        if submitted_at:  # Only track submitted reviews in reviewer_states
+            if author_login not in reviewer_states or submitted_at > reviewer_states[author_login]["timestamp"]:
+                reviewer_states[author_login] = {
+                    "state": state,
+                    "timestamp": submitted_at
+                }
 
     # Build review status string with reviewer names
     total_reviewers = len(reviewer_states)
@@ -221,15 +228,19 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
 
     # Build my engagement string
     my_engagement = None
-    if my_latest_review and my_latest_timestamp:
-        age_str, _ = calculate_age(my_latest_timestamp)
-        age = age_str.replace("📅 ", "")
-        if my_latest_review == "APPROVED":
-            my_engagement = f"✅ You approved {age} ago"
-        elif my_latest_review == "CHANGES_REQUESTED":
-            my_engagement = f"⚠️ You requested changes {age} ago"
-        elif my_latest_review == "COMMENTED":
-            my_engagement = f"💬 You reviewed {age} ago"
+    if my_latest_review:
+        if my_latest_review == "PENDING":
+            # PENDING reviews don't have a timestamp (not submitted yet)
+            my_engagement = f"⏳ You have pending comments (not submitted yet!)"
+        elif my_latest_timestamp:
+            age_str, _ = calculate_age(my_latest_timestamp)
+            age = age_str.replace("📅 ", "")
+            if my_latest_review == "APPROVED":
+                my_engagement = f"✅ You approved {age} ago"
+            elif my_latest_review == "CHANGES_REQUESTED":
+                my_engagement = f"⚠️ You requested changes {age} ago"
+            elif my_latest_review == "COMMENTED":
+                my_engagement = f"💬 You reviewed {age} ago"
 
     # Also check for comments (not reviews)
     if not my_engagement:
@@ -399,7 +410,7 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
             lines.append(f"   • {' • '.join(review_activity_parts)}")
 
         # Metadata line: age, time estimate, diff stats, CI status, conflict status
-        diff_stats = f"🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']}"
+        diff_stats = f"🟢 +{pr['additions']} • 🔴 -{pr['deletions']} • 📄 {pr['files']}"
         metadata_parts = [pr['age_str'], f"⏱️ {pr['time_estimate']}", diff_stats, pr['ci_status'], pr['conflict_status']]
         lines.append(f"   • {' • '.join(metadata_parts)}")
 

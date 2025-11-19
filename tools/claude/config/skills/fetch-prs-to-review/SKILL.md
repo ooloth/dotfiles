@@ -28,14 +28,14 @@ Returns formatted markdown ready to display. Example output:
  1. **"Add user authentication" • frontend-app • @alice**
    • 💬 Implements JWT-based authentication for API endpoints
    • 📅 1 week old • ✅ CI passing • 👀 Review required • ✅ No conflicts
-   • 🟢 +127  🔴 -45  📄 4 files  ⏱️ ~10 min
+   • 🟢 +127 • 🔴 -45 • 📄 4 • ⏱️ 10m
    • 🔗 https://github.com/org/frontend-app/pull/42
 
  2. **"Fix memory leak in cache layer" • data-service • @david**
    • 💬 Resolves memory growth issues in Redis cache implementation
    • 📅 2 days old • ✅ CI passing • ✅ Approved • ✅ No conflicts
    • 💬 You commented 4 hours ago
-   • 🟢 +89  🔴 -12  📄 2 files  ⏱️ ~5 min
+   • 🟢 +89 • 🔴 -12 • 📄 2 • ⏱️ 5m
    • 🔗 https://github.com/org/data-service/pull/89
 
 🔧 CHORES (1):
@@ -43,19 +43,19 @@ Returns formatted markdown ready to display. Example output:
  3. **"chore: update CI pipeline" • infra-config • @frank**
    • 💬 Modernizes GitHub Actions workflows and adds caching
    • 📅 5 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
-   • 🟢 +156  🔴 -89  📄 7 files  ⏱️ ~20 min
+   • 🟢 +156 • 🔴 -89 • 📄 7 • ⏱️ 20m
    • 🔗 https://github.com/org/infra-config/pull/34
 
 📦 DEPENDENCY UPDATES (2):
 
  4. 🆕 **"Bump lodash from 4.17.20 to 4.17.21" • frontend-app • @dependabot**
    • 📅 3 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
-   • 🟢 +12  🔴 -8  📄 2 files  ⏱️ ~5 min
+   • 🟢 +12 • 🔴 -8 • 📄 2 • ⏱️ 5m
    • 🔗 https://github.com/org/frontend-app/pull/178
 
  5. **"Bump express from 4.18.0 to 4.18.2" • backend-api • @dependabot**
    • 📅 1 week old • ❌ CI failing • 👀 Review required • ✅ No conflicts
-   • 🟢 +9  🔴 -9  📄 2 files  ⏱️ ~5 min
+   • 🟢 +9 • 🔴 -9 • 📄 2 • ⏱️ 5m
    • 🔗 https://github.com/org/backend-api/pull/201
 
 Commands:
