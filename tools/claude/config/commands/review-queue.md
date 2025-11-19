@@ -2,120 +2,42 @@
 
 Fetch all open PRs where I'm requested as a reviewer across all relevant repos and present them in priority order to be reviewed.
 
-## Context
+## Phase 1: Fetch PR Data
 
-- My PR review requests: !`gh api graphql -f query='query {
-   search(query: "is:pr is:open archived:false user:recursionpharma review-requested:ooloth -repo:recursionpharma/build-pipelines sort:created-desc", type: ISSUE, first: 50) {
-      issueCount
-      edges {
-         node {
-            ... on PullRequest {
-               number
-               title
-               url
-               createdAt
-               isDraft
-               additions
-               deletions
-               changedFiles
-               mergeable
-               reviewDecision
-               bodyText
-               comments(last: 20) {
-                  totalCount
-                  nodes {
-                     author {
-                        login
-                     }
-                     createdAt
-                  }
-               }
-               reviews(last: 20) {
-                  totalCount
-                  nodes {
-                     state
-                     author {
-                        login
-                     }
-                     submittedAt
-                  }
-               }
-               repository {
-                  nameWithOwner
-               }
-               author {
-                  login
-               }
-               commits(last: 1) {
-                  nodes {
-                     commit {
-                        statusCheckRollup {
-                           state
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      }
-   }
-}'`
+Use the `review-queue` skill to fetch and process PR data:
 
-## Phase 1: Display PRs
+```bash
+python3 ~/.claude/skills/review-queue/fetch_prs.py
+```
 
-Based on the above output, process and display all PRs waiting for review:
+This returns structured JSON with all PRs grouped and prioritized. The skill handles:
 
-1. **Group and prioritize PRs:**
+- Fetching from GitHub GraphQL API
+- Calculating ages, time estimates, review status
+- Grouping by priority (ACTION REQUIRED, HIGH PRIORITY, DEPENDABOT, CHORES)
+- Tracking viewing history (🆕 indicators)
+- Storing cache files
 
-   Group PRs into categories:
-   - **ACTION REQUIRED** - Urgent items (failing CI, very old >6mo, conflicts on old PRs)
-   - **HIGH PRIORITY** - Feature/Bug PRs (not chores, not dependabot)
-   - **DEPENDABOT** - Automated dependency updates
-   - **CHORES** - Infrastructure/config changes (title starts with "chore:")
+## Phase 2: Display PRs
 
-   Within each group, sort by:
-   - Failing CI first
-   - Then by age (oldest first for stale reviews)
+The skill returns JSON with PRs already grouped into categories:
 
-2. **Calculate review time estimates:**
+- **ACTION REQUIRED** - Urgent items (failing CI, very old >6mo, conflicts on old PRs)
+- **HIGH PRIORITY** - Feature/Bug PRs (not chores, not dependabot)
+- **DEPENDABOT** - Automated dependency updates
+- **CHORES** - Infrastructure/config changes (title starts with "chore:")
 
-   Based on total lines changed (additions + deletions):
-   - 0-50 lines: ~5 min
-   - 51-200 lines: ~10 min
-   - 201-500 lines: ~20 min
-   - 501-1000 lines: ~30 min
-   - 1000+ lines: ~45 min
+**Your task:**
 
-   Also calculate total estimated time across all PRs for planning purposes.
+1. Parse the JSON from the skill
+2. Format each PR using the exact template (see "Output Formatting" section below)
+3. **IMPORTANT**: Display the formatted output inline in your text response (not just in tool output)
+4. The formatted output should be your complete message - no additional commentary
+5. Show available commands at the end
 
-3. **Extract data for each PR:**
+## Phase 3: Interactive Session
 
-   For each PR, extract:
-   - Repo name, PR number, title, URL
-   - Author login
-   - Size metrics (additions, deletions, changed files)
-   - Age (calculate from createdAt)
-   - Review status (from reviewDecision and reviews)
-   - Conflict status (from mergeable)
-   - CI status (from statusCheckRollup)
-   - Brief summary (first meaningful line from bodyText)
-   - Your engagement (check if ooloth has commented or reviewed)
-
-4. **Number PRs and store mapping:**
-   - Assign sequential numbers (1, 2, 3...) across all PRs in all sections for easy reference
-   - Save the PR number mapping to `~/.claude/.cache/review-queue.json` for quick lookup
-   - Track viewing history in `~/.claude/.cache/review-queue-history.json` to show "🆕" indicators
-
-5. **Display formatted results:**
-   - Run the Python script via Bash to process PRs and save cache files
-   - **IMPORTANT**: Display the script output inline in your text response (not just in tool output)
-   - The formatted output should be your complete message - no additional commentary
-   - Present all PRs using the exact format template (see "Output Formatting" section)
-   - Show available commands at the end
-
-## Phase 2: Interactive Session
-
-After Phase 1 completes, enter interactive mode.
+After Phase 2 completes, enter interactive mode.
 
 **What the user should see:**
 
@@ -149,6 +71,7 @@ After Phase 1 completes, enter interactive mode.
 4. End your message with the navigation prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
 
 **Response options:**
+
 - "y" → Review next PR in sequence
 - "n" → Exit interactive session
 - "list" → Redisplay full PR list
@@ -239,7 +162,7 @@ Use this exact template for each PR. Preserve spacing, emojis, and structure pre
   - Simple: "✅ Approved", "👀 Review required", "⚠️ Changes requested"
   - With reviewers: "👥 {count} reviewers" (e.g., "👥 2 reviewers", "👥 3 reviewers")
   - Count represents unique human reviewers (excluding bots)
-  - Breakdown shows each reviewer's most recent review state (e.g., "👥 3 reviewers (✅ 1 approved, 💬  2 commented)")
+  - Breakdown shows each reviewer's most recent review state (e.g., "👥 3 reviewers (✅ 1 approved, 💬 2 commented)")
 - `{conflict_status}`: Natural phrasing with emoji: "✅ No conflicts" or "⚠️ Conflicts"
 - `{engagement_line}`: Your engagement status (omit line if none):
   - " 💬 You commented {age} ago"
@@ -416,62 +339,25 @@ This command works best when you've configured Memory with your preferences:
 
 ## Implementation Details
 
-The command uses a Python script to:
+The `review-queue` skill (located at `~/.claude/skills/review-queue/`) handles all data fetching and processing:
 
-1. Fetch PRs via GitHub GraphQL API (with additions, deletions, changedFiles, mergeable, reviewDecision, reviews, bodyText)
-2. Calculate human-readable ages from ISO timestamps
-3. Calculate review time estimates based on total lines changed for each PR
-4. Calculate total estimated review time across all PRs
-5. Parse CI status from statusCheckRollup
-6. Parse review status from reviewDecision and individual reviews:
-   - Overall status (APPROVED, REVIEW_REQUIRED, CHANGES_REQUESTED)
-   - Count unique human reviewers (excluding bots like copilot-pull-request-reviewer)
-   - For each reviewer, determine their most recent review state (approved, changes requested, or commented)
-   - Review engagement summary shows unique reviewers and their latest states (e.g., "👥 3 reviewers (✅ 1 approved, 💬 2 commented)")
-   - **Your engagement**: Check if you (ooloth) have commented or reviewed
-     - Show "💬 You commented 2d ago" or "✅ You approved 3d ago" with most recent timestamp
-7. Parse conflict status from mergeable (MERGEABLE → "No conflicts ✅", CONFLICTING → "Conflicts ⚠️", UNKNOWN → "Unknown")
-8. Extract brief summary from bodyText (first line/sentence, max ~100 chars)
-9. Filter out ignored repos as specified in query
-10. Identify "Action Required" PRs (failing CI, >6mo old, or >3mo old with conflicts)
-11. Group by urgency: Action Required → Feature/Bug → Dependabot → Chores
-12. Assign consecutive numbers (1-N) across all PRs for easy reference
-13. Track PR viewing history in ~/.claude/.cache/review-queue-history.json:
-    - **Updated (not overwritten)** - Persists your interaction history
-    - Records when you first saw each PR and your engagement
-    - Used to show "🆕 New" indicator for unseen PRs
+**What the skill does:**
 
-    ```json
-    {
-      "myorg/frontend-app#42": {
-        "first_seen": "2025-11-18T10:00:00Z",
-        "last_seen": "2025-11-18T12:00:00Z"
-      }
-    }
-    ```
+- Fetches PRs via GitHub GraphQL API
+- Calculates ages, time estimates, CI/review/conflict status
+- Counts unique reviewers and determines their latest review states
+- Groups PRs by urgency (ACTION REQUIRED → Feature/Bug → Dependabot → Chores)
+- Tracks viewing history (🆕 indicators)
+- Saves cache files:
+  - `~/.claude/.cache/review-queue.json` - PR lookup mapping (seq_num → repo#pr)
+  - `~/.claude/.cache/review-queue-history.json` - Viewing history
+- Returns structured JSON ready for formatting
 
-14. Store PR lookup mapping in ~/.claude/.cache/review-queue.json:
-    - **Overwritten on each run** - Always has fresh PR data (list changes over time)
-    - Used when user types a number to lookup which PR to review
-    ```json
-    {
-      "1": "myorg/data-pipeline#47",
-      "2": "myorg/backend-api#23",
-      ...
-      "total": 11,
-      "generated_at": "2025-11-18T17:00:49Z"
-    }
-    ```
-15. Format output with total time, size info, time estimates, review status, conflict status, summaries, urgency reasons, emojis, and status indicators
-    - **🆕 indicator** for PRs not in history (never seen before)
-    - **Your engagement**: "💬 You commented 2d ago" if you have comments/reviews
-    - **Diff stats**: Color-coded with 🟢 for additions, 🔴 for deletions, 📄 for files, ⏱️ for time estimate
-    - **Line order**: Summary (if present), metadata, engagement (if present), urgency (if present), diff stats, URL
-16. Update history file with current timestamp for all displayed PRs
-17. Display available commands and explain interactive workflow
-18. When user types a number:
-    - Read mapping from cache file
-    - Parse repo and PR number
-    - Launch `/pr-review <number> --repo <org>/<repo>`
-    - After review completes, update cache with last_reviewed
-    - Prompt for next action (y/n/list/number)
+**What the slash command does:**
+
+- Invokes the skill
+- Formats JSON output per the template
+- Manages interactive session (y/n/list/number navigation)
+- Launches `/pr-review` when user selects a PR
+
+See `~/.claude/skills/review-queue/SKILL.md` for complete skill documentation.
