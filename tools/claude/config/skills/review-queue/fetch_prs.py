@@ -210,24 +210,22 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
                 "timestamp": submitted_at
             }
 
-    # Count reviewers by their latest state
-    approved_count = sum(1 for r in reviewer_states.values() if r["state"] == "APPROVED")
-    changes_requested_count = sum(1 for r in reviewer_states.values() if r["state"] == "CHANGES_REQUESTED")
-    commented_count = sum(1 for r in reviewer_states.values() if r["state"] == "COMMENTED")
+    # Build review status string with reviewer names
     total_reviewers = len(reviewer_states)
 
-    # Build review status string (just reviewer info, no redundant status)
     if total_reviewers > 0:
-        details = []
-        if approved_count > 0:
-            details.append(f"✅ {approved_count} approved")
-        if changes_requested_count > 0:
-            details.append(f"⚠️ {changes_requested_count} requested changes")
-        if commented_count > 0:
-            details.append(f"💬 {commented_count} commented")
+        # Build list of reviewer actions with names
+        reviewer_actions = []
+        for username, info in reviewer_states.items():
+            if info["state"] == "APPROVED":
+                reviewer_actions.append(f"✅ {username}")
+            elif info["state"] == "CHANGES_REQUESTED":
+                reviewer_actions.append(f"⚠️ {username}")
+            elif info["state"] == "COMMENTED":
+                reviewer_actions.append(f"💬 {username}")
 
-        if details:
-            status = f"👥 {total_reviewers} reviewers ({', '.join(details)})"
+        if reviewer_actions:
+            status = f"👥 {total_reviewers} reviewers ({', '.join(reviewer_actions)})"
         else:
             status = f"👥 {total_reviewers} reviewers"
     else:
@@ -421,15 +419,18 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         # Title line with diff stats (non-breaking space at start to prevent list formatting)
         lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**@{pr['author']} • \"{pr['title']}\"** • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
 
+        # Review activity line (reviewers + my engagement) - first line after title
+        review_activity_parts = []
+        if pr['review_status']:
+            review_activity_parts.append(pr['review_status'])
+        if pr["my_engagement"]:
+            review_activity_parts.append(pr['my_engagement'])
+        if review_activity_parts:
+            lines.append(f"   • {' • '.join(review_activity_parts)}")
+
         # Metadata line
         metadata_parts = [pr['age_str'], pr['ci_status'], pr['conflict_status']]
-        if pr['review_status']:
-            metadata_parts.append(pr['review_status'])
         lines.append(f"   • {' • '.join(metadata_parts)}")
-
-        # Engagement line (optional)
-        if pr["my_engagement"]:
-            lines.append(f"   • {pr['my_engagement']}")
 
         # URL
         lines.append(f"   • 🔗 {pr['url']}")
