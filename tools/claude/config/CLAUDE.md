@@ -12,6 +12,7 @@
 - Minimize your context usage by delegating tasks that are straight-forward to describe and report back about but may require lots of exploration to complete to my custom agents (`tools/claude/config/agents`) or ephemeral Task agents you create
 - Ensure any agents you delegate to know exactly what you want them to report back, and what details to include
 - Update the `<task>.md` with any helpful findings
+- When you detect you are within 10% of your available context window before auto-compact, pause to update your to-do list and the `<task>.md` with all important hand-off details, including the primary goals and non-goals of the task and any implementation decisions that have already been made
 
 ## Using Gemini CLI for Large Codebase Analysis
 
