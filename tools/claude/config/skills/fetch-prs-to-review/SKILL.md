@@ -1,10 +1,10 @@
 ---
-name: review-queue
+name: fetch-prs-to-review
 description: Fetches and processes GitHub pull requests waiting for review. Returns fully formatted markdown with PRs grouped by category (Feature/Bug, Chores, Dependency Updates) and sorted by age. Includes metadata like CI status, review status, size metrics, and viewing history. Use when user wants to see their PR review queue.
 allowed-tools: [Bash]
 ---
 
-# Review Queue Skill
+# Fetch PRs to Review Skill
 
 Fetches pull requests waiting for review from GitHub and returns formatted markdown ready to display.
 
@@ -13,7 +13,7 @@ Fetches pull requests waiting for review from GitHub and returns formatted markd
 Run the skill to get formatted markdown output:
 
 ```bash
-python3 ~/.claude/skills/review-queue/fetch_prs.py
+python3 ~/.claude/skills/fetch-prs-to-review/fetch_prs.py
 ```
 
 ## What It Returns
@@ -76,8 +76,8 @@ Commands:
 7. Sorts by age (oldest first) within each category
 8. Assigns sequential numbers across all PRs
 9. Formats as markdown with proper spacing and blank lines
-10. Stores lookup mapping in `~/.claude/.cache/review-queue.json`
-11. Updates viewing history in `~/.claude/.cache/review-queue-history.json`
+10. Stores lookup mapping in `~/.claude/.cache/fetch-prs-to-review.json`
+11. Updates viewing history in `~/.claude/.cache/fetch-prs-to-review-history.json`
 
 ## Notes
 
