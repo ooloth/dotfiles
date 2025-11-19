@@ -28,7 +28,7 @@ The skill outputs fully formatted markdown ready to display. It handles:
 4. Do not summarize, analyze, or add commentary - just show the formatted list
 5. Create a todo list to track the interactive session:
    - "Waiting for user to select a PR (or 'l')" (pending)
-   - "Reviewing PR with enhanced navigation" (pending - will become in_progress when user selects a PR)
+   - "Reviewing PR with enhanced navigation" (pending)
 
 ## Phase 2: Interactive Session
 
