@@ -294,33 +294,13 @@ def extract_summary(body_text: Optional[str]) -> Optional[str]:
     return None
 
 
-def is_action_required(pr: Dict[str, Any], age_days: int, ci_status: str, conflict_status: str) -> Tuple[bool, Optional[str]]:
-    """Determine if PR requires immediate action."""
-    # Failing CI
-    if "❌" in ci_status:
-        return True, "Failing CI"
-
-    # Very old (>6 months)
-    if age_days > 180:
-        if "⚠️" in conflict_status:
-            return True, "Very old PR with conflicts - close or ask author to update"
-        return True, "Very old PR - close or ask author to update"
-
-    # Old with conflicts (>3 months)
-    if age_days > 90:
-        if "⚠️" in conflict_status:
-            return True, "Old PR with conflicts"
-
-    return False, None
-
-
 def categorize_pr(pr: Dict[str, Any]) -> str:
-    """Categorize PR into: feature/bug, dependabot, or chore."""
+    """Categorize PR into: feature/bug, dependency_updates, or chore."""
     author = pr.get("author", {}).get("login", "")
     title = pr.get("title", "").lower()
 
-    if author == "dependabot":
-        return "dependabot"
+    if author == "dependabot" or title.startswith("bump "):
+        return "dependency_updates"
     elif title.startswith("chore:"):
         return "chore"
     else:
@@ -372,9 +352,6 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         # Extract summary
         summary = extract_summary(pr_node.get("bodyText"))
 
-        # Check if action required
-        action_req, urgency_reason = is_action_required(pr_node, age_days, ci_status, conflict_status)
-
         # Categorize
         category = categorize_pr(pr_node)
 
@@ -414,8 +391,6 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
             "summary": summary,
             "my_engagement": my_engagement,
             "is_new": is_new,
-            "action_required": action_req,
-            "urgency_reason": urgency_reason,
             "category": category,
             "is_draft": pr_node.get("isDraft", False)
         })
@@ -423,20 +398,18 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
     # Save updated history
     save_history(history)
 
-    # Sort PRs by category and priority
-    action_required = [p for p in prs if p["action_required"]]
-    feature_prs = [p for p in prs if not p["action_required"] and p["category"] == "feature" and not p["is_draft"]]
-    dependabot_prs = [p for p in prs if not p["action_required"] and p["category"] == "dependabot"]
-    chore_prs = [p for p in prs if not p["action_required"] and p["category"] == "chore"]
+    # Sort PRs by category
+    feature_prs = [p for p in prs if p["category"] == "feature" and not p["is_draft"]]
+    chore_prs = [p for p in prs if p["category"] == "chore"]
+    dependency_prs = [p for p in prs if p["category"] == "dependency_updates"]
 
-    # Sort within each category (failing CI first, then by age)
-    action_required.sort(key=lambda p: (-("❌" in p["ci_status"]), -p["age_days"]))
-    feature_prs.sort(key=lambda p: (-("❌" in p["ci_status"]), -p["age_days"]))
-    dependabot_prs.sort(key=lambda p: -p["age_days"])
+    # Sort within each category by age (oldest first)
+    feature_prs.sort(key=lambda p: -p["age_days"])
     chore_prs.sort(key=lambda p: -p["age_days"])
+    dependency_prs.sort(key=lambda p: -p["age_days"])
 
     # Assign sequential numbers and build lookup mapping
-    all_prs = action_required + feature_prs + dependabot_prs + chore_prs
+    all_prs = feature_prs + chore_prs + dependency_prs
     pr_mapping = {}
     total_time_mins = 0
 
@@ -461,19 +434,70 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
     pr_mapping["generated_at"] = current_time
     save_mapping(pr_mapping)
 
-    return {
-        "prs": all_prs,
-        "totals": {
-            "action_required": len(action_required),
-            "high_priority": len(feature_prs),
-            "dependabot": len(dependabot_prs),
-            "chores": len(chore_prs),
-            "total": len(all_prs),
-            "estimated_time_mins": total_time_mins,
-            "estimated_time_str": total_time_str
-        },
-        "generated_at": current_time
-    }
+    # Format as markdown
+    output_lines = []
+
+    # Header
+    output_lines.append(f"📋 PRs waiting for your review: {len(all_prs)} found | Est. total time: {total_time_str}")
+    output_lines.append("")
+
+    # Helper function to format a PR
+    def format_pr(pr: Dict[str, Any]) -> str:
+        lines = []
+        new_badge = "🆕 " if pr["is_new"] else ""
+
+        # Title line
+        lines.append(f" {pr['seq_num']}. {new_badge}**\"{pr['title']}\" • {pr['repo_short']} • @{pr['author']}**")
+
+        # Summary line (omit for dependency updates)
+        if pr["category"] != "dependency_updates" and pr["summary"]:
+            lines.append(f"   • 💬 {pr['summary']}")
+
+        # Metadata line
+        lines.append(f"   • {pr['age_str']} • {pr['ci_status']} • {pr['review_status']} • {pr['conflict_status']}")
+
+        # Engagement line (optional)
+        if pr["my_engagement"]:
+            lines.append(f"   • {pr['my_engagement']}")
+
+        # Diff stats
+        lines.append(f"   • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
+
+        # URL
+        lines.append(f"   • 🔗 {pr['url']}")
+        lines.append("")  # Blank line after each PR
+
+        return "\n".join(lines)
+
+    # Feature/Bug PRs
+    if feature_prs:
+        output_lines.append(f"🎯 FEATURE/BUG PRs ({len(feature_prs)}):")
+        output_lines.append("")
+        for pr in feature_prs:
+            output_lines.append(format_pr(pr))
+
+    # Chores
+    if chore_prs:
+        output_lines.append(f"🔧 CHORES ({len(chore_prs)}):")
+        output_lines.append("")
+        for pr in chore_prs:
+            output_lines.append(format_pr(pr))
+
+    # Dependency Updates
+    if dependency_prs:
+        output_lines.append(f"📦 DEPENDENCY UPDATES ({len(dependency_prs)}):")
+        output_lines.append("")
+        for pr in dependency_prs:
+            output_lines.append(format_pr(pr))
+
+    # Footer commands
+    output_lines.append("Commands:")
+    output_lines.append(f"- Type a number (1-{len(all_prs)}) to review that PR")
+    output_lines.append("- After each review, I'll prompt: \"Continue? (y/n/list/number)\" to review more PRs")
+    output_lines.append("")
+    output_lines.append("💡 Interactive workflow: Type a number → review PR → prompted for next → repeat until done")
+
+    return "\n".join(output_lines)
 
 
 def main():
@@ -482,23 +506,17 @@ def main():
         # Fetch PRs from GitHub
         data = fetch_prs_from_github()
 
-        # Process into structured format
-        result = process_prs(data)
+        # Process into formatted markdown
+        markdown_output = process_prs(data)
 
-        # Output JSON
-        print(json.dumps(result, indent=2))
+        # Output markdown
+        print(markdown_output)
 
     except subprocess.CalledProcessError as e:
-        print(json.dumps({
-            "error": "Failed to fetch PRs from GitHub",
-            "details": e.stderr
-        }), file=sys.stderr)
+        print(f"Error: Failed to fetch PRs from GitHub\n{e.stderr}", file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        print(json.dumps({
-            "error": str(e),
-            "type": type(e).__name__
-        }), file=sys.stderr)
+        print(f"Error: {type(e).__name__}: {e}", file=sys.stderr)
         sys.exit(1)
 
 

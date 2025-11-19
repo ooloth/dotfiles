@@ -1,16 +1,16 @@
 ---
 name: review-queue
-description: Fetches and processes GitHub pull requests waiting for review. Returns structured JSON with PRs grouped by priority (ACTION REQUIRED, HIGH PRIORITY, DEPENDABOT, CHORES) including metadata like CI status, review status, size metrics, and viewing history. Use when user wants to see their PR review queue or triage pull requests.
+description: Fetches and processes GitHub pull requests waiting for review. Returns fully formatted markdown with PRs grouped by category (Feature/Bug, Chores, Dependency Updates) and sorted by age. Includes metadata like CI status, review status, size metrics, and viewing history. Use when user wants to see their PR review queue.
 allowed-tools: [Bash]
 ---
 
 # Review Queue Skill
 
-Fetches pull requests waiting for review from GitHub and returns processed, prioritized data.
+Fetches pull requests waiting for review from GitHub and returns formatted markdown ready to display.
 
 ## Usage
 
-Run the skill to get structured PR data:
+Run the skill to get formatted markdown output:
 
 ```bash
 python3 ~/.claude/skills/review-queue/fetch_prs.py
@@ -18,48 +18,51 @@ python3 ~/.claude/skills/review-queue/fetch_prs.py
 
 ## What It Returns
 
-Returns JSON with the following structure:
+Returns formatted markdown ready to display. Example output:
 
-```json
-{
-  "prs": [
-    {
-      "seq_num": 1,
-      "title": "PR title",
-      "url": "https://github.com/...",
-      "repo_full": "org/repo",
-      "repo_short": "repo",
-      "author": "username",
-      "number": 123,
-      "additions": 76,
-      "deletions": 45,
-      "files": 6,
-      "age_str": "📅 1 day old",
-      "age_days": 1,
-      "time_estimate": "~10 min",
-      "ci_status": "✅ CI passing",
-      "review_status": "👀 Review required • 👥 3 reviewers (✅ 1 approved, 💬 2 commented)",
-      "conflict_status": "✅ No conflicts",
-      "summary": "Brief description...",
-      "my_engagement": "💬 You commented 4 hours ago",
-      "is_new": true,
-      "category": "feature",
-      "action_required": false,
-      "urgency_reason": null,
-      "is_draft": false
-    }
-  ],
-  "totals": {
-    "action_required": 2,
-    "high_priority": 3,
-    "dependabot": 5,
-    "chores": 1,
-    "total": 11,
-    "estimated_time_mins": 135,
-    "estimated_time_str": "~2h 15min"
-  },
-  "generated_at": "2025-11-18T17:00:49Z"
-}
+```
+📋 PRs waiting for your review: 5 found | Est. total time: ~55 min
+
+🎯 FEATURE/BUG PRs (2):
+
+ 1. **"Add user authentication" • frontend-app • @alice**
+   • 💬 Implements JWT-based authentication for API endpoints
+   • 📅 1 week old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +127  🔴 -45  📄 4 files  ⏱️ ~10 min
+   • 🔗 https://github.com/org/frontend-app/pull/42
+
+ 2. **"Fix memory leak in cache layer" • data-service • @david**
+   • 💬 Resolves memory growth issues in Redis cache implementation
+   • 📅 2 days old • ✅ CI passing • ✅ Approved • ✅ No conflicts
+   • 💬 You commented 4 hours ago
+   • 🟢 +89  🔴 -12  📄 2 files  ⏱️ ~5 min
+   • 🔗 https://github.com/org/data-service/pull/89
+
+🔧 CHORES (1):
+
+ 3. **"chore: update CI pipeline" • infra-config • @frank**
+   • 💬 Modernizes GitHub Actions workflows and adds caching
+   • 📅 5 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +156  🔴 -89  📄 7 files  ⏱️ ~20 min
+   • 🔗 https://github.com/org/infra-config/pull/34
+
+📦 DEPENDENCY UPDATES (2):
+
+ 4. 🆕 **"Bump lodash from 4.17.20 to 4.17.21" • frontend-app • @dependabot**
+   • 📅 3 days old • ✅ CI passing • 👀 Review required • ✅ No conflicts
+   • 🟢 +12  🔴 -8  📄 2 files  ⏱️ ~5 min
+   • 🔗 https://github.com/org/frontend-app/pull/178
+
+ 5. **"Bump express from 4.18.0 to 4.18.2" • backend-api • @dependabot**
+   • 📅 1 week old • ❌ CI failing • 👀 Review required • ✅ No conflicts
+   • 🟢 +9  🔴 -9  📄 2 files  ⏱️ ~5 min
+   • 🔗 https://github.com/org/backend-api/pull/201
+
+Commands:
+- Type a number (1-5) to review that PR
+- After each review, I'll prompt: "Continue? (y/n/list/number)" to review more PRs
+
+💡 Interactive workflow: Type a number → review PR → prompted for next → repeat until done
 ```
 
 ## Processing Done by Skill
@@ -67,20 +70,21 @@ Returns JSON with the following structure:
 1. Fetches PRs via GitHub GraphQL API where you're requested as reviewer
 2. Calculates human-readable ages and review time estimates
 3. Parses CI status, review status (counting unique reviewers), conflict status
-4. Extracts PR summaries from descriptions
-5. Tracks viewing history (marks new PRs with `is_new: true`)
-6. Groups PRs into categories (ACTION REQUIRED, HIGH PRIORITY, DEPENDABOT, CHORES)
-7. Sorts by urgency within each category
+4. Extracts PR summaries from descriptions (omitted for dependency updates)
+5. Tracks viewing history (marks new PRs with 🆕 badge)
+6. Groups PRs into categories (Feature/Bug → Chores → Dependency Updates)
+7. Sorts by age (oldest first) within each category
 8. Assigns sequential numbers across all PRs
-9. Stores lookup mapping in `~/.claude/.cache/review-queue.json`
-10. Updates viewing history in `~/.claude/.cache/review-queue-history.json`
+9. Formats as markdown with proper spacing and blank lines
+10. Stores lookup mapping in `~/.claude/.cache/review-queue.json`
+11. Updates viewing history in `~/.claude/.cache/review-queue-history.json`
 
 ## Notes
 
 - Filters out PRs from ignored repos (currently: `recursionpharma/build-pipelines`)
-- ACTION REQUIRED: Failing CI, >6mo old, or >3mo old with conflicts
-- HIGH PRIORITY: Feature/bug PRs (not chores, not dependabot)
-- DEPENDABOT: PRs authored by dependabot
+- FEATURE/BUG PRs: Not chores, not dependency updates, not drafts
 - CHORES: PRs with titles starting with "chore:"
+- DEPENDENCY UPDATES: All dependency updates (dependabot, bump PRs, etc.)
 - Unique reviewer count: Counts each person once, shows their most recent review state
 - Time estimates: Based on total lines changed (0-50: 5min, 51-200: 10min, etc.)
+- Formatting: Space before PR numbers prevents markdown list parsing; blank lines separate PRs
