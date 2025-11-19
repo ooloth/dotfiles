@@ -169,6 +169,7 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
     """
     review_decision = pr.get("reviewDecision")
     reviews = pr.get("reviews", {}).get("nodes", [])
+    pr_author = pr.get("author", {}).get("login", "")
 
     # Track unique reviewers and their most recent state
     reviewer_states = {}  # {username: latest_state}
@@ -180,8 +181,8 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
         state = review.get("state")
         submitted_at = review.get("submittedAt")
 
-        # Skip bot reviews
-        if author_login == "copilot-pull-request-reviewer":
+        # Skip bot reviews and PR author (authors replying to comments aren't reviewers)
+        if author_login == "copilot-pull-request-reviewer" or author_login == pr_author:
             continue
 
         # Track my engagement (PENDING reviews have no submittedAt, so they're most recent)
