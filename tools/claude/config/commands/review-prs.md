@@ -1,13 +1,13 @@
-# Review Queue - Find PRs waiting for my review
+# Review PRs - Find PRs waiting for my review
 
 Fetch all open PRs where I'm requested as a reviewer across all relevant repos and present them sorted by age.
 
 ## Phase 1: Display PRs
 
-Run the `review-queue` skill to fetch and display PRs:
+Run the `fetch-prs-to-review` skill to fetch and display PRs:
 
 ```bash
-python3 ~/.claude/skills/review-queue/fetch_prs.py
+python3 ~/.claude/skills/fetch-prs-to-review/fetch_prs.py
 ```
 
 The skill outputs fully formatted markdown ready to display. It handles:
@@ -60,18 +60,18 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 
 1. Update todo: mark "Waiting for user to select a PR" as completed
 2. Update todo: mark "After /review completes, return to interactive mode" as in_progress
-3. Read the mapping from `~/.claude/.cache/review-queue.json`
+3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json`
 4. Parse the repo and PR number
 5. Launch `/review <org>/<repo>#<number>`
 6. After /review completes, wait for user to send any message to continue
 
 **When user sends next message after /review completes:**
 
-You are still in the review-queue session. You MUST immediately:
+You are still in the review-prs session. You MUST immediately:
 
 1. Check your todos - you have one in_progress: "After /review completes, return to interactive mode"
 2. Mark that todo as completed
-3. Read the mapping from `~/.claude/.cache/review-queue.json` to calculate remaining PRs
+3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json` to calculate remaining PRs
 4. Determine the next PR number in sequence
 5. Display abbreviated PR list inline in your text response
 6. End your message with: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
@@ -139,11 +139,11 @@ Note: The navigation prompt at the end allows the user to easily continue to the
 
 ## Cache File Lifecycle
 
-**Location:** `~/.claude/.cache/review-queue.json`
+**Location:** `~/.claude/.cache/fetch-prs-to-review.json`
 
 **Behavior:**
 
-- **Created/Overwritten** every time you run `/review-queue`
+- **Created/Overwritten** every time you run `/review-prs`
 - Fresh PR data each run (list changes as PRs are merged/created)
 - **Read** when you type a number to lookup which PR to review
 - Not deleted - persists between runs for quick lookups
@@ -156,9 +156,9 @@ Note: The navigation prompt at the end allows the user to easily continue to the
 
 **Example flow:**
 
-1. Monday 9am: `/review-queue` → Creates cache with 12 PRs
+1. Monday 9am: `/review-prs` → Creates cache with 12 PRs
 2. You type "7" → Reads cache → Reviews PR #7
-3. Monday 2pm: `/review-queue` → **Overwrites** cache with 11 PRs (one merged)
+3. Monday 2pm: `/review-prs` → **Overwrites** cache with 11 PRs (one merged)
 4. You type "3" → Reads fresh cache → Reviews PR #3 (different from morning #3)
 
 ## Notes
@@ -170,12 +170,12 @@ Note: The navigation prompt at the end allows the user to easily continue to the
 - Groups PRs by type: Feature/Bug → Chores → Dependency Updates
 - Sorts PRs by age within each group (oldest first)
 - Works seamlessly with the built-in `/review <org>/<repo>#<number>` command
-- Cache file is always fresh - run `/review-queue` again if PR list has changed
+- Cache file is always fresh - run `/review-prs` again if PR list has changed
 - Formatting is handled by the skill for consistency
 
 ## Implementation Details
 
-The `review-queue` skill (located at `~/.claude/skills/review-queue/`) handles all data fetching and processing:
+The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-review/`) handles all data fetching and processing:
 
 **What the skill does:**
 
@@ -187,8 +187,8 @@ The `review-queue` skill (located at `~/.claude/skills/review-queue/`) handles a
 - Formats output as markdown with proper spacing
 - Tracks viewing history (🆕 indicators)
 - Saves cache files:
-  - `~/.claude/.cache/review-queue.json` - PR lookup mapping (seq_num → repo#pr)
-  - `~/.claude/.cache/review-queue-history.json` - Viewing history
+  - `~/.claude/.cache/fetch-prs-to-review.json` - PR lookup mapping (seq_num → repo#pr)
+  - `~/.claude/.cache/fetch-prs-to-review-history.json` - Viewing history
 - Returns formatted markdown ready to display
 
 **What the slash command does:**
@@ -200,4 +200,4 @@ The `review-queue` skill (located at `~/.claude/skills/review-queue/`) handles a
 - Launches `/review` when user selects a PR
 - Clears todos when session ends
 
-See `~/.claude/skills/review-queue/SKILL.md` for complete skill documentation.
+See `~/.claude/skills/fetch-prs-to-review/SKILL.md` for complete skill documentation.
