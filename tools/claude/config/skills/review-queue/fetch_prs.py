@@ -368,23 +368,10 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
     # Assign sequential numbers and build lookup mapping
     all_prs = feature_prs + chore_prs + dependency_prs
     pr_mapping = {}
-    total_time_mins = 0
 
     for idx, pr in enumerate(all_prs, start=1):
         pr["seq_num"] = idx
         pr_mapping[str(idx)] = f"{pr['repo_full']}#{pr['number']}"
-
-        # Calculate total time
-        mins = int(pr["time_estimate"].replace("m", ""))
-        total_time_mins += mins
-
-    # Calculate total time in hours and minutes
-    total_hours = total_time_mins // 60
-    total_mins = total_time_mins % 60
-    if total_hours > 0:
-        total_time_str = f"~{total_hours}h {total_mins}min"
-    else:
-        total_time_str = f"~{total_mins}min"
 
     # Save mapping to cache
     pr_mapping["total"] = len(all_prs)
@@ -393,10 +380,6 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
 
     # Format as markdown
     output_lines = []
-
-    # Header
-    output_lines.append(f"📋 PRs waiting for your review: {len(all_prs)} found | Est. total time: {total_time_str}")
-    output_lines.append("")
 
     # Helper function to format a PR
     def format_pr(pr: Dict[str, Any]) -> str:
@@ -428,21 +411,21 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
 
     # Feature/Bug PRs
     if feature_prs:
-        output_lines.append(f"🎯 FEATURE/BUG PRs ({len(feature_prs)}):")
+        output_lines.append("**🎯 FEATURE/BUG PRs**")
         output_lines.append("")
         for pr in feature_prs:
             output_lines.append(format_pr(pr))
 
     # Chores
     if chore_prs:
-        output_lines.append(f"🔧 CHORES ({len(chore_prs)}):")
+        output_lines.append("**🔧 CHORES**")
         output_lines.append("")
         for pr in chore_prs:
             output_lines.append(format_pr(pr))
 
     # Dependency Updates
     if dependency_prs:
-        output_lines.append(f"📦 DEPENDENCY UPDATES ({len(dependency_prs)}):")
+        output_lines.append("**📦 DEPENDENCY UPDATES**")
         output_lines.append("")
         for pr in dependency_prs:
             output_lines.append(format_pr(pr))
