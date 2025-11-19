@@ -405,7 +405,10 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
 
         # URL
         lines.append(f"   • 🔗 {pr['url']}")
-        lines.append("")  # Blank line after each PR
+
+        # Double blank line for paragraph separation
+        lines.append("")
+        lines.append("")
 
         return "\n".join(lines)
 
