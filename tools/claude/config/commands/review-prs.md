@@ -62,10 +62,44 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 2. Update todo: mark "Reviewing PR with enhanced navigation" as in_progress
 3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json`
 4. Parse the repo and PR number
-5. Fetch PR data: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid`
+5. Fetch PR data with context: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments`
 6. Get file diffs: `gh pr diff <number> --repo <org>/<repo>`
-7. Review the PR following the Enhanced Review Format (see below)
-8. After review, provide Post-Review Action Menu (see below)
+7. Process existing review context (see Existing Review Context section below)
+8. Review the PR following the Enhanced Review Format (see below)
+9. After review, provide Post-Review Action Menu (see below)
+
+## Existing Review Context
+
+Before analyzing the PR yourself, process existing review context to avoid duplicating feedback:
+
+**Parse reviews and comments from the PR data:**
+- Extract all review comments (inline and general)
+- Extract all conversation comments
+- Group by file and line number
+- Identify discussion themes
+
+**Display context section at the start of your review:**
+```
+📝 Existing Review Activity:
+
+@alice reviewed 2 days ago (CHANGES_REQUESTED):
+- auth.py:45-52: "Should log errors instead of swallowing"
+- db.py:103: "Use parameterized queries"
+
+@bob commented 1 day ago:
+- General: "Looks good overall, just those two issues to address"
+
+💬 Active discussions (3):
+- auth.py:45-52: Error handling approach (2 comments)
+- db.py:103: SQL injection fix (1 comment)
+- test_auth.py:89: Test coverage question (3 comments, ongoing)
+```
+
+**In your review:**
+- Note which concerns already have feedback (skip or add +1)
+- Identify new issues not yet mentioned
+- Join ongoing discussions if you have additional insight
+- Avoid repeating what others already said clearly
 
 ## Enhanced Review Format
 
@@ -145,14 +179,47 @@ Parse their input:
 - If file:line format: Use that directly
 - Extract file path and line number
 
-**Step 3: Prompt for comment**
+**Step 3: AI-Assisted Comment Drafting**
+
+Show the code snippet again with context, then suggest comment templates:
+
 ```
-Comment for auth.py:45-52:
+Code at auth.py:45-52:
+   try:
+       user = authenticate(token)
+   except Exception:
+       pass
+
+💡 Suggested comments (or write your own):
+1. "I'm curious about the exception handling here. What happens when authentication fails? Should we be logging this or letting it propagate?"
+2. "How do we want to handle the case where authenticate() raises an exception? I'm wondering if silent failure here could make debugging harder later."
+3. "What's the intended behavior when authentication fails? Should this return None, raise a specific error, or log for monitoring?"
+
+Select 1-3 to edit, or press Enter to write custom comment:
 >
 ```
 
-**Step 4: User enters comment**
-Store the comment with file, line number, and body.
+**How to generate suggestions:**
+Based on the issue type, offer socratic, mentor-like templates that lead with curiosity:
+- **Silent error handling**: "I'm curious about...", "What happens when...", "How should we handle..."
+- **SQL injection**: "I'm wondering if...", "Have we considered...", "What would happen if..."
+- **Missing tests**: "How can we verify...", "What edge cases should we consider...", "I'm curious how this behaves when..."
+- **Security concern**: "I'm wondering about security here...", "What happens if a user...", "Have we thought about..."
+- **Performance**: "I'm curious about the performance implications...", "How does this scale when...", "Have we measured..."
+- **Code clarity**: "I'm finding this a bit hard to follow...", "Could we clarify...", "What's the reasoning behind..."
+
+Use full sentences, ask genuine questions, and frame as collaborative exploration rather than directives.
+
+**Step 4: User responds**
+
+If they select a number (1-3):
+- Show that suggestion pre-filled for editing
+- They can modify or use as-is
+
+If they press Enter or type text:
+- Use their custom comment
+
+Store the final comment with file, line number, and body.
 
 **Step 5: Ask to continue**
 ```
@@ -239,35 +306,44 @@ After user selects any action from the Post-Review Action Menu:
 ```
 ## PR Review: recursionpharma/auth-service#144 "Add JWT refresh token rotation"
 
+📝 Existing Review Activity:
+
+@alice reviewed 2 days ago (CHANGES_REQUESTED):
+- auth.py:45-52: "Should log errors instead of swallowing"
+- db.py:103: "Use parameterized queries"
+
+💬 Active discussions (2):
+- auth.py:45-52: Error handling approach (2 comments)
+- db.py:103: SQL injection fix (1 comment)
+
+---
+
 **Summary**: Implements refresh token rotation to improve security of JWT authentication flow.
 
 **Key Strengths**:
 - Well-structured token rotation logic in `auth.py:67-89`
 - Comprehensive test coverage in `test_auth.py:120-156`
 
-**Areas of Concern**:
+**New Issues** (not mentioned in existing reviews):
 
-1. **Silent error swallowing** in `auth.py:45-52`:
+1. **Missing token expiry validation** in `auth.py:78`:
    ```python
-   # auth.py:45-52
-   try:
-       user = authenticate(token)
-   except Exception:
-       pass  # ⚠️ This silently swallows all errors
+   # auth.py:78
+   new_token = generate_refresh_token(user)
+   # ⚠️ No check if old token has expired
    ```
 
-2. **Potential SQL injection** in `db.py:103`:
-   ```python
-   # db.py:103
-   query = f"SELECT * FROM users WHERE id = {user_id}"  # ⚠️ SQL injection risk
-   ```
+**Previously Identified** (joining discussion):
+- auth.py:45-52: Error handling (alice mentioned logging)
+- db.py:103: SQL injection (alice mentioned parameterized queries)
 
-**Recommendation**: Request changes - address error handling and SQL injection before merging.
+**Recommendation**: Request changes - address new expiry validation issue. Existing issues already have good feedback from alice.
 
 ---
 📍 Key areas to review:
-- auth.py:45-52 - Silent error swallowing
-- db.py:103 - SQL injection risk
+- auth.py:78 - Missing token expiry validation (NEW)
+- auth.py:45-52 - Silent error swallowing (alice +1)
+- db.py:103 - SQL injection risk (alice +1)
 
 🎬 Actions:
 o - Open PR in browser
@@ -289,17 +365,21 @@ What would you like to do?
 4. Return to terminal, type "c" to request changes via gh CLI
 5. Automatically return to PR list with continue prompt
 
-**Option B: Add inline comments interactively:**
-1. Read review in terminal
+**Option B: Add inline comments with AI assistance:**
+1. Read review in terminal (see existing feedback from alice)
 2. Type "i" to add inline comments
-3. Select "1" for auth.py:45-52
-4. Enter comment: "This should log the error instead of silently swallowing it"
-5. Select "y" to add another
-6. Select "2" for db.py:103
-7. Enter comment: "Use parameterized queries to prevent SQL injection"
-8. Select "n" when done
-9. Type "c" to submit as request changes with inline comments
-10. Automatically return to PR list with continue prompt
+3. Select "1" for auth.py:78 (the NEW issue you found)
+4. See AI-suggested comments:
+   - Option 1: "I'm curious about the token expiry validation here. What happens if a user requests a refresh with an already-expired token?"
+   - Option 2: "How are we handling the case where old_token has expired? I'm wondering if this could be a security concern."
+   - Option 3: "Should we validate that old_token hasn't expired before issuing a new one? What's the intended behavior here?"
+5. Select "1" to use first suggestion (or edit it, or write custom)
+6. Select "y" to add another
+7. Select "2" for auth.py:45-52 (alice already commented)
+8. Type custom: "Agree with alice's point about logging. I'm also curious if we should handle specific exception types differently here."
+9. Select "n" when done
+10. Type "c" to submit as request changes with 2 inline comments
+11. Automatically return to PR list with continue prompt
 
 ## Cache File Lifecycle
 
@@ -334,8 +414,10 @@ What would you like to do?
 - Groups PRs by type: Feature/Bug → Chores → Dependency Updates
 - Sorts PRs by age within each group (oldest first)
 - **Enhanced review mode** provides:
+  - **Existing review context**: See what others have already commented on to avoid duplication
   - Inline code snippets with context and file:line references
   - Post-review action menu with multiple options
+  - **AI-assisted comment drafting**: Get suggested comments based on issue type, edit or use as-is
   - Interactive inline comment builder for attaching comments to specific lines
   - Quick browser navigation to PR (via "o" action)
   - General review posting via gh CLI (via "a"/"c" actions)
@@ -367,14 +449,15 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 - Uses TodoWrite to track session state throughout workflow
 - Manages interactive session with y/n/l/number navigation
 - When user selects a PR:
-  - Fetches PR data via `gh pr view`
+  - Fetches PR data with reviews and comments via `gh pr view --json reviews,comments,...`
   - Analyzes code changes via `gh pr diff`
-  - Generates enhanced review with file:line references
-  - Shows inline code snippets with context
+  - **Displays existing review context** (who reviewed, what they said, active discussions)
+  - Generates enhanced review avoiding duplication of existing feedback
+  - Shows inline code snippets with file:line references
   - Provides post-review action menu (o/i/a/c/n/l)
 - Post-review actions:
   - **o**: Opens PR in browser
-  - **i**: Interactive inline comment builder (attaches comments to specific lines via gh api)
+  - **i**: Interactive inline comment builder with **AI-assisted suggestions** (attaches comments to specific lines via gh api)
   - **a/c**: Posts general review via gh CLI (approve/request changes)
   - **n**: Skip to next PR
   - **l**: Redisplay full queue
