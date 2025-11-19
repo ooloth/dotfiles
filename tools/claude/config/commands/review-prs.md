@@ -27,8 +27,8 @@ The skill outputs fully formatted markdown ready to display. It handles:
 3. The skill output is your complete message - no additional text before or after
 4. Do not summarize, analyze, or add commentary - just show the formatted list
 5. Create a todo list to track the interactive session:
-   - "Waiting for user to select a PR (or 'list')"
-   - "After /review completes, return to interactive mode"
+   - "Waiting for user to select a PR (or 'list')" (pending)
+   - "Reviewing PR with enhanced navigation" (pending - will become in_progress when user selects a PR)
 
 ## Phase 2: Interactive Session
 
@@ -59,83 +59,142 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 **When user types a number:**
 
 1. Update todo: mark "Waiting for user to select a PR" as completed
-2. Update todo: mark "After /review completes, return to interactive mode" as in_progress
+2. Update todo: mark "Reviewing PR with enhanced navigation" as in_progress
 3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json`
 4. Parse the repo and PR number
-5. Launch `/review <org>/<repo>#<number>`
-6. After /review completes, wait for user to send any message to continue
+5. Fetch PR data: `gh pr view <org>/<repo>#<number> --json title,body,commits,files,url,headRefOid`
+6. Get file diffs: `gh pr diff <org>/<repo>#<number>`
+7. Review the PR following the Enhanced Review Format (see below)
+8. After review, provide Post-Review Action Menu (see below)
 
-**When user sends next message after /review completes:**
+## Enhanced Review Format
 
-You are still in the review-prs session. You MUST immediately:
+When reviewing a PR, ALWAYS:
 
-1. Check your todos - you have one in_progress: "After /review completes, return to interactive mode"
-2. Mark that todo as completed
-3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json` to calculate remaining PRs
-4. Determine the next PR number in sequence
-5. Display abbreviated PR list inline in your text response
-6. End your message with: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
-7. Create new todo: "Waiting for user to select a PR (or 'list')" (pending status)
-8. Wait for user response
+1. **Provide clickable GitHub links for all code references**
+   - Format: `[file.py:45-52](https://github.com/<org>/<repo>/blob/<SHA>/file.py#L45-L52)`
+   - Use the headRefOid (commit SHA) from PR data for stable links
+   - Every code concern must have a clickable link to the exact lines
 
-Note: Due to conversation turn-taking, user must send any message (even just "thanks") to trigger the next turn. When they do, immediately return to interactive mode as described above.
+2. **Show code inline with context**
+   ```python
+   # auth.py:45-52 → https://github.com/org/repo/blob/abc123/auth.py#L45-L52
+   try:
+       user = authenticate(token)
+   except Exception:
+       pass  # ⚠️ Silent error swallowing
+   ```
 
-**Response options:**
+3. **Structure review sections:**
+   - **Summary**: One-line PR description
+   - **Key Strengths**: What's done well (with links)
+   - **Areas of Concern**: Issues requiring attention (with links and inline code)
+   - **Questions**: Clarifications needed (with links)
+   - **Recommendation**: approve/request-changes/comment
 
-- "y" → Review next PR in sequence (update todos and launch /review)
-- "n" → Exit interactive session (clear all todos with empty array)
-- "list" → Redisplay full PR list (keep current todos)
-- number → Jump to specific PR by number (update todos and launch /review)
+## Post-Review Action Menu
 
-**Continue the loop** until user chooses to exit with "n"
-
-When user exits:
-- Clear the todo list: `TodoWrite` with empty todos array `[]`
-- Confirm session ended
-
-**Example post-review response:**
+After completing the review, IMMEDIATELY provide this action menu:
 
 ```
-## PR Review: #144 "Use prototype trekseq"
-
-[... your review content ...]
-
 ---
+📍 Quick Navigation - Jump to key areas:
 
-📋 PRs waiting for your review: 8 remaining | Est. time: ~1h 30min
+1. [Silent error handling](https://://github.com/org/repo/blob/SHA/auth.py#L45-L52) → auth.py:45-52
+2. [SQL injection risk](https://github.com/org/repo/blob/SHA/db.py#L103) → db.py:103
+3. [Missing rate limit](https://github.com/org/repo/blob/SHA/api.py#L78-L91) → api.py:78-91
 
-⚠️ ACTION REQUIRED (2):
+🎬 Actions:
+a - Approve via gh CLI
+c - Request changes via gh CLI
+m - Add comment via gh CLI
+[1-3] - Open specific concern in browser
+n - Next PR (skip posting review)
+list - Show full PR queue
 
- 1. **"Bump jinja2 from 3.1.4 to 3.1.6" • template-javascript-react • @dependabot**
-   • 📅 8 months old • ✅ CI passing • 👀 Review required • ✅ No conflicts
-   • 🟢 +2  🔴 -2  📄 2 files  ⏱️ ~5 min
-   • 🔗 https://github.com/recursionpharma/template-javascript-react/pull/63
-
- 2. **"Introduce Docker-less dev environment" • rp006-brnaseq-analysis-flow • @jackdhaynes**
-   • 💬 Replaces the existing Docker compose-based dev environment setup with a Docker-less one
-   • 📅 5 months old • ⏸️ Draft • 👀 Review required • ⚠️ Conflicts
-   • 🟢 +16  🔴 -225  📄 11 files  ⏱️ ~20 min
-   • 🔗 https://github.com/recursionpharma/rp006-brnaseq-analysis-flow/pull/2
-
-🎯 HIGH PRIORITY - Feature/Bug PRs (1):
-
- 4. **"Add cell neighborhood table" • cell-sight • @marianna-trapotsi-rxrx**
-   • 💬 Added patient-derived information; cell neighborhood table
-   • 📅 1 day old • ✅ CI passing • 👀 Review required • ✅ No conflicts
-   • 🟢 +76  🔴 -45  📄 6 files  ⏱️ ~10 min
-   • 🔗 https://github.com/recursionpharma/cell-sight/pull/39
-
-🤖 DEPENDABOT - Dependency Updates (5):
-[... abbreviated list ...]
-
----
-
-**Review complete.** 8 remaining. Next: #4 "Add cell neighborhood table"
-
-Continue? (y/n/list/number)
+What would you like to do?
 ```
 
-Note: The navigation prompt at the end allows the user to easily continue to the next PR, jump to a specific PR, or redisplay the full list.
+**Action Handlers:**
+
+- **a** → `gh pr review <org>/<repo>#<number> --approve --body "<review summary>"`
+- **c** → `gh pr review <org>/<repo>#<number> --request-changes --body "<review summary>"`
+- **m** → `gh pr review <org>/<repo>#<number> --comment --body "<review summary>"`
+- **[1-3]** → Provide instructions: "Command+click the link above, or copy: [URL]"
+- **n** → Mark todo completed, return to PR list with continue prompt
+- **list** → Redisplay full PR queue
+
+After posting review via gh CLI, automatically return to PR list navigation.
+
+## Post-Action Return to Queue
+
+After user selects any action from the Post-Review Action Menu:
+
+1. If action was **a/c/m** (posting review):
+   - Execute gh CLI command
+   - Show success/failure message
+   - Mark "Reviewing PR with enhanced navigation" todo as completed
+   - Automatically show next steps (don't wait for user input)
+
+2. Calculate remaining PRs from cache
+3. Display abbreviated PR list inline
+4. Show continue prompt: "Review posted. X remaining. Next: #Y. Continue? (y/n/list/number)"
+5. Create new todo: "Waiting for user to select a PR (or 'list')" (pending status)
+
+**Continue options:**
+- **y** → Review next PR in sequence
+- **n** → Exit interactive session (clear all todos with empty array `[]`)
+- **list** → Redisplay full PR list
+- **number** → Jump to specific PR by number
+
+**Example enhanced review with action menu:**
+
+```
+## PR Review: recursionpharma/auth-service#144 "Add JWT refresh token rotation"
+
+**Summary**: Implements refresh token rotation to improve security of JWT authentication flow.
+
+**Key Strengths**:
+- Well-structured token rotation logic in [`auth.py:67-89`](https://github.com/recursionpharma/auth-service/blob/abc123/auth.py#L67-L89)
+- Comprehensive test coverage in [`test_auth.py:120-156`](https://github.com/recursionpharma/auth-service/blob/abc123/test_auth.py#L120-L156)
+
+**Areas of Concern**:
+
+1. **Silent error swallowing** in [`auth.py:45-52`](https://github.com/recursionpharma/auth-service/blob/abc123/auth.py#L45-L52):
+   ```python
+   # auth.py:45-52
+   try:
+       user = authenticate(token)
+   except Exception:
+       pass  # ⚠️ This silently swallows all errors
+   ```
+
+2. **Potential SQL injection** in [`db.py:103`](https://github.com/recursionpharma/auth-service/blob/abc123/db.py#L103):
+   Using string interpolation instead of parameterized queries.
+
+**Recommendation**: Request changes - address error handling and SQL injection before merging.
+
+---
+📍 Quick Navigation - Jump to key areas:
+
+1. [Silent error swallowing](https://github.com/recursionpharma/auth-service/blob/abc123/auth.py#L45-L52) → auth.py:45-52
+2. [SQL injection risk](https://github.com/recursionpharma/auth-service/blob/abc123/db.py#L103) → db.py:103
+
+🎬 Actions:
+a - Approve via gh CLI
+c - Request changes via gh CLI
+m - Add comment via gh CLI
+1-2 - Open specific concern in browser (Command+click link above)
+n - Next PR (skip posting review)
+list - Show full PR queue
+
+What would you like to do?
+```
+
+User then responds with "c" (request changes), and you:
+1. Execute: `gh pr review recursionpharma/auth-service#144 --request-changes --body "<summary>"`
+2. Show success message
+3. Return to PR list with continue prompt
 
 ## Cache File Lifecycle
 
@@ -169,7 +228,12 @@ Note: The navigation prompt at the end allows the user to easily continue to the
 - Uses GraphQL API for private repo access (not `gh search prs`)
 - Groups PRs by type: Feature/Bug → Chores → Dependency Updates
 - Sorts PRs by age within each group (oldest first)
-- Works seamlessly with the built-in `/review <org>/<repo>#<number>` command
+- **Enhanced review mode** provides:
+  - Clickable GitHub links to specific lines of code
+  - Inline code snippets with context
+  - Post-review action menu (approve/comment/request-changes via gh CLI)
+  - Quick navigation to key areas of concern
+  - Seamless return to PR queue after posting review
 - Cache file is always fresh - run `/review-prs` again if PR list has changed
 - Formatting is handled by the skill for consistency
 
@@ -193,11 +257,17 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 
 **What the slash command does:**
 
-- Invokes the skill
-- Displays the skill's markdown output
-- Uses TodoWrite to track session state (ensures return to interactive mode after reviews)
-- Manages interactive session (y/n/list/number navigation)
-- Launches `/review` when user selects a PR
+- Invokes the skill to fetch and display PR list
+- Uses TodoWrite to track session state throughout workflow
+- Manages interactive session with y/n/list/number navigation
+- When user selects a PR:
+  - Fetches PR data via `gh pr view`
+  - Analyzes code changes via `gh pr diff`
+  - Generates enhanced review with clickable GitHub links to specific lines
+  - Shows inline code snippets with context
+  - Provides post-review action menu (approve/comment/request-changes)
+- Executes gh CLI commands to post reviews directly from terminal
+- Automatically returns to PR queue after posting review
 - Clears todos when session ends
 
 See `~/.claude/skills/fetch-prs-to-review/SKILL.md` for complete skill documentation.
