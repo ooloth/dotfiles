@@ -62,8 +62,8 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 2. Update todo: mark "Reviewing PR with enhanced navigation" as in_progress
 3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json`
 4. Parse the repo and PR number
-5. Fetch PR data: `gh pr view <org>/<repo>#<number> --json title,body,commits,files,url,headRefOid`
-6. Get file diffs: `gh pr diff <org>/<repo>#<number>`
+5. Fetch PR data: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid`
+6. Get file diffs: `gh pr diff <number> --repo <org>/<repo>`
 7. Review the PR following the Enhanced Review Format (see below)
 8. After review, provide Post-Review Action Menu (see below)
 
@@ -71,14 +71,14 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 
 When reviewing a PR, ALWAYS:
 
-1. **Provide clickable GitHub links for all code references**
-   - Format: `[file.py:45-52](https://github.com/<org>/<repo>/blob/<SHA>/file.py#L45-L52)`
-   - Use the headRefOid (commit SHA) from PR data for stable links
-   - Every code concern must have a clickable link to the exact lines
+1. **Reference files and line numbers clearly**
+   - Format: `auth.py:45-52` (file path with line numbers)
+   - Every code concern must specify the file and line numbers
+   - No clickable links needed - user will use "o" action to open PR in browser
 
 2. **Show code inline with context**
    ```python
-   # auth.py:45-52 → https://github.com/org/repo/blob/abc123/auth.py#L45-L52
+   # auth.py:45-52
    try:
        user = authenticate(token)
    except Exception:
@@ -87,9 +87,9 @@ When reviewing a PR, ALWAYS:
 
 3. **Structure review sections:**
    - **Summary**: One-line PR description
-   - **Key Strengths**: What's done well (with links)
-   - **Areas of Concern**: Issues requiring attention (with links and inline code)
-   - **Questions**: Clarifications needed (with links)
+   - **Key Strengths**: What's done well (with file:line references)
+   - **Areas of Concern**: Issues requiring attention (with file:line references and inline code)
+   - **Questions**: Clarifications needed (with file:line references)
    - **Recommendation**: approve/request-changes/comment
 
 ## Post-Review Action Menu
@@ -98,17 +98,16 @@ After completing the review, IMMEDIATELY provide this action menu:
 
 ```
 ---
-📍 Quick Navigation - Jump to key areas:
-
-1. [Silent error handling](https://://github.com/org/repo/blob/SHA/auth.py#L45-L52) → auth.py:45-52
-2. [SQL injection risk](https://github.com/org/repo/blob/SHA/db.py#L103) → db.py:103
-3. [Missing rate limit](https://github.com/org/repo/blob/SHA/api.py#L78-L91) → api.py:78-91
+📍 Key areas to review:
+- auth.py:45-52 - Silent error swallowing
+- db.py:103 - SQL injection risk
+- api.py:78-91 - Missing rate limit
 
 🎬 Actions:
+o - Open PR in browser
 a - Approve via gh CLI
 c - Request changes via gh CLI
 m - Add comment via gh CLI
-[1-3] - Open specific concern in browser
 n - Next PR (skip posting review)
 list - Show full PR queue
 
@@ -117,10 +116,10 @@ What would you like to do?
 
 **Action Handlers:**
 
-- **a** → `gh pr review <org>/<repo>#<number> --approve --body "<review summary>"`
-- **c** → `gh pr review <org>/<repo>#<number> --request-changes --body "<review summary>"`
-- **m** → `gh pr review <org>/<repo>#<number> --comment --body "<review summary>"`
-- **[1-3]** → Provide instructions: "Command+click the link above, or copy: [URL]"
+- **o** → Open PR in browser: `open https://github.com/<org>/<repo>/pull/<number>`
+- **a** → `gh pr review <number> --repo <org>/<repo> --approve --body "<review summary>"`
+- **c** → `gh pr review <number> --repo <org>/<repo> --request-changes --body "<review summary>"`
+- **m** → `gh pr review <number> --repo <org>/<repo> --comment --body "<review summary>"`
 - **n** → Mark todo completed, return to PR list with continue prompt
 - **list** → Redisplay full PR queue
 
@@ -155,12 +154,12 @@ After user selects any action from the Post-Review Action Menu:
 **Summary**: Implements refresh token rotation to improve security of JWT authentication flow.
 
 **Key Strengths**:
-- Well-structured token rotation logic in [`auth.py:67-89`](https://github.com/recursionpharma/auth-service/blob/abc123/auth.py#L67-L89)
-- Comprehensive test coverage in [`test_auth.py:120-156`](https://github.com/recursionpharma/auth-service/blob/abc123/test_auth.py#L120-L156)
+- Well-structured token rotation logic in `auth.py:67-89`
+- Comprehensive test coverage in `test_auth.py:120-156`
 
 **Areas of Concern**:
 
-1. **Silent error swallowing** in [`auth.py:45-52`](https://github.com/recursionpharma/auth-service/blob/abc123/auth.py#L45-L52):
+1. **Silent error swallowing** in `auth.py:45-52`:
    ```python
    # auth.py:45-52
    try:
@@ -169,32 +168,37 @@ After user selects any action from the Post-Review Action Menu:
        pass  # ⚠️ This silently swallows all errors
    ```
 
-2. **Potential SQL injection** in [`db.py:103`](https://github.com/recursionpharma/auth-service/blob/abc123/db.py#L103):
-   Using string interpolation instead of parameterized queries.
+2. **Potential SQL injection** in `db.py:103`:
+   ```python
+   # db.py:103
+   query = f"SELECT * FROM users WHERE id = {user_id}"  # ⚠️ SQL injection risk
+   ```
 
 **Recommendation**: Request changes - address error handling and SQL injection before merging.
 
 ---
-📍 Quick Navigation - Jump to key areas:
-
-1. [Silent error swallowing](https://github.com/recursionpharma/auth-service/blob/abc123/auth.py#L45-L52) → auth.py:45-52
-2. [SQL injection risk](https://github.com/recursionpharma/auth-service/blob/abc123/db.py#L103) → db.py:103
+📍 Key areas to review:
+- auth.py:45-52 - Silent error swallowing
+- db.py:103 - SQL injection risk
 
 🎬 Actions:
+o - Open PR in browser
 a - Approve via gh CLI
 c - Request changes via gh CLI
 m - Add comment via gh CLI
-1-2 - Open specific concern in browser (Command+click link above)
 n - Next PR (skip posting review)
 list - Show full PR queue
 
 What would you like to do?
 ```
 
-User then responds with "c" (request changes), and you:
-1. Execute: `gh pr review recursionpharma/auth-service#144 --request-changes --body "<summary>"`
-2. Show success message
-3. Return to PR list with continue prompt
+**User workflow:**
+1. Read review in terminal
+2. Type "o" to open PR in browser (description page)
+3. Navigate to Files changed tab, Cmd+F for "auth.py" and review lines 45-52
+4. Cmd+F for "db.py" and review line 103
+5. Return to terminal, type "c" to request changes via gh CLI
+6. Automatically return to PR list with continue prompt
 
 ## Cache File Lifecycle
 
