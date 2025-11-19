@@ -53,7 +53,7 @@ After Phase 1 completes, enter interactive mode.
 
 - Read the mapping from `~/.claude/.cache/review-queue.json`
 - Parse the repo and PR number
-- Launch `/pr-review <number> --repo <org>/<repo>`
+- Launch `/review <org>/<repo>#<number>`
 
 **After each PR review completes:**
 
@@ -147,7 +147,7 @@ Note: The navigation prompt at the end allows the user to easily continue to the
 - Uses GraphQL API for private repo access (not `gh search prs`)
 - Groups PRs by type: Feature/Bug → Chores → Dependency Updates
 - Sorts PRs by age within each group (oldest first)
-- Works seamlessly with the existing `/pr-review <number> --repo <org>/<repo>` command
+- Works seamlessly with the built-in `/review <org>/<repo>#<number>` command
 - Cache file is always fresh - run `/review-queue` again if PR list has changed
 - Formatting is handled by the skill for consistency
 
@@ -174,6 +174,6 @@ The `review-queue` skill (located at `~/.claude/skills/review-queue/`) handles a
 - Invokes the skill
 - Displays the skill's markdown output
 - Manages interactive session (y/n/list/number navigation)
-- Launches `/pr-review` when user selects a PR
+- Launches `/review` when user selects a PR
 
 See `~/.claude/skills/review-queue/SKILL.md` for complete skill documentation.
