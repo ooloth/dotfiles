@@ -22,3 +22,23 @@
 
 - Implement changes one small theme at-a-time
 - Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
+
+## CI System Information
+
+### Recursion Pharma Organization
+
+- **CI System**: Codefresh
+- **CLI**: `codefresh` (installed via Homebrew)
+
+#### Inspecting CI Failures
+
+When you see a CI failure in a recursionpharma PR, **use the `inspect-codefresh-failure` skill** to analyze it.
+
+The skill will:
+- Extract build IDs from PR status checks
+- Fetch build logs from Codefresh
+- Identify specific errors with file:line references
+- Provide root cause analysis
+- Return a formatted report ready to include in reviews
+
+**Always investigate CI failures** - include specific error details in your review (not just "CI is failing"). Distinguish between errors introduced by the PR vs pre-existing issues.
