@@ -103,7 +103,7 @@ codefresh get builds <build-id> -o json
 codefresh logs <build-id>
 
 # Search for errors (most efficient - use multiple patterns)
-codefresh logs <build-id> | grep -B 10 -A 20 -i "error\|fail\|found.*error"
+codefresh logs <build-id> | grep -E -B 10 -A 20 -i "error\|fail\|found.*error"
 
 # Common error patterns to look for:
 # - "Found N errors" (linting/type checking)
