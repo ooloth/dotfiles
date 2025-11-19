@@ -266,7 +266,7 @@ EOF
 ```
 
 Notes:
-- Use `--input -` with heredoc for complex JSON payloads (the `-f` flag treats arrays as strings)
+- Use `--input -` with heredoc for complex JSON payloads (the `-f` flag is for individual fields and doesn't support complex JSON structures like arrays)
 - Use the line number as the ending line for each range
 - The "path" should be relative to repo root
 - "body" field is the overall review summary from the initial review
