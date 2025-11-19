@@ -26,10 +26,17 @@ The skill outputs fully formatted markdown ready to display. It handles:
 2. Display the skill's output in your text response (copy it directly without modification)
 3. The skill output is your complete message - no additional text before or after
 4. Do not summarize, analyze, or add commentary - just show the formatted list
+5. Create a todo list to track the interactive session:
+   - "Waiting for user to select a PR (or 'list')"
+   - "After /review completes, return to interactive mode"
 
 ## Phase 2: Interactive Session
 
 After Phase 1 completes, enter interactive mode.
+
+**Session State Management:**
+
+Use TodoWrite to maintain session state throughout the workflow. The todo list ensures you remember to return to interactive mode after each PR review completes.
 
 **What the user should see:**
 
@@ -51,25 +58,40 @@ After Phase 1 completes, enter interactive mode.
 
 **When user types a number:**
 
-- Read the mapping from `~/.claude/.cache/review-queue.json`
-- Parse the repo and PR number
-- Launch `/review <org>/<repo>#<number>`
+1. Update todo: mark "Waiting for user to select a PR" as completed
+2. Update todo: mark "After /review completes, return to interactive mode" as in_progress
+3. Read the mapping from `~/.claude/.cache/review-queue.json`
+4. Parse the repo and PR number
+5. Launch `/review <org>/<repo>#<number>`
+6. After /review completes, wait for user to send any message to continue
 
-**After each PR review completes:**
+**When user sends next message after /review completes:**
 
-1. Update the cache with review completion timestamp
-2. Calculate remaining PRs and next PR in sequence
-3. Display the abbreviated PR list inline (not in collapsed tool output)
-4. End your message with the navigation prompt: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
+You are still in the review-queue session. You MUST immediately:
+
+1. Check your todos - you have one in_progress: "After /review completes, return to interactive mode"
+2. Mark that todo as completed
+3. Read the mapping from `~/.claude/.cache/review-queue.json` to calculate remaining PRs
+4. Determine the next PR number in sequence
+5. Display abbreviated PR list inline in your text response
+6. End your message with: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
+7. Create new todo: "Waiting for user to select a PR (or 'list')" (pending status)
+8. Wait for user response
+
+Note: Due to conversation turn-taking, user must send any message (even just "thanks") to trigger the next turn. When they do, immediately return to interactive mode as described above.
 
 **Response options:**
 
-- "y" → Review next PR in sequence
-- "n" → Exit interactive session
-- "list" → Redisplay full PR list
-- number → Jump to specific PR by number
+- "y" → Review next PR in sequence (update todos and launch /review)
+- "n" → Exit interactive session (clear all todos with empty array)
+- "list" → Redisplay full PR list (keep current todos)
+- number → Jump to specific PR by number (update todos and launch /review)
 
 **Continue the loop** until user chooses to exit with "n"
+
+When user exits:
+- Clear the todo list: `TodoWrite` with empty todos array `[]`
+- Confirm session ended
 
 **Example post-review response:**
 
@@ -173,7 +195,9 @@ The `review-queue` skill (located at `~/.claude/skills/review-queue/`) handles a
 
 - Invokes the skill
 - Displays the skill's markdown output
+- Uses TodoWrite to track session state (ensures return to interactive mode after reviews)
 - Manages interactive session (y/n/list/number navigation)
 - Launches `/review` when user selects a PR
+- Clears todos when session ends
 
 See `~/.claude/skills/review-queue/SKILL.md` for complete skill documentation.
