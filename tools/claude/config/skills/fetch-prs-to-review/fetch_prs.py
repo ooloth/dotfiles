@@ -408,7 +408,7 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
             lines.append(f"   • {' • '.join(review_activity_parts)}")
 
         # Metadata line: age, time estimate, diff stats, CI status, conflict status
-        diff_stats = f"🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']}"
+        diff_stats = f"🟢 +{pr['additions']} • 🔴 -{pr['deletions']} • 📄 {pr['files']}"
         metadata_parts = [pr['age_str'], f"⏱️ {pr['time_estimate']}", diff_stats, pr['ci_status'], pr['conflict_status']]
         lines.append(f"   • {' • '.join(metadata_parts)}")
 
