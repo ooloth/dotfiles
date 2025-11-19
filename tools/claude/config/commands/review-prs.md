@@ -27,8 +27,8 @@ The skill outputs fully formatted markdown ready to display. It handles:
 3. The skill output is your complete message - no additional text before or after
 4. Do not summarize, analyze, or add commentary - just show the formatted list
 5. Create a todo list to track the interactive session:
-   - "Waiting for user to select a PR (or 'list')"
-   - "After /review completes, return to interactive mode"
+   - "Waiting for user to select a PR (or 'l')" (pending)
+   - "Reviewing PR with enhanced navigation" (pending)
 
 ## Phase 2: Interactive Session
 
@@ -54,88 +54,332 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 **User input options:**
 
 - Type a number (e.g., "7") to review that specific PR
-- Type "list" to redisplay the PR queue
+- Type "l" to redisplay the PR queue
 
 **When user types a number:**
 
 1. Update todo: mark "Waiting for user to select a PR" as completed
-2. Update todo: mark "After /review completes, return to interactive mode" as in_progress
+2. Update todo: mark "Reviewing PR with enhanced navigation" as in_progress
 3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json`
 4. Parse the repo and PR number
-5. Launch `/review <org>/<repo>#<number>`
-6. After /review completes, wait for user to send any message to continue
+5. Fetch PR data with context: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments`
+6. Get file diffs: `gh pr diff <number> --repo <org>/<repo>`
+7. Process existing review context (see Existing Review Context section below)
+8. Review the PR following the Enhanced Review Format (see below)
+9. After review, provide Post-Review Action Menu (see below)
 
-**When user sends next message after /review completes:**
+## Existing Review Context
 
-You are still in the review-prs session. You MUST immediately:
+Before analyzing the PR yourself, process existing review context to avoid duplicating feedback:
 
-1. Check your todos - you have one in_progress: "After /review completes, return to interactive mode"
-2. Mark that todo as completed
-3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json` to calculate remaining PRs
-4. Determine the next PR number in sequence
-5. Display abbreviated PR list inline in your text response
-6. End your message with: "Review complete. X remaining. Next: #Y. Continue? (y/n/list/number)"
-7. Create new todo: "Waiting for user to select a PR (or 'list')" (pending status)
-8. Wait for user response
+**Parse reviews and comments from the PR data:**
+- Extract all review comments (inline and general)
+- Extract all conversation comments
+- Group by file and line number
+- Identify discussion themes
 
-Note: Due to conversation turn-taking, user must send any message (even just "thanks") to trigger the next turn. When they do, immediately return to interactive mode as described above.
+**Display context section at the start of your review:**
+```
+📝 Existing Review Activity:
 
-**Response options:**
+@alice reviewed 2 days ago (CHANGES_REQUESTED):
+- auth.py:45-52: "Should log errors instead of swallowing"
+- db.py:103: "Use parameterized queries"
 
-- "y" → Review next PR in sequence (update todos and launch /review)
-- "n" → Exit interactive session (clear all todos with empty array)
-- "list" → Redisplay full PR list (keep current todos)
-- number → Jump to specific PR by number (update todos and launch /review)
+@bob commented 1 day ago:
+- General: "Looks good overall, just those two issues to address"
 
-**Continue the loop** until user chooses to exit with "n"
+💬 Active discussions (3):
+- auth.py:45-52: Error handling approach (2 comments)
+- db.py:103: SQL injection fix (1 comment)
+- test_auth.py:89: Test coverage question (3 comments, ongoing)
+```
 
-When user exits:
-- Clear the todo list: `TodoWrite` with empty todos array `[]`
-- Confirm session ended
+**In your review:**
+- Note which concerns already have feedback (skip or add +1)
+- Identify new issues not yet mentioned
+- Join ongoing discussions if you have additional insight
+- Avoid repeating what others already said clearly
 
-**Example post-review response:**
+## Enhanced Review Format
+
+When reviewing a PR, ALWAYS:
+
+1. **Reference files and line numbers clearly**
+   - Format: `auth.py:45-52` (file path with line numbers)
+   - Every code concern must specify the file and line numbers
+   - No clickable links needed - user will use "o" action to open PR in browser
+
+2. **Show code inline with context**
+   ```python
+   # auth.py:45-52
+   try:
+       user = authenticate(token)
+   except Exception:
+       pass  # ⚠️ Silent error swallowing
+   ```
+
+3. **Structure review sections:**
+   - **Summary**: One-line PR description
+   - **Key Strengths**: What's done well (with file:line references)
+   - **Areas of Concern**: Issues requiring attention (with file:line references and inline code)
+   - **Questions**: Clarifications needed (with file:line references)
+   - **Recommendation**: approve/request-changes/comment
+
+## Post-Review Action Menu
+
+After completing the review, IMMEDIATELY provide this action menu:
 
 ```
-## PR Review: #144 "Use prototype trekseq"
+---
+📍 Key areas to review:
+- auth.py:45-52 - Silent error swallowing
+- db.py:103 - SQL injection risk
+- api.py:78-91 - Missing rate limit
 
-[... your review content ...]
+🎬 Actions:
+o - Open PR in browser
+i - Add inline comments (interactive)
+a - Approve via gh CLI (general comment only)
+c - Request changes via gh CLI (general comment only)
+n - Next PR (skip posting review)
+l - Show full PR queue
+
+What would you like to do?
+```
+
+**Action Handlers:**
+
+- **o** → Open PR in browser: `open https://github.com/<org>/<repo>/pull/<number>`
+- **i** → Interactive inline comment builder (see below)
+- **a** → `gh pr review <number> --repo <org>/<repo> --approve --body "<review summary>"`
+- **c** → `gh pr review <number> --repo <org>/<repo> --request-changes --body "<review summary>"`
+- **n** → Mark todo completed, return to PR list with continue prompt
+- **l** → Redisplay full PR queue
+
+After posting review via gh CLI, automatically return to PR list navigation.
+
+## Interactive Inline Comment Builder
+
+When user selects "i", start an interactive flow to build inline comments:
+
+**Step 1: Prompt for location**
+```
+Add inline comment to which area?
+1. auth.py:45-52 - Silent error swallowing
+2. db.py:103 - SQL injection risk
+3. api.py:78-91 - Missing rate limit
+Or type file:line (e.g., "utils.py:23")
+>
+```
+
+**Step 2: User selects location (e.g., "1")**
+Parse their input:
+- If number: Use the corresponding file:line from key areas list
+- If file:line format: Use that directly
+- Extract file path and line number
+
+**Step 3: AI-Assisted Comment Drafting**
+
+Show the code snippet again with context, then suggest comment templates:
+
+```
+Code at auth.py:45-52:
+   try:
+       user = authenticate(token)
+   except Exception:
+       pass
+
+💡 Suggested comments (or write your own):
+1. "I'm curious about the exception handling here. What happens when authentication fails? Should we be logging this or letting it propagate?"
+2. "How do we want to handle the case where authenticate() raises an exception? I'm wondering if silent failure here could make debugging harder later."
+3. "What's the intended behavior when authentication fails? Should this return None, raise a specific error, or log for monitoring?"
+
+Select 1-3 to edit, or press Enter to write custom comment:
+>
+```
+
+**How to generate suggestions:**
+Based on the issue type, offer socratic, mentor-like templates that lead with curiosity:
+- **Silent error handling**: "I'm curious about...", "What happens when...", "How should we handle..."
+- **SQL injection**: "I'm wondering if...", "Have we considered...", "What would happen if..."
+- **Missing tests**: "How can we verify...", "What edge cases should we consider...", "I'm curious how this behaves when..."
+- **Security concern**: "I'm wondering about security here...", "What happens if a user...", "Have we thought about..."
+- **Performance**: "I'm curious about the performance implications...", "How does this scale when...", "Have we measured..."
+- **Code clarity**: "I'm finding this a bit hard to follow...", "Could we clarify...", "What's the reasoning behind..."
+
+Use full sentences, ask genuine questions, and frame as collaborative exploration rather than directives.
+
+**Step 4: User responds**
+
+If they select a number (1-3):
+- Show that suggestion pre-filled for editing
+- They can modify or use as-is
+
+If they press Enter or type text:
+- Use their custom comment
+
+Store the final comment with file, line number, and body.
+
+**Step 5: Ask to continue**
+```
+Inline comment added. Add another? (y/n)
+>
+```
+
+If "y", repeat from Step 1.
+If "n", proceed to Step 6.
+
+**Step 6: Show summary and ask for review type**
+```
+Review with 2 inline comments:
+1. auth.py:45-52: "This should log the error instead of silently swallowing it"
+2. db.py:103: "Use parameterized queries to prevent SQL injection"
+
+Submit as: (a)pprove, (c)hange requests, or co(m)ment?
+>
+```
+
+**Step 7: Submit via GitHub API**
+Build the API request using `--input -` with a heredoc (the `-f` flag doesn't support JSON arrays):
+```bash
+gh api repos/<org>/<repo>/pulls/<number>/reviews \
+  --method POST \
+  --input - <<'EOF'
+{
+  "body": "<review summary from earlier>",
+  "event": "<APPROVE|REQUEST_CHANGES|COMMENT>",
+  "comments": [
+    {
+      "path": "auth.py",
+      "line": 52,
+      "body": "..."
+    },
+    {
+      "path": "db.py",
+      "line": 103,
+      "body": "..."
+    }
+  ]
+}
+EOF
+```
+
+Notes:
+- Use `--input -` with heredoc for complex JSON payloads (the `-f` flag is for individual fields and doesn't support complex JSON structures like arrays)
+- Use the line number as the ending line for each range
+- The "path" should be relative to repo root
+- "body" field is the overall review summary from the initial review
+- "event" maps to: a→APPROVE, c→REQUEST_CHANGES, m→COMMENT
+
+After successful submission, return to PR list navigation.
+
+## Post-Action Return to Queue
+
+After user selects any action from the Post-Review Action Menu:
+
+1. If action was **a/c** (posting review without inline comments):
+   - Execute gh CLI command
+   - Show success/failure message
+   - Mark "Reviewing PR with enhanced navigation" todo as completed
+   - Automatically show next steps (don't wait for user input)
+
+2. If action was **i** (inline comments):
+   - Follow Interactive Inline Comment Builder flow
+   - After submitting via gh api, show success/failure message
+   - Mark "Reviewing PR with enhanced navigation" todo as completed
+   - Automatically show next steps (don't wait for user input)
+
+3. Calculate remaining PRs from cache
+4. Display abbreviated PR list inline
+5. Show continue prompt: "Review posted. X remaining. Next: #Y. Continue? (y/n/l/number)"
+6. Create new todo: "Waiting for user to select a PR (or 'l')" (pending status)
+
+**Continue options:**
+- **y** → Review next PR in sequence
+- **n** → Exit interactive session (clear all todos with empty array `[]`)
+- **l** → Redisplay full PR list
+- **number** → Jump to specific PR by number
+
+**Example enhanced review with action menu:**
+
+```
+## PR Review: recursionpharma/auth-service#144 "Add JWT refresh token rotation"
+
+📝 Existing Review Activity:
+
+@alice reviewed 2 days ago (CHANGES_REQUESTED):
+- auth.py:45-52: "Should log errors instead of swallowing"
+- db.py:103: "Use parameterized queries"
+
+💬 Active discussions (2):
+- auth.py:45-52: Error handling approach (2 comments)
+- db.py:103: SQL injection fix (1 comment)
 
 ---
 
-📋 PRs waiting for your review: 8 remaining | Est. time: ~1h 30min
+**Summary**: Implements refresh token rotation to improve security of JWT authentication flow.
 
-⚠️ ACTION REQUIRED (2):
+**Key Strengths**:
+- Well-structured token rotation logic in `auth.py:67-89`
+- Comprehensive test coverage in `test_auth.py:120-156`
 
- 1. **"Bump jinja2 from 3.1.4 to 3.1.6" • template-javascript-react • @dependabot**
-   • 📅 8 months old • ✅ CI passing • 👀 Review required • ✅ No conflicts
-   • 🟢 +2  🔴 -2  📄 2 files  ⏱️ ~5 min
-   • 🔗 https://github.com/recursionpharma/template-javascript-react/pull/63
+**New Issues** (not mentioned in existing reviews):
 
- 2. **"Introduce Docker-less dev environment" • rp006-brnaseq-analysis-flow • @jackdhaynes**
-   • 💬 Replaces the existing Docker compose-based dev environment setup with a Docker-less one
-   • 📅 5 months old • ⏸️ Draft • 👀 Review required • ⚠️ Conflicts
-   • 🟢 +16  🔴 -225  📄 11 files  ⏱️ ~20 min
-   • 🔗 https://github.com/recursionpharma/rp006-brnaseq-analysis-flow/pull/2
+1. **Missing token expiry validation** in `auth.py:78`:
+   ```python
+   # auth.py:78
+   new_token = generate_refresh_token(user)
+   # ⚠️ No check if old token has expired
+   ```
 
-🎯 HIGH PRIORITY - Feature/Bug PRs (1):
+**Previously Identified** (joining discussion):
+- auth.py:45-52: Error handling (alice mentioned logging)
+- db.py:103: SQL injection (alice mentioned parameterized queries)
 
- 4. **"Add cell neighborhood table" • cell-sight • @marianna-trapotsi-rxrx**
-   • 💬 Added patient-derived information; cell neighborhood table
-   • 📅 1 day old • ✅ CI passing • 👀 Review required • ✅ No conflicts
-   • 🟢 +76  🔴 -45  📄 6 files  ⏱️ ~10 min
-   • 🔗 https://github.com/recursionpharma/cell-sight/pull/39
-
-🤖 DEPENDABOT - Dependency Updates (5):
-[... abbreviated list ...]
+**Recommendation**: Request changes - address new expiry validation issue. Existing issues already have good feedback from alice.
 
 ---
+📍 Key areas to review:
+- auth.py:78 - Missing token expiry validation (NEW)
+- auth.py:45-52 - Silent error swallowing (alice +1)
+- db.py:103 - SQL injection risk (alice +1)
 
-**Review complete.** 8 remaining. Next: #4 "Add cell neighborhood table"
+🎬 Actions:
+o - Open PR in browser
+i - Add inline comments (interactive)
+a - Approve via gh CLI (general comment only)
+c - Request changes via gh CLI (general comment only)
+n - Next PR (skip posting review)
+l - Show full PR queue
 
-Continue? (y/n/list/number)
+What would you like to do?
 ```
 
-Note: The navigation prompt at the end allows the user to easily continue to the next PR, jump to a specific PR, or redisplay the full list.
+**User workflow examples:**
+
+**Option A: Review in browser, then post general review via CLI:**
+1. Read review in terminal
+2. Type "o" to open PR in browser
+3. Navigate to Files changed tab, review code
+4. Return to terminal, type "c" to request changes via gh CLI
+5. Automatically return to PR list with continue prompt
+
+**Option B: Add inline comments with AI assistance:**
+1. Read review in terminal (see existing feedback from alice)
+2. Type "i" to add inline comments
+3. Select "1" for auth.py:78 (the NEW issue you found)
+4. See AI-suggested comments:
+   - Option 1: "I'm curious about the token expiry validation here. What happens if a user requests a refresh with an already-expired token?"
+   - Option 2: "How are we handling the case where old_token has expired? I'm wondering if this could be a security concern."
+   - Option 3: "Should we validate that old_token hasn't expired before issuing a new one? What's the intended behavior here?"
+5. Select "1" to use first suggestion (or edit it, or write custom)
+6. Select "y" to add another
+7. Select "2" for auth.py:45-52 (alice already commented)
+8. Type custom: "Agree with alice's point about logging. I'm also curious if we should handle specific exception types differently here."
+9. Select "n" when done
+10. Type "c" to submit as request changes with 2 inline comments
+11. Automatically return to PR list with continue prompt
 
 ## Cache File Lifecycle
 
@@ -169,7 +413,15 @@ Note: The navigation prompt at the end allows the user to easily continue to the
 - Uses GraphQL API for private repo access (not `gh search prs`)
 - Groups PRs by type: Feature/Bug → Chores → Dependency Updates
 - Sorts PRs by age within each group (oldest first)
-- Works seamlessly with the built-in `/review <org>/<repo>#<number>` command
+- **Enhanced review mode** provides:
+  - **Existing review context**: See what others have already commented on to avoid duplication
+  - Inline code snippets with context and file:line references
+  - Post-review action menu with multiple options
+  - **AI-assisted comment drafting**: Get suggested comments based on issue type, edit or use as-is
+  - Interactive inline comment builder for attaching comments to specific lines
+  - Quick browser navigation to PR (via "o" action)
+  - General review posting via gh CLI (via "a"/"c" actions)
+  - Seamless return to PR queue after posting review
 - Cache file is always fresh - run `/review-prs` again if PR list has changed
 - Formatting is handled by the skill for consistency
 
@@ -193,11 +445,23 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 
 **What the slash command does:**
 
-- Invokes the skill
-- Displays the skill's markdown output
-- Uses TodoWrite to track session state (ensures return to interactive mode after reviews)
-- Manages interactive session (y/n/list/number navigation)
-- Launches `/review` when user selects a PR
+- Invokes the skill to fetch and display PR list
+- Uses TodoWrite to track session state throughout workflow
+- Manages interactive session with y/n/l/number navigation
+- When user selects a PR:
+  - Fetches PR data with reviews and comments via `gh pr view --json reviews,comments,...`
+  - Analyzes code changes via `gh pr diff`
+  - **Displays existing review context** (who reviewed, what they said, active discussions)
+  - Generates enhanced review avoiding duplication of existing feedback
+  - Shows inline code snippets with file:line references
+  - Provides post-review action menu (o/i/a/c/n/l)
+- Post-review actions:
+  - **o**: Opens PR in browser
+  - **i**: Interactive inline comment builder with **AI-assisted suggestions** (attaches comments to specific lines via gh api)
+  - **a/c**: Posts general review via gh CLI (approve/request changes)
+  - **n**: Skip to next PR
+  - **l**: Redisplay full queue
+- Automatically returns to PR queue after posting review
 - Clears todos when session ends
 
 See `~/.claude/skills/fetch-prs-to-review/SKILL.md` for complete skill documentation.
