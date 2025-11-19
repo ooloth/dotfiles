@@ -47,7 +47,6 @@ def fetch_prs_from_github() -> Dict[str, Any]:
           changedFiles
           mergeable
           reviewDecision
-          bodyText
           comments(last: 20) {{
             totalCount
             nodes {{
@@ -276,24 +275,6 @@ def get_conflict_status(pr: Dict[str, Any]) -> str:
         return "❓ Unknown"
 
 
-def extract_summary(body_text: Optional[str]) -> Optional[str]:
-    """Extract first meaningful line from PR description."""
-    if not body_text:
-        return None
-
-    lines = body_text.strip().split('\n')
-    for line in lines:
-        line = line.strip()
-        # Skip empty lines, headers, and common sections
-        if line and not line.startswith('#') and not line.startswith('What?') and not line.startswith('Why?') and not line.startswith('How?'):
-            # Truncate if too long
-            if len(line) > 100:
-                return line[:97] + "..."
-            return line
-
-    return None
-
-
 def categorize_pr(pr: Dict[str, Any]) -> str:
     """Categorize PR into: feature/bug, dependency_updates, or chore."""
     author = pr.get("author", {}).get("login", "")
@@ -349,9 +330,6 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         review_status, my_engagement = get_review_status(pr_node)
         conflict_status = get_conflict_status(pr_node)
 
-        # Extract summary
-        summary = extract_summary(pr_node.get("bodyText"))
-
         # Categorize
         category = categorize_pr(pr_node)
 
@@ -388,7 +366,6 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
             "ci_status": ci_status,
             "review_status": review_status,
             "conflict_status": conflict_status,
-            "summary": summary,
             "my_engagement": my_engagement,
             "is_new": is_new,
             "category": category,
@@ -448,10 +425,6 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
 
         # Title line with diff stats (non-breaking space at start to prevent list formatting)
         lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**\"{pr['title']}\" • @{pr['author']}** • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
-
-        # Summary line (omit for dependency updates)
-        if pr["category"] != "dependency_updates" and pr["summary"]:
-            lines.append(f"   • 💬 {pr['summary']}")
 
         # Metadata line
         lines.append(f"   • {pr['age_str']} • {pr['ci_status']} • {pr['review_status']} • {pr['conflict_status']}")
