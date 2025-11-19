@@ -39,19 +39,20 @@ window-padding-balance = true
 ############
 
 # See: https://ghostty.org/docs/config/reference#keybind
+# Possible trigger key syntax: https://github.com/ghostty-org/ghostty/blob/d6e76858164d52cff460fedc61ddf2e560912d71/src/input/key.zig#L246
 
 # Ghostty
-keybind="cmd+shift+\=new_split:right"
-keybind="cmd+shift+plus=increase_font_size:1"
-keybind="cmd+shift+minus=decrease_font_size:1"
-keybind="cmd+shift+n=new_window"
-keybind="cmd+shift+r=reload_config"
-keybind="cmd+shift+h=goto_split:left"
-keybind="cmd+shift+j=goto_split:down"
-keybind="cmd+shift+k=goto_split:up"
-keybind="cmd+shift+l=goto_split:right"
-keybind="cmd+shift+m=toggle_split_zoom"
-keybind="cmd+shift+;=goto_split:next"
+keybind = cmd+shift+backslash=new_split:right
+keybind = cmd+shift+plus=increase_font_size:1
+keybind = cmd+shift+minus=decrease_font_size:1
+keybind = cmd+shift+n=new_window
+keybind = cmd+shift+r=reload_config
+keybind = cmd+shift+h=goto_split:left
+keybind = cmd+shift+j=goto_split:down
+keybind = cmd+shift+k=goto_split:up
+keybind = cmd+shift+l=goto_split:right
+keybind = cmd+shift+m=toggle_split_zoom
+keybind = cmd+shift+semicolon=goto_split:next
 
 # TODO: navigate previous commands and their outputs
 # TODO: select words, lines, urls, etc?
@@ -61,44 +62,45 @@ keybind="cmd+shift+;=goto_split:next"
 # TMUX #
 ########
 
-# NOTE: "\x01" = "ctrl+a" (tmux prefix)
-# NOTE: "\x1b" = "ctrl"
-# NOTE: "\x1b[A" = "up"
-# NOTE: "\x1b[B" = "down"
-# NOTE: "\x1b[D" = "left"
-# NOTE: "\x1b[C" = "right"
+# NOTE: Reused prefixes:
+# \x01 = ctrl+a (tmux prefix)
+# \x1b = ctrl
+# \x1b[A = up
+# \x1b[B = down
+# \x1b[D = left
+# \x1b[C = right
 # NOTE: outside of tmux, use `kitten show_key` + tmux shortcut to get escape codes for tmux shortcut I want to trigger
 
 # Sessions (detach, other, pick)
-keybind="cmd+d=text:\x01d"
-keybind="cmd+o=text:\x01L"
-keybind="cmd+s=text:\x01T"
+keybind = cmd+d=text:\x01d
+keybind = cmd+o=text:\x01L
+keybind = cmd+s=text:\x01T
 
 # Windows (navigate, create, rename)
-keybind="cmd+]=text:\x01n"
-keybind="cmd+[=text:\x01p"
-keybind="cmd+1=text:\x011"
-keybind="cmd+2=text:\x012"
-keybind="cmd+3=text:\x013"
-keybind="cmd+4=text:\x014"
-keybind="cmd+5=text:\x015"
-keybind="cmd+6=text:\x016"
-keybind="cmd+7=text:\x017"
-keybind="cmd+8=text:\x018"
-keybind="cmd+9=text:\x019"
-keybind="cmd+n=text:\x01c"
-keybind="cmd+r=text:\x01r"
-keybind="cmd+w=text:\x01w"
+keybind = cmd+right_bracket=text:\x01n
+keybind = cmd+left_bracket=text:\x01p
+keybind = cmd+physical:one=text:\x011 # re "physical", see: https://github.com/ghostty-org/ghostty/issues/817
+keybind = cmd+physical:two=text:\x012
+keybind = cmd+physical:three=text:\x013
+keybind = cmd+physical:four=text:\x014
+keybind = cmd+physical:five=text:\x015
+keybind = cmd+physical:six=text:\x016
+keybind = cmd+physical:seven=text:\x017
+keybind = cmd+physical:eight=text:\x018
+keybind = cmd+physical:nine=text:\x019
+keybind = cmd+n=text:\x01c
+keybind = cmd+r=text:\x01r
+keybind = cmd+w=text:\x01w
 
 # TODO: resize w cmd+shift instead of navigating?
 # Panes (split, navigate, maximize, close)
-keybind="cmd+\=text:\x01\\"
-keybind="cmd+-=text:\x01-"
-# keybind="cmd+equal=text:\x01=" # FIXME: ghostty config error.InvalidFormat (not sure why)
-keybind="cmd+;=text:\x01;"
-keybind="cmd+h=text:\x01\x1b[D"
-keybind="cmd+j=text:\x01\x1b[B"
-keybind="cmd+k=text:\x01\x1b[A"
-keybind="cmd+l=text:\x01\x1b[C"
-keybind="cmd+m=text:\x01z"
-keybind="cmd+x=text:\x01x"
+keybind = cmd+backslash=text:\x01\\
+keybind = cmd+period=text:\x01-
+# keybind = cmd+equal=text:\x01=
+keybind = cmd+semicolon=text:\x01;
+keybind = cmd+h=text:\x01\x1b[D
+keybind = cmd+j=text:\x01\x1b[B
+keybind = cmd+k=text:\x01\x1b[A
+keybind = cmd+l=text:\x01\x1b[C
+keybind = cmd+m=text:\x01z
+keybind = cmd+x=text:\x01x
