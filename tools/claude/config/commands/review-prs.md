@@ -129,73 +129,11 @@ When reviewing a PR, ALWAYS:
 
 ## CI Failure Investigation (recursionpharma repos only)
 
-When reviewing a recursionpharma PR with failing CI, **ALWAYS** investigate the failure using Codefresh CLI:
+When reviewing a recursionpharma PR with failing CI, **ALWAYS** investigate the failure.
 
-### Detection
+**Use the `inspect-codefresh-failure` skill** - it will extract build IDs from status checks, fetch logs, identify errors, and provide a formatted analysis report.
 
-Check the `statusCheckRollup` field in PR JSON data for failed checks:
-- Look for `"state": "FAILURE"` or `"conclusion": "FAILURE"`
-- Identify Codefresh builds by `targetUrl` containing `g.codefresh.io/build/`
-
-### Investigation Steps
-
-1. **Extract build ID** from the status check URL:
-   ```python
-   # From: https://g.codefresh.io/build/67c7469b3275b6f1b9f96f69
-   # Build ID: 67c7469b3275b6f1b9f96f69
-   ```
-
-2. **Get build details**:
-   ```bash
-   codefresh get builds <build-id> -o json
-   ```
-
-3. **Search logs for errors** (most efficient):
-   ```bash
-   codefresh logs <build-id> | grep -B 10 -A 20 -i "error\|fail\|found.*errors"
-   ```
-
-### Include in Review
-
-Add a **CI Failure Analysis** section in your review with:
-
-- **Build status**: Failed step name and duration
-- **Root cause**: Specific error messages with file:line references
-- **Context**: Whether errors are from PR changes or pre-existing issues
-- **Impact assessment**: Blocking vs non-blocking failures
-
-**Example format**:
-```markdown
-## CI Failure Analysis
-
-**Build**: python/library (failed after 5m 2s)
-**Failed step**: Check Code with Ruff
-
-**Errors found (10 total)**:
-
-1. `phenomics_potency_prediction/utils.py:331,333,365,367,369`
-   - Undefined name `random_seed` (5 occurrences)
-   - **Impact**: Likely runtime errors, critical to fix
-
-2. `phenomics_potency_prediction/gene-cossim-curvefit/parallel-curvefit.py:233`
-   - Line too long (3373 characters > 120 limit)
-   - **Impact**: Code quality issue, non-blocking
-
-3. `parallel-curvefit.py:139,275`
-   - Bare `except` clauses
-   - **Impact**: Poor error handling, should specify exception types
-
-**Root cause**: Pre-existing code quality issues exposed by this PR's infrastructure change (Nexus → GAR). The PR itself only modifies dependency sources, not application code.
-
-**Recommendation**: Request changes - fix the 5 undefined `random_seed` errors before merging (critical). Other linting issues can be addressed separately.
-```
-
-### When to Skip
-
-Only skip CI investigation if:
-- PR is NOT from a recursionpharma repo
-- All CI checks are passing
-- CI is still running (pending)
+Include the skill's output in your review under a "CI Failure Analysis" section.
 
 ## Post-Review Action Menu
 
