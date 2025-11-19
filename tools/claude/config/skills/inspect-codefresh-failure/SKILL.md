@@ -157,7 +157,7 @@ Returns markdown-formatted analysis ready to include in PR reviews or bug report
 
 ### Root Cause
 
-Pre-existing code quality issues exposed by this PR's infrastructure change (switching from Nexus to Google Artifact Registry). The PR itself only modifies dependency sources in `Dockerfile.test` and `tox.ini`, not application code.
+Pre-existing code quality issues exposed by recent infrastructure changes (such as updates to dependency sources). The changes only modify dependency sources in files like `Dockerfile.test` and `tox.ini`, not application code.
 
 ### Recommendation
 
