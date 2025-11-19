@@ -184,18 +184,23 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
         if author_login == "copilot-pull-request-reviewer":
             continue
 
-        # Track my engagement
+        # Track my engagement (PENDING reviews have no submittedAt, so they're most recent)
         if author_login == my_username:
-            if my_latest_timestamp is None or submitted_at > my_latest_timestamp:
+            if state == "PENDING":
+                # PENDING reviews are always most recent (not yet submitted)
+                my_latest_timestamp = submitted_at  # Will be None
+                my_latest_review = state
+            elif submitted_at and (my_latest_timestamp is None or submitted_at > my_latest_timestamp):
                 my_latest_timestamp = submitted_at
                 my_latest_review = state
 
         # Track each reviewer's most recent state
-        if author_login not in reviewer_states or submitted_at > reviewer_states[author_login]["timestamp"]:
-            reviewer_states[author_login] = {
-                "state": state,
-                "timestamp": submitted_at
-            }
+        if submitted_at:  # Only track submitted reviews in reviewer_states
+            if author_login not in reviewer_states or submitted_at > reviewer_states[author_login]["timestamp"]:
+                reviewer_states[author_login] = {
+                    "state": state,
+                    "timestamp": submitted_at
+                }
 
     # Build review status string with reviewer names
     total_reviewers = len(reviewer_states)
@@ -221,15 +226,19 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
 
     # Build my engagement string
     my_engagement = None
-    if my_latest_review and my_latest_timestamp:
-        age_str, _ = calculate_age(my_latest_timestamp)
-        age = age_str.replace("📅 ", "")
-        if my_latest_review == "APPROVED":
-            my_engagement = f"✅ You approved {age} ago"
-        elif my_latest_review == "CHANGES_REQUESTED":
-            my_engagement = f"⚠️ You requested changes {age} ago"
-        elif my_latest_review == "COMMENTED":
-            my_engagement = f"💬 You reviewed {age} ago"
+    if my_latest_review:
+        if my_latest_review == "PENDING":
+            # PENDING reviews don't have a timestamp (not submitted yet)
+            my_engagement = f"⏳ You have pending comments (not submitted yet!)"
+        elif my_latest_timestamp:
+            age_str, _ = calculate_age(my_latest_timestamp)
+            age = age_str.replace("📅 ", "")
+            if my_latest_review == "APPROVED":
+                my_engagement = f"✅ You approved {age} ago"
+            elif my_latest_review == "CHANGES_REQUESTED":
+                my_engagement = f"⚠️ You requested changes {age} ago"
+            elif my_latest_review == "COMMENTED":
+                my_engagement = f"💬 You reviewed {age} ago"
 
     # Also check for comments (not reviews)
     if not my_engagement:
