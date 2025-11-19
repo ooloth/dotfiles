@@ -38,6 +38,7 @@ See README.md for the complete overview. Key points for Claude:
 
 - See `tools/@new` for an example of the files in each folder
 - See `tools/README.md` for an explanation of the feature folder approach
+- For brew formulae without config, see `tools/eza/` or `tools/logcli/` as examples
 
 ### Symlink Management
 
