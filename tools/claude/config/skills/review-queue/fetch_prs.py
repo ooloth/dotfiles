@@ -446,8 +446,8 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         lines = []
         new_badge = "🆕 " if pr["is_new"] else ""
 
-        # Title line
-        lines.append(f" {pr['seq_num']}. {new_badge}**\"{pr['title']}\" • {pr['repo_short']} • @{pr['author']}**")
+        # Title line with diff stats (non-breaking space at start to prevent list formatting)
+        lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**\"{pr['title']}\" • @{pr['author']}** • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
 
         # Summary line (omit for dependency updates)
         if pr["category"] != "dependency_updates" and pr["summary"]:
@@ -459,9 +459,6 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         # Engagement line (optional)
         if pr["my_engagement"]:
             lines.append(f"   • {pr['my_engagement']}")
-
-        # Diff stats
-        lines.append(f"   • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
 
         # URL
         lines.append(f"   • 🔗 {pr['url']}")
