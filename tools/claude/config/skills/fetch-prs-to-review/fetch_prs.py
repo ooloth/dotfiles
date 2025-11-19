@@ -185,13 +185,14 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
         if author_login == "copilot-pull-request-reviewer" or author_login == pr_author:
             continue
 
-        # Track my engagement (PENDING reviews have no submittedAt, so they're most recent)
+        # Track my engagement (PENDING reviews take priority as they're unfinished)
         if author_login == my_username:
             if state == "PENDING":
-                # PENDING reviews are always most recent (not yet submitted)
-                my_latest_timestamp = submitted_at  # Will be None
+                # PENDING reviews are always most important (not yet submitted)
+                my_latest_timestamp = None
                 my_latest_review = state
-            elif submitted_at and (my_latest_timestamp is None or submitted_at > my_latest_timestamp):
+            elif my_latest_review != "PENDING" and submitted_at and (my_latest_timestamp is None or submitted_at > my_latest_timestamp):
+                # Only update if we haven't found a PENDING review
                 my_latest_timestamp = submitted_at
                 my_latest_review = state
 
