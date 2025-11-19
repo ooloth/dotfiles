@@ -62,11 +62,12 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 2. Update todo: mark "Reviewing PR with enhanced navigation" as in_progress
 3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json`
 4. Parse the repo and PR number
-5. Fetch PR data with context: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments`
+5. Fetch PR data with context: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments,statusCheckRollup`
 6. Get file diffs: `gh pr diff <number> --repo <org>/<repo>`
 7. Process existing review context (see Existing Review Context section below)
-8. Review the PR following the Enhanced Review Format (see below)
-9. After review, provide Post-Review Action Menu (see below)
+8. **For recursionpharma repos**: Check for CI failures and investigate using Codefresh CLI (see CI Failure Investigation section below)
+9. Review the PR following the Enhanced Review Format (see below)
+10. After review, provide Post-Review Action Menu (see below)
 
 ## Existing Review Context
 
@@ -125,6 +126,76 @@ When reviewing a PR, ALWAYS:
    - **Areas of Concern**: Issues requiring attention (with file:line references and inline code)
    - **Questions**: Clarifications needed (with file:line references)
    - **Recommendation**: approve/request-changes/comment
+
+## CI Failure Investigation (recursionpharma repos only)
+
+When reviewing a recursionpharma PR with failing CI, **ALWAYS** investigate the failure using Codefresh CLI:
+
+### Detection
+
+Check the `statusCheckRollup` field in PR JSON data for failed checks:
+- Look for `"state": "FAILURE"` or `"conclusion": "FAILURE"`
+- Identify Codefresh builds by `targetUrl` containing `g.codefresh.io/build/`
+
+### Investigation Steps
+
+1. **Extract build ID** from the status check URL:
+   ```python
+   # From: https://g.codefresh.io/build/67c7469b3275b6f1b9f96f69
+   # Build ID: 67c7469b3275b6f1b9f96f69
+   ```
+
+2. **Get build details**:
+   ```bash
+   codefresh get builds <build-id> -o json
+   ```
+
+3. **Search logs for errors** (most efficient):
+   ```bash
+   codefresh logs <build-id> | grep -B 10 -A 20 -i "error\|fail\|found.*errors"
+   ```
+
+### Include in Review
+
+Add a **CI Failure Analysis** section in your review with:
+
+- **Build status**: Failed step name and duration
+- **Root cause**: Specific error messages with file:line references
+- **Context**: Whether errors are from PR changes or pre-existing issues
+- **Impact assessment**: Blocking vs non-blocking failures
+
+**Example format**:
+```markdown
+## CI Failure Analysis
+
+**Build**: python/library (failed after 5m 2s)
+**Failed step**: Check Code with Ruff
+
+**Errors found (10 total)**:
+
+1. `phenomics_potency_prediction/utils.py:331,333,365,367,369`
+   - Undefined name `random_seed` (5 occurrences)
+   - **Impact**: Likely runtime errors, critical to fix
+
+2. `phenomics_potency_prediction/gene-cossim-curvefit/parallel-curvefit.py:233`
+   - Line too long (3373 characters > 120 limit)
+   - **Impact**: Code quality issue, non-blocking
+
+3. `parallel-curvefit.py:139,275`
+   - Bare `except` clauses
+   - **Impact**: Poor error handling, should specify exception types
+
+**Root cause**: Pre-existing code quality issues exposed by this PR's infrastructure change (Nexus → GAR). The PR itself only modifies dependency sources, not application code.
+
+**Recommendation**: Request changes - fix the 5 undefined `random_seed` errors before merging (critical). Other linting issues can be addressed separately.
+```
+
+### When to Skip
+
+Only skip CI investigation if:
+- PR is NOT from a recursionpharma repo
+- All CI checks are passing
+- CI is still running (pending)
 
 ## Post-Review Action Menu
 

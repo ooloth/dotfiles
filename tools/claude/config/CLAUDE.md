@@ -22,3 +22,48 @@
 
 - Implement changes one small theme at-a-time
 - Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
+
+## CI System Information
+
+### Recursion Pharma Organization
+
+- **CI System**: Codefresh
+- **CLI**: `codefresh` (installed via Homebrew)
+- **When to use**: When reviewing PRs from `recursionpharma/*` repos with failing CI
+
+#### Inspecting Codefresh CI Failures
+
+When you see a CI failure in a recursionpharma PR:
+
+1. **Get PR status data** with `statusCheckRollup` field:
+   ```bash
+   gh pr view <number> --repo recursionpharma/<repo> --json statusCheckRollup
+   ```
+
+2. **Extract build ID** from the Codefresh URL in `targetUrl` or `detailsUrl`:
+   - Format: `https://g.codefresh.io/build/{build-id}`
+   - Example: `67c7469b3275b6f1b9f96f69`
+
+3. **Get build details**:
+   ```bash
+   codefresh get builds <build-id> -o json
+   ```
+
+4. **Get full logs**:
+   ```bash
+   codefresh logs <build-id>
+   ```
+
+5. **Search for errors** (most useful):
+   ```bash
+   codefresh logs <build-id> | grep -B 10 -A 20 -i "error\|fail\|found.*errors"
+   ```
+
+#### When to investigate CI failures
+
+- **ALWAYS** investigate CI failures in recursionpharma PRs during code review
+- Include specific error details in your review (not just "CI is failing")
+- Quote actual error messages with file:line references when available
+- Explain root cause and whether it's related to PR changes or pre-existing issues
+
+**Example**: When reviewing PR recursionpharma/phenomics-potency-prediction#2, I found the CI failed due to Ruff linting errors (10 total): undefined `random_seed` variables in `utils.py:331,333,365,367,369`, a 3373-character line in `parallel-curvefit.py:233`, and bare `except` clauses. These were pre-existing code quality issues exposed by the infrastructure change (switching from Nexus to Google Artifact Registry).
