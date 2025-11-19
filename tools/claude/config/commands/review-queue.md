@@ -23,8 +23,9 @@ The skill outputs fully formatted markdown ready to display. It handles:
 **Your task:**
 
 1. Run the skill using the Bash tool
-2. Display the skill's output directly in your response (no additional formatting or commentary)
-3. The skill output is your complete message
+2. Display the skill's output in your text response (copy it directly without modification)
+3. The skill output is your complete message - no additional text before or after
+4. Do not summarize, analyze, or add commentary - just show the formatted list
 
 ## Phase 2: Interactive Session
 
