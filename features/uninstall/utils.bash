@@ -9,7 +9,7 @@ uninstall_and_unlink() {
   local tool_command="${3}"
   local tool_emoji="${4}"
   local uninstall_command="${5}"
-  local unlink_script_path="${6}"
+  local unlink_script_path="${6:-}"
 
   info "${tool_emoji} Uninstalling ${tool_lower}"
 
