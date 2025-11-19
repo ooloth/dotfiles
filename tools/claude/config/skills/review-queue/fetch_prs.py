@@ -216,17 +216,7 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
     commented_count = sum(1 for r in reviewer_states.values() if r["state"] == "COMMENTED")
     total_reviewers = len(reviewer_states)
 
-    # Build review status string
-    if review_decision == "APPROVED":
-        status = "✅ Approved"
-    elif review_decision == "CHANGES_REQUESTED":
-        status = "⚠️ Changes requested"
-    elif review_decision == "REVIEW_REQUIRED":
-        status = "👀 Review required"
-    else:
-        status = "👀 Review required"
-
-    # Add reviewer count details if there are reviewers
+    # Build review status string (just reviewer info, no redundant status)
     if total_reviewers > 0:
         details = []
         if approved_count > 0:
@@ -237,7 +227,12 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
             details.append(f"💬 {commented_count} commented")
 
         if details:
-            status += f" • 👥 {total_reviewers} reviewers ({', '.join(details)})"
+            status = f"👥 {total_reviewers} reviewers ({', '.join(details)})"
+        else:
+            status = f"👥 {total_reviewers} reviewers"
+    else:
+        # No reviewers yet
+        status = ""
 
     # Build my engagement string
     my_engagement = None
@@ -427,7 +422,10 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**@{pr['author']} • \"{pr['title']}\"** • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
 
         # Metadata line
-        lines.append(f"   • {pr['age_str']} • {pr['ci_status']} • {pr['review_status']} • {pr['conflict_status']}")
+        metadata_parts = [pr['age_str'], pr['ci_status'], pr['conflict_status']]
+        if pr['review_status']:
+            metadata_parts.append(pr['review_status'])
+        lines.append(f"   • {' • '.join(metadata_parts)}")
 
         # Engagement line (optional)
         if pr["my_engagement"]:
