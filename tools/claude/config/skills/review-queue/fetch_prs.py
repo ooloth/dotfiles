@@ -424,7 +424,7 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         new_badge = "🆕 " if pr["is_new"] else ""
 
         # Title line with diff stats (non-breaking space at start to prevent list formatting)
-        lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**\"{pr['title']}\" • @{pr['author']}** • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
+        lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**@{pr['author']} • \"{pr['title']}\"** • 🟢 +{pr['additions']}  🔴 -{pr['deletions']}  📄 {pr['files']} files  ⏱️ {pr['time_estimate']}")
 
         # Metadata line
         lines.append(f"   • {pr['age_str']} • {pr['ci_status']} • {pr['review_status']} • {pr['conflict_status']}")
