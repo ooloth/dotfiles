@@ -105,9 +105,9 @@ After completing the review, IMMEDIATELY provide this action menu:
 
 🎬 Actions:
 o - Open PR in browser
-a - Approve via gh CLI
-c - Request changes via gh CLI
-m - Add comment via gh CLI
+i - Add inline comments (interactive)
+a - Approve via gh CLI (general comment only)
+c - Request changes via gh CLI (general comment only)
 n - Next PR (skip posting review)
 l - Show full PR queue
 
@@ -117,28 +117,102 @@ What would you like to do?
 **Action Handlers:**
 
 - **o** → Open PR in browser: `open https://github.com/<org>/<repo>/pull/<number>`
+- **i** → Interactive inline comment builder (see below)
 - **a** → `gh pr review <number> --repo <org>/<repo> --approve --body "<review summary>"`
 - **c** → `gh pr review <number> --repo <org>/<repo> --request-changes --body "<review summary>"`
-- **m** → `gh pr review <number> --repo <org>/<repo> --comment --body "<review summary>"`
 - **n** → Mark todo completed, return to PR list with continue prompt
 - **l** → Redisplay full PR queue
 
 After posting review via gh CLI, automatically return to PR list navigation.
 
+## Interactive Inline Comment Builder
+
+When user selects "i", start an interactive flow to build inline comments:
+
+**Step 1: Prompt for location**
+```
+Add inline comment to which area?
+1. auth.py:45-52 - Silent error swallowing
+2. db.py:103 - SQL injection risk
+3. api.py:78-91 - Missing rate limit
+Or type file:line (e.g., "utils.py:23")
+>
+```
+
+**Step 2: User selects location (e.g., "1")**
+Parse their input:
+- If number: Use the corresponding file:line from key areas list
+- If file:line format: Use that directly
+- Extract file path and line number
+
+**Step 3: Prompt for comment**
+```
+Comment for auth.py:45-52:
+>
+```
+
+**Step 4: User enters comment**
+Store the comment with file, line number, and body.
+
+**Step 5: Ask to continue**
+```
+Inline comment added. Add another? (y/n)
+>
+```
+
+If "y", repeat from Step 1.
+If "n", proceed to Step 6.
+
+**Step 6: Show summary and ask for review type**
+```
+Review with 2 inline comments:
+1. auth.py:45-52: "This should log the error instead of silently swallowing it"
+2. db.py:103: "Use parameterized queries to prevent SQL injection"
+
+Submit as: (a)pprove, (c)hange requests, or co(m)ment?
+>
+```
+
+**Step 7: Submit via GitHub API**
+Build the API request:
+```bash
+gh api repos/<org>/<repo>/pulls/<number>/reviews \
+  -f body="<review summary from earlier>" \
+  -f event="<APPROVE|REQUEST_CHANGES|COMMENT>" \
+  -f 'comments=[
+    {"path":"auth.py","line":52,"body":"..."},
+    {"path":"db.py","line":103,"body":"..."}
+  ]'
+```
+
+Notes:
+- Use the line number as the ending line for each range
+- The "path" should be relative to repo root
+- "body" field is the overall review summary from the initial review
+- "event" maps to: a→APPROVE, c→REQUEST_CHANGES, m→COMMENT
+
+After successful submission, return to PR list navigation.
+
 ## Post-Action Return to Queue
 
 After user selects any action from the Post-Review Action Menu:
 
-1. If action was **a/c/m** (posting review):
+1. If action was **a/c** (posting review without inline comments):
    - Execute gh CLI command
    - Show success/failure message
    - Mark "Reviewing PR with enhanced navigation" todo as completed
    - Automatically show next steps (don't wait for user input)
 
-2. Calculate remaining PRs from cache
-3. Display abbreviated PR list inline
-4. Show continue prompt: "Review posted. X remaining. Next: #Y. Continue? (y/n/l/number)"
-5. Create new todo: "Waiting for user to select a PR (or 'l')" (pending status)
+2. If action was **i** (inline comments):
+   - Follow Interactive Inline Comment Builder flow
+   - After submitting via gh api, show success/failure message
+   - Mark "Reviewing PR with enhanced navigation" todo as completed
+   - Automatically show next steps (don't wait for user input)
+
+3. Calculate remaining PRs from cache
+4. Display abbreviated PR list inline
+5. Show continue prompt: "Review posted. X remaining. Next: #Y. Continue? (y/n/l/number)"
+6. Create new todo: "Waiting for user to select a PR (or 'l')" (pending status)
 
 **Continue options:**
 - **y** → Review next PR in sequence
@@ -183,22 +257,35 @@ After user selects any action from the Post-Review Action Menu:
 
 🎬 Actions:
 o - Open PR in browser
-a - Approve via gh CLI
-c - Request changes via gh CLI
-m - Add comment via gh CLI
+i - Add inline comments (interactive)
+a - Approve via gh CLI (general comment only)
+c - Request changes via gh CLI (general comment only)
 n - Next PR (skip posting review)
 l - Show full PR queue
 
 What would you like to do?
 ```
 
-**User workflow:**
+**User workflow examples:**
+
+**Option A: Review in browser, then post general review via CLI:**
 1. Read review in terminal
-2. Type "o" to open PR in browser (description page)
-3. Navigate to Files changed tab, Cmd+F for "auth.py" and review lines 45-52
-4. Cmd+F for "db.py" and review line 103
-5. Return to terminal, type "c" to request changes via gh CLI
-6. Automatically return to PR list with continue prompt
+2. Type "o" to open PR in browser
+3. Navigate to Files changed tab, review code
+4. Return to terminal, type "c" to request changes via gh CLI
+5. Automatically return to PR list with continue prompt
+
+**Option B: Add inline comments interactively:**
+1. Read review in terminal
+2. Type "i" to add inline comments
+3. Select "1" for auth.py:45-52
+4. Enter comment: "This should log the error instead of silently swallowing it"
+5. Select "y" to add another
+6. Select "2" for db.py:103
+7. Enter comment: "Use parameterized queries to prevent SQL injection"
+8. Select "n" when done
+9. Type "c" to submit as request changes with inline comments
+10. Automatically return to PR list with continue prompt
 
 ## Cache File Lifecycle
 
@@ -233,10 +320,11 @@ What would you like to do?
 - Groups PRs by type: Feature/Bug → Chores → Dependency Updates
 - Sorts PRs by age within each group (oldest first)
 - **Enhanced review mode** provides:
-  - Clickable GitHub links to specific lines of code
-  - Inline code snippets with context
-  - Post-review action menu (approve/comment/request-changes via gh CLI)
-  - Quick navigation to key areas of concern
+  - Inline code snippets with context and file:line references
+  - Post-review action menu with multiple options
+  - Interactive inline comment builder for attaching comments to specific lines
+  - Quick browser navigation to PR (via "o" action)
+  - General review posting via gh CLI (via "a"/"c" actions)
   - Seamless return to PR queue after posting review
 - Cache file is always fresh - run `/review-prs` again if PR list has changed
 - Formatting is handled by the skill for consistency
@@ -267,10 +355,15 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 - When user selects a PR:
   - Fetches PR data via `gh pr view`
   - Analyzes code changes via `gh pr diff`
-  - Generates enhanced review with clickable GitHub links to specific lines
+  - Generates enhanced review with file:line references
   - Shows inline code snippets with context
-  - Provides post-review action menu (approve/comment/request-changes)
-- Executes gh CLI commands to post reviews directly from terminal
+  - Provides post-review action menu (o/i/a/c/n/l)
+- Post-review actions:
+  - **o**: Opens PR in browser
+  - **i**: Interactive inline comment builder (attaches comments to specific lines via gh api)
+  - **a/c**: Posts general review via gh CLI (approve/request changes)
+  - **n**: Skip to next PR
+  - **l**: Redisplay full queue
 - Automatically returns to PR queue after posting review
 - Clears todos when session ends
 
