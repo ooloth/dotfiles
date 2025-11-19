@@ -27,7 +27,7 @@ The skill outputs fully formatted markdown ready to display. It handles:
 3. The skill output is your complete message - no additional text before or after
 4. Do not summarize, analyze, or add commentary - just show the formatted list
 5. Create a todo list to track the interactive session:
-   - "Waiting for user to select a PR (or 'list')" (pending)
+   - "Waiting for user to select a PR (or 'l')" (pending)
    - "Reviewing PR with enhanced navigation" (pending - will become in_progress when user selects a PR)
 
 ## Phase 2: Interactive Session
@@ -54,7 +54,7 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 **User input options:**
 
 - Type a number (e.g., "7") to review that specific PR
-- Type "list" to redisplay the PR queue
+- Type "l" to redisplay the PR queue
 
 **When user types a number:**
 
@@ -109,7 +109,7 @@ a - Approve via gh CLI
 c - Request changes via gh CLI
 m - Add comment via gh CLI
 n - Next PR (skip posting review)
-list - Show full PR queue
+l - Show full PR queue
 
 What would you like to do?
 ```
@@ -121,7 +121,7 @@ What would you like to do?
 - **c** → `gh pr review <number> --repo <org>/<repo> --request-changes --body "<review summary>"`
 - **m** → `gh pr review <number> --repo <org>/<repo> --comment --body "<review summary>"`
 - **n** → Mark todo completed, return to PR list with continue prompt
-- **list** → Redisplay full PR queue
+- **l** → Redisplay full PR queue
 
 After posting review via gh CLI, automatically return to PR list navigation.
 
@@ -137,13 +137,13 @@ After user selects any action from the Post-Review Action Menu:
 
 2. Calculate remaining PRs from cache
 3. Display abbreviated PR list inline
-4. Show continue prompt: "Review posted. X remaining. Next: #Y. Continue? (y/n/list/number)"
-5. Create new todo: "Waiting for user to select a PR (or 'list')" (pending status)
+4. Show continue prompt: "Review posted. X remaining. Next: #Y. Continue? (y/n/l/number)"
+5. Create new todo: "Waiting for user to select a PR (or 'l')" (pending status)
 
 **Continue options:**
 - **y** → Review next PR in sequence
 - **n** → Exit interactive session (clear all todos with empty array `[]`)
-- **list** → Redisplay full PR list
+- **l** → Redisplay full PR list
 - **number** → Jump to specific PR by number
 
 **Example enhanced review with action menu:**
@@ -187,7 +187,7 @@ a - Approve via gh CLI
 c - Request changes via gh CLI
 m - Add comment via gh CLI
 n - Next PR (skip posting review)
-list - Show full PR queue
+l - Show full PR queue
 
 What would you like to do?
 ```
@@ -263,7 +263,7 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 
 - Invokes the skill to fetch and display PR list
 - Uses TodoWrite to track session state throughout workflow
-- Manages interactive session with y/n/list/number navigation
+- Manages interactive session with y/n/l/number navigation
 - When user selects a PR:
   - Fetches PR data via `gh pr view`
   - Analyzes code changes via `gh pr diff`
