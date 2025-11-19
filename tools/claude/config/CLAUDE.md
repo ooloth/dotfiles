@@ -14,6 +14,8 @@
 - Update the `<task>.md` with any helpful findings
 - When you detect you are within 10% of your available context window before auto-compact, pause to update your to-do list and the `<task>.md` with all important hand-off details, including the primary goals and non-goals of the task and any implementation decisions that have already been made
 
+## Don't code after being asked a question
 
+- When asked a question, think hard and respond and then prompt me for which action(s) to take next
 
 
