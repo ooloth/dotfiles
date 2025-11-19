@@ -18,4 +18,7 @@
 
 - When asked a question, think hard and respond and then prompt me for which action(s) to take next
 
+## Pause to let me commit
 
+- Implement changes one small theme at-a-time
+- Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
