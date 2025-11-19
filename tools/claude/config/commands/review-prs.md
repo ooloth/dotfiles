@@ -174,18 +174,32 @@ Submit as: (a)pprove, (c)hange requests, or co(m)ment?
 ```
 
 **Step 7: Submit via GitHub API**
-Build the API request:
+Build the API request using `--input -` with a heredoc (the `-f` flag doesn't support JSON arrays):
 ```bash
 gh api repos/<org>/<repo>/pulls/<number>/reviews \
-  -f body="<review summary from earlier>" \
-  -f event="<APPROVE|REQUEST_CHANGES|COMMENT>" \
-  -f 'comments=[
-    {"path":"auth.py","line":52,"body":"..."},
-    {"path":"db.py","line":103,"body":"..."}
-  ]'
+  --method POST \
+  --input - <<'EOF'
+{
+  "body": "<review summary from earlier>",
+  "event": "<APPROVE|REQUEST_CHANGES|COMMENT>",
+  "comments": [
+    {
+      "path": "auth.py",
+      "line": 52,
+      "body": "..."
+    },
+    {
+      "path": "db.py",
+      "line": 103,
+      "body": "..."
+    }
+  ]
+}
+EOF
 ```
 
 Notes:
+- Use `--input -` with heredoc for complex JSON payloads (the `-f` flag treats arrays as strings)
 - Use the line number as the ending line for each range
 - The "path" should be relative to repo root
 - "body" field is the overall review summary from the initial review
