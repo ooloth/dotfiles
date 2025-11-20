@@ -133,26 +133,34 @@ When creating a TIL page, set these properties:
 3. **Write content** - Follow voice guide above
 4. **Generate slug** - Lowercase title with hyphens, no special chars
 5. **Write description** - One sentence summarizing the takeaway
-6. **Create page** using `mcp__notion__notion-create-pages`:
+6. **Publish via script** - Pass JSON to `publish_til.py`:
 
+```bash
+echo '<json>' | python3 ~/.claude/skills/scan-git-for-tils/publish_til.py
+```
+
+**Input JSON:**
 ```json
 {
-  "parent": {
-    "data_source_id": "c296db5b-d2f1-44d4-abc6-f9a05736b143"
-  },
-  "pages": [{
-    "properties": {
-      "Title": "Your TIL Title Here",
-      "Status": "Claude Draft",
-      "Type": "how-to",
-      "Destination": "[\"blog\"]",
-      "Description": "One-line summary here",
-      "Slug": "your-til-title-here"
-    },
-    "content": "Your markdown content here following voice guide"
-  }]
+  "title": "Your TIL Title Here",
+  "content": "Your markdown content here",
+  "slug": "your-til-title-here",
+  "description": "One-line summary here",
+  "commit": {
+    "hash": "full-sha-hash",
+    "message": "original commit message",
+    "repo": "owner/repo",
+    "date": "2025-01-15"
+  }
 }
 ```
+
+**Output:** URLs for Writing page and tracker entry
+
+The script automatically:
+- Creates the Writing page with Status="Claude Draft"
+- Creates the TIL Assessed Commits entry
+- Links them via the Writing relation
 
 ---
 
@@ -251,38 +259,10 @@ The `filter(Boolean)` step passes each item to `Boolean()`, which coerces it to 
 
 ## After Creation
 
-After successfully creating the page:
+After the script completes successfully:
 
-1. Display the page URL
-2. Show a summary of properties set
-3. **Link source to draft** (see below)
-4. Remind user they can review and edit in Notion
-5. Offer to draft another or return to suggestions
+1. Display the Writing page URL from the script output
+2. Remind user they can review and edit in Notion
+3. Offer to draft another or return to suggestions
 
----
-
-## Linking Sources to Drafts
-
-After creating the draft, update the source record to link to it.
-
-### For Git commit sources
-
-Update the TIL Assessed Commits page for that commit hash:
-
-```json
-{
-  "data": {
-    "page_id": "<assessed-commit-page-id>",
-    "command": "update_properties",
-    "properties": {
-      "Writing": "[\"<new-draft-page-url>\"]"
-    }
-  }
-}
-```
-
-To find the page ID: search TIL Assessed Commits for the commit hash.
-
-### For Notion backlog sources
-
-The draft was created with a Writing relation pointing to the source item. No additional linking needed - the relation is bidirectional.
+The script handles all Notion operations including linking the tracker entry to the draft.
