@@ -2,7 +2,7 @@ name: Claude Code Review
 
 on:
   pull_request:
-    types: [opened]  # Only review when PR is first opened (not on every push)
+    types: [opened, ready_for_review]  # Review when PR opens (non-draft) or when draft is marked ready
     # Optional: Only run on specific file changes
     # paths:
     #   - "src/**/*.ts"
@@ -12,11 +12,15 @@ on:
 
 jobs:
   claude-review:
+    # Only review PRs that are not in draft mode
+    if: github.event.pull_request.draft == false
+
     # Optional: Filter by PR author
     # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    #   github.event.pull_request.draft == false &&
+    #   (github.event.pull_request.user.login == 'external-contributor' ||
+    #    github.event.pull_request.user.login == 'new-developer' ||
+    #    github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR')
 
     runs-on: ubuntu-latest
     permissions:

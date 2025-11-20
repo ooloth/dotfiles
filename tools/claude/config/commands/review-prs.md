@@ -4,10 +4,10 @@ Fetch all open PRs where I'm requested as a reviewer across all relevant repos a
 
 ## Phase 1: Display PRs
 
-Run the `fetch-prs-to-review` skill to fetch and display PRs:
+Run the `fetching-github-prs-to-review` skill to fetch and display PRs:
 
 ```bash
-python3 ~/.claude/skills/fetch-prs-to-review/fetch_prs.py
+python3 ~/.claude/skills/fetching-github-prs-to-review/fetch_prs.py
 ```
 
 The skill outputs fully formatted markdown ready to display. It handles:
@@ -60,7 +60,7 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 
 1. Update todo: mark "Waiting for user to select a PR" as completed
 2. Update todo: mark "Reviewing PR with enhanced navigation" as in_progress
-3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json`
+3. Read the mapping from `~/.claude/.cache/fetching-github-prs-to-review.json`
 4. Parse the repo and PR number
 5. Fetch PR data with context: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments,statusCheckRollup`
 6. Get file diffs: `gh pr diff <number> --repo <org>/<repo>`
@@ -74,12 +74,14 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 Before analyzing the PR yourself, process existing review context to avoid duplicating feedback:
 
 **Parse reviews and comments from the PR data:**
+
 - Extract all review comments (inline and general)
 - Extract all conversation comments
 - Group by file and line number
 - Identify discussion themes
 
 **Display context section at the start of your review:**
+
 ```
 📝 Existing Review Activity:
 
@@ -97,6 +99,7 @@ Before analyzing the PR yourself, process existing review context to avoid dupli
 ```
 
 **In your review:**
+
 - Note which concerns already have feedback (skip or add +1)
 - Identify new issues not yet mentioned
 - Join ongoing discussions if you have additional insight
@@ -112,6 +115,7 @@ When reviewing a PR, ALWAYS:
    - No clickable links needed - user will use "o" action to open PR in browser
 
 2. **Show code inline with context**
+
    ```python
    # auth.py:45-52
    try:
@@ -131,7 +135,7 @@ When reviewing a PR, ALWAYS:
 
 When reviewing a recursionpharma PR with failing CI, **ALWAYS** investigate the failure.
 
-**Use the `inspect-codefresh-failure` skill** - it will extract build IDs from status checks, fetch logs, identify errors, and provide a formatted analysis report.
+**Use the `inspecting-codefresh-failures` skill** - it will extract build IDs from status checks, fetch logs, identify errors, and provide a formatted analysis report.
 
 Include the skill's output in your review under a "CI Failure Analysis" section.
 
@@ -173,6 +177,7 @@ After posting review via gh CLI, automatically return to PR list navigation.
 When user selects "i", start an interactive flow to build inline comments:
 
 **Step 1: Prompt for location**
+
 ```
 Add inline comment to which area?
 1. auth.py:45-52 - Silent error swallowing
@@ -184,6 +189,7 @@ Or type file:line (e.g., "utils.py:23")
 
 **Step 2: User selects location (e.g., "1")**
 Parse their input:
+
 - If number: Use the corresponding file:line from key areas list
 - If file:line format: Use that directly
 - Extract file path and line number
@@ -210,6 +216,7 @@ Select 1-3 to edit, or press Enter to write custom comment:
 
 **How to generate suggestions:**
 Based on the issue type, offer socratic, mentor-like templates that lead with curiosity:
+
 - **Silent error handling**: "I'm curious about...", "What happens when...", "How should we handle..."
 - **SQL injection**: "I'm wondering if...", "Have we considered...", "What would happen if..."
 - **Missing tests**: "How can we verify...", "What edge cases should we consider...", "I'm curious how this behaves when..."
@@ -222,15 +229,18 @@ Use full sentences, ask genuine questions, and frame as collaborative exploratio
 **Step 4: User responds**
 
 If they select a number (1-3):
+
 - Show that suggestion pre-filled for editing
 - They can modify or use as-is
 
 If they press Enter or type text:
+
 - Use their custom comment
 
 Store the final comment with file, line number, and body.
 
 **Step 5: Ask to continue**
+
 ```
 Inline comment added. Add another? (y/n)
 >
@@ -240,6 +250,7 @@ If "y", repeat from Step 1.
 If "n", proceed to Step 6.
 
 **Step 6: Show summary and ask for review type**
+
 ```
 Review with 2 inline comments:
 1. auth.py:45-52: "This should log the error instead of silently swallowing it"
@@ -251,6 +262,7 @@ Submit as: (a)pprove, (c)hange requests, or co(m)ment?
 
 **Step 7: Submit via GitHub API**
 Build the API request using `--input -` with a heredoc (the `-f` flag doesn't support JSON arrays):
+
 ```bash
 gh api repos/<org>/<repo>/pulls/<number>/reviews \
   --method POST \
@@ -275,6 +287,7 @@ EOF
 ```
 
 Notes:
+
 - Use `--input -` with heredoc for complex JSON payloads (the `-f` flag is for individual fields and doesn't support complex JSON structures like arrays)
 - Use the line number as the ending line for each range
 - The "path" should be relative to repo root
@@ -305,6 +318,7 @@ After user selects any action from the Post-Review Action Menu:
 6. Create new todo: "Waiting for user to select a PR (or 'l')" (pending status)
 
 **Continue options:**
+
 - **y** → Review next PR in sequence
 - **n** → Exit interactive session (clear all todos with empty array `[]`)
 - **l** → Redisplay full PR list
@@ -312,7 +326,7 @@ After user selects any action from the Post-Review Action Menu:
 
 **Example enhanced review with action menu:**
 
-```
+````
 ## PR Review: recursionpharma/auth-service#144 "Add JWT refresh token rotation"
 
 📝 Existing Review Activity:
@@ -340,16 +354,19 @@ After user selects any action from the Post-Review Action Menu:
    # auth.py:78
    new_token = generate_refresh_token(user)
    # ⚠️ No check if old token has expired
-   ```
+````
 
 **Previously Identified** (joining discussion):
+
 - auth.py:45-52: Error handling (alice mentioned logging)
 - db.py:103: SQL injection (alice mentioned parameterized queries)
 
 **Recommendation**: Request changes - address new expiry validation issue. Existing issues already have good feedback from alice.
 
 ---
+
 📍 Key areas to review:
+
 - auth.py:78 - Missing token expiry validation (NEW)
 - auth.py:45-52 - Silent error swallowing (alice +1)
 - db.py:103 - SQL injection risk (alice +1)
@@ -363,6 +380,7 @@ n - Next PR (skip posting review)
 l - Show full PR queue
 
 What would you like to do?
+
 ```
 
 **User workflow examples:**
@@ -392,7 +410,7 @@ What would you like to do?
 
 ## Cache File Lifecycle
 
-**Location:** `~/.claude/.cache/fetch-prs-to-review.json`
+**Location:** `~/.claude/.cache/fetching-github-prs-to-review.json`
 
 **Behavior:**
 
@@ -436,7 +454,7 @@ What would you like to do?
 
 ## Implementation Details
 
-The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-review/`) handles all data fetching and processing:
+The `fetching-github-prs-to-review` skill (located at `~/.claude/skills/fetching-github-prs-to-review/`) handles all data fetching and processing:
 
 **What the skill does:**
 
@@ -448,8 +466,8 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 - Formats output as markdown with proper spacing
 - Tracks viewing history (🆕 indicators)
 - Saves cache files:
-  - `~/.claude/.cache/fetch-prs-to-review.json` - PR lookup mapping (seq_num → repo#pr)
-  - `~/.claude/.cache/fetch-prs-to-review-history.json` - Viewing history
+  - `~/.claude/.cache/fetching-github-prs-to-review.json` - PR lookup mapping (seq_num → repo#pr)
+  - `~/.claude/.cache/fetching-github-prs-to-review-history.json` - Viewing history
 - Returns formatted markdown ready to display
 
 **What the slash command does:**
@@ -473,4 +491,5 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 - Automatically returns to PR queue after posting review
 - Clears todos when session ends
 
-See `~/.claude/skills/fetch-prs-to-review/SKILL.md` for complete skill documentation.
+See `~/.claude/skills/fetching-github-prs-to-review/SKILL.md` for complete skill documentation.
+```
