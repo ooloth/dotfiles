@@ -2,7 +2,6 @@
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-source "$DOTFILES/tools/zsh/utils.zsh"
 
 info "💻 Configuring macOS system settings"
 

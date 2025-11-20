@@ -1,4 +1,3 @@
-source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work
 
 if ! have gcloud; then
   return 0

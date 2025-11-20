@@ -2,7 +2,6 @@
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-source "$DOTFILES/tools/zsh/utils.zsh"
 
 repo="ooloth/config.nvim"
 local_repo="$HOME/Repos/$repo"

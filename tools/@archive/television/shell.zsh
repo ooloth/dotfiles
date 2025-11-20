@@ -1,6 +1,5 @@
 # See: https://alexpasmantier.github.io/television/docs/Users/cli/
 
-source "${DOTFILES}/tools/zsh/utils.zsh"
 
 # TODO: save and source them instead? which is more performant?
 # see: https://alexpasmantier.github.io/television/docs/Users/shell-integration#customizing-shell-integration-scripts

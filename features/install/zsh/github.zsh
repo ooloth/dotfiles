@@ -5,7 +5,6 @@
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-source "$DOTFILES/tools/zsh/utils.zsh"
 
 info "🔑 Adding SSH key pair to GitHub"
 

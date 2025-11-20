@@ -128,7 +128,6 @@ source "${DOTINSTALL}/settings.zsh"
 # SUGGEST RESTART #
 ###################
 
-source "$DOTFILES/tools/zsh/utils.zsh"
 info "🎉 Setup complete!"
 
 printf "\nCongratulations! Your Mac is nearly set up.\n\n"

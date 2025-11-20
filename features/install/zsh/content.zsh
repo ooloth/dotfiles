@@ -2,7 +2,6 @@
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
-source "$DOTFILES/tools/zsh/utils.zsh"
 
 repo="ooloth/content"
 local_repo="$HOME/Repos/$repo"
