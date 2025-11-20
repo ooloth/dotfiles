@@ -3,10 +3,14 @@
 Scan GitHub commit history for TIL-worthy commits.
 
 Usage:
-    python3 scan_git.py [days]
+    python3 scan_git.py [days] [--assessed-hashes hash1,hash2,...]
 
 Arguments:
     days: Number of days to look back (default: 30)
+    --assessed-hashes: Comma-separated list of already-assessed commit hashes
+
+Output:
+    JSON with suggestions and new commits to mark as assessed
 
 Requires:
     - gh CLI installed and authenticated
@@ -16,32 +20,7 @@ import subprocess
 import sys
 import json
 import re
-import os
 from datetime import datetime, timedelta
-from pathlib import Path
-
-
-CACHE_DIR = Path.home() / ".config" / "claude" / ".cache"
-CACHE_FILE = CACHE_DIR / "scan-git-for-tils-history.json"
-
-
-def load_cache() -> set[str]:
-    """Load previously assessed commit hashes."""
-    if CACHE_FILE.exists():
-        try:
-            with open(CACHE_FILE) as f:
-                data = json.load(f)
-                return set(data.get("assessed_commits", []))
-        except (json.JSONDecodeError, KeyError):
-            return set()
-    return set()
-
-
-def save_cache(assessed: set[str]) -> None:
-    """Save assessed commit hashes to cache."""
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    with open(CACHE_FILE, "w") as f:
-        json.dump({"assessed_commits": list(assessed)}, f, indent=2)
 
 
 def get_github_username() -> str:
@@ -316,18 +295,13 @@ def generate_title(commit: dict) -> str:
     return subject or "Untitled"
 
 
-def format_output(suggestions: list[dict], days: int, new_count: int, total_count: int) -> str:
+def format_markdown(suggestions: list[dict], days: int, new_count: int, total_count: int) -> str:
     """Format suggestions as markdown output."""
     header = f"📝 TIL Opportunities from Git History (last {days} days):\n"
 
     if total_count > 0 and new_count == 0:
         return f"""{header}
 No new commits to assess ({total_count} commits already reviewed).
-
-To see all commits again, clear the cache:
-```bash
-rm ~/.claude/.cache/scan-git-for-tils-history.json
-```
 """
 
     if not suggestions:
@@ -335,8 +309,7 @@ rm ~/.claude/.cache/scan-git-for-tils-history.json
 No high-potential TIL topics found.
 
 Try:
-- Increasing the date range: `python3 scan_git.py 60`
-- Clearing the cache to re-assess old commits
+- Increasing the date range: specify more days
 """
 
     lines = [header]
@@ -363,32 +336,44 @@ Try:
 def main():
     # Parse arguments
     days = 30
-    if len(sys.argv) > 1:
-        try:
-            days = int(sys.argv[1])
-        except ValueError:
-            print(f"Invalid days argument: {sys.argv[1]}")
-            sys.exit(1)
+    assessed_hashes = set()
+
+    args = sys.argv[1:]
+    i = 0
+    while i < len(args):
+        if args[i] == "--assessed-hashes" and i + 1 < len(args):
+            assessed_hashes = set(args[i + 1].split(",")) if args[i + 1] else set()
+            i += 2
+        else:
+            try:
+                days = int(args[i])
+            except ValueError:
+                pass
+            i += 1
 
     # Get GitHub username
     username = get_github_username()
     if not username:
-        print("Error: Could not get GitHub username. Is `gh` authenticated?")
+        print(json.dumps({
+            "error": "Could not get GitHub username. Is `gh` authenticated?",
+            "markdown": "",
+            "new_commits": []
+        }))
         sys.exit(1)
-
-    # Load cache
-    previously_assessed = load_cache()
 
     # Get commits
     commits = get_commits(days, username)
     total_count = len(commits)
 
     if not commits:
-        print(format_output([], days, 0, 0))
+        print(json.dumps({
+            "markdown": format_markdown([], days, 0, 0),
+            "new_commits": []
+        }))
         sys.exit(0)
 
     # Filter out already assessed commits
-    new_commits = [c for c in commits if c["full_hash"] not in previously_assessed]
+    new_commits = [c for c in commits if c["full_hash"] not in assessed_hashes]
     new_count = len(new_commits)
 
     # Score and filter new commits
@@ -407,12 +392,20 @@ def main():
     # Take top 10
     top_suggestions = scored_commits[:10]
 
-    # Update cache with all assessed commits
-    all_assessed = previously_assessed | {c["full_hash"] for c in commits}
-    save_cache(all_assessed)
+    # Prepare output
+    output = {
+        "markdown": format_markdown(top_suggestions, days, new_count, total_count),
+        "new_commits": [
+            {
+                "hash": c["full_hash"],
+                "message": c["subject"],
+                "repo": c["repo"]
+            }
+            for c in new_commits
+        ]
+    }
 
-    # Format and print output
-    print(format_output(top_suggestions, days, new_count, total_count))
+    print(json.dumps(output, indent=2))
 
 
 if __name__ == "__main__":

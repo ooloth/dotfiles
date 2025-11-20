@@ -1,6 +1,6 @@
 ---
 name: scan-git-for-tils
-description: Scans GitHub commit history for commits that might make good TIL blog posts. Queries all your repos across all orgs via GitHub API. Looks for bug fixes, configuration changes, gotchas, and interesting solutions. Caches assessed commits to avoid duplicates. Use when user asks for TIL ideas from their recent work.
+description: Scans GitHub commit history for commits that might make good TIL blog posts. Queries all your repos across all orgs via GitHub API. Tracks assessed commits in Notion to avoid duplicates across machines. Use when user asks for TIL ideas from their recent work.
 allowed-tools: [Bash]
 ---
 
@@ -8,43 +8,86 @@ allowed-tools: [Bash]
 
 Analyzes recent GitHub commits across all your repos to find TIL-worthy topics.
 
+## Notion Database
+
+**TIL Assessed Commits Database**
+- Database ID: `928fcd9e47a84f98824790ac5a6d37ca`
+- Data Source ID: `cba80148-aeef-49c9-ba45-5157668b17b3`
+
+Properties:
+- `Commit Hash` (title): Full SHA hash
+- `Message`: Commit message
+- `Repo`: Repository full name
+- `Writing` (relation): Link to Writing database if TIL was drafted
+- `Assessed` (date): When commit was assessed
+
 ## Usage
 
-Run the skill to scan GitHub commit history:
+### Step 1: Fetch assessed hashes from Notion
+
+Use `mcp__notion__notion-search` to get existing hashes:
+
+```
+Search the "TIL Assessed Commits" database to get all commit hashes
+```
+
+Extract the "Commit Hash" property from all pages.
+
+### Step 2: Run the script
 
 ```bash
-python3 ~/.claude/skills/scan-git-for-tils/scan_git.py [days]
+python3 ~/.claude/skills/scan-git-for-tils/scan_git.py [days] --assessed-hashes hash1,hash2,...
 ```
 
 **Arguments:**
 - `days` (optional): Number of days to look back (default: 30)
+- `--assessed-hashes`: Comma-separated list of full commit hashes from Notion
 
-**Requirements:**
-- `gh` CLI installed and authenticated
-- Access to repos you want to scan
+**Output:** JSON with:
+- `markdown`: Formatted suggestions to display
+- `new_commits`: Array of commits to add to Notion
+
+### Step 3: Display results
+
+Show the `markdown` field to the user.
+
+### Step 4: Write new commits to Notion
+
+For each item in `new_commits`, create a page in the TIL Assessed Commits database:
+
+```json
+{
+  "parent": {
+    "data_source_id": "cba80148-aeef-49c9-ba45-5157668b17b3"
+  },
+  "pages": [{
+    "properties": {
+      "Commit Hash": "<hash>",
+      "Message": "<message>",
+      "Repo": "<repo>",
+      "date:Assessed:start": "<today's date ISO>",
+      "date:Assessed:is_datetime": 0
+    }
+  }]
+}
+```
 
 ## What It Returns
 
-Formatted markdown with TIL suggestions:
+JSON output example:
 
-```
-📝 TIL Opportunities from Git History (last 30 days):
-
-1. **Git: Ignoring already-tracked files**
-   - Commit: abc1234 "fix: properly ignore .env after initial commit"
-   - Date: 3 days ago
-   - Files: .gitignore, .env
-   - TIL angle: Common gotcha - .gitignore doesn't affect tracked files
-
-2. **Zsh: Fixing slow shell startup**
-   - Commits: def5678, ghi9012 (related)
-   - Date: 1 week ago
-   - Files: .zshrc, nvm.zsh
-   - TIL angle: Lazy-load slow plugins to speed up shell init
-
-No suggestions found? Try:
-- Increasing the date range
-- Checking a different repository
+```json
+{
+  "markdown": "📝 TIL Opportunities from Git History (last 30 days):\n\n1. **Git: Ignoring already-tracked files**\n   - Repo: ooloth/dotfiles\n   - Commit: abc1234 \"fix: properly ignore .env\"\n   ...",
+  "new_commits": [
+    {
+      "hash": "abc1234567890...",
+      "message": "fix: properly ignore .env after initial commit",
+      "repo": "ooloth/dotfiles"
+    },
+    ...
+  ]
+}
 ```
 
 ## What to Look For
@@ -60,27 +103,14 @@ The script identifies commits with these patterns:
 ## Processing Done by Skill
 
 1. Queries GitHub API for your recent commits across all repos
-2. Filters out previously assessed commits (using cache)
+2. Filters out previously assessed commits (passed via --assessed-hashes)
 3. Scores commits based on TIL potential:
    - Has "fix", "resolve", "workaround" in message
    - Touches config files (.rc, .config, .json, .yaml)
    - Has detailed commit message (multiple lines or >100 chars)
    - Related to common gotcha patterns
-4. Groups related commits (same files or topic)
-5. Generates TIL angle suggestions based on commit content
-6. Saves assessed commit hashes to cache
-7. Formats output as markdown
-
-## Cache Management
-
-**Location:** `~/.config/claude/.cache/scan-git-for-tils-history.json`
-
-The cache stores commit hashes that have been assessed to avoid showing the same suggestions repeatedly.
-
-To reset and see all commits again:
-```bash
-rm ~/.config/claude/.cache/scan-git-for-tils-history.json
-```
+4. Generates TIL angle suggestions based on commit content
+5. Returns JSON with markdown display and new commits to record
 
 ## Notes
 
@@ -88,4 +118,4 @@ rm ~/.config/claude/.cache/scan-git-for-tils-history.json
 - Queries commits across all repos you have access to (personal + orgs)
 - Skips merge commits and dependency bot commits
 - TIL angles are suggestions - Claude should refine based on context
-- Cache prevents duplicate suggestions across sessions
+- Notion sync prevents duplicate suggestions across machines
