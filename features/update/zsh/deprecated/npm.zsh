@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-source "${DOTFILES}/tools/zsh/utils.zsh"
 
 main() {
   # TODO: install node via fnm if npm command is missing?

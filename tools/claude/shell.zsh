@@ -1,7 +1,6 @@
-source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work
 
 ########################
-# ENVIROMENT VARIABLES #
+# ENVIRONMENT VARIABLES #
 ########################
 
 # See: https://docs.anthropic.com/en/docs/claude-code/settings#environment-variables

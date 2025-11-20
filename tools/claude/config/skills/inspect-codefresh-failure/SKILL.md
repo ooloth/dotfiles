@@ -1,20 +1,54 @@
 ---
 name: inspect-codefresh-failure
-description: Inspects Codefresh CI build failures for recursionpharma org repos. Extracts build ID from status checks, fetches logs, and identifies specific errors with file/line references. Use when you see failing CI in a recursionpharma PR or when debugging CI-related issues.
+description: Instruction guide for analyzing Codefresh CI failures. When invoked, IMMEDIATELY follow the step-by-step instructions to extract build IDs, fetch logs, and create a formatted failure report. Use when reviewing recursionpharma PRs with failing CI.
 allowed-tools: [Bash, Read]
 ---
 
 # Inspect Codefresh Failure Skill
 
-Analyzes Codefresh CI failures for recursionpharma organization repositories and provides detailed failure reports with specific errors and root cause analysis.
+## ⚡ THIS IS AN INSTRUCTION GUIDE - EXECUTE IMMEDIATELY
+
+After invoking this skill, **DO NOT WAIT** - immediately execute the following steps using the PR data you already have:
+
+### QUICK START - Execute Now:
+
+**STEP 1**: Extract build ID from the failing check
+
+- Look for `"state": "FAILURE"` or `"conclusion": "FAILURE"` in statusCheckRollup
+- Find the Codefresh URL in `targetUrl` or `detailsUrl`
+- Extract the build ID (24-char hex) from `https://g.codefresh.io/build/{build-id}`
+
+**STEP 2**: Fetch build metadata
+
+```bash
+codefresh get builds <build-id> -o json
+```
+
+**STEP 3**: Search logs for errors
+
+```bash
+codefresh logs <build-id> | grep -E -B 10 -A 20 -i "error|fail|found.*error"
+```
+
+**STEP 4**: Format your findings using the "Expected Output Format" template below
+
+**STEP 5**: Include the formatted report in your PR review under "## CI Failure Analysis"
+
+---
+
+## Detailed Instructions
+
+This skill provides step-by-step guidance for analyzing Codefresh CI failures in recursionpharma organization repositories.
 
 ## Prerequisites
 
 **Required:**
+
 - `codefresh` CLI must be installed (typically via Homebrew: `brew install codefresh`)
 - User must be authenticated with Codefresh (check with `codefresh auth current-context`)
 
 **If prerequisites are missing:**
+
 - Inform the user that the Codefresh CLI is not available
 - Suggest they install it: `brew install codefresh`
 - Provide alternative: manually check the Codefresh build URL in the browser
@@ -22,6 +56,7 @@ Analyzes Codefresh CI failures for recursionpharma organization repositories and
 ## When to Use This Skill
 
 Use this skill when:
+
 - You see a failing CI check in a recursionpharma PR
 - User mentions CI failures in recursionpharma repos
 - Debugging "passes locally but fails in CI" issues
@@ -51,12 +86,14 @@ Use this skill when:
 ## Usage Examples
 
 ### Example 1: From Build ID
+
 ```bash
 # If you already have the build ID
 Build ID: 67c7469b3275b6f1b9f96f69
 ```
 
 ### Example 2: From PR Status Check Data
+
 ```json
 {
   "statusCheckRollup": [
@@ -71,6 +108,7 @@ Build ID: 67c7469b3275b6f1b9f96f69
 ```
 
 ### Example 3: From Repository and PR Number
+
 ```bash
 # Will fetch status checks and extract build ID
 Repository: recursionpharma/phenomics-potency-prediction
@@ -173,8 +211,25 @@ Request changes - fix the 5 undefined `random_seed` errors before merging (criti
 - **Tested and verified** - Commands tested against build `67c7469b3275b6f1b9f96f69` (recursionpharma/phenomics-potency-prediction#2)
 
 **Common error patterns:**
+
 - Linting errors (Ruff, Flake8, Black) - Look for "Found N errors"
 - Type errors (mypy, pyright) - Look for "error:" in output
 - Test failures (pytest, unittest) - Look for "FAILED" or "FAILURE"
 - Build failures (missing dependencies, import errors) - Look for "Error:" or "exit code"
 - Security scans (dependency vulnerabilities) - Check specific security step logs
+
+---
+
+## 🔴 IMPORTANT REMINDERS
+
+**You are reading this skill because you are reviewing a PR with failing CI.**
+
+**RIGHT NOW, you should:**
+
+1. ✅ Have already fetched the PR data with `gh pr view <number> --json statusCheckRollup`
+2. ✅ See failing checks in that data with `"state": "FAILURE"` or `"conclusion": "FAILURE"`
+3. ⚠️ **NEXT**: Extract the build ID from the Codefresh URL and run the commands above
+4. ⚠️ **DO NOT**: Wait, ask questions, or pause - execute the steps immediately
+5. ⚠️ **GOAL**: Create a "## CI Failure Analysis" section in your PR review with specific errors
+
+**If you find yourself waiting or unsure what to do next, re-read the QUICK START section at the top.**
