@@ -21,6 +21,7 @@ import sys
 import json
 import re
 from datetime import datetime, timedelta
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 def get_github_username() -> str:
@@ -64,13 +65,11 @@ def get_commits(days: int, username: str) -> list[dict]:
     except json.JSONDecodeError:
         return []
 
+    # Build commits list without files first
     commits = []
     for item in items:
         commit = item.get("commit", {})
         repo = item.get("repository", {}).get("full_name", "unknown")
-
-        # Get files changed for this commit
-        files = get_commit_files(repo, item.get("sha", ""))
 
         commits.append({
             "hash": item.get("sha", "")[:7],
@@ -79,9 +78,23 @@ def get_commits(days: int, username: str) -> list[dict]:
             "body": "\n".join(commit.get("message", "").split("\n")[1:]).strip(),
             "date": format_relative_date(commit.get("committer", {}).get("date", "")),
             "repo": repo,
-            "files": files,
+            "files": [],
             "url": item.get("html_url", ""),
         })
+
+    # Fetch files in parallel (limit concurrency to avoid rate limits)
+    if commits:
+        with ThreadPoolExecutor(max_workers=15) as executor:
+            future_to_commit = {
+                executor.submit(get_commit_files, c["repo"], c["full_hash"]): c
+                for c in commits
+            }
+            for future in as_completed(future_to_commit):
+                commit = future_to_commit[future]
+                try:
+                    commit["files"] = future.result()
+                except Exception:
+                    commit["files"] = []
 
     return commits
 
