@@ -255,5 +255,34 @@ After successfully creating the page:
 
 1. Display the page URL
 2. Show a summary of properties set
-3. Remind user they can review and edit in Notion
-4. Offer to draft another or return to suggestions
+3. **Link source to draft** (see below)
+4. Remind user they can review and edit in Notion
+5. Offer to draft another or return to suggestions
+
+---
+
+## Linking Sources to Drafts
+
+After creating the draft, update the source record to link to it.
+
+### For Git commit sources
+
+Update the TIL Assessed Commits page for that commit hash:
+
+```json
+{
+  "data": {
+    "page_id": "<assessed-commit-page-id>",
+    "command": "update_properties",
+    "properties": {
+      "Writing": "[\"<new-draft-page-url>\"]"
+    }
+  }
+}
+```
+
+To find the page ID: search TIL Assessed Commits for the commit hash.
+
+### For Notion backlog sources
+
+The draft was created with a Writing relation pointing to the source item. No additional linking needed - the relation is bidirectional.
