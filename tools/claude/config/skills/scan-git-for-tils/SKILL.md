@@ -18,6 +18,7 @@ Properties:
 - `Commit Hash` (title): Full SHA hash
 - `Message`: Commit message
 - `Repo`: Repository full name
+- `Commit Date` (date): When the commit was made
 - `Writing` (relation): Link to Writing database if TIL was drafted
 - `Assessed` (date): When commit was assessed
 
@@ -100,6 +101,8 @@ For each item in `new_commits`, create a page in the TIL Assessed Commits databa
       "Commit Hash": "<hash>",
       "Message": "<message>",
       "Repo": "<repo>",
+      "date:Commit Date:start": "<commit date ISO>",
+      "date:Commit Date:is_datetime": 0,
       "date:Assessed:start": "<today's date ISO>",
       "date:Assessed:is_datetime": 0
     }
@@ -113,12 +116,13 @@ JSON output example:
 
 ```json
 {
-  "markdown": "📝 TIL Opportunities from Git History (last 30 days):\n\n1. **Git: Ignoring already-tracked files**\n   - Repo: ooloth/dotfiles\n   - Commit: abc1234 \"fix: properly ignore .env\"\n   ...",
+  "markdown": "Git commits from last 30 days:\n\n1. [ooloth/dotfiles] fix: properly ignore .env\n   Hash: abc1234 | Date: 3 days ago\n   ...",
   "new_commits": [
     {
       "hash": "abc1234567890...",
       "message": "fix: properly ignore .env after initial commit",
-      "repo": "ooloth/dotfiles"
+      "repo": "ooloth/dotfiles",
+      "date": "2025-01-15"
     },
     ...
   ]

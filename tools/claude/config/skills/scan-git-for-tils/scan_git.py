@@ -70,12 +70,14 @@ def get_commits(days: int, username: str) -> list[dict]:
         commit = item.get("commit", {})
         repo = item.get("repository", {}).get("full_name", "unknown")
 
+        commit_date = commit.get("committer", {}).get("date", "")
         commits.append({
             "hash": item.get("sha", "")[:7],
             "full_hash": item.get("sha", ""),
             "subject": commit.get("message", "").split("\n")[0],
             "body": "\n".join(commit.get("message", "").split("\n")[1:]).strip(),
-            "date": format_relative_date(commit.get("committer", {}).get("date", "")),
+            "date": format_relative_date(commit_date),
+            "iso_date": commit_date[:10] if commit_date else "",  # YYYY-MM-DD
             "repo": repo,
             "files": [],
             "url": item.get("html_url", ""),
@@ -135,12 +137,14 @@ def get_commits_from_events(days: int, username: str) -> list[dict]:
             seen_hashes.add(sha)
 
             message = commit_data.get("message", "")
+            event_date = event.get("created_at", "")
             commits.append({
                 "hash": sha[:7],
                 "full_hash": sha,
                 "subject": message.split("\n")[0],
                 "body": "\n".join(message.split("\n")[1:]).strip(),
-                "date": format_relative_date(event.get("created_at", "")),
+                "date": format_relative_date(event_date),
+                "iso_date": event_date[:10] if event_date else "",
                 "repo": repo,
                 "files": [],  # Events don't include files
                 "url": f"https://github.com/{repo}/commit/{sha}",
@@ -302,7 +306,8 @@ def main():
             {
                 "hash": c["full_hash"],
                 "message": c["subject"],
-                "repo": c["repo"]
+                "repo": c["repo"],
+                "date": c["iso_date"]
             }
             for c in new_commits
         ]
