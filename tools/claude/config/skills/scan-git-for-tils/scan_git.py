@@ -19,7 +19,6 @@ Requires:
 import subprocess
 import sys
 import json
-import re
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -202,145 +201,49 @@ def format_relative_date(iso_date: str) -> str:
         return "unknown"
 
 
-def score_commit(commit: dict) -> int:
-    """Score a commit's TIL potential (0-100)."""
-    score = 0
+def should_skip_commit(commit: dict) -> bool:
+    """Check if commit should be filtered out entirely."""
     subject = commit["subject"].lower()
-    body = commit["body"].lower()
-    files = commit["files"]
 
     # Skip dependency bot commits
     if "dependabot" in subject or ("bump" in subject and "from" in subject):
-        return 0
+        return True
 
     # Skip merge commits
     if subject.startswith("merge"):
-        return 0
+        return True
 
-    # Fix-related keywords (+30)
-    fix_keywords = ["fix", "resolve", "workaround", "gotcha", "issue", "bug", "correct"]
-    if any(kw in subject for kw in fix_keywords):
-        score += 30
-
-    # Configuration files (+20)
-    config_patterns = [
-        r"\..*rc$", r"\.config", r"\.json$", r"\.yaml$", r"\.yml$",
-        r"\.toml$", r"\.env", r"Makefile", r"Dockerfile",
-    ]
-    for f in files:
-        if any(re.search(pat, f) for pat in config_patterns):
-            score += 20
-            break
-
-    # Detailed commit message (+15)
-    full_message = commit["subject"] + " " + commit["body"]
-    if len(full_message) > 100 or commit["body"]:
-        score += 15
-
-    # Learning indicators (+20)
-    learning_keywords = ["learn", "discover", "realize", "turns out", "actually", "til", "today i learned"]
-    if any(kw in subject or kw in body for kw in learning_keywords):
-        score += 20
-
-    # How-to indicators (+15)
-    howto_keywords = ["how to", "enable", "configure", "setup", "set up", "install"]
-    if any(kw in subject or kw in body for kw in howto_keywords):
-        score += 15
-
-    # Multiple files suggests complexity (+10)
-    if 2 <= len(files) <= 5:
-        score += 10
-
-    return min(score, 100)
+    return False
 
 
-def generate_til_angle(commit: dict) -> str:
-    """Generate a suggested TIL angle based on commit content."""
-    subject = commit["subject"].lower()
-    files = commit["files"]
-
-    if "fix" in subject and "ignore" in subject:
-        return "Common gotcha - files need special handling"
-
-    if any(".zsh" in f or ".bash" in f for f in files):
-        return "Shell configuration tip or optimization"
-
-    if any("docker" in f.lower() for f in files):
-        return "Docker/container configuration insight"
-
-    if any(".git" in f for f in files):
-        return "Git workflow or configuration tip"
-
-    if "test" in subject:
-        return "Testing pattern or debugging approach"
-
-    if "config" in subject or any("config" in f for f in files):
-        return "Configuration setup or tooling tip"
-
-    if "performance" in subject or "speed" in subject or "slow" in subject:
-        return "Performance optimization technique"
-
-    if subject.startswith("fix"):
-        return "Problem-solution pattern worth documenting"
-    elif subject.startswith("feat"):
-        return "New capability or workflow"
-    elif subject.startswith("refactor"):
-        return "Code organization or clarity improvement"
-
-    return "Potential learning worth sharing"
 
 
-def generate_title(commit: dict) -> str:
-    """Generate a suggested TIL title from commit."""
-    subject = commit["subject"]
-
-    # Remove conventional commit prefixes
-    subject = re.sub(r"^(fix|feat|chore|docs|refactor|test|style)(\(.+?\))?:\s*", "", subject)
-
-    # Capitalize first letter
-    if subject:
-        subject = subject[0].upper() + subject[1:]
-
-    # Truncate if too long
-    if len(subject) > 60:
-        subject = subject[:57] + "..."
-
-    return subject or "Untitled"
-
-
-def format_markdown(suggestions: list[dict], days: int, new_count: int, total_count: int) -> str:
-    """Format suggestions as markdown output."""
-    header = f"📝 TIL Opportunities from Git History (last {days} days):\n"
+def format_markdown(commits: list[dict], days: int, new_count: int, total_count: int) -> str:
+    """Format commits as markdown for Claude to evaluate."""
+    header = f"Git commits from last {days} days:\n"
 
     if total_count > 0 and new_count == 0:
-        return f"""{header}
-No new commits to assess ({total_count} commits already reviewed).
-"""
+        return f"{header}\nNo new commits to assess ({total_count} commits already reviewed)."
 
-    if not suggestions:
-        return f"""{header}
-No high-potential TIL topics found.
-
-Try:
-- Increasing the date range: specify more days
-"""
+    if not commits:
+        return f"{header}\nNo commits found. Try increasing the date range."
 
     lines = [header]
     if new_count < total_count:
-        lines.append(f"({new_count} new commits assessed, {total_count - new_count} already reviewed)\n")
+        lines.append(f"({new_count} new, {total_count - new_count} already reviewed)\n")
 
-    for i, commit in enumerate(suggestions, 1):
-        files_str = ", ".join(commit["files"][:3]) if commit["files"] else "(files not available)"
-        if len(commit["files"]) > 3:
-            files_str += f" (+{len(commit['files']) - 3} more)"
+    for i, commit in enumerate(commits, 1):
+        files_str = ", ".join(commit["files"][:5]) if commit["files"] else "(no files)"
+        if len(commit["files"]) > 5:
+            files_str += f" (+{len(commit['files']) - 5} more)"
 
-        lines.append(f"{i}. **{commit['suggested_title']}**")
-        lines.append(f"   - Repo: {commit['repo']}")
-        lines.append(f"   - Commit: {commit['hash']} \"{commit['subject'][:50]}{'...' if len(commit['subject']) > 50 else ''}\"")
-        lines.append(f"   - Date: {commit['date']}")
-        if commit["files"]:
-            lines.append(f"   - Files: {files_str}")
-        lines.append(f"   - TIL angle: {commit['til_angle']}")
+        lines.append(f"{i}. [{commit['repo']}] {commit['subject']}")
+        lines.append(f"   Hash: {commit['hash']} | Date: {commit['date']}")
+        if commit["body"]:
+            body_preview = commit["body"][:200] + "..." if len(commit["body"]) > 200 else commit["body"]
+            lines.append(f"   Body: {body_preview}")
+        lines.append(f"   Files: {files_str}")
+        lines.append(f"   URL: {commit['url']}")
         lines.append("")
 
     return "\n".join(lines)
@@ -385,29 +288,16 @@ def main():
         }))
         sys.exit(0)
 
-    # Filter out already assessed commits
-    new_commits = [c for c in commits if c["full_hash"] not in assessed_hashes]
+    # Filter out already assessed commits and skippable commits
+    new_commits = [
+        c for c in commits
+        if c["full_hash"] not in assessed_hashes and not should_skip_commit(c)
+    ]
     new_count = len(new_commits)
 
-    # Score and filter new commits
-    scored_commits = []
-    for commit in new_commits:
-        score = score_commit(commit)
-        if score >= 25:  # Minimum threshold
-            commit["score"] = score
-            commit["til_angle"] = generate_til_angle(commit)
-            commit["suggested_title"] = generate_title(commit)
-            scored_commits.append(commit)
-
-    # Sort by score
-    scored_commits.sort(key=lambda c: c["score"], reverse=True)
-
-    # Take top 10
-    top_suggestions = scored_commits[:10]
-
-    # Prepare output
+    # Prepare output - all commits for Claude to evaluate
     output = {
-        "markdown": format_markdown(top_suggestions, days, new_count, total_count),
+        "markdown": format_markdown(new_commits, days, new_count, total_count),
         "new_commits": [
             {
                 "hash": c["full_hash"],

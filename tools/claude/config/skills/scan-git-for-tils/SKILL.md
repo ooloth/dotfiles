@@ -47,11 +47,46 @@ python3 ~/.claude/skills/scan-git-for-tils/scan_git.py [days] --assessed-hashes 
 - `markdown`: Formatted suggestions to display
 - `new_commits`: Array of commits to add to Notion
 
-### Step 3: Display results
+### Step 3: Evaluate commits
 
-Show the `markdown` field to the user.
+Review the commits in the `markdown` field and identify the top 5-10 that would make good TILs.
 
-### Step 4: Write new commits to Notion
+**Good TIL candidates have:**
+- Solved a non-obvious problem (gotchas, edge cases, surprising behavior)
+- Learned something worth sharing (new technique, tool usage, configuration)
+- Fixed a bug that others might encounter
+- Set up tooling or configuration that was tricky
+- Implemented a pattern that could help others
+
+**Skip commits that are:**
+- Routine maintenance (version bumps, dependency updates, cleanup)
+- Trivial changes (typos, formatting, simple renames)
+- Chores without learning value (CI tweaks, file reorganization)
+- Too project-specific to be useful to others
+
+For each selected commit, generate:
+- **Suggested title**: Clear, direct (e.g., "How to X" or "Why Y happens")
+- **TIL angle**: The specific learning worth documenting
+
+### Step 4: Display results
+
+Present your evaluation to the user:
+
+```
+📝 TIL Opportunities from Git History (last N days):
+
+1. **Suggested Title Here**
+   - Repo: owner/repo
+   - Commit: abc1234 "original commit message"
+   - Date: 3 days ago
+   - Files: file1.py, file2.py
+   - TIL angle: What makes this worth documenting
+   - URL: https://github.com/...
+
+2. ...
+```
+
+### Step 5: Write new commits to Notion
 
 For each item in `new_commits`, create a page in the TIL Assessed Commits database:
 
@@ -90,32 +125,18 @@ JSON output example:
 }
 ```
 
-## What to Look For
+## How It Works
 
-The script identifies commits with these patterns:
-
-1. **Bug fixes** - Commits with "fix" that solved a non-obvious problem
-2. **Configuration changes** - Dotfiles, CI, tooling setup
-3. **Dependency updates** - Updates that required code changes
-4. **Detailed messages** - Commits explaining "why" not just "what"
-5. **Repeated patterns** - Same problem solved multiple times
-
-## Processing Done by Skill
-
-1. Queries GitHub API for your recent commits across all repos
-2. Filters out previously assessed commits (passed via --assessed-hashes)
-3. Scores commits based on TIL potential:
-   - Has "fix", "resolve", "workaround" in message
-   - Touches config files (.rc, .config, .json, .yaml)
-   - Has detailed commit message (multiple lines or >100 chars)
-   - Related to common gotcha patterns
-4. Generates TIL angle suggestions based on commit content
-5. Returns JSON with markdown display and new commits to record
+1. **Script fetches commits** - Queries GitHub API for your recent commits across all repos
+2. **Filters obvious skips** - Removes merge commits, dependabot, already-assessed
+3. **Returns all candidates** - Outputs commit details for Claude to evaluate
+4. **Claude evaluates** - Reviews commits and selects top TIL candidates
+5. **Records to Notion** - Marks all fetched commits as assessed
 
 ## Notes
 
 - Requires `gh` CLI installed and authenticated
 - Queries commits across all repos you have access to (personal + orgs)
-- Skips merge commits and dependency bot commits
-- TIL angles are suggestions - Claude should refine based on context
+- Script filters merge commits and dependency bot commits
+- Claude evaluates remaining commits for TIL potential
 - Notion sync prevents duplicate suggestions across machines
