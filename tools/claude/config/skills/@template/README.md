@@ -16,7 +16,7 @@ Create a skill (instead of a command or agent) when:
 
 | Approach | Use When | Example |
 |----------|----------|---------|
-| **Skill** | Heavy data processing, filtering, caching | `fetching-github-prs`, `analyzing-codebase` |
+| **Skill** | Heavy data processing, filtering, caching | `fetching-github-prs-to-review`, `analyzing-codebase` |
 | **Agent** | Complex exploration requiring multiple tool calls | `Explore`, `Plan`, `atomic-committer` |
 | **Command** | Simple prompts that need Claude's reasoning | `/plan`, `/fix-bug` |
 
@@ -28,7 +28,7 @@ Follow these naming rules from [Claude Docs Best Practices](https://platform.cla
 
 **Pattern: gerund + noun** (action + domain)
 
-- ✅ Good: `fetching-github-prs`, `analyzing-python-code`, `inspecting-codefresh-failures`
+- ✅ Good: `fetching-github-prs-to-review`, `analyzing-python-code`, `inspecting-codefresh-failures`
 - ❌ Bad: `helper`, `utils`, `github-tool`
 
 **Why gerund first:**
@@ -42,7 +42,7 @@ analyzing-python-code
 analyzing-javascript-code
 analyzing-terraform-plans
 
-fetching-github-prs
+fetching-github-prs-to-review
 fetching-jira-tickets
 fetching-slack-messages
 
@@ -298,7 +298,7 @@ Skills improve over time:
 
 ## Real-World Example
 
-See `~/.claude/skills/fetching-github-prs/` for a production skill that:
+See `~/.claude/skills/fetching-github-prs-to-review/` for a production skill that:
 - Fetches PRs from GitHub GraphQL API (~10KB response)
 - Filters, groups, and formats in Python
 - Returns ~2KB markdown summary
@@ -311,7 +311,7 @@ This skill demonstrates all the patterns in this template.
 
 Before considering a skill complete:
 
-- [ ] Follows naming convention (gerund + noun, e.g., `fetching-github-prs`)
+- [ ] Follows naming convention (gerund + noun, e.g., `fetching-github-prs-to-review`)
 - [ ] Description is clear, third-person, under 1024 characters
 - [ ] SKILL.md describes when/how to use it (under 500 lines)
 - [ ] Type hints on all functions

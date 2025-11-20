@@ -22,8 +22,8 @@ from typing import Any, Dict, List, Optional, Tuple
 MY_USERNAME = "ooloth"
 IGNORED_REPOS = ["recursionpharma/build-pipelines"]
 CACHE_DIR = os.path.expanduser("~/.claude/.cache")
-CACHE_FILE = os.path.join(CACHE_DIR, "fetch-prs-to-review.json")
-HISTORY_FILE = os.path.join(CACHE_DIR, "fetch-prs-to-review-history.json")
+CACHE_FILE = os.path.join(CACHE_DIR, "fetching-github-prs-to-review.json")
+HISTORY_FILE = os.path.join(CACHE_DIR, "fetching-github-prs-to-review-history.json")
 
 
 def fetch_prs_from_github() -> Dict[str, Any]:

@@ -83,7 +83,7 @@ Else:
 ## Current State
 
 **Strengths:**
-- Already using skill pattern with `fetch-prs-to-review` (exemplifies article's approach)
+- Already using skill pattern with `fetching-github-prs-to-review` (exemplifies article's approach)
 - Good security deny rules in `settings.json`
 - Agent-based delegation for complex tasks
 
@@ -114,7 +114,7 @@ Add deterministic security rules to deny patterns that could leak secrets:
 **Files**: `tools/claude/config/skills/@template/`
 
 Create a reference template showing best practices:
-- SKILL.md with structure similar to fetch-prs-to-review
+- SKILL.md with workflow patterns and structure
 - Example Python script with:
   - Type hints
   - Data filtering before output
@@ -160,9 +160,9 @@ Add guidance on:
 ### Theme 5: Rename Skills to Follow Naming Convention
 **Files**: `tools/claude/config/skills/*/`, various references
 
-Rename skills to use gerund form:
-- `fetch-prs-to-review` → `fetching-prs-to-review`
-- `inspect-codefresh-failure` → `inspecting-codefresh-failure`
+Rename skills to use gerund + noun form:
+- `fetch-prs-to-review` → `fetching-github-prs-to-review`
+- `inspect-codefresh-failure` → `inspecting-codefresh-failures`
 
 Update all references:
 - `tools/claude/config/CLAUDE.md`
@@ -174,8 +174,8 @@ Update all references:
 **Files**: `tools/claude/config/skills/*/`
 
 Review and enhance caching in:
-- `fetching-prs-to-review`: Already good, document as example
-- `inspecting-codefresh-failure`: Add caching for build logs by build_id
+- `fetching-github-prs-to-review`: Already good, document as example
+- `inspecting-codefresh-failures`: Add caching for build logs by build_id
 - Future skills: Apply caching template
 
 ## Non-Goals

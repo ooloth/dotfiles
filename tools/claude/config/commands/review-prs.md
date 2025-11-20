@@ -4,10 +4,10 @@ Fetch all open PRs where I'm requested as a reviewer across all relevant repos a
 
 ## Phase 1: Display PRs
 
-Run the `fetch-prs-to-review` skill to fetch and display PRs:
+Run the `fetching-github-prs-to-review` skill to fetch and display PRs:
 
 ```bash
-python3 ~/.claude/skills/fetch-prs-to-review/fetch_prs.py
+python3 ~/.claude/skills/fetching-github-prs-to-review/fetch_prs.py
 ```
 
 The skill outputs fully formatted markdown ready to display. It handles:
@@ -60,7 +60,7 @@ Use TodoWrite to maintain session state throughout the workflow. The todo list e
 
 1. Update todo: mark "Waiting for user to select a PR" as completed
 2. Update todo: mark "Reviewing PR with enhanced navigation" as in_progress
-3. Read the mapping from `~/.claude/.cache/fetch-prs-to-review.json`
+3. Read the mapping from `~/.claude/.cache/fetching-github-prs-to-review.json`
 4. Parse the repo and PR number
 5. Fetch PR data with context: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments,statusCheckRollup`
 6. Get file diffs: `gh pr diff <number> --repo <org>/<repo>`
@@ -410,7 +410,7 @@ What would you like to do?
 
 ## Cache File Lifecycle
 
-**Location:** `~/.claude/.cache/fetch-prs-to-review.json`
+**Location:** `~/.claude/.cache/fetching-github-prs-to-review.json`
 
 **Behavior:**
 
@@ -454,7 +454,7 @@ What would you like to do?
 
 ## Implementation Details
 
-The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-review/`) handles all data fetching and processing:
+The `fetching-github-prs-to-review` skill (located at `~/.claude/skills/fetching-github-prs-to-review/`) handles all data fetching and processing:
 
 **What the skill does:**
 
@@ -466,8 +466,8 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 - Formats output as markdown with proper spacing
 - Tracks viewing history (🆕 indicators)
 - Saves cache files:
-  - `~/.claude/.cache/fetch-prs-to-review.json` - PR lookup mapping (seq_num → repo#pr)
-  - `~/.claude/.cache/fetch-prs-to-review-history.json` - Viewing history
+  - `~/.claude/.cache/fetching-github-prs-to-review.json` - PR lookup mapping (seq_num → repo#pr)
+  - `~/.claude/.cache/fetching-github-prs-to-review-history.json` - Viewing history
 - Returns formatted markdown ready to display
 
 **What the slash command does:**
@@ -491,5 +491,5 @@ The `fetch-prs-to-review` skill (located at `~/.claude/skills/fetch-prs-to-revie
 - Automatically returns to PR queue after posting review
 - Clears todos when session ends
 
-See `~/.claude/skills/fetch-prs-to-review/SKILL.md` for complete skill documentation.
+See `~/.claude/skills/fetching-github-prs-to-review/SKILL.md` for complete skill documentation.
 ```

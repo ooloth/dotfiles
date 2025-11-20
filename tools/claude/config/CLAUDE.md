@@ -17,7 +17,7 @@ Use skills (`tools/claude/config/skills/`) for token-heavy operations:
 - **When**: Heavy data processing, filtering, caching opportunities
 - **Why**: Process data in code (Python/bash), return only filtered summaries
 - **Token savings**: 80-98% reduction vs processing via Claude tools
-- **Examples**: `fetching-github-prs`, `inspecting-codefresh-failures`
+- **Examples**: `fetching-github-prs-to-review`, `inspecting-codefresh-failures`
 
 Skills should:
 - Filter data in code before returning to Claude
@@ -31,7 +31,7 @@ Skills should:
 When creating skills, ALWAYS use the `/create-skill` command or reference the template:
 - **Template location**: `tools/claude/config/skills/@template/`
 - **Complete guidance**: See `@template/README.md` for all best practices
-- **Naming convention**: gerund + noun (e.g., `fetching-github-prs`, `analyzing-python-code`)
+- **Naming convention**: gerund + noun (e.g., `fetching-github-prs-to-review`, `analyzing-python-code`)
 - **Examples**: See existing skills in `tools/claude/config/skills/`
 
 The template includes:
