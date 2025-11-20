@@ -17,8 +17,7 @@ Use skills (`tools/claude/config/skills/`) for token-heavy operations:
 - **When**: Heavy data processing, filtering, caching opportunities
 - **Why**: Process data in code (Python/bash), return only filtered summaries
 - **Token savings**: 80-98% reduction vs processing via Claude tools
-- **Examples**: `fetch-prs-to-review`, `inspect-codefresh-failure`
-- **Template**: See `tools/claude/config/skills/@template/` for reference
+- **Examples**: `fetching-github-prs`, `inspecting-codefresh-failures`
 
 Skills should:
 - Filter data in code before returning to Claude
@@ -26,6 +25,20 @@ Skills should:
 - Cache intermediate results to avoid redundant processing
 - Use type hints for reliability
 - Sanitize sensitive data before output
+
+#### Creating New Skills
+
+When creating skills, ALWAYS use the `/create-skill` command or reference the template:
+- **Template location**: `tools/claude/config/skills/@template/`
+- **Complete guidance**: See `@template/README.md` for all best practices
+- **Naming convention**: gerund + noun (e.g., `fetching-github-prs`, `analyzing-python-code`)
+- **Examples**: See existing skills in `tools/claude/config/skills/`
+
+The template includes:
+- SKILL.md structure with workflow patterns
+- Example Python script with all best practices
+- Anti-patterns to avoid
+- Development process guidance
 
 ### 2. Agents Second
 
@@ -65,7 +78,7 @@ Use Claude tools directly only for:
 
 #### Inspecting CI Failures
 
-When you see a CI failure in a recursionpharma PR, **use the `inspect-codefresh-failure` skill** to analyze it.
+When you see a CI failure in a recursionpharma PR, **use the `inspecting-codefresh-failures` skill** to analyze it.
 
 The skill will:
 - Extract build IDs from PR status checks
