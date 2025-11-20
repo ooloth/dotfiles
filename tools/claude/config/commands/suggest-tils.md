@@ -10,12 +10,24 @@ Ask the user which sources to scan:
 📝 TIL Suggestion Sources
 
 Which sources should I scan?
-1. Git history (last 30 days across all repos)
+1. Git history
 2. Notion backlog (unpublished blog items)
 3. Both
 
 >
 ```
+
+If user selects git history (1 or 3), ask about date range:
+
+```
+How far back should I search?
+- Enter number of days (default: 30)
+- Or 'all' for maximum history
+
+>
+```
+
+Note: GitHub API returns max ~1000 commits, so very large ranges may be truncated.
 
 ## Phase 2: Scan Sources
 
