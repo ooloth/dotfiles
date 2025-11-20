@@ -8,6 +8,7 @@ This template shows:
 3. Caching patterns to avoid redundant operations
 4. Error handling with user-friendly messages
 5. Security-conscious data handling
+6. Plan-validate-execute pattern for operations that modify state
 """
 
 import json
@@ -247,12 +248,130 @@ def format_json(result: ProcessedResult) -> str:
 
 
 # =============================================================================
+# PLAN-VALIDATE-EXECUTE PATTERN
+# =============================================================================
+
+def plan_validate_execute_example() -> int:
+    """
+    Demonstrates the plan-validate-execute pattern for operations that modify state.
+
+    This pattern is recommended for skills that:
+    - Modify files or state
+    - Perform irreversible operations
+    - Require user awareness of what will happen
+
+    Pattern:
+    1. PLAN: Show user what will happen
+    2. VALIDATE: Check prerequisites and feasibility
+    3. EXECUTE: Perform the operation
+    4. REPORT: Confirm what was done
+
+    Returns:
+        Exit code (0 for success, 1 for error)
+    """
+
+    # ==========================================================================
+    # PHASE 1: PLAN
+    # ==========================================================================
+    # Describe what the operation will do BEFORE doing it
+    # This gives Claude/user a chance to understand or abort
+
+    print("# Plan", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("This operation will:", file=sys.stderr)
+    print("1. Fetch data from source", file=sys.stderr)
+    print("2. Process and filter 3 items", file=sys.stderr)
+    print("3. Cache results in ~/.claude/.cache/skill-name.json", file=sys.stderr)
+    print("4. Display formatted summary", file=sys.stderr)
+    print("", file=sys.stderr)
+
+    # ==========================================================================
+    # PHASE 2: VALIDATE
+    # ==========================================================================
+    # Check that prerequisites are met BEFORE making changes
+    # Fail fast with clear error messages if validation fails
+
+    print("# Validation", file=sys.stderr)
+    print("", file=sys.stderr)
+
+    # Check: Cache directory exists or can be created
+    try:
+        ensure_cache_dir()
+        print("✓ Cache directory accessible", file=sys.stderr)
+    except Exception as e:
+        print(f"✗ Cache directory not accessible: {e}", file=sys.stderr)
+        return 1
+
+    # Check: Can write to cache location
+    if CACHE_FILE.exists() and not os.access(CACHE_FILE, os.W_OK):
+        print(f"✗ Cannot write to cache file: {CACHE_FILE}", file=sys.stderr)
+        return 1
+    print("✓ Cache file writable", file=sys.stderr)
+
+    # Check: Dependencies available (example)
+    try:
+        import json  # Already imported, but demonstrating the pattern
+        print("✓ Required dependencies available", file=sys.stderr)
+    except ImportError as e:
+        print(f"✗ Missing dependency: {e}", file=sys.stderr)
+        return 1
+
+    print("", file=sys.stderr)
+    print("All validations passed. Proceeding with execution...", file=sys.stderr)
+    print("", file=sys.stderr)
+
+    # ==========================================================================
+    # PHASE 3: EXECUTE
+    # ==========================================================================
+    # Now that we've planned and validated, actually do the work
+
+    try:
+        # Fetch data
+        raw_data = fetch_raw_data()
+
+        # Process data
+        result = filter_and_process(raw_data)
+
+        # Cache results
+        save_cache(result.to_dict())
+
+        # Format output
+        output = format_markdown(result)
+
+    except Exception as e:
+        print(f"✗ Execution failed: {e}", file=sys.stderr)
+        return 1
+
+    # ==========================================================================
+    # PHASE 4: REPORT
+    # ==========================================================================
+    # Confirm what was done and show results
+
+    print("# Results", file=sys.stderr)
+    print("", file=sys.stderr)
+    print(f"✓ Processed {result.metadata['total_count']} items", file=sys.stderr)
+    print(f"✓ Found {result.metadata['active_count']} active items", file=sys.stderr)
+    print(f"✓ Cached results to {CACHE_FILE}", file=sys.stderr)
+    print("", file=sys.stderr)
+
+    # Output the actual results to stdout (Claude sees this)
+    print(output)
+
+    return 0
+
+
+# =============================================================================
 # MAIN EXECUTION
 # =============================================================================
 
 def main() -> int:
     """
     Main execution function.
+
+    This is a simpler pattern for read-only operations (fetching, analyzing, etc.)
+
+    For operations that modify state, see plan_validate_execute_example() above,
+    which demonstrates the plan-validate-execute pattern.
 
     Returns:
         Exit code (0 for success, 1 for error)
@@ -293,4 +412,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Use main() for read-only operations (default pattern)
     sys.exit(main())
+
+    # Or use plan_validate_execute_example() for state-modifying operations
+    # sys.exit(plan_validate_execute_example())
