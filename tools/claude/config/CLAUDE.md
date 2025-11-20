@@ -23,6 +23,18 @@
 - Implement changes one small theme at-a-time
 - Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
 
+## TIL Suggestions
+
+When you help solve a non-trivial problem or explain something in detail, consider if it would make a good TIL blog post. Look for:
+
+- Gotchas or surprising behavior
+- Elegant solutions to common problems
+- Things worth documenting for future reference
+
+Suggest naturally: "This could make a good TIL - want me to draft it?"
+
+To scan for TIL opportunities or draft posts, use the `/suggest-tils` command.
+
 ## CI System Information
 
 ### Recursion Pharma Organization
