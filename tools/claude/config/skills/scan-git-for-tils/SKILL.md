@@ -87,9 +87,11 @@ Present your evaluation to the user:
 2. ...
 ```
 
-### Step 5: Write new commits to Notion
+### Step 5: Write suggested commits to Notion
 
-For each item in `new_commits`, create a page in the TIL Assessed Commits database:
+Only write the commits you actually suggested to the user (not the entire fetch). This allows incremental review of large backlogs.
+
+For each suggested commit, create a page in the TIL Assessed Commits database:
 
 ```json
 {
@@ -134,8 +136,8 @@ JSON output example:
 1. **Script fetches commits** - Queries GitHub API for your recent commits across all repos
 2. **Filters obvious skips** - Removes merge commits, dependabot, already-assessed
 3. **Returns all candidates** - Outputs commit details for Claude to evaluate
-4. **Claude evaluates** - Reviews commits and selects top TIL candidates
-5. **Records to Notion** - Marks all fetched commits as assessed
+4. **Claude evaluates** - Reviews commits and selects top 5-10 TIL candidates
+5. **Records suggestions to Notion** - Only suggested commits are marked as assessed (allows incremental backlog review)
 
 ## Notes
 
