@@ -1,6 +1,6 @@
 ---
 name: skill-name
-description: Brief description of what this skill does. Should be clear enough that Claude knows when to invoke it.
+description: Brief description of what this skill does. Should be clear enough that Claude knows when to invoke it. Max 1024 characters.
 allowed-tools: [Bash]
 ---
 
@@ -17,6 +17,64 @@ This skill follows the pattern described in [Code Execution with MCP](https://ww
 3. **Cache intermediate results** - Avoid redundant API calls or expensive operations
 4. **Use typed interfaces** - Type hints for reliability and clarity
 5. **Deterministic security** - Never expose sensitive data in output
+
+## Workflow Patterns
+
+Choose the workflow pattern that best fits your skill:
+
+### Checklist Workflow
+
+For skills with sequential steps, use a checklist:
+
+```markdown
+When invoked:
+
+1. [ ] Fetch data from source
+2. [ ] Validate data completeness
+3. [ ] Process and filter results
+4. [ ] Format output
+5. [ ] Display summary
+```
+
+### Conditional Workflow
+
+For skills with decision points, use conditional logic:
+
+```markdown
+When invoked:
+
+If cached data exists and is fresh:
+  - Load from cache
+  - Display cached results
+Else:
+  - Fetch fresh data
+  - Process and cache
+  - Display new results
+```
+
+### Plan-Validate-Execute Pattern
+
+For skills that modify state or perform irreversible operations:
+
+```markdown
+When invoked:
+
+1. **Plan**: Show user what will happen
+2. **Validate**: Check prerequisites and feasibility
+3. **Execute**: Perform the operation
+4. **Report**: Confirm results
+```
+
+See `example_skill.py` for implementation of the plan-validate-execute pattern.
+
+## Progressive Disclosure
+
+Keep this SKILL.md under 500 lines. For detailed information:
+- Put workflow details in separate reference files
+- Claude loads reference files on-demand
+- Keep the main skill file focused on the workflow
+
+If this file grows too large, move detailed sections to a `references/` folder.
 
 ## Usage
 
