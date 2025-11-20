@@ -79,5 +79,3 @@ EOF
 find "${DOTFILES}/tools" -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -path "*/shell/integration.zsh" -print | sort | while read file; do
   echo "source \"${file}\"" >> "$MANIFEST"
 done
-
-printf "\n✅ Manifest generated: ${MANIFEST}\n"
