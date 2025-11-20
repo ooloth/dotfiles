@@ -162,7 +162,7 @@ Add guidance on:
 
 Rename skills to use gerund + noun form:
 - `fetch-prs-to-review` → `fetching-github-prs-to-review`
-- `inspect-codefresh-failure` → `inspecting-codefresh-failures`
+- `inspecting-codefresh-failures` → `inspecting-codefresh-failures`
 
 Update all references:
 - `tools/claude/config/CLAUDE.md`
