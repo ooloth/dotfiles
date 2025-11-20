@@ -87,7 +87,7 @@ kill() {
 
 alias R="source ${HOME}/.zshenv && source ${HOME}/.zshrc" # see https://stackoverflow.com/questions/56284264/recommended-method-for-reloading-zshrc-source-vs-exec
 
-alias regen="zsh ${DOTFILES}/features/update/zsh/generate-manifest.zsh" # regenerate shell manifest (rarely needed - happens automatically when stale)
+alias regen="source ${DOTFILES}/features/update/zsh/generate-manifest.zsh" # regenerate shell manifest (rarely needed - happens automatically when stale)
 
 sl() {
   local source_file="$1"
