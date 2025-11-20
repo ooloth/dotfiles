@@ -1,24 +1,27 @@
 ---
 name: scan-git-for-tils
-description: Scans git history for commits that might make good TIL blog posts. Looks for bug fixes, configuration changes, gotchas, and interesting solutions. Returns a formatted list of suggestions with commit context. Use when user asks for TIL ideas from their recent work.
+description: Scans GitHub commit history for commits that might make good TIL blog posts. Queries all your repos across all orgs via GitHub API. Looks for bug fixes, configuration changes, gotchas, and interesting solutions. Caches assessed commits to avoid duplicates. Use when user asks for TIL ideas from their recent work.
 allowed-tools: [Bash]
 ---
 
 # Scan Git for TILs Skill
 
-Analyzes recent git commits to find TIL-worthy topics.
+Analyzes recent GitHub commits across all your repos to find TIL-worthy topics.
 
 ## Usage
 
-Run the skill to scan git history:
+Run the skill to scan GitHub commit history:
 
 ```bash
-python3 ~/.claude/skills/scan-git-for-tils/scan_git.py [days] [repo_path]
+python3 ~/.claude/skills/scan-git-for-tils/scan_git.py [days]
 ```
 
 **Arguments:**
 - `days` (optional): Number of days to look back (default: 30)
-- `repo_path` (optional): Path to git repo (default: current directory)
+
+**Requirements:**
+- `gh` CLI installed and authenticated
+- Access to repos you want to scan
 
 ## What It Returns
 
@@ -56,8 +59,8 @@ The script identifies commits with these patterns:
 
 ## Processing Done by Skill
 
-1. Fetches git log for specified date range
-2. Parses commit messages, files changed, and dates
+1. Queries GitHub API for your recent commits across all repos
+2. Filters out previously assessed commits (using cache)
 3. Scores commits based on TIL potential:
    - Has "fix", "resolve", "workaround" in message
    - Touches config files (.rc, .config, .json, .yaml)
@@ -65,11 +68,24 @@ The script identifies commits with these patterns:
    - Related to common gotcha patterns
 4. Groups related commits (same files or topic)
 5. Generates TIL angle suggestions based on commit content
-6. Formats output as markdown
+6. Saves assessed commit hashes to cache
+7. Formats output as markdown
+
+## Cache Management
+
+**Location:** `~/.config/claude/.cache/scan-git-for-tils-history.json`
+
+The cache stores commit hashes that have been assessed to avoid showing the same suggestions repeatedly.
+
+To reset and see all commits again:
+```bash
+rm ~/.config/claude/.cache/scan-git-for-tils-history.json
+```
 
 ## Notes
 
-- Requires git to be installed and repo to have commits
-- Only analyzes commits by the current git user
+- Requires `gh` CLI installed and authenticated
+- Queries commits across all repos you have access to (personal + orgs)
 - Skips merge commits and dependency bot commits
 - TIL angles are suggestions - Claude should refine based on context
+- Cache prevents duplicate suggestions across sessions
