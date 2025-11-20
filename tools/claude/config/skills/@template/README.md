@@ -16,9 +16,52 @@ Create a skill (instead of a command or agent) when:
 
 | Approach | Use When | Example |
 |----------|----------|---------|
-| **Skill** | Heavy data processing, filtering, caching | `fetch-prs-to-review`, `analyze-codebase` |
+| **Skill** | Heavy data processing, filtering, caching | `fetching-github-prs`, `analyzing-codebase` |
 | **Agent** | Complex exploration requiring multiple tool calls | `Explore`, `Plan`, `atomic-committer` |
 | **Command** | Simple prompts that need Claude's reasoning | `/plan`, `/fix-bug` |
+
+## Naming Conventions
+
+Follow these naming rules from [Claude Docs Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices):
+
+### Skill Name (frontmatter)
+
+**Pattern: gerund + noun** (action + domain)
+
+- ✅ Good: `fetching-github-prs`, `analyzing-python-code`, `inspecting-codefresh-failures`
+- ❌ Bad: `helper`, `utils`, `github-tool`
+
+**Why gerund first:**
+- Smaller list of actions (~10-20) than domains (~20-50+)
+- Groups related actions together when alphabetically sorted
+- Natural English reading (verb phrase)
+
+**Examples by action:**
+```
+analyzing-python-code
+analyzing-javascript-code
+analyzing-terraform-plans
+
+fetching-github-prs
+fetching-jira-tickets
+fetching-slack-messages
+
+inspecting-codefresh-failures
+inspecting-docker-logs
+inspecting-kubernetes-pods
+```
+
+### Skill Description (frontmatter)
+
+- **Third person**: "Fetches and processes..." (not "I fetch...")
+- **Specific functionality**: Include key terms Claude will recognize
+- **Max 1024 characters**: Be concise but clear
+- **When to invoke**: Make it obvious when Claude should use this skill
+
+**Example:**
+```yaml
+description: Fetches GitHub pull requests waiting for review, filters by criteria, groups by category, and returns formatted markdown with CI status, review state, and priority ordering. Use when user wants to see their PR review queue.
+```
 
 ## How to Use This Template
 
@@ -120,24 +163,162 @@ except Exception as e:
 
 **Why**: Claude can show users helpful errors, not stack traces.
 
+## Anti-Patterns to Avoid
+
+From [Claude Docs Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices):
+
+### ❌ Windows-Style File Paths
+
+```python
+# ❌ Don't use backslashes
+path = "C:\\Users\\name\\file.txt"
+
+# ✅ Use forward slashes (works on all platforms)
+path = "C:/Users/name/file.txt"
+# Or better: use pathlib
+from pathlib import Path
+path = Path.home() / "file.txt"
+```
+
+### ❌ Too Many Options
+
+```python
+# ❌ Don't create decision paralysis
+def analyze(format='json', sort='asc', limit=10, group_by=None,
+            filter_by=None, include_meta=True, verbose=False):
+    # Too many choices!
+
+# ✅ Provide sensible defaults, minimal required params
+def analyze(data: List[Dict], output_format: str = 'markdown'):
+    # Simple, clear interface
+```
+
+### ❌ Assuming Package Installations
+
+```yaml
+# ❌ Don't assume packages exist
+dependencies:
+  - requests  # Might not be installed!
+
+# ✅ List requirements AND check availability
+dependencies:
+  - requests (required): pip install requests
+  - jq (optional): brew install jq
+```
+
+In code:
+```python
+try:
+    import requests
+except ImportError:
+    print("Error: requests not installed. Run: pip install requests", file=sys.stderr)
+    sys.exit(1)
+```
+
+### ❌ Time-Sensitive Information
+
+```markdown
+# ❌ Don't hardcode dates or versions
+Last updated: January 2025
+Tested with Claude Sonnet 4.0
+
+# ✅ Use relative time or omit
+Updated regularly
+Compatible with current Claude models
+```
+
+### ❌ Deep File References
+
+```markdown
+# ❌ Don't nest references too deep
+See references/detailed/workflows/advanced/patterns.md
+
+# ✅ Keep references one level from SKILL.md
+See references/workflow-patterns.md
+```
+
+**Why**: Claude loads files on-demand. Deep nesting increases context load and makes navigation confusing.
+
+## Development Process
+
+Recommended workflow from [Claude Docs Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices):
+
+### 1. Complete Task Without Skill First
+
+Before creating a skill, manually complete the task using Claude tools. This helps you:
+- Understand the actual workflow
+- Identify token-heavy operations
+- Spot patterns worth automating
+- Validate the use case
+
+### 2. Identify Reusable Patterns
+
+Ask yourself:
+- What parts are deterministic? (good for code)
+- What parts need Claude's reasoning? (keep in workflow)
+- What data can be filtered in code? (token savings)
+- What results can be cached? (performance)
+
+### 3. Create Initial Skill
+
+Start with the template:
+```bash
+cp -r ~/.claude/skills/@template ~/.claude/skills/action-domain
+```
+
+Focus on:
+- Clear workflow in SKILL.md
+- Working script (even if simple)
+- Basic error handling
+
+### 4. Test with Different Claude Models
+
+If available, test your skill with:
+- Haiku (fast, cheap - does it still work?)
+- Sonnet (balanced - main use case)
+- Opus (powerful - any edge cases?)
+
+### 5. Gather Feedback
+
+Use the skill in real scenarios:
+- Does Claude invoke it appropriately?
+- Are instructions clear enough?
+- Does output format work well?
+- Any missing error cases?
+
+### 6. Iterate Continuously
+
+Skills improve over time:
+- Add caching when performance matters
+- Refine error messages based on actual errors
+- Add features based on real usage
+- Simplify when complexity doesn't pay off
+
+**Key principle**: Start simple, add complexity only when needed.
+
 ## Real-World Example
 
-See `~/.claude/skills/fetch-prs-to-review/` for a production skill that:
+See `~/.claude/skills/fetching-github-prs/` for a production skill that:
 - Fetches PRs from GitHub GraphQL API (~10KB response)
 - Filters, groups, and formats in Python
 - Returns ~2KB markdown summary
 - ~80% token reduction
 - Caches results with viewing history
 
+This skill demonstrates all the patterns in this template.
+
 ## Checklist for New Skills
 
 Before considering a skill complete:
 
-- [ ] SKILL.md describes when/how to use it
+- [ ] Follows naming convention (gerund + noun, e.g., `fetching-github-prs`)
+- [ ] Description is clear, third-person, under 1024 characters
+- [ ] SKILL.md describes when/how to use it (under 500 lines)
 - [ ] Type hints on all functions
 - [ ] Caching implemented (if applicable)
 - [ ] Sensitive data sanitized
 - [ ] Error handling with user-friendly messages
+- [ ] No anti-patterns (Windows paths, too many options, assumed packages, etc.)
 - [ ] Output formatted for readability
 - [ ] Tested locally
 - [ ] Token savings measured/documented
@@ -145,6 +326,6 @@ Before considering a skill complete:
 
 ## Further Reading
 
-- [Code Execution with MCP](https://www.anthropic.com/engineering/code-execution-with-mcp) - Original article
-- Claude Code docs on skills (when available)
-- Your existing skills for more examples
+- [Code Execution with MCP](https://www.anthropic.com/engineering/code-execution-with-mcp) - Token efficiency patterns
+- [Skill Authoring Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) - Official Claude docs
+- Your existing skills for more examples (see `~/.claude/skills/`)
