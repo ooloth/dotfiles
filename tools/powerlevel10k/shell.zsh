@@ -1,6 +1,6 @@
 
 ########################
-# ENVIROMENT VARIABLES #
+# ENVIRONMENT VARIABLES #
 ########################
 
 # Powerlevel10k

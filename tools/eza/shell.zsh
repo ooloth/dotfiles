@@ -1,6 +1,6 @@
 
 ########################
-# ENVIROMENT VARIABLES #
+# ENVIRONMENT VARIABLES #
 ########################
 
 # see: https://github.com/eza-community/eza/blob/main/man/eza.1.md#environment-variables

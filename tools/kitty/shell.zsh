@@ -1,6 +1,5 @@
-
 ########################
-# ENVIROMENT VARIABLES #
+# ENVIRONMENT VARIABLES #
 ########################
 
 ###########

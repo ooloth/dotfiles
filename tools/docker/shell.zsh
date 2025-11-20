@@ -4,7 +4,7 @@ if ! have docker; then
 fi
 
 ########################
-# ENVIROMENT VARIABLES #
+# ENVIRONMENT VARIABLES #
 ########################
 
 ###########

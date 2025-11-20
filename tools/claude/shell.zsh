@@ -1,6 +1,6 @@
 
 ########################
-# ENVIROMENT VARIABLES #
+# ENVIRONMENT VARIABLES #
 ########################
 
 # See: https://docs.anthropic.com/en/docs/claude-code/settings#environment-variables

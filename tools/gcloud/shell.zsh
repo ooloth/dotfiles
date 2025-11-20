@@ -4,7 +4,7 @@ if ! have gcloud; then
 fi
 
 ########################
-# ENVIROMENT VARIABLES #
+# ENVIRONMENT VARIABLES #
 ########################
 
 export PATH="${HOME}/google-cloud-sdk/bin:$PATH"
