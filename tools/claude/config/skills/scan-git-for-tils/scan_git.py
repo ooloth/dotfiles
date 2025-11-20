@@ -3,24 +3,94 @@
 Scan GitHub commit history for TIL-worthy commits.
 
 Usage:
-    python3 scan_git.py [days] [--assessed-hashes hash1,hash2,...]
+    python3 scan_git.py [days]
 
 Arguments:
     days: Number of days to look back (default: 30)
-    --assessed-hashes: Comma-separated list of already-assessed commit hashes
 
 Output:
-    JSON with suggestions and new commits to mark as assessed
+    JSON with commits for Claude to evaluate
 
 Requires:
     - gh CLI installed and authenticated
+    - op CLI installed and authenticated (1Password)
 """
 
 import subprocess
 import sys
 import json
+import urllib.request
+import urllib.error
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# 1Password paths
+OP_NOTION_TOKEN = "op://Scripts/Notion/api-access-token"
+
+# Notion database IDs
+NOTION_ASSESSED_COMMITS_DB = "928fcd9e47a84f98824790ac5a6d37ca"
+
+
+def get_op_secret(path: str) -> str:
+    """Fetch a secret from 1Password."""
+    result = subprocess.run(
+        ["op", "read", path],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return ""
+    return result.stdout.strip()
+
+
+def get_assessed_commits_from_notion() -> set[str]:
+    """Fetch all assessed commit hashes from Notion database."""
+    token = get_op_secret(OP_NOTION_TOKEN)
+    if not token:
+        return set()
+
+    url = f"https://api.notion.com/v1/databases/{NOTION_ASSESSED_COMMITS_DB}/query"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
+
+    assessed_hashes = set()
+    has_more = True
+    start_cursor = None
+
+    while has_more:
+        body = {}
+        if start_cursor:
+            body["start_cursor"] = start_cursor
+
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(body).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+
+        try:
+            with urllib.request.urlopen(req) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except urllib.error.URLError:
+            break
+
+        for page in data.get("results", []):
+            # Commit Hash is the title property
+            title_prop = page.get("properties", {}).get("Commit Hash", {})
+            title_content = title_prop.get("title", [])
+            if title_content:
+                commit_hash = title_content[0].get("plain_text", "")
+                if commit_hash:
+                    assessed_hashes.add(commit_hash)
+
+        has_more = data.get("has_more", False)
+        start_cursor = data.get("next_cursor")
+
+    return assessed_hashes
 
 
 def get_github_username() -> str:
@@ -256,20 +326,14 @@ def format_markdown(commits: list[dict], days: int, new_count: int, total_count:
 def main():
     # Parse arguments
     days = 30
-    assessed_hashes = set()
+    if len(sys.argv) > 1:
+        try:
+            days = int(sys.argv[1])
+        except ValueError:
+            pass
 
-    args = sys.argv[1:]
-    i = 0
-    while i < len(args):
-        if args[i] == "--assessed-hashes" and i + 1 < len(args):
-            assessed_hashes = set(args[i + 1].split(",")) if args[i + 1] else set()
-            i += 2
-        else:
-            try:
-                days = int(args[i])
-            except ValueError:
-                pass
-            i += 1
+    # Fetch assessed commits from Notion
+    assessed_hashes = get_assessed_commits_from_notion()
 
     # Get GitHub username
     username = get_github_username()

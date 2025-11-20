@@ -24,31 +24,25 @@ Properties:
 
 ## Usage
 
-### Step 1: Fetch assessed hashes from Notion
-
-Use `mcp__notion__notion-search` to get existing hashes:
-
-```
-Search the "TIL Assessed Commits" database to get all commit hashes
-```
-
-Extract the "Commit Hash" property from all pages.
-
-### Step 2: Run the script
+### Step 1: Run the script
 
 ```bash
-python3 ~/.claude/skills/scan-git-for-tils/scan_git.py [days] --assessed-hashes hash1,hash2,...
+python3 ~/.claude/skills/scan-git-for-tils/scan_git.py [days]
 ```
 
 **Arguments:**
 - `days` (optional): Number of days to look back (default: 30)
-- `--assessed-hashes`: Comma-separated list of full commit hashes from Notion
+
+The script automatically:
+- Fetches assessed commit hashes from Notion (via 1Password for auth)
+- Fetches your commits from GitHub
+- Filters out already-assessed commits
 
 **Output:** JSON with:
-- `markdown`: Formatted suggestions to display
-- `new_commits`: Array of commits to add to Notion
+- `markdown`: Commit details for Claude to evaluate
+- `new_commits`: Array of commits with hash, message, repo, date
 
-### Step 3: Evaluate commits
+### Step 2: Evaluate commits
 
 Review the commits in the `markdown` field and identify the top 5-10 that would make good TILs.
 
@@ -69,7 +63,7 @@ For each selected commit, generate:
 - **Suggested title**: Clear, direct (e.g., "How to X" or "Why Y happens")
 - **TIL angle**: The specific learning worth documenting
 
-### Step 4: Display results
+### Step 3: Display results
 
 Present your evaluation to the user:
 
@@ -87,7 +81,7 @@ Present your evaluation to the user:
 2. ...
 ```
 
-### Step 5: Write suggested commits to Notion
+### Step 4: Write suggested commits to Notion
 
 Only write the commits you actually suggested to the user (not the entire fetch). This allows incremental review of large backlogs.
 
@@ -142,6 +136,8 @@ JSON output example:
 ## Notes
 
 - Requires `gh` CLI installed and authenticated
+- Requires `op` CLI installed and authenticated (1Password)
+- Notion token stored at `op://Scripts/Notion/api-access-token`
 - Queries commits across all repos you have access to (personal + orgs)
 - Script filters merge commits and dependency bot commits
 - Claude evaluates remaining commits for TIL potential
