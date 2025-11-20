@@ -9,6 +9,15 @@ Creates a TIL blog post draft in Notion following the user's voice and style.
 
 ## Voice Guide
 
+### Spirit
+
+1. **Learning in public** - I'm sharing things I found helpful; you might too
+2. **We don't take ourselves seriously** - Coding is fun, not solemn
+3. **Respect your time** - Get to the point quickly
+4. **Keep it light** - Direct but not dry
+
+Every technique below serves these principles.
+
 ### Two TIL Formats
 
 **Ultra-short (50-150 words)**
@@ -38,23 +47,53 @@ Creates a TIL blog post draft in Notion following the user's voice and style.
    - Contractions are fine
    - Second person throughout
 
-4. **Playful asides and humor** (1-2 per post, don't overdo it)
-   - "Illegal! Now you're a criminal"
-   - "Oh noooo..."
-   - "Really, really no vertical margins"
-
-5. **Code examples always included**
+4. **Code examples always included**
    - Show the problem code
    - Show the solution code
    - Inline comments can have personality
 
-6. **No fluff**
+5. **No fluff**
    - Get to the point quickly
    - Short paragraphs
    - Scannable structure
 
-7. **Helpful signoff** (optional)
-   - "Hope that helps!"
+### Rhythm and Tonal Variation
+
+**Critical**: Don't be relentlessly direct. Alternate rapid-fire teaching with moments of personality.
+
+**The pattern**: Direct instruction → tonal break → direct instruction → tonal break
+
+**Types of tonal breaks** (use 2-4 per standard post):
+
+1. **Playful asides** - Brief moments of humor
+   - "Illegal! Now you're a criminal."
+   - "Really, really no vertical margins"
+   - "Oh noooo..."
+
+2. **Casual satisfaction** - Express relief or confidence
+   - "Happily, there's a cleaner way."
+   - "It worked like a charm."
+   - End with "😎" after a satisfying solution
+
+3. **Honest reflection** - Admit limitations or show thought process
+   - "the example I showed above doesn't actually work out very well!"
+   - "After trying a number of workarounds..."
+   - "this was a fun exercise in the meantime"
+
+4. **Varied closings** - Don't repeat the same signoff
+   - "Hope that clears things up."
+   - "That's the trick."
+   - Or just end on the last code example (no closing needed)
+
+**Example rhythm**:
+```
+[Direct: state problem]
+[Direct: show bad code]
+[Tonal break: "Illegal! Now you're a criminal."]
+[Direct: explain solution]
+[Direct: show good code]
+[Tonal break: casual closing or 😎]
+```
 
 ### What NOT to Do
 
@@ -189,9 +228,7 @@ const truthyArray = array.filter(Boolean)
 // [{ good }, { great }]
 ```
 
-The `filter(Boolean)` step passes each item to `Boolean()`, which coerces it to `true` or `false`. If truthy, we keep it.
-
-Hope that helps!
+The `filter(Boolean)` step passes each item to `Boolean()`, which coerces it to `true` or `false`. If truthy, we keep it. 😎
 ```
 
 **Properties**:
