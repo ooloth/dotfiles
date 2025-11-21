@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["notion-client"]
+# ///
 """
 Scan GitHub commit history for TIL-worthy commits.
 
@@ -14,13 +18,14 @@ Output:
 Requires:
     - gh CLI installed and authenticated
     - op CLI installed and authenticated (1Password)
+    - uv (for dependency management)
 """
+
+from __future__ import annotations
 
 import subprocess
 import sys
 import json
-import urllib.request
-import urllib.error
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -45,50 +50,46 @@ def get_op_secret(path: str) -> str:
 
 def get_assessed_commits_from_notion() -> set[str]:
     """Fetch all assessed commit hashes from Notion database."""
+    from notion_client import Client
+
     token = get_op_secret(OP_NOTION_TOKEN)
     if not token:
         return set()
 
-    url = f"https://api.notion.com/v1/databases/{NOTION_ASSESSED_COMMITS_DB}/query"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-    }
+    try:
+        notion = Client(auth=token)
+    except Exception:
+        return set()
 
     assessed_hashes = set()
-    has_more = True
     start_cursor = None
 
-    while has_more:
-        body = {}
-        if start_cursor:
-            body["start_cursor"] = start_cursor
-
-        req = urllib.request.Request(
-            url,
-            data=json.dumps(body).encode("utf-8"),
-            headers=headers,
-            method="POST",
-        )
-
+    while True:
         try:
-            with urllib.request.urlopen(req) as response:
-                data = json.loads(response.read().decode("utf-8"))
-        except urllib.error.URLError:
+            # Query with pagination
+            query_params = {"database_id": NOTION_ASSESSED_COMMITS_DB}
+            if start_cursor:
+                query_params["start_cursor"] = start_cursor
+
+            response = notion.databases.query(**query_params)
+
+            # Extract commit hashes from results
+            for page in response.get("results", []):
+                title_prop = page.get("properties", {}).get("Commit Hash", {})
+                title_content = title_prop.get("title", [])
+                if title_content:
+                    commit_hash = title_content[0].get("plain_text", "")
+                    if commit_hash:
+                        assessed_hashes.add(commit_hash)
+
+            # Check if there are more pages
+            if not response.get("has_more", False):
+                break
+
+            start_cursor = response.get("next_cursor")
+
+        except Exception:
             break
-
-        for page in data.get("results", []):
-            # Commit Hash is the title property
-            title_prop = page.get("properties", {}).get("Commit Hash", {})
-            title_content = title_prop.get("title", [])
-            if title_content:
-                commit_hash = title_content[0].get("plain_text", "")
-                if commit_hash:
-                    assessed_hashes.add(commit_hash)
-
-        has_more = data.get("has_more", False)
-        start_cursor = data.get("next_cursor")
 
     return assessed_hashes
 

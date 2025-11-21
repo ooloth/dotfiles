@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pytest"]
+# dependencies = ["pytest", "notion-client"]
 # ///
 """
 Tests for pure functions in TIL workflow scripts.
@@ -11,10 +11,8 @@ Or: uv run pytest test_pure_functions.py -v
 """
 
 import sys
-import json
 from pathlib import Path
 from unittest.mock import patch, MagicMock
-from io import BytesIO
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -124,7 +122,7 @@ def make_notion_page(commit_hash: str) -> dict:
 
 
 def make_notion_response(hashes: list[str], has_more: bool = False, next_cursor: str | None = None) -> dict:
-    """Helper: create a mock Notion API response."""
+    """Helper: create a mock Notion SDK response."""
     return {
         "results": [make_notion_page(h) for h in hashes],
         "has_more": has_more,
@@ -132,13 +130,11 @@ def make_notion_response(hashes: list[str], has_more: bool = False, next_cursor:
     }
 
 
-def mock_urlopen(response_data: dict):
-    """Helper: create a mock urlopen response."""
-    mock_response = MagicMock()
-    mock_response.read.return_value = json.dumps(response_data).encode("utf-8")
-    mock_response.__enter__.return_value = mock_response
-    mock_response.__exit__.return_value = None
-    return mock_response
+def mock_notion_client(responses: list[dict]):
+    """Helper: create a mock Notion client with predefined responses."""
+    mock_client = MagicMock()
+    mock_client.databases.query.side_effect = responses
+    return mock_client
 
 
 class TestGetAssessedCommitsFromNotion:
@@ -151,54 +147,62 @@ class TestGetAssessedCommitsFromNotion:
 
     def test_returns_commit_hashes_from_single_page(self):
         with patch("scan_git.get_op_secret", return_value="fake-token"), \
-             patch("urllib.request.urlopen") as mock_open:
+             patch("notion_client.Client") as MockClient:
 
-            mock_open.return_value = mock_urlopen(
+            mock_client = mock_notion_client([
                 make_notion_response(["abc123", "def456", "ghi789"])
-            )
+            ])
+            MockClient.return_value = mock_client
 
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456", "ghi789"}
 
     def test_handles_pagination(self):
         with patch("scan_git.get_op_secret", return_value="fake-token"), \
-             patch("urllib.request.urlopen") as mock_open:
+             patch("notion_client.Client") as MockClient:
 
-            # First page
+            # First page with more results
             first_response = make_notion_response(
                 ["abc123", "def456"],
                 has_more=True,
                 next_cursor="cursor-1"
             )
-            # Second page
+            # Second page, final
             second_response = make_notion_response(
                 ["ghi789", "jkl012"],
                 has_more=False
             )
 
-            mock_open.side_effect = [
-                mock_urlopen(first_response),
-                mock_urlopen(second_response)
-            ]
+            mock_client = mock_notion_client([first_response, second_response])
+            MockClient.return_value = mock_client
 
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456", "ghi789", "jkl012"}
-            assert mock_open.call_count == 2
+            assert mock_client.databases.query.call_count == 2
 
-    def test_handles_url_error_gracefully(self):
-        import urllib.error
-
+    def test_handles_client_error_gracefully(self):
         with patch("scan_git.get_op_secret", return_value="fake-token"), \
-             patch("urllib.request.urlopen") as mock_open:
+             patch("notion_client.Client") as MockClient:
 
-            mock_open.side_effect = urllib.error.URLError("Network error")
+            MockClient.side_effect = Exception("Connection error")
+
+            result = get_assessed_commits_from_notion()
+            assert result == set()
+
+    def test_handles_query_error_gracefully(self):
+        with patch("scan_git.get_op_secret", return_value="fake-token"), \
+             patch("notion_client.Client") as MockClient:
+
+            mock_client = MagicMock()
+            mock_client.databases.query.side_effect = Exception("Query error")
+            MockClient.return_value = mock_client
 
             result = get_assessed_commits_from_notion()
             assert result == set()
 
     def test_skips_pages_without_commit_hash(self):
         with patch("scan_git.get_op_secret", return_value="fake-token"), \
-             patch("urllib.request.urlopen") as mock_open:
+             patch("notion_client.Client") as MockClient:
 
             response = {
                 "results": [
@@ -210,7 +214,8 @@ class TestGetAssessedCommitsFromNotion:
                 "next_cursor": None
             }
 
-            mock_open.return_value = mock_urlopen(response)
+            mock_client = mock_notion_client([response])
+            MockClient.return_value = mock_client
 
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456"}
