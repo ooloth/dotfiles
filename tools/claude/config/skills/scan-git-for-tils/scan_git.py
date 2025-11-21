@@ -155,7 +155,7 @@ def get_commits(days: int, username: str) -> list[dict]:
 
     # Fetch files in parallel (limit concurrency to avoid rate limits)
     if commits:
-        with ThreadPoolExecutor(max_workers=15) as executor:
+        with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_commit = {
                 executor.submit(get_commit_files, c["repo"], c["full_hash"]): c
                 for c in commits
@@ -164,7 +164,8 @@ def get_commits(days: int, username: str) -> list[dict]:
                 commit = future_to_commit[future]
                 try:
                     commit["files"] = future.result()
-                except Exception:
+                except Exception as e:
+                    print(f"Warning: Failed to fetch files for {commit['hash']}: {e}", file=sys.stderr)
                     commit["files"] = []
 
     return commits
@@ -182,11 +183,13 @@ def get_commits_from_events(days: int, username: str) -> list[dict]:
     )
 
     if result.returncode != 0:
+        print(f"Error: Failed to fetch user events via gh api (exit code {result.returncode}): {result.stderr.strip()}", file=sys.stderr)
         return []
 
     try:
         events = json.loads(result.stdout)
     except json.JSONDecodeError:
+        print("Error: Failed to parse JSON output from gh api user events.", file=sys.stderr)
         return []
 
     commits = []

@@ -167,24 +167,31 @@ def update_tracker_entry(token: str, page_id: str, writing_page_id: str) -> str:
         with urllib.request.urlopen(req) as response:
             result = json.loads(response.read().decode("utf-8"))
             return result.get("url", "")
-    except urllib.error.URLError as e:
+    except urllib.error.HTTPError as e:
         error_body = e.read().decode("utf-8")
         raise Exception(f"Failed to update tracker: {e.code} - {error_body}")
+    except urllib.error.URLError as e:
+        raise Exception(f"Failed to update tracker: {e.reason}")
 
 
 def create_tracker_entry(token: str, commit: dict, writing_page_id: str) -> str:
     """Create an entry in TIL Assessed Commits and link to Writing page. Returns page URL."""
 
+    properties = {
+        "Commit Hash": {"title": [{"type": "text", "text": {"content": commit["hash"]}}]},
+        "Message": {"rich_text": [{"type": "text", "text": {"content": commit["message"][:2000]}}]},
+        "Repo": {"rich_text": [{"type": "text", "text": {"content": commit["repo"]}}]},
+        "Assessed": {"date": {"start": date.today().isoformat()}},
+        "Writing": {"relation": [{"id": writing_page_id}]},
+    }
+
+    # Only add Commit Date if present (None breaks Notion API)
+    if commit.get("date"):
+        properties["Commit Date"] = {"date": {"start": commit["date"]}}
+
     body = {
         "parent": {"database_id": ASSESSED_COMMITS_DATA_SOURCE_ID},
-        "properties": {
-            "Commit Hash": {"title": [{"type": "text", "text": {"content": commit["hash"]}}]},
-            "Message": {"rich_text": [{"type": "text", "text": {"content": commit["message"][:2000]}}]},
-            "Repo": {"rich_text": [{"type": "text", "text": {"content": commit["repo"]}}]},
-            "Commit Date": {"date": {"start": commit["date"]} if commit.get("date") else None},
-            "Assessed": {"date": {"start": date.today().isoformat()}},
-            "Writing": {"relation": [{"id": writing_page_id}]},
-        },
+        "properties": properties,
     }
 
     result = notion_request(token, "pages", body)
@@ -294,6 +301,14 @@ def main():
     missing = [f for f in required if f not in input_data]
     if missing:
         print(json.dumps({"error": f"Missing required fields: {missing}"}))
+        sys.exit(1)
+
+    # Validate field lengths (Notion API limits)
+    if len(input_data["title"]) > 2000:
+        print(json.dumps({"error": "Title exceeds 2000 characters"}))
+        sys.exit(1)
+    if len(input_data["description"]) > 2000:
+        print(json.dumps({"error": "Description exceeds 2000 characters"}))
         sys.exit(1)
 
     commit = input_data["commit"]
