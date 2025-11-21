@@ -29,7 +29,7 @@ from dataclasses import dataclass, asdict
 
 from git.commits import get_github_username, get_commits
 from git.formatting import should_skip_commit, format_markdown
-from notion.client import get_assessed_commits_from_notion
+from notion.commits import get_assessed_commits_from_notion
 
 
 @dataclass

@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from git.commits import Commit
 from git.formatting import format_relative_date, should_skip_commit
 from notion.blocks import extract_page_id, markdown_to_blocks
-from notion.client import get_assessed_commits_from_notion
+from notion.commits import get_assessed_commits_from_notion
 
 
 class TestFormatRelativeDate:
@@ -193,12 +193,12 @@ class TestGetAssessedCommitsFromNotion:
     """Test fetching assessed commits from Notion."""
 
     def test_returns_empty_set_when_no_token(self):
-        with patch("notion.client.get_op_secret", return_value=""):
+        with patch("notion.commits.get_op_secret", return_value=""):
             result = get_assessed_commits_from_notion()
             assert result == set()
 
     def test_returns_commit_hashes_from_single_page(self):
-        with patch("notion.client.get_op_secret", return_value="fake-token"), \
+        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             mock_client = mock_notion_client([
@@ -210,7 +210,7 @@ class TestGetAssessedCommitsFromNotion:
             assert result == {"abc123", "def456", "ghi789"}
 
     def test_handles_pagination(self):
-        with patch("notion.client.get_op_secret", return_value="fake-token"), \
+        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             # First page with more results
@@ -233,7 +233,7 @@ class TestGetAssessedCommitsFromNotion:
             assert mock_client.databases.query.call_count == 2
 
     def test_handles_client_error_gracefully(self):
-        with patch("notion.client.get_op_secret", return_value="fake-token"), \
+        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             MockClient.side_effect = Exception("Connection error")
@@ -242,7 +242,7 @@ class TestGetAssessedCommitsFromNotion:
             assert result == set()
 
     def test_handles_query_error_gracefully(self):
-        with patch("notion.client.get_op_secret", return_value="fake-token"), \
+        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             mock_client = MagicMock()
@@ -253,7 +253,7 @@ class TestGetAssessedCommitsFromNotion:
             assert result == set()
 
     def test_skips_pages_without_commit_hash(self):
-        with patch("notion.client.get_op_secret", return_value="fake-token"), \
+        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             response = {

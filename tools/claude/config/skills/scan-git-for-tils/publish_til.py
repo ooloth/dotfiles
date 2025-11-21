@@ -42,9 +42,9 @@ from dataclasses import dataclass, asdict
 
 from pydantic import BaseModel, Field, ValidationError
 
-from notion.client import (
-    get_notion_client,
-    create_writing_page,
+from notion.client import get_notion_client
+from notion.writing import create_writing_page
+from notion.commits import (
     find_existing_tracker_entry,
     update_tracker_entry,
     create_tracker_entry,
