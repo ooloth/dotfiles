@@ -3,6 +3,114 @@
 from __future__ import annotations
 
 
+def _map_language_alias(language: str) -> str:
+    """Map common language names to Notion's expected values."""
+    lang_map = {
+        "": "plain text",
+        "js": "javascript",
+        "ts": "typescript",
+        "py": "python",
+        "sh": "shell",
+        "bash": "shell",
+        "zsh": "shell",
+    }
+    return lang_map.get(language, language) or "plain text"
+
+
+def _create_code_block(lines: list[str], start_index: int) -> tuple[dict, int]:
+    """Create a code block from markdown fenced code.
+
+    Returns: (block dict, new index after closing ```)
+    """
+    language = lines[start_index].strip()[3:].strip()
+    language = _map_language_alias(language)
+
+    code_lines = []
+    i = start_index + 1
+
+    # Collect all lines until closing ```
+    while i < len(lines):
+        if lines[i].strip().startswith("```"):
+            break
+        code_lines.append(lines[i])
+        i += 1
+
+    code_content = "\n".join(code_lines)
+    block = {
+        "type": "code",
+        "code": {
+            "rich_text": [{"type": "text", "text": {"content": code_content}}],
+            "language": language,
+        },
+    }
+
+    return block, i + 1
+
+
+def _create_heading_block(line: str) -> dict | None:
+    """Create a heading block from markdown heading syntax.
+
+    Returns: block dict or None if not a heading
+    """
+    if line.startswith("### "):
+        return {
+            "type": "heading_3",
+            "heading_3": {
+                "rich_text": [{"type": "text", "text": {"content": line[4:]}}]
+            },
+        }
+    elif line.startswith("## "):
+        return {
+            "type": "heading_2",
+            "heading_2": {
+                "rich_text": [{"type": "text", "text": {"content": line[3:]}}]
+            },
+        }
+    elif line.startswith("# "):
+        return {
+            "type": "heading_1",
+            "heading_1": {
+                "rich_text": [{"type": "text", "text": {"content": line[2:]}}]
+            },
+        }
+    return None
+
+
+def _create_list_item_block(line: str) -> dict | None:
+    """Create a list item block from markdown list syntax.
+
+    Returns: block dict or None if not a list item
+    """
+    if line.startswith("- "):
+        return {
+            "type": "bulleted_list_item",
+            "bulleted_list_item": {
+                "rich_text": [{"type": "text", "text": {"content": line[2:]}}]
+            },
+        }
+    elif len(line) > 2 and line[0].isdigit() and line[1:3] == ". ":
+        return {
+            "type": "numbered_list_item",
+            "numbered_list_item": {
+                "rich_text": [{"type": "text", "text": {"content": line[3:]}}]
+            },
+        }
+    return None
+
+
+def _create_paragraph_block(line: str) -> dict:
+    """Create a paragraph block from text content."""
+    if not line.strip():
+        # Empty line - create empty paragraph for spacing
+        return {"type": "paragraph", "paragraph": {"rich_text": []}}
+    else:
+        # Regular paragraph with content
+        return {
+            "type": "paragraph",
+            "paragraph": {"rich_text": [{"type": "text", "text": {"content": line}}]},
+        }
+
+
 def markdown_to_blocks(content: str) -> list:
     """Convert markdown content to Notion blocks.
 
@@ -15,84 +123,29 @@ def markdown_to_blocks(content: str) -> list:
     while i < len(lines):
         line = lines[i]
 
-        # Code blocks - handle language parameter properly
+        # Code blocks
         if line.strip().startswith("```"):
-            language = line.strip()[3:].strip()
-            # Map common language names to Notion's expected values
-            lang_map = {
-                "": "plain text",
-                "js": "javascript",
-                "ts": "typescript",
-                "py": "python",
-                "sh": "shell",
-                "bash": "shell",
-                "zsh": "shell",
-            }
-            language = lang_map.get(language, language) or "plain text"
-
-            code_lines = []
-            i += 1
-            # Collect all lines until closing ```
-            while i < len(lines):
-                if lines[i].strip().startswith("```"):
-                    break
-                code_lines.append(lines[i])
-                i += 1
-
-            # Create code block with proper content
-            code_content = "\n".join(code_lines)
-            if code_content or True:  # Always create block even if empty
-                blocks.append({
-                    "type": "code",
-                    "code": {
-                        "rich_text": [{"type": "text", "text": {"content": code_content}}],
-                        "language": language,
-                    }
-                })
-            i += 1
+            block, new_index = _create_code_block(lines, i)
+            blocks.append(block)
+            i = new_index
             continue
 
         # Headings
-        if line.startswith("### "):
-            blocks.append({
-                "type": "heading_3",
-                "heading_3": {"rich_text": [{"type": "text", "text": {"content": line[4:]}}]}
-            })
-        elif line.startswith("## "):
-            blocks.append({
-                "type": "heading_2",
-                "heading_2": {"rich_text": [{"type": "text", "text": {"content": line[3:]}}]}
-            })
-        elif line.startswith("# "):
-            blocks.append({
-                "type": "heading_1",
-                "heading_1": {"rich_text": [{"type": "text", "text": {"content": line[2:]}}]}
-            })
-        # Bullet lists
-        elif line.startswith("- "):
-            blocks.append({
-                "type": "bulleted_list_item",
-                "bulleted_list_item": {"rich_text": [{"type": "text", "text": {"content": line[2:]}}]}
-            })
-        # Numbered lists
-        elif len(line) > 2 and line[0].isdigit() and line[1:3] == ". ":
-            blocks.append({
-                "type": "numbered_list_item",
-                "numbered_list_item": {"rich_text": [{"type": "text", "text": {"content": line[3:]}}]}
-            })
-        # Empty lines - create empty paragraph for spacing
-        elif not line.strip():
-            blocks.append({
-                "type": "paragraph",
-                "paragraph": {"rich_text": []}
-            })
-        # Regular paragraphs
-        else:
-            blocks.append({
-                "type": "paragraph",
-                "paragraph": {"rich_text": [{"type": "text", "text": {"content": line}}]}
-            })
+        heading_block = _create_heading_block(line)
+        if heading_block:
+            blocks.append(heading_block)
+            i += 1
+            continue
 
+        # List items
+        list_block = _create_list_item_block(line)
+        if list_block:
+            blocks.append(list_block)
+            i += 1
+            continue
+
+        # Paragraphs (including empty lines)
+        blocks.append(_create_paragraph_block(line))
         i += 1
 
     return blocks

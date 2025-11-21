@@ -5,7 +5,8 @@ from __future__ import annotations
 from datetime import date
 
 from shared import get_op_secret
-from notion.blocks import markdown_to_blocks, extract_page_id
+
+from notion.blocks import markdown_to_blocks
 
 # 1Password paths
 OP_NOTION_TOKEN = "op://Scripts/Notion/api-access-token"
@@ -72,7 +73,9 @@ def get_assessed_commits_from_notion() -> set[str]:
     return assessed_hashes
 
 
-def create_writing_page(notion, title: str, content: str, slug: str, description: str) -> str:
+def create_writing_page(
+    notion, title: str, content: str, slug: str, description: str
+) -> str:
     """Create a TIL draft in the Writing database. Returns page URL."""
 
     page = notion.pages.create(
@@ -82,7 +85,9 @@ def create_writing_page(notion, title: str, content: str, slug: str, description
             "Status": {"status": {"name": "Claude Draft"}},
             "Type": {"select": {"name": "how-to"}},
             "Destination": {"multi_select": [{"name": "blog"}]},
-            "Description": {"rich_text": [{"type": "text", "text": {"content": description}}]},
+            "Description": {
+                "rich_text": [{"type": "text", "text": {"content": description}}]
+            },
             "Slug": {"rich_text": [{"type": "text", "text": {"content": slug}}]},
         },
         children=markdown_to_blocks(content),
@@ -96,12 +101,7 @@ def find_existing_tracker_entry(notion, commit_hash: str) -> str:
     try:
         results = notion.databases.query(
             database_id=ASSESSED_COMMITS_DATA_SOURCE_ID,
-            filter={
-                "property": "Commit Hash",
-                "title": {
-                    "equals": commit_hash
-                }
-            }
+            filter={"property": "Commit Hash", "title": {"equals": commit_hash}},
         )
         if results.get("results"):
             return results["results"][0]["id"]
@@ -119,7 +119,7 @@ def update_tracker_entry(notion, page_id: str, writing_page_id: str) -> str:
             properties={
                 "Writing": {"relation": [{"id": writing_page_id}]},
                 "Assessed": {"date": {"start": date.today().isoformat()}},
-            }
+            },
         )
         return page.get("url", "")
     except Exception as e:
@@ -130,8 +130,14 @@ def create_tracker_entry(notion, commit: dict, writing_page_id: str) -> str:
     """Create an entry in TIL Assessed Commits and link to Writing page. Returns page URL."""
 
     properties = {
-        "Commit Hash": {"title": [{"type": "text", "text": {"content": commit["hash"]}}]},
-        "Message": {"rich_text": [{"type": "text", "text": {"content": commit["message"][:2000]}}]},
+        "Commit Hash": {
+            "title": [{"type": "text", "text": {"content": commit["hash"]}}]
+        },
+        "Message": {
+            "rich_text": [
+                {"type": "text", "text": {"content": commit["message"][:2000]}}
+            ]
+        },
         "Repo": {"rich_text": [{"type": "text", "text": {"content": commit["repo"]}}]},
         "Assessed": {"date": {"start": date.today().isoformat()}},
         "Writing": {"relation": [{"id": writing_page_id}]},
