@@ -37,7 +37,7 @@ description: Comprehensive test improvement, creation, and coverage enhancement
 
 1. **Identify failures** - Run tests and capture error messages
 2. **Check CI failures** (recursionpharma repos only):
-   - If tests pass locally but fail in CI, use the `inspect-codefresh-failure` skill
+   - If tests pass locally but fail in CI, use the `inspecting-codefresh-failures` skill
    - It will analyze Codefresh logs and identify environment differences, missing dependencies, or timing issues
 3. **Analyze root cause** - Test issue vs code behavior change vs environment difference
 4. **Categorize problems**:
@@ -98,7 +98,7 @@ description: Comprehensive test improvement, creation, and coverage enhancement
 - **Test performance** - Ensure test suite runs efficiently
 - **Update CI/CD** - Integrate new tests into automated pipelines
   - For recursionpharma repos: Verify tests pass in Codefresh after pushing
-  - If CI fails, use the `inspect-codefresh-failure` skill to analyze build logs
+  - If CI fails, use the `inspecting-codefresh-failures` skill to analyze build logs
 - **Document test strategy** - Clear guidance for future testing
 
 Test target (issue to fix, feature to test, or coverage to improve): $ARGUMENTS

@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-source "$DOTFILES/tools/zsh/utils.zsh"
 info "🐚 Configuring zsh shell"
 
 # Use the Homebrew version of Zsh

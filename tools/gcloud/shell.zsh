@@ -1,11 +1,10 @@
-source "${DOTFILES}/tools/zsh/utils.zsh" # have, is_work
 
 if ! have gcloud; then
   return 0
 fi
 
 ########################
-# ENVIROMENT VARIABLES #
+# ENVIRONMENT VARIABLES #
 ########################
 
 export PATH="${HOME}/google-cloud-sdk/bin:$PATH"

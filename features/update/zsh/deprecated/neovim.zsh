@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-source "$DOTFILES/tools/zsh/utils.zsh"
 
 info "🧃 Updating Neovim lsp servers, linters and formatters"
 

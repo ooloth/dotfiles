@@ -9,8 +9,54 @@
 ## Managing your context window
 
 - You do best thinking when you have less in your context rather than more
-- Minimize your context usage by delegating tasks that are straight-forward to describe and report back about but may require lots of exploration to complete to my custom agents (`tools/claude/config/agents`) or ephemeral Task agents you create
-- Ensure any agents you delegate to know exactly what you want them to report back, and what details to include
+- Minimize your context usage by choosing the right approach for each task:
+
+### 1. Skills First (Highest Priority)
+
+Use skills (`tools/claude/config/skills/`) for token-heavy operations:
+- **When**: Heavy data processing, filtering, caching opportunities
+- **Why**: Process data in code (Python/bash), return only filtered summaries
+- **Token savings**: 80-98% reduction vs processing via Claude tools
+- **Examples**: `fetching-github-prs-to-review`, `inspecting-codefresh-failures`
+
+Skills should:
+- Filter data in code before returning to Claude
+- Return formatted summaries, not raw data
+- Cache intermediate results to avoid redundant processing
+- Use type hints for reliability
+- Sanitize sensitive data before output
+
+#### Creating New Skills
+
+When creating skills, ALWAYS use the `/create-skill` command or reference the template:
+- **Template location**: `tools/claude/config/skills/@template/`
+- **Complete guidance**: See `@template/README.md` for all best practices
+- **Naming convention**: gerund + noun (e.g., `fetching-github-prs-to-review`, `analyzing-python-code`)
+- **Examples**: See existing skills in `tools/claude/config/skills/`
+
+The template includes:
+- SKILL.md structure with workflow patterns
+- Example Python script with all best practices
+- Anti-patterns to avoid
+- Development process guidance
+
+### 2. Agents Second
+
+Use agents (`tools/claude/config/agents`) for complex exploration:
+- **When**: Tasks requiring multiple tool calls, exploration, or investigation
+- **Why**: Agents can autonomously explore and make decisions
+- **Examples**: `atomic-committer`, `pr-creator`, ephemeral `Explore`/`Plan` agents
+- **Ensure**: Agents know exactly what to report back and what details to include
+
+### 3. Direct Tool Usage Last
+
+Use Claude tools directly only for:
+- Simple, one-off operations
+- Tasks requiring immediate context from the conversation
+- Operations where overhead of a skill/agent isn't justified
+
+### General Context Management
+
 - Update the `<task>.md` with any helpful findings
 - When you detect you are within 10% of your available context window before auto-compact, pause to update your to-do list and the `<task>.md` with all important hand-off details, including the primary goals and non-goals of the task and any implementation decisions that have already been made
 
@@ -44,7 +90,7 @@ To scan for TIL opportunities or draft posts, use the `/suggest-tils` command.
 
 #### Inspecting CI Failures
 
-When you see a CI failure in a recursionpharma PR, **use the `inspect-codefresh-failure` skill** to analyze it.
+When you see a CI failure in a recursionpharma PR, **use the `inspecting-codefresh-failures` skill** to analyze it.
 
 The skill will:
 - Extract build IDs from PR status checks

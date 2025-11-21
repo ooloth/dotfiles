@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-source "${DOTFILES}/tools/zsh/utils.zsh"
 
 # Return early if not installed
 if ! have gcloud; then
@@ -8,7 +7,6 @@ if ! have gcloud; then
 fi
 
 # Otherwise, update
-source "$DOTFILES/tools/zsh/utils.zsh"
 info "✨ Updating gcloud components"
 
 # The "quiet" flag skips interactive prompts by using the default or erroring (see: https://stackoverflow.com/a/31811541/8802485)
