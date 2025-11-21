@@ -1,4 +1,4 @@
-name: Test Claude Skills
+name: Test Claude
 
 on:
   # Run on pull requests to main
@@ -19,8 +19,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Test Python Skills
+  skills:
+    name: Skills
     runs-on: macos-latest
 
     steps:
