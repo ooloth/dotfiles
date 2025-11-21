@@ -17,8 +17,9 @@ from unittest.mock import patch, MagicMock
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from scan_git import format_relative_date, should_skip_commit, get_assessed_commits_from_notion
-from publish_til import extract_page_id
+from git.formatting import format_relative_date, should_skip_commit
+from notion.blocks import extract_page_id, markdown_to_blocks
+from notion.client import get_assessed_commits_from_notion
 
 
 class TestFormatRelativeDate:
@@ -141,12 +142,12 @@ class TestGetAssessedCommitsFromNotion:
     """Test fetching assessed commits from Notion."""
 
     def test_returns_empty_set_when_no_token(self):
-        with patch("scan_git.get_op_secret", return_value=""):
+        with patch("shared.get_op_secret", return_value=""):
             result = get_assessed_commits_from_notion()
             assert result == set()
 
     def test_returns_commit_hashes_from_single_page(self):
-        with patch("scan_git.get_op_secret", return_value="fake-token"), \
+        with patch("shared.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             mock_client = mock_notion_client([
@@ -158,7 +159,7 @@ class TestGetAssessedCommitsFromNotion:
             assert result == {"abc123", "def456", "ghi789"}
 
     def test_handles_pagination(self):
-        with patch("scan_git.get_op_secret", return_value="fake-token"), \
+        with patch("shared.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             # First page with more results
@@ -181,7 +182,7 @@ class TestGetAssessedCommitsFromNotion:
             assert mock_client.databases.query.call_count == 2
 
     def test_handles_client_error_gracefully(self):
-        with patch("scan_git.get_op_secret", return_value="fake-token"), \
+        with patch("shared.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             MockClient.side_effect = Exception("Connection error")
@@ -190,7 +191,7 @@ class TestGetAssessedCommitsFromNotion:
             assert result == set()
 
     def test_handles_query_error_gracefully(self):
-        with patch("scan_git.get_op_secret", return_value="fake-token"), \
+        with patch("shared.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             mock_client = MagicMock()
@@ -201,7 +202,7 @@ class TestGetAssessedCommitsFromNotion:
             assert result == set()
 
     def test_skips_pages_without_commit_hash(self):
-        with patch("scan_git.get_op_secret", return_value="fake-token"), \
+        with patch("shared.get_op_secret", return_value="fake-token"), \
              patch("notion_client.Client") as MockClient:
 
             response = {
@@ -219,6 +220,73 @@ class TestGetAssessedCommitsFromNotion:
 
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456"}
+
+
+class TestMarkdownToBlocks:
+    """Test markdown to Notion blocks conversion."""
+
+    def test_converts_code_blocks(self):
+        markdown = "```python\nprint('hello')\n```"
+        blocks = markdown_to_blocks(markdown)
+
+        assert len(blocks) == 1
+        assert blocks[0]["type"] == "code"
+        assert blocks[0]["code"]["language"] == "python"
+        assert blocks[0]["code"]["rich_text"][0]["text"]["content"] == "print('hello')"
+
+    def test_maps_language_aliases(self):
+        markdown = "```js\nconsole.log('test')\n```"
+        blocks = markdown_to_blocks(markdown)
+
+        assert blocks[0]["code"]["language"] == "javascript"
+
+    def test_converts_headings(self):
+        markdown = "# H1\n## H2\n### H3"
+        blocks = markdown_to_blocks(markdown)
+
+        assert len(blocks) == 3
+        assert blocks[0]["type"] == "heading_1"
+        assert blocks[1]["type"] == "heading_2"
+        assert blocks[2]["type"] == "heading_3"
+
+    def test_converts_bullet_lists(self):
+        markdown = "- Item 1\n- Item 2"
+        blocks = markdown_to_blocks(markdown)
+
+        assert len(blocks) == 2
+        assert blocks[0]["type"] == "bulleted_list_item"
+        assert blocks[0]["bulleted_list_item"]["rich_text"][0]["text"]["content"] == "Item 1"
+
+    def test_converts_numbered_lists(self):
+        markdown = "1. First\n2. Second"
+        blocks = markdown_to_blocks(markdown)
+
+        assert len(blocks) == 2
+        assert blocks[0]["type"] == "numbered_list_item"
+        assert blocks[1]["type"] == "numbered_list_item"
+
+    def test_converts_paragraphs(self):
+        markdown = "This is a paragraph"
+        blocks = markdown_to_blocks(markdown)
+
+        assert len(blocks) == 1
+        assert blocks[0]["type"] == "paragraph"
+        assert blocks[0]["paragraph"]["rich_text"][0]["text"]["content"] == "This is a paragraph"
+
+    def test_handles_empty_lines(self):
+        markdown = "Line 1\n\nLine 2"
+        blocks = markdown_to_blocks(markdown)
+
+        assert len(blocks) == 3
+        assert blocks[1]["type"] == "paragraph"
+        assert blocks[1]["paragraph"]["rich_text"] == []
+
+    def test_handles_multiline_code_blocks(self):
+        markdown = "```python\nline1\nline2\nline3\n```"
+        blocks = markdown_to_blocks(markdown)
+
+        assert len(blocks) == 1
+        assert "line1\nline2\nline3" in blocks[0]["code"]["rich_text"][0]["text"]["content"]
 
 
 if __name__ == "__main__":
