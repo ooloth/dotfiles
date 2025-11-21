@@ -32,37 +32,35 @@ jobs:
       - name: Install uv
         run: brew install uv
 
-      - name: Run ruff checks
+      - name: Run ruff and mypy checks
         run: |
-          echo "Running ruff checks on all skills..."
+          echo "Running ruff and mypy checks on all skills..."
           cd tools/claude/config/skills
 
           for skill_dir in */; do
             if [[ -f "$skill_dir/pyproject.toml" ]]; then
               echo ""
-              echo "Checking $skill_dir with ruff..."
-              uv run --directory "$skill_dir" ruff check "$skill_dir" || exit 1
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo "Checking $skill_dir"
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+              cd "$skill_dir"
+
+              # Run ruff (standalone, uses pyproject.toml in current dir)
+              echo "Running ruff..."
+              uv run --with ruff ruff check . || exit 1
+
+              # Run mypy with all necessary deps (from test file dependencies)
+              echo "Running mypy..."
+              uv run --with mypy --with notion-client --with pydantic mypy . || exit 1
+
+              cd ..
+              echo "✅ Passed ruff and mypy checks"
             fi
           done
 
-          echo "✅ All ruff checks passed"
-
-      - name: Run mypy checks
-        run: |
-          echo "Running mypy checks on all skills..."
-          cd tools/claude/config/skills
-
-          for skill_dir in */; do
-            if [[ -f "$skill_dir/pyproject.toml" ]]; then
-              echo ""
-              echo "Type checking $skill_dir with mypy..."
-              # Install mypy in the skill's environment and run it
-              uv pip install --python "$(uv run --directory "$skill_dir" which python)" mypy pydantic 2>/dev/null
-              uv run --directory "$skill_dir" python -m mypy "$skill_dir" || exit 1
-            fi
-          done
-
-          echo "✅ All mypy checks passed"
+          echo ""
+          echo "✅ All ruff and mypy checks passed"
 
       - name: Find and run skill tests
         run: |
