@@ -5,17 +5,17 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "tools/claude/config/skills/**/*.py"
-      - "tools/claude/config/skills/**/pyproject.toml"
-      - ".github/workflows/test-claude-skills.yml"
+      - 'tools/claude/config/skills/**/*.py'
+      - 'tools/claude/config/skills/**/pyproject.toml'
+      - '.github/workflows/test-claude-skills.yml'
 
   # Run on pushes to main branch
   push:
     branches: [main]
     paths:
-      - "tools/claude/config/skills/**/*.py"
-      - "tools/claude/config/skills/**/pyproject.toml"
-      - ".github/workflows/test-claude-skills.yml"
+      - 'tools/claude/config/skills/**/*.py'
+      - 'tools/claude/config/skills/**/pyproject.toml'
+      - '.github/workflows/test-claude-skills.yml'
 
   # Allow manual triggering for debugging
   workflow_dispatch:
@@ -32,37 +32,45 @@ jobs:
       - name: Install uv
         run: brew install uv
 
-      - name: Run ruff and mypy checks
+      - name: Run ruff checks
         run: |
-          echo "Running ruff and mypy checks on all skills..."
+          echo "Running ruff checks on all skills..."
           cd tools/claude/config/skills
 
           for skill_dir in */; do
             if [[ -f "$skill_dir/pyproject.toml" ]]; then
               echo ""
-              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-              echo "Checking $skill_dir"
-              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
+              echo "Checking $skill_dir with ruff..."
               cd "$skill_dir"
-
-              # Run ruff (standalone, uses pyproject.toml in current dir)
-              echo "Running ruff..."
               uv run --with ruff ruff check . || exit 1
-
-              # Run mypy with all necessary deps (from test file dependencies)
-              echo "Running mypy..."
-              uv run --with mypy --with notion-client --with pydantic mypy . || exit 1
-
               cd ..
-              echo "✅ Passed ruff and mypy checks"
+              echo "✅ Passed"
             fi
           done
 
           echo ""
-          echo "✅ All ruff and mypy checks passed"
+          echo "✅ All ruff checks passed"
 
-      - name: Find and run skill tests
+      - name: Run mypy checks
+        run: |
+          echo "Running mypy checks on all skills..."
+          cd tools/claude/config/skills
+
+          for skill_dir in */; do
+            if [[ -f "$skill_dir/pyproject.toml" ]]; then
+              echo ""
+              echo "Type checking $skill_dir with mypy..."
+              cd "$skill_dir"
+              uv run --with mypy --with notion-client --with pydantic mypy . || exit 1
+              cd ..
+              echo "✅ Passed"
+            fi
+          done
+
+          echo ""
+          echo "✅ All mypy checks passed"
+
+      - name: Run tests
         run: |
           echo "Searching for skill tests..."
           cd tools/claude/config/skills
