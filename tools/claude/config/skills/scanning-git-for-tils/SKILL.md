@@ -34,6 +34,7 @@ deno task scan [days]
 **Input**: Number of days to look back (default: 30)
 
 **Output**: JSON with:
+
 - `markdown`: Formatted summary of commits for Claude to review
 - `new_commits`: Array of commit metadata
 
@@ -44,6 +45,7 @@ echo '<json>' | deno task publish
 ```
 
 **Input** (JSON via stdin):
+
 ```json
 {
   "title": "TIL: How TypeScript discriminated unions work",
@@ -60,6 +62,7 @@ echo '<json>' | deno task publish
 ```
 
 **Output**: JSON with:
+
 - `writing_url`: Link to created Notion page
 - `tracker_url`: Link to updated tracker entry
 
@@ -70,6 +73,7 @@ deno task test
 ```
 
 Runs 18 tests covering:
+
 - Commit filtering logic
 - Markdown to Notion blocks conversion
 - Page ID extraction from URLs
@@ -79,6 +83,7 @@ Runs 18 tests covering:
 ### Type Safety Wins
 
 **Discriminated unions work automatically:**
+
 ```typescript
 if (block.type === "code") {
   // TypeScript knows block.code exists - no casting needed
@@ -87,13 +92,15 @@ if (block.type === "code") {
 ```
 
 **Zod validates AND types:**
+
 ```typescript
 const schema = z.object({ url: z.string() });
-type Response = z.infer<typeof schema>;  // Type from schema
-const data = schema.parse(response);     // Runtime validation
+type Response = z.infer<typeof schema>; // Type from schema
+const data = schema.parse(response); // Runtime validation
 ```
 
 **No type escapes needed:**
+
 - Zero `any` types
 - Zero `cast()` calls
 - Zero `type: ignore` comments
@@ -139,6 +146,7 @@ export async function getOpSecret(path: string): Promise<string> {
 ## Dependencies
 
 Managed in `deno.json`:
+
 ```json
 {
   "imports": {
@@ -174,16 +182,19 @@ scanning-git-for-tils/
 ## Development Workflow
 
 **Format code:**
+
 ```bash
 deno fmt
 ```
 
 **Lint code:**
+
 ```bash
 deno lint
 ```
 
 **Type check:**
+
 ```bash
 deno check scan_git.ts
 ```
@@ -193,12 +204,14 @@ All three tools built into Deno - no separate dependencies needed.
 ## When to Use This Version
 
 **Use TypeScript/Deno when:**
+
 - Heavy API validation required
 - Complex discriminated union types
 - Type safety is critical
 - You want single validation+typing system
 
 **Use Python/uv version when:**
+
 - Simple file/text processing
 - Inline script feel is important
 - No complex union types needed
@@ -207,6 +220,7 @@ All three tools built into Deno - no separate dependencies needed.
 ## Comparison to Python Version
 
 See `README.md` for comprehensive comparison covering:
+
 - Type system differences
 - Validation approaches
 - Development experience

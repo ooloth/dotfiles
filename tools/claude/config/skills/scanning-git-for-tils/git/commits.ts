@@ -107,22 +107,27 @@ export async function getCommits(days: number, username: string): Promise<Commit
     const items = JSON.parse(new TextDecoder().decode(stdout));
 
     // Build commits without files first
-    const commits: Commit[] = items.map((item: any) => {
-      const commitData = item.commit || {};
-      const repo = item.repository?.full_name || "unknown";
-      const commitDate = commitData.committer?.date || "";
-      const messageLines = (commitData.message || "").split("\n");
+    const commits: Commit[] = items.map((item: Record<string, unknown>) => {
+      const commitData = (item.commit as Record<string, unknown>) || {};
+      const repo =
+        ((item.repository as Record<string, unknown>)?.full_name as string) ||
+        "unknown";
+      const commitDate =
+        ((commitData.committer as Record<string, unknown>)?.date as string) ||
+        "";
+      const messageLines =
+        ((commitData.message as string) || "").split("\n");
 
       return {
-        hash: (item.sha || "").slice(0, 7),
-        full_hash: item.sha || "",
+        hash: ((item.sha as string) || "").slice(0, 7),
+        full_hash: (item.sha as string) || "",
         subject: messageLines[0],
         body: messageLines.slice(1).join("\n").trim(),
         date: formatRelativeDate(commitDate),
         iso_date: commitDate.slice(0, 10),
         repo,
         files: [],
-        url: item.html_url || "",
+        url: (item.html_url as string) || "",
       };
     });
 

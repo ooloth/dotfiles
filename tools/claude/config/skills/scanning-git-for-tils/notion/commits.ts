@@ -32,7 +32,9 @@ export async function getAssessedCommitsFromNotion(): Promise<Set<string>> {
     let startCursor: string | null = null;
 
     while (true) {
-      const queryParams: any = { database_id: NOTION_ASSESSED_COMMITS_DB };
+      const queryParams: Record<string, unknown> = {
+        database_id: NOTION_ASSESSED_COMMITS_DB,
+      };
       if (startCursor) queryParams.start_cursor = startCursor;
 
       const responseData = await notion.databases.query(queryParams);
@@ -41,7 +43,7 @@ export async function getAssessedCommitsFromNotion(): Promise<Set<string>> {
       // Extract commit hashes
       for (const page of response.results) {
         if (typeof page !== "object" || !page) continue;
-        const props = (page as any).properties;
+        const props = (page as Record<string, unknown>).properties;
         if (!props) continue;
 
         const titleProp = props["Commit Hash"];
@@ -112,7 +114,7 @@ export async function createTrackerEntry(
   commit: Record<string, string>,
   writingPageId: string,
 ): Promise<string> {
-  const properties: any = {
+  const properties: Record<string, unknown> = {
     "Commit Hash": { title: [{ type: "text", text: { content: commit.hash } }] },
     Message: { rich_text: [{ type: "text", text: { content: commit.message.slice(0, 2000) } }] },
     Repo: { rich_text: [{ type: "text", text: { content: commit.repo } }] },

@@ -64,8 +64,8 @@ async function main() {
   }
 
   // Filter out already assessed commits and skippable commits
-  const newCommits = commits.filter(
-    (c) => !assessedHashes.has(c.full_hash) && !shouldSkipCommit(c),
+  const newCommits = commits.filter((c) =>
+    !assessedHashes.has(c.full_hash) && !shouldSkipCommit(c)
   );
   const newCount = newCommits.length;
 

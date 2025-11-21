@@ -10,7 +10,7 @@
    ```typescript
    // TypeScript narrows automatically - no Literal types needed
    if (block.type === "code") {
-     block.code.language  // ✅ Just works
+     block.code.language; // ✅ Just works
    }
    ```
 
@@ -25,8 +25,8 @@
    ```typescript
    // Zod handles both runtime validation AND TypeScript types
    const schema = z.object({ url: z.string() });
-   type Response = z.infer<typeof schema>;  // Type derived from validation
-   const response = schema.parse(data);     // Validates AND types
+   type Response = z.infer<typeof schema>; // Type derived from validation
+   const response = schema.parse(data); // Validates AND types
    ```
 
    vs Python:
@@ -48,12 +48,14 @@
 ### Development Experience
 
 **Python + uv:**
+
 - ✅ Inline script dependencies (unbeatable)
 - ❌ Two type systems (Pydantic + mypy)
 - ❌ Union narrowing issues
 - ❌ type: ignore comments
 
 **TypeScript + Deno:**
+
 - ✅ One type system (Zod + TypeScript)
 - ✅ Discriminated unions work perfectly
 - ✅ No type escapes needed
@@ -83,12 +85,14 @@ deno lint
 ## When to Use TypeScript vs Python
 
 **Use TypeScript/Deno when:**
+
 - Heavy API validation (external data schemas)
 - Complex discriminated unions
 - Type safety is critical
 - Want single validation+typing system
 
 **Use Python/uv when:**
+
 - Simple file/text processing
 - Inline script feel is important
 - No complex union types
@@ -120,11 +124,13 @@ Both versions are comparable. TypeScript compilation happens at runtime but is f
 ## Recommendation
 
 For THIS skill (API-heavy): **TypeScript/Deno is superior**
+
 - No type gymnastics
 - Single source of truth for validation + types
 - Cleaner, more maintainable code
 
 For simpler skills: **Python/uv is still king**
+
 - Inline dependencies
 - Faster to write
 - Type issues don't matter as much

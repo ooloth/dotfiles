@@ -9,7 +9,7 @@
  * - TypeScript types catch errors at compile time
  */
 
-import { assertEquals, assertExists, assert } from "https://deno.land/std@0.208.0/assert/mod.ts";
+import { assert, assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
 import type { Commit } from "./git/commits.ts";
 import { formatRelativeDate } from "./git/commits.ts";
 import { formatMarkdown, shouldSkipCommit } from "./git/formatting.ts";

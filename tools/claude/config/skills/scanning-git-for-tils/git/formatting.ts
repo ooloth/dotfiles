@@ -51,9 +51,7 @@ export function formatMarkdown(
     lines.push(`   Hash: ${commit.hash} (index: ${index}) | Date: ${commit.date}`);
 
     if (commit.body) {
-      const truncated = commit.body.length > 200
-        ? commit.body.slice(0, 200) + "..."
-        : commit.body;
+      const truncated = commit.body.length > 200 ? commit.body.slice(0, 200) + "..." : commit.body;
       lines.push(`   Body: ${truncated}`);
     }
 
