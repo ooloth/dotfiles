@@ -70,12 +70,12 @@ For each selected commit:
 
 ### Step 3: Display results
 
-Present your evaluation to the user:
+Present suggestions **ranked from best to worst by TIL potential**:
 
 ```
 📝 TIL Opportunities from Git History (last N days):
 
-1. **Suggested Title Here**
+1. **Suggested Title Here** [BEST]
    - Repo: owner/repo
    - Commit: abc1234 "original commit message"
    - Date: 3 days ago
@@ -83,8 +83,18 @@ Present your evaluation to the user:
    - TIL angle: What makes this worth documenting
    - URL: https://github.com/...
 
-2. ...
+2. **Second Best Title**
+   ...
+
+10. **Still Worth Documenting**
+   ...
 ```
+
+**Ranking criteria (highest priority first):**
+1. **Broad applicability** - Will help many developers, not project-specific
+2. **Non-obvious insight** - Gotcha, surprising behavior, or clever solution
+3. **Recency** - More recent commits are fresher to write about
+4. **Clear learning** - Easy to extract a concrete takeaway
 
 **Note**: Don't create tracker entries at this stage. The `publish_til.py` script will create tracker entries when drafts are actually published. This prevents duplicates and ensures only drafted commits are marked as assessed.
 
