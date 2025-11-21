@@ -6,7 +6,9 @@ on:
     branches: [main]
     paths:
       - 'tools/claude/config/skills/**/*.py'
+      - 'tools/claude/config/skills/**/*.ts'
       - 'tools/claude/config/skills/**/pyproject.toml'
+      - 'tools/claude/config/skills/**/deno.json'
       - '.github/workflows/test-claude-skills.yml'
 
   # Run on pushes to main branch
@@ -14,7 +16,9 @@ on:
     branches: [main]
     paths:
       - 'tools/claude/config/skills/**/*.py'
+      - 'tools/claude/config/skills/**/*.ts'
       - 'tools/claude/config/skills/**/pyproject.toml'
+      - 'tools/claude/config/skills/**/deno.json'
       - '.github/workflows/test-claude-skills.yml'
 
   # Allow manual triggering for debugging
@@ -31,6 +35,9 @@ jobs:
 
       - name: Install uv
         run: brew install uv
+
+      - name: Install deno
+        run: brew install deno
 
       - name: Run ruff checks
         run: |
@@ -69,6 +76,116 @@ jobs:
 
           echo ""
           echo "✅ All mypy checks passed"
+
+      - name: Run deno format checks
+        run: |
+          echo "Running deno format checks on all TypeScript skills..."
+          cd tools/claude/config/skills
+
+          for skill_dir in */; do
+            if [[ -f "$skill_dir/deno.json" ]]; then
+              echo ""
+              echo "Format checking $skill_dir with deno fmt..."
+              cd "$skill_dir"
+              deno fmt --check || exit 1
+              cd ..
+              echo "✅ Passed"
+            fi
+          done
+
+          echo ""
+          echo "✅ All deno format checks passed"
+
+      - name: Run deno lint checks
+        run: |
+          echo "Running deno lint checks on all TypeScript skills..."
+          cd tools/claude/config/skills
+
+          for skill_dir in */; do
+            if [[ -f "$skill_dir/deno.json" ]]; then
+              echo ""
+              echo "Linting $skill_dir with deno lint..."
+              cd "$skill_dir"
+              deno lint || exit 1
+              cd ..
+              echo "✅ Passed"
+            fi
+          done
+
+          echo ""
+          echo "✅ All deno lint checks passed"
+
+      - name: Run deno type checks
+        run: |
+          echo "Running deno type checks on all TypeScript skills..."
+          cd tools/claude/config/skills
+
+          for skill_dir in */; do
+            if [[ -f "$skill_dir/deno.json" ]]; then
+              echo ""
+              echo "Type checking $skill_dir with deno check..."
+              cd "$skill_dir"
+              # Check all .ts files in the skill directory
+              for ts_file in *.ts **/*.ts; do
+                if [[ -f "$ts_file" ]]; then
+                  deno check "$ts_file" || exit 1
+                fi
+              done
+              cd ..
+              echo "✅ Passed"
+            fi
+          done
+
+          echo ""
+          echo "✅ All deno type checks passed"
+
+      - name: Run deno tests
+        run: |
+          echo "Running deno tests on all TypeScript skills..."
+          cd tools/claude/config/skills
+
+          FAILED_TESTS=""
+          PASSED_TESTS=0
+
+          for skill_dir in */; do
+            if [[ -f "$skill_dir/deno.json" ]]; then
+              echo ""
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo "Testing: $skill_dir"
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              cd "$skill_dir"
+
+              if deno task test; then
+                ((PASSED_TESTS++))
+                echo "✅ Passed: $skill_dir"
+              else
+                FAILED_TESTS="$FAILED_TESTS$skill_dir\n"
+                echo "❌ Failed: $skill_dir"
+              fi
+
+              cd ..
+            fi
+          done
+
+          if [[ $PASSED_TESTS -gt 0 ]]; then
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "Deno Test Summary"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+            if [[ -n "$FAILED_TESTS" ]]; then
+              echo "❌ Failed tests:"
+              echo -e "$FAILED_TESTS"
+              echo ""
+              echo "Passed: $PASSED_TESTS"
+              exit 1
+            fi
+
+            echo "✅ All $PASSED_TESTS TypeScript skill(s) passed"
+          else
+            echo ""
+            echo "ℹ️  No TypeScript skills with deno.json found"
+          fi
 
       - name: Run tests
         run: |
@@ -126,7 +243,7 @@ jobs:
           echo "Runner OS: ${{ runner.os }}"
 
           if [[ "${{ job.status }}" == "success" ]]; then
-            echo "🎉 All Claude skill tests passed!"
+            echo "🎉 All Claude skill tests passed (Python + TypeScript)!"
           else
             echo "❌ Some tests failed. Check the logs above for details."
           fi
