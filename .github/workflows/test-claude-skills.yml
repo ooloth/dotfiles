@@ -1,0 +1,92 @@
+name: Test Claude Skills
+
+on:
+  # Run on pull requests to main
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/claude/config/skills/**/*.py"
+      - ".github/workflows/test-claude-skills.yml"
+
+  # Run on pushes to main branch
+  push:
+    branches: [main]
+    paths:
+      - "tools/claude/config/skills/**/*.py"
+      - ".github/workflows/test-claude-skills.yml"
+
+  # Allow manual triggering for debugging
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test Python Skills
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        run: brew install uv
+
+      - name: Find and run skill tests
+        run: |
+          echo "Searching for skill tests..."
+          cd tools/claude/config/skills
+
+          FAILED_TESTS=""
+          PASSED_TESTS=0
+
+          # Find all test_*.py files
+          for test_file in */test_*.py; do
+            if [[ -f "$test_file" ]]; then
+              echo ""
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo "Running: $test_file"
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+              if uv run "$test_file"; then
+                ((PASSED_TESTS++))
+                echo "✅ Passed: $test_file"
+              else
+                FAILED_TESTS="$FAILED_TESTS$test_file\n"
+                echo "❌ Failed: $test_file"
+              fi
+            fi
+          done
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Test Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          if [[ -n "$FAILED_TESTS" ]]; then
+            echo "❌ Failed tests:"
+            echo -e "$FAILED_TESTS"
+            echo ""
+            echo "Passed: $PASSED_TESTS"
+            exit 1
+          fi
+
+          if [[ $PASSED_TESTS -eq 0 ]]; then
+            echo "⚠️  No test files found"
+            exit 0
+          fi
+
+          echo "✅ All $PASSED_TESTS test file(s) passed"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "=== Test Summary ==="
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Runner OS: ${{ runner.os }}"
+
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "🎉 All Claude skill tests passed!"
+          else
+            echo "❌ Some tests failed. Check the logs above for details."
+          fi
