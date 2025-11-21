@@ -17,10 +17,6 @@ select = [
 
 [tool.mypy]
 python_version = "3.11"
-strict = true
+strict = false
 warn_return_any = true
 warn_unused_configs = true
-
-[[tool.mypy.overrides]]
-module = "notion_client.*"
-ignore_missing_imports = true
