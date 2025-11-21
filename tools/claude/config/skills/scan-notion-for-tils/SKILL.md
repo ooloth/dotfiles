@@ -1,9 +1,11 @@
 ---
 name: scan-notion-for-tils
-description: Searches the Notion Writing database for unpublished items that could become TIL posts. Prioritizes items with Status=New or Drafting, Type=how-to, and recent activity. Returns suggestions with context. Use when user wants to review their backlog for TIL opportunities.
+description: [UNDER DEVELOPMENT - DO NOT USE] Searches the Notion Writing database for unpublished items that could become TIL posts. This skill is not yet integrated with the publishing workflow.
 ---
 
 # Scan Notion for TILs Skill
+
+**Status: Under Development** - This skill is not ready for use. Focus on git-only workflow for now.
 
 Finds unpublished Writing items that could become TIL blog posts.
 

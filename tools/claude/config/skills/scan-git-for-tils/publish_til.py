@@ -103,6 +103,75 @@ def create_writing_page(token: str, title: str, content: str, slug: str, descrip
     return result.get("url", "")
 
 
+def find_existing_tracker_entry(token: str, commit_hash: str) -> str:
+    """Check if tracker entry already exists for this commit. Returns page ID if found."""
+    url = f"https://api.notion.com/v1/databases/{ASSESSED_COMMITS_DATA_SOURCE_ID}/query"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
+
+    body = {
+        "filter": {
+            "property": "Commit Hash",
+            "title": {
+                "equals": commit_hash
+            }
+        }
+    }
+
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers=headers,
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req) as response:
+            data = json.loads(response.read().decode("utf-8"))
+            results = data.get("results", [])
+            if results:
+                return results[0].get("id", "")
+    except urllib.error.URLError:
+        pass
+
+    return ""
+
+
+def update_tracker_entry(token: str, page_id: str, writing_page_id: str) -> str:
+    """Update existing tracker entry to link to Writing page. Returns page URL."""
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
+
+    body = {
+        "properties": {
+            "Writing": {"relation": [{"id": writing_page_id}]},
+            "Assessed": {"date": {"start": date.today().isoformat()}},
+        }
+    }
+
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers=headers,
+        method="PATCH",
+    )
+
+    try:
+        with urllib.request.urlopen(req) as response:
+            result = json.loads(response.read().decode("utf-8"))
+            return result.get("url", "")
+    except urllib.error.URLError as e:
+        error_body = e.read().decode("utf-8")
+        raise Exception(f"Failed to update tracker: {e.code} - {error_body}")
+
+
 def create_tracker_entry(token: str, commit: dict, writing_page_id: str) -> str:
     """Create an entry in TIL Assessed Commits and link to Writing page. Returns page URL."""
 
@@ -257,8 +326,15 @@ def main():
         # Extract page ID for relation
         writing_page_id = extract_page_id(writing_url)
 
-        # Create tracker entry with relation to Writing page
-        tracker_url = create_tracker_entry(token, commit, writing_page_id)
+        # Check if tracker entry already exists
+        existing_tracker_id = find_existing_tracker_entry(token, commit["hash"])
+
+        if existing_tracker_id:
+            # Update existing entry with Writing relation
+            tracker_url = update_tracker_entry(token, existing_tracker_id, writing_page_id)
+        else:
+            # Create new tracker entry with relation to Writing page
+            tracker_url = create_tracker_entry(token, commit, writing_page_id)
 
         # Output results
         print(json.dumps({

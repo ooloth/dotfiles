@@ -312,7 +312,7 @@ def format_markdown(commits: list[dict], days: int, new_count: int, total_count:
             files_str += f" (+{len(commit['files']) - 5} more)"
 
         lines.append(f"{i}. [{commit['repo']}] {commit['subject']}")
-        lines.append(f"   Hash: {commit['hash']} | Date: {commit['date']}")
+        lines.append(f"   Hash: {commit['hash']} (index: {i-1}) | Date: {commit['date']}")
         if commit["body"]:
             body_preview = commit["body"][:200] + "..." if len(commit["body"]) > 200 else commit["body"]
             lines.append(f"   Body: {body_preview}")

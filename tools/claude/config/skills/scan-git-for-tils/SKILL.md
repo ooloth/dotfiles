@@ -46,6 +46,8 @@ The script automatically:
 
 Review the commits in the `markdown` field and identify the top 5-10 that would make good TILs.
 
+**Important**: The markdown shows commits with an `(index: N)` - this maps to `new_commits[N]` array which contains full commit data you'll need for publishing.
+
 **Good TIL candidates have:**
 - Solved a non-obvious problem (gotchas, edge cases, surprising behavior)
 - Learned something worth sharing (new technique, tool usage, configuration)
@@ -59,9 +61,12 @@ Review the commits in the `markdown` field and identify the top 5-10 that would 
 - Chores without learning value (CI tweaks, file reorganization)
 - Too project-specific to be useful to others
 
-For each selected commit, generate:
-- **Suggested title**: Clear, direct (e.g., "How to X" or "Why Y happens")
-- **TIL angle**: The specific learning worth documenting
+For each selected commit:
+1. Note the index number from markdown
+2. Look up full commit data in `new_commits[index]`
+3. Generate:
+   - **Suggested title**: Clear, direct (e.g., "How to X" or "Why Y happens")
+   - **TIL angle**: The specific learning worth documenting
 
 ### Step 3: Display results
 
@@ -81,30 +86,7 @@ Present your evaluation to the user:
 2. ...
 ```
 
-### Step 4: Write suggested commits to Notion
-
-Only write the commits you actually suggested to the user (not the entire fetch). This allows incremental review of large backlogs.
-
-For each suggested commit, create a page in the TIL Assessed Commits database:
-
-```json
-{
-  "parent": {
-    "data_source_id": "cba80148-aeef-49c9-ba45-5157668b17b3"
-  },
-  "pages": [{
-    "properties": {
-      "Commit Hash": "<hash>",
-      "Message": "<message>",
-      "Repo": "<repo>",
-      "date:Commit Date:start": "<commit date ISO>",
-      "date:Commit Date:is_datetime": 0,
-      "date:Assessed:start": "<today's date ISO>",
-      "date:Assessed:is_datetime": 0
-    }
-  }]
-}
-```
+**Note**: Don't create tracker entries at this stage. The `publish_til.py` script will create tracker entries when drafts are actually published. This prevents duplicates and ensures only drafted commits are marked as assessed.
 
 ## What It Returns
 

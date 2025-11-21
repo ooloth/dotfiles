@@ -1,111 +1,71 @@
 # Suggest TILs - Find and draft TIL blog posts
 
-Scan for TIL opportunities from git history and Notion backlog, then draft selected topics.
+Scan git history for TIL opportunities, then draft selected topics.
 
-## Phase 1: Source Selection
+## Phase 1: Date Range Selection
 
-Ask the user which sources to scan:
-
-```
-📝 TIL Suggestion Sources
-
-Which sources should I scan?
-1. Git history
-2. Notion backlog (unpublished blog items)
-3. Both
-
->
-```
-
-If user selects git history (1 or 3), ask about date range:
+Ask the user how far back to search:
 
 ```
+📝 TIL Suggestions from Git History
+
 How far back should I search?
 - Enter number of days (default: 30)
-- Or 'all' for maximum history
+- Or just press Enter for 30 days
 
 >
 ```
 
-Note: GitHub API returns max ~1000 commits, so very large ranges may be truncated.
+Note: Very large ranges (365+ days) may take longer but will find more candidates.
 
-## Phase 2: Scan Sources
-
-Based on selection, invoke the appropriate skills.
-
-### For Git History
+## Phase 2: Scan Git History
 
 Use the `scan-git-for-tils` skill:
 
-1. Fetch assessed commit hashes from "TIL Assessed Commits" database
-2. Run the scan script with those hashes
-3. Display the markdown results
-4. Write new commits to Notion database
-
-### For Notion Backlog
-
-Use the `scan-notion-for-tils` skill:
-
-1. Search Writing database for blog-destined, unpublished items
-2. Filter out items with Claude Draft already linked
-3. Categorize as "ready to draft" or "needs development"
-4. Display formatted suggestions
-
-### For Both
-
-Run both scans sequentially, then combine results.
+1. Run the scan script with the specified days
+2. Script automatically fetches assessed commits from Notion
+3. Script fetches and filters GitHub commits
+4. Display the markdown results for evaluation
 
 ## Phase 3: Selection
 
 After displaying results:
 
 ```
-Select a topic to work on (number), or:
-- 'g' to scan git again with more days
-- 'n' to scan notion again
+Select a commit to draft (enter number), or:
+- 's' to scan again with different date range
 - 'q' to quit
 
 >
 ```
 
-## Phase 4: Draft or Develop
+## Phase 4: Draft TIL
 
-When user selects a topic:
-
-### If from Git (or ready Notion item)
+When user selects a commit:
 
 Use the `draft-til` skill:
 
-1. Show user the proposed TIL content before creating
-2. Ask for approval or edits
-3. Create the page in Writing database with Status = "Claude Draft"
-4. For Notion sources: link draft to source item via Writing relation
-5. For Git sources: update TIL Assessed Commits with Writing relation
-
-### If Notion item needs development
-
-1. Fetch the source item's full content
-2. Research the topic (web search, codebase exploration)
-3. Draft developed content in a new Writing page
-4. Link to source item
-5. Show user for review
+1. Look up full commit data using the index from `new_commits` array
+2. Generate TIL content following voice guide
+3. Show draft to user for approval
+4. When approved, pass JSON to `publish_til.py` script
+5. Display Writing page URL from script output
 
 ## Phase 5: Post-Creation
 
-After creating a draft:
+After successfully publishing a draft:
 
 ```
-✅ Draft created in Writing database
+✅ Draft published to Writing database
 
 Title: "Your TIL Title"
 Status: Claude Draft
 URL: https://www.notion.so/...
 
 Actions:
-o - Open in Notion
-d - Draft another from suggestions
-n - New scan
-q - Done
+- Select another commit number to draft
+- 's' to scan again with different date range
+- 'q' to finish
 
 >
 ```
@@ -116,24 +76,24 @@ Use TodoWrite to track workflow state:
 
 ```
 - "Scanning git history for TILs" (in_progress)
-- "Scanning Notion backlog for TILs" (pending)
 - "Waiting for user selection" (pending)
 - "Drafting TIL" (pending)
+- "Publishing draft" (pending)
 ```
 
 Update todos as you progress through phases.
 
 ## Safety Rules
 
-1. **Never edit existing Writing items** - only create new Claude Draft pages
-2. **Show content before creating** - user approves draft text first
-3. **Always use Status = "Claude Draft"** - never other statuses
-4. **Link sources properly** - git commits and Notion items get linked to drafts
+1. **Show content before publishing** - user must approve draft text
+2. **Use `publish_til.py` for all Notion operations** - don't create pages manually
+3. **Reference commits by index** - use `new_commits[index]` for full data
+4. **Let script handle duplicates** - it checks for existing tracker entries
 
 ## Notes
 
-- This command orchestrates the three TIL skills (scan-git, scan-notion, draft-til)
-- User can iterate: draft one, return to suggestions, draft another
-- Git scanning updates the TIL Assessed Commits database
-- Notion scanning uses Writing relations as the "assessed" indicator
-- All drafts go into the Writing database for user review and publishing
+- This command orchestrates the git scanning and drafting workflow
+- User can draft multiple TILs from one scan
+- Only drafted commits get marked as assessed (others stay in pool for next scan)
+- All drafts go into Writing database with Status="Claude Draft"
+- Tracker entries link back to drafts via Writing relation
