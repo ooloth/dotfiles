@@ -17,6 +17,7 @@ from unittest.mock import patch, MagicMock
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
+from git.commits import Commit
 from git.formatting import format_relative_date, should_skip_commit
 from notion.blocks import extract_page_id, markdown_to_blocks
 from notion.client import get_assessed_commits_from_notion
@@ -56,23 +57,73 @@ class TestShouldSkipCommit:
     """Test commit filtering logic."""
 
     def test_skips_dependabot(self):
-        commit = {"subject": "Bump dependency from 1.0 to 2.0", "full_hash": "abc123"}
+        commit = Commit(
+            hash="abc1234",
+            full_hash="abc123",
+            subject="Bump dependency from 1.0 to 2.0",
+            body="",
+            date="yesterday",
+            iso_date="2025-01-15",
+            repo="owner/repo",
+            files=[],
+            url="https://github.com/owner/repo/commit/abc123"
+        )
         assert should_skip_commit(commit) is True
 
     def test_skips_bump_commits(self):
-        commit = {"subject": "bump version from 1.0 to 2.0", "full_hash": "abc123"}
+        commit = Commit(
+            hash="abc1234",
+            full_hash="abc123",
+            subject="bump version from 1.0 to 2.0",
+            body="",
+            date="yesterday",
+            iso_date="2025-01-15",
+            repo="owner/repo",
+            files=[],
+            url="https://github.com/owner/repo/commit/abc123"
+        )
         assert should_skip_commit(commit) is True
 
     def test_skips_merge_commits(self):
-        commit = {"subject": "merge pull request #123", "full_hash": "abc123"}
+        commit = Commit(
+            hash="abc1234",
+            full_hash="abc123",
+            subject="merge pull request #123",
+            body="",
+            date="yesterday",
+            iso_date="2025-01-15",
+            repo="owner/repo",
+            files=[],
+            url="https://github.com/owner/repo/commit/abc123"
+        )
         assert should_skip_commit(commit) is True
 
     def test_keeps_normal_commits(self):
-        commit = {"subject": "fix: handle null values properly", "full_hash": "abc123"}
+        commit = Commit(
+            hash="abc1234",
+            full_hash="abc123",
+            subject="fix: handle null values properly",
+            body="",
+            date="yesterday",
+            iso_date="2025-01-15",
+            repo="owner/repo",
+            files=[],
+            url="https://github.com/owner/repo/commit/abc123"
+        )
         assert should_skip_commit(commit) is False
 
     def test_keeps_feature_commits(self):
-        commit = {"subject": "feat: add new TIL workflow", "full_hash": "abc123"}
+        commit = Commit(
+            hash="abc1234",
+            full_hash="abc123",
+            subject="feat: add new TIL workflow",
+            body="",
+            date="yesterday",
+            iso_date="2025-01-15",
+            repo="owner/repo",
+            files=[],
+            url="https://github.com/owner/repo/commit/abc123"
+        )
         assert should_skip_commit(commit) is False
 
 

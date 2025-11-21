@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from git.commits import Commit
-
 
 def format_relative_date(iso_date: str) -> str:
     """Convert ISO date to relative format."""
