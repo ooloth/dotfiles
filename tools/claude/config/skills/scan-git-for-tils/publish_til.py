@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["notion-client"]
+# ///
 """
 Publish a TIL draft to Notion and update the tracker.
 
 Usage:
-    echo '<json>' | python3 publish_til.py
+    echo '<json>' | uv run publish_til.py
 
 Input (JSON via stdin):
     {
@@ -27,12 +31,13 @@ Output (JSON):
 
 Requires:
     - op CLI installed and authenticated (1Password)
+    - uv (for dependency management)
 """
+
+from __future__ import annotations
 
 import sys
 import json
-import urllib.request
-import urllib.error
 import subprocess
 from datetime import date
 
@@ -56,125 +61,71 @@ def get_op_secret(path: str) -> str:
     return result.stdout.strip()
 
 
-def notion_request(token: str, endpoint: str, body: dict) -> dict:
-    """Make a request to the Notion API."""
-    url = f"https://api.notion.com/v1/{endpoint}"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-    }
+def get_notion_client() -> Client:
+    """Create authenticated Notion client."""
+    from notion_client import Client
 
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(body).encode("utf-8"),
-        headers=headers,
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(req) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode("utf-8")
-        raise Exception(f"Notion API error: {e.code} - {error_body}")
+    token = get_op_secret(OP_NOTION_TOKEN)
+    if not token:
+        raise Exception("Could not get Notion token from 1Password")
+    return Client(auth=token)
 
 
-def create_writing_page(token: str, title: str, content: str, slug: str, description: str) -> str:
+def create_writing_page(notion: Client, title: str, content: str, slug: str, description: str) -> str:
     """Create a TIL draft in the Writing database. Returns page URL."""
 
-    # Build rich text for title
-    title_rich_text = [{"type": "text", "text": {"content": title}}]
-
-    body = {
-        "parent": {"database_id": WRITING_DATA_SOURCE_ID},
-        "properties": {
-            "Title": {"title": title_rich_text},
+    page = notion.pages.create(
+        parent={"database_id": WRITING_DATA_SOURCE_ID},
+        properties={
+            "Title": {"title": [{"type": "text", "text": {"content": title}}]},
             "Status": {"status": {"name": "Claude Draft"}},
             "Type": {"select": {"name": "how-to"}},
             "Destination": {"multi_select": [{"name": "blog"}]},
             "Description": {"rich_text": [{"type": "text", "text": {"content": description}}]},
             "Slug": {"rich_text": [{"type": "text", "text": {"content": slug}}]},
         },
-        "children": markdown_to_blocks(content),
-    }
-
-    result = notion_request(token, "pages", body)
-    return result.get("url", "")
-
-
-def find_existing_tracker_entry(token: str, commit_hash: str) -> str:
-    """Check if tracker entry already exists for this commit. Returns page ID if found."""
-    url = f"https://api.notion.com/v1/databases/{ASSESSED_COMMITS_DATA_SOURCE_ID}/query"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-    }
-
-    body = {
-        "filter": {
-            "property": "Commit Hash",
-            "title": {
-                "equals": commit_hash
-            }
-        }
-    }
-
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(body).encode("utf-8"),
-        headers=headers,
-        method="POST",
+        children=markdown_to_blocks(content),
     )
 
+    return page.get("url", "")
+
+
+def find_existing_tracker_entry(notion: Client, commit_hash: str) -> str:
+    """Check if tracker entry already exists for this commit. Returns page ID if found."""
     try:
-        with urllib.request.urlopen(req) as response:
-            data = json.loads(response.read().decode("utf-8"))
-            results = data.get("results", [])
-            if results:
-                return results[0].get("id", "")
-    except urllib.error.URLError:
+        results = notion.databases.query(
+            database_id=ASSESSED_COMMITS_DATA_SOURCE_ID,
+            filter={
+                "property": "Commit Hash",
+                "title": {
+                    "equals": commit_hash
+                }
+            }
+        )
+        if results.get("results"):
+            return results["results"][0]["id"]
+    except Exception:
         pass
 
     return ""
 
 
-def update_tracker_entry(token: str, page_id: str, writing_page_id: str) -> str:
+def update_tracker_entry(notion: Client, page_id: str, writing_page_id: str) -> str:
     """Update existing tracker entry to link to Writing page. Returns page URL."""
-    url = f"https://api.notion.com/v1/pages/{page_id}"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-    }
-
-    body = {
-        "properties": {
-            "Writing": {"relation": [{"id": writing_page_id}]},
-            "Assessed": {"date": {"start": date.today().isoformat()}},
-        }
-    }
-
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(body).encode("utf-8"),
-        headers=headers,
-        method="PATCH",
-    )
-
     try:
-        with urllib.request.urlopen(req) as response:
-            result = json.loads(response.read().decode("utf-8"))
-            return result.get("url", "")
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode("utf-8")
-        raise Exception(f"Failed to update tracker: {e.code} - {error_body}")
-    except urllib.error.URLError as e:
-        raise Exception(f"Failed to update tracker: {e.reason}")
+        page = notion.pages.update(
+            page_id=page_id,
+            properties={
+                "Writing": {"relation": [{"id": writing_page_id}]},
+                "Assessed": {"date": {"start": date.today().isoformat()}},
+            }
+        )
+        return page.get("url", "")
+    except Exception as e:
+        raise Exception(f"Failed to update tracker: {e}")
 
 
-def create_tracker_entry(token: str, commit: dict, writing_page_id: str) -> str:
+def create_tracker_entry(notion: Client, commit: dict, writing_page_id: str) -> str:
     """Create an entry in TIL Assessed Commits and link to Writing page. Returns page URL."""
 
     properties = {
@@ -189,20 +140,18 @@ def create_tracker_entry(token: str, commit: dict, writing_page_id: str) -> str:
     if commit.get("date"):
         properties["Commit Date"] = {"date": {"start": commit["date"]}}
 
-    body = {
-        "parent": {"database_id": ASSESSED_COMMITS_DATA_SOURCE_ID},
-        "properties": properties,
-    }
+    page = notion.pages.create(
+        parent={"database_id": ASSESSED_COMMITS_DATA_SOURCE_ID},
+        properties=properties,
+    )
 
-    result = notion_request(token, "pages", body)
-    return result.get("url", "")
+    return page.get("url", "")
 
 
 def markdown_to_blocks(content: str) -> list:
     """Convert markdown content to Notion blocks.
 
-    This is a simplified converter that handles common patterns.
-    For complex content, Notion's API will do additional parsing.
+    Handles: headings, code blocks, lists, paragraphs, inline code.
     """
     blocks = []
     lines = content.split("\n")
@@ -211,21 +160,40 @@ def markdown_to_blocks(content: str) -> list:
     while i < len(lines):
         line = lines[i]
 
-        # Code blocks
-        if line.startswith("```"):
-            language = line[3:].strip() or "plain text"
+        # Code blocks - handle language parameter properly
+        if line.strip().startswith("```"):
+            language = line.strip()[3:].strip()
+            # Map common language names to Notion's expected values
+            lang_map = {
+                "": "plain text",
+                "js": "javascript",
+                "ts": "typescript",
+                "py": "python",
+                "sh": "shell",
+                "bash": "shell",
+                "zsh": "shell",
+            }
+            language = lang_map.get(language, language) or "plain text"
+
             code_lines = []
             i += 1
-            while i < len(lines) and not lines[i].startswith("```"):
+            # Collect all lines until closing ```
+            while i < len(lines):
+                if lines[i].strip().startswith("```"):
+                    break
                 code_lines.append(lines[i])
                 i += 1
-            blocks.append({
-                "type": "code",
-                "code": {
-                    "rich_text": [{"type": "text", "text": {"content": "\n".join(code_lines)}}],
-                    "language": language,
-                }
-            })
+
+            # Create code block with proper content
+            code_content = "\n".join(code_lines)
+            if code_content or True:  # Always create block even if empty
+                blocks.append({
+                    "type": "code",
+                    "code": {
+                        "rich_text": [{"type": "text", "text": {"content": code_content}}],
+                        "language": language,
+                    }
+                })
             i += 1
             continue
 
@@ -252,14 +220,17 @@ def markdown_to_blocks(content: str) -> list:
                 "bulleted_list_item": {"rich_text": [{"type": "text", "text": {"content": line[2:]}}]}
             })
         # Numbered lists
-        elif len(line) > 2 and line[0].isdigit() and line[1] == "." and line[2] == " ":
+        elif len(line) > 2 and line[0].isdigit() and line[1:3] == ". ":
             blocks.append({
                 "type": "numbered_list_item",
                 "numbered_list_item": {"rich_text": [{"type": "text", "text": {"content": line[3:]}}]}
             })
-        # Empty lines (skip)
+        # Empty lines - create empty paragraph for spacing
         elif not line.strip():
-            pass
+            blocks.append({
+                "type": "paragraph",
+                "paragraph": {"rich_text": []}
+            })
         # Regular paragraphs
         else:
             blocks.append({
@@ -318,16 +289,13 @@ def main():
         print(json.dumps({"error": f"Missing commit fields: {commit_missing}"}))
         sys.exit(1)
 
-    # Get Notion token
-    token = get_op_secret(OP_NOTION_TOKEN)
-    if not token:
-        print(json.dumps({"error": "Could not get Notion token from 1Password"}))
-        sys.exit(1)
-
     try:
+        # Create Notion client
+        notion = get_notion_client()
+
         # Create Writing page
         writing_url = create_writing_page(
-            token,
+            notion,
             input_data["title"],
             input_data["content"],
             input_data["slug"],
@@ -342,14 +310,14 @@ def main():
         writing_page_id = extract_page_id(writing_url)
 
         # Check if tracker entry already exists
-        existing_tracker_id = find_existing_tracker_entry(token, commit["hash"])
+        existing_tracker_id = find_existing_tracker_entry(notion, commit["hash"])
 
         if existing_tracker_id:
             # Update existing entry with Writing relation
-            tracker_url = update_tracker_entry(token, existing_tracker_id, writing_page_id)
+            tracker_url = update_tracker_entry(notion, existing_tracker_id, writing_page_id)
         else:
             # Create new tracker entry with relation to Writing page
-            tracker_url = create_tracker_entry(token, commit, writing_page_id)
+            tracker_url = create_tracker_entry(notion, commit, writing_page_id)
 
         # Output results
         print(json.dumps({
