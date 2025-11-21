@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from op.secrets import get_op_secret, OP_NOTION_TOKEN
+from op.secrets import OP_NOTION_TOKEN, get_op_secret
 
 
 def get_notion_client():

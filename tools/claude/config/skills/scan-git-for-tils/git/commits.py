@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
-import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from git.formatting import format_relative_date
 
@@ -142,7 +142,11 @@ def get_commits_from_events(days: int, username: str) -> list[Commit]:
     )
 
     if result.returncode != 0:
-        print(f"Error: Failed to fetch user events via gh api (exit code {result.returncode}): {result.stderr.strip()}", file=sys.stderr)
+        print(
+            f"Error: Failed to fetch user events via gh api "
+            f"(exit code {result.returncode}): {result.stderr.strip()}",
+            file=sys.stderr,
+        )
         return []
 
     try:

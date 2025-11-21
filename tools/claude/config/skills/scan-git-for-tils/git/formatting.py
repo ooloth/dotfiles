@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from git.commits import Commit
 
 
 def format_relative_date(iso_date: str) -> str:

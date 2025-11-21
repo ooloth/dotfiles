@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "tools/claude/config/skills/**/*.py"
+      - "tools/claude/config/skills/**/pyproject.toml"
       - ".github/workflows/test-claude-skills.yml"
 
   # Run on pushes to main branch
@@ -13,6 +14,7 @@ on:
     branches: [main]
     paths:
       - "tools/claude/config/skills/**/*.py"
+      - "tools/claude/config/skills/**/pyproject.toml"
       - ".github/workflows/test-claude-skills.yml"
 
   # Allow manual triggering for debugging
@@ -29,6 +31,38 @@ jobs:
 
       - name: Install uv
         run: brew install uv
+
+      - name: Run ruff checks
+        run: |
+          echo "Running ruff checks on all skills..."
+          cd tools/claude/config/skills
+
+          for skill_dir in */; do
+            if [[ -f "$skill_dir/pyproject.toml" ]]; then
+              echo ""
+              echo "Checking $skill_dir with ruff..."
+              uv run --directory "$skill_dir" ruff check "$skill_dir" || exit 1
+            fi
+          done
+
+          echo "✅ All ruff checks passed"
+
+      - name: Run mypy checks
+        run: |
+          echo "Running mypy checks on all skills..."
+          cd tools/claude/config/skills
+
+          for skill_dir in */; do
+            if [[ -f "$skill_dir/pyproject.toml" ]]; then
+              echo ""
+              echo "Type checking $skill_dir with mypy..."
+              # Install mypy in the skill's environment and run it
+              uv pip install --python "$(uv run --directory "$skill_dir" which python)" mypy pydantic 2>/dev/null
+              uv run --directory "$skill_dir" python -m mypy "$skill_dir" || exit 1
+            fi
+          done
+
+          echo "✅ All mypy checks passed"
 
       - name: Find and run skill tests
         run: |

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from op.secrets import get_op_secret, OP_NOTION_TOKEN
+from op.secrets import OP_NOTION_TOKEN, get_op_secret
 
 # Notion database IDs
 ASSESSED_COMMITS_DATA_SOURCE_ID = "cba80148-aeef-49c9-ba45-5157668b17b3"
@@ -34,7 +34,7 @@ def get_assessed_commits_from_notion() -> set[str]:
             if start_cursor:
                 query_params["start_cursor"] = start_cursor
 
-            response = notion.databases.query(**query_params)
+            response = notion.databases.query(**query_params)  # type: ignore[attr-defined]
 
             # Extract commit hashes from results
             for page in response.get("results", []):

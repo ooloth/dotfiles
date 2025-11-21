@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pytest", "notion-client"]
+# dependencies = ["pytest", "notion-client", "pydantic", "ruff", "mypy"]
 # ///
 """
 Tests for pure functions in TIL workflow scripts.
@@ -12,7 +12,7 @@ Or: uv run pytest test_pure_functions.py -v
 
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -173,7 +173,9 @@ def make_notion_page(commit_hash: str) -> dict:
     }
 
 
-def make_notion_response(hashes: list[str], has_more: bool = False, next_cursor: str | None = None) -> dict:
+def make_notion_response(
+    hashes: list[str], has_more: bool = False, next_cursor: str | None = None
+) -> dict:
     """Helper: create a mock Notion SDK response."""
     return {
         "results": [make_notion_page(h) for h in hashes],

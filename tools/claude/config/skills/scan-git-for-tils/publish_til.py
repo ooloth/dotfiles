@@ -36,20 +36,20 @@ Requires:
 
 from __future__ import annotations
 
-import sys
 import json
-from dataclasses import dataclass, asdict
+import sys
+from dataclasses import asdict, dataclass
 
 from pydantic import BaseModel, Field, ValidationError
 
+from notion.blocks import extract_page_id
 from notion.client import get_notion_client
-from notion.writing import create_writing_page
 from notion.commits import (
+    create_tracker_entry,
     find_existing_tracker_entry,
     update_tracker_entry,
-    create_tracker_entry,
 )
-from notion.blocks import extract_page_id
+from notion.writing import create_writing_page
 
 
 class CommitInput(BaseModel):
