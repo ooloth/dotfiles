@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["notion-client"]
+# dependencies = ["notion-client", "pydantic"]
 # ///
 """
 Publish a TIL draft to Notion and update the tracker.
@@ -34,8 +34,13 @@ Requires:
     - uv (for dependency management)
 """
 
+from __future__ import annotations
+
 import sys
 import json
+from dataclasses import dataclass, asdict
+
+from pydantic import BaseModel, Field, ValidationError
 
 from notion.client import (
     get_notion_client,
@@ -47,34 +52,43 @@ from notion.client import (
 from notion.blocks import extract_page_id
 
 
+class CommitInput(BaseModel):
+    """Commit metadata from git."""
+
+    hash: str = Field(..., min_length=1)
+    message: str = Field(..., min_length=1)
+    repo: str = Field(..., min_length=1)
+    date: str | None = None
+
+
+class PublishTilInput(BaseModel):
+    """Input for publishing a TIL to Notion."""
+
+    title: str = Field(..., min_length=1, max_length=2000)
+    content: str = Field(..., min_length=1)
+    slug: str = Field(..., min_length=1)
+    description: str = Field(..., min_length=1, max_length=2000)
+    commit: CommitInput
+
+
+@dataclass
+class PublishTilOutput:
+    """Output from publishing a TIL to Notion."""
+
+    writing_url: str
+    tracker_url: str
+
+
 def main():
-    # Read JSON input from stdin
+    # Read and validate JSON input from stdin
     try:
-        input_data = json.loads(sys.stdin.read())
+        raw_input = json.loads(sys.stdin.read())
+        input_data = PublishTilInput.model_validate(raw_input)
     except json.JSONDecodeError as e:
         print(json.dumps({"error": f"Invalid JSON input: {e}"}))
         sys.exit(1)
-
-    # Validate required fields
-    required = ["title", "content", "slug", "description", "commit"]
-    missing = [f for f in required if f not in input_data]
-    if missing:
-        print(json.dumps({"error": f"Missing required fields: {missing}"}))
-        sys.exit(1)
-
-    # Validate field lengths (Notion API limits)
-    if len(input_data["title"]) > 2000:
-        print(json.dumps({"error": "Title exceeds 2000 characters"}))
-        sys.exit(1)
-    if len(input_data["description"]) > 2000:
-        print(json.dumps({"error": "Description exceeds 2000 characters"}))
-        sys.exit(1)
-
-    commit = input_data["commit"]
-    commit_required = ["hash", "message", "repo"]
-    commit_missing = [f for f in commit_required if f not in commit]
-    if commit_missing:
-        print(json.dumps({"error": f"Missing commit fields: {commit_missing}"}))
+    except ValidationError as e:
+        print(json.dumps({"error": f"Validation error: {e}"}))
         sys.exit(1)
 
     try:
@@ -84,10 +98,10 @@ def main():
         # Create Writing page
         writing_url = create_writing_page(
             notion,
-            input_data["title"],
-            input_data["content"],
-            input_data["slug"],
-            input_data["description"],
+            input_data.title,
+            input_data.content,
+            input_data.slug,
+            input_data.description,
         )
 
         if not writing_url:
@@ -98,20 +112,23 @@ def main():
         writing_page_id = extract_page_id(writing_url)
 
         # Check if tracker entry already exists
-        existing_tracker_id = find_existing_tracker_entry(notion, commit["hash"])
+        existing_tracker_id = find_existing_tracker_entry(notion, input_data.commit.hash)
 
         if existing_tracker_id:
             # Update existing entry with Writing relation
             tracker_url = update_tracker_entry(notion, existing_tracker_id, writing_page_id)
         else:
             # Create new tracker entry with relation to Writing page
-            tracker_url = create_tracker_entry(notion, commit, writing_page_id)
+            # Convert Pydantic model to dict for notion client
+            commit_dict = input_data.commit.model_dump()
+            tracker_url = create_tracker_entry(notion, commit_dict, writing_page_id)
 
-        # Output results
-        print(json.dumps({
-            "writing_url": writing_url,
-            "tracker_url": tracker_url,
-        }, indent=2))
+        # Output results as dataclass
+        output = PublishTilOutput(
+            writing_url=writing_url,
+            tracker_url=tracker_url,
+        )
+        print(json.dumps(asdict(output), indent=2))
 
     except Exception as e:
         print(json.dumps({"error": str(e)}))

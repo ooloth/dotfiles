@@ -21,12 +21,33 @@ Requires:
     - uv (for dependency management)
 """
 
+from __future__ import annotations
+
 import sys
 import json
+from dataclasses import dataclass, asdict
 
 from git.commits import get_github_username, get_commits
 from git.formatting import should_skip_commit, format_markdown
 from notion.client import get_assessed_commits_from_notion
+
+
+@dataclass
+class CommitSummary:
+    """Summary of a commit for TIL evaluation."""
+
+    hash: str
+    message: str
+    repo: str
+    date: str
+
+
+@dataclass
+class ScanGitOutput:
+    """Output from scanning git commits."""
+
+    markdown: str
+    new_commits: list[CommitSummary]
 
 
 def main():
@@ -56,34 +77,35 @@ def main():
     total_count = len(commits)
 
     if not commits:
-        print(json.dumps({
-            "markdown": format_markdown([], days, 0, 0),
-            "new_commits": []
-        }))
+        output = ScanGitOutput(
+            markdown=format_markdown([], days, 0, 0),
+            new_commits=[]
+        )
+        print(json.dumps(asdict(output)))
         sys.exit(0)
 
     # Filter out already assessed commits and skippable commits
     new_commits = [
         c for c in commits
-        if c["full_hash"] not in assessed_hashes and not should_skip_commit(c)
+        if c.full_hash not in assessed_hashes and not should_skip_commit(c)
     ]
     new_count = len(new_commits)
 
-    # Prepare output - all commits for Claude to evaluate
-    output = {
-        "markdown": format_markdown(new_commits, days, new_count, total_count),
-        "new_commits": [
-            {
-                "hash": c["full_hash"],
-                "message": c["subject"],
-                "repo": c["repo"],
-                "date": c["iso_date"]
-            }
+    # Prepare output
+    output = ScanGitOutput(
+        markdown=format_markdown(new_commits, days, new_count, total_count),
+        new_commits=[
+            CommitSummary(
+                hash=c.full_hash,
+                message=c.subject,
+                repo=c.repo,
+                date=c.iso_date
+            )
             for c in new_commits
         ]
-    }
+    )
 
-    print(json.dumps(output, indent=2))
+    print(json.dumps(asdict(output), indent=2))
 
 
 if __name__ == "__main__":

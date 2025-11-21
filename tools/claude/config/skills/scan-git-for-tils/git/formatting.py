@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from git.commits import Commit
+
 
 def format_relative_date(iso_date: str) -> str:
     """Convert ISO date to relative format."""
@@ -34,9 +36,9 @@ def format_relative_date(iso_date: str) -> str:
         return "unknown"
 
 
-def should_skip_commit(commit: dict) -> bool:
+def should_skip_commit(commit: Commit) -> bool:
     """Check if commit should be filtered out entirely."""
-    subject = commit["subject"].lower()
+    subject = commit.subject.lower()
 
     # Skip dependency bot commits
     if "dependabot" in subject or ("bump" in subject and "from" in subject):
@@ -49,7 +51,7 @@ def should_skip_commit(commit: dict) -> bool:
     return False
 
 
-def format_markdown(commits: list[dict], days: int, new_count: int, total_count: int) -> str:
+def format_markdown(commits: list[Commit], days: int, new_count: int, total_count: int) -> str:
     """Format commits as markdown for Claude to evaluate."""
     header = f"Git commits from last {days} days:\n"
 
@@ -64,17 +66,17 @@ def format_markdown(commits: list[dict], days: int, new_count: int, total_count:
         lines.append(f"({new_count} new, {total_count - new_count} already reviewed)\n")
 
     for i, commit in enumerate(commits, 1):
-        files_str = ", ".join(commit["files"][:5]) if commit["files"] else "(no files)"
-        if len(commit["files"]) > 5:
-            files_str += f" (+{len(commit['files']) - 5} more)"
+        files_str = ", ".join(commit.files[:5]) if commit.files else "(no files)"
+        if len(commit.files) > 5:
+            files_str += f" (+{len(commit.files) - 5} more)"
 
-        lines.append(f"{i}. [{commit['repo']}] {commit['subject']}")
-        lines.append(f"   Hash: {commit['hash']} (index: {i-1}) | Date: {commit['date']}")
-        if commit["body"]:
-            body_preview = commit["body"][:200] + "..." if len(commit["body"]) > 200 else commit["body"]
+        lines.append(f"{i}. [{commit.repo}] {commit.subject}")
+        lines.append(f"   Hash: {commit.hash} (index: {i-1}) | Date: {commit.date}")
+        if commit.body:
+            body_preview = commit.body[:200] + "..." if len(commit.body) > 200 else commit.body
             lines.append(f"   Body: {body_preview}")
         lines.append(f"   Files: {files_str}")
-        lines.append(f"   URL: {commit['url']}")
+        lines.append(f"   URL: {commit.url}")
         lines.append("")
 
     return "\n".join(lines)

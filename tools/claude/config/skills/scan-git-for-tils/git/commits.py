@@ -5,10 +5,26 @@ from __future__ import annotations
 import subprocess
 import sys
 import json
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from git.formatting import format_relative_date
+
+
+@dataclass
+class Commit:
+    """A git commit with metadata."""
+
+    hash: str  # Short hash (7 chars)
+    full_hash: str  # Full SHA
+    subject: str  # First line of commit message
+    body: str  # Remaining lines of commit message
+    date: str  # Relative date (e.g., "2 days ago")
+    iso_date: str  # ISO date (YYYY-MM-DD)
+    repo: str  # Repository name (owner/repo)
+    files: list[str]  # Files changed
+    url: str  # GitHub URL
 
 
 def get_github_username() -> str:
@@ -46,7 +62,7 @@ def get_commit_files(repo: str, sha: str) -> list[str]:
         return []
 
 
-def get_commits(days: int, username: str) -> list[dict]:
+def get_commits(days: int, username: str) -> list[Commit]:
     """Fetch commits from GitHub API."""
     since_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -78,41 +94,43 @@ def get_commits(days: int, username: str) -> list[dict]:
     # Build commits list without files first
     commits = []
     for item in items:
-        commit = item.get("commit", {})
+        commit_data = item.get("commit", {})
         repo = item.get("repository", {}).get("full_name", "unknown")
 
-        commit_date = commit.get("committer", {}).get("date", "")
-        commits.append({
-            "hash": item.get("sha", "")[:7],
-            "full_hash": item.get("sha", ""),
-            "subject": commit.get("message", "").split("\n")[0],
-            "body": "\n".join(commit.get("message", "").split("\n")[1:]).strip(),
-            "date": format_relative_date(commit_date),
-            "iso_date": commit_date[:10] if commit_date else "",  # YYYY-MM-DD
-            "repo": repo,
-            "files": [],
-            "url": item.get("html_url", ""),
-        })
+        commit_date = commit_data.get("committer", {}).get("date", "")
+        message_lines = commit_data.get("message", "").split("\n")
+
+        commits.append(Commit(
+            hash=item.get("sha", "")[:7],
+            full_hash=item.get("sha", ""),
+            subject=message_lines[0],
+            body="\n".join(message_lines[1:]).strip(),
+            date=format_relative_date(commit_date),
+            iso_date=commit_date[:10] if commit_date else "",
+            repo=repo,
+            files=[],
+            url=item.get("html_url", ""),
+        ))
 
     # Fetch files in parallel (limit concurrency to avoid rate limits)
     if commits:
         with ThreadPoolExecutor(max_workers=5) as executor:
             future_to_commit = {
-                executor.submit(get_commit_files, c["repo"], c["full_hash"]): c
+                executor.submit(get_commit_files, c.repo, c.full_hash): c
                 for c in commits
             }
             for future in as_completed(future_to_commit):
                 commit = future_to_commit[future]
                 try:
-                    commit["files"] = future.result()
+                    commit.files = future.result()
                 except Exception as e:
-                    print(f"Warning: Failed to fetch files for {commit['hash']}: {e}", file=sys.stderr)
-                    commit["files"] = []
+                    print(f"Warning: Failed to fetch files for {commit.hash}: {e}", file=sys.stderr)
+                    commit.files = []
 
     return commits
 
 
-def get_commits_from_events(days: int, username: str) -> list[dict]:
+def get_commits_from_events(days: int, username: str) -> list[Commit]:
     """Fallback: get commits from user events."""
     result = subprocess.run(
         [
@@ -151,17 +169,19 @@ def get_commits_from_events(days: int, username: str) -> list[dict]:
             seen_hashes.add(sha)
 
             message = commit_data.get("message", "")
+            message_lines = message.split("\n")
             event_date = event.get("created_at", "")
-            commits.append({
-                "hash": sha[:7],
-                "full_hash": sha,
-                "subject": message.split("\n")[0],
-                "body": "\n".join(message.split("\n")[1:]).strip(),
-                "date": format_relative_date(event_date),
-                "iso_date": event_date[:10] if event_date else "",
-                "repo": repo,
-                "files": [],  # Events don't include files
-                "url": f"https://github.com/{repo}/commit/{sha}",
-            })
+
+            commits.append(Commit(
+                hash=sha[:7],
+                full_hash=sha,
+                subject=message_lines[0],
+                body="\n".join(message_lines[1:]).strip(),
+                date=format_relative_date(event_date),
+                iso_date=event_date[:10] if event_date else "",
+                repo=repo,
+                files=[],  # Events don't include files
+                url=f"https://github.com/{repo}/commit/{sha}",
+            ))
 
     return commits
