@@ -19,9 +19,6 @@ select = [
 python_version = "3.11"
 strict = false
 warn_unused_configs = true
-# Ignore missing stubs for third-party libraries
-# ignore_missing_imports = true
-# Exclude virtual environment and build directories
 exclude = [
     "^.venv/",
     "^venv/",
