@@ -9,3 +9,4 @@
 .cache
 .secrets
 Brewfile.lock.json
+node_modules/

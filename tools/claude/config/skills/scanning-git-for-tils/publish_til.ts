@@ -25,8 +25,8 @@
  * - Discriminated unions work automatically
  */
 
-import { Client } from "@notionhq/client@^2.2.15";
-import { z } from "zod@^3.22.4";
+import { Client } from "@notionhq/client";
+import { z } from "zod";
 import { getOpSecret, OP_NOTION_TOKEN } from "./op/secrets.ts";
 import { extractPageId } from "./notion/blocks.ts";
 import {

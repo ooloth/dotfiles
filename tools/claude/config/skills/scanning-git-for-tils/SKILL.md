@@ -18,9 +18,9 @@ This skill demonstrates when to choose TypeScript/Bun over Python/uv:
 
 - **Type safety**: TypeScript discriminated unions work automatically (vs Python's limited narrowing)
 - **Single validation system**: Zod validates AND provides types (vs Pydantic + mypy dual system)
-- **Inline dependencies**: Auto-install like Python's PEP 723 (no config files needed)
 - **Better npm integration**: Official @notionhq/client SDK (vs unofficial Python library)
 - **No permission flags**: Unlike Deno, Bun runs without verbose `--allow-*` flags
+- **LSP-friendly**: Standard package.json works with all editors
 
 See `COMPARISON.md` for detailed Python/Bun/Deno comparison.
 
@@ -148,14 +148,18 @@ export async function getOpSecret(path: string): Promise<string> {
 
 ## Dependencies
 
-**Auto-installed via inline imports** (like Python/uv's PEP 723):
+Managed in `package.json`:
 
-```typescript
-import { z } from "zod@^3.22.4";
-import { Client } from "@notionhq/client@^2.2.15";
+```json
+{
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "zod": "^3.22.4"
+  }
+}
 ```
 
-No config file needed - Bun auto-installs on first run and caches for subsequent runs.
+Run `bun install` once to set up. Bun auto-installs missing packages on first run.
 
 ## File Structure
 

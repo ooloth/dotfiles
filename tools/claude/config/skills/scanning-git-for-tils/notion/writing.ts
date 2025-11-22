@@ -4,8 +4,8 @@
  */
 
 import type { BlockObjectRequest } from "@notionhq/client/build/src/api-endpoints.js";
-import { Client } from "@notionhq/client@^2.2.15";
-import { z } from "zod@^3.22.4";
+import { Client } from "@notionhq/client";
+import { z } from "zod";
 import { markdownToBlocks } from "./blocks.ts";
 
 const WRITING_DATA_SOURCE_ID = "c296db5b-d2f1-44d4-abc6-f9a05736b143";
@@ -23,7 +23,7 @@ export async function createWritingPage(
   description: string,
 ): Promise<string> {
   const pageData = await notion.pages.create({
-    parent: { database_id: WRITING_DATA_SOURCE_ID },
+    parent: { data_source_id: WRITING_DATA_SOURCE_ID },
     properties: {
       Title: { title: [{ type: "text" as const, text: { content: title } }] },
       Status: { status: { name: "Claude Draft" } },

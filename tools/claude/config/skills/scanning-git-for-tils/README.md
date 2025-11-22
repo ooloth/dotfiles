@@ -62,7 +62,7 @@ This skill is ideal for Bun because it's **API-heavy with complex validation**:
 
 **TypeScript + Bun:**
 
-- ✅ Inline dependencies (auto-install imports)
+- ✅ Standard package.json (LSP-friendly)
 - ✅ One type system (Zod + TypeScript)
 - ✅ Discriminated unions work perfectly
 - ✅ No type escapes needed
@@ -72,6 +72,12 @@ This skill is ideal for Bun because it's **API-heavy with complex validation**:
 
 ## Usage
 
+**First time setup:**
+```bash
+bun install
+```
+
+**Run the skill:**
 ```bash
 # Scan commits
 bun run scan_git.ts [days]
@@ -81,9 +87,6 @@ echo '<json>' | bun run publish_til.ts
 
 # Run tests
 bun test test.ts
-
-# Format code (if using bun fmt, or use Prettier/Biome)
-bun fmt
 ```
 
 ## When to Use Bun vs Python vs Deno

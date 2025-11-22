@@ -3,7 +3,7 @@
  * Notice: Zod validates AND provides types, no dual system needed
  */
 
-import { z } from "zod@^3.22.4";
+import { z } from "zod";
 
 // Zod schema that validates AND provides TypeScript type
 export const CommitSchema = z.object({

@@ -30,7 +30,7 @@ def get_assessed_commits_from_notion() -> set[str]:
     while True:
         try:
             # Query with pagination
-            query_params = {"database_id": NOTION_ASSESSED_COMMITS_DB}
+            query_params = {"database_id": ASSESSED_COMMITS_DATA_SOURCE_ID}
             if start_cursor:
                 query_params["start_cursor"] = start_cursor
 

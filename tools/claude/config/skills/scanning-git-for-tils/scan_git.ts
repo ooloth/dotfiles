@@ -11,7 +11,7 @@
  * - TypeScript type safety + Zod validation
  */
 
-import { z } from "zod@^3.22.4";
+import { z } from "zod";
 import { getCommits, getGitHubUsername } from "./git/commits.ts";
 import { formatMarkdown, shouldSkipCommit } from "./git/formatting.ts";
 import { getAssessedCommitsFromNotion } from "./notion/commits.ts";
