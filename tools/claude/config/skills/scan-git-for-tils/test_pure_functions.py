@@ -26,7 +26,7 @@ from notion.commits import get_assessed_commits_from_notion
 class TestFormatRelativeDate:
     """Test relative date formatting."""
 
-    def test_formats_recent_as_hours_or_just_now(self):
+    def test_formats_recent_as_hours_or_just_now(self) -> None:
         from datetime import datetime
 
         now = datetime.now().isoformat() + "Z"
@@ -34,23 +34,23 @@ class TestFormatRelativeDate:
         # Could be "just now" or "N hours ago" depending on timing
         assert "ago" in result or result == "just now"
 
-    def test_formats_yesterday(self):
+    def test_formats_yesterday(self) -> None:
         from datetime import datetime, timedelta
 
         yesterday = (datetime.now() - timedelta(days=1)).isoformat() + "Z"
         result = format_relative_date(yesterday)
         assert result == "yesterday"
 
-    def test_formats_days_ago(self):
+    def test_formats_days_ago(self) -> None:
         result = format_relative_date("2025-01-15T12:00:00Z")
         # Will be "N days ago" depending on current date
         assert "ago" in result
 
-    def test_handles_invalid_date(self):
+    def test_handles_invalid_date(self) -> None:
         result = format_relative_date("not-a-date")
         assert result == "unknown"
 
-    def test_handles_empty_string(self):
+    def test_handles_empty_string(self) -> None:
         result = format_relative_date("")
         assert result == "unknown"
 
@@ -58,7 +58,7 @@ class TestFormatRelativeDate:
 class TestShouldSkipCommit:
     """Test commit filtering logic."""
 
-    def test_skips_dependabot(self):
+    def test_skips_dependabot(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123",
@@ -72,7 +72,7 @@ class TestShouldSkipCommit:
         )
         assert should_skip_commit(commit) is True
 
-    def test_skips_bump_commits(self):
+    def test_skips_bump_commits(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123",
@@ -86,7 +86,7 @@ class TestShouldSkipCommit:
         )
         assert should_skip_commit(commit) is True
 
-    def test_skips_merge_commits(self):
+    def test_skips_merge_commits(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123",
@@ -100,7 +100,7 @@ class TestShouldSkipCommit:
         )
         assert should_skip_commit(commit) is True
 
-    def test_keeps_normal_commits(self):
+    def test_keeps_normal_commits(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123",
@@ -114,7 +114,7 @@ class TestShouldSkipCommit:
         )
         assert should_skip_commit(commit) is False
 
-    def test_keeps_feature_commits(self):
+    def test_keeps_feature_commits(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123",
@@ -132,18 +132,18 @@ class TestShouldSkipCommit:
 class TestFormatMarkdown:
     """Test markdown formatting for commits."""
 
-    def test_formats_empty_list(self):
+    def test_formats_empty_list(self) -> None:
         result = format_markdown([], 30, 0, 0)
         assert "Git commits from last 30 days:" in result
         assert "No commits found" in result
 
-    def test_formats_all_already_reviewed(self):
+    def test_formats_all_already_reviewed(self) -> None:
         result = format_markdown([], 30, 0, 5)
         assert "Git commits from last 30 days:" in result
         assert "No new commits to assess" in result
         assert "5 commits already reviewed" in result
 
-    def test_formats_single_commit_basic(self):
+    def test_formats_single_commit_basic(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123456789",
@@ -163,7 +163,7 @@ class TestFormatMarkdown:
         assert "Files: src/main.py" in result
         assert "URL: https://github.com/owner/repo/commit/abc123456789" in result
 
-    def test_formats_commit_with_body(self):
+    def test_formats_commit_with_body(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123456789",
@@ -179,7 +179,7 @@ class TestFormatMarkdown:
 
         assert "Body: This fixes an issue where null values weren't handled properly." in result
 
-    def test_formats_commit_with_long_body(self):
+    def test_formats_commit_with_long_body(self) -> None:
         long_body = "a" * 250
         commit = Commit(
             hash="abc1234",
@@ -197,7 +197,7 @@ class TestFormatMarkdown:
         assert "Body: " + "a" * 200 + "..." in result
         assert len([line for line in result.split("\n") if "Body:" in line][0]) < 220
 
-    def test_formats_commit_with_no_files(self):
+    def test_formats_commit_with_no_files(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123456789",
@@ -213,7 +213,7 @@ class TestFormatMarkdown:
 
         assert "Files: (no files)" in result
 
-    def test_formats_commit_with_many_files(self):
+    def test_formats_commit_with_many_files(self) -> None:
         files = [f"file{i}.py" for i in range(10)]
         commit = Commit(
             hash="abc1234",
@@ -235,7 +235,7 @@ class TestFormatMarkdown:
         # Should NOT show file5 or later
         assert "file5.py" not in result
 
-    def test_formats_multiple_commits(self):
+    def test_formats_multiple_commits(self) -> None:
         commits = [
             Commit(
                 hash="abc1234",
@@ -267,7 +267,7 @@ class TestFormatMarkdown:
         assert "2. [owner/repo2] Second commit" in result
         assert "Hash: def5678 (index: 1)" in result
 
-    def test_shows_review_status_when_some_already_reviewed(self):
+    def test_shows_review_status_when_some_already_reviewed(self) -> None:
         commit = Commit(
             hash="abc1234",
             full_hash="abc123",
@@ -288,31 +288,31 @@ class TestFormatMarkdown:
 class TestExtractPageId:
     """Test Notion URL page ID extraction."""
 
-    def test_extracts_from_standard_url(self):
+    def test_extracts_from_standard_url(self) -> None:
         url = "https://www.notion.so/Page-Title-abc123def456"
         result = extract_page_id(url)
         assert result == "abc123def456"
 
-    def test_extracts_from_url_with_query_params(self):
+    def test_extracts_from_url_with_query_params(self) -> None:
         url = "https://www.notion.so/Page-Title-abc123def456?v=xyz"
         result = extract_page_id(url)
         assert result == "abc123def456"
 
-    def test_extracts_from_short_url(self):
+    def test_extracts_from_short_url(self) -> None:
         url = "https://notion.so/abc123def456"
         result = extract_page_id(url)
         assert result == "abc123def456"
 
-    def test_handles_trailing_slash(self):
+    def test_handles_trailing_slash(self) -> None:
         url = "https://www.notion.so/Page-Title-abc123def456/"
         result = extract_page_id(url)
         assert result == "abc123def456"
 
-    def test_handles_empty_string(self):
+    def test_handles_empty_string(self) -> None:
         result = extract_page_id("")
         assert result == ""
 
-    def test_extracts_uuid_with_dashes(self):
+    def test_extracts_uuid_with_dashes(self) -> None:
         # Notion IDs can have dashes in UUID format
         url = "https://www.notion.so/12345678-90ab-cdef-1234-567890abcdef"
         result = extract_page_id(url)
@@ -336,9 +336,9 @@ def make_notion_response(
     }
 
 
-def mock_collect_paginated_api(pages: list[dict]):
+def mock_collect_paginated_api(pages: list[dict]) -> list[dict]:
     """Helper: mock collect_paginated_api to return all pages as a flat list."""
-    all_results = []
+    all_results: list[dict] = []
     for page_response in pages:
         all_results.extend(page_response["results"])
     return all_results
@@ -347,12 +347,12 @@ def mock_collect_paginated_api(pages: list[dict]):
 class TestGetAssessedCommitsFromNotion:
     """Test fetching assessed commits from Notion."""
 
-    def test_returns_empty_set_when_no_token(self):
+    def test_returns_empty_set_when_no_token(self) -> None:
         with patch("notion.commits.get_op_secret", side_effect=RuntimeError("Failed")):
             result = get_assessed_commits_from_notion()
             assert result == set()
 
-    def test_returns_commit_hashes_from_single_page(self):
+    def test_returns_commit_hashes_from_single_page(self) -> None:
         with (
             patch("notion.commits.get_op_secret", return_value="fake-token"),
             patch("notion_client.Client"),
@@ -364,7 +364,7 @@ class TestGetAssessedCommitsFromNotion:
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456", "ghi789"}
 
-    def test_handles_pagination(self):
+    def test_handles_pagination(self) -> None:
         with (
             patch("notion.commits.get_op_secret", return_value="fake-token"),
             patch("notion_client.Client"),
@@ -384,7 +384,7 @@ class TestGetAssessedCommitsFromNotion:
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456", "ghi789", "jkl012"}
 
-    def test_handles_client_error_gracefully(self):
+    def test_handles_client_error_gracefully(self) -> None:
         with (
             patch("notion.commits.get_op_secret", return_value="fake-token"),
             patch("notion_client.Client") as MockClient,
@@ -394,7 +394,7 @@ class TestGetAssessedCommitsFromNotion:
             result = get_assessed_commits_from_notion()
             assert result == set()
 
-    def test_handles_query_error_gracefully(self):
+    def test_handles_query_error_gracefully(self) -> None:
         with (
             patch("notion.commits.get_op_secret", return_value="fake-token"),
             patch("notion_client.Client"),
@@ -405,7 +405,7 @@ class TestGetAssessedCommitsFromNotion:
             result = get_assessed_commits_from_notion()
             assert result == set()
 
-    def test_skips_pages_without_commit_hash(self):
+    def test_skips_pages_without_commit_hash(self) -> None:
         with (
             patch("notion.commits.get_op_secret", return_value="fake-token"),
             patch("notion_client.Client"),
@@ -430,7 +430,7 @@ class TestGetAssessedCommitsFromNotion:
 class TestMarkdownToBlocks:
     """Test markdown to Notion blocks conversion."""
 
-    def test_converts_code_blocks(self):
+    def test_converts_code_blocks(self) -> None:
         markdown = "```python\nprint('hello')\n```"
         blocks = markdown_to_blocks(markdown)
 
@@ -439,13 +439,13 @@ class TestMarkdownToBlocks:
         assert blocks[0]["code"]["language"] == "python"
         assert blocks[0]["code"]["rich_text"][0]["text"]["content"] == "print('hello')"
 
-    def test_maps_language_aliases(self):
+    def test_maps_language_aliases(self) -> None:
         markdown = "```js\nconsole.log('test')\n```"
         blocks = markdown_to_blocks(markdown)
 
         assert blocks[0]["code"]["language"] == "javascript"
 
-    def test_converts_headings(self):
+    def test_converts_headings(self) -> None:
         markdown = "# H1\n## H2\n### H3"
         blocks = markdown_to_blocks(markdown)
 
@@ -454,7 +454,7 @@ class TestMarkdownToBlocks:
         assert blocks[1]["type"] == "heading_2"
         assert blocks[2]["type"] == "heading_3"
 
-    def test_converts_bullet_lists(self):
+    def test_converts_bullet_lists(self) -> None:
         markdown = "- Item 1\n- Item 2"
         blocks = markdown_to_blocks(markdown)
 
@@ -462,7 +462,7 @@ class TestMarkdownToBlocks:
         assert blocks[0]["type"] == "bulleted_list_item"
         assert blocks[0]["bulleted_list_item"]["rich_text"][0]["text"]["content"] == "Item 1"
 
-    def test_converts_numbered_lists(self):
+    def test_converts_numbered_lists(self) -> None:
         markdown = "1. First\n2. Second"
         blocks = markdown_to_blocks(markdown)
 
@@ -470,7 +470,7 @@ class TestMarkdownToBlocks:
         assert blocks[0]["type"] == "numbered_list_item"
         assert blocks[1]["type"] == "numbered_list_item"
 
-    def test_converts_paragraphs(self):
+    def test_converts_paragraphs(self) -> None:
         markdown = "This is a paragraph"
         blocks = markdown_to_blocks(markdown)
 
@@ -478,7 +478,7 @@ class TestMarkdownToBlocks:
         assert blocks[0]["type"] == "paragraph"
         assert blocks[0]["paragraph"]["rich_text"][0]["text"]["content"] == "This is a paragraph"
 
-    def test_handles_empty_lines(self):
+    def test_handles_empty_lines(self) -> None:
         markdown = "Line 1\n\nLine 2"
         blocks = markdown_to_blocks(markdown)
 
@@ -486,7 +486,7 @@ class TestMarkdownToBlocks:
         assert blocks[1]["type"] == "paragraph"
         assert blocks[1]["paragraph"]["rich_text"] == []
 
-    def test_handles_multiline_code_blocks(self):
+    def test_handles_multiline_code_blocks(self) -> None:
         markdown = "```python\nline1\nline2\nline3\n```"
         blocks = markdown_to_blocks(markdown)
 

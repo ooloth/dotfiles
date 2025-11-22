@@ -50,7 +50,7 @@ class ScanGitOutput:
     new_commits: list[CommitSummary]
 
 
-def main():
+def main() -> None:
     # Parse arguments
     days = 30
     if len(sys.argv) > 1:

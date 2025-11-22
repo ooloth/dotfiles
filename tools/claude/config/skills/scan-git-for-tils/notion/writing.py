@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from notion_client import Client
+
 from notion.blocks import markdown_to_blocks
 from notion.validation import NotionPageResponse
 
@@ -9,7 +11,7 @@ from notion.validation import NotionPageResponse
 WRITING_DATA_SOURCE_ID = "c296db5b-d2f1-44d4-abc6-f9a05736b143"
 
 
-def create_writing_page(notion, title: str, content: str, slug: str, description: str) -> str:
+def create_writing_page(notion: Client, title: str, content: str, slug: str, description: str) -> str:
     """Create a TIL draft in the Writing database. Returns page URL."""
 
     response = notion.pages.create(

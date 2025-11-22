@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from notion_client import Client
+
 from op.secrets import OP_NOTION_TOKEN_PATH, get_op_secret
 
 
-def get_notion_client():
+def get_notion_client() -> Client:
     """Create authenticated Notion client.
 
     Raises:

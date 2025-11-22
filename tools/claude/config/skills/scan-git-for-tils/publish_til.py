@@ -79,7 +79,7 @@ class PublishTilOutput:
     tracker_url: str
 
 
-def main():
+def main() -> None:
     # Read and validate JSON input from stdin
     try:
         raw_input = json.loads(sys.stdin.read())
