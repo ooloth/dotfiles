@@ -1,28 +1,20 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pytest", "notion-client", "pydantic", "ruff", "mypy"]
+# dependencies = ["pytest"]
 # ///
-"""
-Tests for pure functions in TIL workflow scripts.
-
-Run with: uv run test_pure_functions.py
-Or: uv run pytest test_pure_functions.py -v
-"""
+"""Tests for git formatting utilities."""
 
 from __future__ import annotations
 
 import sys
 from pathlib import Path
-from unittest.mock import patch
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from git.formatting import format_markdown, format_relative_date, should_skip_commit
 from git.types import Commit
-from notion.blocks import extract_page_id, markdown_to_blocks
-from notion.commits import get_assessed_commits_from_notion
 
 
 class TestFormatRelativeDate:
@@ -285,223 +277,6 @@ class TestFormatMarkdown:
 
         assert "Git commits from last 30 days:" in result
         assert "(1 new, 4 already reviewed)" in result
-
-
-class TestExtractPageId:
-    """Test Notion URL page ID extraction."""
-
-    def test_extracts_from_standard_url(self) -> None:
-        url = "https://www.notion.so/Page-Title-abc123def456"
-        result = extract_page_id(url)
-        assert result == "abc123def456"
-
-    def test_extracts_from_url_with_query_params(self) -> None:
-        url = "https://www.notion.so/Page-Title-abc123def456?v=xyz"
-        result = extract_page_id(url)
-        assert result == "abc123def456"
-
-    def test_extracts_from_short_url(self) -> None:
-        url = "https://notion.so/abc123def456"
-        result = extract_page_id(url)
-        assert result == "abc123def456"
-
-    def test_handles_trailing_slash(self) -> None:
-        url = "https://www.notion.so/Page-Title-abc123def456/"
-        result = extract_page_id(url)
-        assert result == "abc123def456"
-
-    def test_handles_empty_string(self) -> None:
-        result = extract_page_id("")
-        assert result == ""
-
-    def test_extracts_uuid_with_dashes(self) -> None:
-        # Notion IDs can have dashes in UUID format
-        url = "https://www.notion.so/12345678-90ab-cdef-1234-567890abcdef"
-        result = extract_page_id(url)
-        # Should get the whole UUID including trailing segment
-        assert len(result) > 0
-
-
-def make_notion_page(commit_hash: str) -> dict:
-    """Helper: create a mock Notion page with a commit hash."""
-    return {
-        "id": f"page-{commit_hash}",
-        "url": f"https://notion.so/page-{commit_hash}",
-        "properties": {"Commit Hash": {"title": [{"plain_text": commit_hash}]}},
-    }
-
-
-def make_notion_response(
-    hashes: list[str], has_more: bool = False, next_cursor: str | None = None
-) -> dict:
-    """Helper: create a mock Notion SDK response."""
-    return {
-        "results": [make_notion_page(h) for h in hashes],
-        "has_more": has_more,
-        "next_cursor": next_cursor,
-    }
-
-
-def mock_collect_paginated_api(pages: list[dict]) -> list[dict]:
-    """Helper: mock collect_paginated_api to return all pages as a flat list."""
-    all_results: list[dict] = []
-    for page_response in pages:
-        all_results.extend(page_response["results"])
-    return all_results
-
-
-class TestGetAssessedCommitsFromNotion:
-    """Test fetching assessed commits from Notion."""
-
-    def test_returns_empty_set_when_no_token(self) -> None:
-        with patch("notion.commits.get_op_secret", side_effect=RuntimeError("Failed")):
-            result = get_assessed_commits_from_notion()
-            assert result == set()
-
-    def test_returns_commit_hashes_from_single_page(self) -> None:
-        with (
-            patch("notion.commits.get_op_secret", return_value="fake-token"),
-            patch("notion_client.Client"),
-            patch("notion_client.helpers.collect_paginated_api") as mock_paginate,
-        ):
-            pages = [make_notion_response(["abc123", "def456", "ghi789"])]
-            mock_paginate.return_value = mock_collect_paginated_api(pages)
-
-            result = get_assessed_commits_from_notion()
-            assert result == {"abc123", "def456", "ghi789"}
-
-    def test_handles_pagination(self) -> None:
-        with (
-            patch("notion.commits.get_op_secret", return_value="fake-token"),
-            patch("notion_client.Client"),
-            patch("notion_client.helpers.collect_paginated_api") as mock_paginate,
-        ):
-            # First page with more results
-            first_response = make_notion_response(
-                ["abc123", "def456"], has_more=True, next_cursor="cursor-1"
-            )
-            # Second page, final
-            second_response = make_notion_response(["ghi789", "jkl012"], has_more=False)
-
-            # collect_paginated_api handles pagination internally, returns all results
-            pages = [first_response, second_response]
-            mock_paginate.return_value = mock_collect_paginated_api(pages)
-
-            result = get_assessed_commits_from_notion()
-            assert result == {"abc123", "def456", "ghi789", "jkl012"}
-
-    def test_handles_client_error_gracefully(self) -> None:
-        with (
-            patch("notion.commits.get_op_secret", return_value="fake-token"),
-            patch("notion_client.Client") as MockClient,
-        ):
-            MockClient.side_effect = Exception("Connection error")
-
-            result = get_assessed_commits_from_notion()
-            assert result == set()
-
-    def test_handles_query_error_gracefully(self) -> None:
-        with (
-            patch("notion.commits.get_op_secret", return_value="fake-token"),
-            patch("notion_client.Client"),
-            patch("notion_client.helpers.collect_paginated_api") as mock_paginate,
-        ):
-            mock_paginate.side_effect = Exception("Query error")
-
-            result = get_assessed_commits_from_notion()
-            assert result == set()
-
-    def test_skips_pages_without_commit_hash(self) -> None:
-        with (
-            patch("notion.commits.get_op_secret", return_value="fake-token"),
-            patch("notion_client.Client"),
-            patch("notion_client.helpers.collect_paginated_api") as mock_paginate,
-        ):
-            response = {
-                "results": [
-                    make_notion_page("abc123"),
-                    {  # Empty title
-                        "id": "page-empty",
-                        "url": "https://notion.so/page-empty",
-                        "properties": {"Commit Hash": {"title": []}},
-                    },
-                    make_notion_page("def456"),
-                ],
-                "has_more": False,
-                "next_cursor": None,
-            }
-
-            mock_paginate.return_value = mock_collect_paginated_api([response])
-
-            result = get_assessed_commits_from_notion()
-            assert result == {"abc123", "def456"}
-
-
-class TestMarkdownToBlocks:
-    """Test markdown to Notion blocks conversion."""
-
-    def test_converts_code_blocks(self) -> None:
-        markdown = "```python\nprint('hello')\n```"
-        blocks = markdown_to_blocks(markdown)
-
-        assert len(blocks) == 1
-        assert blocks[0]["type"] == "code"
-        assert blocks[0]["code"]["language"] == "python"
-        assert blocks[0]["code"]["rich_text"][0]["text"]["content"] == "print('hello')"
-
-    def test_maps_language_aliases(self) -> None:
-        markdown = "```js\nconsole.log('test')\n```"
-        blocks = markdown_to_blocks(markdown)
-
-        assert blocks[0]["code"]["language"] == "javascript"
-
-    def test_converts_headings(self) -> None:
-        markdown = "# H1\n## H2\n### H3"
-        blocks = markdown_to_blocks(markdown)
-
-        assert len(blocks) == 3
-        assert blocks[0]["type"] == "heading_1"
-        assert blocks[1]["type"] == "heading_2"
-        assert blocks[2]["type"] == "heading_3"
-
-    def test_converts_bullet_lists(self) -> None:
-        markdown = "- Item 1\n- Item 2"
-        blocks = markdown_to_blocks(markdown)
-
-        assert len(blocks) == 2
-        assert blocks[0]["type"] == "bulleted_list_item"
-        assert blocks[0]["bulleted_list_item"]["rich_text"][0]["text"]["content"] == "Item 1"
-
-    def test_converts_numbered_lists(self) -> None:
-        markdown = "1. First\n2. Second"
-        blocks = markdown_to_blocks(markdown)
-
-        assert len(blocks) == 2
-        assert blocks[0]["type"] == "numbered_list_item"
-        assert blocks[1]["type"] == "numbered_list_item"
-
-    def test_converts_paragraphs(self) -> None:
-        markdown = "This is a paragraph"
-        blocks = markdown_to_blocks(markdown)
-
-        assert len(blocks) == 1
-        assert blocks[0]["type"] == "paragraph"
-        assert blocks[0]["paragraph"]["rich_text"][0]["text"]["content"] == "This is a paragraph"
-
-    def test_handles_empty_lines(self) -> None:
-        markdown = "Line 1\n\nLine 2"
-        blocks = markdown_to_blocks(markdown)
-
-        assert len(blocks) == 3
-        assert blocks[1]["type"] == "paragraph"
-        assert blocks[1]["paragraph"]["rich_text"] == []
-
-    def test_handles_multiline_code_blocks(self) -> None:
-        markdown = "```python\nline1\nline2\nline3\n```"
-        blocks = markdown_to_blocks(markdown)
-
-        assert len(blocks) == 1
-        assert "line1\nline2\nline3" in blocks[0]["code"]["rich_text"][0]["text"]["content"]
 
 
 if __name__ == "__main__":
