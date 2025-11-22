@@ -340,11 +340,12 @@ def make_notion_response(
     }
 
 
-def mock_notion_client(responses: list[dict]):
-    """Helper: create a mock Notion client with predefined responses."""
-    mock_client = MagicMock()
-    mock_client.databases.query.side_effect = responses
-    return mock_client
+def mock_collect_paginated_api(pages: list[dict]):
+    """Helper: mock collect_paginated_api to return all pages as a flat list."""
+    all_results = []
+    for page_response in pages:
+        all_results.extend(page_response["results"])
+    return all_results
 
 
 class TestGetAssessedCommitsFromNotion:
@@ -357,19 +358,19 @@ class TestGetAssessedCommitsFromNotion:
 
     def test_returns_commit_hashes_from_single_page(self):
         with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client") as MockClient:
+             patch("notion_client.Client"), \
+             patch("notion_client.helpers.collect_paginated_api") as mock_paginate:
 
-            mock_client = mock_notion_client([
-                make_notion_response(["abc123", "def456", "ghi789"])
-            ])
-            MockClient.return_value = mock_client
+            pages = [make_notion_response(["abc123", "def456", "ghi789"])]
+            mock_paginate.return_value = mock_collect_paginated_api(pages)
 
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456", "ghi789"}
 
     def test_handles_pagination(self):
         with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client") as MockClient:
+             patch("notion_client.Client"), \
+             patch("notion_client.helpers.collect_paginated_api") as mock_paginate:
 
             # First page with more results
             first_response = make_notion_response(
@@ -383,12 +384,12 @@ class TestGetAssessedCommitsFromNotion:
                 has_more=False
             )
 
-            mock_client = mock_notion_client([first_response, second_response])
-            MockClient.return_value = mock_client
+            # collect_paginated_api handles pagination internally, returns all results
+            pages = [first_response, second_response]
+            mock_paginate.return_value = mock_collect_paginated_api(pages)
 
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456", "ghi789", "jkl012"}
-            assert mock_client.databases.query.call_count == 2
 
     def test_handles_client_error_gracefully(self):
         with patch("notion.commits.get_op_secret", return_value="fake-token"), \
@@ -401,18 +402,18 @@ class TestGetAssessedCommitsFromNotion:
 
     def test_handles_query_error_gracefully(self):
         with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client") as MockClient:
+             patch("notion_client.Client"), \
+             patch("notion_client.helpers.collect_paginated_api") as mock_paginate:
 
-            mock_client = MagicMock()
-            mock_client.databases.query.side_effect = Exception("Query error")
-            MockClient.return_value = mock_client
+            mock_paginate.side_effect = Exception("Query error")
 
             result = get_assessed_commits_from_notion()
             assert result == set()
 
     def test_skips_pages_without_commit_hash(self):
         with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client") as MockClient:
+             patch("notion_client.Client"), \
+             patch("notion_client.helpers.collect_paginated_api") as mock_paginate:
 
             response = {
                 "results": [
@@ -424,8 +425,7 @@ class TestGetAssessedCommitsFromNotion:
                 "next_cursor": None
             }
 
-            mock_client = mock_notion_client([response])
-            MockClient.return_value = mock_client
+            mock_paginate.return_value = mock_collect_paginated_api([response])
 
             result = get_assessed_commits_from_notion()
             assert result == {"abc123", "def456"}
