@@ -1,18 +1,18 @@
 /**
- * 1Password secret retrieval.
+ * 1Password secret retrieval - BUN VERSION
  */
 
 export const OP_NOTION_TOKEN = "op://Scripts/Notion/api-access-token";
 
 export async function getOpSecret(path: string): Promise<string> {
-  const proc = new Deno.Command("op", {
-    args: ["read", path],
-    stdout: "piped",
-    stderr: "piped",
+  const proc = Bun.spawn(["op", "read", path], {
+    stdout: "pipe",
+    stderr: "pipe",
   });
 
-  const { code, stdout } = await proc.output();
-  if (code !== 0) return "";
+  const exitCode = await proc.exited;
+  if (exitCode !== 0) return "";
 
-  return new TextDecoder().decode(stdout).trim();
+  const output = await new Response(proc.stdout).text();
+  return output.trim();
 }

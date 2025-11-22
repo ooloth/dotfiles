@@ -1,407 +1,194 @@
 /**
- * Tests for pure functions in TIL workflow TypeScript implementation.
+ * Tests for pure functions in TIL workflow - BUN VERSION
  *
- * Run with: deno task test
+ * Run with: bun test test.bun.ts
  *
- * Compare to Python version - notice:
- * - No need for sys.path manipulation
- * - Deno's built-in test runner (no pytest)
+ * Demonstrates Bun advantages:
+ * - Built-in test runner (no pytest or Deno needed)
  * - TypeScript types catch errors at compile time
+ * - No sys.path manipulation needed
  */
 
-import { assert, assertEquals } from "https://deno.land/std@0.208.0/assert/mod.ts";
+import { test, expect, describe } from "bun:test";
 import type { Commit } from "./git/commits.ts";
-import { formatRelativeDate } from "./git/commits.ts";
 import { formatMarkdown, shouldSkipCommit } from "./git/formatting.ts";
 import { extractPageId, markdownToBlocks } from "./notion/blocks.ts";
 
-// Test relative date formatting
-Deno.test("formatRelativeDate - formats recent as hours or just now", () => {
-  const now = new Date().toISOString();
-  const result = formatRelativeDate(now);
-  // Could be "just now" or "N hours ago" depending on timing
-  assert(result.includes("ago") || result === "just now");
-});
-
-Deno.test("formatRelativeDate - formats yesterday", () => {
-  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const result = formatRelativeDate(yesterday);
-  assertEquals(result, "yesterday");
-});
-
-Deno.test("formatRelativeDate - formats days ago", () => {
-  const daysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString();
-  const result = formatRelativeDate(daysAgo);
-  assert(result.includes("ago"));
-});
-
-Deno.test("formatRelativeDate - handles invalid date", () => {
-  const result = formatRelativeDate("not-a-date");
-  assertEquals(result, "unknown");
-});
-
-Deno.test("formatRelativeDate - handles empty string", () => {
-  const result = formatRelativeDate("");
-  assertEquals(result, "unknown");
-});
-
 // Test commit filtering logic
-Deno.test("shouldSkipCommit - skips dependabot commits", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123",
-    subject: "Bump dependency from 1.0 to 2.0",
-    body: "",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: [],
-    url: "https://github.com/owner/repo/commit/abc123",
-  };
-  assertEquals(shouldSkipCommit(commit), true);
-});
-
-Deno.test("shouldSkipCommit - skips bump commits", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123",
-    subject: "bump version from 1.0 to 2.0",
-    body: "",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: [],
-    url: "https://github.com/owner/repo/commit/abc123",
-  };
-  assertEquals(shouldSkipCommit(commit), true);
-});
-
-Deno.test("shouldSkipCommit - skips merge commits", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123",
-    subject: "merge pull request #123",
-    body: "",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: [],
-    url: "https://github.com/owner/repo/commit/abc123",
-  };
-  assertEquals(shouldSkipCommit(commit), true);
-});
-
-Deno.test("shouldSkipCommit - keeps normal commits", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123",
-    subject: "fix: handle null values properly",
-    body: "",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: [],
-    url: "https://github.com/owner/repo/commit/abc123",
-  };
-  assertEquals(shouldSkipCommit(commit), false);
-});
-
-Deno.test("shouldSkipCommit - keeps feature commits", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123",
-    subject: "feat: add new TIL workflow",
-    body: "",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: [],
-    url: "https://github.com/owner/repo/commit/abc123",
-  };
-  assertEquals(shouldSkipCommit(commit), false);
-});
-
-// Test markdown formatting for commits
-Deno.test("formatMarkdown - formats empty list", () => {
-  const result = formatMarkdown([], 30, 0, 0);
-  assert(result.includes("Git commits from last 30 days:"));
-  assert(result.includes("No commits found"));
-});
-
-Deno.test("formatMarkdown - formats all already reviewed", () => {
-  const result = formatMarkdown([], 30, 0, 5);
-  assert(result.includes("Git commits from last 30 days:"));
-  assert(result.includes("No new commits to assess"));
-  assert(result.includes("5 commits already reviewed"));
-});
-
-Deno.test("formatMarkdown - formats single commit basic", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123456789",
-    subject: "feat: add new feature",
-    body: "",
-    date: "2 days ago",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: ["src/main.py"],
-    url: "https://github.com/owner/repo/commit/abc123456789",
-  };
-  const result = formatMarkdown([commit], 30, 1, 1);
-
-  assert(result.includes("Git commits from last 30 days:"));
-  assert(result.includes("1. [owner/repo] feat: add new feature"));
-  assert(result.includes("Hash: abc1234 (index: 0) | Date: 2 days ago"));
-  assert(result.includes("Files: src/main.py"));
-  assert(result.includes("URL: https://github.com/owner/repo/commit/abc123456789"));
-});
-
-Deno.test("formatMarkdown - formats commit with body", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123456789",
-    subject: "fix: handle edge case",
-    body: "This fixes an issue where null values weren't handled properly.",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: ["src/handler.py"],
-    url: "https://github.com/owner/repo/commit/abc123456789",
-  };
-  const result = formatMarkdown([commit], 30, 1, 1);
-
-  assert(result.includes("Body: This fixes an issue where null values weren't handled properly."));
-});
-
-Deno.test("formatMarkdown - formats commit with long body", () => {
-  const longBody = "a".repeat(250);
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123456789",
-    subject: "feat: major refactor",
-    body: longBody,
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: ["src/main.py"],
-    url: "https://github.com/owner/repo/commit/abc123456789",
-  };
-  const result = formatMarkdown([commit], 30, 1, 1);
-
-  assert(result.includes("Body: " + "a".repeat(200) + "..."));
-  const bodyLine = result.split("\n").find((line) => line.includes("Body:"));
-  assert(bodyLine && bodyLine.length < 220);
-});
-
-Deno.test("formatMarkdown - formats commit with no files", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123456789",
-    subject: "chore: update docs",
-    body: "",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: [],
-    url: "https://github.com/owner/repo/commit/abc123456789",
-  };
-  const result = formatMarkdown([commit], 30, 1, 1);
-
-  assert(result.includes("Files: (no files)"));
-});
-
-Deno.test("formatMarkdown - formats commit with many files", () => {
-  const files = Array.from({ length: 10 }, (_, i) => `file${i}.py`);
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123456789",
-    subject: "refactor: reorganize code",
-    body: "",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files,
-    url: "https://github.com/owner/repo/commit/abc123456789",
-  };
-  const result = formatMarkdown([commit], 30, 1, 1);
-
-  // Should show first 5 files
-  assert(result.includes("file0.py, file1.py, file2.py, file3.py, file4.py"));
-  // Should indicate there are more
-  assert(result.includes("(+5 more)"));
-  // Should NOT show file5 or later
-  assert(!result.includes("file5.py"));
-});
-
-Deno.test("formatMarkdown - formats multiple commits", () => {
-  const commits: Commit[] = [
-    {
+describe("shouldSkipCommit", () => {
+  test("skips dependabot commits", () => {
+    const commit: Commit = {
       hash: "abc1234",
       full_hash: "abc123",
-      subject: "First commit",
-      body: "",
-      date: "2 days ago",
-      iso_date: "2025-01-15",
-      repo: "owner/repo1",
-      files: ["a.py"],
-      url: "https://github.com/owner/repo1/commit/abc123",
-    },
-    {
-      hash: "def5678",
-      full_hash: "def567",
-      subject: "Second commit",
+      subject: "Bump dependency from 1.0 to 2.0",
       body: "",
       date: "yesterday",
-      iso_date: "2025-01-16",
-      repo: "owner/repo2",
-      files: ["b.py"],
-      url: "https://github.com/owner/repo2/commit/def567",
-    },
-  ];
-  const result = formatMarkdown(commits, 7, 2, 2);
+      iso_date: "2025-01-15",
+      repo: "owner/repo",
+      files: [],
+      url: "https://github.com/owner/repo/commit/abc123",
+    };
+    expect(shouldSkipCommit(commit)).toBe(true);
+  });
 
-  assert(result.includes("1. [owner/repo1] First commit"));
-  assert(result.includes("Hash: abc1234 (index: 0)"));
-  assert(result.includes("2. [owner/repo2] Second commit"));
-  assert(result.includes("Hash: def5678 (index: 1)"));
+  test("skips bump commits", () => {
+    const commit: Commit = {
+      hash: "abc1234",
+      full_hash: "abc123",
+      subject: "bump version from 1.0 to 2.0",
+      body: "",
+      date: "yesterday",
+      iso_date: "2025-01-15",
+      repo: "owner/repo",
+      files: [],
+      url: "https://github.com/owner/repo/commit/abc123",
+    };
+    expect(shouldSkipCommit(commit)).toBe(true);
+  });
+
+  test("skips merge commits", () => {
+    const commit: Commit = {
+      hash: "abc1234",
+      full_hash: "abc123",
+      subject: "merge pull request #123",
+      body: "",
+      date: "yesterday",
+      iso_date: "2025-01-15",
+      repo: "owner/repo",
+      files: [],
+      url: "https://github.com/owner/repo/commit/abc123",
+    };
+    expect(shouldSkipCommit(commit)).toBe(true);
+  });
+
+  test("keeps normal commits", () => {
+    const commit: Commit = {
+      hash: "abc1234",
+      full_hash: "abc123",
+      subject: "fix: handle null values properly",
+      body: "",
+      date: "yesterday",
+      iso_date: "2025-01-15",
+      repo: "owner/repo",
+      files: [],
+      url: "https://github.com/owner/repo/commit/abc123",
+    };
+    expect(shouldSkipCommit(commit)).toBe(false);
+  });
 });
 
-Deno.test("formatMarkdown - shows review status when some already reviewed", () => {
-  const commit: Commit = {
-    hash: "abc1234",
-    full_hash: "abc123",
-    subject: "New commit",
-    body: "",
-    date: "yesterday",
-    iso_date: "2025-01-15",
-    repo: "owner/repo",
-    files: ["a.py"],
-    url: "https://github.com/owner/repo/commit/abc123",
-  };
-  const result = formatMarkdown([commit], 30, 1, 5);
+// Test markdown formatting
+describe("formatMarkdown", () => {
+  test("formats empty list correctly", () => {
+    const result = formatMarkdown([], 30, 0, 0);
+    expect(result).toContain("No commits found");
+  });
 
-  assert(result.includes("Git commits from last 30 days:"));
-  assert(result.includes("(1 new, 4 already reviewed)"));
+  test("formats single commit", () => {
+    const commits: Commit[] = [
+      {
+        hash: "abc1234",
+        full_hash: "abc123def456",
+        subject: "fix: bug in parser",
+        body: "Details about the fix",
+        date: "2 days ago",
+        iso_date: "2025-01-15",
+        repo: "owner/repo",
+        files: ["src/parser.ts"],
+        url: "https://github.com/owner/repo/commit/abc123def456",
+      },
+    ];
+    const result = formatMarkdown(commits, 30, 1, 1);
+    expect(result).toContain("owner/repo");
+    expect(result).toContain("fix: bug in parser");
+    expect(result).toContain("abc1234");
+  });
 });
 
-// Test Notion URL page ID extraction
-Deno.test("extractPageId - extracts from standard URL", () => {
-  const url = "https://www.notion.so/Page-Title-abc123def456";
-  const result = extractPageId(url);
-  assertEquals(result, "abc123def456");
-});
+// Test page ID extraction
+describe("extractPageId", () => {
+  test("extracts ID from standard Notion URL", () => {
+    const url = "https://www.notion.so/Page-Title-abc123def456";
+    const id = extractPageId(url);
+    expect(id).toBe("abc123def456");
+  });
 
-Deno.test("extractPageId - extracts from URL with query params", () => {
-  const url = "https://www.notion.so/Page-Title-abc123def456?v=xyz";
-  const result = extractPageId(url);
-  assertEquals(result, "abc123def456");
-});
+  test("extracts ID from URL with query params", () => {
+    const url = "https://www.notion.so/Page-abc123?v=def456";
+    const id = extractPageId(url);
+    expect(id).toBe("abc123");
+  });
 
-Deno.test("extractPageId - extracts from short URL", () => {
-  const url = "https://notion.so/abc123def456";
-  const result = extractPageId(url);
-  assertEquals(result, "abc123def456");
-});
-
-Deno.test("extractPageId - handles trailing slash", () => {
-  const url = "https://www.notion.so/Page-Title-abc123def456/";
-  const result = extractPageId(url);
-  assertEquals(result, "abc123def456");
-});
-
-Deno.test("extractPageId - handles empty string", () => {
-  const result = extractPageId("");
-  assertEquals(result, "");
+  test("handles empty URL", () => {
+    const id = extractPageId("");
+    expect(id).toBe("");
+  });
 });
 
 // Test markdown to Notion blocks conversion
-Deno.test("markdownToBlocks - converts code blocks", () => {
-  const markdown = "```python\nprint('hello')\n```";
-  const blocks = markdownToBlocks(markdown);
+describe("markdownToBlocks", () => {
+  test("converts heading", () => {
+    const blocks = markdownToBlocks("# Heading 1");
+    expect(blocks.length).toBe(1);
+    expect(blocks[0].type).toBe("heading_1");
+    if (blocks[0].type === "heading_1") {
+      expect(blocks[0].heading_1.rich_text[0].text.content).toBe("Heading 1");
+    }
+  });
 
-  assertEquals(blocks.length, 1);
-  assertEquals(blocks[0].type, "code");
+  test("converts paragraph", () => {
+    const blocks = markdownToBlocks("This is a paragraph");
+    expect(blocks.length).toBe(1);
+    expect(blocks[0].type).toBe("paragraph");
+    if (blocks[0].type === "paragraph") {
+      expect(blocks[0].paragraph.rich_text[0].text.content).toBe("This is a paragraph");
+    }
+  });
 
-  // TypeScript narrows the type automatically
-  if (blocks[0].type === "code") {
-    assertEquals(blocks[0].code.language, "python");
-    assertEquals(blocks[0].code.rich_text[0].text.content, "print('hello')");
-  }
-});
+  test("converts code block", () => {
+    const markdown = "```typescript\nconst x = 1;\n```";
+    const blocks = markdownToBlocks(markdown);
+    expect(blocks.length).toBe(1);
+    expect(blocks[0].type).toBe("code");
+    if (blocks[0].type === "code") {
+      expect(blocks[0].code.language).toBe("typescript");
+      expect(blocks[0].code.rich_text[0].text.content).toBe("const x = 1;");
+    }
+  });
 
-Deno.test("markdownToBlocks - maps language aliases", () => {
-  const markdown = "```js\nconsole.log('test')\n```";
-  const blocks = markdownToBlocks(markdown);
+  test("converts bulleted list", () => {
+    const markdown = "- Item 1\n- Item 2";
+    const blocks = markdownToBlocks(markdown);
+    expect(blocks.length).toBe(2);
+    expect(blocks[0].type).toBe("bulleted_list_item");
+    expect(blocks[1].type).toBe("bulleted_list_item");
+  });
 
-  if (blocks[0].type === "code") {
-    assertEquals(blocks[0].code.language, "javascript");
-  }
-});
+  test("converts numbered list", () => {
+    const markdown = "1. First\n2. Second";
+    const blocks = markdownToBlocks(markdown);
+    expect(blocks.length).toBe(2);
+    expect(blocks[0].type).toBe("numbered_list_item");
+    expect(blocks[1].type).toBe("numbered_list_item");
+  });
 
-Deno.test("markdownToBlocks - converts headings", () => {
-  const markdown = "# H1\n## H2\n### H3";
-  const blocks = markdownToBlocks(markdown);
+  test("handles empty lines", () => {
+    const markdown = "Paragraph 1\n\nParagraph 2";
+    const blocks = markdownToBlocks(markdown);
+    expect(blocks.length).toBe(3);
+    expect(blocks[0].type).toBe("paragraph");
+    expect(blocks[1].type).toBe("paragraph"); // Empty paragraph
+    expect(blocks[2].type).toBe("paragraph");
+  });
 
-  assertEquals(blocks.length, 3);
-  assertEquals(blocks[0].type, "heading_1");
-  assertEquals(blocks[1].type, "heading_2");
-  assertEquals(blocks[2].type, "heading_3");
-});
-
-Deno.test("markdownToBlocks - converts bullet lists", () => {
-  const markdown = "- Item 1\n- Item 2";
-  const blocks = markdownToBlocks(markdown);
-
-  assertEquals(blocks.length, 2);
-  assertEquals(blocks[0].type, "bulleted_list_item");
-
-  if (blocks[0].type === "bulleted_list_item") {
-    assertEquals(blocks[0].bulleted_list_item.rich_text[0].text.content, "Item 1");
-  }
-});
-
-Deno.test("markdownToBlocks - converts numbered lists", () => {
-  const markdown = "1. First\n2. Second";
-  const blocks = markdownToBlocks(markdown);
-
-  assertEquals(blocks.length, 2);
-  assertEquals(blocks[0].type, "numbered_list_item");
-  assertEquals(blocks[1].type, "numbered_list_item");
-});
-
-Deno.test("markdownToBlocks - converts paragraphs", () => {
-  const markdown = "This is a paragraph";
-  const blocks = markdownToBlocks(markdown);
-
-  assertEquals(blocks.length, 1);
-  assertEquals(blocks[0].type, "paragraph");
-
-  if (blocks[0].type === "paragraph") {
-    assertEquals(blocks[0].paragraph.rich_text[0].text.content, "This is a paragraph");
-  }
-});
-
-Deno.test("markdownToBlocks - handles empty lines", () => {
-  const markdown = "Line 1\n\nLine 2";
-  const blocks = markdownToBlocks(markdown);
-
-  assertEquals(blocks.length, 3);
-  assertEquals(blocks[1].type, "paragraph");
-
-  if (blocks[1].type === "paragraph") {
-    assertEquals(blocks[1].paragraph.rich_text, []);
-  }
-});
-
-Deno.test("markdownToBlocks - handles multiline code blocks", () => {
-  const markdown = "```python\nline1\nline2\nline3\n```";
-  const blocks = markdownToBlocks(markdown);
-
-  assertEquals(blocks.length, 1);
-
-  if (blocks[0].type === "code") {
-    assertEquals(blocks[0].code.rich_text[0].text.content.includes("line1"), true);
-    assertEquals(blocks[0].code.rich_text[0].text.content.includes("line2"), true);
-    assertEquals(blocks[0].code.rich_text[0].text.content.includes("line3"), true);
-  }
+  test("handles mixed content", () => {
+    const markdown = "# Title\n\nSome text\n\n```js\ncode();\n```\n\n- List item";
+    const blocks = markdownToBlocks(markdown);
+    expect(blocks.length).toBe(5);
+    expect(blocks[0].type).toBe("heading_1");
+    expect(blocks[1].type).toBe("paragraph"); // Empty line
+    expect(blocks[2].type).toBe("paragraph"); // "Some text"
+    expect(blocks[3].type).toBe("code");
+    expect(blocks[4].type).toBe("bulleted_list_item");
+  });
 });

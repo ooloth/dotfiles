@@ -1,10 +1,16 @@
-# scanning-git-for-tils (TypeScript/Deno)
+# scanning-git-for-tils (TypeScript/Bun)
 
-**This is a TypeScript/Deno rewrite of `scan-git-for-tils` for direct comparison.**
+**TypeScript/Bun implementation demonstrating when to choose Bun over Python/uv for Claude Code skills.**
 
-## Key Differences from Python Version
+## Why Bun for This Skill
 
-### Type System Wins
+This skill is ideal for Bun because it's **API-heavy with complex validation**:
+- GitHub API integration
+- Notion API integration (discriminated union types)
+- 1Password integration
+- Markdown → Notion blocks conversion
+
+### Key Advantages Over Python
 
 1. **Discriminated Unions Work Automatically**
    ```typescript
@@ -49,72 +55,80 @@
 
 **Python + uv:**
 
-- ✅ Inline script dependencies (unbeatable)
+- ✅ Inline script dependencies (PEP 723)
 - ❌ Two type systems (Pydantic + mypy)
 - ❌ Union narrowing issues
-- ❌ type: ignore comments
+- ❌ `type: ignore` comments needed
 
-**TypeScript + Deno:**
+**TypeScript + Bun:**
 
+- ✅ Inline dependencies (auto-install imports)
 - ✅ One type system (Zod + TypeScript)
 - ✅ Discriminated unions work perfectly
 - ✅ No type escapes needed
-- ⚠️ Need deno.json (not inline like uv)
-- ✅ Built-in formatter, linter, test runner
-- ✅ Secure by default (explicit permissions)
+- ✅ No permission flags
+- ✅ Built-in formatter and test runner
+- ✅ Better npm compatibility
 
 ## Usage
 
 ```bash
 # Scan commits
-deno task scan [days]
+bun run scan_git.ts [days]
 
 # Publish TIL
-echo '<json>' | deno task publish
+echo '<json>' | bun run publish_til.ts
 
 # Run tests
-deno task test
+bun test test.ts
 
-# Format code
-deno fmt
-
-# Lint code
-deno lint
+# Format code (if using bun fmt, or use Prettier/Biome)
+bun fmt
 ```
 
-## When to Use TypeScript vs Python
+## When to Use Bun vs Python vs Deno
 
-**Use TypeScript/Deno when:**
+**Use TypeScript/Bun when:**
 
-- Heavy API validation (external data schemas)
-- Complex discriminated unions
-- Type safety is critical
-- Want single validation+typing system
+- ✅ Heavy API validation (external data schemas)
+- ✅ Complex discriminated unions
+- ✅ Type safety is critical
+- ✅ Want single validation+typing system
+- ✅ Need inline dependencies
 
 **Use Python/uv when:**
 
-- Simple file/text processing
-- Inline script feel is important
-- No complex union types
-- Quick one-offs
+- ✅ Simple file/text processing
+- ✅ Data manipulation pipelines
+- ✅ No complex union types
+- ✅ Quick one-offs
+- ✅ Rich data science ecosystem
+
+**Avoid Deno for skills:**
+
+- ❌ Requires separate config file (deno.json)
+- ❌ Verbose permission flags (--allow-*)
+- ❌ Unnecessary complexity for skills
+- ⚠️ Use Bun instead for same type safety benefits
 
 ## File Structure
 
 ```
 scanning-git-for-tils/
-├── deno.json              # Dependencies and tasks
-├── scan_git.ts            # Main scanner
-├── publish_til.ts         # Publishing script
+├── SKILL.md                  # Skill documentation
+├── COMPARISON.md             # Python vs Bun vs Deno comparison
+├── scan_git.ts               # Main scanner (Bun)
+├── publish_til.ts            # Publishing script (Bun)
+├── test.ts                   # Tests (Bun)
 ├── git/
-│   ├── commits.ts         # GitHub API
-│   └── formatting.ts      # Commit filtering/formatting
+│   ├── commits.ts            # GitHub API
+│   └── formatting.ts         # Commit filtering/formatting
 ├── notion/
-│   ├── blocks.ts          # Block conversion (discriminated unions!)
-│   ├── commits.ts         # Tracker management
-│   └── writing.ts         # Writing DB
-├── op/
-│   └── secrets.ts         # 1Password integration
-└── test.ts                # Tests
+│   ├── blocks.ts             # Block conversion (discriminated unions!)
+│   ├── commits.ts            # Tracker management
+│   └── writing.ts            # Writing DB
+└── op/
+    └── secrets.ts            # 1Password integration
 ```
 
 ## Performance
@@ -123,14 +137,19 @@ Both versions are comparable. TypeScript compilation happens at runtime but is f
 
 ## Recommendation
 
-For THIS skill (API-heavy): **TypeScript/Deno is superior**
+For THIS skill (API-heavy): **TypeScript/Bun is superior**
 
 - No type gymnastics
 - Single source of truth for validation + types
+- Inline dependencies (like Python/uv)
+- No permission flags hassle (unlike Deno)
 - Cleaner, more maintainable code
 
 For simpler skills: **Python/uv is still king**
 
-- Inline dependencies
+- Best for file/text processing
 - Faster to write
+- Rich ecosystem for data manipulation
 - Type issues don't matter as much
+
+**Never use Deno for skills** - config overhead and permission flags add unnecessary complexity.

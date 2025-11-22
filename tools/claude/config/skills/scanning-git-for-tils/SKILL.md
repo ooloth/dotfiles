@@ -1,6 +1,6 @@
 # scanning-git-for-tils
 
-**TypeScript/Deno implementation for direct comparison with Python version.**
+**TypeScript/Bun implementation - preferred for API-heavy skills with complex validation.**
 
 Scans GitHub commit history for commits worth turning into TIL (Today I Learned) blog posts, then helps draft and publish them to Notion.
 
@@ -12,23 +12,24 @@ Scans GitHub commit history for commits worth turning into TIL (Today I Learned)
 4. **Tracks assessment**: Uses Notion database to remember which commits have been reviewed
 5. **Publishes drafts**: Creates TIL pages in Notion Writing database with proper metadata
 
-## Why TypeScript Version Exists
+## Why TypeScript/Bun Version
 
-This is a **direct comparison** with the Python version at `scan-git-for-tils/`. Both implement identical functionality to demonstrate:
+This skill demonstrates when to choose TypeScript/Bun over Python/uv:
 
-- **Type safety differences**: TypeScript discriminated unions vs Python TypedDict
-- **Validation approaches**: Zod (single system) vs Pydantic + mypy (two systems)
-- **Developer experience**: Deno's built-in tooling vs uv + ruff + mypy
-- **Type narrowing**: How union types work in each language
+- **Type safety**: TypeScript discriminated unions work automatically (vs Python's limited narrowing)
+- **Single validation system**: Zod validates AND provides types (vs Pydantic + mypy dual system)
+- **Inline dependencies**: Auto-install like Python's PEP 723 (no config files needed)
+- **Better npm integration**: Official @notionhq/client SDK (vs unofficial Python library)
+- **No permission flags**: Unlike Deno, Bun runs without verbose `--allow-*` flags
 
-See `README.md` for detailed comparison.
+See `COMPARISON.md` for detailed Python/Bun/Deno comparison.
 
 ## Usage
 
 ### Scan for TIL opportunities
 
 ```bash
-deno task scan [days]
+bun run scan_git.ts [days]
 ```
 
 **Input**: Number of days to look back (default: 30)
@@ -41,7 +42,7 @@ deno task scan [days]
 ### Publish a TIL
 
 ```bash
-echo '<json>' | deno task publish
+echo '<json>' | bun run publish_til.ts
 ```
 
 **Input** (JSON via stdin):
@@ -69,10 +70,10 @@ echo '<json>' | deno task publish
 ### Run tests
 
 ```bash
-deno task test
+bun test test.ts
 ```
 
-Runs 18 tests covering:
+Runs tests covering:
 
 - Commit filtering logic
 - Markdown to Notion blocks conversion
@@ -118,14 +119,14 @@ TypeScript's structural typing means no Protocol hacks needed.
 
 ### GitHub API Integration
 
-Uses `gh` CLI via `Deno.Command`:
+Uses `gh` CLI via `Bun.spawn`:
 
 ```typescript
-const proc = new Deno.Command("gh", {
-  args: ["api", "search/commits", ...],
-  stdout: "piped",
+const proc = Bun.spawn(["gh", "api", "search/commits", ...], {
+  stdout: "pipe",
 });
-const { stdout } = await proc.output();
+const exitCode = await proc.exited;
+const output = await new Response(proc.stdout).text();
 ```
 
 ### 1Password Integration
@@ -134,49 +135,46 @@ Fetches secrets via `op` CLI:
 
 ```typescript
 export async function getOpSecret(path: string): Promise<string> {
-  const proc = new Deno.Command("op", {
-    args: ["read", path],
-    stdout: "piped",
+  const proc = Bun.spawn(["op", "read", path], {
+    stdout: "pipe",
   });
-  const { code, stdout } = await proc.output();
-  return code === 0 ? new TextDecoder().decode(stdout).trim() : "";
+  const exitCode = await proc.exited;
+  if (exitCode !== 0) return "";
+
+  const output = await new Response(proc.stdout).text();
+  return output.trim();
 }
 ```
 
 ## Dependencies
 
-Managed in `deno.json`:
+**Auto-installed via inline imports** (like Python/uv's PEP 723):
 
-```json
-{
-  "imports": {
-    "zod": "npm:zod@^3.22.4",
-    "@notionhq/client": "npm:@notionhq/client@^2.2.15"
-  }
-}
+```typescript
+import { z } from "zod@^3.22.4";
+import { Client } from "@notionhq/client@^2.2.15";
 ```
 
-No inline script metadata like Python/uv - config must be in separate file.
+No config file needed - Bun auto-installs on first run and caches for subsequent runs.
 
 ## File Structure
 
 ```
 scanning-git-for-tils/
-├── deno.json              # Dependencies and tasks
-├── SKILL.md              # This file
-├── README.md             # Comparison guide
-├── scan_git.ts           # Main scanner
-├── publish_til.ts        # Publishing script
-├── test.ts               # Tests
+├── SKILL.md                  # This file
+├── COMPARISON.md             # Python vs Bun vs Deno comparison
+├── scan_git.ts               # Main scanner (Bun)
+├── publish_til.ts            # Publishing script (Bun)
+├── test.ts                   # Tests (Bun)
 ├── git/
-│   ├── commits.ts        # GitHub API integration
-│   └── formatting.ts     # Commit filtering/formatting
+│   ├── commits.ts            # GitHub API integration
+│   └── formatting.ts         # Commit filtering/formatting
 ├── notion/
-│   ├── blocks.ts         # Markdown → Notion (discriminated unions!)
-│   ├── commits.ts        # Tracker database management
-│   └── writing.ts        # Writing database integration
+│   ├── blocks.ts             # Markdown → Notion (discriminated unions!)
+│   ├── commits.ts            # Tracker database management
+│   └── writing.ts            # Writing database integration
 └── op/
-    └── secrets.ts        # 1Password integration
+    └── secrets.ts            # 1Password integration
 ```
 
 ## Development Workflow
@@ -184,45 +182,46 @@ scanning-git-for-tils/
 **Format code:**
 
 ```bash
-deno fmt
-```
-
-**Lint code:**
-
-```bash
-deno lint
+bun fmt
+# Or use Prettier/Biome
 ```
 
 **Type check:**
 
 ```bash
-deno check scan_git.ts
+bun run --bun scan_git.ts --check
+# Or use tsc
 ```
 
-All three tools built into Deno - no separate dependencies needed.
+**Run tests:**
 
-## When to Use This Version
+```bash
+bun test test.ts
+```
 
-**Use TypeScript/Deno when:**
+Built-in formatter and test runner - no separate dependencies needed.
 
-- Heavy API validation required
-- Complex discriminated union types
-- Type safety is critical
-- You want single validation+typing system
+## When to Use Bun vs Python
 
-**Use Python/uv version when:**
+**Use TypeScript/Bun when:**
 
-- Simple file/text processing
-- Inline script feel is important
-- No complex union types needed
-- Quick one-offs
+- ✅ Heavy API validation required
+- ✅ Complex discriminated union types
+- ✅ Type safety is critical
+- ✅ Working with npm ecosystem
+- ✅ Single validation+typing system needed
 
-## Comparison to Python Version
+**Use Python/uv when:**
 
-See `README.md` for comprehensive comparison covering:
+- ✅ Simple file/text processing
+- ✅ Data manipulation pipelines
+- ✅ No complex union types needed
+- ✅ Quick one-offs
+- ✅ Rich data science ecosystem
 
-- Type system differences
-- Validation approaches
-- Development experience
-- Dependency management
-- When to use each language
+**Avoid Deno for skills:**
+- ❌ Requires config file (deno.json)
+- ❌ Verbose permission flags (--allow-*)
+- ❌ Unnecessary complexity for skills
+
+See `COMPARISON.md` for detailed analysis.

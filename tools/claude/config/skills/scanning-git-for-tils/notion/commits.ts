@@ -1,10 +1,10 @@
 /**
- * Notion assessed commits tracking.
- * Compare to Python: No Protocol hacks, no type: ignore comments.
+ * Notion assessed commits tracking - BUN VERSION
+ * Notice: No Protocol hacks, no type: ignore comments
  */
 
-import { Client } from "@notionhq/client";
-import { z } from "zod";
+import { Client } from "@notionhq/client@^2.2.15";
+import { z } from "zod@^3.22.4";
 import { getOpSecret, OP_NOTION_TOKEN } from "../op/secrets.ts";
 
 const ASSESSED_COMMITS_DATA_SOURCE_ID = "cba80148-aeef-49c9-ba45-5157668b17b3";
@@ -32,10 +32,9 @@ export async function getAssessedCommitsFromNotion(): Promise<Set<string>> {
     let startCursor: string | null = null;
 
     while (true) {
-      const queryParams: Record<string, unknown> = {
-        database_id: NOTION_ASSESSED_COMMITS_DB,
-      };
-      if (startCursor) queryParams.start_cursor = startCursor;
+      const queryParams = startCursor
+        ? { database_id: NOTION_ASSESSED_COMMITS_DB, start_cursor: startCursor }
+        : { database_id: NOTION_ASSESSED_COMMITS_DB };
 
       const responseData = await notion.databases.query(queryParams);
       const response = NotionDatabaseQueryResponseSchema.parse(responseData);
@@ -43,16 +42,16 @@ export async function getAssessedCommitsFromNotion(): Promise<Set<string>> {
       // Extract commit hashes
       for (const page of response.results) {
         if (typeof page !== "object" || !page) continue;
-        const props = (page as Record<string, unknown>).properties;
-        if (!props) continue;
+        const props = (page as Record<string, Record<string, unknown>>).properties;
+        if (!props || typeof props !== "object") continue;
 
-        const titleProp = props["Commit Hash"];
+        const titleProp = props["Commit Hash"] as { title?: unknown[] };
         if (!titleProp?.title) continue;
 
         const titleContent = titleProp.title;
         if (!Array.isArray(titleContent) || titleContent.length === 0) continue;
 
-        const commitHash = titleContent[0]?.plain_text;
+        const commitHash = (titleContent[0] as { plain_text?: string })?.plain_text;
         if (typeof commitHash === "string" && commitHash) {
           assessedHashes.add(commitHash);
         }
@@ -114,17 +113,16 @@ export async function createTrackerEntry(
   commit: Record<string, string>,
   writingPageId: string,
 ): Promise<string> {
-  const properties: Record<string, unknown> = {
-    "Commit Hash": { title: [{ type: "text", text: { content: commit.hash } }] },
-    Message: { rich_text: [{ type: "text", text: { content: commit.message.slice(0, 2000) } }] },
-    Repo: { rich_text: [{ type: "text", text: { content: commit.repo } }] },
+  const properties = {
+    "Commit Hash": { title: [{ type: "text" as const, text: { content: commit.hash } }] },
+    Message: {
+      rich_text: [{ type: "text" as const, text: { content: commit.message.slice(0, 2000) } }],
+    },
+    Repo: { rich_text: [{ type: "text" as const, text: { content: commit.repo } }] },
     Assessed: { date: { start: new Date().toISOString().slice(0, 10) } },
     Writing: { relation: [{ id: writingPageId }] },
+    ...(commit.date && { "Commit Date": { date: { start: commit.date } } }),
   };
-
-  if (commit.date) {
-    properties["Commit Date"] = { date: { start: commit.date } };
-  }
 
   const pageData = await notion.pages.create({
     parent: { database_id: ASSESSED_COMMITS_DATA_SOURCE_ID },

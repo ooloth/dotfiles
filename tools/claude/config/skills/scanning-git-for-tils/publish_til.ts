@@ -1,8 +1,8 @@
-#!/usr/bin/env -S deno run --allow-net --allow-env --allow-run
+#!/usr/bin/env bun
 /**
- * Publish a TIL draft to Notion and update the tracker.
+ * Publish a TIL draft to Notion and update the tracker - BUN VERSION
  *
- * Usage: echo '<json>' | deno task publish
+ * Usage: echo '<json>' | bun run publish_til.bun.ts
  *
  * Input (JSON via stdin):
  * {
@@ -18,14 +18,15 @@
  *   }
  * }
  *
- * Compare to Python version:
+ * Demonstrates Bun advantages:
+ * - Inline npm dependencies (auto-install on first run)
  * - Zod validates AND provides types (no separate Pydantic + typing)
- * - No type: ignore comments needed
+ * - No type escapes needed
  * - Discriminated unions work automatically
  */
 
-import { Client } from "@notionhq/client";
-import { z } from "zod";
+import { Client } from "@notionhq/client@^2.2.15";
+import { z } from "zod@^3.22.4";
 import { getOpSecret, OP_NOTION_TOKEN } from "./op/secrets.ts";
 import { extractPageId } from "./notion/blocks.ts";
 import {
@@ -63,12 +64,12 @@ async function main() {
   // Read and validate JSON input from stdin
   let inputData: PublishTilInput;
   try {
-    const stdinText = await new Response(Deno.stdin.readable).text();
+    const stdinText = await Bun.stdin.text();
     const rawInput = JSON.parse(stdinText);
     inputData = PublishTilInputSchema.parse(rawInput);
   } catch (e) {
     console.log(JSON.stringify({ error: `Invalid input: ${e}` }));
-    Deno.exit(1);
+    process.exit(1);
   }
 
   try {
@@ -76,7 +77,7 @@ async function main() {
     const token = await getOpSecret(OP_NOTION_TOKEN);
     if (!token) {
       console.log(JSON.stringify({ error: "Could not get Notion token" }));
-      Deno.exit(1);
+      process.exit(1);
     }
 
     // Create Notion client
@@ -93,7 +94,7 @@ async function main() {
 
     if (!writingUrl) {
       console.log(JSON.stringify({ error: "Failed to create Writing page" }));
-      Deno.exit(1);
+      process.exit(1);
     }
 
     // Extract page ID for relation
@@ -125,10 +126,8 @@ async function main() {
     console.log(JSON.stringify(output, null, 2));
   } catch (e) {
     console.log(JSON.stringify({ error: String(e) }));
-    Deno.exit(1);
+    process.exit(1);
   }
 }
 
-if (import.meta.main) {
-  main();
-}
+main();

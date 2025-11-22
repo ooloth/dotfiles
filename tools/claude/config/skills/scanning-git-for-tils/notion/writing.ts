@@ -1,10 +1,11 @@
 /**
- * Notion Writing database utilities.
- * Compare validation approach: Zod validates AND provides TypeScript types.
+ * Notion Writing database utilities - BUN VERSION
+ * Zod validates AND provides TypeScript types (single system)
  */
 
-import { Client } from "@notionhq/client";
-import { z } from "zod";
+import type { BlockObjectRequest } from "@notionhq/client/build/src/api-endpoints.js";
+import { Client } from "@notionhq/client@^2.2.15";
+import { z } from "zod@^3.22.4";
 import { markdownToBlocks } from "./blocks.ts";
 
 const WRITING_DATA_SOURCE_ID = "c296db5b-d2f1-44d4-abc6-f9a05736b143";
@@ -24,14 +25,14 @@ export async function createWritingPage(
   const pageData = await notion.pages.create({
     parent: { database_id: WRITING_DATA_SOURCE_ID },
     properties: {
-      Title: { title: [{ type: "text", text: { content: title } }] },
+      Title: { title: [{ type: "text" as const, text: { content: title } }] },
       Status: { status: { name: "Claude Draft" } },
       Type: { select: { name: "how-to" } },
       Destination: { multi_select: [{ name: "blog" }] },
-      Description: { rich_text: [{ type: "text", text: { content: description } }] },
-      Slug: { rich_text: [{ type: "text", text: { content: slug } }] },
+      Description: { rich_text: [{ type: "text" as const, text: { content: description } }] },
+      Slug: { rich_text: [{ type: "text" as const, text: { content: slug } }] },
     },
-    children: markdownToBlocks(content),
+    children: markdownToBlocks(content) as BlockObjectRequest[],
   });
 
   // Validate response - throws if invalid

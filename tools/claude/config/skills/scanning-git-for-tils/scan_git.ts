@@ -1,17 +1,17 @@
-#!/usr/bin/env -S deno run --allow-net --allow-env --allow-run
+#!/usr/bin/env bun
 /**
- * Scan GitHub commit history for TIL-worthy commits.
+ * Scan GitHub commit history for TIL-worthy commits - BUN VERSION
  *
- * Usage: deno task scan [days]
+ * Usage: bun run scan_git.bun.ts [days]
  *
- * Compare to Python version - notice:
- * - No inline script metadata needed (deno.json handles it)
- * - Zod validates AND provides types
- * - Discriminated unions work automatically
- * - No type: ignore comments needed
+ * Demonstrates Bun advantages:
+ * - Inline npm dependencies (auto-install on first run)
+ * - No deno.json needed
+ * - No permission flags needed
+ * - TypeScript type safety + Zod validation
  */
 
-import { z } from "zod";
+import { z } from "zod@^3.22.4";
 import { getCommits, getGitHubUsername } from "./git/commits.ts";
 import { formatMarkdown, shouldSkipCommit } from "./git/formatting.ts";
 import { getAssessedCommitsFromNotion } from "./notion/commits.ts";
@@ -32,7 +32,7 @@ type ScanGitOutput = z.infer<typeof ScanGitOutputSchema>;
 
 async function main() {
   // Parse arguments
-  const days = Deno.args[0] ? parseInt(Deno.args[0], 10) || 30 : 30;
+  const days = Bun.argv[2] ? parseInt(Bun.argv[2], 10) || 30 : 30;
 
   // Fetch assessed commits from Notion
   const assessedHashes = await getAssessedCommitsFromNotion();
@@ -47,7 +47,7 @@ async function main() {
         new_commits: [],
       }),
     );
-    Deno.exit(1);
+    process.exit(1);
   }
 
   // Get commits
@@ -60,7 +60,7 @@ async function main() {
       new_commits: [],
     };
     console.log(JSON.stringify(output));
-    Deno.exit(0);
+    process.exit(0);
   }
 
   // Filter out already assessed commits and skippable commits
@@ -83,6 +83,4 @@ async function main() {
   console.log(JSON.stringify(output, null, 2));
 }
 
-if (import.meta.main) {
-  main();
-}
+main();

@@ -12,6 +12,26 @@ Create a skill (instead of a command or agent) when:
 4. **Caching opportunities**: Results can be cached to avoid redundant operations
 5. **Type safety matters**: Structured data with typed interfaces improves reliability
 
+## Choosing Between Python and TypeScript/Bun
+
+### Use Python/uv when:
+- ✅ Simple file/text processing
+- ✅ Data manipulation pipelines
+- ✅ Rich data science ecosystem needed
+- ✅ Quick prototyping
+- ✅ Type issues don't matter much
+
+### Use TypeScript/Bun when:
+- ✅ API-heavy validation (external data schemas)
+- ✅ Complex discriminated unions needed
+- ✅ Type safety is critical
+- ✅ Working with npm packages
+- ✅ Need inline dependencies like Python/uv
+
+**Key insight**: Both Python (PEP 723) and Bun (auto-install) support inline dependencies, keeping skills self-contained. Choose based on type safety needs, not packaging convenience.
+
+**Avoid Deno**: Config file overhead and permission flags make it unnecessarily complex for skills.
+
 ## Skills vs Agents vs Commands
 
 | Approach | Use When | Example |
@@ -80,9 +100,21 @@ Edit `SKILL.md` to define:
 
 Update the sections to describe your specific skill.
 
-### 3. Implement Your Logic
+### 3. Choose Your Language
 
-In `example_skill.py` (rename to match your skill):
+**For Python skills:**
+- Use PEP 723 inline script metadata for dependencies
+- Include type hints for reliability
+- See `example_skill.py` for the template
+
+**For TypeScript/Bun skills:**
+- Use inline version specifiers: `import { z } from "zod@^3.22.4"`
+- Leverage Zod for validation + types (single system)
+- See `scanning-git-for-tils` skill for real-world example
+
+### 4. Implement Your Logic
+
+**In `example_skill.py` (Python):**
 
 1. **Configuration** (lines 18-26): Update cache file names, TTLs, etc.
 2. **Type Definitions** (lines 30-48): Define your data structures
@@ -90,7 +122,12 @@ In `example_skill.py` (rename to match your skill):
 4. **filter_and_process()** (lines 129-171): Filter and transform data
 5. **format_markdown()** (lines 177-203): Format output for display
 
-### 4. Test Your Skill
+**In TypeScript/Bun:**
+- Define Zod schemas for validation AND types
+- Use `Bun.spawn()` for process execution
+- Return JSON to stdout for Claude to parse
+
+### 5. Test Your Skill
 
 ```bash
 # Test locally first
@@ -100,7 +137,7 @@ python3 ~/.claude/skills/your-skill-name/your_script.py
 python3 ~/.claude/skills/your-skill-name/your_script.py  # Should use cache
 ```
 
-### 5. Document Token Savings
+### 6. Document Token Savings
 
 After implementation, measure and document:
 - Tokens before (if processed via Claude tools)
