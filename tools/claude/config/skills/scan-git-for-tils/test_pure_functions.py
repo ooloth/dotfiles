@@ -12,7 +12,7 @@ Or: uv run pytest test_pure_functions.py -v
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -28,6 +28,7 @@ class TestFormatRelativeDate:
 
     def test_formats_recent_as_hours_or_just_now(self):
         from datetime import datetime
+
         now = datetime.now().isoformat() + "Z"
         result = format_relative_date(now)
         # Could be "just now" or "N hours ago" depending on timing
@@ -35,6 +36,7 @@ class TestFormatRelativeDate:
 
     def test_formats_yesterday(self):
         from datetime import datetime, timedelta
+
         yesterday = (datetime.now() - timedelta(days=1)).isoformat() + "Z"
         result = format_relative_date(yesterday)
         assert result == "yesterday"
@@ -66,7 +68,7 @@ class TestShouldSkipCommit:
             iso_date="2025-01-15",
             repo="owner/repo",
             files=[],
-            url="https://github.com/owner/repo/commit/abc123"
+            url="https://github.com/owner/repo/commit/abc123",
         )
         assert should_skip_commit(commit) is True
 
@@ -80,7 +82,7 @@ class TestShouldSkipCommit:
             iso_date="2025-01-15",
             repo="owner/repo",
             files=[],
-            url="https://github.com/owner/repo/commit/abc123"
+            url="https://github.com/owner/repo/commit/abc123",
         )
         assert should_skip_commit(commit) is True
 
@@ -94,7 +96,7 @@ class TestShouldSkipCommit:
             iso_date="2025-01-15",
             repo="owner/repo",
             files=[],
-            url="https://github.com/owner/repo/commit/abc123"
+            url="https://github.com/owner/repo/commit/abc123",
         )
         assert should_skip_commit(commit) is True
 
@@ -108,7 +110,7 @@ class TestShouldSkipCommit:
             iso_date="2025-01-15",
             repo="owner/repo",
             files=[],
-            url="https://github.com/owner/repo/commit/abc123"
+            url="https://github.com/owner/repo/commit/abc123",
         )
         assert should_skip_commit(commit) is False
 
@@ -122,7 +124,7 @@ class TestShouldSkipCommit:
             iso_date="2025-01-15",
             repo="owner/repo",
             files=[],
-            url="https://github.com/owner/repo/commit/abc123"
+            url="https://github.com/owner/repo/commit/abc123",
         )
         assert should_skip_commit(commit) is False
 
@@ -320,13 +322,7 @@ class TestExtractPageId:
 
 def make_notion_page(commit_hash: str) -> dict:
     """Helper: create a mock Notion page with a commit hash."""
-    return {
-        "properties": {
-            "Commit Hash": {
-                "title": [{"plain_text": commit_hash}]
-            }
-        }
-    }
+    return {"properties": {"Commit Hash": {"title": [{"plain_text": commit_hash}]}}}
 
 
 def make_notion_response(
@@ -336,7 +332,7 @@ def make_notion_response(
     return {
         "results": [make_notion_page(h) for h in hashes],
         "has_more": has_more,
-        "next_cursor": next_cursor
+        "next_cursor": next_cursor,
     }
 
 
@@ -357,10 +353,11 @@ class TestGetAssessedCommitsFromNotion:
             assert result == set()
 
     def test_returns_commit_hashes_from_single_page(self):
-        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client"), \
-             patch("notion_client.helpers.collect_paginated_api") as mock_paginate:
-
+        with (
+            patch("notion.commits.get_op_secret", return_value="fake-token"),
+            patch("notion_client.Client"),
+            patch("notion_client.helpers.collect_paginated_api") as mock_paginate,
+        ):
             pages = [make_notion_response(["abc123", "def456", "ghi789"])]
             mock_paginate.return_value = mock_collect_paginated_api(pages)
 
@@ -368,21 +365,17 @@ class TestGetAssessedCommitsFromNotion:
             assert result == {"abc123", "def456", "ghi789"}
 
     def test_handles_pagination(self):
-        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client"), \
-             patch("notion_client.helpers.collect_paginated_api") as mock_paginate:
-
+        with (
+            patch("notion.commits.get_op_secret", return_value="fake-token"),
+            patch("notion_client.Client"),
+            patch("notion_client.helpers.collect_paginated_api") as mock_paginate,
+        ):
             # First page with more results
             first_response = make_notion_response(
-                ["abc123", "def456"],
-                has_more=True,
-                next_cursor="cursor-1"
+                ["abc123", "def456"], has_more=True, next_cursor="cursor-1"
             )
             # Second page, final
-            second_response = make_notion_response(
-                ["ghi789", "jkl012"],
-                has_more=False
-            )
+            second_response = make_notion_response(["ghi789", "jkl012"], has_more=False)
 
             # collect_paginated_api handles pagination internally, returns all results
             pages = [first_response, second_response]
@@ -392,29 +385,32 @@ class TestGetAssessedCommitsFromNotion:
             assert result == {"abc123", "def456", "ghi789", "jkl012"}
 
     def test_handles_client_error_gracefully(self):
-        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client") as MockClient:
-
+        with (
+            patch("notion.commits.get_op_secret", return_value="fake-token"),
+            patch("notion_client.Client") as MockClient,
+        ):
             MockClient.side_effect = Exception("Connection error")
 
             result = get_assessed_commits_from_notion()
             assert result == set()
 
     def test_handles_query_error_gracefully(self):
-        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client"), \
-             patch("notion_client.helpers.collect_paginated_api") as mock_paginate:
-
+        with (
+            patch("notion.commits.get_op_secret", return_value="fake-token"),
+            patch("notion_client.Client"),
+            patch("notion_client.helpers.collect_paginated_api") as mock_paginate,
+        ):
             mock_paginate.side_effect = Exception("Query error")
 
             result = get_assessed_commits_from_notion()
             assert result == set()
 
     def test_skips_pages_without_commit_hash(self):
-        with patch("notion.commits.get_op_secret", return_value="fake-token"), \
-             patch("notion_client.Client"), \
-             patch("notion_client.helpers.collect_paginated_api") as mock_paginate:
-
+        with (
+            patch("notion.commits.get_op_secret", return_value="fake-token"),
+            patch("notion_client.Client"),
+            patch("notion_client.helpers.collect_paginated_api") as mock_paginate,
+        ):
             response = {
                 "results": [
                     make_notion_page("abc123"),
@@ -422,7 +418,7 @@ class TestGetAssessedCommitsFromNotion:
                     make_notion_page("def456"),
                 ],
                 "has_more": False,
-                "next_cursor": None
+                "next_cursor": None,
             }
 
             mock_paginate.return_value = mock_collect_paginated_api([response])
@@ -500,4 +496,5 @@ class TestMarkdownToBlocks:
 
 if __name__ == "__main__":
     import pytest
+
     sys.exit(pytest.main([__file__, "-v"]))
