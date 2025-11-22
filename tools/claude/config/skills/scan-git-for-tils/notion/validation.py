@@ -2,26 +2,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class NotionPageResponse(BaseModel):
     """Validated Notion page response."""
 
+    model_config = ConfigDict(extra="ignore")
+
     url: str
     id: str
-
-    class Config:
-        # Allow extra fields from Notion API
-        extra = "ignore"
-
-
-class NotionQueryResponse(BaseModel):
-    """Validated Notion database query response."""
-
-    results: list[dict]
-    has_more: bool
-    next_cursor: str | None = None
-
-    class Config:
-        extra = "ignore"
