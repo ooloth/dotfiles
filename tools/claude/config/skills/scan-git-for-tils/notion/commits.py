@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from notion.validation import NotionPageResponse
 from op.secrets import OP_NOTION_TOKEN_PATH, get_op_secret
 
 # Notion database IDs
@@ -14,6 +15,7 @@ NOTION_ASSESSED_COMMITS_DB = "928fcd9e47a84f98824790ac5a6d37ca"
 def get_assessed_commits_from_notion() -> set[str]:
     """Fetch all assessed commit hashes from Notion database."""
     from notion_client import Client
+    from notion_client.helpers import collect_paginated_api
 
     token = get_op_secret(OP_NOTION_TOKEN_PATH)
     if not token:
@@ -24,44 +26,34 @@ def get_assessed_commits_from_notion() -> set[str]:
     except Exception:
         return set()
 
-    assessed_hashes = set()
-    start_cursor = None
+    try:
+        # Use helper to automatically handle pagination (Notion API v2025-09-03)
+        pages = collect_paginated_api(
+            notion.data_sources.query,
+            data_source_id=ASSESSED_COMMITS_DATA_SOURCE_ID,
+        )
 
-    while True:
-        try:
-            # Query with pagination
-            query_params = {"database_id": ASSESSED_COMMITS_DATA_SOURCE_ID}
-            if start_cursor:
-                query_params["start_cursor"] = start_cursor
+        # Extract commit hashes from results
+        assessed_hashes = set()
+        for page in pages:
+            title_prop = page.get("properties", {}).get("Commit Hash", {})
+            title_content = title_prop.get("title", [])
+            if title_content:
+                commit_hash = title_content[0].get("plain_text", "")
+                if commit_hash:
+                    assessed_hashes.add(commit_hash)
 
-            response = notion.databases.query(**query_params)  # type: ignore[attr-defined]
+        return assessed_hashes
 
-            # Extract commit hashes from results
-            for page in response.get("results", []):
-                title_prop = page.get("properties", {}).get("Commit Hash", {})
-                title_content = title_prop.get("title", [])
-                if title_content:
-                    commit_hash = title_content[0].get("plain_text", "")
-                    if commit_hash:
-                        assessed_hashes.add(commit_hash)
-
-            # Check if there are more pages
-            if not response.get("has_more", False):
-                break
-
-            start_cursor = response.get("next_cursor")
-
-        except Exception:
-            break
-
-    return assessed_hashes
+    except Exception:
+        return set()
 
 
 def find_existing_tracker_entry(notion, commit_hash: str) -> str:
     """Check if tracker entry already exists for this commit. Returns page ID if found."""
     try:
-        results = notion.databases.query(
-            database_id=ASSESSED_COMMITS_DATA_SOURCE_ID,
+        results = notion.data_sources.query(
+            data_source_id=ASSESSED_COMMITS_DATA_SOURCE_ID,
             filter={"property": "Commit Hash", "title": {"equals": commit_hash}},
         )
         if results.get("results"):
@@ -75,14 +67,16 @@ def find_existing_tracker_entry(notion, commit_hash: str) -> str:
 def update_tracker_entry(notion, page_id: str, writing_page_id: str) -> str:
     """Update existing tracker entry to link to Writing page. Returns page URL."""
     try:
-        page = notion.pages.update(
+        response = notion.pages.update(
             page_id=page_id,
             properties={
                 "Writing": {"relation": [{"id": writing_page_id}]},
                 "Assessed": {"date": {"start": date.today().isoformat()}},
             },
         )
-        return page.get("url", "")
+        # Parse response immediately to validate structure
+        page = NotionPageResponse.model_validate(response)
+        return page.url
     except Exception as e:
         raise Exception(f"Failed to update tracker: {e}")
 
@@ -91,14 +85,8 @@ def create_tracker_entry(notion, commit: dict, writing_page_id: str) -> str:
     """Create an entry in TIL Assessed Commits and link to Writing page. Returns page URL."""
 
     properties = {
-        "Commit Hash": {
-            "title": [{"type": "text", "text": {"content": commit["hash"]}}]
-        },
-        "Message": {
-            "rich_text": [
-                {"type": "text", "text": {"content": commit["message"][:2000]}}
-            ]
-        },
+        "Commit Hash": {"title": [{"type": "text", "text": {"content": commit["hash"]}}]},
+        "Message": {"rich_text": [{"type": "text", "text": {"content": commit["message"][:2000]}}]},
         "Repo": {"rich_text": [{"type": "text", "text": {"content": commit["repo"]}}]},
         "Assessed": {"date": {"start": date.today().isoformat()}},
         "Writing": {"relation": [{"id": writing_page_id}]},
@@ -108,9 +96,11 @@ def create_tracker_entry(notion, commit: dict, writing_page_id: str) -> str:
     if commit.get("date"):
         properties["Commit Date"] = {"date": {"start": commit["date"]}}
 
-    page = notion.pages.create(
-        parent={"database_id": ASSESSED_COMMITS_DATA_SOURCE_ID},
+    response = notion.pages.create(
+        parent={"data_source_id": ASSESSED_COMMITS_DATA_SOURCE_ID},
         properties=properties,
     )
 
-    return page.get("url", "")
+    # Parse response immediately to validate structure
+    page = NotionPageResponse.model_validate(response)
+    return page.url
