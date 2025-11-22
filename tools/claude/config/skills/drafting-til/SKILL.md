@@ -105,12 +105,19 @@ Every technique below serves these principles.
 
 ---
 
-## Notion Property Mappings
+## Notion Databases
 
-**Database**: Writing
+### Writing Database
 **Data Source ID**: `c296db5b-d2f1-44d4-abc6-f9a05736b143`
 
-When creating a TIL page, set these properties:
+### TIL Assessed Commits Database
+**Data Source ID**: `cba80148-aeef-49c9-ba45-5157668b17b3`
+
+---
+
+## Property Mappings
+
+When creating a TIL page in the Writing database, set these properties:
 
 | Property | Value |
 |----------|-------|
@@ -133,34 +140,56 @@ When creating a TIL page, set these properties:
 3. **Write content** - Follow voice guide above
 4. **Generate slug** - Lowercase title with hyphens, no special chars
 5. **Write description** - One sentence summarizing the takeaway
-6. **Publish via script** - Pass JSON to `publish_til.py`:
+6. **Publish via Notion MCP** - Two-step process:
 
-```bash
-echo '<json>' | python3 ~/.claude/skills/scanning-git-for-tils/publish_til.py
-```
+### Step 1: Create Writing Page
 
-**Input JSON:**
-```json
+Use `mcp__notion__notion-create-pages` with Writing data source:
+
+```javascript
 {
-  "title": "Your TIL Title Here",
-  "content": "Your markdown content here",
-  "slug": "your-til-title-here",
-  "description": "One-line summary here",
-  "commit": {
-    "hash": "full-sha-hash",
-    "message": "original commit message",
-    "repo": "owner/repo",
-    "date": "2025-01-15"
-  }
+  "parent": {"data_source_id": "c296db5b-d2f1-44d4-abc6-f9a05736b143"},
+  "pages": [{
+    "properties": {
+      "Title": "Your TIL Title Here",
+      "Status": "Claude Draft",
+      "Type": "how-to",
+      "Destination": "blog",
+      "Description": "One-line summary here",
+      "Slug": "your-til-title-here"
+    },
+    "content": "Your markdown content here..."
+  }]
 }
 ```
 
-**Output:** URLs for Writing page and tracker entry
+**Capture the Writing page URL from the response** - you'll need it for step 2.
 
-The script automatically:
-- Creates the Writing page with Status="Claude Draft"
-- Creates the TIL Assessed Commits entry
-- Links them via the Writing relation
+### Step 2: Create Tracker Entry
+
+Use `mcp__notion__notion-create-pages` with TIL Assessed Commits data source:
+
+```javascript
+{
+  "parent": {"data_source_id": "cba80148-aeef-49c9-ba45-5157668b17b3"},
+  "pages": [{
+    "properties": {
+      "Commit Hash": "full-sha-hash",
+      "Message": "original commit message",
+      "Repo": "owner/repo",
+      "date:Commit Date:start": "2025-01-15",
+      "date:Commit Date:is_datetime": 0,
+      "date:Assessed:start": "2025-01-22",
+      "date:Assessed:is_datetime": 0,
+      "Writing": "[\"https://www.notion.so/writing-page-url\"]"
+    }
+  }]
+}
+```
+
+**Important**: The `Writing` property must be a JSON array of URLs as a string: `"[\"url\"]"`
+
+Both operations return URLs - display both to the user.
 
 ---
 
@@ -259,10 +288,12 @@ The `filter(Boolean)` step passes each item to `Boolean()`, which coerces it to 
 
 ## After Creation
 
-After the script completes successfully:
+After both MCP operations complete successfully:
 
-1. Display the Writing page URL from the script output
+1. Display both URLs:
+   - Writing page URL (for reviewing/editing the draft)
+   - Tracker page URL (confirms commit was marked as assessed)
 2. Remind user they can review and edit in Notion
 3. Offer to draft another or return to suggestions
 
-The script handles all Notion operations including linking the tracker entry to the draft.
+The tracker entry is automatically linked to the Writing page via the relation property.
