@@ -130,7 +130,7 @@ JSON output example:
 - Requires `gh` CLI installed and authenticated
 - Requires `op` CLI installed and authenticated (1Password)
 - Notion token stored at `op://Scripts/Notion/api-access-token`
-- Queries commits across all repos you have access to (personal + orgs)
+- Searches commits authored by your GitHub username (includes any repos where you've committed)
 - Script filters merge commits and dependency bot commits
 - Claude evaluates remaining commits for TIL potential
 - Notion sync prevents duplicate suggestions across machines
