@@ -17,8 +17,8 @@ from unittest.mock import MagicMock, patch
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from git.commits import Commit
 from git.formatting import format_markdown, format_relative_date, should_skip_commit
+from git.types import Commit
 from notion.blocks import extract_page_id, markdown_to_blocks
 from notion.commits import get_assessed_commits_from_notion
 
