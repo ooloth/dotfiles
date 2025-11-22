@@ -12,6 +12,485 @@ Create a skill (instead of a command or agent) when:
 4. **Caching opportunities**: Results can be cached to avoid redundant operations
 5. **Type safety matters**: Structured data with typed interfaces improves reliability
 
+## Implementation Approach: Python + uv
+
+Skills are implemented in **Python with uv** using the single-file script pattern ([PEP 723](https://peps.python.org/pep-0723/)):
+
+### Why Python + uv?
+
+✅ **Self-contained scripts** - Dependencies declared inline, auto-install with `uv run`
+✅ **Rich ecosystem** - Excellent SDKs for most external services (GitHub, Notion, Slack, etc.)
+✅ **Pragmatic typing** - Good-enough type safety without fighting the type system
+✅ **Fast iteration** - No build step, quick prototyping
+✅ **Familiar tooling** - Standard Python ecosystem (mypy, ruff, pytest)
+
+### Key Principles
+
+1. **Use SDKs over raw HTTP** - Prefer official/well-maintained SDKs for external data sources (GitHub, Notion, Jira, etc.) rather than building your own API clients
+2. **Single-file scripts** - Use PEP 723 inline dependencies, not pyproject.toml package definitions
+3. **Pragmatic type safety** - Type hints everywhere, Pydantic at API boundaries, mypy in non-strict mode
+
+## Type Safety Patterns
+
+### Pydantic for Parsing Outputs (Not Inputs)
+
+Use Pydantic to **validate API responses** (outputs from external APIs), not to validate your own function inputs:
+
+```python
+from pydantic import BaseModel, ConfigDict
+
+class NotionPageResponse(BaseModel):
+    """Validated Notion API response."""
+
+    model_config = ConfigDict(extra="ignore")  # Pydantic v2 pattern
+
+    url: str
+    id: str
+
+def create_page(notion, title: str) -> str:
+    """Create page and return URL."""
+    # Call external API
+    response = notion.pages.create(...)
+
+    # ✅ Validate immediately after API call
+    page = NotionPageResponse.model_validate(response)
+
+    # ✅ Extract and return values immediately
+    return page.url  # Don't pass Pydantic models around
+```
+
+**Pattern:**
+1. External API returns data (untyped `dict`)
+2. Validate with Pydantic **immediately**
+3. Extract needed values (primitives or dataclasses)
+4. Use extracted values in rest of code
+
+**Why:** Pydantic provides runtime validation at the boundary where types are uncertain (external APIs). Once validated, use native Python types.
+
+### Dataclasses for Internal Data
+
+Use dataclasses for internal data structures:
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Commit:
+    """A git commit with metadata."""
+
+    hash: str
+    message: str
+    repo: str
+    date: str
+    files: list[str]
+
+def process_commits(commits: list[Commit]) -> str:
+    """Process commits - type-safe throughout."""
+    # Work with well-typed data, no runtime validation needed
+    return format_markdown(commits)
+```
+
+**Why:** Dataclasses are lightweight, well-integrated with mypy, and perfect for internal data that's already validated.
+
+### TypeGuard for Narrowing Types
+
+When you need to narrow types beyond simple `isinstance` checks:
+
+```python
+from typing import TypeGuard
+
+def is_valid_commit(data: dict) -> TypeGuard[dict]:
+    """Type guard to narrow dict to valid commit structure."""
+    return (
+        isinstance(data.get("hash"), str) and
+        isinstance(data.get("message"), str) and
+        isinstance(data.get("repo"), str)
+    )
+
+def process_data(items: list[dict]) -> list[Commit]:
+    """Process raw data with type narrowing."""
+    commits = []
+    for item in items:
+        if is_valid_commit(item):
+            # mypy knows item has required fields
+            commits.append(Commit(
+                hash=item["hash"],
+                message=item["message"],
+                repo=item["repo"],
+                date=item.get("date", ""),
+                files=item.get("files", [])
+            ))
+    return commits
+```
+
+**When to use:** Complex validation logic that you want mypy to understand.
+
+### Pydantic → Dataclass Conversion
+
+For complex APIs, validate with Pydantic then convert to dataclass:
+
+```python
+from pydantic import BaseModel
+from dataclasses import dataclass
+
+class NotionPageValidation(BaseModel):
+    """Pydantic model for validation only."""
+    url: str
+    id: str
+    properties: dict
+
+@dataclass
+class NotionPage:
+    """Dataclass for internal use."""
+    url: str
+    id: str
+    title: str
+
+def fetch_page(page_id: str) -> NotionPage:
+    """Fetch and validate page from API."""
+    response = notion.pages.retrieve(page_id)
+
+    # Validate with Pydantic
+    validated = NotionPageValidation.model_validate(response)
+
+    # Extract to dataclass
+    title = validated.properties.get("Title", {}).get("title", [{}])[0].get("plain_text", "")
+    return NotionPage(
+        url=validated.url,
+        id=validated.id,
+        title=title
+    )
+```
+
+**When to use:** When you need both runtime validation (Pydantic) and clean internal types (dataclass).
+
+## Mitigating Non-Strict Mypy
+
+Since we use `strict = false` for pragmatic SDK integration, compensate with these patterns:
+
+### 1. Type Hints Everywhere
+
+```python
+# ✅ Always include type hints
+def get_commits(days: int, username: str) -> list[Commit]:
+    """Fetch commits from GitHub API."""
+    # ...
+
+# ✅ Modern syntax (list[T], not List[T])
+from __future__ import annotations
+
+def process(items: list[str]) -> dict[str, int]:
+    # ...
+
+# ✅ Union types with |
+def find_user(username: str) -> User | None:
+    # ...
+
+# ❌ Don't rely on inference
+def process(items):  # Type unknown!
+    # ...
+```
+
+### 2. Explicit Return Types
+
+```python
+# ✅ Always declare return type
+def parse_date(date_str: str) -> str:
+    if not date_str:
+        return "unknown"
+    # ...
+    return formatted
+
+# ❌ Don't let mypy infer
+def parse_date(date_str: str):  # Return type inferred (fragile)
+    # ...
+```
+
+### 3. Handle None Explicitly
+
+```python
+# ✅ Check for None before using
+def get_title(page: dict) -> str:
+    title_prop = page.get("properties", {}).get("Title")
+    if not title_prop:
+        return ""
+
+    title_content = title_prop.get("title", [])
+    if not title_content:
+        return ""
+
+    return title_content[0].get("plain_text", "")
+
+# ❌ Don't assume values exist
+def get_title(page: dict) -> str:
+    return page["properties"]["Title"]["title"][0]["plain_text"]  # Can crash!
+```
+
+### 4. Accept Any at SDK Boundaries Only
+
+```python
+from typing import Any
+
+# ✅ Accept Any from SDK, validate immediately
+def create_page(notion, title: str) -> str:
+    response: Any = notion.pages.create(...)  # SDK returns Any
+    page = NotionPageResponse.model_validate(response)  # Validate
+    return page.url  # Type-safe from here
+
+# ✅ Internal functions are fully typed
+def format_markdown(commits: list[Commit]) -> str:
+    # No Any types here
+    # ...
+```
+
+### 5. Small, Well-Typed Helper Functions
+
+```python
+# ✅ Break complex logic into small, typed pieces
+def _map_language_alias(language: str) -> str:
+    """Map language names to Notion's expected values."""
+    lang_map = {
+        "js": "javascript",
+        "ts": "typescript",
+        "py": "python",
+    }
+    return lang_map.get(language, language) or "plain text"
+
+def _create_code_block(lines: list[str], start_index: int) -> tuple[dict, int]:
+    """Create code block from markdown.
+
+    Returns: (block dict, next line index)
+    """
+    language = _map_language_alias(lines[start_index][3:].strip())
+    # ...
+    return block, next_index
+```
+
+**Why:** Small functions are easier to type correctly and verify.
+
+## Testing Patterns
+
+### Comprehensive Unit Tests for Pure Functions
+
+Test all pure functions (no I/O, deterministic output):
+
+```python
+#!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["pytest", "notion-client", "pydantic"]
+# ///
+
+from git.formatting import format_markdown, should_skip_commit
+from git.types import Commit
+
+class TestFormatMarkdown:
+    """Test markdown formatting."""
+
+    def test_formats_empty_list(self):
+        result = format_markdown([], 30, 0, 0)
+        assert "No commits found" in result
+
+    def test_formats_single_commit(self):
+        commit = Commit(
+            hash="abc1234",
+            message="feat: add feature",
+            repo="owner/repo",
+            date="2 days ago",
+            files=["main.py"]
+        )
+        result = format_markdown([commit], 30, 1, 1)
+
+        assert "[owner/repo] feat: add feature" in result
+        assert "Hash: abc1234" in result
+
+if __name__ == "__main__":
+    import pytest
+    import sys
+    sys.exit(pytest.main([__file__, "-v"]))
+```
+
+### Test Helpers for Readability
+
+Create helpers to make tests clear and maintainable:
+
+```python
+def make_notion_page(commit_hash: str) -> dict:
+    """Helper: create mock Notion page with commit hash."""
+    return {
+        "properties": {
+            "Commit Hash": {"title": [{"plain_text": commit_hash}]}
+        }
+    }
+
+def make_notion_response(hashes: list[str]) -> dict:
+    """Helper: create mock Notion SDK response."""
+    return {
+        "results": [make_notion_page(h) for h in hashes],
+        "has_more": False,
+    }
+
+class TestGetAssessedCommits:
+    def test_returns_commit_hashes(self):
+        with patch("notion_client.Client") as MockClient:
+            mock_client = MockClient.return_value
+            mock_client.data_sources.query.return_value = make_notion_response(
+                ["abc123", "def456"]
+            )
+
+            result = get_assessed_commits()
+            assert result == {"abc123", "def456"}
+```
+
+### Test Edge Cases
+
+Always test edge cases:
+
+```python
+class TestFormatRelativeDate:
+    def test_handles_invalid_date(self):
+        result = format_relative_date("not-a-date")
+        assert result == "unknown"
+
+    def test_handles_empty_string(self):
+        result = format_relative_date("")
+        assert result == "unknown"
+
+class TestShouldSkipCommit:
+    def test_skips_dependabot(self):
+        commit = Commit(hash="abc", message="Bump dependency from 1.0 to 2.0", ...)
+        assert should_skip_commit(commit) is True
+
+    def test_keeps_normal_commits(self):
+        commit = Commit(hash="abc", message="fix: handle null values", ...)
+        assert should_skip_commit(commit) is False
+```
+
+### Mock External Dependencies
+
+Mock all external I/O (APIs, CLIs, file system):
+
+```python
+from unittest.mock import patch
+
+class TestGetAssessedCommits:
+    def test_returns_empty_set_when_no_token(self):
+        with patch("notion.commits.get_op_secret", side_effect=RuntimeError("Failed")):
+            result = get_assessed_commits_from_notion()
+            assert result == set()
+
+    def test_handles_api_error_gracefully(self):
+        with (
+            patch("notion.commits.get_op_secret", return_value="fake-token"),
+            patch("notion_client.Client") as MockClient,
+        ):
+            MockClient.side_effect = Exception("Connection error")
+
+            result = get_assessed_commits_from_notion()
+            assert result == set()
+```
+
+### Class-Based Test Organization
+
+Group related tests in classes:
+
+```python
+class TestFormatMarkdown:
+    """Test markdown formatting."""
+    # All markdown tests here
+
+class TestShouldSkipCommit:
+    """Test commit filtering."""
+    # All filtering tests here
+
+class TestExtractPageId:
+    """Test Notion URL parsing."""
+    # All URL tests here
+```
+
+**Why:** Clear organization, easy to run subsets (`pytest test_file.py::TestClass`)
+
+### Descriptive Test Names
+
+Use names that describe what's being tested:
+
+```python
+# ✅ Clear what's being tested
+def test_formats_commit_with_long_body(self):
+def test_handles_pagination(self):
+def test_returns_empty_set_when_no_token(self):
+def test_skips_pages_without_commit_hash(self):
+
+# ❌ Vague names
+def test_format(self):
+def test_pagination(self):
+def test_error(self):
+```
+
+## Error Handling Patterns
+
+### Raise Clear Exceptions at Boundaries
+
+```python
+def get_op_secret(path: str) -> str:
+    """Fetch secret from 1Password.
+
+    Raises:
+        RuntimeError: If 1Password CLI fails with error details.
+    """
+    result = subprocess.run(["op", "read", path], capture_output=True, text=True)
+
+    if result.returncode != 0:
+        # ✅ Raise with clear message including details
+        raise RuntimeError(
+            f"Failed to retrieve secret from 1Password: {result.stderr.strip()}"
+        )
+
+    return result.stdout.strip()
+```
+
+### Handle Errors Gracefully at Call Sites
+
+```python
+def get_assessed_commits_from_notion() -> set[str]:
+    """Fetch assessed commits from Notion.
+
+    Returns empty set on any error for graceful degradation.
+    """
+    try:
+        token = get_op_secret(OP_NOTION_TOKEN_PATH)  # Can raise RuntimeError
+        notion = Client(auth=token)
+    except Exception:
+        # ✅ Graceful degradation - return empty set
+        return set()
+
+    try:
+        pages = notion.data_sources.query(...)
+        return {extract_hash(p) for p in pages}
+    except Exception:
+        # ✅ API errors also degrade gracefully
+        return set()
+```
+
+### Document Error Behavior
+
+```python
+def create_page(notion, title: str) -> str:
+    """Create page in Notion.
+
+    Returns:
+        URL of created page.
+
+    Raises:
+        Exception: If page creation fails with error details.
+    """
+    response = notion.pages.create(...)
+    page = NotionPageResponse.model_validate(response)
+    return page.url
+```
+
+**Pattern:** Raise at boundaries with details, handle gracefully at call sites, document behavior.
+
 ## Skills vs Agents vs Commands
 
 | Approach | Use When | Example |
@@ -80,9 +559,21 @@ Edit `SKILL.md` to define:
 
 Update the sections to describe your specific skill.
 
-### 3. Implement Your Logic
+### 3. Choose Your Language
 
-In `example_skill.py` (rename to match your skill):
+**For Python skills:**
+- Use PEP 723 inline script metadata for dependencies
+- Include type hints for reliability
+- See `example_skill.py` for the template
+
+**For TypeScript/Bun skills:**
+- Use inline version specifiers: `import { z } from "zod@^3.22.4"`
+- Leverage Zod for validation + types (single system)
+- See `scanning-git-for-tils` skill for real-world example
+
+### 4. Implement Your Logic
+
+**In `example_skill.py` (Python):**
 
 1. **Configuration** (lines 18-26): Update cache file names, TTLs, etc.
 2. **Type Definitions** (lines 30-48): Define your data structures
@@ -90,7 +581,12 @@ In `example_skill.py` (rename to match your skill):
 4. **filter_and_process()** (lines 129-171): Filter and transform data
 5. **format_markdown()** (lines 177-203): Format output for display
 
-### 4. Test Your Skill
+**In TypeScript/Bun:**
+- Define Zod schemas for validation AND types
+- Use `Bun.spawn()` for process execution
+- Return JSON to stdout for Claude to parse
+
+### 5. Test Your Skill
 
 ```bash
 # Test locally first
@@ -100,7 +596,7 @@ python3 ~/.claude/skills/your-skill-name/your_script.py
 python3 ~/.claude/skills/your-skill-name/your_script.py  # Should use cache
 ```
 
-### 5. Document Token Savings
+### 6. Document Token Savings
 
 After implementation, measure and document:
 - Tokens before (if processed via Claude tools)

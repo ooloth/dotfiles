@@ -14,12 +14,14 @@
 ### 1. Skills First (Highest Priority)
 
 Use skills (`tools/claude/config/skills/`) for token-heavy operations:
+
 - **When**: Heavy data processing, filtering, caching opportunities
 - **Why**: Process data in code (Python/bash), return only filtered summaries
 - **Token savings**: 80-98% reduction vs processing via Claude tools
 - **Examples**: `fetching-github-prs-to-review`, `inspecting-codefresh-failures`
 
 Skills should:
+
 - Filter data in code before returning to Claude
 - Return formatted summaries, not raw data
 - Cache intermediate results to avoid redundant processing
@@ -29,12 +31,14 @@ Skills should:
 #### Creating New Skills
 
 When creating skills, ALWAYS use the `/create-skill` command or reference the template:
+
 - **Template location**: `tools/claude/config/skills/@template/`
 - **Complete guidance**: See `@template/README.md` for all best practices
 - **Naming convention**: gerund + noun (e.g., `fetching-github-prs-to-review`, `analyzing-python-code`)
 - **Examples**: See existing skills in `tools/claude/config/skills/`
 
 The template includes:
+
 - SKILL.md structure with workflow patterns
 - Example Python script with all best practices
 - Anti-patterns to avoid
@@ -43,6 +47,7 @@ The template includes:
 ### 2. Agents Second
 
 Use agents (`tools/claude/config/agents`) for complex exploration:
+
 - **When**: Tasks requiring multiple tool calls, exploration, or investigation
 - **Why**: Agents can autonomously explore and make decisions
 - **Examples**: `atomic-committer`, `pr-creator`, ephemeral `Explore`/`Plan` agents
@@ -51,6 +56,7 @@ Use agents (`tools/claude/config/agents`) for complex exploration:
 ### 3. Direct Tool Usage Last
 
 Use Claude tools directly only for:
+
 - Simple, one-off operations
 - Tasks requiring immediate context from the conversation
 - Operations where overhead of a skill/agent isn't justified
@@ -69,6 +75,18 @@ Use Claude tools directly only for:
 - Implement changes one small theme at-a-time
 - Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
 
+## TIL Suggestions
+
+When you help solve a non-trivial problem or explain something in detail, consider if it would make a good TIL blog post. Look for:
+
+- Gotchas or surprising behavior
+- Elegant solutions to common problems
+- Things worth documenting for future reference
+
+Suggest naturally: "This could make a good TIL - want me to draft it?"
+
+To scan for TIL opportunities or draft posts, use the `/suggest-tils` command.
+
 ## CI System Information
 
 ### Recursion Pharma Organization
@@ -81,6 +99,7 @@ Use Claude tools directly only for:
 When you see a CI failure in a recursionpharma PR, **use the `inspecting-codefresh-failures` skill** to analyze it.
 
 The skill will:
+
 - Extract build IDs from PR status checks
 - Fetch build logs from Codefresh
 - Identify specific errors with file:line references
@@ -88,3 +107,7 @@ The skill will:
 - Return a formatted report ready to include in reviews
 
 **Always investigate CI failures** - include specific error details in your review (not just "CI is failing"). Distinguish between errors introduced by the PR vs pre-existing issues.
+
+## Python Preferences
+
+- Prefer `from __future__ import annotations` over `from typing import TYPE_CHECKING`
