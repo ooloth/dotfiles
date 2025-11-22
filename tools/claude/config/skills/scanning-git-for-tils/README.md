@@ -72,7 +72,7 @@ uv run --with mypy --with notion-client --with pydantic --with pytest \
 ## Project Structure
 
 ```
-scan-git-for-tils/
+scanning-git-for-tils/
 ├── git/
 │   ├── commits.py     # GitHub API integration
 │   ├── formatting.py  # Markdown formatting utilities
@@ -97,10 +97,12 @@ scan-git-for-tils/
 Declared inline using [PEP 723](https://peps.python.org/pep-0723/) script metadata:
 
 **Runtime:**
+
 - `notion-client>=2.2.0` - Notion API v2025-09-03 support
 - `pydantic>=2.0.0` - Runtime validation with v2 ConfigDict
 
 **Development:**
+
 - `pytest>=7.0.0` - Test framework
 - `mypy>=1.0.0` - Static type checking
 - `ruff>=0.1.0` - Linting and formatting
@@ -112,6 +114,7 @@ Dependencies auto-install when running scripts with `uv run`.
 ### Type Safety Approach
 
 Uses Python with pragmatic type safety:
+
 - Accept `Any` at SDK boundaries (GitHub, Notion APIs)
 - Use Pydantic for runtime validation immediately after API calls
 - Type hints throughout internal code
@@ -120,6 +123,7 @@ Uses Python with pragmatic type safety:
 ### Notion API v2025-09-03
 
 Uses latest Notion API patterns:
+
 - `data_sources.query()` instead of `databases.query()`
 - `collect_paginated_api()` helper for automatic pagination
 - Pydantic validation on all API responses
@@ -135,11 +139,13 @@ Uses latest Notion API patterns:
 Tool configuration in `pyproject.toml`:
 
 **Ruff:**
+
 - Line length: 100
 - Target: Python 3.11
 - Import sorting (I) and pyupgrade (UP) enabled
 
 **Mypy:**
+
 - Python 3.11 syntax
 - Non-strict mode (pragmatic for SDK code)
 - Excludes .venv/ and build directories
