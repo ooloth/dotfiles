@@ -16,6 +16,20 @@ select = [
 [tool.mypy]
 python_version = "3.11"
 strict = false
+
+# Enforce type hints on all functions (including return types)
+disallow_untyped_defs = true
+
+# Require explicit Optional (str | None, not str = None)
+no_implicit_optional = true
+
+# Keep type: ignore comments clean
+warn_unused_ignores = true
+
+# Warn when returning Any from typed functions
+# We handle this by validating with Pydantic immediately after API calls
+warn_return_any = true
+
 exclude = [
     "^.venv/",
     "^venv/",
