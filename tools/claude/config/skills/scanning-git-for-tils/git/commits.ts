@@ -62,7 +62,18 @@ export async function getCommits(days: number, username: string): Promise<Commit
   const query = `author:${username} committer-date:>=${since} sort:committer-date-desc`;
 
   const proc = Bun.spawn(
-    ["gh", "api", "search/commits", "-f", `q=${query}`, "--paginate", "--jq", ".items[]"],
+    [
+      "gh",
+      "api",
+      "--method",
+      "GET",
+      "search/commits",
+      "-f",
+      `q=${query}`,
+      "--paginate",
+      "--jq",
+      ".items[]",
+    ],
     {
       stdout: "pipe",
       stderr: "pipe",
