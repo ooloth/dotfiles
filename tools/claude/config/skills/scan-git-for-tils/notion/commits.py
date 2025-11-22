@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from op.secrets import OP_NOTION_TOKEN, get_op_secret
+from op.secrets import OP_NOTION_TOKEN_PATH, get_op_secret
 
 # Notion database IDs
 ASSESSED_COMMITS_DATA_SOURCE_ID = "cba80148-aeef-49c9-ba45-5157668b17b3"
@@ -15,7 +15,7 @@ def get_assessed_commits_from_notion() -> set[str]:
     """Fetch all assessed commit hashes from Notion database."""
     from notion_client import Client
 
-    token = get_op_secret(OP_NOTION_TOKEN)
+    token = get_op_secret(OP_NOTION_TOKEN_PATH)
     if not token:
         return set()
 

@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from op.secrets import OP_NOTION_TOKEN, get_op_secret
+from op.secrets import OP_NOTION_TOKEN_PATH, get_op_secret
 
 
 def get_notion_client():
     """Create authenticated Notion client."""
     from notion_client import Client
 
-    token = get_op_secret(OP_NOTION_TOKEN)
+    token = get_op_secret(OP_NOTION_TOKEN_PATH)
     if not token:
         raise Exception("Could not get Notion token from 1Password")
     return Client(auth=token)
