@@ -17,11 +17,8 @@ def get_assessed_commits_from_notion() -> set[str]:
     from notion_client import Client
     from notion_client.helpers import collect_paginated_api
 
-    token = get_op_secret(OP_NOTION_TOKEN_PATH)
-    if not token:
-        return set()
-
     try:
+        token = get_op_secret(OP_NOTION_TOKEN_PATH)
         notion = Client(auth=token)
     except Exception:
         return set()

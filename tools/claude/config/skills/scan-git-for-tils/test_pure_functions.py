@@ -352,7 +352,7 @@ class TestGetAssessedCommitsFromNotion:
     """Test fetching assessed commits from Notion."""
 
     def test_returns_empty_set_when_no_token(self):
-        with patch("notion.commits.get_op_secret", return_value=""):
+        with patch("notion.commits.get_op_secret", side_effect=RuntimeError("Failed")):
             result = get_assessed_commits_from_notion()
             assert result == set()
 
