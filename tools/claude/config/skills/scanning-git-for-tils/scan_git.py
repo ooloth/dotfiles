@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["notion-client"]
+# dependencies = ["notion-client", "pydantic"]
 # ///
 """
 Scan GitHub commit history for TIL-worthy commits.
