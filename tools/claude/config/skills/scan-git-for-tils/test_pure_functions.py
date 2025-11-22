@@ -322,7 +322,11 @@ class TestExtractPageId:
 
 def make_notion_page(commit_hash: str) -> dict:
     """Helper: create a mock Notion page with a commit hash."""
-    return {"properties": {"Commit Hash": {"title": [{"plain_text": commit_hash}]}}}
+    return {
+        "id": f"page-{commit_hash}",
+        "url": f"https://notion.so/page-{commit_hash}",
+        "properties": {"Commit Hash": {"title": [{"plain_text": commit_hash}]}},
+    }
 
 
 def make_notion_response(
@@ -414,7 +418,11 @@ class TestGetAssessedCommitsFromNotion:
             response = {
                 "results": [
                     make_notion_page("abc123"),
-                    {"properties": {"Commit Hash": {"title": []}}},  # Empty title
+                    {  # Empty title
+                        "id": "page-empty",
+                        "url": "https://notion.so/page-empty",
+                        "properties": {"Commit Hash": {"title": []}},
+                    },
                     make_notion_page("def456"),
                 ],
                 "has_more": False,

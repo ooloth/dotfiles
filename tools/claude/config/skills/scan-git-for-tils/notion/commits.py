@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from datetime import date
 
-from notion.validation import NotionPageResponse
+from notion_client import Client
+
+from notion.validation import (
+    AssessedCommitPage,
+    NotionPageResponse,
+    NotionQueryResponse,
+)
 from op.secrets import OP_NOTION_TOKEN_PATH, get_op_secret
 
 # Notion database IDs
@@ -14,7 +20,6 @@ NOTION_ASSESSED_COMMITS_DB = "928fcd9e47a84f98824790ac5a6d37ca"
 
 def get_assessed_commits_from_notion() -> set[str]:
     """Fetch all assessed commit hashes from Notion database."""
-    from notion_client import Client
     from notion_client.helpers import collect_paginated_api
 
     try:
@@ -25,20 +30,19 @@ def get_assessed_commits_from_notion() -> set[str]:
 
     try:
         # Use helper to automatically handle pagination (Notion API v2025-09-03)
-        pages = collect_paginated_api(
+        raw_pages = collect_paginated_api(
             notion.data_sources.query,
             data_source_id=ASSESSED_COMMITS_DATA_SOURCE_ID,
         )
 
         # Extract commit hashes from results
         assessed_hashes = set()
-        for page in pages:
-            title_prop = page.get("properties", {}).get("Commit Hash", {})
-            title_content = title_prop.get("title", [])
-            if title_content:
-                commit_hash = title_content[0].get("plain_text", "")
-                if commit_hash:
-                    assessed_hashes.add(commit_hash)
+        for raw_page in raw_pages:
+            # Validate page structure and extract commit hash
+            page = AssessedCommitPage.model_validate(raw_page)
+            commit_hash = page.properties.commit_hash.text
+            if commit_hash:
+                assessed_hashes.add(commit_hash)
 
         return assessed_hashes
 
