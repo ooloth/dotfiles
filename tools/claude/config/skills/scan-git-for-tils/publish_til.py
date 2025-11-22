@@ -49,16 +49,8 @@ from notion.commits import (
     find_existing_tracker_entry,
     update_tracker_entry,
 )
+from notion.validation import CommitInput
 from notion.writing import create_writing_page
-
-
-class CommitInput(BaseModel):
-    """Commit metadata from git."""
-
-    hash: str = Field(..., min_length=1)
-    message: str = Field(..., min_length=1)
-    repo: str = Field(..., min_length=1)
-    date: str | None = None
 
 
 class PublishTilInput(BaseModel):
@@ -119,9 +111,7 @@ def main() -> None:
             tracker_url = update_tracker_entry(notion, existing_tracker_id, writing_page_id)
         else:
             # Create new tracker entry with relation to Writing page
-            # Convert Pydantic model to dict for notion client
-            commit_dict = input_data.commit.model_dump()
-            tracker_url = create_tracker_entry(notion, commit_dict, writing_page_id)
+            tracker_url = create_tracker_entry(notion, input_data.commit, writing_page_id)
 
         # Output results as dataclass
         output = PublishTilOutput(

@@ -1,8 +1,17 @@
-"""Pydantic models for validating Notion API responses."""
+"""Pydantic models for validating Notion API requests and responses."""
 
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+class CommitInput(BaseModel):
+    """Commit metadata for creating tracker entries."""
+
+    hash: str = Field(..., min_length=1)
+    message: str = Field(..., min_length=1)
+    repo: str = Field(..., min_length=1)
+    date: str | None = None
 
 
 class NotionRichText(BaseModel):

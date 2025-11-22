@@ -8,6 +8,7 @@ from notion_client import Client
 
 from notion.validation import (
     AssessedCommitPage,
+    CommitInput,
     NotionPageResponse,
     NotionQueryResponse,
 )
@@ -50,22 +51,25 @@ def get_assessed_commits_from_notion() -> set[str]:
         return set()
 
 
-def find_existing_tracker_entry(notion, commit_hash: str) -> str:
+def find_existing_tracker_entry(notion: Client, commit_hash: str) -> str:
     """Check if tracker entry already exists for this commit. Returns page ID if found."""
     try:
-        results = notion.data_sources.query(
+        raw_response = notion.data_sources.query(
             data_source_id=ASSESSED_COMMITS_DATA_SOURCE_ID,
             filter={"property": "Commit Hash", "title": {"equals": commit_hash}},
         )
-        if results.get("results"):
-            return results["results"][0]["id"]
+        # Validate response immediately
+        response = NotionQueryResponse.model_validate(raw_response)
+        if response.results:
+            # Access validated page ID via dot notation
+            return response.results[0].id
     except Exception:
         pass
 
     return ""
 
 
-def update_tracker_entry(notion, page_id: str, writing_page_id: str) -> str:
+def update_tracker_entry(notion: Client, page_id: str, writing_page_id: str) -> str:
     """Update existing tracker entry to link to Writing page. Returns page URL."""
     try:
         response = notion.pages.update(
@@ -82,20 +86,20 @@ def update_tracker_entry(notion, page_id: str, writing_page_id: str) -> str:
         raise Exception(f"Failed to update tracker: {e}")
 
 
-def create_tracker_entry(notion, commit: dict, writing_page_id: str) -> str:
+def create_tracker_entry(notion: Client, commit: CommitInput, writing_page_id: str) -> str:
     """Create an entry in TIL Assessed Commits and link to Writing page. Returns page URL."""
 
     properties = {
-        "Commit Hash": {"title": [{"type": "text", "text": {"content": commit["hash"]}}]},
-        "Message": {"rich_text": [{"type": "text", "text": {"content": commit["message"][:2000]}}]},
-        "Repo": {"rich_text": [{"type": "text", "text": {"content": commit["repo"]}}]},
+        "Commit Hash": {"title": [{"type": "text", "text": {"content": commit.hash}}]},
+        "Message": {"rich_text": [{"type": "text", "text": {"content": commit.message[:2000]}}]},
+        "Repo": {"rich_text": [{"type": "text", "text": {"content": commit.repo}}]},
         "Assessed": {"date": {"start": date.today().isoformat()}},
         "Writing": {"relation": [{"id": writing_page_id}]},
     }
 
     # Only add Commit Date if present (None breaks Notion API)
-    if commit.get("date"):
-        properties["Commit Date"] = {"date": {"start": commit["date"]}}
+    if commit.date:
+        properties["Commit Date"] = {"date": {"start": commit.date}}
 
     response = notion.pages.create(
         parent={"data_source_id": ASSESSED_COMMITS_DATA_SOURCE_ID},

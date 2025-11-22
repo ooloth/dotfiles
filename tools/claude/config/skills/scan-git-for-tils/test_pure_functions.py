@@ -10,6 +10,8 @@ Run with: uv run test_pure_functions.py
 Or: uv run pytest test_pure_functions.py -v
 """
 
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 from unittest.mock import patch

@@ -8,8 +8,14 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 
+from pydantic import RootModel, ValidationError
+
 from git.formatting import format_relative_date
 from git.types import Commit
+
+
+class CommitFilesResponse(RootModel[list[str]]):
+    """Validated GitHub API response for commit files (from jq filter)."""
 
 
 def get_github_username() -> str:
@@ -42,8 +48,10 @@ def get_commit_files(repo: str, sha: str) -> list[str]:
         return []
 
     try:
-        return json.loads(result.stdout)
-    except json.JSONDecodeError:
+        raw_data = json.loads(result.stdout)
+        validated = CommitFilesResponse.model_validate(raw_data)
+        return validated.root
+    except (json.JSONDecodeError, ValidationError):
         return []
 
 
