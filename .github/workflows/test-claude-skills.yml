@@ -68,7 +68,7 @@ jobs:
               echo ""
               echo "Type checking $skill_dir with mypy..."
               cd "$skill_dir"
-              uv run --with mypy --with notion-client --with pydantic mypy . || exit 1
+              uv run --with mypy --with notion-client --with pydantic --with pytest mypy --python-version 3.11 . || exit 1
               cd ..
               echo "✅ Passed"
             fi
