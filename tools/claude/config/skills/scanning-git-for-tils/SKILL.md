@@ -1,5 +1,5 @@
 ---
-name: scan-git-for-tils
+name: scanning-git-for-tils
 description: Scans GitHub commit history for commits that might make good TIL blog posts. Queries all your repos across all orgs via GitHub API. Tracks assessed commits in Notion to avoid duplicates across machines. Use when user asks for TIL ideas from their recent work.
 allowed-tools: [Bash]
 ---
@@ -27,7 +27,7 @@ Properties:
 ### Step 1: Run the script
 
 ```bash
-python3 ~/.claude/skills/scan-git-for-tils/scan_git.py [days]
+python3 ~/.claude/skills/scanning-git-for-tils/scan_git.py [days]
 ```
 
 **Arguments:**

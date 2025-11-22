@@ -20,7 +20,7 @@ Note: Very large ranges (365+ days) may take longer but will find more candidate
 
 ## Phase 2: Scan Git History
 
-Use the `scan-git-for-tils` skill:
+Use the `scanning-git-for-tils` skill:
 
 1. Run the scan script with the specified days
 2. Script automatically fetches assessed commits from Notion
@@ -43,7 +43,7 @@ Select a commit to draft (enter number), or:
 
 When user selects a commit:
 
-Use the `draft-til` skill:
+Use the `drafting-til` skill:
 
 1. Look up full commit data using the index from `new_commits` array
 2. Generate TIL content following voice guide

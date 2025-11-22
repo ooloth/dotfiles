@@ -1,4 +1,4 @@
-# scan-git-for-tils
+# scanning-git-for-tils
 
 Scans GitHub commit history for TIL-worthy commits and drafts blog posts in Notion.
 

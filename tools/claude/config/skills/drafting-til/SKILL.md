@@ -1,5 +1,5 @@
 ---
-name: draft-til
+name: drafting-til
 description: Drafts a TIL blog post in the user's voice and creates it in Notion with Status="Claude Draft". Contains voice guide for matching the user's writing style. Use when user approves a TIL topic and wants a draft created.
 ---
 
@@ -136,7 +136,7 @@ When creating a TIL page, set these properties:
 6. **Publish via script** - Pass JSON to `publish_til.py`:
 
 ```bash
-echo '<json>' | python3 ~/.claude/skills/scan-git-for-tils/publish_til.py
+echo '<json>' | python3 ~/.claude/skills/scanning-git-for-tils/publish_til.py
 ```
 
 **Input JSON:**

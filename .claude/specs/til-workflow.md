@@ -23,13 +23,13 @@ This spec documents a workflow for Claude to suggest and draft TIL-style blog po
 
 ```
 skills/
-  scan-git-for-tils/
+  scanning-git-for-tils/
     SKILL.md
     scan_git.py
-  scan-notion-for-tils/
+  scanning-notion-for-tils/
     SKILL.md
     scan_notion.py
-  draft-til/
+  drafting-til/
     SKILL.md              # Voice guide, format rules, property mappings
 ```
 
@@ -147,7 +147,7 @@ Add organic trigger hint to global CLAUDE.md.
 
 ## Skill Specifications
 
-### scan-git-for-tils
+### scanning-git-for-tils
 
 **Purpose**: Analyze recent git commits for TIL-worthy patterns
 
@@ -184,7 +184,7 @@ Use when user asks for TIL ideas from their recent work.
    - TIL angle: Diagnose and fix slow shell initialization
 ```
 
-### scan-notion-for-tils
+### scanning-notion-for-tils
 
 **Purpose**: Find unpublished Writing items ready for TIL treatment
 
@@ -220,7 +220,7 @@ Use when user wants to review their backlog for TIL opportunities.
    - TIL angle: filter() doesn't await - need Promise.all pattern
 ```
 
-### draft-til
+### drafting-til
 
 **Purpose**: Create a TIL draft in Notion with proper voice and formatting
 
@@ -287,7 +287,7 @@ Select a topic to draft (number), or 'q' to quit:
 ```
 Phase 3: Draft Creation
 ───────────────────────
-[Invoke draft-til skill with selected topic]
+[Invoke drafting-til skill with selected topic]
 [Show preview of created page]
 
 ✅ Draft created: "Your TIL Title"
@@ -332,16 +332,16 @@ To scan for TIL opportunities or draft posts, use the `/suggest-tils` command.
 1. **Add "Claude Draft" status** to Writing database
    - Use `mcp__notion__notion-update-database` to add status option
 
-2. **Create draft-til skill** first (other skills depend on understanding the output format)
-   - `~/.claude/skills/draft-til/SKILL.md`
+2. **Create drafting-til skill** first (other skills depend on understanding the output format)
+   - `~/.claude/skills/drafting-til/SKILL.md`
 
-3. **Create scan-git-for-tils skill**
-   - `~/.claude/skills/scan-git-for-tils/SKILL.md`
-   - `~/.claude/skills/scan-git-for-tils/scan_git.py`
+3. **Create scanning-git-for-tils skill**
+   - `~/.claude/skills/scanning-git-for-tils/SKILL.md`
+   - `~/.claude/skills/scanning-git-for-tils/scan_git.py`
 
-4. **Create scan-notion-for-tils skill**
-   - `~/.claude/skills/scan-notion-for-tils/SKILL.md`
-   - `~/.claude/skills/scan-notion-for-tils/scan_notion.py`
+4. **Create scanning-notion-for-tils skill**
+   - `~/.claude/skills/scanning-notion-for-tils/SKILL.md`
+   - `~/.claude/skills/scanning-notion-for-tils/scan_notion.py`
 
 5. **Create /suggest-tils command**
    - `~/.claude/commands/suggest-tils.md`

@@ -1,5 +1,5 @@
 [project]
-name = "scan-git-for-tils"
+name = "scanning-git-for-tils"
 version = "0.1.0"
 requires-python = ">=3.11"
 
