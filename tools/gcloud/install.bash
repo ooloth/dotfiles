@@ -12,6 +12,11 @@ curl https://sdk.cloud.google.com >install.sh
 bash install.sh --disable-prompts
 trash install.sh
 
+# See: https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin
+info "📦 Installing required gcloud components"
+gcloud components install gke-gcloud-auth-plugin
+gcloud container clusters get-credentials prod-cluster --region us-central1 --project prod-cluster-cc74bd08
+
 debug "🔁 Restarting shell to load gcloud into PATH"
 exec -l "${SHELL}"
 
