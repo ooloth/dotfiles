@@ -66,26 +66,16 @@ Use Claude tools directly only for:
 - Update the `<task>.md` with any helpful findings
 - When you detect you are within 10% of your available context window before auto-compact, pause to update your to-do list and the `<task>.md` with all important hand-off details, including the primary goals and non-goals of the task and any implementation decisions that have already been made
 
-## Don't code after being asked a question
+## After answering questions
 
-- When asked a question, think hard and respond and then prompt me for which action(s) to take next
+- When asked a question, think hard and respond
+- If the answer involved explaining a non-trivial concept with code examples, or an elegant solution to common problem, or an otherwise appealing tip/trick, ask: "This could make a good TIL - want me to draft it?"
+- Then prompt for which action(s) to take next
 
 ## Pause to let me commit
 
 - Implement changes one small theme at-a-time
 - Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
-
-## TIL Suggestions
-
-When you help solve a non-trivial problem or explain something in detail, consider if it would make a good TIL blog post. Look for:
-
-- Gotchas or surprising behavior
-- Elegant solutions to common problems
-- Things worth documenting for future reference
-
-Suggest naturally: "This could make a good TIL - want me to draft it?"
-
-To scan for TIL opportunities or draft posts, use the `/suggest-tils` command.
 
 ## CI System Information
 
