@@ -1,5 +1,6 @@
 
-if ! have gcloud; then
+# If I haven't installed the Google Cloud SDK, skip the rest.
+if [ ! -d "${HOME}/google-cloud-sdk/bin" ]; then
   return 0
 fi
 
@@ -14,6 +15,9 @@ export PATH="${HOME}/google-cloud-sdk/bin:$PATH"
 export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.config/gcloud/application_default_credentials.json"
 
 if is_work; then
+
+  export CLOUDSDK_CORE_PROJECT="work-cluster-85851b24"
+  # export CLOUDSDK_CORE_PROJECT="prod-cluster-cc74bd08"
   export GOOGLE_CLOUD_PROJECT="eng-infrastructure"
 fi
 
