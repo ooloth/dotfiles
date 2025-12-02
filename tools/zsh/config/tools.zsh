@@ -21,6 +21,10 @@ source "${MANIFEST}"
 # LEGACY: ONE-OFF VARIABLES SETUP #
 ###################################
 
+# gRPC
+# export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
+# export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1
+
 # NPM
 export NPM_CONFIG_USERCONFIG=${HOME}/.config/npm/.npmrc
 
@@ -40,10 +44,6 @@ export VIRTUAL_ENV_PROMPT='' # avoid extra (venv) prompt prefix
 if is_work; then
   # Configome
   export CONFIGOME_ENV=dev
-
-  # grey-havens
-  export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
-  export GRPC_PYTHON_BUILD_SYSTEM_ZLIB=1
 
   # Griphook
   # TODO: still need this?
