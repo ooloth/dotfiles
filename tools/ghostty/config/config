@@ -1,4 +1,5 @@
 # See: https://ghostty.org/docs/config/reference
+# WARN: don't use inline comments beside keybinds! They break the parsing and outputting weird text.
 
 ############
 # BEHAVIOR #
@@ -79,7 +80,8 @@ keybind = cmd+s=text:\x01T
 # Windows (navigate, create, rename)
 keybind = cmd+right_bracket=text:\x01n
 keybind = cmd+left_bracket=text:\x01p
-keybind = cmd+physical:one=text:\x011 # re "physical", see: https://github.com/ghostty-org/ghostty/issues/817
+# re "physical", see: https://github.com/ghostty-org/ghostty/issues/817
+keybind = cmd+physical:one=text:\x011
 keybind = cmd+physical:two=text:\x012
 keybind = cmd+physical:three=text:\x013
 keybind = cmd+physical:four=text:\x014
