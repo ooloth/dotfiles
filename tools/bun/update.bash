@@ -3,5 +3,5 @@ set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
-info "🍞 Updating btop"
+info "🍞 Updating bun"
 brew bundle --file="${DOTFILES}/tools/bun/Brewfile"

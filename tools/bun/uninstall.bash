@@ -3,5 +3,5 @@ set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
-info "🍞 Uninstalling btop"
+info "🍞 Uninstalling bun"
 brew uninstall --formula bun
