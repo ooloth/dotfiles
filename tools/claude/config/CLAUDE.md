@@ -77,6 +77,12 @@ Use Claude tools directly only for:
 - Implement changes one small theme at-a-time
 - Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
 
+## Pull Requests
+
+- **Always use the `writing-pr-descriptions` skill** when creating or updating PRs
+- The skill contains my voice guide, rules, and anti-patterns
+- Never draft PR descriptions without it - even for "simple" PRs
+
 ## CI System Information
 
 ### Recursion Pharma Organization
