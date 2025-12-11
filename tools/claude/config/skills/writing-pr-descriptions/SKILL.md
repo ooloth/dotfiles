@@ -26,7 +26,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ### Conciseness Rules
 - **What section**: 3-5 bullets MAX
-- **Why section**: 1-3 sentences. One clear user benefit.
+- **Why section**: 1-3 bullets. Focus on user benefit.
 - **Validation**: 10 steps MAX. Narrative "Expect to..." style.
 
 ### Structure Requirements
