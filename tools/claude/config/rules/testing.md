@@ -15,4 +15,4 @@
 
 ### Iterative example-based testing
 
-- When testing multiple cases with the same outcome (e.g. handles all "empty" input varieties is X way), prefer a single test case that iterates over multiple input-output scenarios over one test case per scenario
+- When testing multiple cases with the same outcome (e.g. X handles all forms of "empty" input in Y way), prefer one test case that iterates over all input-output scenarios rather than a separate test case for each input-output pair
