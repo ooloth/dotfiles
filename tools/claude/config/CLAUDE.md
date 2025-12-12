@@ -53,6 +53,21 @@ Use agents (`tools/claude/config/agents`) for complex exploration:
 - **Examples**: `atomic-committer`, `pr-creator`, ephemeral `Explore`/`Plan` agents
 - **Ensure**: Agents know exactly what to report back and what details to include
 
+#### Domain Ownership Principle
+
+**Specialized agents own their domains:**
+
+- If an agent exists for a service/domain (Notion, browser testing, etc.), **always delegate to it**
+- Even if you have direct access to the underlying tools (MCP servers, skills, etc.)
+- The specialized agent knows domain-specific patterns, best practices, and workflows
+- **Simple tasks still benefit from consistent delegation** - it's about domain ownership, not task complexity
+- Never bypass a domain agent just because the task seems straightforward
+
+**Decision tree:**
+1. What domain is this task? (Notion, browser testing, GitHub, etc.)
+2. Is there a specialized agent for it? → **Use that agent**
+3. (Never reach: Use tools directly)
+
 #### MCP Server Usage via Specialized Agents
 
 **Configuration Strategy:**
