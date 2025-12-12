@@ -25,7 +25,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 4. **Practical validation** - Teach reviewers like a tutorial
 
 ### Conciseness Rules
-- **What section**: 3-5 bullets MAX
+- **What section**: Include every significant change theme - no cap. Could be 2 bullets, could be 8. Whatever fits the PR.
 - **Why section**: 1-3 bullets. Focus on user benefit.
 - **Validation**: 10 steps MAX. Narrative "Expect to..." style.
 
