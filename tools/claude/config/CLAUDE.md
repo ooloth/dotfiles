@@ -53,6 +53,45 @@ Use agents (`tools/claude/config/agents`) for complex exploration:
 - **Examples**: `atomic-committer`, `pr-creator`, ephemeral `Explore`/`Plan` agents
 - **Ensure**: Agents know exactly what to report back and what details to include
 
+#### MCP Server Usage via Specialized Agents
+
+**Configuration Strategy:**
+
+- **Project scope** (`.mcp.json`): e.g. `next-devtools` only (frequently used servers only, auto-enabled)
+- **User scope** (`~/.claude.json`): `playwright`, `notion` (less frequently used servers, disabled by default)
+
+**Workflow for on-demand MCP servers:**
+
+When browser automation is needed:
+
+1. User runs: `/mcp enable playwright`
+2. Delegate to `playwright-agent` for the work
+3. Optionally disable: `/mcp disable playwright`
+
+When Notion operations are needed:
+
+1. User runs: `/mcp enable notion`
+2. Delegate to `notion-agent` for the work
+3. Optionally disable: `/mcp disable notion`
+
+**IMPORTANT**: Never use MCP servers directly in main conversation. Always delegate to specialized agents:
+
+- **Browser automation**: `playwright-agent`
+  - Testing pages, verifying rendering, capturing screenshots
+  - Inspecting console errors, monitoring network requests
+
+- **Next.js diagnostics**: `nextjs-agent`
+  - Checking dev server status, inspecting routes
+  - Diagnosing compilation/runtime errors
+  - Querying Next.js documentation
+
+- **Notion operations**: `notion-agent`
+  - Searching/fetching Notion content
+  - Creating/updating pages and databases
+  - Managing workspace structure
+
+These agents process MCP data in their own context and return concise summaries, keeping the main conversation lightweight.
+
 ### 3. Direct Tool Usage Last
 
 Use Claude tools directly only for:
