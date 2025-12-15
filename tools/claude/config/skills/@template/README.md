@@ -60,6 +60,7 @@ def create_page(notion, title: str) -> str:
 ```
 
 **Pattern:**
+
 1. External API returns data (untyped `dict`)
 2. Validate with Pydantic **immediately**
 3. Extract needed values (primitives or dataclasses)
@@ -491,13 +492,174 @@ def create_page(notion, title: str) -> str:
 
 **Pattern:** Raise at boundaries with details, handle gracefully at call sites, document behavior.
 
+## Authentication Patterns
+
+### macOS Keychain for API Tokens
+
+For skills that need API tokens, use this secure caching pattern with macOS Keychain:
+
+```python
+import os
+import subprocess
+import sys
+
+# Keychain configuration
+KEYCHAIN_SERVICE = "claude-your-service-api-token"
+KEYCHAIN_ACCOUNT = os.environ.get("USER", "default")
+
+def get_token_from_keychain() -> str | None:
+    """Retrieve token from macOS Keychain.
+
+    Returns None if not found. Keychain is OS-encrypted and unlocked at login.
+    """
+    result = subprocess.run(
+        ["security", "find-generic-password",
+         "-a", KEYCHAIN_ACCOUNT,
+         "-s", KEYCHAIN_SERVICE,
+         "-w"],  # -w outputs password only
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+
+    if result.returncode == 0:
+        return result.stdout.strip()
+    return None
+
+def store_token_in_keychain(token: str) -> None:
+    """Store token in macOS Keychain (OS-encrypted).
+
+    Raises:
+        RuntimeError: If keychain storage fails.
+    """
+    # Delete existing entry first (idempotent)
+    subprocess.run(
+        ["security", "delete-generic-password",
+         "-a", KEYCHAIN_ACCOUNT,
+         "-s", KEYCHAIN_SERVICE],
+        capture_output=True,
+        timeout=5,
+    )
+
+    # Add new entry
+    result = subprocess.run(
+        ["security", "add-generic-password",
+         "-a", KEYCHAIN_ACCOUNT,
+         "-s", KEYCHAIN_SERVICE,
+         "-w", token],  # -w reads password from argument
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+
+    if result.returncode != 0:
+        raise RuntimeError(f"Failed to store token in keychain: {result.stderr}")
+
+def get_token_from_1password() -> str:
+    """Fetch token from 1Password CLI.
+
+    Raises:
+        RuntimeError: If 1Password CLI fails.
+    """
+    result = subprocess.run(
+        ["op", "read", "op://Scripts/Your-Service/api-token"],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"Failed to retrieve token from 1Password: {result.stderr.strip()}"
+        )
+
+    return result.stdout.strip()
+
+def get_api_token() -> str:
+    """Get API token with three-tier fallback.
+
+    Priority:
+    1. Environment variable (if user sets it manually)
+    2. macOS Keychain (encrypted, persistent across sessions)
+    3. 1Password CLI (fetches and caches in keychain for next time)
+
+    Returns:
+        API token string.
+
+    Raises:
+        RuntimeError: If all methods fail.
+    """
+    # Priority 1: User-set environment variable
+    token = os.environ.get("YOUR_SERVICE_TOKEN")
+    if token:
+        return token
+
+    # Priority 2: macOS Keychain (instant, no prompts)
+    token = get_token_from_keychain()
+    if token:
+        return token
+
+    # Priority 3: 1Password CLI (one prompt, then cache)
+    try:
+        token = get_token_from_1password()
+
+        # Cache for next time
+        try:
+            store_token_in_keychain(token)
+        except Exception as e:
+            # Non-fatal: token still works, just won't be cached
+            print(
+                f"Warning: Could not cache token in keychain: {e}",
+                file=sys.stderr
+            )
+
+        return token
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to retrieve API token: {e}")
+```
+
+**Usage in your skill:**
+
+```python
+def main() -> None:
+    try:
+        token = get_api_token()
+        client = YourServiceClient(auth=token)
+        # ... use client
+    except RuntimeError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+```
+
+**User experience:**
+
+First invocation:
+
+1. Prompts for 1Password fingerprint (once)
+2. Stores token in macOS Keychain (OS-encrypted)
+3. Executes skill
+
+Subsequent invocations:
+
+1. Retrieves from keychain (instant, no prompts)
+2. Executes skill
+
+**Why this pattern:**
+
+✅ **Secure**: Tokens encrypted by macOS, never in plaintext files
+✅ **Persistent**: Survives session restarts, no repeated prompts
+✅ **Fast**: Keychain retrieval is instant after first use
+✅ **User-friendly**: One prompt per machine, then seamless
+✅ **Override-able**: Users can set env var to skip keychain entirely
+
 ## Skills vs Agents vs Commands
 
-| Approach | Use When | Example |
-|----------|----------|---------|
-| **Skill** | Heavy data processing, filtering, caching | `fetching-github-prs-to-review`, `analyzing-codebase` |
-| **Agent** | Complex exploration requiring multiple tool calls | `Explore`, `Plan`, `atomic-committer` |
-| **Command** | Simple prompts that need Claude's reasoning | `/plan`, `/fix-bug` |
+| Approach    | Use When                                          | Example                                               |
+| ----------- | ------------------------------------------------- | ----------------------------------------------------- |
+| **Skill**   | Heavy data processing, filtering, caching         | `fetching-github-prs-to-review`, `analyzing-codebase` |
+| **Agent**   | Complex exploration requiring multiple tool calls | `Explore`, `Plan`, `atomic-committer`                 |
+| **Command** | Simple prompts that need Claude's reasoning       | `/plan`, `/fix-bug`                                   |
 
 ## Naming Conventions
 
@@ -511,11 +673,13 @@ Follow these naming rules from [Claude Docs Best Practices](https://platform.cla
 - ❌ Bad: `helper`, `utils`, `github-tool`
 
 **Why gerund first:**
+
 - Smaller list of actions (~10-20) than domains (~20-50+)
 - Groups related actions together when alphabetically sorted
 - Natural English reading (verb phrase)
 
 **Examples by action:**
+
 ```
 analyzing-python-code
 analyzing-javascript-code
@@ -538,6 +702,7 @@ inspecting-kubernetes-pods
 - **When to invoke**: Make it obvious when Claude should use this skill
 
 **Example:**
+
 ```yaml
 description: Fetches GitHub pull requests waiting for review, filters by criteria, groups by category, and returns formatted markdown with CI status, review state, and priority ordering. Use when user wants to see their PR review queue.
 ```
@@ -553,6 +718,7 @@ cp -r ~/.claude/skills/@template ~/.claude/skills/your-skill-name
 ### 2. Customize SKILL.md
 
 Edit `SKILL.md` to define:
+
 - **name**: How Claude will reference this skill
 - **description**: When Claude should use this skill
 - **allowed-tools**: Usually just `[Bash]`
@@ -562,11 +728,13 @@ Update the sections to describe your specific skill.
 ### 3. Choose Your Language
 
 **For Python skills:**
+
 - Use PEP 723 inline script metadata for dependencies
 - Include type hints for reliability
 - See `example_skill.py` for the template
 
 **For TypeScript/Bun skills:**
+
 - Use inline version specifiers: `import { z } from "zod@^3.22.4"`
 - Leverage Zod for validation + types (single system)
 - See `scanning-git-for-tils` skill for real-world example
@@ -582,6 +750,7 @@ Update the sections to describe your specific skill.
 5. **format_markdown()** (lines 177-203): Format output for display
 
 **In TypeScript/Bun:**
+
 - Define Zod schemas for validation AND types
 - Use `Bun.spawn()` for process execution
 - Return JSON to stdout for Claude to parse
@@ -599,6 +768,7 @@ python3 ~/.claude/skills/your-skill-name/your_script.py  # Should use cache
 ### 6. Document Token Savings
 
 After implementation, measure and document:
+
 - Tokens before (if processed via Claude tools)
 - Tokens after (filtered summary)
 - Percentage reduction
@@ -703,6 +873,7 @@ dependencies:
 ```
 
 In code:
+
 ```python
 try:
     import requests
@@ -715,10 +886,12 @@ except ImportError:
 
 ```markdown
 # ❌ Don't hardcode dates or versions
+
 Last updated: January 2025
 Tested with Claude Sonnet 4.0
 
 # ✅ Use relative time or omit
+
 Updated regularly
 Compatible with current Claude models
 ```
@@ -727,9 +900,11 @@ Compatible with current Claude models
 
 ```markdown
 # ❌ Don't nest references too deep
+
 See references/detailed/workflows/advanced/patterns.md
 
 # ✅ Keep references one level from SKILL.md
+
 See references/workflow-patterns.md
 ```
 
@@ -742,6 +917,7 @@ Recommended workflow from [Claude Docs Best Practices](https://platform.claude.c
 ### 1. Complete Task Without Skill First
 
 Before creating a skill, manually complete the task using Claude tools. This helps you:
+
 - Understand the actual workflow
 - Identify token-heavy operations
 - Spot patterns worth automating
@@ -750,6 +926,7 @@ Before creating a skill, manually complete the task using Claude tools. This hel
 ### 2. Identify Reusable Patterns
 
 Ask yourself:
+
 - What parts are deterministic? (good for code)
 - What parts need Claude's reasoning? (keep in workflow)
 - What data can be filtered in code? (token savings)
@@ -758,11 +935,13 @@ Ask yourself:
 ### 3. Create Initial Skill
 
 Start with the template:
+
 ```bash
 cp -r ~/.claude/skills/@template ~/.claude/skills/action-domain
 ```
 
 Focus on:
+
 - Clear workflow in SKILL.md
 - Working script (even if simple)
 - Basic error handling
@@ -770,6 +949,7 @@ Focus on:
 ### 4. Test with Different Claude Models
 
 If available, test your skill with:
+
 - Haiku (fast, cheap - does it still work?)
 - Sonnet (balanced - main use case)
 - Opus (powerful - any edge cases?)
@@ -777,6 +957,7 @@ If available, test your skill with:
 ### 5. Gather Feedback
 
 Use the skill in real scenarios:
+
 - Does Claude invoke it appropriately?
 - Are instructions clear enough?
 - Does output format work well?
@@ -785,6 +966,7 @@ Use the skill in real scenarios:
 ### 6. Iterate Continuously
 
 Skills improve over time:
+
 - Add caching when performance matters
 - Refine error messages based on actual errors
 - Add features based on real usage
@@ -795,6 +977,7 @@ Skills improve over time:
 ## Real-World Example
 
 See `~/.claude/skills/fetching-github-prs-to-review/` for a production skill that:
+
 - Fetches PRs from GitHub GraphQL API (~10KB response)
 - Filters, groups, and formats in Python
 - Returns ~2KB markdown summary

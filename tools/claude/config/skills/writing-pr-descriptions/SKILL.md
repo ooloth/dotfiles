@@ -19,28 +19,33 @@ allowed-tools: [Bash, Read, Glob, Grep]
 ## Voice Guide
 
 ### Spirit
+
 1. **Respect reviewer time** - Get to the point, then stop
 2. **User-centric framing** - What problem does this solve for users?
 3. **Show, don't tell** - Screen recordings > paragraphs of text
 4. **Practical validation** - Teach reviewers like a tutorial
 
 ### Conciseness Rules
-- **What section**: 3-5 bullets MAX
-- **Why section**: 1-3 sentences. One clear user benefit.
+
+- **What section**: Include every significant change theme - no cap. Could be 2 bullets, could be 8. Whatever fits the PR.
+- **Why section**: 1-3 bullets (not a paragraph). Focus on user benefit.
 - **Validation**: 10 steps MAX. Narrative "Expect to..." style.
 
 ### Structure Requirements
+
 - Start with `> [!NOTE]` callout if PR depends on another PR
 - Include 🍿 screen recording for ANY UI changes
 - Mention deployment timing if backend/frontend coordination needed
 - Link actual Jira/Slack (ask user if not provided)
 
 ### Language Rules
+
 - Concrete examples over jargon: "item with `_` separator" not "multi-entity composite perturbation"
 - Frame "Why" around USER benefit, not technical constraints
 - Validation reads like a tutorial: "Expect to see X"
 
 ### What NOT to Do
+
 ❌ Checkbox-heavy validation sections
 ❌ Technical jargon when plain language works
 ❌ Listing every file changed
@@ -49,6 +54,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 ❌ Placeholder links - ask for real URLs
 
 ### Scope Discipline
+
 - Focus on the FEATURE users will see
 - Omit implementation wiring (threading params, type updates)
 - If it's not visible to users or reviewers, skip it
@@ -105,6 +111,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 ```
 
 ### Why This Works
+
 ✅ Dependency callout at top
 ✅ Screen recording before text
 ✅ Deployment timing mentioned
