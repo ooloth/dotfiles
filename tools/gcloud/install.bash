@@ -17,6 +17,15 @@ info "📦 Installing required gcloud components"
 gcloud components install gke-gcloud-auth-plugin
 gcloud container clusters get-credentials prod-cluster --region us-central1 --project prod-cluster-cc74bd08
 
+# This will:
+# 1. Add credentials to your Docker config (~/.docker/config.json)
+# 2. Allow Docker to authenticate when pulling images from us-central1-docker.pkg.dev
+info "🐳 Configuring Docker to authenticate with gcloud"
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+# gcloud container clusters get-credentials work-cluster --region us-central1 --project work-cluster-85851b24
+# gcloud container clusters get-credentials prod-cluster --region us-central1 --project prod-cluster-cc74bd08
+
 debug "🔁 Restarting shell to load gcloud into PATH"
 exec -l "${SHELL}"
 
