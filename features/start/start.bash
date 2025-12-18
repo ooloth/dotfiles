@@ -74,5 +74,13 @@ if is_work; then
     ;;
   esac
 else
-  error "${error_msg}"
+  case "${current_dir}" in
+  mu-next-16)
+    npm run dev
+    ;;
+
+  *)
+    error "${error_msg}"
+    ;;
+  esac
 fi
