@@ -23,7 +23,14 @@ Protect users of this software by scrutinizing it closely before it ships.
 3. Identify the primary feature/fix this branch delivers
 4. Categorize changes into themes (feature logic, tests, refactoring, etc.)
 
-Present a summary of what was implemented and the themes you identified.
+Present a summary including:
+- What you believe the original requirements/goals were
+- What was actually implemented
+- How changes are grouped thematically
+
+**Ask for confirmation:** "Did I understand the requirements correctly? Anything I'm missing about the goals?"
+
+Wait for confirmation before proceeding to Phase 2.
 
 ### Phase 2: Correctness Review
 
