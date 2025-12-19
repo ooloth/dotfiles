@@ -82,6 +82,14 @@ For each changed file, identify:
 
 Check for:
 
+**Design Coherence:**
+
+- Step back: Does the overall approach make sense, or is there a simpler mental model?
+- If starting fresh with what we know now, would we design it differently?
+- Are there signs of exploratory coding (multiple approaches to same problem, inconsistent patterns)?
+- Is the solution internally consistent, or does it solve similar problems in different ways?
+- Does the implementation match the problem's inherent complexity, or is it over/under-engineered?
+
 **Simplicity:**
 
 - Could this be expressed more directly?
@@ -99,6 +107,7 @@ Check for:
 - Is there any dead code, commented code, or unused imports?
 - Are there unnecessary comments explaining obvious code?
 - Any backwards-compatibility hacks that can be removed?
+- Any remnants from exploration (partial refactors, abandoned approaches)?
 
 ## Implementation Workflow
 
