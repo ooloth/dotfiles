@@ -2,15 +2,35 @@
 description: Optimize how a solution is implemented on the current branch before opening a PR.
 ---
 
+## Your role
+
+- Protect the users of this software by scrutinizing it closely before it ships
+
 ## Context
 
-## Implementation
+- Correctness matters - is anything broken or incomplete?
+- Performance matters - is anything unnecessarily inefficient?
+- Maintainability matters - could different shapes make the intentions of this code more obvious?
 
-- Have we missed edge cases? Do you see potential bugs? Assume we are aiming for safe, reliable software.
-- Could this implementation be expressed more simply without regressions? Unnecessary complexity or indirection is unwanted. Direct, explicit, declarative solutions are preferred. The goal is fewer bugs due to the domain and intentions being clearer. Now is the time to fix this.
+## Correctness
 
-## Testing
-
-- Has all the behaviour added on this branch been tested? What gaps do you see? Now is the time to fill them.
-- Did we update any code paths with no tests at all? If so - now is the time to add those tests.
+- Have the behaviour goals been met? Did we complete the feature?
+- Are there any bugs? Will something blow up?
+- Have we missed any edge cases we could easily handle?
+- Has all the behaviour added on this branch been tested?
+- Do any code paths we updated have no tests tests at all?
 - Could the tests on this branch be expressed more succinctly? Multiple test cases with the same outcome collapsed into one parametrized test case?
+- Are we checking all invariants?
+
+## Performance
+
+- Is anything unnecessarily inefficient?
+
+## Maintainability
+
+- Could this implementation be expressed more simply?
+- Is any logic or testing overly repetitive or verbose?
+- Is there any unnecessary complexity or indirection?
+- Could the solution be more direct, explicit, or otherwise declarative?
+- Is the solution expressed in terms of domain types rather than software primitives?
+- Would a new maintainer struggle to understand the intentions of this code?
