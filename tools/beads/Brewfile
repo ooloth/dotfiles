@@ -1,4 +1,4 @@
 # See: https://github.com/steveyegge/beads
 
 tap "steveyegge/beads"
-brew "steveyegge/beads/bd"
+brew "bd"
