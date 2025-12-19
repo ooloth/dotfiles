@@ -4,33 +4,109 @@ description: Optimize how a solution is implemented on the current branch before
 
 ## Your role
 
-- Protect the users of this software by scrutinizing it closely before it ships
+Protect users of this software by scrutinizing it closely before it ships.
 
 ## Context
 
 - Correctness matters - is anything broken or incomplete?
 - Performance matters - is anything unnecessarily inefficient?
-- Maintainability matters - could different shapes make the intentions of this code more obvious?
+- Maintainability matters - could different shapes make intentions more obvious?
 
-## Correctness
+## Process
 
-- Have the behaviour goals been met? Did we complete the feature?
-- Are there any bugs? Will something blow up?
-- Have we missed any edge cases we could easily handle?
-- Has all the behaviour added on this branch been tested?
-- Do any code paths we updated have no tests tests at all?
-- Could the tests on this branch be expressed more succinctly? Multiple test cases with the same outcome collapsed into one parametrized test case?
-- Are we checking all invariants?
+Work through these phases in order. After each phase, present findings and wait for approval before making changes.
 
-## Performance
+### Phase 1: Survey
 
-- Is anything unnecessarily inefficient?
+1. List all files changed on this branch (vs main/master)
+2. Read each changed file to understand the implementation
+3. Identify the primary feature/fix this branch delivers
+4. Categorize changes into themes (feature logic, tests, refactoring, etc.)
 
-## Maintainability
+Present a summary of what was implemented and the themes you identified.
 
-- Could this implementation be expressed more simply?
-- Is any logic or testing overly repetitive or verbose?
-- Is there any unnecessary complexity or indirection?
-- Could the solution be more direct, explicit, or otherwise declarative?
-- Is the solution expressed in terms of domain types rather than software primitives?
-- Would a new maintainer struggle to understand the intentions of this code?
+### Phase 2: Correctness Review
+
+Check each theme for:
+
+**Completeness:**
+
+- Are the stated goals met? Is the feature complete?
+- Are there obvious edge cases we should handle?
+
+**Bugs:**
+
+- Are there any logic errors or potential crashes?
+- Will error cases be handled gracefully?
+
+**Testing:**
+
+- Is all new behavior tested?
+- Are there code paths with zero test coverage?
+- Can test cases be consolidated (e.g., parametrized tests)?
+- Are invariants checked in tests?
+
+**Report format:**
+
+```
+## Correctness Issues
+
+### High Priority
+- [Issue description] in `file:line`
+
+### Medium Priority
+- [Issue description] in `file:line`
+
+### Suggestions
+- [Nice-to-have improvement] in `file:line`
+```
+
+### Phase 3: Performance Review
+
+For each changed file, identify:
+
+- Unnecessary inefficiencies (N+1 queries, missing memoization, etc.)
+- Algorithmic improvements (O(n²) → O(n))
+- Resource waste (unclosed connections, memory leaks)
+
+**Only report actual problems**, not theoretical optimizations.
+
+### Phase 4: Maintainability Review
+
+Check for:
+
+**Simplicity:**
+
+- Could this be expressed more directly?
+- Is there unnecessary complexity, abstraction, or indirection?
+- Is the solution as declarative as possible?
+
+**Clarity:**
+
+- Would a new maintainer struggle to understand intent?
+- Are domain types used instead of primitives?
+- Is logic overly repetitive or verbose?
+
+**Noise:**
+
+- Is there any dead code, commented code, or unused imports?
+- Are there unnecessary comments explaining obvious code?
+- Any backwards-compatibility hacks that can be removed?
+
+## Implementation Workflow
+
+After reviews, for each issue to fix:
+
+1. **Group by theme** - Organize fixes into logical batches
+2. **Work incrementally** - Implement one theme at a time
+3. **Pause for commits** - After each theme (behavior + tests + docs), stop and let me commit
+4. **No over-engineering** - Only fix actual problems, don't add "nice-to-haves" unless asked
+
+## What NOT to do
+
+- Don't add features beyond the branch scope
+- Don't refactor code you're not changing
+- Don't add docstrings/comments to untouched code
+- Don't add error handling for impossible scenarios
+- Don't create abstractions for one-time use
+- Don't design for hypothetical future requirements
