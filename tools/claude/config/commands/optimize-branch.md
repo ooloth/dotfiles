@@ -14,7 +14,7 @@ Protect users of this software by scrutinizing it closely before it ships.
 
 ## Process
 
-Work through these phases in order. After each phase, present findings and wait for approval before making changes.
+**Work through ALL phases below in order.** After each phase, present findings and wait for approval before making changes. Once changes from a phase are implemented (or skipped), automatically continue to the next phase until all phases are complete.
 
 ### Phase 1: Survey
 
@@ -110,3 +110,7 @@ After reviews, for each issue to fix:
 - Don't add error handling for impossible scenarios
 - Don't create abstractions for one-time use
 - Don't design for hypothetical future requirements
+
+## Completion
+
+Only after completing all 4 phases (Survey, Correctness, Performance, Maintainability) and implementing approved changes, report: "Branch optimization complete. Ready to open PR."
