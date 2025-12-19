@@ -1,10 +1,52 @@
-## Remembering
+## Memory
 
-- Plan in these phases: clarify -> explore -> plan -> document plan in a `.claude/specs/<task>.md`
-- The plan phase should produce a `<task>.md` for me to review and help improve
-- Keep the `<task>.md` up-to-date as things change and ensure remove any out-of-date information is removed promptly
-- Assume you will need to hand off this plan to a DIFFERENT agent for implementation
-- Optimize for the future agent's understanding by including all essential details and omitting everything else
+- Plan in these phases: clarify -> explore -> plan -> document
+- Use `beads` for tracking epics and child tasks
+- The plan phase should produce a `beads` task or epic
+
+This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+
+### Quick Reference
+
+```bash
+bd ready              # Find available work
+bd show <id>          # View issue details
+bd update <id> --status in_progress  # Claim work
+bd close <id>         # Complete work
+bd sync               # Sync with git
+```
+
+## Landing the Plane (Session Completion)
+
+**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+
+**MANDATORY WORKFLOW:**
+
+1. **File issues for remaining work** - Create issues for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **PUSH TO REMOTE** - This is MANDATORY:
+   ```bash
+   git pull
+   bd sync
+   git push
+   git status  # MUST show "up to date with origin"
+   ```
+5. **Clean up** - Clear stashes, prune remote branches
+6. **Verify** - All changes committed AND pushed
+7. **Hand off** - Provide context for next session
+
+**CRITICAL RULES:**
+
+- Work is NOT complete until `git push` succeeds
+- NEVER stop before pushing - that leaves work stranded locally
+- NEVER say "ready to push when you are" - YOU must push
+- If push fails, resolve and retry until it succeeds
+
+## Pause to let me review each step
+
+- Implement changes one small theme at-a-time
+- Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
 
 ## Managing your context window
 
@@ -64,6 +106,7 @@ Use agents (`tools/claude/config/agents`) for complex exploration:
 - Never bypass a domain agent just because the task seems straightforward
 
 **Decision tree:**
+
 1. What domain is this task? (Notion, browser testing, GitHub, etc.)
 2. Is there a specialized agent for it? → **Use that agent**
 3. (Never reach: Use tools directly)
@@ -125,11 +168,6 @@ Use Claude tools directly only for:
 - When asked a question, think hard and respond
 - If the answer involved explaining a non-trivial concept with code examples, or an elegant solution to common problem, or an otherwise appealing tip/trick, ask: "This could make a good TIL - want me to draft it?"
 - Then prompt for which action(s) to take next
-
-## Pause to let me commit
-
-- Implement changes one small theme at-a-time
-- Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
 
 ## Pull Requests
 
