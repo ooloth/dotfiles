@@ -28,6 +28,8 @@ Before diving into implementation details, understand the purpose:
 4. Is this the simplest way to achieve that outcome?
 5. Could we solve the underlying need differently?
 
+**For bug fixes or small changes (<5 files, <100 lines), this can be brief.**
+
 **Present to user:**
 - The problem you understand this to solve
 - The outcome it's trying to achieve
@@ -35,7 +37,7 @@ Before diving into implementation details, understand the purpose:
 
 **Ask for confirmation:** "Did I understand the problem and desired outcome correctly?"
 
-Wait for confirmation before proceeding to Phase 1.
+Wait for user response before proceeding to Phase 1.
 
 ---
 
@@ -44,35 +46,46 @@ Wait for confirmation before proceeding to Phase 1.
 **Evidence gathering:**
 
 1. List all files changed on this branch (vs main/master)
-2. Read each changed file to understand the implementation
-3. Read similar/related unchanged files to understand existing codebase patterns:
+2. **For large branches (>20 files):** Focus on highest-impact files, don't try to review everything
+3. Read each changed file to understand the implementation
+4. Read **2-3 similar/related unchanged files** to understand existing codebase patterns:
    - How are similar problems solved elsewhere?
    - What patterns exist for error handling, testing, naming, architecture?
    - Are there utilities or abstractions already available?
-4. Identify what was implemented and how
-5. Categorize changes into themes (feature logic, tests, refactoring, etc.)
-6. **Form initial hypothesis:** Are there fundamental design issues that would require major rework?
+5. Identify what was implemented and how
+6. Categorize changes into themes (feature logic, tests, refactoring, etc.)
+7. **Form initial hypothesis:** Are there fundamental design issues that would require major rework?
 
 **Present to user:**
 - What you believe the original requirements/goals were
 - What was actually implemented
 - How changes are grouped thematically
-- What existing codebase patterns are relevant
+- What existing codebase patterns are relevant (from the 2-3 similar files you read)
 - **Initial hypothesis:** Any fundamental design issues? (e.g., "This reimplements functionality that exists in X", "This could be 3 lines using existing utility Y", "This approach conflicts with pattern Z used elsewhere")
+
+**Redesign scope boundary:** If a redesign would require touching >100 lines or >5 files, note it as design debt but don't block this PR. Focus on incremental improvements.
 
 **Checkpoint:** "Is there a fundamental design issue we should address before diving into detailed review? Or should I proceed with deep analysis?"
 
-If fundamental redesign needed, discuss approach. Otherwise, continue to Phases 2-4.
+Wait for user response. If fundamental redesign needed, discuss approach. Otherwise, continue to Phases 2-4.
 
 ---
 
 ### Phases 2-4: Deep Review (Evidence Collection)
 
-**IMPORTANT:** Do NOT present findings after each phase. Collect all evidence silently and look for patterns. You will synthesize and prioritize everything in Phase 5.
+**IMPORTANT:**
+- Do NOT present findings after each phase
+- Use your internal thinking to track findings as you go
+- After completing each phase, output brief status: "✓ Completed [phase name] review"
+- You will synthesize and prioritize everything in Phase 5
+
+**All phases are required unless user explicitly says to skip one.**
 
 ---
 
 #### Phase 2: Correctness Review
+
+**Output:** "✓ Completed correctness review"
 
 Check each theme for:
 
@@ -120,9 +133,18 @@ Check each theme for:
 - Are error messages actionable?
 - Is this "teachable" - can others learn good patterns from this code?
 
+**Documentation:**
+- Do user-facing changes need README/docs updates?
+- Are breaking changes documented with migration notes?
+- Are new configuration options or environment variables documented?
+- Are new dependencies documented (why needed, how to install)?
+- Does changed behavior need updating in help text, comments, or guides?
+
 ---
 
 #### Phase 3: Performance Review
+
+**Output:** "✓ Completed performance review"
 
 For each changed file, identify:
 
@@ -135,6 +157,8 @@ For each changed file, identify:
 ---
 
 #### Phase 4: Maintainability Review
+
+**Output:** "✓ Completed maintainability review"
 
 Check for:
 
@@ -150,6 +174,7 @@ Check for:
 - Explain why it's simpler (fewer concepts, less indirection, clearer intent)
 - Show what changes would be needed
 - **Don't let current implementation size prevent proposing a better approach** - the biggest wins are often catching overcomplicated solutions before they ship
+- **Redesign scope boundary:** If it would touch >100 lines or >5 files, note as design debt but don't block this PR
 
 **Simplicity:**
 - Could this be expressed more directly?
@@ -183,13 +208,13 @@ Check for:
 Now connect the dots and present the complete picture:
 
 **1. Root Cause Analysis**
-Look across all findings:
-- Are there patterns? (e.g., "All 5 bugs stem from not validating inputs")
-- Is there a fundamental design issue causing multiple problems?
-- Would a redesign eliminate many smaller issues?
+Look across all findings - **only if there IS a pattern:**
+- Are multiple issues caused by the same fundamental problem?
+- Would fixing one thing eliminate many smaller issues?
+- Is there a design issue that explains several bugs?
 
-**2. Top 3 Highest-Impact Improvements**
-Identify the changes that would make the biggest difference:
+**2. Top Improvements**
+Identify the **3-5 highest-impact** changes:
 - What would fix the most issues?
 - What would prevent future problems?
 - What would most improve maintainability?
@@ -199,51 +224,63 @@ Organize everything else (if worth mentioning):
 - Group related issues together
 - De-duplicate similar findings
 - **Filter out noise** - don't report trivial issues if they distract from what matters
+- **Hard cap:** Report max 15 findings total outside top improvements
 
 **4. Calibrate Confidence**
 For each finding, indicate certainty:
 - "This is definitely broken" vs "This might be an issue" vs "Consider this alternative"
+
+**5. Escape Hatch**
+If you genuinely find zero significant issues, say so: "No significant issues found. Code looks good to ship."
 
 **Present to user in this format:**
 
 ```
 ## Optimization Review
 
-### Root Cause
-[If applicable: What fundamental issue explains multiple findings?]
-[If applicable: Would a different design approach eliminate many of these issues?]
+### TLDR
+Found [X] issues: [Y] critical, [Z] quality improvements
+Recommend addressing: [A], [B], [C]
 
-### Top 3 Highest-Impact Improvements
+### Root Cause (only if applicable)
+[What fundamental issue explains multiple findings, if any]
+[Would a different design approach eliminate many of these issues?]
+
+### Top Improvements (3-5 highest impact)
 
 1. **[Improvement name]**
    - Issue: [what's wrong]
    - Impact: [why this matters]
    - Suggested fix: [specific approach]
-   - Confidence: [High/Medium/Low]
+   - Confidence: High/Medium/Low
    - Affects: [which files/areas]
 
 2. **[Improvement name]**
-   - [same format]
+   - Issue: [what's wrong]
+   - Impact: [why this matters]
+   - Suggested fix: [specific approach]
+   - Confidence: High/Medium/Low
+   - Affects: [which files/areas]
 
 3. **[Improvement name]**
    - [same format]
 
-### Other Findings by Theme
+### Other Findings by Theme (max 15 total)
 
 #### [Theme name] (e.g., "Testing Gaps", "Security", "Code Quality")
-- [Issue] in `file:line` - [Suggested fix] - [Why] - Confidence: [High/Medium/Low]
-- [Issue] in `file:line` - [Suggested fix] - [Why] - Confidence: [High/Medium/Low]
+- [Issue] in `file:line` - [Suggested fix] - [Why] - Confidence: High/Medium/Low
+- [Issue] in `file:line` - [Suggested fix] - [Why] - Confidence: High/Medium/Low
 
 #### [Theme name]
 - [Issues...]
 
-### What to Ignore
-[Low-value findings that aren't worth addressing]
+### What to Ignore (optional - only if user might wonder about it)
+[Low-value findings that aren't worth addressing - only mention if you expect the user might ask about them]
 ```
 
-**Ask user:** "Which of these should we address? All Top 3? Some subset?"
+**Ask user:** "Which of these should we address? All top improvements? Some subset? Or is this good to ship as-is?"
 
-Wait for approval before proceeding to implementation.
+Wait for user response before proceeding to implementation.
 
 ---
 
@@ -255,6 +292,7 @@ After user selects which improvements to make:
 2. **Work incrementally** - Implement one theme at a time
 3. **Pause for commits** - After each theme (behavior + tests + docs), stop and let me commit
 4. **No over-engineering** - Only fix approved items, don't add "nice-to-haves" unless asked
+5. **Documentation scope** - If docs are extensive (>50 lines), propose changes instead of implementing
 
 ---
 
@@ -267,20 +305,8 @@ After user selects which improvements to make:
 - Don't create abstractions for one-time use
 - Don't design for hypothetical future requirements
 - Don't report minor issues if they distract from major ones
-
----
-
-## Documentation Check
-
-Before marking complete, verify:
-
-- Do user-facing changes need README/docs updates?
-- Are breaking changes documented with migration notes?
-- Are new configuration options or environment variables documented?
-- Are new dependencies documented (why needed, how to install)?
-- Does changed behavior need updating in help text, comments, or guides?
-
-If documentation updates are needed, implement them before completion.
+- Don't force root cause narratives when issues are genuinely unrelated
+- Don't list ignorable items unless user would wonder about them
 
 ---
 
