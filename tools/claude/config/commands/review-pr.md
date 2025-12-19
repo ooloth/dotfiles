@@ -1,382 +1,481 @@
 ---
-description: Review a pull request and provide constructive feedback as actionable PR comments.
+description: Review a pull request with AI-assisted feedback and inline commenting.
 ---
 
 ## Your role
 
 Provide thoughtful, constructive PR review that helps the author improve their code. Focus on teaching and suggesting, not dictating. Respect the author's ownership while ensuring quality.
 
-## Context
+## Usage
 
-- **You are reviewing someone else's work** - be respectful and constructive
-- **You cannot make changes** - only provide feedback as PR comments
-- **Be selective** - focus on what matters most (3-5 substantive comments)
-- **Teach, don't just correct** - explain reasoning so author learns
-- **Praise good patterns** - call out what's well done
+Provide a PR number (if in a repo directory) or full GitHub URL:
+
+- `/review-pr 123` (when in repo directory)
+- `/review-pr https://github.com/org/repo/pull/123` (from anywhere)
 
 ## Process
 
-Work through all phases, then synthesize into focused PR comments.
+Fast, focused review of a single PR with no session overhead.
 
 ---
 
-### Phase 1: Understand the PR
+### Phase 1: Fetch PR Data
 
-**Read the PR description and understand:**
+Extract org/repo/number from input and fetch:
 
-1. What problem does this PR solve?
-2. Who is affected by this change?
-3. What is the intended outcome?
-4. Are there any related issues or context?
+```bash
+gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments,statusCheckRollup,author
+```
 
-**Present to user:**
-- Summary of what you understand this PR to accomplish
-- Any questions about the scope or intent
+```bash
+gh pr diff <number> --repo <org>/<repo>
+```
 
-**Ask:** "Did I understand this PR correctly?"
+**For recursionpharma repos:** Check `statusCheckRollup` for failures. If CI is failing, note it for Phase 3.
 
-Wait for user response before proceeding.
-
----
-
-### Phase 2: Survey the Changes
-
-**Evidence gathering:**
-
-1. List all files changed in this PR
-2. **For large PRs (>20 files):** Focus on highest-impact changes
-3. Read each changed file to understand the implementation
-4. Read **2-3 similar/related unchanged files** to understand existing codebase patterns
-5. Identify what was implemented and how
-6. Note patterns (both good and problematic)
-
-**Present to user:**
-- What was implemented
-- How changes are grouped thematically
-- Initial impressions (any obvious concerns or particularly good patterns)
-- What existing codebase patterns are relevant
-
-**Output:** "✓ Completed survey"
+**Output:** "✓ Fetched PR data"
 
 ---
 
-### Phase 3: Deep Review (Evidence Collection)
+### Phase 2: Understand Context
 
-**IMPORTANT:**
-- Track findings internally using your thinking
-- After each section, output: "✓ Completed [section] review"
-- Don't present findings yet - you'll synthesize in Phase 4
+**Parse the PR data to understand:**
 
-**Output status after each section.**
+1. What problem does this PR solve? (from title/body)
+2. Who is the author? (affects tone - see Edge Cases)
+3. What files are changed?
+4. **What have others already said?** (critical - avoid duplication)
 
----
+**Process existing review context:**
 
-#### Correctness
+Parse reviews and comments from the JSON:
+- Extract all review comments (inline and general)
+- Extract all conversation comments
+- Group by file and line number
+- Identify discussion themes
+- Note who said what and when
 
-**Completeness:**
-- Are the stated goals met?
-- Are there obvious edge cases not handled?
-
-**Consistency:**
-- Does this follow existing codebase patterns?
-- Are existing utilities used, or does this reinvent the wheel?
-- Does error handling match project conventions?
-- Do naming, structure, and style match surrounding code?
-
-**Bugs & Error Handling:**
-- Are there any logic errors or potential crashes?
-- Are errors handled appropriately?
-- Do error messages provide helpful context?
-- Are all failure modes accounted for?
-
-**Security:**
-- Is user input validated at boundaries?
-- Are there injection risks?
-- Are credentials/secrets handled properly?
-- Are permissions appropriate?
-
-**Only flag actual security violations, not theoretical concerns.**
-
-**Compatibility:**
-- Will this break existing behavior?
-- Are there migration considerations?
-- Are new dependencies justified?
-
-**Testing:**
-- Is new behavior tested?
-- Are there untested code paths?
-- Are edge cases and error cases tested?
-- Could tests be improved?
-
-**Documentation:**
-- Are user-facing changes documented?
-- Are breaking changes noted?
-- Are new configurations documented?
-
-**Output:** "✓ Completed correctness review"
+**Output:** "✓ Analyzed PR context"
 
 ---
 
-#### Performance
+### Phase 3: Deep Review
 
-Identify:
-- Unnecessary inefficiencies (N+1 queries, missing memoization, etc.)
-- Algorithmic improvements (O(n²) → O(n))
-- Resource waste (unclosed connections, memory leaks)
+Review the code changes across all dimensions:
 
-**Only flag actual problems, not theoretical optimizations.**
+**Correctness:**
+- Completeness, edge cases
+- Consistency with existing patterns
+- Bugs, error handling
+- Security (actual violations only)
+- Compatibility, breaking changes
+- Testing coverage
 
-**Output:** "✓ Completed performance review"
+**Performance:**
+- Actual inefficiencies only (not theoretical)
 
----
+**Maintainability:**
+- Design coherence, simplicity
+- Clarity, cleanliness
+- Future lens, developer experience
 
-#### Maintainability
-
-**Design:**
-- Does the overall approach make sense?
-- Is there a simpler way to achieve the same outcome?
-- Are there signs of exploratory coding?
-- Does complexity match the problem?
-
-**Simplicity:**
-- Could this be more direct?
-- Is there unnecessary abstraction?
-
-**Clarity:**
-- Would a new maintainer understand the intent?
-- Is logic repetitive or verbose?
-
-**Cleanliness:**
-- Any dead code, commented code, or unused imports?
-- Any unnecessary comments?
-
-**Future considerations:**
-- How easy will this be to change?
-- What's the blast radius?
-
-**Developer Experience:**
-- Will using this be intuitive or frustrating?
-- Does this improve or degrade the codebase?
-
-**Output:** "✓ Completed maintainability review"
-
----
-
-#### What's Good
-
-Identify patterns worth praising:
+**What's Good:**
 - Clever solutions
-- Good abstraction choices
+- Good abstractions
 - Thorough testing
 - Clear naming
-- Helpful documentation
 - Thoughtful error handling
 
-**Output:** "✓ Identified positive patterns"
+**For recursionpharma PRs with failing CI:**
+
+Use the `inspecting-codefresh-failures` skill to investigate:
+
+```bash
+python3 ~/.claude/skills/inspecting-codefresh-failures/inspect.py <build-id>
+```
+
+Extract build IDs from `statusCheckRollup` data. Include failure analysis in review.
+
+**Output:** "✓ Completed review analysis"
 
 ---
 
-### Phase 4: Synthesize into PR Comments
+### Phase 4: Present Review
 
-**1. Prioritize**
-Across all findings, identify the **3-5 most important** to comment on:
-- What would prevent bugs or security issues?
-- What would most improve maintainability?
-- What represents a learning opportunity for the author?
+**Format:**
 
-**2. Categorize by severity:**
-- 🚫 **Blocking:** Must fix before merge (bugs, security, breaks existing behavior)
-- 💡 **Should fix:** Important quality issues (missing tests, unclear code, minor bugs)
-- 🤔 **Question:** Clarify intent or suggest alternative approach
-- ✨ **Nit/Optional:** Polish, style, minor improvements
-- 👍 **Praise:** Call out good patterns
+```markdown
+## PR Review: [org/repo#number] "[title]"
 
-**3. Write comments:**
-For each issue, write a comment that:
-- States what you observed
-- Explains the impact or concern
-- Suggests an approach (as question when possible)
-- Provides reasoning so author learns
-- Links to relevant docs/examples if helpful
+### 📝 Existing Review Context
 
-**4. Tone guidelines:**
-- Use questions over statements: "Could we..." vs "You should..."
-- Explain why: "This might cause X because Y"
-- Be specific: Point to exact lines, provide examples
-- Be respectful: Assume good intent, avoid "just" or "obviously"
-- Teach: Share context about patterns, tradeoffs, or best practices
+[If there are existing reviews/comments, show them:]
 
-**5. Escape hatch:**
-If you find zero significant issues, still provide meaningful feedback:
-- Acknowledge what's well done
-- Ask clarifying questions if any
-- Suggest optional improvements if relevant
-- Or simply: "LGTM - this looks solid"
+@alice reviewed 2 days ago (CHANGES_REQUESTED):
+- auth.py:45-52: "Should log errors instead of swallowing"
+- db.py:103: "Use parameterized queries"
 
-**Present to user in this format:**
+@bob commented 1 day ago:
+- General: "Looks good overall, just those two issues to address"
 
-```
-## PR Review: [PR Title/Number]
+💬 Active discussions (2):
+- auth.py:45-52: Error handling approach (2 comments)
+- db.py:103: SQL injection fix (1 comment)
+
+[If no existing reviews: "No prior reviews"]
+
+---
 
 ### Summary
-[1-2 sentence summary of what this PR does]
 
-### Recommendation
-**[Approve / Request Changes / Comment]**
-
-Rationale: [Why this recommendation - what needs to be addressed or why it's good to merge]
+[1-2 sentence description of what this PR does]
 
 ---
 
-### Comments
+### 👍 What's Good
+
+- [Good pattern] in `file.ext:123-145` - [Why this is good]
+- [Another strength] in `file.ext:67`
+
+---
+
+### Issues Found
 
 #### 🚫 Blocking (must fix before merge)
 
-**`filename.ext:123`**
-```suggestion
-[Exact location and suggested code if applicable]
+**`auth.py:78-82`** [NEW - not mentioned in existing reviews]
+
+```python
+# auth.py:78-82
+new_token = generate_refresh_token(user)
+# ⚠️ No check if old token has expired
 ```
 
-**Issue:** [What's wrong]
+**Issue:** Missing token expiry validation
 
-**Impact:** [Why this matters - potential bug, security risk, etc.]
+**Impact:** Security risk - users could refresh already-expired tokens
 
-**Suggestion:** [Specific approach to fix]
+**Suggestion:** Add expiry check before generating new token
 
-**Why:** [Reasoning - teach, don't just correct]
+**Why:** Prevents potential security vulnerability where expired tokens remain valid through refresh mechanism
 
 ---
 
-#### 💡 Should fix (important quality issues)
+#### 💡 Should Fix (important quality issues)
 
-**`filename.ext:45`**
+**`api.py:134-156`**
 
-**Observation:** [What you noticed]
+```python
+# api.py:134-156
+def process_batch(items):
+    for item in items:
+        result = db.query(f"SELECT * FROM users WHERE id = {item.user_id}")
+# ⚠️ SQL injection risk
+```
 
-**Concern:** [Why this could be problematic]
+**Issue:** SQL injection vulnerability
 
-**Suggestion:** Could we [alternative approach]? This would [benefit] because [reasoning].
+**Suggestion:** Could we use parameterized queries here? This would prevent SQL injection attacks.
+
+**Why:** String interpolation in SQL queries allows malicious user input to execute arbitrary SQL
 
 ---
 
 #### 🤔 Questions (clarify or suggest alternatives)
 
-**`filename.ext:78`**
+**`utils.py:45-52`**
 
-**Question:** I'm curious about [specific choice]. Have you considered [alternative]?
+**Question:** I'm curious about the caching strategy here. Have you considered using Redis instead of in-memory cache?
 
-**Context:** [Why you're asking - tradeoffs, patterns, etc.]
+**Context:** In-memory cache won't work across multiple server instances. If we're planning to scale horizontally, this could be an issue.
 
 ---
 
 #### ✨ Nit/Optional (polish)
 
-**`filename.ext:234`**
+**`models.py:89`**
 
-**Optional:** [Minor improvement suggestion]
+**Optional:** Could rename `data` to `user_profile` for clarity
 
-**Why:** [Small benefit this would provide]
-
----
-
-#### 👍 Praise (good patterns to call out)
-
-**`filename.ext:156`**
-
-**Nice:** [What they did well]
-
-**Why this is good:** [What pattern or practice this demonstrates]
+**Why:** More specific naming would make the code self-documenting
 
 ---
 
-### General Feedback
+### Previously Identified (from existing reviews)
 
-[Any overarching observations, patterns, or suggestions that don't fit a specific file:line]
+[If others already mentioned issues, list them here to acknowledge but not duplicate:]
+
+- auth.py:45-52: Error handling (alice mentioned logging) - agree with alice's feedback
+- db.py:103: SQL injection (alice mentioned parameterized queries) - +1 to alice's comment
 
 ---
 
-### Follow-up Items (optional)
+### CI Failure Analysis (if applicable)
 
-[Improvements that could be done in a future PR, if any]
+[Output from inspecting-codefresh-failures skill]
+
+---
+
+### Recommendation
+
+**[APPROVE / REQUEST CHANGES / COMMENT]**
+
+**Rationale:** [Why - what needs addressing or why it's good to merge]
+
+---
+
+### 📍 Key Areas to Review
+
+[List 3-5 most important file:line references for quick navigation:]
+
+- auth.py:78-82 - Missing token expiry validation (🚫 Blocking, NEW)
+- api.py:134-156 - SQL injection risk (💡 Should fix)
+- utils.py:45-52 - Caching strategy question (🤔)
+
+---
+
+### 🎬 Actions
+
+**o** - Open PR in browser
+**i** - Add inline comments (AI-assisted)
+**a** - Approve via gh CLI (general comment only)
+**c** - Request changes via gh CLI (general comment only)
+
+What would you like to do?
 ```
 
-**Note to user:** "These comments are ready to paste into the PR. Should I adjust any of them, or would you like me to generate the actual GitHub comment syntax?"
-
-Wait for user response.
+Wait for user input.
 
 ---
 
-## Comment Guidelines
+## Action Handlers
 
-**DO:**
-- Focus on 3-5 substantive comments (not 20 minor nits)
-- Explain WHY, not just WHAT
-- Suggest solutions, don't just point out problems
-- Praise good patterns
-- Ask questions when you're unsure
-- Be specific with file:line references
-- Provide examples or links to help author learn
+**o - Open in browser:**
 
-**DON'T:**
-- Dictate - the author owns this code
-- Nitpick style unless it violates project standards
-- Point out issues in code not changed by this PR
-- Use dismissive language ("just", "simply", "obviously")
-- Leave vague feedback ("this could be better")
-- Report theoretical issues (only real problems)
-- Overwhelm with too many comments
+```bash
+open [PR URL from fetched data]
+```
+
+Then re-show action menu.
 
 ---
 
-## Merge Recommendation Criteria
+**a - Approve via gh CLI:**
 
-**Approve:**
-- No blocking issues
-- Minor issues can be addressed as follow-ups
-- Author has demonstrated understanding of requirements
-- Quality meets project standards
+```bash
+gh pr review <number> --repo <org>/<repo> --approve --body "<review summary from above>"
+```
 
-**Request Changes:**
-- Blocking issues present (bugs, security, breaks existing behavior)
-- Missing critical tests
-- Fundamental design issues
-- Must be addressed before merge
+Success: "✅ Review posted as APPROVED"
 
-**Comment:**
-- Questions need clarification before deciding
-- Want to provide feedback but not block merge
-- Suggesting optional improvements
+---
+
+**c - Request changes via gh CLI:**
+
+```bash
+gh pr review <number> --repo <org>/<repo> --request-changes --body "<review summary from above>"
+```
+
+Success: "✅ Review posted as REQUEST CHANGES"
+
+---
+
+**i - Interactive inline comment builder:**
+
+### Step 1: Show locations
+
+```
+Add inline comment to which area?
+1. auth.py:78-82 - Missing token expiry validation (🚫 Blocking)
+2. api.py:134-156 - SQL injection risk (💡 Should fix)
+3. utils.py:45-52 - Caching strategy question (🤔)
+
+Or type file:line (e.g., "models.py:89")
+>
+```
+
+### Step 2: User selects location
+
+Parse input:
+- Number → use corresponding file:line from key areas
+- file:line format → use directly
+- Extract file path and line number
+
+### Step 3: AI-Assisted Comment Drafting
+
+Show code snippet and suggest socratic, teaching-focused comments:
+
+```
+Code at auth.py:78-82:
+
+    new_token = generate_refresh_token(user)
+    # No check if old token has expired
+
+💡 Suggested comments (or write your own):
+
+1. "I'm curious about the token expiry validation here. What happens if a user requests a refresh with an already-expired token? Should we validate expiry before generating a new one?"
+
+2. "How are we handling the case where old_token has expired? I'm wondering if this could be a security concern if expired tokens remain valid through the refresh mechanism."
+
+3. "I'm wondering if we should add an expiry check here. What's the intended behavior when someone tries to refresh an already-expired token?"
+
+Select 1-3 to use/edit, or press Enter to write custom:
+>
+```
+
+**Suggestion templates by issue type:**
+
+Use full sentences, genuine questions, collaborative tone:
+
+- **Error handling:** "I'm curious about...", "What happens when...", "How should we handle..."
+- **Security:** "I'm wondering about security here...", "What happens if a user...", "Have we thought about..."
+- **SQL injection:** "I'm wondering if...", "Have we considered parameterized queries...", "What would happen if..."
+- **Missing tests:** "How can we verify...", "What edge cases should we consider...", "I'm curious how this behaves when..."
+- **Performance:** "I'm curious about the performance implications...", "How does this scale when...", "Have we measured..."
+- **Code clarity:** "I'm finding this a bit hard to follow...", "Could we clarify...", "What's the reasoning behind..."
+- **Design:** "I'm wondering if there's a simpler approach...", "Have you considered...", "What led to this design choice..."
+
+### Step 4: User responds
+
+If they select 1-3:
+- Show that suggestion pre-filled
+- They can edit or accept as-is
+
+If they press Enter or type text:
+- Use their custom comment
+
+Store: file, line, body
+
+### Step 5: Continue?
+
+```
+Inline comment added. Add another? (y/n)
+>
+```
+
+If **y** → repeat from Step 1
+If **n** → proceed to Step 6
+
+### Step 6: Summary and review type
+
+```
+Review with 2 inline comments:
+1. auth.py:78-82: "I'm curious about the token expiry validation here..."
+2. api.py:134-156: "Have we considered parameterized queries to prevent SQL injection?"
+
+Submit as: (a)pprove, (c)hange requests, or co(m)ment?
+>
+```
+
+### Step 7: Submit via GitHub API
+
+```bash
+gh api repos/<org>/<repo>/pulls/<number>/reviews \
+  --method POST \
+  --input - <<'EOF'
+{
+  "body": "<review summary from Phase 4>",
+  "event": "<APPROVE|REQUEST_CHANGES|COMMENT>",
+  "comments": [
+    {
+      "path": "auth.py",
+      "line": 82,
+      "body": "I'm curious about the token expiry validation here..."
+    },
+    {
+      "path": "api.py",
+      "line": 156,
+      "body": "Have we considered parameterized queries to prevent SQL injection?"
+    }
+  ]
+}
+EOF
+```
+
+**Mapping:**
+- a → APPROVE
+- c → REQUEST_CHANGES
+- m → COMMENT
+
+Success: "✅ Review posted with 2 inline comments"
 
 ---
 
 ## Edge Cases
 
-**PR is too large:**
-- Suggest breaking into smaller PRs if feasible
-- Focus review on highest-risk areas
-- Note that thorough review is difficult
+**Large PR (>20 files):**
+- Note in summary: "⚠️ Large PR - thorough review is challenging"
+- Focus on highest-risk changes
+- Suggest: "Consider breaking into smaller PRs for future changes"
 
-**Author is junior/learning:**
-- Extra focus on teaching and encouragement
+**Junior author (check author experience):**
+- Extra teaching focus
+- More encouragement
 - Explain patterns and practices
 - Provide links to resources
 - More praise for what's done well
 
-**Author has different opinions:**
-- Ask questions rather than assert
-- Acknowledge tradeoffs
-- Defer to team conventions if they exist
-- Be open to learning from their perspective
-
-**Emergency/hotfix PR:**
-- Focus only on critical issues
+**Hotfix/emergency PR:**
+- Note: "⚠️ Hotfix - prioritizing critical issues only"
+- Focus only on blocking bugs/security
 - Note technical debt for follow-up
-- Expedite review of what matters
+- Expedite review
+
+**No issues found:**
+- Still provide value:
+  - Acknowledge what's well done (👍 section)
+  - Ask clarifying questions if any (🤔)
+  - Or: "LGTM - this looks solid. No issues found."
+
+---
+
+## Review Guidelines
+
+**DO:**
+- Show existing reviews to avoid duplication
+- Use severity levels (🚫💡🤔✨👍) for clarity
+- Include code snippets with file:line references
+- Explain WHY, not just WHAT
+- Ask questions when unsure
+- Praise good patterns (👍)
+- Provide AI-assisted comment suggestions
+- Be specific and actionable
+- Teach through socratic questions
+
+**DON'T:**
+- Dictate - the author owns this code
+- Nitpick style unless it violates standards
+- Point out issues in unchanged code
+- Use dismissive language ("just", "obviously")
+- Leave vague feedback
+- Report theoretical issues (only real problems)
+- Duplicate what others already said clearly
+- Overwhelm with too many comments (3-5 substantive)
+
+---
+
+## Comment Tone
+
+**Questions over statements:**
+- ✅ "Could we add validation here?"
+- ❌ "You should add validation here"
+
+**Explain impact:**
+- ✅ "This might cause X because Y"
+- ❌ "This is wrong"
+
+**Collaborative exploration:**
+- ✅ "I'm curious about...", "Have you considered..."
+- ❌ "Just do X", "Obviously this should be Y"
+
+**Teach, don't correct:**
+- ✅ "Parameterized queries prevent SQL injection by separating data from commands"
+- ❌ "Use parameterized queries"
 
 ---
 
 ## Completion
 
-After user approves/adjusts comments, output:
-
-"PR review complete. Comments are ready to post."
+After posting review (via a/c/i actions):
+- Show success message
+- Done (no session state to clean up)
