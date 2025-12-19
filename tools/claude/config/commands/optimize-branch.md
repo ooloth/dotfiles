@@ -41,10 +41,28 @@ Check each theme for:
 - Are the stated goals met? Is the feature complete?
 - Are there obvious edge cases we should handle?
 
-**Bugs:**
+**Bugs & Error Handling:**
 
 - Are there any logic errors or potential crashes?
-- Will error cases be handled gracefully?
+- Are errors propagated consistently (same pattern throughout)?
+- Do error messages provide helpful context for debugging?
+- Do we fail fast where appropriate, or handle gracefully where needed?
+- Are all failure modes accounted for?
+
+**Security:**
+
+- Is user input validated at system boundaries (APIs, CLI args, file uploads, etc.)?
+- Are there injection risks (SQL, command, XSS, path traversal)?
+- Are credentials or secrets properly handled (not logged, not in version control)?
+- Are file permissions and access controls appropriate?
+- Are external dependencies from trusted sources?
+
+**Compatibility:**
+
+- Will this change break existing behavior or workflows?
+- Are there migration considerations for existing users?
+- Are version/platform requirements reasonable and documented?
+- Are new dependencies necessary and justified?
 
 **Testing:**
 
@@ -52,6 +70,7 @@ Check each theme for:
 - Are there code paths with zero test coverage?
 - Can test cases be consolidated (e.g., parametrized tests)?
 - Are invariants checked in tests?
+- Are error cases and edge cases tested?
 
 **Report format:**
 
@@ -127,6 +146,18 @@ After reviews, for each issue to fix:
 - Don't create abstractions for one-time use
 - Don't design for hypothetical future requirements
 
+## Documentation Check
+
+Before marking complete, verify:
+
+- Do user-facing changes need README/docs updates?
+- Are breaking changes documented with migration notes?
+- Are new configuration options or environment variables documented?
+- Are new dependencies documented (why needed, how to install)?
+- Does changed behavior need updating in help text, comments, or guides?
+
+If documentation updates are needed, implement them before completion.
+
 ## Completion
 
-Only after completing all 4 phases (Survey, Correctness, Performance, Maintainability) and implementing approved changes, report: "Branch optimization complete. Ready to open PR."
+Only after completing all 4 phases (Survey, Correctness, Performance, Maintainability), implementing approved changes, and updating documentation, report: "Branch optimization complete. Ready to open PR."
