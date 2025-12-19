@@ -20,13 +20,18 @@ Protect users of this software by scrutinizing it closely before it ships.
 
 1. List all files changed on this branch (vs main/master)
 2. Read each changed file to understand the implementation
-3. Identify the primary feature/fix this branch delivers
-4. Categorize changes into themes (feature logic, tests, refactoring, etc.)
+3. Read similar/related unchanged files to understand existing codebase patterns:
+   - How are similar problems solved elsewhere?
+   - What patterns exist for error handling, testing, naming, architecture?
+   - Are there utilities or abstractions already available?
+4. Identify the primary feature/fix this branch delivers
+5. Categorize changes into themes (feature logic, tests, refactoring, etc.)
 
 Present a summary including:
 - What you believe the original requirements/goals were
 - What was actually implemented
 - How changes are grouped thematically
+- What existing codebase patterns are relevant
 
 **Ask for confirmation:** "Did I understand the requirements correctly? Anything I'm missing about the goals?"
 
@@ -40,6 +45,13 @@ Check each theme for:
 
 - Are the stated goals met? Is the feature complete?
 - Are there obvious edge cases we should handle?
+
+**Consistency:**
+
+- Does this follow the same patterns as similar code in the codebase?
+- Are existing utilities/abstractions used, or is this reinventing the wheel?
+- Does error handling match the project's conventions?
+- Do naming, structure, and style match surrounding code?
 
 **Bugs & Error Handling:**
 
@@ -57,6 +69,8 @@ Check each theme for:
 - Are file permissions and access controls appropriate?
 - Are external dependencies from trusted sources?
 
+**Only report actual security violations, not theoretical what-ifs.**
+
 **Compatibility:**
 
 - Will this change break existing behavior or workflows?
@@ -72,6 +86,11 @@ Check each theme for:
 - Are invariants checked in tests?
 - Are error cases and edge cases tested?
 
+**Priority criteria:**
+- **High**: Bugs, security issues, breaking changes, missing core functionality
+- **Medium**: Quality issues, missing tests, inconsistencies, compatibility concerns
+- **Suggestions**: Nice-to-haves, simplifications, code quality improvements
+
 **Report format:**
 
 ```
@@ -79,12 +98,18 @@ Check each theme for:
 
 ### High Priority
 - [Issue description] in `file:line`
+  Suggested fix: [specific improvement]
+  Why: [reasoning]
 
 ### Medium Priority
 - [Issue description] in `file:line`
+  Suggested fix: [specific improvement]
+  Why: [reasoning]
 
 ### Suggestions
 - [Nice-to-have improvement] in `file:line`
+  Suggested fix: [specific improvement]
+  Why: [reasoning]
 ```
 
 ### Phase 3: Performance Review
@@ -97,6 +122,22 @@ For each changed file, identify:
 
 **Only report actual problems**, not theoretical optimizations.
 
+**Report format:**
+
+```
+## Performance Issues
+
+### High Priority
+- [Issue description] in `file:line`
+  Suggested fix: [specific improvement]
+  Why: [reasoning and impact]
+
+### Medium Priority
+- [Issue description] in `file:line`
+  Suggested fix: [specific improvement]
+  Why: [reasoning and impact]
+```
+
 ### Phase 4: Maintainability Review
 
 Check for:
@@ -108,6 +149,12 @@ Check for:
 - Are there signs of exploratory coding (multiple approaches to same problem, inconsistent patterns)?
 - Is the solution internally consistent, or does it solve similar problems in different ways?
 - Does the implementation match the problem's inherent complexity, or is it over/under-engineered?
+
+**Redesign threshold:** If you can see a significantly simpler design that better fits the problem:
+- Describe the alternative approach with concrete examples
+- Explain why it's simpler (fewer concepts, less indirection, clearer intent)
+- Show what changes would be needed
+- **Don't let current implementation size prevent proposing a better approach** - the biggest wins are often catching overcomplicated solutions before they ship
 
 **Simplicity:**
 
@@ -127,6 +174,33 @@ Check for:
 - Are there unnecessary comments explaining obvious code?
 - Any backwards-compatibility hacks that can be removed?
 - Any remnants from exploration (partial refactors, abandoned approaches)?
+
+**Report format:**
+
+```
+## Maintainability Issues
+
+### Alternative Design (if applicable)
+Current approach: [brief description]
+Simpler approach: [concrete alternative with examples]
+Why simpler: [fewer concepts, less indirection, clearer intent]
+Changes needed: [what would need to change]
+
+### High Priority
+- [Issue description] in `file:line`
+  Suggested fix: [specific improvement]
+  Why: [reasoning]
+
+### Medium Priority
+- [Issue description] in `file:line`
+  Suggested fix: [specific improvement]
+  Why: [reasoning]
+
+### Suggestions
+- [Nice-to-have improvement] in `file:line`
+  Suggested fix: [specific improvement]
+  Why: [reasoning]
+```
 
 ## Implementation Workflow
 
