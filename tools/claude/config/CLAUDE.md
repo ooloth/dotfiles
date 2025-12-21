@@ -3,6 +3,7 @@
 ### Beads is the Single Source of Truth
 
 **All planning lives in beads, not markdown files.** When asked "what's next?" or starting a new session:
+
 1. Run `bd ready` to find available work
 2. Run `bd list --status=in_progress` to see active work
 3. Run `bd show <id>` for full context on any issue
@@ -10,6 +11,7 @@
 **Do NOT duplicate plans in markdown files.** Implementation details (code snippets, design notes) go in the beads issue's `design` or `notes` fields. Delete any temporary planning files after implementation.
 
 ### Planning Workflow
+
 1. **Clarify** - Understand the request, ask questions
 2. **Explore** - Read code, gather context
 3. **Plan** - Create beads epic/tasks with acceptance criteria
@@ -25,37 +27,37 @@ bd close <id>         # Complete work
 bd sync               # Sync with git
 ```
 
-## Landing the Plane (Session Completion)
+## Working in Small Steps (CRITICAL - READ FIRST)
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+**You must NEVER commit code yourself during a session. The user commits.**
 
-**MANDATORY WORKFLOW:**
+**Workflow for EVERY change:**
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull
-   bd sync
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
+1. **Make one small change** - Implement one cohesive theme (behavior change across related files)
+2. **Add or update tests** - If testing is relevant, add/update test cases for the behavior change
+3. **Run tests** - Verify the change works and doesn't break anything
+4. **STOP and report** - Describe what you changed and what tests you ran
+5. **Wait** - Do not continue until user reviews and commits
 
-**CRITICAL RULES:**
+**What is "one small change"?**
 
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+Good examples (one theme = one commit):
 
-## Pause to let me review each step
+- ✅ Add aria-label to pagination nav + test that verifies it's present
+- ✅ Add focus-visible styles to all interactive elements in the Likes page + visual regression test
+- ✅ Add skip link to layout + add id="main" to all main elements + test both features
+- ✅ Implement new validation function + comprehensive test suite for all edge cases
 
-- Implement changes one small theme at-a-time
-- Pause after each theme is implemented (behavior + test case(s) + documentation) to let me commit myself
+The key: **related changes that tell one story**. It's fine if the change touches multiple files, as long as they're part of the same logical theme.
+
+**Never:**
+
+- ❌ Batch UNRELATED changes (e.g., focus styles + aria-label + reduced-motion in one go)
+- ❌ Commit yourself without explicit instructions to do so
+- ❌ Say "this is ready to commit" and keep working
+- ❌ Skip running tests
+
+**Remember:** The user wants to review and commit each theme themselves. Stop after each one.
 
 ## Managing your context window
 
