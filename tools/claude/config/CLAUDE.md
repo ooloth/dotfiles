@@ -1,10 +1,19 @@
 ## Memory
 
-- Plan in these phases: clarify -> explore -> plan -> document
-- Use `beads` for tracking epics and child tasks
-- The plan phase should produce a `beads` task or epic
+### Beads is the Single Source of Truth
 
-This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+**All planning lives in beads, not markdown files.** When asked "what's next?" or starting a new session:
+1. Run `bd ready` to find available work
+2. Run `bd list --status=in_progress` to see active work
+3. Run `bd show <id>` for full context on any issue
+
+**Do NOT duplicate plans in markdown files.** Implementation details (code snippets, design notes) go in the beads issue's `design` or `notes` fields. Delete any temporary planning files after implementation.
+
+### Planning Workflow
+1. **Clarify** - Understand the request, ask questions
+2. **Explore** - Read code, gather context
+3. **Plan** - Create beads epic/tasks with acceptance criteria
+4. **Implement** - Work through tasks, update status as you go
 
 ### Quick Reference
 
@@ -160,8 +169,8 @@ Use Claude tools directly only for:
 
 ### General Context Management
 
-- Update the `<task>.md` with any helpful findings
-- When you detect you are within 10% of your available context window before auto-compact, pause to update your to-do list and the `<task>.md` with all important hand-off details, including the primary goals and non-goals of the task and any implementation decisions that have already been made
+- Update beads issues with helpful findings (use `notes` or `design` fields)
+- When you detect you are within 10% of your available context window before auto-compact, pause to update beads issues with all important hand-off details, including goals, non-goals, and implementation decisions already made
 
 ## After answering questions
 
