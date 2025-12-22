@@ -31,6 +31,7 @@ Before diving into implementation details, understand the purpose:
 **For bug fixes or small changes (<5 files, <100 lines), this can be brief.**
 
 **Present to user:**
+
 - The problem you understand this to solve
 - The outcome it's trying to achieve
 - Any simpler alternatives you can see to achieving that outcome
@@ -57,6 +58,7 @@ Wait for user response before proceeding to Phase 1.
 7. **Form initial hypothesis:** Are there fundamental design issues that would require major rework?
 
 **Present to user:**
+
 - What you believe the original requirements/goals were
 - What was actually implemented
 - How changes are grouped thematically
@@ -74,6 +76,7 @@ Wait for user response. If fundamental redesign needed, discuss approach. Otherw
 ### Phases 2-4: Deep Review (Evidence Collection)
 
 **IMPORTANT:**
+
 - Do NOT present findings after each phase
 - Use your internal thinking to track findings as you go
 - After completing each phase, output brief status: "✓ Completed [phase name] review"
@@ -90,16 +93,19 @@ Wait for user response. If fundamental redesign needed, discuss approach. Otherw
 Check each theme for:
 
 **Completeness:**
+
 - Are the stated goals met? Is the feature complete?
 - Are there obvious edge cases we should handle?
 
 **Consistency:**
+
 - Does this follow the same patterns as similar code in the codebase?
 - Are existing utilities/abstractions used, or is this reinventing the wheel?
 - Does error handling match the project's conventions?
 - Do naming, structure, and style match surrounding code?
 
 **Bugs & Error Handling:**
+
 - Are there any logic errors or potential crashes?
 - Are errors propagated consistently (same pattern throughout)?
 - Do error messages provide helpful context for debugging?
@@ -107,6 +113,7 @@ Check each theme for:
 - Are all failure modes accounted for?
 
 **Security:**
+
 - Is user input validated at system boundaries (APIs, CLI args, file uploads, etc.)?
 - Are there injection risks (SQL, command, XSS, path traversal)?
 - Are credentials or secrets properly handled (not logged, not in version control)?
@@ -116,12 +123,14 @@ Check each theme for:
 **Only report actual security violations, not theoretical what-ifs.**
 
 **Compatibility:**
+
 - Will this change break existing behavior or workflows?
 - Are there migration considerations for existing users?
 - Are version/platform requirements reasonable and documented?
 - Are new dependencies necessary and justified?
 
 **Testing:**
+
 - Is all new behavior tested?
 - Are there code paths with zero test coverage?
 - Can test cases be consolidated (e.g., parametrized tests)?
@@ -129,11 +138,13 @@ Check each theme for:
 - Are error cases and edge cases tested?
 
 **Developer Experience:**
+
 - Will using this API/feature be intuitive or frustrating?
 - Are error messages actionable?
 - Is this "teachable" - can others learn good patterns from this code?
 
 **Documentation:**
+
 - Do user-facing changes need README/docs updates?
 - Are breaking changes documented with migration notes?
 - Are new configuration options or environment variables documented?
@@ -163,6 +174,7 @@ For each changed file, identify:
 Check for:
 
 **Design Coherence:**
+
 - Step back: Does the overall approach make sense, or is there a simpler mental model?
 - If starting fresh with what we know now, would we design it differently?
 - Are there signs of exploratory coding (multiple approaches to same problem, inconsistent patterns)?
@@ -170,6 +182,7 @@ Check for:
 - Does the implementation match the problem's inherent complexity, or is it over/under-engineered?
 
 **If you see a significantly simpler design:**
+
 - Describe the alternative approach with concrete examples
 - Explain why it's simpler (fewer concepts, less indirection, clearer intent)
 - Show what changes would be needed
@@ -177,27 +190,32 @@ Check for:
 - **Redesign scope boundary:** If it would touch >100 lines or >5 files, note as design debt but don't block this PR
 
 **Simplicity:**
+
 - Could this be expressed more directly?
 - Is there unnecessary complexity, abstraction, or indirection?
 - Is the solution as declarative as possible?
 
 **Clarity:**
+
 - Would a new maintainer struggle to understand intent?
 - Are domain types used instead of primitives?
 - Is logic overly repetitive or verbose?
 
 **Noise:**
+
 - Is there any dead code, commented code, or unused imports?
 - Are there unnecessary comments explaining obvious code?
 - Any backwards-compatibility hacks that can be removed?
 - Any remnants from exploration (partial refactors, abandoned approaches)?
 
 **Future Lens:**
+
 - How easy will this be to change when requirements evolve?
 - What's the maintenance burden?
 - What's the blast radius of future changes?
 
 **Developer Experience:**
+
 - Does this make the codebase better or worse as a place to work?
 - Is this code a joy or a chore to maintain?
 
@@ -209,18 +227,21 @@ Now connect the dots and present the complete picture:
 
 **1. Root Cause Analysis**
 Look across all findings - **only if there IS a pattern:**
+
 - Are multiple issues caused by the same fundamental problem?
 - Would fixing one thing eliminate many smaller issues?
 - Is there a design issue that explains several bugs?
 
 **2. Top Improvements**
 Identify the **3-5 highest-impact** changes:
+
 - What would fix the most issues?
 - What would prevent future problems?
 - What would most improve maintainability?
 
 **3. Group Remaining Findings by Theme**
 Organize everything else (if worth mentioning):
+
 - Group related issues together
 - De-duplicate similar findings
 - **Filter out noise** - don't report trivial issues if they distract from what matters
@@ -228,6 +249,7 @@ Organize everything else (if worth mentioning):
 
 **4. Calibrate Confidence**
 For each finding, indicate certainty:
+
 - "This is definitely broken" vs "This might be an issue" vs "Consider this alternative"
 
 **5. Escape Hatch**
@@ -282,9 +304,26 @@ Recommend addressing: [A], [B], [C]
 
 Wait for user response before proceeding to implementation.
 
+**REMINDER BEFORE STARTING:**
+When user approves, implement ONE theme, stop, wait for "committed", repeat.
+Never batch multiple themes without explicit user instruction to do so.
+
 ---
 
 ## Implementation Workflow
+
+**CRITICAL - READ THIS FIRST:**
+
+After each theme is complete (code + tests + verification):
+
+1. **STOP** - Do not continue to next theme
+2. **Report** - Describe what changed and what tests you ran
+3. **Wait** - User will say "committed" before you proceed
+4. **Never batch themes** - One theme = one commit = one stop
+
+**This is a BLOCKING requirement. Violating it frustrates the user.**
+
+---
 
 After user selects which improvements to make:
 
