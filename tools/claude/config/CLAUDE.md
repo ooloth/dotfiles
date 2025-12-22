@@ -60,14 +60,16 @@ The key: **related changes that tell one story**. It's fine if the change touche
 
 **Never:**
 
+- ❌ Batch multiple themes together (e.g., theme 1 + theme 2 + theme 3 in one go)
 - ❌ Batch UNRELATED changes (e.g., focus styles + aria-label + reduced-motion in one go)
+- ❌ Continue to the next theme without waiting for user to say "committed"
 - ❌ Commit yourself without explicit instructions to do so
 - ❌ Say "this is ready to commit" and keep working
 - ❌ Skip running tests
 - ❌ Close beads tasks before the user says they've committed
 - ❌ Move to the next task without user explicitly telling you to
 
-**Remember:** The user wants to review and commit each theme themselves. Stop after each one.
+**Remember:** The user wants to review and commit each theme themselves. Stop after each one. ONE theme = ONE stop.
 
 ## Beads Task Management
 
