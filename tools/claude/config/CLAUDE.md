@@ -83,7 +83,22 @@ The key: **related changes that tell one story**. It's fine if the change touche
 4. After each theme: STOP, report, wait for user to say "committed"
 5. Repeat until all themes for the task are done
 6. **When user confirms final commit:** Close task with `bd close <id> -r "summary of all work"`
-7. Wait for user to tell you what's next
+7. **Offer next options:** Run `bd ready` and `bd list --label <current-label> --status open` to show what's available, then present 2-3 options with brief context
+
+**After closing a task, ALWAYS present options:**
+```
+Task complete! What would you like to do next?
+
+1. Continue with [current area] tasks on this branch:
+   - META-xyz: [Brief description]
+   - META-abc: [Brief description]
+
+2. Switch to a different area:
+   - See all ready tasks: `bd ready`
+   - [List any deferred tasks if relevant]
+
+3. Something else?
+```
 
 **Capturing context in beads:**
 
