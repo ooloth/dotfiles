@@ -53,6 +53,7 @@ Good examples (one theme = one commit):
 The key: **related changes that tell one story**. It's fine if the change touches multiple files, as long as they're part of the same logical theme.
 
 **One beads task may need many commits:**
+
 - A single beads task might result in 1 commit or 25 commits, depending on how many distinct themes emerge
 - Stop after EACH theme for user to review and commit
 - Only close beads task when ALL themes for that task are done and committed
@@ -75,6 +76,7 @@ The key: **related changes that tell one story**. It's fine if the change touche
 **Why:** If the session gets disconnected, the next Claude needs the full context.
 
 **Workflow:**
+
 1. User tells you to work on a beads task
 2. You mark it `in_progress` with `bd update <id> --status in_progress`
 3. You implement changes as multiple themes/commits (following "Working in Small Steps" above)
@@ -84,6 +86,7 @@ The key: **related changes that tell one story**. It's fine if the change touche
 7. Wait for user to tell you what's next
 
 **Capturing context in beads:**
+
 - Use `bd update <id> --notes "..."` to add implementation details discovered during work
 - Use `bd update <id> --design "..."` for code snippets, architectural decisions
 - Update task description if you discover the scope was different than expected
