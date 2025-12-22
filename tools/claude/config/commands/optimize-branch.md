@@ -304,6 +304,9 @@ Recommend addressing: [A], [B], [C]
 
 Wait for user response before proceeding to implementation.
 
+**Before implementing:**
+Create beads task(s) for approved themes. See CLAUDE.md "Working in Small Steps".
+
 ---
 
 ## Implementation Workflow

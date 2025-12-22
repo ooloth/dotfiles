@@ -52,6 +52,16 @@ Good examples (one theme = one commit):
 
 The key: **related changes that tell one story**. It's fine if the change touches multiple files, as long as they're part of the same logical theme.
 
+**Before starting multi-step work:**
+
+If you're about to implement 2+ themes (whether from beads, optimization, or any other source):
+
+1. **Create beads tasks** - One task per theme, or one parent task with the plan in `design` field
+2. **Why:** If disconnected, next Claude needs the approved plan
+3. **Then** proceed with "Working in Small Steps" workflow
+
+This applies to ALL multi-step work: beads tasks, optimization findings, refactoring, feature implementation.
+
 **One beads task may need many commits:**
 
 - A single beads task might result in 1 commit or 25 commits, depending on how many distinct themes emerge
