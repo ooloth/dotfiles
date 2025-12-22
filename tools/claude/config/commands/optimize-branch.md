@@ -304,34 +304,27 @@ Recommend addressing: [A], [B], [C]
 
 Wait for user response before proceeding to implementation.
 
-**REMINDER BEFORE STARTING:**
-When user approves, implement ONE theme, stop, wait for "committed", repeat.
-Never batch multiple themes without explicit user instruction to do so.
-
 ---
 
 ## Implementation Workflow
 
-**CRITICAL - READ THIS FIRST:**
+**CRITICAL: Follow CLAUDE.md "Working in Small Steps" workflow**
 
-After each theme is complete (code + tests + verification):
+After implementing each theme:
 
 1. **STOP** - Do not continue to next theme
 2. **Report** - Describe what changed and what tests you ran
 3. **Wait** - User will say "committed" before you proceed
-4. **Never batch themes** - One theme = one commit = one stop
 
-**This is a BLOCKING requirement. Violating it frustrates the user.**
+**Never batch multiple themes together.** ONE theme = ONE commit = ONE stop.
 
 ---
 
-After user selects which improvements to make:
+**Task-specific guidance:**
 
-1. **Group by theme** - Organize approved fixes into logical batches
-2. **Work incrementally** - Implement one theme at a time
-3. **Pause for commits** - After each theme (behavior + tests + docs), stop and let me commit
-4. **No over-engineering** - Only fix approved items, don't add "nice-to-haves" unless asked
-5. **Documentation scope** - If docs are extensive (>50 lines), propose changes instead of implementing
+- Group approved fixes into logical themes (related changes that tell one story)
+- Only fix approved items - don't add "nice-to-haves" unless asked
+- If docs are extensive (>50 lines), propose changes instead of implementing
 
 ---
 
