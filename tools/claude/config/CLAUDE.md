@@ -37,7 +37,9 @@ bd sync               # Sync with git
 2. **Add or update tests** - If testing is relevant, add/update test cases for the behavior change
 3. **Run tests** - Verify the change works and doesn't break anything
 4. **STOP and report** - Describe what you changed and what tests you ran
-5. **Wait** - Do not continue until user reviews and commits
+5. **Wait for user to say "committed"** - Do not continue or close beads tasks until user confirms
+6. **Repeat steps 1-5** - If the beads task needs more themes/commits, continue with the next logical change
+7. **When beads task is fully complete** - Close it with `bd close <id> -r "summary of all work"`
 
 **What is "one small change"?**
 
@@ -50,14 +52,43 @@ Good examples (one theme = one commit):
 
 The key: **related changes that tell one story**. It's fine if the change touches multiple files, as long as they're part of the same logical theme.
 
+**One beads task may need many commits:**
+- A single beads task might result in 1 commit or 25 commits, depending on how many distinct themes emerge
+- Stop after EACH theme for user to review and commit
+- Only close beads task when ALL themes for that task are done and committed
+
 **Never:**
 
 - ❌ Batch UNRELATED changes (e.g., focus styles + aria-label + reduced-motion in one go)
 - ❌ Commit yourself without explicit instructions to do so
 - ❌ Say "this is ready to commit" and keep working
 - ❌ Skip running tests
+- ❌ Close beads tasks before the user says they've committed
+- ❌ Move to the next task without user explicitly telling you to
 
 **Remember:** The user wants to review and commit each theme themselves. Stop after each one.
+
+## Beads Task Management
+
+**Beads is the single source of truth. All task details must be captured in beads, not ephemeral todo lists.**
+
+**Why:** If the session gets disconnected, the next Claude needs the full context.
+
+**Workflow:**
+1. User tells you to work on a beads task
+2. You mark it `in_progress` with `bd update <id> --status in_progress`
+3. You implement changes as multiple themes/commits (following "Working in Small Steps" above)
+4. After each theme: STOP, report, wait for user to say "committed"
+5. Repeat until all themes for the task are done
+6. **When user confirms final commit:** Close task with `bd close <id> -r "summary of all work"`
+7. Wait for user to tell you what's next
+
+**Capturing context in beads:**
+- Use `bd update <id> --notes "..."` to add implementation details discovered during work
+- Use `bd update <id> --design "..."` for code snippets, architectural decisions
+- Update task description if you discover the scope was different than expected
+- Don't rely on ephemeral TodoWrite for anything that needs to persist - use beads
+- If you're within 10% of context limit, capture ALL important decisions in beads before auto-compact
 
 ## Managing your context window
 
