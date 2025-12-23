@@ -17,6 +17,44 @@
 3. **Plan** - Create beads epic/tasks with acceptance criteria
 4. **Implement** - Work through tasks, update status as you go
 
+### When to Create Beads Issues (vs TodoWrite)
+
+**ALWAYS use beads for:**
+- Work that involves making decisions about what to do/skip (e.g., PR review assessment, optimization results)
+- Any multi-item work where you need to record WHY you're addressing/skipping each item
+- Work that could survive an auto-compact (beads persists; TodoWrite doesn't)
+- Assessments with categories (must fix, should fix, won't fix)
+
+**TodoWrite is only for:**
+- Simple task tracking within a single beads issue (breaking down implementation steps)
+- Ephemeral notes that don't need to persist beyond the current work item
+
+**CRITICAL: When assessing multiple items (PR feedback, optimization results, bug lists):**
+
+```bash
+# DO THIS FIRST - before implementing anything:
+bd create --title "Address PR review feedback" \
+  --type task --priority P1 \
+  --design "Assessment:
+
+MUST FIX:
+- Item 1 (reason)
+- Item 2 (reason)
+
+SHOULD FIX:
+- Item 3 (reason)
+
+WON'T FIX:
+- Item 4 (reason we're skipping)
+
+Each fix = one commit per 'Working in Small Steps'"
+
+# Then work through items, updating notes as you go:
+bd update <id> --notes "Item 1: Discovered X during implementation"
+```
+
+**This applies even if you're within your context window** - auto-compact can happen anytime.
+
 ### Quick Reference
 
 ```bash
@@ -142,6 +180,17 @@ Task complete! What would you like to do next?
 
 - You do best thinking when you have less in your context rather than more
 - Minimize your context usage by choosing the right approach for each task:
+
+### 0. Use Beads to Survive Auto-Compact (Do This First!)
+
+**Before starting ANY multi-item work, capture decisions in beads:**
+
+- **Decision matrices**: When assessing what to do/skip (PR reviews, optimization, bugs)
+- **Multi-step plans**: Break down into beads tasks BEFORE implementing
+- **Important discoveries**: Use `bd update <id> --notes` as you work
+- **Why we're doing X**: Capture rationale in `--design` field so next Claude understands
+
+**Remember:** TodoWrite is ephemeral; beads persists across auto-compact and session boundaries.
 
 ### 1. Skills First (Highest Priority)
 
