@@ -52,15 +52,33 @@ Good examples (one theme = one commit):
 
 The key: **related changes that tell one story**. It's fine if the change touches multiple files, as long as they're part of the same logical theme.
 
+**This workflow applies to ALL types of work:**
+
+- ✅ New feature implementation
+- ✅ PR review fixes (each individual fix = one theme)
+- ✅ Optimization findings (each optimization = one theme)
+- ✅ Refactoring tasks (each refactor = one theme)
+- ✅ Bug fixes (each bug = one theme)
+- ✅ Any other multi-step work
+
+**Even if the user says "fix them all" or "implement all of these"**, you must stop after EACH individual theme for review and commit.
+
+<example>
+user: "Add error handling to the API functions"
+assistant: *Creates todo list with all API functions that need error handling*
+assistant: *Adds error handling to notion/getPosts.ts + tests*
+assistant: "Added error handling to getPosts function. Tests pass. Ready to commit."
+assistant: *STOPS and waits for user to say "committed"*
+❌ Does NOT continue to the next API function
+</example>
+
 **Before starting multi-step work:**
 
-If you're about to implement 2+ themes (whether from beads, optimization, or any other source):
+If you're about to implement 2+ themes (whether from beads, optimization, PR reviews, or any other source):
 
 1. **Create beads tasks** - One task per theme, or one parent task with the plan in `design` field
 2. **Why:** If disconnected, next Claude needs the approved plan
 3. **Then** proceed with "Working in Small Steps" workflow
-
-This applies to ALL multi-step work: beads tasks, optimization findings, refactoring, feature implementation.
 
 **One beads task may need many commits:**
 
