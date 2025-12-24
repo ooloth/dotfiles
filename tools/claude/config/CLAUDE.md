@@ -65,6 +65,53 @@ bd close <id>         # Complete work
 bd sync               # Sync with git
 ```
 
+## BEFORE Implementing: Always Create Beads Task (BLOCKING RULE)
+
+**STOP. Read this BEFORE touching any code.**
+
+When the user approves work ("yes", "do it", "go ahead", "please fix"):
+
+### Mandatory Workflow
+
+```
+1. ❌ Do NOT read files
+2. ❌ Do NOT start implementing
+3. ✅ CREATE BEADS TASK FIRST with `bd create`
+4. ✅ Capture: what's broken, approved approach, what success looks like
+5. ✅ THEN read files and implement
+```
+
+**Why this is blocking**: Auto-compact or disconnection can happen anytime. Without a beads task, the next Claude has no context about what you were doing or why.
+
+### Examples
+
+**WRONG** ❌
+```
+user: "Yes please fix the Pushover notifications"
+assistant: *Immediately reads .github/workflows/ci.yml and starts implementing*
+```
+
+**RIGHT** ✅
+```
+user: "Yes please fix the Pushover notifications"
+assistant: "Creating beads task first to ensure persistence..."
+assistant: *Runs `bd create --title "Fix Pushover notifications..." --type task`*
+assistant: *Sets status to in_progress*
+assistant: *THEN reads files and implements*
+```
+
+### Applies To
+
+**ALL implementation work, no exceptions:**
+- Bug fixes (even "quick" ones)
+- Feature additions
+- Refactoring
+- CI/workflow changes
+- Configuration updates
+- Documentation that involves code
+
+**If you find yourself about to read a code file to implement something**, stop and create the beads task first.
+
 ## Working in Small Steps (CRITICAL - READ FIRST)
 
 **You must NEVER commit code yourself during a session. The user commits.**
