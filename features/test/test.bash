@@ -40,7 +40,7 @@ else
     PYTHONPATH=. pytest "$@"
     ;;
 
-  mu-next-16)
+  michaeluloth.com)
     npm run test "$@"
     ;;
 

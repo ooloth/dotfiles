@@ -27,7 +27,7 @@ if is_work; then
   esac
 else
   case $current_dir in
-  mu-next-16)
+  michaeluloth.com)
     npm run format "$@"
     npm run lint "$@"
     npm run typecheck "$@"
