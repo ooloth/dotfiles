@@ -112,6 +112,19 @@ assistant: *THEN reads files and implements*
 
 **If you find yourself about to read a code file to implement something**, stop and create the beads task first.
 
+## Before Making Changes
+
+Check the user's last message before using Edit, Write, or Bash:
+
+- Has `?` → Answer the question, present options, wait for decision
+- Feedback about your behavior → Acknowledge, wait for instruction
+- Explicit command ("do it", "fix X", "committed") → Proceed
+
+Examples:
+- "Would it be simpler to...?" → Answer, present options, wait
+- "You should have asked first" → Acknowledge, wait for instruction
+- "Please fix the build" → Proceed with fix
+
 ## Working in Small Steps (CRITICAL - READ FIRST)
 
 **You must NEVER commit code yourself during a session. The user commits.**
@@ -351,33 +364,10 @@ Use Claude tools directly only for:
 
 ## After answering questions
 
-**CRITICAL: Answer questions, don't immediately act on them**
+When you answer a question or complete an assessment:
 
-When the user asks a question or makes a request that could be answered OR acted upon:
-
-1. **Always answer/assess FIRST**
-   - Present your findings, analysis, or recommendations
-   - Show what you discovered
-
-2. **Then ASK before acting**
-   - "Would you like me to [action]?"
-   - "Should I proceed with [specific changes]?"
-   - Wait for explicit approval
-
-3. **Only act immediately if:**
-   - User says "go ahead", "do it", "please add X now"
-   - User explicitly says "committed" (signals they're ready for next step)
-   - Context makes it unambiguous they want immediate action
-
-**Examples:**
-- "Assess X for Y" → Present assessment, ask if they want you to fix Y
-- "Remember to add tests" → Present what needs tests, ask if they want you to add them
-- "What needs fixing?" → List what needs fixing, ask if they want you to fix it
-- "Fix X" → Fix X (explicit action request)
-
-**Other guidelines:**
 - If the answer involved explaining a non-trivial concept with code examples, or an elegant solution to common problem, or an otherwise appealing tip/trick, ask: "This could make a good TIL - want me to draft it?"
-- Then prompt for which action(s) to take next
+- Ask what action(s) to take next (don't assume)
 
 ## Pull Requests
 
