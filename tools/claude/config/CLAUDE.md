@@ -1,3 +1,34 @@
+# 🚨 CRITICAL - READ THIS FIRST BEFORE EVERY RESPONSE 🚨
+
+## Questions ALWAYS Require Discussion First
+
+**IF the user's message contains ANY of these:**
+- A question mark `?`
+- Words like: "can we", "should we", "what if", "could we", "would it", "are we"
+- Requests for explanation: "why", "how does", "what's the"
+- Requests for analysis: "do we", "are there"
+
+**THEN you MUST:**
+1. **ANSWER the question** with options/analysis/explanation
+2. **STOP and WAIT** for explicit implementation approval
+3. **DO NOT use Edit/Write/Bash tools** until user says "do it", "go ahead", "implement", "yes please do that", "make those changes"
+
+**Approval phrases (OK to implement):**
+- ✅ "do it", "go ahead", "implement that", "yes please do that", "make those changes", "fix it", "add it"
+
+**Discussion phrases (NOT approval - keep discussing):**
+- ❌ "yes", "yes please", "ok", "sounds good", "that makes sense", "correct", "right"
+
+**When in doubt: ALWAYS discuss first, implement second.**
+
+**Example:**
+- User: "Can we reduce the number of args we pass to fetchItunesItems?"
+- You: [Propose solution with options] then STOP
+- User: "yes please" ❌ This means "yes I agree with your analysis" NOT "implement it"
+- User: "yes please do that" ✅ This means implement
+
+---
+
 ## Memory
 
 ### Beads is the Single Source of Truth
@@ -20,12 +51,14 @@
 ### When to Create Beads Issues (vs TodoWrite)
 
 **ALWAYS use beads for:**
+
 - Work that involves making decisions about what to do/skip (e.g., PR review assessment, optimization results)
 - Any multi-item work where you need to record WHY you're addressing/skipping each item
 - Work that could survive an auto-compact (beads persists; TodoWrite doesn't)
 - Assessments with categories (must fix, should fix, won't fix)
 
 **TodoWrite is only for:**
+
 - Simple task tracking within a single beads issue (breaking down implementation steps)
 - Ephemeral notes that don't need to persist beyond the current work item
 
@@ -86,12 +119,14 @@ When the user approves work ("yes", "do it", "go ahead", "please fix"):
 ### Examples
 
 **WRONG** ❌
+
 ```
 user: "Yes please fix the Pushover notifications"
 assistant: *Immediately reads .github/workflows/ci.yml and starts implementing*
 ```
 
 **RIGHT** ✅
+
 ```
 user: "Yes please fix the Pushover notifications"
 assistant: "Creating beads task first to ensure persistence..."
@@ -103,6 +138,7 @@ assistant: *THEN reads files and implements*
 ### Applies To
 
 **ALL implementation work, no exceptions:**
+
 - Bug fixes (even "quick" ones)
 - Feature additions
 - Refactoring
@@ -121,6 +157,7 @@ Check the user's last message before using Edit, Write, or Bash:
 - Explicit command ("do it", "fix X", "committed") → Proceed
 
 Examples:
+
 - "Would it be simpler to...?" → Answer, present options, wait
 - "You should have asked first" → Acknowledge, wait for instruction
 - "Please fix the build" → Proceed with fix
@@ -214,6 +251,7 @@ If you're about to implement 2+ themes (whether from beads, optimization, PR rev
 7. **Offer next options:** Run `bd ready` and `bd list --label <current-label> --status open` to show what's available, then present 2-3 options with brief context
 
 **After closing a task, ALWAYS present options:**
+
 ```
 Task complete! What would you like to do next?
 
