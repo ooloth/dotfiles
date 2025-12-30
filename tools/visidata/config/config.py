@@ -1,8 +1,9 @@
+# ruff: noqa
+# type: ignore
+
 # Visidata configuration file
 # See: https://www.visidata.org/docs/customize/
 # See: https://www.visidata.org/docs/api/commands
-
-# TODO: disable basedpyright and ruff
 
 options.color_default = "white on transparent"
 options.default_width = 20
