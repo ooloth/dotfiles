@@ -38,8 +38,8 @@ brew install marksman # see: https://github.com/neovim/nvim-lspconfig/blob/maste
 npm i -g @mdx-js/language-service # TS server for MDX: https://github.com/mdx-js/mdx-analyzer/tree/main/packages/typescript-plugin
 
 # Python
-brew install basedpyright # see: https://docs.basedpyright.com/latest/installation/command-line-and-language-server/#__tabbed_2_2
-brew install ruff
+uv tool install ruff@latest
+uv tool install ty@latest
 
 # Terraform
 brew tap hashicorp/tap
