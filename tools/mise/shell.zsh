@@ -1,7 +1,7 @@
 
-#########################
+########################
 # ENVIRONMENT VARIABLES #
-#########################
+########################
 
 ###########
 # ALIASES #
@@ -11,5 +11,7 @@
 # COMPLETIONS #
 ###############
 
-# NOTE: Homebrew automatically activates mise, so no need to do so manually
+if have mise; then
+  eval "$(mise activate zsh)"
+fi
 
