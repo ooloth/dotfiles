@@ -13,6 +13,10 @@ fi
 
 if is_work; then
   case "${current_dir}" in
+  clintech-gxp-datalake-ops)
+    uv run pytest -q
+    ;;
+
   mapapp-1 | mapapp-2 | mapapp-3)
     ./bin/test.sh "$@"
     ;;
