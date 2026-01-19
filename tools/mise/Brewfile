@@ -1,1 +1,4 @@
 brew "mise"
+
+# Dependencies
+brew "libyaml"
