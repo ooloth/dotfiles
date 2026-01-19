@@ -8,6 +8,10 @@ error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
 if is_work; then
   case $current_dir in
+  clintech-gxp-datalake-ops)
+    prek run --all-files
+    ;;
+
   mapapp-1 | mapapp-2 | mapapp-3)
     ./bin/check.sh "$@"
     ;;
