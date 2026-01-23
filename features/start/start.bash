@@ -12,6 +12,10 @@ if is_work; then
     du
     ;;
 
+  clintech-gxp-datalake-ops)
+    uv run uvicorn rxrx.valid.clinical_ingest.app:app
+    ;;
+
   genie)
     # the genie docker compose file starts the frontend, backend and db (no need to run any separately)
     du
