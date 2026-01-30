@@ -13,7 +13,8 @@ if is_work; then
     ;;
 
   clintech-gxp-datalake-ops)
-    uv run uvicorn rxrx.valid.clinical_ingest.app:app
+    dd
+    uvicorn rxrx.valid.clinical_ingest.app:app --reload
     ;;
 
   genie)
@@ -44,10 +45,10 @@ if is_work; then
 
   platelet-ui)
     info "🚀 Starting cauldron, genie, skurge, platelet and platelet-ui"
-    cauldron && dud
-    genie && dud
-    pl && dud
-    skurge && dud
+    cauldron && du
+    genie && du
+    pl && du
+    skurge && du
     plu && n && du
     ;;
 
