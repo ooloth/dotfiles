@@ -13,6 +13,10 @@ if is_work; then
     dd
     ;;
 
+  clintech-gxp-datalake-ops)
+    docker compose down -v
+    ;;
+
   genie)
     info "✋ Stopping genie"
     dd
