@@ -8,3 +8,7 @@ For all work that involves modifying code:
 4. Optionally refactor to improve the implementation design
 5. Pause to let me review and commit
 6. Until the list is empty, go back to #2
+
+## Rules
+
+- Run tests yourself, directly in the foreground; never use the Task tool or any other subagent or background task (it makes the test run much too slow)
