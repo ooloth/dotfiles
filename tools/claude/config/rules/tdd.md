@@ -9,6 +9,22 @@ For all work that involves modifying code:
 5. Pause to let me review and commit
 6. Until the list is empty, go back to #2
 
-## Rules
+## Rules - CRITICAL
 
-- Run tests yourself, directly in the foreground; never use the Task tool or any other subagent or background task (it makes the test run much too slow)
+**BLOCKING RULE: ALWAYS run tests in the FOREGROUND.**
+
+- ❌ NEVER use `Task` tool for tests
+- ❌ NEVER use `run_in_background=true` on Bash for tests
+- ❌ NEVER delegate test execution to any agent
+- ✅ ALWAYS use direct `Bash` tool calls in foreground
+
+**Why:** Background execution is 10-50x slower due to polling overhead. Direct foreground execution gives immediate results.
+
+**Examples:**
+
+```bash
+# ✅ CORRECT - Direct foreground
+python -m pytest tests/path/to/test.py::test_name -xvs
+
+# ❌ WRONG - Background task (never use run_in_background parameter for pytest)
+```
