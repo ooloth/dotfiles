@@ -3,4 +3,4 @@ set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
-symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/config.toml" "${TOOL_CONFIG_DIR}"
+symlink "${DOTFILES}/tools/mise/config/config.toml" "${HOME}/.config/mise"
