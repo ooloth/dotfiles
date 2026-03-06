@@ -178,14 +178,23 @@ Examples:
 
 **What is "one small change"?**
 
-Good examples (one theme = one commit):
+A committable unit is **ONE test case + the implementation that makes it pass**.
 
-- ✅ Add aria-label to pagination nav + test that verifies it's present
-- ✅ Add focus-visible styles to all interactive elements in the Likes page + visual regression test
-- ✅ Add skip link to layout + add id="main" to all main elements + test both features
-- ✅ Implement new validation function + comprehensive test suite for all edge cases
+Good examples (one test case = one commit):
 
-The key: **related changes that tell one story**. It's fine if the change touches multiple files, as long as they're part of the same logical theme.
+- ✅ Add test for aria-label on pagination nav → Add the aria-label → STOP
+- ✅ Add test for focus-visible on button → Add the focus-visible style → STOP
+- ✅ Add test for skip link presence → Add skip link to layout → STOP
+- ✅ Add test for empty string validation → Implement the validation check → STOP
+
+When implementing a feature with multiple scenarios:
+- Test scenario 1 → Implementation → STOP, wait for "committed"
+- Test scenario 2 → Implementation → STOP, wait for "committed"
+- Test scenario 3 → Implementation → STOP, wait for "committed"
+
+The TDD cycle is: Write ONE failing test → Make it pass → (Optional refactor) → STOP and wait for "committed"
+
+The key: **ONE test case at a time, no batching**. It's fine if the implementation touches multiple files, as long as you're making ONE test pass.
 
 **This workflow applies to ALL types of work:**
 
