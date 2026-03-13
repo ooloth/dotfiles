@@ -30,6 +30,7 @@ from rich.pretty import pprint  # ty: ignore[unresolved-import]
 @dataclass
 class Config:
     BRANCH: str = ""  # e.g. "fix-bug-123" or "add-feature-xyz"
+    DEBUG_MODE: bool = True
     ITERATIONS: int = 50
     # MODEL: str # Vary MODEL per prompt by default? One env var per prompt?
 
@@ -47,6 +48,15 @@ def parse_config() -> Config:
 class ShouldContinueDecision:
     yes: bool
     reason: str
+
+
+class PromptFile(StrEnum):
+    BUILD = "BUILD.md"
+    DISCUSS = "DISCUSS.md"
+    GOAL = "GOAL.md"  # "${PWD}/.ralph/${config.BRANCH}/GOAL.md"
+    PUBLISH = "PUBLISH.md"
+    REVIEW = "REVIEW.md"
+    UPDATE = "UPDATE.md"
 
 
 @dataclass
@@ -68,18 +78,9 @@ class LoopState:
 
         return ShouldContinueDecision(yes=True, reason="More iterations to go!")
 
-
-class PromptFile(StrEnum):
-    BUILD = "BUILD.md"
-    DISCUSS = "DISCUSS.md"
-    PUBLISH = "PUBLISH.md"
-    REVIEW = "REVIEW.md"
-    UPDATE = "UPDATE.md"
-
-
-def choose_prompt() -> PromptFile:
-    """Based on tasks.json state, I imagine?"""
-    return PromptFile.DISCUSS
+    def next_prompt(self) -> PromptFile:
+        """Based on tasks.json state, I imagine?"""
+        return PromptFile.DISCUSS
 
 
 def summarize_session():
