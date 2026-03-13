@@ -7,8 +7,10 @@
 
 from __future__ import annotations
 
+import subprocess
 from dataclasses import dataclass
 from enum import StrEnum
+from pathlib import Path
 
 from rich.pretty import pprint  # ty: ignore[unresolved-import]
 
@@ -33,6 +35,8 @@ class Config:
     DEBUG_MODE: bool = True
     ITERATIONS: int = 50
     # MODEL: str # Vary MODEL per prompt by default? One env var per prompt?
+    RALPH_DIR_PROJECT: Path = Path.cwd() / ".ralph"
+    RALPH_DIR_GLOBAL: Path = Path.home() / "Repos/ooloth/dotfiles/features/ralph"
 
 
 def parse_config() -> Config:
@@ -78,9 +82,33 @@ class LoopState:
 
         return ShouldContinueDecision(yes=True, reason="More iterations to go!")
 
-    def next_prompt(self) -> PromptFile:
+    def next_prompt(self) -> str:
         """Based on tasks.json state, I imagine?"""
-        return PromptFile.DISCUSS
+
+        def get_prompt_file_name() -> str:
+            return PromptFile.BUILD
+
+        def get_absolute_path(file_name: str) -> Path:
+            match file_name:
+                case PromptFile.GOAL:
+                    prompt_file_path = (
+                        self.config.RALPH_DIR_PROJECT / self.config.BRANCH / file_name
+                    )
+                    # print(f"Looking for GOAL.md at: {prompt_file_path}")
+                    return prompt_file_path
+                case _:
+                    prompt_file_path = (
+                        self.config.RALPH_DIR_GLOBAL / f"prompts/{file_name}"
+                    )
+                    # print(f"Looking for {file_name} at: {prompt_file_path}")
+                    return prompt_file_path
+
+        prompt_file = get_absolute_path(get_prompt_file_name()).resolve()
+
+        if not prompt_file.exists():
+            raise FileNotFoundError(f"Prompt file not found: {prompt_file}")
+
+        return prompt_file.read_text()
 
 
 def summarize_session():
@@ -104,6 +132,21 @@ def loop(config: Config, initial_state: LoopState):
         # Continue?
         if continue_decision.yes:
             print(f"=== Iteration {state.iteration} ===")
+            prompt = state.next_prompt()
+            print(f"Prompt: {prompt}")
+
+            # subprocess.run(
+            #     [
+            #         "cat",
+            #         prompt_file_path_absolute,
+            #         "|",
+            #         "claude",
+            #         "--dangerously-skip-permissions",
+            #     ],
+            #     # capture_output=True,
+            #     # text=True,
+            # ).stdout
+
         else:
             print(f"\nStopping loop: {continue_decision.reason}")
             break
