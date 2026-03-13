@@ -17,7 +17,11 @@ from rich.pretty import pprint as print  # ty: ignore[unresolved-import]
 
 @dataclass
 class Config:
-    pass
+    """Config for the loop."""
+
+    BRANCH: str = ""  # e.g. "fix-bug-123" or "add-feature-xyz"
+    ITERATIONS: int = 50
+    # MODEL: str # Vary MODEL per prompt by default? One env var per prompt?
 
 
 def parse_config() -> Config:
@@ -56,7 +60,7 @@ def choose_prompt() -> Prompt:
 def main():
     config = parse_config()
 
-    for i in range(5):
+    for i in range(config.ITERATIONS):
         # continue_decision = should_continue()
         # if not continue_decision.choice == True:
         #     print("Stopping loop:", continue_decision.reason)
