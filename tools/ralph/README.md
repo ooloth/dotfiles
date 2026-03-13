@@ -7,7 +7,7 @@ Based on the [ralph technique](https://ghuntley.com/ralph/) by Geoffrey Huntley,
 ## How It Works
 
 A bash loop that:
-1. Pipes a prompt into Claude Code
+1. Pipes a prompt into Claude
 2. Claude picks next task from prd.json
 3. Claude implements it
 4. Claude runs verification (tests, types, lint)
