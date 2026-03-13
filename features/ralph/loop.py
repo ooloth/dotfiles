@@ -45,16 +45,16 @@ def should_continue() -> ShouldContinueDecision:
     return ShouldContinueDecision(decision=True, reason="Always continue for now")
 
 
-class Prompt(StrEnum):
-    BUILD = "build"
-    REVIEW = "review"
-    PUBLISH = "publish"
-    UPDATE = "update"
-    DISCUSS = "discuss"
+class PromptFile(StrEnum):
+    BUILD = "BUILD.md"
+    DISCUSS = "DISCUSS.md"
+    PUBLISH = "PUBLISH.md"
+    REVIEW = "REVIEW.md"
+    UPDATE = "UPDATE.md"
 
 
-def choose_prompt() -> Prompt:
-    return Prompt.BUILD
+def choose_prompt() -> PromptFile:
+    return PromptFile.DISCUSS
 
 
 def main():
