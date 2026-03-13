@@ -29,8 +29,6 @@ from rich.pretty import pprint  # ty: ignore[unresolved-import]
 
 @dataclass
 class Config:
-    """Config for the loop."""
-
     BRANCH: str = ""  # e.g. "fix-bug-123" or "add-feature-xyz"
     ITERATIONS: int = 50
     # MODEL: str # Vary MODEL per prompt by default? One env var per prompt?
@@ -44,7 +42,11 @@ def parse_config() -> Config:
 # CONTROL FLOW #
 ################
 
-# TODO: loop logic as state machine to avoid bool combos
+
+@dataclass
+class ShouldContinueDecision:
+    yes: bool
+    reason: str
 
 
 @dataclass
@@ -60,22 +62,11 @@ class LoopState:
             case _:
                 raise ValueError(f"Unknown action: {action}")
 
+    def should_continue(self) -> ShouldContinueDecision:
+        if self.iteration > self.config.ITERATIONS:
+            return ShouldContinueDecision(yes=False, reason="Reached max iterations")
 
-@dataclass
-class ShouldContinueDecision:
-    yes: bool
-    reason: str
-
-
-def should_continue(
-    config: Config,
-    state: LoopState,
-) -> ShouldContinueDecision:
-    """State machine? Reducer?"""
-    if state.iteration > config.ITERATIONS:
-        return ShouldContinueDecision(yes=False, reason="Reached max iterations")
-
-    return ShouldContinueDecision(yes=True, reason="More iterations to go!")
+        return ShouldContinueDecision(yes=True, reason="More iterations to go!")
 
 
 class PromptFile(StrEnum):
@@ -107,7 +98,7 @@ def loop(config: Config, initial_state: LoopState):
 
     while True:
         state = state.dispatch("increment_iteration")
-        continue_decision = should_continue(config, state)
+        continue_decision = state.should_continue()
 
         # Continue?
         if continue_decision.yes:
