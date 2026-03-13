@@ -10,6 +10,15 @@ from enum import StrEnum
 
 from rich.pretty import pprint as print  # ty: ignore[unresolved-import]
 
+# TODO: https://github.com/lowspeclabs/Local-Ralph-Loop-With-RLM-RHC-Engram/blob/main/run_ralph.py
+# TODO: https://x.com/ryancarson/article/2008548371712135632
+# TODO: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+# TODO: https://block.github.io/goose/docs/tutorials/ralph-loop/
+# TODO: https://github.com/snarktank/ralph
+# TODO: https://ghuntley.com/ralph/
+# TODO: https://ghuntley.com/loop/
+# TODO: https://ghuntley.com/tag/ai/
+
 ##########
 # CONFIG #
 ##########
@@ -42,6 +51,7 @@ class ShouldContinueDecision:
 
 
 def should_continue() -> ShouldContinueDecision:
+    """State machine? Reducer?"""
     return ShouldContinueDecision(decision=True, reason="Always continue for now")
 
 
