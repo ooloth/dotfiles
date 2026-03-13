@@ -1,5 +1,5 @@
 ---
-description: Commit changes using the atomic-committer agent
+description: Commit changes in a logical sequence.
 ---
 
-Use the atomic-committer agent to commit all changes.
+Please commit all changes yourself. Use multiple commits if relevant. Pair test cases with their implementation. Commit in a sequence that progresses from building blocks to orchestration.

@@ -385,5 +385,6 @@
   "hooks": {},
   "feedbackSurveyState": {
     "lastShownTime": 1754054339526
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }
