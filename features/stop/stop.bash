@@ -13,7 +13,7 @@ if is_work; then
     dd
     ;;
 
-  clintech-gxp-datalake-ops)
+  ops-1 | ops-2)
     docker compose down -v
     ;;
 

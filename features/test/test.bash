@@ -13,7 +13,7 @@ fi
 
 if is_work; then
   case "${current_dir}" in
-  clintech-gxp-datalake-ops)
+  ops-1 | ops-2)
     uv run pytest -q
     ;;
 

@@ -8,7 +8,7 @@ error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
 if is_work; then
   case $current_dir in
-  clintech-gxp-datalake-ops)
+  ops-1 | ops-2)
     prek run --all-files
     ;;
 

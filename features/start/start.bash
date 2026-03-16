@@ -12,7 +12,7 @@ if is_work; then
     du
     ;;
 
-  clintech-gxp-datalake-ops)
+  ops-1 | ops-2)
     info "🚀 Starting database + API"
     docker compose up --build --detach
     uvicorn rxrx.valid.clinical_ingest.app:app --reload
