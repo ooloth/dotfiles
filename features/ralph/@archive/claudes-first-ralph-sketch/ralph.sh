@@ -30,8 +30,11 @@ for i in $(seq 1 "$MAX_ITERATIONS"); do
   echo "════════════════════════════════════════"
   echo ""
 
-  # Run claude-code with prompt, capture output
-  OUTPUT=$(cat "$RALPH_DIR/prompt.md" | claude-code --dangerously-skip-permissions 2>&1 | tee /dev/stderr) || true
+  # Run claude with prompt, save output to temp file while showing live
+  npx -y @anthropic-ai/claude-code --dangerously-skip-permissions < "$RALPH_DIR/prompt.md" 2>&1 | tee "/tmp/ralph-iteration-$i.log"
+
+  # Read output to check for completion
+  OUTPUT=$(cat "/tmp/ralph-iteration-$i.log")
 
   # Check for completion signal
   if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
