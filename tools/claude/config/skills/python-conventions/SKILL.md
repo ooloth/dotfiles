@@ -10,4 +10,4 @@ description: Python patterns and style guide (when alternate patterns are not sp
 
 ## Style guide
 
-- Imports go at the top of the module, not inline
+- Place imports go at the top of modules, not inline
