@@ -1,6 +1,6 @@
 ---
 name: testing-conventions
-description: Test design patterns for all projects where alternate patterns are not specified
+description: Test design patterns and style guide (when alternate patterns are not specified at the project level)
 ---
 
 ## Unit testing patterns
