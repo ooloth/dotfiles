@@ -13,36 +13,9 @@ Provide a PR number (if in a repo directory) or full GitHub URL:
 - `/review-pr 123` (when in repo directory)
 - `/review-pr https://github.com/org/repo/pull/123` (from anywhere)
 
-## Process
-
-Fast, focused review of a single PR with no session overhead.
-
----
-
-### Phase 0: Team Context (Optional)
-
-**Ask user:**
-```
-Quick context (or press Enter for defaults):
-1. Time-sensitive? (release/hotfix/normal) [default: normal]
-2. Author experience? (junior/mid/senior/unknown) [default: unknown]
->
-```
-
-**If user presses Enter without input:** Use defaults (normal, unknown)
-
-**How this affects review:**
-- **Hotfix**: Focus only on blocking bugs/security, note other issues for follow-up
-- **Junior author**: More teaching, more encouragement, explain patterns
-- **Senior author**: Trust their judgment more, ask "why" questions to learn from them
-
-Proceed to Phase 1.
-
----
-
 ### Phase 1: Fetch PR Data
 
-Extract org/repo/number from input and fetch **in parallel**:
+If user provided a PR number or URL as input, extract org/repo/number from input and fetch **in parallel**:
 
 ```bash
 gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments,statusCheckRollup,author &
@@ -63,7 +36,7 @@ wait
 1. **PR title and description/body**
    - What problem is this solving?
    - What approach did author choose?
-   - What tradeoffs or design choices did they explain?
+   - What trade-offs or design choices did they explain?
    - Are there stated areas of uncertainty or "I'm not sure about X"?
    - Is this part of a series? (Part 1 of 3, Depends on #123, WIP, Draft)
    - Are there explicitly incomplete parts? (Tests coming in part 2, etc.)
@@ -87,9 +60,10 @@ wait
 4. **What did author respond?** (critical - don't repeat resolved concerns)
 
 **Skip non-reviewable files:**
-- package-lock.json, *.lock, yarn.lock, Gemfile.lock
-- Generated code (*.generated.*, *_pb2.py, etc.)
-- Test snapshots (__snapshots__/*)
+
+- package-lock.json, \*.lock, yarn.lock, Gemfile.lock
+- Generated code (_.generated._, \*\_pb2.py, etc.)
+- Test snapshots (**snapshots**/\*)
 - Vendored dependencies (vendor/, node_modules/ if committed)
 - Binary files
 - **Formatting-only changes** (detect hunks that are whitespace/style only)
@@ -97,6 +71,7 @@ wait
 **Process existing review context:**
 
 Parse reviews and comments from the JSON:
+
 - Extract all review comments (inline and general)
 - Extract all conversation comments
 - Group by file and line number
@@ -119,6 +94,7 @@ Parse reviews and comments from the JSON:
 **IMPORTANT:** Don't review diffs in isolation. Read full changed files to understand context.
 
 For each changed file (excluding skipped files):
+
 ```bash
 gh pr view <number> --repo <org>/<repo> --json files
 # Extract file paths
@@ -127,11 +103,13 @@ curl -L "https://raw.githubusercontent.com/<org>/<repo>/<headRefOid>/<file_path>
 ```
 
 **Why:** Diff shows changes but not surrounding code. Need full context to:
+
 - Verify suggestions match existing patterns in this file
 - Ensure "weird code" isn't actually consistent with file conventions
 - Understand if change fits file's architecture
 
 **Show progress for visibility:**
+
 ```
 Analyzing changed files:
 ✓ auth.py (1/8)
@@ -155,6 +133,7 @@ Read **2-3 similar/related unchanged files** to understand how this codebase sol
 3. What conventions are used? (naming, architecture, testing patterns)
 
 **Must output what you found:**
+
 ```
 ✓ Reviewed existing patterns:
 - Error handling: utils/errors.py uses custom exception classes with error codes
@@ -173,6 +152,7 @@ Read **2-3 similar/related unchanged files** to understand how this codebase sol
 Review the code changes across all dimensions:
 
 **Correctness:**
+
 - Completeness, edge cases
 - Consistency with existing patterns (from Phase 5)
 - Bugs, error handling
@@ -183,14 +163,17 @@ Review the code changes across all dimensions:
   - Better: "Add tests for: expired token, malformed token, missing token, token with wrong signature"
 
 **Performance:**
+
 - Actual inefficiencies only (not theoretical)
 
 **Maintainability:**
+
 - Design coherence, simplicity
 - Clarity, cleanliness
 - Future lens, developer experience
 
 **What's Good:**
+
 - Clever solutions
 - Good abstractions
 - Thorough testing
@@ -208,16 +191,19 @@ python3 ~/.claude/skills/inspecting-codefresh-failures/inspect.py <build-id>
 Extract build IDs from `statusCheckRollup` data. Include failure analysis in review.
 
 **Volume control:**
+
 - Focus on **3-5 most impactful issues**
 - If there are 10+ issues, group related ones or suggest "broader refactor needed"
 - Don't overwhelm with every minor issue
 
 **Balanced feedback ratio:**
+
 - Aim for **at least 1:1 positive to negative comments**
 - For every issue raised, find something to praise
 - Makes reviews collaborative, not adversarial
 
 **Show progress:**
+
 ```
 Deep review in progress:
 ✓ Correctness (1/4)
@@ -234,7 +220,7 @@ Deep review in progress:
 
 **Format:**
 
-```markdown
+````markdown
 ## PR Review: [org/repo#number] "[title]"
 
 ### 📝 Existing Review Context
@@ -242,6 +228,7 @@ Deep review in progress:
 [If there are existing reviews/comments, show them with resolution status:]
 
 @alice reviewed 2 days ago (CHANGES_REQUESTED):
+
 - auth.py:45-52: "Should log errors instead of swallowing"
   → Author responded: "Good catch, will fix"
   → ✅ Fixed in commit abc1234
@@ -250,12 +237,15 @@ Deep review in progress:
   → ❌ Not addressed, still a concern
 
 @bob commented 1 day ago:
+
 - General: "Looks good overall, just those two issues to address"
 
 💬 Active discussions (1):
+
 - auth.py:45-52: Error handling approach (resolved)
 
 🎯 Team standards learned:
+
 - This team blocks on: security issues, missing tests, breaking changes
 - This team allows as follow-up: performance optimizations, refactoring
 
@@ -299,12 +289,14 @@ Deep review in progress:
 new_token = generate_refresh_token(user)
 # ⚠️ No check if old token has expired
 ```
+````
 
 **Issue:** Missing token expiry validation
 
 **Impact:** If a user passes an already-expired token, the system still issues a new refresh token. This allows indefinite session extension even after tokens expire. Example: user's token expires at noon, they can still refresh at 1pm.
 
 **Suggested fix:**
+
 ```python
 # Before
 new_token = generate_refresh_token(user)
@@ -344,6 +336,7 @@ def process_batch(items):
 **Impact:** If `item.user_id` comes from untrusted input, attacker could inject SQL. Example: if user_id is `"1; DROP TABLE users; --"`, this executes the DROP command.
 
 **Suggested fix:**
+
 ```python
 # Before
 result = db.query(f"SELECT * FROM users WHERE id = {item.user_id}")
@@ -434,6 +427,7 @@ Example: "Request changes - the token expiry bypass (🚫) is a security issue t
 [For PRs needing changes:]
 
 🔧 **Please address before merge:**
+
 1. auth.py:78-82 - Add token expiry validation (prevents security bypass)
    - Suggested fix: Check `is_token_valid(old_token)` before refresh
    - Test cases: expired token, malformed token, valid token
@@ -442,6 +436,7 @@ Example: "Request changes - the token expiry bypass (🚫) is a security issue t
    - Test cases: injection attempt, special characters
 
 💡 **Consider for follow-up:**
+
 - utils.py:45-52 - Shared cache solution for horizontal scaling (works fine now, becomes issue at multi-instance deployment)
 - models.py:89 - Rename `data` to `user_profile` (minor clarity improvement, matches existing convention)
 
@@ -469,7 +464,8 @@ Example: "Request changes - the token expiry bypass (🚫) is a security issue t
 **c** - Request changes via gh CLI (general comment only)
 
 What would you like to do?
-```
+
+````
 
 Wait for user input.
 
@@ -481,7 +477,7 @@ Wait for user input.
 
 ```bash
 open [PR URL from fetched data]
-```
+````
 
 Then re-show action menu.
 
@@ -530,7 +526,7 @@ Proceed? (y/n)
 
 For each issue, generate contextual comment (same quality as interactive mode):
 
-```bash
+````bash
 gh api repos/<org>/<repo>/pulls/<number>/reviews \
   --method POST \
   --input - <<'EOF'
@@ -551,7 +547,7 @@ gh api repos/<org>/<repo>/pulls/<number>/reviews \
   ]
 }
 EOF
-```
+````
 
 Success: "✅ Review posted with 2 inline comments (REQUEST CHANGES)"
 
@@ -574,6 +570,7 @@ Or type file:line (e.g., "models.py:89")
 ### Step 2: User selects location
 
 Parse input:
+
 - Number → use corresponding file:line from key areas
 - file:line format → use directly
 - Extract file path and line number
@@ -582,7 +579,7 @@ Parse input:
 
 Show code snippet and suggest **contextual, specific** comments based on actual analysis:
 
-```
+````
 Code at auth.py:78-82:
 
     new_token = generate_refresh_token(user)
@@ -597,9 +594,10 @@ Suggested fix:
 if not is_token_valid(old_token):
     raise InvalidTokenError('Cannot refresh expired token')
 new_token = generate_refresh_token(user)
-```
+````
 
 Test cases to add:
+
 - test_refresh_with_expired_token() - should raise InvalidTokenError
 - test_refresh_with_valid_token() - should succeed"
 
@@ -610,6 +608,7 @@ The impact: user's token expires at noon, they can still refresh at 1pm and cont
 Could we validate that old_token is still valid before proceeding?
 
 Test cases needed:
+
 - Expired token scenario
 - Malformed token scenario
 - Valid token scenario"
@@ -621,12 +620,15 @@ Example attack: User's session expires, but they keep calling refresh_token() ev
 Have you considered adding `is_token_valid(old_token)` validation before generating the new token?
 
 Suggested tests:
+
 - test_refresh_with_expired_token()
 - test_refresh_with_valid_token()
 - test_refresh_with_malformed_token()"
 
 Select 1-3 to use/edit, or press Enter to write custom:
+
 >
+
 ```
 
 **How to generate suggestions:**
@@ -676,8 +678,11 @@ Store: file, line, body
 ### Step 5: Continue?
 
 ```
+
 Inline comment added. Add another? (y/n)
+
 >
+
 ```
 
 If **y** → repeat from Step 1
@@ -686,13 +691,17 @@ If **n** → proceed to Step 6
 ### Step 6: Summary and review type
 
 ```
+
 Review with 2 inline comments:
+
 1. auth.py:78-82: "I noticed we're generating a new token without validating..."
 2. api.py:134-156: "I see we're using string interpolation for the query..."
 
 Submit as: (a)pprove, (c)hange requests, or co(m)ment?
+
 >
-```
+
+````
 
 ### Step 7: Submit via GitHub API
 
@@ -717,15 +726,17 @@ gh api repos/<org>/<repo>/pulls/<number>/reviews \
   ]
 }
 EOF
-```
+````
 
 **Mapping:**
+
 - a → APPROVE
 - c → REQUEST_CHANGES
 - m → COMMENT
 
 **Error handling:**
 If gh api fails:
+
 - Show error message
 - Suggest: "You can post these comments manually in the browser (action 'o')"
 - List the comments that would have been posted
@@ -737,6 +748,7 @@ Success: "✅ Review posted with 2 inline comments"
 ## Severity Criteria (Explicit Examples)
 
 **🚫 Blocking (must fix before merge):**
+
 - Bug that breaks production: "Function returns None when it should return list, will crash caller"
 - Security hole: "SQL injection allows arbitrary code execution"
 - Data loss: "Delete operation has no confirmation, user could lose all data"
@@ -744,22 +756,26 @@ Success: "✅ Review posted with 2 inline comments"
 - Breaking changes without migration: "Renames database column without migration script"
 
 **💡 Should Fix (important quality issues):**
+
 - Missing tests: "New function has no test coverage, could break silently"
 - Unclear code: "This 50-line function does 5 things, hard to understand"
 - Tech debt that will bite us: "This N+1 query works now but will timeout at 1000 users"
 - Inconsistent patterns: "Uses fetch() everywhere else but axios here, creates confusion"
 
 **🤔 Question (clarify or suggest alternatives):**
+
 - Clarify intent: "What's the reasoning behind caching at this layer vs the DB layer?"
 - Suggest alternatives: "Have you considered using existing utility X instead of reimplementing?"
 - Understand constraints: "Is there a reason we can't use the standard library for this?"
 
 **✨ Nit/Optional (polish):**
+
 - Style: "Could format this with Prettier" (only if team uses Prettier)
 - Naming: "Consider renaming `data` to `userProfile`"
 - Minor improvements: "Could extract this magic number to a constant"
 
 **👍 Praise (no threshold - praise liberally):**
+
 - Good design: "Smart use of caching here to avoid repeated DB hits"
 - Clever solution: "Nice! Using Set instead of Array makes the lookup O(1)"
 - Thorough testing: "Great test coverage - you covered all 4 edge cases"
@@ -770,11 +786,13 @@ Success: "✅ Review posted with 2 inline comments"
 ## Edge Cases
 
 **Large PR (>20 files):**
+
 - Note in summary: "⚠️ Large PR (X files) - thorough review is challenging"
 - Focus on highest-risk changes
 - Suggest: "Consider breaking into smaller PRs for future changes"
 
 **Junior author (from Phase 0):**
+
 - Extra teaching focus
 - More encouragement
 - Explain patterns and practices
@@ -783,24 +801,28 @@ Success: "✅ Review posted with 2 inline comments"
 - Frame as learning opportunity: "Here's a pattern you might not have seen..."
 
 **Senior author (from Phase 0):**
+
 - Trust their judgment
 - Ask "why" questions to learn from them
 - Less explaining, more collaborative discussion
 - Assume they know tradeoffs, ask about reasoning
 
 **Hotfix/emergency PR (from Phase 0):**
+
 - Note: "⚠️ Hotfix - prioritizing critical issues only"
 - Focus only on blocking bugs/security
 - Note technical debt for follow-up: "This works for the hotfix. Could we file a ticket to refactor X?"
 - Expedite review - be concise
 
 **No issues found:**
+
 - Still provide value:
   - Acknowledge what's well done (👍 section)
   - Ask clarifying questions if curious (🤔)
   - Or: "✅ LGTM - this looks solid. No issues found. Well done on the test coverage!"
 
 **Good-enough for now:**
+
 - Acknowledge constraints: "This works perfectly for current scale. When we hit 10k users, we might need to optimize X."
 - Don't require perfect when good is sufficient
 - Suggest follow-up for future: "Could we create a ticket to investigate Y when we have more time?"
@@ -810,6 +832,7 @@ Success: "✅ Review posted with 2 inline comments"
 ## Review Guidelines
 
 **DO:**
+
 - Read PR description FIRST to understand author's intent and design choices
 - Read full changed files for context, not just diffs
 - Enforce reading 2-3 similar files to ground suggestions in existing patterns
@@ -833,6 +856,7 @@ Success: "✅ Review posted with 2 inline comments"
 - Show progress for visibility during long reviews
 
 **DON'T:**
+
 - Dictate - the author owns this code
 - Question choices author already explained in PR description
 - Nitpick style unless it violates team standards
@@ -852,38 +876,47 @@ Success: "✅ Review posted with 2 inline comments"
 ## Comment Tone
 
 **Questions over statements:**
+
 - ✅ "Could we add validation here?"
 - ❌ "You should add validation here"
 
 **Explain concrete impact:**
+
 - ✅ "If user passes `'; DROP TABLE users; --'`, this executes it and deletes all data"
 - ❌ "This has a SQL injection risk"
 
 **Show before/after:**
+
 - ✅ Include code suggestion with explanation
 - ❌ Just point out what's wrong without solution
 
 **Include specific test cases:**
+
 - ✅ "Test cases: expired token, malformed token, valid token"
 - ❌ "Add tests"
 
 **Collaborative exploration:**
+
 - ✅ "I'm curious about the reasoning here...", "Have you considered...", "What led to this approach?"
 - ❌ "Just do X", "Obviously this should be Y"
 
 **Teach, don't correct:**
+
 - ✅ "Parameterized queries prevent SQL injection by treating user input as data, not executable commands. The DB driver escapes special characters."
 - ❌ "Use parameterized queries"
 
 **Acknowledge constraints:**
+
 - ✅ "This works great for current scale. If we grow to 10k users, we might need caching."
 - ❌ "This won't scale"
 
 **Distinguish blocking from follow-up:**
+
 - ✅ "This security issue should be fixed before merge. The performance optimization could be a follow-up ticket."
 - ❌ Everything treated equally urgent
 
 **Reference existing patterns:**
+
 - ✅ "This follows the pattern in auth/session.py where we use Redis for caching"
 - ❌ Suggest new patterns without checking what exists
 
@@ -892,5 +925,6 @@ Success: "✅ Review posted with 2 inline comments"
 ## Completion
 
 After posting review (via a/b/c/i actions):
+
 - Show success message
 - Done (no session state to clean up)
