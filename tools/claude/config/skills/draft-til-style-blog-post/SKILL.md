@@ -1,6 +1,6 @@
 ---
 name: drafting-til
-description: Drafts a TIL blog post in the user's voice and creates it in Notion with Status="Claude Draft". Contains voice guide for matching the user's writing style. Use when user approves a TIL topic and wants a draft created.
+description: Draft a TIL-style blog post in the user's voice and write it to Notion with Status="Claude Draft". Contains voice guide for matching the user's writing style. Use when user approves a TIL topic and wants a draft created.
 ---
 
 # Draft TIL Skill
@@ -21,11 +21,13 @@ Every technique below serves these principles.
 ### Two TIL Formats
 
 **Ultra-short (50-150 words)**
+
 - Single tip with one code example
 - Minimal explanation
 - Best for simple gotchas or quick references
 
 **Standard (300-500 words)**
+
 - Problem → bad solution → good solution structure
 - Multiple code examples
 - More explanation and personality
@@ -86,6 +88,7 @@ Every technique below serves these principles.
    - Or just end on the last code example (no closing needed)
 
 **Example rhythm**:
+
 ```
 [Direct: state problem]
 [Direct: show bad code]
@@ -108,9 +111,11 @@ Every technique below serves these principles.
 ## Notion Databases
 
 ### Writing Database
+
 **Data Source ID**: `c296db5b-d2f1-44d4-abc6-f9a05736b143`
 
 ### TIL Assessed Commits Database
+
 **Data Source ID**: `cba80148-aeef-49c9-ba45-5157668b17b3`
 
 ---
@@ -119,17 +124,17 @@ Every technique below serves these principles.
 
 When creating a TIL page in the Writing database, set these properties:
 
-| Property | Value |
-|----------|-------|
-| Title | The TIL title (direct, specific) |
-| Status | "Claude Draft" |
-| Type | "how-to" |
-| Destination | ["blog"] |
-| Description | One-line summary of what reader will learn |
-| Slug | URL-friendly version of title (lowercase, hyphens) |
-| Topics | Link to relevant Topics if obvious match exists |
-| Research | Link to source Research items if applicable |
-| Questions | Link to source Questions if applicable |
+| Property    | Value                                              |
+| ----------- | -------------------------------------------------- |
+| Title       | The TIL title (direct, specific)                   |
+| Status      | "Claude Draft"                                     |
+| Type        | "how-to"                                           |
+| Destination | ["blog"]                                           |
+| Description | One-line summary of what reader will learn         |
+| Slug        | URL-friendly version of title (lowercase, hyphens) |
+| Topics      | Link to relevant Topics if obvious match exists    |
+| Research    | Link to source Research items if applicable        |
+| Questions   | Link to source Questions if applicable             |
 
 ---
 
@@ -198,7 +203,8 @@ Both operations return URLs - display both to the user.
 **Title**: Tmux's version command is -V
 
 **Content**:
-```markdown
+
+````markdown
 Most CLI tools use `--version` or `-v` to show their version.
 
 Tmux uses `-V` (capital V):
@@ -207,9 +213,11 @@ Tmux uses `-V` (capital V):
 tmux -V
 # tmux 3.4
 ```
+````
 
 The lowercase `-v` enables verbose mode instead.
-```
+
+````
 
 **Properties**:
 - Status: Claude Draft
@@ -234,7 +242,7 @@ You have an array of whatever:
 
 ```javascript
 const array = [{ stuff }, { moreStuff }, ...]
-```
+````
 
 But hiding in that array are some unusable `null` or `undefined` values:
 
@@ -266,6 +274,7 @@ const truthyArray = array.filter(Boolean)
 ```
 
 The `filter(Boolean)` step passes each item to `Boolean()`, which coerces it to `true` or `false`. If truthy, we keep it. 😎
+
 ```
 
 **Properties**:
@@ -297,3 +306,4 @@ After both MCP operations complete successfully:
 3. Offer to draft another or return to suggestions
 
 The tracker entry is automatically linked to the Writing page via the relation property.
+```
