@@ -1,5 +1,5 @@
 ---
-name: writing-pr-descriptions
+name: write-pr-description
 description: Voice guide for writing PR descriptions. Use this skill for ALL PR creation and updates (via gh CLI or editing existing PRs). Contains your specific voice rules, anti-patterns, examples, and workflow. Never write PR descriptions without invoking this skill first.
 allowed-tools: [Bash, Read, Glob, Grep]
 ---

@@ -418,7 +418,7 @@ When you answer a question or complete an assessment:
 
 ## Pull Requests
 
-- **Always use the `writing-pr-descriptions` skill** when creating or updating PRs
+- **Always use the `write-pr-description` skill** when creating or updating PRs
 - The skill contains my voice guide, rules, and anti-patterns
 - Never draft PR descriptions without it - even for "simple" PRs
 
