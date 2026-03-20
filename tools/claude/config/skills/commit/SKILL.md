@@ -1,8 +1,16 @@
 ---
-description: Commit the changes in the working tree in a logical sequence.
+description: Commit the changes in the working tree. Use every time you are committing changes.
 ---
 
-Please commit all changes in this working tree yourself and then return to deferring committing to me.
+## Context
+
+- All changes: !`git diff HEAD`
+- Staged changes: !`git diff --staged`
+- Unstaged changes: !`git diff`
+
+## Your task
+
+Please commit all changes in this working tree yourself. Then go back to deferring all future committing to me.
 
 Divide the changes into multiple commits if relevant. Divide changes thematically. For example, pair one test case with its implementation and corresponding documentation updates. Changes in one file don't necessarily all belong in the same commit.
 
