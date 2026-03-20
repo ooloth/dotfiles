@@ -26,6 +26,11 @@ CACHE_FILE = os.path.join(CACHE_DIR, "fetching-github-prs-to-review.json")
 HISTORY_FILE = os.path.join(CACHE_DIR, "fetching-github-prs-to-review-history.json")
 
 
+def get_login(obj: Optional[Dict[str, Any]], default: str = "") -> str:
+    """Safely extract login from a nullable author/actor object."""
+    return (obj or {}).get("login", default)
+
+
 def fetch_prs_from_github() -> Dict[str, Any]:
     """Fetch PRs from GitHub using GraphQL API."""
     # Build the ignored repos filter
@@ -169,7 +174,7 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
     """
     review_decision = pr.get("reviewDecision")
     reviews = pr.get("reviews", {}).get("nodes", [])
-    pr_author = pr.get("author", {}).get("login", "")
+    pr_author = get_login(pr.get("author"))
 
     # Track unique reviewers and their most recent state
     reviewer_states = {}  # {username: latest_state}
@@ -177,7 +182,7 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
     my_latest_timestamp = None
 
     for review in reviews:
-        author_login = review.get("author", {}).get("login", "")
+        author_login = get_login(review.get("author"))
         state = review.get("state")
         submitted_at = review.get("submittedAt")
 
@@ -246,7 +251,7 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
     if not my_engagement:
         comments = pr.get("comments", {}).get("nodes", [])
         for comment in comments:
-            if comment.get("author", {}).get("login") == my_username:
+            if get_login(comment.get("author")) == my_username:
                 age_str, _ = calculate_age(comment.get("createdAt"))
                 age = age_str.replace("📅 ", "")
                 my_engagement = f"💬 You commented {age} ago"
@@ -268,7 +273,7 @@ def get_conflict_status(pr: Dict[str, Any]) -> str:
 
 def categorize_pr(pr: Dict[str, Any]) -> str:
     """Categorize PR into: feature/bug, dependency_updates, or chore."""
-    author = pr.get("author", {}).get("login", "")
+    author = get_login(pr.get("author"))
     title = pr.get("title", "").lower()
 
     if author == "dependabot" or title.startswith("bump "):
@@ -347,7 +352,7 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
             "url": pr_node["url"],
             "repo_full": repo_full,
             "repo_short": repo_short,
-            "author": pr_node["author"]["login"],
+            "author": get_login(pr_node.get("author"), default="ghost"),
             "additions": pr_node["additions"],
             "deletions": pr_node["deletions"],
             "files": pr_node["changedFiles"],
