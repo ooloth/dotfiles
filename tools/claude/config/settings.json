@@ -382,7 +382,19 @@
       "Bash(wget http://169.254.169.254/:*)"
     ]
   },
-  "hooks": {},
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
+          }
+        ]
+      }
+    ]
+  },
   "feedbackSurveyState": {
     "lastShownTime": 1754054339526
   },
