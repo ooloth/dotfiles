@@ -3,25 +3,30 @@
 ## Questions ALWAYS Require Discussion First
 
 **IF the user's message contains ANY of these:**
+
 - A question mark `?`
 - Words like: "can we", "should we", "what if", "could we", "would it", "are we"
 - Requests for explanation: "why", "how does", "what's the"
 - Requests for analysis: "do we", "are there"
 
 **THEN you MUST:**
+
 1. **ANSWER the question** with options/analysis/explanation
 2. **STOP and WAIT** for explicit implementation approval
 3. **DO NOT use Edit/Write/Bash tools** until user says "do it", "go ahead", "implement", "yes please do that", "make those changes"
 
 **Approval phrases (OK to implement):**
+
 - ✅ "do it", "go ahead", "implement that", "yes please do that", "make those changes", "fix it", "add it"
 
 **Discussion phrases (NOT approval - keep discussing):**
+
 - ❌ "yes", "yes please", "ok", "sounds good", "that makes sense", "correct", "right"
 
 **When in doubt: ALWAYS discuss first, implement second.**
 
 **Example:**
+
 - User: "Can we reduce the number of args we pass to fetchItunesItems?"
 - You: [Propose solution with options] then STOP
 - User: "yes please" ❌ This means "yes I agree with your analysis" NOT "implement it"
@@ -188,6 +193,7 @@ Good examples (one test case = one commit):
 - ✅ Add test for empty string validation → Implement the validation check → STOP
 
 When implementing a feature with multiple scenarios:
+
 - Test scenario 1 → Implementation → STOP, wait for "committed"
 - Test scenario 2 → Implementation → STOP, wait for "committed"
 - Test scenario 3 → Implementation → STOP, wait for "committed"
@@ -442,7 +448,3 @@ The skill will:
 - Return a formatted report ready to include in reviews
 
 **Always investigate CI failures** - include specific error details in your review (not just "CI is failing"). Distinguish between errors introduced by the PR vs pre-existing issues.
-
-## Python Preferences
-
-- Prefer `from __future__ import annotations` over `from typing import TYPE_CHECKING`
