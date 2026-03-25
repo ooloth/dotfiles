@@ -398,5 +398,6 @@
   "feedbackSurveyState": {
     "lastShownTime": 1754054339526
   },
+  "showClearContextOnPlanAccept": true,
   "skipDangerousModePermissionPrompt": true
 }
