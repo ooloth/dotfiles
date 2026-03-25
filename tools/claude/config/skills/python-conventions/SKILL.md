@@ -5,9 +5,9 @@ description: Python patterns and style guide (when alternate patterns are not sp
 
 ## Type hints
 
-- Don't use `assert` for runtime type narrowing; raise an appropriate error instead
-- Don't quote return types; if using Python < 3.14, add: `from __future__ import annotations`
+- Do not use `assert` for runtime type narrowing; raise an appropriate error instead
+- Do not quote return types; if using Python < 3.14, add: `from __future__ import annotations`
 
 ## Style guide
 
-- Place imports go at the top of modules, not inline
+- Place imports at the top of the module, not inline
