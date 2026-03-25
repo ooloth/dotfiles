@@ -1,1 +1,10 @@
-{}
+{
+  "defaultModel": "claude-opus-4-6",
+  "defaultProvider": "anthropic",
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": false,
+  "quietStartup": false,
+  "packages": [],
+  "prompts": ["~/.claude/commands"],
+  "skills": ["~/.claude/skills"]
+}
