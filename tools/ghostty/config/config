@@ -56,6 +56,12 @@ keybind = cmd+shift+l=goto_split:right
 keybind = cmd+shift+m=toggle_split_zoom
 keybind = cmd+shift+semicolon=goto_split:next
 
+# See: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/terminal-setup.md#ghostty
+keybind = alt+backspace=text:\x1b\x7f
+
+# Support Claude Code in tmux
+keybind = shift+enter=text:\n
+
 # TODO: navigate previous commands and their outputs
 # TODO: select words, lines, urls, etc?
 # TODO: search scrollback (when feature added)
