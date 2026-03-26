@@ -399,5 +399,9 @@
     "lastShownTime": 1754054339526
   },
   "showClearContextOnPlanAccept": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  }
 }
