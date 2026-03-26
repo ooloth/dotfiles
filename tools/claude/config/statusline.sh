@@ -8,9 +8,9 @@ model=$(echo "$input" | jq -r '.model.id // "claude"')
 agent=$(echo "$input" | jq -r '.agent.name // ""')
 
 # Context window: used tokens / total tokens, rounded to k
-pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
 total=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
 used=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // 0')
+# pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
 
 used_k=$(((used + 500) / 1000))
 total_k=$(((total + 500) / 1000))
@@ -21,9 +21,9 @@ YELLOW='\033[33m'
 RED='\033[31m'
 RESET='\033[0m'
 
-if [[ "$pct" -ge 75 ]]; then
+if [[ "$used_k" -ge 100 ]]; then
   color="$RED"
-elif [[ "$pct" -ge 50 ]]; then
+elif [[ "$used_k" -ge 50 ]]; then
   color="$YELLOW"
 else
   color=""
