@@ -19,6 +19,7 @@ from rich.pretty import pprint  # ty: ignore[unresolved-import]
 # TODO: https://x.com/ryancarson/article/2008548371712135632
 # TODO: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
 # TODO: https://block.github.io/goose/docs/tutorials/ralph-loop/
+# TODO: https://github.com/coleam00/ralph-loop-quickstart/blob/main/ralph.sh
 # TODO: https://github.com/snarktank/ralph
 # TODO: https://ghuntley.com/ralph/
 # TODO: https://ghuntley.com/loop/
@@ -33,10 +34,10 @@ from rich.pretty import pprint  # ty: ignore[unresolved-import]
 class Config:
     BRANCH: str = ""  # e.g. "fix-bug-123" or "add-feature-xyz"
     DEBUG_MODE: bool = True
-    ITERATIONS: int = 50
+    ITERATIONS: int = 3
     # MODEL: str # Vary MODEL per prompt by default? One env var per prompt?
-    RALPH_DIR_PROJECT: Path = Path.cwd() / ".ralph"
     RALPH_DIR_GLOBAL: Path = Path.home() / "Repos/ooloth/dotfiles/features/ralph"
+    RALPH_DIR_PROJECT: Path = Path.cwd() / ".ralph"
 
 
 def parse_config() -> Config:
@@ -130,26 +131,30 @@ def loop(config: Config, initial_state: LoopState):
         continue_decision = state.should_continue()
 
         # Continue?
-        if continue_decision.yes:
-            print(f"=== Iteration {state.iteration} ===")
-            prompt = state.next_prompt()
-            print(f"Prompt: {prompt}")
-
-            # subprocess.run(
-            #     [
-            #         "cat",
-            #         prompt_file_path_absolute,
-            #         "|",
-            #         "claude",
-            #         "--dangerously-skip-permissions",
-            #     ],
-            #     # capture_output=True,
-            #     # text=True,
-            # ).stdout
-
-        else:
+        if not continue_decision.yes:
             print(f"\nStopping loop: {continue_decision.reason}")
             break
+
+        # Execute prompt again
+        print(f"=== Iteration {state.iteration} ===")
+        prompt = state.next_prompt()
+        # print(f"Prompt: {prompt}")
+
+        # subprocess.run(
+        #     f'echo "{prompt}" | claude --dangerously-skip-permissions', shell=True
+        # )
+
+        subprocess.run(
+            # result = subprocess.run(
+            # f'echo "{prompt}" | claude -p --dangerously-skip-permissions --output-format stream-json --verbose --include-partial-messages | jq -rj \'select(.type == "stream_event" and .event.delta.type? == "text_delta") | .event.delta.text\'',
+            f'echo "{prompt}" | claude -p --dangerously-skip-permissions',
+            shell=True,
+            # capture_output=True,
+            # text=True,
+        )
+
+
+# print(f"Result: {result.stdout}")
 
 
 def main():

@@ -1,5 +1,5 @@
 ---
-name: inspecting-codefresh-failures
+name: inspect-codefresh-failures
 description: Instruction guide for analyzing Codefresh CI failures. When invoked, IMMEDIATELY follow the step-by-step instructions to extract build IDs, fetch logs, and create a formatted failure report. Use when reviewing recursionpharma PRs with failing CI.
 allowed-tools: [Bash, Read]
 ---

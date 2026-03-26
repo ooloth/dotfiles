@@ -1,5 +1,5 @@
 ---
-name: fetching-github-prs-to-review
+name: fetch-github-prs-to-review
 description: Fetches and processes GitHub pull requests waiting for review. Returns fully formatted markdown with PRs grouped by category (Feature/Bug, Chores, Dependency Updates) and sorted by age. Includes metadata like CI status, review status, size metrics, and viewing history. Use when user wants to see their PR review queue.
 allowed-tools: [Bash]
 ---
