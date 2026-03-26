@@ -2,9 +2,15 @@
   "defaultModel": "claude-opus-4-6",
   "defaultProvider": "anthropic",
   "defaultThinkingLevel": "high",
+  "enableSkillCommands": true,
   "hideThinkingBlock": false,
   "quietStartup": false,
   "packages": [],
-  "prompts": ["~/.claude/commands"],
-  "skills": ["~/.claude/skills"]
+  "prompts": [
+    "~/.claude/commands"
+  ],
+  "skills": [
+    "~/.claude/skills"
+  ],
+  "lastChangelogVersion": "0.62.0"
 }
