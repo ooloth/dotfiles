@@ -5,6 +5,7 @@ input=$(cat)
 
 # Available data: https://code.claude.com/docs/en/statusline#full-json-schema
 model=$(echo "$input" | jq -r '.model.id // "claude"')
+agent=$(echo "$input" | jq -r '.agent.name // ""')
 
 # Context window: used tokens / total tokens, rounded to k
 pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
@@ -28,8 +29,10 @@ else
   color=""
 fi
 
+middle="${model}${agent:+ · $agent}"
+
 if [[ -n "$color" ]]; then
-  printf "%s · ${color}%s${RESET}\n" "$model" "$ctx"
+  printf "%s · ${color}%s${RESET}\n" "$middle" "$ctx"
 else
-  printf "%s · %s\n" "$model" "$ctx"
+  printf "%s · %s\n" "$middle" "$ctx"
 fi
