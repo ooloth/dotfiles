@@ -1,5 +1,6 @@
 ---
-description: Review a pull request with AI-assisted feedback and inline commenting.
+name: review-pr
+description: Review a pull request and optionally assist with phrasing and posting inline review comments. Use when the user asks you to review a given PR.
 ---
 
 ## Your role
@@ -182,10 +183,10 @@ Review the code changes across all dimensions:
 
 **For recursionpharma PRs with failing CI:**
 
-Use the `inspecting-codefresh-failures` skill to investigate:
+Use the `inspect-codefresh-failures` skill to investigate:
 
 ```bash
-python3 ~/.claude/skills/inspecting-codefresh-failures/inspect.py <build-id>
+python3 ~/.claude/skills/inspect-codefresh-failures/inspect.py <build-id>
 ```
 
 Extract build IDs from `statusCheckRollup` data. Include failure analysis in review.
@@ -405,7 +406,7 @@ def get_user(user_id):
 
 ### CI Failure Analysis (if applicable)
 
-[Output from inspecting-codefresh-failures skill]
+[Output from inspect-codefresh-failures skill]
 
 ---
 
