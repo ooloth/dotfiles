@@ -1,24 +1,25 @@
-# 🚨 CRITICAL - READ THIS FIRST BEFORE EVERY RESPONSE 🚨
-
 ## Questions ALWAYS Require Discussion First
 
-**IF the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", etc.:**
+**IF the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", "discuss", "propose" etc.:**
 
 1. **ANSWER the question** with options/analysis/explanation
-2. **STOP and WAIT** for explicit implementation approval
+2. **STOP and WAIT** for explicit implementation approval or further discussion
 3. **DO NOT use Edit/Write/Bash tools** until user gives an approval phrase
 
-**Approval phrases:** ✅ "do it", "go ahead", "implement that", "yes please do that", "make those changes", "fix it", "add it"
+**Approval phrases:** ✅ "do it", "go ahead", "go for it", "yes please do that", "make those changes", "fix it", "add it"
 
-**Discussion phrases (NOT approval):** ❌ "yes", "yes please", "ok", "sounds good", "that makes sense"
+**Discussion phrases (not necessarily approval):** ❌ "yes", "ok", "sounds good", "that makes sense"
 
-**When in doubt: discuss first, implement second.**
+### After answering questions
+
+- Ask what action(s) to take next (don't assume)
+- When in doubt: confirm the user is ready for you to implement
 
 ---
 
 ## BEFORE Implementing: Always Create a Beads Task
 
-When the user approves work, run `bd create` BEFORE reading any files or writing code:
+When the user approves work, run `bd create` BEFORE reading any files or writing code to ensure the plan has been captured:
 
 ```bash
 bd create --title "..." --type task --priority P1 --design "what's broken, approved approach, success criteria"
@@ -26,35 +27,32 @@ bd update <id> --status in_progress
 # THEN read files and implement
 ```
 
-Full beads workflow → `/use-beads`
+Always use `bd` to manage tasks and persist the outcome of discussions with the user. For the full beads workflow, see `/use-beads`.
 
 ---
 
+## Validate your work
+
+- Sequence work in a way that allows you to compare your assumptions to concrete feedback immediately
+- Prefer implementing thin vertical slices that can be validated e2e rather than making unintegrated changes to a horizontal layer
+
 ## Working in Small Steps
 
-**NEVER commit code yourself. The user commits.**
-
-1. Make one small change (one cohesive behavior change)
-2. Add/update tests if relevant
+1. Make one small, thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation)
+2. Run checks
 3. Run tests
-4. STOP and report what changed
-5. Wait for user to say "committed"
-6. Repeat for next change
-7. When all changes committed → `bd close <id> -r "summary"`
+4. Prove the change works with manual testing if you can
+5. STOP and report what changed; NEVER commit code yourself unless explicitly asked to do so; the user always commits; commit checkpoints are the user's opportunity to review incremental changes
+6. Wait for user to say "committed" or "done" (or similar) or explicitly ask you to commit
+7. Repeat for the remaining changes
+8. When all changes committed → `bd close <id> -r "summary"`
 
 One change = ONE test case + the implementation that makes it pass. No batching.
 
 ---
 
-## After Answering Questions
-
-- If the answer involved a non-trivial concept, elegant solution, or useful tip → ask: "This could make a good TIL - want me to draft it?"
-- Ask what action(s) to take next (don't assume)
-
----
-
 ## Skills for Specific Workflows
 
-- **PRs**: Always use `/write-pr-description` before creating or updating any PR
-- **Beads**: `/use-beads` — full workflow, commands, task lifecycle
-- **CI failures** (recursionpharma): `/use-codefresh`
+- **PR creation and updates**: `/write-pr-description`
+- **Task management**: `/use-beads`
+- **CI failures** (recursionpharma repos): `/use-codefresh`
