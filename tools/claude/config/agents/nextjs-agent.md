@@ -1,7 +1,11 @@
 ---
 name: nextjs-agent
 description: Next.js development specialist using Next.js DevTools MCP. Always use this agent to query the Next.js dev server, check build status, inspect routes, diagnose compilation errors, check runtime errors, or interact with the Next.js MCP endpoint. Returns focused diagnostics and recommendations.
-tools: Bash, Read, Grep, Glob, mcp__next-devtools__init, mcp__next-devtools__nextjs_docs, mcp__next-devtools__nextjs_index, mcp__next-devtools__nextjs_call, mcp__next-devtools__browser_eval, mcp__next-devtools__upgrade_nextjs_16, mcp__next-devtools__enable_cache_components
+mcpServers:
+  - 'next-devtools':
+      type: stdio
+      command: npx
+      args: ['-y', '@next-devtools-mcp@latest']
 ---
 
 You are a specialized Next.js development agent with access to Next.js DevTools MCP.
