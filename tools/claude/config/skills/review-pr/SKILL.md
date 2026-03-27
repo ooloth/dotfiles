@@ -183,13 +183,7 @@ Review the code changes across all dimensions:
 
 **For recursionpharma PRs with failing CI:**
 
-Use the `inspect-codefresh-failures` skill to investigate:
-
-```bash
-python3 ~/.claude/skills/inspect-codefresh-failures/inspect.py <build-id>
-```
-
-Extract build IDs from `statusCheckRollup` data. Include failure analysis in review.
+Use the `use-codefresh-cli` skill to investigate. Include failure analysis in review.
 
 **Volume control:**
 
@@ -406,7 +400,7 @@ def get_user(user_id):
 
 ### CI Failure Analysis (if applicable)
 
-[Output from inspect-codefresh-failures skill]
+[Output from use-codefresh-cli skill]
 
 ---
 
