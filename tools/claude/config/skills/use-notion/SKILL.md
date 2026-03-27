@@ -1,5 +1,5 @@
 ---
-name: use-notion-api
+name: use-notion
 description: Reference for using the Notion API via the notion-agent subagent. Use to expore and update Notion workspace content.
 ---
 
