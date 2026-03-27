@@ -4,7 +4,7 @@ description: Reference for using Codefresh via the CodeFresh CLI. Use when a Cod
 allowed-tools: [Bash, Read]
 ---
 
-Consider using a subagent when you just need an answer about what's in the logs and don't want to fill your context window with all the intermediate CodeFresh response data as you search.
+Consider using a subagent when you just need an answer and don't need to see the intermediate CodeFresh responses.
 
 ## Extract Build ID from PR Status Checks
 
