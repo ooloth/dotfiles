@@ -312,7 +312,7 @@ Use skills (`tools/claude/config/skills/`) for token-heavy operations:
 - **When**: Heavy data processing, filtering, caching opportunities
 - **Why**: Process data in code (Python/bash), return only filtered summaries
 - **Token savings**: 80-98% reduction vs processing via Claude tools
-- **Examples**: `fetching-github-prs-to-review`, `inspecting-codefresh-failures`
+- **Examples**: `fetch-github-prs-to-review`, `inspect-codefresh-failures`
 
 Skills should:
 
@@ -328,7 +328,7 @@ When creating skills, ALWAYS use the `/create-skill` command or reference the te
 
 - **Template location**: `tools/claude/config/skills/@template/`
 - **Complete guidance**: See `@template/README.md` for all best practices
-- **Naming convention**: gerund + noun (e.g., `fetching-github-prs-to-review`, `analyzing-python-code`)
+- **Naming convention**: gerund + noun (e.g., `fetch-github-prs-to-review`, `analyzing-python-code`)
 - **Examples**: See existing skills in `tools/claude/config/skills/`
 
 The template includes:
@@ -437,7 +437,7 @@ When you answer a question or complete an assessment:
 
 #### Inspecting CI Failures
 
-When you see a CI failure in a recursionpharma PR, **use the `inspecting-codefresh-failures` skill** to analyze it.
+When you see a CI failure in a recursionpharma PR, **use the `inspect-codefresh-failures` skill** to analyze it.
 
 The skill will:
 

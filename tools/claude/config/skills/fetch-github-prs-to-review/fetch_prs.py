@@ -17,13 +17,12 @@ import sys
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
-
 # Configuration
 MY_USERNAME = "ooloth"
 IGNORED_REPOS = ["recursionpharma/build-pipelines"]
 CACHE_DIR = os.path.expanduser("~/.claude/.cache")
-CACHE_FILE = os.path.join(CACHE_DIR, "fetching-github-prs-to-review.json")
-HISTORY_FILE = os.path.join(CACHE_DIR, "fetching-github-prs-to-review-history.json")
+CACHE_FILE = os.path.join(CACHE_DIR, "fetch-github-prs-to-review.json")
+HISTORY_FILE = os.path.join(CACHE_DIR, "fetch-github-prs-to-review-history.json")
 
 
 def get_login(obj: Optional[Dict[str, Any]], default: str = "") -> str:
@@ -36,7 +35,7 @@ def fetch_prs_from_github() -> Dict[str, Any]:
     # Build the ignored repos filter
     ignored_filter = " ".join(f"-repo:{repo}" for repo in IGNORED_REPOS)
 
-    query = f'''query {{
+    query = f"""query {{
   search(query: "is:pr is:open archived:false user:recursionpharma review-requested:{MY_USERNAME} {ignored_filter} sort:created-desc", type: ISSUE, first: 50) {{
     issueCount
     edges {{
@@ -90,13 +89,13 @@ def fetch_prs_from_github() -> Dict[str, Any]:
       }}
     }}
   }}
-}}'''
+}}"""
 
     result = subprocess.run(
-        ['gh', 'api', 'graphql', '-f', f'query={query}'],
+        ["gh", "api", "graphql", "-f", f"query={query}"],
         capture_output=True,
         text=True,
-        check=True
+        check=True,
     )
 
     return json.loads(result.stdout)
@@ -104,7 +103,7 @@ def fetch_prs_from_github() -> Dict[str, Any]:
 
 def calculate_age(created_at_str: str) -> Tuple[str, int]:
     """Calculate human-readable age and days from ISO timestamp."""
-    created = datetime.fromisoformat(created_at_str.replace('Z', '+00:00'))
+    created = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
     now = datetime.now(timezone.utc)
     delta = now - created
 
@@ -165,7 +164,9 @@ def get_ci_status(pr: Dict[str, Any]) -> str:
         return "⏳ CI pending"
 
 
-def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tuple[str, Optional[str]]:
+def get_review_status(
+    pr: Dict[str, Any], my_username: str = MY_USERNAME
+) -> Tuple[str, Optional[str]]:
     """
     Get review status with emoji and details.
 
@@ -196,17 +197,24 @@ def get_review_status(pr: Dict[str, Any], my_username: str = MY_USERNAME) -> Tup
                 # PENDING reviews are always most important (not yet submitted)
                 my_latest_timestamp = None
                 my_latest_review = state
-            elif my_latest_review != "PENDING" and submitted_at and (my_latest_timestamp is None or submitted_at > my_latest_timestamp):
+            elif (
+                my_latest_review != "PENDING"
+                and submitted_at
+                and (my_latest_timestamp is None or submitted_at > my_latest_timestamp)
+            ):
                 # Only update if we haven't found a PENDING review
                 my_latest_timestamp = submitted_at
                 my_latest_review = state
 
         # Track each reviewer's most recent state
         if submitted_at:  # Only track submitted reviews in reviewer_states
-            if author_login not in reviewer_states or submitted_at > reviewer_states[author_login]["timestamp"]:
+            if (
+                author_login not in reviewer_states
+                or submitted_at > reviewer_states[author_login]["timestamp"]
+            ):
                 reviewer_states[author_login] = {
                     "state": state,
-                    "timestamp": submitted_at
+                    "timestamp": submitted_at,
                 }
 
     # Build review status string with reviewer names
@@ -287,7 +295,7 @@ def categorize_pr(pr: Dict[str, Any]) -> str:
 def load_or_create_history() -> Dict[str, Any]:
     """Load viewing history from cache or create new."""
     if os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, 'r') as f:
+        with open(HISTORY_FILE, "r") as f:
             return json.load(f)
     return {}
 
@@ -295,14 +303,14 @@ def load_or_create_history() -> Dict[str, Any]:
 def save_history(history: Dict[str, Any]) -> None:
     """Save viewing history to cache."""
     os.makedirs(CACHE_DIR, exist_ok=True)
-    with open(HISTORY_FILE, 'w') as f:
+    with open(HISTORY_FILE, "w") as f:
         json.dump(history, f, indent=2)
 
 
 def save_mapping(mapping: Dict[str, Any]) -> None:
     """Save PR lookup mapping to cache."""
     os.makedirs(CACHE_DIR, exist_ok=True)
-    with open(CACHE_FILE, 'w') as f:
+    with open(CACHE_FILE, "w") as f:
         json.dump(mapping, f, indent=2)
 
 
@@ -319,7 +327,9 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         age_str, age_days = calculate_age(pr_node["createdAt"])
 
         # Calculate time estimate
-        time_estimate = calculate_time_estimate(pr_node["additions"], pr_node["deletions"])
+        time_estimate = calculate_time_estimate(
+            pr_node["additions"], pr_node["deletions"]
+        )
 
         # Get statuses
         ci_status = get_ci_status(pr_node)
@@ -339,34 +349,33 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
 
         # Update history
         if pr_key not in history:
-            history[pr_key] = {
-                "first_seen": current_time,
-                "last_seen": current_time
-            }
+            history[pr_key] = {"first_seen": current_time, "last_seen": current_time}
         else:
             history[pr_key]["last_seen"] = current_time
 
-        prs.append({
-            "number": pr_node["number"],
-            "title": pr_node["title"],
-            "url": pr_node["url"],
-            "repo_full": repo_full,
-            "repo_short": repo_short,
-            "author": get_login(pr_node.get("author"), default="ghost"),
-            "additions": pr_node["additions"],
-            "deletions": pr_node["deletions"],
-            "files": pr_node["changedFiles"],
-            "age_str": age_str,
-            "age_days": age_days,
-            "time_estimate": time_estimate,
-            "ci_status": ci_status,
-            "review_status": review_status,
-            "conflict_status": conflict_status,
-            "my_engagement": my_engagement,
-            "is_new": is_new,
-            "category": category,
-            "is_draft": pr_node.get("isDraft", False)
-        })
+        prs.append(
+            {
+                "number": pr_node["number"],
+                "title": pr_node["title"],
+                "url": pr_node["url"],
+                "repo_full": repo_full,
+                "repo_short": repo_short,
+                "author": get_login(pr_node.get("author"), default="ghost"),
+                "additions": pr_node["additions"],
+                "deletions": pr_node["deletions"],
+                "files": pr_node["changedFiles"],
+                "age_str": age_str,
+                "age_days": age_days,
+                "time_estimate": time_estimate,
+                "ci_status": ci_status,
+                "review_status": review_status,
+                "conflict_status": conflict_status,
+                "my_engagement": my_engagement,
+                "is_new": is_new,
+                "category": category,
+                "is_draft": pr_node.get("isDraft", False),
+            }
+        )
 
     # Save updated history
     save_history(history)
@@ -403,20 +412,28 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         new_badge = "🆕 " if pr["is_new"] else ""
 
         # Title line (non-breaking space at start to prevent list formatting)
-        lines.append(f"\u00A0{pr['seq_num']}. {new_badge}**@{pr['author']} • \"{pr['title']}\"**")
+        lines.append(
+            f'\u00a0{pr["seq_num"]}. {new_badge}**@{pr["author"]} • "{pr["title"]}"**'
+        )
 
         # Review activity line (reviewers + my engagement) - first line after title
         review_activity_parts = []
-        if pr['review_status']:
-            review_activity_parts.append(pr['review_status'])
+        if pr["review_status"]:
+            review_activity_parts.append(pr["review_status"])
         if pr["my_engagement"]:
-            review_activity_parts.append(pr['my_engagement'])
+            review_activity_parts.append(pr["my_engagement"])
         if review_activity_parts:
             lines.append(f"   • {' • '.join(review_activity_parts)}")
 
         # Metadata line: age, time estimate, diff stats, CI status, conflict status
         diff_stats = f"🟢 +{pr['additions']} • 🔴 -{pr['deletions']} • 📄 {pr['files']}"
-        metadata_parts = [pr['age_str'], f"⏱️ {pr['time_estimate']}", diff_stats, pr['ci_status'], pr['conflict_status']]
+        metadata_parts = [
+            pr["age_str"],
+            f"⏱️ {pr['time_estimate']}",
+            diff_stats,
+            pr["ci_status"],
+            pr["conflict_status"],
+        ]
         lines.append(f"   • {' • '.join(metadata_parts)}")
 
         # URL
@@ -452,9 +469,13 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
     # Footer commands
     output_lines.append("Commands:")
     output_lines.append(f"- Type a number (1-{len(all_prs)}) to review that PR")
-    output_lines.append("- After each review, I'll prompt: \"Continue? (y/n/list/number)\" to review more PRs")
+    output_lines.append(
+        '- After each review, I\'ll prompt: "Continue? (y/n/list/number)" to review more PRs'
+    )
     output_lines.append("")
-    output_lines.append("💡 Interactive workflow: Type a number → review PR → prompted for next → repeat until done")
+    output_lines.append(
+        "💡 Interactive workflow: Type a number → review PR → prompted for next → repeat until done"
+    )
 
     return "\n".join(output_lines)
 
