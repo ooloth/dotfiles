@@ -1,5 +1,5 @@
 ---
-name: analyze-architecture
+name: review-architecture
 description: Perform an architecture review to identify anti-patterns that are at risk of spreading. Use when asked to identify opportunities to make the system easier to understand and maintain.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: analyze-tests
+name: review-tests
 description: Assess the current test coverage, methods, paradigms and patterns. Use when asked to identify opportunities to improve how well the system's behaviour is confirmed by its tests.
 ---
 
