@@ -1,5 +1,5 @@
 ---
-name: testing-conventions
+name: conventions-for-tests
 description: Test design patterns and style guide (when alternate patterns are not specified at the project level)
 ---
 

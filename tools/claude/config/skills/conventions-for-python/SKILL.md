@@ -1,5 +1,5 @@
 ---
-name: python-conventions
+name: conventions-for-python
 description: Python patterns and style guide (when alternate patterns are not specified at the project level)
 ---
 
