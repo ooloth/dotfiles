@@ -312,7 +312,7 @@ Use skills (`tools/claude/config/skills/`) for token-heavy operations:
 - **When**: Heavy data processing, filtering, caching opportunities
 - **Why**: Process data in code (Python/bash), return only filtered summaries
 - **Token savings**: 80-98% reduction vs processing via Claude tools
-- **Examples**: `fetch-github-prs-to-review`, `use-codefresh-cli`
+- **Examples**: `fetch-github-prs-to-review`, `use-codefresh`
 
 Skills should:
 
@@ -437,7 +437,7 @@ When you answer a question or complete an assessment:
 
 #### Inspecting CI Failures
 
-When you see a CI failure in a recursionpharma PR, **use the `use-codefresh-cli` skill** to analyze it.
+When you see a CI failure in a recursionpharma PR, **use the `use-codefresh` skill** to analyze it.
 
 The skill will:
 

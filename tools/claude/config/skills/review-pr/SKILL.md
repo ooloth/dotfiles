@@ -183,7 +183,7 @@ Review the code changes across all dimensions:
 
 **For recursionpharma PRs with failing CI:**
 
-Use the `use-codefresh-cli` skill to investigate. Include failure analysis in review.
+Use the `use-codefresh` skill to investigate. Include failure analysis in review.
 
 **Volume control:**
 
@@ -400,7 +400,7 @@ def get_user(user_id):
 
 ### CI Failure Analysis (if applicable)
 
-[Output from use-codefresh-cli skill]
+[Output from use-codefresh skill]
 
 ---
 

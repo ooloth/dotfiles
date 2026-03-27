@@ -138,7 +138,7 @@ When reviewing a PR, ALWAYS:
 
 When reviewing a recursionpharma PR with failing CI, **ALWAYS** investigate the failure.
 
-**Use the `use-codefresh-cli` skill** - it will extract build IDs from status checks, fetch logs, identify errors, and provide a formatted analysis report.
+**Use the `use-codefresh` skill** - it will extract build IDs from status checks, fetch logs, identify errors, and provide a formatted analysis report.
 
 Include the skill's output in your review under a "CI Failure Analysis" section.
 

@@ -1,10 +1,10 @@
 ---
-name: use-codefresh-cli
-description: Reference for the Codefresh CLI. Use when a Codefresh CI check is failing in a recursionpharma PR, or when working with Codefresh builds.
+name: use-codefresh
+description: Reference for using Codefresh via the CodeFresh CLI. Use when a Codefresh CI check is failing in a recursionpharma PR, or when working with Codefresh builds.
 allowed-tools: [Bash, Read]
 ---
 
-# Codefresh CLI
+Consider using a subagent when you just need an answer about what's in the logs and don't want to fill your context window with all the intermediate CodeFresh response data as you search.
 
 ## Extract Build ID from PR Status Checks
 
