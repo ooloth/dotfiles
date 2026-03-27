@@ -29,14 +29,15 @@ bd update <id> --status in_progress
 
 Always use `bd` to manage tasks and persist the outcome of discussions with the user. For the full beads workflow, see `/use-beads`.
 
+## Validate Every Change
+
+- Compare all assumptions about an implementation to concrete feedback immediately
+- Manual testing is just as important as automated testing
+- Prefer working in thin vertical slices rather that unintegrated horizontal layer changes since they can be tested e2e much sooner
+
 ---
 
-## Validate your work
-
-- Sequence work in a way that allows you to compare your assumptions to concrete feedback immediately
-- Prefer implementing thin vertical slices that can be validated e2e rather than making unintegrated changes to a horizontal layer
-
-## Working in Small Steps
+## Work in Small Steps
 
 1. Make one small, thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation)
 2. Run checks
@@ -50,9 +51,3 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 One change = ONE test case + the implementation that makes it pass. No batching.
 
 ---
-
-## Skills for Specific Workflows
-
-- **PR creation and updates**: `/write-pr-description`
-- **Task management**: `/use-beads`
-- **CI failures** (recursionpharma repos): `/use-codefresh`
