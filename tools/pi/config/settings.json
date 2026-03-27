@@ -6,11 +6,8 @@
   "hideThinkingBlock": false,
   "quietStartup": false,
   "packages": [],
-  "prompts": [
-    "~/.claude/commands"
-  ],
-  "skills": [
-    "~/.claude/skills"
-  ],
+  "prompts": [],
+  "skills": ["~/.claude/skills"],
   "lastChangelogVersion": "0.62.0"
 }
+

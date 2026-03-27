@@ -1,42 +1,45 @@
-# Review PRs - Find PRs waiting for my review
+---
+name: review-prs
+description: Fetch and present a prioritized summary of all PRs awaiting the current user's review across the relevant projects and provide an interactive workflow helping the user phrase and post inline review comments and overall review decisions.
+---
 
-Fetch all open PRs where I'm requested as a reviewer across all relevant repos and present them sorted by age.
+## Context
 
-## Phase 1: Display PRs
+- Ready-to-display summary of PRs awaiting my review: !`uv run ~/.claude/skills/review-prs/fetch_prs.py`
 
-Run the `fetch-github-prs-to-review` skill to fetch and display PRs:
+### What the script above does
 
-```bash
-python3 ~/.claude/skills/fetch-github-prs-to-review/fetch_prs.py
-```
+1. Fetches PRs via GitHub GraphQL API where you're requested as reviewer
+2. Calculates human-readable ages and review time estimates
+3. Parses CI status, review status (counting unique reviewers), conflict status
+4. Extracts PR summaries from descriptions (omitted for dependency updates)
+5. Tracks viewing history (marks new PRs with 🆕 badge)
+6. Groups PRs into categories (Feature/Bug → Chores → Dependency Updates)
+7. Sorts by age (oldest first) within each category
+8. Assigns sequential numbers across all PRs
+9. Formats as markdown with proper spacing and blank lines
+10. Stores lookup mapping in `~/.claude/.cache/fetch-github-prs-to-review.json`
+11. Updates viewing history in `~/.claude/.cache/fetch-github-prs-to-review-history.json`
 
-The skill outputs fully formatted markdown ready to display. It handles:
+### Notes
 
-- Fetching from GitHub GraphQL API
-- Calculating ages, time estimates, review status
-- Formatting each PR with proper spacing
-- Grouping into: Feature/Bug PRs → Chores → Dependency Updates
-- Sorting by age (oldest first) within each category
-- Tracking viewing history (🆕 indicators)
-- Storing cache files for PR lookup
+- Filters out PRs from ignored repos (currently: `recursionpharma/build-pipelines`)
+- FEATURE/BUG PRs: Not chores, not dependency updates, not drafts
+- CHORES: PRs with titles starting with "chore:"
+- DEPENDENCY UPDATES: All dependency updates (dependabot, bump PRs, etc.)
+- Unique reviewer count: Counts each person once, shows their most recent review state
+- Time estimates: Based on total lines changed (0-50: 5min, 51-200: 10min, etc.)
+- Formatting: Space before PR numbers prevents markdown list parsing; blank lines separate PRs
 
-**Your task:**
+## Workflow
 
-1. Run the skill using the Bash tool
-2. Display the skill's output in your text response (copy it directly without modification)
-3. The skill output is your complete message - no additional text before or after
-4. Do not summarize, analyze, or add commentary - just show the formatted list
-5. Create a todo list to track the interactive session:
-   - "Waiting for user to select a PR (or 'l')" (pending)
-   - "Reviewing PR with enhanced navigation" (pending)
-
-## Phase 2: Interactive Session
-
-After Phase 1 completes, enter interactive mode.
-
-**Session State Management:**
-
-Use TodoWrite to maintain session state throughout the workflow. The todo list ensures you remember to return to interactive mode after each PR review completes.
+1. Show the user the output of the script above immediately (copy it directly without modification or summarization; the skill output is your complete message)
+2. Offer the user an interactive workflow until all PRs have been reviewed:
+   a. User types a number or otherwise chooses a PR
+   b. You review PR using `review-pr` skill
+   c. You show user an summary of the remaining PRs (reuse the previous script output + manually remove the completed PRs and update the numbering; do not rerun the script)
+   d. You prompt for next choice
+   d. Repeat until done
 
 **What the user should see:**
 
