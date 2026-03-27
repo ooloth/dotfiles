@@ -49,5 +49,3 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 8. When all changes committed → `bd close <id> -r "summary"`
 
 One change = ONE test case + the implementation that makes it pass. No batching.
-
----
