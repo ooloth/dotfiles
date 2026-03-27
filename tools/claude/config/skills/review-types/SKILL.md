@@ -1,9 +1,14 @@
 ---
 name: review-types
-description: Assess the expressiveness and accuracy of the current type annotations. Use when asked to identify opportunities to improve how well the type system is being used to ensure correctness and/or express the intent of the code in domain-specific terms.
+description: Assess the expressiveness, accuracy and cohesion of the project's current static type annotations. Use when asked to identify opportunities to improve how well the type system is being used to ensure correctness and/or express the intent of the code in domain-specific terms.
 ---
 
-Your task:
+## Context
+
+1. Study the `conventions-for-types` reference skill guidance
+2. Study the current project's documented static typing guidance (if any)
+
+## Your task
 
 1. Use up to 50 subagents to explore the current codebase (or subsection if the user specified a smaller scope)
 2. Look for missing type annotations

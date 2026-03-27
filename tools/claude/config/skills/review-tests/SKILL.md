@@ -1,9 +1,14 @@
 ---
 name: review-tests
-description: Assess the current test coverage, methods, paradigms and patterns. Use when asked to identify opportunities to improve how well the system's behaviour is confirmed by its tests.
+description: Assess the current coverage and patterns across all tests in the project. Use when asked to identify opportunities to improve how well the system's behaviour is confirmed by its tests.
 ---
 
-Your task:
+## Context
+
+1. Study the `conventions-for-tests` reference skill guidance
+2. Study the current project's documented testing intentions (if any)
+
+## Your task
 
 1. Use up to 50 subagents to explore the current codebase (or subsection if the user specified a smaller scope)
 2. Identify opportunities to improve the overall approach used for testing and how tests seem to be designed (or seem not to be)

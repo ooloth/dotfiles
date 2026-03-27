@@ -3,7 +3,12 @@ name: review-observability
 description: Analyze gaps in the ability to easily observe how the system operates and is used when it runs. Use when the user asks you to help identify opportunities to make the system easier to debug, monitor or analyze.
 ---
 
-Your task:
+## Context
+
+1. Study the `conventions-for-observability` reference skill guidance
+2. Study the current project's documented observability guidance (if any)
+
+## Your task:
 
 1. Use up to 50 subagents to explore the current codebase (or subsection if the user specified a smaller scope)
 2. Identify opportunities to add or replace observability tooling
