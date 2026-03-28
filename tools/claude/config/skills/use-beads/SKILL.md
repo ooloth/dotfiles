@@ -73,36 +73,6 @@ bd dep add <child-2> <child-1>   # child-2 depends on child-1
 
 When children must be sequential, use `bd dep add` so `bd ready` naturally surfaces only the next unblocked child. Independent children need no dependencies — they'll all appear in `bd ready` immediately.
 
-## Working Through an Epic
-
-Once an epic has children, the workflow is: pick a ready child → implement → close it → next child unblocks → repeat.
-
-```bash
-# See what's ready within the epic
-bd ready --parent <epic-id>
-
-# Claim the next child
-bd update <child-id> --claim
-
-# ... implement, stop for commits, etc. ...
-
-# Close the child when done
-bd close <child-id> -r "summary"
-
-# Check what unblocked
-bd ready --parent <epic-id>
-```
-
-When all children are closed, close the epic:
-
-```bash
-# See which epics are ready to close
-bd epic close-eligible
-
-# Or close it directly
-bd close <epic-id> -r "all children complete"
-```
-
 ## When to Use Beads vs TodoWrite
 
 **ALWAYS use beads for:**
@@ -159,7 +129,7 @@ bd update <id> --notes "Item 1: Discovered X during implementation"
 4. Close child → `bd close <child-id> -r "summary"`
 5. Next child unblocks automatically (if deps were set)
 6. Repeat until all children closed
-7. Close epic → `bd close <epic-id> -r "all children complete"`
+7. Close epic → `bd epic close-eligible` or `bd close <epic-id> -r "all children complete"`
 
 ### After closing, present next options:
 
