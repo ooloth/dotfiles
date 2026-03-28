@@ -30,15 +30,42 @@ bd update <id> --status in_progress
 # THEN read files and implement
 ```
 
+## Creating Epics
+
+When approved work has multiple distinct pieces, create an **epic** with **children** — never a single monolithic item. The epic holds the *why* and *shape*; each child is a self-contained task a fresh agent can pick up without reading the parent.
+
+**Epic design** — keep it to: goal, constraints, key decisions, and implementation order. No code snippets, directory layouts, or per-step instructions.
+
+**Child designs** — each child gets its own "what's broken / approach / success criteria" even if derived from the parent. A fresh agent running `bd show <child-id>` must have enough context to start working.
+
+```bash
+# 1. Create the epic (shape + decisions only)
+bd create --title "Generalize loop engine" \
+  --type epic --priority P2 \
+  --design "Goal: ... Key decisions: ... Implementation order: 1, 2, 3."
+
+# 2. Immediately create children with self-contained designs
+bd create --title "Extract WorkSpec dataclass" \
+  --type task --priority P2 --parent <epic-id> \
+  --design "What: ... Approach: ... Success: ..."
+bd create --title "Add RalphStrategy" \
+  --type task --priority P2 --parent <epic-id> \
+  --design "What: ... Approach: ... Success: ..."
+```
+
+**Never** create an epic without children in the same step. If you find yourself putting implementation detail (code, file paths, step-by-step instructions) in the epic design, that detail belongs in a child.
+
 ## When to Use Beads vs TodoWrite
 
 **ALWAYS use beads for:**
+
 - Work involving decisions about what to do/skip (PR reviews, optimization)
 - Multi-item work where you need to record WHY you're addressing/skipping each item
 - Any work that must survive auto-compact
 - Assessments with categories (must fix, should fix, won't fix)
 
 **TodoWrite only for:**
+
 - Simple step tracking within a single beads issue
 - Ephemeral notes that don't need to persist
 
@@ -62,6 +89,7 @@ WON'T FIX:
 ```
 
 Then work through items, updating notes as you go:
+
 ```bash
 bd update <id> --notes "Item 1: Discovered X during implementation"
 ```
@@ -91,11 +119,4 @@ Task complete! What's next?
 bd ready                        # Find available work
 bd list --status=in_progress    # See what's in flight
 bd show <id>                    # Get full context
-```
-
-## Capturing Context Before Auto-Compact
-
-If within 10% of context limit, pause and capture all important decisions:
-```bash
-bd update <id> --notes "Current state: X. Next step: Y. Key decision: Z (reason)."
 ```
