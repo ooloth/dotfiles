@@ -4,10 +4,14 @@
   "defaultThinkingLevel": "high",
   "enableSkillCommands": true,
   "hideThinkingBlock": false,
-  "quietStartup": false,
-  "packages": [],
+  "lastChangelogVersion": "0.62.0",
+  "packages": [
+    "npm:@victor-software-house/pi-curated-themes"
+  ],
   "prompts": [],
-  "skills": ["~/.claude/skills"],
-  "lastChangelogVersion": "0.62.0"
+  "quietStartup": false,
+  "skills": [
+    "~/.claude/skills"
+  ],
+  "theme": "catppuccin-mocha"
 }
-
