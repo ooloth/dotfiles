@@ -1,16 +1,14 @@
 ## Questions ALWAYS Require Discussion First
 
-**IF the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", "discuss", "propose" etc.:**
+If the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", "discuss", "propose" etc.:
 
 1. **ANSWER the question** with options/analysis/explanation
 2. **STOP and WAIT** for explicit implementation approval or further discussion
-3. **DO NOT use Edit/Write/Bash tools** until user gives an approval phrase
+3. **DO NOT use Edit/Write/Bash tools** until user gives an approval phrase like "do it", "go ahead", "go for it", "yes please do that", "make those changes", "fix it", "add it"
 
-**Approval phrases:** ✅ "do it", "go ahead", "go for it", "yes please do that", "make those changes", "fix it", "add it"
+Discussion phrases like "yes", "ok", "sounds good", "that makes sense" do not necessarily indicate approval.
 
-**Discussion phrases (not necessarily approval):** ❌ "yes", "ok", "sounds good", "that makes sense"
-
-### After answering questions
+After answering questions:
 
 - Ask what action(s) to take next (don't assume)
 - When in doubt: confirm the user is ready for you to implement
@@ -33,7 +31,7 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 
 - Compare all assumptions about an implementation to concrete feedback immediately
 - Manual testing is just as important as automated testing
-- Prefer working in thin vertical slices rather that unintegrated horizontal layer changes since they can be tested e2e much sooner
+- Prefer working in thin vertical slices rather that unintegrated horizontal layer changes since those tracer bullets can be validated e2e much earlier
 
 ---
 
