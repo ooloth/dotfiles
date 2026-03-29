@@ -49,3 +49,8 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 8. When all changes committed → `bd close <id> -r "summary"`
 
 One change = ONE test case + the implementation that makes it pass. No batching.
+
+## Backwards Compatibility is Unusually Unwanted
+
+- Unless told otherwise, assume backwards-compatibility is unwanted
+- In many cases, it merely adds unnecessary complexity by maintaining dead code paths and logic for choosing them
