@@ -29,12 +29,11 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 
 ## Validate Every Change
 
-- Compare all assumptions about an implementation to concrete feedback immediately
-- Manual testing is just as important as automated testing
-- Prefer working in thin vertical slices rather than unintegrated horizontal layer changes since those tracer bullets can be validated e2e much earlier
-- After every commit-worthy change, ask: "can I run this and observe it working?" If the answer is yes — do it before reporting the change is ready. Run the CLI, hit the endpoint, trigger the event, eyeball the output. If a change adds or modifies user-facing behavior and you don't exercise it end-to-end before presenting it, assume something is broken that the tests didn't catch.
-- When end-to-end execution isn't possible (e.g. requires paid API keys, hardware, or third-party state you can't set up), say so explicitly and describe what you would run and what you would look for. Don't silently skip validation.
-- Assume backwards-compatibility is unnecessary and would introduce unwanted complexity unless the user specifically tells you it's needed
+- Prefer batching changes as thin vertical slices (tracer bullets) that can be validated e2e, rather than batching in a single horizontal layer without integrating the new code in any runtime path
+- Immediately after every commit-worthy change (and before reporting success), ask yourself: "how can I run this and observe it working?"
+- In the meantime, assume your changes have not worked (even if tests pass)
+- Be creative: run the CLI, hit the endpoint, trigger the event, eyeball the output; this sort of manually smoke testing is just as important as automated testing
+- When end-to-end execution is truly impossible (e.g. requires paid API keys, hardware, or third-party state you can't set up), tell the user so explicitly and describe what you would run and what you would look for. Don't silently skip validation.
 
 ---
 
