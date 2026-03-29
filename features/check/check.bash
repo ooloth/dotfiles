@@ -8,6 +8,10 @@ error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
 if is_work; then
   case $current_dir in
+  agent-1 | agent-2)
+    prek run --all-files
+    ;;
+
   ops-1 | ops-2)
     prek run --all-files
     ;;
@@ -31,6 +35,10 @@ if is_work; then
   esac
 else
   case $current_dir in
+  agent-1 | agent-2)
+    prek run --all-files
+    ;;
+
   michaeluloth.com)
     npm run format "$@"
     npm run lint "$@"
