@@ -13,6 +13,10 @@ fi
 
 if is_work; then
   case "${current_dir}" in
+  agent-1 | agent-2)
+    uv run pytest -q
+    ;;
+
   ops-1 | ops-2)
     uv run pytest -q
     ;;
@@ -38,6 +42,10 @@ else
   case "${current_dir}" in
   advent-of-code)
     ./bin/test "$@"
+    ;;
+
+  agent-1 | agent-2)
+    uv run pytest -q
     ;;
 
   hub)
