@@ -44,8 +44,8 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 2. Run checks
 3. Run tests
 4. Prove the change works with manual testing if you can
-5. STOP and report what changed; NEVER commit code yourself unless explicitly asked to do so; the user always commits; commit checkpoints are the user's opportunity to review incremental changes
-6. Wait for user to say "committed" or "done" (or similar) or explicitly ask you to commit
+5. STOP and report what changed; NEVER commit code yourself unless the user explicitly asks you to commit THIS specific change. Prior commit requests do not carry forward — each commit requires its own approval. (This applies to development workflow commits. Commands that commit as part of their designed operation — e.g. an agentic ralph loop — are approved when the user approves the run.)
+6. Wait for the user to review and commit (or explicitly ask you to commit). Phrases like "committed", "done", or "commit" are your signal to proceed to the next change.
 7. Repeat for the remaining changes
 8. When all changes committed → `bd close <id> -r "summary"`
 
