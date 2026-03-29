@@ -1,4 +1,4 @@
-## Questions ALWAYS Require Discussion First
+## Questions ALWAYS Require A Discussion Before You Act
 
 If the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", "discuss", "propose" etc.:
 
@@ -31,7 +31,10 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 
 - Compare all assumptions about an implementation to concrete feedback immediately
 - Manual testing is just as important as automated testing
-- Prefer working in thin vertical slices rather that unintegrated horizontal layer changes since those tracer bullets can be validated e2e much earlier
+- Prefer working in thin vertical slices rather than unintegrated horizontal layer changes since those tracer bullets can be validated e2e much earlier
+- After every commit-worthy change, ask: "can I run this and observe it working?" If the answer is yes — do it before reporting the change is ready. Run the CLI, hit the endpoint, trigger the event, eyeball the output. If a change adds or modifies user-facing behavior and you don't exercise it end-to-end before presenting it, assume something is broken that the tests didn't catch.
+- When end-to-end execution isn't possible (e.g. requires paid API keys, hardware, or third-party state you can't set up), say so explicitly and describe what you would run and what you would look for. Don't silently skip validation.
+- Assume backwards-compatibility is unnecessary and would introduce unwanted complexity unless the user specifically tells you it's needed
 
 ---
 
