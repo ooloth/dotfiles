@@ -30,7 +30,8 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 - Immediately after every commit-worthy change (and before reporting success), ask yourself: "how can I run this and observe it working?"
 - In the meantime, assume your changes have not worked (even if tests pass)
 - Be creative: run the CLI, hit the endpoint, trigger the event, eyeball the output; this sort of manually smoke testing is just as important as automated testing
-- When end-to-end execution is truly impossible (e.g. requires paid API keys, hardware, or third-party state you can't set up), tell the user so explicitly and describe what you would run and what you would look for. Don't silently skip validation.
+- **Try first. Declare impossible second.** Before claiming you can't validate end-to-end, actually attempt it. Run the CLI command. If it fails because a tool is missing, _then_ you know. The escape clause below is for after you've tried and hit a wall — not for when you've guessed there might be one.
+- If end-to-end execution is truly impossible, tell the user why and describe what they can do and what they should look for. Don't just silently skip validation.
 
 ---
 
