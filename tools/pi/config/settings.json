@@ -5,13 +5,11 @@
   "enableSkillCommands": true,
   "hideThinkingBlock": false,
   "lastChangelogVersion": "0.62.0",
-  "packages": [
-    "npm:@victor-software-house/pi-curated-themes"
-  ],
+  "packages": ["npm:@victor-software-house/pi-curated-themes"],
   "prompts": [],
   "quietStartup": false,
-  "skills": [
-    "~/.claude/skills"
-  ],
+  "shellCommandPrefix": "export PATH=\"$HOME/.bun/bin:$PATH\"\nshopt -s expand_aliases\neval \"$(grep '^alias ' ~/.zshrc)\"",
+  "skills": ["~/.claude/skills"],
   "theme": "catppuccin-mocha"
 }
+
