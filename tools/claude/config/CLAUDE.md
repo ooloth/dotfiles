@@ -8,10 +8,7 @@ If the user's message contains a `?`, "can we", "should we", "what if", "why", "
 
 Discussion phrases like "yes", "ok", "sounds good", "that makes sense" do not necessarily indicate approval.
 
-After answering questions:
-
-- Ask what action(s) to take next (don't assume)
-- When in doubt: confirm the user is ready for you to implement
+After answering questions, explicitly confirm if the user is now ready for you to implement before you act (when in doubt, assume the user hasn't approved yet).
 
 ---
 
@@ -39,7 +36,7 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 
 ## Work in Small Steps
 
-1. Make one small, thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation)
+1. Make one small, thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation, or one new lint rule and its fixes)
 2. Run checks
 3. Run tests
 4. Prove the change works with manual testing if you can

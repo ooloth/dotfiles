@@ -13,7 +13,7 @@ description: Commit the changes in the working tree. Use every time you are comm
 
 1. Run all checks and fix any errors that weren't auto-fixed until you see a successful run
 2. Run all tests and fix any errors you encounter until all tests pass
-3. Divide the changes into themes if relevant. For example, pair one test case with its implementation and corresponding documentation updates. Vertical slices make better themes than horizontal categories. Very thin slices are ideal when committing. Changes in one file or layer don't necessarily all belong in the same commit.
+3. Divide the changes into themes if relevant. For example, pair one test case with its implementation and corresponding documentation updates. Or one new lint rule and its fixes. Changes in one file or layer don't necessarily all belong in the same commit.
 4. Commit the changes yourself following the "Writing Commit Messages" style guide below. Design a commit sequence that helps readers understand how the system evolved, but do not revert and replay changes to achieve that sequence. Just do your best to divide the existing changes up sensibly. See "Workflows > Staging file hunks non-interactively" when staging some changes in a file but not others (hint: `git add -p` won't work)
 5. When finished making all commits, move on to your next known task immediately or ask me what's next. Defer all future committing to me until I specifically ask you to commit again.
 
