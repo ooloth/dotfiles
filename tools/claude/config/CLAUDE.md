@@ -12,17 +12,17 @@ After answering questions, explicitly confirm if the user is now ready for you t
 
 ---
 
-## BEFORE Implementing: Always Create a Beads Task
+## BEFORE Implementing: Always Create a Trekker Task
 
-When the user approves work, run `bd create` BEFORE reading any files or writing code to ensure the plan has been captured:
+When the user approves work, create a `trekker` task BEFORE reading or writing any files to ensure the plan has been captured:
 
 ```bash
-bd create --title "..." --type task --priority P1 --design "what's broken, approved approach, success criteria"
-bd update <id> --status in_progress
+trekker task create -t "..." -p 1 -d "Problem: ... Approach: ... Done when: ..."
+trekker task update TREK-N -s in_progress
 # THEN read files and implement
 ```
 
-Always use `bd` to manage tasks and persist the outcome of discussions with the user. For the full beads workflow, see `/use-beads`.
+Always use `trekker` to manage tasks and persist the outcome of discussions with the user as a crash recovery mechanism (so the next agent can continue without repeating the discussion). For the full `trekker` workflow, see `/use-trekker`.
 
 ## Validate Every Change
 
@@ -43,7 +43,12 @@ Always use `bd` to manage tasks and persist the outcome of discussions with the 
 5. STOP and report what changed; NEVER commit code yourself unless the user explicitly asks you to commit THIS specific change. Prior commit requests do not carry forward — each commit requires its own approval. (This applies to development workflow commits. Commands that commit as part of their designed operation — e.g. an agentic ralph loop — are approved when the user approves the run.)
 6. Wait for the user to review and commit (or explicitly ask you to commit). Phrases like "committed", "done", or "commit" are your signal to proceed to the next change.
 7. Repeat for the remaining changes
-8. When all changes committed → `bd close <id> -r "summary"`
+8. When all changes committed → close the task:
+   ```bash
+   trekker comment add TREK-N -a "claude" -c "Resolution: ..."
+   trekker task update TREK-N -s completed
+   ```
+9. After closing, check whether related open tasks need their descriptions updated — the approach may have changed, a prerequisite may now be satisfied, or the task may have become unnecessary
 
 One change = ONE test case + the implementation that makes it pass. No batching.
 
