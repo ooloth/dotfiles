@@ -12,7 +12,7 @@ if is_work; then
     prek run --all-files
     ;;
 
-  ops-1 | ops-2)
+  ops-1 | ops-2 | ops-3)
     prek run --all-files
     ;;
 

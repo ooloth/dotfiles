@@ -17,7 +17,7 @@ if is_work; then
     uv run pytest -q
     ;;
 
-  ops-1 | ops-2)
+  ops-1 | ops-2 | ops-3)
     uv run pytest -q
     ;;
 
