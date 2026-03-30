@@ -8,7 +8,7 @@ error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
 if is_work; then
   case $current_dir in
-  agent-1 | agent-2)
+  agency-1 | agency-2)
     prek run --all-files
     ;;
 
