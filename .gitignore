@@ -1,12 +1,13 @@
 # Theirs
+.claude/settings.local.json
 .DS_Store
-*.log
 .nvimlog
+.trekker/
+*.log
 *.pyc
-
-# Mine
-**/.claude/settings.local.json
-.cache
-.secrets
 Brewfile.lock.json
 node_modules/
+
+# Mine
+.cache
+.secrets

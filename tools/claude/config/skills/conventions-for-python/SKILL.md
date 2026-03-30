@@ -10,4 +10,5 @@ description: Python patterns and style guide (when alternate patterns are not sp
 
 ## Style guide
 
+- Prefer `match` statements over `if...elif` chains referencing the same variable
 - Place imports at the top of the module, not inline

@@ -6,9 +6,10 @@
 # ALIASES #
 ###########
 
-alias cat="bat --paging=never"
+alias a="agent-loop"
 
 ###############
 # COMPLETIONS #
 ###############
+
 
