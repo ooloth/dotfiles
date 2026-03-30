@@ -47,17 +47,19 @@ bd update <id> --claim
 
 When approved work has multiple distinct pieces, create an **epic** with **children** — never a single monolithic item. The epic holds the _why_ and _shape_; each child is a self-contained task a fresh agent can pick up without reading the parent.
 
-**Epic design** — keep it to: goal, constraints, key decisions, and implementation order. No code snippets, directory layouts, or per-step instructions.
+**Epic design** — keep it to: goal, constraints, key decisions, and implementation order. No code snippets, directory layouts, or per-step instructions. The epic design is a *summary* — it explains why the work exists and how the pieces fit together, not what to do.
 
-**Child designs** — each child gets its own "what's broken / approach / success criteria" even if derived from the parent. A fresh agent running `bd show <child-id>` must have enough context to start working.
+**All actionable work must be a child task.** If something needs to be implemented, tested, fixed, or validated, it's a task — not a bullet point in the epic design. The epic is complete when all its children are complete. If the epic design contains work items that aren't represented by children, the epic is malformed.
+
+**Child designs** — each child gets its own "what's broken / approach / success criteria" even if derived from the parent. A fresh agent running `bd show <child-id>` must have enough context to start working without reading the parent.
 
 ```bash
-# 1. Create the epic (shape + decisions only)
+# 1. Create the epic (shape only — no actionable items here)
 bd create --title "Generalize loop engine" \
   --type epic --priority P2 \
   --design "Goal: ... Key decisions: ... Implementation order: 1, 2, 3."
 
-# 2. Immediately create children with self-contained designs
+# 2. Every work item becomes a child task
 bd create --title "Extract WorkSpec dataclass" \
   --type task --priority P2 --parent <epic-id> \
   --design "What: ... Approach: ... Success: ..."
@@ -69,7 +71,7 @@ bd create --title "Add RalphStrategy" \
 bd dep add <child-2> <child-1>   # child-2 depends on child-1
 ```
 
-**Never** create an epic without children in the same step. If you find yourself putting implementation detail (code, file paths, step-by-step instructions) in the epic design, that detail belongs in a child.
+**Never** create an epic without children in the same step. **Never** leave actionable work described only in the epic — if it's worth mentioning, it's worth tracking as a child task.
 
 When children must be sequential, use `bd dep add` so `bd ready` naturally surfaces only the next unblocked child. Independent children need no dependencies — they'll all appear in `bd ready` immediately.
 
