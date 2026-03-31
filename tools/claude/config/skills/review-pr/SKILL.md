@@ -159,7 +159,7 @@ Review the code changes across all dimensions:
 - Bugs, error handling
 - Security (actual violations only)
 - Compatibility, breaking changes
-- Testing coverage - **specify exact test cases needed**:
+- Testing coverage (inadequate new behaviour coverage, weakened coverage for existing behaviour) - **specify exact test cases needed**:
   - Not: "Add tests"
   - Better: "Add tests for: expired token, malformed token, missing token, token with wrong signature"
 
