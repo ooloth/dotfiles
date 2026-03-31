@@ -25,8 +25,8 @@ description: Preferred architecture patterns when not otherwise specified by the
 ## Domain modeling via types
 
 - Use the type system to explain the components of the code base and how they interact
-- Prefer domain-specific types over primitive types for their expressive power
-- This doesn't have to mean following OOP design patterns - FP can be equally expressive via composing function signatures with expressive domain types; mix and match based on what best suites the use case
+- Prefer domain-specific types over primitive types
+- Function signatures can be just as expressive as OOP-style classes for expressing the domain and intent of the code; mix and match those paradigms as needed
 
 ## Input Validation Rules
 
