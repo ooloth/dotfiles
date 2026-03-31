@@ -22,15 +22,17 @@ description: Preferred architecture patterns when not otherwise specified by the
 - This doesn't have to mean following FP patterns - but aim to make the code easier to reason about by minimizing the complexity introduced by dependencies on internal state, time, etc
 - If it's possible to express a code path as I/O -> transformations -> I/O, strongly consider doing it
 
-## Domain modeling via types
+## Type-driven design and domain modeling
 
 - Use the type system to explain the components of the code base and how they interact
+- Use types to enforce invariants at compile time (e.g. `UnvalidatedEmailAddress` in -> `ValidatedEmailAddress` out)
 - Prefer domain-specific types over primitive types for their expressive power
-- This doesn't have to mean following OOP design patterns - FP can be equally expressive via composing function signatures with expressive domain types; mix and match based on what best suites the use case
+- A pipeline of composed function signatures can be just as expressive as OOP-style objects at expressing the domain's types; mix and match paradigms as needed
 
 ## Input Validation Rules
 
-Parse at the I/O boundary and transform raw data into ergonomic, expressive, type-safe domain objects
+- Always parse incoming data at the I/O boundary
+- Transform raw outside-world structures into ergonomic, expressive, type-safe domain objects
 
 ### Parse real-world data at the I/O boundary
 
