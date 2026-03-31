@@ -7,6 +7,7 @@ description: Test design patterns and style guide (when alternate patterns are n
 
 - Consider a property-based vs example-based vs snapshot-based test and choose the best fit
 - For example-based tests, when testing multiple inputs that should produce the same outcome (e.g. various forms of "empty"), prefer one test that iterates over multiple input scenarios (in whatever way is most idiomatic) over a separate test function for every input-output scenario
+- Prefer the simple readability of normal helper functions over test framework equivalents (fixtures, etc) whenever the latter doesn't add real value
 
 ### Libraries
 

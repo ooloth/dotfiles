@@ -13,11 +13,11 @@ fi
 
 if is_work; then
   case "${current_dir}" in
-  agent-1 | agent-2)
+  agency-1 | agency-2)
     uv run pytest -q
     ;;
 
-  ops-1 | ops-2)
+  ops-1 | ops-2 | ops-3)
     uv run pytest -q
     ;;
 

@@ -27,13 +27,10 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 ## Validate Every Change
 
 - Prefer batching changes as thin vertical slices (tracer bullets) that can be validated e2e, rather than batching in a single horizontal layer without integrating the new code in any runtime path
-- Immediately after every commit-worthy change (and before reporting success), ask yourself: "how can I run this and observe it working?"
-- In the meantime, assume your changes have not worked (even if tests pass)
+- Immediately after every commit-worthy change (and before reporting success), ask yourself: "how can I run this myself and confirm it actually works?"
+- Use your ability to do local e2e runs to confirm what you see happening; if the relevant codepaths are missing the observability signals you need for verification, recommend adding them; if the local dev tools setup is lacking conveniences that would make local verification easier, recommend what to add; in the meantime, feel free to run relevant code paths ad hoc via any creative manual means you can think of; the point is to pile up evidence that the changes actually work and never assume that the code looking right or automated tests passing is enough
 - Be creative: run the CLI, hit the endpoint, trigger the event, eyeball the output; this sort of manually smoke testing is just as important as automated testing
-- **Try first. Declare impossible second.** Before claiming you can't validate end-to-end, actually attempt it. Run the CLI command. If it fails because a tool is missing, _then_ you know. The escape clause below is for after you've tried and hit a wall — not for when you've guessed there might be one.
 - If end-to-end execution is truly impossible, tell the user why and describe what they can do and what they should look for. Don't just silently skip validation.
-
----
 
 ## Work in Small Steps
 
