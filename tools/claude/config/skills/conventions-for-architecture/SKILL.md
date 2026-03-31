@@ -25,11 +25,9 @@ description: Preferred architecture patterns when not otherwise specified by the
 ## Type-driven design and domain modeling
 
 - Use the type system to explain the components of the code base and how they interact
-- Prefer domain-specific types over primitive types
-- Function signatures can be just as expressive as OOP-style classes for expressing the domain and intent of the code; mix and match those paradigms as needed
-- Use types to enforce invariants at compile time (e.g. `UnvalidatedEmailAddress` in -> `ValidatedEmailAddress` out)
-- Prefer domain-specific types over primitive types for their expressive power
-- A pipeline of composed function signatures can be just as expressive as OOP-style objects at expressing the domain's types; mix and match paradigms as needed
+- Use types to enforce invariants (e.g. `UnvalidatedEmailAddress` in -> `ValidatedEmailAddress` out)
+- Prefer domain-specific types over primitive types since they can express domain-specifc concepts
+- Function signatures can be just as expressive as OOP-style objects for expressing the domain and intent of the code; mix and match those paradigms as needed
 
 ## Input Validation Rules
 
