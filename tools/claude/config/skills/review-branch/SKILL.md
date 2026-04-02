@@ -206,7 +206,7 @@ Check for:
 
 - Is there any dead code, commented code, or unused imports?
 - Are there unnecessary comments explaining obvious code?
-- Any backwards-compatibility hacks that can be removed?
+- Any unnecessary backwards compatibility support that can be removed?
 - Any remnants from exploration (partial refactors, abandoned approaches)?
 
 **Future Lens:**
