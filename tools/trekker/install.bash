@@ -15,5 +15,6 @@ install_and_symlink \
 
 if ! have trekker-dashboard; then
   debug "📋 Installing trekker-dashboard"
+  # See: https://omercan.io/trekker/
   bun install --global @obsfx/trekker-dashboard
 fi
