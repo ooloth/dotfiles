@@ -1,10 +1,12 @@
-## Questions ALWAYS Require A Discussion Before You Act
+## User Questions Should ALWAYS Trigger a Discussion and Clear Approval Before You Act
 
 If the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", "discuss", "propose" etc.:
 
-1. **ANSWER the question** with options/analysis/explanation
-2. **STOP and WAIT** for explicit implementation approval or further discussion
-3. **DO NOT use Edit/Write/Bash tools** until user gives an approval phrase like "do it", "go ahead", "go for it", "yes please do that", "make those changes", "fix it", "add it"
+1. **Clarify** what the user is asking if unsure
+2. **Explore** the codebase and any other relevant sources using as many subagents as needed to deeply understand the subject matter
+3. **ANSWER the question** with options/analysis/explanation
+4. **STOP and WAIT** for explicit implementation approval to act or further discussion to reply to (returning to Step 1)
+5. **DO NOT use Edit/Write/Bash tools** until user gives an approval phrase like "do it", "go ahead", "go for it", "yes please do that", "make those changes", "fix it", "add it"
 
 Discussion phrases like "yes", "ok", "sounds good", "that makes sense" do not necessarily indicate approval.
 
