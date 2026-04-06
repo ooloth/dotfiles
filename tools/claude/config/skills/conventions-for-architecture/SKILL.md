@@ -1,6 +1,6 @@
 ---
 name: conventions-for-architecture
-description: Preferred architecture patterns when not otherwise specified by the project.
+description: Preferred architecture patterns when not otherwise specified by the project. TRIGGER when proposing new folder structure, creating multiple new files, or deciding where new functionality should live.
 ---
 
 ## Clear boundaries

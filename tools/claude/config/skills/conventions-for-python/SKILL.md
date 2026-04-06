@@ -1,6 +1,6 @@
 ---
 name: conventions-for-python
-description: Python patterns and style guide (when alternate patterns are not specified at the project level)
+description: Python patterns and style guide (when alternate patterns are not specified at the project level). TRIGGER when writing, editing, or reviewing Python (.py) files.
 ---
 
 ## Type hints

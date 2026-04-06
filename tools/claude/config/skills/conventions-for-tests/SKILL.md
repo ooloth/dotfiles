@@ -1,6 +1,6 @@
 ---
 name: conventions-for-tests
-description: Test design patterns and style guide (when alternate patterns are not specified at the project level)
+description: Test design patterns and style guide (when alternate patterns are not specified at the project level). TRIGGER when writing, editing, or reviewing test files.
 ---
 
 ## Unit testing patterns
