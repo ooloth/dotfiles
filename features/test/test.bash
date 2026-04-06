@@ -11,14 +11,21 @@ if [ "$#" -gt 0 ]; then
   args=" ${*}"
 fi
 
+case $current_dir in
+agency-1 | agency-2)
+  uv run --frozen pytest
+  exit 0
+  ;;
+
+agent-1 | agent-2)
+  uv run --frozen pytest
+  ;;
+esac
+
 if is_work; then
   case "${current_dir}" in
-  agency-1 | agency-2)
-    uv run pytest -q
-    ;;
-
   ops-1 | ops-2 | ops-3)
-    uv run pytest -q
+    uv run pytest
     ;;
 
   mapapp-1 | mapapp-2 | mapapp-3)
@@ -42,10 +49,6 @@ else
   case "${current_dir}" in
   advent-of-code)
     ./bin/test "$@"
-    ;;
-
-  agent-1 | agent-2)
-    uv run pytest -q
     ;;
 
   hub)

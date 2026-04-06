@@ -6,14 +6,22 @@ source "${DOTFILES}/tools/bash/utils.bash"
 current_dir=$(basename "${PWD}")
 error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
+case $current_dir in
+agency-1 | agency-2)
+  uv run --frozen prek run --all-files
+  exit 0
+  ;;
+
+agent-1 | agent-2)
+  uv run --frozen prek run --all-files
+  exit 0
+  ;;
+esac
+
 if is_work; then
   case $current_dir in
-  agency-1 | agency-2)
-    prek run --all-files
-    ;;
-
   ops-1 | ops-2 | ops-3)
-    prek run --all-files
+    uv run prek run --all-files
     ;;
 
   mapapp-1 | mapapp-2 | mapapp-3)
@@ -35,10 +43,6 @@ if is_work; then
   esac
 else
   case $current_dir in
-  agent-1 | agent-2)
-    prek run --all-files
-    ;;
-
   michaeluloth.com)
     npm run format "$@"
     npm run lint "$@"
