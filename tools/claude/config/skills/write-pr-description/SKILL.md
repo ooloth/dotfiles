@@ -52,6 +52,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 ❌ Business rule explanations (put in code comments)
 ❌ "Comprehensive" descriptions - less is more
 ❌ Placeholder links - ask for real URLs
+❌ Automated steps in "How to validate" — never "run the tests", "run CI", or "run lint/checks"; validation must be manual only (start the app, open a page, trigger a flow, observe output)
 
 ### Scope Discipline
 
