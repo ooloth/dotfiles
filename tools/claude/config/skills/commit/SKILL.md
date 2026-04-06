@@ -49,7 +49,8 @@ Write commit messages that follow the following style guidelines (if not superse
 - Use plain prose, not bullet points. Wrap lines at ~72 characters.
 - Focus on the why and how rather than restating the diff
 - Keep the tone direct and technical without no filler phrases
-- Don't exceed a handful of paragraphs; less is more.
+- Don't exceed a handful of paragraphs; less is more
+- If the commit resolves a GitHub Issue, include `Fixes #X` or `Closes #X`
 
 ## Workflows
 
