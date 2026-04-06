@@ -76,6 +76,13 @@ Wait for user response. If fundamental redesign needed, discuss approach. Otherw
 
 ### Phases 2-4: Deep Review (Evidence Collection)
 
+**Before reviewing, load relevant conventions based on changed file types:**
+
+- Python files (.py) → invoke `conventions-for-python`
+- Test files (test_*.py, *.test.ts, *.spec.ts, etc.) → invoke `conventions-for-tests`
+- Type definitions (*.d.ts, Pydantic models, Zod schemas, TypeScript interfaces) → invoke `conventions-for-types`
+- Multiple new files or new folder structure → invoke `conventions-for-architecture`
+
 **IMPORTANT:**
 
 - Do NOT present findings after each phase

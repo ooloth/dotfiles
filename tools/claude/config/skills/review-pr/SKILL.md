@@ -150,6 +150,13 @@ Read **2-3 similar/related unchanged files** to understand how this codebase sol
 
 ### Phase 6: Deep Review
 
+**Before reviewing, load relevant conventions based on changed file types:**
+
+- Python files (.py) → invoke `conventions-for-python`
+- Test files (test_*.py, *.test.ts, *.spec.ts, etc.) → invoke `conventions-for-tests`
+- Type definitions (*.d.ts, Pydantic models, Zod schemas, TypeScript interfaces) → invoke `conventions-for-types`
+- Multiple new files or new folder structure → invoke `conventions-for-architecture`
+
 Review the code changes across all dimensions:
 
 **Correctness:**

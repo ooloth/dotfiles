@@ -5,8 +5,8 @@ description: Perform a code style review to identify anti-patterns in this proje
 
 ## Context
 
-1. Study the `conventions-for-architecture` reference skill guidance
-2. Study the current project's documented architecture guidance (if any)
+1. Study the `conventions-for-code-style` reference skill guidance
+2. Study the current project's documented code style guidance (if any)
 
 ## Your task
 
