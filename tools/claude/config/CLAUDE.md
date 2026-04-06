@@ -52,6 +52,12 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 
 One change = ONE test case + the implementation that makes it pass. No batching.
 
+## Use Rust equivalents of UNIX tools
+
+- Use `rg` instead of `grep`
+- Use `fd` instead of `find`
+- Use `sd` instead of `sed`
+
 ## Backwards Compatibility is Unusually Unwanted
 
 - Unless told otherwise, assume backwards-compatibility is unwanted
