@@ -1,4 +1,4 @@
-## User Questions Should ALWAYS Trigger a Discussion and Clear Approval Before You Act
+## Explicitly Confirm Before Acting (Especially After Questions)
 
 If the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", "discuss", "propose" etc.:
 
