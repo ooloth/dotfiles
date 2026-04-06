@@ -5,9 +5,8 @@ description: Commit the changes in the working tree. Use every time you are comm
 
 ## Context
 
+- Status: !`git status --short`
 - All changes: !`git diff HEAD`
-- Staged changes: !`git diff --staged`
-- Unstaged changes: !`git diff`
 
 ## Your task
 
