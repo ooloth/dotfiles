@@ -6,7 +6,9 @@
 # ALIASES #
 ###########
 
-if have kitten; then
+# If terminal is kitty, use kittens for diff, image display, ripgrep, ssh, and file transfer.
+# See: https://github.com/kovidgoyal/kitty/issues/957
+if [[ "${TERM}" == "xterm-kitty" ]]; then
   diff() { kitten diff "${1}" "${2}"; } # see: https://sw.kovidgoyal.net/kitty/kittens/diff/
   image() { kitten icat "$@"; } # see: https://sw.kovidgoyal.net/kitty/kittens/icat/
   rg() {
