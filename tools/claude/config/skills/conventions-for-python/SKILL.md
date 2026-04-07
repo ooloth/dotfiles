@@ -10,3 +10,4 @@ description: Python patterns and style guide (when alternate patterns are not sp
 ## Style guide
 
 - Prefer `match` statements over `if...elif` chains referencing the same variable
+- Leverage `assert_never` in the default `match` statement block to make exhaustive case handling explicit
