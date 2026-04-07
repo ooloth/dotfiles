@@ -10,6 +10,10 @@ description: Preferred code style across all languages when idiomatic and not ot
 - Explicit is better than clever
 - Declarative is better than imperative - it should not be necessary to read a function body line-by-line to infer what it does
 
+## Maintainability
+
+- Repeated hard-coded values should ideally be captured in a reused constant of some sort (e.g. an enum)
+
 ## Testability
 
 - Prefer pure functions wherever possible to make domain decisions easy to test
