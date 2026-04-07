@@ -1,0 +1,1 @@
+- Docs: https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/docs/extensions.md
