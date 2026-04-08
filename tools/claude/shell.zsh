@@ -24,6 +24,5 @@ fi
 # ALIASES #
 ###########
 
-alias cc="claude"
-alias ccy="claude --dangerously-skip-permissions"
-
+alias cc="claude --allow-dangerously-skip-permissions"
+# alias ccy="claude --dangerously-skip-permissions"
