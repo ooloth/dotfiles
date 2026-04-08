@@ -25,4 +25,4 @@ fi
 ###########
 
 alias cc="claude --allow-dangerously-skip-permissions"
-# alias ccy="claude --dangerously-skip-permissions"
+alias ccy="claude --dangerously-skip-permissions"
