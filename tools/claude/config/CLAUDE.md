@@ -6,7 +6,9 @@ If the user's message contains a `?`, "can we", "should we", "what if", "why", "
 2. **Proactively explore** the codebase and any other relevant sources using as many subagents as needed to deeply understand the subject matter
 3. **ANSWER the question** with options/analysis/explanation
 4. **STOP and WAIT** for explicit implementation approval to act or further discussion to reply to (returning to Step 1)
-5. **DO NOT use Edit/Write/Bash tools** until user gives an approval phrase like "do it", "go ahead", "go for it", "yes please do that", "make those changes", "fix it", "add it"
+5. **DO NOT take any action with side effects** until user gives an approval phrase like "do it", "go ahead", "go for it", "yes please do that", "make those changes", "fix it", "add it"
+
+This applies to **all side effects**, not just file edits — GitHub comments, issue state changes, PR creation, API calls, shell commands that mutate state, etc. If the action changes anything the user would need to know about, present your plan and wait. External/public side effects (e.g. posting a comment visible to others) require the same approval gate as code changes — arguably more so, since they cannot be locally reverted.
 
 Discussion phrases like "yes", "ok", "sounds good", "that makes sense" do not necessarily indicate approval.
 
@@ -32,7 +34,7 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 2. Run checks
 3. Run tests
 4. Prove the change works with manual testing if you can
-5. STOP and report what changed; NEVER commit code yourself unless the user explicitly asks you to commit THIS specific change. Prior commit requests do not carry forward — each commit requires its own approval. (This applies to development workflow commits. Commands that commit as part of their designed operation — e.g. an agentic ralph loop — are approved when the user approves the run.)
+5. STOP and report what changed; NEVER commit code or take further actions yourself unless the user explicitly approves THIS specific change. Prior approvals do not carry forward — each action requires its own approval. (This applies to development workflow commits and any side effects. Commands that commit as part of their designed operation — e.g. an autonomous ralph loop — are approved when the user approves the run.)
 6. Wait for the user to review and commit (or explicitly ask you to commit). Phrases like "committed", "done", or "commit" are your signal to proceed to the next change.
 7. Repeat for the remaining changes
 8. When all changes committed → close the task:
