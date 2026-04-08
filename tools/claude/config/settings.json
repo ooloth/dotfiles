@@ -376,7 +376,10 @@
       "Bash(wget :* | sh:*)",
       "Bash(wget :* | sudo :*)",
       "Bash(wget -qO- :* | sh:*)",
-      "Bash(wget http://169.254.169.254/:*)"
+      "Bash(wget http://169.254.169.254/:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
     ]
   },
   "hooks": {
