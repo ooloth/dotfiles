@@ -1,3 +1,10 @@
+## Protect Your Context Window
+
+- Your context window has a limited budget and fills up quickly
+- Try to prevent that from happening by delegating as much exploration as you can to subagents
+- That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
+  details only entering the conversation
+
 ## Explicitly Confirm You Should Act (Especially After Questions)
 
 If the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", "discuss", "propose" etc, have a discussion:
