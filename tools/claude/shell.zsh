@@ -14,10 +14,10 @@ export DISABLE_ERROR_REPORTING=1
 export DISABLE_TELEMETRY=1
 
 if is_work; then
+  # See: https://github.com/recursionpharma/ai-coding-guild-docs/blob/trunk/public/claude/settings.json
   export ANTHROPIC_VERTEX_PROJECT_ID=vertexai-sandbox-e8a925d0
   export CLAUDE_CODE_USE_VERTEX=1
-  export CLOUD_ML_REGION=us-east5
-  export DISABLE_PROMPT_CACHING=1
+  export CLOUD_ML_REGION=global
 fi
 
 ###########
