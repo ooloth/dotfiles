@@ -12,5 +12,5 @@ symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/settings.json" "${TOOL_CONFIG_DI
 
 # Pi Coding Agent does not support finding the global CLAUDE.md
 # See comment from creator: https://github.com/badlogic/pi-mono/issues/692#issuecomment-3745162482
-# Use bare ln -s void AGENTS.md being treated as a directory by "symlink"
-ln -s "${DOTFILES}/tools/claude/config/CLAUDE.md" "${TOOL_CONFIG_DIR}/AGENTS.md"
+# Use a direct target path because this symlink must be named AGENTS.md (not CLAUDE.md).
+ln -fsv "${DOTFILES}/tools/claude/config/CLAUDE.md" "${TOOL_CONFIG_DIR}/AGENTS.md"
