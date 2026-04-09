@@ -4,12 +4,15 @@
   "defaultThinkingLevel": "high",
   "enableSkillCommands": true,
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.62.0",
-  "packages": ["npm:@victor-software-house/pi-curated-themes"],
+  "lastChangelogVersion": "0.66.1",
+  "packages": [
+    "npm:@victor-software-house/pi-curated-themes"
+  ],
   "prompts": [],
   "quietStartup": false,
   "shellCommandPrefix": "export PATH=\"$HOME/.bun/bin:$PATH\"\nshopt -s expand_aliases\neval \"$(grep '^alias ' ~/.zshrc)\"",
-  "skills": ["~/.claude/skills"],
+  "skills": [
+    "~/.claude/skills"
+  ],
   "theme": "catppuccin-mocha"
 }
-
