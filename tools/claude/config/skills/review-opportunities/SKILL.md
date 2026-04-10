@@ -6,6 +6,6 @@ description: Analyze gaps in user-facing features and desirable characteristics,
 ## Your task
 
 1. Use up to 50 subagents to explore the current codebase (or subsection if the user specified a smaller scope)
-2. Identify opportunities to improve user- or developer-facing characteristics
+2. Identify opportunities to improve user- or developer-facing characteristics and address fundamental flaws 
 3. Study the user's `trekker`, Jira, Monday, GitHub issues or other backlog (if any) to see what opportunities are already tracked
 4. Report the top untracked user-facing and developer-facing opportunities
