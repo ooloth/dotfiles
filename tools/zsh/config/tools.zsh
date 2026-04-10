@@ -1,21 +1,12 @@
 # Add tool-specific environment variables, aliases and completions to zsh environment
-#
-# This file uses a pre-generated manifest to avoid expensive find operations on every shell startup. The manifest
-# includes all shell/*.zsh and shell.zsh files in this project is auto-regenerated when stale (i.e. any .zsh files
-# are newer than the manifest).
-#
-# To manually regenerate: source ${DOTFILES}/features/update/zsh/generate-manifest.zsh
 
-MANIFEST="${DOTFILES}/.cache/shell-files-manifest.zsh"
-
-# Check if manifest needs regeneration
-if [[ ! -f "${MANIFEST}" ]] || [[ -n $(find "${DOTFILES}/features" "${DOTFILES}/tools" -name "*.zsh" -newer "$MANIFEST" -print -quit) ]]; then
-  # Manifest is missing or stale, regenerate it
-  source "${DOTFILES}/features/update/zsh/generate-manifest.zsh"
-fi
-
-# Source the manifest (contains all shell.zsh files)
-source "${MANIFEST}"
+# Source all shell config files from features and tools (excluding @new and @archive)
+while IFS= read -r file; do
+  source "$file"
+done < <(find "${DOTFILES}/features" "${DOTFILES}/tools" \
+  \( -name '@new' -o -name '@archive' \) -prune -o \
+  \( -name 'shell.zsh' -o -path '*/shell/variables.zsh' -o -path '*/shell/aliases.zsh' -o -path '*/shell/integration.zsh' \) \
+  -print | sort)
 
 ###################################
 # LEGACY: ONE-OFF VARIABLES SETUP #
