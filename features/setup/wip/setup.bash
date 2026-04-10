@@ -74,7 +74,7 @@ main() {
     # Initialize dotfiles utilities now that repository is available
     printf "\n🔧 Initializing dotfiles utilities...\n\n"
 
-    source "${DOTFILES}/tools/macos/shell/aliases.zsh" # is_air, is_mini, is_work
+    source "${DOTFILES}/tools/macos/shell.zsh" # is_air, is_mini, is_work
     source "${DOTFILES}/tools/zsh/utils.zsh"           # have, info, warn, error
 
     # Initialize dry-run mode utilities

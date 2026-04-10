@@ -4,7 +4,7 @@
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 # Include is_air, is_mini, is_work in this commonly-sourced file
-source "${DOTFILES}/tools/macos/shell/aliases.zsh"
+source "${DOTFILES}/tools/macos/shell.zsh"
 
 ###########
 # GENERAL #
