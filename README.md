@@ -65,6 +65,16 @@ This will:
 3. Set up symlinks for all configurations
 4. Configure macOS system preferences
 
+## Checking
+
+```sh
+dcheck        # verify symlinks and critical tool presence
+```
+
+`dcheck` is a read-only health check. It reports `OK`, `MISSING`, or
+`WRONG TARGET` for every managed symlink and confirms that critical
+tools are installed. Exits nonzero if anything is wrong.
+
 ## Updating
 
 ```sh
