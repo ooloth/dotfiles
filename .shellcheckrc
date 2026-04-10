@@ -10,5 +10,15 @@ external-sources=true
 # Disable specific warnings
 disable=SC1091,SC1090,SC2059,SC2119,SC2155
 
+# SC2034: variables defined in utils.zsh (TEXT_*, etc.) appear unused to shellcheck
+# because they are consumed by scripts that source this file — shellcheck can't see
+# across that sourcing boundary even with external-sources=true.
+disable=SC2034
+
+# SC2317: the `return "$code" 2>/dev/null || exit "$code"` pattern in return_or_exit()
+# is intentional — it handles both sourced (return) and direct-run (exit) contexts.
+# Shellcheck incorrectly flags the exit branch as unreachable.
+disable=SC2317
+
 # Override the detected shell for files without a shebang
 shell=bash
