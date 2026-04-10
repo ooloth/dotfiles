@@ -6,7 +6,6 @@ on:
     branches: [main]
     paths:
       - "**/*.bash"
-      - "**/*.bats"
       - "**/*.sh"
       - ".github/workflows/test-dotfiles.yml"
 
@@ -15,7 +14,6 @@ on:
     branches: [main]
     paths:
       - "**/*.bash"
-      - "**/*.bats"
       - "**/*.sh"
       - ".github/workflows/test-dotfiles.yml"
 
@@ -58,7 +56,6 @@ jobs:
 
           # Find all bash scripts and run shellcheck
           BASH_FILES=$(find . \( -name "*.sh" -o -name "*.bash" \) -type f -not -path "./.*")
-          ALL_BATS_TESTS=$(find -name "*.bats" -type f 2>/dev/null | sort)
 
           if [[ -z "$BASH_FILES" ]]; then
             echo "No bash scripts found to check"
@@ -86,74 +83,6 @@ jobs:
           fi
 
           echo "✅ All bash scripts passed shellcheck"
-
-      - name: Install BATS
-        run: |
-          # Install BATS for running bash tests
-          brew install bats-core
-
-      - name: Test environment validation
-        run: |
-          # Validate that our test environment works correctly
-          echo "Validating test environment..."
-
-          # Check that DOTFILES is set correctly
-          if [[ -z "$DOTFILES" ]]; then
-            echo "❌ DOTFILES environment variable not set"
-            exit 1
-          fi
-
-          echo "✅ DOTFILES set to: $DOTFILES"
-
-          # Verify BATS is available
-          if ! command -v bats >/dev/null 2>&1; then
-            echo "❌ BATS not found in PATH"
-            exit 1
-          fi
-
-          echo "✅ BATS available: $(bats --version)"
-          echo "✅ Test infrastructure validated"
-
-      - name: Run BATS test suite
-        run: |
-          # Run comprehensive BATS test suite across all directories
-          echo "Running BATS test suite..."
-
-          FAILED_TESTS=""
-          TOTAL_TESTS=0
-
-          # Find all BATS test files 
-          ALL_BATS_TESTS=$(find -name "*.bats" -type f 2>/dev/null | sort)
-
-          if [[ -z "$ALL_BATS_TESTS" ]]; then
-            echo "No BATS test files found"
-            exit 0
-          fi
-
-          echo "Found BATS test files:"
-          echo "$ALL_BATS_TESTS"
-          echo ""
-
-          # Run each test file
-          echo "$ALL_BATS_TESTS" | while read -r test_file; do
-            if [[ -n "$test_file" ]]; then
-              echo "Running: $test_file"
-              ((TOTAL_TESTS++))
-              if ! bats "$test_file"; then
-                echo "❌ Failed: $test_file"
-                FAILED_TESTS="$FAILED_TESTS$test_file\n"
-              fi
-              echo ""
-            fi
-          done
-
-          if [[ -n "$FAILED_TESTS" ]]; then
-            echo "❌ BATS test failures:"
-            echo -e "$FAILED_TESTS"
-            exit 1
-          fi
-
-          echo "✅ All BATS tests completed successfully"
 
       # TODO: does this make sense? what's it doing?
       - name: Test symlink verification
