@@ -57,7 +57,6 @@ function banner() {
   # Define the text and border styles
   local text_color="${TEXT_BRIGHT}$color"
   local border_color="${TEXT_NORMAL}$color"
-  local border_char="="
   local border_char_top_left_corner="╔"
   local border_char_top_right_corner="╗"
   local border_char_bottom_right_corner="╝"
@@ -85,19 +84,19 @@ function banner() {
 function info() {
   local text="$1"
   local color="${TEXT_WHITE}"
-  banner $text $color
+  banner "${text}" "${color}"
 }
 
 function warn() {
   local text="$1"
   local color="${TEXT_YELLOW}"
-  banner $text $color
+  banner "${text}" "${color}"
 }
 
 function error() {
   local text="$1"
   local color="${TEXT_RED}"
-  banner $text $color
+  banner "${text}" "${color}"
 }
 
 function debug() {
