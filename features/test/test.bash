@@ -55,6 +55,10 @@ else
     PYTHONPATH=. pytest "$@"
     ;;
 
+  media-tools)
+    uv run pytest "$@"
+    ;;
+
   michaeluloth.com)
     npm run test "$@"
     ;;
