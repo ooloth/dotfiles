@@ -58,13 +58,32 @@ symlink() {
     return 1
   fi
 
+  local file_name
+  file_name="$(basename "$source_file")"
+  local target_path="$target_dir/$file_name"
+
+  # In check mode: report status without creating anything
+  if [[ "${DOTFILES_CHECK:-}" == "true" ]]; then
+    if [[ ! -e "$source_file" ]]; then
+      printf "❌ MISSING source: %s\n" "$source_file"
+      return 1
+    fi
+    if [[ -L "$target_path" ]] && [[ "$(readlink "$target_path")" == "$source_file" ]]; then
+      printf "✅ OK      %s → %s\n" "$file_name" "$target_dir"
+      return 0
+    elif [[ -L "$target_path" ]]; then
+      printf "❌ WRONG TARGET: %s → %s (points to: %s)\n" "$file_name" "$target_dir" "$(readlink "$target_path")"
+      return 1
+    else
+      printf "❌ MISSING: %s → %s\n" "$file_name" "$target_dir"
+      return 1
+    fi
+  fi
+
   if [[ ! -e "$source_file" ]]; then
     echo "Error: Source file does not exist: $source_file" >&2
     return 1
   fi
-
-  local file_name="$(basename "$source_file")"
-  local target_path="$target_dir/$file_name"
 
   # Check if the target file exists and is a symlink pointing to the correct source file
   if [ -L "$target_path" ] && [ "$(readlink "$target_path")" = "$source_file" ]; then
