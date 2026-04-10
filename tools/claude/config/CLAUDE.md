@@ -23,6 +23,10 @@ Explicitly confirm if the user is ready for you to implement and for the discuss
 
 If your thinking later leads you to modify the approved plan (e.g. want to make new design decisions), stop and discuss those rather than quietly making an executive decision.
 
+**Open design questions void prior approval.** If implementation depends on an unresolved design choice (e.g. which name, which approach, which pattern), present the options and stop — even if you already have approval for the parent task. Prior approval does not extend through an open question; resolve it first, then implement.
+
+**A response that asks a question must contain no side-effecting tool calls.** If you write "Agree?", "Which would you prefer?", or any other question seeking user input, that response cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and acting in the same turn makes the question rhetorical and bypasses the gate.
+
 ## BEFORE Implementing: Always Create a Trekker Task
 
 When the user approves work, create a `trekker` task BEFORE reading or writing any files to ensure the plan has been captured:
