@@ -118,6 +118,8 @@ Check each theme for:
 - Are errors propagated consistently (same pattern throughout)?
 - Do error messages provide helpful context for debugging?
 - Do we fail fast where appropriate, or handle gracefully where needed?
+- Could any runtime errors be shifted left to compile time type checks for earlier discovery?
+- Could refactoring to different patterns make any error states impossible?
 - Are all failure modes accounted for?
 
 **Security:**
@@ -208,6 +210,7 @@ Check for:
 - Would a new maintainer struggle to understand intent?
 - Are domain types used instead of primitives?
 - Is logic overly repetitive or verbose?
+- Would well-named helper functions and better types help clarify what the code is aiming to do?
 
 **Noise:**
 
@@ -215,6 +218,7 @@ Check for:
 - Are there unnecessary comments explaining obvious code?
 - Any unnecessary backwards compatibility support that can be removed?
 - Any remnants from exploration (partial refactors, abandoned approaches)?
+- Any duplicate or near-duplicate code introduced when existing code have been reused?
 
 **Future Lens:**
 
@@ -342,14 +346,9 @@ After implementing each theme:
 ## What NOT to do
 
 - Don't add features beyond the branch scope
-- Don't refactor code you're not changing
-- Don't add docstrings/comments to untouched code
 - Don't add error handling for impossible scenarios
-- Don't create abstractions for one-time use
 - Don't design for hypothetical future requirements
-- Don't report minor issues if they distract from major ones
 - Don't force root cause narratives when issues are genuinely unrelated
-- Don't list ignorable items unless user would wonder about them
 
 ---
 

@@ -177,7 +177,7 @@ Review the code changes across all dimensions:
 **Maintainability:**
 
 - Design coherence, simplicity
-- Clarity, cleanliness
+- Clarity, cleanliness, appropriate code reuse, no dead code
 - Future lens, developer experience
 
 **What's Good:**
