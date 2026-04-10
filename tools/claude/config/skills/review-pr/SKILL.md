@@ -847,9 +847,9 @@ Success: "✅ Review posted with 2 inline comments"
 - Provide specific test cases (exact scenarios to test)
 - Explain concrete impact with examples ("If user passes X, then Y happens")
 - Explain WHY, not just WHAT
-- Ask questions when unsure
+- Ask questions when unsure - be friendly and curious rather than intense or concerned
 - Maintain at least 1:1 positive to negative ratio
-- Provide AI-assisted comment suggestions with code + why + tests
+- Provide comment wording suggestions with code + why + tests
 - Be specific and actionable
 - Teach through socratic questions
 - Acknowledge constraints and "good enough for now"
