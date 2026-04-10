@@ -59,6 +59,16 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 - Be creative: run the CLI, hit the endpoint, trigger the event, eyeball the output; this sort of manually smoke testing is just as important as automated testing
 - If end-to-end execution is truly impossible, tell the user why and describe what they can do and what they should look for. Don't just silently skip validation.
 
+## Use tmux Windows for Long-Running Processes
+
+The user always runs Claude Code inside tmux. When starting a process meant to stay running (dev server, build watcher, test runner, log tailer), use a named tmux window instead of a background job:
+
+```bash
+tmux new-window -n "dev-server" "npm run dev"
+```
+
+The user can navigate to it naturally with normal tmux keybindings. Prefer this over `run_in_background` or `&` for any process where ongoing output is useful to observe.
+
 ## Use Rust equivalents of UNIX tools
 
 - Use `rg` instead of `grep`
