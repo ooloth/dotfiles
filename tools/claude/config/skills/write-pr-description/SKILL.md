@@ -29,7 +29,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 - **What section**: Include every significant change theme - no cap. Could be 2 bullets, could be 8. Whatever fits the PR.
 - **Why section**: 1-3 bullets (not a paragraph). Focus on user benefit.
-- **Validation**: 10 steps MAX. Narrative "Expect to..." style.
+- **Validation**: Narrative "Expect to..." style. Should be a numbered list of manual e2e testing steps and what evidence-providing observability signals to look for to confirm correct behavior. If there are gaps in the latter, point them out! Now is the time to fill those gaps. Should NEVER make reference to automated checks - these should be higher-confidence manual checks.
 
 ### Structure Requirements
 
@@ -46,13 +46,14 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ### What NOT to Do
 
-❌ Checkbox-heavy validation sections
-❌ Technical jargon when plain language works
 ❌ Listing every file changed
-❌ Business rule explanations (put in code comments)
 ❌ "Comprehensive" descriptions - less is more
+❌ Checkbox-heavy validation sections
+❌ Automated steps in "How to validate" — never "run the tests", "run CI", or "run lint/checks"; validation must be manual only (run the real thing e2e and expect to see X evidence of correct behavior)
+❌ Technical jargon when plain language works
+❌ Business rule explanations (put in code comments)
 ❌ Placeholder links - ask for real URLs
-❌ Automated steps in "How to validate" — never "run the tests", "run CI", or "run lint/checks"; validation must be manual only (start the app, open a page, trigger a flow, observe output)
+❌ Escaped inline code like `variable` - `variable` is nicer to read
 
 ### Scope Discipline
 
@@ -64,7 +65,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ## Template Handling
 
-1. **Project template first** - Use `.github/PULL_REQUEST_TEMPLATE.md` as base
+1. **Project template first** - Use `.github/PULL_REQUEST_TEMPLATE.md` or `.github/pull_request_template.md` as base
 2. **Respect conventions** - Match their emoji style (✅ not 💪)
 3. **Enhance sparingly** - Add sections only if project template is minimal
 
@@ -150,7 +151,7 @@ gh pr view --web
 - [ ] Ask user for screen recording (if UI change)
 - [ ] Draft description using voice rules
 - [ ] Check: Is "Why" user-centric?
-- [ ] Check: Validation ≤10 steps?
+- [ ] Check: Validation all manual e2e testing and evidence observation (e.g. UI, logs)?
 - [ ] Check: No implementation details?
 - [ ] Create draft PR via `gh pr create --draft`
 - [ ] Return PR URL to user
