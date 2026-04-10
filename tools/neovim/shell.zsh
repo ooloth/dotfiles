@@ -1,4 +1,10 @@
-#!/usr/bin/env zsh
+########################
+# ENVIRONMENT VARIABLES #
+########################
+
+###########
+# ALIASES #
+###########
 
 alias neovim="nvim"
 alias nvim="NVIM_APPNAME=nvim-ide nvim"

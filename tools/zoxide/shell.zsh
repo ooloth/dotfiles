@@ -1,4 +1,10 @@
-#!/usr/bin/env zsh
+########################
+# ENVIRONMENT VARIABLES #
+########################
+
+###########
+# ALIASES #
+###########
 
 alias adv="z ${HOME}/Repos/ooloth/advent-of-code"
 alias cd="z"
@@ -20,4 +26,10 @@ if is_work; then
   alias tech="z ${HOME}/Repos/recursionpharma/tech"
 fi
 
+###############
+# COMPLETIONS #
+###############
 
+if have zoxide; then
+  eval "$(zoxide init zsh)"
+fi

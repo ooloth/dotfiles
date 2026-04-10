@@ -1,4 +1,6 @@
-#!/usr/bin/env zsh
+########################
+# ENVIRONMENT VARIABLES #
+########################
 
 # TODO: zsh/variables.zsh should find all shell/variables.zsh files and source them
 
@@ -13,3 +15,11 @@ case "$COMPUTER_NAME" in
       # Default to work for unknown computer names (including explicit "work")
       export COMPUTER="work" ;;
 esac
+
+###########
+# ALIASES #
+###########
+
+is_air() { [[ "$COMPUTER" == "air" ]]; }
+is_mini() { [[ "$COMPUTER" == "mini" ]]; }
+is_work() { [[ "$COMPUTER" == "work" ]]; }

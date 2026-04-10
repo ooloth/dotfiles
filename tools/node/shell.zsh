@@ -1,4 +1,10 @@
-#!/usr/bin/env zsh
+########################
+# ENVIRONMENT VARIABLES #
+########################
+
+###########
+# ALIASES #
+###########
 
 # Global npm dependencies for current node version
 alias ng="zsh ${DOTFILES}/tools/node/update.bash" # updated global npm dependencies for current node version
