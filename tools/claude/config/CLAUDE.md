@@ -63,23 +63,18 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 - Be creative: run the CLI, hit the endpoint, trigger the event, eyeball the output; this sort of manually smoke testing is just as important as automated testing
 - If end-to-end execution is truly impossible, tell the user why and describe what they can do and what they should look for. Don't just silently skip validation.
 
-## Use tmux Windows for Long-Running Processes
+## Skill Feedback
 
-The user always runs Claude Code inside tmux. When starting a process meant to stay running (dev server, build watcher, test runner, log tailer), use a named tmux window instead of a background job:
+After invoking any skill, mention any friction or gaps you noticed — a misleading instruction, an ambiguity that cost time, or anything else you learned that would help a future agent. Report it clearly after completing the skill's task. Skip if execution went smoothly.
 
-```bash
-tmux new-window -n "dev-server" "npm run dev"
-```
+## Available CLI tools
 
-The user can navigate to it naturally with normal tmux keybindings. Prefer this over `run_in_background` or `&` for any process where ongoing output is useful to observe.
-
-## Use Rust equivalents of UNIX tools
-
-- Use `rg` instead of `grep`
-- Use `fd` instead of `find`
-- Use `sd` instead of `sed`
+- `tmux` - consider running background jobs in a named `tmux` window (e.g. `tmux new-window -n "dev-server" "npm run dev"`) instead of using `run_in_background` or `&`
+- `rg` - consider using instead of `grep`
+- `fd` - consider using instead of `find`
+- `sd` - consider using instead of `sed`
 
 ## Backwards Compatibility Probably Doesn't Matter
 
 - Unless told otherwise, assume backwards-compatibility is unwanted
-- In many cases, it merely adds unnecessary complexity by maintaining dead code paths and logic for choosing them
+- In many cases, it adds unnecessary complexity and maintains dead code paths
