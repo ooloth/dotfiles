@@ -43,6 +43,11 @@ if is_work; then
   esac
 else
   case $current_dir in
+  media-tools)
+    uv run prek run --all-files
+    exit 0
+    ;;
+
   michaeluloth.com)
     npm run format "$@"
     npm run lint "$@"
