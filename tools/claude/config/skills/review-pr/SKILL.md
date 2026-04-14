@@ -3,6 +3,7 @@ name: review-pr
 description: Review a pull request and optionally assist with phrasing and posting inline review comments. Use when the user asks you to review a given PR.
 argument-hint: '[pr number]'
 effort: high
+model: opus
 ---
 
 ## Your role

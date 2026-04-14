@@ -3,6 +3,7 @@ name: validate
 description: Confirm we have actually completed and completed validated what we planned to accomplish. TRIGGER whenever the user asks you to confirm a task is complete, if any implementation or validation was missed, etc.
 argument-hint: '[task number or description]'
 effort: high
+model: opus
 ---
 
 ## Context

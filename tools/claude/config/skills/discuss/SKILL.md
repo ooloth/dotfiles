@@ -3,6 +3,7 @@ name: discuss
 description: Plan how to best implement a solution, focusing on deeply understanding the problem and intended outcomes. TRIGGER whenever the user has a task they want you to work on.
 argument-hint: '[task number or description]'
 effort: high
+model: opus
 ---
 
 ## Context
