@@ -2,6 +2,8 @@
 # brew tap "bufbuild/buf" # for buf_lint
 # brew tap "hashicorp/tap" # for terraform
 
+brew "neovim"
+
 brew "ast-grep"                     # for grug-far: https://ast-grep.github.io/guide/quick-start.html
 brew "basedpyright"                 # python (lsp): https://docs.basedpyright.com/latest/installation/command-line-and-language-server/
 brew "bash-language-server"         # bash: https://formulae.brew.sh/formula/bash-language-server
