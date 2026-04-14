@@ -91,135 +91,25 @@ Parse reviews and comments from the JSON:
 
 ---
 
-### Phase 4: Read Full Files for Context
+### Phase 4: Deep Review
 
-**IMPORTANT:** Don't review diffs in isolation. Read full changed files to understand context.
+**Invoke the `review-code` skill**, passing:
 
-For each changed file (excluding skipped files):
+- **Files:** the changed files list from Phase 3 (non-reviewable files already excluded)
+- **How to read them:** raw GitHub URLs — `https://raw.githubusercontent.com/<org>/<repo>/<headRefOid>/<file_path>` — or via `gh`
+- **Context:** author's stated intent from Phase 2; active discussions and team standards from Phase 3
 
-```bash
-gh pr view <number> --repo <org>/<repo> --json files
-# Extract file paths
-# For each file:
-curl -L "https://raw.githubusercontent.com/<org>/<repo>/<headRefOid>/<file_path>"
-```
+review-code performs a full read of all changed files and 2-3 related unchanged files, loads relevant conventions, and runs correctness, performance, and maintainability analysis — noting positive findings throughout.
 
-**Why:** Diff shows changes but not surrounding code. Need full context to:
+**For recursionpharma PRs with failing CI:** also invoke `use-codefresh` and include the failure analysis alongside review-code's findings.
 
-- Verify suggestions match existing patterns in this file
-- Ensure "weird code" isn't actually consistent with file conventions
-- Understand if change fits file's architecture
-
-**Show progress for visibility:**
-
-```
-Analyzing changed files:
-✓ auth.py (1/8)
-✓ api.py (2/8)
-✓ utils.py (3/8)
-...
-```
-
-**Output after all files:** "✓ Read all changed files ([X] files)"
-
----
-
-### Phase 5: Understand Existing Patterns
-
-**REQUIRED before suggesting alternatives:**
-
-Read **2-3 similar/related unchanged files** to understand how this codebase solves similar problems:
-
-1. Find similar patterns: How does existing code handle authentication/caching/error handling/etc?
-2. What utilities exist? (Don't suggest reinventing the wheel)
-3. What conventions are used? (naming, architecture, testing patterns)
-
-**Must output what you found:**
-
-```
-✓ Reviewed existing patterns:
-- Error handling: utils/errors.py uses custom exception classes with error codes
-- Testing: All API functions have corresponding test_*.py with parametrized tests
-- Authentication: Existing pattern in auth/session.py uses JWT with Redis cache
-```
-
-**Use this to ground all suggestions in actual codebase patterns.**
-
-**Output:** "✓ Analyzed existing codebase patterns ([X] similar files reviewed)"
-
----
-
-### Phase 6: Deep Review
-
-**Before reviewing, load relevant conventions based on changed file types:**
-
-- Python files (.py) → invoke `conventions-for-python`
-- Test files (test\__.py, _.test.ts, \*.spec.ts, etc.) → invoke `conventions-for-tests`
-- Type definitions (\*.d.ts, Pydantic models, Zod schemas, TypeScript interfaces) → invoke `conventions-for-types`
-- Multiple new files or new folder structure → invoke `conventions-for-architecture`
-
-Review the code changes across all dimensions:
-
-**Correctness:**
-
-- Completeness, edge cases
-- Consistency with existing patterns (from Phase 5)
-- Bugs, error handling
-- Security (actual violations only)
-- Compatibility, breaking changes
-- Testing coverage (inadequate new behaviour coverage, weakened coverage for existing behaviour) - **specify exact test cases needed**:
-  - Not: "Add tests"
-  - Better: "Add tests for: expired token, malformed token, missing token, token with wrong signature"
-
-**Performance:**
-
-- Actual inefficiencies only (not theoretical)
-
-**Maintainability:**
-
-- Design coherence, simplicity
-- Clarity, cleanliness, appropriate code reuse, no dead code
-- Future lens, developer experience
-
-**What's Good:**
-
-- Clever solutions
-- Good abstractions
-- Thorough testing
-- Clear naming
-- Thoughtful error handling
-
-**For recursionpharma PRs with failing CI:**
-
-Use the `use-codefresh` skill to investigate. Include failure analysis in review.
-
-**Volume control:**
-
-- Focus on **3-5 most impactful issues**
-- If there are 10+ issues, group related ones or suggest "broader refactor needed"
-- Don't overwhelm with every minor issue
-
-**Balanced feedback ratio:**
-
-- Aim for **at least 1:1 positive to negative comments**
-- For every issue raised, find something to praise
-- Makes reviews collaborative, not adversarial
-
-**Show progress:**
-
-```
-Deep review in progress:
-✓ Correctness (1/4)
-✓ Performance (2/4)
-✓ Maintainability (3/4)
-✓ What's good (4/4)
-```
+**Output:** neutral findings structured as Praise, Issues (Critical/Important/Minor), Questions, and Patterns Observed. Phase 5 maps these to the PR format with severity emojis (🚫💡🤔✨👍).
 
 **Output:** "✓ Completed review analysis"
 
 ---
 
-### Phase 7: Present Review
+### Phase 5: Present Review
 
 **Format:**
 
@@ -534,7 +424,7 @@ gh api repos/<org>/<repo>/pulls/<number>/reviews \
   --method POST \
   --input - <<'EOF'
 {
-  "body": "<review summary from Phase 7>",
+  "body": "<review summary from Phase 5>",
   "event": "REQUEST_CHANGES",
   "comments": [
     {
@@ -713,7 +603,7 @@ gh api repos/<org>/<repo>/pulls/<number>/reviews \
   --method POST \
   --input - <<'EOF'
 {
-  "body": "<review summary from Phase 7>",
+  "body": "<review summary from Phase 5>",
   "event": "<APPROVE|REQUEST_CHANGES|COMMENT>",
   "comments": [
     {

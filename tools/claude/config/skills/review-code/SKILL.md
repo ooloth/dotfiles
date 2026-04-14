@@ -10,7 +10,7 @@ Perform deep, grounded code analysis. Read the actual code (not just diffs), und
 
 ## Inputs from calling skill
 
-Before invoking this skill, the calling skill should have established:
+Before invoking this skill, the calling skill (if applicable) should have established:
 
 - The list of changed files (paths relative to repo root)
 - How to read file contents (local paths for branch review; raw GitHub URLs or `gh` for PR review)
