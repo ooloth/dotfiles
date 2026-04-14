@@ -2,6 +2,7 @@
 name: use-trekker
 description: Full reference for the trekker task management workflow. Use when working with trekker issues, planning multi-step work, or managing task lifecycle.
 allowed-tools: [Bash]
+model: haiku
 ---
 
 ## Quick Reference

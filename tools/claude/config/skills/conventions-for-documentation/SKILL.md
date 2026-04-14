@@ -1,6 +1,7 @@
 ---
 name: conventions-for-documentation
 description: Preferred documentation patterns when not otherwise specified by the project. TRIGGER when writing code comments or documentation files.
+model: haiku
 ---
 
 ## Code Comments
