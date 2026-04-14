@@ -1,6 +1,7 @@
 ---
 name: review-opportunities
 description: Analyze gaps in user-facing features and desirable characteristics, developer-facing tooling and desirable characteristics, and other opportunities not currently tracked in the project's roadmap. Use when the user asks you to help identify opportunities to improve the system.
+effort: high
 ---
 
 ## Your task

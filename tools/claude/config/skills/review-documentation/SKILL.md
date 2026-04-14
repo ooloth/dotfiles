@@ -1,6 +1,7 @@
 ---
 name: review-documentation
 description: Perform a documentation review to identify stale and missing text and visuals in this project that are misleading or risk inconsistent future choices. Use when asked to identify opportunities improve the system's documentation or make the system easier to understand and maintain.
+effort: high
 ---
 
 ## Context

@@ -1,6 +1,7 @@
 ---
 name: review-branch
 description: Look for opportunities to optimize the approach and/or implementation of the solution to a problem you see on the current branch (relative to its base branch). Use when the user asks you to assess, analyze, improve, optimize, review or validate the current branch or its changes.
+effort: high
 ---
 
 ## Your role

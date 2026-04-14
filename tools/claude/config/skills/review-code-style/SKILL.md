@@ -1,6 +1,7 @@
 ---
 name: review-code-style
 description: Perform a code style review to identify anti-patterns in this project that are at risk of spreading. Use when asked to identify opportunities to make the system easier to understand and maintain.
+effort: high
 ---
 
 ## Context

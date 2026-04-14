@@ -2,6 +2,7 @@
 name: review-pr-comments
 description: Assess the merits of each change recommended by each PR reviewer and recommend what actions to take in response
 argument-hint: '[pr number]'
+effort: high
 ---
 
 ## Steps

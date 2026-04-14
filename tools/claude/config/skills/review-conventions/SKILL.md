@@ -1,6 +1,7 @@
 ---
 name: review-conventions
 description: Perform a comprehensive review of all codebase conventions using subagents and report your findings. Use when asked to review the codebase or identify opportunities to improve it.
+effort: high
 ---
 
 ## Important: stay in your coordinator role

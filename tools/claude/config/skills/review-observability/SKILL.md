@@ -1,6 +1,7 @@
 ---
 name: review-observability
 description: Analyze gaps in the ability to easily observe how the system operates and is used when it runs. Use when the user asks you to help identify opportunities to make the system easier to debug, monitor or analyze.
+effort: high
 ---
 
 ## Context

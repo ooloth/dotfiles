@@ -1,6 +1,7 @@
 ---
 name: review-tests
 description: Assess the current coverage and patterns across all tests in the project. Use when asked to identify opportunities to improve how well the system's behaviour is confirmed by its tests.
+effort: high
 ---
 
 ## Context

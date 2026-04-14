@@ -1,6 +1,7 @@
 ---
 name: review-types
 description: Assess the expressiveness, accuracy and cohesion of the project's current static type annotations. Use when asked to identify opportunities to improve how well the type system is being used to ensure correctness and/or express the intent of the code in domain-specific terms.
+effort: high
 ---
 
 ## Context
