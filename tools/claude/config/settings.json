@@ -4,7 +4,7 @@
     "commit": "",
     "pr": ""
   },
-  "cleanupPeriodDays": 360,
+  "cleanupPeriodDays": 99999,
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true
   },
