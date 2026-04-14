@@ -29,7 +29,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 - **What section**: Include every significant change theme - no cap. Could be 2 bullets, could be 8. Whatever fits the PR.
 - **Why section**: 1-3 bullets (not a paragraph). Focus on user benefit.
-- **Validation**: Narrative "Expect to..." style. Should be a numbered list of manual e2e testing steps and what evidence-providing observability signals to look for to confirm correct behavior. If there are gaps in the latter, point them out! Now is the time to fill those gaps. Should NEVER make reference to automated checks - these should be higher-confidence manual checks.
+- **Validation**: Narrative "Expect to..." style. Should be a sequential checklist of steps to follow in order — each step should build on the previous one so the list reads like a walkthrough, not a grab-bag of independent checks. Include what evidence-providing observability signals to look for to confirm correct behavior. If there are gaps in the latter, point them out! Now is the time to fill those gaps. Should NEVER make reference to automated checks - these should be higher-confidence manual checks.
 
 ### Structure Requirements
 
@@ -48,7 +48,6 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ❌ Listing every file changed
 ❌ "Comprehensive" descriptions - less is more
-❌ Checkbox-heavy validation sections
 ❌ Automated steps in "How to validate" — never "run the tests", "run CI", or "run lint/checks"; validation must be manual only (run the real thing e2e and expect to see X evidence of correct behavior)
 ❌ Technical jargon when plain language works
 ❌ Business rule explanations (put in code comments)
@@ -95,16 +94,16 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ## 👩‍🔬 How to validate
 
-1. `./bin/dev.sh` + `cd frontend` + `npm start`
-2. Expect to **not** see the "Include archived items" toggle
-3. Select a dataset with archived items
-4. Expect to see the toggle now
-5. Query a few items, including one that's archived (look for the `[archived]` badge)
-6. Expect to see the archived item in the list, detail view, and charts
-7. Toggle archived items off
-8. Expect the archived item's chip to be disabled
-9. Expect the disabled item's tooltip to explain why
-10. Expect the archived item to no longer appear in your views
+- [ ] `./bin/dev.sh` + `cd frontend` + `npm start`
+- [ ] Expect to **not** see the "Include archived items" toggle
+- [ ] Select a dataset with archived items
+- [ ] Expect to see the toggle now
+- [ ] Query a few items, including one that's archived (look for the `[archived]` badge)
+- [ ] Expect to see the archived item in the list, detail view, and charts
+- [ ] Toggle archived items off
+- [ ] Expect the archived item's chip to be disabled
+- [ ] Expect the disabled item's tooltip to explain why
+- [ ] Expect the archived item to no longer appear in your views
 
 ## 🔖 Related links
 
