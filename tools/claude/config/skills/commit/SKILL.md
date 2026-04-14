@@ -1,6 +1,7 @@
 ---
 name: commit
 description: Commit the changes in the working tree. Use every time you are committing changes.
+allowed-tools: Bash
 ---
 
 ## Context

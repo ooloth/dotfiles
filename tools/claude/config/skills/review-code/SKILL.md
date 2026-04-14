@@ -2,6 +2,7 @@
 name: review-code
 description: Core code analysis engine shared by review-pr and review-branch. Reads changed files, loads conventions, and performs correctness/performance/maintainability review. Outputs neutral findings for the calling skill to format for its specific audience. Invoke directly for ad-hoc analysis when you want raw findings without branch or PR ceremony — specify which files to analyze as the argument.
 argument-hint: '[file paths or description of what to analyze]'
+allowed-tools: Bash Read Grep Glob
 effort: high
 model: opus
 ---
