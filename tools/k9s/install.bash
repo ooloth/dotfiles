@@ -1,15 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/install/utils.bash"
-source "${DOTFILES}/tools/k9s/utils.bash" # source last to avoid env var overrides
+source "${DOTFILES}/tools/bash/utils.bash"
 
-install_and_symlink \
-  "${TOOL_LOWER}" \
-  "${TOOL_UPPER}" \
-  "${TOOL_COMMAND}" \
-  "${TOOL_EMOJI}" \
-  "brew install --formula ${TOOL_PACKAGE}" \
-  "brew list --version ${TOOL_PACKAGE}" \
-  "parse_version" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
+info "🚛 Installing k9s"
+brew bundle --file="${DOTFILES}/tools/k9s/Brewfile"
+
+debug "🔗 Symlinking k9s configuration"
+bash "${DOTFILES}/tools/k9s/symlinks/link.bash"
