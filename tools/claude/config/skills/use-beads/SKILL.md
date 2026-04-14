@@ -3,6 +3,7 @@ name: use-beads
 description: Full reference for the beads task management workflow. Use when working with beads issues, planning multi-step work, or managing task lifecycle.
 allowed-tools: [Bash]
 model: haiku
+effort: low
 ---
 
 ## Quick Reference

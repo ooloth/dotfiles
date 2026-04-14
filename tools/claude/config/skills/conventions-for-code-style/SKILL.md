@@ -2,6 +2,7 @@
 name: conventions-for-code-style
 description: Preferred code style across all languages when idiomatic and not otherwise specified by language-specific or project guidance.
 model: haiku
+effort: low
 ---
 
 ## Readability

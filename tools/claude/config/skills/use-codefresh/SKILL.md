@@ -3,6 +3,7 @@ name: use-codefresh
 description: Reference for using Codefresh via the CodeFresh CLI. Use when a Codefresh CI check is failing in a recursionpharma PR, or when working with Codefresh builds.
 allowed-tools: [Bash, Read]
 model: haiku
+effort: low
 ---
 
 Consider using a subagent when you just need an answer and don't need to see the intermediate CodeFresh responses.
