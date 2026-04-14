@@ -1,31 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/update/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
-source "${DOTFILES}/tools/homebrew/utils.bash" # source last to avoid env var overrides
 
 info "🍺 Updating homebrew"
+
+debug "📦 Regenerating combined Brewfile"
+bash "${DOTFILES}/tools/homebrew/generate-brewfile.bash"
+
+debug "🍺 Refreshing formula database"
 brew update
 
-debug "📦 Updating homebrew packages"
-readarray -t homebrew_leaves < <(brew leaves -r)
-brew upgrade --formulae "${homebrew_leaves[@]}"
+debug "📦 Ensuring all declared packages are installed"
+brew bundle --file="${DOTFILES}/tools/homebrew/config/Brewfile"
 
-# Install all dependencies listed in Brewfile
-# see: https://github.com/Homebrew/homebrew-bundle
-# brew bundle --file="${DOTFILES}/tools/homebrew/config/Brewfile" # ensure installed + updated (no --cleanup flag! some packages are installed individually now)
+debug "📦 Upgrading all installed packages"
+brew upgrade
 
 debug "📦 Updating casks"
 brew cu --all --include-mas --no-brew-update --yes --cleanup
 
 debug "🚀 All Homebrew packages are up to date"
 
-debug "${TOOL_EMOJI} Caching updated list of outdated formulae"
-cache_brew_outdated_formula_list
-
-debug "${TOOL_EMOJI} Removing orphaned subdependencies\n"
+debug "🍺 Removing orphaned subdependencies"
 brew autoremove
 
-debug "${TOOL_EMOJI} Removing old downloads\n"
+debug "🍺 Removing old downloads"
 brew cleanup --quiet
