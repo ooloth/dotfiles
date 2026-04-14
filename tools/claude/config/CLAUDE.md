@@ -45,7 +45,7 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 2. Run checks
 3. Run tests
 4. Prove the change works with manual testing if you can
-5. STOP and report what changed; NEVER commit code or take further actions yourself unless the user explicitly approves THIS specific change. Prior approvals do not carry forward — each action requires its own approval. (This applies to development workflow commits and any side effects. Commands that commit as part of their designed operation — e.g. an autonomous ralph loop — are approved when the user approves the run.)
+5. STOP and report what changed. Do not invoke the commit skill or run `git commit` under any circumstances — not as a final step, not when the work is complete and tested, not when you believe it follows from prior approval. The only valid signal is the user explicitly saying "commit" or invoking `/commit` themselves. Prior approvals do not carry forward — each action requires its own approval. (Commands that commit as part of their designed operation — e.g. an autonomous loop — are approved when the user approves the run.)
 6. Wait for the user to review and commit (or explicitly ask you to commit). Phrases like "committed", "done", or "commit" are your signal to proceed to the next change.
 7. Repeat for the remaining changes
 8. When all changes committed → close the task:
