@@ -2,6 +2,16 @@
 name: conventions-for-tests
 description: Test design patterns and style guide (when alternate patterns are not specified at the project level). TRIGGER when writing, editing, or reviewing test files.
 model: haiku
+effort: low
+paths:
+  - "**/test_*.py"
+  - "**/*_test.py"
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.tsx"
+  - "**/*.test.js"
+  - "**/*.spec.js"
 ---
 
 ## Unit testing patterns
