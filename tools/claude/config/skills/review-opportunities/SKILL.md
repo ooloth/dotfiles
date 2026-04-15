@@ -10,3 +10,7 @@ effort: high
 2. Identify opportunities to improve user- or developer-facing characteristics and address fundamental flaws 
 3. Study the user's `trekker`, Jira, Monday, GitHub issues or other backlog (if any) to see what opportunities are already tracked
 4. Report the top untracked user-facing and developer-facing opportunities
+5. Generate a self-contained HTML slide deck of the findings:
+   - `mkdir -p .claude/reports`
+   - Write the report to `.claude/reports/review-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - `open .claude/reports/review-opportunities.html`

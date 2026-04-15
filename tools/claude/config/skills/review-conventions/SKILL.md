@@ -34,4 +34,8 @@ Do NOT invoke any Skill tools yourself. Doing so would load that skill's instruc
 3. Ensure you understand the results and are equipped to compare their relative importance (explore specific areas of the codebase yourself if that helps you)
 4. Rank the findings by priority for the user to address (based on impact, cost of delay, ROI, etc)
 5. Present the prioritized findings to the user, ensuring a summary table is included near the end of your response for clarity
-6. Recommend a next action and wait for the user's response
+6. Generate a self-contained HTML slide deck of the prioritized findings:
+   - `mkdir -p .claude/reports`
+   - Write the report to `.claude/reports/review-conventions.html` — clean minimal styling, one slide per category plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - `open .claude/reports/review-conventions.html`
+7. Recommend a next action and wait for the user's response
