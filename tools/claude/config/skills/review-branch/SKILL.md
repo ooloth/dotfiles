@@ -10,12 +10,6 @@ model: opus
 
 Protect users of this software by scrutinizing it closely before it ships. Focus on strategic insight, not just thorough auditing.
 
-## Context
-
-- Correctness matters - is anything broken or incomplete?
-- Performance matters - is anything unnecessarily inefficient?
-- Maintainability matters - could different shapes make intentions more obvious?
-
 ## Process
 
 **Work through ALL phases below in order.** Catch fundamental issues early (Phases 0-1), collect evidence silently (Phases 2-4), then present a synthesized, prioritized picture (Phase 5).

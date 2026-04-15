@@ -19,6 +19,12 @@ Before invoking this skill, the calling skill (if applicable) should have establ
 - How to read file contents (local paths for branch review; raw GitHub URLs or `gh` for PR review)
 - Any context that should inform the review (e.g., author's stated intent, problem being solved)
 
+## Context
+
+- Correctness matters - is anything broken or incomplete?
+- Performance matters - is anything unnecessarily inefficient?
+- Maintainability matters - could different shapes make intentions more obvious?
+
 ---
 
 ## Phase A: Read Changed Files
