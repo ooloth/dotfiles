@@ -79,15 +79,14 @@ Wait for user response. If fundamental redesign needed, discuss approach. Otherw
 
 ### Phases 2-4: Deep Review
 
-**Invoke the `review-code` skill**, passing:
+**Use the Agent tool (general-purpose)** to run the `review-code` analysis. The agent's output is a private tool result — it does not appear in the conversation. Do not present the raw findings to the user. Consume them as input to Phase 5.
+
+Pass the agent:
 
 - **Files:** the changed files list from Phase 1
 - **How to read them:** local file paths (files are on disk)
 - **Context:** the problem statement and desired outcome from Phase 0; the change themes and initial hypothesis from Phase 1
-
-review-code performs a full read of all changed files and 2-3 related unchanged files, loads relevant conventions, and runs correctness, performance, and maintainability analysis — noting positive findings throughout.
-
-**Output:** neutral findings structured as Praise, Issues (Critical/Important/Minor), Questions, and Patterns Observed. Phase 5 maps these to the branch review format.
+- **Instruction:** follow the `review-code` skill's analysis process — read all changed files in full, read 2-3 related unchanged files for pattern context, load relevant conventions skills, then perform correctness/performance/maintainability review noting positive findings throughout. Return findings structured as Praise, Issues (Critical/Important/Minor), Questions, and Patterns Observed.
 
 ---
 
