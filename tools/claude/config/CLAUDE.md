@@ -44,8 +44,11 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 1. Make one small, thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation, one new lint rule and its fixes, etc)
 2. Run checks
 3. Run tests
-4. Prove the change works with manual testing if you can
-5. STOP and report what changed. Do not invoke the commit skill or run `git commit` under any circumstances — not as a final step, not when the work is complete and tested, not when you believe it follows from prior approval. The only valid signal is the user explicitly saying "commit" or invoking `/commit` themselves. Prior approvals do not carry forward — each action requires its own approval. (Commands that commit as part of their designed operation — e.g. an autonomous loop — are approved when the user approves the run.)
+4. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output, whatever applies. The status report in step 5 must include one of:
+   - **What you ran and what you observed** (e.g. "ran X, saw Y in the output")
+   - **Why end-to-end execution is impossible here** and what the user should run and look for instead
+   Omitting this section is not allowed. "Tests pass" is not a substitute.
+5. STOP. Write a status report. **Your response must end there — no git commands, no commit skill, no "let me commit this", no tool calls that advance the work.** The report is the deliverable for this step. Committing is the user's action, not yours. The only valid signal to commit is the user explicitly saying "commit" or invoking `/commit`. Prior approvals do not carry forward to committing — even if the work is fully done and tested. (Commands that commit as part of their designed operation — e.g. an autonomous loop — are approved when the user approves the run.)
 6. Wait for the user to review and commit (or explicitly ask you to commit). Phrases like "committed", "done", or "commit" are your signal to proceed to the next change.
 7. Repeat for the remaining changes
 8. When all changes committed → close the task:
