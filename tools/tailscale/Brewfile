@@ -1,1 +1,2 @@
-cask "tailscale"
+# FIXME: conflicts with Mac App Store version I installed - should this be an "mas" installation?
+# cask "tailscale"
