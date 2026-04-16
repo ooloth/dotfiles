@@ -38,7 +38,11 @@ Before invoking this skill, the calling skill (if applicable) should have establ
 - Binary files
 - **Formatting-only changes** (detect hunks that are whitespace/style only)
 
-For each reviewable file, read the **full file content**, not just the diff. The diff shows changes but not surrounding code.
+For each reviewable file:
+
+1. **Read the diff first** (`git diff <base>..HEAD -- <file>` for branch reviews; the raw diff for PR reviews). This is mandatory — it reveals exactly what changed regardless of file size, so you cannot miss new code added near the end of a large file.
+2. **Then read surrounding context:** for files under 500 lines, read the full file; for larger files, use the line numbers from the diff with `offset`/`limit` to read each changed section plus ~30 lines of context. Do not attempt a top-to-bottom full read of large files — the Read tool silently truncates at 2000 lines.
+3. **Verify before reporting gaps.** Before claiming something is missing (e.g. "no test for X"), check the diff to confirm it was not added in this branch.
 
 **Show progress:**
 

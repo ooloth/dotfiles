@@ -80,7 +80,12 @@ Pass the agent:
 - **Files:** the changed files list from Phase 1
 - **How to read them:** local file paths (files are on disk)
 - **Context:** the problem statement and desired outcome from Phase 0; the change themes and initial hypothesis from Phase 1
-- **Instruction:** follow the `review-code` skill's analysis process — read all changed files in full, read 2-3 related unchanged files for pattern context, load relevant conventions skills, then perform correctness/performance/maintainability review noting positive findings throughout. Return findings structured as Praise, Issues (Critical/Important/Minor), Questions, and Patterns Observed.
+- **Instruction:** follow the `review-code` skill's analysis process:
+  1. **For each changed file, run `git diff <base>..HEAD -- <file>` first.** This is mandatory — it shows exactly what was added or removed regardless of file size. Never rely on reading a file top-to-bottom as a substitute, because large files (>500 lines) are silently truncated by the Read tool at 2000 lines and new code added near the end will be missed.
+  2. After reading the diff, read full file context: for files under 500 lines read the whole file; for larger files use the line numbers from the diff to read the changed sections with `offset`/`limit` parameters (include ~30 lines of context before and after each hunk).
+  3. Read 2-3 related unchanged files for pattern context.
+  4. Load relevant conventions skills, then perform correctness/performance/maintainability review noting positive findings throughout.
+  5. Return findings structured as Praise, Issues (Critical/Important/Minor), Questions, and Patterns Observed. For each Issue, verify it against the diff before reporting it — do not report a gap (e.g. "missing test") without checking the diff to confirm the gap actually exists.
 
 ---
 

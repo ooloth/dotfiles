@@ -15,6 +15,7 @@ effort: low
 ## Maintainability
 
 - Repeated hard-coded values should ideally be captured in a reused constant of some sort (e.g. an enum)
+- Keep files under 2000 lines. The Read tool silently truncates at 2000 lines, so an agent reading a longer file will miss everything after that point without any warning — creating a blind spot for code review, refactoring, and analysis tasks. Split large files by extracting cohesive groups of related functions, types, or test cases into new files before they hit that limit.
 
 ## Testability
 
