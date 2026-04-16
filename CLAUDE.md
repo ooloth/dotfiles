@@ -57,7 +57,7 @@ When making changes to this repository:
 
 ### Testing and Verification
 
-- All bash scripts must pass `shellcheck` checks in order to pass CI
+- All `*.sh` and `*.bash` files must pass `shellcheck` checks in order to pass CI (other file types should not be checked)
 - **Use `.shellcheckrc` for project-wide settings** - centralized configuration in the `.shellcheckrc` file instead of using disable comments
 - Run `symlinks` alias to recreate all symlinks
 - Test individual scripts by sourcing them
