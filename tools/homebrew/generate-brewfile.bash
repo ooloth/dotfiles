@@ -9,8 +9,8 @@ mapfile -t brewfiles < <(
   find "${DOTFILES}/tools" -maxdepth 2 -name "Brewfile" \
     ! -path "*/homebrew/*" \
     ! -path "*/@new/*" \
-    ! -path "*/@archive/*" \
-    | sort
+    ! -path "*/@archive/*" |
+    sort
 )
 
 mkdir -p "$(dirname "$output")"
@@ -25,4 +25,4 @@ for f in "${brewfiles[@]}"; do
   } >>"$output"
 done
 
-info "Generated combined Brewfile from ${#brewfiles[@]} tool Brewfiles"
+debug "✅ Generated combined Brewfile from ${#brewfiles[@]} tool Brewfiles"
