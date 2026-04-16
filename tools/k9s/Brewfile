@@ -4,4 +4,6 @@
 #   if ["7385-Y3FH97X-MAC", "MULO-JQ97NW-MBP"].include?(computer_name) ... end
 computer_name = `networksetup -getcomputername`.chomp
 
-brew "k9s"
+if ["7385-Y3FH97X-MAC", "MULO-JQ97NW-MBP"].include?(computer_name)
+  brew "k9s"
+end
