@@ -1,7 +1,1 @@
-# machine detection — wrap entries in a conditional block to restrict by machine:
-#   if computer_name == "Air" ... end
-#   if computer_name == "Mini" ... end
-#   if ["7385-Y3FH97X-MAC", "MULO-JQ97NW-MBP"].include?(computer_name) ... end
-computer_name = `networksetup -getcomputername`.chomp
-
 brew "lazygit"
