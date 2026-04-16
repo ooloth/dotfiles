@@ -93,7 +93,6 @@ if computer_name == "Air"
 end
 
 if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
-  vscode "editorconfig.editorconfig"
   vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
   vscode "ms-python.black-formatter"
   vscode "ms-python.flake8"
