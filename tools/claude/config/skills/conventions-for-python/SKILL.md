@@ -14,3 +14,5 @@ paths: "**/*.py"
 
 - Prefer `match` statements over `if...elif` chains referencing the same variable
 - Leverage `assert_never` in the default `match` statement block to make exhaustive case handling explicit
+
+Apply these conventions to the current task.

@@ -28,3 +28,5 @@ paths:
 - JS/TS: use `vitest` for unit tests (unless `jest` is already installed in the project)
 - JS/TS: use `fast-check` for property-based tests
 - React: use `@testing-library/react` for component tests
+
+Apply these conventions to the current task.

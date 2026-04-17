@@ -9,3 +9,5 @@ effort: low
 
 - Comment the "why" generously for future maintainers
 - Minimize comments that paraphrase the "what" - those comments aren't banned, but try to achieve their goal by making the code itself more explicit and self-documenting
+
+Apply these conventions to the current task.

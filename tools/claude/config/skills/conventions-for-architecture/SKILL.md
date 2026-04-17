@@ -56,3 +56,5 @@ effort: low
 - When possible, prevention is better than detection
 - Could logic based on brittle combinations of boolean flags be replaced by a finite state machine?
 - Could runtime bad state checks be replaced by types that block unwanted values at compile time?
+
+Apply these conventions to the current task.

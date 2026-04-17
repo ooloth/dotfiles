@@ -8,3 +8,5 @@ effort: low
 ## Tell the story of the intent in domain terms
 
 - Prefer domain specific types over primitive types since they result in both safer and more expressively self-documented code
+
+Apply these conventions to the current task.

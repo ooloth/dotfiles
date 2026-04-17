@@ -23,3 +23,5 @@ effort: low
 - Isolate I/O at the edges and extract the pure centre into one or more pure helpers the main entrypoint orchestrates
 - Aim to minimize the need to mock, fake, patch or otherwise test indirectly
 - Ideally, code paths will be testable by calling the real objects directly; try to enable that
+
+Apply these conventions to the current task.
