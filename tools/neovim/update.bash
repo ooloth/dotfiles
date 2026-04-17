@@ -22,7 +22,7 @@ brew bundle --file="${DOTFILES}/tools/neovim/Brewfile"
 
 debug "📦 Updating uv tool dependencies"
 for package in "${TOOL_UV_DEPENDENCIES[@]}"; do
-  uv tool upgrade "${package}"
+  uv tool install --upgrade "${package}"
 done
 
 debug "📦 Updating global npm dependencies"
