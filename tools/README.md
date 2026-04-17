@@ -27,6 +27,7 @@ The @new template directory groups all the related files for a particular tool/u
 2. **Self-Contained**: Each feature can be understood in isolation + deleted without affecting other tools
 3. **Discoverable**: The root level of `/tools` shows all available tools
 4. **Automatic integration**: Tools are automatically integrated with install and update features
+5. **Shared formulae are fine**: The same formula may appear in multiple Brewfiles when it is both a standalone tool and a dependency of another tool (e.g. `jq` in `tools/jq/Brewfile` and `tools/yazi/Brewfile`). `brew bundle` deduplicates at install time.
 
 ## Adding a New Tool
 
