@@ -19,6 +19,10 @@ export TOOL_NPM_DEPENDENCIES=(
   svelte-language-server        # svelte: ...
 )
 
+export TOOL_UV_DEPENDENCIES=(
+  ruff
+)
+
 parse_version() {
   local raw_version="${1}"
   local prefix_brew_formula="${TOOL_PACKAGE} "

@@ -11,6 +11,11 @@ brew bundle --file="${DOTFILES}/tools/neovim/Brewfile"
 debug "🔗 Symlinking neovim configuration"
 bash "${DOTFILES}/tools/neovim/symlinks/link.bash"
 
+debug "📦 Installing uv tool dependencies"
+for package in "${TOOL_UV_DEPENDENCIES[@]}"; do
+  uv tool install "${package}"
+done
+
 debug "📦 Installing global npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   ensure_global_npm_package_installed "${package}"

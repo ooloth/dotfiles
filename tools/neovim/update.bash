@@ -20,6 +20,11 @@ update_and_symlink \
 debug "📦 Updating homebrew dependencies"
 brew bundle --file="${DOTFILES}/tools/neovim/Brewfile"
 
+debug "📦 Updating uv tool dependencies"
+for package in "${TOOL_UV_DEPENDENCIES[@]}"; do
+  uv tool upgrade "${package}"
+done
+
 debug "📦 Updating global npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   ensure_global_npm_package_updated "${package}"
