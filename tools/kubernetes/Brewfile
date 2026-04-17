@@ -1,0 +1,7 @@
+computer_name = `networksetup -getcomputername`.chomp
+
+if ["7385-Y3FH97X-MAC", "MULO-JQ97NW-MBP"].include?(computer_name)
+  brew "k9s"
+  brew "kubectl"
+  brew "kubectx"
+end
