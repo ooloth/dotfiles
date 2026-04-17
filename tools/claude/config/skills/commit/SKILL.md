@@ -13,7 +13,7 @@ allowed-tools: Bash
 
 1. Run all checks and fix any errors that weren't auto-fixed until you see a successful run
 2. Run all tests and fix any errors you encounter until all tests pass
-3. Divide the changes into themes if relevant. For example, pair one test case with its implementation and corresponding documentation updates. Or one new lint rule and its fixes. Changes in one file or layer don't necessarily all belong in the same commit.
+3. Divide the changes into themes if relevant. For example, pair one test case with its implementation and corresponding documentation updates. Or one new lint rule and its fixes. Changes in one file or layer don't necessarily all belong in the same commit. **If a clean split would require writing intermediate versions of files to disk, do not split — make one commit instead.** Writing intermediate files is change replay: the committed state was never tested and may not even be correct.
 4. Commit the changes yourself following the "Writing Commit Messages" style guide below. Design a commit sequence that helps readers understand how the system evolved, but do not revert and replay changes to achieve that sequence. Just do your best to divide the existing changes up sensibly. See "Workflows > Staging file hunks non-interactively" when staging some changes in a file but not others (hint: `git add -p` won't work)
 5. When finished making all commits, move on to your next approved task immediately (if known) or ask me what's next and do NOT commit again unless specifically asked to do so
 
