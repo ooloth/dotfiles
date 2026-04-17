@@ -5,6 +5,7 @@ source "${DOTFILES}/tools/bash/utils.bash"
 
 debug "⚠️ Must install gcloud manually via https://cloud.google.com/sdk/docs/install#mac"
 
+# TODO: replace with this? - https://formulae.brew.sh/cask/gcloud-cli
 # TODO: confirm this works smoothly
 # See: https://cloud.google.com/sdk/docs/downloads-interactive#silent
 info "☁️ Installing gcloud SDK to ${HOME}/google-cloud-sdk"
