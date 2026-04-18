@@ -4,29 +4,6 @@
 # Execute the `networksetup` command in a subshell and remove the trailing '\n'
 computer_name = `networksetup -getcomputername`.chomp
 
-################
-# APPS (CASKS) #
-################
-
-if computer_name == "Air"
-  cask "1password"
-  cask "google-chrome" # NOTE: work likely controls installation of this app
-  # NOTE: manually download prepros v6 instead (just need it for Adam's site)
-  # cask "transmit"
-  cask "zoom" # NOTE: work likely controls installation of this app
-end
-
-if computer_name == "Mini"
-  cask "1password"
-  cask "backblaze"
-  cask "carbon-copy-cloner"
-  # cask "handbrake"
-end
-
-if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
-  cask "meetingbar" # for auto-joining zoom calls
-end
-
 ########################
 # APPS (MAC APP STORE) #
 ########################
