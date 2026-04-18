@@ -14,6 +14,5 @@ u() {
   else
     # Otherwise, update all tools
     bash "${DOTFILES}/features/update/tools.bash";
-    zsh "${DOTFILES}/features/update/tools.zsh";
   fi
 }
