@@ -8,20 +8,6 @@ computer_name = `networksetup -getcomputername`.chomp
 # TAPS #
 ########
 
-tap "buo/cask-upgrade" # see: https://gist.github.com/ChristopherA/a579274536aab36ea9966f301ff14f3f#best-practices-brew-cask-mas-and-cu
-
-############
-# PACKAGES #
-############
-
-brew "bash"
-brew "coreutils"
-brew "git-delta" # for git: https://dandavison.github.io/delta/
-brew "github-keygen" # for git ssh
-brew "goose" # for go
-brew "imagemagick" # for kitty's icat image support
-brew "mas"
-brew "svn" # for font cask installations
 
 if computer_name == "Air"
   brew "deno"
