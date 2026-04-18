@@ -55,9 +55,9 @@ Possible sources of tracked work ideas include:
 1. Present the prioritized findings to the user, ensuring a summary table is included near the end
    of your response for clarity
 2. Generate a self-contained HTML slide deck of the prioritized findings:
-   - `mkdir -p .claude/reports`
-   - Write the report to `.claude/reports/prioritized-work-items.html` — use clean, minimal styling,
+   - `mkdir -p .agents`
+   - Write the report to `.agents/prioritized-work-items.html` — use clean, minimal styling,
      one slide per category plus a summary/title slide, and keyboard arrow-key and click navigation
      between slides
-   - `open .claude/reports/prioritized-work-items.html`
+   - `open .agents/prioritized-work-items.html`
 3. Recommend a next action and wait for the user's response

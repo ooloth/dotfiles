@@ -31,7 +31,7 @@ Use up to 25 subagents to explore the following data sources:
 7. Rank the findings by priority for the user to address (based on impact, cost of delay, ROI, etc)
 8. Present the prioritized findings to the user, ensuring a summary table is included near the end of your response for clarity
 9. Generate a self-contained HTML slide deck of the prioritized findings:
-   - `mkdir -p .claude/reports`
-   - Write the report to `.claude/reports/review-conventions.html` — clean minimal styling, one slide per category plus a summary/title slide, keyboard arrow-key and click navigation between slides
-   - `open .claude/reports/review-conventions.html`
+   - `mkdir -p .agents`
+   - Write the report to `.agents/review-conventions.html` — clean minimal styling, one slide per category plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - `open .agents/review-conventions.html`
 10. Recommend a next action and wait for the user's response
