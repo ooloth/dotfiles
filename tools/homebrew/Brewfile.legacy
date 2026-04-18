@@ -9,36 +9,18 @@ computer_name = `networksetup -getcomputername`.chomp
 ########
 
 tap "buo/cask-upgrade" # see: https://gist.github.com/ChristopherA/a579274536aab36ea9966f301ff14f3f#best-practices-brew-cask-mas-and-cu
-tap "jesseduffield/lazydocker"
 
 ############
 # PACKAGES #
 ############
 
 brew "bash"
-brew "bats-core" # for bash testing
 brew "coreutils"
-brew "fzf"
-brew "gh"
-brew "git"
 brew "git-delta" # for git: https://dandavison.github.io/delta/
 brew "github-keygen" # for git ssh
-brew "go"
 brew "goose" # for go
-brew "httpie"
 brew "imagemagick" # for kitty's icat image support
-brew "jq" # for parsing json
-brew "kubectl" # for kubernetes
-brew "kubectx" # for kubernetes
-brew "jesseduffield/lazydocker/lazydocker"
-brew "lazygit"
 brew "mas"
-brew "m-cli" # macos CLI: https://github.com/rgcr/m-cli
-brew "postgresql@14"
-brew "libpq" # for postgres
-brew "powerlevel10k"
-brew "speedtest-cli"
-brew "stern" # for kubectl
 brew "svn" # for font cask installations
 
 if computer_name == "Air"
@@ -59,37 +41,22 @@ if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
   brew "zlib"
 end
 
-#########
-# FONTS #
-#########
-
-# Fonts
-# see: https://github.com/Homebrew/homebrew-cask/tree/master/Casks/font
-cask "font-symbols-only-nerd-font"
-cask "font-ubuntu-mono"
-cask "font-ubuntu-mono-nerd-font"
-
 ################
 # APPS (CASKS) #
 ################
 
-cask "1password-cli"
 cask "alfred"
 cask "appcleaner"
 cask "brave-browser"
 # NOTE: don't install "docker" cask until Apple Silicon issues resolved
 cask "firefox"
 cask "hyperkey" # karabiner become impossible to allow on work laptop...
-cask "kitty"
 cask "neohtop" # see: https://abdenasser.github.io/neohtop/
 cask "notion"
-cask "obsidian"
-cask "raycast"
 cask "rectangle"
 cask "sip-app"
 cask "thingsmacsandboxhelper" # enables Things 3 "Quick Entry with Autofill" feature: https://formulae.brew.sh/cask/thingsmacsandboxhelper
 cask "vlc"
-cask "zed"
 
 if computer_name == "Air"
   cask "1password"
