@@ -8,7 +8,7 @@ info "🍺 Updating homebrew packages"
 
 # Install all dependencies listed in Brewfile
 # see: https://github.com/Homebrew/homebrew-bundle
-brew bundle --file="${DOTFILES}/tools/homebrew/config/Brewfile.generated" # ensure installed + updated (no --cleanup flag! some packages are installed individually now)
+brew bundle --file="${DOTFILES}/tools/homebrew/Brewfile.legacy" # ensure installed + updated (no --cleanup flag! some packages are installed individually now)
 
 debug "🍺 Updating casks"
 brew cu --all --include-mas --no-brew-update --yes # update casks only, including casks with their own auto-updater

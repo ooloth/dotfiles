@@ -3,11 +3,12 @@ set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
-output="${DOTFILES}/tools/homebrew/config/Brewfile.generated"
+output="${DOTFILES}/tools/homebrew/Brewfile.generated"
 
 mapfile -t brewfiles < <(
   find "${DOTFILES}/tools" -maxdepth 2 -name "Brewfile" \
-    ! -path "*/homebrew/*" \
+    ! -name "Brewfile.generated" \
+    ! -name "Brewfile.legacy" \
     ! -path "*/@new/*" \
     ! -path "*/@archive/*" |
     sort
