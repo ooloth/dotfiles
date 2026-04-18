@@ -105,21 +105,19 @@ fi
 ####################
 
 DOTINSTALL="${DOTFILES}/features/install/zsh"
-DOTUPDATE="${DOTFILES}/features/update/zsh"
 
 source "${DOTINSTALL}/ssh.zsh"
 source "${DOTINSTALL}/github.zsh"
 source "${DOTINSTALL}/deprecated/homebrew.zsh"
-source "${DOTUPDATE}/homebrew.zsh"
 source "${DOTINSTALL}/zsh.zsh"
 source "${DOTINSTALL}/deprecated/rust.zsh"
 source "${DOTINSTALL}/deprecated/uv.zsh"
 source "${DOTINSTALL}/deprecated/node.zsh"
-source "${DOTUPDATE}/deprecated/npm.zsh"
+source "${DOTINSTALL}/deprecated/npm.zsh"
 source "${DOTINSTALL}/deprecated/tmux.zsh"
 source "${DOTINSTALL}/deprecated/neovim.zsh"
 source "${DOTINSTALL}/content.zsh"
-source "${DOTUPDATE}/deprecated/symlinks.zsh" # deprecated (update now uses symlinks.bash)
+source "${DOTINSTALL}/deprecated/symlinks.zsh" # deprecated (update now uses symlinks.bash)
 source "${DOTINSTALL}/settings.zsh"
 
 # TODO: automate my remaining manual setup steps (e.g. app preferences, etc.)

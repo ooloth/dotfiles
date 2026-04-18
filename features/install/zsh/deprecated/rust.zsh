@@ -2,20 +2,31 @@
 
 DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
+###########
+# INSTALL #
+###########
 
 if have rustup; then
   printf "\n🦀 Rust is already installed\n"
-  return_or_exit 0
+else
+  info "🦀 Installing rust"
+
+  # Use custom paths
+  export CARGO_HOME=$HOME/.config/cargo
+  export RUSTUP_HOME=$HOME/.config/rustup
+
+  # See: https://www.rust-lang.org/tools/install
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+  printf "\n🚀 Finished installing rustup, rustc and cargo.\n"
 fi
 
-# Otherwise, install
-info "🦀 Installing rust"
+##########
+# UPDATE #
+##########
 
-# Use custom paths
-export CARGO_HOME=$HOME/.config/cargo
-export RUSTUP_HOME=$HOME/.config/rustup
+info "🦀 Updating rust dependencies"
 
-# See: https://www.rust-lang.org/tools/install
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup update
 
-printf "\n🚀 Finished installing rustup, rustc and cargo.\n"
+printf "\n🎉 All rust dependencies are up to date\n"
