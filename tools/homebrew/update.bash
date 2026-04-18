@@ -12,7 +12,7 @@ debug "🍺 Refreshing formula database"
 brew update
 
 debug "📦 Ensuring all declared packages are installed"
-brew bundle --file="${DOTFILES}/tools/homebrew/config/Brewfile"
+brew bundle --file="${DOTFILES}/tools/homebrew/config/Brewfile.generated"
 
 debug "📦 Upgrading all installed packages"
 brew upgrade

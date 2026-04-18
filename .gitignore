@@ -12,4 +12,4 @@ node_modules/
 # Mine
 .cache
 .secrets
-tools/homebrew/config/Brewfile
+tools/homebrew/config/Brewfile.generated
