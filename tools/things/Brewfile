@@ -1,0 +1,6 @@
+computer_name = `networksetup -getcomputername`.chomp
+
+if computer_name != "Mini"
+  cask "thingsmacsandboxhelper" # enables Things 3 "Quick Entry with Autofill": https://formulae.brew.sh/cask/thingsmacsandboxhelper
+  mas "Things 3", id: 904280696
+end

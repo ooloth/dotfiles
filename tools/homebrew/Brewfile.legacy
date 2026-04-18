@@ -4,11 +4,6 @@
 # Execute the `networksetup` command in a subshell and remove the trailing '\n'
 computer_name = `networksetup -getcomputername`.chomp
 
-########
-# TAPS #
-########
-
-
 if computer_name == "Air"
   brew "deno"
   brew "gleam"
@@ -31,24 +26,11 @@ end
 # APPS (CASKS) #
 ################
 
-cask "alfred"
-cask "appcleaner"
-cask "brave-browser"
-# NOTE: don't install "docker" cask until Apple Silicon issues resolved
-cask "firefox"
-cask "hyperkey" # karabiner become impossible to allow on work laptop...
-cask "neohtop" # see: https://abdenasser.github.io/neohtop/
-cask "notion"
-cask "rectangle"
-cask "sip-app"
-cask "thingsmacsandboxhelper" # enables Things 3 "Quick Entry with Autofill" feature: https://formulae.brew.sh/cask/thingsmacsandboxhelper
-cask "vlc"
-
 if computer_name == "Air"
   cask "1password"
   cask "google-chrome" # NOTE: work likely controls installation of this app
   # NOTE: manually download prepros v6 instead (just need it for Adam's site)
-  # cask "transmit
+  # cask "transmit"
   cask "zoom" # NOTE: work likely controls installation of this app
 end
 
@@ -70,9 +52,7 @@ end
 if computer_name != "Mini"
   # FIXME: feedbin id not found
   # mas "Feedbin", id: 1444961766 # required for the Safari extension
-  mas "Notion Web Clipper", id: 1559269364 # Safari extension
   mas "Reeder 5.", id: 1529448980
-  mas "Things 3", id: 904280696
 end
 
 mas "Amphetamine", id: 937984704
