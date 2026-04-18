@@ -1,0 +1,5 @@
+computer_name = `networksetup -getcomputername`.chomp
+
+if computer_name == "Air"
+  mas "Numbers", id: 409203825
+end

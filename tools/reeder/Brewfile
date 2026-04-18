@@ -1,0 +1,5 @@
+computer_name = `networksetup -getcomputername`.chomp
+
+if computer_name != "Mini"
+  mas "Reeder 5.", id: 1529448980
+end

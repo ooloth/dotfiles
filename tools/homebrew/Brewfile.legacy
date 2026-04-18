@@ -1,26 +1,2 @@
-# NOTE: ruby works in this file, so feel free to use it for conditional logic, etc
-# see: https://github.com/Homebrew/homebrew-bundle
-
-# Execute the `networksetup` command in a subshell and remove the trailing '\n'
-computer_name = `networksetup -getcomputername`.chomp
-
-########################
-# APPS (MAC APP STORE) #
-########################
-
-if computer_name != "Mini"
-  # FIXME: feedbin id not found
-  # mas "Feedbin", id: 1444961766 # required for the Safari extension
-  mas "Reeder 5.", id: 1529448980
-end
-
-mas "Amphetamine", id: 937984704
-
-message = "\📦 Loading additional Mac App Store apps for #{computer_name}\n"
-
-if computer_name == "Air"
-  # mas "Bear", id: 1091189122
-  mas "Keynote", id: 409183694
-  mas "Numbers", id: 409203825
-  mas "Pages", id: 409201541
-end
+# All entries migrated to tools/x/Brewfile — this file is now empty and can be deleted.
+# See: https://github.com/ooloth/dotfiles/issues/126
