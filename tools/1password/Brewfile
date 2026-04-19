@@ -2,4 +2,5 @@ computer_name = `networksetup -getcomputername`.chomp
 
 if ["Air", "Mini"].include?(computer_name)
   cask "1password"
+  cask "1password-cli"
 end
