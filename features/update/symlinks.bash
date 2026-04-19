@@ -21,7 +21,7 @@ main() {
 
   # If a specific tool is provided as an argument, symlink only that tool's configs
   if [[ ! -z "${tool}" ]]; then
-    bash "${DOTFILES}/tools/${tool}/symlinks/link.bash"
+    bash "${DOTFILES}/tools/${tool}/link.bash"
     return 0
   fi
 
