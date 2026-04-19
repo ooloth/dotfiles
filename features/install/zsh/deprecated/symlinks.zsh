@@ -48,7 +48,7 @@ symlink "${DOTFILES}/tools/zsh/config/.zshrc" "${HOME}"
 
 # TODO: recursively symlink any file in [tool}/config (but not /config itself)?
 # Or just source {tool}/symlink.bash files that each define their own commands?
-symlink "${DOTFILES}/tools/gh/config/config.yml" "${HOMECONFIG}/gh"
+symlink "${DOTFILES}/tools/github/config/config.yml" "${HOMECONFIG}/gh"
 symlink "${DOTFILES}/tools/ghostty/config/config" "${HOMECONFIG}/ghostty"
 symlink "${DOTFILES}/tools/git/config/config" "${HOMECONFIG}/git"
 symlink "${DOTFILES}/tools/git/config/config.work" "${HOMECONFIG}/git"

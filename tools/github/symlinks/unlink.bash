@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/gh/utils.bash"
+source "${DOTFILES}/tools/github/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
 
 debug "🔗 Removing symlinked config files"
