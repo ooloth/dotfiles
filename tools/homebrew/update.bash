@@ -17,9 +17,6 @@ brew bundle --file="${DOTFILES}/tools/homebrew/Brewfile.generated"
 debug "📦 Upgrading all installed packages"
 brew upgrade
 
-debug "📦 Updating casks"
-brew cu --all --include-mas --no-brew-update --yes --cleanup
-
 debug "🚀 All Homebrew packages are up to date"
 
 debug "🍺 Removing orphaned subdependencies"
