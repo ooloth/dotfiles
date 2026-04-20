@@ -8,3 +8,5 @@ if computer_name == "Air"
   brew "go"
 end
 
+# --- goose ---
+brew "goose" # go db migrations: https://pressly.github.io/goose/

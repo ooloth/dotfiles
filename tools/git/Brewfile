@@ -1,1 +1,2 @@
 brew "git"
+brew "git-delta" # pager for git diffs: https://dandavison.github.io/delta/

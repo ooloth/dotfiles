@@ -22,6 +22,10 @@ if have kubectl; then
   alias ks="k scale"
 fi
 
+if have stern; then
+  alias kl="stern"
+fi
+
 ###############
 # COMPLETIONS #
 ###############

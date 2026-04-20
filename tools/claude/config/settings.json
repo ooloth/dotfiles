@@ -1,28 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "cleanupPeriodDays": 99999,
   "attribution": {
     "commit": "",
     "pr": ""
-  },
-  "cleanupPeriodDays": 99999,
-  "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true
-  },
-  "feedbackSurveyState": {
-    "lastShownTime": 1754054339526
-  },
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "osascript -e \"display notification \\\"Needs your attention in $(basename $PWD)\\\" with title \\\"Claude Code\\\"\""
-          }
-        ]
-      }
-    ]
   },
   "includeGitInstructions": false,
   "permissions": {
@@ -268,7 +249,6 @@
       "WebFetch(domain:docs.anthropic.com)",
       "Write"
     ],
-    "defaultMode": "plan",
     "deny": [
       "Bash(:* | base64 -d | bash:*)",
       "Bash(:* | base64 -d | sh:*)",
@@ -407,14 +387,35 @@
       "Read(./.env)",
       "Read(./.env.*)",
       "Read(./secrets/**)"
+    ],
+    "defaultMode": "plan"
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e \"display notification \\\"Needs your attention in $(basename $PWD)\\\" with title \\\"Claude Code\\\"\""
+          }
+        ]
+      }
     ]
   },
-  "plansDirectory": "./.claude/plans",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": true
+  },
   "showClearContextOnPlanAccept": true,
+  "plansDirectory": "./.claude/plans",
   "showThinkingSummaries": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 1754054339526
+  }
 }

@@ -30,3 +30,4 @@ brew "typescript-language-server"   # typescript/javascript: https://formulae.br
 brew "vscode-langservers-extracted" # css/eslint/html/json: https://formulae.brew.sh/formula/vscode-langservers-extracted
 brew "vue-language-server"          # vue: https://formulae.brew.sh/formula/vue-language-server
 brew "yaml-language-server"         # yaml: https://formulae.brew.sh/formula/yaml-language-server
+cask "font-symbols-only-nerd-font"

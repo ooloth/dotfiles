@@ -1,0 +1,5 @@
+computer_name = `networksetup -getcomputername`.chomp
+
+if computer_name == "Air"
+  cask "firefox"
+end
