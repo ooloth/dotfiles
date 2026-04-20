@@ -3,8 +3,7 @@ set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/Repos/ooloth/dotfiles}"
 
-source "${DOTFILES}/tools/macos/shell.zsh"
-source "${DOTFILES}/features/common/errors.bash"
+source "${DOTFILES}/tools/bash/utils.bash"
 
 # Check if running on macOS
 is_macos() {
