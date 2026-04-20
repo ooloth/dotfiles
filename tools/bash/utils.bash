@@ -97,6 +97,7 @@ symlink() {
   ln -fsvw "$source_file" "$target_dir"
 }
 
+# TODO: confirm this works; I've been seeing broken symlinks in ~/.claude and possibly elsewere...
 remove_broken_symlinks() {
   local directory="${1:-}"
 
