@@ -7,4 +7,4 @@ info "📁 Updating yazi"
 brew bundle --file="${DOTFILES}/tools/yazi/Brewfile"
 
 debug "🔗 Symlinking yazi configuration"
-bash "${DOTFILES}/tools/yazi/symlinks/link.bash"
+bash "${DOTFILES}/tools/yazi/link.bash"
