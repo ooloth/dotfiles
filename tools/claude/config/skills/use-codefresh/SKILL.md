@@ -26,6 +26,30 @@ codefresh get builds <build-id> -o json
 codefresh logs <build-id> | grep -E -B 10 -A 20 -i "error|fail|found.*error"
 ```
 
+## Log Structure
+
+Codefresh logs are long (often 1000–3000+ lines) and front-loaded with noisy setup
+output: apt package installs, Python compilation `configure` checks, mise tool
+downloads. **The actual failure is almost always near the end.** Skip directly to
+the tail and work backwards:
+
+```bash
+# Start at the end — most failures appear in the last ~100 lines
+codefresh logs <build-id> 2>&1 | tail -100
+
+# Then narrow with grep if needed
+codefresh logs <build-id> 2>&1 | grep -E -B 5 -A 15 "FAILED|ERROR|AssertionError|raise " | tail -150
+```
+
+### Failure type heuristics
+
+| What you see near the end | Likely cause |
+|---|---|
+| `FAILED tests/...` / `AssertionError` | Test failure (prek/pytest) |
+| `ruff-check...Failed` / `ty check...Failed` | Lint or type error |
+| `error: ...` in a Python traceback | Runtime error in a build step |
+| Process exited with code 1, no clear message | Check a few hundred lines before the end |
+
 ## Troubleshooting
 
 **Command not found:** Install with `brew install codefresh`.
