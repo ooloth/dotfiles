@@ -37,6 +37,16 @@ model: opus
 1. Clearly summarize your understanding of the code's expected behaviour (in all cases), the local
    and system level invariants that apply to it, and what evidence you intend to embed in an HTML
    slide deck as part of your report that will prove that each claim you make is true
+1. **Hard constraint on evidence sources:** Every piece of evidence must come from running the real
+   system — the actual process, the actual database, the actual log output. Specifically:
+   - **Automated tests do not count** — not as proof, not even as a component of proof. Their
+     pass/fail result tells you nothing about whether the code works at runtime.
+   - **No mocking, no test fixtures, no `pytest`** — only the system running as it runs in
+     production: real process, real DB, real I/O, real log lines.
+   - For each claim, state concretely: what command you will run, what process output or DB query
+     result you will capture, and how that output proves the claim.
+   - If you find yourself reaching for a test file to prove something, stop and ask: "how would I
+     observe this behaviour if I had no test suite at all?" That is the question to answer.
 1. If starting by emitting additional observability signals would improve your ability to provide
    evidence of current behaviour, propose those changes (they will likely be gratefully approved)
 1. Wait for the user's response
