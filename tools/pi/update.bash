@@ -1,16 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/update/utils.bash"
-source "${DOTFILES}/tools/pi/utils.bash" # source last to avoid env var overrides
+source "${DOTFILES}/tools/bash/utils.bash"
 
-update_and_symlink \
-  "${TOOL_LOWER}" \
-  "${TOOL_UPPER}" \
-  "${TOOL_COMMAND}" \
-  "${TOOL_EMOJI}" \
-  "npm install --global ${TOOL_PACKAGE}@latest" \
-  "${TOOL_COMMAND} --version" \
-  "parse_version" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
+info "🥧 Updating Pi"
+npm install --global @mariozechner/pi-coding-agent@latest
