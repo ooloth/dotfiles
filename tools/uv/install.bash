@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/install/utils.bash"
-source "${DOTFILES}/tools/uv/utils.bash"
+source "${DOTFILES}/tools/bash/utils.bash"
 
-debug "⚠️ Using work's custom ${TOOL_LOWER} install command"
-
-install_and_symlink \
-  "${TOOL_LOWER}" \
-  "${TOOL_UPPER}" \
-  "${TOOL_COMMAND}" \
-  "${TOOL_EMOJI}" \
-  "${TOOL_INSTALL_COMMAND}" \
-  "${TOOL_PACKAGE} --version" \
-  "parse_version" \
-  "${DOTFILES}/tools/${tool_lower}/symlinks/link.bash"
+if is_work; then
+  # See: https://python.prod.rxrx.io/UV-Adoption-Guide
+  info "🐍 Installing uv (work)"
+  curl -LsSf https://python.prod.rxrx.io/rxrx-setup-uv.sh | sh
+else
+  # See: https://docs.astral.sh/uv/getting-started/installation/
+  info "🐍 Installing uv"
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
