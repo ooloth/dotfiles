@@ -7,10 +7,10 @@ effort: high
 ## Your task
 
 1. Use up to 50 subagents to explore the current codebase (or subsection if the user specified a smaller scope)
-2. Identify opportunities to improve user- or developer-facing characteristics and address fundamental flaws 
+2. Identify opportunities to improve user- or developer-facing characteristics and address fundamental flaws
 3. Study the user's `trekker`, Jira, Monday, GitHub issues or other backlog (if any) to see what opportunities are already tracked
 4. Report the top untracked user-facing and developer-facing opportunities
 5. Generate a self-contained HTML slide deck of the findings:
-   - `mkdir -p .agents`
-   - Write the report to `.agents/review-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
-   - `open .agents/review-opportunities.html`
+   - `mkdir -p .agents/<yyyy-mm-dd>`
+   - Write the report to `.agents/<yyyy-mm-dd>/review-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - `open .agents/<yyyy-mm-dd>/review-opportunities.html`

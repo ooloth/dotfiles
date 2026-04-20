@@ -35,7 +35,8 @@ Do NOT invoke any Skill tools yourself. Doing so would load that skill's instruc
 4. Rank the findings by priority for the user to address (based on impact, cost of delay, ROI, etc)
 5. Present the prioritized findings to the user, ensuring a summary table is included near the end of your response for clarity
 6. Generate a self-contained HTML slide deck of the prioritized findings:
-   - `mkdir -p .agents`
-   - Write the report to `.agents/review-conventions.html` — clean minimal styling, one slide per category plus a summary/title slide, keyboard arrow-key and click navigation between slides
-   - `open .agents/review-conventions.html`
+   - `mkdir -p .agents/<yyyy-mm-dd>`
+   - Write the report to `.agents/<yyyy-mm-dd>/review-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - Write the report to `.agents/<yyyy-mm-dd>/review-conventions.html` — clean minimal styling, one slide per category plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - `open .agents/<yyyy-mm-dd>/review-conventions.html`
 7. Recommend a next action and wait for the user's response
