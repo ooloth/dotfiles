@@ -1,16 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/rust/utils.bash"
-source "${DOTFILES}/features/update/utils.bash"
+source "${DOTFILES}/tools/bash/utils.bash"
 
-# See: https://www.rust-lang.org/tools/install
-update_and_symlink \
-  "${TOOL_LOWER}" \
-  "${TOOL_UPPER}" \
-  "${TOOL_COMMAND}" \
-  "${TOOL_EMOJI}" \
-  "rustup update" \
-  "${TOOL_COMMAND} --version" \
-  "parse_version" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash"
+if ! have rustc; then
+  bash "${DOTFILES}/tools/rust/install.bash"
+  exit 0
+fi
+
+info "🦀 Updating Rust"
+rustup update
