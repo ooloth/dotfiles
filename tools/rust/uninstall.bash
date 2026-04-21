@@ -11,4 +11,3 @@ uninstall_and_unlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "rustup self uninstall" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/unlink.bash"

@@ -12,4 +12,3 @@ uninstall_and_unlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "brew uninstall --formula ${TOOL_PACKAGE}" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/unlink.bash"

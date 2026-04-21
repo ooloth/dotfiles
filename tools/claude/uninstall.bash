@@ -10,4 +10,3 @@ uninstall_and_unlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "npm uninstall --global ${TOOL_PACKAGE}" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/unlink.bash"

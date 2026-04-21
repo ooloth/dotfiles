@@ -10,4 +10,3 @@ uninstall_and_unlink \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
   "uv tool uninstall ${TOOL_PACKAGE}" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/unlink.bash"

@@ -15,7 +15,7 @@ update_and_symlink \
   "brew list --version ${TOOL_PACKAGE}" \
   "parse_version" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
+  "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
 
 debug "📦 Updating homebrew dependencies"
 brew bundle --file="${DOTFILES}/tools/neovim/Brewfile"

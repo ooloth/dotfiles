@@ -14,4 +14,4 @@ update_and_symlink \
   "npm --version" \
   "" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash" # "npm install --global npm@latest" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"

@@ -8,5 +8,3 @@ brew bundle list --file="${DOTFILES}/tools/sesh/Brewfile" | while IFS= read -r f
   brew uninstall --formula "${formula}"
 done
 
-debug "🔗 Unlinking sesh configuration"
-bash "${DOTFILES}/tools/sesh/symlinks/unlink.bash"
