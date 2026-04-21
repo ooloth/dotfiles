@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/git/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
 
-symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/config" "${TOOL_CONFIG_DIR}"
-symlink "${DOTFILES}/tools/${TOOL_LOWER}/config/config.work" "${TOOL_CONFIG_DIR}"
+symlink "${DOTFILES}/tools/git/config/config" "${HOME}/.config/git"
+symlink "${DOTFILES}/tools/git/config/config.work" "${HOME}/.config/git"
