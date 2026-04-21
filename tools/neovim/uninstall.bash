@@ -1,25 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/uninstall/utils.bash"
-source "${DOTFILES}/tools/node/utils.bash"
-source "${DOTFILES}/tools/neovim/utils.bash" # source last to avoid env var overrides
+source "${DOTFILES}/tools/bash/utils.bash"
+source "${DOTFILES}/tools/neovim/utils.bash"
 
-uninstall_and_unlink \
-  "${TOOL_LOWER}" \
-  "${TOOL_UPPER}" \
-  "${TOOL_COMMAND}" \
-  "${TOOL_EMOJI}" \
-  "brew uninstall --formula ${TOOL_PACKAGE}"
+info "🦸 Uninstalling Neovim"
 
-debug "📦 Uninstalling homebrew dependencies"
-brew bundle list --file="${DOTFILES}/tools/${TOOL_LOWER}/Brewfile" | while IFS= read -r formula; do
-  brew uninstall --formula "${formula}"
+debug "📦 Uninstalling uv tool dependencies"
+for package in "${TOOL_UV_DEPENDENCIES[@]}"; do
+  uv tool uninstall "${package}"
 done
 
 debug "📦 Uninstalling global npm dependencies"
 for package in "${TOOL_NPM_DEPENDENCIES[@]}"; do
   npm uninstall -g "${package}"
 done
-
-debug "🚀 All ${TOOL_UPPER} dependencies have been uninstalled"

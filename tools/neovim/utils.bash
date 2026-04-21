@@ -21,6 +21,7 @@ export TOOL_NPM_DEPENDENCIES=(
 
 export TOOL_UV_DEPENDENCIES=(
   ruff
+  ty
 )
 
 parse_version() {
