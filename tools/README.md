@@ -11,9 +11,7 @@ The @new template directory groups all the related files for a particular tool/u
 │   ├── aliases.zsh        # Shell aliases
 │   ├── integration.zsh    # Shell integration logic
 │   └── variables.zsh      # Shell environment variables
-├── symlinks/
-│   ├── link.bash          # Symlink configuration files
-│   └── unlink.bash        # Clean up symlinked files
+├── link.bash              # Symlink configuration files (optional)
 ├── install.bash           # Installation logic
 ├── uninstall.bash         # Uninstallation logic
 ├── update.bash            # Update logic (optional)

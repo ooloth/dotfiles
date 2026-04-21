@@ -19,14 +19,14 @@ Before writing any files:
 - **How is it installed?** Check its README/docs for the recommended installer. Common options: `brew install`, `npm install -g`, `bun install -g`, `uv tool install`, `cargo install`, or a custom install script.
 - **What does `{command} --version` output?** Run it (or check the docs) to know the exact format — you'll need this to write `parse_version`.
 - **Are there zsh completions?** Check the docs or the brew caveats after install. If completions require explicit shell setup (e.g. `eval "$(tool completion zsh)"`), note it — you'll need `shell.zsh`.
-- **Does it have dotfiles config to manage?** If it writes config to `~/.config/{tool}/` or similar, you'll need `symlinks/`.
+- **Does it have dotfiles config to manage?** If it writes config to `~/.config/{tool}/` or similar, you'll need `link.bash` and a `config/` directory.
 
 ### 2. Classify the tool
 
 **Simple tool** (no dotfiles config to symlink): needs only the 4 core files.
 Examples: `eza`, `sd`, `logcli`
 
-**Tool with config** (has config files to symlink): also needs `symlinks/link.bash`, `symlinks/unlink.bash`, and a `config/` directory.
+**Tool with config** (has config files to symlink): also needs `link.bash` and a `config/` directory.
 Examples: `claude`, `neovim`, `git`
 
 ### 3. Create `tools/{tool}/utils.bash`
@@ -117,7 +117,7 @@ For **tools with config**, add the symlink script path as an 8th argument:
 
 ```bash
   "parse_version" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
+  "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
 ```
 
 ### 5. Create `tools/{tool}/update.bash`
@@ -149,7 +149,7 @@ For **tools with config**, add the symlink script path as a 9th argument:
 
 ```bash
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
-  "${DOTFILES}/tools/${TOOL_LOWER}/symlinks/link.bash"
+  "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
 ```
 
 ### 6. Create `tools/{tool}/uninstall.bash`
@@ -197,9 +197,9 @@ Brew auto-installs completions to `/opt/homebrew/share/zsh/site-functions` — n
 # eval "$(tool completion zsh)"
 ```
 
-### 8. For tools with config: create `symlinks/`
+### 8. For tools with config: create `link.bash`
 
-`tools/{tool}/symlinks/link.bash`:
+`tools/{tool}/link.bash`:
 
 ```bash
 #!/usr/bin/env bash
@@ -209,18 +209,6 @@ source "${DOTFILES}/tools/{tool}/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
 
 symlink "${DOTFILES}/tools/{tool}/config/settings.json" "${TOOL_CONFIG_DIR}/settings.json"
-```
-
-`tools/{tool}/symlinks/unlink.bash`:
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-source "${DOTFILES}/tools/{tool}/utils.bash"
-source "${DOTFILES}/tools/bash/utils.bash"
-
-trash "${TOOL_CONFIG_DIR}"
 ```
 
 ### 9. Verify

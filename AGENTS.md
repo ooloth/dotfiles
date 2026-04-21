@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 - `features/` houses workflow scripts (setup, install, update, run, test, etc.). Active install/update logic lives under `features/install/zsh/` and `features/update/zsh/`.
-- `tools/{tool}/` is the unit of configuration. Expect `config/` for dotfiles, `shell/` for aliases/variables, and `symlinks/` for link/unlink scripts (see `tools/README.md`).
+- `tools/{tool}/` is the unit of configuration. Expect `config/` for dotfiles, `shell/` for aliases/variables, and `link.bash` for symlinking config files (see `tools/README.md`).
 - Work-in-progress or experimental Bash rewrites may appear under `features/**/wip/` or `tools/**/wip/`.
 
 ## Build, Test, and Development Commands
@@ -22,4 +22,4 @@
 
 ## Configuration & Symlinks
 - Tool configs are symlinked into `~` from `tools/{tool}/config/`; update the repo copies, not the home-directory targets.
-- Symlink orchestration lives in `features/update/symlinks.zsh` and tool-level `symlinks/` scripts.
+- Symlink orchestration lives in `features/update/symlinks.zsh` and tool-level `link.bash` scripts.
