@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/uninstall/utils.bash"
-source "${DOTFILES}/tools/claude/utils.bash" # source last to avoid env var overrides
+source "${DOTFILES}/tools/bash/utils.bash"
 
-uninstall_and_unlink \
-  "${TOOL_LOWER}" \
-  "${TOOL_UPPER}" \
-  "${TOOL_COMMAND}" \
-  "${TOOL_EMOJI}" \
-  "npm uninstall --global ${TOOL_PACKAGE}" \
+info "🤖 Uninstalling Claude Code"
+npm uninstall --global @anthropic-ai/claude-code
