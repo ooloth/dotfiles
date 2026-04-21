@@ -27,6 +27,8 @@ If your thinking later leads you to modify the approved plan (e.g. want to make 
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write "Agree?", "Which would you prefer?", or any other question seeking user input, that response cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and acting in the same turn makes the question rhetorical and bypasses the gate.
 
+**Receiving answers to your questions is not implementation approval.** When the user responds to a list of questions you asked, you are in "answer incorporation" mode — not implementation mode. Even if every question is now answered, your next move is to (1) answer any question they asked back, (2) present the full implementation plan, (3) stop and ask for explicit approval of that plan. A "go ahead" embedded inside a numbered answer to one of your sub-questions means "use that approach for this decision" — it is not approval to begin implementing. Decisions being complete and implementation being approved are two separate gates.
+
 ## BEFORE Implementing: Always Create a Trekker Task
 
 When the user approves work, create a `trekker` task BEFORE reading or writing any files to ensure the plan has been captured:
