@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: change tool name + update TOOL_* variables in utils.bash
-source "${DOTFILES}/features/uninstall/utils.bash"
-source "${DOTFILES}/tools/@new/utils.bash" # source last to avoid env var overrides
+source "${DOTFILES}/tools/bash/utils.bash"
 
-# TODO: change uninstall command
-uninstall_and_unlink \
-  "${TOOL_LOWER}" \
-  "${TOOL_UPPER}" \
-  "${TOOL_COMMAND}" \
-  "${TOOL_EMOJI}" \
-  "brew uninstall --formula ${TOOL_PACKAGE}" \
+# TODO: add non-brew uninstall steps (e.g. npm/uv/bun uninstalls, trash config dirs)
+# TODO: delete this file if there are no non-brew steps (brew handled by #140)
+info "TODO: Uninstalling @new"
