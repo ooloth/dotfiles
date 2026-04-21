@@ -152,24 +152,26 @@ For **tools with config**, add the symlink script path as a 9th argument:
   "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
 ```
 
-### 6. Create `tools/{tool}/uninstall.bash`
+### 6. Create `tools/{tool}/uninstall.bash` (non-brew tools only)
+
+**Brew-managed tools**: skip this file. Uninstall by moving the tool folder to
+`tools/@archive` (or deleting it) and running `u` — the Brewfile entry drops
+out of `Brewfile.generated` automatically.
+
+**Non-brew tools** (npm/bun/uv/cargo): create a plain script with only the
+cleanup steps brew can't handle — no wrapper needed:
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/features/uninstall/utils.bash"
-source "${DOTFILES}/tools/{tool}/utils.bash" # source last to avoid env var overrides
+source "${DOTFILES}/tools/bash/utils.bash"
 
-uninstall_and_unlink \
-  "${TOOL_LOWER}" \
-  "${TOOL_UPPER}" \
-  "${TOOL_COMMAND}" \
-  "${TOOL_EMOJI}" \
-  "brew uninstall --formula ${TOOL_PACKAGE}"
+info "🔧 Uninstalling {tool}"
+{uninstall command}
 ```
 
-Uninstall commands: `brew uninstall --formula {pkg}` / `npm uninstall --global {pkg}` / `bun uninstall --global {pkg}` / `uv tool uninstall {pkg}` / `cargo uninstall {pkg}`
+Uninstall commands: `npm uninstall --global {pkg}` / `bun uninstall --global {pkg}` / `uv tool uninstall {pkg}` / `cargo uninstall {pkg}`
 
 ### 7. Create `tools/{tool}/shell.zsh` (only if needed)
 

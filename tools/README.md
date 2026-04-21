@@ -13,7 +13,7 @@ The @new template directory groups all the related files for a particular tool/u
 │   └── variables.zsh      # Shell environment variables
 ├── link.bash              # Symlink configuration files (optional)
 ├── install.bash           # Installation logic
-├── uninstall.bash         # Uninstallation logic
+├── uninstall.bash         # Non-brew cleanup only (optional)
 ├── update.bash            # Update logic (optional)
 ├── utils.bash             # Shared utilities (optional)
 └── README.md              # Tool documentation (optional)
@@ -36,5 +36,7 @@ The @new template directory groups all the related files for a particular tool/u
 
 ## Deprecating a Tool
 
-1. Run `{tool}/uninstall.bash`
-2. Move folder to `tools/@archive`
+1. For **non-brew tools**, run `{tool}/uninstall.bash` first
+2. Move folder to `tools/@archive` (or delete it)
+3. Run `u` to converge — brew-managed packages are removed when their Brewfile
+   entry disappears from `Brewfile.generated`
