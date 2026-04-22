@@ -53,7 +53,11 @@ Also discover what quality checks this project has documented. Look for:
 Record whatever you find as the **quality gate** for this project. If nothing is documented,
 note that and skip the quality gate step each round.
 
-This intent context and quality gate are passed to every subagent throughout the run.
+From what you read, distill a short **problem statement**: in 1-2 sentences, what pain point
+or goal do these changes address, and what outcome should they achieve? If the git log and PR
+description don't make this clear, note it as "intent unclear" — do not invent one.
+
+The problem statement and quality gate are both passed to every subagent throughout the run.
 
 ---
 
