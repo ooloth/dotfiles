@@ -12,6 +12,18 @@ model: opus
 
 ## Your task
 
+### Phase 0: Load Conventions
+
+Before exploring the problem, load the conventions that will govern the implementation:
+
+1. List `~/.claude/conventions/` and the project's `.claude/conventions/` (if it exists)
+2. Based on the task description and likely file types involved, load the relevant convention files
+3. If the task scope is unclear, load all of them — it's cheaper to load too many than to miss one
+
+These are the criteria the implementation will be evaluated against. Having them in context now
+means the plan you propose will already respect them, and the implementation agent will inherit
+that awareness rather than discovering violations at review time.
+
 ### Phase 1: Discuss the Problem
 
 1. If the user did not specify what they want to discuss, ask them for that information
