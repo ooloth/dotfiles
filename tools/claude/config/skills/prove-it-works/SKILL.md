@@ -1,6 +1,6 @@
 ---
 name: prove-it-works
-description: Provide convincing evidence that the code actually achieves its intended outcomes and does what it is expected to do runtime across all logical branches and edge cases. TRIGGER whenever the user asks you to validate, check or otherwise robustly prove whether code is working as expected.
+description: Provide convincing evidence that the code actually achieves its intended outcomes and does what it is expected to do runtime across all logical branches and edge cases. TRIGGER whenever the user asks you to prove, demonstrate, or provide hard evidence that code works as expected at runtime.
 argument-hint: '[scope]'
 effort: high
 model: opus

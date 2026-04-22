@@ -1,6 +1,6 @@
 ---
 name: review-session
-description: Review the last Claude Code session and identify opportunities to make things easier for the next agent. Use when asked to recommend improvements to the user or project's agent harness and Claude Code skills.
+description: Review the last session to find where the agent struggled and what config changes would have helped.
 ---
 
 ## Your task
