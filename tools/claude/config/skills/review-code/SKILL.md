@@ -80,12 +80,12 @@ Read **2-3 similar/related unchanged files** to understand how this codebase sol
 
 ## Phase C: Load Conventions
 
-Based on changed file types, invoke relevant conventions skills **before reviewing**:
+Based on changed file types, read relevant files from `~/.claude/conventions/` **before reviewing**:
 
-- Python files (.py) → invoke `conventions-for-python`
-- Test files (test\__.py, _.test.ts, \*.spec.ts, etc.) → invoke `conventions-for-tests`
-- Type definitions (\*.d.ts, Pydantic models, Zod schemas, TypeScript interfaces) → invoke `conventions-for-types`
-- Multiple new files or new folder structure → invoke `conventions-for-architecture`
+- Python files (.py) → read `~/.claude/conventions/python.md`
+- Test files (test\__.py, _.test.ts, \*.spec.ts, etc.) → read `~/.claude/conventions/tests.md`
+- Type definitions (\*.d.ts, Pydantic models, Zod schemas, TypeScript interfaces) → read `~/.claude/conventions/types.md`
+- Multiple new files or new folder structure → read `~/.claude/conventions/architecture.md`
 
 **Output:** "✓ Loaded conventions ([list loaded])"
 
