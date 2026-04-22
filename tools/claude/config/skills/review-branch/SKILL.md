@@ -33,6 +33,8 @@ Before diving into implementation details, understand the purpose:
 - The problem you understand this to solve
 - The outcome it's trying to achieve
 - Any simpler alternatives you can see to achieving that outcome
+- Whether this is a **one-way door** (costly to undo: public APIs, data schemas, core UX patterns)
+  or a **two-way door** (easily reversible)
 
 **Ask for confirmation:** "Did I understand the problem and desired outcome correctly?"
 
@@ -142,6 +144,8 @@ Recommend addressing: [A], [B], [C]
    - Issue: [what's wrong]
    - Impact: [why this matters]
    - Suggested fix: [specific approach]
+   - Tradeoffs: Value — [what it unlocks] / Cost — [complexity, maintenance] / Risk — [what breaks if wrong] / Alternative — [what was considered and rejected] *(omit if not an architectural decision)*
+   - Reversibility: one-way door / two-way door *(omit if not an architectural decision)*
    - Confidence: High/Medium/Low
    - Affects: [which files/areas]
 
@@ -149,6 +153,8 @@ Recommend addressing: [A], [B], [C]
    - Issue: [what's wrong]
    - Impact: [why this matters]
    - Suggested fix: [specific approach]
+   - Tradeoffs: *(omit if not an architectural decision)*
+   - Reversibility: *(omit if not an architectural decision)*
    - Confidence: High/Medium/Low
    - Affects: [which files/areas]
 

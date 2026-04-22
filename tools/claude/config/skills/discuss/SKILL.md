@@ -42,7 +42,31 @@ that awareness rather than discovering violations at review time.
 
 1. After thoroughly understanding the goal, discuss the ideal way to achieve it in the context of
    this project and its domain
-2. Grill the user about every implementation decision that does not already have an obvious answer
-3. Proactively recommend whether the implementation is best suited to a single PR vs multiple
+2. For every non-trivial decision, name the tradeoffs explicitly before grilling the user — frame
+   options as "optimize for X vs Y", not "right vs wrong":
+
+   | Dimension | Question |
+   |---|---|
+   | **Value** | What outcome does this unlock? |
+   | **Cost** | Time, complexity, ongoing maintenance |
+   | **Risk** | What breaks if we're wrong? Who pays? |
+   | **Alternative** | What did we consider and reject, and why? |
+
+3. Flag reversibility for each significant decision:
+   - **Two-way door** (easily reversible) — decide fast, move on
+   - **One-way door** (costly to undo: public APIs, data schemas, pricing, core UX patterns users
+     learn) — requires explicit sign-off; include an ADR-lite entry in the plan:
+
+   ```
+   ## Decision: [short title]
+   Context: [problem, constraints]
+   Options considered: [A, B, C]
+   Choice: [X], because [reason]
+   Reversibility: one-way door
+   Revisit trigger: [metric / date / condition that reopens this]
+   ```
+
+4. Grill the user about every implementation decision that does not already have an obvious answer
+5. Proactively recommend whether the implementation is best suited to a single PR vs multiple
    stacked PRs vs multiple parallel PRs
-4. Present the full plan to the user and wait for their explicit approval before you act
+6. Present the full plan to the user and wait for their explicit approval before you act
