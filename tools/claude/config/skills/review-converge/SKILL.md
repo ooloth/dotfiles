@@ -1,6 +1,6 @@
 ---
 name: review-converge
-description: Autonomously review and fix the current branch or specified scope in iterative rounds until clean, leaving all changes in the working tree. Escalates only genuine design decisions. Ends with a transparent report of every round, every fix, and anything it couldn't resolve.
+description: Autonomously review and fix the current branch or specified scope in iterative rounds until clean, leaving all changes in the working tree. Escalates only genuine design decisions. Ends with a transparent report of every round, every fix, and anything it couldn't resolve — persisted to .agents/.
 argument-hint: '[branch name | PR number | file path | "current branch"]'
 effort: high
 model: opus
@@ -44,12 +44,25 @@ Before the first round, understand the intent of the changes:
 - If scope is a **PR number**: fetch the PR description with `gh pr view <number>`
 - If scope is a **file path**: read the file and any related context files
 
-This intent context is passed to every review subagent so it understands what the changes are
-trying to accomplish — not just what changed.
+Also discover what quality checks this project has documented. Look for:
+
+- Commands mentioned in `CLAUDE.md` or project docs as the standard check/lint/test commands
+- Scripts in `Makefile`, `package.json` (`lint`, `typecheck`, `test`), `pyproject.toml`, etc.
+- Any CI configuration that reveals what checks run on every commit
+
+Record whatever you find as the **quality gate** for this project. If nothing is documented,
+note that and skip the quality gate step each round.
+
+This intent context and quality gate are passed to every subagent throughout the run.
 
 ---
 
 ## Phase 2: Converge Loop
+
+Maintain a **decided list** across all rounds: every finding that has been auto-fixed or
+escalated in a prior round. Before classifying findings each round, filter out anything already
+on the decided list. This keeps review agents fresh and unbiased (they see everything anew) while
+preventing the coordinator from re-presenting already-handled items.
 
 Run up to **5 rounds**. Before each round, emit:
 
@@ -73,7 +86,7 @@ Wait for the subagent to return findings.
 
 ### Step B — Classify Findings
 
-Partition every Issue finding into one of two buckets:
+Filter out any finding already on the decided list. Then partition remaining Issue findings:
 
 **Auto-fix** — there is one clearly correct answer. This includes:
 
@@ -97,14 +110,14 @@ fix is **auto-fix**. A Minor finding with two reasonable approaches is **escalat
 apply the mechanical sub-fix and escalate only the design question. Never hold a mechanical fix
 hostage to an unresolved design question.
 
+Add all classified findings to the decided list.
+
 ### Step C — Check for Repetition
 
-Compare this round's findings against all previous rounds. A finding is **repeated** if the same
-issue at the same location appeared in a prior round after a fix was attempted. Record it as a
-repetition with a note on what was tried.
+Compare this round's auto-fix findings against prior rounds. A finding is **repeated** if the
+same issue at the same location appeared in a prior round after a fix was attempted.
 
-**One failed attempt = escalate.** Do not attempt a second fix for the same issue — record it
-as a repetition and move on.
+**One failed attempt = escalate.** Move it to the escalate bucket and add it to the decided list.
 
 ### Step D — Decide Whether to Continue
 
@@ -116,29 +129,33 @@ Round N/5: [X] auto-fix, [Y] escalate, [Z] repeated
 
 Then:
 
-- If there are **no auto-fix findings**: exit the loop (clean or only escalations/repetitions remain)
+- If there are **no auto-fix findings**: exit the loop
 - If the **round limit is reached**: exit the loop
 - Otherwise: continue to Step E
 
-### Step E — Fix (subagent)
+### Step E — Fix (subagents, parallel where safe)
 
-Before spawning the fix subagent, verify any file paths referenced in the findings actually exist
-(`ls` or `fd`). Correct a wrong path before passing it to the subagent; if the right path is
-ambiguous, escalate the finding instead.
+Before spawning fix subagents, verify any file paths referenced in the findings actually exist
+(`ls` or `fd`). Correct a wrong path before passing it; if the right path is ambiguous, escalate.
 
-Use the Agent tool (general-purpose) to implement all auto-fix findings from this round. Pass it:
+**Group findings by file.** Spawn one fix subagent per file (or small group of related files)
+in parallel using multiple Agent tool calls in a single message. Pass each subagent:
 
-- The complete list of auto-fix findings with their suggested fixes from the review output
-- The file paths and relevant context
+- Its subset of auto-fix findings with suggested fixes
+- The relevant file paths and context
 - Instruction: implement every finding exactly as described; do not make additional changes; do
   not commit anything
 
-Wait for the subagent to complete.
+Wait for all fix subagents to complete.
+
+**Run the quality gate.** If a quality gate was discovered in Phase 1, run it now. Feed any new
+failures back into the next round as additional findings (do not auto-fix them here — let the
+review loop handle them cleanly).
 
 Emit:
 
 ```
-Round N/5: applied [X] fixes
+Round N/5: applied [X] fixes[, quality gate: OK | N new issues]
 ```
 
 Record what was changed (file, issue, fix applied, before/after snippet) for the report.
@@ -149,11 +166,17 @@ Then return to the top of the loop for the next round.
 
 ## Phase 3: Report
 
-Once the loop exits, generate a plain-text report. Emit it directly in the conversation (no HTML
-deck — this is a workflow summary, not a discovery report).
+Once the loop exits, generate the report. **Emit it in the conversation AND write it to disk:**
 
+```bash
+mkdir -p .agents/$(date +%Y-%m-%d)/$(git rev-parse --abbrev-ref HEAD)
+# write to .agents/<date>/<branch>/review-converge.md
 ```
-## review-converge report
+
+Report format:
+
+```markdown
+# review-converge report
 
 **Scope:** [resolved scope]
 **Rounds completed:** N of 5
@@ -161,11 +184,11 @@ deck — this is a workflow summary, not a discovery report).
 
 ---
 
-### Changes made
+## Changes made
 
 Leave a blank line before and after every diff block so items don't run together.
 
-#### Round 1
+### Round 1
 
 - `file:line` — [issue] — [fix applied]
 
@@ -181,31 +204,34 @@ Leave a blank line before and after every diff block so items don't run together
   + [after]
   ```
 
-#### Round 2
+### Round 2
 ...
 
-#### Round N
-[Clean — no auto-fixable findings.]  ← if loop exited cleanly
+### Round N
+Clean — no auto-fixable findings.
 
 ---
 
-### Repeated findings (could not resolve)
+## Repeated findings (could not resolve)
 
 These issues reappeared after a fix attempt. One attempt was made; escalating rather than
 speculating further.
 
 - `file:line` — [issue] — Attempted: [what was tried] — Why it didn't hold: [best guess]
 
-(None)  ← if no repetitions
+(None)
 
 ---
 
-### Escalated items
+## Escalated items
 
-These require a decision from you. Each lists the options so you can reply with a number or letter.
+These require a decision from you. Each lists the options; add a confidence parenthetical on any
+option where you have a strong lean (e.g. `(high confidence)`).
+
+Reply with your decisions (e.g. "1b, 2a") and I'll apply them and do one final pass.
 
 1. `file:line` — [issue] — Why escalated: [reason]
-   - (a) [option]
+   - (a) [option] (high confidence)
    - (b) [option]
    - (c) [option if applicable]
 
@@ -213,18 +239,28 @@ These require a decision from you. Each lists the options so you can reply with 
    - (a) [option]
    - (b) [option]
 
-(None)  ← if nothing escalated
+(None)
 
 ---
 
-### Working tree
+## Documentation gaps
+
+Patterns seen during this run that suggest missing or incomplete project documentation. Addressing
+these would turn future escalations into auto-fixes and prevent the same issues from recurring.
+
+- **[Pattern name]** — [what kept coming up] — Suggested addition: [which file to update and
+  what to document, e.g. "add a note to conventions/bash.md that all helper functions must use
+  the call-site failure pattern: `check_X ... || failures=$((failures + 1))`"]
+
+(None)
+
+---
+
+## Working tree
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
 
----
-
-**To resolve escalations:** reply with your decisions (e.g. "1b, 2a") and I'll apply them and
-do one final pass.
+Report saved to: .agents/<date>/<branch>/review-converge.md
 ```
 
 ---
@@ -238,3 +274,4 @@ do one final pass.
 - **No silent changes** — every change made must appear in the report with a diff snippet.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
+- **Decided list** — never re-present a finding the coordinator has already classified.
