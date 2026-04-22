@@ -31,3 +31,19 @@ model: opus
 3. Have all edge cases been handled?
 4. Do all branches have well-designed automated tests?
 5. Have you manually tested every branch and seen evidence that everything is working correctly?
+
+### Phase 3: Instrumentation Check
+
+For user-facing or behavior-changing changes, verify that observability shipped with the feature:
+
+- [ ] **North-star metric** — the one number expected to move; is it defined?
+- [ ] **Baseline** — current value captured before the change?
+- [ ] **Expected direction & size** — e.g. +5% conversion, –20% latency
+- [ ] **Time horizon** — when will we check? (7 days? 30?)
+- [ ] **Guardrail metrics** — what must *not* get worse (error rate, adjacent funnels)?
+- [ ] **How we'll read it** — A/B, before/after, cohort, or qualitative signal defined?
+
+If instrumentation was not shipped in the same change, flag it explicitly. "We'll add analytics
+later" is a gap — call it out and recommend adding it before or immediately after this ships.
+
+Skip this phase if the change is purely internal (refactor, dev tooling, CI, etc.).
