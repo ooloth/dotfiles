@@ -27,9 +27,9 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ### Conciseness Rules
 
-- **What section**: Include every significant change theme - no cap. Could be 2 bullets, could be 8. Whatever fits the PR.
-- **Why section**: 1-3 bullets (not a paragraph). Focus on user benefit.
-- **Validation**: Narrative "Expect to..." style. Should be a sequential checklist of steps to follow in order — each step should build on the previous one so the list reads like a walkthrough, not a grab-bag of independent checks. Include what evidence-providing observability signals to look for to confirm correct behavior. If there are gaps in the latter, point them out! Now is the time to fill those gaps. Should NEVER make reference to automated checks - these should be higher-confidence manual checks.
+- **What section**: First bullet is a single-sentence TL;DR of the entire change. Subsequent bullets call out worthwhile details (variants covered, notable constraints, deployment notes). No cap on total — whatever fits the PR.
+- **Why section**: First bullet is a single-sentence TL;DR of the entire reason. Subsequent bullets add detail if needed (1-3 total, not a paragraph). Focus on user benefit.
+- **Validation**: A single flat `- [ ]` checklist — no nested items, no prose paragraphs. Steps must be sequential, each building on the previous so the list reads like a walkthrough, not a grab-bag of independent checks. Write each item in "Expect to see X" tutorial style. Include evidence-providing observability signals to confirm correct behavior; if gaps exist, point them out now. NEVER reference automated checks — manual e2e only.
 
 ### Structure Requirements
 
@@ -49,6 +49,8 @@ allowed-tools: [Bash, Read, Glob, Grep]
 ❌ Listing every file changed
 ❌ "Comprehensive" descriptions - less is more
 ❌ Automated steps in "How to validate" — never "run the tests", "run CI", or "run lint/checks"; validation must be manual only (run the real thing e2e and expect to see X evidence of correct behavior)
+❌ Prose paragraphs in "How to validate" — every step must be its own `- [ ]` checkbox item
+❌ Nested lists in "How to validate" — keep it a single flat list
 ❌ Technical jargon when plain language works
 ❌ Business rule explanations (put in code comments)
 ❌ Placeholder links - ask for real URLs
@@ -78,9 +80,8 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ## ✅ What
 
-- Adds an "Include archived items" toggle to filter archived entries in/out of all views
-- Includes a tooltip explaining what "archived items" are
-- Hides the toggle completely if the current dataset doesn't have archived items
+- Adds an "Include archived items" toggle to all views — hidden when the dataset has none, with a tooltip explaining the concept
+- Hides completely (no tooltip either) when the current dataset has no archived items
 - Since this toggle won't appear until datasets with archived items are in prod, it's safe to deploy backend and frontend together
 
 ### 🍿 Screen recording of validation steps below
@@ -89,8 +90,8 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ## 🤔 Why
 
-- This dataset is the first appearance of archived items in the app
-- While users gain an understanding of how to interpret these items, we want them to have the ability to hide them
+- New datasets introduce archived items for the first time, and users need the option to hide them while building familiarity
+- Defaulting them visible gives reviewers the full picture until users understand what they mean
 
 ## 👩‍🔬 How to validate
 
@@ -116,9 +117,11 @@ allowed-tools: [Bash, Read, Glob, Grep]
 ✅ Dependency callout at top
 ✅ Screen recording before text
 ✅ Deployment timing mentioned
+✅ First What bullet summarises the entire change in one sentence
+✅ First Why bullet summarises the entire reason in one sentence
 ✅ User-centric Why
 ✅ Concrete language
-✅ Narrative validation (10 steps)
+✅ Flat `- [ ]` checklist validation (10 steps, no nesting, no prose)
 ✅ Real links (not placeholders)
 
 ---
