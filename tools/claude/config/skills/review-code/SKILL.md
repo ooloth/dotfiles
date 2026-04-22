@@ -149,6 +149,13 @@ Based on changed file types, read relevant files from `~/.claude/conventions/` *
 - Are error cases and edge cases tested?
 - **Specify exact test cases needed:** not "add tests" but "add tests for: expired token, malformed token, missing token, token with wrong signature"
 
+**Observability:**
+
+- Does this add or change user-facing behavior without corresponding analytics, logging, or metrics calls?
+- Are new error paths surfaced (logged, tracked, reported) or silently swallowed?
+- Were any existing analytics/logging/tracing calls changed or removed — is that intentional?
+- Will this be diagnosable in production if something goes wrong?
+
 **Documentation:**
 
 - Do user-facing changes need README/docs updates?

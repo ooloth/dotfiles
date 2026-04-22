@@ -183,6 +183,19 @@ Create beads task(s) for approved themes. See CLAUDE.md "Working in Small Steps"
 
 ---
 
+### Phase 6: Completeness Check
+
+After the code quality review, verify the branch delivers on its goal:
+
+1. **Did the implementation achieve the stated goal?** Compare what was built to the problem from Phase 0.
+2. **Are edge cases handled?** Identify inputs, states, or sequences not covered by the happy path.
+3. **Is test coverage adequate?** All significant branches should have automated tests.
+4. **Has it been manually tested?** Run the actual codepath and observe the output — tests alone don't count.
+
+**Present to user:** A brief completeness verdict alongside Phase 5 — what's complete, what's missing.
+
+---
+
 ## Implementation Workflow
 
 **CRITICAL: Follow CLAUDE.md "Working in Small Steps" workflow**
