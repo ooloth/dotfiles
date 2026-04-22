@@ -1,14 +1,33 @@
 ---
 name: review-conventions
-description: Perform a comprehensive review of all codebase conventions using subagents and report your findings. Use when asked to review the codebase or identify opportunities to improve it.
+description: Review codebase conventions — a specific domain or all domains in parallel. Use when asked to review or check conventions.
+argument-hint: '[architecture | code-style | documentation | observability | tests | types] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+model: opus
 effort: high
+---
+
+## Dispatch
+
+**If the user specified a domain:**
+
+1. Identify which conventions to load:
+   - If a domain was named, load `~/.claude/conventions/<domain>.md`
+   - If no domain but a scope was given, list `~/.claude/conventions/` and load whichever files are relevant
+   - State which file(s) you loaded before proceeding
+2. Study the current project's documented guidance for this concern (if any)
+3. Use up to 50 subagents to explore the codebase (or the path/git-range if the user specified a smaller scope)
+4. Identify deviations from the ideal state and instances of the failure modes
+5. Focus especially on patterns you would not want a future agent to spread
+
+**If no domain was specified, continue below for a full parallel review.**
+
 ---
 
 ## Important: stay in your coordinator role
 
 Do NOT invoke any Skill tools yourself. Instead, launch 6 Agent subagents in a **single message** (so they run in parallel), with each review's full prompt inlined as shown below.
 
-## Your task
+## Full review
 
 1. Read all 6 convention files from `~/.claude/conventions/`: `architecture.md`, `code-style.md`, `documentation.md`, `observability.md`, `tests.md`, `types.md`. Then launch all 6 Agent subagents in a **single message**, scoped to the entire codebase (or subsection if the user specified a smaller scope). Paste the conventions file content into each agent's prompt. Each agent should return a structured list of findings with severity, location, and recommendation.
 
