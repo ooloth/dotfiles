@@ -6,37 +6,40 @@ effort: high
 
 ## Important: stay in your coordinator role
 
-Do NOT invoke any Skill tools yourself. Doing so would load that skill's instructions into your own context, causing you to start executing it directly instead of delegating. Instead, launch 6 Agent subagents in a **single message** (so they run in parallel), with each review's full prompt inlined as shown below.
+Do NOT invoke any Skill tools yourself. Instead, launch 6 Agent subagents in a **single message** (so they run in parallel), with each review's full prompt inlined as shown below.
 
 ## Your task
 
-1. Read the SKILL.md files for each review and its corresponding conventions reference (12 files total — see paths below). Then launch all 6 Agent subagents in a **single message** (so they run in parallel), scoped to the entire codebase (or subsection if the user specified a smaller scope). Paste the contents of both SKILL.md files into each agent's prompt so the agent has the full context. Each agent should return a structured list of findings with severity, location, and recommendation.
+1. Read all 6 convention files from `~/.claude/conventions/`: `architecture.md`, `code-style.md`, `documentation.md`, `observability.md`, `tests.md`, `types.md`. Then launch all 6 Agent subagents in a **single message**, scoped to the entire codebase (or subsection if the user specified a smaller scope). Paste the conventions file content into each agent's prompt. Each agent should return a structured list of findings with severity, location, and recommendation.
+
+   Each subagent's prompt must include:
+   - The full content of the relevant conventions file
+   - This shared task: "Use up to 50 subagents to explore the codebase. Identify deviations from the ideal state and instances of the failure modes described above. Focus especially on patterns you would not want a future agent to spread. Return findings as a structured list with severity, location, and recommendation."
 
    **Subagent 1 — Architecture** (subagent_type: Explore, description: "review architecture")
-   Read and inline: `~/.claude/skills/review-architecture/SKILL.md` + `~/.claude/skills/conventions-for-architecture/SKILL.md`
+   Inline: `~/.claude/conventions/architecture.md`
 
-   **Subagent 2 — Documentation** (subagent_type: Explore, description: "review documentation")
-   Read and inline: `~/.claude/skills/review-documentation/SKILL.md` + `~/.claude/skills/conventions-for-documentation/SKILL.md`
+   **Subagent 2 — Code style** (subagent_type: Explore, description: "review code style")
+   Inline: `~/.claude/conventions/code-style.md`
 
-   **Subagent 3 — Observability** (subagent_type: Explore, description: "review observability")
-   Read and inline: `~/.claude/skills/review-observability/SKILL.md` + `~/.claude/skills/conventions-for-observability/SKILL.md`
+   **Subagent 3 — Documentation** (subagent_type: Explore, description: "review documentation")
+   Inline: `~/.claude/conventions/documentation.md`
 
-   **Subagent 4 — Tests** (subagent_type: Explore, description: "review tests")
-   Read and inline: `~/.claude/skills/review-tests/SKILL.md` + `~/.claude/skills/conventions-for-tests/SKILL.md`
+   **Subagent 4 — Observability** (subagent_type: Explore, description: "review observability")
+   Inline: `~/.claude/conventions/observability.md`
 
-   **Subagent 5 — Types** (subagent_type: Explore, description: "review types")
-   Read and inline: `~/.claude/skills/review-types/SKILL.md` + `~/.claude/skills/conventions-for-types/SKILL.md`
+   **Subagent 5 — Tests** (subagent_type: Explore, description: "review tests")
+   Inline: `~/.claude/conventions/tests.md`
 
-   **Subagent 6 — Code style** (subagent_type: Explore, description: "review code style")
-   Read and inline: `~/.claude/skills/review-code-style/SKILL.md` + `~/.claude/skills/conventions-for-code-style/SKILL.md`
+   **Subagent 6 — Types** (subagent_type: Explore, description: "review types")
+   Inline: `~/.claude/conventions/types.md`
 
 2. Wait for all 6 subagents to return their results
-3. Ensure you understand the results and are equipped to compare their relative importance (explore specific areas of the codebase yourself if that helps you)
-4. Rank the findings by priority for the user to address (based on impact, cost of delay, ROI, etc)
-5. Present the prioritized findings to the user, ensuring a summary table is included near the end of your response for clarity
-6. Generate a self-contained HTML slide deck of the prioritized findings:
+3. Explore specific areas of the codebase yourself if needed to compare the relative importance of findings
+4. Rank findings by priority (impact, cost of delay, ROI)
+5. Present the prioritized findings with a summary table
+6. Generate a self-contained HTML slide deck:
    - `mkdir -p .agents/<yyyy-mm-dd>`
-   - Write the report to `.agents/<yyyy-mm-dd>/review-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
-   - Write the report to `.agents/<yyyy-mm-dd>/review-conventions.html` — clean minimal styling, one slide per category plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - Write to `.agents/<yyyy-mm-dd>/review-conventions.html` — clean minimal styling, one slide per category plus a title/summary slide, keyboard arrow-key and click navigation
    - `open .agents/<yyyy-mm-dd>/review-conventions.html`
 7. Recommend a next action and wait for the user's response
