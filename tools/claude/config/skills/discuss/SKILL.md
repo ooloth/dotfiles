@@ -16,7 +16,7 @@ model: opus
 
 Before exploring the problem, load the conventions that will govern the implementation:
 
-1. List `~/.claude/conventions/` and the project's `.claude/conventions/` (if it exists)
+1. List `~/.claude/conventions/` and the project's documented conventions and invariants (if they exist)
 2. Based on the task description and likely file types involved, load the relevant convention files
 3. If the task scope is unclear, load all of them — it's cheaper to load too many than to miss one
 
