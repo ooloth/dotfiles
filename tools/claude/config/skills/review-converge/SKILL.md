@@ -163,15 +163,19 @@ deck — this is a workflow summary, not a discovery report).
 
 ### Changes made
 
+Leave a blank line before and after every diff block so items don't run together.
+
 #### Round 1
 
 - `file:line` — [issue] — [fix applied]
+
   ```diff
   - [before, max 3 lines]
   + [after, max 3 lines]
   ```
 
 - `file:line` — [issue] — [fix applied]
+
   ```diff
   - [before]
   + [after]
