@@ -1,6 +1,6 @@
 ---
 name: review-converge
-description: Autonomously review and fix the current branch or specified scope in iterative rounds until clean, leaving all changes in the working tree. Escalates only design decisions and non-obvious judgment calls. Ends with a transparent report of every round, every fix, and anything it couldn't resolve.
+description: Autonomously review and fix the current branch or specified scope in iterative rounds until clean, leaving all changes in the working tree. Escalates only genuine design decisions. Ends with a transparent report of every round, every fix, and anything it couldn't resolve.
 argument-hint: '[branch name | PR number | file path | "current branch"]'
 effort: high
 model: opus
@@ -75,26 +75,36 @@ Wait for the subagent to return findings.
 
 Partition every Issue finding into one of two buckets:
 
-**Auto-fix** — all of the following must be true:
-- There is one clearly correct fix
-- Implementing it requires no design choice or trade-off judgment
-- It does not change a public API, data model, or contract in a way that needs deliberate owner
-  sign-off
+**Auto-fix** — there is one clearly correct answer. This includes:
 
-**Escalate** — any of the following applies:
-- Multiple valid approaches exist and the right one depends on requirements or preferences
+- Obvious correctness fixes (bugs, missing error handling, unquoted variables, etc.)
+- Consistency fixes with no ambiguity (matching the pattern used everywhere else)
+- Conservative improvements on working code (defensive quoting, minor style alignment)
+- The mechanical part of a mixed finding — see splitting rule below
+
+The test is: *does applying this require the author to make a choice?* If no, auto-fix it.
+
+**Escalate** — the right answer genuinely depends on a decision only the author can make:
+
+- Multiple valid approaches exist and the choice depends on requirements or preferences
 - The fix would change a public API, data model, or contract
-- Correctly fixing it requires context only the author or team has
-- It is a non-obvious judgment call about trade-offs
+- Correctly fixing it requires intent or context only the author has
 
-Note: a Critical severity finding with an obvious correct fix is **auto-fix**, not escalate.
-Severity and escalation status are independent.
+Note: severity and escalation status are independent. A Critical finding with an obvious correct
+fix is **auto-fix**. A Minor finding with two reasonable approaches is **escalate**.
+
+**Splitting rule:** If a finding contains both a mechanical sub-fix and a design sub-question,
+apply the mechanical sub-fix and escalate only the design question. Never hold a mechanical fix
+hostage to an unresolved design question.
 
 ### Step C — Check for Repetition
 
 Compare this round's findings against all previous rounds. A finding is **repeated** if the same
 issue at the same location appeared in a prior round after a fix was attempted. Record it as a
 repetition with a note on what was tried.
+
+**One failed attempt = escalate.** Do not attempt a second fix for the same issue — record it
+as a repetition and move on.
 
 ### Step D — Decide Whether to Continue
 
@@ -112,6 +122,10 @@ Then:
 
 ### Step E — Fix (subagent)
 
+Before spawning the fix subagent, verify any file paths referenced in the findings actually exist
+(`ls` or `fd`). Correct a wrong path before passing it to the subagent; if the right path is
+ambiguous, escalate the finding instead.
+
 Use the Agent tool (general-purpose) to implement all auto-fix findings from this round. Pass it:
 
 - The complete list of auto-fix findings with their suggested fixes from the review output
@@ -127,7 +141,7 @@ Emit:
 Round N/5: applied [X] fixes
 ```
 
-Record what was changed (file, issue, fix applied) for the report.
+Record what was changed (file, issue, fix applied, before/after snippet) for the report.
 
 Then return to the top of the loop for the next round.
 
@@ -150,12 +164,20 @@ deck — this is a workflow summary, not a discovery report).
 ### Changes made
 
 #### Round 1
-- `file:line` — [issue description] — [fix applied]
-- `file:line` — [issue description] — [fix applied]
-...
+
+- `file:line` — [issue] — [fix applied]
+  ```diff
+  - [before, max 3 lines]
+  + [after, max 3 lines]
+  ```
+
+- `file:line` — [issue] — [fix applied]
+  ```diff
+  - [before]
+  + [after]
+  ```
 
 #### Round 2
-- `file:line` — [issue description] — [fix applied]
 ...
 
 #### Round N
@@ -165,22 +187,27 @@ deck — this is a workflow summary, not a discovery report).
 
 ### Repeated findings (could not resolve)
 
-These issues reappeared in a later round after a fix was attempted. The coordinator was unable to
-converge on a solution — these need your attention.
+These issues reappeared after a fix attempt. One attempt was made; escalating rather than
+speculating further.
 
-- `file:line` — [issue] — Attempted: [what was tried in round N] — Still present in round N+1
-  because: [coordinator's best guess at why]
+- `file:line` — [issue] — Attempted: [what was tried] — Why it didn't hold: [best guess]
 
 (None)  ← if no repetitions
 
 ---
 
-### Escalated items (need your input)
+### Escalated items
 
-These findings were not auto-fixed because they require a design decision or non-obvious judgment.
+These require a decision from you. Each lists the options so you can reply with a number or letter.
 
-- `file:line` — [issue] — Why escalated: [reason — e.g. "two valid approaches, depends on whether
-  X or Y is preferred", "changes public API contract"]
+1. `file:line` — [issue] — Why escalated: [reason]
+   - (a) [option]
+   - (b) [option]
+   - (c) [option if applicable]
+
+2. `file:line` — [issue] — Why escalated: [reason]
+   - (a) [option]
+   - (b) [option]
 
 (None)  ← if nothing escalated
 
@@ -189,6 +216,11 @@ These findings were not auto-fixed because they require a design decision or non
 ### Working tree
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
+
+---
+
+**To resolve escalations:** reply with your decisions (e.g. "1b, 2a") and I'll apply them and
+do one final pass.
 ```
 
 ---
@@ -199,6 +231,6 @@ All changes are uncommitted. Run `git diff` to review before committing.
 - **No commits** — ever. Working tree only.
 - **No scope creep** — only fix findings from the review. Do not refactor, clean up, or improve
   things outside the reported findings.
-- **No silent changes** — every change made must appear in the report.
-- **Repetition is data** — if a fix doesn't hold across a round boundary, record it honestly
-  rather than trying increasingly speculative fixes. Two failed attempts = escalate it.
+- **No silent changes** — every change made must appear in the report with a diff snippet.
+- **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
+- **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
