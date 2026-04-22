@@ -180,12 +180,9 @@ Then return to the top of the loop for the next round.
 
 ## Phase 3: Report
 
-Once the loop exits, generate the report. **Emit it in the conversation AND write it to disk:**
-
-```bash
-mkdir -p .agents/$(date +%Y-%m-%d)/$(git rev-parse --abbrev-ref HEAD)
-# write to .agents/<date>/<branch>/review-converge.md
-```
+Once the loop exits, emit the full report in the conversation. **Never abbreviate it — the full
+report, including every escalation with its complete lettered option list, must appear in the
+conversation.** Do not produce a condensed summary. Do not write to disk.
 
 Report format:
 
@@ -273,8 +270,6 @@ these would turn future escalations into auto-fixes and prevent the same issues 
 ## Working tree
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
-
-Report saved to: .agents/<date>/<branch>/review-converge.md
 ```
 
 ---
