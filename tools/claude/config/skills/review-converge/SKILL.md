@@ -106,6 +106,16 @@ The test is: *does applying this require the author to make a choice?* If no, au
 Note: severity and escalation status are independent. A Critical finding with an obvious correct
 fix is **auto-fix**. A Minor finding with two reasonable approaches is **escalate**.
 
+**Escalation discipline** — before writing an escalation:
+
+- Resolve all analytical sub-questions yourself by reading the code and tests. Never escalate
+  "is this a bug?", "is this intentional?", or "does X occur in production?" — answer those
+  yourself and state your conclusion. Only the *decision* goes to the author.
+- Every escalated item must present ≥2 concrete lettered action options, each with a clear
+  outcome. If you find yourself writing an option like "(a) No action — just confirming
+  awareness", the item is not a genuine escalation; move it to Patterns Observed instead.
+- Mark your recommended option `(recommended)`.
+
 **Splitting rule:** If a finding contains both a mechanical sub-fix and a design sub-question,
 apply the mechanical sub-fix and escalate only the design question. Never hold a mechanical fix
 hostage to an unresolved design question.
