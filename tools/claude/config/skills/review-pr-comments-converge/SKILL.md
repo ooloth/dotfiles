@@ -188,6 +188,10 @@ Return to the top of the loop.
 Emit the full report in the conversation. Never abbreviate — every escalation with its complete
 option list must appear. Do not write to disk.
 
+**Stop here.** Do not post any GitHub replies or resolve any threads. Wait for the user to review
+the working tree changes and explicitly approve posting replies (e.g. "post the replies", "reply
+and resolve"). The report is the deliverable for this phase.
+
 ```markdown
 # review-pr-comments-converge report
 
@@ -241,6 +245,20 @@ These require a decision from you. Reply with your decisions (e.g. "1b, 2a") and
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
 ```
+
+---
+
+## Phase 4: Post Replies (only after explicit user approval)
+
+After the user has reviewed the working tree changes and explicitly approves (e.g. "post the
+replies"), post replies and resolve threads:
+
+- For each auto-fixed or dismissed comment with an inline `comment_id`: run
+  `reply_to_comment.py` with `--resolve`
+- For each escalated comment: post a reply summarising the options; do not resolve the thread
+- Review body comments (no `comment_id`): respond with `gh pr comment`
+
+Do not run any of these commands before receiving explicit approval in Phase 3.
 
 ---
 
