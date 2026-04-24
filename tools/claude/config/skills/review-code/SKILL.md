@@ -13,12 +13,17 @@ Orchestrate a parallel code review. Determine scope, launch all 10 agents simult
 
 ## Step 1: Determine scope
 
-Identify changed files using this priority:
+Identify changed files and determine the exact diff command for agents to use:
 
-1. **Argument provided** — use the specified file paths or description
-2. **On a feature branch** — `git diff main...HEAD --name-only` (or master/trunk)
-3. **On main with staged changes** — `git diff --staged --name-only`
-4. **On main, nothing staged** — `git diff HEAD~1 --name-only`
+| Situation | File list command | Diff command for agents |
+|---|---|---|
+| PR branch | `gh pr diff --name-only` | `gh pr diff` |
+| Feature branch | `git diff main...HEAD --name-only` | `git diff main...HEAD` |
+| Main, staged changes | `git diff --staged --name-only` | `git diff --staged` |
+| Main, nothing staged | `git diff HEAD~1 --name-only` | `git diff HEAD~1` |
+| File paths provided | use the provided paths | `git diff HEAD -- <files>` |
+
+Substitute the actual base ref (main, master, trunk) where needed.
 
 **Skip non-reviewable files:**
 
@@ -29,7 +34,7 @@ Identify changed files using this priority:
 - Binary files
 - Formatting-only changes (whitespace/style only)
 
-Output the reviewable file list before launching agents.
+Output the reviewable file list and the diff command before launching agents.
 
 ## Step 2: Synthesize intent
 
@@ -48,6 +53,7 @@ Synthesize everything into a single crisp block. Do not transcribe raw source te
 Problem: [what's broken, missing, or needed — and why it matters]
 Approach: [how this change addresses it, at a high level]
 Key outcomes: [what success looks like; invariants, constraints, or requirements the implementation must satisfy]
+Diff command: [exact command agents should run to read the diff]
 ```
 
 **Enhance if needed:** if the raw sources are vague, incomplete, or contradictory, read the diff and fill in the gaps yourself. Never leave this block generic ("various improvements") or empty. The agents depend on it to evaluate completeness and flag gaps.
@@ -98,7 +104,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
+2. Run the diff command from Context to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
 3. Read 2-3 similar unchanged files to understand existing patterns for error handling, validation, etc.
 
 Review for:
@@ -128,7 +134,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed, then read surrounding context.
+2. Run the diff command from Context to read what changed, then read surrounding context.
 
 Review for:
 - Input validation at system boundaries (APIs, CLI args, file uploads, env vars)
@@ -159,7 +165,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed, then read surrounding context.
+2. Run the diff command from Context to read what changed, then read surrounding context.
 3. Check how similar operations are handled in unchanged files.
 
 Review for:
@@ -191,7 +197,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed.
+2. Run the diff command from Context to read what changed.
 3. Find and read the corresponding test files.
 4. Read 2-3 existing test files to understand the project's test style.
 
@@ -243,7 +249,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed.
+2. Run the diff command from Context to read what changed.
 3. Check existing logging, metrics, and analytics patterns in related files.
 4. Check README, docs, help text, and changelogs for areas that need updating.
 
@@ -279,7 +285,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed.
+2. Run the diff command from Context to read what changed.
 3. If package files changed, read them in full.
 
 Dependencies (if package files changed):
@@ -318,7 +324,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed.
+2. Run the diff command from Context to read what changed.
 3. Read related unchanged files to understand existing design patterns and conventions.
 4. Read ~/.claude/conventions/types.md if it exists.
 
@@ -361,7 +367,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed, then read surrounding context.
+2. Run the diff command from Context to read what changed, then read surrounding context.
 
 Readability:
 - Would a new maintainer struggle to understand intent?
@@ -405,7 +411,7 @@ Changed files:
 
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run `git diff` to read what changed.
+2. Run the diff command from Context to read what changed.
 3. Read ~/.claude/conventions/ files relevant to the changed file types:
    - Python files (.py) → python.md
    - Test files → tests.md
