@@ -5,7 +5,7 @@ set -euo pipefail
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 # Include is_air, is_mini, is_work in this commonly-sourced file
-source "${DOTFILES}/tools/macos/shell.zsh"
+source "${DOTFILES}/tools/macos/utils.bash"
 
 ##############
 # INSPECTING #
@@ -163,7 +163,8 @@ function banner() {
   local border_char_vertical="║"
 
   # Calculate the width of the text, adding one extra column per emoji (since they generally occupy two columns onscreen)
-  local emoji_count=$(echo -n "$text" | python3 -c "import sys, unicodedata; print(sum((unicodedata.category(ch) == 'So') for ch in sys.stdin.read()))")
+  local emoji_count
+  emoji_count=$(printf '%s' "$text" | perl -CS -0777 -ne 'print scalar(() = /\p{So}/g)')
   local char_count=${#text}
   local padding_left=1
   local padding_right=1
