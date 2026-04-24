@@ -2,7 +2,6 @@
 
 # Content utilities for dotfiles setup
 
-set -euo pipefail
 
 # Configuration
 readonly CONTENT_REPO="ooloth/content"

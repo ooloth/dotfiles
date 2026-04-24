@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 get_tool_version() {
   local version_command="${1}"

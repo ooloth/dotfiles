@@ -3,7 +3,6 @@
 # SSH utility functions for installation scripts
 # Provides reusable functionality for detecting and working with SSH keys
 
-set -euo pipefail
 
 # Get SSH key paths (centralized configuration)
 get_ssh_key_paths() {

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 # Check if Zsh is installed and available
 zsh_is_installed() {

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 export TOOL_LOWER="node"
 export TOOL_UPPER="Node"

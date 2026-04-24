@@ -3,7 +3,6 @@
 # Tmux utility functions for installation and management scripts
 # Provides reusable functionality for tmux configuration and plugin management
 
-set -euo pipefail
 
 # ============================================================================
 # Configuration and Constants

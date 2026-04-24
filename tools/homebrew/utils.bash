@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 export TOOL_LOWER="homebrew"
 export TOOL_UPPER="Homebrew"

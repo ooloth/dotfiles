@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 export TOOL_LOWER="vscode"
 export TOOL_UPPER="Visual Studio Code"

@@ -3,7 +3,6 @@
 # Git and GitHub utility functions for installation scripts
 # Provides reusable functionality for Git configuration and GitHub SSH setup
 
-set -euo pipefail
 
 # ============================================================================
 # Git Configuration Functions
@@ -104,7 +103,7 @@ get_git_remote_url() {
     fi
     
     (
-        cd "$repo_dir"
+        cd "$repo_dir" || return
         git config --get remote.origin.url 2>/dev/null
     )
 }
@@ -136,7 +135,7 @@ set_git_remote_url() {
     fi
     
     (
-        cd "$repo_dir"
+        cd "$repo_dir" || return
         git remote set-url origin "$new_url"
     )
 }

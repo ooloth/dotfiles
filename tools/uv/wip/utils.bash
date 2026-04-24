@@ -2,7 +2,6 @@
 
 # UV utilities for dotfiles setup
 
-set -euo pipefail
 
 # Check if UV is installed
 is_uv_installed() {

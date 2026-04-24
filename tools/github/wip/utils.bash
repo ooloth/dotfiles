@@ -2,7 +2,6 @@
 
 # GitHub utilities for dotfiles setup
 
-set -euo pipefail
 
 # Check if we can connect to GitHub via SSH
 can_connect_to_github_via_ssh() {
