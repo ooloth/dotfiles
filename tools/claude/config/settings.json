@@ -417,5 +417,6 @@
   "skipDangerousModePermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754054339526
-  }
+  },
+  "theme": "dark-daltonized"
 }
