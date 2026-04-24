@@ -74,19 +74,18 @@ Run up to **5 rounds**. Before each round, emit:
 Round N/5: reviewing...
 ```
 
-### Step A — Review (subagent)
+### Step A — Review
 
-Use the Agent tool (general-purpose) to run the `review-code` analysis. Pass it:
+Invoke the `review-code` skill directly in the main conversation (via the Skill tool, not the Agent
+tool). Skip `review-code`'s Steps 1 and 2 — scope, diff command, and intent are already established
+in Phase 1 and do not change between rounds. Jump straight to Step 3, supplying:
 
-- The scope (files or diff range)
-- The intent context from Phase 1
-- Instruction to read full file context (not just diffs) wherever needed to evaluate a change in
-  its proper context — e.g. when a change's correctness depends on how callers use it, or when
-  the surrounding code is needed to judge whether a pattern is consistent
-- Instruction to follow the `review-code` skill's analysis process and return findings in the
-  standard format: Praise / Issues (Critical, Important, Minor) / Questions / Patterns Observed
+- The diff command from Phase 1
+- The reviewable file list from Phase 1
+- The problem statement from Phase 1 as the intent block
 
-Wait for the subagent to return findings.
+Wait for `review-code` to return its merged findings in the standard format: Praise / Issues
+(Critical, Important, Minor) / Questions / Patterns Observed.
 
 ### Step B — Classify Findings
 
@@ -99,7 +98,7 @@ Filter out any finding already on the decided list. Then partition remaining Iss
 - Conservative improvements on working code (defensive quoting, minor style alignment)
 - The mechanical part of a mixed finding — see splitting rule below
 
-The test is: *does applying this require the author to make a choice?* If no, auto-fix it.
+The test is: _does applying this require the author to make a choice?_ If no, auto-fix it.
 
 **Escalate** — the right answer genuinely depends on a decision only the author can make:
 
@@ -114,7 +113,7 @@ fix is **auto-fix**. A Minor finding with two reasonable approaches is **escalat
 
 - Resolve all analytical sub-questions yourself by reading the code and tests. Never escalate
   "is this a bug?", "is this intentional?", or "does X occur in production?" — answer those
-  yourself and state your conclusion. Only the *decision* goes to the author.
+  yourself and state your conclusion. Only the _decision_ goes to the author.
 - Every escalated item must present ≥2 concrete lettered action options, each with a clear
   outcome. If you find yourself writing an option like "(a) No action — just confirming
   awareness", the item is not a genuine escalation; move it to Patterns Observed instead.
@@ -186,7 +185,7 @@ conversation.** Do not produce a condensed summary. Do not write to disk.
 
 Report format:
 
-```markdown
+````markdown
 # review-converge report
 
 **Scope:** [resolved scope]
@@ -207,6 +206,7 @@ Leave a blank line before and after every diff block so items don't run together
   - [before, max 3 lines]
   + [after, max 3 lines]
   ```
+````
 
 - `file:line` — [issue] — [fix applied]
 
@@ -216,9 +216,11 @@ Leave a blank line before and after every diff block so items don't run together
   ```
 
 ### Round 2
+
 ...
 
 ### Round N
+
 Clean — no auto-fixable findings.
 
 ---
@@ -268,8 +270,10 @@ these would turn future escalations into auto-fixes and prevent the same issues 
 ---
 
 ## Working tree
+
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
+
 ```
 
 ---
@@ -284,3 +288,4 @@ All changes are uncommitted. Run `git diff` to review before committing.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
 - **Decided list** — never re-present a finding the coordinator has already classified.
+```
