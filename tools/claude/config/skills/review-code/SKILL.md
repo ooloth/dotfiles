@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Core code analysis engine shared by review-pr and review-branch. Reads changed files, loads conventions, and performs correctness/performance/maintainability review. Outputs neutral findings for the calling skill to format for its specific audience. Invoke directly for ad-hoc analysis when you want raw findings without branch or PR ceremony — specify which files to analyze as the argument.
+description: Core code analysis engine shared by review-pr and review-branch. Determines scope, launches 10 parallel specialized agents, and merges findings into a neutral output for the calling skill to format. Invoke directly for ad-hoc analysis when you want raw findings without branch or PR ceremony — specify which files to analyze as the argument.
 argument-hint: '[file paths or description of what to analyze]'
 allowed-tools: Bash Read Grep Glob
 effort: high
@@ -9,25 +9,16 @@ model: opus
 
 ## Your role
 
-Perform deep, grounded code analysis. Read the actual code (not just diffs), understand existing codebase patterns, and surface real issues with concrete evidence. Output neutral findings that the calling skill formats for its specific audience (teammate in a PR, or yourself on a branch).
+Orchestrate a parallel code review. Determine scope, launch all 10 agents simultaneously, then merge their findings into neutral structured output for the calling skill to format.
 
-## Inputs from calling skill
+## Step 1: Determine scope
 
-Before invoking this skill, the calling skill (if applicable) should have established:
+Identify changed files using this priority:
 
-- The list of changed files (paths relative to repo root)
-- How to read file contents (local paths for branch review; raw GitHub URLs or `gh` for PR review)
-- Any context that should inform the review (e.g., author's stated intent, problem being solved)
-
-## Context
-
-- Correctness matters - is anything broken or incomplete?
-- Performance matters - is anything unnecessarily inefficient?
-- Maintainability matters - could different shapes make intentions more obvious?
-
----
-
-## Phase A: Read Changed Files
+1. **Argument provided** — use the specified file paths or description
+2. **On a feature branch** — `git diff main...HEAD --name-only` (or master/trunk)
+3. **On main with staged changes** — `git diff --staged --name-only`
+4. **On main, nothing staged** — `git diff HEAD~1 --name-only`
 
 **Skip non-reviewable files:**
 
@@ -36,225 +27,348 @@ Before invoking this skill, the calling skill (if applicable) should have establ
 - Test snapshots (**snapshots**/\*)
 - Vendored dependencies (vendor/, node_modules/ if committed)
 - Binary files
-- **Formatting-only changes** (detect hunks that are whitespace/style only)
+- Formatting-only changes (whitespace/style only)
 
-For each reviewable file:
+Output the reviewable file list before launching agents.
 
-1. **Read the diff first** (`git diff <base>..HEAD -- <file>` for branch reviews; the raw diff for PR reviews). This is mandatory — it reveals exactly what changed regardless of file size, so you cannot miss new code added near the end of a large file.
-2. **Then read surrounding context:** for files under 500 lines, read the full file; for larger files, use the line numbers from the diff with `offset`/`limit` to read each changed section plus ~30 lines of context. Do not attempt a top-to-bottom full read of large files — the Read tool silently truncates at 2000 lines.
-3. **Verify before reporting gaps.** Before claiming something is missing (e.g. "no test for X"), check the diff to confirm it was not added in this branch.
+## Step 2: Launch all 10 agents in parallel
 
-**Show progress:**
+Send a single message containing all 10 Agent tool calls simultaneously. Pass each agent:
 
-```
-Reading changed files:
-✓ auth.py (1/5)
-✓ api.py (2/5)
-...
-```
-
-**Output:** "✓ Read [N] changed files ([M] skipped as non-reviewable)"
+- The list of changed/reviewable files
+- Its specific instructions below
 
 ---
 
-## Phase B: Read Existing Patterns
-
-Read **2-3 similar/related unchanged files** to understand how this codebase solves similar problems:
-
-- How does existing code handle authentication/caching/error handling/etc?
-- What utilities exist? (Don't suggest reinventing the wheel)
-- What conventions are used? (naming, architecture, testing patterns)
-
-**Output what you found:**
+### Agent 1: Test Runner
 
 ```
-✓ Reviewed existing patterns:
-- Error handling: utils/errors.py uses custom exception classes with error codes
-- Testing: All API functions have corresponding test_*.py with parametrized tests
-- Authentication: auth/session.py uses JWT with Redis cache
-```
+Run the test suite for the changed files listed below and report results.
 
-**Output:** "✓ Analyzed existing patterns ([N] related files)"
+Changed files:
+[insert file list]
+
+Instructions:
+1. Identify the test framework and how to run tests (check package.json, Makefile, pyproject.toml, etc.)
+2. Run the tests most relevant to the changed files
+3. Report:
+   - Which test command was run
+   - Pass/fail counts
+   - Any failures with error messages and stack traces
+   - Whether all tests passed or attention is needed
+```
 
 ---
 
-## Phase C: Load Conventions
+### Agent 2: Correctness
 
-Based on changed file types, read relevant files from `~/.claude/conventions/` **before reviewing**:
+```
+Review the changed files for correctness issues.
 
-- Python files (.py) → read `~/.claude/conventions/python.md`
-- Test files (test\__.py, _.test.ts, \*.spec.ts, etc.) → read `~/.claude/conventions/tests.md`
-- Type definitions (\*.d.ts, Pydantic models, Zod schemas, TypeScript interfaces) → read `~/.claude/conventions/types.md`
-- Multiple new files or new folder structure → read `~/.claude/conventions/architecture.md`
+Changed files:
+[insert file list]
 
-**Output:** "✓ Loaded conventions ([list loaded])"
+Instructions:
+1. Run `git diff` to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
+2. Read 2-3 similar unchanged files to understand existing patterns for error handling, validation, etc.
+
+Review for:
+- Logic errors, off-by-one errors, incorrect conditionals
+- Missing edge cases (empty input, null/None, zero, max values)
+- Incomplete feature implementation (stated goals not fully met)
+- Error propagation: are errors handled consistently with surrounding code?
+- Backward compatibility: does this break existing callers or data?
+- Are existing utilities/patterns reused, or is this reinventing the wheel?
+
+For each issue: file:line | what's wrong | concrete impact | specific fix
+Skip theoretical what-ifs — report actual problems in the code.
+```
 
 ---
 
-## Phase D: Correctness Review
+### Agent 3: Security
 
-**Output:** "✓ Completed correctness review"
+```
+Review the changed files for security issues.
 
-**Completeness:**
+Changed files:
+[insert file list]
 
-- Are the stated goals met? Is the feature complete?
-- Are there obvious edge cases we should handle?
+Instructions:
+1. Run `git diff` to read what changed, then read surrounding context.
 
-**Consistency:**
+Review for:
+- Input validation at system boundaries (APIs, CLI args, file uploads, env vars)
+- Injection risks: SQL, command injection, XSS, path traversal
+- Authentication and authorization gaps
+- Secrets or credentials hardcoded or logged
+- Error messages that leak sensitive information (stack traces, internal paths, user data)
+- File permissions and access controls
+- External dependencies from untrusted sources
 
-- Does this follow the same patterns as similar code (from Phase B)?
-- Are existing utilities/abstractions used, or is this reinventing the wheel?
-- Does error handling match the project's conventions?
-- Do naming, structure, and style match surrounding code?
+For each issue: file:line | what's wrong | severity (Critical/High/Medium/Low) | specific fix
+Only report actual security violations, not theoretical what-ifs.
+If no issues found, report "No security concerns identified."
+```
 
-**Bugs & Error Handling:**
+---
 
-- Are there any logic errors or potential crashes?
-- Are errors propagated consistently (same pattern throughout)?
-- Do error messages provide helpful context for debugging?
-- Do we fail fast where appropriate, or handle gracefully where needed?
-- Could any runtime errors be shifted left to compile-time type checks?
-- Could refactoring to different patterns make any error states impossible?
-- Are all failure modes accounted for?
+### Agent 4: Performance
 
-**Security:**
+```
+Review the changed files for performance issues.
 
-- Is user input validated at system boundaries (APIs, CLI args, file uploads, etc.)?
-- Are there injection risks (SQL, command, XSS, path traversal)?
-- Are credentials or secrets properly handled (not logged, not in version control)?
-- Are file permissions and access controls appropriate?
-- Are external dependencies from trusted sources?
+Changed files:
+[insert file list]
 
-**Only report actual security violations, not theoretical what-ifs.**
+Instructions:
+1. Run `git diff` to read what changed, then read surrounding context.
+2. Check how similar operations are handled in unchanged files.
 
-**Compatibility:**
+Review for:
+- N+1 queries or repeated fetches inside loops
+- Blocking operations in async contexts
+- Missing memoization or caching where appropriate
+- Memory leaks: unclosed connections, resources, growing collections
+- Missing pagination for potentially large datasets
+- Expensive operations in hot paths (per-request, per-item, per-frame)
+- Algorithmic inefficiency (O(n²) where O(n) is straightforward)
 
-- Will this change break existing behavior or workflows?
-- Are there migration considerations for existing users?
-- Are version/platform requirements reasonable and documented?
-- Are new dependencies necessary and justified?
+For each issue: file:line | what's wrong | concrete impact | specific fix
+Only report actual problems. Do not report theoretical micro-optimizations.
+If no issues found, report "No performance concerns identified."
+```
 
-**Developer Experience:**
+---
 
-- Will using this API/feature be intuitive or frustrating?
-- Are error messages actionable?
-- Is this "teachable" — can others learn good patterns from this code?
+### Agent 5: Test Quality
 
-**Testing:**
+```
+Review the test coverage and quality for the changed files.
 
-- Is all new behavior tested?
+Changed files:
+[insert file list]
+
+Instructions:
+1. Run `git diff` to read what changed.
+2. Find and read the corresponding test files.
+3. Read 2-3 existing test files to understand the project's test style.
+
+Review for:
+Coverage (with ROI lens):
+- Are critical paths tested? (auth, payments, data integrity, error paths)
+- Are edge cases that matter covered?
 - Are there code paths with zero test coverage?
-- Can test cases be consolidated (e.g., parametrized tests)?
-- Are invariants checked in tests?
-- Are error cases and edge cases tested?
-- **Specify exact test cases needed:** not "add tests" but "add tests for: expired token, malformed token, missing token, token with wrong signature"
+- Specify exact missing test cases: not "add tests" but "add tests for: expired token, missing token, token with wrong signature"
 
-**Observability:**
+Test design:
+- Do tests verify behavior, not implementation details?
+- Will these tests break for the wrong reasons? (brittle selectors, testing internals)
+- Are assertions focused on outcomes users care about?
 
-- Does this add or change user-facing behavior without corresponding analytics, logging, or metrics calls?
-- Are new error paths surfaced (logged, tracked, reported) or silently swallowed?
-- Were any existing analytics/logging/tracing calls changed or removed — is that intentional?
-- Will this be diagnosable in production if something goes wrong?
+Test code quality:
+- Many similar tests that could be parameterized/data-driven?
+- Copy-pasted setup that should be extracted to helpers/fixtures?
+- Tests that pass but don't meaningfully assert anything?
 
-**Documentation:**
+Flakiness risk:
+- Timing dependencies, race conditions, order-sensitive assertions?
+- Reliance on external state that could change?
+- Async operations not properly awaited/mocked?
 
-- Do user-facing changes need README/docs updates?
+For each issue: file:line | what's wrong | specific fix
+If coverage is appropriate, report "Test coverage is appropriate and behavior-focused."
+```
+
+---
+
+### Agent 6: Observability & Documentation
+
+```
+Review the changed files for observability and documentation gaps.
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Run `git diff` to read what changed.
+2. Check existing logging, metrics, and analytics patterns in related files.
+3. Check README, docs, help text, and changelogs for areas that need updating.
+
+Observability:
+- Does new user-facing behavior have corresponding logging, metrics, or analytics?
+- Are new error paths surfaced (logged, tracked) or silently swallowed?
+- Were existing logging/tracing calls changed or removed — is that intentional?
+- If this fails in production, how would we know? Is it diagnosable?
+
+Documentation:
+- Do user-facing changes need README or docs updates?
 - Are breaking changes documented with migration notes?
-- Are new configuration options or environment variables documented?
+- Are new config options or environment variables documented?
 - Are new dependencies documented (why needed, how to install)?
-- Does changed behavior need updating in help text, comments, or guides?
+- Does changed behavior need updating in help text or guides?
+
+For each issue: file:line | what's wrong | specific fix
+If no gaps found, report "No observability or documentation gaps identified."
+```
 
 ---
 
-## Phase E: Performance Review
+### Agent 7: Dependencies & Deployment
 
-**Output:** "✓ Completed performance review"
+```
+Review the changed files for dependency and deployment concerns.
 
-For each changed file, identify:
+Changed files:
+[insert file list]
 
-- Unnecessary inefficiencies (N+1 queries, missing memoization, etc.)
-- Algorithmic improvements (O(n²) → O(n))
-- Resource waste (unclosed connections, memory leaks)
+Instructions:
+1. Run `git diff` to read what changed.
+2. If package files changed, read them in full.
 
-**Only report actual problems**, not theoretical optimizations.
+Dependencies (if package files changed):
+- Are new dependencies justified? Could existing deps cover this?
+- Are dependencies well-maintained? (check for recent activity, known issues)
+- Frontend deps: impact on bundle size?
+
+Breaking changes (if public APIs or exports changed):
+- Are any public interfaces, types, or exports modified?
+- Would existing consumers break?
+- Is a version bump needed? (major for breaking, minor for features, patch for fixes)
+
+Deployment safety:
+- Database migrations that could fail or lock tables?
+- Backward compatibility with existing data/state in production?
+- Deployment ordering issues? (config changes, service dependencies)
+- Would a feature flag help with safe rollout?
+- Could this be rolled back safely if issues arise?
+
+For each issue: file:line | what's wrong | specific recommendation
+If no concerns found, report "No dependency or deployment concerns identified."
+```
 
 ---
 
-## Phase F: Maintainability Review
+### Agent 8: Design & Expressiveness
 
-**Output:** "✓ Completed maintainability review"
+```
+Review the changed files for design quality and expressiveness.
 
-**Design Coherence:**
+Changed files:
+[insert file list]
 
-- Step back: Does the overall approach make sense, or is there a simpler mental model?
-- If starting fresh with what we know now, would we design it differently?
-- Are there signs of exploratory coding (multiple approaches to same problem, inconsistent patterns)?
-- Is the solution internally consistent, or does it solve similar problems in different ways?
-- Does the implementation match the problem's inherent complexity, or is it over/under-engineered?
+Instructions:
+1. Run `git diff` to read what changed.
+2. Read related unchanged files to understand existing design patterns and conventions.
+3. Read ~/.claude/conventions/types.md if it exists.
 
-**If you see a significantly simpler design:**
+Design coherence:
+- Does the overall approach make sense, or is there a simpler mental model?
+- Are there signs of exploratory coding (multiple approaches, inconsistent patterns)?
+- Is the solution internally consistent, or similar problems solved differently?
+- Does implementation match the problem's inherent complexity (not over/under-engineered)?
 
-- Describe the alternative approach with concrete examples
-- Explain why it's simpler (fewer concepts, less indirection, clearer intent)
-- Show what changes would be needed
-- **Don't let current implementation size prevent proposing a better approach** — the biggest wins are often catching overcomplicated solutions before they ship
-- **Redesign scope boundary:** If it would touch >100 lines or >5 files, note as design debt but don't block the current work
+Expressiveness:
+- Are domain-specific types used instead of primitives? (str, int, bool where a named type would express intent)
+- Do types enforce invariants and make invalid states unrepresentable?
+- Are function signatures expressive of the domain they model?
+- Are there overly broad types (Any, untyped dicts) that provide no safety or documentation value?
+- Missing type annotations where they'd add clarity?
 
-**Simplicity:**
+Abstraction ROI:
+- Do abstractions pull their weight? (used more than once, clearer than inline)
+- Is there unnecessary indirection or wrapping?
+- Are there helpers that exist for a single call site?
 
-- Could this be expressed more directly?
-- Is there unnecessary complexity, abstraction, or indirection?
-- Is the solution as declarative as possible?
+If you see a significantly simpler design, describe the alternative with concrete examples.
+Note as design debt (don't block current work) if it would touch >100 lines or >5 files.
 
-**Clarity:**
+For each issue: file:line | what's wrong | specific alternative
+```
 
+---
+
+### Agent 9: Readability & Simplicity
+
+```
+Review the changed files for readability and simplicity.
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Run `git diff` to read what changed, then read surrounding context.
+
+Readability:
 - Would a new maintainer struggle to understand intent?
-- Are domain types used instead of primitives?
-- Is logic overly repetitive or verbose?
-- Would well-named helper functions and better types help clarify what the code is aiming to do?
+- Is logic overly clever or indirect when a dumber approach would be clearer?
+- Are there long functions or deeply nested blocks that should be extracted?
+- Is there unnecessary verbosity — could the same intent be expressed in fewer lines?
 
-**Noise:**
+Simplicity:
+- Are we solving problems we don't actually have?
+- Is there premature generality (configurable where hardcoded would suffice)?
+- Framework-level solutions for one-off problems?
+- Is the complexity proportionate to the problem?
 
-- Is there any dead code, commented code, or unused imports?
-- Are there unnecessary comments explaining obvious code?
-- Any unnecessary backwards compatibility support that can be removed?
-- Any remnants from exploration (partial refactors, abandoned approaches)?
-- Any duplicate or near-duplicate code when existing code could have been reused?
+Code noise:
+- Dead code, commented-out code, unused imports or variables?
+- Unnecessary backwards-compatibility shims?
+- Remnants from exploration (partial refactors, abandoned approaches)?
+- Duplicate or near-duplicate code when existing code could have been reused?
 
-**Future Lens:**
+Change atomicity:
+- Does this represent one logical unit of work?
+- Are unrelated changes mixed in that should be separate commits?
+- Would splitting out cleanup/refactoring as a preceding commit help reviewability?
 
-- How easy will this be to change when requirements evolve?
-- What's the maintenance burden?
-- What's the blast radius of future changes?
-
-**Developer Experience:**
-
-- Does this make the codebase better or worse as a place to work?
-- Is this code a joy or a chore to maintain?
-
----
-
-## Phase G: What's Good
-
-Note positive findings **throughout** Phases D-F as you encounter them — don't batch at the end:
-
-- Clever solutions
-- Good abstractions
-- Thorough testing
-- Clear naming
-- Thoughtful error handling
-- Consistent use of existing patterns
-
-Aim for **at least 1:1 positive to negative ratio.**
+For each issue: file:line | what's wrong | simpler alternative
+If the code is appropriately simple, report "Code complexity is proportionate to the problem."
+```
 
 ---
 
-## Output
+### Agent 10: Style & Consistency
 
-Present findings in a neutral structured list. The calling skill maps these to its audience:
+```
+Review the changed files for style and consistency.
 
-- **review-pr** maps Critical→🚫, Important→💡, Minor→✨, Questions→🤔, Praise→👍 and formats findings as comment candidates for a teammate
-- **review-branch** maps to Top Improvements + Other Findings by Theme with root cause analysis for self-directed implementation
+Changed files:
+[insert file list]
+
+Instructions:
+1. Run `git diff` to read what changed.
+2. Read ~/.claude/conventions/ files relevant to the changed file types:
+   - Python files (.py) → python.md
+   - Test files → tests.md
+   - Type definitions → types.md
+   - Multiple new files or new folder structure → architecture.md
+3. Read 2-3 similar unchanged files to understand the project's naming and style conventions.
+
+Review for:
+- Naming: do identifiers match the project's conventions and surrounding code?
+- File and folder organization: are files in the right place?
+- Architectural patterns: does new code follow established patterns in the codebase?
+- Consistency: does new code match the style of surrounding code?
+- Project conventions: does code follow rules in any project style guide (CLAUDE.md, etc.)?
+
+For each issue: file:line | what's wrong | what convention is being violated | suggested fix
+If style is consistent, report "No style or consistency issues identified."
+```
+
+---
+
+## Step 3: Merge findings
+
+Collect all agent results. Map each finding to the neutral output schema:
+
+- **Critical** — correctness bugs, security vulnerabilities, failing tests, broken behavior
+- **Important** — performance problems, test gaps on critical paths, significant design issues, deployment risks
+- **Minor** — style, readability, small simplifications, documentation gaps
+- **Questions** — genuine design uncertainties worth discussing
+- **Praise** — good patterns, clever solutions, thorough tests, clear naming
+
+Focus on 3-5 most impactful issues per severity level.
 
 ```
 ## Code Analysis Findings
@@ -280,4 +394,4 @@ Present findings in a neutral structured list. The calling skill maps these to i
 - [pattern that should inform how fixes and suggestions are expressed]
 ```
 
-**Volume:** Focus on 3-5 most impactful issues. If there are 10+, group related ones or note "broader refactor needed" rather than listing every instance.
+The calling skill (`review-pr` or `review-branch`) formats these findings for its specific audience. When invoked directly, present findings as-is.
