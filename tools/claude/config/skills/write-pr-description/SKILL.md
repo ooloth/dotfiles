@@ -37,6 +37,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 - Include 🍿 screen recording for ANY UI changes
 - Mention deployment timing if backend/frontend coordination needed
 - Link actual Jira/Slack (ask user if not provided)
+- Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or bare GitHub Issue URL (GitHub auto-renders those with a preview)
 
 ### Language Rules
 
@@ -108,7 +109,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ## 🔖 Related links
 
-- [Jira task](https://jira.example.com/browse/PROJ-123)
+- [Jira task: PROJ-123](https://jira.example.com/browse/PROJ-123)
 - [Slack thread](https://workspace.slack.com/archives/C12345/p1234567890)
 ```
 
