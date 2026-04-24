@@ -6,7 +6,6 @@ set -uo pipefail
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 source "${DOTFILES}/tools/bash/utils.bash"
-set +e  # utils.bash re-enables -e; disable it to preserve non-blocking behaviour
 
 main() {
   local tool="${1:-}"
