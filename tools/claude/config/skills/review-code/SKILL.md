@@ -31,10 +31,32 @@ Identify changed files using this priority:
 
 Output the reviewable file list before launching agents.
 
-## Step 2: Launch all 10 agents in parallel
+## Step 2: Synthesize intent
+
+Before launching agents, build a clear picture of what this change is trying to accomplish. Every agent receives this context so they can evaluate completeness, flag missing invariants, and avoid false positives on things that are working as intended.
+
+Gather from all available sources in this priority order:
+
+1. **PR description and title** — `gh pr view --json title,body` (if on a PR branch)
+2. **Linked issues** — if the PR body references issue numbers, fetch them with `gh issue view <n>`
+3. **Commit messages** — `git log main...HEAD --format="%s%n%b"` (or equivalent base ref)
+4. **The diff itself** — read it for intent signal when other sources are thin or absent
+
+Synthesize everything into a single crisp block. Do not transcribe raw source text — extract and clarify:
+
+```
+Problem: [what's broken, missing, or needed — and why it matters]
+Approach: [how this change addresses it, at a high level]
+Key outcomes: [what success looks like; invariants, constraints, or requirements the implementation must satisfy]
+```
+
+**Enhance if needed:** if the raw sources are vague, incomplete, or contradictory, read the diff and fill in the gaps yourself. Never leave this block generic ("various improvements") or empty. The agents depend on it to evaluate completeness and flag gaps.
+
+## Step 3: Launch all 10 agents in parallel
 
 Send a single message containing all 10 Agent tool calls simultaneously. Pass each agent:
 
+- The synthesized intent block from Step 2
 - The list of changed/reviewable files
 - Its specific instructions below
 
@@ -44,6 +66,9 @@ Send a single message containing all 10 Agent tool calls simultaneously. Pass ea
 
 ```
 Run the test suite for the changed files listed below and report results.
+
+Context:
+[insert synthesized intent block]
 
 Changed files:
 [insert file list]
@@ -64,6 +89,9 @@ Instructions:
 
 ```
 Review the changed files for correctness issues.
+
+Context:
+[insert synthesized intent block]
 
 Changed files:
 [insert file list]
@@ -90,6 +118,9 @@ Skip theoretical what-ifs — report actual problems in the code.
 
 ```
 Review the changed files for security issues.
+
+Context:
+[insert synthesized intent block]
 
 Changed files:
 [insert file list]
@@ -118,6 +149,9 @@ If no issues found, report "No security concerns identified."
 ```
 Review the changed files for performance issues.
 
+Context:
+[insert synthesized intent block]
+
 Changed files:
 [insert file list]
 
@@ -145,6 +179,9 @@ If no issues found, report "No performance concerns identified."
 
 ```
 Review the test coverage and quality for the changed files.
+
+Context:
+[insert synthesized intent block]
 
 Changed files:
 [insert file list]
@@ -187,6 +224,9 @@ If coverage is appropriate, report "Test coverage is appropriate and behavior-fo
 ```
 Review the changed files for observability and documentation gaps.
 
+Context:
+[insert synthesized intent block]
+
 Changed files:
 [insert file list]
 
@@ -218,6 +258,9 @@ If no gaps found, report "No observability or documentation gaps identified."
 
 ```
 Review the changed files for dependency and deployment concerns.
+
+Context:
+[insert synthesized intent block]
 
 Changed files:
 [insert file list]
@@ -253,6 +296,9 @@ If no concerns found, report "No dependency or deployment concerns identified."
 
 ```
 Review the changed files for design quality and expressiveness.
+
+Context:
+[insert synthesized intent block]
 
 Changed files:
 [insert file list]
@@ -292,6 +338,9 @@ For each issue: file:line | what's wrong | specific alternative
 
 ```
 Review the changed files for readability and simplicity.
+
+Context:
+[insert synthesized intent block]
 
 Changed files:
 [insert file list]
@@ -333,6 +382,9 @@ If the code is appropriately simple, report "Code complexity is proportionate to
 ```
 Review the changed files for style and consistency.
 
+Context:
+[insert synthesized intent block]
+
 Changed files:
 [insert file list]
 
@@ -358,7 +410,7 @@ If style is consistent, report "No style or consistency issues identified."
 
 ---
 
-## Step 3: Merge findings
+## Step 4: Merge findings
 
 Collect all agent results. Map each finding to the neutral output schema:
 
