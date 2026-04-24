@@ -97,8 +97,9 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
-2. Read 2-3 similar unchanged files to understand existing patterns for error handling, validation, etc.
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
+3. Read 2-3 similar unchanged files to understand existing patterns for error handling, validation, etc.
 
 Review for:
 - Logic errors, off-by-one errors, incorrect conditionals
@@ -126,7 +127,8 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed, then read surrounding context.
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed, then read surrounding context.
 
 Review for:
 - Input validation at system boundaries (APIs, CLI args, file uploads, env vars)
@@ -156,8 +158,9 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed, then read surrounding context.
-2. Check how similar operations are handled in unchanged files.
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed, then read surrounding context.
+3. Check how similar operations are handled in unchanged files.
 
 Review for:
 - N+1 queries or repeated fetches inside loops
@@ -187,9 +190,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed.
-2. Find and read the corresponding test files.
-3. Read 2-3 existing test files to understand the project's test style.
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed.
+3. Find and read the corresponding test files.
+4. Read 2-3 existing test files to understand the project's test style.
 
 Review for:
 Coverage (with ROI lens):
@@ -213,6 +217,13 @@ Flakiness risk:
 - Reliance on external state that could change?
 - Async operations not properly awaited/mocked?
 
+Anti-patterns:
+- Testing implementation details (private methods, internal state)
+- Mocking so heavily that tests don't verify real behavior
+- Tests that pass but don't actually assert meaningful outcomes
+- Coverage for coverage's sake on low-risk code
+- Is test code held to the same quality standards as production code?
+
 For each issue: file:line | what's wrong | specific fix
 If coverage is appropriate, report "Test coverage is appropriate and behavior-focused."
 ```
@@ -231,9 +242,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed.
-2. Check existing logging, metrics, and analytics patterns in related files.
-3. Check README, docs, help text, and changelogs for areas that need updating.
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed.
+3. Check existing logging, metrics, and analytics patterns in related files.
+4. Check README, docs, help text, and changelogs for areas that need updating.
 
 Observability:
 - Does new user-facing behavior have corresponding logging, metrics, or analytics?
@@ -266,8 +278,9 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed.
-2. If package files changed, read them in full.
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed.
+3. If package files changed, read them in full.
 
 Dependencies (if package files changed):
 - Are new dependencies justified? Could existing deps cover this?
@@ -304,9 +317,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed.
-2. Read related unchanged files to understand existing design patterns and conventions.
-3. Read ~/.claude/conventions/types.md if it exists.
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed.
+3. Read related unchanged files to understand existing design patterns and conventions.
+4. Read ~/.claude/conventions/types.md if it exists.
 
 Design coherence:
 - Does the overall approach make sense, or is there a simpler mental model?
@@ -346,7 +360,8 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed, then read surrounding context.
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed, then read surrounding context.
 
 Readability:
 - Would a new maintainer struggle to understand intent?
@@ -389,13 +404,14 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run `git diff` to read what changed.
-2. Read ~/.claude/conventions/ files relevant to the changed file types:
+1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+2. Run `git diff` to read what changed.
+3. Read ~/.claude/conventions/ files relevant to the changed file types:
    - Python files (.py) → python.md
    - Test files → tests.md
    - Type definitions → types.md
    - Multiple new files or new folder structure → architecture.md
-3. Read 2-3 similar unchanged files to understand the project's naming and style conventions.
+4. Read 2-3 similar unchanged files to understand the project's naming and style conventions.
 
 Review for:
 - Naming: do identifiers match the project's conventions and surrounding code?
@@ -420,7 +436,7 @@ Collect all agent results. Map each finding to the neutral output schema:
 - **Questions** — genuine design uncertainties worth discussing
 - **Praise** — good patterns, clever solutions, thorough tests, clear naming
 
-Focus on 3-5 most impactful issues per severity level.
+Focus on 3-5 most impactful issues per severity level. Agents with no findings get a single collapsed line (e.g. `- Security: no issues found`) rather than being omitted or expanded.
 
 ```
 ## Code Analysis Findings
