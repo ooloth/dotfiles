@@ -75,13 +75,15 @@ Wait for user response. If fundamental redesign needed, discuss approach. Otherw
 
 ### Phases 2-4: Deep Review
 
-**Invoke the `review-code` skill using the Skill tool**, passing:
+**Invoke Skill(review-code)**, passing:
 
 - **Files:** the changed files list from Phase 1
 - **How to read them:** local file paths (files are on disk)
 - **Context:** the problem statement and desired outcome from Phase 0; the change themes and initial hypothesis from Phase 1
 
-`review-code` performs a full read of all changed files and 2-3 related unchanged files, loads relevant conventions, and runs correctness, performance, and maintainability analysis — noting positive findings throughout.
+The `review-code` skill performs a full read of all changed files and 2-3 related unchanged files,
+loads relevant conventions, and runs correctness, performance, and maintainability analysis —
+noting positive findings throughout.
 
 ---
 
