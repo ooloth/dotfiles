@@ -11,6 +11,8 @@ model: opus
 
 Provide thoughtful, constructive PR review that helps the author improve their code. Focus on teaching and suggesting, not dictating. Respect the author's ownership while ensuring quality.
 
+**Context budget:** Your context window must last the full session — Phases 1-3 (lean data gathering via `gh` CLI only), Phase 4 (review-code subagents do all file reading), Phase 5 (synthesize findings), then action handlers. Do NOT read file contents in the main agent — all file reading happens inside review-code's 10 parallel agents.
+
 ## Usage
 
 Provide a PR number (if in a repo directory) or full GitHub URL:
@@ -96,11 +98,27 @@ Parse reviews and comments from the JSON:
 
 ### Phase 4: Deep Review
 
+**Before invoking review-code, construct this context block** (uses only what Phases 1-3 already fetched — no additional reads):
+
+```
+Problem: [one sentence — what the author says was broken or missing]
+Approach: [one sentence — how the PR addresses it]
+Key outcomes: [bullet list — stated goals, invariants, constraints the implementation must satisfy]
+Active discussions: [bullet list — open concerns from existing reviews to avoid duplicating]
+Key questions to investigate: [bullet list — specific risks derived from PR description and author's stated uncertainties,
+  e.g. "Author flagged they're unsure about the caching strategy: verify thread safety",
+  "PR description says migration is in-place: check for partial-run safety",
+  "Author noted this is Part 1 of 3: check what is and isn't expected to be complete here"]
+Diff command: gh pr diff <number> --repo <org>/<repo>
+```
+
+The "Key questions" section is the most important part — it transforms generic checklists into targeted, domain-aware reviews. Derive it from explicit flags in the PR description, author's stated uncertainties ("I'm not sure about X"), failing CI context, and active reviewer discussions.
+
 **Invoke the `review-code` skill**, passing:
 
 - **Files:** the changed files list from Phase 3 (non-reviewable files already excluded)
 - **How to read them:** raw GitHub URLs — `https://raw.githubusercontent.com/<org>/<repo>/<headRefOid>/<file_path>` — or via `gh`
-- **Context:** author's stated intent from Phase 2; active discussions and team standards from Phase 3
+- **Context:** the structured context block constructed above
 
 review-code performs a full read of all changed files and 2-3 related unchanged files, loads relevant conventions, and runs correctness, performance, and maintainability analysis — noting positive findings throughout.
 
@@ -730,8 +748,8 @@ Success: "✅ Review posted with 2 inline comments"
 **DO:**
 
 - Read PR description FIRST to understand author's intent and design choices
-- Read full changed files for context, not just diffs
-- Enforce reading 2-3 similar files to ground suggestions in existing patterns
+- review-code reads full changed files and 2-3 similar unchanged files — do not read files in the main agent
+- Construct "Key questions to investigate" before invoking review-code to make subagents domain-aware
 - Show existing reviews with resolution status (what was addressed vs still open)
 - Learn team standards from existing reviews (what they block on)
 - Skip formatting-only changes and non-reviewable files
