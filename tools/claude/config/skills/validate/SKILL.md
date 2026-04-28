@@ -16,7 +16,8 @@ model: opus
 
 ### Phase 1: Understand the Problem
 
-1. If the user did not specify what they want to discuss and you can't deduce it, ask them for that information
+1. If the user did not specify what they want to discuss and you can't deduce it, ask them for
+   that information
 2. If you are unclear what the user is asking you to validate, clarify until you're quite sure
 3. Once you understand the discussion topic, use as many subagents as you need to explore the
    problem definition and all relevant code paths and documentation and the changes you made
@@ -29,8 +30,11 @@ model: opus
    ideal way to achieve the intended goal
 2. Was the complete intention of the original task achieved?
 3. Have all edge cases been handled?
-4. Do all branches have well-designed automated tests?
-5. Have you manually tested every branch and seen evidence that everything is working correctly?
+4. Is the chosen approach as declarative and straightforward as it could be?
+5. Have domain concepts and their evolutions been optimally modelled using custom types?
+6. Do all branches have well-designed automated tests?
+7. Does every branch emit the necessary runtime evidence to support black box testing workloads
+   confirming all expected behaviour at runtime based on externally visible proof?
 
 ### Phase 3: Instrumentation Check
 
@@ -40,7 +44,7 @@ For user-facing or behavior-changing changes, verify that observability shipped 
 - [ ] **Baseline** — current value captured before the change?
 - [ ] **Expected direction & size** — e.g. +5% conversion, –20% latency
 - [ ] **Time horizon** — when will we check? (7 days? 30?)
-- [ ] **Guardrail metrics** — what must *not* get worse (error rate, adjacent funnels)?
+- [ ] **Guardrail metrics** — what must _not_ get worse (error rate, adjacent funnels)?
 - [ ] **How we'll read it** — A/B, before/after, cohort, or qualitative signal defined?
 
 If instrumentation was not shipped in the same change, flag it explicitly. "We'll add analytics

@@ -12,88 +12,78 @@ Protect users of this software by scrutinizing it closely before it ships. Focus
 
 ## Process
 
-**Work through ALL phases below in order.** Catch fundamental issues early (Phases 0-1), collect evidence silently (Phases 2-4), then present a synthesized, prioritized picture (Phase 5).
+**Work through ALL phases below in order.** Catch fundamental issues early (Phase 1), collect evidence silently (Phases 2-4), then present a synthesized, prioritized picture (Phase 5).
+
+**Context budget:** Your context window must last the full session — Phase 1 (lean survey), Phases 2-4 (subagents do all file reading), Phase 5 (synthesize subagent outputs), then one or more implementation rounds where the user asks you to fix approved items. Spend context at synthesis time, not during information gathering. If you exhaust your context before implementation begins, you become useless at the moment you're needed most.
 
 ---
 
-### Phase 0: Problem Validation
+### Phase 1: Understand & Survey
 
-Before diving into implementation details, understand the purpose:
+**CRITICAL: Do NOT read file contents in the main agent during this phase. All file reading happens inside review-code's 10 parallel agents (Phases 2-4). Reading files here exhausts your context before the review begins.**
 
-1. What user/developer pain point does this change address?
-2. Who experiences this problem?
-3. What outcome are they trying to achieve?
-4. Is this the simplest way to achieve that outcome?
-5. Could we solve the underlying need differently?
+**Gather fast signals only (no file reads):**
 
-**For bug fixes or small changes (<5 files, <100 lines), this can be brief.**
+1. Read commit messages: `git log <base>...HEAD --format="%s%n%b"` — intent and approach
+2. Run `git diff <base>...HEAD --stat` — changed files, directories, and scale
+3. Check trekker task list if available for linked requirements
 
-**Present to user:**
+**From those signals, present to user:**
 
-- The problem you understand this to solve
-- The outcome it's trying to achieve
-- Any simpler alternatives you can see to achieving that outcome
-- Whether this is a **one-way door** (costly to undo: public APIs, data schemas, core UX patterns)
-  or a **two-way door** (easily reversible)
+- **Problem:** what pain point this addresses and who experiences it
+- **Outcome:** what success looks like; any simpler alternative you can see
+- **Reversibility:** one-way door (data schemas, public APIs, core UX) or two-way door
+- **Change themes:** files grouped by directory/concern (feature logic, tests, migrations, config, etc.)
+- **Scale:** file count, rough line totals, number of commits
+- **Initial hypothesis:** any fundamental red flags visible from commit messages + file names alone (e.g., "Commit messages suggest this reimplements X that already exists", "File names suggest an approach that conflicts with pattern Z")
 
-**Ask for confirmation:** "Did I understand the problem and desired outcome correctly?"
+**Ask for confirmation:** "Did I understand the problem and approach correctly?"
 
-Wait for user response before proceeding to Phase 1.
+Wait for user response, then — regardless of what the user says — construct the context block below and proceed immediately to Phases 2-4.
 
----
+**Construct a structured context block for review-code** (do this after the user confirms, before invoking the skill):
 
-### Phase 1: Survey & Initial Hypothesis
+```
+Problem: [one sentence — what was broken or missing]
+Approach: [one sentence — how this change addresses it]
+Key outcomes: [bullet list — invariants, constraints, requirements the implementation must satisfy]
+Change themes: [bullet list — file groups and what each does]
+Key questions to investigate: [bullet list — specific risks or areas derived from commit messages,
+  e.g. "Migration rewrites rows in-place: check for partial-run safety and concurrent access",
+  "State machine is the TOCTOU guard: verify FOR UPDATE lock actually closes the window",
+  "New enum shares the DB table with old values: check all ORM→domain casts are validated"]
+Diff command: git diff <base>...HEAD
+```
 
-**Evidence gathering:**
+The "Key questions" section is the most important part — it transforms generic checklists into targeted, domain-aware reviews. Derive it from what the commit messages explicitly flag as risky or novel.
 
-1. List all files changed on this branch (vs main/master)
-2. **For large branches (>20 files):** Focus on highest-impact files, don't try to review everything
-3. Read each changed file to understand the implementation
-4. Read **2-3 similar/related unchanged files** to understand existing codebase patterns:
-   - How are similar problems solved elsewhere?
-   - What patterns exist for error handling, testing, naming, architecture?
-   - Are there utilities or abstractions already available?
-5. Identify what was implemented and how
-6. Categorize changes into themes (feature logic, tests, refactoring, etc.)
-7. **Form initial hypothesis:** Are there fundamental design issues that would require major rework?
-
-**Present to user:**
-
-- What you believe the original requirements/goals were
-- What was actually implemented
-- How changes are grouped thematically
-- What existing codebase patterns are relevant (from the 2-3 similar files you read)
-- **Initial hypothesis:** Any fundamental design issues? (e.g., "This reimplements functionality that exists in X", "This could be 3 lines using existing utility Y", "This approach conflicts with pattern Z used elsewhere")
-
-**Redesign scope boundary:** If a redesign would require touching >100 lines or >5 files, note it as design debt but don't block this PR. Focus on incremental improvements.
-
-**Checkpoint:** "Is there a fundamental design issue we should address before diving into detailed review? Or should I proceed with deep analysis?"
-
-Wait for user response. If fundamental redesign needed, discuss approach. Otherwise, continue to Phases 2-4.
+**Redesign scope boundary:** If a redesign would require touching >100 lines or >5 files, note it as design debt but don't block this PR.
 
 ---
 
 ### Phases 2-4: Deep Review
 
-**Use the Agent tool (general-purpose)** to run the `review-code` analysis. The agent's output is a private tool result — it does not appear in the conversation. Do not present the raw findings to the user. Consume them as input to Phase 5.
-
-Pass the agent:
+**Invoke Skill(review-code)**, passing:
 
 - **Files:** the changed files list from Phase 1
 - **How to read them:** local file paths (files are on disk)
-- **Context:** the problem statement and desired outcome from Phase 0; the change themes and initial hypothesis from Phase 1
-- **Instruction:** follow the `review-code` skill's analysis process:
-  1. **For each changed file, run `git diff <base>..HEAD -- <file>` first.** This is mandatory — it shows exactly what was added or removed regardless of file size. Never rely on reading a file top-to-bottom as a substitute, because large files (>500 lines) are silently truncated by the Read tool at 2000 lines and new code added near the end will be missed.
-  2. After reading the diff, read full file context: for files under 500 lines read the whole file; for larger files use the line numbers from the diff to read the changed sections with `offset`/`limit` parameters (include ~30 lines of context before and after each hunk).
-  3. Read 2-3 related unchanged files for pattern context.
-  4. Load relevant conventions skills, then perform correctness/performance/maintainability review noting positive findings throughout.
-  5. Return findings structured as Praise, Issues (Critical/Important/Minor), Questions, and Patterns Observed. For each Issue, verify it against the diff before reporting it — do not report a gap (e.g. "missing test") without checking the diff to confirm the gap actually exists.
+- **Context:** the problem statement, desired outcome, change themes, and initial hypothesis from Phase 1
+
+The `review-code` skill performs a full read of all changed files and 2-3 related unchanged files,
+loads relevant conventions, and runs correctness, performance, and maintainability analysis —
+noting positive findings throughout.
 
 ---
 
 ### Phase 5: Synthesis & Prioritization
 
-Map review-code's neutral findings to the branch review format and connect the dots:
+Map review-code's neutral findings to the branch review format and connect the dots.
+
+**Before organizing findings, calibrate them against your Phase 1 domain knowledge:**
+- Dismiss false positives that don't apply given the context (e.g., a "missing error handler" finding on code that intentionally propagates, a "performance concern" on a path that runs once per deploy)
+- Elevate findings that are especially risky given the domain constraints you identified (e.g., GxP audit trail gaps, migration safety, security boundaries, irreversible operations)
+- If a subagent finding contradicts something the commit messages explicitly addressed, note that the finding may be stale and flag it as low-confidence
+- Do NOT read any files to resolve ambiguity — if a finding is uncertain, report it with Low confidence and let the user decide
 
 **1. Root Cause Analysis**
 Look across all findings - **only if there IS a pattern:**
@@ -179,20 +169,22 @@ Recommend addressing: [A], [B], [C]
 Wait for user response before proceeding to implementation.
 
 **Before implementing:**
-Create beads task(s) for approved themes. See CLAUDE.md "Working in Small Steps".
+Create trekker task(s) for approved themes. See CLAUDE.md "Working in Small Steps".
 
 ---
 
 ### Phase 6: Completeness Check
 
-After the code quality review, verify the branch delivers on its goal:
+**Do NOT read any files in this phase.** Draw completeness conclusions entirely from what Phase 5's synthesis already contains.
 
-1. **Did the implementation achieve the stated goal?** Compare what was built to the problem from Phase 0.
-2. **Are edge cases handled?** Identify inputs, states, or sequences not covered by the happy path.
-3. **Is test coverage adequate?** All significant branches should have automated tests.
-4. **Has it been manually tested?** Run the actual codepath and observe the output — tests alone don't count.
+Ask yourself — from what the subagents reported:
 
-**Present to user:** A brief completeness verdict alongside Phase 5 — what's complete, what's missing.
+1. **Goal achieved?** Did the findings suggest the stated problem from Phase 1 is actually solved, or are there gaps that undercut it?
+2. **Edge cases?** Did any agent flag unhandled inputs, states, or sequences? If so, those are your completeness gaps.
+3. **Test coverage?** Did the test-quality agent surface missing cases on critical paths?
+4. **Manual validation?** Did any agent confirm or question whether the codepath was actually exercised end-to-end?
+
+**Present to user:** Two or three sentences alongside Phase 5 — what's demonstrably complete, and what (if anything) the review couldn't confirm. If the subagents didn't surface completeness concerns, say so and move on.
 
 ---
 
