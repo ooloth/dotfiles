@@ -42,7 +42,7 @@ trekker task update TREK-1 -s in_progress
 # THEN read files and implement
 ```
 
-## Writing Descriptions
+## Writing Descriptions (invoke `write-ticket-description` skill first)
 
 Descriptions are the primary context a future agent has. Focus on **intent, constraints, and validation** — not one specific implementation.
 
