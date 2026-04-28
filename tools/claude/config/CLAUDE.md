@@ -139,6 +139,10 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 - Be creative: run the CLI, hit the endpoint, trigger the event, eyeball the output; this sort of manually smoke testing is just as important as automated testing
 - If end-to-end execution is truly impossible, tell the user why and describe what they can do and what they should look for. Don't just silently skip validation.
 
+## Issue and Ticket Writing
+
+**NEVER create a GitHub issue, Jira task, Monday task, or Linear task without first invoking the `write-ticket-description` skill.**
+
 ## Skill Feedback
 
 After invoking any skill, mention any friction or gaps you noticed — a misleading instruction, an ambiguity that cost time, or anything else you learned that would help a future agent. Report it clearly after completing the skill's task. Skip if execution went smoothly.
