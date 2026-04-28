@@ -128,6 +128,8 @@ review-code performs a full read of all changed files and 2-3 related unchanged 
 
 **Output:** "✓ Completed review analysis"
 
+**CRITICAL: After review-code produces the neutral schema, do NOT stop. Immediately proceed to Phase 5 and write the full formatted PR review in the same response. The neutral schema is an intermediate artifact — the user should see only the Phase 5 output.**
+
 ---
 
 ### Phase 5: Present Review

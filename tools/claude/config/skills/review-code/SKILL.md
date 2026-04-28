@@ -73,6 +73,8 @@ Send a single message containing all 10 Agent tool calls simultaneously. Pass ea
 ```
 Run the test suite for the changed files listed below and report results.
 
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+
 Context:
 [insert synthesized intent block]
 
@@ -95,6 +97,8 @@ Instructions:
 
 ```
 Review the changed files for correctness issues.
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -125,6 +129,8 @@ Skip theoretical what-ifs — report actual problems in the code.
 
 ```
 Review the changed files for security issues.
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -157,6 +163,8 @@ If no issues found, report "No security concerns identified."
 ```
 Review the changed files for performance issues.
 
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+
 Context:
 [insert synthesized intent block]
 
@@ -188,6 +196,8 @@ If no issues found, report "No performance concerns identified."
 
 ```
 Review the test coverage and quality for the changed files.
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -241,6 +251,8 @@ If coverage is appropriate, report "Test coverage is appropriate and behavior-fo
 ```
 Review the changed files for observability and documentation gaps.
 
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+
 Context:
 [insert synthesized intent block]
 
@@ -276,6 +288,8 @@ If no gaps found, report "No observability or documentation gaps identified."
 
 ```
 Review the changed files for dependency and deployment concerns.
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -315,6 +329,8 @@ If no concerns found, report "No dependency or deployment concerns identified."
 
 ```
 Review the changed files for design quality and expressiveness.
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -359,6 +375,8 @@ For each issue: file:line | what's wrong | specific alternative
 ```
 Review the changed files for readability and simplicity.
 
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+
 Context:
 [insert synthesized intent block]
 
@@ -402,6 +420,8 @@ If the code is appropriately simple, report "Code complexity is proportionate to
 
 ```
 Review the changed files for style and consistency.
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
