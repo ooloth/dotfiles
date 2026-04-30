@@ -1,0 +1,5 @@
+computer_name = `networksetup -getcomputername`.chomp
+
+if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
+  brew "argocd"
+end
