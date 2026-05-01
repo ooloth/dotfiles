@@ -12,7 +12,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 2. Gather changes: `git log main..HEAD --oneline` and `git diff main...HEAD --stat`
 3. Ask user for: Jira URL, Slack thread, screen recording (if UI)
 4. Draft using voice rules below
-5. Create PR: `gh pr create --draft --title "..." --body "..."`
+5. Write body to `/tmp/pr-body.md`, then: `gh pr create --draft --title "..." --body-file /tmp/pr-body.md`
 
 ---
 
@@ -133,11 +133,13 @@ allowed-tools: [Bash, Read, Glob, Grep]
 # Check for related issues
 gh issue list --state open
 
-# Create draft PR
-gh pr create --draft --title "Title" --body "$(cat <<'EOF'
+# Write body to a file first — avoids escaped backticks mangling inline code in the GitHub UI
+cat > /tmp/pr-body.md << 'EOF'
 [PR body here]
 EOF
-)"
+
+# Create draft PR
+gh pr create --draft --title "Title" --body-file /tmp/pr-body.md
 
 # View PR
 gh pr view --web
