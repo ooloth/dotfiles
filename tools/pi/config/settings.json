@@ -4,7 +4,7 @@
   "defaultThinkingLevel": "high",
   "enableSkillCommands": true,
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.67.3",
+  "lastChangelogVersion": "0.70.0",
   "packages": [
     "npm:@victor-software-house/pi-curated-themes"
   ],
