@@ -11,14 +11,14 @@ model: opus
 
 Identify what to review and the exact diff command to pass agents.
 
-| Argument | File list | Diff command |
-|---|---|---|
-| PR number or URL | `gh pr diff <n> --name-only` | `gh pr diff <n>` |
-| Branch name | `git diff <branch>...HEAD --name-only` | `git diff <branch>...HEAD` |
-| File path(s) | use provided paths | `git diff HEAD -- <files>` |
-| None, on feature branch | `git diff main...HEAD --name-only` | `git diff main...HEAD` |
-| None, on main, staged | `git diff --staged --name-only` | `git diff --staged` |
-| None, on main, nothing staged | — | ask: "What would you like me to review?" |
+| Argument                      | File list                              | Diff command                             |
+| ----------------------------- | -------------------------------------- | ---------------------------------------- |
+| PR number or URL              | `gh pr diff <n> --name-only`           | `gh pr diff <n>`                         |
+| Branch name                   | `git diff <branch>...HEAD --name-only` | `git diff <branch>...HEAD`               |
+| File path(s)                  | use provided paths                     | `git diff HEAD -- <files>`               |
+| None, on feature branch       | `git diff main...HEAD --name-only`     | `git diff main...HEAD`                   |
+| None, on main, staged         | `git diff --staged --name-only`        | `git diff --staged`                      |
+| None, on main, nothing staged | —                                      | ask: "What would you like me to review?" |
 
 Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with `git symbolic-ref --short HEAD`.
 
@@ -462,31 +462,44 @@ Collect all agent results. Focus on the 3–5 most impactful issues per severity
 ```
 ## Code Review
 
+### Verdict: [Approve | Request Changes | Comment]
+[One sentence on what to do next]
+
 ### What's Working Well
-- [file:line] [specific praise grounded in actual code]
-
-### Issues
-
-#### Must Fix
-- [file:line] | [what's wrong] | Impact: [concrete consequence] | Fix: [specific approach] | Confidence: High
-
-#### Should Fix
-- [file:line] | [what's wrong] | Impact: [concrete consequence] | Fix: [specific approach] | Confidence: High/Medium
-
-#### Consider
-- [file:line] | [observation or suggestion] | Confidence: Medium/Low
-
-### Open Questions
-- [file:line] | [genuine uncertainty or design alternative worth discussing]
+- `file:line` — [specific praise grounded in actual code]
 
 ### All Clear
 - [Agent name]: [one-line summary — e.g. "no issues found" or "12 tests passed"]
 
-### Verdict: [Approve | Request Changes | Comment]
-[One sentence on what to do next]
+### Issues
+
+#### Must Fix
+
+1. `file:line` — [what's wrong; why it matters]
+   - (a) [recommended fix]
+   - (b) [alternative if meaningfully different]
+
+#### Should Fix
+
+2. `file:line` — [what's wrong; why it matters]
+   - (a) [recommended fix]
+   - (b) [alternative if meaningfully different]
+
+#### Consider
+
+3. `file:line` — [observation or suggestion]
+   - (a) [one approach]
+   - (b) [another approach]
+
+### Open Questions
+
+4. `file:line` — [genuine uncertainty or design decision]
+   - (a) [one path and its tradeoff]
+   - (b) [another path and its tradeoff]
 ```
 
 **Verdict mapping:**
+
 - **Approve** — no Must Fix issues; Should Fix and Consider items are optional
 - **Request Changes** — one or more Must Fix issues present
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
@@ -500,8 +513,9 @@ After presenting findings, ask:
 > "Post this as a GitHub review? (yes / approve / request-changes / comment / skip)"
 
 On any answer other than "skip":
+
 - Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE; request-changes → REQUEST_CHANGES; comment → COMMENT
-- Write a 2–3 sentence overall summary for the review body
+- Write a 2–3 sentence overall summary for the review body in a friendly tone
 - Collect every finding that has a `file:line` reference as an inline comment
 - Run:
 
@@ -510,7 +524,8 @@ python3 <skill-base-dir>/scripts/post_review.py <pr-number> <EVENT> "<summary>" 
 ```
 
 **Tone for inline comment bodies:** Write as a curious teammate, not an auditor.
-- Lead with an observation or question, not a directive: "I wonder if this could return `None` when the list is empty?" rather than "Handle the empty case."
+
+- Lead with an observation or question, not a directive: "Could this return `None` when the list is empty?" rather than "Handle the empty case."
 - Show concrete impact with a brief example: "If `token` expires between the check and the refresh, this would issue a new token for an expired session."
-- Acknowledge tradeoffs where they exist: "This works well for current scale — if we ever fan out to multiple instances, we'd want a shared cache here."
-- Praise specifically and genuinely: "Nice — using a `dataclass` here makes the shape obvious without extra boilerplate."
+- Acknowledge trade-offs where they exist: "This works well at our current scale — if we ever fan out to multiple instances, we'd likely want a shared cache here."
+- Praise specifically and genuinely: "Nice! Using a `dataclass` here makes the shape obvious without extra boilerplate."
