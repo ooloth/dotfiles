@@ -57,6 +57,10 @@ allowed-tools: [Bash, Read, Glob, Grep]
 ## Done when
 
 [One-line bar: the minimum condition for this issue to be closeable.]
+
+## Depends on
+
+[Optional. List issues that must be complete before this one can start, with a one-line reason each is a hard prerequisite. Omit if no hard dependencies exist.]
 ```
 
 ---
@@ -105,6 +109,12 @@ allowed-tools: [Bash, Read, Glob, Grep]
 - One sentence
 - States the minimum bar, not the ideal
 - Phrased as a condition: "when X is true" or "once X works"
+
+### Depends on
+
+- List only hard prerequisites — issues this cannot start without, not issues it would merely benefit from coming after
+- One line per dependency: issue reference + why it blocks
+- Omit entirely if no hard dependencies exist
 
 ---
 

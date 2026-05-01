@@ -274,8 +274,6 @@ these would turn future escalations into auto-fixes and prevent the same issues 
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
 
-```
-
 ---
 
 ## Guardrails
@@ -288,4 +286,7 @@ All changes are uncommitted. Run `git diff` to review before committing.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
 - **Decided list** — never re-present a finding the coordinator has already classified.
+
+```
+
 ```
