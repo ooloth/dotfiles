@@ -1,29 +1,26 @@
 ---
 name: review-code
-description: Core code analysis engine shared by review-pr and review-branch. Determines scope, launches 10 parallel specialized agents, and merges findings into a neutral output for the calling skill to format. Invoke directly for ad-hoc analysis when you want raw findings without branch or PR ceremony — specify which files to analyze as the argument.
-argument-hint: '[file paths or description of what to analyze]'
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 10 parallel specialized agents, and presents actionable findings with a verdict. For PR scope, optionally posts the review to GitHub with inline comments.
+argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob
 effort: high
 model: opus
 ---
 
-## Your role
-
-Orchestrate a parallel code review. Determine scope, launch all 10 agents simultaneously, then merge their findings into neutral structured output for the calling skill to format.
-
 ## Step 1: Determine scope
 
-Identify changed files and determine the exact diff command for agents to use:
+Identify what to review and the exact diff command to pass agents.
 
-| Situation | File list command | Diff command for agents |
+| Argument | File list | Diff command |
 |---|---|---|
-| PR branch | `gh pr diff --name-only` | `gh pr diff` |
-| Feature branch | `git diff main...HEAD --name-only` | `git diff main...HEAD` |
-| Main, staged changes | `git diff --staged --name-only` | `git diff --staged` |
-| Main, nothing staged | `git diff HEAD~1 --name-only` | `git diff HEAD~1` |
-| File paths provided | use the provided paths | `git diff HEAD -- <files>` |
+| PR number or URL | `gh pr diff <n> --name-only` | `gh pr diff <n>` |
+| Branch name | `git diff <branch>...HEAD --name-only` | `git diff <branch>...HEAD` |
+| File path(s) | use provided paths | `git diff HEAD -- <files>` |
+| None, on feature branch | `git diff main...HEAD --name-only` | `git diff main...HEAD` |
+| None, on main, staged | `git diff --staged --name-only` | `git diff --staged` |
+| None, on main, nothing staged | — | ask: "What would you like me to review?" |
 
-Substitute the actual base ref (main, master, trunk) where needed.
+Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with `git symbolic-ref --short HEAD`.
 
 **Skip non-reviewable files:**
 
@@ -34,29 +31,35 @@ Substitute the actual base ref (main, master, trunk) where needed.
 - Binary files
 - Formatting-only changes (whitespace/style only)
 
-Output the reviewable file list and the diff command before launching agents.
+**For PR scope — fetch PR context before Step 2:**
+
+```bash
+gh pr view <n> --json title,body,number
+```
+
+Store the title and body for use in Step 2. Store the PR number for Step 5.
+
+Output the reviewable file list and diff command before proceeding.
 
 ## Step 2: Synthesize intent
 
-Before launching agents, build a clear picture of what this change is trying to accomplish. Every agent receives this context so they can evaluate completeness, flag missing invariants, and avoid false positives on things that are working as intended.
+Build a context block that every agent receives. Gather from these sources in priority order:
 
-Gather from all available sources in this priority order:
+1. **PR title and body** — from Step 1 fetch (if PR scope)
+2. **Linked issues** — if the PR body references issue numbers, fetch with `gh issue view <n>`
+3. **Commit messages** — `git log <base>...HEAD --format="%s%n%b"`
+4. **The diff itself** — read for intent when other sources are thin
 
-1. **PR description and title** — `gh pr view --json title,body` (if on a PR branch)
-2. **Linked issues** — if the PR body references issue numbers, fetch them with `gh issue view <n>`
-3. **Commit messages** — `git log main...HEAD --format="%s%n%b"` (or equivalent base ref)
-4. **The diff itself** — read it for intent signal when other sources are thin or absent
-
-Synthesize everything into a single crisp block. Do not transcribe raw source text — extract and clarify:
+Synthesize into a single crisp block:
 
 ```
 Problem: [what's broken, missing, or needed — and why it matters]
 Approach: [how this change addresses it, at a high level]
-Key outcomes: [what success looks like; invariants, constraints, or requirements the implementation must satisfy]
+Key outcomes: [invariants, constraints, or requirements the implementation must satisfy]
 Diff command: [exact command agents should run to read the diff]
 ```
 
-**Enhance if needed:** if the raw sources are vague, incomplete, or contradictory, read the diff and fill in the gaps yourself. Never leave this block generic ("various improvements") or empty. The agents depend on it to evaluate completeness and flag gaps.
+Enhance if needed: if raw sources are vague, read the diff and fill in the gaps. Never leave this block generic ("various improvements") or empty.
 
 ## Step 3: Launch all 10 agents in parallel
 
@@ -452,40 +455,62 @@ If style is consistent, report "No style or consistency issues identified."
 
 ---
 
-## Step 4: Merge findings
+## Step 4: Present findings
 
-Collect all agent results. Map each finding to the neutral output schema:
-
-- **Critical** — correctness bugs, security vulnerabilities, failing tests, broken behavior
-- **Important** — performance problems, test gaps on critical paths, significant design issues, deployment risks
-- **Minor** — style, readability, small simplifications, documentation gaps
-- **Questions** — genuine design uncertainties worth discussing
-- **Praise** — good patterns, clever solutions, thorough tests, clear naming
-
-Focus on 3-5 most impactful issues per severity level. Agents with no findings get a single collapsed line (e.g. `- Security: no issues found`) rather than being omitted or expanded.
+Collect all agent results. Focus on the 3–5 most impactful issues per severity tier; collapse agents with no findings to a single line.
 
 ```
-## Code Analysis Findings
+## Code Review
 
-### Praise
-- [file:line] [what's good and why, grounded in actual code]
+### What's Working Well
+- [file:line] [specific praise grounded in actual code]
 
 ### Issues
 
-#### Critical
-- [file:line] | [what's wrong] | Impact: [concrete impact with example] | Fix: [specific approach with code] | Test cases: [exact scenarios] | Confidence: High
+#### Must Fix
+- [file:line] | [what's wrong] | Impact: [concrete consequence] | Fix: [specific approach] | Confidence: High
 
-#### Important
-- [file:line] | [what's wrong] | Impact: [concrete impact] | Fix: [specific approach] | Confidence: High/Medium
+#### Should Fix
+- [file:line] | [what's wrong] | Impact: [concrete consequence] | Fix: [specific approach] | Confidence: High/Medium
 
-#### Minor
-- [file:line] | [what's wrong] | Fix: [specific approach] | Confidence: Medium/Low
+#### Consider
+- [file:line] | [observation or suggestion] | Confidence: Medium/Low
 
-### Questions
-- [file:line] | [genuine uncertainty or alternative worth discussing]
+### Open Questions
+- [file:line] | [genuine uncertainty or design alternative worth discussing]
 
-### Patterns Observed
-- [pattern that should inform how fixes and suggestions are expressed]
+### All Clear
+- [Agent name]: [one-line summary — e.g. "no issues found" or "12 tests passed"]
+
+### Verdict: [Approve | Request Changes | Comment]
+[One sentence on what to do next]
 ```
 
-The calling skill (`review-pr` or `review-branch`) formats these findings for its specific audience. When invoked directly, present findings as-is.
+**Verdict mapping:**
+- **Approve** — no Must Fix issues; Should Fix and Consider items are optional
+- **Request Changes** — one or more Must Fix issues present
+- **Comment** — open questions or suggestions worth discussing, nothing blocking
+
+## Step 5: Post review (PR scope only)
+
+A helper script lives at `scripts/post_review.py` relative to this skill's base directory (shown at the top of this skill's content as "Base directory for this skill: ...").
+
+After presenting findings, ask:
+
+> "Post this as a GitHub review? (yes / approve / request-changes / comment / skip)"
+
+On any answer other than "skip":
+- Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE; request-changes → REQUEST_CHANGES; comment → COMMENT
+- Write a 2–3 sentence overall summary for the review body
+- Collect every finding that has a `file:line` reference as an inline comment
+- Run:
+
+```bash
+python3 <skill-base-dir>/scripts/post_review.py <pr-number> <EVENT> "<summary>" "<file>:<line>:<body>" ...
+```
+
+**Tone for inline comment bodies:** Write as a curious teammate, not an auditor.
+- Lead with an observation or question, not a directive: "I wonder if this could return `None` when the list is empty?" rather than "Handle the empty case."
+- Show concrete impact with a brief example: "If `token` expires between the check and the refresh, this would issue a new token for an expired session."
+- Acknowledge tradeoffs where they exist: "This works well for current scale — if we ever fan out to multiple instances, we'd want a shared cache here."
+- Praise specifically and genuinely: "Nice — using a `dataclass` here makes the shape obvious without extra boilerplate."
