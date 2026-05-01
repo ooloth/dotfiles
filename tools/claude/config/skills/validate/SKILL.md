@@ -28,13 +28,17 @@ model: opus
 
 1. After thoroughly understanding the problem and current solution, compare what you see to the
    ideal way to achieve the intended goal
-2. Was the complete intention of the original task achieved?
-3. Have all edge cases been handled?
+2. Was the complete intention of the original task achieved? What evidence proves that?
+3. Have all edge cases been handled? What evidence proves that?
 4. Is the chosen approach as declarative and straightforward as it could be?
 5. Have domain concepts and their evolutions been optimally modelled using custom types?
-6. Do all branches have well-designed automated tests?
+6. Do all branches have well-designed automated tests? Do the tests we have prove this change
+   introduces no regressions vs what choices the codebase makes and what side effects it emits
+   on the default branch down every relevant logical branch?
 7. Does every branch emit the necessary runtime evidence to support black box testing workloads
-   confirming all expected behaviour at runtime based on externally visible proof?
+   confirming all expected behaviour at runtime based on externally visible proof (i.e. assuming
+   automated tests simulating runtime scenarios don't count)?
+8. If my team says "prove this does not break anything", what can we show them?
 
 ### Phase 3: Instrumentation Check
 
