@@ -1,6 +1,6 @@
 ---
 name: discuss
-description: Plan how to best implement a solution, focusing on deeply understanding the problem and intended outcomes. TRIGGER whenever the user has a task they want you to work on.
+description: Plan an implementation before acting. TRIGGER for ambiguous tasks, design discussions, multi-step work, risky changes, or when the user asks a question before implementation.
 argument-hint: '[task number or description]'
 effort: high
 model: opus
@@ -12,48 +12,58 @@ model: opus
 
 ## Your task
 
-### Phase 0: Load Conventions
+This is a discussion/planning skill. Do not make side-effecting changes while using it: no edits,
+writes, mutating shell commands, commits, posted comments, or ticket creation. Read-only exploration
+is allowed when needed.
 
-Before exploring the problem, load the conventions that will govern the implementation:
+### Phase 0: Decide Depth
 
-1. List `~/.claude/conventions/` and the project's documented conventions and invariants (if they exist)
-2. Based on the task description and likely file types involved, load the relevant convention files
-3. If the task scope is unclear, load all of them — it's cheaper to load too many than to miss one
+Classify the task before exploring:
 
-These are the criteria the implementation will be evaluated against. Having them in context now
-means the plan you propose will already respect them, and the implementation agent will inherit
-that awareness rather than discovering violations at review time.
+| Depth                    | Use when                                                                                                  | Behavior                                                     |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Trivial / clear**      | The desired change and implementation path are obvious                                                    | Answer directly; ask at most one blocking question           |
+| **Ambiguous**            | The goal, scope, or acceptance criteria are unclear                                                       | Clarify intent, then propose a plan                          |
+| **Multi-step**           | The work spans files, domains, tests, migrations, or multiple commits                                     | Explore relevant paths and propose slices                    |
+| **Risky / one-way-door** | Public APIs, data schemas, pricing, security, irreversible data changes, or core UX patterns are involved | Explore deeply and require explicit sign-off on the decision |
 
-### Phase 1: Discuss the Problem
+Scale investigation to the classification. Do not turn small tasks into heavyweight planning.
 
-1. If the user did not specify what they want to discuss, ask them for that information
-2. If you are unclear what the user is asking, clarify until you're quite sure
-3. Once you understand the discussion topic, use as many subagents as you need to explore all
-   relevant code paths and documentation
-4. Proactively answer every question and follow-up question that occurs to you by exploring the
-   codebase and anything else that would help you
-5. If the task (or topic) idea seems stale or otherwise a poor fit for the current codebase and
-   docs, proactively investigate whatever would help you and the user decide whether this work
-   should be redefined, skipped, etc
-6. Once you are as informed as you can be by exploring on your own, have a discussion with the user
-   and grill them about every requirement and intended outcome that is not already obvious
+### Phase 1: Load Context Progressively
 
-### Phase 2: Discuss the Solution
+1. List `~/.claude/conventions/` and the project's documented conventions and invariants when they
+   may affect the plan.
+2. Load `agents.md` plus only the convention files that are obviously relevant to the task.
+3. Load additional convention files only when the investigation shows they matter.
+4. If the task scope is still unclear, prefer asking a clarifying question over loading every file.
 
-1. After thoroughly understanding the goal, discuss the ideal way to achieve it in the context of
-   this project and its domain
-2. For every non-trivial decision, name the tradeoffs explicitly before grilling the user — frame
-   options as "optimize for X vs Y", not "right vs wrong":
+### Phase 2: Understand Intent
 
-   | Dimension | Question |
-   |---|---|
-   | **Value** | What outcome does this unlock? |
-   | **Cost** | Time, complexity, ongoing maintenance |
-   | **Risk** | What breaks if we're wrong? Who pays? |
+1. If the user did not specify what they want to discuss, ask them for that information.
+2. If the user asked a question, answer the question before proposing implementation.
+3. Use read-only exploration and subagents only as needed to understand the current code, docs,
+   constraints, and likely impact.
+4. If the idea seems stale or poorly matched to the current codebase, investigate enough to help the
+   user decide whether to redefine, defer, or skip it.
+5. Ask only questions that block a correct plan. For two-way-door decisions, recommend a default and
+   move on instead of making the user decide everything.
+
+### Phase 3: Design the Solution
+
+1. Recommend the simplest approach that achieves the intended outcome. Push back on unnecessary
+   scope, abstractions, configurability, or compatibility work.
+2. For non-trivial decisions, name tradeoffs explicitly — frame options as "optimize for X vs Y",
+   not "right vs wrong":
+
+   | Dimension       | Question                                  |
+   | --------------- | ----------------------------------------- |
+   | **Value**       | What outcome does this unlock?            |
+   | **Cost**        | Time, complexity, ongoing maintenance     |
+   | **Risk**        | What breaks if we're wrong? Who pays?     |
    | **Alternative** | What did we consider and reject, and why? |
 
 3. Flag reversibility for each significant decision:
-   - **Two-way door** (easily reversible) — decide fast, move on
+   - **Two-way door** (easily reversible) — recommend a default, decide fast, and move on.
    - **One-way door** (costly to undo: public APIs, data schemas, pricing, core UX patterns users
      learn) — requires explicit sign-off; include an ADR-lite entry in the plan:
 
@@ -66,7 +76,26 @@ that awareness rather than discovering violations at review time.
    Revisit trigger: [metric / date / condition that reopens this]
    ```
 
-4. Grill the user about every implementation decision that does not already have an obvious answer
-5. Proactively recommend whether the implementation is best suited to a single PR vs multiple
-   stacked PRs vs multiple parallel PRs
-6. Present the full plan to the user and wait for their explicit approval before you act
+4. Recommend whether the implementation belongs in one small change, multiple stacked changes, or
+   multiple parallel changes.
+5. Define how each implementation slice will be validated, including manual/end-to-end evidence or
+   why end-to-end validation is impossible.
+
+### Phase 4: Present the Plan and Stop
+
+End with a concrete plan artifact:
+
+1. **Understanding** — what the user wants and any assumptions
+2. **Findings** — relevant code/docs/current-state facts discovered
+3. **Recommendation** — preferred approach and why
+4. **Open decisions** — only decisions that block correct implementation
+5. **Implementation plan** — small, commit-worthy slices and PR strategy
+6. **Validation plan** — checks, tests, and manual/runtime evidence for each slice
+7. **Approval request** — ask the user to explicitly approve implementation
+
+If the user answers clarifying questions, incorporate the answers, present the full plan, and stop
+again for explicit approval. Do not treat answers to questions as implementation approval.
+
+When the user explicitly approves implementation, the next implementation agent must create or
+update a Trekker task before reading or writing implementation files, then proceed with the first
+small slice.
