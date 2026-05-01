@@ -1,18 +1,24 @@
 {
-  "defaultModel": "claude-opus-4-6",
-  "defaultProvider": "anthropic",
+  "defaultModel": "gpt-5.5",
+  "defaultProvider": "openai-codex",
   "defaultThinkingLevel": "high",
   "enableSkillCommands": true,
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.70.0",
+  "lastChangelogVersion": "0.71.0",
   "packages": [
+    {
+      "source": "git:github.com/mitsuhiko/agent-stuff@main",
+      "extensions": ["extensions/answer.ts", "extensions/review.ts"],
+      "skills": [],
+      "prompts": [],
+      "themes": []
+    },
     "npm:@victor-software-house/pi-curated-themes"
   ],
   "prompts": [],
   "quietStartup": false,
   "shellCommandPrefix": "export PATH=\"$HOME/.bun/bin:$PATH\"\nshopt -s expand_aliases\neval \"$(grep '^alias ' ~/.zshrc)\"",
-  "skills": [
-    "~/.claude/skills"
-  ],
+  "skills": ["~/.claude/skills"],
   "theme": "catppuccin-mocha"
 }
+
