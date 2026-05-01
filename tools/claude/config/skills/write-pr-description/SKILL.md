@@ -24,6 +24,8 @@ allowed-tools: [Bash, Read, Glob, Grep]
 2. **User-centric framing** - What problem does this solve for users?
 3. **Show, don't tell** - Screen recordings > paragraphs of text
 4. **Practical validation** - Teach reviewers like a tutorial
+5. **Approachable** - A new junior teammate should be able to easily understand all "What" and "Why" phrasing choices
+6. **Clear** - A senior tech lead teammate should find each "Why" bullet relevant and clarifying
 
 ### Conciseness Rules
 
