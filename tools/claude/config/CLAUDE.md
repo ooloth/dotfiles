@@ -121,8 +121,8 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
    - **What you ran and what you observed** (e.g. "ran X, saw Y in the output")
    - **Why end-to-end execution is impossible here** and what the user should run and look for instead
      Omitting this section is not allowed. "Tests pass" is not a substitute.
-5. STOP. Write a status report. **Your response must end there — no git commands, no commit skill, no "let me commit this", no tool calls that advance the work.** The report is the deliverable for this step. Committing is the user's action, not yours. The only valid signal to commit is the user explicitly saying "commit" or invoking `/commit`. Prior approvals do not carry forward to committing — even if the work is fully done and tested. (Commands that commit as part of their designed operation — e.g. an autonomous loop — are approved when the user approves the run.) **Each commit requires its own signal. Approval to implement a batch of changes is not approval to commit each one as you go — those are two separate gates.**
-6. Wait for the user to review and commit (or explicitly ask you to commit). Phrases like "committed", "done", or "commit" are your signal to proceed to the next change.
+5. Write a status report. **Do not commit without an explicit user signal** ("commit", "/commit", etc.) — prior approvals do not carry forward to commits, and each commit requires its own signal. (Commits that are part of an autonomous loop are approved when the user approves the run.)
+6. When you receive a commit signal, commit via `/commit`. After committing, you may continue implementing the next approved task — but stop and write another status report before committing anything further.
 7. Repeat for the remaining changes
 8. When all changes committed → close the task:
    ```bash
