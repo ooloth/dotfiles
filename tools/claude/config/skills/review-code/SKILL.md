@@ -351,10 +351,10 @@ If no issues found, report "No security concerns identified."
 
 ---
 
-### Agent 8: Performance
+### Agent 8: Operational Health
 
 ```
-Review the changed files for performance issues.
+Review the changed files for performance and observability concerns.
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -367,9 +367,9 @@ Changed files:
 Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 2. Run the diff command from Context to read what changed, then read surrounding context.
-3. Check how similar operations are handled in unchanged files.
+3. Check how similar operations are handled in unchanged files — both for performance patterns and existing logging/metrics conventions.
 
-Review for:
+Performance:
 - N+1 queries or repeated fetches inside loops
 - Blocking operations in async contexts
 - Missing memoization or caching where appropriate
@@ -378,17 +378,25 @@ Review for:
 - Expensive operations in hot paths (per-request, per-item, per-frame)
 - Algorithmic inefficiency (O(n²) where O(n) is straightforward)
 
+Observability:
+- Does new behavior have corresponding logging, metrics, or analytics?
+- Are new error paths surfaced (logged, tracked) or silently swallowed?
+- Were existing logging or tracing calls changed or removed — is that intentional?
+- If this fails in production, how would we know? Is the failure diagnosable from logs alone?
+- Are log messages at appropriate levels with enough context to act on?
+
 For each issue: file:line | what's wrong | concrete impact | specific fix
-Only report actual problems. Do not report theoretical micro-optimizations.
-If no issues found, report "No performance concerns identified."
+Only report actual problems, not theoretical micro-optimizations.
+If no issues found, report "No operational health concerns identified."
 ```
 
 ---
 
-### Agent 9: Observability
+### Agent 9: Documentation
 
 ```
-Review the changed files for observability gaps.
+Review whether the changed code is properly documented — check for stale docs and missing docs,
+including .md files, diagrams, help text, docstrings, and code comments.
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -399,19 +407,29 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed.
-3. Check existing logging, metrics, and tracing patterns in related files.
+1. Run the diff command from Context to read what changed.
+2. Find all documentation that could be affected:
+   - All .md files: `find . -name "*.md" -not -path "*/node_modules/*" -not -path "*/.git/*"`
+   - Diagrams: look for .svg, .png, .drawio, .mermaid, or docs/diagrams/ directories
+   - Docstrings and help text in changed source files
+   - Code comments in changed files and closely related unchanged files
+3. Read the docs most likely to describe the changed behavior.
 
-Review for:
-- Does new behavior have corresponding logging, metrics, or analytics?
-- Are new error paths surfaced (logged, tracked) or silently swallowed?
-- Were existing logging or tracing calls changed or removed — is that intentional?
-- If this fails in production, how would we know? Is the failure diagnosable from logs alone?
-- Are log messages at appropriate levels with enough context to act on?
+Stale docs:
+- Do existing .md files, diagrams, or help text describe behavior that was changed or removed?
+- Are examples, command signatures, config keys, flags, or APIs in the docs now wrong?
+- Are there code comments in changed files that no longer accurately describe what the code does?
 
-For each issue: file:line | what's wrong | specific fix
-If no gaps found, report "No observability gaps identified."
+Missing docs:
+- Is new behavior, a new flag, a new API, or a new config option undocumented in any .md or help text?
+- For public-facing interfaces: is there a docstring or equivalent describing what it does, its inputs, and its outputs?
+- For non-obvious code: is there a comment explaining WHY — a hidden constraint, a subtle invariant, a workaround, behavior that would surprise a reader? (Don't flag missing comments for self-explanatory code.)
+
+Changelogs:
+- Does the project maintain a changelog? If so, does this change warrant an entry that isn't there?
+
+For each issue: file:line | what's stale or missing | specific fix
+If docs are complete and accurate, report "Documentation is up to date."
 ```
 
 ---
