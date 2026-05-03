@@ -78,8 +78,8 @@ Scale investigation to the classification. Do not turn small tasks into heavywei
 
 4. Recommend whether the implementation belongs in one small change, multiple stacked changes, or
    multiple parallel changes.
-5. Define how each implementation slice will be validated, including manual/end-to-end evidence or
-   why end-to-end validation is impossible.
+5. Define how each implementation slice will be validated, including live execution evidence (what
+   you ran, what you observed) or why live execution is impossible.
 
 ### Phase 4: Present the Plan and Stop
 
@@ -90,7 +90,7 @@ End with a concrete plan artifact:
 3. **Recommendation** — preferred approach and why
 4. **Open decisions** — only decisions that block correct implementation
 5. **Implementation plan** — small, commit-worthy slices and PR strategy
-6. **Validation plan** — checks, tests, and manual/runtime evidence for each slice
+6. **Validation plan** — checks, tests, and live execution evidence for each slice
 7. **Approval request** — ask the user to explicitly approve implementation
 
 If the user answers clarifying questions, incorporate the answers, present the full plan, and stop

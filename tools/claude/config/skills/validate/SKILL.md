@@ -35,9 +35,8 @@ model: opus
 6. Do all branches have well-designed automated tests? Do the tests we have prove this change
    introduces no regressions vs what choices the codebase makes and what side effects it emits
    on the default branch down every relevant logical branch?
-7. Does every branch emit the necessary runtime evidence to support black box testing workloads
-   confirming all expected behaviour at runtime based on externally visible proof (i.e. assuming
-   automated tests simulating runtime scenarios don't count)?
+7. Can the expected behaviour of every branch be confirmed from the outside — by running the real
+   system and observing its output — without relying on automated tests?
 8. If my team says "prove this does not break anything", what can we show them?
 
 ### Phase 3: Instrumentation Check
