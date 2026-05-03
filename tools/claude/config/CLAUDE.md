@@ -149,7 +149,11 @@ After invoking any skill, mention any friction or gaps you noticed — a mislead
 
 ## Available CLI tools
 
-- `tmux` - consider running background jobs in a named `tmux` window (e.g. `tmux new-window -n "dev-server" "npm run dev"`) instead of using `run_in_background` or `&`
+- `tmux` - use for background jobs (`tmux new-window -n "dev-server" "npm run dev"`) instead of
+  `run_in_background` or `&`. Also use to test interactive programs (TUIs, REPLs): run them in
+  a named window, drive them with `tmux send-keys -t <window> "<key>" ""`, and read the screen
+  with `tmux capture-pane -t <window> -p`. This is often the only way to visually verify an
+  interactive program without asking the user to do it.
 - `rg` - consider using instead of `grep`
 - `fd` - consider using instead of `find`
 - `sd` - consider using instead of `sed`
