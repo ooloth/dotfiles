@@ -76,6 +76,10 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
   details only entering the conversation
 
+## Clarify, Don't Plan
+
+When a task is ambiguous or has multiple valid approaches, do NOT enter plan mode. Instead, ask questions. Only enter plan mode if the user explicitly asks for it.
+
 ## Explicitly Confirm You Should Act (Especially After Questions)
 
 If the user's message contains a `?`, "can we", "should we", "what if", "why", "how does", "discuss", "propose" etc, have a discussion:
@@ -141,7 +145,7 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 
 ## Issue and Ticket Writing
 
-**NEVER create a GitHub issue, Jira task, Monday task, or Linear task without first invoking the `write-ticket-description` skill.**
+NEVER create a GitHub issue, Jira task, Monday task, or Linear task without first invoking the `write-ticket-description` skill.
 
 ## Skill Feedback
 
