@@ -408,15 +408,15 @@
     "command": "~/.claude/statusline.sh"
   },
   "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
-    "lua-lsp@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": false,
+    "lua-lsp@claude-plugins-official": false
   },
   "showClearContextOnPlanAccept": true,
   "plansDirectory": "./.claude/plans",
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
+  "theme": "dark-daltonized",
   "feedbackSurveyState": {
     "lastShownTime": 1754054339526
-  },
-  "theme": "dark-daltonized"
+  }
 }
