@@ -162,6 +162,11 @@ Design coherence:
 - Is the solution internally consistent, or are similar problems solved differently?
 - Does implementation match the problem's inherent complexity (not over/under-engineered)?
 
+Evolvability:
+- Assume we're going to extend this code a lot over time; how could improving its structure better prepare for that?
+- Could different structure unlock adding and removing pieces more easily?
+- Could different structure expand unbroken regions of pure code that's easy to test comprehensively?
+
 Expressiveness:
 - Are domain-specific types used instead of primitives where intent would be clearer?
 - Do types enforce invariants and make invalid states unrepresentable?
