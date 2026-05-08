@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit the changes in the working tree. Use every time you are committing changes.
+description: Commit the changes in the working tree. Only invoke when the user explicitly signals to commit ("commit", "/commit", etc.). Never invoke this skill on your own initiative — implementation approval is not a commit signal.
 allowed-tools: Bash
 ---
 
