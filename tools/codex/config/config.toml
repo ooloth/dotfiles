@@ -8,8 +8,8 @@
 [tui]
 status_line = ["model-with-reasoning", "context-used", "five-hour-limit", "weekly-limit", "context-window-size"]
 
- [tui.model_availability_nux]
- "gpt-5.5" = 3
+[tui.model_availability_nux]
+"gpt-5.5" = 4
 
  [apps.connector_76869538009648d5b282a4bb21c3d157.tools.github_create_issue]
  approval_mode = "approve"
