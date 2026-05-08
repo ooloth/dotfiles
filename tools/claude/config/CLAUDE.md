@@ -118,22 +118,25 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 
 ## Work in Small Steps
 
-1. Make one small, thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation, one new lint rule and its fixes, etc)
-2. Run checks
-3. Run tests
-4. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output, whatever applies. The status report in step 5 must include one of:
+1. Choose your next thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation, one new lint rule and its fixes, etc), ideally aiming for wafer-thin vertical slices that can be verified e2e
+2. Describe your implementation plan, calling out any design decisions or questions the user should weigh in on
+3. Wait for approval
+4. Implement the change
+5. Run all automated checks
+6. Before running tests, ask: what new decisions or behaviors does this change introduce — branches, filters, transformations, mappings? For each one: if the logic were wrong, would any existing test catch it? If not, and if the behavior can be exercised without standing up the full system, write a test for it. Then run all tests.
+7. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output, whatever applies. The status report in step 5 must include one of:
    - **What you ran and what you observed** (e.g. "ran X, saw Y in the output")
    - **Why end-to-end execution is impossible here** and what the user should run and look for instead
      Omitting this section is not allowed. "Tests pass" is not a substitute.
-5. Write a status report. **Do not commit without an explicit user signal** ("commit", "/commit", etc.) — prior approvals do not carry forward to commits, and each commit requires its own signal. (Commits that are part of an autonomous loop are approved when the user approves the run.)
-6. When you receive a commit signal, commit via `/commit`. After committing, you may continue implementing the next approved task — but stop and write another status report before committing anything further.
-7. Repeat for the remaining changes
-8. When all changes committed → close the task:
-   ```bash
-   trekker comment add TREK-N -a "claude" -c "Resolution: ..."
-   trekker task update TREK-N -s completed
-   ```
-9. After closing, check whether related open tasks need their descriptions updated — the approach may have changed, a prerequisite may now be satisfied, or the task may have become unnecessary
+8. Write a status report. **Do not commit without an explicit user signal** ("commit", "/commit", etc.) — prior approvals do not carry forward to commits, and each commit requires its own signal. (Commits that are part of an autonomous loop are approved when the user approves the run.)
+9. When you receive a commit signal, commit via `/commit`. After committing, you may move to describing your plan for the next change (steps 1-2) — but as always, stop and wait for approval before implementing it (step 3)
+10. Repeat for the remaining changes
+11. When all changes committed → close the task:
+    ```bash
+    trekker comment add TREK-N -a "claude" -c "Resolution: ..."
+    trekker task update TREK-N -s completed
+    ```
+12. After closing, check whether related open tasks (or issues or tickets) need their descriptions updated — the approach may have changed, a prerequisite may now be satisfied, or the task may have become unnecessary
 
 ## Validate Every Change
 
