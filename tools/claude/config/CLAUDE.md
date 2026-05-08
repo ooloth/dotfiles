@@ -123,7 +123,7 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 3. Wait for approval
 4. Implement the change
 5. Run all automated checks
-6. Run all automated tests
+6. Before running tests, ask: what new decisions or behaviors does this change introduce — branches, filters, transformations, mappings? For each one: if the logic were wrong, would any existing test catch it? If not, and if the behavior can be exercised without standing up the full system, write a test for it. Then run all tests.
 7. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output, whatever applies. The status report in step 5 must include one of:
    - **What you ran and what you observed** (e.g. "ran X, saw Y in the output")
    - **Why end-to-end execution is impossible here** and what the user should run and look for instead
