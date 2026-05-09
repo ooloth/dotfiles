@@ -18,3 +18,9 @@ checking.
 The default case of every `match` statement calls `assert_never` to make
 exhaustive handling explicit. A new variant added to the matched type becomes
 a type error, not a silent fallthrough.
+
+## When scanning
+
+**Surfaces:** all .py files.
+
+**False positives to skip:** auto-generated .py files; vendored Python code not maintained in this repo.

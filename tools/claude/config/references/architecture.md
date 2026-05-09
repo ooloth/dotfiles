@@ -52,3 +52,9 @@ new dependency to manage — is weighed against the benefit of the separation.
 Related types, logic, and I/O for a feature live together. A change to one
 feature touches one folder, not five. Adding a feature means adding a folder;
 removing a feature means deleting one.
+
+## When scanning
+
+**Surfaces:** import and use statements across all source files; module, crate, or package boundary definitions; directory structure; Cargo.toml / package.json workspace layout.
+
+**False positives to skip:** test code that imports broadly for fixture or integration-testing purposes; dev-only or build-only dependencies.

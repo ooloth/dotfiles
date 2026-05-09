@@ -41,3 +41,9 @@ possible, what to do next. "Something went wrong" is not a user-facing message.
 **Errors are aggregated where multiple can occur.**
 When validating input or processing a batch, all errors are collected before
 returning rather than failing on the first. Callers receive a complete picture.
+
+## When scanning
+
+**Surfaces:** all source files, with emphasis on fallible operations, error propagation paths, and user-facing error output sites.
+
+**False positives to skip:** test code that uses `unwrap()` or equivalent deliberately for assertion clarity.

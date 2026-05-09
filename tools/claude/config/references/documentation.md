@@ -41,3 +41,9 @@ changes to user-facing behavior have an entry.
 **Diagrams reflect current architecture.**
 Visual representations of system structure, data flow, or component
 relationships are updated when the structure they depict changes.
+
+## When scanning
+
+**Surfaces:** README.md at any level; .md files under docs/, .claude/, or similar doc directories; module-level doc comments (//!, docstrings at file tops — not scattered inline comments).
+
+**False positives to skip:** illustrative paths (path/to/your/config.toml, <owner>/<repo>); commands in sections explicitly marked as planned or not yet implemented; external URLs.

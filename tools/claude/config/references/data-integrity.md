@@ -42,3 +42,9 @@ impossible, that is documented and a compensating path is identified.
 Application-level uniqueness checks are not used alone. A unique constraint or
 index in the database is the backstop, since application checks have race
 windows.
+
+## When scanning
+
+**Surfaces:** database models and schema definitions; migration files; write paths and transaction sites; read-modify-write sequences.
+
+**False positives to skip:** read-only query code; test fixtures that use simplified schemas by design.

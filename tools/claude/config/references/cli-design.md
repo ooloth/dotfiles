@@ -57,3 +57,9 @@ happen without doing it. This reduces the cost of mistakes.
 **Subcommand naming is big-endian.**
 When subcommands have qualifiers, the concept leads: `issue create` rather than
 `create issue`. Related subcommands sort together and read as a hierarchy.
+
+## When scanning
+
+**Surfaces:** CLI entry points and command definitions; flag and subcommand declarations; help text strings; error message output sites; exit code handling.
+
+**False positives to skip:** internal-only commands not exposed to end users; test harness CLI utilities.

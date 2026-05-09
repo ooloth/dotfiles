@@ -48,3 +48,9 @@ before bounds are exceeded.
 When a set of concurrent operations can fail independently, the handling of
 partial success — which results to keep, which to retry, how to report — is
 defined.
+
+## When scanning
+
+**Surfaces:** all source files containing async functions, thread or task spawning, locks, channels, or shared mutable state.
+
+**False positives to skip:** fire-and-forget patterns explicitly documented as intentional; test code using synchronous equivalents for simplicity.

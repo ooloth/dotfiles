@@ -43,3 +43,9 @@ via lockfiles or checksums.
 **Access follows least privilege.**
 Code requests only the permissions it needs. Overly broad access — admin
 where read-only suffices, write where read suffices — is worth flagging.
+
+## When scanning
+
+**Surfaces:** all source files, with emphasis on HTTP handlers, CLI argument parsing, file I/O, authentication and authorization enforcement, and secret handling.
+
+**False positives to skip:** test code using known-safe fixture values; internal admin endpoints with documented, intentionally permissive access scope.

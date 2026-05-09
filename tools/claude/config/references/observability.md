@@ -31,3 +31,9 @@ of the surrounding code remains clear after instrumentation is added.
 **Resource handles are closed.**
 Connections, file handles, and other resources are released after use.
 Long-lived processes don't accumulate open handles.
+
+## When scanning
+
+**Surfaces:** all source files, with emphasis on error paths, new behavior entry points, and resource allocation or cleanup sites.
+
+**False positives to skip:** test code that doesn't require logging; intentional no-op error handling that is explicitly documented.

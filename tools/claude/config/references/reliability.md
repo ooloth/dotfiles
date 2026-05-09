@@ -44,3 +44,9 @@ degraded behavior is defined, not accidental.
 When a dependency is consistently failing, requests to it are suspended for a
 period rather than repeatedly attempted. This protects the calling system from
 cascading failure and gives the dependency time to recover.
+
+## When scanning
+
+**Surfaces:** all source files containing network requests, database queries, or calls to external services.
+
+**False positives to skip:** calls to in-process functions; test code using mocked or stubbed external dependencies.

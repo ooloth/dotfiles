@@ -54,3 +54,9 @@ shipping.
 **Parallelism is used for independent work.**
 Independent I/O operations or CPU-bound tasks that can safely run in parallel
 are structured to do so rather than executed sequentially.
+
+## When scanning
+
+**Surfaces:** all source files, with emphasis on loop bodies, database query sites, hot-path functions, and memory allocation in frequently called code.
+
+**False positives to skip:** test code not on production execution paths; one-off scripts without performance requirements.

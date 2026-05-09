@@ -41,3 +41,9 @@ align visually and sort meaningfully when listed together.
 **Magic values are named.**
 Literal numbers and strings that carry meaning are extracted to named constants.
 A reader understands what a value represents without searching for its origin.
+
+## When scanning
+
+**Surfaces:** all source files.
+
+**False positives to skip:** generated code; vendored code; test fixtures with intentionally repetitive structure.

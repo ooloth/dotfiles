@@ -44,3 +44,9 @@ options are available but don't intrude on the common path.
 **Errors are part of the contract.**
 The failure modes of an operation are as documented as its happy path. A
 caller knows what errors to expect and under what conditions.
+
+## When scanning
+
+**Surfaces:** exported function and method signatures; public type definitions; REST/RPC route handlers; SDK surface files; interface declarations.
+
+**False positives to skip:** internal helpers with no external callers; test utilities not part of the public API.

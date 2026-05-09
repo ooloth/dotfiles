@@ -36,3 +36,9 @@ must be fixed.
 Because assertions check invariants on every execution path, fuzz inputs that
 reach unexpected states trigger assertion failures that uncover bugs invisible
 to deterministic tests.
+
+## When scanning
+
+**Surfaces:** all source files, with emphasis on functions operating on validated types, state machines, and complex invariants.
+
+**False positives to skip:** test assertion helpers (e.g. `assert_eq!`, `pytest.raises`) — these are test infrastructure, not runtime invariant checks.

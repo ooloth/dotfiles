@@ -40,3 +40,9 @@ for fields that would cause harm if exposed.
 Before a new feature collects personal data, the privacy implications are
 identified. The question "do we need this?" is asked before "how do we store
 this?"
+
+## When scanning
+
+**Surfaces:** logging statements; error messages and API responses; analytics event construction; database schemas and model definitions; API response serialization.
+
+**False positives to skip:** data that is not personally identifiable; logs written exclusively to secure, access-controlled audit stores.

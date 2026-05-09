@@ -40,3 +40,9 @@ all environments; the config differs.
 **Config values have explicit documented defaults.**
 Optional config values are not left to the runtime's or library's undocumented
 defaults. The default is stated in the code and documented alongside the key.
+
+## When scanning
+
+**Surfaces:** startup and main entry points; environment variable read sites; configuration parsing and validation code.
+
+**False positives to skip:** test fixtures that mock configuration with raw values for isolation; documentation example configs not used at runtime.

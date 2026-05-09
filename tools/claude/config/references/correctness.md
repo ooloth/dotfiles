@@ -38,3 +38,9 @@ breakage is intentional, documented, and coordinated.
 If the code assumes something about its inputs or environment that types and
 validation don't enforce, that assumption is either enforced or noted at the
 call site.
+
+## When scanning
+
+**Surfaces:** all source files, with emphasis on complex branching logic, parsers, state machines, and boundary value handling.
+
+**False positives to skip:** code explicitly marked as experimental or draft; code gated behind a flag that disables it in production.

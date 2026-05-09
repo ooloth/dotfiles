@@ -46,3 +46,9 @@ reading its body.
 Code that doesn't require I/O is extracted from code that does. This expands
 the surface area that can be tested without mocks or fixtures, and makes
 type-level reasoning easier.
+
+## When scanning
+
+**Surfaces:** all source files, with emphasis on type and struct definitions, function signatures, and API boundary types.
+
+**False positives to skip:** types generated from external schemas (protobuf, OpenAPI); test types simplified for readability.

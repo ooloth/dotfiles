@@ -58,3 +58,9 @@ and either fixed or explicitly marked. Async operations are awaited, not raced.
 Test setup lives in plain functions unless the framework provides something
 those functions cannot — lifecycle hooks, shared fixtures with teardown. The
 simpler form is chosen by default.
+
+## When scanning
+
+**Surfaces:** all test files — files containing test functions or classes, and files in test directories.
+
+**False positives to skip:** test utility helpers and fixture factories are not themselves subject to behavioral coverage requirements.

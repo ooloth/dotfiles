@@ -29,3 +29,9 @@ reviewed. Dependencies come from trusted, official sources.
 Added libraries are weighed against their impact on bundle size. Libraries
 that cover only the needed functionality are preferred over large
 general-purpose alternatives when the use case is narrow.
+
+## When scanning
+
+**Surfaces:** Cargo.toml, package.json, requirements.txt, go.mod, Gemfile, and their lockfiles.
+
+**False positives to skip:** dev-only and test-only dependencies, which carry lower risk than production dependencies.
