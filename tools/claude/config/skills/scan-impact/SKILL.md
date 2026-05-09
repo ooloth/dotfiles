@@ -11,4 +11,4 @@ What should we work on next?
    issues, jira, etc) - though don't assume the right answer is already a ticket
 2. Think critically about the potential for this system to fail because it did not prove its worth
    quickly enough and so it was not adopted and was ultimately abandoned, and how to avoid that fate
-   by shipping game-changing new value to end users asap.
+   by shipping game-changing new value to end users asap
