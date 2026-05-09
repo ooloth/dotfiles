@@ -1,7 +1,7 @@
 ---
 name: review-conventions
 description: Review codebase conventions — a specific domain or all domains in parallel. Use when asked to review or check conventions.
-argument-hint: '[architecture | design | code-quality | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | observability | performance | concurrency | documentation | api-design | cli-design | dependencies | deployment | config | python | rust] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+argument-hint: '[architecture | design | code-quality | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | observability | performance | concurrency | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
 ---
@@ -59,9 +59,9 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    **Subagent 5 — Testing** (subagent_type: Explore, description: "review testing")
    Inline: `~/.claude/references/testing.md`
 
-   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability, performance, and concurrency")
+   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability, performance, concurrency, and reliability")
    Inline: `~/.claude/references/observability.md`, `~/.claude/references/performance.md`,
-   `~/.claude/references/concurrency.md`
+   `~/.claude/references/concurrency.md`, `~/.claude/references/reliability.md`
 
    **Subagent 7 — Documentation & Release** (subagent_type: Explore, description: "review documentation, API design, dependencies, deployment, and config")
    Inline: `~/.claude/references/documentation.md`, `~/.claude/references/api-design.md`,

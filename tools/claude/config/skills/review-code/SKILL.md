@@ -395,10 +395,10 @@ If no issues found, report "No observability concerns identified."
 
 ---
 
-### Agent 9: Performance
+### Agent 9: Performance & Reliability
 
 ```
-Review the changed files for performance and concurrency concerns.
+Review the changed files for performance, concurrency, and reliability concerns.
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -409,7 +409,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/performance.md` and `~/.claude/references/concurrency.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/performance.md`, `~/.claude/references/concurrency.md`, and `~/.claude/references/reliability.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. Check how similar operations are handled in unchanged files — look for existing performance patterns and concurrency primitives in use.
@@ -426,13 +426,21 @@ Performance:
 Concurrency:
 - Unprotected access to shared mutable state
 - Async operations that are not awaited
+- Blocking operations in async contexts
 - Unbounded queues or thread pools
 - Inconsistent lock acquisition order (deadlock risk)
 - Partial failure in concurrent operations without a recovery path
 
+Reliability:
+- External calls (network, DB, APIs) without explicit timeouts
+- Transient errors retried without backoff or bound
+- Permanent failures retried as if transient
+- Operations not safe to retry that may be retried due to timeouts
+- Failures in one dependency cascading to unrelated operations
+
 For each issue: file:line | what's wrong | concrete impact | specific fix
 Only report actual problems, not theoretical micro-optimizations.
-If no issues found, report "No performance or concurrency concerns identified."
+If no issues found, report "No performance, concurrency, or reliability concerns identified."
 ```
 
 ---
