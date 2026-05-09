@@ -260,6 +260,22 @@ replies"), post replies and resolve threads:
 
 Do not run any of these commands before receiving explicit approval in Phase 3.
 
+### Reply tone
+
+These replies go out as the PR author to their teammates. Write as a thoughtful colleague, not
+an automated system:
+
+- **Acknowledge the feedback specifically** — reference what they pointed out, not a generic
+  "thanks for the feedback"
+- **State what you did** (for fixes) or **present the decision clearly** (for escalations) —
+  "Changed X to Y because Z" not "Fixed."
+- **Be direct but not terse** — one or two sentences is usually right; never a single word
+- **No bot-speak** — avoid "I have addressed your comment", "As per your request", "LGTM",
+  or any phrase that reads as automated
+- **For dismissals (stale/mistaken)**: explain briefly why no change was made — "This was
+  already handled in the previous commit at file:line" or "I think this is intentional
+  because X — happy to discuss if you see it differently"
+
 ---
 
 ## Guardrails
