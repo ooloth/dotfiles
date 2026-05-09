@@ -73,7 +73,7 @@ model: opus
    of your response for clarity and each intended behaviour and invariant is treated as its own
    category
 2. Generate a self-contained HTML slide deck of the prioritized findings:
-   - `mkdir -p .agents/<yyyy-mm-dd>/<branch>`
+   - `mkdir -p .outputs/<yyyy-mm-dd>/<branch>`
    - Write the report to `.agents/<date>/<branch>/validation-findings.html` — use clean, minimal styling,
      one slide per category plus a summary/title slide, and keyboard arrow-key and click navigation
      between slides

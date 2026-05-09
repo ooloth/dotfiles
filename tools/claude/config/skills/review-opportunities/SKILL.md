@@ -11,6 +11,6 @@ effort: high
 3. Study the user's `trekker`, Jira, Monday, GitHub issues or other backlog (if any) to see what opportunities are already tracked
 4. Report the top untracked user-facing and developer-facing opportunities
 5. Generate a self-contained HTML slide deck of the findings:
-   - `mkdir -p .agents/<yyyy-mm-dd>`
-   - Write the report to `.agents/<yyyy-mm-dd>/review-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
-   - `open .agents/<yyyy-mm-dd>/review-opportunities.html`
+   - `mkdir -p .outputs/<yyyy-mm-dd>`
+   - Write the report to `.outputs/<yyyy-mm-dd>/review-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - `open .outputs/<yyyy-mm-dd>/review-opportunities.html`
