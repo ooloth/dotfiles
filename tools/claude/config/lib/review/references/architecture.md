@@ -47,3 +47,8 @@ where from domain knowledge alone.
 **New boundaries are justified.**
 Before introducing a new component, the cost — a new interface to maintain, a
 new dependency to manage — is weighed against the benefit of the separation.
+
+**Code is organized by feature, not by layer.**
+Related types, logic, and I/O for a feature live together. A change to one
+feature touches one folder, not five. Adding a feature means adding a folder;
+removing a feature means deleting one.

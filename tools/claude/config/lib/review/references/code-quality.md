@@ -17,6 +17,11 @@ unless the abbreviated form is the established domain term.
 
 ## Should
 
+**Files are under 2000 lines.**
+Files longer than 2000 lines are split at natural seams. The Read tool
+truncates silently at 2000 lines, creating blind spots for any agent reading
+the file.
+
 **Functions are small enough to reason about.**
 Long functions are extracted at natural seams. Deeply nested blocks are
 flattened or extracted. A function that requires scrolling to read is examined

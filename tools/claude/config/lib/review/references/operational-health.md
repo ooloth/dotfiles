@@ -35,6 +35,10 @@ Logs include enough context to act on — relevant IDs, states, and values.
 Log levels are appropriate: errors for failures, warnings for degraded states,
 info for significant events, debug for diagnostic detail.
 
+**Observability doesn't obscure business logic.**
+Telemetry calls are isolated from the code they instrument. The primary intent
+of the surrounding code remains clear after instrumentation is added.
+
 ## Consider
 
 **Hot paths are free of unnecessary work.**

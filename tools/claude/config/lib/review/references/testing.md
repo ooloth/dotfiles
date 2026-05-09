@@ -37,6 +37,11 @@ by a previous test. Each test sets up what it needs and cleans up after itself.
 Duplicated setup is extracted to fixtures or helpers. Names are as descriptive
 as in production code. Dead test code is removed.
 
+**Mocks are used only at system boundaries.**
+Real objects are used wherever possible. Mocks are reserved for external APIs,
+time, randomness, and other true system boundaries. Excessive mocking
+disconnects tests from real behavior and masks integration failures.
+
 ## Consider
 
 **More powerful techniques are used where they fit.**
@@ -48,3 +53,8 @@ low.
 **Flakiness risk is minimized.**
 Tests that depend on timing, execution order, or external state are identified
 and either fixed or explicitly marked. Async operations are awaited, not raced.
+
+**Plain helpers are preferred over framework abstractions.**
+Test setup lives in plain functions unless the framework provides something
+those functions cannot — lifecycle hooks, shared fixtures with teardown. The
+simpler form is chosen by default.
