@@ -1,5 +1,5 @@
 ---
-name: review-opportunities
+name: scan-opportunities
 description: Analyze gaps in user-facing features and desirable characteristics, developer-facing tooling and desirable characteristics, and other opportunities not currently tracked in the project's roadmap. Use when the user asks you to help identify opportunities to improve the system.
 effort: high
 ---
@@ -12,5 +12,5 @@ effort: high
 4. Report the top untracked user-facing and developer-facing opportunities
 5. Generate a self-contained HTML slide deck of the findings:
    - `mkdir -p .outputs/<yyyy-mm-dd>`
-   - Write the report to `.outputs/<yyyy-mm-dd>/review-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
-   - `open .outputs/<yyyy-mm-dd>/review-opportunities.html`
+   - Write the report to `.outputs/<yyyy-mm-dd>/scan-opportunities.html` — clean minimal styling, one slide per opportunity plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - `open .outputs/<yyyy-mm-dd>/scan-opportunities.html`
