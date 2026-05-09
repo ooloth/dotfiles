@@ -262,7 +262,7 @@ Patterns seen during this run that suggest missing or incomplete project documen
 these would turn future escalations into auto-fixes and prevent the same issues from recurring.
 
 - **[Pattern name]** — [what kept coming up] — Suggested addition: [which file to update and
-  what to document, e.g. "add a note to conventions/bash.md that all helper functions must use
+  what to document, e.g. "add a note to references/bash.md that all helper functions must use
   the call-site failure pattern: `check_X ... || failures=$((failures + 1))`"]
 
 (None)

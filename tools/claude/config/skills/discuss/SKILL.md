@@ -31,10 +31,10 @@ Scale investigation to the classification. Do not turn small tasks into heavywei
 
 ### Phase 1: Load Context Progressively
 
-1. List `~/.claude/conventions/` and the project's documented conventions and invariants when they
-   may affect the plan.
-2. Load `agents.md` plus only the convention files that are obviously relevant to the task.
-3. Load additional convention files only when the investigation shows they matter.
+1. Read `~/.claude/references/README.md` and list `~/.claude/references/` when invariants may
+   affect the plan.
+2. Load only the reference files obviously relevant to the task.
+3. Load additional reference files only when the investigation shows they matter.
 4. If the task scope is still unclear, prefer asking a clarifying question over loading every file.
 
 ### Phase 2: Understand Intent

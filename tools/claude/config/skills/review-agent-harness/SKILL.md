@@ -9,8 +9,7 @@ effort: high
 
 Use up to 25 subagents to explore the following data sources:
 
-1. Study `~/.claude/conventions/agents.md`
-2. Study the current project's documented agent harness intentions (if any)
+1. Study the current project's documented agent harness intentions (if any)
 3. Study the user's global Claude Code configuration in `~/.claude/` (custom skills, agents and settings are symlinked from ~/Repos/ooloth/dotfiles/tools/claude/config/)
 4. Study the project-level Claude Code configuration in `./.claude/`
 5. Study the user's recent Claude Code sessions in `~/.claude/projects/`

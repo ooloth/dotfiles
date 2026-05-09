@@ -5,7 +5,7 @@ description: Load preferred patterns and apply them to the current task. TRIGGER
 
 ## Your task
 
-1. List `~/.claude/conventions/` if needed
-1. Determine which convention domains are relevant to the current task
-1. Load the relevant files
-1. Proactively apply the guidance
+1. Read `~/.claude/references/README.md` to understand the invariant framing and tier definitions
+2. Determine which reference domains are relevant to the current task (list `~/.claude/references/` if unsure)
+3. Load the relevant files
+4. Proactively apply the invariants
