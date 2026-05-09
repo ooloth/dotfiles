@@ -152,6 +152,10 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 - Be creative: run the CLI, hit the endpoint, trigger the event, eyeball the output; this sort of live execution is just as important as automated testing
 - If end-to-end execution is truly impossible, tell the user why and describe what they can do and what they should look for. Don't just silently skip validation.
 
+## Uphold Invariants
+
+Before designing, writing, or editing any code — invoke the `uphold-invariants` skill.
+
 ## Issue and Ticket Writing
 
 NEVER create a GitHub issue, Jira task, Monday task, or Linear task without first invoking the `write-ticket-description` skill.
