@@ -78,9 +78,9 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## Improve yourself
 
-After invoking any skill, mention any friction or gaps you noticed — a misleading instruction, an ambiguity that cost time, or anything else you learned that would help a future agent. Report it clearly after completing the skill's task. Skip if execution went smoothly.
+When you encounter friction during any task — a misleading instruction, an ambiguity that cost time, a missing doc, or anything else a future agent would trip on — fix it inline. If a targeted edit to a CLAUDE.md, reference file, skill file, or project doc would prevent that friction, make the edit and note what you changed. Don't just mention it; fix it.
 
-The same applies to difficulties you encounter that could be solved by improving the current projects docs - recommend any updates that could save the next agent time.
+Skip if execution went smoothly.
 
 ## Clarify, Don't Plan
 
