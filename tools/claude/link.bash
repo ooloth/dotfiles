@@ -7,7 +7,7 @@ config_dir="${HOME}/.claude"
 
 symlink "${DOTFILES}/tools/claude/config/agents" "${config_dir}"
 symlink "${DOTFILES}/tools/claude/config/references" "${config_dir}"
-symlink "${DOTFILES}/tools/claude/config/conventions" "${config_dir}"
+symlink "${DOTFILES}/tools/claude/config/references" "${HOME}/.agents"
 symlink "${DOTFILES}/tools/claude/config/skills" "${config_dir}"
 symlink "${DOTFILES}/tools/claude/config/skills" "${HOME}/.agents"
 symlink "${DOTFILES}/tools/claude/config/CLAUDE.md" "${config_dir}"

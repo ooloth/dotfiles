@@ -76,6 +76,12 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
   details only entering the conversation
 
+## Improve yourself
+
+After invoking any skill, mention any friction or gaps you noticed — a misleading instruction, an ambiguity that cost time, or anything else you learned that would help a future agent. Report it clearly after completing the skill's task. Skip if execution went smoothly.
+
+The same applies to difficulties you encounter that could be solved by improving the current projects docs - recommend any updates that could save the next agent time.
+
 ## Clarify, Don't Plan
 
 When a task is ambiguous or has multiple valid approaches, do NOT enter plan mode. Instead, ask questions. Only enter plan mode if the user explicitly asks for it.
@@ -149,10 +155,6 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 ## Issue and Ticket Writing
 
 NEVER create a GitHub issue, Jira task, Monday task, or Linear task without first invoking the `write-ticket-description` skill.
-
-## Skill Feedback
-
-After invoking any skill, mention any friction or gaps you noticed — a misleading instruction, an ambiguity that cost time, or anything else you learned that would help a future agent. Report it clearly after completing the skill's task. Skip if execution went smoothly.
 
 ## Available CLI tools
 

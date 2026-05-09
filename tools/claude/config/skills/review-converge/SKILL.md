@@ -57,7 +57,9 @@ From what you read, distill a short **problem statement**: in 1-2 sentences, wha
 or goal do these changes address, and what outcome should they achieve? If the git log and PR
 description don't make this clear, note it as "intent unclear" — do not invent one.
 
-The problem statement and quality gate are both passed to every subagent throughout the run.
+Also read `~/.claude/references/README.md` and load the reference files most relevant to the
+change scope. These invariants are passed to every subagent alongside the problem statement and
+quality gate throughout the run.
 
 ---
 

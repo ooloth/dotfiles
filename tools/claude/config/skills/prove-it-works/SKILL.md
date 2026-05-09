@@ -16,7 +16,9 @@ model: opus
 
 ### Phase 1: Understand the code's intent and invariants
 
-1. Use as many subagents as you need to explore all relevant code paths and documentation that could
+1. Read `~/.claude/references/README.md` and the reference files relevant to this code's domain
+   to identify which invariants apply (correctness, security, data integrity, type design, etc.).
+2. Use as many subagents as you need to explore all relevant code paths and documentation that could
    help you understand the intended behaviour of the code in question, the local and system-level
    invariants that apply to its behaviour (and especially its side effects), and the observable
    outputs available to validate that behaviour from the outbox in while treating the system's

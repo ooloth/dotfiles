@@ -19,9 +19,11 @@ model: opus
 1. If the user did not specify what they want to discuss and you can't deduce it, ask them for
    that information
 2. If you are unclear what the user is asking you to validate, clarify until you're quite sure
-3. Once you understand the discussion topic, use as many subagents as you need to explore the
+3. Read `~/.claude/references/README.md` and the reference files relevant to the change scope.
+   Use these invariants as your evaluation criteria throughout.
+4. Once you understand the discussion topic, use as many subagents as you need to explore the
    problem definition and all relevant code paths and documentation and the changes you made
-4. Proactively answer every question and follow-up question that occurs to you by exploring the
+5. Proactively answer every question and follow-up question that occurs to you by exploring the
    codebase and anything else that would help you
 
 ### Phase 2: Assess the Solution for Gaps or Mistakes

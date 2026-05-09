@@ -85,8 +85,9 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run the diff command from Context to read what changed.
-2. Compare the diff carefully against the Problem, Approach, and Key outcomes in the Context block.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/correctness.md`. Use these invariants as your evaluation criteria.
+2. Run the diff command from Context to read what changed.
+3. Compare the diff carefully against the Problem, Approach, and Key outcomes in the Context block.
 
 Look for gaps between stated intent and actual implementation:
 - Does the code fully address the stated problem, or only partially?
@@ -118,9 +119,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed.
-3. Read related unchanged files and explore the broader codebase to understand existing patterns and available tools.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/design.md` and `~/.claude/references/architecture.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed.
+4. Read related unchanged files and explore the broader codebase to understand existing patterns and available tools.
 
 Consider whether an alternative approach would be meaningfully better on any of these axes:
 - More reliable: fewer failure modes, better error recovery, more robust to edge cases
@@ -152,10 +154,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed.
-3. Read related unchanged files to understand existing design patterns and conventions.
-4. Read ~/.claude/references/README.md, then ~/.claude/references/type-design.md.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/architecture.md`, `~/.claude/references/design.md`, `~/.claude/references/code-quality.md`, and `~/.claude/references/type-design.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed.
+4. Read related unchanged files to understand existing design patterns and conventions.
 
 Design coherence:
 - Does the overall structure make sense, or is there a simpler mental model?
@@ -208,9 +210,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
-3. Read 2-3 similar unchanged files to understand existing patterns for error handling, validation, etc.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/correctness.md`, `~/.claude/references/assertions.md`, and `~/.claude/references/error-handling.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
+4. Read 2-3 similar unchanged files to understand existing patterns for error handling, validation, etc.
 
 Review for:
 - Logic errors, off-by-one errors, incorrect conditionals
@@ -240,9 +243,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed, then read surrounding context.
-3. If database models or migrations changed, read them in full.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/data-integrity.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed, then read surrounding context.
+4. If database models or migrations changed, read them in full.
 
 Validity:
 - Can invalid data be written to persistent storage? (missing validation, no DB constraints)
@@ -283,10 +287,11 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed.
-3. Find and read the corresponding test files (new and existing).
-4. Read 2-3 existing test files to understand the project's test conventions and style.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/testing.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed.
+4. Find and read the corresponding test files (new and existing).
+5. Read 2-3 existing test files to understand the project's test conventions and style.
 
 Conventions:
 - Do the tests follow project conventions (file naming, structure, assertion style)?
@@ -337,8 +342,9 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed, then read surrounding context.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/security.md` and `~/.claude/references/privacy.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed, then read surrounding context.
 
 Review for:
 - Input validation at system boundaries (APIs, CLI args, file uploads, env vars)
@@ -370,9 +376,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed, then read surrounding context.
-3. Check how similar operations are handled in unchanged files — both for performance patterns and existing logging/metrics conventions.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/operational-health.md`, `~/.claude/references/performance.md`, and `~/.claude/references/concurrency.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed, then read surrounding context.
+4. Check how similar operations are handled in unchanged files — both for performance patterns and existing logging/metrics conventions.
 
 Performance:
 - N+1 queries or repeated fetches inside loops
@@ -412,8 +419,9 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run the diff command from Context to read what changed.
-2. Find all documentation that could be affected:
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/documentation.md`. Use these invariants as your evaluation criteria.
+2. Run the diff command from Context to read what changed.
+3. Find all documentation that could be affected:
    - All .md files: `find . -name "*.md" -not -path "*/node_modules/*" -not -path "*/.git/*"`
    - Diagrams: look for .svg, .png, .drawio, .mermaid, or docs/diagrams/ directories
    - Docstrings and help text in changed source files
@@ -453,9 +461,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-2. Run the diff command from Context to read what changed.
-3. If package files changed, read them in full.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/dependencies-deployment.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed.
+4. If package files changed, read them in full.
 
 Dependencies (if package files changed):
 - Are new dependencies justified? Could existing deps cover this?

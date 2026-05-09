@@ -27,6 +27,9 @@ Substitute the actual base ref (main, master, trunk) where needed.
 
 ## Step 2: Review
 
-1. Review the code in the scope identified above
-2. Identify the top 5 things we could do to improve it, ranked by criticality and ROI
-3. Present your feedback using formatting that makes each recommendation easy to scan and discuss
+1. Read `~/.claude/references/README.md` and these reference files to ground your evaluation
+   criteria: `architecture.md`, `design.md`, `code-quality.md`, `correctness.md`, `security.md`,
+   `testing.md`. Load others if the change touches data, operations, or deployment.
+2. Review the code in the scope identified above across all relevant quality dimensions.
+3. Identify the top 5 things we could do to improve it, ranked by criticality and ROI.
+4. Present your feedback using formatting that makes each recommendation easy to scan and discuss.
