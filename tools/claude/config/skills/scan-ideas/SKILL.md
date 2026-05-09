@@ -1,5 +1,5 @@
 ---
-name: prioritize
+name: scan-ideas
 description: Find all tracked issues and work item ideas for the current project and rank them by priority to address. TRIGGER whenever the user asks for help deciding what to work on next and you are not already working through a known plan.
 argument-hint: '[issue source]'
 effort: high
