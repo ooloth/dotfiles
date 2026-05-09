@@ -8,11 +8,15 @@ Each file states **invariants** — facts about what correct code looks like,
 written in declarative form. Invariants are not instructions to the agent; they
 are descriptions of what is true about well-written code.
 
-This framing makes each file usable in two directions without changing the
+This framing makes each file usable in multiple directions without changing the
 content:
 
 - A **writing** skill reads an invariant as: "produce code that satisfies this"
 - A **reviewing** skill reads an invariant as: "check whether the code satisfies this"
+- A **scanning** skill reads an invariant as: "find existing violations of this across a codebase"
+
+Some files include `## In scope` and `## Out of scope` sections that narrow the
+scanning target — which surfaces to examine and which to skip.
 
 ## Read this file first
 

@@ -34,8 +34,12 @@ Changes that affect a large surface area, modify critical paths, or carry
 uncertainty benefit from a feature flag that allows staged rollout and
 instant kill-switch.
 
-## When scanning
+## In scope
 
-**Surfaces:** CI/CD pipeline configs; migration files; deployment scripts; Dockerfiles; infrastructure-as-code manifests.
+- CI/CD pipeline configs
+- Migration files
+- Deployment scripts, Dockerfiles, and infrastructure-as-code manifests
 
-**False positives to skip:** local-only dev scripts not involved in production deployment.
+## Out of scope
+
+- Local-only dev scripts not involved in production deployment

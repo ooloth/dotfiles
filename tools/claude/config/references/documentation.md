@@ -42,8 +42,14 @@ changes to user-facing behavior have an entry.
 Visual representations of system structure, data flow, or component
 relationships are updated when the structure they depict changes.
 
-## When scanning
+## In scope
 
-**Surfaces:** README.md at any level; .md files under docs/, .claude/, or similar doc directories; module-level doc comments (//!, docstrings at file tops — not scattered inline comments).
+- README.md at any level
+- .md files under docs/, .claude/, or similar doc directories
+- Module-level doc comments (//! blocks, docstrings at file tops) — not scattered inline comments
 
-**False positives to skip:** illustrative paths (path/to/your/config.toml, <owner>/<repo>); commands in sections explicitly marked as planned or not yet implemented; external URLs.
+## Out of scope
+
+- Illustrative paths (path/to/your/config.toml, \<owner\>/\<repo\>)
+- Commands in sections explicitly marked as planned or not yet implemented
+- External URLs

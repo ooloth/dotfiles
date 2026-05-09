@@ -43,8 +43,14 @@ Application-level uniqueness checks are not used alone. A unique constraint or
 index in the database is the backstop, since application checks have race
 windows.
 
-## When scanning
+## In scope
 
-**Surfaces:** database models and schema definitions; migration files; write paths and transaction sites; read-modify-write sequences.
+- Database models and schema definitions
+- Migration files
+- Write paths and transaction sites
+- Read-modify-write sequences
 
-**False positives to skip:** read-only query code; test fixtures that use simplified schemas by design.
+## Out of scope
+
+- Read-only query code
+- Test fixtures that use simplified schemas by design

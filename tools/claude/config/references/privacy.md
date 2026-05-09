@@ -41,8 +41,15 @@ Before a new feature collects personal data, the privacy implications are
 identified. The question "do we need this?" is asked before "how do we store
 this?"
 
-## When scanning
+## In scope
 
-**Surfaces:** logging statements; error messages and API responses; analytics event construction; database schemas and model definitions; API response serialization.
+- Logging statements
+- Error messages and API responses
+- Analytics event construction
+- Database schemas and model definitions
+- API response serialization
 
-**False positives to skip:** data that is not personally identifiable; logs written exclusively to secure, access-controlled audit stores.
+## Out of scope
+
+- Data that is not personally identifiable
+- Logs written exclusively to secure, access-controlled audit stores

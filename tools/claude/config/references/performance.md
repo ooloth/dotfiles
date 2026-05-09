@@ -55,8 +55,14 @@ shipping.
 Independent I/O operations or CPU-bound tasks that can safely run in parallel
 are structured to do so rather than executed sequentially.
 
-## When scanning
+## In scope
 
-**Surfaces:** all source files, with emphasis on loop bodies, database query sites, hot-path functions, and memory allocation in frequently called code.
+- Loop bodies
+- Database query sites
+- Hot-path functions
+- Memory allocation in frequently called code
 
-**False positives to skip:** test code not on production execution paths; one-off scripts without performance requirements.
+## Out of scope
+
+- Test code not on production execution paths
+- One-off scripts without performance requirements

@@ -58,8 +58,15 @@ happen without doing it. This reduces the cost of mistakes.
 When subcommands have qualifiers, the concept leads: `issue create` rather than
 `create issue`. Related subcommands sort together and read as a hierarchy.
 
-## When scanning
+## In scope
 
-**Surfaces:** CLI entry points and command definitions; flag and subcommand declarations; help text strings; error message output sites; exit code handling.
+- CLI entry points and command definitions
+- Flag and subcommand declarations
+- Help text strings
+- Error message output sites
+- Exit code handling
 
-**False positives to skip:** internal-only commands not exposed to end users; test harness CLI utilities.
+## Out of scope
+
+- Internal-only commands not exposed to end users
+- Test harness CLI utilities

@@ -59,8 +59,11 @@ Test setup lives in plain functions unless the framework provides something
 those functions cannot — lifecycle hooks, shared fixtures with teardown. The
 simpler form is chosen by default.
 
-## When scanning
+## In scope
 
-**Surfaces:** all test files — files containing test functions or classes, and files in test directories.
+- Files containing test functions or classes
+- Files in test directories
 
-**False positives to skip:** test utility helpers and fixture factories are not themselves subject to behavioral coverage requirements.
+## Out of scope
+
+- Test utility helpers and fixture factories (not themselves subject to behavioral coverage requirements)

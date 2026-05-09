@@ -41,8 +41,13 @@ all environments; the config differs.
 Optional config values are not left to the runtime's or library's undocumented
 defaults. The default is stated in the code and documented alongside the key.
 
-## When scanning
+## In scope
 
-**Surfaces:** startup and main entry points; environment variable read sites; configuration parsing and validation code.
+- Startup and main entry points
+- Environment variable read sites
+- Configuration parsing and validation code
 
-**False positives to skip:** test fixtures that mock configuration with raw values for isolation; documentation example configs not used at runtime.
+## Out of scope
+
+- Test fixtures that mock configuration with raw values for isolation
+- Documentation example configs not used at runtime

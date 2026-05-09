@@ -39,8 +39,12 @@ If the code assumes something about its inputs or environment that types and
 validation don't enforce, that assumption is either enforced or noted at the
 call site.
 
-## When scanning
+## In scope
 
-**Surfaces:** all source files, with emphasis on complex branching logic, parsers, state machines, and boundary value handling.
+- Complex branching logic, parsers, and state machines
+- Boundary value handling
 
-**False positives to skip:** code explicitly marked as experimental or draft; code gated behind a flag that disables it in production.
+## Out of scope
+
+- Code explicitly marked as experimental or draft
+- Code gated behind a flag that disables it in production

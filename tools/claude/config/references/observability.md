@@ -32,8 +32,13 @@ of the surrounding code remains clear after instrumentation is added.
 Connections, file handles, and other resources are released after use.
 Long-lived processes don't accumulate open handles.
 
-## When scanning
+## In scope
 
-**Surfaces:** all source files, with emphasis on error paths, new behavior entry points, and resource allocation or cleanup sites.
+- Error paths
+- New behavior entry points
+- Resource allocation and cleanup sites
 
-**False positives to skip:** test code that doesn't require logging; intentional no-op error handling that is explicitly documented.
+## Out of scope
+
+- Test code (no logging required)
+- Intentional no-op error handling that is explicitly documented

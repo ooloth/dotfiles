@@ -45,8 +45,14 @@ options are available but don't intrude on the common path.
 The failure modes of an operation are as documented as its happy path. A
 caller knows what errors to expect and under what conditions.
 
-## When scanning
+## In scope
 
-**Surfaces:** exported function and method signatures; public type definitions; REST/RPC route handlers; SDK surface files; interface declarations.
+- Exported function and method signatures
+- Public type definitions
+- REST/RPC route handlers and SDK surface files
+- Interface declarations
 
-**False positives to skip:** internal helpers with no external callers; test utilities not part of the public API.
+## Out of scope
+
+- Internal helpers with no external callers
+- Test utilities not part of the public API

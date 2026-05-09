@@ -34,9 +34,8 @@ them unless there is a deliberate reason to diverge.
 State transformations move forward through the call stack. Callbacks, circular
 references, and shared mutable state are avoided where a simple pipeline would do.
 
-## When scanning
+## Out of scope
 
-**Surfaces:** all source files.
-
-**False positives to skip:** test code that duplicates setup intentionally for test isolation; one-off scripts explicitly scoped to a single use.
+- Test code that duplicates setup intentionally for test isolation
+- One-off scripts explicitly scoped to a single use
 

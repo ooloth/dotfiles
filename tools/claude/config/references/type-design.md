@@ -47,8 +47,13 @@ Code that doesn't require I/O is extracted from code that does. This expands
 the surface area that can be tested without mocks or fixtures, and makes
 type-level reasoning easier.
 
-## When scanning
+## In scope
 
-**Surfaces:** all source files, with emphasis on type and struct definitions, function signatures, and API boundary types.
+- Type and struct definitions
+- Function signatures
+- API boundary types
 
-**False positives to skip:** types generated from external schemas (protobuf, OpenAPI); test types simplified for readability.
+## Out of scope
+
+- Types generated from external schemas (protobuf, OpenAPI)
+- Test types simplified for readability

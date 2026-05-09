@@ -51,8 +51,7 @@ exist by construction, `unreachable!()` for arms that cannot be reached,
 Pattern matching is exhaustive and forces handling of all cases. Chains of `if let`
 hide the unhandled cases and are harder to extend.
 
-## When scanning
+## Out of scope
 
-**Surfaces:** all .rs files.
-
-**False positives to skip:** auto-generated .rs files (e.g. build.rs output, protobuf-generated); vendored code not maintained in this repo.
+- Auto-generated .rs files (e.g. build.rs output, protobuf-generated)
+- Vendored code not maintained in this repo

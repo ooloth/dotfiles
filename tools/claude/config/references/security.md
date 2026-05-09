@@ -44,8 +44,14 @@ via lockfiles or checksums.
 Code requests only the permissions it needs. Overly broad access — admin
 where read-only suffices, write where read suffices — is worth flagging.
 
-## When scanning
+## In scope
 
-**Surfaces:** all source files, with emphasis on HTTP handlers, CLI argument parsing, file I/O, authentication and authorization enforcement, and secret handling.
+- HTTP handlers and CLI argument parsing
+- File I/O
+- Authentication and authorization enforcement
+- Secret handling
 
-**False positives to skip:** test code using known-safe fixture values; internal admin endpoints with documented, intentionally permissive access scope.
+## Out of scope
+
+- Test code using known-safe fixture values
+- Internal admin endpoints with documented, intentionally permissive access scope
