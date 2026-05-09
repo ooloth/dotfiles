@@ -61,9 +61,9 @@ Diff command: [exact command agents should run to read the diff]
 
 Enhance if needed: if raw sources are vague, read the diff and fill in the gaps. Never leave this block generic ("various improvements") or empty.
 
-## Step 3: Launch all 10 agents in parallel
+## Step 3: Launch all 12 agents in parallel
 
-Send a single message containing all 10 Agent tool calls simultaneously. Pass each agent:
+Send a single message containing all 12 Agent tool calls simultaneously. Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
@@ -154,7 +154,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/architecture.md`, `~/.claude/references/design.md`, `~/.claude/references/code-quality.md`, and `~/.claude/references/type-design.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/architecture.md`, `~/.claude/references/design.md`, `~/.claude/references/code-quality.md`, `~/.claude/references/type-design.md`, and `~/.claude/references/api-design.md`. If the project has a CLI binary or command-line interface, also load `~/.claude/references/cli-design.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Read related unchanged files to understand existing design patterns and conventions.
@@ -362,10 +362,10 @@ If no issues found, report "No security concerns identified."
 
 ---
 
-### Agent 8: Operational Health
+### Agent 8: Observability
 
 ```
-Review the changed files for performance and observability concerns.
+Review the changed files for observability concerns.
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -376,10 +376,43 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/operational-health.md`, `~/.claude/references/performance.md`, and `~/.claude/references/concurrency.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/operational-health.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
-4. Check how similar operations are handled in unchanged files — both for performance patterns and existing logging/metrics conventions.
+4. Check how similar operations handle logging and metrics in unchanged files.
+
+Observability:
+- Does new behavior have corresponding logging, metrics, or analytics?
+- Are new error paths surfaced (logged, tracked) or silently swallowed?
+- Were existing logging or tracing calls changed or removed — is that intentional?
+- If this fails in production, how would we know? Is the failure diagnosable from logs alone?
+- Are log messages at appropriate levels with enough context to act on?
+
+For each issue: file:line | what's wrong | concrete impact | specific fix
+Only report actual problems.
+If no issues found, report "No observability concerns identified."
+```
+
+---
+
+### Agent 9: Performance
+
+```
+Review the changed files for performance and concurrency concerns.
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/performance.md` and `~/.claude/references/concurrency.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed, then read surrounding context.
+4. Check how similar operations are handled in unchanged files — look for existing performance patterns and concurrency primitives in use.
 
 Performance:
 - N+1 queries or repeated fetches inside loops
@@ -390,21 +423,21 @@ Performance:
 - Expensive operations in hot paths (per-request, per-item, per-frame)
 - Algorithmic inefficiency (O(n²) where O(n) is straightforward)
 
-Observability:
-- Does new behavior have corresponding logging, metrics, or analytics?
-- Are new error paths surfaced (logged, tracked) or silently swallowed?
-- Were existing logging or tracing calls changed or removed — is that intentional?
-- If this fails in production, how would we know? Is the failure diagnosable from logs alone?
-- Are log messages at appropriate levels with enough context to act on?
+Concurrency:
+- Unprotected access to shared mutable state
+- Async operations that are not awaited
+- Unbounded queues or thread pools
+- Inconsistent lock acquisition order (deadlock risk)
+- Partial failure in concurrent operations without a recovery path
 
 For each issue: file:line | what's wrong | concrete impact | specific fix
 Only report actual problems, not theoretical micro-optimizations.
-If no issues found, report "No operational health concerns identified."
+If no issues found, report "No performance or concurrency concerns identified."
 ```
 
 ---
 
-### Agent 9: Documentation
+### Agent 10: Documentation
 
 ```
 Review whether the changed code is properly documented — check for stale docs and missing docs,
@@ -447,7 +480,7 @@ If docs are complete and accurate, report "Documentation is up to date."
 
 ---
 
-### Agent 10: Dependencies & Deployment
+### Agent 11: Dependencies & Deployment
 
 ```
 Review the changed files for dependency and deployment concerns.
@@ -485,6 +518,33 @@ Deployment safety:
 
 For each issue: file:line | what's wrong | specific recommendation
 If no concerns found, report "No dependency or deployment concerns identified."
+```
+
+---
+
+### Agent 12: Language
+
+```
+Review the changed files for language-specific invariant violations.
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Identify which programming languages are present in the changed files by file extension (`.rs` → Rust, `.py` → Python).
+2. Read `~/.claude/references/README.md`, then load only the reference files that apply: `~/.claude/references/rust.md` if Rust files are present, `~/.claude/references/python.md` if Python files are present.
+3. If no language-specific reference files apply to the changed files, report "No language-specific reference files apply to this change." and stop.
+4. Otherwise, run the diff command from Context to read what changed.
+
+Apply the loaded invariants to the changed files. Look for violations specific to the language — idioms, error handling patterns, type system conventions, and anti-patterns called out in the reference files.
+
+For each issue: file:line | what's wrong | specific fix
+If no language-specific issues found, report "No language-specific concerns identified."
 ```
 
 ---
