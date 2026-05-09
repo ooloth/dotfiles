@@ -37,7 +37,7 @@ effort: high
 1. Show the user the output of the script above immediately (copy it directly without modification or summarization; the skill output is your complete message)
 2. Offer the user an interactive workflow until all PRs have been reviewed:
    a. User types a number or otherwise chooses a PR
-   b. You review PR using `review-pr` skill
+   b. You review PR using `review-code` skill
    c. You show user an summary of the remaining PRs (reuse the previous script output + manually remove the completed PRs and update the numbering; do not rerun the script)
    d. You prompt for next choice
    d. Repeat until done

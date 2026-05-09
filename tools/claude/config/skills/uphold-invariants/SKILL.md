@@ -1,6 +1,6 @@
 ---
 name: uphold-invariants
-description: Load universal invariant references and apply them to the current task. TRIGGER when designing, writing, or editing code — including when structuring files, designing types, writing tests or planning a concrete implementation.
+description: Load universal invariant references and apply them to the current task. TRIGGER when designing, writing, or editing code — including when planning a concrete implementation, structuring files, designing types, or writing tests.
 ---
 
 ## Your task
