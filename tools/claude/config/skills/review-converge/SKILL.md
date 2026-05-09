@@ -1,6 +1,6 @@
 ---
 name: review-converge
-description: Autonomously review and fix the current branch or specified scope in iterative rounds until clean, leaving all changes in the working tree. Escalates only genuine design decisions. Ends with a transparent report of every round, every fix, and anything it couldn't resolve — persisted to .agents/.
+description: Autonomously review and fix the current branch or specified scope in iterative rounds until clean, leaving all changes in the working tree. Escalates only genuine design decisions. Ends with a transparent report of every round, every fix, and anything it couldn't resolve — persisted to .outputs/.
 argument-hint: '[branch name | PR number | file path | "current branch"]'
 effort: high
 model: opus

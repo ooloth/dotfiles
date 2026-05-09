@@ -80,5 +80,5 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
 6. Generate a self-contained HTML slide deck:
    - `mkdir -p .outputs/<yyyy-mm-dd>`
    - Write to `.outputs/<yyyy-mm-dd>/scan-invariants.html` — clean minimal styling, one slide per category plus a title/summary slide, keyboard arrow-key and click navigation
-   - `open .outputs/<yyyy-mm-dd>/review-invariants.html`
+   - `open .outputs/<yyyy-mm-dd>/scan-invariants.html`
 7. Recommend a next action and wait for the user's response

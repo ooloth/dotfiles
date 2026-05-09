@@ -23,15 +23,15 @@ model: opus
    invariants that apply to its behaviour (and especially its side effects), and the observable
    outputs available to validate that behaviour from the outbox in while treating the system's
    implementation as a black box
-2. Proactively answer every question and follow-up question that occurs to you by exploring the
+3. Proactively answer every question and follow-up question that occurs to you by exploring the
    codebase and anything else that would help you
-3. Wait for all subagents to return their results
-4. Ensure you understand the results you have received and are equipped to make a plan for how to
+4. Wait for all subagents to return their results
+5. Ensure you understand the results you have received and are equipped to make a plan for how to
    run the code in question like it runs in production and record definitive proof (e.g. screen
    recordings, screenshots, etc) convincingly proving the extent to which the code's behaviour does
    and does not currently match its intended behaviour and does and does not currently uphold all
    required invariants;
-5. Once you understand the code, its intended behaviour, the applicable invariants, and what proof
+6. Once you understand the code, its intended behaviour, the applicable invariants, and what proof
    you will provide in the HTML slide deck you will share after your testing, this phase is done
 
 ### Phase 2: Present your validation plan
@@ -74,8 +74,8 @@ model: opus
    category
 2. Generate a self-contained HTML slide deck of the prioritized findings:
    - `mkdir -p .outputs/<yyyy-mm-dd>/<branch>`
-   - Write the report to `.agents/<date>/<branch>/validation-findings.html` — use clean, minimal styling,
+   - Write the report to `.outputs/<yyyy-mm-dd>/<branch>/validation-findings.html` — use clean, minimal styling,
      one slide per category plus a summary/title slide, and keyboard arrow-key and click navigation
      between slides
-   - `open .agents/<date>/<branch>/validation-findings.html`
+   - `open .outputs/<yyyy-mm-dd>/<branch>/validation-findings.html`
 3. Recommend a next action and wait for the user's response
