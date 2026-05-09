@@ -1,6 +1,6 @@
 ---
-name: conventions
-description: Load preferred patterns and apply them to the current task. TRIGGER when writing, editing, or reviewing code — including when structuring files, designing types, writing tests, or working in Python.
+name: uphold-invariants
+description: Load universal invariant references and apply them to the current task. TRIGGER when writing, editing, or reviewing code — including when structuring files, designing types, or writing tests.
 ---
 
 ## Your task

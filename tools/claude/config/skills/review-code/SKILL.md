@@ -131,11 +131,6 @@ What is the minimum code that correctly solves the stated problem? Compare it to
 - Existing utilities, patterns, or libraries in the project or standard library that would make this trivial
 - Complexity whose justification isn't obvious to a competent reader of the problem statement
 
-Also consider whether a meaningfully better approach exists on these axes:
-- More reliable: fewer failure modes, better error recovery
-- More idiomatic: uses the language or framework as intended
-- More expressive: intent is immediately obvious without reading the implementation
-
 Ground every observation in the actual code and the problem being solved. Don't flag superficial rewrites.
 
 If a simpler or better approach exists: describe it concretely, explain what makes it better, and note the cost of switching.
@@ -163,22 +158,6 @@ Instructions:
 3. Run the diff command from Context to read what changed.
 4. Read related unchanged files to understand existing structural patterns and conventions.
 
-Boundaries & dependencies:
-- Do dependencies flow in one direction? Are there cycles or upward imports?
-- Do implementation details leak across component boundaries?
-- Are side effects (I/O, mutation) at the edges, with pure logic in the middle?
-
-Internal design:
-- Does each function or type have one responsibility?
-- Are abstractions used in more than one place, or only at a single call site?
-- Does complexity match the problem — not over-engineered, not under-separated?
-- Do existing patterns get followed, or is the same problem solved a new way without reason?
-
-Code clarity:
-- Is there dead code, unused imports, or commented-out remnants?
-- Do names reflect intent without abbreviation?
-- Are files and functions sized to be reasoned about (files under 2000 lines, functions without excessive nesting)?
-
 For each issue: file:line | what's wrong | specific alternative
 If structure is sound, report "Structure and internal organisation look solid."
 ```
@@ -205,20 +184,10 @@ Instructions:
 4. Find all documentation that could be affected: .md files, help text, docstrings, CLI --help output, code comments in changed files.
 
 Types & interfaces:
-- Are domain-specific types used instead of primitives where intent would be clearer?
-- Do types make invalid states unrepresentable?
-- Does a function transform its input into a more specific type, or return the same type it received?
-- Is the public surface minimal — only what callers need?
 
 API & CLI design:
-- Is the API designed from the caller's perspective, not the implementation's?
-- Is naming consistent across the public surface?
-- For CLIs: does every command and flag have help text? Do errors go to stderr? Are exit codes meaningful?
 
 Documentation:
-- Do existing .md files, diagrams, or help text describe behavior that was changed or removed?
-- Is new behavior, a new flag, a new API, or a new config option documented?
-- For non-obvious code: is there a comment explaining WHY — a hidden constraint, a workaround, behavior that would surprise a reader?
 
 For each issue: file:line | what's wrong | specific fix
 If the public surface is well-designed and documented, report "Public surface is well-designed and documented."
@@ -244,21 +213,6 @@ Instructions:
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
 4. Read 2-3 similar unchanged files to understand existing patterns for error handling and validation.
-
-Logic & edge cases:
-- Logic errors, off-by-one errors, incorrect conditionals
-- Missing edge cases (empty input, null/None/zero, single-element, boundary values)
-- All reachable branches handled
-
-Error handling:
-- Errors propagated consistently with surrounding code
-- Errors enriched with context as they cross boundaries
-- Internal details not exposed to callers
-- Domain errors (not found, validation failed) distinguished from programming errors (assertion violation)
-
-Assertions:
-- Preconditions and postconditions asserted where invariants must hold
-- Assertions cover both what must be true and what must never be true
 
 For each issue: file:line | what's wrong | concrete impact | specific fix
 Skip theoretical what-ifs — report actual problems in the code.
@@ -286,22 +240,10 @@ Instructions:
 4. If database models or migrations changed, read them in full.
 
 Security:
-- Input validation at system boundaries (APIs, CLI args, file uploads, env vars)
-- Injection risks: SQL, command injection, XSS, path traversal
-- Authentication and authorization gaps
-- Secrets or credentials hardcoded or logged
-- Error messages leaking sensitive information (stack traces, internal paths, user data)
 
 Privacy:
-- PII appearing in logs, error messages, traces, or analytics
-- Personal data collected without a stated purpose, or retained indefinitely
-- Deletion paths that leave data accessible in secondary stores
 
 Data integrity:
-- Invalid data reachable by persistent storage (missing validation or DB constraints)
-- Multi-step writes not wrapped in transactions where partial failure would corrupt state
-- Read-modify-write patterns missing concurrency protection
-- Migrations that break existing data or are irreversible without a compensating path
 
 For each issue: file:line | what's wrong | severity (Critical/High/Medium/Low) | specific fix
 Only report actual violations, not theoretical what-ifs.
@@ -330,24 +272,12 @@ Instructions:
 4. Check how similar operations are handled in unchanged files.
 
 Performance:
-- N+1 queries or repeated I/O inside loops
-- Algorithmic inefficiency (O(n²) where O(n) is straightforward)
-- Expensive operations in hot paths
-- Large datasets loaded into memory rather than paginated or streamed
 
 Concurrency:
-- Unprotected access to shared mutable state
-- Async operations not awaited; blocking operations in async contexts
-- Unbounded queues or thread pools; inconsistent lock acquisition order
 
 Reliability:
-- External calls (network, DB, APIs) without explicit timeouts
-- Transient failures retried without bounded backoff, or permanent failures retried as transient
-- Failures in one dependency cascading to unrelated operations
 
 Observability:
-- New behavior without corresponding log output
-- Error paths silently swallowed
 - If this fails in production, would we know? Is the failure diagnosable from logs alone?
 
 For each issue: file:line | what's wrong | concrete impact | specific fix
@@ -377,26 +307,9 @@ Instructions:
 4. Find and read the corresponding test files (new and existing).
 5. Read 2-3 existing test files to understand the project's test conventions and style.
 
-Coverage (with ROI lens):
-- Do the tests provide evidence the changes work across all logical branches?
+Coverage:
 - Are critical paths tested? (auth, payments, data integrity, error paths)
 - Specify exact missing cases: not "add tests" but "add tests for: expired token, missing token, wrong signature"
-
-Test design:
-- Do tests verify behavior, not implementation details?
-- Are assertions focused on outcomes callers care about?
-- Will these tests break for the wrong reasons? (brittle selectors, testing internals)
-- Is each test focused on one behavior — one reason to fail?
-
-Technique:
-- Could similar test cases collapse into one parametrized test?
-- Is property-based testing applicable where the input space is large?
-- Are mocks used only at system boundaries (external APIs, time, randomness)?
-
-Test code quality:
-- Copy-pasted setup that should be extracted to helpers or fixtures?
-- Tests that pass but don't assert meaningful outcomes?
-- Flakiness risk: timing dependencies, order-sensitive assertions, async not awaited?
 
 For each issue: file:line | what's wrong | specific fix
 If tests are well-designed, report "Test design is solid and coverage is appropriate."
@@ -424,20 +337,10 @@ Instructions:
 4. If package files changed, read them in full. If config or env handling changed, read those files in full.
 
 Dependencies (if package files changed):
-- Are new dependencies justified? Could existing deps cover this?
-- Are dependencies well-maintained? (recent activity, known vulnerabilities)
-- Frontend deps: impact on bundle size?
 
 Deployment safety:
-- Database migrations that could fail or lock tables?
-- Deployment ordering issues? (consumer coordination, service dependencies)
-- Could this be rolled back safely if issues arise?
-- Would a feature flag help with safe rollout?
 
 Configuration (if config or env handling changed):
-- Is config validated at startup rather than lazily?
-- Is config parsed into typed structs at the boundary?
-- Are all config keys documented?
 
 For each issue: file:line | what's wrong | specific recommendation
 If no concerns found, report "No release readiness concerns identified."
