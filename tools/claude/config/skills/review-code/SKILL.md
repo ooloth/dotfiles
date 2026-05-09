@@ -61,9 +61,9 @@ Diff command: [exact command agents should run to read the diff]
 
 Enhance if needed: if raw sources are vague, read the diff and fill in the gaps. Never leave this block generic ("various improvements") or empty.
 
-## Step 3: Launch all 12 agents in parallel
+## Step 3: Launch all 10 agents in parallel
 
-Send a single message containing all 12 Agent tool calls simultaneously. Pass each agent:
+Send a single message containing all 10 Agent tool calls simultaneously. Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
@@ -71,10 +71,10 @@ Send a single message containing all 12 Agent tool calls simultaneously. Pass ea
 
 ---
 
-### Agent 1: Change-Intent Alignment
+### Agent 1: Intent Alignment
 
 ```
-Assess whether the implementation actually achieves the stated intent of this change.
+Question: Does the implementation actually achieve the stated intent of this change?
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -105,10 +105,10 @@ If implementation matches intent: report "Implementation aligns with stated inte
 
 ---
 
-### Agent 2: Approach Alternatives
+### Agent 2: Approach
 
 ```
-Assess whether the approach taken is the best available choice for this problem.
+Question: Is this the simplest correct solution to the stated problem, and is it the best available approach?
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -124,26 +124,30 @@ Instructions:
 3. Run the diff command from Context to read what changed.
 4. Read related unchanged files and explore the broader codebase to understand existing patterns and available tools.
 
-Consider whether an alternative approach would be meaningfully better on any of these axes:
-- More reliable: fewer failure modes, better error recovery, more robust to edge cases
-- More correct: fewer logical gaps, better coverage of the problem's full scope
-- More idiomatic: uses the language, framework, or platform as intended
-- Less complex: achieves the same outcome with less code or fewer moving parts
-- More declarative: expresses what rather than how
-- More expressive of intent: a reader immediately understands what this code is for and why
+Simplicity check — ask this first:
+What is the minimum code that correctly solves the stated problem? Compare it to what was written. If the answer is substantially less, that gap is the most important finding. Look for:
+- Abstractions for a single call site, or layers that exist for one use case
+- Problems being solved that were never stated — hypothetical future requirements, speculative flexibility
+- Existing utilities, patterns, or libraries in the project or standard library that would make this trivial
+- Complexity whose justification isn't obvious to a competent reader of the problem statement
 
-Ground every observation in the actual code and the problem being solved. Don't flag superficial rewrites or stylistic preferences — only raise an alternative if it's substantively better for the core problem.
+Also consider whether a meaningfully better approach exists on these axes:
+- More reliable: fewer failure modes, better error recovery
+- More idiomatic: uses the language or framework as intended
+- More expressive: intent is immediately obvious without reading the implementation
 
-If you see a meaningfully better approach: describe it concretely (not just "consider X"), explain what makes it better, and note the cost of switching.
-If the approach is sound: report "Approach looks well-suited to the problem."
+Ground every observation in the actual code and the problem being solved. Don't flag superficial rewrites.
+
+If a simpler or better approach exists: describe it concretely, explain what makes it better, and note the cost of switching.
+If the approach is well-chosen: report "Approach is well-suited to the problem."
 ```
 
 ---
 
-### Agent 3: Design & Code Quality
+### Agent 3: Structure
 
 ```
-Review the changed files for design quality, expressiveness, readability, and simplicity.
+Question: Is the internal organisation of this code sound?
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -154,52 +158,78 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/architecture.md`, `~/.claude/references/design.md`, `~/.claude/references/code-quality.md`, `~/.claude/references/type-design.md`, and `~/.claude/references/api-design.md`. If the project has a CLI binary or command-line interface, also load `~/.claude/references/cli-design.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/architecture.md`, `~/.claude/references/design.md`, and `~/.claude/references/code-quality.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
-4. Read related unchanged files to understand existing design patterns and conventions.
+4. Read related unchanged files to understand existing structural patterns and conventions.
 
-Design coherence:
-- Does the overall structure make sense, or is there a simpler mental model?
-- Is the solution internally consistent, or are similar problems solved differently?
-- Does implementation match the problem's inherent complexity (not over/under-engineered)?
+Boundaries & dependencies:
+- Do dependencies flow in one direction? Are there cycles or upward imports?
+- Do implementation details leak across component boundaries?
+- Are side effects (I/O, mutation) at the edges, with pure logic in the middle?
 
-Evolvability:
-- Assume we're going to extend this code a lot over time; how could improving its structure better prepare for that?
-- Could different structure unlock adding and removing pieces more easily?
-- Could different structure expand unbroken regions of pure code that's easy to test comprehensively?
+Internal design:
+- Does each function or type have one responsibility?
+- Are abstractions used in more than one place, or only at a single call site?
+- Does complexity match the problem — not over-engineered, not under-separated?
+- Do existing patterns get followed, or is the same problem solved a new way without reason?
 
-Expressiveness:
-- Are domain-specific types used instead of primitives where intent would be clearer?
-- Do types enforce invariants and make invalid states unrepresentable?
-- Are there overly broad types (Any, untyped dicts) that provide no safety or documentation value?
-
-Abstraction ROI:
-- Do abstractions pull their weight? (used more than once, clearer than inline)
-- Is there unnecessary indirection or wrapping?
-- Are there helpers that exist for a single call site?
-
-Readability & simplicity:
-- Would a new maintainer struggle to understand intent?
-- Is logic overly clever when a dumber approach would be clearer?
-- Is there premature generality (configurable where hardcoded would suffice)?
-- Are there long functions or deeply nested blocks that should be extracted?
-
-Code noise:
-- Dead code, commented-out code, unused imports or variables?
-- Remnants from exploration (partial refactors, abandoned approaches)?
-- Unrelated changes mixed in that should be a separate commit?
+Code clarity:
+- Is there dead code, unused imports, or commented-out remnants?
+- Do names reflect intent without abbreviation?
+- Are files and functions sized to be reasoned about (files under 2000 lines, functions without excessive nesting)?
 
 For each issue: file:line | what's wrong | specific alternative
-If the code is well-designed, report "Design and code quality look solid."
+If structure is sound, report "Structure and internal organisation look solid."
 ```
 
 ---
 
-### Agent 4: Correctness
+### Agent 4: Public Surface
 
 ```
-Review the changed files for correctness issues.
+Question: From the caller's perspective, is this code well-designed and discoverable?
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/type-design.md`, `~/.claude/references/api-design.md`, and `~/.claude/references/documentation.md`. If the project has a CLI binary or command-line interface, also load `~/.claude/references/cli-design.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed.
+4. Find all documentation that could be affected: .md files, help text, docstrings, CLI --help output, code comments in changed files.
+
+Types & interfaces:
+- Are domain-specific types used instead of primitives where intent would be clearer?
+- Do types make invalid states unrepresentable?
+- Does a function transform its input into a more specific type, or return the same type it received?
+- Is the public surface minimal — only what callers need?
+
+API & CLI design:
+- Is the API designed from the caller's perspective, not the implementation's?
+- Is naming consistent across the public surface?
+- For CLIs: does every command and flag have help text? Do errors go to stderr? Are exit codes meaningful?
+
+Documentation:
+- Do existing .md files, diagrams, or help text describe behavior that was changed or removed?
+- Is new behavior, a new flag, a new API, or a new config option documented?
+- For non-obvious code: is there a comment explaining WHY — a hidden constraint, a workaround, behavior that would surprise a reader?
+
+For each issue: file:line | what's wrong | specific fix
+If the public surface is well-designed and documented, report "Public surface is well-designed and documented."
+```
+
+---
+
+### Agent 5: Correctness
+
+```
+Question: Does this code behave correctly across all inputs, states, and callers?
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -213,15 +243,22 @@ Instructions:
 1. Read `~/.claude/references/README.md`, then `~/.claude/references/correctness.md`, `~/.claude/references/assertions.md`, and `~/.claude/references/error-handling.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
-4. Read 2-3 similar unchanged files to understand existing patterns for error handling, validation, etc.
+4. Read 2-3 similar unchanged files to understand existing patterns for error handling and validation.
 
-Review for:
+Logic & edge cases:
 - Logic errors, off-by-one errors, incorrect conditionals
-- Missing edge cases (empty input, null/None, zero, max values)
-- Incomplete feature implementation (stated goals not fully met)
-- Error propagation: are errors handled consistently with surrounding code?
-- Backward compatibility: does this break existing callers or data?
-- Are existing utilities/patterns reused, or is this reinventing the wheel?
+- Missing edge cases (empty input, null/None/zero, single-element, boundary values)
+- All reachable branches handled
+
+Error handling:
+- Errors propagated consistently with surrounding code
+- Errors enriched with context as they cross boundaries
+- Internal details not exposed to callers
+- Domain errors (not found, validation failed) distinguished from programming errors (assertion violation)
+
+Assertions:
+- Preconditions and postconditions asserted where invariants must hold
+- Assertions cover both what must be true and what must never be true
 
 For each issue: file:line | what's wrong | concrete impact | specific fix
 Skip theoretical what-ifs — report actual problems in the code.
@@ -229,10 +266,10 @@ Skip theoretical what-ifs — report actual problems in the code.
 
 ---
 
-### Agent 5: Data Integrity
+### Agent 6: Data Safety
 
 ```
-Review the changed files for data integrity and state consistency concerns.
+Question: Is data protected from external threats, personal data mishandling, and write-time corruption?
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -243,40 +280,87 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/data-integrity.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/security.md`, `~/.claude/references/privacy.md`, and `~/.claude/references/data-integrity.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. If database models or migrations changed, read them in full.
 
-Validity:
-- Can invalid data be written to persistent storage? (missing validation, no DB constraints)
-- Are uniqueness, foreign key, and type constraints enforced at both application and DB level?
-- Are there writes that bypass validation layers?
+Security:
+- Input validation at system boundaries (APIs, CLI args, file uploads, env vars)
+- Injection risks: SQL, command injection, XSS, path traversal
+- Authentication and authorization gaps
+- Secrets or credentials hardcoded or logged
+- Error messages leaking sensitive information (stack traces, internal paths, user data)
 
-Atomicity:
-- Are multi-step writes wrapped in transactions where partial failure would corrupt state?
-- If a write sequence fails midway, is the resulting state valid or corrupt?
-- Are there read-modify-write patterns missing locks or optimistic concurrency checks?
+Privacy:
+- PII appearing in logs, error messages, traces, or analytics
+- Personal data collected without a stated purpose, or retained indefinitely
+- Deletion paths that leave data accessible in secondary stores
 
-Consistency:
-- Are related entities kept in sync? (denormalized counts, derived fields, both sides of a relationship)
-- Are there race conditions where concurrent writers could produce inconsistent state?
+Data integrity:
+- Invalid data reachable by persistent storage (missing validation or DB constraints)
+- Multi-step writes not wrapped in transactions where partial failure would corrupt state
+- Read-modify-write patterns missing concurrency protection
+- Migrations that break existing data or are irreversible without a compensating path
 
-Migrations:
-- Does the migration handle existing rows correctly?
-- Can existing data violate new constraints being added?
-- Is the migration reversible? Is there a down migration?
-
-For each issue: file:line | what's wrong | concrete failure scenario | specific fix
-If no concerns found, report "No data integrity concerns identified."
+For each issue: file:line | what's wrong | severity (Critical/High/Medium/Low) | specific fix
+Only report actual violations, not theoretical what-ifs.
+If no concerns found, report "No data safety concerns identified."
 ```
 
 ---
 
-### Agent 6: Test Inspector
+### Agent 7: Runtime Behaviour
 
 ```
-Inspect the tests for the changed files — assess quality, design, and coverage without running the suite.
+Question: How does this code behave under real-world conditions — load, failure, and concurrency?
+
+**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/performance.md`, `~/.claude/references/concurrency.md`, `~/.claude/references/reliability.md`, and `~/.claude/references/observability.md`. Use these invariants as your evaluation criteria.
+2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
+3. Run the diff command from Context to read what changed, then read surrounding context.
+4. Check how similar operations are handled in unchanged files.
+
+Performance:
+- N+1 queries or repeated I/O inside loops
+- Algorithmic inefficiency (O(n²) where O(n) is straightforward)
+- Expensive operations in hot paths
+- Large datasets loaded into memory rather than paginated or streamed
+
+Concurrency:
+- Unprotected access to shared mutable state
+- Async operations not awaited; blocking operations in async contexts
+- Unbounded queues or thread pools; inconsistent lock acquisition order
+
+Reliability:
+- External calls (network, DB, APIs) without explicit timeouts
+- Transient failures retried without bounded backoff, or permanent failures retried as transient
+- Failures in one dependency cascading to unrelated operations
+
+Observability:
+- New behavior without corresponding log output
+- Error paths silently swallowed
+- If this fails in production, would we know? Is the failure diagnosable from logs alone?
+
+For each issue: file:line | what's wrong | concrete impact | specific fix
+Only report actual problems, not theoretical micro-optimizations.
+If no concerns found, report "No runtime behaviour concerns identified."
+```
+
+---
+
+### Agent 8: Testing
+
+```
+Question: Is the test suite trustworthy and sufficient to catch regressions in this change?
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -293,10 +377,6 @@ Instructions:
 4. Find and read the corresponding test files (new and existing).
 5. Read 2-3 existing test files to understand the project's test conventions and style.
 
-Conventions:
-- Do the tests follow project conventions (file naming, structure, assertion style)?
-- Does new test code follow the patterns established in the codebase?
-
 Coverage (with ROI lens):
 - Do the tests provide evidence the changes work across all logical branches?
 - Are critical paths tested? (auth, payments, data integrity, error paths)
@@ -304,23 +384,19 @@ Coverage (with ROI lens):
 
 Test design:
 - Do tests verify behavior, not implementation details?
-- Are assertions focused on outcomes users care about?
+- Are assertions focused on outcomes callers care about?
 - Will these tests break for the wrong reasons? (brittle selectors, testing internals)
+- Is each test focused on one behavior — one reason to fail?
 
-Testing approaches — are more powerful techniques underused?
-- Parametrization: could similar test cases collapse into one parametrized test?
-- Snapshot testing: appropriate for UI output or serialized structures?
-- Property-based testing: applicable where input space is large and relationships hold generally?
-- Are the chosen approaches well-matched to what's being tested?
+Technique:
+- Could similar test cases collapse into one parametrized test?
+- Is property-based testing applicable where the input space is large?
+- Are mocks used only at system boundaries (external APIs, time, randomness)?
 
 Test code quality:
-- Copy-pasted setup that should be extracted to helpers/fixtures?
+- Copy-pasted setup that should be extracted to helpers or fixtures?
 - Tests that pass but don't assert meaningful outcomes?
-- Is test code held to the same quality standards as production code?
-
-Flakiness risk:
-- Timing dependencies, race conditions, order-sensitive assertions?
-- Async operations not properly awaited or mocked?
+- Flakiness risk: timing dependencies, order-sensitive assertions, async not awaited?
 
 For each issue: file:line | what's wrong | specific fix
 If tests are well-designed, report "Test design is solid and coverage is appropriate."
@@ -328,170 +404,10 @@ If tests are well-designed, report "Test design is solid and coverage is appropr
 
 ---
 
-### Agent 7: Security
+### Agent 9: Release Readiness
 
 ```
-Review the changed files for security issues.
-
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
-
-Context:
-[insert synthesized intent block]
-
-Changed files:
-[insert file list]
-
-Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/security.md` and `~/.claude/references/privacy.md`. Use these invariants as your evaluation criteria.
-2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-3. Run the diff command from Context to read what changed, then read surrounding context.
-
-Review for:
-- Input validation at system boundaries (APIs, CLI args, file uploads, env vars)
-- Injection risks: SQL, command injection, XSS, path traversal
-- Authentication and authorization gaps
-- Secrets or credentials hardcoded or logged
-- Error messages that leak sensitive information (stack traces, internal paths, user data)
-- File permissions and access controls
-- External dependencies from untrusted sources
-
-For each issue: file:line | what's wrong | severity (Critical/High/Medium/Low) | specific fix
-Only report actual security violations, not theoretical what-ifs.
-If no issues found, report "No security concerns identified."
-```
-
----
-
-### Agent 8: Observability
-
-```
-Review the changed files for observability concerns.
-
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
-
-Context:
-[insert synthesized intent block]
-
-Changed files:
-[insert file list]
-
-Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/observability.md`. Use these invariants as your evaluation criteria.
-2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-3. Run the diff command from Context to read what changed, then read surrounding context.
-4. Check how similar operations handle logging and metrics in unchanged files.
-
-Observability:
-- Does new behavior have corresponding logging, metrics, or analytics?
-- Are new error paths surfaced (logged, tracked) or silently swallowed?
-- Were existing logging or tracing calls changed or removed — is that intentional?
-- If this fails in production, how would we know? Is the failure diagnosable from logs alone?
-- Are log messages at appropriate levels with enough context to act on?
-
-For each issue: file:line | what's wrong | concrete impact | specific fix
-Only report actual problems.
-If no issues found, report "No observability concerns identified."
-```
-
----
-
-### Agent 9: Performance & Reliability
-
-```
-Review the changed files for performance, concurrency, and reliability concerns.
-
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
-
-Context:
-[insert synthesized intent block]
-
-Changed files:
-[insert file list]
-
-Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/performance.md`, `~/.claude/references/concurrency.md`, and `~/.claude/references/reliability.md`. Use these invariants as your evaluation criteria.
-2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
-3. Run the diff command from Context to read what changed, then read surrounding context.
-4. Check how similar operations are handled in unchanged files — look for existing performance patterns and concurrency primitives in use.
-
-Performance:
-- N+1 queries or repeated fetches inside loops
-- Blocking operations in async contexts
-- Missing memoization or caching where appropriate
-- Memory leaks: unclosed connections, resources, growing collections
-- Missing pagination for potentially large datasets
-- Expensive operations in hot paths (per-request, per-item, per-frame)
-- Algorithmic inefficiency (O(n²) where O(n) is straightforward)
-
-Concurrency:
-- Unprotected access to shared mutable state
-- Async operations that are not awaited
-- Blocking operations in async contexts
-- Unbounded queues or thread pools
-- Inconsistent lock acquisition order (deadlock risk)
-- Partial failure in concurrent operations without a recovery path
-
-Reliability:
-- External calls (network, DB, APIs) without explicit timeouts
-- Transient errors retried without backoff or bound
-- Permanent failures retried as if transient
-- Operations not safe to retry that may be retried due to timeouts
-- Failures in one dependency cascading to unrelated operations
-
-For each issue: file:line | what's wrong | concrete impact | specific fix
-Only report actual problems, not theoretical micro-optimizations.
-If no issues found, report "No performance, concurrency, or reliability concerns identified."
-```
-
----
-
-### Agent 10: Documentation
-
-```
-Review whether the changed code is properly documented — check for stale docs and missing docs,
-including .md files, diagrams, help text, docstrings, and code comments.
-
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
-
-Context:
-[insert synthesized intent block]
-
-Changed files:
-[insert file list]
-
-Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/documentation.md`. Use these invariants as your evaluation criteria.
-2. Run the diff command from Context to read what changed.
-3. Find all documentation that could be affected:
-   - All .md files: `find . -name "*.md" -not -path "*/node_modules/*" -not -path "*/.git/*"`
-   - Diagrams: look for .svg, .png, .drawio, .mermaid, or docs/diagrams/ directories
-   - Docstrings and help text in changed source files
-   - Code comments in changed files and closely related unchanged files
-3. Read the docs most likely to describe the changed behavior.
-
-Stale docs:
-- Do existing .md files, diagrams, or help text describe behavior that was changed or removed?
-- Are examples, command signatures, config keys, flags, or APIs in the docs now wrong?
-- Are there code comments in changed files that no longer accurately describe what the code does?
-
-Missing docs:
-- Is new behavior, a new flag, a new API, or a new config option undocumented in any .md or help text?
-- For public-facing interfaces: is there a docstring or equivalent describing what it does, its inputs, and its outputs?
-- For non-obvious code: is there a comment explaining WHY — a hidden constraint, a subtle invariant, a workaround, behavior that would surprise a reader? (Don't flag missing comments for self-explanatory code.)
-
-Changelogs:
-- Does the project maintain a changelog? If so, does this change warrant an entry that isn't there?
-
-For each issue: file:line | what's stale or missing | specific fix
-If docs are complete and accurate, report "Documentation is up to date."
-```
-
----
-
-### Agent 11: Release Readiness
-
-```
-Review the changed files for release readiness — dependencies, deployment safety, and configuration.
+Question: Is this change ready to ship responsibly — dependencies justified, deployment safe, config correct?
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -515,8 +431,8 @@ Dependencies (if package files changed):
 Deployment safety:
 - Database migrations that could fail or lock tables?
 - Deployment ordering issues? (consumer coordination, service dependencies)
-- Would a feature flag help with safe rollout?
 - Could this be rolled back safely if issues arise?
+- Would a feature flag help with safe rollout?
 
 Configuration (if config or env handling changed):
 - Is config validated at startup rather than lazily?
@@ -529,10 +445,10 @@ If no concerns found, report "No release readiness concerns identified."
 
 ---
 
-### Agent 12: Language
+### Agent 10: Language
 
 ```
-Review the changed files for language-specific invariant violations.
+Question: Does this code use the language correctly, following the project's established idioms?
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
