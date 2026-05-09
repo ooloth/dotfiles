@@ -155,7 +155,7 @@ Instructions:
 1. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 2. Run the diff command from Context to read what changed.
 3. Read related unchanged files to understand existing design patterns and conventions.
-4. Read ~/.claude/lib/review/references/README.md, then ~/.claude/lib/review/references/type-design.md.
+4. Read ~/.claude/references/README.md, then ~/.claude/references/type-design.md.
 
 Design coherence:
 - Does the overall structure make sense, or is there a simpler mental model?
