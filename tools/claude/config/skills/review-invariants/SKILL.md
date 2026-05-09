@@ -1,6 +1,6 @@
 ---
-name: review-conventions
-description: Review codebase conventions — a specific domain or all domains in parallel. Use when asked to review or check conventions.
+name: review-invariants
+description: Check whether a codebase upholds its invariants — a specific theme or all themes in parallel. Use when asked to review conventions, check invariants, or audit codebase health.
 argument-hint: '[architecture | design | code-quality | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | observability | performance | concurrency | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
@@ -8,16 +8,16 @@ effort: high
 
 ## Dispatch
 
-**If the user specified a domain:**
+**If the user specified a theme:**
 
 1. Read `~/.claude/references/README.md` to understand the invariant framing and tier definitions
-2. Load `~/.claude/references/<domain>.md` (list `~/.claude/references/` if unsure which file applies)
+2. Load `~/.claude/references/<theme>.md` (list `~/.claude/references/` if unsure which file applies)
 3. Study the current project's documented guidance for this concern (if any)
 4. Use up to 50 subagents to explore the codebase (or the path/git-range if the user specified a smaller scope)
 5. Identify violations of Must invariants, deviations from Should invariants, and unresolved Consider tradeoffs
 6. Focus especially on patterns you would not want a future agent to spread
 
-**If no domain was specified, continue below for a full parallel review.**
+**If no theme was specified, continue below for a full parallel review.**
 
 ---
 
@@ -79,6 +79,6 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
 5. Present the prioritized findings with a summary table
 6. Generate a self-contained HTML slide deck:
    - `mkdir -p .agents/<yyyy-mm-dd>`
-   - Write to `.agents/<yyyy-mm-dd>/review-conventions.html` — clean minimal styling, one slide per category plus a title/summary slide, keyboard arrow-key and click navigation
-   - `open .agents/<yyyy-mm-dd>/review-conventions.html`
+   - Write to `.agents/<yyyy-mm-dd>/review-invariants.html` — clean minimal styling, one slide per category plus a title/summary slide, keyboard arrow-key and click navigation
+   - `open .agents/<yyyy-mm-dd>/review-invariants.html`
 7. Recommend a next action and wait for the user's response
