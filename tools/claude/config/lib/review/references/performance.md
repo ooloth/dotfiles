@@ -5,6 +5,12 @@ done to make it faster is driven by measurement rather than assumption.
 
 ## Must
 
+**Performance is considered at design time.**
+The largest performance wins — algorithmic choices, data layout, batching
+strategy — are made at design time, not recovered through profiling after the
+fact. Back-of-the-envelope estimates of network, storage, memory, and compute
+costs inform design decisions before a line is written.
+
 **Algorithmic complexity is justified.**
 Operations over large or unbounded inputs use algorithms whose complexity is
 appropriate for the expected scale. O(n²) over large inputs is examined before

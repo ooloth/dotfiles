@@ -5,6 +5,11 @@ problem it solves, and similar problems within a codebase are solved the same wa
 
 ## Must
 
+**Work is finished before it ships.**
+Incomplete implementations, known hacks, and deferred cleanup ship as
+permanent fixtures. Code is easier to change while the context is loaded.
+Debt deferred compounds — do it right while it's hot.
+
 **Abstractions earn their place.**
 Every abstraction is used in more than one place or makes a single complex thing
 significantly clearer. Helpers that exist for one call site are inlined. Wrappers

@@ -35,12 +35,12 @@ When multiple locks must be held simultaneously, they are always acquired in
 the same order across all call sites. Inconsistent ordering is the cause of
 deadlocks.
 
-## Consider
+## Should
 
-**Backpressure is applied.**
-When a producer generates work faster than a consumer processes it, the system
-applies backpressure rather than allowing unbounded queue growth. Queues have
-a defined maximum size.
+**Concurrency and queues have explicit bounds.**
+Every queue has a maximum size. Every thread pool or task executor has a
+concurrency limit. Unbounded growth is not the default. Backpressure is applied
+before bounds are exceeded.
 
 **Partial failure in concurrent operations has a recovery path.**
 When a set of concurrent operations can fail independently, the handling of

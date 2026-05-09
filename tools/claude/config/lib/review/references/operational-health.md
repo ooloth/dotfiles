@@ -45,3 +45,7 @@ that could be cached or hoisted.
 **Resource handles are closed.**
 Connections, file handles, and other resources are released after use.
 Long-lived processes don't accumulate open handles.
+
+**Resource usage is bounded.**
+Memory, connections, threads, and other resources have explicit limits. The
+system cannot silently accumulate unbounded resource usage under load.

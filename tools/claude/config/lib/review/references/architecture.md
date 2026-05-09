@@ -23,6 +23,11 @@ and tested without external dependencies.
 
 ## Should
 
+**The control plane is separated from the data plane.**
+Orchestration, validation, and assertions happen in the control plane. The data
+plane executes large batched units of work without interruption. Mixing them
+forces the data plane to pay control-plane costs on every iteration.
+
 **Public surfaces are as small as possible.**
 A component exposes only what callers need. Every additional export is a
 commitment to maintain. Internal details are private by default.
