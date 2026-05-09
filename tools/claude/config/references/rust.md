@@ -28,6 +28,11 @@ by `op run --env-file=.env` or equivalent.
 
 ## Should
 
+**The simplest memory model is chosen; cleverness is deferred until profiling demands it.**
+Clarity and forward momentum take priority over optimization. The highest-level tool
+available is used. The borrow checker is not fought — if the design requires it, the
+design is changed.
+
 **Clone freely; don't fight the borrow checker.**
 Clone values across `.await` points and wherever the alternative is lifetime
 complexity. Optimize only if profiling shows the clone is a bottleneck.
@@ -40,6 +45,16 @@ complexity. Optimize only if profiling shows the clone is a bottleneck.
 Annotate structs with derive attributes. Don't use the builder API. Command and flag
 definitions live on the struct, not assembled at runtime.
 
+**Prefer `let` over `let mut`; return new values rather than mutating in place.**
+Mutation is explicit, not the default. Reach for `let mut` only when mutation is
+genuinely needed. Functions that transform inputs into new values are easier to
+test and compose.
+
+**Tokio is used for concurrency, not convenience.**
+Don't reach for `tokio::spawn`, channels, or `Arc<Mutex<T>>` just because an async
+runtime is present. Those introduce synchronization complexity. Use synchronous code
+when there is no concurrency benefit.
+
 ## Consider
 
 **`assert!`, `unwrap()`, and `unreachable!()` are correct for invariant violations.**
@@ -50,6 +65,37 @@ exist by construction, `unreachable!()` for arms that cannot be reached,
 **`match` is preferred over chains of `if let`.**
 Pattern matching is exhaustive and forces handling of all cases. Chains of `if let`
 hide the unhandled cases and are harder to extend.
+
+**`Arc<T>` is the optimization path when a clone is measured to be too expensive.**
+Cloning an `Arc<T>` is an atomic refcount increment, not a copy of the data. Reach
+for it when profiling shows a clone is a bottleneck — not before.
+
+**`debug_assert!` is reserved for expensive checks on hot paths.**
+`assert!` fires in both debug and release builds. `debug_assert!` fires only in
+debug. Use `debug_assert!` only when the check is expensive and the invariant is
+structurally enforced elsewhere in release builds. `assert!` is the right choice
+in almost all cases.
+
+**Unit tests live in inline `#[cfg(test)] mod tests` modules.**
+Tests for a module are co-located in the same file, keeping the test and the code
+it covers adjacent.
+
+**Parameterized tests use `rstest`.**
+When the same test shape applies to multiple inputs or variants, `rstest` replaces
+copy-pasted test functions with `#[case]` annotations.
+
+**Snapshot tests use `insta`.**
+When the expected value is large or deeply structured, `insta` replaces hand-written
+expected values with stored snapshots that can be updated intentionally.
+
+**Property-based tests use `proptest`.**
+When a behavior should hold for any valid input across a range, `proptest` replaces
+a handful of chosen examples with generated cases.
+
+**Mutation testing uses `cargo-mutants`.**
+`cargo-mutants` verifies that tests catch logic errors by mutating operators, return
+values, and conditions and reporting which mutations survive. Run periodically, not
+on every commit — it is intentionally slow.
 
 ## Out of scope
 
