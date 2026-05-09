@@ -1,5 +1,5 @@
 ---
-name: review-invariants
+name: scan-invariants
 description: Check whether a codebase upholds its invariants — a specific theme or all themes in parallel. Use when asked to review conventions, check invariants, or audit codebase health.
 argument-hint: '[architecture | design | code-quality | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | observability | performance | concurrency | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
@@ -78,7 +78,7 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
 4. Rank findings by priority (impact, cost of delay, ROI)
 5. Present the prioritized findings with a summary table
 6. Generate a self-contained HTML slide deck:
-   - `mkdir -p .agents/<yyyy-mm-dd>`
-   - Write to `.agents/<yyyy-mm-dd>/review-invariants.html` — clean minimal styling, one slide per category plus a title/summary slide, keyboard arrow-key and click navigation
-   - `open .agents/<yyyy-mm-dd>/review-invariants.html`
+   - `mkdir -p .outputs/<yyyy-mm-dd>`
+   - Write to `.outputs/<yyyy-mm-dd>/scan-invariants.html` — clean minimal styling, one slide per category plus a title/summary slide, keyboard arrow-key and click navigation
+   - `open .outputs/<yyyy-mm-dd>/review-invariants.html`
 7. Recommend a next action and wait for the user's response
