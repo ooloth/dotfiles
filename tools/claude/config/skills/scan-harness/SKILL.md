@@ -1,6 +1,6 @@
 ---
-name: review-agent-harness
-description: Preferred agent harness patterns when not otherwise specified by the project. TRIGGER when you notice you or another agent had trouble completing work quickly and correctly and better instructions or other harness tooling could help, or if the user asks you to help improve their Claude Code setup.
+name: scan-harness
+description: Audit the user's Claude Code agent harness for improvements — global config, project config, recent session patterns, and opportunities for better guardrails and feedback loops. Use when the user asks to improve their Claude Code setup.
 model: opus
 effort: high
 ---
@@ -10,14 +10,14 @@ effort: high
 Use up to 25 subagents to explore the following data sources:
 
 1. Study the current project's documented agent harness intentions (if any)
-3. Study the user's global Claude Code configuration in `~/.claude/` (custom skills, agents and settings are symlinked from ~/Repos/ooloth/dotfiles/tools/claude/config/)
-4. Study the project-level Claude Code configuration in `./.claude/`
-5. Study the user's recent Claude Code sessions in `~/.claude/projects/`
-6. Study the Claude Code skills docs: https://code.claude.com/docs/en/skills
-7. Study the Claude Code hooks docs: https://code.claude.com/docs/en/hooks-guide
-8. Study the Claude Code subagents docs: https://code.claude.com/docs/en/sub-agents
-9. Study the Claude Code agent teams docs: https://code.claude.com/docs/en/agent-teams
-10. Study the Claude Code /loop docs: https://code.claude.com/docs/en/scheduled-tasks
+2. Study the user's global Claude Code configuration in `~/.claude/` (custom skills, agents and settings are symlinked from ~/Repos/ooloth/dotfiles/tools/claude/config/)
+3. Study the project-level Claude Code configuration in `./.claude/`
+4. Study the user's recent Claude Code sessions in `~/.claude/projects/`
+5. Study the Claude Code skills docs: https://code.claude.com/docs/en/skills
+6. Study the Claude Code hooks docs: https://code.claude.com/docs/en/hooks-guide
+7. Study the Claude Code subagents docs: https://code.claude.com/docs/en/sub-agents
+8. Study the Claude Code agent teams docs: https://code.claude.com/docs/en/agent-teams
+9. Study the Claude Code /loop docs: https://code.claude.com/docs/en/scheduled-tasks
 
 ## Your task
 
@@ -31,6 +31,6 @@ Use up to 25 subagents to explore the following data sources:
 8. Present the prioritized findings to the user, ensuring a summary table is included near the end of your response for clarity
 9. Generate a self-contained HTML slide deck of the prioritized findings:
    - `mkdir -p .outputs/<yyyy-mm-dd>`
-   - Write the report to `.outputs/<yyyy-mm-dd>/review-conventions.html` — clean minimal styling, one slide per category plus a summary/title slide, keyboard arrow-key and click navigation between slides
-   - `open .outputs/<yyyy-mm-dd>/review-conventions.html`
+   - Write the report to `.outputs/<yyyy-mm-dd>/scan-harness.html` — clean minimal styling, one slide per category plus a summary/title slide, keyboard arrow-key and click navigation between slides
+   - `open .outputs/<yyyy-mm-dd>/scan-harness.html`
 10. Recommend a next action and wait for the user's response
