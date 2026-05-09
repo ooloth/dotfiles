@@ -376,7 +376,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/operational-health.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/observability.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. Check how similar operations handle logging and metrics in unchanged files.
@@ -480,10 +480,10 @@ If docs are complete and accurate, report "Documentation is up to date."
 
 ---
 
-### Agent 11: Dependencies & Deployment
+### Agent 11: Release Readiness
 
 ```
-Review the changed files for dependency and deployment concerns.
+Review the changed files for release readiness — dependencies, deployment safety, and configuration.
 
 **Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
 
@@ -494,30 +494,29 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/dependencies-deployment.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/dependencies.md`, `~/.claude/references/deployment.md`, and `~/.claude/references/config.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
-4. If package files changed, read them in full.
+4. If package files changed, read them in full. If config or env handling changed, read those files in full.
 
 Dependencies (if package files changed):
 - Are new dependencies justified? Could existing deps cover this?
-- Are dependencies well-maintained? (check for recent activity, known issues)
+- Are dependencies well-maintained? (recent activity, known vulnerabilities)
 - Frontend deps: impact on bundle size?
-
-Breaking changes (if public APIs or exports changed):
-- Are any public interfaces, types, or exports modified?
-- Would existing consumers break?
-- Is a version bump needed? (major for breaking, minor for features, patch for fixes)
 
 Deployment safety:
 - Database migrations that could fail or lock tables?
-- Backward compatibility with existing data/state in production?
-- Deployment ordering issues? (config changes, service dependencies)
+- Deployment ordering issues? (consumer coordination, service dependencies)
 - Would a feature flag help with safe rollout?
 - Could this be rolled back safely if issues arise?
 
+Configuration (if config or env handling changed):
+- Is config validated at startup rather than lazily?
+- Is config parsed into typed structs at the boundary?
+- Are all config keys documented?
+
 For each issue: file:line | what's wrong | specific recommendation
-If no concerns found, report "No dependency or deployment concerns identified."
+If no concerns found, report "No release readiness concerns identified."
 ```
 
 ---

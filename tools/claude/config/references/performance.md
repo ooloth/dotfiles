@@ -36,6 +36,14 @@ same result within a request are not issued multiple times.
 In performance-sensitive paths, allocations are scrutinized. Reuse, pooling,
 or pre-allocation is preferred over allocating on every call.
 
+**Loops don't hide repeated I/O.**
+Database queries, API calls, and file reads inside loops are replaced with
+batched equivalents. N+1 patterns are identified and resolved before merging.
+
+**Large datasets are paginated or streamed.**
+Operations that could return unbounded result sets use pagination or streaming.
+Fetching everything into memory is not the default for large collections.
+
 ## Consider
 
 **Performance budgets exist for user-facing operations.**

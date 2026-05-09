@@ -34,8 +34,3 @@ them unless there is a deliberate reason to diverge.
 State transformations move forward through the call stack. Callbacks, circular
 references, and shared mutable state are avoided where a simple pipeline would do.
 
-## Consider
-
-**Unrelated changes are in separate commits.**
-Refactoring, bug fixes, and feature work mixed into a single diff make intent
-harder to review and history harder to bisect.

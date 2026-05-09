@@ -35,7 +35,9 @@ When multiple locks must be held simultaneously, they are always acquired in
 the same order across all call sites. Inconsistent ordering is the cause of
 deadlocks.
 
-## Should
+**Blocking work is not done in async contexts.**
+CPU-bound or blocking operations are offloaded from async executors. Async
+runtimes are not blocked by synchronous work.
 
 **Concurrency and queues have explicit bounds.**
 Every queue has a maximum size. Every thread pool or task executor has a

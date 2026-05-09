@@ -1,7 +1,7 @@
 ---
 name: review-conventions
 description: Review codebase conventions — a specific domain or all domains in parallel. Use when asked to review or check conventions.
-argument-hint: '[architecture | design | code-quality | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | operational-health | performance | concurrency | documentation | api-design | dependencies-deployment | python] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+argument-hint: '[architecture | design | code-quality | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | observability | performance | concurrency | documentation | api-design | cli-design | dependencies | deployment | config | python | rust] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
 ---
@@ -59,16 +59,19 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    **Subagent 5 — Testing** (subagent_type: Explore, description: "review testing")
    Inline: `~/.claude/references/testing.md`
 
-   **Subagent 6 — Operations** (subagent_type: Explore, description: "review operational health")
-   Inline: `~/.claude/references/operational-health.md`, `~/.claude/references/performance.md`,
+   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability, performance, and concurrency")
+   Inline: `~/.claude/references/observability.md`, `~/.claude/references/performance.md`,
    `~/.claude/references/concurrency.md`
 
-   **Subagent 7 — Documentation & Deployment** (subagent_type: Explore, description: "review documentation and deployment")
+   **Subagent 7 — Documentation & Release** (subagent_type: Explore, description: "review documentation, API design, dependencies, deployment, and config")
    Inline: `~/.claude/references/documentation.md`, `~/.claude/references/api-design.md`,
-   `~/.claude/references/dependencies-deployment.md`
+   `~/.claude/references/dependencies.md`, `~/.claude/references/deployment.md`,
+   `~/.claude/references/config.md`
 
-   Note: include `~/.claude/references/python.md` in the Types & Correctness agent if the codebase
-   contains Python.
+   Note: include language-specific files in the relevant agents when applicable:
+   `~/.claude/references/python.md` → Types & Correctness (if Python);
+   `~/.claude/references/rust.md` → Types & Correctness (if Rust);
+   `~/.claude/references/cli-design.md` → Structure (if the project has a CLI binary).
 
 2. Wait for all subagents to return their results
 3. Explore specific areas of the codebase yourself if needed to compare the relative importance of findings
