@@ -20,6 +20,11 @@ are both stated.
 
 ## Should
 
+**`assert` is for programmer errors; error returns are for environmental failures.**
+The discriminator: could this condition fire due to something outside the code —
+an absent environment variable, malformed input, a failed network call? If yes,
+return an error. If only a bug within the codebase could trigger it, assert it.
+
 **Arguments and return values are asserted.**
 Function arguments are asserted to satisfy preconditions before use. Return
 values are asserted to satisfy postconditions before returning. Silent

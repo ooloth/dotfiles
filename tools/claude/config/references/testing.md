@@ -42,6 +42,11 @@ Real objects are used wherever possible. Mocks are reserved for external APIs,
 time, randomness, and other true system boundaries. Excessive mocking
 disconnects tests from real behavior and masks integration failures.
 
+**The urge to mock a non-boundary component is a signal that logic is in the wrong layer.**
+When testing requires mocking something that isn't a true system boundary, the logic
+being tested belongs one layer closer to the pure core. Moving it there makes it
+directly testable without mocks and reveals the correct architectural boundary.
+
 ## Consider
 
 **More powerful techniques are used where they fit.**

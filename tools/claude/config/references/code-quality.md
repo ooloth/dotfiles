@@ -31,6 +31,11 @@ for natural split points.
 When a simpler, more direct expression achieves the same result, it is used.
 Cleverness that requires a comment to explain is rewritten.
 
+**Values are immutable unless mutation is necessary.**
+Variables and fields are immutable by default. Functions return new values rather
+than modifying inputs in place. Mutation that is required is explicit and visible
+at the call site.
+
 ## Consider
 
 **Related names sort by most significant word.**
