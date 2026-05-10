@@ -1,6 +1,6 @@
 ---
 name: uphold-invariants
-description: Selectively load relevant code quality reference files (architecture, testing, security, type design, etc.) and apply their invariants to the current task. Always invoke before designing, writing, or editing any code.
+description: Load relevant code quality reference files (architecture, testing, security, type design, etc.) and apply their invariants to the current task. ALWAYS invoke before designing, writing, or editing ANY code.
 ---
 
 ## Your task
