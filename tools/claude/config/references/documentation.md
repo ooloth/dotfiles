@@ -25,14 +25,17 @@ not explained — well-named identifiers do that.
 
 **New behavior appears in the right doc surfaces.**
 A new flag appears in help text. A new config key appears in the example
-config. A new architectural decision has a record. Docs are updated in the
-same change that introduces the behavior.
+config. Docs are updated in the same change that introduces the behavior.
 
 **Examples are correct and runnable.**
 Code samples in documentation execute without modification. Copy-paste
 examples that silently fail are worse than no examples.
 
 ## Consider
+
+**Significant architectural decisions are recorded with their rationale.**
+When a non-obvious design choice is made, a record exists explaining why — ADR, Notion page,
+PR description, or inline note. Future maintainers can find the reasoning without asking the author.
 
 **Changelogs are updated for user-facing changes.**
 When the project maintains a changelog, additions, removals, and breaking
