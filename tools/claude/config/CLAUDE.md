@@ -100,6 +100,8 @@ This applies to **all side effects**, not just file edits — GitHub comments, i
 
 Discussion phrases like "yes", "ok", "sounds good", "that makes sense" do not necessarily indicate approval.
 
+**"I'd like to X — is that doable?" is a feasibility question, not approval.** Even when the user describes exactly what they want in the same message, a trailing `?` means answer and stop. Do not implement. The desire description tells you *what* to plan; the question mark tells you to present that plan and wait.
+
 Explicitly confirm if the user is ready for you to implement and for the discussion to end before you act (when in doubt, assume the user hasn't approved yet).
 
 If your thinking later leads you to modify the approved plan (e.g. want to make new design decisions), stop and discuss those rather than quietly making an executive decision.
