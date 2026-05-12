@@ -375,9 +375,30 @@ If no language-specific issues found, report "No language-specific concerns iden
 
 ---
 
+## Step 3.5: Verify before presenting
+
+Before writing a single line of output, audit the agent findings for claims that assert specific library behavior, numerical values, runtime semantics, or API guarantees. These are the highest-risk claims — most likely to be subtly wrong — and the ones a reviewer would have to take on faith.
+
+**For each such claim, run a targeted check:**
+
+- Library default values → `python3 -c "import lib; print(lib.DEFAULT_X)"`
+- API signature or accepted kwargs → `python3 -c "import inspect, lib; print(inspect.signature(lib.Cls.method))"`
+- Stdlib availability → `python3 -c "import lib; print(hasattr(lib, 'func'))"`
+- Source behavior → read the relevant installed source with `python3 -c "import inspect, lib; print(inspect.getsource(lib.func))"`
+- File/doc claims → read the file
+
+**Apply the results:**
+
+- Strike claims that don't survive the check — remove them entirely, don't soften them.
+- Correct claims that are partially right — state what's actually true.
+- Merge duplicate findings — when multiple agents flag the same issue, keep the most precise version and note the convergence.
+- Drop findings you cannot verify and that are speculative rather than grounded in the diff.
+
+Only carry verified findings into Step 4.
+
 ## Step 4: Present findings
 
-Collect all agent results. Focus on the 3–5 most impactful issues per severity tier; collapse agents with no findings to a single line.
+Produce a prioritized action list — not a categorized findings report. The reader's question is "what should I change?" Answer it directly.
 
 ```
 ## Code Review
@@ -385,43 +406,38 @@ Collect all agent results. Focus on the 3–5 most impactful issues per severity
 ### Verdict: [Approve | Request Changes | Comment]
 [One sentence on what to do next]
 
-### What's Working Well
-- `file:line` — [specific praise grounded in actual code]
+### Recommended Changes
 
-### All Clear
-- [Agent name]: [one-line summary — e.g. "no issues found" or "12 tests passed"]
+1. `file:line` — [imperative: what to do] *(blocks ship)*
+   Why: [one sentence on concrete impact if left unfixed]
+   Verified: [how you confirmed this — library source, command output, doc reference]
 
-### Issues
-
-#### Must Fix
-
-1. `file:line` — [what's wrong; why it matters]
-   - (a) [recommended fix]
-   - (b) [alternative if meaningfully different]
-
-#### Should Fix
-
-2. `file:line` — [what's wrong; why it matters]
-   - (a) [recommended fix]
-   - (b) [alternative if meaningfully different]
-
-#### Consider
-
-3. `file:line` — [observation or suggestion]
-   - (a) [one approach]
-   - (b) [another approach]
+2. `file:line` — [imperative: what to do]
+   Why: [one sentence on impact]
+   Verified: [how you confirmed this]
 
 ### Open Questions
 
-4. `file:line` — [genuine uncertainty or design decision]
+3. `file:line` — [genuine design decision with no clear right answer]
    - (a) [one path and its tradeoff]
    - (b) [another path and its tradeoff]
+
+### Looks Good
+[One sentence: what the change gets right, or which concern areas came back clean.]
 ```
+
+**Formatting rules:**
+
+- Order by impact: blockers first (mark with `*(blocks ship)*`), then should-fix, then suggestions. Severity is implicit from position — no separate tiers.
+- Each item is an imperative action ("Pass `chunk_size=` to `blob.open()`"), not an observation ("The BlobReader default is 40 MiB"). The reader should be able to act on item N without re-reading the diagnosis.
+- The Verified line is mandatory for any claim about library internals, runtime behavior, or numerical values. For convention-based findings (style, naming, docstring), write "convention — no runtime check needed."
+- Omit "What's Working Well" and "All Clear" sections — they are not decision inputs. Consolidate into the single "Looks Good" line.
+- If there are no recommended changes, say so in one sentence under the verdict and skip the section.
 
 **Verdict mapping:**
 
-- **Approve** — no Must Fix issues; Should Fix and Consider items are optional
-- **Request Changes** — one or more Must Fix issues present
+- **Approve** — no blockers; all remaining items are optional
+- **Request Changes** — one or more items marked *(blocks ship)*
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
 
 ## Step 5: Post review (PR scope only)
