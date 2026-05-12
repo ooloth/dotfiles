@@ -13,13 +13,29 @@ If Status and All changes are both empty, there is nothing to commit — say so 
 
 ## Your task
 
-1. Run all checks and fix any errors that weren't auto-fixed until you see a successful run. Discover what checks apply by consulting the project's Makefile, CI configuration (e.g. `.github/workflows/`), and CLAUDE.md.
-2. Run all tests and fix any errors you encounter until all tests pass
-3. Divide the changes into themes if relevant. For example, pair one test case with its implementation and corresponding documentation updates. Or one new lint rule and its fixes. Changes in one file or layer don't necessarily all belong in the same commit. **If a clean split would require writing intermediate versions of files to disk, do not split — make one commit instead.** Writing intermediate files is change replay: the committed state was never tested and may not even be correct.
-4. Commit the changes yourself following the "Writing Commit Messages" style guide below. Design a commit sequence that helps readers understand how the system evolved, but do not revert and replay changes to achieve that sequence. Just do your best to divide the existing changes up sensibly. See "Workflows > Staging file hunks non-interactively" when staging some changes in a file but not others (hint: `git add -p` won't work)
+1. Run all checks. Fix errors that are mechanical and contained to files already in the diff
+   (e.g. formatting, unused imports, trivial lint). If fixing an error would require touching new
+   files, making design decisions, or adding non-trivial logic — stop, report what failed and why,
+   and wait for approval before proceeding. Discover what checks apply by consulting the project's
+   CONTRIBUTING.md, Justfile and CLAUDE.md.
+2. Run all tests. Apply the same rule: fix only mechanical failures in files already in the diff;
+   escalate anything requiring new design work.
+3. Try to divide the changes into themes. For example, pair one test case with its implementation
+   and corresponding documentation updates. Or one new lint rule and all its fixes. Changes in one
+   file or layer don't necessarily all belong in the same commit. Design a commit sequence that
+   will help readers understand how the system evolved, but do NOT design a sequence that would
+   require reverting or replaying changes; that is time-consuming and introduces the risk of
+   mistakes and committing unreviewed changes
+4. Make each commit following the "Writing Commit Messages" style guide below. See "Workflows >
+   Staging file hunks non-interactively" when staging some changes in a file but not others (hint:
+   `git add -p` won't work in this environment)
 5. After each commit, run `git log --oneline -3` to confirm it was recorded correctly.
-6. If a precommit hook fails and addressing the failure requires a design decision the user has not made, stop and present options and wait for approval.
-7. When finished making all commits, you may continue implementing your next approved task — but stop and write a status report before committing anything further. Each commit requires its own explicit user signal ("commit", "/commit", etc.). This invocation of /commit authorized only the changes present right now. It does not carry forward to future changes made later in the session.
+6. If a precommit hook fails and addressing the failure requires a design decision the user has not
+   made, stop and present options and wait for approval.
+7. When finished making all commits, continue implementing your next approved task — but do not
+   ever commit again unless explicitly asked to again. Each commit requires a new, explicit user
+   approval signal ("commit", "/commit", etc.). The invocation of /commit you just acted on
+   authorized only the changes you just finished committing. It does not carry forward.
 
 ## Writing Commit Messages
 
