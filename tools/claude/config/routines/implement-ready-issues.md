@@ -9,7 +9,7 @@ This prompt runs unattended in a cloud environment — there is no human in the 
 
 ## Purpose
 
-Finds all GitHub issues labeled `status:ready-for-agent` across a set of pre-cloned repos, implements each one autonomously in an isolated git worktree, and opens a draft PR. Designed to run as a Claude Code Routine where repos are pre-cloned into the workspace.
+Finds all GitHub issues labeled `status:ready-for-agent` across a set of pre-cloned repos, implements each one autonomously on a dedicated branch, and opens a draft PR. Designed to run as a Claude Code Routine where repos are pre-cloned into the workspace.
 
 ## Setup
 
@@ -54,15 +54,11 @@ Skip any issue that already carries `status:agent-working`. Note it in the final
 
 ## Implementation
 
-### 4. Prepare a worktree for each issue
-
-For each issue to implement, create an isolated worktree:
+### 4. Create a branch for each issue
 
 ```bash
 BRANCH="claude/issue-<number>"
-WORKTREE="/tmp/worktrees/<repo-name>-issue-<number>"
-
-git -C <repo-path> worktree add "$WORKTREE" -b "$BRANCH"
+git -C <repo-path> checkout -b "$BRANCH"
 ```
 
 ### 5. Spawn one subagent per issue
@@ -71,22 +67,12 @@ For each issue, spawn a subagent and pass it:
 
 - `repo` — GitHub slug (e.g. `ooloth/hub`)
 - `issue` — issue number
-- `worktree` — absolute path prepared in step 4
+- `repo-path` — absolute path to the cloned repo (identified in step 1)
 - `branch` — branch name from step 4
 - `dotfiles-path` — absolute path to the cloned dotfiles repo (identified in step 1)
 - Instruction: read `tools/claude/config/routines/implement-issue.md` from the dotfiles repo and follow it exactly using the values above
 
 Run subagents in parallel only when they target **different repos**. Two subagents in the same repo must run sequentially to avoid git conflicts.
-
-## Cleanup
-
-### 6. Remove worktrees
-
-After each subagent completes (whether it opened a PR or stopped early), remove its worktree:
-
-```bash
-git -C <repo-path> worktree remove "$WORKTREE" --force
-```
 
 ## Report
 

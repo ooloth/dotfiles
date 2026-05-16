@@ -9,12 +9,12 @@ This prompt runs unattended in a cloud environment — there is no human in the 
 
 ## Purpose
 
-Implements a GitHub issue autonomously: validates the issue's claims against current code, makes the fix in a prepared git worktree, verifies the repo's checks and tests pass, then opens a draft PR.
+Implements a GitHub issue autonomously: validates the issue's claims against current code, makes the fix on a dedicated branch, verifies the repo's checks and tests pass, then opens a draft PR.
 
 ## Prerequisites
 
 - `gh` CLI authenticated (`gh auth status`)
-- Worktree already created and branch already checked out by the caller
+- Branch already checked out in the cloned repo by the caller
 
 ## Context
 
@@ -22,7 +22,7 @@ The task prompt provides:
 
 - `repo` — org/repo slug (e.g. `ooloth/hub`)
 - `issue` — GitHub issue number
-- `worktree` — absolute path to the prepared git worktree
+- `repo-path` — absolute path to the cloned repo
 - `branch` — branch name
 - `dotfiles-path` — absolute path to the cloned dotfiles repo
 
@@ -37,10 +37,10 @@ gh issue view <issue> --repo <repo> \
 
 Read the title, body, and all comments in full.
 
-### 2. Verify the worktree is clean
+### 2. Verify the repo is clean
 
 ```bash
-git -C <worktree> status --porcelain
+git -C <repo-path> status --porcelain
 ```
 
 If the output is non-empty, the worktree has uncommitted changes — something went wrong in a previous run. Stop without modifying any labels.
@@ -68,14 +68,14 @@ gh issue edit <issue> --repo <repo> \
 
 ### 5. Validate the issue's claims
 
-Using `Read`, `rg`, and `find` inside `<worktree>`, explore the areas the issue describes:
+Using `Read`, `rg`, and `find` inside `<repo-path>`, explore the areas the issue describes:
 
 - Find the files and symbols it references
 - Check whether the bug, gap, or violation it describes still exists in the current code
 - Check recent commits for evidence it was already addressed:
 
 ```bash
-git -C <worktree> log --oneline -20
+git -C <repo-path> log --oneline -20
 ```
 
 **If stale or already resolved** — comment explaining what you found, relabel, and stop:
@@ -106,7 +106,7 @@ not guess.
 
 ### 7. Implement
 
-Make all changes inside `<worktree>`. Follow the repo's existing conventions (formatting, naming, error handling, style). Do not touch files unrelated to the issue.
+Make all changes inside `<repo-path>`. Follow the repo's existing conventions (formatting, naming, error handling, style). Do not touch files unrelated to the issue.
 
 ### 8. Write missing tests
 
@@ -121,7 +121,7 @@ system, write a test for it.
 Run the same check and test commands you used in step 3.
 
 Your changes introduced any failures that appear now — the baseline
-passed in step 3. Read the errors, fix them in `<worktree>`, and re-run.
+passed in step 3. Read the errors, fix them in `<repo-path>`, and re-run.
 Repeat until green. Do not bail here: this is your responsibility to
 resolve.
 
