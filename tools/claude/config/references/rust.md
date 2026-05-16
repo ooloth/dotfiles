@@ -97,6 +97,10 @@ a handful of chosen examples with generated cases.
 values, and conditions and reporting which mutations survive. Run periodically, not
 on every commit — it is intentionally slow.
 
+## In scope
+
+- All .rs files in the repo
+
 ## Out of scope
 
 - Auto-generated .rs files (e.g. build.rs output, protobuf-generated)

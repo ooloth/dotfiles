@@ -19,6 +19,10 @@ The default case of every `match` statement calls `assert_never` to make
 exhaustive handling explicit. A new variant added to the matched type becomes
 a type error, not a silent fallthrough.
 
+## In scope
+
+- All .py files in the repo
+
 ## Out of scope
 
 - Auto-generated .py files

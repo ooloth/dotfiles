@@ -47,6 +47,10 @@ align visually and sort meaningfully when listed together.
 Literal numbers and strings that carry meaning are extracted to named constants.
 A reader understands what a value represents without searching for its origin.
 
+## In scope
+
+- All non-generated, non-vendored source files
+
 ## Out of scope
 
 - Generated code

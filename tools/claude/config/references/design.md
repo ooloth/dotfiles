@@ -34,6 +34,10 @@ them unless there is a deliberate reason to diverge.
 State transformations move forward through the call stack. Callbacks, circular
 references, and shared mutable state are avoided where a simple pipeline would do.
 
+## In scope
+
+- All non-generated, non-vendored source files
+
 ## Out of scope
 
 - Test code that duplicates setup intentionally for test isolation
