@@ -134,11 +134,19 @@ gh issue view <number> --repo <slug> --json title,body
 
 Compare semantically — same problem with different wording still counts as a duplicate.
 
-If a finding matches an existing issue, add a comment capturing any evidence not already covered in the issue (file path, line range, exact text):
+If a finding matches an existing open issue, add a comment capturing any evidence not already covered in the issue (file path, line range, exact text):
 
 ```bash
 gh issue comment <number> --repo <slug> --body "<evidence>"
 ```
+
+Also check for intentionally suppressed issues before filing:
+
+```bash
+gh issue list --repo <slug> --state closed --label "wontfix" --limit 200 --json number,title
+```
+
+If a finding matches a closed `wontfix` issue, skip it silently — do not file and do not comment.
 
 ### 5. Ensure labels exist
 
@@ -199,6 +207,9 @@ Commented on existing issue:
 
 Skipped (duplicate):
   ooloth/hub  — same issue already tracked in #39
+
+Skipped (wontfix):
+  ooloth/hub  — finding matches closed wontfix issue #29
 
 Surfaced only (Consider — not filed):
   ooloth/hub  — no rate limiting on outbound API calls
