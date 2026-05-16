@@ -27,7 +27,40 @@ Derive each repo's GitHub slug from its origin URL:
 git -C <path> remote get-url origin
 ```
 
-### 2. Find ready issues
+### 2. Detect and reset stale claims
+
+For each repo, find open issues labeled `status:agent-working`:
+
+```bash
+gh issue list \
+  --repo <slug> \
+  --label "status:agent-working" \
+  --state open \
+  --json number,updatedAt \
+  --jq '.[]'
+```
+
+For each such issue, check whether an open PR exists for the corresponding branch:
+
+```bash
+gh pr list --repo <slug> --head "claude/issue-<number>" --state open --json number --jq 'length'
+```
+
+- If an open PR exists, the issue is under review — skip it.
+- If no open PR exists and `updatedAt` is more than 72 hours ago, the previous run stalled. Leave a comment and reset the label:
+
+```bash
+gh issue comment <number> --repo <slug> \
+  --body "No open PR found after 72 hours — previous agent run appears to have stalled. Resetting to ready-for-agent."
+
+gh issue edit <number> --repo <slug> \
+  --remove-label "status:agent-working" \
+  --add-label "status:ready-for-agent"
+```
+
+- If no open PR exists but `updatedAt` is within 72 hours, the run may still be in progress — skip it.
+
+### 3. Find ready issues
 
 For each repo, list issues labeled `status:ready-for-agent`:
 
@@ -42,7 +75,7 @@ gh issue list \
 
 If no ready issues exist across all repos, output `No ready issues found.` and stop.
 
-### 3. Skip already-claimed issues
+### 4. Skip already-claimed issues
 
 For each ready issue, check whether `status:agent-working` is also present — a previous run may have claimed it and stalled:
 
@@ -52,7 +85,7 @@ gh issue view <number> --repo <slug> --json labels --jq '[.labels[].name]'
 
 Skip any issue that already carries `status:agent-working`. Note it in the final report.
 
-### 4. Check open agent PR count per repo
+### 5. Check open agent PR count per repo
 
 For each repo, count open PRs opened by this agent:
 
@@ -64,21 +97,21 @@ If the count is 3 or more, skip all issues for that repo and note it in the fina
 
 ## Implementation
 
-### 5. Create a branch for each issue
+### 6. Create a branch for each issue
 
 ```bash
 BRANCH="claude/issue-<number>"
-git -C <repo-path> checkout -b "$BRANCH"
+git -C <repo-path> checkout -B "$BRANCH"
 ```
 
-### 6. Spawn one subagent per issue
+### 7. Spawn one subagent per issue
 
 For each issue, spawn a subagent and pass it:
 
 - `repo` — GitHub slug (e.g. `ooloth/hub`)
 - `issue` — issue number
 - `repo-path` — absolute path to the cloned repo (identified in step 1)
-- `branch` — branch name from step 5
+- `branch` — branch name from step 6
 - `dotfiles-path` — absolute path to the cloned dotfiles repo (identified in step 1)
 - Instruction: read `tools/claude/config/routines/implement-issue.md` from the dotfiles repo and follow it exactly using the values above
 
@@ -93,6 +126,9 @@ Implemented:
 
 Stopped early:
   ooloth/hub #38       — open design question; relabeled status:needs-human-review (see issue comment)
+
+Reset (stale claim):
+  ooloth/hub #29       — no open PR after 72 hours; reset to ready-for-agent
 
 Skipped (already claimed):
   ooloth/hub #51       — status:agent-working label already present

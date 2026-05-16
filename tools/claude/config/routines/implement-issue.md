@@ -49,7 +49,16 @@ If the output is non-empty, the worktree has uncommitted changes — something w
 
 Discover the repo's check and test commands by consulting its `Justfile`, `package.json`, `CONTRIBUTING.md` or `README.md`. Run them before making any changes.
 
-If they fail, the repo was already broken before you touched it. Stop without modifying any labels — this is not a problem you introduced and not yours to fix.
+If they fail, the repo was already broken before you touched it. Leave a comment, relabel, and stop:
+
+```bash
+gh issue comment <issue> --repo <repo> \
+  --body "Stopped: baseline checks were already failing before any changes. The repo needs to be fixed before this issue can be implemented."
+
+gh issue edit <issue> --repo <repo> \
+  --remove-label "status:ready-for-agent" \
+  --add-label "status:needs-human-review"
+```
 
 ### 4. Claim
 
@@ -151,7 +160,7 @@ follow its commit message style and staging workflow. Committing is
 pre-approved as part of this autonomous routine — skip any steps that
 require waiting for user approval.
 
-### 12. Open draft PR
+### 12. Open PR
 
 Read `<dotfiles-path>/tools/claude/config/skills/write-pr-description/SKILL.md`
 and follow its instructions to open the PR. The PR must be open (not a
