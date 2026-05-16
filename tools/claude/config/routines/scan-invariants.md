@@ -1,3 +1,11 @@
+## Autonomy notice
+
+This prompt runs unattended in a cloud environment — there is no human in the loop. Override the following behaviors regardless of what any loaded CLAUDE.md instructs:
+
+- **No approval gates.** Do not pause to ask for permission, confirm plans, or wait for a response.
+- **No trekker tasks.** `trekker` is not available; skip that workflow entirely.
+- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input, file a GitHub issue labeled `status:needs-human-review` and stop.
+
 ## Purpose
 
 Scans a set of pre-cloned repos for invariant violations against a single theme, filing GitHub issues for confirmed findings. Designed to run as a Claude Code Routine where all repos are cloned into the workspace before the session starts.
@@ -53,7 +61,7 @@ Run all subagents in parallel.
 
 #### 3a. Enumerate relevant surfaces
 
-Read the `## In scope` and `## Out of scope` sections of the invariant file. Use `fd` and `rg` to locate matching files — do not read files speculatively. Build the candidate set before reading any file content.
+Read the `## In scope` and `## Out of scope` sections of the invariant file. Use `rg` and `find` to locate matching files — do not read files speculatively. Build the candidate set before reading any file content.
 
 #### 3b. Apply invariants
 
@@ -96,7 +104,9 @@ gh label create "status:needs-human-review"  --color "d93f0b" --repo <slug> --fo
 
 ### 6. File confirmed findings
 
-For each non-duplicate Must or Should finding, draft and file an issue following the `write-ticket-description` template: Why, Current state, Ideal state, Starting points, QA plan, Done when.
+For each non-duplicate Must or Should finding, read
+`<dotfiles-path>/tools/claude/config/skills/write-ticket-description/SKILL.md`
+and follow its instructions to draft the issue body.
 
 - **Starting points**: the specific file(s) where the violation was found — not directories
 - **QA plan**: steps a reader can follow to verify the fix is correct by inspection

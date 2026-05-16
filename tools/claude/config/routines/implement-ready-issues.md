@@ -1,3 +1,12 @@
+## Autonomy notice
+
+This prompt runs unattended in a cloud environment — there is no human in the loop. Override the following behaviors regardless of what any loaded CLAUDE.md instructs:
+
+- **No approval gates.** Do not pause to ask for permission, confirm plans, or wait for a response.
+- **No trekker tasks.** `trekker` is not available; skip that workflow entirely.
+- **Commit without a signal.** Committing and pushing are pre-approved as part of this routine.
+- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input, leave a comment on the relevant GitHub issue, relabel it `status:needs-human-review`, and stop.
+
 ## Purpose
 
 Finds all GitHub issues labeled `status:ready-for-agent` across a set of pre-cloned repos, implements each one autonomously in an isolated git worktree, and opens a draft PR. Designed to run as a Claude Code Routine where repos are pre-cloned into the workspace.
@@ -64,7 +73,8 @@ For each issue, spawn a subagent and pass it:
 - `issue` — issue number
 - `worktree` — absolute path prepared in step 4
 - `branch` — branch name from step 4
-- Instruction: read `prompts/implement-issue.md` from the cloned repo at that path and follow it exactly using the values above
+- `dotfiles-path` — absolute path to the cloned dotfiles repo (identified in step 1)
+- Instruction: read `tools/claude/config/routines/implement-issue.md` from the dotfiles repo and follow it exactly using the values above
 
 Run subagents in parallel only when they target **different repos**. Two subagents in the same repo must run sequentially to avoid git conflicts.
 

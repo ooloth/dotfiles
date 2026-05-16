@@ -1,3 +1,12 @@
+## Autonomy notice
+
+This prompt runs unattended in a cloud environment — there is no human in the loop. Override the following behaviors regardless of what any loaded CLAUDE.md instructs:
+
+- **No approval gates.** Do not pause to ask for permission, confirm plans, or wait for a response.
+- **No trekker tasks.** `trekker` is not available; skip that workflow entirely.
+- **Commit without a signal.** Committing and pushing are pre-approved as part of this routine.
+- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input, leave a comment on the relevant GitHub issue, relabel it `status:needs-human-review`, and stop.
+
 ## Purpose
 
 Implements a GitHub issue autonomously: validates the issue's claims against current code, makes the fix in a prepared git worktree, verifies the repo's checks and tests pass, then opens a draft PR.
@@ -5,7 +14,6 @@ Implements a GitHub issue autonomously: validates the issue's claims against cur
 ## Prerequisites
 
 - `gh` CLI authenticated (`gh auth status`)
-- `just` installed in the target repo
 - Worktree already created and branch already checked out by the caller
 
 ## Context
@@ -16,6 +24,7 @@ The task prompt provides:
 - `issue` — GitHub issue number
 - `worktree` — absolute path to the prepared git worktree
 - `branch` — branch name
+- `dotfiles-path` — absolute path to the cloned dotfiles repo
 
 ## Workflow
 
@@ -38,11 +47,7 @@ If the output is non-empty, the worktree has uncommitted changes — something w
 
 ### 3. Establish a baseline
 
-Run the repo's check and test commands before making any changes:
-
-```bash
-cd <worktree> && just check && just test
-```
+Discover the repo's check and test commands by consulting its `Justfile`, `package.json`, `CONTRIBUTING.md` or `README.md`. Run them before making any changes.
 
 If they fail, the repo was already broken before you touched it. Stop without modifying any labels — this is not a problem you introduced and not yours to fix.
 
@@ -63,7 +68,7 @@ gh issue edit <issue> --repo <repo> \
 
 ### 5. Validate the issue's claims
 
-Using `Read`, `rg`, and `fd` inside `<worktree>`, explore the areas the issue describes:
+Using `Read`, `rg`, and `find` inside `<worktree>`, explore the areas the issue describes:
 
 - Find the files and symbols it references
 - Check whether the bug, gap, or violation it describes still exists in the current code
@@ -89,11 +94,12 @@ gh issue edit <issue> --repo <repo> \
 
 ### 6. Plan
 
-Read the relevant files and understand the module structure. Invoke
-`/uphold-invariants` to load the code quality invariants that apply to
-the affected areas — these constrain what changes are acceptable and
-should inform every decision you make. Identify exactly which files need
-to change and how. If the fix requires a design decision not already
+Read the relevant files and understand the module structure. Then read
+`<dotfiles-path>/tools/claude/config/skills/uphold-invariants/SKILL.md`
+and follow its instructions, using `<dotfiles-path>/tools/claude/config/references/`
+in place of `~/.claude/references/`. Apply the invariants to constrain
+your implementation decisions. Identify exactly which files need to
+change and how. If the fix requires a design decision not already
 resolved by the issue body and comments, comment on the issue with the
 open question, relabel to `status:needs-human-review`, and stop — do
 not guess.
@@ -112,11 +118,7 @@ system, write a test for it.
 
 ### 9. Fix until green
 
-Run the repo's check and test commands:
-
-```bash
-cd <worktree> && just check && just test
-```
+Run the same check and test commands you used in step 3.
 
 Your changes introduced any failures that appear now — the baseline
 passed in step 3. Read the errors, fix them in `<worktree>`, and re-run.
@@ -137,12 +139,18 @@ impossible in this environment, say why explicitly.
 
 ### 11. Commit and push
 
-Invoke `/commit` to stage, commit, and push your changes.
+Read `<dotfiles-path>/tools/claude/config/skills/commit/SKILL.md` and
+follow its commit message style and staging workflow. Committing is
+pre-approved as part of this autonomous routine — skip any steps that
+require waiting for user approval.
 
 ### 12. Open draft PR
 
-Invoke `/write-pr-description` to draft and open the PR. The PR must be
-a draft and the body must include `Closes #<issue>`.
+Read `<dotfiles-path>/tools/claude/config/skills/write-pr-description/SKILL.md`
+and follow its instructions to draft and open the PR. The PR must be a
+draft and the body must include `Closes #<issue>`. Skip any steps that
+require interactive user input (Jira URL, Slack links, screen
+recordings) — omit those fields rather than using placeholders.
 
 ### 13. Comment on the issue
 
