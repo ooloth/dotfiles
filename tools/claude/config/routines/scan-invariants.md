@@ -8,13 +8,13 @@ This prompt runs unattended in a cloud environment — there is no human in the 
 
 ## Purpose
 
-Scans a set of pre-cloned repos for invariant violations against a single theme, filing GitHub issues for confirmed findings. Designed to run as a Claude Code Routine where all repos are cloned into the workspace before the session starts.
+Scans a set of pre-cloned repos for invariant violations against one or two themes, filing GitHub issues for confirmed findings. Designed to run as a Claude Code Routine where all repos are cloned into the workspace before the session starts.
 
 ## Arguments
 
 Provided by the Routine bootstrap prompt:
 
-- `THEME` — invariant theme name, must match a filename in `ooloth/dotfiles/tools/claude/config/references/` (e.g. `security`, `testing`, `architecture`)
+- `THEMES` — one or two invariant theme names, comma-separated, each matching a filename in `ooloth/dotfiles/tools/claude/config/references/` (e.g. `security` or `error-handling, observability`)
 
 ## Setup
 
@@ -32,17 +32,17 @@ Identify the dotfiles repo (its origin URL ends in `dotfiles`). All other repos 
 git -C <path> remote get-url origin
 ```
 
-### 2. Load the invariant definition
+### 2. Load invariant definitions
 
-Read both files from the dotfiles repo:
+Read the following files from the dotfiles repo:
 
 - `<dotfiles-path>/tools/claude/config/references/README.md` — tier definitions (Must/Should/Consider)
-- `<dotfiles-path>/tools/claude/config/references/<THEME>.md` — the invariant definition
+- One file per theme in THEMES: `<dotfiles-path>/tools/claude/config/references/<theme>.md`
 
-If the theme file does not exist, stop and output:
+For any theme without a matching file, stop and output:
 
 ```
-Unknown theme: <THEME>
+Unknown theme: <theme>
 Available themes: <list filenames in tools/claude/config/references/ excluding README.md>
 ```
 
@@ -50,33 +50,57 @@ Available themes: <list filenames in tools/claude/config/references/ excluding R
 
 ### 3. Spawn one subagent per target repo
 
-For each target repo, spawn a subagent with:
+For each target repo, spawn a subagent with the following prompt (substitute bracketed values):
 
-- The full content of both reference files loaded in step 2
-- The absolute path of the cloned repo
-- The repo's GitHub slug (derived from its origin URL)
-- Instructions to follow steps 3a–3c below
+```
+Repo: [absolute path]
+GitHub slug: [slug]
+Themes: [THEMES]
+
+Question: Does this codebase uphold its [THEMES] invariants?
+
+## Invariant definitions
+
+[paste full content of README.md from step 2]
+
+[paste full content of each theme file loaded in step 2]
+
+## Instructions
+
+1. Based on the invariant definitions above, identify which files in this
+   repo could plausibly contain violations. Use your understanding of what
+   each theme cares about as the primary driver — do not limit yourself to
+   the ## In scope section. Treat ## In scope as supplementary guidance that
+   highlights non-obvious file types or patterns you might otherwise miss.
+   Honour ## Out of scope as a firm exclusion. For themes that apply broadly
+   to all source files, prioritise files most likely to have the highest
+   concentration of relevant code rather than attempting to read everything.
+   Use rg and find to locate files — build the candidate list before reading
+   any content.
+
+2. For each candidate file: read it and apply all Must and Should
+   invariants from each loaded theme. For each violation found, record:
+   - File: path relative to repo root
+   - Tier: Must or Should
+   - Theme: which theme the violated invariant belongs to
+   - Finding: one sentence describing the specific problem
+   - Evidence: exact text or line range that is wrong or missing
+
+   Skip anything marked as Out of scope in the relevant invariant definition.
+
+3. If more than one theme was provided: do one additional cross-theme pass.
+   Using the ## In scope sections of all loaded themes, identify files that
+   fall within the scope of more than one theme. For each such file, check
+   whether a code construct that satisfies one theme's invariants still
+   violates another's. These violations are only visible when both lenses
+   are active simultaneously. Record them with Theme: [both theme names].
+
+4. Return findings in this format, ordered by tier (Must first):
+   [file] | [tier] | [theme] | [finding] | [evidence]
+   Top 10 findings max. If none found, say so in one sentence.
+```
 
 Run all subagents in parallel.
-
-#### 3a. Enumerate relevant surfaces
-
-Read the `## In scope` and `## Out of scope` sections of the invariant file. Use `rg` and `find` to locate matching files — do not read files speculatively. Build the candidate set before reading any file content.
-
-#### 3b. Apply invariants
-
-For each candidate file: read it, apply the Must/Should/Consider invariants. For each violation found, record:
-
-- **File**: path relative to repo root
-- **Tier**: Must, Should, or Consider
-- **Finding**: one sentence describing the specific problem
-- **Evidence**: the exact text, line range, or pattern that is wrong or missing
-
-Skip anything the reference file marks as a known false positive.
-
-#### 3c. Return findings
-
-Return a structured list of findings. If none, return an empty list.
 
 ## Filing
 
@@ -85,10 +109,22 @@ Return a structured list of findings. If none, return an empty list.
 For each finding across all subagents, check open issues before filing:
 
 ```bash
-gh issue list --repo <slug> --state open --limit 100 --json number,title --jq '.[].title'
+gh issue list --repo <slug> --state open --limit 100 --json number,title
+```
+
+**First pass:** compare each finding against issue titles. If a title is clearly unrelated, move on. If a title looks potentially related, fetch the full body before deciding:
+
+```bash
+gh issue view <number> --repo <slug> --json title,body
 ```
 
 Compare semantically — same problem with different wording still counts as a duplicate.
+
+If a finding matches an existing issue, add a comment capturing any evidence not already covered in the issue (file path, line range, exact text):
+
+```bash
+gh issue comment <number> --repo <slug> --body "<evidence>"
+```
 
 ### 5. Ensure labels exist
 
@@ -96,8 +132,13 @@ Before filing the first issue in each repo:
 
 ```bash
 gh label create "author:agent"               --color "0075ca" --repo <slug> --force
-gh label create "category:<THEME>"           --color "e4e669" --repo <slug> --force
 gh label create "status:needs-human-review"  --color "d93f0b" --repo <slug> --force
+```
+
+For each theme in THEMES:
+
+```bash
+gh label create "category:<theme>"           --color "e4e669" --repo <slug> --force
 ```
 
 `--force` is idempotent — safe to run even if the label already exists.
@@ -117,7 +158,17 @@ gh issue create \
   --repo <slug> \
   --title "<title>" \
   --body "<body>" \
-  --label "author:agent,category:<THEME>,status:needs-human-review"
+  --label "author:agent,category:<theme>,status:needs-human-review"
+```
+
+For findings that span both themes, apply both category labels:
+
+```bash
+gh issue create \
+  --repo <slug> \
+  --title "<title>" \
+  --body "<body>" \
+  --label "author:agent,category:<theme-1>,category:<theme-2>,status:needs-human-review"
 ```
 
 Surface Consider findings in the final report only — do not file them.
