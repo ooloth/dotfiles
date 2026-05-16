@@ -75,8 +75,9 @@ Question: Does this codebase uphold its [THEMES] invariants?
    Honour ## Out of scope as a firm exclusion. For themes that apply broadly
    to all source files, prioritise files most likely to have the highest
    concentration of relevant code rather than attempting to read everything.
-   Use rg and find to locate files — build the candidate list before reading
-   any content.
+   Use up to 50 sub-subagents to explore the codebase in parallel if needed
+   for coverage. Use rg and find to locate files — build the candidate list
+   before reading any content.
 
 2. For each candidate file: read it and apply all Must and Should
    invariants from each loaded theme. For each violation found, record:
@@ -85,8 +86,13 @@ Question: Does this codebase uphold its [THEMES] invariants?
    - Theme: which theme the violated invariant belongs to
    - Finding: one sentence describing the specific problem
    - Evidence: exact text or line range that is wrong or missing
+   - Ideal: one or more sentences describing what this code would do
+     if the violation were resolved — each phrased as an observable
+     fact ("X does Y"), not an implementation step
 
-   Skip anything marked as Out of scope in the relevant invariant definition.
+   Skip anything marked as Out of scope in the relevant invariant
+   definition. Focus especially on patterns you would not want a
+   future agent to spread.
 
 3. If more than one theme was provided: do one additional cross-theme pass.
    Using the ## In scope sections of all loaded themes, identify files that
@@ -96,7 +102,7 @@ Question: Does this codebase uphold its [THEMES] invariants?
    are active simultaneously. Record them with Theme: [both theme names].
 
 4. Return findings in this format, ordered by tier (Must first):
-   [file] | [tier] | [theme] | [finding] | [evidence]
+   [file] | [tier] | [theme] | [finding] | [evidence] | [ideal]
    Top 10 findings max. If none found, say so in one sentence.
 ```
 
