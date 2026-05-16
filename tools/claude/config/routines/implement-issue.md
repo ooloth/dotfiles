@@ -180,6 +180,8 @@ gh issue comment <issue> --repo <repo> \
   --body "Opened PR: <pr-url>"
 ```
 
+**Do not change the issue label.** `status:agent-working` stays on the issue after the PR is opened — it signals the agent's work is in review. Only replace it with `status:needs-human-review` when stopping without a PR due to a blocker (steps 5, 6, or 9).
+
 ## Output format
 
 **Done:** PR #N opened — `<pr title>`
