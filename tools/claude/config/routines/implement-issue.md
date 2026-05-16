@@ -154,8 +154,9 @@ require waiting for user approval.
 ### 12. Open draft PR
 
 Read `<dotfiles-path>/tools/claude/config/skills/write-pr-description/SKILL.md`
-and follow its instructions to draft and open the PR. The PR must be a
-draft and the body must include `Closes #<issue>`. Skip any steps that
+and follow its instructions to open the PR. The PR must be open (not a
+draft) and the body must include `Closes #<issue>`. Omit `--draft` from
+the `gh pr create` command even if the skill includes it. Skip any steps that
 require interactive user input (Jira URL, Slack links, screen
 recordings) — omit those fields rather than using placeholders.
 
@@ -176,7 +177,7 @@ gh issue comment <issue> --repo <repo> \
 
 ## Output format
 
-**Done:** PR #N opened as draft — `<pr title>`
+**Done:** PR #N opened — `<pr title>`
 
 Or if stopped early:
 

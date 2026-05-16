@@ -78,8 +78,8 @@ Run subagents in parallel only when they target **different repos**. Two subagen
 
 ```
 Implemented:
-  ooloth/hub #42       — opened draft PR #N: <title>
-  ooloth/dotfiles #17  — opened draft PR #N: <title>
+  ooloth/hub #42       — opened PR #N: <title>
+  ooloth/dotfiles #17  — opened PR #N: <title>
 
 Stopped early:
   ooloth/hub #38       — open design question; relabeled status:needs-human-review (see issue comment)
