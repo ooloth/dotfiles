@@ -52,23 +52,33 @@ gh issue view <number> --repo <slug> --json labels --jq '[.labels[].name]'
 
 Skip any issue that already carries `status:agent-working`. Note it in the final report.
 
+### 4. Check open agent PR count per repo
+
+For each repo, count open PRs opened by this agent:
+
+```bash
+gh pr list --repo <slug> --state open --head "claude/" --json number --jq 'length'
+```
+
+If the count is 3 or more, skip all issues for that repo and note it in the final report.
+
 ## Implementation
 
-### 4. Create a branch for each issue
+### 5. Create a branch for each issue
 
 ```bash
 BRANCH="claude/issue-<number>"
 git -C <repo-path> checkout -b "$BRANCH"
 ```
 
-### 5. Spawn one subagent per issue
+### 6. Spawn one subagent per issue
 
 For each issue, spawn a subagent and pass it:
 
 - `repo` — GitHub slug (e.g. `ooloth/hub`)
 - `issue` — issue number
 - `repo-path` — absolute path to the cloned repo (identified in step 1)
-- `branch` — branch name from step 4
+- `branch` — branch name from step 5
 - `dotfiles-path` — absolute path to the cloned dotfiles repo (identified in step 1)
 - Instruction: read `tools/claude/config/routines/implement-issue.md` from the dotfiles repo and follow it exactly using the values above
 
@@ -86,4 +96,7 @@ Stopped early:
 
 Skipped (already claimed):
   ooloth/hub #51       — status:agent-working label already present
+
+Skipped (too many open agent PRs):
+  ooloth/hub           — 3 open PRs with claude/ prefix
 ```

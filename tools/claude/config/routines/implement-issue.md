@@ -160,7 +160,12 @@ the `gh pr create` command even if the skill includes it. Skip any steps that
 require interactive user input (Jira URL, Slack links, screen
 recordings) — omit those fields rather than using placeholders.
 
-Add `--assignee ooloth` to the `gh pr create` command.
+Add `--assignee ooloth --label "author:agent"` to the `gh pr create`
+command. Ensure the label exists first:
+
+```bash
+gh label create "author:agent" --color "0075ca" --repo <repo> --force
+```
 
 Always include a Related Links section with a link to this session:
 
@@ -172,7 +177,7 @@ echo "https://claude.ai/code/$CLAUDE_SESSION_ID"
 
 ```bash
 gh issue comment <issue> --repo <repo> \
-  --body "Opened draft PR: <pr-url>"
+  --body "Opened PR: <pr-url>"
 ```
 
 ## Output format
