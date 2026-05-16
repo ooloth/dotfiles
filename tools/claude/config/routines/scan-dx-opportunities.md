@@ -94,7 +94,7 @@ without accidentally undermining decisions that were deliberately made?
      gap is closed — each phrased as a fact ("X does Y"), not an
      implementation step
 
-5. Return the top 5 untracked gaps, ordered by impact. If none found,
+5. Return the top 10 untracked gaps, ordered by impact. If none found,
    say so in one sentence.
 ```
 
@@ -104,14 +104,25 @@ Run all subagents in parallel.
 
 ### 3. Dedup against open issues
 
-For each finding, do a final semantic check before filing:
+For each finding across all subagents, check open issues before filing:
 
 ```bash
-gh issue list --repo <slug> --state open --limit 200 --json number,title \
-  --jq '.[].title'
+gh issue list --repo <slug> --state open --limit 200 --json number,title
 ```
 
-Same problem with different wording still counts as a duplicate. Skip duplicates silently.
+**First pass:** compare each finding against issue titles. If a title is clearly unrelated, move on. If a title looks potentially related, fetch the full body before deciding:
+
+```bash
+gh issue view <number> --repo <slug> --json title,body
+```
+
+Compare semantically — same problem with different wording still counts as a duplicate.
+
+If a finding matches an existing issue, add a comment capturing any context not already covered in the issue (finding, impact, starting point):
+
+```bash
+gh issue comment <number> --repo <slug> --body "<context>"
+```
 
 ### 4. Ensure labels exist
 
@@ -141,6 +152,9 @@ gh issue create \
 Filed:
   #45  ooloth/hub       — no explanation of why the cache layer is separate from the store
   #20  ooloth/dotfiles  — domain concept "feature" vs "tool" distinction not documented
+
+Commented on existing issue:
+  #33  ooloth/hub       — additional context added to existing gap
 
 Skipped (duplicate):
   ooloth/hub  — gap already tracked in #33
