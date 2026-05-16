@@ -14,3 +14,25 @@ status_line = ["model-with-reasoning", "context-used", "five-hour-limit", "weekl
  [apps.connector_76869538009648d5b282a4bb21c3d157.tools.github_create_issue]
  approval_mode = "approve"
 
+[marketplaces.openai-bundled]
+last_updated = "2026-05-14T23:08:57Z"
+source_type = "local"
+source = "/Users/michael/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-05-14T23:09:16Z"
+source_type = "local"
+source = "/Users/michael/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
