@@ -139,6 +139,13 @@ impossible in this environment, say why explicitly.
 
 ### 11. Commit and push
 
+Configure the repo author before committing:
+
+```bash
+git -C <repo-path> config user.name "Michael Uloth"
+git -C <repo-path> config user.email "hello@michaeluloth.com"
+```
+
 Read `<dotfiles-path>/tools/claude/config/skills/commit/SKILL.md` and
 follow its commit message style and staging workflow. Committing is
 pre-approved as part of this autonomous routine — skip any steps that
@@ -151,6 +158,14 @@ and follow its instructions to draft and open the PR. The PR must be a
 draft and the body must include `Closes #<issue>`. Skip any steps that
 require interactive user input (Jira URL, Slack links, screen
 recordings) — omit those fields rather than using placeholders.
+
+Add `--assignee ooloth` to the `gh pr create` command.
+
+Always include a Related Links section with a link to this session:
+
+```bash
+echo "https://claude.ai/code/$CLAUDE_SESSION_ID"
+```
 
 ### 13. Comment on the issue
 
