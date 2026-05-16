@@ -79,7 +79,15 @@ Question: Does this codebase uphold its [THEMES] invariants?
    for coverage. Use rg and find to locate files — build the candidate list
    before reading any content.
 
-2. For each candidate file: read it and apply all Must and Should
+2. Check the existing backlog to avoid surfacing already-tracked issues:
+
+   gh issue list --repo [slug] --state open --limit 200 \
+     --json number,title --jq '.[].title'
+
+   Keep this list in mind when prioritising findings — if a finding clearly
+   matches an existing issue, deprioritise it in favour of novel violations.
+
+3. For each candidate file: read it and apply all Must and Should
    invariants from each loaded theme. For each violation found, record:
    - File: path relative to repo root
    - Tier: Must or Should
@@ -94,14 +102,14 @@ Question: Does this codebase uphold its [THEMES] invariants?
    definition. Focus especially on patterns you would not want a
    future agent to spread.
 
-3. If more than one theme was provided: do one additional cross-theme pass.
+4. If more than one theme was provided: do one additional cross-theme pass.
    Using the ## In scope sections of all loaded themes, identify files that
    fall within the scope of more than one theme. For each such file, check
    whether a code construct that satisfies one theme's invariants still
    violates another's. These violations are only visible when both lenses
    are active simultaneously. Record them with Theme: [both theme names].
 
-4. Return findings in this format, ordered by tier (Must first):
+5. Return findings in this format, ordered by tier (Must first):
    [file] | [tier] | [theme] | [finding] | [evidence] | [ideal]
    Top 10 findings max. If none found, say so in one sentence.
 ```
@@ -115,7 +123,7 @@ Run all subagents in parallel.
 For each finding across all subagents, check open issues before filing:
 
 ```bash
-gh issue list --repo <slug> --state open --limit 100 --json number,title
+gh issue list --repo <slug> --state open --limit 200 --json number,title
 ```
 
 **First pass:** compare each finding against issue titles. If a title is clearly unrelated, move on. If a title looks potentially related, fetch the full body before deciding:
