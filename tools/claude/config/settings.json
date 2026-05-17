@@ -415,7 +415,7 @@
   "plansDirectory": "./.claude/plans",
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark-daltonized",
+  "theme": "dark-ansi",
   "feedbackSurveyState": {
     "lastShownTime": 1754054339526
   }
