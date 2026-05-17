@@ -16,8 +16,9 @@ significantly clearer. Helpers that exist for one call site are inlined. Wrapper
 that add no clarity are removed.
 
 **Each unit has one responsibility.**
-Functions do one thing. Types represent one concept. When a function or type
-covers multiple concerns, it is split at the seam between them.
+Functions do one thing. Types represent one concept. Functions and types whose
+purpose requires a conjunction ("and", "or") to describe are split into
+separate units.
 
 ## Should
 

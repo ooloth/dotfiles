@@ -28,13 +28,9 @@ by `op run --env-file=.env` or equivalent.
 
 ## Should
 
-**The simplest memory model is chosen; cleverness is deferred until profiling demands it.**
-Clarity and forward momentum take priority over optimization. The highest-level tool
-available is used. The borrow checker is not fought — if the design requires it, the
-design is changed.
-
-**Clone freely; don't fight the borrow checker.**
-Clone values across `.await` points and wherever the alternative is lifetime
+**The borrow checker is not fought; owned types and clones are preferred.**
+If a design requires lifetime annotations or complex borrowing, the design is changed.
+Clone values freely across `.await` points and wherever the alternative is lifetime
 complexity. Optimize only if profiling shows the clone is a bottleneck.
 
 **Async uses tokio with `features = ["full"]`.**

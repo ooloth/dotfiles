@@ -23,9 +23,10 @@ truncates silently at 2000 lines, creating blind spots for any agent reading
 the file.
 
 **Functions are small enough to reason about.**
-Long functions are extracted at natural seams. Deeply nested blocks are
-flattened or extracted. A function that requires scrolling to read is examined
-for natural split points.
+Blocks nested more than two levels deep are extracted to named functions.
+Predicates and transformations passed to higher-order functions are extracted
+to named functions when their bodies can't be understood at a glance.
+Functions that require scrolling to read are split at natural seams.
 
 **Logic is not clever.**
 When a simpler, more direct expression achieves the same result, it is used.
