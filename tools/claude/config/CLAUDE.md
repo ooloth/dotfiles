@@ -1,21 +1,10 @@
 # CLAUDE.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+Behavioral guidelines to reduce common LLM coding mistakes.
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
-## 1. Think Before Coding
-
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
-
-Before implementing:
-
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
-
-## 2. Simplicity First
+## Simplicity First
 
 **Minimum code that solves the problem. Nothing speculative.**
 
@@ -23,11 +12,13 @@ Before implementing:
 - No abstractions for single-use code.
 - No "flexibility" or "configurability" that wasn't requested.
 - No error handling for impossible scenarios.
+- If multiple interpretations exist, present them — don't pick one silently.
+- If a simpler approach exists, say so. Push back when warranted.
 - If you write 200 lines and it could be 50, rewrite it.
 
 Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
-## 3. Surgical Changes
+## Surgical Changes
 
 **Touch only what you must. Clean up only your own mess.**
 
@@ -36,36 +27,14 @@ When editing existing code:
 - Don't "improve" adjacent code, comments, or formatting.
 - Don't refactor things that aren't broken.
 - Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
+- If you notice unrelated dead code, mention it — don't delete it.
 
 When your changes create orphans:
 
 - Remove imports/variables/functions that YOUR changes made unused.
 - Don't remove pre-existing dead code unless asked.
 
-The test: Every changed line should trace directly to the user's request.
-
-## 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
-
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
-
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
-
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+The test: every changed line should trace directly to the user's request.
 
 ---
 
@@ -100,7 +69,7 @@ This applies to **all side effects**, not just file edits — GitHub comments, i
 
 Discussion phrases like "yes", "ok", "sounds good", "that makes sense" do not necessarily indicate approval.
 
-**"I'd like to X — is that doable?" is a feasibility question, not approval.** Even when the user describes exactly what they want in the same message, a trailing `?` means answer and stop. Do not implement. The desire description tells you *what* to plan; the question mark tells you to present that plan and wait.
+**"I'd like to X — is that doable?" is a feasibility question, not approval.** Even when the user describes exactly what they want in the same message, a trailing `?` means answer and stop. Do not implement. The desire description tells you _what_ to plan; the question mark tells you to present that plan and wait.
 
 Explicitly confirm if the user is ready for you to implement and for the discussion to end before you act (when in doubt, assume the user hasn't approved yet).
 
@@ -130,7 +99,9 @@ For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` bef
 non-trivial domain logic — invoke `/design` after approach approval to produce the type story and
 test plan before step 4.
 
-1. Choose your next thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation, one new lint rule and its fixes, etc), ideally aiming for wafer-thin vertical slices that can be verified e2e
+1. Choose your next thematic change (one cohesive behavior change; e.g. one new test and its
+   refactored implementation, one new lint rule and its fixes, etc), ideally aiming for thin
+   vertical slices that can be verified e2e
 2. Describe your implementation plan, calling out any design decisions or questions the user should weigh in on
 3. Wait for approval
 4. Implement using red-green-refactor:
