@@ -126,13 +126,22 @@ Always use `trekker` to manage tasks and persist the outcome of discussions with
 
 ## Work in Small Steps
 
+For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` before step 1. For
+non-trivial domain logic — invoke `/design` after approach approval to produce the type story and
+test plan before step 4.
+
 1. Choose your next thematic change (one cohesive behavior change; e.g. one new test and its refactored implementation, one new lint rule and its fixes, etc), ideally aiming for wafer-thin vertical slices that can be verified e2e
 2. Describe your implementation plan, calling out any design decisions or questions the user should weigh in on
 3. Wait for approval
-4. Implement the change
+4. Implement using red-green-refactor:
+   - Write failing test(s) that specify the intended behavior. If `/design` was run, translate the approved test plan into tests now.
+   - Run them and confirm they fail for the right reason — not a compile error or missing import. Report what failure you saw.
+   - Write the minimum code to make them pass.
+   - Run tests and confirm green.
+   - If the green implementation is obviously rough, refactor — keeping tests green throughout.
 5. Run all automated checks
-6. Before running tests, ask: what new decisions or behaviors does this change introduce — branches, filters, transformations, mappings? For each one: if the logic were wrong, would any existing test catch it? If not, and if the behavior can be exercised without standing up the full system, write a test for it. Then run all tests.
-7. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output, whatever applies. The status report in step 5 must include one of:
+6. Check: does any behavior this change introduces lack test coverage? If so, add a test before moving on. Then run all tests.
+7. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output, whatever applies. The status report must include one of:
    - **What you ran and what you observed** (e.g. "ran X, saw Y in the output")
    - **Why end-to-end execution is impossible here** and what the user should run and look for instead
      Omitting this section is not allowed. "Tests pass" is not a substitute.
