@@ -146,7 +146,16 @@ the endpoint, trigger the event, eyeball the output — whatever applies
 to what changed. Do not rely on tests alone. If end-to-end execution is
 impossible in this environment, say why explicitly.
 
-### 11. Commit and push
+### 11. Self-review
+
+Read the full diff and steelman a reviewer's objections. Specifically:
+Do these changes solve the problem — and does the test suite prove it?
+Have edge cases or unwanted side effects been missed? Is this the
+minimum change, or did anything speculative creep in? Does the fix
+address the root cause or just a symptom? Do these choices uphold all
+relevant invariants? Fix anything you can't defend.
+
+### 12. Commit and push
 
 Configure the repo author before committing:
 
@@ -160,7 +169,7 @@ follow its commit message style and staging workflow. Committing is
 pre-approved as part of this autonomous routine — skip any steps that
 require waiting for user approval.
 
-### 12. Open PR
+### 13. Open PR
 
 Read `<dotfiles-path>/tools/claude/config/skills/write-pr-description/SKILL.md`
 and follow its instructions to open the PR. The PR must be open (not a
@@ -182,7 +191,7 @@ Always include a Related Links section with a link to this session:
 echo "https://claude.ai/code/$CLAUDE_SESSION_ID"
 ```
 
-### 13. Comment on the issue
+### 14. Comment on the issue
 
 ```bash
 gh issue comment <issue> --repo <repo> \
