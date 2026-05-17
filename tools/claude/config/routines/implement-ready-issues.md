@@ -95,6 +95,10 @@ gh pr list --repo <slug> --state open --head "claude/" --json number --jq 'lengt
 
 If the count is 3 or more, skip all issues for that repo and note it in the final report.
 
+### 5b. Rank and cap candidates globally
+
+After per-repo filtering, rank all remaining candidate issues using your own judgment and proceed with at most 5. Note any skipped issues in the final report under "Skipped (global cap)".
+
 ## Implementation
 
 ### 6. Create a branch for each issue
@@ -135,4 +139,8 @@ Skipped (already claimed):
 
 Skipped (too many open agent PRs):
   ooloth/hub           — 3 open PRs with claude/ prefix
+
+Skipped (global cap):
+  ooloth/hub #33       — ranked below cutoff
+  ooloth/dotfiles #9   — ranked below cutoff
 ```
