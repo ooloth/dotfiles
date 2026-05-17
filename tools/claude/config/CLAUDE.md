@@ -39,7 +39,7 @@ The test: every changed line should trace directly to the user's request.
 ## Backwards Compatibility Probably Doesn't Matter
 
 - Unless told otherwise, assume backwards-compatibility is unwanted
-- In many cases, it adds unnecessary complexity and maintains dead code paths
+- In many cases, it just adds unnecessary complexity and leads to maintaining dead code paths
 
 ---
 
