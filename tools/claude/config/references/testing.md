@@ -20,6 +20,12 @@ error handling paths are tested. The absence of tests here is a defect.
 
 ## Should
 
+**Test names describe behavior in domain terms.**
+A test name is documentation — it states what the system does in language the
+domain recognizes. `subscription_expires_after_trial_period` is domain
+documentation. `process_user_data` is not. A failing test name alone should
+tell a reader what broke without reading the test body.
+
 **Each test covers one behavior.**
 A test has one reason to fail. Multiple unrelated assertions in a single test
 obscure which behavior broke.

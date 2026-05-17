@@ -5,6 +5,13 @@ problem it solves, and similar problems within a codebase are solved the same wa
 
 ## Must
 
+**Names use the vocabulary of the domain.**
+Types, functions, variables, and modules are named using the language a domain
+expert would use to describe the problem. A reader familiar with the domain
+understands what the code does without reading how it is implemented.
+Implementation vocabulary — process, handle, manage, data, info, util — signals
+a gap between the code and the domain it models.
+
 **Work is finished before it ships.**
 Incomplete implementations, known hacks, and deferred cleanup ship as
 permanent fixtures. Code is easier to change while the context is loaded.

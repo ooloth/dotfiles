@@ -14,7 +14,9 @@ don't leak inward. Validation is a side effect of parsing, not a separate step.
 **Primitives are not used where domain types express intent more clearly.**
 A user ID is not an int. An email is not a str. A status is not a bool. Where
 a primitive would require a comment to explain its meaning, a named type is
-used instead.
+used instead. The idiomatic form is a newtype or wrapper whose only
+construction path validates or parses the value — the type itself becomes
+proof of validity, and callers cannot construct an invalid instance directly.
 
 **Invalid states are unrepresentable.**
 Types are structured so the compiler or runtime rejects invalid combinations.

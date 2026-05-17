@@ -32,6 +32,13 @@ Expected failures (not found, validation failed, quota exceeded) are modeled
 as domain errors. Unexpected failures (nil dereference, assertion violation)
 are programming errors and are not caught and handled as if they were expected.
 
+**Error messages and context use domain vocabulary.**
+Errors describe what failed in terms the domain recognises, not in terms of
+implementation mechanics. "Payment declined: monthly quota exceeded" is a
+domain error. "execute() returned -1" is not. In systems using opaque error
+types, context chains (`.context()`, `.with_context()`) serve this role —
+each layer adds domain meaning, not stack details.
+
 **User-facing messages are actionable.**
 When an error reaches a user, the message describes what failed and, where
 possible, what to do next. "Something went wrong" is not a user-facing message.

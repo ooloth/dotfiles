@@ -28,6 +28,12 @@ Predicates and transformations passed to higher-order functions are extracted
 to named functions when their bodies can't be understood at a glance.
 Functions that require scrolling to read are split at natural seams.
 
+**Boolean parameters are not used to select behaviour.**
+A function that accepts a boolean to switch between two modes is two functions.
+A parameter that is always `true` or always `false` at its call sites is a
+design smell. Where multiple options are needed, a named options type or enum
+is used instead.
+
 **Logic is not clever.**
 When a simpler, more direct expression achieves the same result, it is used.
 Cleverness that requires a comment to explain is rewritten.
