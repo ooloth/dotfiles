@@ -108,9 +108,9 @@ the `uphold-invariants` skill file — try
 `<dotfiles-path>/tools/claude/config/skills/uphold-invariants/SKILL.md`
 first, falling back to
 `../dotfiles/tools/claude/config/skills/uphold-invariants/SKILL.md`.
-**You must read this file before proceeding.** Once read, invoke the
-`uphold-invariants` skill, substituting
-`<dotfiles-path>/tools/claude/config/references/` (or
+**You must read this file before proceeding.** Once read, invoke that
+file's prompt using the Skill tool and follow its instructions,
+substituting `<dotfiles-path>/tools/claude/config/references/` (or
 `../dotfiles/tools/claude/config/references/`) for `~/.claude/references/`.
 Apply the invariants to constrain
 your implementation decisions. Identify exactly which files need to
@@ -173,8 +173,8 @@ git -C <repo-path> config user.email "hello@michaeluloth.com"
 Locate the `commit` skill file — try
 `<dotfiles-path>/tools/claude/config/skills/commit/SKILL.md` first,
 falling back to `../dotfiles/tools/claude/config/skills/commit/SKILL.md`.
-**You must read this file before proceeding.** Once read, invoke the
-`commit` skill and follow its commit message style and staging workflow.
+**You must read this file before proceeding.** Once read, invoke that
+file's prompt using the Skill tool and follow its instructions.
 Committing is pre-approved as part of this autonomous routine — skip any
 steps that require waiting for user approval.
 
@@ -184,8 +184,9 @@ Locate the `write-pr-description` skill file — try
 `<dotfiles-path>/tools/claude/config/skills/write-pr-description/SKILL.md`
 first, falling back to
 `../dotfiles/tools/claude/config/skills/write-pr-description/SKILL.md`.
-**You must read this file before proceeding.** Once read, invoke the
-`write-pr-description` skill to open the PR. The PR must be open (not a
+**You must read this file before proceeding.** Once read, invoke that
+file's prompt using the Skill tool and follow its instructions to open
+the PR. The PR must be open (not a
 draft) and the body must include `Closes #<issue>`. Omit `--draft` from
 the `gh pr create` command even if the skill includes it. Skip any steps
 that require interactive user input (Jira URL, Slack links, screen
