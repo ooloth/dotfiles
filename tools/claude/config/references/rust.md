@@ -35,7 +35,11 @@ complexity. Optimize only if profiling shows the clone is a bottleneck.
 
 **Async uses tokio with `features = ["full"]`.**
 `#[tokio::main]` at the entry point. `tokio::join!` for parallel independent work.
-`tokio::fs` and `tokio::time` instead of std equivalents inside async functions.
+`tokio::fs` and `tokio::time` instead of std equivalents inside async functions when the
+I/O is non-trivial. Reading a small local file (config, HEAD ref, lockfile check) that
+completes in microseconds does not need async coloring. Reserve `tokio::fs` for operations
+that could realistically block: large reads/writes, directory traversals, or paths that
+might be on network mounts.
 
 **CLI uses clap derive macros.**
 Annotate structs with derive attributes. Don't use the builder API. Command and flag
