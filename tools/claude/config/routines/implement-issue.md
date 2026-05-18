@@ -103,10 +103,16 @@ gh issue edit <issue> --repo <repo> \
 
 ### 6. Plan
 
-Read the relevant files and understand the module structure. Then read
+Read the relevant files and understand the module structure. Then locate
+the `uphold-invariants` skill file — try
 `<dotfiles-path>/tools/claude/config/skills/uphold-invariants/SKILL.md`
-and follow its instructions, using `<dotfiles-path>/tools/claude/config/references/`
-in place of `~/.claude/references/`. Apply the invariants to constrain
+first, falling back to
+`../dotfiles/tools/claude/config/skills/uphold-invariants/SKILL.md`.
+**You must read this file before proceeding.** Once read, invoke the
+`uphold-invariants` skill, substituting
+`<dotfiles-path>/tools/claude/config/references/` (or
+`../dotfiles/tools/claude/config/references/`) for `~/.claude/references/`.
+Apply the invariants to constrain
 your implementation decisions. Identify exactly which files need to
 change and how. If the fix requires a design decision not already
 resolved by the issue body and comments, comment on the issue with the
@@ -164,18 +170,25 @@ git -C <repo-path> config user.name "Michael Uloth"
 git -C <repo-path> config user.email "hello@michaeluloth.com"
 ```
 
-Read `<dotfiles-path>/tools/claude/config/skills/commit/SKILL.md` and
-follow its commit message style and staging workflow. Committing is
-pre-approved as part of this autonomous routine — skip any steps that
-require waiting for user approval.
+Locate the `commit` skill file — try
+`<dotfiles-path>/tools/claude/config/skills/commit/SKILL.md` first,
+falling back to `../dotfiles/tools/claude/config/skills/commit/SKILL.md`.
+**You must read this file before proceeding.** Once read, invoke the
+`commit` skill and follow its commit message style and staging workflow.
+Committing is pre-approved as part of this autonomous routine — skip any
+steps that require waiting for user approval.
 
 ### 13. Open PR
 
-Read `<dotfiles-path>/tools/claude/config/skills/write-pr-description/SKILL.md`
-and follow its instructions to open the PR. The PR must be open (not a
+Locate the `write-pr-description` skill file — try
+`<dotfiles-path>/tools/claude/config/skills/write-pr-description/SKILL.md`
+first, falling back to
+`../dotfiles/tools/claude/config/skills/write-pr-description/SKILL.md`.
+**You must read this file before proceeding.** Once read, invoke the
+`write-pr-description` skill to open the PR. The PR must be open (not a
 draft) and the body must include `Closes #<issue>`. Omit `--draft` from
-the `gh pr create` command even if the skill includes it. Skip any steps that
-require interactive user input (Jira URL, Slack links, screen
+the `gh pr create` command even if the skill includes it. Skip any steps
+that require interactive user input (Jira URL, Slack links, screen
 recordings) — omit those fields rather than using placeholders.
 
 Add `--assignee ooloth --label "author:agent"` to the `gh pr create`
