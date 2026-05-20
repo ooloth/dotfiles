@@ -93,11 +93,11 @@ For each repo, count open PRs opened by this agent:
 gh pr list --repo <slug> --state open --head "claude/" --json number --jq 'length'
 ```
 
-If the count is 3 or more, skip all issues for that repo and note it in the final report.
-
-### 5b. Rank and cap candidates globally
-
-After per-repo filtering, rank all remaining candidate issues using your own judgment and proceed with at most 5. Note any skipped issues in the final report under "Skipped (global cap)".
+If the count is 3 or more, skip all issues for that repo and note it in
+the final report. Otherwise, note the budget: `3 − <current count>`. If
+the repo has more ready issues than its budget, rank them and proceed
+with only the top `budget` issues, noting the rest under "Skipped
+(per-repo cap)".
 
 ## Implementation
 
@@ -140,7 +140,7 @@ Skipped (already claimed):
 Skipped (too many open agent PRs):
   ooloth/hub           — 3 open PRs with claude/ prefix
 
-Skipped (global cap):
-  ooloth/hub #33       — ranked below cutoff
-  ooloth/dotfiles #9   — ranked below cutoff
+Skipped (per-repo cap):
+  ooloth/hub #33       — ranked below cutoff (budget exhausted)
+  ooloth/dotfiles #9   — ranked below cutoff (budget exhausted)
 ```
