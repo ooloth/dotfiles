@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ## ⚡ QUICK START
 
-1. **Duplicate check** — search the platform for issues with similar titles; read candidate descriptions; recommend skip / improve / comment / create (see [Duplicate Check](#duplicate-check) below)
+1. **Duplicate check** — search the platform for issues with similar titles; read candidate descriptions; stop only if a duplicate or overlap is found — otherwise say "No duplicates found" and continue (see [Duplicate Check](#duplicate-check) below)
 2. Explore the relevant code to verify the current state before describing it
 3. Draft using the template and voice rules below
 4. Create the ticket using the appropriate platform tool
@@ -47,14 +47,12 @@ gh issue view NUMBER --json title,body,state,url
 
 Based on what you find, recommend exactly one of the following and explain why:
 
-| Situation | Recommendation |
+| Situation | Action |
 |---|---|
-| Existing issue covers this fully, description is complete | **Skip** — link to the existing issue; do not create a new one |
-| Existing issue covers the same problem but the description lacks context, clarity, or scope | **Improve the existing description** — propose specific edits to its current sections |
-| Existing issue is correct and complete, but new context, examples, or motivation should be captured | **Add a comment** to the existing issue with the new information |
-| No meaningful overlap found | **Create new** — proceed with the template below |
-
-Stop after presenting the recommendation and wait for the user to confirm before proceeding.
+| Existing issue covers this fully, description is complete | **Stop** — tell the user, link the existing issue, do not create a new one |
+| Existing issue covers the same problem but the description lacks context, clarity, or scope | **Stop** — propose specific edits to the existing description and wait for approval |
+| Existing issue is correct and complete, but new context or examples should be captured | **Stop** — propose a comment on the existing issue and wait for approval |
+| No meaningful overlap found | **Continue** — say "No duplicates found" and proceed to the next quick-start step without pausing |
 
 ---
 
