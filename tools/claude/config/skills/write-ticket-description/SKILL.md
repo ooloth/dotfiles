@@ -8,9 +8,53 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 ## ⚡ QUICK START
 
-1. Explore the relevant code to verify the current state before describing it
-2. Draft using the template and voice rules below
-3. Create the ticket using the appropriate platform tool
+1. **Duplicate check** — search the platform for issues with similar titles; read candidate descriptions; recommend skip / improve / comment / create (see [Duplicate Check](#duplicate-check) below)
+2. Explore the relevant code to verify the current state before describing it
+3. Draft using the template and voice rules below
+4. Create the ticket using the appropriate platform tool
+
+---
+
+## Duplicate Check
+
+Before writing anything, search the platform for issues that may already cover this ground.
+
+### Step 1 — Search for similar titles
+
+Use the platform's search to find issues whose titles sound similar to the one you're about to create. Cast a wide net: try multiple keyword combinations drawn from the problem domain, not just the exact phrasing the user gave you.
+
+**GitHub:**
+```bash
+gh issue list --search "KEYWORDS" --state all --limit 20 --json number,title,state
+```
+
+**Linear:** use the Linear MCP search tool with keyword queries.
+
+**Jira / Monday:** use available CLI or MCP tools; fall back to asking the user to paste relevant results if no tool is available.
+
+### Step 2 — Read candidate descriptions
+
+For any issue whose title overlaps meaningfully, fetch the full description and read it. Titles alone are not enough — two issues can sound similar but cover different root causes, or the same root cause from different angles.
+
+**GitHub:**
+```bash
+gh issue view NUMBER --json title,body,state,url
+```
+
+**Linear / Jira / Monday:** fetch the full issue body via the relevant tool.
+
+### Step 3 — Recommend one action
+
+Based on what you find, recommend exactly one of the following and explain why:
+
+| Situation | Recommendation |
+|---|---|
+| Existing issue covers this fully, description is complete | **Skip** — link to the existing issue; do not create a new one |
+| Existing issue covers the same problem but the description lacks context, clarity, or scope | **Improve the existing description** — propose specific edits to its current sections |
+| Existing issue is correct and complete, but new context, examples, or motivation should be captured | **Add a comment** to the existing issue with the new information |
+| No meaningful overlap found | **Create new** — proceed with the template below |
+
+Stop after presenting the recommendation and wait for the user to confirm before proceeding.
 
 ---
 
