@@ -4,11 +4,14 @@
   "defaultThinkingLevel": "high",
   "enableSkillCommands": true,
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.71.0",
+  "lastChangelogVersion": "0.73.1",
   "packages": [
     {
       "source": "git:github.com/mitsuhiko/agent-stuff@main",
-      "extensions": ["extensions/answer.ts", "extensions/review.ts"],
+      "extensions": [
+        "extensions/answer.ts",
+        "extensions/review.ts"
+      ],
       "skills": [],
       "prompts": [],
       "themes": []
@@ -18,7 +21,8 @@
   "prompts": [],
   "quietStartup": false,
   "shellCommandPrefix": "export PATH=\"$HOME/.bun/bin:$PATH\"\nshopt -s expand_aliases\neval \"$(grep '^alias ' ~/.zshrc)\"",
-  "skills": ["~/.claude/skills"],
+  "skills": [
+    "~/.claude/skills"
+  ],
   "theme": "catppuccin-mocha"
 }
-
