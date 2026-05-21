@@ -154,7 +154,8 @@ Before spawning fix subagents, verify any file paths referenced in the findings 
 (`ls` or `fd`). Correct a wrong path before passing it; if the right path is ambiguous, escalate.
 
 **Group findings by file.** Spawn one fix subagent per file (or small group of related files)
-in parallel using multiple Agent tool calls in a single message. Pass each subagent:
+in parallel using multiple Agent tool calls in a single message. For each Agent tool call, set
+the tool's `model` parameter to `"opus"`. Pass each subagent:
 
 - Its subset of auto-fix findings with suggested fixes
 - The relevant file paths and context

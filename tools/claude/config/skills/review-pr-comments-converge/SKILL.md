@@ -96,7 +96,7 @@ Round N/3: validating...
 
 ### Step A — Validate Comments (subagent)
 
-Spawn a general-purpose subagent. Pass it:
+Spawn a general-purpose subagent. Set the Agent tool call's `model` parameter to `"opus"`. Pass it:
 
 - The full list of comments from Phase 1 (minus any already on the decided list)
 - The problem statement and PR description
@@ -161,7 +161,8 @@ Round N/3: [X] auto-fix, [Y] escalate, [Z] dismissed (stale/mistaken), [W] repea
 ### Step E — Fix (subagents, parallel where safe)
 
 Verify file paths exist before spawning. Group findings by file; spawn one fix subagent per file
-(or small related group) in parallel. Pass each:
+(or small related group) in parallel using multiple Agent tool calls in a single message. For each
+Agent tool call, set the tool's `model` parameter to `"opus"`. Pass each:
 
 - Its subset of auto-fix findings with suggested fixes
 - The relevant file paths
