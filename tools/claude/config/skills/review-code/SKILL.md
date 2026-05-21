@@ -63,7 +63,7 @@ Enhance if needed: if raw sources are vague, read the diff and fill in the gaps.
 
 ## Step 3: Launch all 10 agents in parallel
 
-Send a single message containing all 10 Agent tool calls simultaneously. Pass each agent:
+Send a single message containing all 10 Agent tool calls simultaneously. For each Agent tool call, set the tool's `model` parameter to `"opus"`. Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
