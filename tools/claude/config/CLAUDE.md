@@ -11,35 +11,13 @@ Behavioral guidelines to reduce common LLM coding mistakes.
 - No features beyond what was asked.
 - No abstractions for single-use code.
 - No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
+- No backwards compatibility that wasn't requested
+- No error handling for impossible scenarios
 - If multiple interpretations exist, present them — don't pick one silently.
 - If a simpler approach exists, say so. Push back when warranted.
 - If you write 200 lines and it could be 50, rewrite it.
 
 Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
-
-## Surgical Changes
-
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it and ask whether to delete it.
-
-When your changes create orphans:
-
-- Remove imports/variables/functions that YOUR changes made unused.
-- For pre-existing dead code: mention it, then delete it if told to.
-
-The test: every changed line should trace directly to the user's request.
-
-## Backwards Compatibility Probably Doesn't Matter
-
-- Unless told otherwise, assume backwards-compatibility is unwanted
-- In many cases, it just adds unnecessary complexity and leads to maintaining dead code paths
 
 ---
 
