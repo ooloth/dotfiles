@@ -1,6 +1,6 @@
 ---
 name: discuss
-description: Plan an implementation before acting. TRIGGER for ambiguous tasks, design discussions, multi-step work, risky changes, or when the user asks a question before implementation.
+description: Explore a task and validate the overall strategy before implementation. TRIGGER for ambiguous tasks, design discussions, multi-step work, risky changes, or when the user asks a question before implementation.
 argument-hint: '[task number or description]'
 effort: high
 model: opus
@@ -12,27 +12,15 @@ model: opus
 
 ## Your task
 
-This is a discussion/planning skill. Do not make side-effecting changes while using it: no edits,
+This is a discussion/strategy skill. Do not make side-effecting changes while using it: no edits,
 writes, mutating shell commands, commits, posted comments, or ticket creation. Read-only exploration
-is allowed when needed.
-
-### Phase 0: Decide Depth
-
-Classify the task before exploring:
-
-| Depth                    | Use when                                                                                                  | Behavior                                                     |
-| ------------------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Trivial / clear**      | The desired change and implementation path are obvious                                                    | Answer directly; ask at most one blocking question           |
-| **Ambiguous**            | The goal, scope, or acceptance criteria are unclear                                                       | Clarify intent, then propose a plan                          |
-| **Multi-step**           | The work spans files, domains, tests, migrations, or multiple commits                                     | Explore relevant paths and propose slices                    |
-| **Risky / one-way-door** | Public APIs, data schemas, pricing, security, irreversible data changes, or core UX patterns are involved | Explore deeply and require explicit sign-off on the decision |
-
-Scale investigation to the classification. Do not turn small tasks into heavyweight planning.
+is allowed when needed. Do not plan fine implementation details (type design, slices, tests) — that
+belongs to `/design`, which runs after the user approves the approach.
 
 ### Phase 1: Load Context Progressively
 
-1. Read `~/.claude/references/README.md` and list `~/.claude/references/` when invariants may
-   affect the plan.
+1. Read `~/.claude/references/README.md` and list `~/.claude/references/` only when invariants or
+   architectural constraints may affect the approach decision.
 2. Load only the reference files obviously relevant to the task.
 3. Load additional reference files only when the investigation shows they matter.
 4. If the task scope is still unclear, prefer asking a clarifying question over loading every file.
@@ -40,15 +28,15 @@ Scale investigation to the classification. Do not turn small tasks into heavywei
 ### Phase 2: Understand Intent
 
 1. If the user did not specify what they want to discuss, ask them for that information.
-2. If the user asked a question, answer the question before proposing implementation.
+2. If the user asked a question, answer the question before proposing anything.
 3. Use read-only exploration and subagents only as needed to understand the current code, docs,
    constraints, and likely impact.
 4. If the idea seems stale or poorly matched to the current codebase, investigate enough to help the
    user decide whether to redefine, defer, or skip it.
-5. Ask only questions that block a correct plan. For two-way-door decisions, recommend a default and
-   move on instead of making the user decide everything.
+5. Ask only questions that block a correct approach decision. For two-way-door decisions, recommend
+   a default and move on instead of making the user decide everything.
 
-### Phase 3: Design the Solution
+### Phase 3: Recommend an Approach
 
 1. Recommend the simplest approach that achieves the intended outcome. Push back on unnecessary
    scope, abstractions, configurability, or compatibility work.
@@ -76,26 +64,19 @@ Scale investigation to the classification. Do not turn small tasks into heavywei
    Revisit trigger: [metric / date / condition that reopens this]
    ```
 
-4. Recommend whether the implementation belongs in one small change, multiple stacked changes, or
-   multiple parallel changes.
-5. Define how each implementation slice will be validated, including live execution evidence (what
-   you ran, what you observed) or why live execution is impossible.
+### Phase 4: Present and Stop
 
-### Phase 4: Present the Plan and Stop
-
-End with a concrete plan artifact:
+End with a strategy artifact:
 
 1. **Understanding** — what the user wants and any assumptions
 2. **Findings** — relevant code/docs/current-state facts discovered
 3. **Recommendation** — preferred approach and why
 4. **Open decisions** — only decisions that block correct implementation
-5. **Implementation plan** — small, commit-worthy slices and PR strategy
-6. **Validation plan** — checks, tests, and live execution evidence for each slice
-7. **Approval request** — ask the user to explicitly approve implementation
+5. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
+   to produce the type story, test plan, and implementation slices
 
-If the user answers clarifying questions, incorporate the answers, present the full plan, and stop
-again for explicit approval. Do not treat answers to questions as implementation approval.
+If the user answers clarifying questions, incorporate the answers, present the updated strategy,
+and stop again. Do not treat answers to questions as approach approval.
 
-When the user explicitly approves implementation, the next implementation agent must create or
-update a Trekker task before reading or writing implementation files, then proceed with the first
-small slice.
+When the user explicitly approves the approach, recommend running `/design` to translate it into a
+concrete implementation plan before any code is written.
