@@ -13,11 +13,11 @@ If Status and All changes are both empty, there is nothing to commit — say so 
 
 ## Your task
 
-1. Run all checks. Fix errors that are mechanical and contained to files already in the diff
-   (e.g. formatting, unused imports, trivial lint). If fixing an error would require touching new
-   files, making design decisions, or adding non-trivial logic — stop, report what failed and why,
-   and wait for approval before proceeding. Discover what checks apply by consulting the project's
-   CONTRIBUTING.md, Justfile and CLAUDE.md.
+1. Run all relevant checks. Fix errors that are mechanical and contained to files already in the
+   diff (e.g. formatting, unused imports, trivial lint). If fixing an error would require touching
+   new files, making design decisions, or adding non-trivial logic — stop, report what failed and
+   why, and wait for approval before proceeding. Discover what checks apply by consulting the
+   project's CONTRIBUTING.md, Justfile and CLAUDE.md.
 2. Run all tests. Apply the same rule: fix only mechanical failures in files already in the diff;
    escalate anything requiring new design work.
 3. Try to divide the changes into themes. For example, pair one test case with its implementation
