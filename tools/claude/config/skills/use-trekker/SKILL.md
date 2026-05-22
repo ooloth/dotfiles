@@ -31,9 +31,14 @@ trekker task list --epic EPIC-1                 # Children
 trekker epic complete EPIC-1                    # Archive epic + all tasks
 ```
 
-## Before Implementing: Always Create a Task
+## Before Implementing: Always Persist the Agreed Approach
 
-When the user approves work, run `trekker task create` BEFORE reading any files or writing code. Context loss can happen anytime — the task is the handoff for the next agent.
+Before reading any files or writing code, record the problem, approach, and done-when criteria
+somewhere a future agent can find it — context loss can happen anytime.
+
+- **Known ticket exists** (GitHub Issue, Linear, Jira, etc.): add a comment there. Skip
+  `trekker task create`.
+- **No ticket exists** (spontaneous idea): create a trekker task:
 
 ```bash
 trekker task create -t "Fix Pushover notifications" -p 1 \
