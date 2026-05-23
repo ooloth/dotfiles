@@ -80,7 +80,13 @@ For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` bef
 non-trivial domain logic — invoke `/design` after approach approval to produce the type story and
 test plan before step 4.
 
-When the user approves work, create a `trekker` task BEFORE reading or writing any files:
+When the user approves work, persist the agreed approach BEFORE reading or writing any files —
+context loss can happen anytime, and the next agent must be able to resume without repeating the
+discussion:
+
+- **Known ticket exists** (GitHub Issue, Linear, Jira, etc.): add a comment to that ticket
+  recording the problem, agreed approach, constraints, and done-when criteria. Skip `trekker`.
+- **No ticket exists** (spontaneous idea): create a `trekker` task instead:
 
 ```bash
 trekker task create -t "..." -p 1 -d "Problem: ... Approach: ... Done when: ..."
@@ -88,9 +94,7 @@ trekker task update TREK-N -s in_progress
 # THEN read files and implement
 ```
 
-Always use `trekker` to persist the outcome of discussions as a crash recovery mechanism (so the
-next agent can continue without repeating the discussion). For the full `trekker` workflow, see
-`/use-trekker`.
+For the full `trekker` workflow, see `/use-trekker`.
 
 1. Choose your next thematic change (one cohesive behavior change; e.g. one new test and its
    refactored implementation, one new lint rule and its fixes, etc), ideally aiming for thin
