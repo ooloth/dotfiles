@@ -114,5 +114,6 @@ If the user pushes back, requests changes, or raises questions: incorporate the 
 the type story and/or test plan, re-present the full artifact, and stop again. Do not implement
 until the user gives explicit approval.
 
-When the user approves, the implementing agent must create or update a Trekker task before reading
-or writing any files, then proceed with the first slice.
+When the user approves, the implementing agent must record the agreed approach before reading or
+writing any files — add a comment to the known ticket (Jira, GitHub issue, Linear, etc.) if one
+exists, or create a Trekker task if no ticket exists. Then proceed with the first slice.
