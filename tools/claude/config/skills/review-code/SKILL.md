@@ -437,7 +437,7 @@ Produce a prioritized action list — not a categorized findings report. The rea
 **Verdict mapping:**
 
 - **Approve** — no blockers; all remaining items are optional
-- **Request Changes** — one or more items marked *(blocks ship)*
+- **Request Changes** — one or more items marked _(blocks ship)_
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
 
 ## Step 5: Post review (PR scope only)
