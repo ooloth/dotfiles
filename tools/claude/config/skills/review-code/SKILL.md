@@ -448,16 +448,28 @@ After presenting findings, ask:
 
 > "Post this as a GitHub review? (yes / approve / request-changes / comment / skip)"
 
+**Authorization gate:** Only proceed if the user explicitly answers this question with yes, approve,
+request-changes, comment, or skip. Do NOT infer authorization from numbered responses to
+individual findings (e.g., "(1) do it" answers finding #1, not this question). Wait for a
+separate, unambiguous reply to the posting question before posting anything to GitHub.
+
 On any answer other than "skip":
 
-- Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE; request-changes → REQUEST_CHANGES; comment → COMMENT
-- Write a 2–3 sentence overall summary for the review body in a friendly tone
+- Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE;
+  request-changes → REQUEST_CHANGES; comment → COMMENT
+- Write a 2–3 sentence overall summary for the review body (see audience guidance below)
 - Collect every finding that has a `file:line` reference as an inline comment
 - Run:
 
 ```bash
 python3 <skill-base-dir>/scripts/post_review.py <pr-number> <EVENT> "<summary>" "<file>:<line>:<body>" ...
 ```
+
+**Summary audience:** The review body is read by GitHub users who only know what's in the PR diff — they have no context from this review session. Write for that audience:
+
+**Self-review context:** If the user is the PR author and this was effectively a self-review session
+where you applied changes locally yourself, you likely should NOT be posting a review! If you're
+about to, double check if that makes sense by confirming with the user.
 
 **Tone for inline comment bodies:** Write as a curious teammate, not an auditor.
 
