@@ -14,6 +14,10 @@ export CLAUDE_CODE_ENABLE_TELEMETRY=0
 export DISABLE_ERROR_REPORTING=1
 export DISABLE_TELEMETRY=1
 
+# Agents have been complaining about frequent TaskCreate reminders
+# See: https://github.com/anthropics/claude-code/issues/43311#issuecomment-4185513335
+export CLAUDE_CODE_ENABLE_TASKS=0
+
 if is_work; then
   # See: https://github.com/recursionpharma/ai-coding-guild-docs/blob/trunk/public/claude/settings.json
   export ANTHROPIC_VERTEX_PROJECT_ID=vertexai-sandbox-e8a925d0
