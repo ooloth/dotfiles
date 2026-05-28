@@ -97,6 +97,12 @@ a handful of chosen examples with generated cases.
 values, and conditions and reporting which mutations survive. Run periodically, not
 on every commit — it is intentionally slow.
 
+**HTTP client integration tests use `wiremock`.**
+When testing a function that makes HTTP requests, `wiremock` starts a real local
+server and asserts on the actual requests received — method, path, headers, and
+body. This catches URL construction bugs, missing headers, and serialization errors
+that trait-based mocks cannot.
+
 ## In scope
 
 - All .rs files in the repo
