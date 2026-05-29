@@ -141,9 +141,22 @@ gh label create "category:agent-gap"        --color "e4e669" --repo <slug> --for
 gh label create "status:needs-human-review" --color "d93f0b" --repo <slug> --force
 ```
 
-### 5. File confirmed findings
+### 5. Determine filing budget
 
-For each non-duplicate finding, read
+Before filing, count the current open `author:agent` issues in the repo:
+
+```bash
+gh issue list --repo <slug> --state open --label "author:agent" --limit 200 --json number | jq 'length'
+```
+
+Use the count to determine the filing budget for this run:
+
+- If count **>= 20**: budget = 1 — pick the single most important non-duplicate finding and file only that one
+- If count **< 20**: budget = min(5, 20 − count) — file up to that many non-duplicate findings (choose the most important)
+
+### 6. File confirmed findings
+
+For each non-duplicate finding within the budget, read
 `<dotfiles-path>/tools/claude/config/skills/write-ticket-description/SKILL.md`
 and follow its instructions to draft the issue body.
 
@@ -155,7 +168,7 @@ gh issue create \
   --label "author:agent,category:agent-gap,status:needs-human-review"
 ```
 
-### 6. Report
+### 7. Report
 
 ```
 Filed:
