@@ -6,7 +6,7 @@
 # See: https://code.claude.com/docs/en/env-vars
 # See: https://code.claude.com/docs/en/model-config#environment-variables
 # See: https://docs.anthropic.com/en/docs/about-claude/models/overview#model-names
-export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-7
+export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-4-8
 export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-4-6
 export ANTHROPIC_MODEL=opusplan
 export CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1
