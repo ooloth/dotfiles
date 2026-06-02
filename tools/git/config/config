@@ -9,6 +9,9 @@
 [credential]
   helper = osxkeychain
 
+[delta]
+  side-by-side = true
+
 [diff]
   colorMoved = true
   tool = vscode
