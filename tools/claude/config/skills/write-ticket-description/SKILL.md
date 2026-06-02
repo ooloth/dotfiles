@@ -72,13 +72,9 @@ Based on what you find, recommend exactly one of the following and explain why:
 ## Template
 
 ```markdown
-## Why
-
-[One sentence: what problem this solves and why it matters now. User-facing or developer-facing — not "tech debt".]
-
 ## Current state
 
-[What exists today and what's wrong with it. Observable facts, not opinions.]
+[Lead with the downstream impact, then support it with the observable facts that cause it. No opinions.]
 
 ## Ideal state
 
@@ -109,15 +105,10 @@ Based on what you find, recommend exactly one of the following and explain why:
 
 ## Voice Rules
 
-### Why section
-
-- One sentence only — what problem this solves AND why it matters now
-- User-centric framing when possible; developer-centric is fine when the user isn't affected
-- Never write "tech debt" or "code quality" as the reason — name the actual downstream impact
-
 ### Current state
 
-- Observable facts only — what a person can see or measure today
+- Lead with the consequence: one sentence naming the downstream impact
+- Follow with the observable facts that cause it — what a person can see or measure today
 - Don't editorialize ("unfortunately", "badly", "messy")
 - Keep it to 2-4 sentences max
 
@@ -163,7 +154,8 @@ Based on what you find, recommend exactly one of the following and explain why:
 ## What NOT to Do
 
 ❌ Describing implementation steps in "Ideal state" — those belong in a PR
-❌ Vague "Why" like "improve code quality" or "refactor for maintainability" — name the impact
+❌ Current state that opens with a technical fact instead of the downstream impact
+❌ Burying the consequence — "there is no caching" before "the TUI blocks on every call"
 ❌ Omitting "Out of scope" when adjacent things could easily be pulled in
 ❌ QA steps that reference automated checks — always manual e2e
 ❌ QA steps that don't say what to observe — every step needs an expected outcome
@@ -175,13 +167,9 @@ Based on what you find, recommend exactly one of the following and explain why:
 ## Example: Good Ticket Description
 
 ```markdown
-## Why
-
-`hub status` hits GitHub on every invocation, which will block the TUI from rendering without a network round-trip.
-
 ## Current state
 
-`hub status` fetches live GitHub data (PRs, issues) on every call. There is no background refresh, no caching, and no store schema for status data.
+`hub status` blocks the TUI from rendering on every invocation because it fetches live GitHub data on every call with no background refresh, no caching, and no store schema for status data.
 
 ## Ideal state
 
@@ -218,8 +206,7 @@ Based on what you find, recommend exactly one of the following and explain why:
 
 ### Why This Works
 
-✅ Why names the actual downstream impact (TUI blocking), not just "improve performance"
-✅ Current state is observable facts, not opinions
+✅ Current state leads with the impact (TUI blocking), then supports it with observable facts
 ✅ Ideal state uses "X does Y" framing — each bullet is a verifiable fact
 ✅ Out of scope prevents two obvious scope-creep traps
 ✅ Starting points are file paths, not directories
