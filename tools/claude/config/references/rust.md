@@ -22,9 +22,17 @@ take `&str`/`&[T]`. Return owned values, not references to borrowed data.
 If `'a` appears, stop and restructure. Return owned types instead of references with
 lifetimes. If lifetimes seem necessary, the design is fighting the borrow checker.
 
-**Secrets come from environment variables.**
-Never read from files or hardcode. Accessed via `std::env::var`. Injected at runtime
-by `op run --env-file=.env` or equivalent.
+**Secrets are sourced at runtime, never hardcoded.**
+Secret values come from outside the binary at runtime (env vars, secret managers, vault
+references, etc.) and are never committed to source. The mechanism is project-specific.
+
+**Types holding secrets use `Secret<T>` from the `secrecy` crate.**
+`Debug` prints `[REDACTED]`. All access goes through `.expose_secret()`, making every use
+site explicit and grep-able. Secret fields on serializable structs use `#[serde(skip)]`.
+
+**All required secrets are resolved at startup.**
+Validate and resolve every required secret when the binary starts — not lazily. A missing
+or malformed value fails immediately with a clear error message, not silently at first use.
 
 ## Should
 

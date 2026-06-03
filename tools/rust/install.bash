@@ -12,6 +12,13 @@ info "🦀 Installing Rust"
 # See: https://users.rust-lang.org/t/how-can-i-cleanup-changes-in-profile/67012
 # See: https://rust-lang.github.io/rustup/installation/index.html
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --no-modify-path -y
-rustup component add rust-analyzer
+
+debug "📦 Adding rustup completions"
 mkdir -p ~/.zfunc
-rustup completions zsh > ~/.zfunc/_rustup
+rustup completions zsh >~/.zfunc/_rustup
+
+debug "📦 Adding rust-analyzer"
+rustup component add rust-analyzer
+
+debug "📦 Adding cargo-nextest"
+cargo install cargo-nextest --locked
