@@ -30,14 +30,14 @@ options.color_bottom_hdr = "underline blue on transparent"
 options.color_column_sep = "8 on transparent"
 
 # Cursor
-options.color_current_row = "bold white on transparent"
+options.color_current_row = "bold blue on transparent"
 options.color_current_col = "bold blue on transparent"
-options.color_current_hdr = "bold blue reverse"
+options.color_current_hdr = "bold blue on transparent"
 options.color_current_cell = "bold black on blue"
 
 # Selection & keys
 options.color_selected_row = "bold yellow on transparent"
-options.color_key_col = "bold cyan"
+options.color_key_col = "bold white"
 
 # Editing
 options.color_edit_cell = "bold black on blue"
@@ -60,8 +60,8 @@ options.color_note_row = "yellow"
 
 # Menus & palette
 options.color_menu = "bold black on blue"
-options.color_menu_active = "bold blue on black"  # controls active top menu item fg/bg + active status bar tab fg only
-options.color_menu_spec = "bold white on transparent"
+options.color_menu_active = "bold white on black"  # controls active top menu item fg/bg + active status bar tab fg only
+options.color_menu_spec = "bold white on black"
 options.color_menu_help = "italic black on blue"
 options.color_cmdpalette = "bold black on blue"
 options.color_sidebar = "black on blue"
