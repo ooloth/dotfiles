@@ -39,15 +39,9 @@ options.color_current_cell = "bold black on blue"
 options.color_selected_row = "bold yellow on transparent"
 options.color_key_col = "bold cyan"
 
-# Status bar
-options.color_status = "bold white on transparent"
-options.color_active_status = "bold black on blue"
-options.color_inactive_status = "8 on transparent"
-options.color_highlight_status = "bold black on blue"
-options.color_keystrokes = "bold"
-
 # Editing
 options.color_edit_cell = "bold black on blue"
+options.color_edit_unfocused = "bold black on blue"
 
 # Messages
 options.color_error = "bold red"
@@ -66,15 +60,24 @@ options.color_note_row = "yellow"
 
 # Menus & palette
 options.color_menu = "bold black on blue"
-options.color_menu_active = "bold white on transparent"
+options.color_menu_active = "bold blue on black"  # controls active top menu item fg/bg + active status bar tab fg only
 options.color_menu_spec = "bold white on transparent"
 options.color_menu_help = "italic black on blue"
 options.color_cmdpalette = "bold black on blue"
 options.color_sidebar = "black on blue"
-options.color_sidebar_title = "bold black on yellow"
+options.color_sidebar_title = "bold black on blue"
+
+# Status bar
+options.color_status = ""  # NOTE: option not actually applied by visidata
+options.color_active_status = "bold black on blue"
+options.color_inactive_status = "8 on transparent"
+options.color_highlight_status = "bold black on blue"
+options.color_longname_status = "black"
+options.color_keystrokes = "bold"
 
 # Misc
 options.color_aggregator = "bold white on transparent"
+options.color_code = "bold white on transparent"
 options.color_heading = "bold black on yellow"
 options.color_match = "bold red"
 options.color_graph_axis = "bold white"
