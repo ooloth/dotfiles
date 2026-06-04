@@ -30,8 +30,8 @@ options.color_bottom_hdr = "underline blue on transparent"
 options.color_column_sep = "8 on transparent"
 
 # Cursor
-options.color_current_row = "bold white on black"
-options.color_current_col = "bold blue on black"
+options.color_current_row = "bold white on transparent"
+options.color_current_col = "bold blue on transparent"
 options.color_current_hdr = "bold blue reverse"
 options.color_current_cell = "bold black on blue"
 
@@ -40,9 +40,9 @@ options.color_selected_row = "bold yellow on transparent"
 options.color_key_col = "bold cyan"
 
 # Status bar
-options.color_status = "bold white on black"
+options.color_status = "bold white on transparent"
 options.color_active_status = "bold black on blue"
-options.color_inactive_status = "8 on black"
+options.color_inactive_status = "8 on transparent"
 options.color_highlight_status = "bold black on blue"
 options.color_keystrokes = "bold"
 
@@ -66,7 +66,7 @@ options.color_note_row = "yellow"
 
 # Menus & palette
 options.color_menu = "bold black on blue"
-options.color_menu_active = "black on yellow"
+options.color_menu_active = "bold white on transparent"
 options.color_menu_spec = "bold black on blue"
 options.color_menu_help = "italic black on blue"
 options.color_cmdpalette = "white on transparent"
@@ -74,7 +74,7 @@ options.color_sidebar = "black on blue"
 options.color_sidebar_title = "bold black on yellow"
 
 # Misc
-options.color_aggregator = "bold white on black"
+options.color_aggregator = "bold white on transparent"
 options.color_heading = "bold black on yellow"
 options.color_match = "bold red"
 options.color_graph_axis = "bold white"
