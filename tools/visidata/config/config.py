@@ -44,10 +44,10 @@ options.color_status = "bold white on black"
 options.color_active_status = "bold black on blue"
 options.color_inactive_status = "8 on black"
 options.color_highlight_status = "bold black on blue"
-options.color_keystrokes = "bold white on black"
+options.color_keystrokes = "bold"
 
 # Editing
-options.color_edit_cell = "bold black on yellow"
+options.color_edit_cell = "bold black on blue"
 
 # Messages
 options.color_error = "bold red"
@@ -67,9 +67,9 @@ options.color_note_row = "yellow"
 # Menus & palette
 options.color_menu = "bold black on blue"
 options.color_menu_active = "black on yellow"
-options.color_menu_spec = "bold cyan on black"
+options.color_menu_spec = "bold black on blue"
 options.color_menu_help = "italic black on blue"
-options.color_cmdpalette = "black on cyan"
+options.color_cmdpalette = "white on transparent"
 options.color_sidebar = "black on blue"
 options.color_sidebar_title = "bold black on yellow"
 
