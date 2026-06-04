@@ -67,9 +67,9 @@ options.color_note_row = "yellow"
 # Menus & palette
 options.color_menu = "bold black on blue"
 options.color_menu_active = "bold white on transparent"
-options.color_menu_spec = "bold black on blue"
+options.color_menu_spec = "bold white on transparent"
 options.color_menu_help = "italic black on blue"
-options.color_cmdpalette = "white on transparent"
+options.color_cmdpalette = "bold black on blue"
 options.color_sidebar = "black on blue"
 options.color_sidebar_title = "bold black on yellow"
 
