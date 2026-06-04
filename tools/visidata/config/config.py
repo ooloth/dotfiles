@@ -1,10 +1,10 @@
 # Visidata configuration file
 # See: https://www.visidata.org/docs/customize/
 # See: https://www.visidata.org/docs/api/commands
+# See: https://jsvine.github.io/intro-to-visidata/advanced/configuring-visidata/
 
 # ruff: noqa
-# type: ignore
-
+# ty: ignore
 
 ###########
 # OPTIONS #
