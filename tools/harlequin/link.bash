@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ "${VERBOSE:-false}" = true ]; then
-  printf "✅ No configuration files to symlink\n"
-fi
+source "${DOTFILES}/tools/bash/utils.bash"
+
+symlink "${DOTFILES}/tools/harlequin/config/config.toml" "${HOME}/.config/harlequin"
