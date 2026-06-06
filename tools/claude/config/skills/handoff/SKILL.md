@@ -47,6 +47,7 @@ Hand off all context and instructions necessary for a fresh agent to continue yo
 ## Final step
 
 As your final step, provide the ideal 1-2 sentence prompt for me to provide to the next agent to
-point them towards the right next step with an overall understanding of the overall design vision;
-ensure any relevant doc references not included in the handoff doc are mentioned (though prefer to
-put those references in the handoff write-up instead when possible)
+point them towards the right next step with an overall understanding of the overall design vision
+if "/discuss <handoff write-up location>" is not sufficient; ensure any relevant doc references not
+included in the handoff doc are mentioned (though prefer to put those references in the handoff
+write-up instead when possible).
