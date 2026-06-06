@@ -2,4 +2,6 @@
 # ALIASES #
 ###########
 
-alias hub="op run --env-file=${HOME}/Repos/ooloth/hub/.env -- hub-tui"
+# `hub` is the CLI (agent toolkit), installed on PATH via `just install` — no alias.
+# `ht` opens the TUI dashboard (human-facing surface).
+alias ht="hub-tui"
