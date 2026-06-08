@@ -9,8 +9,12 @@ Scope: $ARGUMENTS (if empty, assume the current change).
 What did you assume would work but haven't actually watched run? Don't answer with a plan —
 go run it. Use the real entry point, real inputs, real output. Not tests. The thing itself.
 
+If you find yourself reaching for a test file, stop and ask: how would I observe this behaviour
+if I had no test suite at all? That's the question to answer.
+
 What do you observe? What's still unobserved? What would a skeptic demand you prove that you
-can't yet show evidence for?
+can't yet show evidence for? If you can't observe something because the right signals aren't
+emitted, say so — that's a finding worth surfacing.
 
 Once you've run it: could any of the gaps you found be closed with a permanent integration test?
 
