@@ -7,7 +7,6 @@
 ###########
 
 alias adv="z ${HOME}/Repos/ooloth/advent-of-code"
-alias cd="z"
 alias con="z ${HOME}/Repos/ooloth/content"
 alias conf="z ${HOME}/Repos/ooloth/config.nvim"
 alias dot="z ${DOTFILES}"
