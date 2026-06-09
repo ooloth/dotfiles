@@ -13,7 +13,12 @@ If Status and All changes are both empty, there is nothing to commit — say so 
 
 ## Your task
 
-1. Run all relevant checks. Fix errors that are mechanical and contained to files already in the
+1. **Before running checks and tests:** if you already ran them in this conversation and they all
+   passed, run `git diff HEAD` now and compare it to the diff you saw when they ran. If the output
+   is byte-for-byte identical, skip steps 1 and 2. If anything differs — even whitespace — run
+   them.
+
+   Run all relevant checks. Fix errors that are mechanical and contained to files already in the
    diff (e.g. formatting, unused imports, trivial lint). If fixing an error would require touching
    new files, making design decisions, or adding non-trivial logic — stop, report what failed and
    why, and wait for approval before proceeding. Discover what checks apply by consulting the
