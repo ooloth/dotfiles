@@ -61,7 +61,8 @@ gh pr view --web
 ### What & Why
 
 - **What**: A single flat bullet list. First bullet is a single-sentence TL;DR of the entire change.
-  Subsequent bullets call out worthwhile details (variants covered, notable constraints, deployment notes).
+  Subsequent bullets call out worthwhile details (variants covered, notable constraints, deployment
+  notes).
 - **Why**: First bullet is a single-sentence TL;DR of the entire reason. Subsequent bullets add
   detail if needed (1–3 total). Frame around USER benefit, not technical constraints.
 - Focus on the feature users will see. Omit implementation wiring (threading params, type updates).
@@ -71,10 +72,17 @@ gh pr view --web
 ### Validation
 
 - A single flat `- [ ]` checklist — no nested items, no prose paragraphs
-- Steps must be sequential, each building on the previous so the list reads like a walkthrough, not a grab-bag of independent checks
+- Steps must be sequential, each building on the previous so the list reads like a walkthrough, not
+  a grab-bag of independent checks
 - Write each item in "Expect to see X" tutorial style
-- Include evidence-providing observability signals to confirm correct behavior; if gaps exist, point them out now
+- Include evidence-providing observability signals to confirm correct behavior; if gaps exist,
+  point them out now
 - Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
+- **Reviewer-frame**: every step must be executable locally, before merging, against the local dev
+  environment. The question being answered is: "what would a skeptic demand I prove without running
+  tests or deploying?" If a step only confirms CI behavior or requires deployment first, cut it.
+- **Pre-draft check**: before writing the checklist, ask — _if there were no test suite, how would I
+  watch this behavior happen?_ That answer is the checklist.
 
 ### Structure
 
@@ -82,7 +90,8 @@ gh pr view --web
 - Include 🍿 screen recording for ANY UI changes
 - Mention deployment timing if backend/frontend coordination needed
 - Link actual Jira/Slack (ask user if not provided)
-- Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or bare GitHub Issue URL (GitHub auto-renders those with a preview)
+- Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or bare GitHub Issue
+  URL (since GitHub auto-renders those with a preview)
 
 ### Anti-patterns
 
@@ -92,6 +101,8 @@ gh pr view --web
 ❌ Technical jargon when plain language is available
 ❌ Placeholder links — ask for real URLs  
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read
+❌ Validation steps that run or reference automated tests — CI already shows this; zero marginal value to a reviewer
+❌ Post-merge prod checks ("after deploying, verify in prod") — useless to the reviewer deciding whether to approve now
 
 ---
 
