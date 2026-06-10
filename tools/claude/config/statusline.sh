@@ -8,16 +8,14 @@ model=$(echo "$input" | jq -r '.model.id // "claude"')
 agent=$(echo "$input" | jq -r '.agent.name // ""')
 
 # Context window: used tokens / total tokens, rounded to k
-total=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
-used=$(echo "$input" | jq -r '
-  (.context_window.current_usage.input_tokens // 0) +
-  (.context_window.current_usage.cache_creation_input_tokens // 0) +
-  (.context_window.current_usage.cache_read_input_tokens // 0)
+# used_percentage is authoritative (server-side); raw token sums overcounted due to cache fields
+used_k=$(echo "$input" | jq -r '
+  (.context_window.used_percentage // 0) *
+  (.context_window.context_window_size // 200000) / 100000 | round
 ')
-# pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
-
-used_k=$(((used + 500) / 1000))
-total_k=$(((total + 500) / 1000))
+total_k=$(echo "$input" | jq -r '
+  (.context_window.context_window_size // 200000) / 1000 | round
+')
 ctx="${used_k}k/${total_k}k"
 
 # Color the context fraction based on usage: yellow >= 50%, red >= 75%
