@@ -409,21 +409,18 @@ Produce a prioritized action list — not a categorized findings report. The rea
 ### Recommended Changes
 
 1. `file:line` — [imperative: what to do] *(blocking)*
-[blank line]
-   *Why:* [one sentence on concrete impact if left unfixed]
-   *Verification:* [how you confirmed this — library source, command output, doc reference]
-[blank line]
+   Why: [one sentence on concrete impact if left unfixed]
+   Verified: [how you confirmed this — library source, command output, doc reference]
+
 2. `file:line` — [imperative: what to do]
-[blank line]
-   *Why:* [one sentence on impact]
-   *Verification:* [how you confirmed this]
+   Why: [one sentence on impact]
+   Verified: [how you confirmed this]
 
 ### Open Questions
 
 3. `file:line` — [genuine design decision with no clear right answer]
    - (a) [one path and its tradeoff]
    - (b) [another path and its tradeoff]
-[blank line]
 
 ### Looks Good
 [One sentence: what the change gets right, or which concern areas came back clean.]
