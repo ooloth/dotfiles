@@ -408,19 +408,22 @@ Produce a prioritized action list — not a categorized findings report. The rea
 
 ### Recommended Changes
 
-1. `file:line` — [imperative: what to do] *(blocks ship)*
-   Why: [one sentence on concrete impact if left unfixed]
-   Verified: [how you confirmed this — library source, command output, doc reference]
-
+1. `file:line` — [imperative: what to do] *(blocking)*
+[blank line]
+   *Why:* [one sentence on concrete impact if left unfixed]
+   *Verification:* [how you confirmed this — library source, command output, doc reference]
+[blank line]
 2. `file:line` — [imperative: what to do]
-   Why: [one sentence on impact]
-   Verified: [how you confirmed this]
+[blank line]
+   *Why:* [one sentence on impact]
+   *Verification:* [how you confirmed this]
 
 ### Open Questions
 
 3. `file:line` — [genuine design decision with no clear right answer]
    - (a) [one path and its tradeoff]
    - (b) [another path and its tradeoff]
+[blank line]
 
 ### Looks Good
 [One sentence: what the change gets right, or which concern areas came back clean.]
@@ -428,7 +431,7 @@ Produce a prioritized action list — not a categorized findings report. The rea
 
 **Formatting rules:**
 
-- Order by impact: blockers first (mark with `*(blocks ship)*`), then should-fix, then suggestions. Severity is implicit from position — no separate tiers.
+- Order by impact: blockers first (mark with `*(blocking)*`), then should-fix, then suggestions. Severity is implicit from position — no separate tiers.
 - Each item is an imperative action ("Pass `chunk_size=` to `blob.open()`"), not an observation ("The BlobReader default is 40 MiB"). The reader should be able to act on item N without re-reading the diagnosis.
 - The Verified line is mandatory for any claim about library internals, runtime behavior, or numerical values. For convention-based findings (style, naming, docstring), write "convention — no runtime check needed."
 - Omit "What's Working Well" and "All Clear" sections — they are not decision inputs. Consolidate into the single "Looks Good" line.
