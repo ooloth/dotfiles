@@ -406,21 +406,29 @@ Produce a prioritized action list — not a categorized findings report. The rea
 ### Verdict: [Approve | Request Changes | Comment]
 [One sentence on what to do next]
 
-### Recommended Changes
+### Findings
 
-1. `file:line` — [imperative: what to do] *(blocking)*
-   Why: [one sentence on concrete impact if left unfixed]
-   Verified: [how you confirmed this — library source, command output, doc reference]
+| # | Severity | Location | Action |
+|---|----------|----------|--------|
+| 1 | must | `file:line` | [imperative: what to do] |
+| 2 | should | `file:line` | [imperative: what to do] |
+| 3 | consider | `file:line` | [imperative: what to do] |
+| 4 | ? | `file:line` | [open design question] |
 
-2. `file:line` — [imperative: what to do]
-   Why: [one sentence on impact]
-   Verified: [how you confirmed this]
+---
 
-### Open Questions
+**1. `file:line` — [imperative: what to do]** *(must)*
 
-3. `file:line` — [genuine design decision with no clear right answer]
-   - (a) [one path and its tradeoff]
-   - (b) [another path and its tradeoff]
+[1–3 sentences. Explain why this matters — what breaks, degrades, or becomes harder if left unfixed. Then describe what work you did to verify the claim: which file or function you read, which command you ran, what the output showed. Use hedging language ("no guard visible in the surrounding context", "appears to", "may") if confidence is less than certain.]
+
+**2. `file:line` — [imperative: what to do]**
+
+[Same structure. Cite the specific code or source that grounds the finding. If you ran a command to verify a library behavior or default value, say so and include the result.]
+
+**4. `file:line` — [open design question]**
+
+- (a) [one path and its tradeoff]
+- (b) [another path and its tradeoff]
 
 ### Looks Good
 [One sentence: what the change gets right, or which concern areas came back clean.]
@@ -428,16 +436,18 @@ Produce a prioritized action list — not a categorized findings report. The rea
 
 **Formatting rules:**
 
-- Order by impact: blockers first (mark with `*(blocking)*`), then should-fix, then suggestions. Severity is implicit from position — no separate tiers.
-- Each item is an imperative action ("Pass `chunk_size=` to `blob.open()`"), not an observation ("The BlobReader default is 40 MiB"). The reader should be able to act on item N without re-reading the diagnosis.
-- The Verified line is mandatory for any claim about library internals, runtime behavior, or numerical values. For convention-based findings (style, naming, docstring), write "convention — no runtime check needed."
-- Omit "What's Working Well" and "All Clear" sections — they are not decision inputs. Consolidate into the single "Looks Good" line.
-- If there are no recommended changes, say so in one sentence under the verdict and skip the section.
+- The table is a scannable index only — one row per finding, action phrased as an imperative.
+- Severity column values: `must`, `should`, `consider`, `?` (open question). Order rows by severity.
+- Each detail section is 1–3 sentences of integrated prose — no labeled sub-fields. It must answer two questions: (1) why does this matter, and (2) what did you actually look at to verify it. These are not optional; a finding with no impact explanation or no verification basis should not be reported.
+- Use hedging language within the prose when confidence is less than certain — don't assert facts you haven't confirmed.
+- Open question items (`?`) get the (a)/(b) tradeoff format instead of prose.
+- Omit "What's Working Well" and "All Clear" sections — consolidate into the single "Looks Good" line.
+- If there are no recommended changes, say so in one sentence under the verdict and skip the Findings section.
 
 **Verdict mapping:**
 
 - **Approve** — no blockers; all remaining items are optional
-- **Request Changes** — one or more items marked _(blocks ship)_
+- **Request Changes** — one or more `must` items
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
 
 ## Step 5: Post review (PR scope only)
