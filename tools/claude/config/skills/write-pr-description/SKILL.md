@@ -78,9 +78,10 @@ gh pr view --web
 - Include evidence-providing observability signals to confirm correct behavior; if gaps exist,
   point them out now
 - Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
-- **Reviewer-frame**: every step must be executable locally, before merging, against the local dev
-  environment. The question being answered is: "what would a skeptic demand I prove without running
-  tests or deploying?" If a step only confirms CI behavior or requires deployment first, cut it.
+- **Reviewer-frame**: every step must be executable on a laptop, before merging, without deploying
+  anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any other
+  deployed environment. The question being answered is: "what would a skeptic demand I prove
+  without running tests or deploying?" If a step requires a deployment first, cut it.
 - **Pre-draft check**: before writing the checklist, ask — _if there were no test suite, how would I
   watch this behavior happen?_ That answer is the checklist.
 
@@ -102,7 +103,7 @@ gh pr view --web
 ❌ Placeholder links — ask for real URLs  
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read
 ❌ Validation steps that run or reference automated tests — CI already shows this; zero marginal value to a reviewer
-❌ Post-merge prod checks ("after deploying, verify in prod") — useless to the reviewer deciding whether to approve now
+❌ Any step requiring a deployment — to DEV, UAT, staging, or prod — all require merging first and cannot be run by a reviewer before approving
 
 ---
 
