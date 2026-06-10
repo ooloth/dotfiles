@@ -13,16 +13,18 @@ If Status and All changes are both empty, there is nothing to commit — say so 
 
 ## Your task
 
-1. **Before running checks and tests:** if you already ran them in this conversation and they all
-   passed, run `git diff HEAD` now and compare it to the diff you saw when they ran. If the output
-   is byte-for-byte identical, skip steps 1 and 2. If anything differs — even whitespace — run
-   them.
+1. **Before running checks and tests:** if you already ran them against the entire codebase (i.e.
+   full codebase checks and the complete test suite, not selected tests related to your changes) in
+   this conversation and they all passed, run `git diff HEAD` now and compare it to the diff you saw
+   when they ran. If the output is byte-for-byte identical, skip steps 1 and 2. If anything differs
+   — even whitespace — or if either run skipped anything in the codebase, run them.
 
    Run all relevant checks. Fix errors that are mechanical and contained to files already in the
    diff (e.g. formatting, unused imports, trivial lint). If fixing an error would require touching
    new files, making design decisions, or adding non-trivial logic — stop, report what failed and
    why, and wait for approval before proceeding. Discover what checks apply by consulting the
    project's CONTRIBUTING.md, Justfile and CLAUDE.md.
+
 2. Run all tests. Apply the same rule: fix only mechanical failures in files already in the diff;
    escalate anything requiring new design work.
 3. Try to divide the changes into themes. For example, pair one test case with its implementation
