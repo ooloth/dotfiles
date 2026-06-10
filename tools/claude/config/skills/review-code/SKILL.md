@@ -442,9 +442,11 @@ Produce a prioritized action list — not a categorized findings report. The rea
 
 ## Step 5: Post review (PR scope only)
 
-A helper script lives at `scripts/post_review.py` relative to this skill's base directory (shown at the top of this skill's content as "Base directory for this skill: ...").
+After presenting findings, if this is a PR and the author is the user (ooloth), ask the user to
+indicate which changes to make locally or discuss further first and then stop and wait for a reply
+(skip the rest of this skill's instructions).
 
-After presenting findings, ask:
+Otherwise, if this is a PR and the author is NOT the user, ask:
 
 > "Post this as a GitHub review? (yes / approve / request-changes / comment / skip)"
 
@@ -466,10 +468,6 @@ python3 <skill-base-dir>/scripts/post_review.py <pr-number> <EVENT> "<summary>" 
 ```
 
 **Summary audience:** The review body is read by GitHub users who only know what's in the PR diff — they have no context from this review session. Write for that audience:
-
-**Self-review context:** If the user is the PR author and this was effectively a self-review session
-where you applied changes locally yourself, you likely should NOT be posting a review! If you're
-about to, double check if that makes sense by confirming with the user.
 
 **Tone for inline comment bodies:** Write as a curious teammate, not an auditor.
 
