@@ -13,27 +13,29 @@ If Status and All changes are both empty, there is nothing to commit — say so 
 
 ## Your task
 
-1. **Before running checks and tests:** if you already ran them against the entire codebase (i.e.
-   full codebase checks and the complete test suite, not selected tests related to your changes) in
-   this conversation and they all passed, run `git diff HEAD` now and compare it to the diff you saw
-   when they ran. If the output is byte-for-byte identical, skip steps 1 and 2. If anything differs
-   — even whitespace — or if either run skipped anything in the codebase, run them.
+**Before running checks and tests:** you may skip steps 1 and 2 below ONLY if you can answer yes to
+ALL of the following: (a) you ran the project's full check suite — not a subset — earlier in this
+conversation and it passed; (b) you ran the project's full test suite — the same command CI would
+run, with no path filters or -k flags — and it passed; not the subset of tests you think are
+relevant to the changed files — all the tests (c) `git diff HEAD` is byte-for-byte identical to the
+diff you saw when those runs completed. If any condition is false, run them now.
 
-   Run all relevant checks. Fix errors that are mechanical and contained to files already in the
+1. Run all relevant checks. Fix any errors that are mechanical and contained to files already in the
    diff (e.g. formatting, unused imports, trivial lint). If fixing an error would require touching
    new files, making design decisions, or adding non-trivial logic — stop, report what failed and
    why, and wait for approval before proceeding. Discover what checks apply by consulting the
    project's CONTRIBUTING.md, Justfile and CLAUDE.md.
-
-2. Run all tests. Apply the same rule: fix only mechanical failures in files already in the diff;
-   escalate anything requiring new design work.
+2. Run the full test suite — the same command CI runs, with no path filters. Not just the tests you
+   think are relevant to the changed files — all the tests. Do not run only the tests for changed
+   files. Apply the same fix rule: mechanical failures in files already in the diff only; escalate
+   anything else.
 3. Try to divide the changes into themes. For example, pair one test case with its implementation
    and corresponding documentation updates. Or one new lint rule and all its fixes. Changes in one
-   file or layer don't necessarily all belong in the same commit. Design a commit sequence that
-   will help readers understand how the system evolved, but do NOT design a sequence that would
-   require reverting or replaying changes; that is time-consuming and introduces the risk of
-   mistakes and committing unreviewed changes
-4. Make each commit following the "Writing Commit Messages" style guide below. See "Workflows >
+   file or layer don't necessarily all belong in the same commit. Don't spend much time on this -
+   just do your best to separate unrelated changes. Do NOT design commits that would require
+   reverting and replaying changes; that's slow and risky and not worth it. A single commit is
+   preferable in that case.
+4. Write each commit following the "Writing Commit Messages" style guide below. See "Workflows >
    Staging file hunks non-interactively" when staging some changes in a file but not others (hint:
    `git add -p` won't work in this environment)
 5. After each commit, run `git log --oneline -3` to confirm it was recorded correctly.
