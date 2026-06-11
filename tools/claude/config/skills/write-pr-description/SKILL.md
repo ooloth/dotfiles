@@ -42,7 +42,7 @@ gh pr view --web
 - [ ] Reviewed file changes: `git diff $BASE...HEAD --stat`
 - [ ] Asked user for Jira/Slack links
 - [ ] Asked user for screen recording (if UI change)
-- [ ] "Why" is user-centric (not technical constraints)
+- [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Validation is manual e2e only — no automated checks
 - [ ] No implementation details snuck in
 
@@ -62,9 +62,14 @@ gh pr view --web
 
 - **What**: A single flat bullet list. First bullet is a single-sentence TL;DR of the entire change.
   Subsequent bullets call out worthwhile details (variants covered, notable constraints, deployment
-  notes).
+  notes) without confusing the main point. The key facts reviewers should be aware are in the diff
+  are clearly stated, especially changes that affect the system's observable side effects and
+  measurable characteristics
 - **Why**: First bullet is a single-sentence TL;DR of the entire reason. Subsequent bullets add
-  detail if needed (1–3 total). Frame around USER benefit, not technical constraints.
+  detail if needed. Prefer writing at the level of impact and outcome rather than implementation
+  where possible — explain why this change needed to exist and try to pre-emptively answer the key
+  question a reviewer would ask before reading the diff in this case (e.g. "Didn't we already fix
+  this?", "Why do we need this?", "Aren't there better ways to solve this problem?", etc happen.
 - Focus on the feature users will see. Omit implementation wiring (threading params, type updates).
   If it's not visible to users or reviewers, skip it.
 - Concrete examples over jargon: "item with `_` separator" not "multi-entity composite perturbation"
