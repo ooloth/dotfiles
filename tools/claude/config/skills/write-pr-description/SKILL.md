@@ -70,9 +70,12 @@ gh pr view --web
   where possible — explain why this change needed to exist and try to pre-emptively answer the key
   question a reviewer would ask before reading the diff in this case (e.g. "Didn't we already fix
   this?", "Why do we need this?", "Aren't there better ways to solve this problem?", etc happen.
-- Focus on the feature users will see. Omit implementation wiring (threading params, type updates).
   If it's not visible to users or reviewers, skip it.
-- Concrete examples over jargon: "item with `_` separator" not "multi-entity composite perturbation"
+- **Phrasing:** Do not write like an LLM. Write like a mentor teaching a Junior Engineer. Onboard
+  as you describe. Use simple, unintimidating language a coworker just joining the project could
+  follow. Assume concepts and terminology may be new to the reader. Empower someone new to the
+  codebase to effectively review the PR because your phrasing made the change and its impact so
+  easy to understand.
 
 ### Validation
 
