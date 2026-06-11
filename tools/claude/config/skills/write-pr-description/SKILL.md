@@ -92,6 +92,8 @@ gh pr view --web
   without running tests or deploying?" If a step requires a deployment first, cut it.
 - **Pre-draft check**: before writing the checklist, ask — _if there were no test suite, how would I
   watch this behavior happen?_ That answer is the checklist.
+- Any commands the reviewer should run must be provided in a complete, copy-pastable form, not
+  alluded to; assume the reviewer is unfamiliar and will not figure it out unless you provide it
 
 ### Structure
 
