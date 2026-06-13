@@ -28,6 +28,9 @@ Cover every branch from Step 1 that you can reach. For each run, record:
 - What you ran (exact command, request, or interaction)
 - What you observed (stdout, response, file content, UI — not "it seemed fine")
 
+❌ "The tests pass and the logic looks correct."
+✅ "I ran `npm run dev`, navigated to /settings, toggled the feature, and saw the config update in the network response."
+
 ## Step 3 — Gap audit
 
 After running, answer two questions:
@@ -37,9 +40,26 @@ After running, answer two questions:
 
 Don't let this section distract from Steps 1–2. The primary goal is live evidence, not test design. Surface the gap, name the test type, move on.
 
-## Step 4 — Report
+## Step 4 — Decide (internal, do not output yet)
 
-Produce a summary:
+Before writing the report, decide what you'll recommend. Ask yourself:
+
+- Are any unobserved paths blockers to shipping?
+- Which missing tests from Step 3 are highest priority?
+- Is anything only verifiable in staging/prod — and if so, what should the user watch for?
+
+Produce a private prioritized list (3–5 bullets). Use these categories:
+
+- **Ship it** — all critical paths observed, no blockers
+- **Fix before shipping** — specific gap is a blocker; name it
+- **Add tests** — specific integration tests worth writing; name them
+- **Needs live infra** — name what to watch for in staging/prod
+
+Hold this list. Output nothing yet.
+
+## Step 5 — Report
+
+Now output the summary table followed immediately by the recommendations from Step 4:
 
 | Path | Observed? | Evidence | Notes |
 |------|-----------|----------|-------|
@@ -47,7 +67,9 @@ Produce a summary:
 | Invalid input | ✅ | `curl -X POST /api/foo -d '{}'` → 400 response with expected error body | |
 | DB unreachable | ❌ | Can't simulate locally without stopping the DB container | Missing integration test |
 
----
+**Recommended next steps:**
 
-❌ "The tests pass and the logic looks correct."
-✅ "I ran `npm run dev`, navigated to /settings, toggled the feature, and saw the config update in the network response."
+- Add integration test: ...
+- Ship it / Fix X before shipping / Watch for Y in staging
+
+> What would you like to do?
