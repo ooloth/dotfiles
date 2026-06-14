@@ -12,8 +12,9 @@ on:
 
 jobs:
   claude-review:
-    # Only review PRs that are not in draft mode
-    if: github.event.pull_request.draft == false
+    # Disabled: Claude Code pricing changed; re-enable by restoring the original condition below
+    # if: github.event.pull_request.draft == false
+    if: false
 
     # Optional: Filter by PR author
     # if: |
