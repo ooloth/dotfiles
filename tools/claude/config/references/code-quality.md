@@ -17,15 +17,18 @@ unless the abbreviated form is the established domain term.
 
 ## Should
 
-**Files are under 500 lines.**
+**Files are under 500 lines and represent discrete domain concepts.**
 Files longer than 500 lines are split at natural seams. Agents silently truncate long files,
 creating blind spots that lead to false conclusions. And humans have a hard time understanding them.
+File names enumerate discrete domain concepts and are grouped under subfolders that enumerate
+higher level concepts whenever that helps the file system read like a catalogue of the codebase's
+domain entities and logical behaviours and the boundaries between them.
 
 **Functions are small enough to reason about.**
-Blocks nested more than two levels deep are extracted to named functions.
-Predicates and transformations passed to higher-order functions are extracted
-to named functions when their bodies can't be understood at a glance.
-Functions that require scrolling to read are split at natural seams.
+Blocks nested more than two levels deep are extracted to named functions. Predicates and
+transformations passed to higher-order functions are extracted to named functions when their
+bodies can't be understood at a glance. Functions that require scrolling to read are split at
+natural seams.
 
 **Boolean parameters are not used to select behaviour.**
 A function that accepts a boolean to switch between two modes is two functions.
