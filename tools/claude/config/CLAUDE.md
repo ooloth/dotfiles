@@ -17,45 +17,45 @@ If the user's message contains a `?`, "can we", "should we", "what if", "why", "
 1. **Clarify** what the user is asking (if unsure)
 2. **Proactively explore** the codebase and any other relevant sources using as many subagents as needed to deeply understand the subject matter
 3. **ANSWER the question** with options/analysis/explanation
-4. **STOP and WAIT** for explicit implementation approval to act or further discussion to reply to (returning to Step 1)
-5. **DO NOT take any action with side effects** until user gives an approval phrase like "do it", "go ahead", "go for it", "yes please do that", "make those changes", "fix it", "add it"
+4. **STOP and WAIT** for explicit implementation approval to act, or further discussion to reply to (returning to Step 1)
 
-This applies to **all side effects**, not just file edits — GitHub comments, issue state changes,
-PR creation, API calls, shell commands that mutate state, etc. If the action changes anything the
-user would need to know about, present your plan and wait. External/public side effects (e.g.
-posting a comment visible to others) require the same approval gate as code changes — arguably
-more so, since they cannot be locally reverted.
+**Default to still-discussing until an explicit signal closes the entire message.** Every message
+is in discussion mode by default, no matter what it contains — directives, answers to your
+questions, new context, agreement, a tangent, a question of its own. None of these end the
+discussion, individually or in combination — only an explicit signal that the user is ready for
+you to act on everything discussed so far does. That signal must cover the *whole* message: an
+approval phrase ("do it", "go ahead", "go for it", "yes please do that", "make those changes",
+"fix it", "add it") attached to one item in a longer message closes that item, not the rest of it.
+If anything else in the message isn't itself that same closing signal, the whole message stays
+open — including the parts that read like clear instructions. When you can't point to a moment
+where the user said "act on all of this now," they haven't, and nothing executes.
 
-Discussion phrases like "yes", "ok", "sounds good", "that makes sense" do not necessarily indicate approval.
+This is deliberately stricter than pattern-matching for approval phrases or scanning for
+unanswered questions. None of the following close a discussion, alone or bundled with items that
+look approved:
+- Casual acknowledgment ("yes", "ok", "sounds good", "that makes sense")
+- A feasibility question ("I'd like to X — is that doable?" is a question even when it describes
+  exactly what the user wants; the trailing `?` means answer and stop)
+- Answering questions you asked — you're in "answer incorporation" mode, not implementation mode;
+  next present the full plan and ask again, don't fold "answered" into "approved"
+- An unresolved sub-decision inside an otherwise-approved task (which name, which approach) —
+  approval for the parent task does not extend through it; resolve it, then implement
+- Context or material offered to inform the discussion, even material you asked for yourself
 
-**"I'd like to X — is that doable?" is a feasibility question, not approval.** Even when the user
-describes exactly what they want in the same message, a trailing `?` means answer and stop. Do not
-implement. The desire description tells you _what_ to plan; the question mark tells you to present
-that plan and wait.
-
-Explicitly confirm if the user is ready for you to implement and for the discussion to end before
-you act (when in doubt, assume the user hasn't approved yet).
-
-If your thinking later leads you to modify the approved plan (e.g. want to make new design
-decisions), stop and discuss those rather than quietly making an executive decision.
-
-**Open design questions void prior approval.** If implementation depends on an unresolved design
-choice (e.g. which name, which approach, which pattern), present the options and stop — even if
-you already have approval for the parent task. Prior approval does not extend through an open
-question; resolve it first, then implement.
+**This applies to all side effects**, not just file edits — GitHub/Jira comments, issue state
+changes, PR creation, API calls, Slack messages, shell commands that mutate state, etc.
+External/public side effects (posting a comment visible to others) need this same gate — arguably
+more so, since they cannot be locally reverted. Approval for one kind of side effect does not
+transfer to another: being approved to edit files does not mean you're also approved to post a
+ticket comment about it, even in the same already-approved task — check separately.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
 cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and
 acting in the same turn makes the question rhetorical and bypasses the gate.
 
-**Receiving answers to your questions is not implementation approval.** When the user responds to
-a list of questions you asked, you are in "answer incorporation" mode — not implementation mode.
-Even if every question is now answered, your next move is to (1) answer any question they asked
-back, (2) present the full implementation plan, (3) stop and ask for explicit approval of that
-plan. A "go ahead" embedded inside a numbered answer to one of your sub-questions means "use that
-approach for this decision" — it is not approval to begin implementing. Decisions being complete
-and implementation being approved are two separate gates.
+If your thinking later leads you to modify the approved plan (e.g. want to make new design
+decisions), stop and discuss those rather than quietly making an executive decision.
 
 ---
 
