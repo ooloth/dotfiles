@@ -1,9 +1,3 @@
----
-name: Rust invariants
-description: Language-specific invariants for Rust code; load in addition to language-agnostic references when Rust files are in scope
-type: reference
----
-
 # Rust
 
 Rust code upholds these invariants in addition to all language-agnostic references.

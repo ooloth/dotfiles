@@ -1,9 +1,3 @@
----
-name: CLI design invariants
-description: Invariants for command-line interface design; load when the changed files include a CLI binary or command-line interface
-type: reference
----
-
 # CLI Design
 
 A CLI is well-designed when every operation is discoverable, error messages tell the

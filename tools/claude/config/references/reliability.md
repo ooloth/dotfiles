@@ -33,6 +33,12 @@ A failure in one dependency does not cascade to unrelated operations. Work
 that can proceed without the failing dependency does proceed. Partial success
 is a valid outcome when operations are independent.
 
+**Resource handles are closed after use.**
+Connections, file handles, and other resources are released when the work
+that required them is done. Long-lived processes that accumulate open handles
+degrade over time — resource exhaustion is a reliability failure, not just
+a memory concern.
+
 ## Consider
 
 **Non-critical dependencies have a degraded fallback.**

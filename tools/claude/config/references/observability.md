@@ -26,12 +26,6 @@ info for significant events, debug for diagnostic detail.
 Telemetry calls are isolated from the code they instrument. The primary intent
 of the surrounding code remains clear after instrumentation is added.
 
-## Consider
-
-**Resource handles are closed.**
-Connections, file handles, and other resources are released after use.
-Long-lived processes don't accumulate open handles.
-
 ## In scope
 
 - Error paths
