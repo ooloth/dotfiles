@@ -1,8 +1,9 @@
-# Concurrency
+# Async Coordination
 
-Concurrent code is correct when shared state is always protected, async
-operations are always resolved, and the system behaves correctly whether work
-runs sequentially or in parallel.
+Async and concurrent code is correct when shared state is always protected,
+async operations are always resolved, race conditions are structurally
+impossible rather than guarded against, and the system behaves correctly
+whether work runs sequentially or in parallel.
 
 ## Must
 
@@ -18,6 +19,9 @@ deliberate choice, not an oversight, and is documented.
 **Cancellation is respected.**
 When a cancellation signal is received, in-progress work stops at the next
 safe point. Resources held by cancelled work are released.
+
+**Race conditions are eliminated structurally, not patched.**
+When async coordination involves multiple possible lifecycle states — loading, cancelling, retrying, settled — model them as an explicit finite state machine rather than accumulating boolean flags. Illegal state combinations become unrepresentable by construction; transitions are the only path between states, so there is no route to an illegal state that requires a guard. More than one boolean flag coordinating async behavior is a signal an FSM is needed.
 
 ## Should
 
@@ -48,6 +52,11 @@ before bounds are exceeded.
 When a set of concurrent operations can fail independently, the handling of
 partial success — which results to keep, which to retry, how to report — is
 defined.
+
+**Typestates encode state into the type system when the language allows.**
+Parameterize types by state so invalid operations are compile errors rather
+than runtime checks. A `Connection<Closed>` that lacks a `.send()` method
+cannot be misused; a guard like `if (state !== 'closed')` can be forgotten.
 
 ## In scope
 
