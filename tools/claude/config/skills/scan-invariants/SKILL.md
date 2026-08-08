@@ -1,7 +1,7 @@
 ---
 name: scan-invariants
 description: Check whether a codebase upholds its invariants — a specific theme or all themes in parallel. Use when asked to review conventions, check invariants, or audit codebase health.
-argument-hint: '[code-structure | code-readability | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | observability | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
 ---
@@ -47,7 +47,7 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
 
    **Subagent 2 — Types & Correctness** (subagent_type: Explore, description: "review types and correctness")
    Inline: `~/.claude/references/type-design.md`, `~/.claude/references/correctness.md`,
-   `~/.claude/references/assertions.md`, `~/.claude/references/error-handling.md`
+   `~/.claude/references/error-handling.md`
 
    **Subagent 3 — Security & Privacy** (subagent_type: Explore, description: "review security and privacy")
    Inline: `~/.claude/references/security.md`, `~/.claude/references/privacy.md`

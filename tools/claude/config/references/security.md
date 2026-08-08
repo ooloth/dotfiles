@@ -44,6 +44,17 @@ via lockfiles or checksums.
 Code requests only the permissions it needs. Overly broad access — admin
 where read-only suffices, write where read suffices — is worth flagging.
 
+**Public and authenticated endpoints are rate-limited.**
+Endpoints that accept unauthenticated or high-volume requests have explicit
+rate limits. Application-level limits protect against abuse patterns that
+bypass upstream infrastructure controls.
+
+**State-mutating endpoints are protected against CSRF.**
+Endpoints that accept browser sessions and change server state verify request
+origin. A CSRF check missing from a session-authenticated mutation is an
+exploitable vulnerability. Applies to cookie-authenticated web APIs and
+form handlers; not to Bearer-token or API-key authenticated endpoints.
+
 ## In scope
 
 - HTTP handlers and CLI argument parsing

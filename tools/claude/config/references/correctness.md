@@ -28,18 +28,31 @@ silently missing behaviors, known hacks, or deferred cleanup. Incomplete work
 and shortcuts don't ship as permanent fixtures — they compound and they're
 easiest to address while the context is still loaded.
 
+**Runtime invariants are asserted, not only tested.**
+Conditions that must always hold — preconditions on inputs, postconditions on
+outputs, internal state constraints — are asserted where they apply, not only
+in tests. Both what must be true and what must never be true are stated. An
+assertion that fires in production catches programmer errors that tests alone
+cannot.
+
 ## Should
 
 **Existing callers and data are unaffected.**
 Changes don't break existing call sites or corrupt existing data unless the
 breakage is intentional, documented, and coordinated.
 
+**`assert` is for programmer errors; errors are returned for environmental failures.**
+The discriminator: could this condition occur because of something outside the
+code — absent config, malformed input, a failed network call? If yes, return
+an error. If only a bug within the codebase could trigger it, assert it.
+Assertion failures halt; they are not caught and recovered from.
+
 ## Consider
 
-**Implicit assumptions are explicit.**
-If the code assumes something about its inputs or environment that types and
-validation don't enforce, that assumption is either enforced or noted at the
-call site.
+**Assertions multiply the value of fuzzing.**
+Because assertions check invariants on every execution path, fuzz inputs that
+reach unexpected states trigger assertion failures — uncovering bugs invisible
+to deterministic tests.
 
 ## In scope
 

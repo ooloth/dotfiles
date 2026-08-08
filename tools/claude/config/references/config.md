@@ -32,11 +32,6 @@ member. Undocumented config is a bus-factor risk.
 
 ## Consider
 
-**Environmental differences are expressed through config, not branches.**
-Business logic does not branch on `if env == "production"`. Environmental
-differences are expressed as config values. The code path is the same in
-all environments; the config differs.
-
 **Config values have explicit documented defaults.**
 Optional config values are not left to the runtime's or library's undocumented
 defaults. The default is stated in the code and documented alongside the key.

@@ -17,6 +17,12 @@ diagnosable from logs alone.
 
 ## Should
 
+**Log output is structured.**
+Logs use a consistent machine-parseable format — JSON or key=value — with
+well-defined field names. Free-form prose strings are not the output format
+for production logging. Structured logs can be queried, aggregated, and
+alerted on; unstructured logs cannot.
+
 **Log messages are actionable.**
 Logs include enough context to act on — relevant IDs, states, and values.
 Log levels are appropriate: errors for failures, warnings for degraded states,
