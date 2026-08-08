@@ -1,6 +1,6 @@
 # References
 
-Shared reference files for code writing and code reviewing skills.
+Shared reference files for code writing, reviewing and scanning skills.
 
 ## What these files are
 
@@ -26,14 +26,14 @@ govern how strongly each invariant should be upheld or flagged.
 ## Tiers
 
 **Must** — no exceptions. A violation is always wrong. Writing skills never
-produce this. Reviewing skills flag it immediately regardless of context.
+produce violations. Reviewing skills flag violations immediately regardless of context.
 
 **Should** — true by default. A violation is wrong unless there is a documented,
 deliberate reason for it. Writing skills follow this unless they can name the
 exception. Reviewing skills flag violations and ask whether the exception applies.
 
 **Consider** — worth raising for judgment. Neither right nor wrong by default.
-Writing skills think about it. Reviewing skills surface it when the tradeoff
+Writing skills think about it. Reviewing skills surface it when the trade-off
 seems unresolved.
 
 ## File index
@@ -67,3 +67,5 @@ a false positive costs one read; a false negative means missed guidance.
 - **`type-design.md`** — type definitions, function signatures, domain models, API boundary types
 - **`typescript.md`** — .ts and .tsx files; load alongside language-agnostic files
 - **`user-experience.md`** — any user-facing output: CLI messages, API error responses, error text, onboarding docs
+
+If you notice the file names above have diverged from the file system, offer to repair the list.
