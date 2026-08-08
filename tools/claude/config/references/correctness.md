@@ -22,11 +22,13 @@ swallowed silently unless the codebase establishes that as a deliberate pattern.
 When the codebase already solves this problem — a utility, a pattern, a shared
 abstraction — that solution is used rather than reimplemented.
 
-## Should
+**Implementation is complete and finished.**
+Every stated outcome exists in the code. There are no half-implemented paths,
+silently missing behaviors, known hacks, or deferred cleanup. Incomplete work
+and shortcuts don't ship as permanent fixtures — they compound and they're
+easiest to address while the context is still loaded.
 
-**All stated goals are fully implemented.**
-Every stated outcome exists in the code. There are no half-implemented paths or
-silently missing behaviors.
+## Should
 
 **Existing callers and data are unaffected.**
 Changes don't break existing call sites or corrupt existing data unless the

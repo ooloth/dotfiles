@@ -1,8 +1,8 @@
-# Architecture
+# Code Structure
 
-A system's architecture is sound when components know only what they need to,
-dependencies flow in one direction, and boundaries between components are as
-narrow as the problem allows.
+A codebase is well-structured when components know only what they need to,
+dependencies and data both flow in one direction, and boundaries between
+components are as narrow as the problem allows.
 
 ## Must
 
@@ -36,6 +36,12 @@ commitment to maintain. Internal details are private by default.
 When a boundary exists, callers depend on the contract it defines, not the
 concrete type behind it. Swapping implementations doesn't require changing
 callers.
+
+**Data flows in one direction.**
+State transformations move forward through the call stack. Callbacks, circular
+references, and shared mutable state are avoided where a simple pipeline
+would do. Bidirectional data flow between components is a structural smell,
+not just a readability one.
 
 ## Consider
 

@@ -17,11 +17,6 @@ the abbreviated form is the established domain term.
 Unused imports, variables, functions, and commented-out code don't exist.
 Remnants from exploration or abandoned approaches are removed before merging.
 
-**Work is finished before it ships.**
-Incomplete implementations, known hacks, and deferred cleanup don't ship as
-permanent fixtures. Code is easier to change while the context is loaded.
-Debt deferred compounds — do it right while it's hot.
-
 **Abstractions earn their place.**
 Every abstraction is used in more than one place or makes a single complex
 thing significantly clearer. Helpers that exist for one call site are inlined.
@@ -61,6 +56,8 @@ Variables and fields are immutable by default. Functions return new values
 rather than modifying inputs in place. Mutation that is required is explicit
 and visible at the call site.
 
+## Consider
+
 **Complexity matches the problem.**
 The solution is not over-engineered (configurable where hardcoded suffices,
 generalized for one case, layered where flat would do) or under-engineered
@@ -70,12 +67,7 @@ generalized for one case, layered where flat would do) or under-engineered
 The codebase has established ways of solving common problems. New code follows
 them unless there is a deliberate reason to diverge.
 
-**Data flows in one direction.**
-State transformations move forward through the call stack. Callbacks, circular
-references, and shared mutable state are avoided where a simple pipeline
-would do.
 
-## Consider
 
 **Related names sort by most significant word.**
 When a concept has qualifiers (unit, bound, direction), the concept leads:
