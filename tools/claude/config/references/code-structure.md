@@ -23,10 +23,11 @@ and tested without external dependencies.
 
 ## Should
 
-**The control plane is separated from the data plane.**
-Orchestration, validation, and assertions happen in the control plane. The data
-plane executes large batched units of work without interruption. Mixing them
-forces the data plane to pay control-plane costs on every iteration.
+**Orchestration is separated from execution.**
+Coordination logic — deciding what to do, validating preconditions, sequencing
+steps — is kept separate from the code that does the work. Mixing them forces
+execution paths to pay coordination costs on every iteration and makes either
+harder to test in isolation.
 
 **Public surfaces are as small as possible.**
 A component exposes only what callers need. Every additional export is a
@@ -43,28 +44,36 @@ references, and shared mutable state are avoided where a simple pipeline
 would do. Bidirectional data flow between components is a structural smell,
 not just a readability one.
 
-## Consider
-
-**Boundaries reflect the domain.**
-Module, package, and service names correspond to problem-domain concepts, not
-implementation concerns (utils, helpers, misc). A reader can infer what lives
-where from domain knowledge alone.
-
-**New boundaries are justified.**
-Before introducing a new component, the cost — a new interface to maintain, a
-new dependency to manage — is weighed against the benefit of the separation.
+**Boundaries and files are named after domain concepts.**
+Module, package, directory, and file names correspond to problem-domain
+concepts, not implementation mechanics. `payment/`, `subscription/`,
+`invoice.ts` are domain names. `utils/`, `helpers/`, `types.ts`, `hooks.ts`,
+`store.ts`, `api.ts` used as aggregates are layer names — they describe how
+the code is built, not what it does.
 
 **Code is organized by feature, not by layer.**
 Related types, logic, and I/O for a feature live together. A change to one
 feature touches one folder, not five. Adding a feature means adding a folder;
 removing a feature means deleting one.
 
+**The directory tree is navigable without reading code.**
+A developer unfamiliar with the codebase can locate the relevant file for a
+domain concept by reading directory and file names alone — without tracing
+imports, grepping, or asking. When the tree requires code reading to
+navigate, the names or structure are wrong.
+
+## Consider
+
+**New boundaries are justified.**
+Before introducing a new component, the cost — a new interface to maintain, a
+new dependency to manage — is weighed against the benefit of the separation.
+
 ## In scope
 
 - Import and use statements across all source files
-- Module, crate, or package boundary definitions
-- Directory structure
-- Cargo.toml / package.json workspace layout
+- Module, package, or crate boundary definitions
+- Directory structure and file naming
+- Manifest files defining package or workspace structure
 
 ## Out of scope
 

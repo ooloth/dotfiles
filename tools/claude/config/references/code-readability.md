@@ -28,12 +28,9 @@ purpose requires a conjunction ("and", "or") to describe are split.
 
 ## Should
 
-**Files are under 500 lines and represent discrete domain concepts.**
+**Files are under 500 lines.**
 Files longer than 500 lines are split at natural seams. Agents silently
-truncate long files, creating blind spots that lead to false conclusions. File
-names enumerate discrete domain concepts and are grouped under subfolders
-that enumerate higher-level concepts whenever that helps the file system
-read like a catalogue of the codebase's domain entities and behaviours.
+truncate long files, creating blind spots that lead to false conclusions.
 
 **Functions are small enough to reason about.**
 Blocks nested more than two levels deep are extracted to named functions.
