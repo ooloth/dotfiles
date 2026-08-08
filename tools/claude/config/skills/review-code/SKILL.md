@@ -119,7 +119,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/design.md` and `~/.claude/references/architecture.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/code-readability.md` and `~/.claude/references/code-structure.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Read related unchanged files and explore the broader codebase to understand existing patterns and available tools.
@@ -153,7 +153,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/architecture.md`, `~/.claude/references/design.md`, and `~/.claude/references/code-quality.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/code-structure.md` and `~/.claude/references/code-readability.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Read related unchanged files to understand existing structural patterns and conventions.
@@ -266,7 +266,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/performance.md`, `~/.claude/references/concurrency.md`, `~/.claude/references/reliability.md`, and `~/.claude/references/observability.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.claude/references/README.md`, then `~/.claude/references/performance.md`, `~/.claude/references/async-coordination.md`, `~/.claude/references/reliability.md`, and `~/.claude/references/observability.md`. Use these invariants as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. Check how similar operations are handled in unchanged files.
@@ -362,8 +362,8 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Identify which programming languages are present in the changed files by file extension (`.rs` → Rust, `.py` → Python).
-2. Read `~/.claude/references/README.md`, then load only the reference files that apply: `~/.claude/references/rust.md` if Rust files are present, `~/.claude/references/python.md` if Python files are present.
+1. Identify which programming languages are present in the changed files by file extension (`.rs` → Rust, `.py` → Python, `.ts`/`.tsx` → TypeScript).
+2. Read `~/.claude/references/README.md`, then load only the reference files that apply: `~/.claude/references/rust.md` if Rust files are present, `~/.claude/references/python.md` if Python files are present, `~/.claude/references/typescript.md` if TypeScript files are present.
 3. If no language-specific reference files apply to the changed files, report "No language-specific reference files apply to this change." and stop.
 4. Otherwise, run the diff command from Context to read what changed.
 

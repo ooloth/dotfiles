@@ -1,7 +1,7 @@
 ---
 name: scan-invariants
 description: Check whether a codebase upholds its invariants — a specific theme or all themes in parallel. Use when asked to review conventions, check invariants, or audit codebase health.
-argument-hint: '[architecture | design | code-quality | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | observability | performance | concurrency | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+argument-hint: '[code-structure | code-readability | type-design | correctness | assertions | error-handling | security | privacy | data-integrity | testing | observability | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
 ---
@@ -43,8 +43,7 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
      structured list with severity (Must/Should/Consider), location, and recommendation."
 
    **Subagent 1 — Structure** (subagent_type: Explore, description: "review structure")
-   Inline: `~/.claude/references/architecture.md`, `~/.claude/references/design.md`,
-   `~/.claude/references/code-quality.md`
+   Inline: `~/.claude/references/code-structure.md`, `~/.claude/references/code-readability.md`
 
    **Subagent 2 — Types & Correctness** (subagent_type: Explore, description: "review types and correctness")
    Inline: `~/.claude/references/type-design.md`, `~/.claude/references/correctness.md`,
@@ -59,9 +58,9 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    **Subagent 5 — Testing** (subagent_type: Explore, description: "review testing")
    Inline: `~/.claude/references/testing.md`
 
-   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability, performance, concurrency, and reliability")
+   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability, performance, async coordination, and reliability")
    Inline: `~/.claude/references/observability.md`, `~/.claude/references/performance.md`,
-   `~/.claude/references/concurrency.md`, `~/.claude/references/reliability.md`
+   `~/.claude/references/async-coordination.md`, `~/.claude/references/reliability.md`
 
    **Subagent 7 — Documentation & Release** (subagent_type: Explore, description: "review documentation, API design, dependencies, deployment, and config")
    Inline: `~/.claude/references/documentation.md`, `~/.claude/references/api-design.md`,
@@ -71,6 +70,7 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    Note: include language-specific files in the relevant agents when applicable:
    `~/.claude/references/python.md` → Types & Correctness (if Python);
    `~/.claude/references/rust.md` → Types & Correctness (if Rust);
+   `~/.claude/references/typescript.md` → Types & Correctness (if TypeScript);
    `~/.claude/references/cli-design.md` → Structure (if the project has a CLI binary).
 
 2. Wait for all subagents to return their results
