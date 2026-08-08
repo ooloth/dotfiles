@@ -33,10 +33,6 @@ examples that silently fail are worse than no examples.
 
 ## Consider
 
-**Significant architectural decisions are recorded with their rationale.**
-When a non-obvious design choice is made, a record exists explaining why — ADR, Notion page,
-PR description, or inline note. Future maintainers can find the reasoning without asking the author.
-
 **Changelogs are updated for user-facing changes.**
 When the project maintains a changelog, additions, removals, and breaking
 changes to user-facing behavior have an entry.

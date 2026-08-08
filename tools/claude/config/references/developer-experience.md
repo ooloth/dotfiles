@@ -73,6 +73,6 @@ project evolved and what has already been considered and rejected.
 
 ## Out of scope
 
-- User-facing documentation describing how to use the system (covered by ux)
+- User-facing documentation describing how to use the system (covered by user-experience)
 - Agent-specific context files such as CLAUDE.md and settings (covered by agent-harness)
 - Whether individual changed behaviours are documented (covered by documentation)

@@ -30,6 +30,11 @@ Every environment variable and config key the system reads is listed in
 documentation a new developer can find without asking a long-tenured team
 member. Undocumented config is a bus-factor risk.
 
+**Environmental differences are expressed through config, not branches.**
+Business logic does not branch on environment name — no `if env == "production"`.
+Environmental differences are expressed as config values. The code path is the
+same in all environments; only the config differs.
+
 ## Consider
 
 **Config values have explicit documented defaults.**

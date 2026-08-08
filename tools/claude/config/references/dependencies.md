@@ -23,6 +23,11 @@ uncertainty about future compatibility and security response.
 Lockfiles or checksums confirm that installed versions match what was
 reviewed. Dependencies come from trusted, official sources.
 
+**Dependencies are scanned for known vulnerabilities.**
+Security audits run regularly — `npm audit`, `cargo audit`, `pip-audit`, or
+equivalent. Known vulnerabilities in transitive dependencies are not silently
+accumulated; they are triaged and resolved or explicitly accepted.
+
 ## Consider
 
 **Frontend dependencies are scrutinized for bundle size.**

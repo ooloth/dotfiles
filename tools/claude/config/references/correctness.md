@@ -56,8 +56,7 @@ to deterministic tests.
 
 ## In scope
 
-- Complex branching logic, parsers, and state machines
-- Boundary value handling
+- All non-generated, non-vendored source files
 
 ## Out of scope
 

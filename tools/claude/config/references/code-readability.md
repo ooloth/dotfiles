@@ -64,8 +64,6 @@ generalized for one case, layered where flat would do) or under-engineered
 The codebase has established ways of solving common problems. New code follows
 them unless there is a deliberate reason to diverge.
 
-
-
 **Related names sort by most significant word.**
 When a concept has qualifiers (unit, bound, direction), the concept leads:
 `connection_count_max` rather than `max_connection_count`. Related names
