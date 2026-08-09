@@ -20,6 +20,7 @@ gate in the middle.
 ## Implementation alternatives considered
 ## Implementation decision
 ## Types / data shape
+## Compiler guarantees
 ## Test plan
 ## Structure / boundaries
 ## QA plan
@@ -27,6 +28,19 @@ gate in the middle.
 ## Out of scope
 ## Open questions
 ```
+
+## Types / data shape convention
+
+```
+Input: <RawType>
+  ↓ <transformName>()
+<IntermediateType> { field: DomainType, ... }
+  ↓ <transformName>()
+<FinalType> | <ErrorVariant> | <AlternativeOutcome>
+```
+
+Each step names the type in domain language and states what becomes
+impossible that the previous step permitted.
 
 ## Must
 
@@ -44,9 +58,27 @@ algorithms, file layout, and library choices belong to Implementation
 decision. A caching daemon vs. an async read path is Approach; SQLite vs.
 in-memory is Implementation.
 
+**Approach decision is the simplest option that achieves Ideal state.** Any
+scope beyond that is named and justified in the decision, not silently
+included.
+
+**Approach decision and Implementation decision each state their
+reversibility** — two-way door (cheap to reverse) or one-way door (costly
+to undo).
+
 **Types and Test plan do not appear before Implementation decision is
 recorded.** The concrete design is derived from the decision, not the
 reverse.
+
+**Each step in Types / data shape names what becomes impossible that the
+previous step permitted.** A step that doesn't rule anything out isn't
+doing structural work.
+
+**Compiler guarantees states what the type design rules out for free.**
+Test plan does not re-verify anything already listed there.
+
+**Each Test plan case names its paradigm and why it was chosen over the
+alternatives**, not just what the case verifies.
 
 **Questions asked while establishing the foundation are recorded in
 Questions with their answers, tagged by whether resolved by the user or by
@@ -82,12 +114,20 @@ decision ends up optimizing for.
 surprise value, not to a fixed length.** A cheap, obvious pick earns a
 sentence. An irreversible, non-obvious one earns whatever it needs.
 
+**New types in Types / data shape follow existing domain naming and
+structural conventions in the codebase, or the divergence is named and
+justified.**
+
 ## Consider
 
 **Implementation alternatives considered may be a single line noting none
 existed**, when the mechanism was genuinely the only reasonable one once
 Approach decision was made — the heading stays, the content doesn't have
 to pretend a choice was harder than it was.
+
+**A two-way-door decision's alternatives entry may be a single line naming
+the default taken, without exhaustive comparison.** Reversibility, not
+decision importance, licenses the brevity.
 
 ## In scope
 
