@@ -57,6 +57,7 @@ a false positive costs one read; a false negative means missed guidance.
 - **`error-handling.md`** — fallible operations, error propagation paths, user-facing error output
 - **`observability.md`** — new code paths, error paths, logging sites, resource allocation
 - **`performance.md`** — loop bodies, database queries, hot-path functions, large or unbounded data operations
+- **`plans.md`** — plan documents: problem statement through implementation-ready design, produced before non-trivial or ambiguous implementation begins
 - **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API responses; analytics events
 - **`python.md`** — .py files; load alongside language-agnostic files
 - **`reliability.md`** — network requests, database queries, external service calls, file handles, resource cleanup

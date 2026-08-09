@@ -61,9 +61,10 @@ decisions), stop and discuss those rather than quietly making an executive decis
 
 ## Work in Small Steps
 
-For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` before step 1. For
-non-trivial domain logic — invoke `/design` after approach approval to produce the type story and
-test plan before step 4.
+For ambiguous tasks, multi-step work, non-trivial domain logic, or risky changes — invoke
+`/write-plan` before step 1; it produces the approach, type story, and test plan as one persisted
+document, stopping for approval after the approach is chosen and again before implementation
+begins.
 
 When the user approves work, persist the agreed approach BEFORE reading or writing any files —
 context loss can happen anytime, and the next agent must be able to resume without repeating the
@@ -138,6 +139,13 @@ For the full `trekker` workflow, see `/use-trekker`.
 ## Uphold Invariants
 
 Before designing, writing, or editing any code — invoke the `uphold-invariants` skill.
+
+## Build a Plan
+
+Before proposing an approach to an ambiguous task, a non-trivial design
+decision, multi-step work, or a risky/hard-to-reverse change — invoke the
+`write-plan` skill to build a persisted plan artifact. Skip for simple
+clarifying questions, direct factual lookups, and trivial fixes.
 
 ## Issue and Ticket Writing
 
