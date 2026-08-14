@@ -22,4 +22,4 @@
 
 ## Configuration & Symlinks
 - Tool configs are symlinked into `~` from `tools/{tool}/config/`; update the repo copies, not the home-directory targets.
-- Symlink orchestration lives in `features/update/symlinks.zsh` and tool-level `link.bash` scripts.
+- Symlink orchestration lives in `features/update/symlinks.bash` and tool-level `link.bash` scripts.

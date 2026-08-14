@@ -44,7 +44,7 @@ See README.md for the complete overview. Key points for Claude:
 
 **Important for Git commits**: Files in `tools/claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `tools/claude/config/CLAUDE.md` instead of trying to commit outside the repository.
 
-The symlink creation logic is in `features/update/symlinks.zsh`. (Note: `tools/bash/wip/symlinks/*.bash` are under development and not yet functional).
+The symlink creation logic is in `features/update/symlinks.bash`, invoked by `features/update/tools.bash` and by the `symlinks` alias. (`features/install/zsh/deprecated/symlinks.zsh` is deprecated and only still sourced by `features/setup/setup.zsh`.)
 
 ### Claude Development Workflow
 
