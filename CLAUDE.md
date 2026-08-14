@@ -4,6 +4,13 @@ This file provides Claude-specific guidance when working with this dotfiles repo
 
 For general project information, installation instructions, and usage details, see the [README](./README.md).
 
+## Uphold Project Invariants
+
+Before designing, writing, or editing any code — invoke the `uphold-project-invariants` skill. It
+loads this repo's own `docs/invariants/` and `docs/standards/`. This is in addition to the global
+`uphold-standards` skill, not instead of it: that one carries portable engineering guidance, this
+one carries what is true only here.
+
 ## Folder Structure
 
 See README.md for the complete overview. Key points for Claude:
