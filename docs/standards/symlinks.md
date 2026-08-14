@@ -3,6 +3,13 @@
 How this repo links config files into `$HOME` — conventions for writing
 correct `link.bash` scripts.
 
+## Must
+
+**Renamed and deleted symlink sources leave nothing behind.**
+When a source moves or disappears, the links pointing at it go with it in
+the same change. Broken symlinks don't accumulate in `$HOME`. Creating a
+replacement link is not the same as retiring the one it supersedes.
+
 ## Should
 
 **New symlinking logic uses the shared `symlink()` helper in
