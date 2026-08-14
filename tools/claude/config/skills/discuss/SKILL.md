@@ -33,8 +33,11 @@ belongs to `/design`, which runs after the user approves the approach.
    constraints, and likely impact.
 4. If the idea seems stale or poorly matched to the current codebase, investigate enough to help the
    user decide whether to redefine, defer, or skip it.
-5. Ask only questions that block a correct approach decision. For two-way-door decisions, recommend
-   a default and move on instead of making the user decide everything.
+5. Facts are your job, not the user's — dispatch subagents to find them. Ask the user only what
+   blocks a correct approach decision, and batch those into one numbered round with a recommended
+   answer for each rather than drip-feeding one question per turn. Don't ask about anything still
+   gated on a question you haven't gotten an answer to yet. For two-way-door decisions, recommend a
+   default and move on instead of making the user decide everything.
 
 ### Phase 3: Recommend an Approach
 
@@ -65,6 +68,16 @@ belongs to `/design`, which runs after the user approves the approach.
    ```
 
 ### Phase 4: Present and Stop
+
+Before presenting, review what you are about to claim:
+
+1. Every claim is either verified — with how — or explicitly tagged as an assumption. An untagged
+   claim is a defect regardless of whether it turns out to be true.
+2. For each assumption, ask "would this being wrong change the recommendation?" If yes, it belongs
+   in open decisions, not assumptions — resolve it by asking or investigating before presenting.
+3. An assumption that contradicts observable code or config is surfaced, not silently recorded as
+   fact. If the user states how something works and the codebase disagrees, the contradiction
+   becomes an open question — not a quietly resolved assumption in either direction.
 
 End with a strategy artifact:
 

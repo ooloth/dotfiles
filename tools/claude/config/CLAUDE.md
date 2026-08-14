@@ -61,10 +61,9 @@ decisions), stop and discuss those rather than quietly making an executive decis
 
 ## Work in Small Steps
 
-For ambiguous tasks, multi-step work, non-trivial domain logic, or risky changes — invoke
-`/write-plan` before step 1; it produces the approach, type story, and test plan as one persisted
-document, stopping for approval after the approach is chosen and again before implementation
-begins.
+For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` before step 1. For
+non-trivial domain logic — invoke `/design` after approach approval to produce the type story and
+test plan before step 4.
 
 When the user approves work, persist the agreed approach BEFORE reading or writing any files —
 context loss can happen anytime, and the next agent must be able to resume without repeating the
@@ -107,12 +106,28 @@ For the full `trekker` workflow, see `/use-trekker`.
    describing your plan for the next change (steps 1-2) — but as always, stop and wait for
    approval before implementing it (step 3)
 10. Repeat for the remaining changes
-11. When all changes committed → close the task:
+11. Before closing, ask: did this work establish something that must always hold, or a reusable
+    standard for approaching this kind of problem? **Usually the answer is no** — say so and move
+    on. A plausible-sounding observation is not a finding; only durable knowledge that would change
+    what a future agent does counts. If there is something, offer to record it in whichever of
+    these fit — more than one may:
+    - **Portable engineering standard** (true of any codebase) → global `~/.claude/references/`
+    - **Standard specific to this repo** (graded Must/Should/Consider guidance with legitimate
+      exceptions) → `docs/standards/`
+    - **Invariant specific to this repo** (no sanctioned exception — violating it means the system
+      is broken, not merely unconventional) → `docs/invariants/`
+
+    Good standards are often worth capturing both in the project and globally; offer both rather
+    than picking one. If the project has no `docs/standards/` or `docs/invariants/`, offer the
+    nearest equivalent it does have, or offer to create the folder. Read the existing files first
+    and extend the closest match — a new theme file needs justification. Recording anything here is
+    a commit-worthy change: it re-enters steps 4–9 and needs its own commit signal.
+12. When all changes committed → close the task:
     ```bash
     trekker comment add TREK-N -a "claude" -c "Resolution: ..."
     trekker task update TREK-N -s completed
     ```
-12. After closing, check whether related open tasks (or issues or tickets) need their descriptions
+13. After closing, check whether related open tasks (or issues or tickets) need their descriptions
     updated — the approach may have changed, a prerequisite may now be satisfied, or the task may
     have become unnecessary
 
@@ -139,13 +154,6 @@ For the full `trekker` workflow, see `/use-trekker`.
 ## Uphold Invariants
 
 Before designing, writing, or editing any code — invoke the `uphold-invariants` skill.
-
-## Build a Plan
-
-Before proposing an approach to an ambiguous task, a non-trivial design
-decision, multi-step work, or a risky/hard-to-reverse change — invoke the
-`write-plan` skill to build a persisted plan artifact. Skip for simple
-clarifying questions, direct factual lookups, and trivial fixes.
 
 ## Issue and Ticket Writing
 
