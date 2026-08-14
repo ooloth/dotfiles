@@ -8,13 +8,13 @@ This prompt runs unattended in a cloud environment — there is no human in the 
 
 ## Purpose
 
-Scans a set of pre-cloned repos for invariant violations against one or two themes, filing GitHub issues for confirmed findings. Designed to run as a Claude Code Routine where all repos are cloned into the workspace before the session starts.
+Scans a set of pre-cloned repos for standards violations against one or two themes, filing GitHub issues for confirmed findings. Designed to run as a Claude Code Routine where all repos are cloned into the workspace before the session starts.
 
 ## Arguments
 
 Provided by the Routine bootstrap prompt:
 
-- `THEMES` — one or two invariant theme names, comma-separated, each matching a filename in `ooloth/dotfiles/tools/claude/config/references/` (e.g. `security` or `error-handling, observability`)
+- `THEMES` — one or two standards theme names, comma-separated, each matching a filename in `ooloth/dotfiles/tools/agents/config/standards/` (e.g. `security` or `error-handling, observability`)
 
 ## Setup
 
@@ -32,18 +32,18 @@ Identify the dotfiles repo (its origin URL ends in `dotfiles`). All other repos 
 git -C <path> remote get-url origin
 ```
 
-### 2. Load invariant definitions
+### 2. Load standards definitions
 
 Read the following files from the dotfiles repo:
 
-- `<dotfiles-path>/tools/claude/config/references/README.md` — tier definitions (Must/Should/Consider)
-- One file per theme in THEMES: `<dotfiles-path>/tools/claude/config/references/<theme>.md`
+- `<dotfiles-path>/tools/agents/config/standards/README.md` — tier definitions (Must/Should/Consider)
+- One file per theme in THEMES: `<dotfiles-path>/tools/agents/config/standards/<theme>.md`
 
 For any theme without a matching file, stop and output:
 
 ```
 Unknown theme: <theme>
-Available themes: <list filenames in tools/claude/config/references/ excluding README.md>
+Available themes: <list filenames in tools/agents/config/standards/ excluding README.md>
 ```
 
 ## Scanning
@@ -57,7 +57,7 @@ Repo: [absolute path]
 GitHub slug: [slug]
 Themes: [THEMES]
 
-Question: Does this codebase uphold its [THEMES] invariants?
+Question: Does this codebase uphold its [THEMES] standards?
 
 ## Invariant definitions
 
@@ -67,7 +67,7 @@ Question: Does this codebase uphold its [THEMES] invariants?
 
 ## Instructions
 
-1. Based on the invariant definitions above, identify which files in this
+1. Based on the standards definitions above, identify which files in this
    repo could plausibly contain violations. Use your understanding of what
    each theme cares about as the primary driver — do not limit yourself to
    the ## In scope section. Treat ## In scope as supplementary guidance that
@@ -88,24 +88,24 @@ Question: Does this codebase uphold its [THEMES] invariants?
    matches an existing issue, deprioritise it in favour of novel violations.
 
 3. For each candidate file: read it and apply all Must and Should
-   invariants from each loaded theme. For each violation found, record:
+   standards from each loaded theme. For each violation found, record:
    - File: path relative to repo root
    - Tier: Must or Should
-   - Theme: which theme the violated invariant belongs to
+   - Theme: which theme the violated standard belongs to
    - Finding: one sentence describing the specific problem
    - Evidence: exact text or line range that is wrong or missing
    - Ideal: one or more sentences describing what this code would do
      if the violation were resolved — each phrased as an observable
      fact ("X does Y"), not an implementation step
 
-   Skip anything marked as Out of scope in the relevant invariant
+   Skip anything marked as Out of scope in the relevant standards
    definition. Focus especially on patterns you would not want a
    future agent to spread.
 
 4. If more than one theme was provided: do one additional cross-theme pass.
    Using the ## In scope sections of all loaded themes, identify files that
    fall within the scope of more than one theme. For each such file, check
-   whether a code construct that satisfies one theme's invariants still
+   whether a code construct that satisfies one theme's standards still
    violates another's. These violations are only visible when both lenses
    are active simultaneously. Record them with Theme: [both theme names].
 

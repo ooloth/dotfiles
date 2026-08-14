@@ -111,7 +111,7 @@ For the full `trekker` workflow, see `/use-trekker`.
     on. A plausible-sounding observation is not a finding; only durable knowledge that would change
     what a future agent does counts. If there is something, offer to record it in whichever of
     these fit — more than one may:
-    - **Portable engineering standard** (true of any codebase) → global `~/.claude/references/`
+    - **Portable engineering standard** (true of any codebase) → global `~/.agents/standards/`
     - **Standard specific to this repo** (graded Must/Should/Consider guidance with legitimate
       exceptions) → `docs/standards/`
     - **Invariant specific to this repo** (no sanctioned exception — violating it means the system
@@ -153,7 +153,7 @@ For the full `trekker` workflow, see `/use-trekker`.
 
 ## Uphold Invariants
 
-Before designing, writing, or editing any code — invoke the `uphold-invariants` skill.
+Before designing, writing, or editing any code — invoke the `uphold-standards` skill.
 
 ## Issue and Ticket Writing
 
@@ -173,7 +173,7 @@ NEVER create a GitHub issue, Jira task, Monday task, or Linear task without firs
 
 When you encounter friction during any task — a misleading instruction, an ambiguity that cost
 time, a missing doc, or anything else a future agent would trip on — fix it inline. If a targeted
-edit to a CLAUDE.md, reference file, skill file, or project doc would prevent that friction, make
+edit to a CLAUDE.md, standards file, skill file, or project doc would prevent that friction, make
 the edit and note what you changed. Don't just mention it; fix it.
 
 Skip if execution went smoothly.

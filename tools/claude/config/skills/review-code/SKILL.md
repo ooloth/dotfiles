@@ -85,7 +85,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/correctness.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/correctness.md`. Use these standards as your evaluation criteria.
 2. Run the diff command from Context to read what changed.
 3. Compare the diff carefully against the Problem, Approach, and Key outcomes in the Context block.
 
@@ -119,7 +119,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/code-readability.md` and `~/.claude/references/code-structure.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/code-readability.md` and `~/.agents/standards/code-structure.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Read related unchanged files and explore the broader codebase to understand existing patterns and available tools.
@@ -153,7 +153,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/code-structure.md` and `~/.claude/references/code-readability.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/code-structure.md` and `~/.agents/standards/code-readability.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Read related unchanged files to understand existing structural patterns and conventions.
@@ -178,7 +178,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/type-design.md`, `~/.claude/references/api-design.md`, and `~/.claude/references/documentation.md`. If the project has a CLI binary or command-line interface, also load `~/.claude/references/cli-design.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/type-design.md`, `~/.agents/standards/api-design.md`, and `~/.agents/standards/documentation.md`. If the project has a CLI binary or command-line interface, also load `~/.agents/standards/cli-design.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Find all documentation that could be affected: .md files, help text, docstrings, CLI --help output, code comments in changed files.
@@ -209,7 +209,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/correctness.md` and `~/.claude/references/error-handling.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/correctness.md` and `~/.agents/standards/error-handling.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
 4. Read 2-3 similar unchanged files to understand existing patterns for error handling and validation.
@@ -234,7 +234,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/security.md`, `~/.claude/references/privacy.md`, and `~/.claude/references/data-integrity.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/security.md`, `~/.agents/standards/privacy.md`, and `~/.agents/standards/data-integrity.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. If database models or migrations changed, read them in full.
@@ -266,7 +266,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/performance.md`, `~/.claude/references/async-coordination.md`, `~/.claude/references/reliability.md`, and `~/.claude/references/observability.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/performance.md`, `~/.agents/standards/async-coordination.md`, `~/.agents/standards/reliability.md`, and `~/.agents/standards/observability.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. Check how similar operations are handled in unchanged files.
@@ -301,7 +301,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/testing.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/testing.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Find and read the corresponding test files (new and existing).
@@ -331,7 +331,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.claude/references/README.md`, then `~/.claude/references/dependencies.md`, `~/.claude/references/deployment.md`, and `~/.claude/references/config.md`. Use these invariants as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/dependencies.md`, `~/.agents/standards/deployment.md`, and `~/.agents/standards/config.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. If package files changed, read them in full. If config or env handling changed, read those files in full.
@@ -363,11 +363,11 @@ Changed files:
 
 Instructions:
 1. Identify which programming languages are present in the changed files by file extension (`.rs` → Rust, `.py` → Python, `.ts`/`.tsx` → TypeScript).
-2. Read `~/.claude/references/README.md`, then load only the reference files that apply: `~/.claude/references/rust.md` if Rust files are present, `~/.claude/references/python.md` if Python files are present, `~/.claude/references/typescript.md` if TypeScript files are present.
+2. Read `~/.agents/standards/README.md`, then load only the reference files that apply: `~/.agents/standards/rust.md` if Rust files are present, `~/.agents/standards/python.md` if Python files are present, `~/.agents/standards/typescript.md` if TypeScript files are present.
 3. If no language-specific reference files apply to the changed files, report "No language-specific reference files apply to this change." and stop.
 4. Otherwise, run the diff command from Context to read what changed.
 
-Apply the loaded invariants to the changed files. Look for violations specific to the language — idioms, error handling patterns, type system conventions, and anti-patterns called out in the reference files.
+Apply the loaded standards to the changed files. Look for violations specific to the language — idioms, error handling patterns, type system conventions, and anti-patterns called out in the standards files.
 
 For each issue: file:line | what's wrong | specific fix
 If no language-specific issues found, report "No language-specific concerns identified."

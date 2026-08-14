@@ -104,15 +104,15 @@ gh issue edit <issue> --repo <repo> \
 ### 6. Plan
 
 Read the relevant files and understand the module structure. Then locate
-the `uphold-invariants` skill file — try
-`<dotfiles-path>/tools/claude/config/skills/uphold-invariants/SKILL.md`
+the `uphold-standards` skill file — try
+`<dotfiles-path>/tools/claude/config/skills/uphold-standards/SKILL.md`
 first, falling back to
-`../dotfiles/tools/claude/config/skills/uphold-invariants/SKILL.md`.
+`../dotfiles/tools/claude/config/skills/uphold-standards/SKILL.md`.
 **You must read this file before proceeding.** Once read, invoke that
 file's prompt using the Skill tool and follow its instructions,
-substituting `<dotfiles-path>/tools/claude/config/references/` (or
-`../dotfiles/tools/claude/config/references/`) for `~/.claude/references/`.
-Apply the invariants to constrain
+substituting `<dotfiles-path>/tools/agents/config/standards/` (or
+`../dotfiles/tools/agents/config/standards/`) for `~/.agents/standards/`.
+Apply the standards to constrain
 your implementation decisions. Identify exactly which files need to
 change and how. If the fix requires a design decision not already
 resolved by the issue body and comments, comment on the issue with the
@@ -159,7 +159,7 @@ Do these changes solve the problem — and does the test suite prove it?
 Have edge cases or unwanted side effects been missed? Is this the
 minimum change, or did anything speculative creep in? Does the fix
 address the root cause or just a symptom? Do these choices uphold all
-relevant invariants? Fix anything you can't defend.
+relevant standards? Fix anything you can't defend.
 
 ### 12. Commit and push
 

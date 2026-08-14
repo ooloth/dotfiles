@@ -19,10 +19,10 @@ belongs to `/design`, which runs after the user approves the approach.
 
 ### Phase 1: Load Context Progressively
 
-1. Read `~/.claude/references/README.md` and list `~/.claude/references/` only when invariants or
+1. Read `~/.agents/standards/README.md` and list `~/.agents/standards/` only when standards or
    architectural constraints may affect the approach decision.
-2. Load only the reference files obviously relevant to the task.
-3. Load additional reference files only when the investigation shows they matter.
+2. Load only the standards files obviously relevant to the task.
+3. Load additional standards files only when the investigation shows they matter.
 4. If the task scope is still unclear, prefer asking a clarifying question over loading every file.
 
 ### Phase 2: Understand Intent

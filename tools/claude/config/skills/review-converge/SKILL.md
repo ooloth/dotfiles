@@ -57,8 +57,8 @@ From what you read, distill a short **problem statement**: in 1-2 sentences, wha
 or goal do these changes address, and what outcome should they achieve? If the git log and PR
 description don't make this clear, note it as "intent unclear" — do not invent one.
 
-Also read `~/.claude/references/README.md` and load the reference files most relevant to the
-change scope. These invariants are passed to every subagent alongside the problem statement and
+Also read `~/.agents/standards/README.md` and load the standards files most relevant to the
+change scope. These standards are passed to every subagent alongside the problem statement and
 quality gate throughout the run.
 
 ---
@@ -265,7 +265,7 @@ Patterns seen during this run that suggest missing or incomplete project documen
 these would turn future escalations into auto-fixes and prevent the same issues from recurring.
 
 - **[Pattern name]** — [what kept coming up] — Suggested addition: [which file to update and
-  what to document, e.g. "add a note to references/bash.md that all helper functions must use
+  what to document, e.g. "add a note to standards/bash.md that all helper functions must use
   the call-site failure pattern: `check_X ... || failures=$((failures + 1))`"]
 
 (None)

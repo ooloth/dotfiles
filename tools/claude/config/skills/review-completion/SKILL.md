@@ -16,7 +16,7 @@ model: opus
 ## Phase 1: Understand Intent and Load Invariants
 
 1. If the scope is unclear, ask before continuing
-2. Read `~/.claude/references/README.md` and the reference files relevant to the change scope
+2. Read `~/.agents/standards/README.md` and the reference files relevant to the change scope
 3. Use as many subagents as needed to explore the problem definition, all relevant code paths,
    documentation, and the changes made
 4. Identify the observable outputs available to validate behaviour from the outside while treating

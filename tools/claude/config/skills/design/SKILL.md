@@ -19,9 +19,9 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 
 1. Read the agreed objective from $ARGUMENTS — if it's a Trekker task number, read that task; if
    it's a description, use it directly. Ask the user to clarify if the scope is still ambiguous.
-2. Load `~/.claude/references/type-design.md` and `~/.claude/references/testing.md`. Also load any
-   language-specific reference file that applies to this codebase (`~/.claude/references/rust.md`,
-   `~/.claude/references/python.md`, etc.).
+2. Load `~/.agents/standards/type-design.md` and `~/.agents/standards/testing.md`. Also load any
+   language-specific reference file that applies to this codebase (`~/.agents/standards/rust.md`,
+   `~/.agents/standards/python.md`, etc.).
 3. Explore the codebase to understand:
    - Existing domain types and naming conventions
    - Existing testing patterns and what paradigms are already in use

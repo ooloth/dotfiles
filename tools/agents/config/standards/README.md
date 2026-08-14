@@ -1,19 +1,25 @@
-# References
+# Standards
 
-Shared reference files for code writing, reviewing and scanning skills.
+Shared standards files for code writing, reviewing and scanning skills.
 
 ## What these files are
 
-Each file states **invariants** — facts about what correct code looks like,
-written in declarative form. Invariants are not instructions to the agent; they
-are descriptions of what is true about well-written code.
+Each file states **standards** — descriptions of what correct code looks like,
+written in declarative form and graded by how strongly they hold. Standards are
+not instructions to the agent; they are descriptions of what is true about
+well-written code.
+
+Only the **Must** tier holds unconditionally. **Should** allows documented
+exceptions and **Consider** is a judgment call with no default, so this content
+is not a set of invariants — a project's genuinely exception-free facts belong
+in its own `docs/invariants/`.
 
 This framing makes each file usable in multiple directions without changing the
 content:
 
-- A **writing** skill reads an invariant as: "produce code that satisfies this"
-- A **reviewing** skill reads an invariant as: "check whether the code satisfies this"
-- A **scanning** skill reads an invariant as: "find existing violations of this across a codebase"
+- A **writing** skill reads a standard as: "produce code that satisfies this"
+- A **reviewing** skill reads a standard as: "check whether the code satisfies this"
+- A **scanning** skill reads a standard as: "find existing violations of this across a codebase"
 
 Some files include `## In scope` and `## Out of scope` sections that narrow the
 scanning target — which surfaces to examine and which to skip.
@@ -21,7 +27,7 @@ scanning target — which surfaces to examine and which to skip.
 ## Read this file first
 
 Always read this file before any category file. The tier definitions below
-govern how strongly each invariant should be upheld or flagged.
+govern how strongly each standard should be upheld or flagged.
 
 ## Tiers
 
