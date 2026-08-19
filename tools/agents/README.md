@@ -8,3 +8,6 @@ this folder holds what they all read.
 
 `config/standards/` is linked to both `~/.claude/standards` and
 `~/.agents/standards`, so any harness can load it.
+
+`config/skills/` is linked to both `~/.claude/skills` and
+`~/.agents/skills`, so any harness can load it.

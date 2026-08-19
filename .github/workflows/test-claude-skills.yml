@@ -5,16 +5,16 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'tools/claude/config/skills/**/*.py'
-      - 'tools/claude/config/skills/**/pyproject.toml'
+      - 'tools/agents/config/skills/**/*.py'
+      - 'tools/agents/config/skills/**/pyproject.toml'
       - '.github/workflows/test-claude-skills.yml'
 
   # Run on pushes to main branch
   push:
     branches: [main]
     paths:
-      - 'tools/claude/config/skills/**/*.py'
-      - 'tools/claude/config/skills/**/pyproject.toml'
+      - 'tools/agents/config/skills/**/*.py'
+      - 'tools/agents/config/skills/**/pyproject.toml'
       - '.github/workflows/test-claude-skills.yml'
 
   # Allow manual triggering for debugging
@@ -35,7 +35,7 @@ jobs:
       - name: Run ruff checks
         run: |
           echo "Running ruff checks on all skills..."
-          cd tools/claude/config/skills
+          cd tools/agents/config/skills
 
           for skill_dir in */; do
             if [[ -f "$skill_dir/pyproject.toml" ]]; then
@@ -54,7 +54,7 @@ jobs:
       - name: Run mypy checks
         run: |
           echo "Running mypy checks on all skills..."
-          cd tools/claude/config/skills
+          cd tools/agents/config/skills
 
           for skill_dir in */; do
             if [[ -f "$skill_dir/pyproject.toml" ]]; then
@@ -73,7 +73,7 @@ jobs:
       - name: Run tests
         run: |
           echo "Searching for skill tests..."
-          cd tools/claude/config/skills
+          cd tools/agents/config/skills
 
           FAILED_TESTS=""
           PASSED_TESTS=0

@@ -157,7 +157,7 @@ Use the count to determine the filing budget for this run:
 ### 6. File confirmed findings
 
 For each non-duplicate finding within the budget, read
-`<dotfiles-path>/tools/claude/config/skills/write-ticket-description/SKILL.md`
+`<dotfiles-path>/tools/agents/config/skills/write-ticket-description/SKILL.md`
 and follow its instructions to draft the issue body.
 
 ```bash

@@ -179,7 +179,7 @@ Use the count to determine the filing budget for this run:
 - If count **< 20**: budget = min(5, 20 − count) — file up to that many non-duplicate findings (choose the most important)
 
 For each finding within the budget, read
-`<dotfiles-path>/tools/claude/config/skills/write-ticket-description/SKILL.md`
+`<dotfiles-path>/tools/agents/config/skills/write-ticket-description/SKILL.md`
 and follow its instructions to draft the issue body.
 
 - **Starting points**: the specific file(s) where the violation was found — not directories

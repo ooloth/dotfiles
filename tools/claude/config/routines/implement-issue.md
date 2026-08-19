@@ -105,9 +105,9 @@ gh issue edit <issue> --repo <repo> \
 
 Read the relevant files and understand the module structure. Then locate
 the `uphold-standards` skill file — try
-`<dotfiles-path>/tools/claude/config/skills/uphold-standards/SKILL.md`
+`<dotfiles-path>/tools/agents/config/skills/uphold-standards/SKILL.md`
 first, falling back to
-`../dotfiles/tools/claude/config/skills/uphold-standards/SKILL.md`.
+`../dotfiles/tools/agents/config/skills/uphold-standards/SKILL.md`.
 **You must read this file before proceeding.** Once read, invoke that
 file's prompt using the Skill tool and follow its instructions,
 substituting `<dotfiles-path>/tools/agents/config/standards/` (or
@@ -171,8 +171,8 @@ git -C <repo-path> config user.email "hello@michaeluloth.com"
 ```
 
 Locate the `commit` skill file — try
-`<dotfiles-path>/tools/claude/config/skills/commit/SKILL.md` first,
-falling back to `../dotfiles/tools/claude/config/skills/commit/SKILL.md`.
+`<dotfiles-path>/tools/agents/config/skills/commit/SKILL.md` first,
+falling back to `../dotfiles/tools/agents/config/skills/commit/SKILL.md`.
 **You must read this file before proceeding.** Once read, invoke that
 file's prompt using the Skill tool and follow its instructions.
 Committing is pre-approved as part of this autonomous routine — skip any
@@ -181,9 +181,9 @@ steps that require waiting for user approval.
 ### 13. Open PR
 
 Locate the `write-pr-description` skill file — try
-`<dotfiles-path>/tools/claude/config/skills/write-pr-description/SKILL.md`
+`<dotfiles-path>/tools/agents/config/skills/write-pr-description/SKILL.md`
 first, falling back to
-`../dotfiles/tools/claude/config/skills/write-pr-description/SKILL.md`.
+`../dotfiles/tools/agents/config/skills/write-pr-description/SKILL.md`.
 **You must read this file before proceeding.** Once read, invoke that
 file's prompt using the Skill tool and follow its instructions to open
 the PR. The PR must be open (not a
