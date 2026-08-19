@@ -51,10 +51,14 @@ A user ID is not a `string`. An email is not a `string`. Branded or opaque
 types (`type UserId = string & { readonly _brand: "UserId" }`) prevent one
 primitive from being substituted for another across domain boundaries.
 
-**Type-only imports use the `type` keyword.**
-`import type { Foo } from "./foo"` is used when importing only types. This
-makes the import's purpose explicit, enables better tree-shaking, and avoids
-accidental value imports.
+**Type-only imports are marked with an inline `type` keyword.**
+`import { type Foo } from "./foo"` is used, with `type` inside the braces
+before each type being imported. This makes the import's purpose explicit,
+enables better tree-shaking, and avoids accidental value imports. The inline
+form is preferred over the statement-level `import type { Foo }` because it
+marks each specifier individually, so a module's types and its runtime values
+stay in one import statement and remain distinguishable at a glance —
+`import { fetchUsers, type IUser } from "./users"`.
 
 **Utility types are used over duplicating structure.**
 `Pick<T, K>`, `Omit<T, K>`, `Partial<T>`, `Required<T>`, and similar built-in
