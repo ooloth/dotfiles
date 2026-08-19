@@ -15,3 +15,16 @@ update_and_symlink \
   "" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
   "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
+
+# Keep Corepack present: npm's global upgrade above can prune it since it isn't
+# npm-tracked, and Node ≥25 no longer bundles it at all
+update_and_symlink \
+  "corepack" \
+  "corepack" \
+  "corepack" \
+  "📦" \
+  "npm install --global corepack@latest" \
+  "corepack --version" \
+  "" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/install.bash" \
+  "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
