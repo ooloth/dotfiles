@@ -56,6 +56,63 @@ Based on what you find, recommend exactly one of the following and explain why:
 
 ---
 
+## Epics and Sub-Issues (GitHub only)
+
+Applies when GitHub Issues is the ticketing system. Linear, Jira and Monday have their own
+parent/child mechanics — use their native tools instead.
+
+GitHub's official **sub-issue** feature is what to reach for, not task-list checkboxes. Sub-issues
+give the parent a real progress bar, give each child a visible parent, and survive renumbering.
+Checkbox lists (`- [ ] #12`) are the fallback only when the sub-issue API is unavailable.
+
+### Creating the hierarchy
+
+`gh issue create` has **no `--parent` flag** (checked through gh 2.92). Link after creation via the
+REST API, which needs the child's **database id**, not its issue number:
+
+```bash
+R=repos/OWNER/REPO
+CHILD_ID=$(gh api $R/issues/CHILD_NUMBER --jq '.id')
+gh api --method POST $R/issues/PARENT_NUMBER/sub_issues -F sub_issue_id="$CHILD_ID"
+```
+
+Works with the ordinary `repo` token scope — no `project` scope required.
+
+### Verifying the link
+
+```bash
+gh api $R/issues/PARENT_NUMBER/sub_issues --jq '.[] | "#\(.number)  \(.title)"'
+gh api $R/issues/PARENT_NUMBER --jq '.sub_issues_summary'
+```
+
+From the child's side, REST exposes the parent as **`parent_issue_url`** — there is no `.parent`
+field, so `--jq '.parent.number'` silently prints nothing and looks like a broken link. To read the
+parent as a number, use GraphQL:
+
+```bash
+gh api graphql -f query='{repository(owner:"OWNER",name:"REPO"){issue(number:N){parent{number title}}}}'
+```
+
+### Writing an epic body
+
+An epic uses the same template as any other ticket, with two additions:
+
+- **A coverage table** mapping each externally-defined requirement (a spec, a brief, a checklist in
+  a README) to the sub-issue that satisfies it. This is what makes "did we miss anything?"
+  answerable at a glance. Fill the numbers in *after* the children exist, then edit the epic.
+- **A note naming any sub-issue that has no corresponding requirement** and why it earns its place.
+  Unexplained extra scope in an epic reads as scope creep.
+
+Keep the epic's own "Done when" about the aggregate — all children closed, all requirements met —
+never about the implementation of any one child.
+
+### Ordering
+
+Create the parent first so children can reference it, and open each child body with `Part of #N`.
+Sub-issues list in creation order, so create them in the order you intend to work them.
+
+---
+
 ## Title Rules
 
 - **Scannable in a list** — the reader understands what it is without opening it
