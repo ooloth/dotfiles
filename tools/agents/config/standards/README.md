@@ -24,6 +24,23 @@ content:
 Some files include `## In scope` and `## Out of scope` sections that narrow the
 scanning target — which surfaces to examine and which to skip.
 
+## Phrasing
+
+Each bold lead sentence must be a standalone claim you could hold up against a
+piece of code and mark true or false, regardless of who's reading it or why.
+That's what keeps one file usable for writing, reviewing, and scanning without
+rephrasing.
+
+- **Subject is the code, not the agent.** Write "Errors are handled at the
+  level with enough context to act," not "Handle errors at the right level."
+- **Present tense, declarative, third person.** State a fact about the code,
+  not an instruction to the reader.
+- **No imperative verbs.** Avoid "Use," "Ensure," "Avoid," "Don't" as the
+  sentence's main verb — those read as commands, not properties.
+
+Wrong: "Validate that names reflect intent."
+Right: "Names use domain vocabulary and reflect intent."
+
 ## Read this file first
 
 Always read this file before any category file. The tier definitions below
