@@ -5,11 +5,6 @@ travel, and resolved at the level where there is enough context to act on them.
 
 ## Must
 
-**Errors are represented in the type system.**
-Where the language supports it, fallible operations return Result, Option, or
-an equivalent typed error rather than throwing exceptions or returning sentinel
-values. Callers cannot ignore an error without explicitly choosing to.
-
 **Error context is preserved as errors propagate.**
 When an error crosses a boundary or moves up the call stack, it is wrapped with
 context that explains what the caller was trying to do. A chain of wrapped
@@ -21,6 +16,11 @@ are logged internally and stripped from responses to callers. What a caller
 receives tells them what failed, not how the system is built.
 
 ## Should
+
+**Errors are represented in the type system.**
+Where the language supports it, fallible operations return Result, Option, or
+an equivalent typed error rather than throwing exceptions or returning sentinel
+values. Callers cannot ignore an error without explicitly choosing to.
 
 **Errors are handled at the level with enough context to act.**
 An error is not caught and swallowed deep in a call stack where nothing
