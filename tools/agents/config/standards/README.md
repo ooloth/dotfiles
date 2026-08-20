@@ -72,6 +72,7 @@ a false positive costs one read; a false negative means missed guidance.
 - **`code-structure.md`** — directory layout, import graphs, module boundaries, feature organisation
 - **`config.md`** — startup code, env var read sites, config parsing and validation
 - **`correctness.md`** — all non-generated source files; load for every code task
+- **`css.md`** — stylesheets, style blocks, CSS-in-JS, design tokens; contrast, motion, responsive layout
 - **`data-integrity.md`** — database models, schema changes, migration files, write paths, transactions
 - **`dependencies.md`** — package manifests (package.json, Cargo.toml, requirements.txt, go.mod)
 - **`deployment.md`** — CI/CD config, Dockerfiles, infrastructure manifests, migration files
