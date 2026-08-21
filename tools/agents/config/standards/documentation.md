@@ -31,6 +31,15 @@ config. Docs are updated in the same change that introduces the behavior.
 Code samples in documentation execute without modification. Copy-paste
 examples that silently fail are worse than no examples.
 
+**Comments describe the code as it is, not as it was.**
+A comment narrating a previous implementation — what a value used to be, what
+a rule replaced, which element a removed box enclosed — describes something no
+reader of the current code can see, and costs clarity to carry. History earns
+its place only where it is the reason the code is shaped this way: the
+regression a guard exists for, the measurement that fixed a constant, the
+option that was tried and failed. That reason reads as a present fact about
+the code rather than as a change narrative.
+
 ## Consider
 
 **Changelogs are updated for user-facing changes.**
@@ -45,7 +54,9 @@ relationships are updated when the structure they depict changes.
 
 - README.md at any level
 - .md files under docs/, .claude/, or similar doc directories
-- Module-level doc comments (//! blocks, docstrings at file tops) — not scattered inline comments
+- Module-level doc comments (//! blocks, docstrings at file tops)
+- Inline comments, for the two standards that name them: whether a comment
+  explains a non-obvious why, and whether it describes the code as it is
 
 ## Out of scope
 
