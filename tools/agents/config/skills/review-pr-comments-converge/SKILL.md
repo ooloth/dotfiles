@@ -35,6 +35,14 @@ Starting review-pr-comments-converge...
 Two scripts live in `scripts/` relative to this skill's base directory (shown at the top of this
 skill's content as "Base directory for this skill: ..."). Use them throughout the run.
 
+**Call them by absolute path from the target repo's root — never `cd` into `scripts/` first.**
+Both infer the repository from `$GH_REPO` or the working directory, so running them from the
+skill's own directory targets the *dotfiles* repo instead. That does not fail loudly: PR numbers
+are small and collide across repositories, so the wrong target is a real repo with a real PR of
+the same number, and a reply meant for one project lands on another. Pass `--repo OWNER/NAME`
+whenever the working directory is not the target. Both scripts print the repo they resolved —
+check that line before trusting the output or the write.
+
 ### `scripts/fetch_pr_comments.py <pr-number>`
 
 Fetches all inline comments and review body comments via the GitHub GraphQL API. Each inline
@@ -44,7 +52,7 @@ comment in the output includes:
 - **`thread_id`** — the node ID needed to resolve the conversation thread
 - **`File:`** — the file path repeated immediately before the diff hunk
 
-### `scripts/reply_to_comment.py <pr-number> <comment-id> <body> [--resolve]`
+### `scripts/reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]`
 
 Posts a reply to an inline comment. Pass `--resolve` to also close the conversation thread.
 The thread ID is looked up automatically from the comment ID — you only need to pass the
@@ -53,6 +61,9 @@ The thread ID is looked up automatically from the comment ID — you only need t
 ```bash
 uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 "Fixed — changed to 'fill empty snapshots'." --resolve
 ```
+
+It prints `Target: OWNER/NAME#PR, comment ID` before writing. Read that line — it is the only
+thing standing between a misresolved repo and a reply posted on a stranger's pull request.
 
 > **Note:** `reply_to_comment.py` handles inline review comments only. Review body comments
 > (the `=== Review Body Comments ===` section) show a `review_id` for reference but are not

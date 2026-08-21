@@ -9,13 +9,18 @@ The comment_id and thread_id are shown by fetch_pr_comments.py. Pass the comment
 the thread_id is looked up automatically when --resolve is used.
 
 Usage:
-  reply_to_comment.py <pr-number> <comment-id> <body> [--resolve]
+  reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]
 
 Arguments:
   pr-number   PR number (integer)
   comment-id  The comment_id from fetch_pr_comments.py output
   body        Reply text (quote in shell if it contains spaces)
   --resolve   Also resolve the review thread after posting the reply
+  --repo      Target repository. Without it the repo is inferred from $GH_REPO or the shell's
+              working directory — so running this from a different checkout (including this
+              skill's own directory) posts to *that* repo's PR of the same number. PR numbers
+              are small and collide across repos, so the wrong target is a plausible repo with
+              a plausible PR, not an error. Pass --repo whenever the cwd is not the target.
 """
 
 import json
@@ -53,9 +58,34 @@ def run(cmd: list[str]) -> str:
     return result.stdout.strip()
 
 
-def get_repo() -> tuple[str, str, str]:
-    raw = run(["gh", "repo", "view", "--json", "nameWithOwner"])
-    nwo = json.loads(raw)["nameWithOwner"]
+def take_option(args: list[str], flag: str) -> tuple[list[str], str | None]:
+    """Pull `--flag value` or `--flag=value` out of args. Positional order is preserved.
+
+    Hand-rolled rather than argparse because the reply body is a positional that may begin with
+    a dash, which argparse would read as an unknown option.
+    """
+    for i, arg in enumerate(args):
+        if arg == flag:
+            if i + 1 >= len(args):
+                raise SystemExit(f"error: {flag} needs a value")
+            return args[:i] + args[i + 2 :], args[i + 1]
+        if arg.startswith(f"{flag}="):
+            return args[:i] + args[i + 1 :], arg.split("=", 1)[1]
+    return args, None
+
+
+def get_repo(explicit: str | None) -> tuple[str, str, str]:
+    """Resolve the target repo. An explicit --repo wins; otherwise gh infers it from $GH_REPO,
+    then from the working directory."""
+    if explicit:
+        nwo = explicit
+    else:
+        raw = run(["gh", "repo", "view", "--json", "nameWithOwner"])
+        nwo = json.loads(raw)["nameWithOwner"]
+
+    if nwo.count("/") != 1 or not all(nwo.split("/")):
+        raise SystemExit(f"error: repo must be OWNER/NAME, got {nwo!r}")
+
     owner, name = nwo.split("/", 1)
     return nwo, owner, name
 
@@ -80,10 +110,11 @@ def main() -> None:
     args = sys.argv[1:]
     resolve = "--resolve" in args
     args = [a for a in args if a != "--resolve"]
+    args, repo_arg = take_option(args, "--repo")
 
     if len(args) < 3:
         print(
-            "Usage: reply_to_comment.py <pr-number> <comment-id> <body> [--resolve]",
+            "Usage: reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -92,7 +123,12 @@ def main() -> None:
     comment_id = int(args[1])
     body = args[2]
 
-    nwo, owner, name = get_repo()
+    nwo, owner, name = get_repo(repo_arg)
+
+    # Named before the write, not after. Without --repo the target comes from the working
+    # directory, and a wrong cwd yields a real repo with a real PR of the same number rather
+    # than an error — so the only thing that catches it is seeing the target first.
+    print(f"Target: {nwo}#{pr_number}, comment {comment_id}")
 
     run([
         "gh", "api",

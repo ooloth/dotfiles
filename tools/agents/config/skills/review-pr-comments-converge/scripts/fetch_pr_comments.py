@@ -12,7 +12,11 @@ Each inline comment shows:
   - comment_id  : used by reply_to_comment.py to post a reply
   - thread_id   : used by reply_to_comment.py --resolve to close the conversation
 
-Usage: fetch_pr_comments.py <pr-number>
+Usage: fetch_pr_comments.py <pr-number> [--repo OWNER/NAME]
+
+Without --repo the repo is inferred from $GH_REPO or the shell's working directory. Pass it
+whenever the cwd is not the target — PR numbers collide across repos, so the wrong cwd reads a
+different repo's PR rather than failing.
 """
 
 import json
@@ -76,15 +80,47 @@ def indent(text: str, prefix: str = "  ") -> str:
     return "\n".join(prefix + line for line in text.splitlines())
 
 
+def take_option(args: list[str], flag: str) -> tuple[list[str], str | None]:
+    """Pull `--flag value` or `--flag=value` out of args, preserving positional order."""
+    for i, arg in enumerate(args):
+        if arg == flag:
+            if i + 1 >= len(args):
+                raise SystemExit(f"error: {flag} needs a value")
+            return args[:i] + args[i + 2 :], args[i + 1]
+        if arg.startswith(f"{flag}="):
+            return args[:i] + args[i + 1 :], arg.split("=", 1)[1]
+    return args, None
+
+
+def get_repo(explicit: str | None) -> tuple[str, str, str]:
+    """Resolve the target repo. An explicit --repo wins; otherwise gh infers it from $GH_REPO,
+    then from the working directory."""
+    if explicit:
+        nwo = explicit
+    else:
+        raw = run(["gh", "repo", "view", "--json", "nameWithOwner"])
+        nwo = json.loads(raw)["nameWithOwner"]
+
+    if nwo.count("/") != 1 or not all(nwo.split("/")):
+        raise SystemExit(f"error: repo must be OWNER/NAME, got {nwo!r}")
+
+    owner, name = nwo.split("/", 1)
+    return nwo, owner, name
+
+
 def main() -> None:
-    if len(sys.argv) < 2:
-        print("Usage: fetch_pr_comments.py <pr-number>", file=sys.stderr)
+    args, repo_arg = take_option(sys.argv[1:], "--repo")
+
+    if not args:
+        print("Usage: fetch_pr_comments.py <pr-number> [--repo OWNER/NAME]", file=sys.stderr)
         sys.exit(1)
 
-    pr_number = int(sys.argv[1])
-    repo_raw = run(["gh", "repo", "view", "--json", "nameWithOwner"])
-    name_with_owner = json.loads(repo_raw)["nameWithOwner"]
-    owner, name = name_with_owner.split("/", 1)
+    pr_number = int(args[0])
+    name_with_owner, owner, name = get_repo(repo_arg)
+
+    # Printed so the reply step can be checked against the same target these ids came from.
+    print(f"# Source: {name_with_owner}#{pr_number}")
+    print()
 
     raw = run([
         "gh", "api", "graphql",
