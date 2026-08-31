@@ -21,7 +21,12 @@ visible in review, rather than an omission, which isn't.
 **Secrets are not hardcoded or logged.**
 Credentials, API keys, tokens, and passwords exist only in environment
 variables or secret stores. They don't appear in source code, logs, error
-messages, or stack traces.
+messages, or stack traces. This includes local development: a file of real
+values on a developer's disk is protected only by an ignore rule, and an
+ignore rule is one mistake away from failing. Where a committed file
+describes what the environment needs, it holds *references* to a secret
+store rather than the values themselves, so committing it is harmless by
+construction rather than by vigilance.
 
 **Authentication and authorization are enforced.**
 Every protected route or operation verifies identity and permission before
