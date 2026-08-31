@@ -28,12 +28,16 @@ silently missing behaviors, known hacks, or deferred cleanup. Incomplete work
 and shortcuts don't ship as permanent fixtures — they compound and they're
 easiest to address while the context is still loaded.
 
-**Runtime invariants are asserted, not only tested.**
+**Runtime invariants and violable contracts are asserted, not only tested.**
 Conditions that must always hold — preconditions on inputs, postconditions on
 outputs, internal state constraints — are asserted where they apply, not only
-in tests. Both what must be true and what must never be true are stated. An
-assertion that fires in production catches programmer errors that tests alone
-cannot.
+in tests. Both what must be true and what must never be true are stated.
+Beyond the invariants already identified, no function carries a contract a
+caller could violate without something checking it: a range an argument must
+fall in, a relationship between two parameters, a property a collection always
+has. A contract already guaranteed by the type system or by validation at a
+boundary is considered checked. An assertion that fires in production catches
+programmer errors that types and tests alone cannot.
 
 **Assertions are split so a failure names the exact violation.**
 One condition per assertion. `assert(a && b)` reports that something broke;
@@ -76,14 +80,6 @@ an error. If only a bug within the codebase could trigger it, assert it.
 Assertion failures halt; they are not caught and recovered from.
 
 ## Consider
-
-**Functions assert what they require of callers and what they promise about results.**
-The point is not a count — an assertion that cannot fail adds noise, not safety.
-It is that most functions carry contracts nobody wrote down: a range an argument
-must fall in, a relationship between two parameters, a property the return value
-always has. Where such a contract exists and a caller could violate it, an
-assertion converts a silent wrong answer into an immediate failure at the place
-responsible for it.
 
 **Assertions multiply the value of fuzzing.**
 Because assertions check invariants on every execution path, fuzz inputs that
