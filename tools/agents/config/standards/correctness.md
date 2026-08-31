@@ -49,6 +49,13 @@ accumulating collections have an explicit cap. An unbounded loop turns a logic
 bug into a hang and an unbounded buffer turns one into an outage — the two
 failure modes hardest to diagnose from outside the process.
 
+**The build produces no warnings, with warning levels set as strict as the toolchain allows.**
+Strictness and cleanliness are one standard, not two — a silent build with the
+checks turned down proves nothing. A warning is either a defect or noise that
+conceals one, and a build where warnings are routine has no capacity left to
+notice a new one. Suppressions are narrow, sited at the specific occurrence
+rather than the file or the project, and state their reason.
+
 **Behaviour is deterministic given the same inputs.**
 The same inputs produce the same outputs and the same sequence of effects.
 Clocks, randomness, iteration order over unordered collections, and scheduling
@@ -69,6 +76,14 @@ an error. If only a bug within the codebase could trigger it, assert it.
 Assertion failures halt; they are not caught and recovered from.
 
 ## Consider
+
+**Functions assert what they require of callers and what they promise about results.**
+The point is not a count — an assertion that cannot fail adds noise, not safety.
+It is that most functions carry contracts nobody wrote down: a range an argument
+must fall in, a relationship between two parameters, a property the return value
+always has. Where such a contract exists and a caller could violate it, an
+assertion converts a silent wrong answer into an immediate failure at the place
+responsible for it.
 
 **Assertions multiply the value of fuzzing.**
 Because assertions check invariants on every execution path, fuzz inputs that
