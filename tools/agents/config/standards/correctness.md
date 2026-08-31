@@ -35,6 +35,27 @@ in tests. Both what must be true and what must never be true are stated. An
 assertion that fires in production catches programmer errors that tests alone
 cannot.
 
+**Assertions are split so a failure names the exact violation.**
+One condition per assertion. `assert(a && b)` reports that something broke;
+`assert(a)` followed by `assert(b)` reports which. Where a contract spans a call
+boundary it is asserted on both sides — the caller checks what it promises, the
+callee checks what it requires — so a disagreement about the contract surfaces
+as well as a violation of it.
+
+**Loops and recursion have fixed upper bounds.**
+Every loop has a bound a reader can determine without running it, and recursion
+either has a proven depth limit or is written as iteration. Queues, buffers, and
+accumulating collections have an explicit cap. An unbounded loop turns a logic
+bug into a hang and an unbounded buffer turns one into an outage — the two
+failure modes hardest to diagnose from outside the process.
+
+**Behaviour is deterministic given the same inputs.**
+The same inputs produce the same outputs and the same sequence of effects.
+Clocks, randomness, iteration order over unordered collections, and scheduling
+are injected or seeded rather than reached for directly. A bug that reproduces
+costs an order of magnitude less to fix than one that doesn't, and replaying a
+failure is only possible if the system was deterministic to begin with.
+
 ## Should
 
 **Existing callers and data are unaffected.**
