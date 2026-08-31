@@ -31,7 +31,21 @@ the same outcome on repeat. Duplicate execution is safe by design.
 **Failures are isolated.**
 A failure in one dependency does not cascade to unrelated operations. Work
 that can proceed without the failing dependency does proceed. Partial success
-is a valid outcome when operations are independent.
+is a valid outcome when operations are independent. The same holds within a
+process: a fault while handling one request does not affect another request in
+flight, or take down the process serving both.
+
+**Recovery from data loss is designed, not assumed.**
+Anything that stores state has a recovery point — how much recent work is lost
+when its storage is gone — and a recovery time. Continuous replication and a
+periodic copy differ by exactly that first number, so choosing between them is
+choosing how much work a failure is allowed to destroy. Recovery also stays
+decoupled from the platform hosting it, or a migration quietly takes the
+recovery path with it. And restoring returns the data while saying nothing
+about how long the system was unreachable: backups cover data loss, not
+downtime, and availability needs its own provision.
+
+A backup that has never been restored is a hypothesis, not a backup.
 
 **Resource handles are closed after use.**
 Connections, file handles, and other resources are released when the work
