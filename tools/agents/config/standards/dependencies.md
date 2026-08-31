@@ -26,6 +26,14 @@ uncertainty about future compatibility and security response.
 Lockfiles or checksums confirm that installed versions match what was
 reviewed. Dependencies come from trusted, official sources.
 
+**Third-party code loaded at runtime is pinned and verified too.**
+A script fetched from a CDN when a page loads has no manifest, no lockfile
+and no install step, so nothing confirms that what runs today is what was
+reviewed — and it executes with full access to the page. An exact version
+is pinned and its integrity verified, by subresource integrity, a vendored
+copy, or both. A floating tag is less audited than anything in a manifest,
+not more, despite feeling lighter.
+
 **Dependencies are scanned for known vulnerabilities.**
 Security audits run regularly — `npm audit`, `cargo audit`, `pip-audit`, or
 equivalent. Known vulnerabilities in transitive dependencies are not silently
@@ -41,6 +49,7 @@ general-purpose alternatives when the use case is narrow.
 ## In scope
 
 - Cargo.toml, package.json, requirements.txt, go.mod, Gemfile, and their lockfiles
+- Third-party code loaded at runtime: script tags, dynamic imports from external origins
 
 ## Out of scope
 
