@@ -12,7 +12,7 @@ well-written code.
 Only the **Must** tier holds unconditionally. **Should** allows documented
 exceptions and **Consider** is a judgment call with no default, so this content
 is not a set of invariants — a project's genuinely exception-free facts belong
-in its own `docs/invariants/`.
+in its own `docs/invariants/` (or `docs/guarantees/`).
 
 This framing makes each file usable in multiple directions without changing the
 content:
@@ -73,8 +73,8 @@ a false positive costs one read; a false negative means missed guidance.
 - **`config.md`** — startup code, env var read sites, config parsing and validation
 - **`correctness.md`** — all non-generated source files; load for every code task
 - **`css.md`** — stylesheets, style blocks, CSS-in-JS, design tokens; contrast, motion, responsive layout
-- **`data-integrity.md`** — database models, schema changes, migration files, write paths, transactions
-- **`dependencies.md`** — package manifests (package.json, Cargo.toml, requirements.txt, go.mod)
+- **`data-integrity.md`** — data models, storage shapes, schema changes, migrations, write paths, transactions
+- **`dependencies.md`** — package manifests (package.json, Cargo.toml, pyproject.toml, go.mod)
 - **`deployment.md`** — CI/CD config, Dockerfiles, infrastructure manifests, migration files
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions
 - **`documentation.md`** — any file change that affects documented behaviour or has accompanying docs
