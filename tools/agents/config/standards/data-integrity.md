@@ -22,10 +22,18 @@ collide on the same record.
 
 ## Should
 
+**A value that can be derived is derived, not stored beside its source.**
+Completion flags, counts, totals, and cached summaries are computed from the
+data they summarise rather than maintained as a second field that can disagree
+with it. The most reliable way to keep two representations in sync is to have
+one. Storing a derived value is a deliberate trade — made when recomputation
+is genuinely too expensive — not the default, and it converts a question with
+one answer into two answers that can drift.
+
 **Related representations stay in sync.**
 Denormalized fields, derived counts, and both sides of a relationship are
 updated together in the same operation. One side is not updated without the
-other.
+other. This is the obligation taken on by the trade above.
 
 **Migrations handle existing data.**
 Schema changes account for rows that already exist. New non-nullable columns
