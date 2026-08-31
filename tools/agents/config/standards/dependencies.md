@@ -10,7 +10,10 @@ Before adding a dependency, existing dependencies and standard library
 capabilities are considered. A new dependency is added only when it covers
 ground that would be unreasonable to reimplement. The cost — a new
 transitive dependency tree, a new maintenance obligation — is weighed
-against the benefit.
+against the benefit. The cost that persists is rarely the integration,
+which is paid once. It is the second model of the world now being carried:
+another vocabulary, another set of failure modes to recognise, and another
+place to look when something breaks.
 
 ## Should
 
