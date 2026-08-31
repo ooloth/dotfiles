@@ -23,6 +23,14 @@ should not have to discover conventions by having their PR rejected.
 
 ## Should
 
+**The edit-to-feedback loop is fast, and its speed is known.**
+The time between saving a change and seeing its effect is measured rather than
+guessed, and treated as a property worth protecting. It is paid on every
+iteration, so it compounds in a way that nothing else in the setup does, and it
+degrades gradually enough that nobody notices until it is bad. Where an
+architecture caps how fast that loop can be, the ceiling is recorded rather
+than discovered later.
+
 **Domain concepts are defined.**
 The core terms, entities, and relationships of the problem domain are
 explained. A developer who maps unfamiliar domain concepts onto general
