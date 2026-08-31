@@ -1,6 +1,7 @@
 # Observability
 
 Code is observable when failures are visible, diagnosable from logs alone,
+claims about its behavior are backed by measurement rather than assumption,
 and new behavior leaves a trace without obscuring the logic that produces it.
 
 ## Must
@@ -16,6 +17,14 @@ corresponding log output. If this code fails in production, the failure is
 diagnosable from logs alone.
 
 ## Should
+
+**A load-bearing claim about behavior is measured, not assumed.**
+A rate, a latency, a frequency, or a cost that a decision depends on is
+checked against real measurement wherever one is feasible to take. Where
+nothing currently measures it, that absence is closed by adding the
+instrumentation rather than carried forward as an assumption — an
+assumption that stands in for a measurement long enough stops being
+flagged as one.
 
 **Log output is structured.**
 Logs use a consistent machine-parseable format — JSON or key=value — with
@@ -37,6 +46,8 @@ of the surrounding code remains clear after instrumentation is added.
 - Error paths
 - New behavior entry points
 - Resource allocation and cleanup sites
+- Quantitative claims backing a design, performance, or process decision
+  (rates, latencies, costs, capacity estimates)
 
 ## Out of scope
 
