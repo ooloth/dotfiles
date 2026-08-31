@@ -52,10 +52,14 @@ measurable yet — weaken every sentence around them while making none of it
 actionable. The same content, stated as an open question somewhere a reader
 looks for open questions, becomes work someone can pick up.
 
-**Documentation describes the current state rather than tracking progress.**
-Expiry dates, completion criteria, and how-far-along notes don't change what a
-reader should do now, and they go stale faster than the content around them.
-Schedules and remaining work live in whatever tracks work.
+**Comments and documents describe the present (not the past or future).**
+What a value used to be, what a rule replaced, which record was removed, how
+far along the work is, when the content expires — none of it is visible to a
+reader of the current state. Version control holds the past; whatever tracks
+work holds the schedule. History earns its place only where it is the reason
+the present is shaped this way — the regression a guard exists for, the
+measurement that fixed a constant, the option that was tried and failed — and
+it reads as a present fact rather than as a change narrative.
 
 **Content that could be executed is executed.**
 A rule that could be a type, a lint rule, or a test is that instead, and the
@@ -74,15 +78,6 @@ moment someone rewords a heading, and nothing reports it.
 Fixed-width wrapping keeps a diff to the lines that actually changed instead of
 reflowing a paragraph because one word was added. Code blocks, URLs, and tables
 wrap where they wrap.
-
-**Comments describe the code as it is, not as it was.**
-A comment narrating a previous implementation — what a value used to be, what
-a rule replaced, which element a removed box enclosed — describes something no
-reader of the current code can see, and costs clarity to carry. History earns
-its place only where it is the reason the code is shaped this way: the
-regression a guard exists for, the measurement that fixed a constant, the
-option that was tried and failed. That reason reads as a present fact about
-the code rather than as a change narrative.
 
 ## Consider
 
