@@ -73,6 +73,14 @@ failure is only possible if the system was deterministic to begin with.
 Changes don't break existing call sites or corrupt existing data unless the
 breakage is intentional, documented, and coordinated.
 
+**Mistakes the toolchain could catch are caught by the toolchain.**
+Where a mistake can be surfaced by a type, a schema, a compiler check, or a
+lint rule, it is — rather than left to be found when the code runs. This is a
+choice about how things are arranged, not only about heeding what the tools
+already say: a misspelled field name, an unhandled variant, or a malformed
+template found at build time costs a moment, and the same mistake found at
+runtime costs a user.
+
 **`assert` is for programmer errors; errors are returned for environmental failures.**
 The discriminator: could this condition occur because of something outside the
 code — absent config, malformed input, a failed network call? If yes, return
