@@ -23,6 +23,14 @@ where producer and consumer are incompatible in production.
 Schema changes on large tables use strategies that avoid long locks. Existing
 rows satisfy any new constraints before enforcement begins.
 
+**The deploy artifact and the local development workflow are separate decisions.**
+How something is packaged for production does not dictate how it is run while
+being written, and rejecting a tool for one does not decide the other. A
+container may be required by the target platform while day-to-day work runs the
+process directly; a build step may exist in CI and nowhere else. Conflating them
+imports production's constraints into the edit-run loop, where they cost time on
+every iteration and buy nothing.
+
 **Deployment ordering is considered.**
 When a change requires coordinating config updates, service restarts, or
 infrastructure changes, the required order is identified and documented.
