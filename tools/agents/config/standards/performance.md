@@ -48,8 +48,10 @@ Fetching everything into memory is not the default for large collections.
 
 **Performance budgets exist for user-facing operations.**
 Operations that a user waits for — page loads, API responses, search results —
-have a target latency. Regressions against that target are caught before
-shipping.
+have a target latency, expressed at a percentile rather than as an average. A
+user experiences the slow request, not the mean of all requests, and an average
+conceals exactly the tail that gets noticed. Regressions against that target are
+caught before shipping.
 
 **Parallelism is used for independent work.**
 Independent I/O operations or CPU-bound tasks that can safely run in parallel
