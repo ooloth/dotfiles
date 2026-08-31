@@ -413,6 +413,7 @@
   },
   "showClearContextOnPlanAccept": true,
   "plansDirectory": "./.claude/plans",
+  "tui": "fullscreen",
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark-daltonized",
