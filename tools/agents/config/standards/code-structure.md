@@ -19,7 +19,9 @@ Only types that belong to the interface cross.
 **Side effects live at the edges.**
 I/O, external API calls, and mutation of shared state happen at entry and exit
 points. Business logic in the middle is free of I/O and can be reasoned about
-and tested without external dependencies.
+and tested without external dependencies. Logic kept free of I/O is also
+portable: one implementation can run in a batch job, on a server and in a
+client, instead of being rewritten per runtime and kept in agreement by hand.
 
 ## Should
 
