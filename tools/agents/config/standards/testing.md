@@ -52,6 +52,13 @@ For HTTP API boundaries specifically, a fake HTTP server is preferred over a
 trait-based mock — it exercises URL construction, headers, and serialization,
 not just call presence.
 
+Some behaviour cannot be exercised in-process at all. Anything that depends on
+a connection staying open — streaming, timeouts, backpressure, reconnection,
+a stall that never raises an error — needs a real server and a real connection,
+because an in-process request helper completes immediately by construction. A
+test that appears to cover a stream but never holds one open passes for the
+wrong reason.
+
 **The urge to mock a non-boundary component is a signal that logic is in the wrong layer.**
 When testing requires mocking something that isn't a true system boundary, the logic
 being tested belongs one layer closer to the pure core. Moving it there makes it
