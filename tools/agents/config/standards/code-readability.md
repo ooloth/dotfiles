@@ -20,7 +20,9 @@ Remnants from exploration or abandoned approaches are removed before merging.
 **Abstractions earn their place.**
 Every abstraction is used in more than one place or makes a single complex
 thing significantly clearer. Helpers that exist for one call site are inlined.
-Wrappers that add no clarity are removed.
+Wrappers that add no clarity are removed. An abstraction introduced before
+anything dispatches through it is speculation rather than design — a second
+use site justifies it, the anticipation of one does not.
 
 **Each unit has one responsibility.**
 Functions do one thing. Types represent one concept. Functions and types whose
