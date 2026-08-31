@@ -13,7 +13,10 @@ Validation happens at the boundary, not deep in business logic.
 **Injection is not possible.**
 SQL queries use parameterized statements. Shell commands don't interpolate
 user input. HTML output is escaped. User data never reaches an interpreter
-as executable code or a navigable path.
+as executable code or a navigable path. Escaping is a property of the
+rendering approach rather than a step someone remembers: where the tool
+escapes by default, the failure mode is a deliberate opt-out, which is
+visible in review, rather than an omission, which isn't.
 
 **Secrets are not hardcoded or logged.**
 Credentials, API keys, tokens, and passwords exist only in environment
