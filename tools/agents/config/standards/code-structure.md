@@ -29,6 +29,13 @@ steps — is kept separate from the code that does the work. Mixing them forces
 execution paths to pay coordination costs on every iteration and makes either
 harder to test in isolation.
 
+**State is visible only where it is used.**
+A value lives in the narrowest scope that serves it — a block rather than a
+function, a function rather than a module, a module rather than the process.
+Widening scope for convenience multiplies the places a wrong value could have
+come from, and the cost of tracking one down is proportional to how much code
+could have written it.
+
 **Public surfaces are as small as possible.**
 A component exposes only what callers need. Every additional export is a
 commitment to maintain. Internal details are private by default.
