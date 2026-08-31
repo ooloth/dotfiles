@@ -1,6 +1,6 @@
 ---
 name: uphold-standards
-description: Load relevant code quality standards (architecture, testing, security, type design, etc.) and apply them to the current task. ALWAYS invoke before ANY technical decision, design, or code change — including architecture decisions made before any code exists.
+description: Load relevant code and documentation quality standards (architecture, testing, security, type design, etc.) and apply them to the current task. ALWAYS invoke before ANY technical decision, design, documentation or code change — including architecture decisions made before any code exists.
 ---
 
 ## Your task
