@@ -23,7 +23,7 @@ If the user's message contains a `?`, "can we", "should we", "what if", "why", "
 is in discussion mode by default, no matter what it contains — directives, answers to your
 questions, new context, agreement, a tangent, a question of its own. None of these end the
 discussion, individually or in combination — only an explicit signal that the user is ready for
-you to act on everything discussed so far does. That signal must cover the *whole* message: an
+you to act on everything discussed so far does. That signal must cover the _whole_ message: an
 approval phrase ("do it", "go ahead", "go for it", "yes please do that", "make those changes",
 "fix it", "add it") attached to one item in a longer message closes that item, not the rest of it.
 If anything else in the message isn't itself that same closing signal, the whole message stays
@@ -33,6 +33,7 @@ where the user said "act on all of this now," they haven't, and nothing executes
 This is deliberately stricter than pattern-matching for approval phrases or scanning for
 unanswered questions. None of the following close a discussion, alone or bundled with items that
 look approved:
+
 - Casual acknowledgment ("yes", "ok", "sounds good", "that makes sense")
 - A feasibility question ("I'd like to X — is that doable?" is a question even when it describes
   exactly what the user wants; the trailing `?` means answer and stop)
@@ -106,7 +107,7 @@ For the full `trekker` workflow, see `/use-trekker`.
    describing your plan for the next change (steps 1-2) — but as always, stop and wait for
    approval before implementing it (step 3)
 10. Repeat for the remaining changes
-11. Before closing, ask: did this work establish something that must always hold, or a reusable
+11. Before closing, ask: did this work establish an invariant that must always hold, or a reusable
     standard for approaching this kind of problem? **Usually the answer is no** — say so and move
     on. A plausible-sounding observation is not a finding; only durable knowledge that would change
     what a future agent does counts. If there is something, offer to record it in whichever of
@@ -122,6 +123,7 @@ For the full `trekker` workflow, see `/use-trekker`.
     nearest equivalent it does have, or offer to create the folder. Read the existing files first
     and extend the closest match — a new theme file needs justification. Recording anything here is
     a commit-worthy change: it re-enters steps 4–9 and needs its own commit signal.
+
 12. When all changes committed → close the task:
     ```bash
     trekker comment add TREK-N -a "claude" -c "Resolution: ..."
