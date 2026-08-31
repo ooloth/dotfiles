@@ -71,11 +71,17 @@ domain concept by reading directory and file names alone — without tracing
 imports, grepping, or asking. When the tree requires code reading to
 navigate, the names or structure are wrong.
 
-## Consider
+**A package boundary is earned by having two consumers.**
+Code with a single consumer gains no compile isolation and no dependency
+hygiene from its own package — only ceremony, and one more place to look.
+Shared logic used by more than one binary or entry point is the case that
+earns a boundary. Exception: a boundary drawn so something can be published
+or versioned independently.
 
-**New boundaries are justified.**
-Before introducing a new component, the cost — a new interface to maintain, a
-new dependency to manage — is weighed against the benefit of the separation.
+**Repetition is acceptable when it tracks how the system grows.**
+An entry added per feature, as each feature is added, has the same shape as
+the growth it accompanies. Identical repetition across a fixed set is a smell,
+because nothing about the system explains why it repeats.
 
 ## In scope
 
