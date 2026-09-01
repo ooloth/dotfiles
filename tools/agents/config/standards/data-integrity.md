@@ -1,5 +1,7 @@
 # Data Integrity
 
+<!-- TODO: reframe as data-management to encourage reading more often? -->
+
 Data has integrity when it is valid at the moment it is written, consistent
 across all the places it is represented, and recoverable if a write sequence
 fails partway through.
