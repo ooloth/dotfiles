@@ -30,6 +30,13 @@ system actually does, not only what tests assert it should do.
 
 ## Should
 
+**An instruction that governs an act is loaded at that act, not at session start.**
+Memory of a rule decays over a session, and work built on the paraphrase looks
+compliant while breaking the rule. Four mechanisms, in order of reliability:
+check what can be checked, put the load step inside the procedure where it is
+needed, phrase triggers as recurring rather than preconditional, and keep the
+rules short enough that re-reading is cheap.
+
 **Usage patterns are described.**
 How users or callers interact with the system is documented. An agent
 understands the intended interaction model — what inputs the system accepts,

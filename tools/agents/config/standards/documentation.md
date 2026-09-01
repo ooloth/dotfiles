@@ -56,10 +56,12 @@ looks for open questions, becomes work someone can pick up.
 What a value used to be, what a rule replaced, which record was removed, how
 far along the work is, when the content expires — none of it is visible to a
 reader of the current state. Version control holds the past; whatever tracks
-work holds the schedule. History earns its place only where it is the reason
-the present is shaped this way — the regression a guard exists for, the
-measurement that fixed a constant, the option that was tried and failed — and
-it reads as a present fact rather than as a change narrative.
+work holds the schedule.
+
+Rewrite any sentence containing *used to*, *previously*, *no longer*, *has
+since*, or a date, without them. Keep the rewrite. History survives only where
+a reader lacking it would do the wrong thing — delete the guard, change the
+constant.
 
 **Content that could be executed is executed.**
 A rule that could be a type, a lint rule, or a test is that instead, and the
