@@ -172,7 +172,8 @@ For the full `trekker` workflow, see `/use-trekker`.
 
 ## Uphold Standards
 
-Before designing, writing, or editing any code — invoke the `uphold-standards` skill.
+Before designing, writing, or editing any code, documentation, or decision record — invoke the
+`uphold-standards` skill. Docs-only changes included.
 
 ## Issue and Ticket Writing
 
