@@ -186,6 +186,10 @@ NEVER create a GitHub issue, Jira task, Monday task, or Linear task without firs
 - Try to prevent that from happening by delegating as much exploration as you can to subagents
 - That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
   details only entering the conversation
+- When spawning your own subagents, prefer lower token-usage models like sonnet or haiku over
+  opus unless there's a specific reason the task really needs a model with powerful reasoning
+  capabilities; there will be a trade-off here (quality will degrade) so use your judgment based
+  on how mechanical vs reason-based the task is and what capabilities the model needs to succeed
 
 ## Improve Yourself
 
