@@ -180,6 +180,3 @@ Skip if execution went smoothly.
   a named window, drive them with `tmux send-keys -t <window> "<key>" ""`, and read the screen
   with `tmux capture-pane -t <window> -p`. This is often the only way to visually verify an
   interactive program without asking the user to do it.
-- `rg` - consider using instead of `grep`
-- `fd` - consider using instead of `find`
-- `sd` - consider using instead of `sed`
