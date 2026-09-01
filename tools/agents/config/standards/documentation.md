@@ -71,10 +71,23 @@ since*, or a date, without them. Keep the rewrite. History survives only where
 a reader lacking it would do the wrong thing — delete the guard, change the
 constant.
 
-**Content that could be executed is executed.**
-A rule that could be a type, a lint rule, or a test is that instead, and the
-documentation points at it. Prose describing a constraint the toolchain could
-enforce drifts from the code; the enforcement doesn't.
+**Anything a machine could check is checked by a machine, not asserted in prose.**
+A rule that could be a type, a lint rule or a test is one of those, and the docs
+point at it instead of restating it. Prose drifts from the code; the check does
+not.
+
+Documentation is where the unchecked rules collect, so read it looking for them.
+Two kinds hide there: a wish, which is a claim about what matters that nothing
+measures, and an instruction — remember X, never Y — which is a check with no
+runner. Both read as settled and neither is. Prose asserting something checkable
+that nothing checks is a smell: move it to CI, or say why it cannot go.
+
+The direction is one way. An instruction becomes a review scan, a scan becomes a
+script, a script becomes a type or a test that runs on every change. Inference is
+what finds the category nobody thought to look for, which is why the check cannot
+be written first — but left as inference it is re-derived every session, at full
+cost, with a different answer each time. Extract the mechanical part even where
+judgement remains.
 
 **An index entry describes what its target contains rather than restating its name.**
 "errors — error handling" tells a reader nothing the filename didn't. An entry
