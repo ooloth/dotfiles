@@ -46,6 +46,14 @@ config. Docs are updated in the same change that introduces the behavior.
 Code samples in documentation execute without modification. Copy-paste
 examples that silently fail are worse than no examples.
 
+**Prose is followed in one pass, forward, without backtracking.**
+A reader who reaches the third paragraph and has to return to the first has been
+failed, however short the piece is. Length is not the measure. Draft it as you
+would say it aloud, then write that: speech keeps one idea per sentence in the
+order the reader needs them, joined by the words that carry the logic. Those
+joining words and the distinctions an argument turns on are structure, not
+padding — cutting them leaves assertions the reader has to reassemble.
+
 **Statements are unhedged, and what is uncertain is recorded as an open question.**
 Caveats woven through prose — no evidence for this, unverified assumption, not
 measurable yet — weaken every sentence around them while making none of it
