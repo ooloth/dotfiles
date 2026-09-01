@@ -4,8 +4,6 @@ Challenge my assumptions and reasoning. Offer skeptical viewpoints. Correct me p
 
 Be extremely concise. Sacrifice grammar for the sake of concision.
 
----
-
 ## Explicitly Confirm You Should Act (Especially After Questions)
 
 When a task is ambiguous or has multiple valid approaches, ask questions rather than planning or
@@ -58,8 +56,6 @@ acting in the same turn makes the question rhetorical and bypasses the gate.
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
 
----
-
 ## Work in Small Steps
 
 For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` before step 1. For
@@ -82,17 +78,20 @@ trekker task update TREK-N -s in_progress
 
 For the full `trekker` workflow, see `/use-trekker`.
 
-1. Choose your next thematic change (one cohesive behavior change; e.g. one new test and its
-   refactored implementation, one new lint rule and its fixes, etc), ideally aiming for thin
-   vertical slices that can be verified e2e
-2. Describe your implementation plan, calling out any design decisions or questions the user should weigh in on
+1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
+   (rather than a horizontal layer slice that can't)
+2. Describe your implementation plan, including the "/design" skill's type and test design plan
+   where relevant, and calling out any design decisions or questions the user should make
 3. Wait for approval
 4. Implement using red-green-refactor:
-   - Write failing test(s) that specify the intended behavior. If `/design` was run, translate the approved test plan into tests now.
-   - Run them and confirm they fail for the right reason — not a compile error or missing import. Report what failure you saw.
-   - Write the minimum code to make them pass.
-   - Run tests and confirm green.
-   - If the green implementation is obviously rough, refactor — keeping tests green throughout.
+   1. Write all failing test(s) that specify the intended behavior. If `/design` was run, translate
+      the approved test plan into tests now.
+   2. Run them and confirm they fail for the right reason — not a compile error or missing import.
+      Report what failure you saw.
+   3. Write the code needed to make them pass, translating the approved type plan into types now if
+      relevant, and upholding all relevant global and project-level standards and invariants
+   4. Run the tests and confirm green
+   5. If the green implementation is obviously rough, refactor — keeping tests green throughout.
 5. Run all automated checks
 6. Check: does any behavior this change introduces lack test coverage? If so, add a test before moving on. Then run all tests.
 7. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint,
@@ -108,23 +107,21 @@ For the full `trekker` workflow, see `/use-trekker`.
    approval before implementing it (step 3)
 10. Repeat for the remaining changes
 11. Before closing, ask: did this work establish an invariant that must always hold, or a reusable
-    standard for approaching this kind of problem? **Usually the answer is no** — say so and move
-    on. A plausible-sounding observation is not a finding; only durable knowledge that would change
-    what a future agent does counts. If there is something, offer to record it in whichever of
-    these fit — more than one may:
+    standard for approaching this kind of problem? If not, say nothing. If so, offer to record it in
+    whichever of these fit — more than one may:
     - **Portable engineering standard** (true of any codebase) → global `~/.agents/standards/`
     - **Standard specific to this repo** (graded Must/Should/Consider guidance with legitimate
       exceptions) → `docs/standards/`
     - **Invariant specific to this repo** (no sanctioned exception — violating it means the system
-      is broken, not merely unconventional) → `docs/invariants/`
+      is broken, not merely unconventional) → `docs/invariants/` or `docs/guarantees/`
 
-    Good standards are often worth capturing both in the project and globally; offer both rather
-    than picking one. If the project has no `docs/standards/` or `docs/invariants/`, offer the
-    nearest equivalent it does have, or offer to create the folder. Read the existing files first
-    and extend the closest match — a new theme file needs justification. Recording anything here is
-    a commit-worthy change: it re-enters steps 4–9 and needs its own commit signal.
+    **Note:** Good standards are often worth capturing both in the project and globally; offer both
+    rather than picking one. If the project has no `docs/standards/` or `docs/invariants/`, offer
+    the nearest equivalent it does have, or offer to create the folder. Read the existing files
+    first and extend the closest match — a new theme file needs justification. Recording anything
+    here is a commit-worthy change: it re-enters steps 4–9 and needs its own commit signal.
 
-12. When all changes committed → close the task:
+12. When all changes committed → close the task - e.g. if using trekker:
     ```bash
     trekker comment add TREK-N -a "claude" -c "Resolution: ..."
     trekker task update TREK-N -s completed
@@ -151,8 +148,6 @@ For the full `trekker` workflow, see `/use-trekker`.
 - If end-to-end execution is truly impossible, tell the user why and describe what they can do and
   what they should look for. Don't just silently skip validation.
 
----
-
 ## Uphold Standards
 
 Before designing, writing, or editing any code — invoke the `uphold-standards` skill.
@@ -161,8 +156,6 @@ Before designing, writing, or editing any code — invoke the `uphold-standards`
 
 NEVER create a GitHub issue, Jira task, Monday task, or Linear task without first invoking the
 `write-ticket-description` skill.
-
----
 
 ## Protect Your Context Window
 
