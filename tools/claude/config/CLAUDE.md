@@ -31,7 +31,7 @@ Specifically avoid:
   understanding developed are not part of the answer.
 - **Elegant vagueness.** A concrete number, filename, or quote beats a well-turned summary.
 
-**Cutting is not compressing.** Connectives — *but*, *so*, *two ways this goes wrong* — and the
+**Cutting is not compressing.** Connectives — _but_, _so_, _two ways this goes wrong_ — and the
 distinctions the argument turns on are structure, not padding. Delete them and you leave assertions
 the reader has to reassemble. Cut the flourish, the second example, and any sentence explaining why
 the previous sentence was right.
@@ -209,11 +209,24 @@ NEVER create a GitHub issue, Jira task, Monday task, or Linear task without firs
 ## Improve Yourself
 
 When you encounter friction during any task — a misleading instruction, an ambiguity that cost
-time, a missing doc, or anything else a future agent would trip on — fix it inline. If a targeted
-edit to a CLAUDE.md, standards file, skill file, or project doc would prevent that friction, make
-the edit and note what you changed. Don't just mention it; fix it.
+time, a missing doc, or anything else a future agent would trip on — the user wants you to flag and
+help prevent that issue going forward with the most effective available fix.
 
-Skip if execution went smoothly.
+**Ask yourself whether you've found an instance or a category.** If the same mistake could be made
+again in a different file, fixing the one in front of you leaves the rest. Recommend the strongest
+mechanism that fits, in this order, because they decay at different rates:
+
+1. **A check that runs** — a script, a lint rule, a test. It cannot be forgotten and does not depend
+   on anyone reading anything. The standards already prefer this wherever a rule could be executed.
+2. **A scan in a review or handover skill**, where catching it needs judgement rather than a lookup:
+   a stale claim, a decision nobody argued, a promise nothing enforces. Say what to look for and
+   name where it has actually occurred.
+3. **A written rule**, last, because it holds only while somebody remembers it.
+
+Present your recommendation the user. If you opted for 2 or 3, explain why the stronger mechanisms
+above it would not fit.
+
+Skip and say nothing if execution went smoothly.
 
 ## Available CLI Tools
 
