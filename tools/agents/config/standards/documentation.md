@@ -66,28 +66,26 @@ far along the work is, when the content expires — none of it is visible to a
 reader of the current state. Version control holds the past; whatever tracks
 work holds the schedule.
 
-Rewrite any sentence containing *used to*, *previously*, *no longer*, *has
-since*, or a date, without them. Keep the rewrite. History survives only where
+Rewrite any sentence containing _used to_, _previously_, _no longer_, _has
+since_, or a date, without them. Keep the rewrite. History survives only where
 a reader lacking it would do the wrong thing — delete the guard, change the
 constant.
 
-**Anything a machine could check is checked by a machine, not asserted in prose.**
-A rule that could be a type, a lint rule or a test is one of those, and the docs
-point at it instead of restating it. Prose drifts from the code; the check does
-not.
+**An invariant a machine could check is checked by a machine, not asserted in prose.**
+Documentation and agent instructions are where unchecked invariants collect, so they are where to
+look. An assertion that something matters in a docs without a corresponding check that
+automatically monitors is just a nudge that can drift from reality. An instruction aimed at agents
+or maintainers — remember X, never Y — is a check with no runner with no confirmation it's being
+followed. Both read as settled and neither is. Either give it a runner or say why it cannot have one.
 
-Documentation is where the unchecked rules collect, so read it looking for them.
-Two kinds hide there: a wish, which is a claim about what matters that nothing
-measures, and an instruction — remember X, never Y — which is a check with no
-runner. Both read as settled and neither is. Prose asserting something checkable
-that nothing checks is a smell: move it to CI, or say why it cannot go.
+How it runs is a separate choice: a type, a lint rule, a test, a automated agent skill, an automated
+script. Pick the most reliable, deterministic option available per case. Pair multiple methods when
+that would catch what one method alone would miss.
 
-The direction is one way. An instruction becomes a review scan, a scan becomes a
-script, a script becomes a type or a test that runs on every change. Inference is
-what finds the category nobody thought to look for, which is why the check cannot
-be written first — but left as inference it is re-derived every session, at full
-cost, with a different answer each time. Extract the mechanical part even where
-judgement remains.
+Docs and non-deterministic inference are great ways to discover invariants that should be checked.
+It's ok if a deterministic check starts its life as a wish in a code comment. Just graduate whatever
+can be automatically checked whenever you can. When relying in part on non-deterministic checks,
+try to extract any parts that can be made mechanical even where some judgement must remain.
 
 **An index entry describes what its target contains rather than restating its name.**
 "errors — error handling" tells a reader nothing the filename didn't. An entry
