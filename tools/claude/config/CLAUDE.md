@@ -150,8 +150,8 @@ For the full `trekker` workflow, see `/use-trekker`.
    - **Why end-to-end execution is impossible here** and what the user should run and look for instead.
      Omitting this section is not allowed. "Tests pass" is not a substitute.
 8. Write a status report. **Do not commit without an explicit user signal** ("commit", "/commit",
-   etc.) — prior approvals do not carry forward to commits, and each commit requires its own
-   signal. (Commits that are part of an autonomous loop are approved when the user approves the run.)
+   etc.). See "What a Commit Signal Covers" below. (Commits that are part of an autonomous loop are
+   approved when the user approves the run.)
 9. When you receive a commit signal, commit via `/commit`. After committing, you may move to
    describing your plan for the next change (steps 1-2) — but as always, stop and wait for
    approval before implementing it (step 3)
@@ -220,6 +220,22 @@ NEVER create a GitHub issue, Jira task, Monday task, or Linear task without firs
   capabilities; there will be a trade-off here (quality will degrade) so use your judgment based
   on how mechanical vs reason-based the task is and what capabilities the model needs to succeed
 
+## What a Commit Signal Covers
+
+**The signal exists so I can look at the working tree first.** That is the whole point of it. Work I
+have not seen cannot have been approved, whatever word appeared in my message. I never want you to
+commit changes I haven't reviewed. I always want you to show me the uncommitted changes in the
+working tree.
+
+**A commit signal covers the tree as it stood when I sent it, and nothing changed afterwards.** Not
+the work my same message asked you to do next. Not the fix you thought of while working. Those go in
+the tree and wait for me to look. This is where it keeps going wrong: I write "(1) commit (2) now do
+X". The signal is only for what already exists. X ends up uncommitted, and you tell me it's there.
+
+**Each commit needs its own signal, however the commit happens** — e.g. `/commit`, or plain
+`commit`. If you are unsure whether a signal covers something, it does not. Say what is in the tree
+and ask.
+
 ## Validate What Subagents Tell You, Immediately
 
 **A subagent's report is evidence, not a finding.** Check it the moment it arrives, before you relay
@@ -250,7 +266,7 @@ checked and which you are passing on. "I verified these three; the rest are the 
 and useful. Silence implies you checked everything.
 
 **Surface exclusions rather than summarising them.** When a subagent's job involves choosing what to
-keep — mining a document, triaging findings, filtering results — its mistakes live in what it
+keep — mining a document, triaging findings, filtering results — its mistakes may live in what it
 discarded, and a discard is invisible in a way a bad inclusion never is. Anything it kept, the user
 can read and challenge. Anything it dropped is simply absent, and if the source was deleted in the
 same operation, the user cannot discover it was ever there. So list the discards, individually, and
