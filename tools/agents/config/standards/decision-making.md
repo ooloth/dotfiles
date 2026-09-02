@@ -134,6 +134,24 @@ opposite directions: bundling several decisions into one record so that none of 
 and settling one narrowly while foreclosing others by consequence. Naming the second is what
 stops a choice being made without anyone noticing it was made.
 
+**Options are weighed by what each forecloses, not by which is better today.**
+Present merit is the weakest of the available criteria and the one every comparison reaches for
+first, because it is the easiest to feel and the hardest to check. Options are usually close on it,
+and the apparent gap is mostly familiarity. What separates them is what each makes expensive to
+reach afterwards: run every candidate forward and ask which futures it keeps in play, which it
+closes, and what reopening each closed one would cost.
+
+The asymmetry that falls out is usually the decision. It is also the step where a preference gets
+laundered into a derivation, so the asymmetry is traced rather than asserted — name the specific
+later work each direction would require, and check that the cheap direction is actually cheap
+rather than merely the one already preferred. An asymmetry that cannot be stated as concrete work
+is not evidence of anything.
+
+Product optionality is the form this usually takes, and it outranks developer convenience where
+the two disagree. A choice that saves effort now and removes a thing the product could have become
+has to say so plainly, because the effort is visible on the day and the removed future never
+announces itself.
+
 **A decision that closes an option says so, and says what it would cost to reopen.**
 Most choices that feel urgent are reversible in an afternoon. The ones worth stopping for are the
 ones that quietly make something later expensive — a hosting layout that caps a recovery mechanism,
