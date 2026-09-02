@@ -212,6 +212,26 @@ NEVER create a GitHub issue, Jira task, Monday task, or Linear task without firs
   capabilities; there will be a trade-off here (quality will degrade) so use your judgment based
   on how mechanical vs reason-based the task is and what capabilities the model needs to succeed
 
+**Tell every subagent to read the files itself and not to spawn subagents of its own.** Say it
+explicitly in the prompt; agents fan out by default when the scope looks large. Two reasons, and the
+second is the one that costs you silently:
+
+- **A nested agent serialises.** The parent waits on a child that waits on its own tool calls, so
+  the wall clock becomes the depth of the chain rather than the width of your fan-out. One unbounded
+  agent makes every other agent's parallelism irrelevant, because wall clock is the slowest agent
+  and not the total.
+- **Its report reaches you two relays from the source**, which is two chances for a claim to shed
+  its hedges. You already cannot check a subagent's reading by having done it yourself; a
+  grandchild's reading is laundered twice before it arrives, and the "I could not confirm this" is
+  what drops out first.
+
+**Give every subagent an explicit, bounded file list.** Unbounded scope is what makes an agent fan
+out, so this is the same fix stated from the other end — "scan every file in `docs/`" invites
+nesting and "read these fourteen files" does not. Split a large directory across several agents by
+file list rather than by task category; three agents over a third of the files each finish in
+roughly a third of the wall clock of one agent over all of them. Bundling several questions into one
+agent is fine and often better, since they share the reading.
+
 ## What a Commit Signal Covers
 
 **The signal exists so I can look at the working tree first.** That is the whole point of it. Work I
