@@ -34,6 +34,13 @@ first. This is the failure that does not announce itself: a derivation from an u
 stays invisible precisely because the reasoning built on top of it is sound, so it reads as
 reasoned for months and is found by accident.
 
+**Each input names the record that established it.**
+Not "this is consistent with what we have written" — _which record settled this, and where is it._
+The two questions feel alike and catch different things: consistency is satisfied by any claim
+nothing contradicts, which is exactly what an unrecorded assumption looks like from the inside.
+Where no record can be named, the input is an open question and it is asked rather than assumed,
+however obvious the answer seems and however many documents already repeat it.
+
 **A prerequisite found while deciding is settled before the decision that surfaced it.**
 Not noted and carried past. Not answered provisionally with a plan to revisit. The prerequisite
 is usually the less interesting of the two, which is exactly why writing it down and continuing
