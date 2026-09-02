@@ -248,6 +248,8 @@ X". The signal is only for what already exists. X ends up uncommitted, and you t
 `commit`. If you are unsure whether a signal covers something, it does not. Say what is in the tree
 and ask.
 
+**Every commit goes through `/commit`. Never run `git commit` from Bash directly.**
+
 ## Validate What Subagents Tell You, Immediately
 
 **A subagent's report is evidence, not a finding.** Check it the moment it arrives, before you relay
