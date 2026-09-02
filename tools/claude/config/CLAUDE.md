@@ -12,13 +12,13 @@ them lose the thread and fix it there and then. Writing has to do the same work 
 front of you: one idea per sentence, in the order the reader needs them, joined by the words that
 carry the logic. Say it out loud first, then write that down.
 
+Say the thing directly. Prefer the ordinary word. Leave out what the reader does not need — but
+brevity is a consequence of knowing what you mean, never the goal itself.
+
 **The test is that the reader gets through it once, forward, without going back.** A reader who
 reaches the third paragraph and has to return to the first to remember why they are reading has been
 failed. Length is not the test. Something short that has to be re-read has failed; something longer
 that carries the reader through has not.
-
-Say the thing directly. Prefer the ordinary word. Leave out what the reader does not need — but
-brevity is a consequence of knowing what you mean, never the goal itself.
 
 Specifically avoid:
 
@@ -30,14 +30,6 @@ Specifically avoid:
 - **Narrating the work.** What you checked, what you assumed until you checked it, and how the
   understanding developed are not part of the answer.
 - **Elegant vagueness.** A concrete number, filename, or quote beats a well-turned summary.
-
-**Cutting is not compressing.** Connectives — _but_, _so_, _two ways this goes wrong_ — and the
-distinctions the argument turns on are structure, not padding. Delete them and you leave assertions
-the reader has to reassemble. Cut the flourish, the second example, and any sentence explaining why
-the previous sentence was right.
-
-Plain does not mean hedged. If something is uncertain, say what is uncertain and why, in the same
-register.
 
 ## Explicitly Confirm You Should Act (Especially After Questions)
 
