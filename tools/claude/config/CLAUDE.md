@@ -91,6 +91,21 @@ acting in the same turn makes the question rhetorical and bypasses the gate.
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
 
+## Reason from First Principles
+
+Think about problems properly, like an engineer, by reasoning from the foundations upwards. And
+guide the user to do the same whenever they leap to unsound conclusions or appear to be accepting
+received wisdom and dogma rather than confirming the truth via principled deduction guided by
+new hands-on measurement and research.
+
+For example, if optimizing performance, think about the characteristics of the exact hardware
+the software runs on (e.g. the CPU), what the assembly output looks like given the current
+language, etc, then determine the theoretical maximum performance available given those facts.
+Then, measure the system's current performance and compute the delta compared to that theoritical
+max. Don't just hand wave performance potential based on what's normally considered "fine" or focus
+on improving relatively slow code paths based on local norms, which tell you nothing about what's
+actually possible and what optimal performance actually would be.
+
 ## Work in Small Steps
 
 For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` before step 1. For
