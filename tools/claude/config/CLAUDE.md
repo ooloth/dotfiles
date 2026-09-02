@@ -205,6 +205,42 @@ NEVER create a GitHub issue, Jira task, Monday task, or Linear task without firs
   capabilities; there will be a trade-off here (quality will degrade) so use your judgment based
   on how mechanical vs reason-based the task is and what capabilities the model needs to succeed
 
+## Validate What Subagents Tell You, Immediately
+
+**A subagent's report is evidence, not a finding.** Check it the moment it arrives, before you relay
+any of it, act on any of it, or write any of it down. Once you have restated a subagent's claim in
+your own voice it has been laundered — the hedges, the "I could not confirm this", and the thinness
+of the sourcing all fall away, and what reaches the user is your assertion.
+
+Delegation is what makes this dangerous rather than merely imperfect. The whole point of it is that
+you don't read what the subagent read, so its output is the one input you cannot sanity-check by
+having seen the material.
+
+**Check these first, because these are where it goes wrong:**
+
+- **Any claim about the world outside the repo** — a vendor's behaviour, a library's status, an
+  acquisition, a version, a licence, a price, a benchmark. Repo facts are one grep away and get
+  checked by reflex; world facts need a search and silently don't.
+- **Any quote attributed to a source.** Open the source. A URL beside a quote is not evidence that
+  the URL contains the quote.
+- **Any number.** Ask what produced it.
+- **Any claim you inherited rather than established** — including one already written down in the
+  repo. A hedge somebody else wrote ("treat this as false unless confirmed") is a request for work,
+  not a finding. Restating it more confidently than they did is how a caveat becomes a fact.
+- **Anything the subagent excluded, deleted or classified as not worth keeping.** See below.
+
+**Verify in proportion, and say what you did.** A report with sixty citations cannot have all sixty
+opened. Open the ones that decide something, and when you relay the rest, say plainly which you
+checked and which you are passing on. "I verified these three; the rest are the agent's" is honest
+and useful. Silence implies you checked everything.
+
+**Surface exclusions rather than summarising them.** When a subagent's job involves choosing what to
+keep — mining a document, triaging findings, filtering results — its mistakes live in what it
+discarded, and a discard is invisible in a way a bad inclusion never is. Anything it kept, the user
+can read and challenge. Anything it dropped is simply absent, and if the source was deleted in the
+same operation, the user cannot discover it was ever there. So list the discards, individually, and
+give the user the chance to overrule. Do not report only what survived.
+
 ## Improve Yourself
 
 When you encounter friction during any task — a misleading instruction, an ambiguity that cost
