@@ -74,6 +74,7 @@ a false positive costs one read; a false negative means missed guidance.
 - **`correctness.md`** — all non-generated source files; load for every code task
 - **`css.md`** — stylesheets, style blocks, CSS-in-JS, design tokens; contrast, motion, responsive layout
 - **`data-integrity.md`** — data models, storage shapes, schema changes, migrations, write paths, transactions
+- **`decision-making.md`** — architecture decision records, spikes and benchmarks, any choice of tool, runtime, platform or data shape
 - **`dependencies.md`** — package manifests (package.json, Cargo.toml, pyproject.toml, go.mod)
 - **`deployment.md`** — CI/CD config, Dockerfiles, infrastructure manifests, migration files
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions

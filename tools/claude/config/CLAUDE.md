@@ -185,10 +185,9 @@ For the full `trekker` workflow, see `/use-trekker`.
 
 ## Uphold Standards
 
-Before designing, writing, or editing any code, documentation, or decision record — invoke the
-`uphold-standards` skill. This applies to docs-only changes as well. Re-invoke the skill
-repeatedly each time it applies (not just once per session). Do not merely refer to your memory of
-the skill.
+NEVER design, edit or review code, make a decision, or update documentation without first invoking
+the `uphold-standards` skill. Re-invoke the skill each time it applies (not just once per session).
+Do not merely rely on your memory of the skill.
 
 ## Issue and Ticket Writing
 

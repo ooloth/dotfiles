@@ -1,6 +1,6 @@
 ---
 name: uphold-standards
-description: Load relevant universal code and documentation quality standards (architecture, testing, security, type design, etc.) and apply them to the current task. ALWAYS invoke before ANY technical decision, design, documentation or code change.
+description: Load relevant universal engineering standards (decision-making and ADRs, architecture, testing, security, type design, documentation, etc.) and apply them to the current task. ALWAYS invoke before ANY technical decision, design, documentation or code change — including before writing or revising a decision record, choosing a tool, runtime, platform or data shape, or running a spike.
 ---
 
 ## Your task
