@@ -83,6 +83,73 @@ acting in the same turn makes the question rhetorical and bypasses the gate.
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
 
+## Protect Your Context Window
+
+- Your context window has a limited budget and fills up quickly
+- Try to prevent that from happening by delegating as much exploration as you can to subagents
+- That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
+  details only entering the conversation
+- When spawning your own subagents, prefer lower token-usage models like sonnet or haiku over
+  opus unless there's a specific reason the task really needs a model with powerful reasoning
+  capabilities; there will be a trade-off here (quality will degrade) so use your judgment based
+  on how mechanical vs reason-based the task is and what capabilities the model needs to succeed
+
+**Tell every subagent to read the files itself and not to spawn subagents of its own.** Say it
+explicitly in the prompt; agents fan out by default when the scope looks large. Two reasons, and the
+second is the one that costs you silently:
+
+- **A nested agent serialises.** The parent waits on a child that waits on its own tool calls, so
+  the wall clock becomes the depth of the chain rather than the width of your fan-out. One unbounded
+  agent makes every other agent's parallelism irrelevant, because wall clock is the slowest agent
+  and not the total.
+- **Its report reaches you two relays from the source**, which is two chances for a claim to shed
+  its hedges. You already cannot check a subagent's reading by having done it yourself; a
+  grandchild's reading is laundered twice before it arrives, and the "I could not confirm this" is
+  what drops out first.
+
+**Give every subagent an explicit, bounded file list.** Unbounded scope is what makes an agent fan
+out, so this is the same fix stated from the other end — "scan every file in `docs/`" invites
+nesting and "read these fourteen files" does not. Split a large directory across several agents by
+file list rather than by task category; three agents over a third of the files each finish in
+roughly a third of the wall clock of one agent over all of them. Bundling several questions into one
+agent is fine and often better, since they share the reading.
+
+## Validate What Subagents Tell You, Immediately
+
+**A subagent's report is evidence, not a finding.** Check it the moment it arrives, before you relay
+any of it, act on any of it, or write any of it down. Once you have restated a subagent's claim in
+your own voice it has been laundered — the hedges, the "I could not confirm this", and the thinness
+of the sourcing all fall away, and what reaches the user is your assertion.
+
+Delegation is what makes this dangerous rather than merely imperfect. The whole point of it is that
+you don't read what the subagent read, so its output is the one input you cannot sanity-check by
+having seen the material.
+
+**Check these first, because these are where it goes wrong:**
+
+- **Any claim about the world outside the repo** — a vendor's behaviour, a library's status, an
+  acquisition, a version, a licence, a price, a benchmark. Repo facts are one grep away and get
+  checked by reflex; world facts need a search and silently don't.
+- **Any quote attributed to a source.** Open the source. A URL beside a quote is not evidence that
+  the URL contains the quote.
+- **Any number.** Ask what produced it.
+- **Any claim you inherited rather than established** — including one already written down in the
+  repo. A hedge somebody else wrote ("treat this as false unless confirmed") is a request for work,
+  not a finding. Restating it more confidently than they did is how a caveat becomes a fact.
+- **Anything the subagent excluded, deleted or classified as not worth keeping.** See below.
+
+**Verify in proportion, and say what you did.** A report with sixty citations cannot have all sixty
+opened. Open the ones that decide something, and when you relay the rest, say plainly which you
+checked and which you are passing on. "I verified these three; the rest are the agent's" is honest
+and useful. Silence implies you checked everything.
+
+**Surface exclusions rather than summarising them.** When a subagent's job involves choosing what to
+keep — mining a document, triaging findings, filtering results — its mistakes may live in what it
+discarded, and a discard is invisible in a way a bad inclusion never is. Anything it kept, the user
+can read and challenge. Anything it dropped is simply absent, and if the source was deleted in the
+same operation, the user cannot discover it was ever there. So list the discards, individually, and
+give the user the chance to overrule. Do not report only what survived.
+
 ## Reason from First Principles
 
 Think about problems properly, like an engineer, by reasoning from the foundations upwards. And
@@ -97,6 +164,12 @@ Then, measure the system's current performance and compute the delta compared to
 max. Don't just hand wave performance potential based on what's normally considered "fine" or focus
 on improving relatively slow code paths based on local norms, which tell you nothing about what's
 actually possible and what optimal performance actually would be.
+
+## Uphold Standards
+
+NEVER design, edit or review code, make a decision, or update documentation without first invoking
+the `uphold-standards` skill. Re-invoke the skill each time it applies (not just once per session).
+Do not merely rely on your memory of the skill.
 
 ## Work in Small Steps
 
@@ -190,48 +263,6 @@ For the full `trekker` workflow, see `/use-trekker`.
 - If end-to-end execution is truly impossible, tell the user why and describe what they can do and
   what they should look for. Don't just silently skip validation.
 
-## Uphold Standards
-
-NEVER design, edit or review code, make a decision, or update documentation without first invoking
-the `uphold-standards` skill. Re-invoke the skill each time it applies (not just once per session).
-Do not merely rely on your memory of the skill.
-
-## Issue and Ticket Writing
-
-NEVER create a GitHub issue, Jira task, Monday task, or Linear task without first invoking the
-`write-ticket-description` skill.
-
-## Protect Your Context Window
-
-- Your context window has a limited budget and fills up quickly
-- Try to prevent that from happening by delegating as much exploration as you can to subagents
-- That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
-  details only entering the conversation
-- When spawning your own subagents, prefer lower token-usage models like sonnet or haiku over
-  opus unless there's a specific reason the task really needs a model with powerful reasoning
-  capabilities; there will be a trade-off here (quality will degrade) so use your judgment based
-  on how mechanical vs reason-based the task is and what capabilities the model needs to succeed
-
-**Tell every subagent to read the files itself and not to spawn subagents of its own.** Say it
-explicitly in the prompt; agents fan out by default when the scope looks large. Two reasons, and the
-second is the one that costs you silently:
-
-- **A nested agent serialises.** The parent waits on a child that waits on its own tool calls, so
-  the wall clock becomes the depth of the chain rather than the width of your fan-out. One unbounded
-  agent makes every other agent's parallelism irrelevant, because wall clock is the slowest agent
-  and not the total.
-- **Its report reaches you two relays from the source**, which is two chances for a claim to shed
-  its hedges. You already cannot check a subagent's reading by having done it yourself; a
-  grandchild's reading is laundered twice before it arrives, and the "I could not confirm this" is
-  what drops out first.
-
-**Give every subagent an explicit, bounded file list.** Unbounded scope is what makes an agent fan
-out, so this is the same fix stated from the other end — "scan every file in `docs/`" invites
-nesting and "read these fourteen files" does not. Split a large directory across several agents by
-file list rather than by task category; three agents over a third of the files each finish in
-roughly a third of the wall clock of one agent over all of them. Bundling several questions into one
-agent is fine and often better, since they share the reading.
-
 ## What a Commit Signal Covers
 
 **The signal exists so I can look at the working tree first.** That is the whole point of it. Work I
@@ -250,41 +281,10 @@ and ask.
 
 **Every commit goes through `/commit`. Never run `git commit` from Bash directly.**
 
-## Validate What Subagents Tell You, Immediately
+## Issue and Ticket Writing
 
-**A subagent's report is evidence, not a finding.** Check it the moment it arrives, before you relay
-any of it, act on any of it, or write any of it down. Once you have restated a subagent's claim in
-your own voice it has been laundered — the hedges, the "I could not confirm this", and the thinness
-of the sourcing all fall away, and what reaches the user is your assertion.
-
-Delegation is what makes this dangerous rather than merely imperfect. The whole point of it is that
-you don't read what the subagent read, so its output is the one input you cannot sanity-check by
-having seen the material.
-
-**Check these first, because these are where it goes wrong:**
-
-- **Any claim about the world outside the repo** — a vendor's behaviour, a library's status, an
-  acquisition, a version, a licence, a price, a benchmark. Repo facts are one grep away and get
-  checked by reflex; world facts need a search and silently don't.
-- **Any quote attributed to a source.** Open the source. A URL beside a quote is not evidence that
-  the URL contains the quote.
-- **Any number.** Ask what produced it.
-- **Any claim you inherited rather than established** — including one already written down in the
-  repo. A hedge somebody else wrote ("treat this as false unless confirmed") is a request for work,
-  not a finding. Restating it more confidently than they did is how a caveat becomes a fact.
-- **Anything the subagent excluded, deleted or classified as not worth keeping.** See below.
-
-**Verify in proportion, and say what you did.** A report with sixty citations cannot have all sixty
-opened. Open the ones that decide something, and when you relay the rest, say plainly which you
-checked and which you are passing on. "I verified these three; the rest are the agent's" is honest
-and useful. Silence implies you checked everything.
-
-**Surface exclusions rather than summarising them.** When a subagent's job involves choosing what to
-keep — mining a document, triaging findings, filtering results — its mistakes may live in what it
-discarded, and a discard is invisible in a way a bad inclusion never is. Anything it kept, the user
-can read and challenge. Anything it dropped is simply absent, and if the source was deleted in the
-same operation, the user cannot discover it was ever there. So list the discards, individually, and
-give the user the chance to overrule. Do not report only what survived.
+NEVER create a GitHub issue, Jira task, Monday task, or Linear task without first invoking the
+`write-ticket-description` skill.
 
 ## Improve Yourself
 
