@@ -20,6 +20,14 @@ reaches the third paragraph and has to return to the first to remember why they 
 failed. Length is not the test. Something short that has to be re-read has failed; something longer
 that carries the reader through has not.
 
+Mannered prose substitutes metaphor and flourish for direct statement. Instead of "a parameter
+worth varying," the mannered writer produces "a dial worth turning." Instead of "this point still
+matters," they write "this point earns its keep." The phrases exist to display the writer, not to
+convey the idea, and readers can tell. That is why mannered prose irritates: it makes the reader
+work harder so the writer can perform. It is also imprecise. Metaphors drag in connotations the
+writer did not choose and cannot control. The fix is to say what you mean. When a literal phrase is
+available, use it.
+
 Specifically avoid:
 
 - **Metaphors that replace the explanation** — "read them as a bill, not as weather" says less than
