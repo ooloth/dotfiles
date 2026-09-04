@@ -1,4 +1,4 @@
-# See: https://github.com/steveyegge/beads
+# See: https://github.com/gastownhall/beads (moved from steveyegge/beads)
 
-tap "steveyegge/beads"
-brew "steveyegge/beads/bd"
+tap "gastownhall/beads"
+brew "gastownhall/beads/bd"
