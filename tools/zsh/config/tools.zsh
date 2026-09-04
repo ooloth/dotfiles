@@ -43,7 +43,7 @@ if is_work; then
 
   # Kafka
   # Get the latest version of librdkafka installed by Homebrew
-  librdkafka_version=$(ls /opt/homebrew/Cellar/librdkafka | sort -V | tail -n 1)
+  librdkafka_version=$(printf '%s\n' /opt/homebrew/Cellar/librdkafka/*(/:t) | sort -V | tail -n 1)
   export C_INCLUDE_PATH="/opt/homebrew/Cellar/librdkafka/$librdkafka_version/include"
   export LIBRARY_PATH="/opt/homebrew/Cellar/librdkafka/$librdkafka_version/lib"
 
