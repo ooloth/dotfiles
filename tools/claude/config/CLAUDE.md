@@ -169,7 +169,7 @@ actually possible and what optimal performance actually would be.
 
 NEVER design, edit or review code, make a decision, or update documentation without first invoking
 the `uphold-standards` skill. Re-invoke the skill each time it applies (not just once per session).
-Do not merely rely on your memory of the skill.
+DO NOT SKIP RE-INVOKING. It leads to no longer applying the standards, which is disastrous.
 
 ## Work in Small Steps
 
