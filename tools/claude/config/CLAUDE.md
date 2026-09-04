@@ -337,6 +337,7 @@ Skip and say nothing if execution went smoothly.
 
 ## Available CLI Tools
 
+- `gh` - NEVER run a `gh` command without first invoking the `use-gh` skill
 - `tmux` - use for background jobs (`tmux new-window -n "dev-server" "npm run dev"`) instead of
   `run_in_background` or `&`. Also use to test interactive programs (TUIs, REPLs): run them in
   a named window, drive them with `tmux send-keys -t <window> "<key>" ""`, and read the screen
