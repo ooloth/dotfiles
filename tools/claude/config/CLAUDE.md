@@ -128,6 +128,14 @@ trekker task update TREK-N -s in_progress
 
 For the full `trekker` workflow, see `/use-trekker`.
 
+**Keep `docs/questions/` current, not just at creation.** When a discussion surfaces a genuine
+open question — real options, not yet settled, worth surviving context loss or a future session —
+proactively recommend capturing it as its own file in `docs/questions/` (one question per file,
+kebab-case name, phrased as the question). The same applies afterward: if work on something
+unrelated turns up a finding, option, or decision relevant to an existing question file, update
+that file then, not only while it's the topic of direct discussion. This is for still-open design
+questions; the trekker/ticket persistence above is for work already approved.
+
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
 2. Describe your implementation plan, including the "/design" skill's type and test design plan
