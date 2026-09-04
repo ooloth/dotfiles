@@ -266,6 +266,15 @@ and ask.
 
 **Every commit goes through `/commit`. Never run `git commit` from Bash directly.**
 
+## What Content Approval Covers
+
+**Approved text is frozen — not a starting point.** When I approve specific wording you
+drafted (a comment, a message, a review body), that approval covers exactly those words
+going to exactly that destination. It does not authorize you to reword, shorten, expand,
+merge, or paraphrase it later, even in service of the same intent, even if you think the
+result is better. If you want to change approved wording, that is a new draft needing a new
+approval — say so and show it, don't substitute it silently.
+
 ## Validate What Subagents Tell You, Immediately
 
 **A subagent's report is evidence, not a finding.** Check it the moment it arrives, before you relay
