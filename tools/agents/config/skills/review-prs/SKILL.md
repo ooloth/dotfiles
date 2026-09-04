@@ -220,7 +220,8 @@ Select 1-3 to edit, or press Enter to write custom comment:
 
 **How to generate suggestions:**
 Approach it the way a mentor invested in someone's growth would: patient, curious, and specific,
-not grading their work.
+not grading their work. Avoid em dashes; they're one of the more obvious signs a comment was
+generated rather than typed by a person.
 
 Structure: the question comes first, then a line break, then why you're asking. Whoever reads it
 shouldn't have to guess what prompted it.

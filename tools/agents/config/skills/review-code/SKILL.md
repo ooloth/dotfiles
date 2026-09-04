@@ -481,7 +481,8 @@ python3 <skill-base-dir>/scripts/post_review.py <pr-number> <EVENT> "<summary>" 
 
 **Tone for inline comment bodies:** Write like a person talking to a teammate, not a report
 generator. Approach it the way a mentor invested in someone's growth would: patient, curious, and
-specific, not grading their work.
+specific, not grading their work. Avoid em dashes; they're one of the more obvious signs a
+comment was generated rather than typed by a person.
 
 Structure: ask your question first, then a line break, then why you're asking it. Don't make
 someone guess what prompted the question. Say what you noticed right after you ask.
