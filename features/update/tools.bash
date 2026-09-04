@@ -27,6 +27,7 @@ main() {
   priority_files=(
     "${DOTFILES}/features/update/mode.bash"
     "${DOTFILES}/features/update/symlinks.bash"
+    "${DOTFILES}/features/update/gcloud-auth.bash"
     "${DOTFILES}/tools/uv/${file_name}"
     "${DOTFILES}/tools/node/${file_name}"
     "${DOTFILES}/tools/homebrew/${file_name}"
@@ -54,7 +55,14 @@ main() {
   if [[ ${#failed_scripts[@]} -gt 0 ]]; then
     error "❌ Some updates failed"
     for file in "${failed_scripts[@]}"; do
-      printf "  - %s\n" "$(basename "$(dirname "$file")")" >&2
+      # Per-tool scripts are all named "update.bash", so the tool's own directory name
+      # identifies them. Feature scripts (features/update/*.bash) have distinct names.
+      local label
+      label="$(basename "$file" .bash)"
+      if [[ "$label" == "update" ]]; then
+        label="$(basename "$(dirname "$file")")"
+      fi
+      printf "  - %s\n" "$label" >&2
     done
     printf "\n" >&2
   fi
