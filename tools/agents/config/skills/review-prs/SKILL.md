@@ -219,10 +219,13 @@ Select 1-3 to edit, or press Enter to write custom comment:
 ```
 
 **How to generate suggestions:**
+Approach it the way a mentor invested in someone's growth would: patient, curious, and specific,
+not grading their work.
+
 Structure: the question comes first, then a line break, then why you're asking. Whoever reads it
 shouldn't have to guess what prompted it.
 
-A curious question is a good way to open a conversation — it lets the author reason through
+A curious question is a good way to open a conversation. It lets the author reason through
 something themselves instead of being handed the answer, and that's worth doing even when you
 already have a guess. The one thing to skip: asking about something you've already fully
 confirmed with nothing left to discover. That's not curiosity, it's a fact wearing a question
@@ -241,7 +244,8 @@ mark.
 - Code clarity: "What's the reasoning behind this order of operations? / I found this section
   hard to follow on a first read."
 
-Use full sentences.
+Use full sentences. Include a code snippet in the comment itself when quoting the exact lines, or
+sketching the fix, would make the ask land faster than describing it in words.
 
 **Step 4: User responds**
 
