@@ -219,16 +219,29 @@ Select 1-3 to edit, or press Enter to write custom comment:
 ```
 
 **How to generate suggestions:**
-Based on the issue type, offer socratic, mentor-like templates that lead with curiosity:
+Structure: the question comes first, then a line break, then why you're asking. Whoever reads it
+shouldn't have to guess what prompted it.
 
-- **Silent error handling**: "I'm curious about...", "What happens when...", "How should we handle..."
-- **SQL injection**: "I'm wondering if...", "Have we considered...", "What would happen if..."
-- **Missing tests**: "How can we verify...", "What edge cases should we consider...", "I'm curious how this behaves when..."
-- **Security concern**: "I'm wondering about security here...", "What happens if a user...", "Have we thought about..."
-- **Performance**: "I'm curious about the performance implications...", "How does this scale when...", "Have we measured..."
-- **Code clarity**: "I'm finding this a bit hard to follow...", "Could we clarify...", "What's the reasoning behind..."
+A curious question is a good way to open a conversation — it lets the author reason through
+something themselves instead of being handed the answer, and that's worth doing even when you
+already have a guess. The one thing to skip: asking about something you've already fully
+confirmed with nothing left to discover. That's not curiosity, it's a fact wearing a question
+mark.
 
-Use full sentences, ask genuine questions, and frame as collaborative exploration rather than directives.
+- Silent error handling: "What happens when authentication fails here? / I noticed this just does
+  `except: pass`, so I'm not sure what a caller actually sees when the token's bad."
+- SQL injection: "Could this ever get built from user input? / The query's assembled with an
+  f-string a few lines up."
+- Missing tests: "What happens if this list comes back empty? / I don't see a test for that
+  case."
+- Security concern: "What happens if someone passes an empty password here? / I don't see a
+  length or presence check before this gets used."
+- Performance: "Has this been run against a large dataset? / This loop looks like it hits the
+  database on every pass."
+- Code clarity: "What's the reasoning behind this order of operations? / I found this section
+  hard to follow on a first read."
+
+Use full sentences.
 
 **Step 4: User responds**
 

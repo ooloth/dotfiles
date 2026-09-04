@@ -479,9 +479,32 @@ python3 <skill-base-dir>/scripts/post_review.py <pr-number> <EVENT> "<summary>" 
 
 **Summary audience:** The review body is read by GitHub users who only know what's in the PR diff — they have no context from this review session. Write for that audience:
 
-**Tone for inline comment bodies:** Write as a curious teammate, not an auditor.
+**Tone for inline comment bodies:** Write like a person talking to a teammate, not a report
+generator.
 
-- Lead with an observation or question, not a directive: "Could this return `None` when the list is empty?" rather than "Handle the empty case."
-- Show concrete impact with a brief example: "If `token` expires between the check and the refresh, this would issue a new token for an expired session."
-- Acknowledge trade-offs where they exist: "This works well at our current scale — if we ever fan out to multiple instances, we'd likely want a shared cache here."
-- Praise specifically and genuinely: "Nice! Using a `dataclass` here makes the shape obvious without extra boilerplate."
+Structure: ask your question first, then a line break, then why you're asking it. Don't make
+someone guess what prompted the question — say what you noticed right after you ask.
+
+Asking something you already have a strong idea about is fine, as long as the question genuinely
+invites them into the reasoning — their intent, an edge case, a judgment call. What's not fine is
+replaying a fact you've already fully nailed down as if it were still open. If you've proven
+something and there's nothing left to discover, skip the question — say what you found and ask
+for the fix.
+
+How direct to be depends on what's at stake:
+
+- Going to break something, and you're sure? Ask for the fix directly, then say what you found.
+  "Can you add a check for the empty queue here? / This throws in production when the queue's
+  empty — I traced it to line 40."
+- Have an opinion but nothing's actually wrong? Ask if they want the change, then say why, and
+  make clear it's optional. "Want to pull this into a shared helper? / It's the same fixture as
+  `test_x.py:40` — not a big deal either way."
+- Real choice, no clear right answer? Ask which way they'd rather go, then lay out what's
+  different. "Did you consider clearing the audit stamp on revert instead of keeping it? /
+  Keeping it preserves who reverted; clearing it treats the row as fresh."
+- Don't know why something was done a certain way? Ask if it was on purpose, then say what looked
+  off. "Was skipping the null check here intentional? / The sibling function has one and this
+  doesn't."
+- Small, and you don't feel strongly? Skip the question — just mention what you saw.
+
+Use a quick example when it makes the impact click, and say something nice when it's earned.
