@@ -69,8 +69,15 @@ Write commit messages that follow the following style guidelines (if not superse
 
 #### References
 
-- If the change relates to a GitHub issue, PR, or discussion, list the relevant numbers on their own lines after the subject, separated by a blank line. e.g. #1234
-- If there are no references, omit this section entirely (no blank line)
+- Before writing this section, decide: **does this commit fully resolve a linked GitHub issue?**
+  - Yes → write `Fixes #X` (or `Closes #X`). This both references the issue and auto-closes it
+    when the commit lands on the default branch — including a direct push, not just a merged PR.
+  - No, but it relates to one → write the bare number instead, e.g. `#1234`.
+- List each reference on its own line after the subject, separated by a blank line.
+- If there are no references, omit this section entirely (no blank line).
+- Don't stop at the first matching pattern — a commit can be both "relates to #1234" and
+  "resolves #5678" if it touches more than one ticket; check each linked issue against the
+  resolves-or-relates question individually rather than defaulting to bare numbers for all of them.
 
 #### Long form description
 
@@ -79,7 +86,6 @@ Write commit messages that follow the following style guidelines (if not superse
 - Focus on the why and how rather than restating the diff
 - Keep the tone direct and technical without filler phrases
 - Don't exceed a handful of paragraphs; less is more
-- If the commit resolves a GitHub Issue, include `Fixes #X` or `Closes #X`
 
 ## Workflows
 

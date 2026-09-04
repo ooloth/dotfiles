@@ -4,4 +4,4 @@ set -euo pipefail
 source "${DOTFILES}/tools/bash/utils.bash"
 
 info "🥧 Uninstalling Pi"
-npm uninstall --global @mariozechner/pi-coding-agent
+npm uninstall --global @earendil-works/pi-coding-agent

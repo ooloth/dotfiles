@@ -388,7 +388,7 @@
       "Read(./.env.*)",
       "Read(./secrets/**)"
     ],
-    "defaultMode": "plan"
+    "defaultMode": "auto"
   },
   "hooks": {
     "Notification": [
