@@ -1,6 +1,6 @@
 ---
 name: use-gh
-description: gh CLI tips to avoid gotchas that waste time and context, and — worst — post malformed comments/reviews to a real PR or issue. Use before any gh command that posts, comments, or reviews.
+description: gh CLI gotchas that waste context or post malformed comments and reviews to real PRs and issues. Read before every gh invocation, reads included: default output silently omits comments and relationships, and a bad post cannot be un-notified. Re-invoke each time.
 allowed-tools: [Bash, Read]
 ---
 
@@ -53,6 +53,19 @@ event type before submitting, not after.
 - **Inline comment line numbers.** Use `line`+`side`, which map directly to a line in the current
   file. Avoid `position`, which counts against diff hunk offsets and silently lands the comment
   on the wrong line if you get the offset wrong — that's a delete-and-repost, not an edit.
+
+## Default output hides comments and relationships
+
+`gh issue view N` and `gh pr view N` print the body only, so you read a stale picture with no hint
+anything is missing.
+
+- **Pass `--comments`.** On a long-running issue the current plan usually lives in a comment, not
+  the body.
+- **Relationships need GraphQL.** Sub-issue parents and `blockedBy`/`blocking` are absent from
+  `--json` entirely (gh 2.92); REST gives only `parent_issue_url`. Use
+  `gh api graphql -f query='{repository(owner:"O",name:"R"){issue(number:N){parent{number} blockedBy(first:10){nodes{number title}}}}}'`
+- **Put ordering in the title.** Since `gh` can't surface relationships, an ordering signal that
+  must reach an agent belongs where `gh issue list` prints it for every row.
 
 ## Other gotchas worth avoiding
 
