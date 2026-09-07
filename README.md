@@ -1,10 +1,27 @@
 # My dotfiles
 
-A highly opinionated development environment configuration for macOS.
+A highly opinionated development environment for macOS, including shell, editor and tool
+configuration plus the agent skills and engineering workflows I use every day.
 
-## ⚠️ Disclaimer
+> [!WARNING]
+> I update these configurations often as my preferences change. I recommend you treat this repo as
+> inspiration and fork and customize it to your liking if you're looking for stability.
 
-I update these configurations often as my preferences change. Don't expect stability! Use this repo as inspiration and feel free to fork and customize it.
+## 🤖 Agent-assisted development
+
+I've been experimenting with coding agents as a way to make good engineering practices explicit and
+repeatable, rather than just using them to generate code.
+
+Some of the skills I've found most useful:
+
+- Design — compare possible approaches, design the type progression and derive a test plan before implementation
+- Discuss — explore a problem and decide what to do without changing anything
+- Review — review changes systematically and iterate until the important issues are resolved
+- Standards — review a project against the engineering standards I use across projects
+- Invariants — make sure an agent knows about and applies the guarantees a project depends on
+- PR workflows — create and review pull requests using repeatable checks and conventions
+
+They're opinionated and evolving because they're mostly an attempt to encode how I already like to work.
 
 ## What's Included
 
