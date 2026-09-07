@@ -1,11 +1,10 @@
-# My dotfiles
+# My dotfiles 🦸
 
 A highly opinionated development environment for macOS, including shell, editor and tool
 configuration plus the agent skills and engineering workflows I use every day.
 
-> [!WARNING]
-> I update these configurations often as my preferences change. I recommend you treat this repo as
-> inspiration and fork and customize it to your liking if you're looking for stability.
+_**Disclaimer:** I update these configurations often as my preferences change. I recommend you
+treat this repo as inspiration and fork and customize it if you'd like stability._
 
 ## 🤖 Agent-assisted development
 
