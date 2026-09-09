@@ -127,6 +127,11 @@ that neither is mistaken for full coverage on its own. For each transformation:
    - **Example tests** — when none of the above apply, or when a specific edge case is important
      enough to document by name
 
+   When Phase 4 assigned assertions to the code under test, weight the choice toward a
+   generated-input paradigm where one fits. Each generated case exercises those assertions as well
+   as the stated property, so the cheapest way to cover an asserted invariant is often to point a
+   generator at it rather than write an example per case.
+
    For each test case, state what it verifies in domain terms, why the type system doesn't cover
    it, and which paradigm is most appropriate and why.
 

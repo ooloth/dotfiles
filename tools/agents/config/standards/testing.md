@@ -72,13 +72,17 @@ When testing requires mocking something that isn't a true system boundary, the l
 being tested belongs one layer closer to the pure core. Moving it there makes it
 directly testable without mocks and reveals the correct architectural boundary.
 
-## Consider
-
 **More powerful techniques are used where they fit.**
 Property-based testing applies when a behavior holds for a large or unbounded
 input space. Snapshot testing applies for serialized structures or rendered
 output. Mutation testing applies when confidence in a suite's sensitivity is
-low.
+low. Generated-input techniques compound with assertions in the code under
+test: every generated case exercises those assertions too, so one run covers
+the properties the test states plus every invariant the implementation
+asserts. Code that asserts its invariants is worth more generator effort than
+code that does not.
+
+## Consider
 
 **Flakiness risk is minimized.**
 Tests that depend on timing, execution order, or external state are identified
