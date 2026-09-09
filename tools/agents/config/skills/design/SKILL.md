@@ -1,6 +1,6 @@
 ---
 name: design
-description: Design the type progression and test plan for approved work. Invoke after agreeing on the high-level approach and before writing any implementation.
+description: Design the type progression, assertion plan and test plan for approved work. Invoke after agreeing on the high-level approach and before writing any implementation.
 argument-hint: '[task description or Trekker task number]'
 effort: high
 model: opus
@@ -19,9 +19,9 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 
 1. Read the agreed objective from $ARGUMENTS — if it's a Trekker task number, read that task; if
    it's a description, use it directly. Ask the user to clarify if the scope is still ambiguous.
-2. Load `~/.agents/standards/type-design.md` and `~/.agents/standards/testing.md`. Also load any
-   language-specific reference file that applies to this codebase (`~/.agents/standards/rust.md`,
-   `~/.agents/standards/python.md`, etc.).
+2. Load `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md` and
+   `~/.agents/standards/testing.md`. Also load any language-specific reference file that applies
+   to this codebase (`~/.agents/standards/rust.md`, `~/.agents/standards/python.md`, etc.).
 3. Explore the codebase to understand:
    - Existing domain types and naming conventions
    - Existing testing patterns and what paradigms are already in use
@@ -72,9 +72,44 @@ specific failure appears here:
 - Types that cross layer boundaries — a persistence-layer type appearing in domain logic, or a
   domain type leaking into a serialisation layer
 
-### Phase 4: Derive the Test Plan
+### Phase 4: Derive the Assertion Plan
 
-From the type boundaries, identify what needs behavioral verification. For each transformation:
+The assertion standards live in `~/.agents/standards/correctness.md` and are not restated here.
+Read them before this phase; this phase turns them into an artifact.
+
+Where types check structure, assertions check logic and state on every execution, including in
+production. For each constraint the type story flagged as needing a runtime check, decide which of
+three mechanisms owns it:
+
+1. **Boundary validation** — something outside the code can violate it: absent config, malformed
+   input, a failed call, a human editing the content it reads. Belongs in a schema or parser at
+   the I/O boundary, returning an error rather than halting.
+2. **Assertion** — only a bug in this codebase can violate it. Belongs at the site of the
+   contract: preconditions on arguments, postconditions on returns, invariants on internal state.
+3. **Test only** — neither of the above applies.
+
+A constraint in category 1 or 2 is asserted **and** tested, never asserted instead of tested. A
+test covers the inputs its author imagined; an assertion covers the inputs production supplies.
+The two find different bugs, and the second kind is why an assertion multiplies the value of
+fuzzing and property testing.
+
+State for each assertion: the condition, the site, and whether it pins the positive space (what
+must hold) or the negative space (what must never occur). Where both are meaningful, cover both.
+Asserting the contract without its breach checks half of it.
+
+Common ways an assertion plan fails:
+- An assertion standing in for boundary validation, firing on external input a user can
+  legitimately get wrong
+- A constraint routed entirely into tests when it could have run against real data
+- Assertions that abort on improbable-but-valid states rather than impossible ones
+- Several conditions bundled into one assertion, so a failure reports that something broke
+  without reporting which
+
+### Phase 5: Derive the Test Plan
+
+From the type boundaries, identify what needs behavioral verification. Constraints Phase 4
+assigned to an assertion or to boundary validation still appear here, with the pairing named, so
+that neither is mistaken for full coverage on its own. For each transformation:
 
 1. **Compiler guarantees** — list what correct code gets for free from the type design. No tests
    needed for these.
@@ -95,7 +130,7 @@ From the type boundaries, identify what needs behavioral verification. For each 
    For each test case, state what it verifies in domain terms, why the type system doesn't cover
    it, and which paradigm is most appropriate and why.
 
-### Phase 5: Present and Stop
+### Phase 6: Present and Stop
 
 Present the design artifact:
 
@@ -104,8 +139,10 @@ Present the design artifact:
 2. **Type story** — the full progression with domain-named types at each step and what each step
    rules out
 3. **Compiler guarantees** — what the type design enforces for free
-4. **Test plan** — what needs verification, which paradigm, and why
-5. **Open decisions** — any naming or structural choices the user should weigh in on before
+4. **Assertion plan** — which constraints are asserted and where, which are left to boundary
+   validation, and which states are deliberately allowed rather than asserted against
+5. **Test plan** — what needs verification, which paradigm, and why
+6. **Open decisions** — any naming or structural choices the user should weigh in on before
    implementation begins
 
 Ask for explicit approval.

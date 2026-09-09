@@ -43,6 +43,14 @@ by a previous test. Each test sets up what it needs and cleans up after itself.
 Duplicated setup is extracted to fixtures or helpers. Names are as descriptive
 as in production code. Dead test code is removed.
 
+**Conditions that can be asserted at runtime are asserted as well as tested.**
+A test covers the inputs its author imagined; an assertion covers the inputs
+production supplies. A condition that must always hold is asserted at its site
+and tested for the cases worth naming, rather than left to tests alone, which
+see only synthetic data. Which conditions are assertions, which belong in
+validation at an I/O boundary, and which are returned as errors is set out in
+`correctness.md`.
+
 **Mocks are used only at system boundaries.**
 Real objects are used wherever possible. Mocks are reserved for external APIs,
 time, randomness, and other true system boundaries. Excessive mocking
