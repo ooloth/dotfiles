@@ -175,24 +175,46 @@ Then:
 - If the **round limit is reached**: exit the loop
 - Otherwise: continue to Step E
 
-### Step E — Fix (subagents, parallel where safe)
+### Step E — Fix (one subagent per round)
 
-Before spawning fix subagents, verify any file paths referenced in the findings actually exist
-(`ls` or `fd`). Correct a wrong path before passing it; if the right path is ambiguous, escalate.
+Before spawning, verify any file paths referenced in the findings actually exist (`ls` or `fd`).
+Correct a wrong path before passing it; if the right path is ambiguous, escalate.
 
-**Group findings by file.** Spawn one fix subagent per file (or small group of related files)
-in parallel using multiple Agent tool calls in a single message. For each Agent tool call, set
-the tool's `model` parameter to `"sonnet"`. Pass each subagent:
+**Spawn one fix subagent for the whole round**, carrying every auto-fix finding from this round.
+Set the Agent tool call's `model` parameter to `"sonnet"`.
 
-- Its subset of auto-fix findings with suggested fixes
+One agent, not one per file. Fixes within a round depend on each other — a test has to be written
+against the source fix it guards — so splitting by file produces a serial chain of handoffs that
+looks like parallelism and isn't. One agent holds the whole round's context, and there is no
+window in which two agents restore the same file.
+
+Pass it:
+
+- Every auto-fix finding from this round, with suggested fixes
 - The relevant file paths and context
 - Instruction: implement every finding exactly as described; do not make additional changes; do
   not commit anything
 - Instruction: write a test only to guard a defect you are fixing here, one per fix, and name
   which fix it guards. Do not add tests for untested behaviour you did not change — report those
   as coverage gaps instead. See **Tests: regression guards only** below.
+- Instruction: run only what proves your own changes. Do not run the full quality gate — the
+  coordinator runs it once after you return, and running it twice wastes a minute per round.
+- The verification rules below, where they apply to its fixes
 
-Wait for all fix subagents to complete.
+**Verification is proportional to what the fix changes.** A fix that alters runtime behaviour —
+control flow, an exit code, a condition, an error path — needs its guard test mutation-proved:
+revert the fix, confirm the test fails and fails *on the assertion that names the behaviour*, then
+restore. A fix that cannot change behaviour — formatting, a docstring, a comment, an import
+reorder — needs nothing beyond the coordinator's quality gate. Do not mutation-prove those.
+
+**When mutating a file to prove a test, defeat stale bytecode.** A restored file can still be
+imported from a cached compile of the mutated source: a same-second restore leaves the cached
+artefact looking current, so the source is provably correct by checksum while the running code is
+not. This has already produced one false test failure in a past run. Run every verification pass
+with compilation caching off (`PYTHONDONTWRITEBYTECODE=1` for Python, the equivalent elsewhere),
+and confirm the restore with both a checksum and a clean run, never the checksum alone.
+
+Wait for the fix subagent to complete.
 
 **Tests: regression guards only.** The loop writes a test only to guard a defect it fixed in this
 run. One test per fix, pinned to that defect, failing without the fix and passing with it. That is
@@ -215,9 +237,10 @@ yours. Here it is not — you are reviewing someone else's change, and coverage 
 is theirs to decide on. Inside this skill, that rule applies only to behaviour *the loop itself*
 changed.
 
-**Run the quality gate.** If a quality gate was discovered in Phase 1, run it now. Feed any new
-failures back into the next round as additional findings (do not auto-fix them here — let the
-review loop handle them cleanly).
+**Run the quality gate, once, yourself.** If a quality gate was discovered in Phase 1, run it now.
+This is the coordinator's job and the fix subagent was told not to do it, so this is the only place
+it runs each round. Feed any new failures back into the next round as additional findings (do not
+auto-fix them here — let the review loop handle them cleanly).
 
 Emit:
 
@@ -384,6 +407,11 @@ All changes are uncommitted. Run `git diff` to review before committing.
   alone. It is never auto-fixed and never becomes a lettered escalation, whatever its severity.
 - **Regression guards only** — a test is written only to guard a fix made in this run, one per
   fix, and the report names which fix it guards. Coverage gaps are listed, never filled.
+- **One fix agent per round** — it holds the whole round's fixes. Never one per file.
+- **The coordinator owns the quality gate** — it runs once per round, after the fix agent returns.
+  The fix agent runs only what proves its own change.
+- **Proportional proof** — mutation-prove a guard test only for a fix that changes runtime
+  behaviour, and defeat compilation caching when you do.
 - **No silent changes** — every change made must appear in the report with a diff snippet.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.

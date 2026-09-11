@@ -169,19 +169,42 @@ Round N/3: [X] auto-fix, [Y] escalate, [Z] dismissed (stale/mistaken), [W] repea
 - If **round limit reached**: exit the loop
 - Otherwise: continue to Step E
 
-### Step E — Fix (subagents, parallel where safe)
+### Step E — Fix (one subagent per round)
 
-Verify file paths exist before spawning. Group findings by file; spawn one fix subagent per file
-(or small related group) in parallel using multiple Agent tool calls in a single message. For each
-Agent tool call, set the tool's `model` parameter to `"sonnet"`. Pass each:
+Verify file paths exist before spawning. **Spawn one fix subagent for the whole round**, carrying
+every auto-fix finding from this round. Set the Agent tool call's `model` parameter to `"sonnet"`.
 
-- Its subset of auto-fix findings with suggested fixes
+One agent, not one per file. Fixes within a round depend on each other — a test has to be written
+against the source fix it guards — so splitting by file produces a serial chain of handoffs that
+looks like parallelism and isn't. One agent holds the whole round's context, and there is no
+window in which two agents restore the same file.
+
+Pass it:
+
+- Every auto-fix finding from this round, with suggested fixes
 - The relevant file paths
 - Instruction: implement every finding exactly as described; no additional changes; no commits
+- Instruction: run only what proves your own changes. Do not run the full quality gate — the
+  coordinator runs it once after you return, and running it twice wastes a minute per round.
 
-Wait for all fix subagents to complete.
+**Verification is proportional to what the fix changes.** A fix that alters runtime behaviour —
+control flow, an exit code, a condition, an error path — is worth proving: revert it, confirm the
+relevant test fails on the assertion that names the behaviour, then restore. A fix that cannot
+change behaviour — formatting, a docstring, a comment, an import reorder — needs nothing beyond
+the coordinator's quality gate.
 
-**Run the quality gate.** Feed any new failures back into the next round as additional findings.
+**When mutating a file to prove a test, defeat stale bytecode.** A restored file can still be
+imported from a cached compile of the mutated source: a same-second restore leaves the cached
+artefact looking current, so the source is provably correct by checksum while the running code is
+not. This has already produced one false test failure in a past run. Run every verification pass
+with compilation caching off (`PYTHONDONTWRITEBYTECODE=1` for Python, the equivalent elsewhere),
+and confirm the restore with both a checksum and a clean run, never the checksum alone.
+
+Wait for the fix subagent to complete.
+
+**Run the quality gate, once, yourself.** This is the coordinator's job and the fix subagent was
+told not to do it, so this is the only place it runs each round. Feed any new failures back into
+the next round as additional findings.
 
 Emit:
 
@@ -301,3 +324,8 @@ an automated system:
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
 - **Validate before fixing** — never auto-fix a comment without first confirming the comment is
   correct by reading the actual code.
+- **One fix agent per round** — it holds the whole round's fixes. Never one per file.
+- **The coordinator owns the quality gate** — it runs once per round, after the fix agent returns.
+  The fix agent runs only what proves its own change.
+- **Proportional proof** — prove a fix that changes runtime behaviour, and defeat compilation
+  caching when you do. Formatting and docs need only the quality gate.
