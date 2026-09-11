@@ -188,8 +188,32 @@ the tool's `model` parameter to `"sonnet"`. Pass each subagent:
 - The relevant file paths and context
 - Instruction: implement every finding exactly as described; do not make additional changes; do
   not commit anything
+- Instruction: write a test only to guard a defect you are fixing here, one per fix, and name
+  which fix it guards. Do not add tests for untested behaviour you did not change — report those
+  as coverage gaps instead. See **Tests: regression guards only** below.
 
 Wait for all fix subagents to complete.
+
+**Tests: regression guards only.** The loop writes a test only to guard a defect it fixed in this
+run. One test per fix, pinned to that defect, failing without the fix and passing with it. That is
+the entire licence.
+
+It does not write a test for behaviour that was already untested and that the loop did not change.
+That is a coverage gap, not a regression. Filling it is what stops the loop terminating: the new
+tests are new code, the next round reviews that code, finds hygiene problems in it, fixes those,
+and the round after reviews those fixes. Two rounds of a past run went entirely to tests the run
+had written itself. Record those gaps in the **Coverage gaps not filled** report section as named
+test cases the author can add, and write none of them.
+
+Apply this test at the moment of writing, and state the answer in the report entry: **which fix
+from this run does this test guard?** If you cannot name one, you are filling a coverage gap. List
+it instead.
+
+This narrows one standing instruction on purpose. The global workflow rule "does any behavior this
+change introduces lack test coverage? If so, add a test before moving on" assumes the change is
+yours. Here it is not — you are reviewing someone else's change, and coverage they chose not to add
+is theirs to decide on. Inside this skill, that rule applies only to behaviour *the loop itself*
+changed.
 
 **Run the quality gate.** If a quality gate was discovered in Phase 1, run it now. Feed any new
 failures back into the next round as additional findings (do not auto-fix them here — let the
@@ -301,6 +325,19 @@ here or as a separate piece of work.
 
 ---
 
+## Coverage gaps not filled
+
+Behaviour that has no test and that this run did not change, so no test was written for it. These
+are named cases ready to add, not a suggestion to "improve coverage". Say the word if you want any
+of them written.
+
+- `file:line` — [behaviour with no test] — Suggested case: [the test, named and described
+  concretely enough to write, e.g. "`add` exits 1 when Feedbin returns NOT_FOUND"]
+
+(None)
+
+---
+
 ## Documentation gaps
 
 Patterns seen during this run that suggest missing or incomplete project documentation. Addressing
@@ -329,6 +366,8 @@ All changes are uncommitted. Run `git diff` to review before committing.
   things outside the reported findings.
 - **Pre-existing stays out** — a defect already on the base ref is listed in one line and left
   alone. It is never auto-fixed and never becomes a lettered escalation, whatever its severity.
+- **Regression guards only** — a test is written only to guard a fix made in this run, one per
+  fix, and the report names which fix it guards. Coverage gaps are listed, never filled.
 - **No silent changes** — every change made must appear in the report with a diff snippet.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
