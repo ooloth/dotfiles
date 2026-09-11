@@ -91,7 +91,30 @@ Wait for `review-code` to return its merged findings in the standard format: Pra
 
 ### Step B — Classify Findings
 
-Filter out any finding already on the decided list. Then partition remaining Issue findings:
+Filter out any finding already on the decided list. Then partition remaining Issue findings.
+
+**Sort by provenance first.** Before deciding auto-fix versus escalate, establish for each finding
+whether this change introduced it or whether it is already true on the base ref. The review agents
+label each finding `[introduced]` / `[pre-existing]` / `[provenance unknown]`; spot-check the
+labels rather than trusting them, and resolve every `[provenance unknown]` yourself with
+`git show <base-ref>:<path>` or `git log -S`. A defect on a line the diff shows as unchanged
+context is pre-existing even when the change rewrote the function around it.
+
+**Pre-existing** — the defect is on the base ref. It does not enter the loop:
+
+- Never auto-fix it. The user asked for a review of a change, not a cleanup of the surrounding
+  code, and a fix they did not ask for costs them a larger diff to review.
+- Never write it up as a lettered escalation. It is not a decision blocking this change.
+- Record one line for the **Pre-existing issues noticed** report section and move on.
+- Cap the section at 8 entries. If you find more, list the 8 with the largest consequence and say
+  how many you dropped.
+
+The one exception: a pre-existing defect that the change makes *newly reachable or newly visible*
+is worth raising, because the change is what puts it in front of a user. Say so in its one line
+(`surfaced by this change: <how>`). It still does not get auto-fixed and still does not become a
+lettered escalation — the user decides whether to pull it in.
+
+Then partition what remains — the `[introduced]` findings only:
 
 **Auto-fix** — there is one clearly correct answer. This includes:
 
@@ -110,6 +133,10 @@ The test is: _does applying this require the author to make a choice?_ If no, au
 
 Note: severity and escalation status are independent. A Critical finding with an obvious correct
 fix is **auto-fix**. A Minor finding with two reasonable approaches is **escalate**.
+
+Note also: provenance outranks severity. A Critical pre-existing defect is still pre-existing — it
+goes in its one-line section, not into the loop. Severity decides how the user should feel about
+it, not whose change owns it.
 
 **Escalation discipline** — before writing an escalation:
 
@@ -259,6 +286,21 @@ Reply with your decisions (e.g. "1b, 2a") and I'll apply them and do one final p
 
 ---
 
+## Pre-existing issues noticed
+
+Already true on [base ref] before this change. Nothing here was fixed and nothing here blocks the
+change. One line each, no options, no discussion. Say the word if you want any of them picked up,
+here or as a separate piece of work.
+
+- `file:line` — [what's wrong, one sentence] — [how it was confirmed pre-existing]
+- `file:line` — [what's wrong] — surfaced by this change: [how]
+
+[If more than 8 were found: "N more not listed."]
+
+(None)
+
+---
+
 ## Documentation gaps
 
 Patterns seen during this run that suggest missing or incomplete project documentation. Addressing
@@ -285,6 +327,8 @@ All changes are uncommitted. Run `git diff` to review before committing.
 - **No commits** — ever. Working tree only.
 - **No scope creep** — only fix findings from the review. Do not refactor, clean up, or improve
   things outside the reported findings.
+- **Pre-existing stays out** — a defect already on the base ref is listed in one line and left
+  alone. It is never auto-fixed and never becomes a lettered escalation, whatever its severity.
 - **No silent changes** — every change made must appear in the report with a diff snippet.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.

@@ -68,6 +68,14 @@ Send a single message containing all 10 Agent tool calls simultaneously. For eac
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
 - Its specific instructions below
+- This provenance requirement, verbatim:
+
+  > For every finding, state whether the change under review **introduced** it or whether it is
+  > **pre-existing** — already true on the base ref before this change. Decide it mechanically,
+  > not by impression: run `git show <base-ref>:<path>` (or `git log -S '<the exact line>'`) and
+  > say which you ran. A line that appears in the diff as unchanged context is pre-existing even
+  > when it sits inside a function the change rewrote. Label each finding `[introduced]` or
+  > `[pre-existing]`. If you cannot determine it, say `[provenance unknown]` rather than guessing.
 
 ---
 
