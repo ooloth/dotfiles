@@ -63,8 +63,8 @@ Enhance if needed: if raw sources are vague, read the diff and fill in the gaps.
 
 ## Step 3: Launch the agents in parallel
 
-The ten agents below always run. You may add **up to two more** in the same fan-out when this
-particular change raises a question none of the ten prompts ask.
+The ten agents below always run. You may add more in the same fan-out when this particular change
+raises a question none of the ten prompts ask.
 
 The bar is a named question, not a topic. "Add a concurrency agent" is a topic. "Does the new
 retry path double-submit when the first attempt times out after the server committed?" is a
