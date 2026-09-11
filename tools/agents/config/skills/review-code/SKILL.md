@@ -61,9 +61,24 @@ Diff command: [exact command agents should run to read the diff]
 
 Enhance if needed: if raw sources are vague, read the diff and fill in the gaps. Never leave this block generic ("various improvements") or empty.
 
-## Step 3: Launch all 10 agents in parallel
+## Step 3: Launch the agents in parallel
 
-Send a single message containing all 10 Agent tool calls simultaneously. For each Agent tool call, set the tool's `model` parameter to `"sonnet"`. Pass each agent:
+The ten agents below always run. You may add **up to two more** in the same fan-out when this
+particular change raises a question none of the ten prompts ask.
+
+The bar is a named question, not a topic. "Add a concurrency agent" is a topic. "Does the new
+retry path double-submit when the first attempt times out after the server committed?" is a
+question, and it earns an agent. If you cannot write the question down, do not add the agent.
+
+Add rather than enrich. Each agent returns 200 words and its top 3 findings, so appending a
+concern to an existing agent's prompt does not add coverage — it pushes that agent's fourth
+finding off the list. A new agent brings its own budget.
+
+Give an added agent the same shape as the ten: the intent block, the file list, the provenance
+requirement, a word limit, and one question to answer. Record the question and why the ten did not
+cover it — Step 4 reports it.
+
+Send a single message containing all Agent tool calls simultaneously. For each Agent tool call, set the tool's `model` parameter to `"sonnet"`. Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
@@ -437,6 +452,16 @@ Produce a prioritized action list — not a categorized findings report. The rea
 
 - (a) [one path and its tradeoff]
 - (b) [another path and its tradeoff]
+
+### Added agents
+[Omit this section entirely if you added none.]
+
+- **[the question you added it to answer]** — Why the ten did not cover it: [reason] — What it
+  found: [finding, or "nothing"]
+
+**Generalisable?** [One of: this was specific to this change, nothing to close. | This is a
+category — [what recurs] — close it by [adding a standing 11th agent for X / adding a standard to
+`~/.agents/standards/<file>.md` saying Y / both].]
 
 ### Looks Good
 [One sentence: what the change gets right, or which concern areas came back clean.]
