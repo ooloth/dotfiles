@@ -53,6 +53,13 @@ own activity is narration and goes.**
 whether to trust it. "Corrected on 2026-09-12" tells them about a session they
 were not in. The two look alike and only one survives.
 
+**A section whose declared purpose is provenance is exempt.**
+Where a document defines a section for recording where something came from,
+that section's content is history by design and the rules above do not reach
+it. The exemption is the section, not the sentence: narration elsewhere in the
+same file is still narration, and a section that drifts into explaining how the
+work went has left its purpose rather than extended it.
+
 **History survives only as a forward-facing instruction.**
 Where a reader lacking context would do the wrong thing — delete the guard,
 change the constant, re-add the dependency — what ships is the instruction not
