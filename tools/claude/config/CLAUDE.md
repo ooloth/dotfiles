@@ -330,6 +330,11 @@ mechanism that fits, in this order, because they decay at different rates:
    name where it has actually occurred.
 3. **A written rule**, last, because it holds only while somebody remembers it.
 
+**Whichever mechanism you pick, verify it by replaying the failing input through a fresh agent.**
+Give it only the changed instructions and the exact input that failed, withhold the expected answer,
+and read what it does. Re-reading your own edit confirms only that it says what you meant, and any
+result you reported before the most recent edit describes a file state that no longer exists.
+
 Present your recommendation the user. If you opted for 2 or 3, explain why the stronger mechanisms
 above it would not fit.
 
