@@ -28,6 +28,37 @@ untraceable conversation or a model's recollection are marked unverified or
 left out. Once an unsourced figure sits in a document of facts it is
 indistinguishable from a measured one, and decisions get built on it.
 
+**Comments and documents describe the present, never the past.**
+What a value used to be, what a rule replaced, which record was removed, what
+an earlier pass got wrong, how far along the work is, when the content expires —
+none of it is visible to a reader of the current state, and all of it competes
+with the instruction for their attention. Version control holds the past;
+whatever tracks work holds the schedule.
+
+Sentences containing _used to_, _previously_, _no longer_, _has since_, _so
+far_, _originally_, or whose subject is a past session, author or incident are
+rewritten without them, and the rewrite is what ships.
+
+**A rule is stated without the incident that produced it.**
+The war story is the most tempting form of this, because it reads as evidence
+the rule is well founded. It is not: it adds nothing a reader can act on, and
+it dates the rule to a situation that will not recur in the same shape. The
+mechanism that makes the rule matter is what carries the weight, so that is
+what is written. "A refusal here is the signal, not an obstacle" survives; an
+account of the day somebody routed around it does not.
+
+**A date attached to a source is provenance and stays; a date attached to our
+own activity is narration and goes.**
+"Read 2026-09-12" tells a reader how current a fact is and is load bearing on
+whether to trust it. "Corrected on 2026-09-12" tells them about a session they
+were not in. The two look alike and only one survives.
+
+**History survives only as a forward-facing instruction.**
+Where a reader lacking context would do the wrong thing — delete the guard,
+change the constant, re-add the dependency — what ships is the instruction not
+to, and the constraint that makes it so. Not the account of what went wrong
+when someone did.
+
 **Structured content reads as prose or lists rather than tables.**
 Docs are read and edited as plain text far more often than rendered, and a
 markdown table there is alignment padding nobody maintains: editing one cell
@@ -59,17 +90,6 @@ Caveats woven through prose — no evidence for this, unverified assumption, not
 measurable yet — weaken every sentence around them while making none of it
 actionable. The same content, stated as an open question somewhere a reader
 looks for open questions, becomes work someone can pick up.
-
-**Comments and documents describe the present (not the past or future).**
-What a value used to be, what a rule replaced, which record was removed, how
-far along the work is, when the content expires — none of it is visible to a
-reader of the current state. Version control holds the past; whatever tracks
-work holds the schedule.
-
-Rewrite any sentence containing _used to_, _previously_, _no longer_, _has
-since_, or a date, without them. Keep the rewrite. History survives only where
-a reader lacking it would do the wrong thing — delete the guard, change the
-constant.
 
 **An invariant a machine could check is checked by a machine, not asserted in prose.**
 Documentation and agent instructions are where unchecked invariants collect, so they are where to
