@@ -46,6 +46,14 @@ boundary it is asserted on both sides — the caller checks what it promises, th
 callee checks what it requires — so a disagreement about the contract surfaces
 as well as a violation of it.
 
+**Assertions convert silent incorrectness into a halt.**
+An assertion that fires stops the process at the violation, before wrong
+output is written, sent, or displayed. What reaches a user is a crash naming
+the condition that failed, rather than plausible-looking corrupt data. This is
+why assertion failures are not caught and recovered from: catching one and
+continuing produces the exact undefined and potentially-catastrophic outcome
+the assertion exists to prevent.
+
 **Loops and recursion have fixed upper bounds.**
 Every loop has a bound a reader can determine without running it, and recursion
 either has a proven depth limit or is written as iteration. Queues, buffers, and

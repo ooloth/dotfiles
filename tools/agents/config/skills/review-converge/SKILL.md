@@ -91,7 +91,30 @@ Wait for `review-code` to return its merged findings in the standard format: Pra
 
 ### Step B — Classify Findings
 
-Filter out any finding already on the decided list. Then partition remaining Issue findings:
+Filter out any finding already on the decided list. Then partition remaining Issue findings.
+
+**Sort by provenance first.** Before deciding auto-fix versus escalate, establish for each finding
+whether this change introduced it or whether it is already true on the base ref. The review agents
+label each finding `[introduced]` / `[pre-existing]` / `[provenance unknown]`; spot-check the
+labels rather than trusting them, and resolve every `[provenance unknown]` yourself with
+`git show <base-ref>:<path>` or `git log -S`. A defect on a line the diff shows as unchanged
+context is pre-existing even when the change rewrote the function around it.
+
+**Pre-existing** — the defect is on the base ref. It does not enter the loop:
+
+- Never auto-fix it. The user asked for a review of a change, not a cleanup of the surrounding
+  code, and a fix they did not ask for costs them a larger diff to review.
+- Never write it up as a lettered escalation. It is not a decision blocking this change.
+- Record one line for the **Pre-existing issues noticed** report section and move on.
+- Cap the section at 8 entries. If you find more, list the 8 with the largest consequence and say
+  how many you dropped.
+
+The one exception: a pre-existing defect that the change makes *newly reachable or newly visible*
+is worth raising, because the change is what puts it in front of a user. Say so in its one line
+(`surfaced by this change: <how>`). It still does not get auto-fixed and still does not become a
+lettered escalation — the user decides whether to pull it in.
+
+Then partition what remains — the `[introduced]` findings only:
 
 **Auto-fix** — there is one clearly correct answer. This includes:
 
@@ -110,6 +133,10 @@ The test is: _does applying this require the author to make a choice?_ If no, au
 
 Note: severity and escalation status are independent. A Critical finding with an obvious correct
 fix is **auto-fix**. A Minor finding with two reasonable approaches is **escalate**.
+
+Note also: provenance outranks severity. A Critical pre-existing defect is still pre-existing — it
+goes in its one-line section, not into the loop. Severity decides how the user should feel about
+it, not whose change owns it.
 
 **Escalation discipline** — before writing an escalation:
 
@@ -148,25 +175,72 @@ Then:
 - If the **round limit is reached**: exit the loop
 - Otherwise: continue to Step E
 
-### Step E — Fix (subagents, parallel where safe)
+### Step E — Fix (one subagent per round)
 
-Before spawning fix subagents, verify any file paths referenced in the findings actually exist
-(`ls` or `fd`). Correct a wrong path before passing it; if the right path is ambiguous, escalate.
+Before spawning, verify any file paths referenced in the findings actually exist (`ls` or `fd`).
+Correct a wrong path before passing it; if the right path is ambiguous, escalate.
 
-**Group findings by file.** Spawn one fix subagent per file (or small group of related files)
-in parallel using multiple Agent tool calls in a single message. For each Agent tool call, set
-the tool's `model` parameter to `"opus"`. Pass each subagent:
+**Spawn one fix subagent for the whole round**, carrying every auto-fix finding from this round.
+Set the Agent tool call's `model` parameter to `"sonnet"`.
 
-- Its subset of auto-fix findings with suggested fixes
+One agent, not one per file. Fixes within a round depend on each other — a test has to be written
+against the source fix it guards — so splitting by file produces a serial chain of handoffs that
+looks like parallelism and isn't. One agent holds the whole round's context, and there is no
+window in which two agents restore the same file.
+
+Pass it:
+
+- Every auto-fix finding from this round, with suggested fixes
 - The relevant file paths and context
 - Instruction: implement every finding exactly as described; do not make additional changes; do
   not commit anything
+- Instruction: write a test only to guard a defect you are fixing here, one per fix, and name
+  which fix it guards. Do not add tests for untested behaviour you did not change — report those
+  as coverage gaps instead. See **Tests: regression guards only** below.
+- Instruction: run only what proves your own changes. Do not run the full quality gate — the
+  coordinator runs it once after you return, and running it twice wastes a minute per round.
+- The verification rules below, where they apply to its fixes
 
-Wait for all fix subagents to complete.
+**Verification is proportional to what the fix changes.** A fix that alters runtime behaviour —
+control flow, an exit code, a condition, an error path — needs its guard test mutation-proved:
+revert the fix, confirm the test fails and fails *on the assertion that names the behaviour*, then
+restore. A fix that cannot change behaviour — formatting, a docstring, a comment, an import
+reorder — needs nothing beyond the coordinator's quality gate. Do not mutation-prove those.
 
-**Run the quality gate.** If a quality gate was discovered in Phase 1, run it now. Feed any new
-failures back into the next round as additional findings (do not auto-fix them here — let the
-review loop handle them cleanly).
+**When mutating a file to prove a test, defeat stale bytecode.** A restored file can still be
+imported from a cached compile of the mutated source: a same-second restore leaves the cached
+artefact looking current, so the source is provably correct by checksum while the running code is
+not. This has already produced one false test failure in a past run. Run every verification pass
+with compilation caching off (`PYTHONDONTWRITEBYTECODE=1` for Python, the equivalent elsewhere),
+and confirm the restore with both a checksum and a clean run, never the checksum alone.
+
+Wait for the fix subagent to complete.
+
+**Tests: regression guards only.** The loop writes a test only to guard a defect it fixed in this
+run. One test per fix, pinned to that defect, failing without the fix and passing with it. That is
+the entire licence.
+
+It does not write a test for behaviour that was already untested and that the loop did not change.
+That is a coverage gap, not a regression. Filling it is what stops the loop terminating: the new
+tests are new code, the next round reviews that code, finds hygiene problems in it, fixes those,
+and the round after reviews those fixes. Two rounds of a past run went entirely to tests the run
+had written itself. Record those gaps in the **Coverage gaps not filled** report section as named
+test cases the author can add, and write none of them.
+
+Apply this test at the moment of writing, and state the answer in the report entry: **which fix
+from this run does this test guard?** If you cannot name one, you are filling a coverage gap. List
+it instead.
+
+This narrows one standing instruction on purpose. The global workflow rule "does any behavior this
+change introduces lack test coverage? If so, add a test before moving on" assumes the change is
+yours. Here it is not — you are reviewing someone else's change, and coverage they chose not to add
+is theirs to decide on. Inside this skill, that rule applies only to behaviour *the loop itself*
+changed.
+
+**Run the quality gate, once, yourself.** If a quality gate was discovered in Phase 1, run it now.
+This is the coordinator's job and the fix subagent was told not to do it, so this is the only place
+it runs each round. Feed any new failures back into the next round as additional findings (do not
+auto-fix them here — let the review loop handle them cleanly).
 
 Emit:
 
@@ -259,6 +333,34 @@ Reply with your decisions (e.g. "1b, 2a") and I'll apply them and do one final p
 
 ---
 
+## Pre-existing issues noticed
+
+Already true on [base ref] before this change. Nothing here was fixed and nothing here blocks the
+change. One line each, no options, no discussion. Say the word if you want any of them picked up,
+here or as a separate piece of work.
+
+- `file:line` — [what's wrong, one sentence] — [how it was confirmed pre-existing]
+- `file:line` — [what's wrong] — surfaced by this change: [how]
+
+[If more than 8 were found: "N more not listed."]
+
+(None)
+
+---
+
+## Coverage gaps not filled
+
+Behaviour that has no test and that this run did not change, so no test was written for it. These
+are named cases ready to add, not a suggestion to "improve coverage". Say the word if you want any
+of them written.
+
+- `file:line` — [behaviour with no test] — Suggested case: [the test, named and described
+  concretely enough to write, e.g. "`add` exits 1 when Feedbin returns NOT_FOUND"]
+
+(None)
+
+---
+
 ## Documentation gaps
 
 Patterns seen during this run that suggest missing or incomplete project documentation. Addressing
@@ -267,6 +369,22 @@ these would turn future escalations into auto-fixes and prevent the same issues 
 - **[Pattern name]** — [what kept coming up] — Suggested addition: [which file to update and
   what to document, e.g. "add a note to standards/bash.md that all helper functions must use
   the call-site failure pattern: `check_X ... || failures=$((failures + 1))`"]
+
+(None)
+
+---
+
+## Reviewer and standards gaps
+
+Only if a round needed an agent the standing ten do not provide. The question that agent was added
+to answer is evidence about your reviewer set, not just about this change, so say which it is.
+
+- **Added agent:** [the question] — Why the ten did not ask it: [reason] — What it found:
+  [finding, or "nothing"]
+
+**Generalisable?** [One of: specific to this change, nothing to close. | A category — [what
+recurs] — close it by [a standing 11th agent for X / a standard in
+`~/.agents/standards/<file>.md` saying Y / both].]
 
 (None)
 
@@ -285,6 +403,15 @@ All changes are uncommitted. Run `git diff` to review before committing.
 - **No commits** — ever. Working tree only.
 - **No scope creep** — only fix findings from the review. Do not refactor, clean up, or improve
   things outside the reported findings.
+- **Pre-existing stays out** — a defect already on the base ref is listed in one line and left
+  alone. It is never auto-fixed and never becomes a lettered escalation, whatever its severity.
+- **Regression guards only** — a test is written only to guard a fix made in this run, one per
+  fix, and the report names which fix it guards. Coverage gaps are listed, never filled.
+- **One fix agent per round** — it holds the whole round's fixes. Never one per file.
+- **The coordinator owns the quality gate** — it runs once per round, after the fix agent returns.
+  The fix agent runs only what proves its own change.
+- **Proportional proof** — mutation-prove a guard test only for a fix that changes runtime
+  behaviour, and defeat compilation caching when you do.
 - **No silent changes** — every change made must appear in the report with a diff snippet.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.

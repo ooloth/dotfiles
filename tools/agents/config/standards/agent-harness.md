@@ -37,6 +37,18 @@ check what can be checked, put the load step inside the procedure where it is
 needed, phrase triggers as recurring rather than preconditional, and keep the
 rules short enough that re-reading is cheap.
 
+**A change to an agent instruction file is verified by replaying the failing
+input through a fresh agent.**
+Re-reading the edited file confirms only that it says what its author meant.
+What matters is what an agent carrying no memory of the discussion does with
+it, and that is observable: an ephemeral agent given only the instruction
+files and the exact input that failed produces a result the author can hold
+against the original failure. The replay uses the input that failed rather
+than a friendly one, withholds the expected answer from the agent, and runs
+again after every subsequent edit, since a result already reported describes
+a file state that no longer exists. This is the closest an instruction file
+gets to a test, and instruction files are otherwise unverified.
+
 **Usage patterns are described.**
 How users or callers interact with the system is documented. An agent
 understands the intended interaction model — what inputs the system accepts,
