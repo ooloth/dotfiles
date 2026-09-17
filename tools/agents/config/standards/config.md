@@ -20,6 +20,14 @@ in the call stack.
 
 ## Should
 
+**A config file read by more than one tool is validated against its format
+rather than by any single reader.**
+One reader accepting the file is not evidence that the file is valid. A
+stricter reader, whether another implementation, a later version, or a
+parser in CI, rejects what a lenient one absorbed, and it fails wherever
+that reader runs rather than where the file was written. A validator in
+the project's own checks judges the file against the format instead.
+
 **Required and optional config are distinct.**
 Required config fails fast if absent. Optional config has an explicit,
 documented default. The distinction is visible in the code and documentation,
@@ -46,6 +54,8 @@ defaults. The default is stated in the code and documented alongside the key.
 - Startup and main entry points
 - Environment variable read sites
 - Configuration parsing and validation code
+- Config files consumed by external tools, such as CI workflow definitions,
+  editor and agent config, and container manifests
 
 ## Out of scope
 
