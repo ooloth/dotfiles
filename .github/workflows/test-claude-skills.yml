@@ -7,6 +7,8 @@ on:
     paths:
       - 'tools/agents/config/skills/**/*.py'
       - 'tools/agents/config/skills/**/pyproject.toml'
+      - 'tools/agents/config/skills/**/SKILL.md'
+      - 'tools/agents/check-skills.py'
       - '.github/workflows/test-claude-skills.yml'
 
   # Run on pushes to main branch
@@ -15,6 +17,8 @@ on:
     paths:
       - 'tools/agents/config/skills/**/*.py'
       - 'tools/agents/config/skills/**/pyproject.toml'
+      - 'tools/agents/config/skills/**/SKILL.md'
+      - 'tools/agents/check-skills.py'
       - '.github/workflows/test-claude-skills.yml'
 
   # Allow manual triggering for debugging
@@ -31,6 +35,9 @@ jobs:
 
       - name: Install uv
         run: brew install uv
+
+      - name: Validate skill frontmatter
+        run: uv run tools/agents/check-skills.py
 
       - name: Run ruff checks
         run: |

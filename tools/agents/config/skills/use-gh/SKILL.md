@@ -1,6 +1,6 @@
 ---
 name: use-gh
-description: gh CLI gotchas that waste context or post malformed comments and reviews to real PRs and issues. Read before every gh invocation, reads included: default output silently omits comments and relationships, and a bad post cannot be un-notified. Re-invoke each time.
+description: gh CLI gotchas that waste context or post malformed comments and reviews to real PRs and issues. Read before every gh invocation, reads included, because default output silently omits comments and relationships and a bad post cannot be un-notified. Re-invoke each time.
 allowed-tools: [Bash, Read]
 ---
 

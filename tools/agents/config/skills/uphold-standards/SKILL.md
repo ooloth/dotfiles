@@ -1,6 +1,6 @@
 ---
 name: uphold-standards
-description: Load the universal engineering standards relevant to the change at hand (decision-making and ADRs, architecture, testing, security, type design, documentation, etc.) and apply them. Invoke at the start of each separate technical decision, design, documentation or code change, including every later one in the same session: an earlier invocation covers only the change it preceded and never the next one, so a session making four changes invokes this four times. Also invoke before writing or revising a decision record, choosing a tool, runtime, platform or data shape, or running a spike.
+description: Load the universal engineering standards relevant to the change at hand (decision-making and ADRs, architecture, testing, security, type design, documentation, etc.) and apply them. Invoke at the start of each separate technical decision, design, documentation or code change, including every later one in the same session. An earlier invocation covers only the change it preceded and never the next one, so a session making four changes invokes this four times. Also invoke before writing or revising a decision record, choosing a tool, runtime, platform or data shape, or running a spike.
 ---
 
 ## Your task
