@@ -13,6 +13,10 @@ not asserted unless they are the observable contract.
 **Passing tests are meaningful.**
 A test that always passes regardless of what the code does provides no value.
 Every assertion can fail, and would fail if the behavior it covers were broken.
+A test written after the code it covers has not demonstrated that by passing, so
+it is confirmed against a deliberate break — a condition inverted, a term
+dropped, a constant returned — and the confirmation is that the right test fails
+and names the right thing.
 
 **Critical paths have test coverage.**
 Authentication, authorization, payment flows, data integrity operations, and
@@ -34,6 +38,14 @@ obscure which behavior broke.
 Happy path, empty input, boundary values, and error conditions are all
 represented. Parametrization is used when the same behavior holds across a
 range of inputs.
+
+**A generator produces the inputs that exercise the behaviour under test.**
+A property test whose generator rarely reaches the branch in question passes
+identically against correct and broken code, while reading as the strongest test
+in the suite. Generators are shaped toward the region that matters — the long
+input, the empty one, the one dense with separators — and the shaping is
+confirmed the same way as any other test, by watching it fail against a
+deliberate break.
 
 **Tests are independent.**
 No test depends on the execution order of other tests or on state left behind
