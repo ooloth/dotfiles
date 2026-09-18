@@ -376,14 +376,15 @@ these would turn future escalations into auto-fixes and prevent the same issues 
 
 ## Reviewer and standards gaps
 
-Only if a round needed an agent the standing ten do not provide. The question that agent was added
-to answer is evidence about your reviewer set, not just about this change, so say which it is.
+Only if a round needed an agent the standing eleven do not provide. The question that agent was
+added to answer is evidence about your reviewer set, not just about this change, so say which it
+is.
 
-- **Added agent:** [the question] — Why the ten did not ask it: [reason] — What it found:
+- **Added agent:** [the question] — Why the eleven did not ask it: [reason] — What it found:
   [finding, or "nothing"]
 
 **Generalisable?** [One of: specific to this change, nothing to close. | A category — [what
-recurs] — close it by [a standing 11th agent for X / a standard in
+recurs] — close it by [a standing 12th agent for X / a standard in
 `~/.agents/standards/<file>.md` saying Y / both].]
 
 (None)

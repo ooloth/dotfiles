@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 10 parallel specialized agents, and presents actionable findings with a verdict. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 11 parallel specialized agents, and presents actionable findings with a verdict. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob
 effort: high
@@ -63,8 +63,8 @@ Enhance if needed: if raw sources are vague, read the diff and fill in the gaps.
 
 ## Step 3: Launch the agents in parallel
 
-The ten agents below always run. You may add more in the same fan-out when this particular change
-raises a question none of the ten prompts ask.
+The eleven agents below always run. You may add more in the same fan-out when this particular
+change raises a question none of the eleven prompts ask.
 
 The bar is a named question, not a topic. "Add a concurrency agent" is a topic. "Does the new
 retry path double-submit when the first attempt times out after the server committed?" is a
@@ -74,9 +74,9 @@ Add rather than enrich. Each agent returns 200 words and its top 3 findings, so 
 concern to an existing agent's prompt does not add coverage — it pushes that agent's fourth
 finding off the list. A new agent brings its own budget.
 
-Give an added agent the same shape as the ten: the intent block, the file list, the provenance
-requirement, a word limit, and one question to answer. Record the question and why the ten did not
-cover it — Step 4 reports it.
+Give an added agent the same shape as the eleven: the intent block, the file list, the provenance
+requirement, a word limit, and one question to answer. Record the question and why the eleven did
+not cover it — Step 4 reports it.
 
 Send a single message containing all Agent tool calls simultaneously. For each Agent tool call, set the tool's `model` parameter to `"sonnet"`. Pass each agent:
 
@@ -398,6 +398,32 @@ If no language-specific issues found, report "No language-specific concerns iden
 
 ---
 
+### Agent 11: Failure Paths
+
+```
+Question: For each failure path this change adds or moves — a throw, a non-zero exit, an error return, a new branch that gives up — is it reachable from the program's real entry point, and when it fires, what does the process observably do?
+
+**Return findings in 250 words or fewer. Answer the question path by path first, then report your top 3 issues ordered by severity. If the change adds no failure path, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/error-handling.md`, `~/.agents/standards/reliability.md`, `~/.agents/standards/observability.md`, and `~/.agents/standards/async-coordination.md`. Use these as your evaluation criteria.
+2. Run the diff command from Context. List every failure path the diff adds or relocates. A path that merely changes its message is not one; a path that changes when, whether, or how loudly it fires is.
+3. For each path, find the program's real entry point (the binary, the `main`, the script the scheduler runs, the handler the framework calls) and trace whether anything reachable from it reaches that path. Grep for importers of the module, then importers of those. Say plainly when nothing does: an unreachable failure path protects nothing, however correct it looks.
+4. For each reachable path, read the enclosing function IN FULL plus its callers, and determine what actually happens when it fires. Name the observable outcome: exit code, what appears in logs, and whether remaining work continues, is skipped, or is silently reported as success.
+5. Check specifically for handlers that do not catch what they look like they catch: a synchronous throw evaluated while building an argument, before the promise/future it is passed to exists; a throw in a constructor or at module load; an error raised outside the `try` that visually surrounds it; a rejected promise nothing awaits.
+6. Judge each outcome against the intent block. A change whose stated point is failing earlier or louder has not delivered it if the failure is caught and logged deep in the stack, or if the process still exits 0.
+
+For each issue: file:line | the path | reachable from where, or not at all | what the process actually does | why that is wrong given the intent
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific library behavior, numerical values, runtime semantics, or API guarantees. These are the highest-risk claims — most likely to be subtly wrong — and the ones a reviewer would have to take on faith.
@@ -456,7 +482,7 @@ Produce a prioritized action list — not a categorized findings report. The rea
 ### Added agents
 [Omit this section entirely if you added none.]
 
-- **[the question you added it to answer]** — Why the ten did not cover it: [reason] — What it
+- **[the question you added it to answer]** — Why the eleven did not cover it: [reason] — What it
   found: [finding, or "nothing"]
 
 **Generalisable?** [One of: this was specific to this change, nothing to close. | This is a

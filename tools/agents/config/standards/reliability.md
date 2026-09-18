@@ -17,6 +17,22 @@ is handled differently from one that is not (invalid input, not found,
 authentication failure). Retrying a permanent failure wastes resources and
 delays the error signal to the caller.
 
+**A failure path is reachable from the entry point.**
+A guard in a module nothing imports, a branch no caller can select, a check
+behind a condition that is never true — each reads as protection and provides
+none. Whether a raise, an exit, or an early return fires at all is a property
+of the call graph, not of the code around it, so it is established by tracing
+from the binary, handler, or scheduled command that actually runs.
+
+**A failure path's observable effect at the process boundary is intended.**
+Every raise has an outcome a person outside the process can see: an exit code,
+a log line, work that continues or stops. That outcome is chosen, not inherited
+from wherever the error happens to land. An error caught by a handler that logs
+and returns a default has decided the operation is recoverable; an error that
+escapes to the top has decided it is not. Code fails fast only when something
+actually exits non-zero — an error swallowed three frames down leaves the
+process reporting success, whatever the message said on the way past.
+
 ## Should
 
 **Transient failures are retried with bounded backoff.**
@@ -68,8 +84,10 @@ cascading failure and gives the dependency time to recover.
 ## In scope
 
 - Source files containing network requests, database queries, or calls to external services
+- Entry points and the call graph reachable from them, for the two standards about failure paths
+- Sites that raise, exit, or return early on failure, wherever they sit
 
 ## Out of scope
 
-- Calls to in-process functions
+- Calls to in-process functions, except where a failure path passes through them
 - Test code using mocked or stubbed external dependencies
