@@ -35,6 +35,55 @@ Starting review-converge (max 5 rounds)...
 
 ---
 
+## Phase 0.5: Confirm the branch is current
+
+Do this before reading any code. A review of a stale branch is wasted work, and the waste is
+invisible: every agent reads a diff against the wrong base, findings describe code the base
+branch has already changed, and the report reads exactly like a good one.
+
+`git merge-base` will not tell you. It returns a correct answer for a branch that is a hundred
+commits behind, so the staleness never surfaces as an error.
+
+```bash
+git fetch origin --quiet
+# BASE is the PR's baseRefName, or the repo's default branch for a plain branch scope
+git rev-list --count HEAD..origin/<BASE>                     # commits behind
+git merge-tree --write-tree --name-only origin/<BASE> HEAD   # conflicts, without touching the tree
+```
+
+**Stop and report, before Phase 1, if the branch is behind by one or more commits or if
+`merge-tree` reports a conflict.** Say how far behind it is, name the conflicting paths, and ask
+whether to update the branch first. Do not update it on your own initiative: this skill does not
+commit, and updating the branch is a commit.
+
+When the user asks you to update, **merge `origin/<BASE>` into the branch rather than rebasing**,
+unless they say otherwise. The branch may already be pushed and under review, and a merge keeps
+the existing commits and their review history intact.
+
+Then run a second, separate check: **are the files under review still the ones the project
+builds?** Both steps below are required, and you run the second one even when the first says the
+path is fine.
+
+1. Does the path still exist on the base ref?
+   `git ls-tree origin/<BASE> -- <each path in the diff>`
+
+2. Does the base ref still build it? Grep the build manifest on the base ref — `compose.yaml`,
+   `Dockerfile`, `package.json`, `justfile`, CI config — for the directory those paths sit in,
+   and read what it points at.
+   `git show origin/<BASE>:compose.yaml | grep -n '<dir>'`
+
+**Existence is not the check, and a path that exists tells you nothing on its own.** The failure
+this catches is a directory that was copied elsewhere and left behind: it still exists, it still
+diffs cleanly, the manifest points at the new copy, and every fix you land in the old one changes
+nothing. When a base ref holds two copies of a tree, `git rev-parse origin/<BASE>:<dir>` on each
+returns the same hash for identical copies, which is the fastest way to confirm what you are
+looking at.
+
+If the manifest points somewhere other than the paths under review, report it and stop, the same
+as for staleness.
+
+---
+
 ## Phase 1: Load Context
 
 Before the first round, understand the intent of the changes:
@@ -401,6 +450,9 @@ All changes are uncommitted. Run `git diff` to review before committing.
 ## Guardrails
 
 - **Max 5 rounds** — always. Never loop indefinitely.
+- **Current base first** — Phase 0.5 runs before any code is read. A branch behind its base, or
+  whose reviewed paths the base has moved or superseded, stops the run and asks. Merge to update,
+  never rebase, and only when the user says so.
 - **No commits** — ever. Working tree only.
 - **No scope creep** — only fix findings from the review. Do not refactor, clean up, or improve
   things outside the reported findings.
