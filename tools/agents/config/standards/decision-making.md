@@ -46,6 +46,16 @@ Not noted and carried past. Not answered provisionally with a plan to revisit. T
 is usually the less interesting of the two, which is exactly why writing it down and continuing
 feels like progress.
 
+**A choice that two or more open questions each defer to the other is an open question in its own
+right.**
+It is invisible to a reader of any single one of them, because each reads as having handled it by
+pointing elsewhere. And it is settled by whichever of the deferring questions is answered first,
+which lets the narrowest choice in the set decide the widest — the same failure as taking a decision
+out of order, arrived at without anyone taking a decision at all. The deferral is the tell: where a
+file says the answer depends on another file that says the same back, nobody owns the thing in the
+middle. This is not the same as a prerequisite found while deciding, which is found because somebody
+was deciding; this one survives precisely because nobody is.
+
 **Research precedes measurement, and neither substitutes for the other.**
 Reading first is what tells you which properties are worth observing — including the ones you
 would not have thought to look for, which are the ones a spike designed in ignorance silently
