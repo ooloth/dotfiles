@@ -161,6 +161,20 @@ rather than assumed.
 **A spike is budgeted in hours, scoped to one observation, and deleted afterwards.**
 The observation is the artifact. A spike kept around becomes a codebase nobody decided to have.
 
+**Where a bounded search finds no property on which the candidates differ, that is the finding.**
+The decision is then made on stated preference, and the record says it was made that way rather than
+presenting the preference as a derivation. The bound is named before the search starts, in hours or
+in candidates, because a search with no bound ends when somebody tires of it and the stopping point
+then reads as a conclusion. This is the companion to the Must that one reason disqualifies an
+option: that one says where no reason disqualifies, the option is not disqualified, and this one says
+what follows, which is that the search is over rather than behind. Without it the honest response to
+finding no disqualifier is to look harder, and looking harder reliably produces three or four
+plausible-sounding reasons that read together as one strong case, which is the failure that Must was
+written to prevent reached the long way round. The tell that a field has no discriminator is that
+every candidate satisfies every requirement and the comparison has moved onto qualities nothing in
+the problem asked for. A decision taken there is cheap, and treating it as expensive is what turns a
+week of work into a quarter of one.
+
 **A decision names what else it moves before it is recorded.**
 Decide one thing at a time, and look at the whole system while doing it. Two failures pull in
 opposite directions: bundling several decisions into one record so that none of them is argued,
