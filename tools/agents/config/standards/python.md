@@ -57,9 +57,55 @@ Add `from __future__ import annotations` at the top of any file targeting
 Python < 3.14 rather than quoting return type annotations. Quoted annotations
 are harder to read and unnecessary with the future import.
 
+## Scripts
+
+The standards above describe an application: a codebase with a domain model, layers worth
+enforcing, and `ty`, `import-linter` and `beartype` running in CI. A dev script has none of those,
+and applying them to one produces Pydantic models around four argparse flags. The rules below
+replace them for scripts, and are held to just as firmly.
+
+**A script is one file, run by `uv`, with its dependencies declared inline.**
+PEP 723 metadata at the top and a `#!/usr/bin/env -S uv run --script` shebang. No virtualenv to
+activate, no requirements file, no install step, and no ambiguity about which interpreter it wants.
+A reader can run it from a fresh clone and an editor can resolve its imports.
+
+**One file is the whole shape, not the starting shape.**
+A script does not grow a helper module, a package directory, or a sibling it imports. When it needs
+a second file, or something starts importing it, or it runs anywhere but a developer's machine, it
+is an application and everything above this section applies to it. That transition is a rewrite and
+saying so is the point: the cheap shape stays cheap because it is not allowed to creep.
+
+**The module docstring says what the script does and how to run it.**
+It is the only documentation a script gets, and `--help` is built from it. A reader decides from
+those lines whether this is the tool they want.
+
+**Every function signature is annotated.**
+This survives the carve-out because it costs one line, needs no runtime, and is what makes a script
+readable six months later. `ty` runs on a single file as happily as on a package.
+
+**An expected failure exits with a sentence, not a traceback.**
+Missing input, absent state, a precondition that does not hold: these end the run with a message a
+human can act on and a non-zero status. `SystemExit("…")` is the idiomatic form. A traceback is
+reserved for the genuinely unexpected, where the stack is the useful part.
+
+**A script that mutates a developer's own state is reversible, and refuses when it would not be.**
+Application code rarely edits the machine it runs on; scripts do it constantly, to caches,
+databases, config and checkouts. So: back up before writing, provide the inverse operation, and
+refuse to run rather than overwrite a backup that a previous run left behind. The refusal is the
+feature. Nothing here is covered by the application standards because nothing there has this shape.
+
+**`match` replaces an `if/elif` chain over one variable, without requiring `assert_never`.**
+Exhaustiveness checking needs a sealed union, and a script branching over string literals has none.
+The readability argument still holds; the type argument does not.
+
+Not required of a script, and cluttering when added: Pydantic models at the boundary, the `result`
+library, `NewType` wrappers, frozen dataclass domain types, `import-linter` contracts, `beartype`.
+Argparse `choices` is the boundary validation a CLI needs.
+
 ## In scope
 
-- All .py files in the repo
+- Application `.py` files, for everything above the Scripts section
+- Script `.py` files, for the Scripts section, which replaces the rest
 
 ## Out of scope
 
