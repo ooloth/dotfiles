@@ -37,6 +37,30 @@ asking the same of each answer, until every branch ends in something written dow
 out afterwards does not do the same job: one reconstructed after choosing contains only the steps
 its author already believed in, which is why it always looks complete.
 
+**The properties a decision is scored against are derived from what the system does, not inherited
+from what has already been written about it.**
+A criteria list assembled from the documents in front of you is the previous author's list, and it
+reads as complete precisely because it was written as a summary. Derive it from what the thing being
+chosen will actually do, then compare: where the inherited list is a subset, the difference is what
+would otherwise have been decided without. The same test settles whether the question is even
+well-posed, because a question none of the derived criteria can discriminate on is the wrong
+question however reasonable it sounds. "One tool or several?" is unanswerable when nothing the
+system requires is about how many tools there are, and a question like that will absorb a survey
+and return a preference wearing a derivation.
+
+**Every architectural decision considers CPU, memory, storage and network, and records which of them
+do not bind and why.**
+These four are what software eventually runs on, so they generate candidate criteria reliably where
+a topic-driven list does not. Each is asked along three axes: how much is consumed, how fast it
+moves, and how long one operation takes. Ask them by enumerating the moments the system touches that
+resource rather than in the abstract, because "storage" returns nothing and "the request path reads
+a row, a write is flushed, a backup is copied off the machine, a migration rewrites a table" returns
+a list you can reason about. Most will not bind, and saying so is the point: "memory does not bind,
+because the workload is X and the smallest instance is Y" and silence about memory are
+indistinguishable in a finished record, and only one of them was considered. This is not a mandate
+to measure. A property recorded as not binding needs a reason rather than a number, and the Must
+against measuring what does not bind still applies.
+
 **Decisions are sequenced so that a milestone is reached in a state worth keeping.**
 Dependency order is the mechanism; reaching a milestone in a state you would keep is the goal. If
 you would expect to redo a choice shortly after the milestone, it is missing an input or the
@@ -160,6 +184,20 @@ rather than assumed.
 
 **A spike is budgeted in hours, scoped to one observation, and deleted afterwards.**
 The observation is the artifact. A spike kept around becomes a codebase nobody decided to have.
+
+**A spike built on one candidate confirms; it does not choose.**
+It can show whether a property is reachable at all, and a failure there is worth knowing. It cannot
+show that what was built beats what was not, so the choice of which candidate to build becomes the
+decision, made by whichever was nearest to hand. One candidate is built only where the field is
+already down to one on other grounds, and then the spike confirms it against a named falsifier.
+Where two or more remain, the spike covers them all and measures only the property that separates
+them, not the whole system under each.
+
+**A survey states what it did not examine.**
+A question answered as "can each candidate do X" has not asked how well, at what cost, or with what
+failure mode, and that gap is invisible in the answer. Naming the unexamined axes costs a sentence
+and lets a reader judge whether the omission was reasonable rather than discovering it later as a
+surprise.
 
 **Where a bounded search finds no property on which the candidates differ, that is the finding.**
 The decision is then made on stated preference, and the record says it was made that way rather than
