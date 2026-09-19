@@ -7,12 +7,28 @@ change it.
 ## Must
 
 **The order decisions are taken in is the order they depend on each other.**
-Speed and familiarity do not move a decision earlier. How much a decision unblocks is different:
-among decisions that do not derive from one another, the one unblocking the most is taken first,
-because reaching the decisions that need making is the point of having an order. What is forbidden
-is moving a decision ahead of something it derives from, whatever it would unblock. An out-of-order
-answer is not wrong-looking — it is arbitrary and reads as considered, which is what makes the cost
-fall on whoever inherits it.
+Speed and familiarity do not move a decision earlier. What is forbidden is moving a decision ahead
+of something it derives from, whatever it would unblock. An out-of-order answer is not
+wrong-looking — it is arbitrary and reads as considered, which is what makes the cost fall on
+whoever inherits it.
+
+**Among decisions that do not derive from one another, the one whose wrong answer is cheapest to
+unwind is taken first.**
+Two things follow from taking it. Being wrong is survivable, so the decision does not need the
+evidence it does not yet have. And making it produces evidence — a scaffold that runs, an
+observation, a thing that exists — which every later decision is then made with rather than
+without. This is the same principle as deferring, read from the other end: the expensive decision
+is the one that most needs what has not been learned yet, so it is the one that waits. Cheapest to
+unwind counts discovery. A wrong answer nobody notices is not cheap however small the
+fix would have been, so a decision that fails silently moves earlier rather than later, where the
+thing it affects is still small enough to inspect. How much a decision unblocks is a reasonable proxy
+and usually gives the same answer, because the
+thing everything waits on is often the cheap one. It is not the criterion, because it is a property
+of how the work was planned rather than of the system: redraw the milestones and the unblocking
+counts change, while the cost of being wrong does not. Where the two disagree, the cost of being
+wrong decides. Neither of these catches a decision that two open questions each defer to the other.
+That is the Must below, and it runs first, because a tiebreak applied to decisions whose dependency nobody
+noticed will order them confidently and wrongly.
 
 **Every step between a decision and the problem it serves is named.**
 A tool, a library, a runtime, a storage mechanism — each is the last step in a chain, never the
