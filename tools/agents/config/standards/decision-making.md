@@ -182,6 +182,22 @@ and library choices, where published numbers describe someone else's workload on
 hardware. The exception is where the spike would cost more than being wrong — that is stated
 rather than assumed.
 
+**Research settles what a document can settle, and running settles what only running can.**
+A property a candidate documents having or lacking is established by reading, in an hour, and a
+negative result costs nothing. A property that only holds or fails in practice is established by
+running. Neither is the default, and the two failures are symmetrical: running a comparison a
+document would have settled, and asserting from a document what only running can show. The entry
+above pushes toward observing and is silent on the first of those, which is the more expensive
+mistake on a question whose candidates publish what they can and cannot do — most of a tool or
+runtime field is eliminated by reading, and the spike is then aimed at whatever survives.
+
+**A check earns its place when it can name the property, the requirement that binds it, and which
+candidates leave the field on each outcome.**
+A check that eliminates nobody is not wasted when it was cheap and its outcome was genuinely open —
+a negative result is a finding, and it stops the work that would otherwise have been spent on the
+property it cleared. It is wasted when the outcome was known before it ran, which is the shape a
+check takes when it is really a demonstration.
+
 **A spike is budgeted in hours, scoped to one observation, and deleted afterwards.**
 The observation is the artifact. A spike kept around becomes a codebase nobody decided to have.
 
