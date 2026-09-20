@@ -329,6 +329,8 @@
       "Bash(netcat -l:*)",
       "Bash(nmap:*)",
       "Bash(npm install -g :* --unsafe-perm:*)",
+      "Bash(op read:*)",
+      "Bash(op item get:*)",
       "Bash(parted:*)",
       "Bash(passwd:*)",
       "Bash(pip install :* --break-system-packages:*)",
