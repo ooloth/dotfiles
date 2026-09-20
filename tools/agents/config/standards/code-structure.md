@@ -25,27 +25,11 @@ client, instead of being rewritten per runtime and kept in agreement by hand.
 
 ## Should
 
-**A function either performs I/O or computes, and the two are composed by its caller.**
-A function that fetches and then decides what the result means hides a side
-effect from its call site and welds the decision to the fetch, so the decision
-cannot be exercised without performing it. Hoisting the I/O to the caller
-leaves a pure function taking what was fetched, and an entry point where every
-side effect is visible in one sequence. Exceptions are the cases where the
-interleaving is itself the logic: a retry deciding whether to call again, a
-pagination loop, a stream consumed incrementally.
-
-**Orchestration is separated from execution.**
-Coordination logic — deciding what to do, validating preconditions, sequencing
-steps — is kept separate from the code that does the work. Mixing them forces
-execution paths to pay coordination costs on every iteration and makes either
-harder to test in isolation.
-
-**State is visible only where it is used.**
-A value lives in the narrowest scope that serves it — a block rather than a
-function, a function rather than a module, a module rather than the process.
-Widening scope for convenience multiplies the places a wrong value could have
-come from, and the cost of tracking one down is proportional to how much code
-could have written it.
+**Data flows in one direction.**
+State transformations move forward through the call stack. Callbacks, circular
+references, and shared mutable state are avoided where a simple pipeline
+would do. Bidirectional data flow between components is a structural smell,
+not just a readability one.
 
 **Public surfaces are as small as possible.**
 A component exposes only what callers need. Every additional export is a
@@ -56,11 +40,43 @@ When a boundary exists, callers depend on the contract it defines, not the
 concrete type behind it. Swapping implementations doesn't require changing
 callers.
 
-**Data flows in one direction.**
-State transformations move forward through the call stack. Callbacks, circular
-references, and shared mutable state are avoided where a simple pipeline
-would do. Bidirectional data flow between components is a structural smell,
-not just a readability one.
+**State is visible only where it is used.**
+A value lives in the narrowest scope that serves it — a block rather than a
+function, a function rather than a module, a module rather than the process.
+Widening scope for convenience multiplies the places a wrong value could have
+come from, and the cost of tracking one down is proportional to how much code
+could have written it.
+
+**A function either performs I/O or computes, and the two are composed by its caller.**
+A function that fetches and then decides what the result means hides a side
+effect from its call site and welds the decision to the fetch, so the decision
+cannot be exercised without performing it. Hoisting the I/O to the caller
+leaves a pure function taking what was fetched, and an entry point where every
+side effect is visible in one sequence. Exceptions are the cases where the
+interleaving is itself the logic: a retry deciding whether to call again, a
+pagination loop, a stream consumed incrementally.
+
+**An I/O call is written in the function that composes the operation, not in a helper it calls.**
+A helper that performs I/O and nothing else still hides it: the reader sees a
+name and cannot tell whether it opens a socket, and each level down compounds
+that. Written at the top, the composing function — `main`, a request handler, a
+job body — reads as the ordered list of effects the operation performs, and
+everything below it computes. A call goes deeper only when the composing
+function cannot know how many times it happens or what it targets without doing
+the inner work first: paging until exhausted, retrying on what the response
+says, fanning out over computed keys. Entering a separately consumed component
+is not nesting — that component composes its own effects.
+
+**Orchestration is separated from execution.**
+Coordination logic — deciding what to do, validating preconditions, sequencing
+steps — is kept separate from the code that does the work. Mixing them forces
+execution paths to pay coordination costs on every iteration and makes either
+harder to test in isolation.
+
+**Code is organized by feature, not by layer.**
+Related types, logic, and I/O for a feature live together. A change to one
+feature touches one folder, not five. Adding a feature means adding a folder;
+removing a feature means deleting one.
 
 **Boundaries and files are named after domain concepts.**
 Module, package, directory, and file names correspond to problem-domain
@@ -68,11 +84,6 @@ concepts, not implementation mechanics. `payment/`, `subscription/`,
 `invoice.ts` are domain names. `utils/`, `helpers/`, `types.ts`, `hooks.ts`,
 `store.ts`, `api.ts` used as aggregates are layer names — they describe how
 the code is built, not what it does.
-
-**Code is organized by feature, not by layer.**
-Related types, logic, and I/O for a feature live together. A change to one
-feature touches one folder, not five. Adding a feature means adding a folder;
-removing a feature means deleting one.
 
 **The directory tree is navigable without reading code.**
 A developer unfamiliar with the codebase can locate the relevant file for a
