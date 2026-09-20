@@ -24,6 +24,18 @@ collide on the same record.
 
 ## Should
 
+**A cache or mirror distinguishes "the source said nothing" from "the source said empty".**
+A fetch that reaches no source returns the same shape as one that reaches every source and finds
+nothing: an empty collection. Writing the first over a populated store destroys what was known and
+asserts a fact nobody observed, and it does so while every individual step reports success. The
+write path therefore branches on whether anything was reached, not on whether the result is empty,
+and refuses when nothing was. The condition is a conjunction — empty *and* something failed — for
+the symmetric reason: a source that genuinely returned nothing is a real answer, and refusing to
+record it leaves the store asserting stale rows forever. Unattended writers are where this bites,
+because nobody is present to distrust the empty result. The exception worth documenting is a store
+whose readers can already tell the two apart, such as one that keeps the failure alongside the
+data.
+
 **A value that can be derived is derived, not stored beside its source.**
 Completion flags, counts, totals, and cached summaries are computed from the
 data they summarise rather than maintained as a second field that can disagree
