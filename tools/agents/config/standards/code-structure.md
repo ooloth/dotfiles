@@ -25,6 +25,15 @@ client, instead of being rewritten per runtime and kept in agreement by hand.
 
 ## Should
 
+**A function either performs I/O or computes, and the two are composed by its caller.**
+A function that fetches and then decides what the result means hides a side
+effect from its call site and welds the decision to the fetch, so the decision
+cannot be exercised without performing it. Hoisting the I/O to the caller
+leaves a pure function taking what was fetched, and an entry point where every
+side effect is visible in one sequence. Exceptions are the cases where the
+interleaving is itself the logic: a retry deciding whether to call again, a
+pagination loop, a stream consumed incrementally.
+
 **Orchestration is separated from execution.**
 Coordination logic — deciding what to do, validating preconditions, sequencing
 steps — is kept separate from the code that does the work. Mixing them forces
