@@ -7,7 +7,7 @@
 # See: https://code.claude.com/docs/en/model-config#environment-variables
 # See: https://code.claude.com/docs/en/model-config#model-aliases
 # See: https://docs.anthropic.com/en/docs/about-claude/models/overview#model-names
-export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5
+export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5-5
 export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5
 export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5-20251001
 export ANTHROPIC_MODEL=opus
