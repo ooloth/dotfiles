@@ -183,9 +183,14 @@ DO NOT SKIP RE-INVOKING. It leads to no longer applying the standards, which is 
 
 ## Work in Small Steps
 
-For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` before step 1. For
-non-trivial domain logic — invoke `/design` after approach approval to produce the type story and
-test plan before step 4.
+For ambiguous tasks, multi-step work, or risky changes — invoke `/discuss` before step 1.
+
+**Invoke `/design` for every slice that changes code**, after approach approval and before step 4,
+to produce the type story and test plan. A slice that changes only documentation is the one
+exception. Do not judge whether the logic is "non-trivial enough" to deserve it — that judgment
+gets made too narrowly, and a slice that looks like plumbing still has a type story worth writing
+down before the first test. This applies per slice, so a task split into three code slices invokes
+it three times.
 
 When the user approves work, persist the agreed approach BEFORE reading or writing any files —
 context loss can happen anytime, and the next agent must be able to resume without repeating the
@@ -214,7 +219,8 @@ questions; the trekker/ticket persistence above is for work already approved.
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
 2. Describe your implementation plan, including the "/design" skill's type and test design plan
-   where relevant, and calling out any design decisions or questions the user should make
+   for any slice that changes code, and calling out any design decisions or questions the user
+   should make
 3. Wait for approval
 4. Implement using red-green-refactor:
    1. Write all failing test(s) that specify the intended behavior. If `/design` was run, translate
