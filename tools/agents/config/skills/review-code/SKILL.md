@@ -530,11 +530,34 @@ On any answer other than "skip":
   request-changes → REQUEST_CHANGES; comment → COMMENT
 - Write a 2–3 sentence overall summary for the review body (see audience guidance below)
 - Collect every finding that has a `file:line` reference as an inline comment
-- Run:
+- Get the PR's head commit, so the comments stay pinned to the code you reviewed:
+  `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid -q .headRefOid`
+- Write the review to a JSON file in the scratchpad with the **Write tool**. Never build it with a
+  shell heredoc, `echo`, or command-line arguments: the shell rewrites backticks, `$(...)` and
+  quotes, and a mangled review cannot be un-posted. `line` is the line number in the PR's version
+  of the file; `side` is `RIGHT` for those and `LEFT` only for a line the PR deletes.
+
+```json
+{
+  "event": "APPROVE",
+  "body": "<summary>",
+  "commit_id": "<head SHA>",
+  "comments": [
+    { "path": "<file>", "line": 42, "side": "RIGHT", "body": "<comment>" }
+  ]
+}
+```
+
+- Dry-run it and read the output. It prints the exact payload that would be sent. Check that every
+  body reads as intended and every `path`/`line` points where you meant; fix the file and dry-run
+  again until it does:
 
 ```bash
-python3 <skill-base-dir>/scripts/post_review.py <pr-number> <EVENT> "<summary>" "<file>:<line>:<body>" ...
+uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo <owner>/<repo> --dry-run
 ```
+
+- Post it by running the same command without `--dry-run`. `--repo` is required, so the review
+  cannot land on a same-numbered PR in whatever repo the shell is in.
 
 **Summary audience:** The review body is read by GitHub users who only know what's in the PR diff — they have no context from this review session. Write for that audience:
 
