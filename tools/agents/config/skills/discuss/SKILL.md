@@ -46,6 +46,12 @@ belongs to `/design`, which runs after the user approves the approach.
    previous author's list and it reads as complete because it was written as a summary. State each
    as an observable property, and say which bind and which do not.
 
+   Observable means something observes it. For each property that binds, name what does: a type, a
+   test, an assertion, a check against recorded state, or a measurement that already exists. Where
+   nothing does, taking that measurement is part of the work rather than an assumption carried past
+   this point. A property nobody can observe is an intention, and every option below is scored
+   against this list.
+
 2. Recommend the simplest approach that delivers those properties. Simplicity is how a property is
    reached cheaply, never a reason to drop one. Push back on scope, abstraction, configurability or
    compatibility work that no stated property requires.
@@ -79,6 +85,21 @@ belongs to `/design`, which runs after the user approves the approach.
    Revisit trigger: [metric / date / condition that reopens this]
    ```
 
+   A revisit trigger naming a metric requires that metric to exist. Where nothing records it,
+   recording it is part of the decision rather than a later step: a trigger keyed to a measurement
+   nobody takes never fires, and the record then reads as revisitable while being permanent.
+   `decision-making.md` asks for the observable condition that would reopen a decision, and an
+   unobservable one does not satisfy it.
+
+6. Where the approach spans processes, asynchronous work, or separate runs, settle what ties events
+   together across that boundary and where anything durable is kept. `decision-making.md` names a
+   missing identifier that turns a later feature into a migration as a canonical example of an
+   option closed without anyone noticing, and a correlation identifier is exactly that: adding one
+   later means changing every interface it crosses. Whether a store exists that a later check can
+   read, and which one, is the same kind of decision, since a slice can conform to such a store but
+   cannot invent one. Name both, or name their absence, so `/design` is not left to improvise a
+   mechanism from inside a single slice.
+
 ### Phase 4: Present and Stop
 
 Before presenting, review what you are about to claim:
@@ -95,13 +116,15 @@ End with a strategy artifact:
 
 1. **Understanding** — what the user wants and any assumptions
 2. **Target properties** — what a good answer must do, derived in Phase 3, with which of them bind
-   and which do not and why. This section comes before any option is named, and no recommendation
-   below it is valid without it.
+   and which do not and why, and what observes each one that binds. This section comes before any
+   option is named, and no recommendation below it is valid without it.
 3. **Findings** — relevant code/docs/current-state facts discovered
-4. **Recommendation** — preferred approach, scored against each target property
+4. **Recommendation** — preferred approach, scored against each target property, including what
+   ties events together across any process, async or run boundary it introduces, and where anything
+   durable that a later check reads is kept
 5. **Open decisions** — only decisions that block correct implementation
 6. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
-   to produce the type story, test plan, and implementation slices
+   to produce the type story, telemetry plan, test plan, and implementation slices
 
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
 and stop again. Do not treat answers to questions as approach approval.

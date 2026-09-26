@@ -1,6 +1,6 @@
 ---
 name: design
-description: Design the type progression, assertion plan and test plan for approved work. Invoke after agreeing on the high-level approach and before writing any implementation.
+description: Design the type progression, assertion plan, telemetry plan and test plan for approved work. Invoke after agreeing on the high-level approach and before writing any implementation.
 argument-hint: '[task description or Trekker task number]'
 effort: high
 model: opus
@@ -139,12 +139,57 @@ Common ways an assertion plan fails:
 - A recorded-signal check specified without naming the record it reads, which leaves it
   unimplementable
 
-### Phase 5: Derive the Test Plan
+### Phase 5: Derive the Telemetry Plan
+
+Types, assertions and tests each verify a property somebody named in advance, so between them they
+cover the failures that were predicted. When the system misbehaves in a way nobody anticipated, none
+of them fires and what remains is whatever it recorded. This phase decides what that is.
+
+Work from questions, not from emissions. For each step in the type story and each failure variant,
+ask what someone will need to know when this behaves wrong at three in the morning, then ask whether
+the running system can already answer it. A question it can answer produces nothing here. A question
+it cannot answer names one thing to record, and the entry states the question rather than the log
+line, so a later reader can tell when the record stops being worth keeping.
+
+Three sources of questions, beyond those the type story suggests on its own:
+
+1. **What each failure variant retains.** Phase 3 named this per variant, because it constrains the
+   types. Carry those forward rather than re-deriving them, and check that what is retained answers
+   the question somebody would actually ask, not merely that something was retained.
+2. **What a recorded-signal check reads.** Phase 4 named a record for every constraint routed to
+   destination 3. Those are telemetry decisions already taken, so state them here too and keep the
+   two plans from drifting.
+3. **A branch the inputs and outputs do not reveal.** Where the code chose between paths and an
+   observer holding the input and the output cannot tell which it took, the choice is recorded. This
+   is the case neither of the others catches, because nothing failed.
+
+State for each entry: the question, why the system cannot answer it today, and the smallest thing
+that would let it. Where the answer needs a mechanism this slice does not own — an identifier that
+crosses interfaces, a store that outlives the run — name it as an open decision and stop there. A
+slice that invents a system-wide mechanism from the inside produces the third incompatible one, and
+`/discuss` is where those are settled.
+
+This plan covers what must be recorded and why. Log format, log levels, field naming, and keeping
+telemetry out of the logic it instruments are implementation concerns governed by
+`~/.agents/standards/observability.md`, and they do not appear here.
+
+Common ways a telemetry plan fails:
+- An emission listed without the question it answers, so nothing says when it could be removed
+- A question the system can already answer, restated as a gap
+- Retention carried from Phase 3 without being checked against a question, so a variant retains a
+  value nobody would ask for
+- A system-wide mechanism invented inside one slice rather than escalated
+- The plan growing because the section exists; a slice whose behaviour is fully visible in its
+  inputs, outputs and exit code has nothing here and says so
+
+### Phase 6: Derive the Test Plan
 
 From the type boundaries, identify what needs behavioral verification. Constraints Phase 4
 assigned to an assertion, to boundary validation, or to a recorded-signal check still appear here,
-with the pairing named, so that none of them is mistaken for full coverage on its own. For each
-transformation:
+with the pairing named, so that none of them is mistaken for full coverage on its own. Where Phase 5
+named a question the running system cannot answer and this slice cannot make answerable, the
+behaviour behind it is a candidate for heavier coverage, since production will not report it. For
+each transformation:
 
 1. **Compiler guarantees** — list what correct code gets for free from the type design. No tests
    needed for these.
@@ -170,7 +215,7 @@ transformation:
    For each test case, state what it verifies in domain terms, why the type system doesn't cover
    it, and which paradigm is most appropriate and why.
 
-### Phase 6: Present and Stop
+### Phase 7: Present and Stop
 
 Present the design artifact:
 
@@ -185,9 +230,12 @@ Present the design artifact:
    validation, and which states are deliberately allowed rather than asserted against. Where a
    constraint is checked against a recorded signal, name the record, the check, and what a firing
    means; omit this part entirely when no constraint landed there
-6. **Test plan** — what needs verification, which paradigm, and why
-7. **Open decisions** — any naming or structural choices the user should weigh in on before
-   implementation begins
+6. **Telemetry plan** — the questions the running system cannot answer, what each one needs
+   recorded, and what this slice deliberately leaves unobservable; omit it when the slice's
+   behaviour is fully visible in its inputs, outputs and exit code
+7. **Test plan** — what needs verification, which paradigm, and why
+8. **Open decisions** — any naming or structural choices the user should weigh in on before
+   implementation begins, including any mechanism Phase 5 found this slice does not own
 
 Ask for explicit approval.
 
