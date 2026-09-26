@@ -34,7 +34,10 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 
 First, state the properties the design is scored against. Where `/discuss` produced a target
 properties list, carry it forward and translate each into what it demands of the types. Do not
-re-derive it. Where none exists, derive it here from what the code will actually do.
+re-derive it. Where none exists, derive it here from what the code will actually do, and name what
+observes each property that binds: a type, a test, an assertion, a check against recorded state, or
+a measurement that already exists. A property nothing observes is a gap for Phase 5 to close or to
+escalate, never one carried forward on trust.
 
 Then sketch 2–3 meaningfully different type progressions for the same feature. For each, state:
 - The shape of the progression (a one-line summary of the type structure)
