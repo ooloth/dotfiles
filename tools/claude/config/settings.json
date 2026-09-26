@@ -24,7 +24,9 @@
       "Bash(git push -f*)",
       "Bash(git push * +*)",
       "Bash(git reset --hard*)",
-      "Bash(git clean *)"
+      "Bash(git clean *)",
+      "Edit(~/.claude/settings.json)",
+      "Edit(~/Repos/ooloth/dotfiles/tools/claude/config/settings.json)"
     ],
     "deny": [
       "Bash(git push --force origin main:*)",
@@ -59,26 +61,35 @@
       "Read(./.env.keys)",
       "Read(./.env.backup)",
       "Read(./.env.bak)",
-      "Read(./secrets/**)"
+      "Read(./secrets/**)",
+      "Edit(~/.ssh/**)",
+      "Edit(~/.aws/**)",
+      "Edit(~/.zshrc)",
+      "Edit(~/.zprofile)",
+      "Edit(~/.zshenv)",
+      "Edit(~/.bashrc)",
+      "Edit(~/.bash_profile)",
+      "Edit(~/.gitconfig)",
+      "Edit(~/Library/LaunchAgents/**)",
+      "Edit(~/Repos/**/.git/hooks/**)",
+      "Edit(~/Repos/**/.git/config)"
     ],
     "defaultMode": "auto"
   },
   "sandbox": {
     "enabled": true,
-    "excludedCommands": [
-      "git *",
-      "gh *",
-      "pnpm add *",
-      "pnpm install*",
-      "pnpm remove *",
-      "pnpm update*",
-      "pnpm view *"
-    ],
+    "allowUnsandboxedCommands": false,
+    "enableWeakerNetworkIsolation": true,
+    "excludedCommands": ["git push *", "git fetch *", "git pull *", "tmux -L agent *"],
     "filesystem": {
-      "allowWrite": ["~/.npm"],
-      "denyRead": ["~/.ssh"]
+      "allowWrite": ["~/.npm", "~/Library/pnpm", "~/Library/Caches/pnpm", "~/Repos/ooloth/dotfiles/.git"],
+      "allowRead": ["~/.config/gh/hosts.yml"],
+      "denyRead": ["~/.ssh"],
+      "denyWrite": ["~/Repos/**/.git/hooks", "~/Repos/**/.git/config"]
     },
     "network": {
+      "allowLocalBinding": true,
+      "strictAllowlist": true,
       "allowedDomains": [
         "github.com",
         "*.github.com",
@@ -90,8 +101,7 @@
     },
     "credentials": {
       "files": [
-        { "path": "~/.aws/credentials", "mode": "deny" },
-        { "path": "~/.config/gh/hosts.yml", "mode": "deny" }
+        { "path": "~/.aws/credentials", "mode": "deny" }
       ],
       "envVars": [
         { "name": "GH_TOKEN", "mode": "deny" },

@@ -356,8 +356,40 @@ Skip and say nothing if execution went smoothly.
 ## Available CLI Tools
 
 - `gh` - NEVER run a `gh` command without first invoking the `use-gh` skill
-- `tmux` - use for background jobs (`tmux new-window -n "dev-server" "npm run dev"`) instead of
-  `run_in_background` or `&`. Also use to test interactive programs (TUIs, REPLs): run them in
-  a named window, drive them with `tmux send-keys -t <window> "<key>" ""`, and read the screen
-  with `tmux capture-pane -t <window> -p`. This is often the only way to visually verify an
-  interactive program without asking the user to do it.
+- `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
+  programs (TUIs, REPLs). This is often the only way to visually verify an interactive program
+  without asking the user to do it. Always use the agent server, `tmux -L agent`, so the user's own
+  sessions stay out of reach, and write each tmux call as its own bare command with no pipe, `&&`
+  or prefix, or the sandbox exclusion does not match and the call fails:
+  - start: `tmux -L agent new-session -d -s <name> -n <window> "<command>"`
+  - add a window: `tmux -L agent new-window -t <name> -n <window> "<command>"`
+  - type: `tmux -L agent send-keys -t <name>:<window> "<keys>" Enter`
+  - read the screen: `tmux -L agent capture-pane -t <name>:<window> -p`
+  - finish: `tmux -L agent kill-session -t <name>`
+
+  The user watches with `tmux -L agent attach`.
+
+## Sandbox
+
+Every Bash command runs in a sandbox, and there is no way out of it: `dangerouslyDisableSandbox`
+is turned off.
+
+- Bash can write only to the current project and `$TMPDIR`. Put scratch work (spikes, throwaway
+  repos, proofs of concept) in a directory from `mktemp -d`, never in bare `/tmp`.
+- Network access reaches only allowlisted hosts. Read documentation with WebFetch, which is
+  controlled separately. If a command needs a host that is not allowed, name the host and stop.
+- pnpm, gh, node, python, test runs and local dev servers all work inside the sandbox.
+- Never start a background process with `&` or `nohup`. A later Bash command cannot signal it, and
+  `ps` is blocked, so it keeps running after you finish. Run it in a `tmux -L agent` window, or
+  start, check and stop it within one Bash command.
+- `git push`, `git fetch`, `git pull` and `tmux -L agent` run outside it on purpose. Commands inside
+  a `tmux -L agent` window run outside it too, so use those windows only for the project's own
+  commands.
+- For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
+  Playwright tools; the main session has none, and headless Chrome cannot start inside the sandbox.
+- To edit Claude's own config (this file, skills, agents, settings), use the Edit tool on the real
+  path under `~/Repos/ooloth/dotfiles/tools/`, not the `~/.claude/` symlink. Bash cannot write
+  these files at all, and `~/.claude/` is a protected path that auto mode may refuse. Edits to
+  `settings.json` ask the user first.
+- When the sandbox blocks something, report the restriction and what you were trying to do. Do not
+  route around it with the Write tool, a tmux window or an excluded command.
