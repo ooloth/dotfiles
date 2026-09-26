@@ -74,6 +74,16 @@ A flag appears in help text. A config key appears in the example config. Each
 surface is updated in the same change as the behavior it describes, and a
 surface that never received its entry is as wrong as one that went stale.
 
+**A decision reaches every reader it binds, each in the place that reader looks.**
+The reasoning and the rejected options sit in one decision record. What the
+decision commits the project to sits wherever that commitment is checked: a
+rule for reviewers in the standards, a new way to run something in the run
+instructions, a misleading half-finished state in whatever file warns about
+those. Each of those entries links to the record rather than restating its
+reasoning. A decision recorded only as a record binds only the people who
+think to open it, and one restated in full in several places drifts into
+versions that disagree.
+
 **Examples are correct and runnable.**
 Code samples in documentation execute without modification. Copy-paste
 examples that silently fail are worse than no examples.
