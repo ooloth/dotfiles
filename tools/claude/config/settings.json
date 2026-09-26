@@ -407,6 +407,34 @@
     ],
     "defaultMode": "auto"
   },
+  "sandbox": {
+    "enabled": true,
+    "excludedCommands": ["git *", "gh *"],
+    "filesystem": {
+      "allowWrite": ["~/.npm"]
+    },
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "*.github.com",
+        "*.githubusercontent.com",
+        "registry.npmjs.org",
+        "pypi.org",
+        "files.pythonhosted.org"
+      ]
+    },
+    "credentials": {
+      "files": [
+        { "path": "~/.aws/credentials", "mode": "deny" },
+        { "path": "~/.config/gh/hosts.yml", "mode": "deny" }
+      ],
+      "envVars": [
+        { "name": "GH_TOKEN", "mode": "deny" },
+        { "name": "GITHUB_TOKEN", "mode": "deny" },
+        { "name": "ANTHROPIC_API_KEY", "mode": "deny" }
+      ]
+    }
+  },
   "hooks": {
     "Notification": [
       {
