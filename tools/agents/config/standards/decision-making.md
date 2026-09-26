@@ -64,6 +64,14 @@ genuinely the only thing separating the candidates, the properties did not discr
 finding is that they did not: the record says the choice was made on cost rather than presenting
 the cost as a derivation.
 
+**A predicted failure mode is a constraint on the design, never a reason to drop the requirement.**
+"It would degrade into busywork" and "it would be ignored" describe how a bad version of the thing
+fails. Neither says the thing is not needed. The prediction narrows which designs are acceptable,
+so the work is to find one that survives it, and the tell that this went wrong is a recommendation
+justified by the good version being hard to specify. Where no design survives the constraint, that
+is the finding and it is recorded as one, rather than arriving as a preference for leaving the
+requirement out.
+
 **Every architectural decision considers CPU, memory, storage and network, and records which of them
 do not bind and why.**
 These four are what software eventually runs on, so they generate candidate criteria reliably where

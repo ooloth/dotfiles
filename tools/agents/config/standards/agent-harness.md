@@ -49,6 +49,18 @@ again after every subsequent edit, since a result already reported describes
 a file state that no longer exists. This is the closest an instruction file
 gets to a test, and instruction files are otherwise unverified.
 
+**A claim about how an instruction will behave is replayed before it is argued
+from.**
+Predicting that an instruction would be ignored, read too broadly, or filled in
+as busywork is a claim about an observable thing, and the observation costs one
+ephemeral agent and the input in question. Argued rather than run, the
+prediction decides what gets written while never being checked, and it is
+indistinguishable from taste to everyone including its author. The procedure is
+the replay above, run before the decision instead of after it: give an agent
+carrying no memory of the discussion the instruction as it would be written and
+the input that would test it, withhold the expected answer, and read what it
+does.
+
 **Usage patterns are described.**
 How users or callers interact with the system is documented. An agent
 understands the intended interaction model — what inputs the system accepts,
