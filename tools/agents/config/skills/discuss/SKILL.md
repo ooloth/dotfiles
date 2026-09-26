@@ -19,9 +19,9 @@ belongs to `/design`, which runs after the user approves the approach.
 
 ### Phase 1: Load Context Progressively
 
-1. Read `~/.agents/standards/README.md` and list `~/.agents/standards/` only when standards or
-   architectural constraints may affect the approach decision.
-2. Load only the standards files obviously relevant to the task.
+1. Read `~/.agents/standards/README.md` and `~/.agents/standards/decision-making.md`. Both always
+   apply: recommending an approach is a decision.
+2. List `~/.agents/standards/` and load any other file whose theme matches the task.
 3. Load additional standards files only when the investigation shows they matter.
 4. If the task scope is still unclear, prefer asking a clarifying question over loading every file.
 
@@ -41,9 +41,21 @@ belongs to `/design`, which runs after the user approves the approach.
 
 ### Phase 3: Recommend an Approach
 
-1. Recommend the simplest approach that achieves the intended outcome. Push back on unnecessary
-   scope, abstractions, configurability, or compatibility work.
-2. For non-trivial decisions, name tradeoffs explicitly — frame options as "optimize for X vs Y",
+1. Derive the properties a good answer must have, from what the system will actually do, before
+   considering any option. Not from what the ticket or existing docs say it needs; that is the
+   previous author's list and it reads as complete because it was written as a summary. State each
+   as an observable property, and say which bind and which do not.
+
+2. Recommend the simplest approach that delivers those properties. Simplicity is how a property is
+   reached cheaply, never a reason to drop one. Push back on scope, abstraction, configurability or
+   compatibility work that no stated property requires.
+
+3. Implementation effort is a constraint, never a merit. It rules an option out only against a
+   budget the user stated. "X is simpler to build" is not a reason to prefer X unless it also names
+   a property X delivers better. This governs the Cost row below: cost is what an option spends to
+   deliver the properties, not a score it competes on.
+
+4. For non-trivial decisions, name tradeoffs explicitly — frame options as "optimize for X vs Y",
    not "right vs wrong":
 
    | Dimension       | Question                                  |
@@ -53,7 +65,7 @@ belongs to `/design`, which runs after the user approves the approach.
    | **Risk**        | What breaks if we're wrong? Who pays?     |
    | **Alternative** | What did we consider and reject, and why? |
 
-3. Flag reversibility for each significant decision:
+5. Flag reversibility for each significant decision:
    - **Two-way door** (easily reversible) — recommend a default, decide fast, and move on.
    - **One-way door** (costly to undo: public APIs, data schemas, pricing, core UX patterns users
      learn) — requires explicit sign-off; include an ADR-lite entry in the plan:
@@ -82,10 +94,13 @@ Before presenting, review what you are about to claim:
 End with a strategy artifact:
 
 1. **Understanding** — what the user wants and any assumptions
-2. **Findings** — relevant code/docs/current-state facts discovered
-3. **Recommendation** — preferred approach and why
-4. **Open decisions** — only decisions that block correct implementation
-5. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
+2. **Target properties** — what a good answer must do, derived in Phase 3, with which of them bind
+   and which do not and why. This section comes before any option is named, and no recommendation
+   below it is valid without it.
+3. **Findings** — relevant code/docs/current-state facts discovered
+4. **Recommendation** — preferred approach, scored against each target property
+5. **Open decisions** — only decisions that block correct implementation
+6. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
    to produce the type story, test plan, and implementation slices
 
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
