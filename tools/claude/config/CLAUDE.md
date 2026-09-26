@@ -207,21 +207,17 @@ gets made too narrowly, and a slice that looks like plumbing still has a type st
 down before the first test. This applies per slice, so a task split into three code slices invokes
 it three times.
 
-When the user approves work, persist the agreed approach BEFORE reading or writing any files —
-context loss can happen anytime, and the next agent must be able to resume without repeating the
-discussion:
+**When the work is on a ticket** (GitHub Issue, Linear, Jira, etc.), **each agreed plan is recorded
+on it** before that plan is acted on. A comment is added at each of these points:
 
-- **Known ticket exists** (GitHub Issue, Linear, Jira, etc.): add a comment to that ticket
-  recording the problem, agreed approach, constraints, and done-when criteria. Skip `trekker`.
-- **No ticket exists** (spontaneous idea): create a `trekker` task instead:
+- the end of `/discuss`, or agreement on an approach when it wasn't used
+- the end of `/design`, or agreement on the type and test plan when it wasn't used
+- any later decision that changes either one
 
-```bash
-trekker task create -t "..." -p 1 -d "Problem: ... Approach: ... Done when: ..."
-trekker task update TREK-N -s in_progress
-# THEN read files and implement
-```
-
-For the full `trekker` workflow, see `/use-trekker`.
+Each comment records the problem, the agreed approach, the constraints and the done-when criteria
+as they stand at that point. The comment is a public side effect, so its draft is shown to the user
+and posted only once they approve that wording. When the work is not on a ticket, none of this is
+written anywhere.
 
 **Keep `docs/questions/` current, not just at creation.** When a discussion surfaces a genuine
 open question — real options, not yet settled, worth surviving context loss or a future session —
@@ -229,7 +225,7 @@ proactively recommend capturing it as its own file in `docs/questions/` (one que
 kebab-case name, phrased as the question). The same applies afterward: if work on something
 unrelated turns up a finding, option, or decision relevant to an existing question file, update
 that file then, not only while it's the topic of direct discussion. This is for still-open design
-questions; the trekker/ticket persistence above is for work already approved.
+questions; the ticket comments above are for work already approved.
 
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
@@ -275,11 +271,7 @@ questions; the trekker/ticket persistence above is for work already approved.
     first and extend the closest match — a new theme file needs justification. Recording anything
     here is a commit-worthy change: it re-enters steps 4–9 and needs its own commit signal.
 
-12. When all changes committed → close the task - e.g. if using trekker:
-    ```bash
-    trekker comment add TREK-N -a "claude" -c "Resolution: ..."
-    trekker task update TREK-N -s completed
-    ```
+12. When all changes are committed, close the ticket if the work is on one.
 13. After closing, check whether related open tasks (or issues or tickets) need their descriptions
     updated — the approach may have changed, a prerequisite may now be satisfied, or the task may
     have become unnecessary

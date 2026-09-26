@@ -1,7 +1,7 @@
 ---
 name: design
 description: Design the type progression, assertion plan, telemetry plan and test plan for approved work. Invoke after agreeing on the high-level approach and before writing any implementation.
-argument-hint: '[task description or Trekker task number]'
+argument-hint: '[task description or ticket reference]'
 effort: high
 model: opus
 ---
@@ -17,8 +17,8 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 
 ### Phase 1: Understand the Scope
 
-1. Read the agreed objective from $ARGUMENTS — if it's a Trekker task number, read that task; if
-   it's a description, use it directly. Ask the user to clarify if the scope is still ambiguous.
+1. Read the agreed objective from $ARGUMENTS — if it's a ticket reference, read that ticket and its
+   comments; if it's a description, use it directly. Ask the user to clarify if the scope is still ambiguous.
 2. Load `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md`,
    `~/.agents/standards/testing.md` and `~/.agents/standards/decision-making.md`. The last applies
    because Phase 2 chooses between options. Also load any language-specific reference file that
@@ -247,6 +247,7 @@ If the user pushes back, requests changes, or raises questions: incorporate the 
 the type story and/or test plan, re-present the full artifact, and stop again. Do not implement
 until the user gives explicit approval.
 
-When the user approves, the implementing agent must record the agreed approach before reading or
-writing any files — add a comment to the known ticket (Jira, GitHub issue, Linear, etc.) if one
-exists, or create a Trekker task if no ticket exists. Then proceed with the first slice.
+When the user approves and the work is on a ticket (GitHub Issue, Linear, Jira, etc.), draft a
+comment recording the approved design, show it to the user, and post it once they approve that
+wording, before writing code. When the work is not on a ticket, nothing is recorded. Then proceed
+with the first slice.
