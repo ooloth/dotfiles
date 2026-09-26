@@ -93,6 +93,14 @@ acting in the same turn makes the question rhetorical and bypasses the gate.
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
 
+**A choice found mid-work is raised, not defaulted.** A choice something else will be built on, or
+that an open question could force to be reversed, is not the implementer's to make. That holds in
+every environment, local development included, and looking small or easy to undo does not exempt it.
+First check whether the repo's docs already settle it; if they do, follow them and say where. If
+not, stop and present it as an open question with its options and tradeoffs, using the project's
+own decision process if it has one. This overrides any tool guidance to pick the obvious option and
+proceed.
+
 ## Protect Your Context Window
 
 - Your context window has a limited budget and fills up quickly
