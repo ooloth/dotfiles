@@ -289,7 +289,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/performance.md`, `~/.agents/standards/async-coordination.md`, `~/.agents/standards/reliability.md`, and `~/.agents/standards/observability.md`. Use these standards as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/performance.md`, `~/.agents/standards/async-coordination.md`, `~/.agents/standards/reliability.md`, `~/.agents/standards/observability.md`, and `~/.agents/standards/instrumentation.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. Check how similar operations are handled in unchanged files.
@@ -412,7 +412,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/error-handling.md`, `~/.agents/standards/reliability.md`, `~/.agents/standards/observability.md`, and `~/.agents/standards/async-coordination.md`. Use these as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/error-handling.md`, `~/.agents/standards/reliability.md`, `~/.agents/standards/observability.md`, `~/.agents/standards/instrumentation.md`, and `~/.agents/standards/async-coordination.md`. Use these as your evaluation criteria.
 2. Run the diff command from Context. List every failure path the diff adds or relocates. A path that merely changes its message is not one; a path that changes when, whether, or how loudly it fires is.
 3. For each path, find the program's real entry point (the binary, the `main`, the script the scheduler runs, the handler the framework calls) and trace whether anything reachable from it reaches that path. Grep for importers of the module, then importers of those. Say plainly when nothing does: an unreachable failure path protects nothing, however correct it looks.
 4. For each reachable path, read the enclosing function IN FULL plus its callers, and determine what actually happens when it fires. Name the observable outcome: exit code, what appears in logs, and whether remaining work continues, is skipped, or is silently reported as success.

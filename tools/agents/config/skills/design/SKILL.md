@@ -119,7 +119,8 @@ Destination 3 belongs in the artifact only when a constraint from Phase 3 actual
 Most slices have none, and inventing one to fill the section is worse than leaving it out. It
 covers correctness alone: log formats and levels, span and metric naming, latency, cost, capacity,
 and dashboard layout are outside this plan even when the same instrumentation would carry them.
-Those are implementation concerns, governed by `~/.agents/standards/observability.md`.
+Those are implementation concerns, governed by `~/.agents/standards/instrumentation.md` and
+`~/.agents/standards/performance.md`.
 
 A constraint in category 1, 2 or 3 is asserted **and** tested, never asserted instead of tested. A
 test covers the inputs its author imagined; an assertion covers the inputs production supplies.
@@ -174,7 +175,7 @@ slice that invents a system-wide mechanism from the inside produces the third in
 
 This plan covers what must be recorded and why. Log format, log levels, field naming, and keeping
 telemetry out of the logic it instruments are implementation concerns governed by
-`~/.agents/standards/observability.md`, and they do not appear here.
+`~/.agents/standards/instrumentation.md`, and they do not appear here.
 
 Common ways a telemetry plan fails:
 - An emission listed without the question it answers, so nothing says when it could be removed

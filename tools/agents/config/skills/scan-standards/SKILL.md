@@ -58,9 +58,10 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    **Subagent 5 — Testing** (subagent_type: Explore, description: "review testing")
    Inline: `~/.agents/standards/testing.md`
 
-   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability, performance, async coordination, and reliability")
-   Inline: `~/.agents/standards/observability.md`, `~/.agents/standards/performance.md`,
-   `~/.agents/standards/async-coordination.md`, `~/.agents/standards/reliability.md`
+   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability, instrumentation, performance, async coordination, and reliability")
+   Inline: `~/.agents/standards/observability.md`, `~/.agents/standards/instrumentation.md`,
+   `~/.agents/standards/performance.md`, `~/.agents/standards/async-coordination.md`,
+   `~/.agents/standards/reliability.md`
 
    **Subagent 7 — Documentation & Release** (subagent_type: Explore, description: "review documentation, API design, dependencies, deployment, and config")
    Inline: `~/.agents/standards/documentation.md`, `~/.agents/standards/api-design.md`,
