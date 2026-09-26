@@ -31,6 +31,20 @@ degrades gradually enough that nobody notices until it is bad. Where an
 architecture caps how fast that loop can be, the ceiling is recorded rather
 than discovered later.
 
+**Changes are verified in a production-like local run, and only the fast loop
+differs from production.**
+The fast loop is what a change is written in, and it may differ from production
+wherever that keeps it fast. A second local run uses the production artifacts
+in the production topology, and a change is verified there. That run differs
+from production only where a stated reason says so. A difference matters when
+it can change what a user sees or whether a promise to them holds: origin,
+TLS and cookies, caching, compression, the built bundle. Without this, a fault
+that only production's arrangement produces is first seen after a deploy, and
+every attempt to reproduce it costs another. Keeping one mode for both jobs
+fails in one of two ways: the loop slows to a production build on every edit,
+or the differences that make it fast hide the faults verification exists to
+find.
+
 **Domain concepts are defined.**
 The core terms, entities, and relationships of the problem domain are
 explained. A developer who maps unfamiliar domain concepts onto general
