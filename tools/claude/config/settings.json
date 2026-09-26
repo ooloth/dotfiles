@@ -80,7 +80,7 @@
     "enabled": true,
     "allowUnsandboxedCommands": false,
     "enableWeakerNetworkIsolation": true,
-    "excludedCommands": ["git push *", "git fetch *", "git pull *", "tmux -L agent *"],
+    "excludedCommands": ["git push origin", "git push origin *", "git fetch *", "git pull *", "tmux -L agent *"],
     "filesystem": {
       "allowWrite": ["~/.npm", "~/Library/pnpm", "~/Library/Caches/pnpm", "~/Repos/ooloth/dotfiles/.git"],
       "allowRead": ["~/.config/gh/hosts.yml"],

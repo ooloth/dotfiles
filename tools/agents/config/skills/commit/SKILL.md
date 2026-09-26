@@ -39,9 +39,12 @@ diff you saw when those runs completed. If any condition is false, run them now.
    Staging file hunks non-interactively" when staging some changes in a file but not others (hint:
    `git add -p` won't work in this environment)
 5. After each commit, run `git log --oneline -3` to confirm it was recorded correctly.
-6. If a precommit hook fails and addressing the failure requires a design decision the user has not
+6. If the user also asked you to push, run `git push origin <branch>` as a Bash call of its own,
+   with no pipe, `&&`, `;` or redirect. Only that exact form runs outside the sandbox; any other
+   form fails on a proxy that refuses SSH.
+7. If a precommit hook fails and addressing the failure requires a design decision the user has not
    made, stop and present options and wait for approval.
-7. When finished making all commits, continue implementing your next approved task — but do not
+8. When finished making all commits, continue implementing your next approved task — but do not
    ever commit again unless explicitly asked to again. Each commit requires a new, explicit user
    approval signal ("commit", "/commit", etc.). The invocation of /commit you just acted on
    authorized only the changes you just finished committing. It does not carry forward.

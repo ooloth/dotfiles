@@ -393,9 +393,13 @@ is turned off.
 - Never start a background process with `&` or `nohup`. A later Bash command cannot signal it, and
   `ps` is blocked, so it keeps running after you finish. Run it in a `tmux -L agent` window, or
   start, check and stop it within one Bash command.
-- `git push`, `git fetch`, `git pull` and `tmux -L agent` run outside it on purpose. Commands inside
-  a `tmux -L agent` window run outside it too, so use those windows only for the project's own
-  commands.
+- `git push origin …`, `git fetch`, `git pull` and `tmux -L agent` run outside it on purpose, and
+  only when the Bash call is that one command with nothing around it: no pipe, `&&`, `;` or
+  redirect. Push as `git push origin <branch>`. Any other push, including a bare `git push`, runs
+  inside the sandbox and fails on a proxy that refuses SSH. Pushing to a remote other than `origin`
+  is left sandboxed on purpose, so the repo's contents cannot be sent somewhere else.
+- Commands inside a `tmux -L agent` window run outside it too, so use those windows only for the
+  project's own commands.
 - For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
   Playwright tools; the main session has none, and headless Chrome cannot start inside the sandbox.
 - To edit Claude's own config (this file, skills, agents, settings), use the Edit tool on the real
