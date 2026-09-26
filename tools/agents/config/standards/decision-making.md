@@ -41,8 +41,12 @@ its author already believed in, which is why it always looks complete.
 from what has already been written about it.**
 A criteria list assembled from the documents in front of you is the previous author's list, and it
 reads as complete precisely because it was written as a summary. Derive it from what the thing being
-chosen will actually do, then compare: where the inherited list is a subset, the difference is what
-would otherwise have been decided without. The same test settles whether the question is even
+chosen will actually do, by listing the concrete moments the system touches it: each request,
+write, read, deploy, failure and wait it takes part in. "The network" returns nothing to reason
+about, and "a returning user's first request after the page has loaded" returns a property a
+candidate either has or lacks. Each property cites what it rests on, and one that can cite nothing
+rests on an input that is not settled yet. Then compare: where the inherited list is a subset, the
+difference is what would otherwise have been decided without. The same test settles whether the question is even
 well-posed, because a question none of the derived criteria can discriminate on is the wrong
 question however reasonable it sounds. "One tool or several?" is unanswerable when nothing the
 system requires is about how many tools there are, and a question like that will absorb a survey
@@ -79,7 +83,8 @@ a topic-driven list does not. Each is asked along three axes: how much is consum
 moves, and how long one operation takes. Ask them by enumerating the moments the system touches that
 resource rather than in the abstract, because "storage" returns nothing and "the request path reads
 a row, a write is flushed, a backup is copied off the machine, a migration rewrites a table" returns
-a list you can reason about. Most will not bind, and saying so is the point: "memory does not bind,
+a list you can reason about. These moments are the same ones the property list is derived from,
+applied to the four resources. Most will not bind, and saying so is the point: "memory does not bind,
 because the workload is X and the smallest instance is Y" and silence about memory are
 indistinguishable in a finished record, and only one of them was considered. This is not a mandate
 to measure. A property recorded as not binding needs a reason rather than a number, and the Must
@@ -214,6 +219,22 @@ document would have settled, and asserting from a document what only running can
 above pushes toward observing and is silent on the first of those, which is the more expensive
 mistake on a question whose candidates publish what they can and cannot do — most of a tool or
 runtime field is eliminated by reading, and the spike is then aimed at whatever survives.
+
+**Research is assigned by property, not by candidate.**
+A researcher given a candidate returns a survey of that candidate, and the comparison is then
+assembled from several surveys that each chose their own axes. A researcher given a property
+returns a verdict for every candidate on the axis the decision turns on, with its source, and that
+verdict goes straight into the comparison. Enumerating the field is its own assignment, so the
+candidates are not limited to the ones already named, and a property a researcher finds that the
+list missed joins the list before any option is compared.
+
+**The comparison shows every option against every derived property, and each rejection names the
+property it fails.**
+A comparison written as prose per option lets each option be judged on whichever properties flatter
+or sink it. A grid shows where an option was never assessed, makes the one disqualifying property
+visible, and shows when two options differ on nothing the list contains, which is the finding the
+entry on bounded searches below describes. A grid in the working is enough; the record carries the
+properties and names the one each rejection fails.
 
 **A check earns its place when it can name the property, the requirement that binds it, and which
 candidates leave the field on each outcome.**
