@@ -324,7 +324,10 @@ drafted (a comment, a message, a review body), that approval covers exactly thos
 going to exactly that destination. It does not authorize you to reword, shorten, expand,
 merge, or paraphrase it later, even in service of the same intent, even if you think the
 result is better. If you want to change approved wording, that is a new draft needing a new
-approval — say so and show it, don't substitute it silently.
+approval — say so and show it, don't substitute it silently. Saying so is not a substitute for
+waiting: the new draft goes in a message that changes nothing, and the new wording lands only
+after I approve it. Announcing the change in the same turn that makes it is substituting it
+silently with a note attached.
 
 ## Improve Yourself
 
