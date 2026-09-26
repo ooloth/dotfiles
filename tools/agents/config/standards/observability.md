@@ -7,11 +7,6 @@ and formatted is `instrumentation.md`.
 
 ## Must
 
-**Errors are surfaced, not swallowed.**
-Every error path is either handled explicitly or propagated to a layer that
-will log or report it. Silent failure — catching an error and doing nothing —
-does not exist.
-
 **A new failure mode is diagnosable from what the system records.**
 Code that introduces a way to fail can be diagnosed from its recorded output
 alone, without attaching a debugger or reproducing the failure locally. What
@@ -20,6 +15,14 @@ introduced, because the state that would have answered the question is gone by
 the time anybody asks.
 
 ## Should
+
+**A failure that was handled still leaves a record.**
+Recovering, retrying, degrading to a default or serving a cached value are all
+legitimate outcomes, and each is a fact about the run that nothing else
+reports. Handling an error decides what the system does about it; it does not
+decide whether anybody learns it happened. `error-handling.md` covers which
+layer should handle an error, and `reliability.md` covers what the process
+boundary shows; this covers whether the handled case is knowable at all.
 
 **A load-bearing claim about behavior is measured, not assumed.**
 A rate, a latency, a frequency, or a cost that a decision depends on is
