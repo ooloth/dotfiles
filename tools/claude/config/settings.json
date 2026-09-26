@@ -41,7 +41,6 @@
       "Bash(sudo *)",
       "Read(~/.ssh/**)",
       "Read(~/.aws/**)",
-      "Read(~/.config/gh/**)",
       "Read(./.env)",
       "Read(./.env.local)",
       "Read(./.env.*.local)",
@@ -66,7 +65,15 @@
   },
   "sandbox": {
     "enabled": true,
-    "excludedCommands": ["git *", "gh *"],
+    "excludedCommands": [
+      "git *",
+      "gh *",
+      "pnpm add *",
+      "pnpm install*",
+      "pnpm remove *",
+      "pnpm update*",
+      "pnpm view *"
+    ],
     "filesystem": {
       "allowWrite": ["~/.npm"],
       "denyRead": ["~/.ssh"]
