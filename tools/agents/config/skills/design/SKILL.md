@@ -19,9 +19,10 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 
 1. Read the agreed objective from $ARGUMENTS — if it's a Trekker task number, read that task; if
    it's a description, use it directly. Ask the user to clarify if the scope is still ambiguous.
-2. Load `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md` and
-   `~/.agents/standards/testing.md`. Also load any language-specific reference file that applies
-   to this codebase (`~/.agents/standards/rust.md`, `~/.agents/standards/python.md`, etc.).
+2. Load `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md`,
+   `~/.agents/standards/testing.md` and `~/.agents/standards/decision-making.md`. The last applies
+   because Phase 2 chooses between options. Also load any language-specific reference file that
+   applies to this codebase (`~/.agents/standards/rust.md`, `~/.agents/standards/python.md`, etc.).
 3. Explore the codebase to understand:
    - Existing domain types and naming conventions
    - Existing testing patterns and what paradigms are already in use
@@ -31,14 +32,18 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 
 ### Phase 2: Consider Alternatives
 
-Before committing to a design, sketch 2–3 meaningfully different type progressions for the same
-feature. For each, state:
+First, state the properties the design is scored against. Where `/discuss` produced a target
+properties list, carry it forward and translate each into what it demands of the types. Do not
+re-derive it. Where none exists, derive it here from what the code will actually do.
+
+Then sketch 2–3 meaningfully different type progressions for the same feature. For each, state:
 - The shape of the progression (a one-line summary of the type structure)
-- What it optimises for (clarity at boundaries, fewer allocations, stronger compiler guarantees,
-  simpler error handling, etc.)
+- How it scores against each target property, and which properties it fails to deliver
 - Its main tradeoff
 
-Then recommend one with a sentence explaining the choice. Only carry the recommended design forward.
+Then recommend one, naming the property that decides it. Implementation effort is a constraint,
+never a merit: "fewer types", "less refactoring" and "a smaller diff" describe what an option costs
+and never why it wins. Only carry the recommended design forward.
 
 ### Phase 3: Design the Type Story
 
@@ -139,15 +144,17 @@ that neither is mistaken for full coverage on its own. For each transformation:
 
 Present the design artifact:
 
-1. **Alternatives considered** — the progressions sketched in Phase 2 and why the recommended one
-   was chosen
-2. **Type story** — the full progression with domain-named types at each step and what each step
+1. **Target properties** — what the design must deliver, carried from `/discuss` or derived in
+   Phase 2, and which of them the type system can enforce
+2. **Alternatives considered** — the progressions sketched in Phase 2, each scored against those
+   properties, and the property that decided the choice
+3. **Type story** — the full progression with domain-named types at each step and what each step
    rules out
-3. **Compiler guarantees** — what the type design enforces for free
-4. **Assertion plan** — which constraints are asserted and where, which are left to boundary
+4. **Compiler guarantees** — what the type design enforces for free
+5. **Assertion plan** — which constraints are asserted and where, which are left to boundary
    validation, and which states are deliberately allowed rather than asserted against
-5. **Test plan** — what needs verification, which paradigm, and why
-6. **Open decisions** — any naming or structural choices the user should weigh in on before
+6. **Test plan** — what needs verification, which paradigm, and why
+7. **Open decisions** — any naming or structural choices the user should weigh in on before
    implementation begins
 
 Ask for explicit approval.

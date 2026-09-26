@@ -48,6 +48,22 @@ question however reasonable it sounds. "One tool or several?" is unanswerable wh
 system requires is about how many tools there are, and a question like that will absorb a survey
 and return a preference wearing a derivation.
 
+**The derived properties are written down before any option is named.**
+Deriving them and keeping them in your head satisfies nothing a reader can check. A recommendation
+presented without the list reads as reasoned whether or not the reasoning happened, and a property
+that was never derived is invisible in exactly the way a derived one is. The list is also the only
+part of the record a reader can disagree with before the conclusion has framed the question for
+them.
+
+**Implementation effort is a constraint, never a merit.**
+A stated budget rules an option out. Nothing rules one in on effort. "Simpler to build", "a smaller
+diff", "less to configure" and "fewer moving parts" each name what an option costs, and none of
+them names anything the system requires, so an option that wins on one of them has not been
+compared on anything. The tell is a comparison whose merit column contains a cost. Where effort is
+genuinely the only thing separating the candidates, the properties did not discriminate, and the
+finding is that they did not: the record says the choice was made on cost rather than presenting
+the cost as a derivation.
+
 **Every architectural decision considers CPU, memory, storage and network, and records which of them
 do not bind and why.**
 These four are what software eventually runs on, so they generate candidate criteria reliably where

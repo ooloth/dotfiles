@@ -99,10 +99,11 @@ decisions), stop and discuss those rather than quietly making an executive decis
 - Try to prevent that from happening by delegating as much exploration as you can to subagents
 - That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
   details only entering the conversation
-- When spawning your own subagents, prefer lower token-usage models like sonnet or haiku over
-  opus unless there's a specific reason the task really needs a model with powerful reasoning
-  capabilities; there will be a trade-off here (quality will degrade) so use your judgment based
-  on how mechanical vs reason-based the task is and what capabilities the model needs to succeed
+- When spawning your own subagents, name what the task actually demands of a model before choosing
+  one: how much of the reasoning is mechanical, what a wrong answer costs, and whether you would be
+  able to tell it was wrong. Then pick the cheapest model that meets it. Cost rules a model out
+  against a budget; it never rules one in. A task whose output you cannot check is not a place to
+  save tokens
 
 **Tell every subagent to read the files itself and not to spawn subagents of its own.** Say it
 explicitly in the prompt; agents fan out by default when the scope looks large. Two reasons, and the
@@ -174,6 +175,12 @@ Then, measure the system's current performance and compute the delta compared to
 max. Don't just hand wave performance potential based on what's normally considered "fine" or focus
 on improving relatively slow code paths based on local norms, which tell you nothing about what's
 actually possible and what optimal performance actually would be.
+
+The same move applies to any design decision, not only performance. Before weighing options, state
+the properties the finished system should have, derived from what it will actually do rather than
+from what the ticket or the existing docs already say it needs. Then ask what it would take to have
+all of them, and only then what to give up. An approach recommended without that list was scored
+against a bar you set yourself, and setting it low is invisible in the result.
 
 ## Uphold Standards
 
