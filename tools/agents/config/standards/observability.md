@@ -7,12 +7,11 @@ and formatted is `instrumentation.md`.
 
 ## Must
 
-**A new failure mode is diagnosable from what the system records.**
-Code that introduces a way to fail can be diagnosed from its recorded output
-alone, without attaching a debugger or reproducing the failure locally. What
-has to be recorded for that to hold is settled when the failure mode is
-introduced, because the state that would have answered the question is gone by
-the time anybody asks.
+**A failure mode is diagnosable from what the system records.**
+Every way the code can fail can be diagnosed from its recorded output alone,
+without attaching a debugger or reproducing the failure locally. What has to be
+recorded is decided when the failure mode is written, because the state that
+would have answered the question is gone by the time anybody asks.
 
 ## Should
 
@@ -56,7 +55,7 @@ form, because `privacy.md` rules out the value.
 ## In scope
 
 - Error paths
-- New failure modes
+- Failure modes
 - Quantitative claims backing a design, performance, or process decision
   (rates, latencies, costs, capacity estimates)
 - Invariants that hold across processes, runs, or accumulated state rather than

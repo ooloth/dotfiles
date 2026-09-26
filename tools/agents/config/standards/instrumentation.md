@@ -7,10 +7,10 @@ place is `observability.md`.
 
 ## Must
 
-**New behavior leaves a trace.**
-Code that introduces new operations, decisions, or failure modes emits output
-covering them. A code path that runs and says nothing is indistinguishable
-from one that never ran.
+**A code path that runs leaves a trace.**
+Operations, decisions and failure modes each emit output covering them, and
+that output is added in the same change as the path it covers. A code path that
+runs and says nothing is indistinguishable from one that never ran.
 
 ## Should
 
@@ -32,7 +32,7 @@ of the surrounding code remains clear after instrumentation is added.
 ## In scope
 
 - Logging, metric and trace call sites
-- New behavior entry points
+- Operation, decision and failure-mode sites
 - Resource allocation and cleanup sites
 
 ## Out of scope

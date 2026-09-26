@@ -69,9 +69,10 @@ the wrap width — an index, a key map — where scanning down a column is the p
 
 ## Should
 
-**New behavior appears in the right doc surfaces.**
-A new flag appears in help text. A new config key appears in the example
-config. Docs are updated in the same change that introduces the behavior.
+**Behavior appears in the right doc surfaces.**
+A flag appears in help text. A config key appears in the example config. Each
+surface is updated in the same change as the behavior it describes, and a
+surface that never received its entry is as wrong as one that went stale.
 
 **Examples are correct and runnable.**
 Code samples in documentation execute without modification. Copy-paste

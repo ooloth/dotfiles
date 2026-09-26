@@ -1,7 +1,7 @@
 ---
 name: scan-standards
 description: Check whether a codebase upholds its standards — a specific theme or all themes in parallel. Use when asked to review conventions, check standards, or audit codebase health.
-argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | instrumentation | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
 ---
@@ -16,6 +16,10 @@ effort: high
 4. Use up to 50 subagents to explore the codebase (or the path/git-range if the user specified a smaller scope)
 5. Identify violations of Must standards, deviations from Should standards, and unresolved Consider tradeoffs
 6. Focus especially on patterns you would not want a future agent to spread
+7. Report separately any standard you could not evaluate against the code in front of you, quoting
+   its lead sentence. A lead sentence whose truth depends on knowing what recently changed cannot be
+   checked against a codebase that has no diff, and that is a defect in the standard rather than a
+   gap in the scan
 
 **If no theme was specified, continue below for a full parallel review.**
 
@@ -40,7 +44,11 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    - This shared task: "Use up to 50 subagents to explore the codebase. Identify violations of Must
      standards, deviations from Should standards, and unresolved Consider tradeoffs. Focus
      especially on patterns you would not want a future agent to spread. Return findings as a
-     structured list with severity (Must/Should/Consider), location, and recommendation."
+     structured list with severity (Must/Should/Consider), location, and recommendation. Report
+     separately any standard you could not evaluate against the code in front of you, quoting its
+     lead sentence and naming what you would have needed. A lead sentence whose truth depends on
+     knowing what recently changed cannot be checked against a codebase that has no diff, and
+     skipping it silently is how it stays that way."
 
    **Subagent 1 — Structure** (subagent_type: Explore, description: "review structure")
    Inline: `~/.agents/standards/code-structure.md`, `~/.agents/standards/code-readability.md`
@@ -75,10 +83,13 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    `~/.agents/standards/cli-design.md` → Structure (if the project has a CLI binary).
 
 2. Wait for all subagents to return their results
-3. Explore specific areas of the codebase yourself if needed to compare the relative importance of findings
-4. Rank findings by priority (impact, cost of delay, ROI)
-5. Present the prioritized findings with a summary table
-6. Generate a self-contained HTML slide deck:
+3. Collect anything a subagent reported as unevaluable. Those are defects in the standards files
+   rather than in the codebase, so they get their own short section and are not ranked among the
+   code findings
+4. Explore specific areas of the codebase yourself if needed to compare the relative importance of findings
+5. Rank findings by priority (impact, cost of delay, ROI)
+6. Present the prioritized findings with a summary table, followed by the unevaluable standards
+7. Generate a self-contained HTML slide deck:
    - `mkdir -p .outputs/<yyyy-mm-dd>`
    - Write to `.outputs/<yyyy-mm-dd>/scan-standards.html` — clean minimal styling, one slide per category plus a title/summary slide, keyboard arrow-key and click navigation
    - `open .outputs/<yyyy-mm-dd>/scan-standards.html`
