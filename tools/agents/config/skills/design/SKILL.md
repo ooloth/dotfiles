@@ -65,6 +65,11 @@ For each step:
   out that the previous type permitted.
 - **Flag anything that requires runtime validation** — where the type system can't enforce a
   constraint and a check is needed instead.
+- **For each error or failure variant, name what is retained at that point** — the values someone
+  would need to reconstruct the input that produced it. `correctness.md` asks for deterministic
+  behaviour so that a failure can be replayed, and replay also needs the input to still exist.
+  Where it would not, that constrains the type: an input consumed as a stream cannot be replayed
+  and a retained value can, so the choice belongs here rather than at implementation time.
 
 The following are common ways a type story fails. This list is illustrative, not exhaustive — use
 your judgment. Any design that fails to tell the domain story in types is wrong, whether or not the
@@ -84,16 +89,36 @@ Read them before this phase; this phase turns them into an artifact.
 
 Where types check structure, assertions check logic and state on every execution, including in
 production. For each constraint the type story flagged as needing a runtime check, decide which of
-three mechanisms owns it:
+four mechanisms owns it:
 
 1. **Boundary validation** — something outside the code can violate it: absent config, malformed
    input, a failed call, a human editing the content it reads. Belongs in a schema or parser at
    the I/O boundary, returning an error rather than halting.
 2. **Assertion** — only a bug in this codebase can violate it. Belongs at the site of the
    contract: preconditions on arguments, postconditions on returns, invariants on internal state.
-3. **Test only** — neither of the above applies.
+3. **Recorded-signal check** — only a bug in this codebase can violate it, but no single call site
+   can evaluate it, because the invariant spans processes, spans time, or holds over many
+   executions rather than one. Every accepted job eventually reaches a terminal state; the number of
+   rows written equals the number of events consumed; a cache agrees with its source. The check is
+   still an assertion and still follows the standards above, but the site it belongs at does not
+   exist yet, so the design creates it. State four things: the invariant, the record the check reads
+   and where that record is written, where the check runs (a reconciliation pass, a periodic
+   verifier, a comparison of two counters), and what a firing means.
 
-A constraint in category 1 or 2 is asserted **and** tested, never asserted instead of tested. A
+   Such a check records and alerts rather than halting, and that is not a weaker assertion.
+   `correctness.md` requires a halt because an assertion fires between computing wrong output and
+   using it, so stopping prevents the consequence. A check that runs after the fact has no such
+   moment: the output is already out, nothing is prevented by stopping, and halting the verifier
+   stops the next check from running as well. What this check owes is a signal a person acts on.
+4. **Test only** — none of the above applies.
+
+Destination 3 belongs in the artifact only when a constraint from Phase 3 actually lands there.
+Most slices have none, and inventing one to fill the section is worse than leaving it out. It
+covers correctness alone: log formats and levels, span and metric naming, latency, cost, capacity,
+and dashboard layout are outside this plan even when the same instrumentation would carry them.
+Those are implementation concerns, governed by `~/.agents/standards/observability.md`.
+
+A constraint in category 1, 2 or 3 is asserted **and** tested, never asserted instead of tested. A
 test covers the inputs its author imagined; an assertion covers the inputs production supplies.
 The two find different bugs, and the second kind is why an assertion multiplies the value of
 fuzzing and property testing.
@@ -109,12 +134,17 @@ Common ways an assertion plan fails:
 - Assertions that abort on improbable-but-valid states rather than impossible ones
 - Several conditions bundled into one assertion, so a failure reports that something broke
   without reporting which
+- An invariant that spans executions routed to "test only", where the only thing that ever checks
+  it is data a test author made up
+- A recorded-signal check specified without naming the record it reads, which leaves it
+  unimplementable
 
 ### Phase 5: Derive the Test Plan
 
 From the type boundaries, identify what needs behavioral verification. Constraints Phase 4
-assigned to an assertion or to boundary validation still appear here, with the pairing named, so
-that neither is mistaken for full coverage on its own. For each transformation:
+assigned to an assertion, to boundary validation, or to a recorded-signal check still appear here,
+with the pairing named, so that none of them is mistaken for full coverage on its own. For each
+transformation:
 
 1. **Compiler guarantees** — list what correct code gets for free from the type design. No tests
    needed for these.
@@ -152,7 +182,9 @@ Present the design artifact:
    rules out
 4. **Compiler guarantees** — what the type design enforces for free
 5. **Assertion plan** — which constraints are asserted and where, which are left to boundary
-   validation, and which states are deliberately allowed rather than asserted against
+   validation, and which states are deliberately allowed rather than asserted against. Where a
+   constraint is checked against a recorded signal, name the record, the check, and what a firing
+   means; omit this part entirely when no constraint landed there
 6. **Test plan** — what needs verification, which paradigm, and why
 7. **Open decisions** — any naming or structural choices the user should weigh in on before
    implementation begins
