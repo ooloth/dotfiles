@@ -411,7 +411,8 @@
     "enabled": true,
     "excludedCommands": ["git *", "gh *"],
     "filesystem": {
-      "allowWrite": ["~/.npm"]
+      "allowWrite": ["~/.npm"],
+      "denyRead": ["~/.ssh"]
     },
     "network": {
       "allowedDomains": [
