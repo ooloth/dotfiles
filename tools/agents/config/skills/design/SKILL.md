@@ -251,6 +251,11 @@ When the user approves and the work is on a ticket (GitHub Issue, Linear, Jira, 
 comment recording the approved design (type progression, assertion plan, telemetry plan and test
 plan) and how it follows from the approach in the previous comment. The draft is the full approved
 artifact above, not a subset: each test and each assertion traced to the property it observes, and
-each telemetry signal to the failure it would reveal. Show it to the user, and post it once they
+each telemetry signal to the failure it would reveal. The comment keeps the property numbering of
+the approach comment. Its sections hold the artifact as follows: **Types** holds the type story, the
+compiler guarantees and the progressions that lost; **Assertions**, **Telemetry** and **Tests** hold
+their plans. An open decision settled during design goes in the section it affects and links the
+record that settles it, which is committed and pushed before the comment is posted, per the global
+rule on what a comment links. Show it to the user, and post it once they
 approve that wording, before writing code. When the work is not on a ticket, nothing is recorded. Then proceed
 with the first slice.
