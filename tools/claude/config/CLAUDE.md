@@ -229,9 +229,18 @@ line so the chain reads without opening them. A choice that something else will 
 that an open question could reverse, is never settled in a comment: it goes through the project's
 decision process, and the comment links the result.
 
-The comment is a public side effect, so its draft is shown to the user
-and posted only once they approve that wording. When the work is not on a ticket, none of this is
-written anywhere.
+A comment is read by people outside this harness, so it names no skill, slash command or agent. It
+says what happened instead: "the design comment", not "`/design`"; "checked in a browser", not "the
+browser agent". Its sections are named for what each answers, never after a skill's artifact:
+**What this must make true**, **What does not bind here**, **Approach**, **Alternatives that
+lost**, **Deferred**, **Constraints** and **Done when**. A design comment uses **Types**,
+**Assertions**, **Telemetry** and **Tests**. Done when has no checkboxes: the comment records a
+point in time, and the tracker holds status. Where the approved artifact lacks something the comment
+needs, such as an alternative nobody weighed, the gap is raised with the user before drafting and
+never filled in by the drafter.
+
+The comment is a public side effect, so its draft is shown to the user and posted only once they
+approve that wording. When the work is not on a ticket, none of this is written anywhere.
 
 **Keep `docs/questions/` current, not just at creation.** When a discussion surfaces a genuine
 open question — real options, not yet settled, worth surviving context loss or a future session —
