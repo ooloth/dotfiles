@@ -198,6 +198,7 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 ### Decisions
 
 - Look for recorded decisions in `DECISIONS.md`, `docs/decisions/`, `docs/adr/`, `doc/adr/`, `adr/` and `docs/architecture/decisions/`, and search the repo for "ADR"
+- A project may record decisions somewhere else, so also check its `CLAUDE.md`, `AGENTS.md`, `README.md` and `docs/README.md` for where it says decisions live
 - Read titles first; open a record only when its title touches this work
 - Under **Constraints**, link each record that binds this work and say in one line how it binds. Don't restate its reasoning; the record is the source
 - A record binds only when its title plainly covers this work. When applying it takes interpretation (does a record about "customer downloads" cover an export only admins can run?), deciding whether it applies is itself a decision: link the record under **Open** as that question instead of asserting it binds
