@@ -1,9 +1,42 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "cleanupPeriodDays": 30,
+  "autoMemoryEnabled": false,
   "attribution": {
     "commit": "",
     "pr": ""
+  },
+  "cleanupPeriodDays": 30,
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": false,
+    "lua-lsp@claude-plugins-official": false
+  },
+  "feedbackSurveyState": {
+    "lastShownTime": 1754054339526
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git *)",
+            "command": "bash ~/.claude/hooks/git-push-guard.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e \"display notification \\\"Needs your attention in $(basename $PWD)\\\" with title \\\"Claude Code\\\"\""
+          }
+        ]
+      }
+    ]
   },
   "includeGitInstructions": false,
   "permissions": {
@@ -76,13 +109,20 @@
     ],
     "defaultMode": "auto"
   },
+  "plansDirectory": "./.claude/plans",
   "sandbox": {
     "enabled": true,
     "allowUnsandboxedCommands": false,
     "enableWeakerNetworkIsolation": true,
     "excludedCommands": ["git push origin", "git push origin *", "git fetch *", "git pull *", "tmux -L agent *"],
     "filesystem": {
-      "allowWrite": ["~/.npm", "~/Library/pnpm", "~/Library/Caches/pnpm", "~/Library/Caches/uv", "~/Repos/ooloth/dotfiles/.git"],
+      "allowWrite": [
+        "~/.npm",
+        "~/Library/pnpm",
+        "~/Library/Caches/pnpm",
+        "~/Library/Caches/uv",
+        "~/Repos/ooloth/dotfiles/.git"
+      ],
       "allowRead": ["~/.config/gh/hosts.yml"],
       "denyRead": ["~/.ssh"],
       "denyWrite": ["~/Repos/**/.git/hooks", "~/Repos/**/.git/config"]
@@ -100,9 +140,7 @@
       ]
     },
     "credentials": {
-      "files": [
-        { "path": "~/.aws/credentials", "mode": "deny" }
-      ],
+      "files": [{ "path": "~/.aws/credentials", "mode": "deny" }],
       "envVars": [
         { "name": "GH_TOKEN", "mode": "deny" },
         { "name": "GITHUB_TOKEN", "mode": "deny" },
@@ -110,46 +148,13 @@
       ]
     }
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(git *)",
-            "command": "bash ~/.claude/hooks/git-push-guard.sh"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "osascript -e \"display notification \\\"Needs your attention in $(basename $PWD)\\\" with title \\\"Claude Code\\\"\""
-          }
-        ]
-      }
-    ]
-  },
+  "showClearContextOnPlanAccept": true,
+  "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
-  "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": false,
-    "lua-lsp@claude-plugins-official": false
-  },
-  "showClearContextOnPlanAccept": true,
-  "plansDirectory": "./.claude/plans",
-  "tui": "fullscreen",
-  "showThinkingSummaries": true,
-  "skipDangerousModePermissionPrompt": true,
   "theme": "dark-daltonized",
-  "feedbackSurveyState": {
-    "lastShownTime": 1754054339526
-  }
+  "tui": "fullscreen"
 }
