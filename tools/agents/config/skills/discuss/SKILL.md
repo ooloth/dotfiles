@@ -134,13 +134,17 @@ End with a strategy artifact:
    decision that binds the task (linked), or where you looked if none did
 4. **Recommendation** — preferred approach, scored against each target property, including what
    ties events together across any process, async or run boundary it introduces, and where anything
-   durable that a later check reads is kept
+   durable that a later check reads is kept. It ends with the alternatives a competent person would
+   have chosen, each with the property it fails
 5. **Open decisions** — only decisions that block correct implementation
 6. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
-   to produce the type story, telemetry plan, test plan, and implementation slices
+   to produce the type story, assertion plan, telemetry plan, test plan, and implementation slices
 
-When the work is on a ticket, the plan comment is drafted from this artifact: Target properties,
-Recommendation with its rejected alternatives, and Open decisions. Findings stay out.
+When the work is on a ticket, the plan comment is drafted from three sections of this artifact:
+**Target properties**, **Recommendation** (including its alternatives) and **Open decisions**. A
+point from **Findings** that the approach rests on goes in beside the step it supports; the rest
+of **Findings** stays out. The comment's done-when is the ticket's Ideal state plus whatever the
+approach adds to it.
 
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
 and stop again. Do not treat answers to questions as approach approval.
