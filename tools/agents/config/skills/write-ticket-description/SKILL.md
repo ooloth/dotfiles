@@ -10,8 +10,9 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 1. **Duplicate check** — search the platform for issues with similar titles; read candidate descriptions; stop only if a duplicate or overlap is found — otherwise say "No duplicates found" and continue (see [Duplicate Check](#duplicate-check) below)
 2. Explore the relevant code to verify the current state before describing it
-3. Draft using the template and voice rules below
-4. Create the ticket using the appropriate platform tool
+3. Ask the requester, before drafting, for any bound or exclusion you would otherwise have to invent (see [Ideal state](#ideal-state) and [Out of scope](#out-of-scope))
+4. Draft using the template and voice rules below
+5. Create the ticket using the appropriate platform tool
 
 ---
 
@@ -103,7 +104,7 @@ An epic uses the same template as any other ticket, with two additions:
 - **A note naming any sub-issue that has no corresponding requirement** and why it earns its place.
   Unexplained extra scope in an epic reads as scope creep.
 
-Keep the epic's own "Done when" about the aggregate — all children closed, all requirements met —
+Keep the epic's own Ideal state about the aggregate — all children closed, all requirements met —
 never about the implementation of any one child.
 
 ### Ordering
@@ -140,15 +141,11 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 
 ## Out of scope
 
-[Explicit list of things that might seem related but aren't part of this issue. If nothing obvious qualifies, omit this section.]
+[Only exclusions the requester stated. Omit this section when they stated none.]
 
 ## Starting points
 
 [2-3 file paths that explain today's behavior. Helps a cold reader orient fast.]
-
-## Done when
-
-[One-line bar: the minimum condition for this issue to be closeable, adding the concrete detail the title leaves out.]
 
 ## Depends on
 
@@ -170,27 +167,27 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 ### Ideal state
 
 - Write each bullet as a fact that will be true when the work is done: "X does Y" not "add X" or "implement Y"
-- Each bullet should be independently checkable — these bullets are what make success observable
+- Each bullet is something a person can check in the running system when the ticket closes — these bullets are what make success observable
+- A business outcome (fewer support tickets, happier customers) appears only as the reason for a system bullet, after "so that", and only when the link is not obvious
+- Where a property has a limit (a size, a time, a count), the bullet states the most demanding value wanted: "An export of up to 1,000,000 orders completes"
+- Only the requester supplies a limit. If a property needs one and you do not know it, ask before drafting; never invent a plausible number
+- A yes-or-no property gets no limit
+- Ideal state is the full scope: anything it does not describe is out of scope
+- Ideal state is also the bar for closing: the ticket closes when every bullet holds
 - Don't mix in implementation steps — those belong in a PR, not an issue
 - The step-by-step verification plan is written during implementation, once the approach is known, not here
 
 ### Out of scope
 
-- Be explicit about adjacent things that are NOT included
-- Prevents scope creep and spares the implementer from guessing
-- Omit this section if nothing obvious qualifies
+- List only exclusions the requester stated; each one is a decision, and deciding is not the author's job
+- An exclusion you think of yourself is a question for the requester before drafting, not a bullet in the ticket
+- Omit this section when the requester stated no exclusions
 
 ### Starting points
 
 - Name actual file paths, not directory names
 - Pick the files a reader would need to understand the current behavior, not the files where the change should go
 - 2-3 max; more than that is noise
-
-### Done when
-
-- One sentence
-- States the minimum bar, not the ideal
-- Adds what the title leaves out — a number, a scope, a condition — rather than restating it
 
 ### Depends on
 
@@ -205,11 +202,11 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 ❌ Describing implementation steps in "Ideal state" — those belong in a PR
 ❌ Current state that opens with a technical fact instead of the downstream impact
 ❌ Burying the consequence — "the export runs synchronously" before "large customers cannot export"
-❌ Omitting "Out of scope" when adjacent things could easily be pulled in
+❌ An exclusion in "Out of scope" that the requester did not state
+❌ A limit in "Ideal state" that the requester did not supply
+❌ An "Ideal state" bullet that can only be checked outside the system ("support gets fewer tickets")
 ❌ A QA plan or verification steps — they assume an approach nobody has chosen yet
 ❌ Starting points that name directories instead of files, or point to where the change should go
-❌ "Done when" that lists multiple conditions — pick the one that matters most
-❌ "Done when" that restates the title
 
 ---
 
@@ -238,10 +235,6 @@ Customers with more than about 50,000 orders cannot export their order history, 
 
 - `app/orders/export_controller.rb` — handles the export request today
 - `app/orders/csv_builder.rb` — builds the file row by row
-
-## Done when
-
-A customer with 1,000,000 orders can request an export and receive the complete file.
 ```
 
 ### Why This Works
@@ -249,6 +242,6 @@ A customer with 1,000,000 orders can request an export and receive the complete 
 ✅ Title is a present-tense claim about the outcome, not a task or a mechanism
 ✅ Current state leads with the impact (customers can't export, support load), then supports it with observable facts
 ✅ Ideal state uses "X does Y" framing and names no mechanism — each bullet is a verifiable fact
-✅ Out of scope prevents two obvious scope-creep traps
+✅ Each Ideal state limit (1,000,000 orders) came from the requester
+✅ Out of scope lists only the two exclusions the requester stated
 ✅ Starting points explain today's behavior, not where the change should go
-✅ Done when adds the concrete bar (1,000,000 orders, the complete file) that the title leaves out
