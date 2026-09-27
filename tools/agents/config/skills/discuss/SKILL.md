@@ -139,6 +139,9 @@ End with a strategy artifact:
 6. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
    to produce the type story, telemetry plan, test plan, and implementation slices
 
+When the work is on a ticket, the plan comment is drafted from this artifact: Target properties,
+Recommendation with its rejected alternatives, and Open decisions. Findings stay out.
+
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
 and stop again. Do not treat answers to questions as approach approval.
 

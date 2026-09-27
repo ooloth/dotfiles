@@ -248,6 +248,9 @@ the type story and/or test plan, re-present the full artifact, and stop again. D
 until the user gives explicit approval.
 
 When the user approves and the work is on a ticket (GitHub Issue, Linear, Jira, etc.), draft a
-comment recording the approved design, show it to the user, and post it once they approve that
-wording, before writing code. When the work is not on a ticket, nothing is recorded. Then proceed
+comment recording the approved design (type progression, assertion plan, telemetry plan and test
+plan) and how it follows from the approach in the previous comment. The draft is the full approved
+artifact above, not a subset: each test and each assertion traced to the property it observes, and
+each telemetry signal to the failure it would reveal. Show it to the user, and post it once they
+approve that wording, before writing code. When the work is not on a ticket, nothing is recorded. Then proceed
 with the first slice.
