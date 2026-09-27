@@ -115,14 +115,15 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 
 ## Title Rules
 
+- **A claim about what will be true once the work is done**, in the present tense — "Large order exports download without timing out"
 - **Scannable in a list** — the reader understands what it is without opening it
-- **Outcome-focused, not implementation-focused** — "Cache status data for fast reads" not "Add SQLite table for status"
-- **Verb-first or noun-first, not a full sentence** — "Add daemon for background status refresh" or "Background status refresh via daemon"
-- **Specific enough to distinguish from similar tickets** — "Fix auth token expiry on mobile" not "Fix auth bug"
+- **An outcome, not a mechanism** — the claim describes what a user or developer experiences, not how the system achieves it
+- **Specific enough to distinguish from similar tickets** — "Mobile users stay signed in after switching apps" not "Sign-in works"
 
-❌ Vague: "Fix status", "Improve performance", "Refactor auth"
-❌ Implementation-first: "Add tokio-cron-scheduler", "Create new table"
-❌ Passive: "Status should be cached", "Daemon is needed"
+❌ Vague: "Exports work", "Performance is better", "Auth is cleaner"
+❌ Task: "Add background export job", "Fix auth bug"
+❌ Wish: "Exports should not time out"
+❌ Mechanism: "Exports run on a job queue", "Status is cached in SQLite"
 
 ---
 
@@ -143,15 +144,11 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 
 ## Starting points
 
-[2-3 file paths the implementer should read first. Helps a cold reader orient fast.]
-
-## QA plan
-
-[Numbered steps an implementer can follow cold to confirm correctness. Specific enough to run without asking anyone. No automated tests — manual e2e only.]
+[2-3 file paths that explain today's behavior. Helps a cold reader orient fast.]
 
 ## Done when
 
-[One-line bar: the minimum condition for this issue to be closeable.]
+[One-line bar: the minimum condition for this issue to be closeable, adding the concrete detail the title leaves out.]
 
 ## Depends on
 
@@ -168,12 +165,14 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 - Follow with the observable facts that cause it — what a person can see or measure today
 - Don't editorialize ("unfortunately", "badly", "messy")
 - Keep it to 2-4 sentences max
+- Whoever re-verifies it after the ticket was created adds a `Checked YYYY-MM-DD` line; a new ticket needs none, since the platform records its creation date
 
 ### Ideal state
 
 - Write each bullet as a fact that will be true when the work is done: "X does Y" not "add X" or "implement Y"
-- Each bullet should be independently checkable
+- Each bullet should be independently checkable — these bullets are what make success observable
 - Don't mix in implementation steps — those belong in a PR, not an issue
+- The step-by-step verification plan is written during implementation, once the approach is known, not here
 
 ### Out of scope
 
@@ -184,21 +183,14 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 ### Starting points
 
 - Name actual file paths, not directory names
-- Pick the files a reader would need to understand the current behavior, not every file that will change
+- Pick the files a reader would need to understand the current behavior, not the files where the change should go
 - 2-3 max; more than that is noise
-
-### QA plan
-
-- Numbered sequential steps, each building on the last — reads like a walkthrough
-- Every step ends with what the implementer should observe: "Expect to see X"
-- No automated steps (no "run tests", "run CI") — manual e2e only
-- Include failure/edge cases, not just the happy path
 
 ### Done when
 
 - One sentence
 - States the minimum bar, not the ideal
-- Phrased as a condition: "when X is true" or "once X works"
+- Adds what the title leaves out — a number, a scope, a condition — rather than restating it
 
 ### Depends on
 
@@ -212,60 +204,51 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 
 ❌ Describing implementation steps in "Ideal state" — those belong in a PR
 ❌ Current state that opens with a technical fact instead of the downstream impact
-❌ Burying the consequence — "there is no caching" before "the TUI blocks on every call"
+❌ Burying the consequence — "the export runs synchronously" before "large customers cannot export"
 ❌ Omitting "Out of scope" when adjacent things could easily be pulled in
-❌ QA steps that reference automated checks — always manual e2e
-❌ QA steps that don't say what to observe — every step needs an expected outcome
-❌ Starting points that name directories instead of files
+❌ A QA plan or verification steps — they assume an approach nobody has chosen yet
+❌ Starting points that name directories instead of files, or point to where the change should go
 ❌ "Done when" that lists multiple conditions — pick the one that matters most
+❌ "Done when" that restates the title
 
 ---
 
 ## Example: Good Ticket Description
 
 ```markdown
+# Large order exports download without timing out
+
 ## Current state
 
-`hub status` blocks the TUI from rendering on every invocation because it fetches live GitHub data on every call with no background refresh, no caching, and no store schema for status data.
+Customers with more than about 50,000 orders cannot export their order history, and support receives several tickets a week asking for exports to be run manually. The export request fails with a timeout after 30 seconds for any account above that size, and the page shows a generic error with no suggestion of what to do next.
 
 ## Ideal state
 
-- `hub daemon` runs as a long-lived process and refreshes status data on a configurable schedule
-- Each refresh writes results to SQLite via `store/`
-- `hub status` reads from the cache — instant output, no network call
-- If the cache is empty or stale beyond a threshold, `hub status` falls back to a live fetch with a warning
-- The daemon is the only process that writes status data; the CLI only reads
+- An export of up to 1,000,000 orders completes and the customer receives the file
+- A customer who starts a long export can leave the page and still get the file when it is ready
+- A customer can see whether an export is still running, finished, or failed
+- A failed export tells the customer it failed and lets them start it again
 
 ## Out of scope
 
-- Running the daemon as a system service (launchd/systemd) — out of scope for now
-- Scheduling workflows other than status
+- New export formats (only the existing CSV)
+- Scheduled or recurring exports
 
 ## Starting points
 
-- `ui/cli/src/main.rs` — CLI entry point and command dispatch
-- `workflows/src/status.rs` — current live-fetch logic
-- `store/` — existing SQLite pattern to follow
-
-## QA plan
-
-1. Start `hub daemon`, wait for the first tick — expect to see status rows in SQLite
-2. Run `hub status` immediately after — expect instant output (no network delay)
-3. Kill GitHub connectivity, trigger a daemon tick — expect graceful failure with no corruption of existing cache rows
-4. Run `hub status` with an empty cache — expect a live fetch and a warning that the cache was empty
-5. Manually backdate cache rows, run `hub status` — expect a staleness warning
-6. Stop `hub daemon` — expect clean shutdown with no panics
+- `app/orders/export_controller.rb` — handles the export request today
+- `app/orders/csv_builder.rb` — builds the file row by row
 
 ## Done when
 
-`hub status` reads from a SQLite cache populated by `hub daemon` and falls back gracefully when the cache is missing or stale.
+A customer with 1,000,000 orders can request an export and receive the complete file.
 ```
 
 ### Why This Works
 
-✅ Current state leads with the impact (TUI blocking), then supports it with observable facts
-✅ Ideal state uses "X does Y" framing — each bullet is a verifiable fact
+✅ Title is a present-tense claim about the outcome, not a task or a mechanism
+✅ Current state leads with the impact (customers can't export, support load), then supports it with observable facts
+✅ Ideal state uses "X does Y" framing and names no mechanism — each bullet is a verifiable fact
 ✅ Out of scope prevents two obvious scope-creep traps
-✅ Starting points are file paths, not directories
-✅ QA steps are sequential and each ends with an expected observation
-✅ Done when is a single condition, not a checklist
+✅ Starting points explain today's behavior, not where the change should go
+✅ Done when adds the concrete bar (1,000,000 orders, the complete file) that the title leaves out
