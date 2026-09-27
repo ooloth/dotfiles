@@ -24,6 +24,13 @@ belongs to `/design`, which runs after the user approves the approach.
 2. List `~/.agents/standards/` and load any other file whose theme matches the task.
 3. Load additional standards files only when the investigation shows they matter.
 4. If the task scope is still unclear, prefer asking a clarifying question over loading every file.
+5. Read the project's recorded decisions. List the titles in `DECISIONS.md`, `docs/decisions/`,
+   `docs/adr/`, `doc/adr/`, `adr/` and `docs/architecture/decisions/`, and search the repo for
+   "ADR". A project may record decisions somewhere else, so also check its `CLAUDE.md`,
+   `AGENTS.md`, `README.md` and `docs/README.md` for where it says decisions live. Open a record
+   only when its title touches the task. If the task came from a ticket with a **Decisions**
+   section, repeat this search anyway: records may have been added or superseded since the ticket
+   was written, and its author knew less than you do now.
 
 ### Phase 2: Understand Intent
 
@@ -40,6 +47,11 @@ belongs to `/design`, which runs after the user approves the approach.
    default and move on instead of making the user decide everything.
 
 ### Phase 3: Recommend an Approach
+
+A recorded decision that covers the task is a constraint on every option below. An option that
+contradicts one is not taken quietly: superseding the record is an open decision in its own right,
+presented under **Open decisions** with the record linked. Where applying a record to this task
+takes interpretation, whether it applies is also an open decision.
 
 1. Derive the properties a good answer must have, from what the system will actually do, before
    considering any option. Not from what the ticket or existing docs say it needs; that is the
@@ -118,7 +130,8 @@ End with a strategy artifact:
 2. **Target properties** — what a good answer must do, derived in Phase 3, with which of them bind
    and which do not and why, and what observes each one that binds. This section comes before any
    option is named, and no recommendation below it is valid without it.
-3. **Findings** — relevant code/docs/current-state facts discovered
+3. **Findings** — relevant code/docs/current-state facts discovered, including each recorded
+   decision that binds the task (linked), or where you looked if none did
 4. **Recommendation** — preferred approach, scored against each target property, including what
    ties events together across any process, async or run boundary it introduces, and where anything
    durable that a later check reads is kept
