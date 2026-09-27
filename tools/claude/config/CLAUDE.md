@@ -229,6 +229,12 @@ line so the chain reads without opening them. A choice that something else will 
 that an open question could reverse, is never settled in a comment: it goes through the project's
 decision process, and the comment links the result.
 
+Everything a comment links exists where its reader can open it before the comment is posted, so a
+record the work adds is committed and pushed first. A record already on the default branch is
+linked there. One added by this work is linked by a permalink to the commit that added it
+(`blob/<sha>/<path>`), because on a feature branch the default branch will not have it until the
+PR merges, and a link to the branch stops working once the branch is deleted.
+
 A comment is read by people outside this harness, so it names no skill, slash command or agent. It
 says what happened instead: "the design comment", not "`/design`"; "checked in a browser", not "the
 browser agent". Its sections are named for what each answers, never after a skill's artifact:
