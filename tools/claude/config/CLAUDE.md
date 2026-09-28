@@ -190,23 +190,21 @@ from what the ticket or the existing docs already say it needs. Then ask what it
 all of them, and only then what to give up. An approach recommended without that list was scored
 against a bar you set yourself, and setting it low is invisible in the result.
 
-**What the properties serve is a good experience for users and developers, and performance and
-safety are what produce it.** So state both theoretical maximums before accepting any tradeoff
-between them:
+**Every property is one of three kinds: safety, performance or experience.** State the theoretical
+maximum of each before accepting any tradeoff between them:
 
+- **Maximum safety:** the system cannot silently do the wrong thing. That includes correctness,
+  reliability, security, data integrity, bounded resources, and checking itself while running so it
+  stops rather than carrying on wrong, and whatever else could make it wrong unnoticed. State it for
+  each kind of wrongness, not only the one the question is about.
 - **Maximum performance:** the fewest steps the work could possibly take on the hardware and network
   it runs on.
-- **Maximum safety:** what could be lost or corrupted, and the strongest protection physically
-  possible.
+- **Maximum experience:** the least a user or developer has to know or do to get what they came for.
 
-Then look for a design that comes close to both. A tradeoff often means the design is not finished
-yet, because a different design can remove it. Accept one only where a physical fact forces it, and
-name that fact.
-
-Storing a database is the worked example. A local disk gives the maximum performance, since a commit
-crosses no network. Surviving the machine's loss requires a copy somewhere else. A network disk pays
-for that copy on every commit. A local disk with continuous replication off the machine pays for it
-in the background, and so comes close to both.
+Then look for a design that comes close to all three. They are not ranked. A tradeoff often means
+the design is not finished yet, because a different design can remove it. Accept one only where a
+physical fact forces it, name that fact, and argue it from the properties. The full rule is in
+`decision-making.md` in the standards.
 
 **Decide slowly, from properties.** Models are trained to reach a choice quickly, and the harness
 reinforces it: its system prompt says "When you have enough information to act, act" and asks for

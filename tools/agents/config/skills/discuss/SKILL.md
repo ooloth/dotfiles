@@ -76,11 +76,12 @@ takes interpretation, whether it applies is also an open decision.
    as a row citing that statement.
 
 4. Score every option against every property in one table, options as rows and properties as
-   columns. Before accepting any tradeoff, state the theoretical maximum performance and maximum
-   safety for the thing being decided, and look for a design that comes close to both.
-   `decision-making.md` says how. Options framed as points on one curve, "optimise for speed or for
-   durability", are the sign this step was skipped. A tradeoff that remains names the physical fact
-   that forces it.
+   columns. Before accepting any tradeoff, state the theoretical maximums for safety, performance
+   and experience for the thing being decided, as `decision-making.md` defines them, and look for a
+   design that comes close to all three. State safety's maximum for each kind of wrongness the
+   system could have, not only the kind the task is about. Options framed as points on one curve,
+   such as "fast or correct" or "simple or safe", are the sign this step was skipped. A tradeoff
+   that remains names the physical fact that forces it.
 
    If more than one option survives, the list is not finished. Zoom into each property every
    survivor passes, and extend the list to moments and softer properties not yet covered, each

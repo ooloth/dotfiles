@@ -92,29 +92,37 @@ indistinguishable in a finished record, and only one of them was considered. Thi
 to measure. A property recorded as not binding needs a reason rather than a number, and the Must
 against measuring what does not bind still applies.
 
-**Before a tradeoff between performance and safety is accepted, the theoretical maximum of each is
-stated, and a design reaching both is looked for.**
-What properties serve in the end is a good experience for users and developers, and performance and
-safety are what produce it. So neither is traded for the other by default.
+**Every property belongs to one of three categories, safety, performance or experience, and before
+a tradeoff between them is accepted, the theoretical maximum of each is stated and a design reaching
+all three is looked for.**
 
-- **Maximum performance** is the fewest steps the work could possibly take on the hardware and
-  network it runs on.
-- **Maximum safety** is the strongest protection physically possible against what could be lost or
-  corrupted.
+- **Safety** is every way the system can be wrong, and whether it notices. It includes correctness,
+  reliability, security, data integrity, bounded resources, and checking itself while running so
+  that it stops rather than carrying on wrong. That list is where to start, not where to stop.
+  Maximum safety is a system that cannot silently do the wrong thing.
+- **Performance** is the fewest steps the work could possibly take on the hardware and network it
+  runs on.
+- **Experience** is what users and developers live with: how clear, direct and easy to change the
+  thing is. Maximum experience is the least a user or developer has to know or do to get what they
+  came for.
 
-A tradeoff between them often means the design is not finished, because a different design can
-remove it. A local disk with continuous replication off the machine comes close to both. Faced with
-a choice between a fast local disk and a network disk that survives the host, this is the design
-that removes the choice. A tradeoff that survives the search names the physical fact that forces
-it. The tell that this step was skipped is a comparison whose options are points on one curve, such
-as "optimise for speed or for durability", with no option that asks whether the curve can be left.
+Safety's maximum is stated for each kind of wrongness the system could have, not only the kind the
+question is about. The question's topic is what narrows it: a question about storage pulls attention
+to lost data, and away from a process that fails without anyone knowing or an input nobody checks.
+So after the named parts, ask what else could make this system wrong without anyone noticing.
+
+The three are not ranked, and none is traded for another by default. A tradeoff between them often
+means the design is not finished, because a different design can remove it. A tradeoff that
+survives the search names the physical fact that forces it, and is then argued from the properties.
+
+The tell that this step was skipped is options presented as points on one curve, such as "fast or
+correct", "fast or validated" or "simple or safe", with no option asking whether the curve can be
+left.
 
 **A benefit is weighed net of what the system already owes by other means.**
 An option that buys something the system will have anyway has bought nothing. The benefit counts
-only as the difference from what is already required. A network disk's survival of host failure is
-no reason to accept one when an off-machine copy is required regardless. That copy delivers most of
-the same survival, so the network disk's remaining benefit is only the gap between them. The tell is
-a benefit column listing something another record already mandates.
+only as the difference from what is already required. The tell is a benefit column listing
+something another record already mandates.
 
 **Decisions are sequenced so that a milestone is reached in a state worth keeping.**
 Dependency order is the mechanism; reaching a milestone in a state you would keep is the goal. If
@@ -292,9 +300,9 @@ A first pass through the properties rarely finishes a decision, and several surv
 is not finished yet. It does not mean the candidates are equal. Two moves continue it.
 
 - **Zoom in.** Each property that every survivor passes is shorthand for several conditions, and one
-  of those may separate them. "A local filesystem" turned out to stand for working locks, one host,
-  honest syncs, per-commit latency, a write ceiling and survival of host failure. Only the last three
-  separated a local disk from a network one.
+  of those may separate them. "Fast enough" can stand for the median, the slowest percentile, the
+  first request after idle and the oldest supported device, and candidates that tie on one often
+  differ on another.
 - **Extend.** Derive properties from moments not yet listed. Softer ones belong here too once the
   technical ones stop separating: what employers look for, what a maintainer will live with for
   years, what AI assistants have learned from. Each enters as a row citing its source, such as a
