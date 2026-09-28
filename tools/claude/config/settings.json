@@ -114,13 +114,24 @@
     "enabled": true,
     "allowUnsandboxedCommands": false,
     "enableWeakerNetworkIsolation": true,
-    "excludedCommands": ["git push origin", "git push origin *", "git fetch *", "git pull *", "tmux -L agent *"],
+    "excludedCommands": [
+      "git push origin",
+      "git push origin *",
+      "git fetch *",
+      "git pull *",
+      "tmux -L agent *",
+      "taplo *",
+      "just check",
+      "just fmt",
+      "git commit *"
+    ],
     "filesystem": {
       "allowWrite": [
         "~/.npm",
         "~/Library/pnpm",
         "~/Library/Caches/pnpm",
         "~/Library/Caches/uv",
+        "~/.cache/prek",
         "~/Repos/ooloth/dotfiles/.git"
       ],
       "allowRead": ["~/.config/gh/hosts.yml"],
