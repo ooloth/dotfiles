@@ -69,9 +69,20 @@ the wrap width — an index, a key map — where scanning down a column is the p
 
 ## Should
 
-**New behavior appears in the right doc surfaces.**
-A new flag appears in help text. A new config key appears in the example
-config. Docs are updated in the same change that introduces the behavior.
+**Behavior appears in the right doc surfaces.**
+A flag appears in help text. A config key appears in the example config. Each
+surface is updated in the same change as the behavior it describes, and a
+surface that never received its entry is as wrong as one that went stale.
+
+**A decision reaches every reader it binds, each in the place that reader looks.**
+The reasoning and the rejected options sit in one decision record. What the
+decision commits the project to sits wherever that commitment is checked: a
+rule for reviewers in the standards, a new way to run something in the run
+instructions, a misleading half-finished state in whatever file warns about
+those. Each of those entries links to the record rather than restating its
+reasoning. A decision recorded only as a record binds only the people who
+think to open it, and one restated in full in several places drifts into
+versions that disagree.
 
 **Examples are correct and runnable.**
 Code samples in documentation execute without modification. Copy-paste

@@ -5,12 +5,12 @@ is trustworthy, and does not accumulate unexamined risk over time.
 
 ## Must
 
-**New dependencies are justified.**
-Before adding a dependency, existing dependencies and standard library
-capabilities are considered. A new dependency is added only when it covers
-ground that would be unreasonable to reimplement. The cost — a new
-transitive dependency tree, a new maintenance obligation — is weighed
-against the benefit. The cost that persists is rarely the integration,
+**Each dependency is justified.**
+A dependency earns its place by covering ground that would be unreasonable
+to reimplement, and one that has stopped covering it is removed. Before
+adding one, existing dependencies and standard library capabilities are
+considered. The cost — a transitive dependency tree, a maintenance
+obligation — is weighed against the benefit. The cost that persists is rarely the integration,
 which is paid once. It is the second model of the world now being carried:
 another vocabulary, another set of failure modes to recognise, and another
 place to look when something breaks.

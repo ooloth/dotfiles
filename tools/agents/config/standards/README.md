@@ -80,7 +80,8 @@ a false positive costs one read; a false negative means missed guidance.
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions
 - **`documentation.md`** — any file change that affects documented behaviour or has accompanying docs
 - **`error-handling.md`** — fallible operations, error propagation paths, user-facing error output
-- **`observability.md`** — new code paths, error paths, logging sites, resource allocation
+- **`instrumentation.md`** — logging, metric and trace call sites; log format, levels and field content
+- **`observability.md`** — what a failure has to reveal, what must be recorded for it to, invariants no call site can check
 - **`performance.md`** — loop bodies, database queries, hot-path functions, large or unbounded data operations
 - **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API responses; analytics events
 - **`python.md`** — .py files; load alongside language-agnostic files

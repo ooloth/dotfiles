@@ -41,12 +41,40 @@ its author already believed in, which is why it always looks complete.
 from what has already been written about it.**
 A criteria list assembled from the documents in front of you is the previous author's list, and it
 reads as complete precisely because it was written as a summary. Derive it from what the thing being
-chosen will actually do, then compare: where the inherited list is a subset, the difference is what
-would otherwise have been decided without. The same test settles whether the question is even
+chosen will actually do, by listing the concrete moments the system touches it: each request,
+write, read, deploy, failure and wait it takes part in. "The network" returns nothing to reason
+about, and "a returning user's first request after the page has loaded" returns a property a
+candidate either has or lacks. Each property cites what it rests on, and one that can cite nothing
+rests on an input that is not settled yet. Then compare: where the inherited list is a subset, the
+difference is what would otherwise have been decided without. The same test settles whether the question is even
 well-posed, because a question none of the derived criteria can discriminate on is the wrong
 question however reasonable it sounds. "One tool or several?" is unanswerable when nothing the
 system requires is about how many tools there are, and a question like that will absorb a survey
 and return a preference wearing a derivation.
+
+**The derived properties are written down before any option is named.**
+Deriving them and keeping them in your head satisfies nothing a reader can check. A recommendation
+presented without the list reads as reasoned whether or not the reasoning happened, and a property
+that was never derived is invisible in exactly the way a derived one is. The list is also the only
+part of the record a reader can disagree with before the conclusion has framed the question for
+them.
+
+**Implementation effort is a constraint, never a merit.**
+A stated budget rules an option out. Nothing rules one in on effort. "Simpler to build", "a smaller
+diff", "less to configure" and "fewer moving parts" each name what an option costs, and none of
+them names anything the system requires, so an option that wins on one of them has not been
+compared on anything. The tell is a comparison whose merit column contains a cost. Where effort is
+genuinely the only thing separating the candidates, the properties did not discriminate, and the
+finding is that they did not: the record says the choice was made on cost rather than presenting
+the cost as a derivation.
+
+**A predicted failure mode is a constraint on the design, never a reason to drop the requirement.**
+"It would degrade into busywork" and "it would be ignored" describe how a bad version of the thing
+fails. Neither says the thing is not needed. The prediction narrows which designs are acceptable,
+so the work is to find one that survives it, and the tell that this went wrong is a recommendation
+justified by the good version being hard to specify. Where no design survives the constraint, that
+is the finding and it is recorded as one, rather than arriving as a preference for leaving the
+requirement out.
 
 **Every architectural decision considers CPU, memory, storage and network, and records which of them
 do not bind and why.**
@@ -55,7 +83,8 @@ a topic-driven list does not. Each is asked along three axes: how much is consum
 moves, and how long one operation takes. Ask them by enumerating the moments the system touches that
 resource rather than in the abstract, because "storage" returns nothing and "the request path reads
 a row, a write is flushed, a backup is copied off the machine, a migration rewrites a table" returns
-a list you can reason about. Most will not bind, and saying so is the point: "memory does not bind,
+a list you can reason about. These moments are the same ones the property list is derived from,
+applied to the four resources. Most will not bind, and saying so is the point: "memory does not bind,
 because the workload is X and the smallest instance is Y" and silence about memory are
 indistinguishable in a finished record, and only one of them was considered. This is not a mandate
 to measure. A property recorded as not binding needs a reason rather than a number, and the Must
@@ -191,6 +220,22 @@ above pushes toward observing and is silent on the first of those, which is the 
 mistake on a question whose candidates publish what they can and cannot do — most of a tool or
 runtime field is eliminated by reading, and the spike is then aimed at whatever survives.
 
+**Research is assigned by property, not by candidate.**
+A researcher given a candidate returns a survey of that candidate, and the comparison is then
+assembled from several surveys that each chose their own axes. A researcher given a property
+returns a verdict for every candidate on the axis the decision turns on, with its source, and that
+verdict goes straight into the comparison. Enumerating the field is its own assignment, so the
+candidates are not limited to the ones already named, and a property a researcher finds that the
+list missed joins the list before any option is compared.
+
+**The comparison shows every option against every derived property, and each rejection names the
+property it fails.**
+A comparison written as prose per option lets each option be judged on whichever properties flatter
+or sink it. A grid shows where an option was never assessed, makes the one disqualifying property
+visible, and shows when two options differ on nothing the list contains, which is the finding the
+entry on bounded searches below describes. A grid in the working is enough; the record carries the
+properties and names the one each rejection fails.
+
 **A check earns its place when it can name the property, the requirement that binds it, and which
 candidates leave the field on each outcome.**
 A check that eliminates nobody is not wasted when it was cheap and its outcome was genuinely open —
@@ -276,6 +321,16 @@ reader cannot tell whether circumstances have crossed the line.
 **Familiarity is stated as a cost of the alternative, never as a merit of the choice.**
 "I already know X" is a legitimate input. Smuggled in as a property of X, it is an argument that
 cannot be checked.
+
+**Record numbers follow the order decisions derive from each other, unless records are cited from
+places a renumber cannot update.**
+Read in derivation order, a listing of the records is the argument being built, and a reader sees
+what each decision rests on without opening it. The cost is that inserting a record renumbers the
+ones after it, which is mechanical when every citation lives in files a link checker can see. It
+is not mechanical once numbers are quoted from other repositories, tickets, commit messages or
+chat, because those keep pointing at the old number and silently name the wrong record. That is
+the usual state of a team project, so there numbers are permanent and assigned in the order records
+are written, and each record's links to what it rests on carry the derivation instead.
 
 ## Consider
 

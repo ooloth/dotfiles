@@ -93,16 +93,25 @@ acting in the same turn makes the question rhetorical and bypasses the gate.
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
 
+**A choice found mid-work is raised, not defaulted.** A choice something else will be built on, or
+that an open question could force to be reversed, is not the implementer's to make. That holds in
+every environment, local development included, and looking small or easy to undo does not exempt it.
+First check whether the repo's docs already settle it; if they do, follow them and say where. If
+not, stop and present it as an open question with its options and tradeoffs, using the project's
+own decision process if it has one. This overrides any tool guidance to pick the obvious option and
+proceed.
+
 ## Protect Your Context Window
 
 - Your context window has a limited budget and fills up quickly
 - Try to prevent that from happening by delegating as much exploration as you can to subagents
 - That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
   details only entering the conversation
-- When spawning your own subagents, prefer lower token-usage models like sonnet or haiku over
-  opus unless there's a specific reason the task really needs a model with powerful reasoning
-  capabilities; there will be a trade-off here (quality will degrade) so use your judgment based
-  on how mechanical vs reason-based the task is and what capabilities the model needs to succeed
+- When spawning your own subagents, name what the task actually demands of a model before choosing
+  one: how much of the reasoning is mechanical, what a wrong answer costs, and whether you would be
+  able to tell it was wrong. Then pick the cheapest model that meets it. Cost rules a model out
+  against a budget; it never rules one in. A task whose output you cannot check is not a place to
+  save tokens
 
 **Tell every subagent to read the files itself and not to spawn subagents of its own.** Say it
 explicitly in the prompt; agents fan out by default when the scope looks large. Two reasons, and the
@@ -175,6 +184,12 @@ max. Don't just hand wave performance potential based on what's normally conside
 on improving relatively slow code paths based on local norms, which tell you nothing about what's
 actually possible and what optimal performance actually would be.
 
+The same move applies to any design decision, not only performance. Before weighing options, state
+the properties the finished system should have, derived from what it will actually do rather than
+from what the ticket or the existing docs already say it needs. Then ask what it would take to have
+all of them, and only then what to give up. An approach recommended without that list was scored
+against a bar you set yourself, and setting it low is invisible in the result.
+
 ## Uphold Standards
 
 NEVER design, edit or review code, make a decision, or update documentation without first invoking
@@ -192,21 +207,46 @@ gets made too narrowly, and a slice that looks like plumbing still has a type st
 down before the first test. This applies per slice, so a task split into three code slices invokes
 it three times.
 
-When the user approves work, persist the agreed approach BEFORE reading or writing any files —
-context loss can happen anytime, and the next agent must be able to resume without repeating the
-discussion:
+**When the work is on a ticket** (GitHub Issue, Linear, Jira, etc.), **its comments carry the
+reasoning behind the implementation, one step per comment,** so a reviewer can check each step
+without re-deriving it. Each comment is posted before the step it records is acted on:
 
-- **Known ticket exists** (GitHub Issue, Linear, Jira, etc.): add a comment to that ticket
-  recording the problem, agreed approach, constraints, and done-when criteria. Skip `trekker`.
-- **No ticket exists** (spontaneous idea): create a `trekker` task instead:
+- **After `/discuss`, or agreement on an approach:**
+  - the target properties, each with its source (the ticket's Ideal state, a linked record, or
+    derived from what the system does) and what observes it;
+  - which properties do not bind, and why;
+  - the approach, and how it delivers each binding property;
+  - the alternatives a competent person would have chosen, and why each lost;
+  - the constraints and the done-when criteria.
+- **After `/design`, or agreement on the design:** the type progression, the assertion plan, the
+  telemetry plan and the test plan, and how each follows from the approach. Each test and each
+  assertion is traced to the property it observes, and each telemetry signal to the failure it
+  would reveal.
+- **After any later change:** what changed, and which step of the chain it changes.
 
-```bash
-trekker task create -t "..." -p 1 -d "Problem: ... Approach: ... Done when: ..."
-trekker task update TREK-N -s in_progress
-# THEN read files and implement
-```
+A comment links records rather than restating their arguments, but states each property in one
+line so the chain reads without opening them. A choice that something else will be built on, or
+that an open question could reverse, is never settled in a comment: it goes through the project's
+decision process, and the comment links the result.
 
-For the full `trekker` workflow, see `/use-trekker`.
+Everything a comment links exists where its reader can open it before the comment is posted, so a
+record the work adds is committed and pushed first. A record already on the default branch is
+linked there. One added by this work is linked by a permalink to the commit that added it
+(`blob/<sha>/<path>`), because on a feature branch the default branch will not have it until the
+PR merges, and a link to the branch stops working once the branch is deleted.
+
+A comment is read by people outside this harness, so it names no skill, slash command or agent. It
+says what happened instead: "the design comment", not "`/design`"; "checked in a browser", not "the
+browser agent". Its sections are named for what each answers, never after a skill's artifact:
+**What this must make true**, **What does not bind here**, **Approach**, **Alternatives that
+lost**, **Deferred**, **Constraints** and **Done when**. A design comment uses **Types**,
+**Assertions**, **Telemetry** and **Tests**. Done when has no checkboxes: the comment records a
+point in time, and the tracker holds status. Where the approved artifact lacks something the comment
+needs, such as an alternative nobody weighed, the gap is raised with the user before drafting and
+never filled in by the drafter.
+
+The comment is a public side effect, so its draft is shown to the user and posted only once they
+approve that wording. When the work is not on a ticket, none of this is written anywhere.
 
 **Keep `docs/questions/` current, not just at creation.** When a discussion surfaces a genuine
 open question — real options, not yet settled, worth surviving context loss or a future session —
@@ -214,7 +254,7 @@ proactively recommend capturing it as its own file in `docs/questions/` (one que
 kebab-case name, phrased as the question). The same applies afterward: if work on something
 unrelated turns up a finding, option, or decision relevant to an existing question file, update
 that file then, not only while it's the topic of direct discussion. This is for still-open design
-questions; the trekker/ticket persistence above is for work already approved.
+questions; the ticket comments above are for work already approved.
 
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
@@ -260,11 +300,7 @@ questions; the trekker/ticket persistence above is for work already approved.
     first and extend the closest match — a new theme file needs justification. Recording anything
     here is a commit-worthy change: it re-enters steps 4–9 and needs its own commit signal.
 
-12. When all changes committed → close the task - e.g. if using trekker:
-    ```bash
-    trekker comment add TREK-N -a "claude" -c "Resolution: ..."
-    trekker task update TREK-N -s completed
-    ```
+12. When all changes are committed, close the ticket if the work is on one.
 13. After closing, check whether related open tasks (or issues or tickets) need their descriptions
     updated — the approach may have changed, a prerequisite may now be satisfied, or the task may
     have become unnecessary
@@ -317,7 +353,10 @@ drafted (a comment, a message, a review body), that approval covers exactly thos
 going to exactly that destination. It does not authorize you to reword, shorten, expand,
 merge, or paraphrase it later, even in service of the same intent, even if you think the
 result is better. If you want to change approved wording, that is a new draft needing a new
-approval — say so and show it, don't substitute it silently.
+approval — say so and show it, don't substitute it silently. Saying so is not a substitute for
+waiting: the new draft goes in a message that changes nothing, and the new wording lands only
+after I approve it. Announcing the change in the same turn that makes it is substituting it
+silently with a note attached.
 
 ## Improve Yourself
 
@@ -349,8 +388,44 @@ Skip and say nothing if execution went smoothly.
 ## Available CLI Tools
 
 - `gh` - NEVER run a `gh` command without first invoking the `use-gh` skill
-- `tmux` - use for background jobs (`tmux new-window -n "dev-server" "npm run dev"`) instead of
-  `run_in_background` or `&`. Also use to test interactive programs (TUIs, REPLs): run them in
-  a named window, drive them with `tmux send-keys -t <window> "<key>" ""`, and read the screen
-  with `tmux capture-pane -t <window> -p`. This is often the only way to visually verify an
-  interactive program without asking the user to do it.
+- `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
+  programs (TUIs, REPLs). This is often the only way to visually verify an interactive program
+  without asking the user to do it. Always use the agent server, `tmux -L agent`, so the user's own
+  sessions stay out of reach, and write each tmux call as its own bare command with no pipe, `&&`
+  or prefix, or the sandbox exclusion does not match and the call fails:
+  - start: `tmux -L agent new-session -d -s <name> -n <window> "<command>"`
+  - add a window: `tmux -L agent new-window -t <name> -n <window> "<command>"`
+  - type: `tmux -L agent send-keys -t <name>:<window> "<keys>" Enter`
+  - read the screen: `tmux -L agent capture-pane -t <name>:<window> -p`
+  - finish: `tmux -L agent kill-session -t <name>`
+
+  The user watches with `tmux -L agent attach`.
+
+## Sandbox
+
+Every Bash command runs in a sandbox, and there is no way out of it: `dangerouslyDisableSandbox`
+is turned off.
+
+- Bash can write only to the current project and `$TMPDIR`. Put scratch work (spikes, throwaway
+  repos, proofs of concept) in a directory from `mktemp -d`, never in bare `/tmp`.
+- Network access reaches only allowlisted hosts. Read documentation with WebFetch, which is
+  controlled separately. If a command needs a host that is not allowed, name the host and stop.
+- pnpm, gh, node, python, test runs and local dev servers all work inside the sandbox.
+- Never start a background process with `&` or `nohup`. A later Bash command cannot signal it, and
+  `ps` is blocked, so it keeps running after you finish. Run it in a `tmux -L agent` window, or
+  start, check and stop it within one Bash command.
+- `git push origin …`, `git fetch`, `git pull` and `tmux -L agent` run outside it on purpose, and
+  only when the Bash call is that one command with nothing around it: no pipe, `&&`, `;` or
+  redirect. Push as `git push origin <branch>`. Any other push, including a bare `git push`, runs
+  inside the sandbox and fails on a proxy that refuses SSH. Pushing to a remote other than `origin`
+  is left sandboxed on purpose, so the repo's contents cannot be sent somewhere else.
+- Commands inside a `tmux -L agent` window run outside it too, so use those windows only for the
+  project's own commands.
+- For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
+  Playwright tools; the main session has none, and headless Chrome cannot start inside the sandbox.
+- To edit Claude's own config (this file, skills, agents, settings), use the Edit tool on the real
+  path under `~/Repos/ooloth/dotfiles/tools/`, not the `~/.claude/` symlink. Bash cannot write
+  these files at all, and `~/.claude/` is a protected path that auto mode may refuse. Edits to
+  `settings.json` ask the user first.
+- When the sandbox blocks something, report the restriction and what you were trying to do. Do not
+  route around it with the Write tool, a tmux window or an excluded command.

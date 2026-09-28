@@ -10,8 +10,10 @@ allowed-tools: [Bash, Read, Glob, Grep]
 
 1. **Duplicate check** — search the platform for issues with similar titles; read candidate descriptions; stop only if a duplicate or overlap is found — otherwise say "No duplicates found" and continue (see [Duplicate Check](#duplicate-check) below)
 2. Explore the relevant code to verify the current state before describing it
-3. Draft using the template and voice rules below
-4. Create the ticket using the appropriate platform tool
+3. Check the project's recorded decisions for any that constrain this work, and note any one-way decision the work needs that nobody has made (see [Decisions](#decisions))
+4. Ask the requester, before drafting, for any bound, exclusion or desired property you would otherwise have to invent (see [Ideal state](#ideal-state) and [Out of scope](#out-of-scope)) — never for an architectural choice
+5. Draft using the template and voice rules below
+6. Create the ticket using the appropriate platform tool
 
 ---
 
@@ -103,7 +105,7 @@ An epic uses the same template as any other ticket, with two additions:
 - **A note naming any sub-issue that has no corresponding requirement** and why it earns its place.
   Unexplained extra scope in an epic reads as scope creep.
 
-Keep the epic's own "Done when" about the aggregate — all children closed, all requirements met —
+Keep the epic's own Ideal state about the aggregate — all children closed, all requirements met —
 never about the implementation of any one child.
 
 ### Ordering
@@ -115,14 +117,15 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 
 ## Title Rules
 
+- **A claim about what will be true once the work is done**, in the present tense — "Large order exports download without timing out"
 - **Scannable in a list** — the reader understands what it is without opening it
-- **Outcome-focused, not implementation-focused** — "Cache status data for fast reads" not "Add SQLite table for status"
-- **Verb-first or noun-first, not a full sentence** — "Add daemon for background status refresh" or "Background status refresh via daemon"
-- **Specific enough to distinguish from similar tickets** — "Fix auth token expiry on mobile" not "Fix auth bug"
+- **An outcome, not a mechanism** — the claim describes what a user or developer experiences, not how the system achieves it
+- **Specific enough to distinguish from similar tickets** — "Mobile users stay signed in after switching apps" not "Sign-in works"
 
-❌ Vague: "Fix status", "Improve performance", "Refactor auth"
-❌ Implementation-first: "Add tokio-cron-scheduler", "Create new table"
-❌ Passive: "Status should be cached", "Daemon is needed"
+❌ Vague: "Exports work", "Performance is better", "Auth is cleaner"
+❌ Task: "Add background export job", "Fix auth bug"
+❌ Wish: "Exports should not time out"
+❌ Mechanism: "Exports run on a job queue", "Status is cached in SQLite"
 
 ---
 
@@ -139,19 +142,21 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 
 ## Out of scope
 
-[Explicit list of things that might seem related but aren't part of this issue. If nothing obvious qualifies, omit this section.]
+[Only exclusions the requester stated. Omit this section when they stated none.]
+
+## Decisions
+
+**Constraints**
+
+[Each recorded decision this work must respect, linked, with one line on how it binds this work.]
+
+**Open**
+
+[Each one-way decision this work needs that nobody has recorded, phrased as a question, with the category that makes it one-way.]
 
 ## Starting points
 
-[2-3 file paths the implementer should read first. Helps a cold reader orient fast.]
-
-## QA plan
-
-[Numbered steps an implementer can follow cold to confirm correctness. Specific enough to run without asking anyone. No automated tests — manual e2e only.]
-
-## Done when
-
-[One-line bar: the minimum condition for this issue to be closeable.]
+[2-3 file paths that explain today's behavior. Helps a cold reader orient fast.]
 
 ## Depends on
 
@@ -168,37 +173,46 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 - Follow with the observable facts that cause it — what a person can see or measure today
 - Don't editorialize ("unfortunately", "badly", "messy")
 - Keep it to 2-4 sentences max
+- Whoever re-verifies it after the ticket was created adds a `Checked YYYY-MM-DD` line; a new ticket needs none, since the platform records its creation date
 
 ### Ideal state
 
 - Write each bullet as a fact that will be true when the work is done: "X does Y" not "add X" or "implement Y"
-- Each bullet should be independently checkable
+- Each bullet is something a person can check in the running system when the ticket closes — these bullets are what make success observable
+- A business outcome (fewer support tickets, happier customers) appears only as the reason for a system bullet, after "so that", and only when the link is not obvious
+- Where a property has a limit (a size, a time, a count), the bullet states the most demanding value wanted: "An export of up to 1,000,000 orders completes"
+- Only the requester supplies a limit. If a property needs one and you do not know it, ask before drafting; never invent a plausible number
+- A yes-or-no property gets no limit
+- Ideal state is the full scope: anything it does not describe is out of scope
+- So each bullet traces to something the requester said. A property you think the work should also have is a question for the requester before drafting, not a bullet
+- Ideal state is also the bar for closing: the ticket closes when every bullet holds
 - Don't mix in implementation steps — those belong in a PR, not an issue
+- The step-by-step verification plan is written during implementation, once the approach is known, not here
 
 ### Out of scope
 
-- Be explicit about adjacent things that are NOT included
-- Prevents scope creep and spares the implementer from guessing
-- Omit this section if nothing obvious qualifies
+- List only exclusions the requester stated; each one is a decision, and deciding is not the author's job
+- An exclusion you think of yourself is a question for the requester before drafting, not a bullet in the ticket
+- Omit this section when the requester stated no exclusions
+
+### Decisions
+
+- Look for recorded decisions in `DECISIONS.md`, `docs/decisions/`, `docs/adr/`, `doc/adr/`, `adr/` and `docs/architecture/decisions/`, and search the repo for "ADR"
+- A project may record decisions somewhere else, so also check its `CLAUDE.md`, `AGENTS.md`, `README.md` and `docs/README.md` for where it says decisions live
+- Read titles first; open a record only when its title touches this work
+- Under **Constraints**, link each record that binds this work and say in one line how it binds. Don't restate its reasoning; the record is the source
+- A record binds only when its title plainly covers this work. When applying it takes interpretation (does a record about "customer downloads" cover an export only admins can run?), deciding whether it applies is itself a decision: link the record under **Open** as that question instead of asserting it binds
+- If the request conflicts with a recorded decision, say so under **Constraints** and do not resolve it. Following the request instead needs a new decision that supersedes the record, and that goes under **Open**
+- Under **Open**, list a decision only when the work would introduce one of these: a new external service or dependency; a new persistent data shape or store; a new public interface (an API, an event, a CLI contract, a file format); a new process or runtime; a user-facing pattern people will learn. Any other choice belongs to the implementer and is not listed
+- Phrase each open decision as a question and name its category. Name options only if the requester did, and never choose one
+- An open decision is settled through the project's decision process (a decision record, an ADR), not by the requester in chat. The requester may answer what users get; how the system provides it stays open. If the repo has `docs/questions/`, suggest a question file for each open decision
+- When a list is empty, say so and name where you looked: "No recorded decisions found in `docs/decisions/`, `DECISIONS.md` (searched for ADR)." / "No open decisions."
 
 ### Starting points
 
 - Name actual file paths, not directory names
-- Pick the files a reader would need to understand the current behavior, not every file that will change
+- Pick the files a reader would need to understand the current behavior, not the files where the change should go
 - 2-3 max; more than that is noise
-
-### QA plan
-
-- Numbered sequential steps, each building on the last — reads like a walkthrough
-- Every step ends with what the implementer should observe: "Expect to see X"
-- No automated steps (no "run tests", "run CI") — manual e2e only
-- Include failure/edge cases, not just the happy path
-
-### Done when
-
-- One sentence
-- States the minimum bar, not the ideal
-- Phrased as a condition: "when X is true" or "once X works"
 
 ### Depends on
 
@@ -212,60 +226,62 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 
 ❌ Describing implementation steps in "Ideal state" — those belong in a PR
 ❌ Current state that opens with a technical fact instead of the downstream impact
-❌ Burying the consequence — "there is no caching" before "the TUI blocks on every call"
-❌ Omitting "Out of scope" when adjacent things could easily be pulled in
-❌ QA steps that reference automated checks — always manual e2e
-❌ QA steps that don't say what to observe — every step needs an expected outcome
-❌ Starting points that name directories instead of files
-❌ "Done when" that lists multiple conditions — pick the one that matters most
+❌ Burying the consequence — "the export runs synchronously" before "large customers cannot export"
+❌ An exclusion in "Out of scope" that the requester did not state
+❌ A limit in "Ideal state" that the requester did not supply
+❌ An "Ideal state" bullet that can only be checked outside the system ("support gets fewer tickets")
+❌ An "Ideal state" bullet the requester did not ask for
+❌ A ticket that contradicts a recorded decision without saying so
+❌ An open decision answered in the ticket, or put to the requester as a chat question
+❌ A choice the implementer can easily reverse listed as an open decision
+❌ A QA plan or verification steps — they assume an approach nobody has chosen yet
+❌ Starting points that name directories instead of files, or point to where the change should go
 
 ---
 
 ## Example: Good Ticket Description
 
 ```markdown
+# Large order exports download without timing out
+
 ## Current state
 
-`hub status` blocks the TUI from rendering on every invocation because it fetches live GitHub data on every call with no background refresh, no caching, and no store schema for status data.
+Customers with more than about 50,000 orders cannot export their order history, and support receives several tickets a week asking for exports to be run manually. The export request fails with a timeout after 30 seconds for any account above that size, and the page shows a generic error with no suggestion of what to do next.
 
 ## Ideal state
 
-- `hub daemon` runs as a long-lived process and refreshes status data on a configurable schedule
-- Each refresh writes results to SQLite via `store/`
-- `hub status` reads from the cache — instant output, no network call
-- If the cache is empty or stale beyond a threshold, `hub status` falls back to a live fetch with a warning
-- The daemon is the only process that writes status data; the CLI only reads
+- An export of up to 1,000,000 orders completes and the customer receives the file
+- A customer who starts a long export can leave the page and still get the file when it is ready
+- A customer can see whether an export is still running, finished, or failed
+- A failed export tells the customer it failed and lets them start it again
 
 ## Out of scope
 
-- Running the daemon as a system service (launchd/systemd) — out of scope for now
-- Scheduling workflows other than status
+- New export formats (only the existing CSV)
+- Scheduled or recurring exports
+
+## Decisions
+
+**Constraints**
+
+- [004 — Customer downloads are served from expiring links](docs/decisions/004-customer-downloads-are-served-from-expiring-links.md) — the finished export file is delivered the same way
+
+**Open**
+
+- Does a long-running export need a new background process, and which runtime runs it? (new process or runtime)
 
 ## Starting points
 
-- `ui/cli/src/main.rs` — CLI entry point and command dispatch
-- `workflows/src/status.rs` — current live-fetch logic
-- `store/` — existing SQLite pattern to follow
-
-## QA plan
-
-1. Start `hub daemon`, wait for the first tick — expect to see status rows in SQLite
-2. Run `hub status` immediately after — expect instant output (no network delay)
-3. Kill GitHub connectivity, trigger a daemon tick — expect graceful failure with no corruption of existing cache rows
-4. Run `hub status` with an empty cache — expect a live fetch and a warning that the cache was empty
-5. Manually backdate cache rows, run `hub status` — expect a staleness warning
-6. Stop `hub daemon` — expect clean shutdown with no panics
-
-## Done when
-
-`hub status` reads from a SQLite cache populated by `hub daemon` and falls back gracefully when the cache is missing or stale.
+- `app/orders/export_controller.rb` — handles the export request today
+- `app/orders/csv_builder.rb` — builds the file row by row
 ```
 
 ### Why This Works
 
-✅ Current state leads with the impact (TUI blocking), then supports it with observable facts
-✅ Ideal state uses "X does Y" framing — each bullet is a verifiable fact
-✅ Out of scope prevents two obvious scope-creep traps
-✅ Starting points are file paths, not directories
-✅ QA steps are sequential and each ends with an expected observation
-✅ Done when is a single condition, not a checklist
+✅ Title is a present-tense claim about the outcome, not a task or a mechanism
+✅ Current state leads with the impact (customers can't export, support load), then supports it with observable facts
+✅ Ideal state uses "X does Y" framing and names no mechanism — each bullet is a verifiable fact
+✅ Each Ideal state limit (1,000,000 orders) came from the requester
+✅ Out of scope lists only the two exclusions the requester stated
+✅ Decisions links the one record that binds the work and leaves the background-work question open instead of picking a job queue
+✅ Starting points explain today's behavior, not where the change should go

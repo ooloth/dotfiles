@@ -19,11 +19,18 @@ belongs to `/design`, which runs after the user approves the approach.
 
 ### Phase 1: Load Context Progressively
 
-1. Read `~/.agents/standards/README.md` and list `~/.agents/standards/` only when standards or
-   architectural constraints may affect the approach decision.
-2. Load only the standards files obviously relevant to the task.
+1. Read `~/.agents/standards/README.md` and `~/.agents/standards/decision-making.md`. Both always
+   apply: recommending an approach is a decision.
+2. List `~/.agents/standards/` and load any other file whose theme matches the task.
 3. Load additional standards files only when the investigation shows they matter.
 4. If the task scope is still unclear, prefer asking a clarifying question over loading every file.
+5. Read the project's recorded decisions. List the titles in `DECISIONS.md`, `docs/decisions/`,
+   `docs/adr/`, `doc/adr/`, `adr/` and `docs/architecture/decisions/`, and search the repo for
+   "ADR". A project may record decisions somewhere else, so also check its `CLAUDE.md`,
+   `AGENTS.md`, `README.md` and `docs/README.md` for where it says decisions live. Open a record
+   only when its title touches the task. If the task came from a ticket with a **Decisions**
+   section, repeat this search anyway: records may have been added or superseded since the ticket
+   was written, and its author knew less than you do now.
 
 ### Phase 2: Understand Intent
 
@@ -41,9 +48,32 @@ belongs to `/design`, which runs after the user approves the approach.
 
 ### Phase 3: Recommend an Approach
 
-1. Recommend the simplest approach that achieves the intended outcome. Push back on unnecessary
-   scope, abstractions, configurability, or compatibility work.
-2. For non-trivial decisions, name tradeoffs explicitly — frame options as "optimize for X vs Y",
+A recorded decision that covers the task is a constraint on every option below. An option that
+contradicts one is not taken quietly: superseding the record is an open decision in its own right,
+presented under **Open decisions** with the record linked. Where applying a record to this task
+takes interpretation, whether it applies is also an open decision.
+
+1. Derive the properties a good answer must have, from what the system will actually do, before
+   considering any option. Not from what the ticket or existing docs say it needs; that is the
+   previous author's list and it reads as complete because it was written as a summary. State each
+   as an observable property, and say which bind and which do not.
+
+   Observable means something observes it. For each property that binds, name what does: a type, a
+   test, an assertion, a check against recorded state, or a measurement that already exists. Where
+   nothing does, taking that measurement is part of the work rather than an assumption carried past
+   this point. A property nobody can observe is an intention, and every option below is scored
+   against this list.
+
+2. Recommend the simplest approach that delivers those properties. Simplicity is how a property is
+   reached cheaply, never a reason to drop one. Push back on scope, abstraction, configurability or
+   compatibility work that no stated property requires.
+
+3. Implementation effort is a constraint, never a merit. It rules an option out only against a
+   budget the user stated. "X is simpler to build" is not a reason to prefer X unless it also names
+   a property X delivers better. This governs the Cost row below: cost is what an option spends to
+   deliver the properties, not a score it competes on.
+
+4. For non-trivial decisions, name tradeoffs explicitly — frame options as "optimize for X vs Y",
    not "right vs wrong":
 
    | Dimension       | Question                                  |
@@ -53,7 +83,7 @@ belongs to `/design`, which runs after the user approves the approach.
    | **Risk**        | What breaks if we're wrong? Who pays?     |
    | **Alternative** | What did we consider and reject, and why? |
 
-3. Flag reversibility for each significant decision:
+5. Flag reversibility for each significant decision:
    - **Two-way door** (easily reversible) — recommend a default, decide fast, and move on.
    - **One-way door** (costly to undo: public APIs, data schemas, pricing, core UX patterns users
      learn) — requires explicit sign-off; include an ADR-lite entry in the plan:
@@ -66,6 +96,21 @@ belongs to `/design`, which runs after the user approves the approach.
    Reversibility: one-way door
    Revisit trigger: [metric / date / condition that reopens this]
    ```
+
+   A revisit trigger naming a metric requires that metric to exist. Where nothing records it,
+   recording it is part of the decision rather than a later step: a trigger keyed to a measurement
+   nobody takes never fires, and the record then reads as revisitable while being permanent.
+   `decision-making.md` asks for the observable condition that would reopen a decision, and an
+   unobservable one does not satisfy it.
+
+6. Where the approach spans processes, asynchronous work, or separate runs, settle what ties events
+   together across that boundary and where anything durable is kept. `decision-making.md` names a
+   missing identifier that turns a later feature into a migration as a canonical example of an
+   option closed without anyone noticing, and a correlation identifier is exactly that: adding one
+   later means changing every interface it crosses. Whether a store exists that a later check can
+   read, and which one, is the same kind of decision, since a slice can conform to such a store but
+   cannot invent one. Name both, or name their absence, so `/design` is not left to improvise a
+   mechanism from inside a single slice.
 
 ### Phase 4: Present and Stop
 
@@ -82,11 +127,24 @@ Before presenting, review what you are about to claim:
 End with a strategy artifact:
 
 1. **Understanding** — what the user wants and any assumptions
-2. **Findings** — relevant code/docs/current-state facts discovered
-3. **Recommendation** — preferred approach and why
-4. **Open decisions** — only decisions that block correct implementation
-5. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
-   to produce the type story, test plan, and implementation slices
+2. **Target properties** — what a good answer must do, derived in Phase 3, with which of them bind
+   and which do not and why, and what observes each one that binds. This section comes before any
+   option is named, and no recommendation below it is valid without it.
+3. **Findings** — relevant code/docs/current-state facts discovered, including each recorded
+   decision that binds the task (linked), or where you looked if none did
+4. **Recommendation** — preferred approach, scored against each target property, including what
+   ties events together across any process, async or run boundary it introduces, and where anything
+   durable that a later check reads is kept. It ends with the alternatives a competent person would
+   have chosen, each with the property it fails
+5. **Open decisions** — only decisions that block correct implementation
+6. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
+   to produce the type story, assertion plan, telemetry plan, test plan, and implementation slices
+
+When the work is on a ticket, the plan comment is drafted from three sections of this artifact:
+**Target properties**, **Recommendation** (including its alternatives) and **Open decisions**. A
+point from **Findings** that the approach rests on goes in beside the step it supports; the rest
+of **Findings** stays out. The comment's done-when is the ticket's Ideal state plus whatever the
+approach adds to it.
 
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
 and stop again. Do not treat answers to questions as approach approval.
