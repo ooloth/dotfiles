@@ -11,6 +11,18 @@ strategy — are made at design time, not recovered through profiling after the
 fact. Back-of-the-envelope estimates of network, storage, memory, and compute
 costs inform design decisions before a line is written.
 
+**A design adds no network hop it could avoid unless the hop buys a property
+nothing else provides.**
+A hop costs performance and safety, which together produce a good experience
+for users and developers. It adds latency to every operation that crosses it,
+a failure mode that can stall rather than fail, and often a capacity ceiling
+someone else sets. So an option that adds one names the property it buys. A
+saving in money or effort is not a property. Nor is a benefit the system
+already owes by other means: a network disk's survival of host failure is no
+reason to accept one when an off-machine copy is required anyway. The tell is
+a hop justified by price, by convenience, or by something another requirement
+already delivers.
+
 **Algorithmic complexity is justified.**
 Operations over large or unbounded inputs use algorithms whose complexity is
 appropriate for the expected scale. O(n²) over large inputs is examined before
@@ -59,6 +71,7 @@ are structured to do so rather than executed sequentially.
 
 ## In scope
 
+- Design choices that place work, data or a dependency across a network
 - Loop bodies
 - Database query sites
 - Hot-path functions
