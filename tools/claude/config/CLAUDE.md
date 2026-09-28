@@ -190,6 +190,39 @@ from what the ticket or the existing docs already say it needs. Then ask what it
 all of them, and only then what to give up. An approach recommended without that list was scored
 against a bar you set yourself, and setting it low is invisible in the result.
 
+**What the properties serve is a good experience for users and developers, and performance and
+safety are what produce it.** So state both theoretical maximums before accepting any tradeoff
+between them:
+
+- **Maximum performance:** the fewest steps the work could possibly take on the hardware and network
+  it runs on.
+- **Maximum safety:** what could be lost or corrupted, and the strongest protection physically
+  possible.
+
+Then look for a design that comes close to both. A tradeoff often means the design is not finished
+yet, because a different design can remove it. Accept one only where a physical fact forces it, and
+name that fact.
+
+Storing a database is the worked example. A local disk gives the maximum performance, since a commit
+crosses no network. Surviving the machine's loss requires a copy somewhere else. A network disk pays
+for that copy on every commit. A local disk with continuous replication off the machine pays for it
+in the background, and so comes close to both.
+
+**Decide slowly, from properties.** Models are trained to reach a choice quickly, and the harness
+reinforces it: its system prompt says "When you have enough information to act, act" and asks for
+"a recommendation, not an exhaustive survey". For a design decision, do not follow that pull. If a
+first pass through the properties leaves several candidates standing, the list is not finished.
+
+- **Zoom in:** split each property that every survivor passes into the conditions it stands for.
+- **Extend:** add properties from moments not yet considered, including softer ones such as what
+  employers look for or what a maintainer will live with for years. Each cites its source like any
+  other.
+- **Score again.**
+
+The decision is whatever the table then yields. Worked this way, the final round is usually easy. A
+recommendation offered before that point is the failure, however reasonable it sounds. The rules
+are in `decision-making.md` in the standards.
+
 ## Uphold Standards
 
 NEVER design, edit or review code, make a decision, or update documentation without first invoking
