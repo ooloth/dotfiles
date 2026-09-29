@@ -379,16 +379,6 @@ reader cannot tell whether circumstances have crossed the line.
 "I already know X" is a legitimate input. Smuggled in as a property of X, it is an argument that
 cannot be checked.
 
-**Record numbers follow the order decisions derive from each other, unless records are cited from
-places a renumber cannot update.**
-Read in derivation order, a listing of the records is the argument being built, and a reader sees
-what each decision rests on without opening it. The cost is that inserting a record renumbers the
-ones after it, which is mechanical when every citation lives in files a link checker can see. It
-is not mechanical once numbers are quoted from other repositories, tickets, commit messages or
-chat, because those keep pointing at the old number and silently name the wrong record. That is
-the usual state of a team project, so there numbers are permanent and assigned in the order records
-are written, and each record's links to what it rests on carry the derivation instead.
-
 ## Consider
 
 **A decision found to rest on something unsettled is demoted rather than annotated.**
