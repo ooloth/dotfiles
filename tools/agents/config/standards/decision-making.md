@@ -14,10 +14,11 @@ whoever inherits it.
 
 **Among decisions that do not derive from one another, the one whose wrong answer is cheapest to
 unwind is taken first.**
-Two things follow from taking it. Being wrong is survivable, so the decision does not need the
-evidence it does not yet have. And making it produces evidence — a scaffold that runs, an
-observation, a thing that exists — which every later decision is then made with rather than
-without. This is the same principle as deferring, read from the other end: the expensive decision
+Two things follow from taking it. Being wrong is survivable, so it can be taken before evidence
+that only a later decision would produce. And making it produces evidence — a scaffold that runs,
+an observation, a thing that exists — which every later decision is then made with rather than
+without. Cheapness decides when a decision is taken, not how carefully it is derived: a
+cheap-to-unwind decision still gets its properties derived and scored like any other. This is the same principle as deferring, read from the other end: the expensive decision
 is the one that most needs what has not been learned yet, so it is the one that waits. Cheapest to
 unwind counts discovery. A wrong answer nobody notices is not cheap however small the
 fix would have been, so a decision that fails silently moves earlier rather than later, where the
@@ -63,10 +64,11 @@ them.
 A stated budget rules an option out. Nothing rules one in on effort. "Simpler to build", "a smaller
 diff", "less to configure" and "fewer moving parts" each name what an option costs, and none of
 them names anything the system requires, so an option that wins on one of them has not been
-compared on anything. The tell is a comparison whose merit column contains a cost. Where effort is
-genuinely the only thing separating the candidates, the properties did not discriminate, and the
-finding is that they did not: the record says the choice was made on cost rather than presenting
-the cost as a derivation.
+compared on anything. The tell is a comparison whose merit column contains a cost. Where effort seems
+to be the only thing separating the candidates, the property list is not finished: it is extended
+and zoomed, per the entry on comparisons that leave several candidates standing. A cost the
+maintainer has stated a view on, such as a budget or a strong wish for something to be free, enters
+that list as a cited row rather than deciding from outside it.
 
 **A predicted failure mode is a constraint on the design, never a reason to drop the requirement.**
 "It would degrade into busywork" and "it would be ignored" describe how a bad version of the thing
@@ -89,6 +91,45 @@ because the workload is X and the smallest instance is Y" and silence about memo
 indistinguishable in a finished record, and only one of them was considered. This is not a mandate
 to measure. A property recorded as not binding needs a reason rather than a number, and the Must
 against measuring what does not bind still applies.
+
+**Every property belongs to one of three categories, safety, performance or experience, and before
+a tradeoff between them is accepted, the theoretical maximum of each is stated and a design reaching
+all three is looked for.**
+
+- **Safety** is every way the system can go wrong or cause harm, and whether it notices. It
+  includes correctness, reliability, security, data integrity, bounded resources, and checking
+  itself while running so that it stops rather than carrying on wrong. That list is where to start,
+  not where to stop. Maximum safety is a system that cannot go wrong or cause harm without noticing.
+- **Performance** is how little anyone waits, on the path they wait on, and how little of the
+  machine's resources (time, memory, battery, network) the work spends. It is judged at the slowest
+  cases as well as the typical one. Fewest steps is not the same thing: parallel work, work done
+  ahead of time and batching all add steps and can cut the wait. Maximum performance is the physical
+  floor: the round trips the work cannot avoid on the network it runs on, plus the computation it
+  cannot skip on the hardware it runs on.
+- **Experience** is what users and developers live with: how clear, direct and easy to change the
+  thing is. Maximum experience is the least a user or developer has to know or do to get what they
+  came for.
+
+Before any maximum is stated, the ways a bad design could fail are listed in all three categories:
+how it could go wrong or cause harm, how it could be slow, and how it could be hard to use or to
+change. The list
+is written before any candidate or check is named, and the maximums and properties are derived from
+it. The question's topic is what narrows attention. A question about storage pulls it to lost data,
+and away from a process that dies without anyone knowing, an input nobody checks, or a deploy nobody
+can undo. Writing the failures out first, category by category, is what widens it again.
+
+The three are not ranked, and none is traded for another by default. A tradeoff between them often
+means the design is not finished, because a different design can remove it. A tradeoff that
+survives the search names the physical fact that forces it, and is then argued from the properties.
+
+The tell that this step was skipped is options presented as points on one curve, such as "fast or
+correct", "fast or validated" or "simple or safe", with no option asking whether the curve can be
+left.
+
+**A benefit is weighed net of what the system already owes by other means.**
+An option that buys something the system will have anyway has bought nothing. The benefit counts
+only as the difference from what is already required. The tell is a benefit column listing
+something another record already mandates.
 
 **Decisions are sequenced so that a milestone is reached in a state worth keeping.**
 Dependency order is the mechanism; reaching a milestone in a state you would keep is the goal. If
@@ -232,8 +273,8 @@ list missed joins the list before any option is compared.
 property it fails.**
 A comparison written as prose per option lets each option be judged on whichever properties flatter
 or sink it. A grid shows where an option was never assessed, makes the one disqualifying property
-visible, and shows when two options differ on nothing the list contains, which is the finding the
-entry on bounded searches below describes. A grid in the working is enough; the record carries the
+visible, and shows when two options differ on nothing the list contains. That is the signal to
+extend and zoom the list, per the entry below. A grid in the working is enough; the record carries the
 properties and names the one each rejection fails.
 
 **A check earns its place when it can name the property, the requirement that binds it, and which
@@ -260,19 +301,35 @@ failure mode, and that gap is invisible in the answer. Naming the unexamined axe
 and lets a reader judge whether the omission was reasonable rather than discovering it later as a
 surprise.
 
-**Where a bounded search finds no property on which the candidates differ, that is the finding.**
-The decision is then made on stated preference, and the record says it was made that way rather than
-presenting the preference as a derivation. The bound is named before the search starts, in hours or
-in candidates, because a search with no bound ends when somebody tires of it and the stopping point
-then reads as a conclusion. This is the companion to the Must that one reason disqualifies an
-option: that one says where no reason disqualifies, the option is not disqualified, and this one says
-what follows, which is that the search is over rather than behind. Without it the honest response to
-finding no disqualifier is to look harder, and looking harder reliably produces three or four
-plausible-sounding reasons that read together as one strong case, which is the failure that Must was
-written to prevent reached the long way round. The tell that a field has no discriminator is that
-every candidate satisfies every requirement and the comparison has moved onto qualities nothing in
-the problem asked for. A decision taken there is cheap, and treating it as expensive is what turns a
-week of work into a quarter of one.
+**A comparison that leaves more than one candidate standing is extended and zoomed before anything
+is chosen.**
+A first pass through the properties rarely finishes a decision, and several survivors mean the list
+is not finished yet. It does not mean the candidates are equal. Two moves continue it.
+
+- **Zoom in.** Each property that every survivor passes is shorthand for several conditions, and one
+  of those may separate them. "Fast enough" can stand for the median, the slowest percentile, the
+  first request after idle and the oldest supported device, and candidates that tie on one often
+  differ on another.
+- **Extend.** Derive properties from moments not yet listed. Softer ones belong here too once the
+  technical ones stop separating: what employers look for, what a maintainer will live with for
+  years, what AI assistants have learned from. Each enters as a row citing its source, such as a
+  stated goal or a stated preference, never as a tie-breaker outside the table.
+
+Then score again, and write each pass down with its date. The decision is what the table yields, and
+it is presented as derived from the table.
+
+This keeps the protection the Must that one reason disqualifies an option exists for: three weak
+reasons must not read as one strong case. Every row cites its source, so a weak reason is visibly a
+weak row rather than a stack of prose. Where a pass changes no verdict, the next pass zooms into a
+different property or extends to a moment not yet covered. Stopping on "no property separates them"
+is a finding only after both moves have been tried and recorded. The tell that this was skipped is a
+record whose decision rests on a preference that appears nowhere in its property list.
+
+**An unknown is not a pass.**
+A candidate whose verdict on a property is unknown is neither kept nor dropped on that property. The
+unknown is resolved first, or it is stated as the reason the comparison cannot finish yet. A grid
+that carries unknown cells into a recommendation has decided those cells without evidence, in
+whichever direction the recommendation needed.
 
 **A decision names what else it moves before it is recorded.**
 Decide one thing at a time, and look at the whole system while doing it. Two failures pull in
@@ -321,16 +378,6 @@ reader cannot tell whether circumstances have crossed the line.
 **Familiarity is stated as a cost of the alternative, never as a merit of the choice.**
 "I already know X" is a legitimate input. Smuggled in as a property of X, it is an argument that
 cannot be checked.
-
-**Record numbers follow the order decisions derive from each other, unless records are cited from
-places a renumber cannot update.**
-Read in derivation order, a listing of the records is the argument being built, and a reader sees
-what each decision rests on without opening it. The cost is that inserting a record renumbers the
-ones after it, which is mechanical when every citation lives in files a link checker can see. It
-is not mechanical once numbers are quoted from other repositories, tickets, commit messages or
-chat, because those keep pointing at the old number and silently name the wrong record. That is
-the usual state of a team project, so there numbers are permanent and assigned in the order records
-are written, and each record's links to what it rests on carry the derivation instead.
 
 ## Consider
 

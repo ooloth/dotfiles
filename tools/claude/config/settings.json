@@ -14,18 +14,6 @@
     "lastShownTime": 1754054339526
   },
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(git *)",
-            "command": "bash ~/.claude/hooks/git-push-guard.sh"
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "matcher": "",
@@ -110,44 +98,6 @@
     "defaultMode": "auto"
   },
   "plansDirectory": "./.claude/plans",
-  "sandbox": {
-    "enabled": true,
-    "allowUnsandboxedCommands": false,
-    "enableWeakerNetworkIsolation": true,
-    "excludedCommands": ["git push origin", "git push origin *", "git fetch *", "git pull *", "tmux -L agent *"],
-    "filesystem": {
-      "allowWrite": [
-        "~/.npm",
-        "~/Library/pnpm",
-        "~/Library/Caches/pnpm",
-        "~/Library/Caches/uv",
-        "~/Repos/ooloth/dotfiles/.git"
-      ],
-      "allowRead": ["~/.config/gh/hosts.yml"],
-      "denyRead": ["~/.ssh"],
-      "denyWrite": ["~/Repos/**/.git/hooks", "~/Repos/**/.git/config"]
-    },
-    "network": {
-      "allowLocalBinding": true,
-      "strictAllowlist": true,
-      "allowedDomains": [
-        "github.com",
-        "*.github.com",
-        "*.githubusercontent.com",
-        "registry.npmjs.org",
-        "pypi.org",
-        "files.pythonhosted.org"
-      ]
-    },
-    "credentials": {
-      "files": [{ "path": "~/.aws/credentials", "mode": "deny" }],
-      "envVars": [
-        { "name": "GH_TOKEN", "mode": "deny" },
-        { "name": "GITHUB_TOKEN", "mode": "deny" },
-        { "name": "ANTHROPIC_API_KEY", "mode": "deny" }
-      ]
-    }
-  },
   "showClearContextOnPlanAccept": true,
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,

@@ -43,8 +43,9 @@ belongs to `/design`, which runs after the user approves the approach.
 5. Facts are your job, not the user's — dispatch subagents to find them. Ask the user only what
    blocks a correct approach decision, and batch those into one numbered round with a recommended
    answer for each rather than drip-feeding one question per turn. Don't ask about anything still
-   gated on a question you haven't gotten an answer to yet. For two-way-door decisions, recommend a
-   default and move on instead of making the user decide everything.
+   gated on a question you haven't gotten an answer to yet. For a two-way-door decision, derive a
+   recommendation from the properties rather than handing the choice to the user. Being easy to
+   reverse does not excuse skipping the derivation.
 
 ### Phase 3: Recommend an Approach
 
@@ -70,21 +71,29 @@ takes interpretation, whether it applies is also an open decision.
 
 3. Implementation effort is a constraint, never a merit. It rules an option out only against a
    budget the user stated. "X is simpler to build" is not a reason to prefer X unless it also names
-   a property X delivers better. This governs the Cost row below: cost is what an option spends to
-   deliver the properties, not a score it competes on.
+   a property X delivers better. Cost is what an option spends to deliver the properties, not a
+   score it competes on, unless the user has stated a view on it, in which case it enters the table
+   as a row citing that statement.
 
-4. For non-trivial decisions, name tradeoffs explicitly — frame options as "optimize for X vs Y",
-   not "right vs wrong":
+4. Score every option against every property in one table, options as rows and properties as
+   columns. Before accepting any tradeoff, state the theoretical maximums for safety, performance
+   and experience for the thing being decided, as `decision-making.md` defines them, and look for a
+   design that comes close to all three. First list the ways a bad design could go wrong or cause
+   harm, be slow, or be hard to use or change, in all three categories and not only the one the task
+   is about. Options
+   framed as points on one curve,
+   such as "fast or correct" or "simple or safe", are the sign this step was skipped. A tradeoff
+   that remains names the physical fact that forces it.
 
-   | Dimension       | Question                                  |
-   | --------------- | ----------------------------------------- |
-   | **Value**       | What outcome does this unlock?            |
-   | **Cost**        | Time, complexity, ongoing maintenance     |
-   | **Risk**        | What breaks if we're wrong? Who pays?     |
-   | **Alternative** | What did we consider and reject, and why? |
+   If more than one option survives, the list is not finished. Zoom into each property every
+   survivor passes, and extend the list to moments and softer properties not yet covered, each
+   citing its source. Score again. An unknown cell is resolved before the option it belongs to is
+   kept or dropped. Recommend only what the table yields, and present the passes that got there.
 
 5. Flag reversibility for each significant decision:
-   - **Two-way door** (easily reversible) — recommend a default, decide fast, and move on.
+   - **Two-way door** (easily reversible) — it may be taken earlier than a one-way door, but it is
+     derived and scored just as carefully. Reversibility lowers the cost of being wrong, not the
+     care owed to being right.
    - **One-way door** (costly to undo: public APIs, data schemas, pricing, core UX patterns users
      learn) — requires explicit sign-off; include an ADR-lite entry in the plan:
 

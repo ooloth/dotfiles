@@ -190,6 +190,40 @@ from what the ticket or the existing docs already say it needs. Then ask what it
 all of them, and only then what to give up. An approach recommended without that list was scored
 against a bar you set yourself, and setting it low is invisible in the result.
 
+**Every property is one of three kinds: safety, performance or experience.** First list the ways a
+bad design could fail in each: how it could go wrong or cause harm, how it could be slow, and how it
+could be hard to use or to change. Write that list before naming any candidate. Then state the
+theoretical maximum of each kind before accepting any tradeoff between them:
+
+- **Maximum safety:** the system cannot go wrong or cause harm without noticing. That includes
+  correctness, reliability, security, data integrity, bounded resources, and checking itself while
+  running so it stops rather than carrying on wrong, and whatever else could go wrong unnoticed.
+- **Maximum performance:** the least anyone waits on the path they wait on, and the least of the
+  machine's resources spent, judged at the slowest cases too. It is set by the round trips and
+  computation the work cannot avoid. Fewest steps is not the same thing, because parallel work,
+  work done ahead of time and batching add steps and can cut the wait.
+- **Maximum experience:** the least a user or developer has to know or do to get what they came for.
+
+Then look for a design that comes close to all three. They are not ranked. A tradeoff often means
+the design is not finished yet, because a different design can remove it. Accept one only where a
+physical fact forces it, name that fact, and argue it from the properties. The full rule is in
+`decision-making.md` in the standards.
+
+**Decide slowly, from properties.** Models are trained to reach a choice quickly, and the harness
+reinforces it: its system prompt says "When you have enough information to act, act" and asks for
+"a recommendation, not an exhaustive survey". For a design decision, do not follow that pull. If a
+first pass through the properties leaves several candidates standing, the list is not finished.
+
+- **Zoom in:** split each property that every survivor passes into the conditions it stands for.
+- **Extend:** add properties from moments not yet considered, including softer ones such as what
+  employers look for or what a maintainer will live with for years. Each cites its source like any
+  other.
+- **Score again.**
+
+The decision is whatever the table then yields. Worked this way, the final round is usually easy. A
+recommendation offered before that point is the failure, however reasonable it sounds. The rules
+are in `decision-making.md` in the standards.
+
 ## Uphold Standards
 
 NEVER design, edit or review code, make a decision, or update documentation without first invoking
@@ -390,42 +424,23 @@ Skip and say nothing if execution went smoothly.
 - `gh` - NEVER run a `gh` command without first invoking the `use-gh` skill
 - `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
   programs (TUIs, REPLs). This is often the only way to visually verify an interactive program
-  without asking the user to do it. Always use the agent server, `tmux -L agent`, so the user's own
-  sessions stay out of reach, and write each tmux call as its own bare command with no pipe, `&&`
-  or prefix, or the sandbox exclusion does not match and the call fails:
-  - start: `tmux -L agent new-session -d -s <name> -n <window> "<command>"`
-  - add a window: `tmux -L agent new-window -t <name> -n <window> "<command>"`
-  - type: `tmux -L agent send-keys -t <name>:<window> "<keys>" Enter`
-  - read the screen: `tmux -L agent capture-pane -t <name>:<window> -p`
-  - finish: `tmux -L agent kill-session -t <name>`
+  without asking the user to do it:
+  - start: `tmux new-session -d -s <name> -n <window> "<command>"`
+  - add a window: `tmux new-window -t <name> -n <window> "<command>"`
+  - type: `tmux send-keys -t <name>:<window> "<keys>" Enter`
+  - read the screen: `tmux capture-pane -t <name>:<window> -p`
+  - finish: `tmux kill-session -t <name>`
 
-  The user watches with `tmux -L agent attach`.
+  The user watches with `tmux attach -t <name>`.
 
-## Sandbox
+## Shell
 
-Every Bash command runs in a sandbox, and there is no way out of it: `dangerouslyDisableSandbox`
-is turned off.
-
-- Bash can write only to the current project and `$TMPDIR`. Put scratch work (spikes, throwaway
-  repos, proofs of concept) in a directory from `mktemp -d`, never in bare `/tmp`.
-- Network access reaches only allowlisted hosts. Read documentation with WebFetch, which is
-  controlled separately. If a command needs a host that is not allowed, name the host and stop.
-- pnpm, gh, node, python, test runs and local dev servers all work inside the sandbox.
-- Never start a background process with `&` or `nohup`. A later Bash command cannot signal it, and
-  `ps` is blocked, so it keeps running after you finish. Run it in a `tmux -L agent` window, or
-  start, check and stop it within one Bash command.
-- `git push origin …`, `git fetch`, `git pull` and `tmux -L agent` run outside it on purpose, and
-  only when the Bash call is that one command with nothing around it: no pipe, `&&`, `;` or
-  redirect. Push as `git push origin <branch>`. Any other push, including a bare `git push`, runs
-  inside the sandbox and fails on a proxy that refuses SSH. Pushing to a remote other than `origin`
-  is left sandboxed on purpose, so the repo's contents cannot be sent somewhere else.
-- Commands inside a `tmux -L agent` window run outside it too, so use those windows only for the
-  project's own commands.
+- Put scratch work (spikes, throwaway repos, proofs of concept) in a directory from `mktemp -d`,
+  never in bare `/tmp`.
+- Never start a background process with `&` or `nohup`. Run it in a tmux window, or start, check
+  and stop it within one Bash command.
 - For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
-  Playwright tools; the main session has none, and headless Chrome cannot start inside the sandbox.
+  Playwright tools; the main session has none.
 - To edit Claude's own config (this file, skills, agents, settings), use the Edit tool on the real
-  path under `~/Repos/ooloth/dotfiles/tools/`, not the `~/.claude/` symlink. Bash cannot write
-  these files at all, and `~/.claude/` is a protected path that auto mode may refuse. Edits to
-  `settings.json` ask the user first.
-- When the sandbox blocks something, report the restriction and what you were trying to do. Do not
-  route around it with the Write tool, a tmux window or an excluded command.
+  path under `~/Repos/ooloth/dotfiles/tools/`, not the `~/.claude/` symlink. `~/.claude/` is a
+  protected path that auto mode may refuse. Edits to `settings.json` ask the user first.

@@ -82,7 +82,7 @@ a false positive costs one read; a false negative means missed guidance.
 - **`error-handling.md`** — fallible operations, error propagation paths, user-facing error output
 - **`instrumentation.md`** — logging, metric and trace call sites; log format, levels and field content
 - **`observability.md`** — what a failure has to reveal, what must be recorded for it to, invariants no call site can check
-- **`performance.md`** — loop bodies, database queries, hot-path functions, large or unbounded data operations
+- **`performance.md`** — design choices that put a network hop on a path, loop bodies, database queries, hot-path functions, large or unbounded data operations
 - **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API responses; analytics events
 - **`python.md`** — .py files; load alongside language-agnostic files
 - **`reliability.md`** — network requests, database queries, external service calls, file handles, resource cleanup
