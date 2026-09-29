@@ -14,18 +14,6 @@
     "lastShownTime": 1754054339526
   },
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(git *)",
-            "command": "bash ~/.claude/hooks/git-push-guard.sh"
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "matcher": "",
