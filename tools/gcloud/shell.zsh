@@ -33,9 +33,11 @@ alias bqq="bq query --use_legacy_sql=false --project_id=datalake-prod-ef49c0c9 -
 
 # see: https://stackoverflow.com/a/51563857/8802485
 # see: https://cloud.google.com/docs/authentication/gcloud#gcloud-credentials
-alias gca="gcloud auth login --update-adc"
+alias gca="gcloud auth login michael.uloth@recursion.com --update-adc"
 # alias gca="gcloud auth login --update-adc && gcloud auth application-default"
 # alias gca="gcloud auth login --update-adc && gcloud auth application-default set-quota-project eng-infrastructure"
+
+alias gcat="gcloud auth login michael.uloth@rxrx.tech --update-adc"
 
 ###############
 # COMPLETIONS #
