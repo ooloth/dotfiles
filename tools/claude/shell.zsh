@@ -12,13 +12,18 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5
 export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5-20251001
 export ANTHROPIC_MODEL=opus
 export CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1
-export CLAUDE_CODE_ENABLE_TELEMETRY=0
-export DISABLE_ERROR_REPORTING=1
-export DISABLE_TELEMETRY=1
 
 # Agents have been complaining about frequent TaskCreate reminders
 # See: https://github.com/anthropics/claude-code/issues/43311#issuecomment-4185513335
 export CLAUDE_CODE_ENABLE_TASKS=0
+
+export CLAUDE_CODE_ENABLE_TELEMETRY=0
+
+# Default is 200, which I've hit in research-heavy sessions
+export CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=999
+
+export DISABLE_ERROR_REPORTING=1
+export DISABLE_TELEMETRY=1
 
 # if is_work; then
   # export ANTHROPIC_MODEL=sonnet
