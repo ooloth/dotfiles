@@ -78,8 +78,9 @@ takes interpretation, whether it applies is also an open decision.
 4. Score every option against every property in one table, options as rows and properties as
    columns. Before accepting any tradeoff, state the theoretical maximums for safety, performance
    and experience for the thing being decided, as `decision-making.md` defines them, and look for a
-   design that comes close to all three. First list the ways a bad design could be wrong, slow, or
-   hard to use or change, in all three categories and not only the one the task is about. Options
+   design that comes close to all three. First list the ways a bad design could go wrong or cause
+   harm, be slow, or be hard to use or change, in all three categories and not only the one the task
+   is about. Options
    framed as points on one curve,
    such as "fast or correct" or "simple or safe", are the sign this step was skipped. A tradeoff
    that remains names the physical fact that forces it.

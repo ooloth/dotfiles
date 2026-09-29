@@ -191,16 +191,17 @@ all of them, and only then what to give up. An approach recommended without that
 against a bar you set yourself, and setting it low is invisible in the result.
 
 **Every property is one of three kinds: safety, performance or experience.** First list the ways a
-bad design could fail in each: how it could be wrong, how it could be slow, and how it could be hard
-to use or to change. Write that list before naming any candidate. Then state the theoretical maximum
-of each kind before accepting any tradeoff between them:
+bad design could fail in each: how it could go wrong or cause harm, how it could be slow, and how it
+could be hard to use or to change. Write that list before naming any candidate. Then state the
+theoretical maximum of each kind before accepting any tradeoff between them:
 
-- **Maximum safety:** the system cannot silently do the wrong thing. That includes correctness,
-  reliability, security, data integrity, bounded resources, and checking itself while running so it
-  stops rather than carrying on wrong, and whatever else could make it wrong unnoticed. State it for
-  each kind of wrongness, not only the one the question is about.
-- **Maximum performance:** the fewest steps the work could possibly take on the hardware and network
-  it runs on.
+- **Maximum safety:** the system cannot go wrong or cause harm without noticing. That includes
+  correctness, reliability, security, data integrity, bounded resources, and checking itself while
+  running so it stops rather than carrying on wrong, and whatever else could go wrong unnoticed.
+- **Maximum performance:** the least anyone waits on the path they wait on, and the least of the
+  machine's resources spent, judged at the slowest cases too. It is set by the round trips and
+  computation the work cannot avoid. Fewest steps is not the same thing, because parallel work,
+  work done ahead of time and batching add steps and can cut the wait.
 - **Maximum experience:** the least a user or developer has to know or do to get what they came for.
 
 Then look for a design that comes close to all three. They are not ranked. A tradeoff often means

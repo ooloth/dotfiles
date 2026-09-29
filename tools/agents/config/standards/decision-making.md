@@ -96,18 +96,23 @@ against measuring what does not bind still applies.
 a tradeoff between them is accepted, the theoretical maximum of each is stated and a design reaching
 all three is looked for.**
 
-- **Safety** is every way the system can be wrong, and whether it notices. It includes correctness,
-  reliability, security, data integrity, bounded resources, and checking itself while running so
-  that it stops rather than carrying on wrong. That list is where to start, not where to stop.
-  Maximum safety is a system that cannot silently do the wrong thing.
-- **Performance** is the fewest steps the work could possibly take on the hardware and network it
-  runs on.
+- **Safety** is every way the system can go wrong or cause harm, and whether it notices. It
+  includes correctness, reliability, security, data integrity, bounded resources, and checking
+  itself while running so that it stops rather than carrying on wrong. That list is where to start,
+  not where to stop. Maximum safety is a system that cannot go wrong or cause harm without noticing.
+- **Performance** is how little anyone waits, on the path they wait on, and how little of the
+  machine's resources (time, memory, battery, network) the work spends. It is judged at the slowest
+  cases as well as the typical one. Fewest steps is not the same thing: parallel work, work done
+  ahead of time and batching all add steps and can cut the wait. Maximum performance is the physical
+  floor: the round trips the work cannot avoid on the network it runs on, plus the computation it
+  cannot skip on the hardware it runs on.
 - **Experience** is what users and developers live with: how clear, direct and easy to change the
   thing is. Maximum experience is the least a user or developer has to know or do to get what they
   came for.
 
 Before any maximum is stated, the ways a bad design could fail are listed in all three categories:
-how it could be wrong, how it could be slow, and how it could be hard to use or to change. The list
+how it could go wrong or cause harm, how it could be slow, and how it could be hard to use or to
+change. The list
 is written before any candidate or check is named, and the maximums and properties are derived from
 it. The question's topic is what narrows attention. A question about storage pulls it to lost data,
 and away from a process that dies without anyone knowing, an input nobody checks, or a deploy nobody
