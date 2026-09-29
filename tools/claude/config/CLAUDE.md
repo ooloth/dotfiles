@@ -190,8 +190,10 @@ from what the ticket or the existing docs already say it needs. Then ask what it
 all of them, and only then what to give up. An approach recommended without that list was scored
 against a bar you set yourself, and setting it low is invisible in the result.
 
-**Every property is one of three kinds: safety, performance or experience.** State the theoretical
-maximum of each before accepting any tradeoff between them:
+**Every property is one of three kinds: safety, performance or experience.** First list the ways a
+bad design could fail in each: how it could be wrong, how it could be slow, and how it could be hard
+to use or to change. Write that list before naming any candidate. Then state the theoretical maximum
+of each kind before accepting any tradeoff between them:
 
 - **Maximum safety:** the system cannot silently do the wrong thing. That includes correctness,
   reliability, security, data integrity, bounded resources, and checking itself while running so it

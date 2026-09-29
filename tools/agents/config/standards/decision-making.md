@@ -106,10 +106,12 @@ all three is looked for.**
   thing is. Maximum experience is the least a user or developer has to know or do to get what they
   came for.
 
-Safety's maximum is stated for each kind of wrongness the system could have, not only the kind the
-question is about. The question's topic is what narrows it: a question about storage pulls attention
-to lost data, and away from a process that fails without anyone knowing or an input nobody checks.
-So after the named parts, ask what else could make this system wrong without anyone noticing.
+Before any maximum is stated, the ways a bad design could fail are listed in all three categories:
+how it could be wrong, how it could be slow, and how it could be hard to use or to change. The list
+is written before any candidate or check is named, and the maximums and properties are derived from
+it. The question's topic is what narrows attention. A question about storage pulls it to lost data,
+and away from a process that dies without anyone knowing, an input nobody checks, or a deploy nobody
+can undo. Writing the failures out first, category by category, is what widens it again.
 
 The three are not ranked, and none is traded for another by default. A tradeoff between them often
 means the design is not finished, because a different design can remove it. A tradeoff that
