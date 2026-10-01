@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
+source "${DOTFILES}/tools/rust/utils.bash"
 
 export CARGO_HOME="${HOME}/.config/cargo"
 export RUSTUP_HOME="${HOME}/.config/rustup"
@@ -20,5 +21,7 @@ rustup completions zsh >~/.zfunc/_rustup
 debug "📦 Adding rust-analyzer"
 rustup component add rust-analyzer
 
-debug "📦 Adding cargo-nextest"
-cargo install cargo-nextest --locked
+debug "📦 Adding cargo dependencies"
+for package in "${TOOL_CARGO_DEPENDENCIES[@]}"; do
+  cargo install --locked "${package}"
+done
