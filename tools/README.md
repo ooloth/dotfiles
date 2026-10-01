@@ -37,6 +37,6 @@ The @new template directory groups all the related files for a particular tool/u
 ## Deprecating a Tool
 
 1. For **non-brew tools**, run `{tool}/uninstall.bash` first
-2. Move folder to `tools/@archive` (or delete it)
-3. Run `u` to converge — brew-managed packages are removed when their Brewfile
-   entry disappears from `Brewfile.generated`
+2. For **brew tools**, run `brew uninstall {formula}` (or `--cask`). `u` installs
+   what the Brewfiles declare but never removes anything they no longer declare.
+3. Move folder to `tools/@archive` (or delete it)

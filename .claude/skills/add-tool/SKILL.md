@@ -154,9 +154,9 @@ For **tools with config**, add the symlink script path as a 9th argument:
 
 ### 6. Create `tools/{tool}/uninstall.bash` (non-brew tools only)
 
-**Brew-managed tools**: skip this file. Uninstall by moving the tool folder to
-`tools/@archive` (or deleting it) and running `u` — the Brewfile entry drops
-out of `Brewfile.generated` automatically.
+**Brew-managed tools**: skip this file. Uninstall with `brew uninstall {formula}`,
+then move the tool folder to `tools/@archive` (or delete it). `u` installs what
+the Brewfiles declare but never removes anything they no longer declare.
 
 **Non-brew tools** (npm/bun/uv/cargo): create a plain script with only the
 cleanup steps brew can't handle — no wrapper needed:
