@@ -288,13 +288,20 @@ never filled in by the drafter.
 The comment is a public side effect, so its draft is shown to the user and posted only once they
 approve that wording. When the work is not on a ticket, none of this is written anywhere.
 
-**Keep `docs/questions/` current, not just at creation.** When a discussion surfaces a genuine
-open question — real options, not yet settled, worth surviving context loss or a future session —
-proactively recommend capturing it as its own file in `docs/questions/` (one question per file,
-kebab-case name, phrased as the question). The same applies afterward: if work on something
-unrelated turns up a finding, option, or decision relevant to an existing question file, update
-that file then, not only while it's the topic of direct discussion. This is for still-open design
-questions; the ticket comments above are for work already approved.
+**Keep open questions current, not just at creation.** When a discussion surfaces a genuine open
+question (real options, not yet settled, worth surviving context loss or a future session),
+recommend capturing it where the project's team discusses decisions:
+
+- **On a work project whose team tracks work in Jira, Linear or similar,** a decide task on that
+  tracker, titled as the decision to record. The team discusses through ticket comments, and the
+  outcome still lands in the repo's decision record.
+- **On a personal project,** its own file in `docs/questions/` (one question per file, kebab-case
+  name, phrased as the question), so the discussion can happen locally without a tracker.
+
+If later work turns up a finding, option or decision relevant to an existing decide task or
+question file, propose updating it then, not only while it's the topic of discussion. Posting to a
+tracker still needs approval. This is for still-open design questions. The ticket comments above
+are for work already approved.
 
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
