@@ -29,7 +29,7 @@ printf "8. Install the packages, casks, App Store apps and VS Code extensions li
 printf "9. Configure your Mac to use the Homebrew version of Zsh\n"
 printf "10. Install rust (if not work computer)\n"
 printf "11. Install uv\n"
-printf "12. Install the latest version of Node via fnm and set it as the default\n"
+printf "12. Install the latest LTS version of Node via fnm and set it as the default\n"
 printf "13. Install global npm dependencies\n"
 printf "14. Install tmux dependencies\n"
 printf "15. Install neovim dependencies\n"

@@ -16,6 +16,81 @@ parse_version() {
 
 }
 
+# Print the newest LTS Node version (e.g. "v24.21.0")
+#
+# The default Node tracks LTS rather than the newest release because odd-numbered
+# lines (23, 25, ...) reach end-of-life within months and npm drops support for
+# them, which breaks `npm install --global npm@latest`. LTS lines last ~30 months.
+#
+# Usage: latest_lts_node_version
+# Returns 1 if fnm can't list remote versions
+latest_lts_node_version() {
+  local version
+  # fnm prints LTS lines with their codename, e.g. "v24.21.0 (Krypton)"
+  version="$(fnm ls-remote --lts | tail -n 1 | awk '{print $1}')"
+
+  if [[ ! "${version}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    printf "❌ Could not determine the latest LTS Node version (got '%s')\n" "${version}" >&2
+    return 1
+  fi
+
+  printf "%s\n" "${version}"
+}
+
+# Print the npm version to install for the active Node: "latest" when npm@latest
+# supports it, otherwise the newest npm release whose engines.node range does
+#
+# Usage: npm_version_supporting_active_node
+# Returns 1 if the active Node version or npm's supported Node ranges can't be read
+npm_version_supporting_active_node() {
+  local node_version
+  node_version="$(node --version)"
+  if [[ ! "${node_version}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    printf "❌ Could not read the active Node version (got '%s')\n" "${node_version}" >&2
+    return 1
+  fi
+
+  # The active npm bundles semver, so range checks need no extra dependency
+  local semver_module
+  semver_module="$(npm root --global)/npm/node_modules/semver"
+  if [[ ! -d "${semver_module}" ]]; then
+    printf "❌ Could not find npm's bundled semver module at %s\n" "${semver_module}" >&2
+    return 1
+  fi
+
+  local latest_node_range
+  latest_node_range="$(npm view npm@latest engines.node)"
+  if [[ -z "${latest_node_range}" ]]; then
+    printf "❌ Could not read the Node versions npm@latest supports\n" >&2
+    return 1
+  fi
+
+  if node -e 'process.exit(require(process.argv[1]).satisfies(process.version, process.argv[2]) ? 0 : 1)' \
+    "${semver_module}" "${latest_node_range}"; then
+    printf "latest\n"
+    return 0
+  fi
+
+  local newest_supported_version
+  newest_supported_version="$(
+    npm view "npm@>=1" version engines.node --json | node -e '
+      const semver = require(process.argv[1]);
+      const releases = [].concat(JSON.parse(require("fs").readFileSync(0, "utf8")));
+      const supported = releases
+        .filter((release) => release["engines.node"] && semver.satisfies(process.version, release["engines.node"]))
+        .map((release) => release.version);
+      const newest = semver.maxSatisfying(supported, "*");
+      if (newest) console.log(newest);
+    ' "${semver_module}"
+  )"
+  if [[ -z "${newest_supported_version}" ]]; then
+    printf "❌ No npm release supports Node %s\n" "${node_version}" >&2
+    return 1
+  fi
+
+  printf "%s\n" "${newest_supported_version}"
+}
+
 NPM_OUTDATED_LIST_CACHE_FILE="${TMPDIR:-/tmp}/.npm_outdated_list"
 
 # Check if a global npm package is installed

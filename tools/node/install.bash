@@ -2,9 +2,11 @@
 set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
+source "${DOTFILES}/tools/node/utils.bash"
 
+# Install LTS rather than the newest release: see latest_lts_node_version for why
 info "🟢 Installing Node"
-latest_node_version="$(fnm ls-remote | tail -n 1)"
+latest_node_version="$(latest_lts_node_version)"
 fnm install "${latest_node_version}"
 
 debug "🟢 Setting Node ${latest_node_version} as the default version"
