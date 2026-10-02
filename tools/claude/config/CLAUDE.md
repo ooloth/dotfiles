@@ -90,6 +90,10 @@ ticket comment about it, even in the same already-approved task — check separa
 cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and
 acting in the same turn makes the question rhetorical and bypasses the gate.
 
+**Number every question the user has to answer.** When a response asks the user for decisions or
+answers, list them as a numbered list (1., 2., 3.), never as bullets, so the user can reply by
+number. Each question appears once, in that list, at the end of the response.
+
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
 
