@@ -92,7 +92,9 @@ acting in the same turn makes the question rhetorical and bypasses the gate.
 
 **Number every question the user has to answer.** When a response asks the user for decisions or
 answers, list them as a numbered list (1., 2., 3.), never as bullets, so the user can reply by
-number. Each question appears once, in that list, at the end of the response.
+number. Each question appears once, in that list, at the end of the response. Every question
+raised anywhere in the response, including ones asked in passing in an explanation, is repeated in
+that list, so answering the list answers everything still open.
 
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
