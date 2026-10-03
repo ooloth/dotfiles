@@ -261,6 +261,26 @@ above pushes toward observing and is silent on the first of those, which is the 
 mistake on a question whose candidates publish what they can and cannot do — most of a tool or
 runtime field is eliminated by reading, and the spike is then aimed at whatever survives.
 
+**The moments a choice is scored on include the years of maintaining it, not only the day it is
+adopted.**
+A choice is lived with long after it is made. It is set up, configured, patched, upgraded across
+versions that change its behaviour, debugged when it surprises someone, rebuilt when its machine is
+lost, and kept while the project behind it changes hands. Each of those is a moment the system
+touches the choice, and each yields properties as concrete as the request path's: how much there is
+to configure and keep in mind, what an update does to the running system, how a failure makes
+itself known, how easily help is found, and what replacing the choice would cost. A property list
+derived only from adoption favours whatever is quickest to stand up, and says nothing about what the
+maintainer pays every month afterwards. The horizon is the system's expected life, as its problem
+statement or its maintainers set it. A throwaway prototype has a short one, and says so.
+
+**A measured property is weighed beside the rest of the list, not in place of it.**
+A measurement is the strongest evidence a comparison holds, for the one property it measures. A
+candidate that loses a measured row has lost that row, read in light of what the difference costs
+over the system's life. It is disqualified only where the row is a requirement it fails outright,
+which is the Must that one named reason disqualifies an option. The tell is a comparison settled by
+the one column that happened to be measurable, while properties the maintainer weighs more stay
+unread.
+
 **Research is assigned by property, not by candidate.**
 A researcher given a candidate returns a survey of that candidate, and the comparison is then
 assembled from several surveys that each chose their own axes. A researcher given a property
