@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-01
+updated: 2026-10-03
 update_when: a laptop is audited, the cleanup dry run runs cleanly, or `u` gains a cleanup step
 decays: fast
 status: open
@@ -66,4 +66,10 @@ Nothing here is settled until it graduates into a decision record.
   printed a circular-dependency warning for `libtiff` and `webp`, then exited with
   `Error: No available formula with the name "spacelift-io/spacelift/spacectl"` without listing
   anything.
+- *Measured (2026-10-03, Air):* `postgresql@14` was installed on request on 2026-02-27 and stayed
+  linked after `tools/postgresql/Brewfile`'s `postgresql` alias moved to `postgresql@18`. `brew
+  bundle` installed @18 but could not link it ("postgresql@18 was installed but not linked because
+  postgresql@14 is already linked"), so `psql` ran version 14 with nothing reporting it. No
+  Brewfile declared @14. It was unlinked and uninstalled by hand. The same thing will happen at the
+  next major version, because a versioned formula's link is not moved when the alias moves.
 - *Not yet measured:* the home laptop's dry-run output.
