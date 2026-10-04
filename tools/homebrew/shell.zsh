@@ -9,6 +9,7 @@
 export HOMEBREW_NO_AUTO_UPDATE=1      # I'll update manually (don't slow down individual install/upgrade commands)
 export HOMEBREW_NO_INSTALL_CLEANUP=1  # I'll clean up manually (don't slow down individual install/upgrade commands)
 export HOMEBREW_UPGRADE_GREEDY=1      # Upgrade casks with auto-updates: true or version: latest as well
+export HOMEBREW_NO_ASK=1              # Don't ask for confirmation before upgrading (so `u` can run unattended)
 
 ###########
 # ALIASES #
