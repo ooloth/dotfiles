@@ -3,6 +3,11 @@ set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
+# gcloud is only used on the work laptop
+if ! is_work; then
+  exit 0
+fi
+
 # TODO: replace with brew cask? - https://formulae.brew.sh/cask/gcloud-cli
 # See: https://cloud.google.com/sdk/docs/downloads-interactive#silent
 info "☁️ Installing gcloud SDK to ${HOME}/google-cloud-sdk"

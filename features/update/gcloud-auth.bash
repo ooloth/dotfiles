@@ -6,8 +6,8 @@ export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
-# Skip entirely on machines without gcloud installed (e.g. personal laptop)
-if ! have gcloud; then
+# gcloud is only used on the work laptop
+if ! is_work || ! have gcloud; then
   exit 0
 fi
 

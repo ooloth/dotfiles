@@ -3,7 +3,8 @@ set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
 
-if ! have gcloud; then
+# gcloud is only used on the work laptop
+if ! is_work || ! have gcloud; then
   exit 0
 fi
 
