@@ -64,8 +64,10 @@ Docs are read and edited as plain text far more often than rendered, and a
 markdown table there is alignment padding nobody maintains: editing one cell
 means re-padding its row, a formatter re-pads the whole block, and a one-word
 change surfaces as a rewrite of every line. Grep reads paragraphs and lists
-and mangles table rows. The exception is a lookup whose every row fits inside
-the wrap width — an index, a key map — where scanning down a column is the point.
+and mangles table rows. The exceptions are a lookup whose every row fits inside
+the wrap width — an index, a key map — where scanning down a column is the point,
+and output read rendered and not edited afterwards, such as a ticket comment or
+PR description.
 
 ## Should
 
@@ -95,6 +97,34 @@ would say it aloud, then write that: speech keeps one idea per sentence in the
 order the reader needs them, joined by the words that carry the logic. Those
 joining words and the distinctions an argument turns on are structure, not
 padding — cutting them leaves assertions the reader has to reassemble.
+
+**Structure that prose would deliver one piece at a time is drawn.**
+When understanding a change means holding several parts in mind at once, such
+as actors exchanging messages, states and the transitions between them, or
+components and what depends on what, a diagram shows them together where prose
+makes the reader assemble them. The form follows the question the reader has:
+
+- Who talks to whom, and in what order: a sequence diagram
+- What states a thing can be in, and what moves it between them: a state diagram
+- What the code decides, and which path each input takes: a flowchart
+- What depends on what: a dependency graph
+- What is stored, and how the pieces relate: an entity-relationship diagram
+- What happens in what order during a rollout or migration: a timeline
+- How a value changes shape from input to output: a data-flow diagram
+
+These are examples, not a complete list. Where the content is a set of
+combinations, such as options scored against properties or inputs mapped to
+outcomes, a table shows it better than a diagram. Where a change alters a
+structure, a before and after pair shows the change itself. A diagram is
+included only when it replaces prose or shows something the prose does not. One
+that restates the surrounding text, or that holds two boxes and an arrow, is
+left out.
+
+**Diagrams are plain text in a code block, no wider than 100 columns.**
+They are read in terminals and in trackers that do not render diagram
+languages, and plain text looks the same in all of them. Mermaid and similar
+languages show as source wherever they are not rendered. At 100 columns or
+less, a diagram does not wrap in a narrow terminal or comment pane.
 
 **Statements are unhedged, and what is uncertain is recorded as an open question.**
 Caveats woven through prose — no evidence for this, unverified assumption, not
@@ -148,6 +178,7 @@ relationships are updated when the structure they depict changes.
 - Module-level doc comments (//! blocks, docstrings at file tops)
 - Inline comments, for the two standards that name them: whether a comment
   explains a non-obvious why, and whether it describes the code as it is
+- Ticket comments and PR descriptions, for the diagram and table standards
 
 ## Out of scope
 

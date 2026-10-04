@@ -233,7 +233,10 @@ Present the design artifact:
 5. **Assertion plan** — which constraints are asserted and where, which are left to boundary
    validation, and which states are deliberately allowed rather than asserted against. Where a
    constraint is checked against a recorded signal, name the record, the check, and what a firing
-   means; omit this part entirely when no constraint landed there
+   means. Where that check spans processes, mark on the approach's interaction diagram where the
+   record is written and where the check reads it, rather than drawing a new one; draw one to the
+   diagram standards in `~/.agents/standards/documentation.md` only when the approach has none.
+   Omit this part entirely when no constraint landed there
 6. **Telemetry plan** — the questions the running system cannot answer, what each one needs
    recorded, and what this slice deliberately leaves unobservable; omit it when the slice's
    behaviour is fully visible in its inputs, outputs and exit code

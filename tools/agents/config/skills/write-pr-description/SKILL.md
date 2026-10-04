@@ -45,6 +45,7 @@ gh pr view --web
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Validation is manual e2e only — no automated checks
 - [ ] No implementation details snuck in
+- [ ] Diagram present only if the PR changes observable interactions, and it replaces prose or shows what prose cannot
 
 ---
 
@@ -100,6 +101,10 @@ gh pr view --web
 - Start with `> [!NOTE]` callout if PR depends on another PR
 - Include 🍿 screen recording for ANY UI changes
 - Mention deployment timing if backend/frontend coordination needed
+- When the PR changes how parts of the system interact in a way a reviewer can
+  observe, add a before and after diagram of that interaction under What, drawn
+  to the diagram standards in `~/.agents/standards/documentation.md`. Most PRs
+  have nothing to draw and include no diagram
 - Link actual Jira/Slack (ask user if not provided)
 - Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or bare GitHub Issue
   URL (since GitHub auto-renders those with a preview)

@@ -143,8 +143,10 @@ End with a strategy artifact:
    decision that binds the task (linked), or where you looked if none did
 4. **Recommendation** — preferred approach, scored against each target property, including what
    ties events together across any process, async or run boundary it introduces, and where anything
-   durable that a later check reads is kept. It ends with the alternatives a competent person would
-   have chosen, each with the property it fails
+   durable that a later check reads is kept. Where the approach changes how components, processes
+   or runs interact, it includes a before and after diagram of that interaction, drawn to the
+   diagram standards in `~/.agents/standards/documentation.md`. It ends with the alternatives a
+   competent person would have chosen, each with the property it fails
 5. **Open decisions** — only decisions that block correct implementation
 6. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
    to produce the type story, assertion plan, telemetry plan, test plan, and implementation slices
