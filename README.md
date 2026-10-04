@@ -123,17 +123,21 @@ This will:
 ## Checking
 
 ```sh
-dcheck        # verify symlinks and critical tool presence
+dcheck        # verify symlinks, tools, the agent shell and feature aliases
 ```
 
 `dcheck` is a read-only health check. It reports `OK`, `MISSING`, or
 `WRONG TARGET` for every managed symlink and confirms that critical
-tools are installed. Exits nonzero if anything is wrong.
+tools are installed. It also starts an interactive zsh with and without
+`CLAUDECODE` set, and confirms that the agent shell has no aliases and no
+function named like a command, while your own shell keeps its aliases.
+Last, it confirms each feature's aliases run that feature's own scripts.
+Exits nonzero if anything is wrong. `u` runs it after a full update.
 
 ## Updating
 
 ```sh
-u             # update everything
+u             # update everything, then run dcheck
 u "homebrew"  # update one tool
 symlinks      # update symlinks
 ```

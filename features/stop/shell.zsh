@@ -3,4 +3,4 @@
 # ALIASES #
 ###########
 
-alias submit="bash ${DOTFILES}/features/submit/submit.bash"
+alias stop="bash ${DOTFILES}/features/stop/stop.bash"

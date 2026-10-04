@@ -51,6 +51,10 @@ main() {
     bash "$file" || failed_scripts+=("$file")
   done
 
+  # Check the result, so a broken symlink, missing tool or unsafe agent shell is reported here
+  local check="${DOTFILES}/features/check/dotfiles.bash"
+  bash "$check" || failed_scripts+=("$check")
+
   # Summarise any failures at the end for visibility
   if [[ ${#failed_scripts[@]} -gt 0 ]]; then
     error "❌ Some updates failed"
