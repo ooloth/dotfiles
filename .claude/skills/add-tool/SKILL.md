@@ -210,8 +210,11 @@ set -euo pipefail
 source "${DOTFILES}/tools/{tool}/utils.bash"
 source "${DOTFILES}/tools/bash/utils.bash"
 
-symlink "${DOTFILES}/tools/{tool}/config/settings.json" "${TOOL_CONFIG_DIR}/settings.json"
+symlink "${DOTFILES}/tools/{tool}/config/settings.json" "${TOOL_CONFIG_DIR}"
 ```
+
+`symlink()`'s second argument is the directory the link goes in. The link takes the source file's
+name, so passing a file path creates `settings.json/settings.json`.
 
 ### 9. Verify
 
