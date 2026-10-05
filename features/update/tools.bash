@@ -20,7 +20,7 @@ main() {
     fi
 
     bash "${DOTFILES}/tools/${tool}/${file_name}"
-    return 0
+    return
   fi
 
   # Otherwise, update all tools with an update.bash script
