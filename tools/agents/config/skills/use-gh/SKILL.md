@@ -65,14 +65,14 @@ event type before submitting, not after.
 `gh issue view N` and `gh pr view N` print the body only, so you read a stale picture with no hint
 anything is missing.
 
-- **Pass `--comments`.** On a long-running issue the current plan usually lives in a comment, not
-  the body.
-- **Relationships need GraphQL.** Sub-issue parents and `blockedBy`/`blocking` are absent from
-  `--json` entirely (gh 2.92); REST gives only `parent_issue_url`. Use
-  `gh api graphql -f query='{repository(owner:"O",name:"R"){issue(number:N){parent{number}
-  blockedBy(first:10){nodes{number title}}}}}'`
-- **Put ordering in the title.** Since `gh` can't surface relationships, an ordering signal that
-  must reach an agent belongs where `gh issue list` prints it for every row.
+- **Read the comments.** On a long-running issue the current plan usually lives in a comment, not
+  the body. `--comments` cannot be combined with `--json`, so ask for them as a field instead:
+  `gh issue view N --json title,body,comments`.
+- **Ask for relationships by name.** `parent`, `subIssues`, `blockedBy` and `blocking` are
+  `--json` fields on `gh issue view` and `gh issue list` (gh 2.102), and are never printed unless
+  requested: `gh issue view N --json parent,blockedBy,blocking,subIssues`.
+- **Put ordering in the title.** Default `gh issue list` output shows no relationships, so an
+  ordering signal that must reach an agent belongs where that output prints it for every row.
 
 ## Other gotchas worth avoiding
 
