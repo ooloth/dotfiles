@@ -39,6 +39,9 @@ observes each property that binds: a type, a test, an assertion, a check against
 a measurement that already exists. A property nothing observes is a gap for Phase 5 to close or to
 escalate, never one carried forward on trust.
 
+Where this phase derives a property rather than carrying one, it also says whether code outside
+this slice could break it. Such a property is cross-cutting, and is handled as Phase 6 describes.
+
 Then sketch 2–3 meaningfully different type progressions for the same feature. For each, state:
 - The shape of the progression (a one-line summary of the type structure)
 - How it scores against each target property, and which properties it fails to deliver
@@ -192,8 +195,13 @@ From the type boundaries, identify what needs behavioral verification. Constrain
 assigned to an assertion, to boundary validation, or to a recorded-signal check still appear here,
 with the pairing named, so that none of them is mistaken for full coverage on its own. Where Phase 5
 named a question the running system cannot answer and this slice cannot make answerable, the
-behaviour behind it is a candidate for heavier coverage, since production will not report it. For
-each transformation:
+behaviour behind it is a candidate for heavier coverage, since production will not report it.
+
+A cross-cutting property gets a check over every instance in the codebase, not only a test of this
+slice's transformations, so that a violation in code this slice never touched fails it. The test
+plan names that check, what it enumerates, and the property it observes.
+
+For each transformation:
 
 1. **Compiler guarantees** — list what correct code gets for free from the type design. No tests
    needed for these.

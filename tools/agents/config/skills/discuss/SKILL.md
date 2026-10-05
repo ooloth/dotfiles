@@ -65,6 +65,15 @@ takes interpretation, whether it applies is also an open decision.
    this point. A property nobody can observe is an intention, and every option below is scored
    against this list.
 
+   An observer counts only if it covers every place the property could be broken, including code
+   added later. A property that only this work's code can break is covered by tests of that code.
+   A property that code elsewhere can break, such as a rule every handler or every config file
+   follows, is cross-cutting: its observer is a check over every instance, not a test of the
+   instances this work creates. Mark each cross-cutting property as such. The project also records
+   it, in `docs/invariants/` when it has no sanctioned exception or in `docs/standards/` when it
+   has one, so whoever writes the code that could break it reads the rule before the check fails.
+   Where the project has neither folder, creating one is an open decision.
+
 2. Recommend the simplest approach that delivers those properties. Simplicity is how a property is
    reached cheaply, never a reason to drop one. Push back on scope, abstraction, configurability or
    compatibility work that no stated property requires.
@@ -138,8 +147,8 @@ End with a strategy artifact:
 
 1. **Understanding** — what the user wants and any assumptions
 2. **Target properties** — what a good answer must do, derived in Phase 3, with which of them bind
-   and which do not and why, and what observes each one that binds. This section comes before any
-   option is named, and no recommendation below it is valid without it.
+   and which do not and why, what observes each one that binds, and which are cross-cutting. This
+   section comes before any option is named, and no recommendation below it is valid without it.
 3. **Findings** — relevant code/docs/current-state facts discovered, including each recorded
    decision that binds the task (linked), or where you looked if none did
 4. **Recommendation** — preferred approach, scored against each target property, including what
@@ -158,7 +167,8 @@ point from **Findings** that the approach rests on goes in beside the step it su
 of **Findings** stays out. A diagram in **Recommendation** goes into the comment's **Approach**
 section as the full before and after pair, since a reader of the ticket alone has no other view of
 what the approach replaces. The comment's done-when is the ticket's Ideal state plus whatever the
-approach adds to it.
+approach adds to it, including, for each cross-cutting property, the check over every instance and
+its entry in `docs/invariants/` or `docs/standards/`.
 
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
 and stop again. Do not treat answers to questions as approach approval.
