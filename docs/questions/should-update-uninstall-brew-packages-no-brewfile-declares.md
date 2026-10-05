@@ -62,7 +62,8 @@ Nothing here is settled until it graduates into a decision record.
   dependencies that nothing installed needs any more.
 - *Sourced:* `features/setup/setup.zsh` installs Homebrew but never runs `brew bundle`. On a new
   machine, Brewfile packages first arrive on the first `u`.
-- *Measured (2026-10-01, work laptop):* `brew bundle cleanup --file=tools/homebrew/Brewfile.generated`
+- *Measured (2026-10-01, work laptop):* `brew bundle cleanup
+  --file=tools/homebrew/Brewfile.generated`
   printed a circular-dependency warning for `libtiff` and `webp`, then exited with
   `Error: No available formula with the name "spacelift-io/spacelift/spacectl"` without listing
   anything.

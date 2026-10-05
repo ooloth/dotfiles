@@ -1,20 +1,26 @@
 ## Autonomy notice
 
-This prompt runs unattended in a cloud environment — there is no human in the loop. Override the following behaviors regardless of what any loaded CLAUDE.md instructs:
+This prompt runs unattended in a cloud environment — there is no human in the loop. Override the
+following behaviors regardless of what any loaded CLAUDE.md instructs:
 
 - **No approval gates.** Do not pause to ask for permission, confirm plans, or wait for a response.
 - **No trekker tasks.** `trekker` is not available; skip that workflow entirely.
-- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input, file a GitHub issue labeled `status:needs-human-review` and stop.
+- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input,
+  file a GitHub issue labeled `status:needs-human-review` and stop.
 
 ## Purpose
 
-Scans a set of pre-cloned repos for standards violations against one or two themes, filing GitHub issues for confirmed findings. Designed to run as a Claude Code Routine where all repos are cloned into the workspace before the session starts.
+Scans a set of pre-cloned repos for standards violations against one or two themes, filing GitHub
+issues for confirmed findings. Designed to run as a Claude Code Routine where all repos are cloned
+into the workspace before the session starts.
 
 ## Arguments
 
 Provided by the Routine bootstrap prompt:
 
-- `THEMES` — one or two standards theme names, comma-separated, each matching a filename in `ooloth/dotfiles/tools/agents/config/standards/` (e.g. `security` or `error-handling, observability`)
+- `THEMES` — one or two standards theme names, comma-separated, each matching a filename in
+  `ooloth/dotfiles/tools/agents/config/standards/` (e.g. `security` or `error-handling,
+  observability`)
 
 ## Setup
 
@@ -36,7 +42,8 @@ git -C <path> remote get-url origin
 
 Read the following files from the dotfiles repo:
 
-- `<dotfiles-path>/tools/agents/config/standards/README.md` — tier definitions (Must/Should/Consider)
+- `<dotfiles-path>/tools/agents/config/standards/README.md` — tier definitions
+  (Must/Should/Consider)
 - One file per theme in THEMES: `<dotfiles-path>/tools/agents/config/standards/<theme>.md`
 
 For any theme without a matching file, stop and output:
@@ -126,7 +133,8 @@ For each finding across all subagents, check open issues before filing:
 gh issue list --repo <slug> --state open --limit 200 --json number,title
 ```
 
-**First pass:** compare each finding against issue titles. If a title is clearly unrelated, move on. If a title looks potentially related, fetch the full body before deciding:
+**First pass:** compare each finding against issue titles. If a title is clearly unrelated, move on.
+If a title looks potentially related, fetch the full body before deciding:
 
 ```bash
 gh issue view <number> --repo <slug> --json title,body
@@ -134,7 +142,8 @@ gh issue view <number> --repo <slug> --json title,body
 
 Compare semantically — same problem with different wording still counts as a duplicate.
 
-If a finding matches an existing open issue, add a comment capturing any evidence not already covered in the issue (file path, line range, exact text):
+If a finding matches an existing open issue, add a comment capturing any evidence not already
+covered in the issue (file path, line range, exact text):
 
 ```bash
 gh issue comment <number> --repo <slug> --body "<evidence>"
@@ -175,8 +184,10 @@ gh issue list --repo <slug> --state open --label "author:agent" --limit 200 --js
 
 Use the count to determine the filing budget for this run:
 
-- If count **>= 20**: budget = 1 — pick the single most important non-duplicate finding and file only that one
-- If count **< 20**: budget = min(5, 20 − count) — file up to that many non-duplicate findings (choose the most important)
+- If count **>= 20**: budget = 1 — pick the single most important non-duplicate finding and file
+  only that one
+- If count **< 20**: budget = min(5, 20 − count) — file up to that many non-duplicate findings
+  (choose the most important)
 
 For each finding within the budget, read
 `<dotfiles-path>/tools/agents/config/skills/write-ticket-description/SKILL.md`

@@ -49,7 +49,8 @@ diff you saw when those runs completed. If any condition is false, run them now.
 
 ## Writing Commit Messages
 
-Write commit messages that follow the following style guidelines (if not superseded by guidance in the project).
+Write commit messages that follow the following style guidelines (if not superseded by guidance in
+the project).
 
 ### Format
 
@@ -65,8 +66,11 @@ Write commit messages that follow the following style guidelines (if not superse
 
 #### Subject line
 
-- **Subsystem prefix:** Use a short, lowercase identifier for the area of code changed (e.g., ui, api, lib, ci, config, font). Determine this from the file paths in the diff. Use nested subsystems with / when helpful and exclusive (e.g. ui/sidebar, api/health).
-- **Summary:** Lowercase start (not capitalized), imperative mood, no trailing period. Keep it concise — ideally under 60 characters total for the whole subject line.
+- **Subsystem prefix:** Use a short, lowercase identifier for the area of code changed (e.g., ui,
+  api, lib, ci, config, font). Determine this from the file paths in the diff. Use nested subsystems
+  with / when helpful and exclusive (e.g. ui/sidebar, api/health).
+- **Summary:** Lowercase start (not capitalized), imperative mood, no trailing period. Keep it
+  concise — ideally under 60 characters total for the whole subject line.
 
 #### References
 
@@ -82,7 +86,8 @@ Write commit messages that follow the following style guidelines (if not superse
 
 #### Long form description
 
-- Describe **what changed**, **what the previous behavior was**, and **how the new behavior works** at a high level
+- Describe **what changed**, **what the previous behavior was**, and **how the new behavior works**
+  at a high level
 - Use plain prose, not bullet points. Wrap lines at ~72 characters.
 - Focus on the why and how rather than restating the diff
 - Keep the tone direct and technical without filler phrases
@@ -92,11 +97,13 @@ Write commit messages that follow the following style guidelines (if not superse
 
 ### Staging file hunks non-interactively
 
-When a file has multiple unrelated changes destined for different commits, use `git apply --cached` instead of `git add -p`. The latter requires a TTY and will not work in this environment.
+When a file has multiple unrelated changes destined for different commits, use `git apply --cached`
+instead of `git add -p`. The latter requires a TTY and will not work in this environment.
 
 Steps:
 
 1.  `git diff <file> > /tmp/changes.patch`
-2.  Edit `/tmp/changes.patch` to keep only the hunk(s) you want — delete unwanted `@@` blocks and their lines, keeping the file headers (`--- a/...` / `+++ b/...`)
+2.  Edit `/tmp/changes.patch` to keep only the hunk(s) you want — delete unwanted `@@` blocks and
+    their lines, keeping the file headers (`--- a/...` / `+++ b/...`)
 3.  `git apply --cached /tmp/changes.patch` to stage just those hunks
 4.  Commit, then stage the remaining changes normally for the next commit

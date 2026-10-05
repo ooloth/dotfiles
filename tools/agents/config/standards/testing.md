@@ -112,4 +112,5 @@ simpler form is chosen by default.
 
 ## Out of scope
 
-- Test utility helpers and fixture factories (not themselves subject to behavioral coverage requirements)
+- Test utility helpers and fixture factories (not themselves subject to behavioral coverage
+  requirements)

@@ -68,7 +68,8 @@ of partial success — which results to keep, which to retry, how to report
 
 ## In scope
 
-- Source files containing async functions, thread or task spawning, locks, channels, or shared mutable state
+- Source files containing async functions, thread or task spawning, locks, channels, or shared
+  mutable state
 
 ## Out of scope
 

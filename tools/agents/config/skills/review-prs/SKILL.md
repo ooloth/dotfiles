@@ -6,7 +6,8 @@ effort: high
 
 ## Context
 
-- Ready-to-display summary of PRs awaiting my review: !`uv run ~/.claude/skills/review-prs/fetch_prs.py`
+- Ready-to-display summary of PRs awaiting my review: !`uv run
+  ~/.claude/skills/review-prs/fetch_prs.py`
 
 ### What the script above does
 
@@ -34,11 +35,13 @@ effort: high
 
 ## Workflow
 
-1. Show the user the output of the script above immediately (copy it directly without modification or summarization; the skill output is your complete message)
+1. Show the user the output of the script above immediately (copy it directly without modification
+   or summarization; the skill output is your complete message)
 2. Offer the user an interactive workflow until all PRs have been reviewed:
    a. User types a number or otherwise chooses a PR
    b. You review PR using `review-code` skill
-   c. You show user an summary of the remaining PRs (reuse the previous script output + manually remove the completed PRs and update the numbering; do not rerun the script)
+   c. You show user an summary of the remaining PRs (reuse the previous script output + manually
+   remove the completed PRs and update the numbering; do not rerun the script)
    d. You prompt for next choice
    d. Repeat until done
 
@@ -53,7 +56,8 @@ effort: high
 - Prompts ("What would you like to do?")
 - Commentary about the PRs (the formatted output is self-explanatory)
 
-**IMPORTANT**: The formatted PR list must be displayed inline in your text response, not just in collapsed tool output. Users need to see the list immediately without expanding anything.
+**IMPORTANT**: The formatted PR list must be displayed inline in your text response, not just in
+collapsed tool output. Users need to see the list immediately without expanding anything.
 
 **User input options:**
 
@@ -66,10 +70,12 @@ effort: high
 2. Update todo: mark "Reviewing PR with enhanced navigation" as in_progress
 3. Read the mapping from `~/.claude/.cache/fetch-github-prs-to-review.json`
 4. Parse the repo and PR number
-5. Fetch PR data with context: `gh pr view <number> --repo <org>/<repo> --json title,body,commits,files,url,headRefOid,reviews,comments,statusCheckRollup`
+5. Fetch PR data with context: `gh pr view <number> --repo <org>/<repo> --json
+   title,body,commits,files,url,headRefOid,reviews,comments,statusCheckRollup`
 6. Get file diffs: `gh pr diff <number> --repo <org>/<repo>`
 7. Process existing review context (see Existing Review Context section below)
-8. **For recursionpharma repos**: Check for CI failures and investigate using Codefresh CLI (see CI Failure Investigation section below)
+8. **For recursionpharma repos**: Check for CI failures and investigate using Codefresh CLI (see CI
+   Failure Investigation section below)
 9. Review the PR following the Enhanced Review Format (see below)
 10. After review, provide Post-Review Action Menu (see below)
 
@@ -139,7 +145,8 @@ When reviewing a PR, ALWAYS:
 
 When reviewing a recursionpharma PR with failing CI, **ALWAYS** investigate the failure.
 
-**Use the `use-codefresh` skill** - it will extract build IDs from status checks, fetch logs, identify errors, and provide a formatted analysis report.
+**Use the `use-codefresh` skill** - it will extract build IDs from status checks, fetch logs,
+identify errors, and provide a formatted analysis report.
 
 Include the skill's output in your review under a "CI Failure Analysis" section.
 
@@ -310,7 +317,8 @@ EOF
 
 Notes:
 
-- Use `--input -` with heredoc for complex JSON payloads (the `-f` flag is for individual fields and doesn't support complex JSON structures like arrays)
+- Use `--input -` with heredoc for complex JSON payloads (the `-f` flag is for individual fields and
+  doesn't support complex JSON structures like arrays)
 - Use the line number as the ending line for each range
 - The "path" should be relative to repo root
 - "body" field is the overall review summary from the initial review
@@ -383,7 +391,8 @@ After user selects any action from the Post-Review Action Menu:
 - auth.py:45-52: Error handling (alice mentioned logging)
 - db.py:103: SQL injection (alice mentioned parameterized queries)
 
-**Recommendation**: Request changes - address new expiry validation issue. Existing issues already have good feedback from alice.
+**Recommendation**: Request changes - address new expiry validation issue. Existing issues already
+have good feedback from alice.
 
 ---
 

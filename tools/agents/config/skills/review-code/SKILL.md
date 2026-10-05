@@ -20,7 +20,8 @@ Identify what to review and the exact diff command to pass agents.
 | None, on main, staged         | `git diff --staged --name-only`        | `git diff --staged`                      |
 | None, on main, nothing staged | —                                      | ask: "What would you like me to review?" |
 
-Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with `git symbolic-ref --short HEAD`.
+Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with
+`git symbolic-ref --short HEAD`.
 
 **Skip non-reviewable files:**
 
@@ -59,7 +60,8 @@ Key outcomes: [invariants, constraints, or requirements the implementation must 
 Diff command: [exact command agents should run to read the diff]
 ```
 
-Enhance if needed: if raw sources are vague, read the diff and fill in the gaps. Never leave this block generic ("various improvements") or empty.
+Enhance if needed: if raw sources are vague, read the diff and fill in the gaps. Never leave this
+block generic ("various improvements") or empty.
 
 ## Step 3: Launch the agents in parallel
 
@@ -78,7 +80,8 @@ Give an added agent the same shape as the eleven: the intent block, the file lis
 requirement, a word limit, and one question to answer. Record the question and why the eleven did
 not cover it — Step 4 reports it.
 
-Send a single message containing all Agent tool calls simultaneously. For each Agent tool call, set the tool's `model` parameter to `"sonnet"`. Pass each agent:
+Send a single message containing all Agent tool calls simultaneously. For each Agent tool call, set
+the tool's `model` parameter to `"sonnet"`. Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
@@ -426,28 +429,34 @@ For each issue: file:line | the path | reachable from where, or not at all | wha
 
 ## Step 3.5: Verify before presenting
 
-Before writing a single line of output, audit the agent findings for claims that assert specific library behavior, numerical values, runtime semantics, or API guarantees. These are the highest-risk claims — most likely to be subtly wrong — and the ones a reviewer would have to take on faith.
+Before writing a single line of output, audit the agent findings for claims that assert specific
+library behavior, numerical values, runtime semantics, or API guarantees. These are the highest-risk
+claims — most likely to be subtly wrong — and the ones a reviewer would have to take on faith.
 
 **For each such claim, run a targeted check:**
 
 - Library default values → `python3 -c "import lib; print(lib.DEFAULT_X)"`
-- API signature or accepted kwargs → `python3 -c "import inspect, lib; print(inspect.signature(lib.Cls.method))"`
+- API signature or accepted kwargs → `python3 -c "import inspect, lib;
+  print(inspect.signature(lib.Cls.method))"`
 - Stdlib availability → `python3 -c "import lib; print(hasattr(lib, 'func'))"`
-- Source behavior → read the relevant installed source with `python3 -c "import inspect, lib; print(inspect.getsource(lib.func))"`
+- Source behavior → read the relevant installed source with `python3 -c "import inspect, lib;
+  print(inspect.getsource(lib.func))"`
 - File/doc claims → read the file
 
 **Apply the results:**
 
 - Strike claims that don't survive the check — remove them entirely, don't soften them.
 - Correct claims that are partially right — state what's actually true.
-- Merge duplicate findings — when multiple agents flag the same issue, keep the most precise version and note the convergence.
+- Merge duplicate findings — when multiple agents flag the same issue, keep the most precise version
+  and note the convergence.
 - Drop findings you cannot verify and that are speculative rather than grounded in the diff.
 
 Only carry verified findings into Step 4.
 
 ## Step 4: Present findings
 
-Produce a prioritized action list — not a categorized findings report. The reader's question is "what should I change?" Answer it directly.
+Produce a prioritized action list — not a categorized findings report. The reader's question is
+"what should I change?" Answer it directly.
 
 ```
 ## Code Review
@@ -497,11 +506,17 @@ category — [what recurs] — close it by [adding a standing 11th agent for X /
 
 - The table is a scannable index only — one row per finding, action phrased as an imperative.
 - Severity column values: `must`, `should`, `consider`, `?` (open question). Order rows by severity.
-- Each detail section is 1–3 sentences of integrated prose — no labeled sub-fields. It must answer two questions: (1) why does this matter, and (2) what did you actually look at to verify it. These are not optional; a finding with no impact explanation or no verification basis should not be reported.
-- Use hedging language within the prose when confidence is less than certain — don't assert facts you haven't confirmed.
+- Each detail section is 1–3 sentences of integrated prose — no labeled sub-fields. It must answer
+  two questions: (1) why does this matter, and (2) what did you actually look at to verify it. These
+  are not optional; a finding with no impact explanation or no verification basis should not be
+  reported.
+- Use hedging language within the prose when confidence is less than certain — don't assert facts
+  you haven't confirmed.
 - Open question items (`?`) get the (a)/(b) tradeoff format instead of prose.
-- Omit "What's Working Well" and "All Clear" sections — consolidate into the single "Looks Good" line.
-- If there are no recommended changes, say so in one sentence under the verdict and skip the Findings section.
+- Omit "What's Working Well" and "All Clear" sections — consolidate into the single "Looks Good"
+  line.
+- If there are no recommended changes, say so in one sentence under the verdict and skip the
+  Findings section.
 
 **Verdict mapping:**
 
@@ -559,7 +574,8 @@ uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo 
 - Post it by running the same command without `--dry-run`. `--repo` is required, so the review
   cannot land on a same-numbered PR in whatever repo the shell is in.
 
-**Summary audience:** The review body is read by GitHub users who only know what's in the PR diff — they have no context from this review session. Write for that audience:
+**Summary audience:** The review body is read by GitHub users who only know what's in the PR diff —
+they have no context from this review session. Write for that audience:
 
 **Tone for inline comment bodies:** Write like a person talking to a teammate, not a report
 generator. Approach it the way a mentor invested in someone's growth would: patient, curious, and

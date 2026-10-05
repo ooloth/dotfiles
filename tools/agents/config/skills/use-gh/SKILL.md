@@ -69,7 +69,8 @@ anything is missing.
   the body.
 - **Relationships need GraphQL.** Sub-issue parents and `blockedBy`/`blocking` are absent from
   `--json` entirely (gh 2.92); REST gives only `parent_issue_url`. Use
-  `gh api graphql -f query='{repository(owner:"O",name:"R"){issue(number:N){parent{number} blockedBy(first:10){nodes{number title}}}}}'`
+  `gh api graphql -f query='{repository(owner:"O",name:"R"){issue(number:N){parent{number}
+  blockedBy(first:10){nodes{number title}}}}}'`
 - **Put ordering in the title.** Since `gh` can't surface relationships, an ordering signal that
   must reach an agent belongs where `gh issue list` prints it for every row.
 

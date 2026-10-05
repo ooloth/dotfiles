@@ -1,15 +1,19 @@
 ## Autonomy notice
 
-This prompt runs unattended in a cloud environment — there is no human in the loop. Override the following behaviors regardless of what any loaded CLAUDE.md instructs:
+This prompt runs unattended in a cloud environment — there is no human in the loop. Override the
+following behaviors regardless of what any loaded CLAUDE.md instructs:
 
 - **No approval gates.** Do not pause to ask for permission, confirm plans, or wait for a response.
 - **No trekker tasks.** `trekker` is not available; skip that workflow entirely.
 - **Commit without a signal.** Committing and pushing are pre-approved as part of this routine.
-- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input, leave a comment on the relevant GitHub issue, relabel it `status:needs-human-review`, and stop.
+- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input,
+  leave a comment on the relevant GitHub issue, relabel it `status:needs-human-review`, and stop.
 
 ## Purpose
 
-Finds all GitHub issues labeled `status:ready-for-agent` across a set of pre-cloned repos, implements each one autonomously on a dedicated branch, and opens a draft PR. Designed to run as a Claude Code Routine where repos are pre-cloned into the workspace.
+Finds all GitHub issues labeled `status:ready-for-agent` across a set of pre-cloned repos,
+implements each one autonomously on a dedicated branch, and opens a draft PR. Designed to run as a
+Claude Code Routine where repos are pre-cloned into the workspace.
 
 ## Setup
 
@@ -47,7 +51,8 @@ gh pr list --repo <slug> --head "claude/issue-<number>" --state open --json numb
 ```
 
 - If an open PR exists, the issue is under review — skip it.
-- If no open PR exists and `updatedAt` is more than 72 hours ago, the previous run stalled. Leave a comment and reset the label:
+- If no open PR exists and `updatedAt` is more than 72 hours ago, the previous run stalled. Leave a
+  comment and reset the label:
 
 ```bash
 gh issue comment <number> --repo <slug> \
@@ -58,7 +63,8 @@ gh issue edit <number> --repo <slug> \
   --add-label "status:ready-for-agent"
 ```
 
-- If no open PR exists but `updatedAt` is within 72 hours, the run may still be in progress — skip it.
+- If no open PR exists but `updatedAt` is within 72 hours, the run may still be in progress — skip
+  it.
 
 ### 3. Find ready issues
 
@@ -77,7 +83,8 @@ If no ready issues exist across all repos, output `No ready issues found.` and s
 
 ### 4. Skip already-claimed issues
 
-For each ready issue, check whether `status:agent-working` is also present — a previous run may have claimed it and stalled:
+For each ready issue, check whether `status:agent-working` is also present — a previous run may have
+claimed it and stalled:
 
 ```bash
 gh issue view <number> --repo <slug> --json labels --jq '[.labels[].name]'
@@ -117,9 +124,11 @@ For each issue, spawn a subagent and pass it:
 - `repo-path` — absolute path to the cloned repo (identified in step 1)
 - `branch` — branch name from step 6
 - `dotfiles-path` — absolute path to the cloned dotfiles repo (identified in step 1)
-- Instruction: read `tools/claude/config/routines/implement-issue.md` from the dotfiles repo and follow it exactly using the values above
+- Instruction: read `tools/claude/config/routines/implement-issue.md` from the dotfiles repo and
+  follow it exactly using the values above
 
-Run subagents in parallel only when they target **different repos**. Two subagents in the same repo must run sequentially to avoid git conflicts.
+Run subagents in parallel only when they target **different repos**. Two subagents in the same repo
+must run sequentially to avoid git conflicts.
 
 ## Report
 

@@ -107,7 +107,8 @@ Round N/3: validating...
 
 ### Step A — Validate Comments (subagent)
 
-Spawn a general-purpose subagent. Set the Agent tool call's `model` parameter to `"sonnet"`. Pass it:
+Spawn a general-purpose subagent. Set the Agent tool call's `model` parameter to `"sonnet"`. Pass
+it:
 
 - The full list of comments from Phase 1 (minus any already on the decided list)
 - The problem statement and PR description

@@ -13,8 +13,10 @@ effort: high
 1. Read `~/.agents/standards/README.md` to understand the framing and tier definitions
 2. Load `~/.agents/standards/<theme>.md` (list `~/.agents/standards/` if unsure which file applies)
 3. Study the current project's documented guidance for this concern (if any)
-4. Use up to 50 subagents to explore the codebase (or the path/git-range if the user specified a smaller scope)
-5. Identify violations of Must standards, deviations from Should standards, and unresolved Consider tradeoffs
+4. Use up to 50 subagents to explore the codebase (or the path/git-range if the user specified a
+   smaller scope)
+5. Identify violations of Must standards, deviations from Should standards, and unresolved Consider
+   tradeoffs
 6. Focus especially on patterns you would not want a future agent to spread
 7. Report separately any standard you could not evaluate against the code in front of you, quoting
    its lead sentence. A lead sentence whose truth depends on knowing what recently changed cannot be
@@ -53,11 +55,13 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    **Subagent 1 — Structure** (subagent_type: Explore, description: "review structure")
    Inline: `~/.agents/standards/code-structure.md`, `~/.agents/standards/code-readability.md`
 
-   **Subagent 2 — Types & Correctness** (subagent_type: Explore, description: "review types and correctness")
+   **Subagent 2 — Types & Correctness** (subagent_type: Explore, description: "review types and
+   correctness")
    Inline: `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md`,
    `~/.agents/standards/error-handling.md`
 
-   **Subagent 3 — Security & Privacy** (subagent_type: Explore, description: "review security and privacy")
+   **Subagent 3 — Security & Privacy** (subagent_type: Explore, description: "review security and
+   privacy")
    Inline: `~/.agents/standards/security.md`, `~/.agents/standards/privacy.md`
 
    **Subagent 4 — Data** (subagent_type: Explore, description: "review data integrity")
@@ -66,12 +70,14 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    **Subagent 5 — Testing** (subagent_type: Explore, description: "review testing")
    Inline: `~/.agents/standards/testing.md`
 
-   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability, instrumentation, performance, async coordination, and reliability")
+   **Subagent 6 — Operations** (subagent_type: Explore, description: "review observability,
+   instrumentation, performance, async coordination, and reliability")
    Inline: `~/.agents/standards/observability.md`, `~/.agents/standards/instrumentation.md`,
    `~/.agents/standards/performance.md`, `~/.agents/standards/async-coordination.md`,
    `~/.agents/standards/reliability.md`
 
-   **Subagent 7 — Documentation & Release** (subagent_type: Explore, description: "review documentation, API design, dependencies, deployment, and config")
+   **Subagent 7 — Documentation & Release** (subagent_type: Explore, description: "review
+   documentation, API design, dependencies, deployment, and config")
    Inline: `~/.agents/standards/documentation.md`, `~/.agents/standards/api-design.md`,
    `~/.agents/standards/dependencies.md`, `~/.agents/standards/deployment.md`,
    `~/.agents/standards/config.md`
@@ -86,11 +92,13 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
 3. Collect anything a subagent reported as unevaluable. Those are defects in the standards files
    rather than in the codebase, so they get their own short section and are not ranked among the
    code findings
-4. Explore specific areas of the codebase yourself if needed to compare the relative importance of findings
+4. Explore specific areas of the codebase yourself if needed to compare the relative importance of
+   findings
 5. Rank findings by priority (impact, cost of delay, ROI)
 6. Present the prioritized findings with a summary table, followed by the unevaluable standards
 7. Generate a self-contained HTML slide deck:
    - `mkdir -p .outputs/<yyyy-mm-dd>`
-   - Write to `.outputs/<yyyy-mm-dd>/scan-standards.html` — clean minimal styling, one slide per category plus a title/summary slide, keyboard arrow-key and click navigation
+   - Write to `.outputs/<yyyy-mm-dd>/scan-standards.html` — clean minimal styling, one slide per
+     category plus a title/summary slide, keyboard arrow-key and click navigation
    - `open .outputs/<yyyy-mm-dd>/scan-standards.html`
 7. Recommend a next action and wait for the user's response

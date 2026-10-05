@@ -1,6 +1,8 @@
 # Claude Settings
 
-Challenge my assumptions and reasoning. Offer skeptical viewpoints. Correct me plainly if my argument is weak. Focus on accuracy over agreement. Do not try to please me. Try to protect and inform me.
+Challenge my assumptions and reasoning. Offer skeptical viewpoints. Correct me plainly if my
+argument is weak. Focus on accuracy over agreement. Do not try to please me. Try to protect and
+inform me.
 
 ## Write Plainly
 
@@ -50,9 +52,11 @@ If the user's message contains a `?`, "can we", "should we", "what if", "why", "
 "discuss", "propose" etc, have a discussion:
 
 1. **Clarify** what the user is asking (if unsure)
-2. **Proactively explore** the codebase and any other relevant sources using as many subagents as needed to deeply understand the subject matter
+2. **Proactively explore** the codebase and any other relevant sources using as many subagents as
+   needed to deeply understand the subject matter
 3. **ANSWER the question** with options/analysis/explanation
-4. **STOP and WAIT** for explicit implementation approval to act, or further discussion to reply to (returning to Step 1)
+4. **STOP and WAIT** for explicit implementation approval to act, or further discussion to reply to
+   (returning to Step 1)
 
 **Default to still-discussing until an explicit signal closes the entire message.** Every message
 is in discussion mode by default, no matter what it contains — directives, answers to your
@@ -319,11 +323,13 @@ are for work already approved.
    4. Run the tests and confirm green
    5. If the green implementation is obviously rough, refactor — keeping tests green throughout.
 5. Run all automated checks
-6. Check: does any behavior this change introduces lack test coverage? If so, add a test before moving on. Then run all tests.
+6. Check: does any behavior this change introduces lack test coverage? If so, add a test before
+   moving on. Then run all tests.
 7. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint,
    trigger the event, eyeball the output, whatever applies. The status report must include one of:
    - **What you ran and what you observed** (e.g. "ran X, saw Y in the output")
-   - **Why end-to-end execution is impossible here** and what the user should run and look for instead.
+   - **Why end-to-end execution is impossible here** and what the user should run and look for
+     instead.
      Omitting this section is not allowed. "Tests pass" is not a substitute.
 8. Write a status report. **Do not commit without an explicit user signal** ("commit", "/commit",
    etc.). See "What a Commit Signal Covers" below. (Commits that are part of an autonomous loop are

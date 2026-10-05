@@ -18,17 +18,20 @@ Two things follow from taking it. Being wrong is survivable, so it can be taken 
 that only a later decision would produce. And making it produces evidence — a scaffold that runs,
 an observation, a thing that exists — which every later decision is then made with rather than
 without. Cheapness decides when a decision is taken, not how carefully it is derived: a
-cheap-to-unwind decision still gets its properties derived and scored like any other. This is the same principle as deferring, read from the other end: the expensive decision
+cheap-to-unwind decision still gets its properties derived and scored like any other. This is the
+same principle as deferring, read from the other end: the expensive decision
 is the one that most needs what has not been learned yet, so it is the one that waits. Cheapest to
 unwind counts discovery. A wrong answer nobody notices is not cheap however small the
 fix would have been, so a decision that fails silently moves earlier rather than later, where the
-thing it affects is still small enough to inspect. How much a decision unblocks is a reasonable proxy
+thing it affects is still small enough to inspect. How much a decision unblocks is a reasonable
+proxy
 and usually gives the same answer, because the
 thing everything waits on is often the cheap one. It is not the criterion, because it is a property
 of how the work was planned rather than of the system: redraw the milestones and the unblocking
 counts change, while the cost of being wrong does not. Where the two disagree, the cost of being
 wrong decides. Neither of these catches a decision that two open questions each defer to the other.
-That is the Must below, and it runs first, because a tiebreak applied to decisions whose dependency nobody
+That is the Must below, and it runs first, because a tiebreak applied to decisions whose dependency
+nobody
 noticed will order them confidently and wrongly.
 
 **Every step between a decision and the problem it serves is named.**
@@ -47,7 +50,8 @@ write, read, deploy, failure and wait it takes part in. "The network" returns no
 about, and "a returning user's first request after the page has loaded" returns a property a
 candidate either has or lacks. Each property cites what it rests on, and one that can cite nothing
 rests on an input that is not settled yet. Then compare: where the inherited list is a subset, the
-difference is what would otherwise have been decided without. The same test settles whether the question is even
+difference is what would otherwise have been decided without. The same test settles whether the
+question is even
 well-posed, because a question none of the derived criteria can discriminate on is the wrong
 question however reasonable it sounds. "One tool or several?" is unanswerable when nothing the
 system requires is about how many tools there are, and a question like that will absorb a survey
@@ -64,7 +68,8 @@ them.
 A stated budget rules an option out. Nothing rules one in on effort. "Simpler to build", "a smaller
 diff", "less to configure" and "fewer moving parts" each name what an option costs, and none of
 them names anything the system requires, so an option that wins on one of them has not been
-compared on anything. The tell is a comparison whose merit column contains a cost. Where effort seems
+compared on anything. The tell is a comparison whose merit column contains a cost. Where effort
+seems
 to be the only thing separating the candidates, the property list is not finished: it is extended
 and zoomed, per the entry on comparisons that leave several candidates standing. A cost the
 maintainer has stated a view on, such as a budget or a strong wish for something to be free, enters
@@ -86,7 +91,8 @@ moves, and how long one operation takes. Ask them by enumerating the moments the
 resource rather than in the abstract, because "storage" returns nothing and "the request path reads
 a row, a write is flushed, a backup is copied off the machine, a migration rewrites a table" returns
 a list you can reason about. These moments are the same ones the property list is derived from,
-applied to the four resources. Most will not bind, and saying so is the point: "memory does not bind,
+applied to the four resources. Most will not bind, and saying so is the point: "memory does not
+bind,
 because the workload is X and the smallest instance is Y" and silence about memory are
 indistinguishable in a finished record, and only one of them was considered. This is not a mandate
 to measure. A property recorded as not binding needs a reason rather than a number, and the Must
@@ -294,7 +300,8 @@ property it fails.**
 A comparison written as prose per option lets each option be judged on whichever properties flatter
 or sink it. A grid shows where an option was never assessed, makes the one disqualifying property
 visible, and shows when two options differ on nothing the list contains. That is the signal to
-extend and zoom the list, per the entry below. A grid in the working is enough; the record carries the
+extend and zoom the list, per the entry below. A grid in the working is enough; the record carries
+the
 properties and names the one each rejection fails.
 
 **A check earns its place when it can name the property, the requirement that binds it, and which

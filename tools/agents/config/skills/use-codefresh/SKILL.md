@@ -6,7 +6,8 @@ model: haiku
 effort: low
 ---
 
-Consider using a subagent when you just need an answer and don't need to see the intermediate CodeFresh responses.
+Consider using a subagent when you just need an answer and don't need to see the intermediate
+CodeFresh responses.
 
 ## Extract Build ID from PR Status Checks
 
@@ -54,4 +55,5 @@ codefresh logs <build-id> 2>&1 | grep -E -B 5 -A 15 "FAILED|ERROR|AssertionError
 
 **Command not found:** Install with `brew install codefresh`.
 
-**Not authorized:** Run `codefresh auth current-context` to check the active context. If missing or wrong, the user needs to re-authenticate.
+**Not authorized:** Run `codefresh auth current-context` to check the active context. If missing or
+wrong, the user needs to re-authenticate.

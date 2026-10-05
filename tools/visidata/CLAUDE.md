@@ -12,7 +12,8 @@ tmux new-window -n "vd-test" "VD_CONFIG=$HOME/.config/visidata/config.py vd /tmp
 sleep 2
 ```
 
-Always pass `VD_CONFIG` explicitly — the env var is required for the config to be picked up (see `shell.zsh`).
+Always pass `VD_CONFIG` explicitly — the env var is required for the config to be picked up (see
+`shell.zsh`).
 
 ### Reload after a config change
 

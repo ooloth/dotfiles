@@ -64,34 +64,50 @@ seems unresolved.
 Load every file whose scope matches the task at hand. When in doubt, load it —
 a false positive costs one read; a false negative means missed guidance.
 
-- **`agent-harness.md`** — agent context files (CLAUDE.md, AGENTS.md), harness config, tool permissions
-- **`api-design.md`** — exported function signatures, REST/RPC routes, SDK surface, interface declarations
-- **`async-coordination.md`** — async functions, awaited operations, concurrent tasks, lifecycle state (loading/error/success/cancelled), event handlers
-- **`cli-design.md`** — CLI binaries, command definitions, flag declarations, help text, exit code handling
+- **`agent-harness.md`** — agent context files (CLAUDE.md, AGENTS.md), harness config, tool
+  permissions
+- **`api-design.md`** — exported function signatures, REST/RPC routes, SDK surface, interface
+  declarations
+- **`async-coordination.md`** — async functions, awaited operations, concurrent tasks, lifecycle
+  state (loading/error/success/cancelled), event handlers
+- **`cli-design.md`** — CLI binaries, command definitions, flag declarations, help text, exit code
+  handling
 - **`code-readability.md`** — all non-generated source files; load for every code task
 - **`code-structure.md`** — directory layout, import graphs, module boundaries, feature organisation
 - **`config.md`** — startup code, env var read sites, config parsing and validation
 - **`correctness.md`** — all non-generated source files; load for every code task
-- **`css.md`** — stylesheets, style blocks, CSS-in-JS, design tokens; contrast, motion, responsive layout
-- **`data-integrity.md`** — data models, storage shapes, schema changes, migrations, write paths, transactions
-- **`decision-making.md`** — architecture decision records, spikes and benchmarks, any choice of tool, runtime, platform or data shape
+- **`css.md`** — stylesheets, style blocks, CSS-in-JS, design tokens; contrast, motion, responsive
+  layout
+- **`data-integrity.md`** — data models, storage shapes, schema changes, migrations, write paths,
+  transactions
+- **`decision-making.md`** — architecture decision records, spikes and benchmarks, any choice of
+  tool, runtime, platform or data shape
 - **`dependencies.md`** — package manifests (package.json, Cargo.toml, pyproject.toml, go.mod)
-- **`deployment.md`** — any change to code that runs in a deployed environment; CI/CD config, Dockerfiles, infrastructure manifests, migration files
+- **`deployment.md`** — any change to code that runs in a deployed environment; CI/CD config,
+  Dockerfiles, infrastructure manifests, migration files
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions
-- **`documentation.md`** — any file change that affects documented behaviour or has accompanying docs; diagrams and tables in ticket comments and PR descriptions
+- **`documentation.md`** — any file change that affects documented behaviour or has accompanying
+  docs; diagrams and tables in ticket comments and PR descriptions
 - **`error-handling.md`** — fallible operations, error propagation paths, user-facing error output
-- **`instrumentation.md`** — logging, metric and trace call sites; log format, levels and field content
-- **`observability.md`** — what a failure has to reveal, what must be recorded for it to, invariants no call site can check
-- **`performance.md`** — design choices that put a network hop on a path, loop bodies, database queries, hot-path functions, large or unbounded data operations
-- **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API responses; analytics events
+- **`instrumentation.md`** — logging, metric and trace call sites; log format, levels and field
+  content
+- **`observability.md`** — what a failure has to reveal, what must be recorded for it to, invariants
+  no call site can check
+- **`performance.md`** — design choices that put a network hop on a path, loop bodies, database
+  queries, hot-path functions, large or unbounded data operations
+- **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API
+  responses; analytics events
 - **`python.md`** — .py files; load alongside language-agnostic files
-- **`reliability.md`** — network requests, database queries, external service calls, file handles, resource cleanup
+- **`reliability.md`** — network requests, database queries, external service calls, file handles,
+  resource cleanup
 - **`rust.md`** — .rs files; load alongside language-agnostic files
-- **`security.md`** — HTTP handlers, auth and permission checks, file I/O, secret handling, input parsing
+- **`security.md`** — HTTP handlers, auth and permission checks, file I/O, secret handling, input
+  parsing
 - **`terraform.md`** — .tf and .tfvars files, CI/CD that runs plan or apply
 - **`testing.md`** — test files and test directories
 - **`type-design.md`** — type definitions, function signatures, domain models, API boundary types
 - **`typescript.md`** — .ts and .tsx files; load alongside language-agnostic files
-- **`user-experience.md`** — any user-facing output: CLI messages, API error responses, error text, onboarding docs
+- **`user-experience.md`** — any user-facing output: CLI messages, API error responses, error text,
+  onboarding docs
 
 If you notice the file names above have diverged from the file system, offer to repair the list.

@@ -5,4 +5,5 @@ model: haiku
 effort: low
 ---
 
-Use the `notion-agent` subagent to answer your questions and make approved updates (it has scoped access to the notion mcp).
+Use the `notion-agent` subagent to answer your questions and make approved updates (it has scoped
+access to the notion mcp).

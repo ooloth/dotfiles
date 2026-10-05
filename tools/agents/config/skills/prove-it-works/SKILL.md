@@ -12,7 +12,8 @@ Before running anything, produce a short report:
 
 - **Entry points**: how can this code be reached? (CLI flag, HTTP endpoint, import, event, etc.)
 - **Branches**: what distinct paths does execution take? (happy path, error case, edge inputs, etc.)
-- **Observable outputs**: what does the system emit that you can check? (stdout, log lines, HTTP response, file on disk, UI state, exit code, etc.)
+- **Observable outputs**: what does the system emit that you can check? (stdout, log lines, HTTP
+  response, file on disk, UI state, exit code, etc.)
 - **Gaps**: what paths exist that you cannot observe directly, and why?
 
 This is a planning artifact, not prose — use a list.
@@ -29,16 +30,22 @@ Cover every branch from Step 1 that you can reach. For each run, record:
 - What you observed (stdout, response, file content, UI — not "it seemed fine")
 
 ❌ "The tests pass and the logic looks correct."
-✅ "I ran `npm run dev`, navigated to /settings, toggled the feature, and saw the config update in the network response."
+✅ "I ran `npm run dev`, navigated to /settings, toggled the feature, and saw the config update in
+the network response."
 
 ## Step 3 — Gap audit
 
 After running, answer two questions:
 
-1. **What remains unobserved?** List any paths from Step 1 you couldn't reach, and why (missing fixture, needs live infra, too slow to set up locally, etc.)
-2. **What tests are missing?** Focus on integration tests and black-box tests that run the real system and assert from outside — not unit tests that mock internals. A good integration test here would reproduce what you just ran manually. If a gap from #1 could be closed by adding such a test, say so explicitly.
+1. **What remains unobserved?** List any paths from Step 1 you couldn't reach, and why (missing
+   fixture, needs live infra, too slow to set up locally, etc.)
+2. **What tests are missing?** Focus on integration tests and black-box tests that run the real
+   system and assert from outside — not unit tests that mock internals. A good integration test here
+   would reproduce what you just ran manually. If a gap from #1 could be closed by adding such a
+   test, say so explicitly.
 
-Don't let this section distract from Steps 1–2. The primary goal is live evidence, not test design. Surface the gap, name the test type, move on.
+Don't let this section distract from Steps 1–2. The primary goal is live evidence, not test design.
+Surface the gap, name the test type, move on.
 
 ## Step 4 — Decide (internal, do not output yet)
 

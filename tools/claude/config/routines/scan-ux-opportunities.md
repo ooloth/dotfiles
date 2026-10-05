@@ -1,14 +1,17 @@
 ## Autonomy notice
 
-This prompt runs unattended in a cloud environment — there is no human in the loop. Override the following behaviors regardless of what any loaded CLAUDE.md instructs:
+This prompt runs unattended in a cloud environment — there is no human in the loop. Override the
+following behaviors regardless of what any loaded CLAUDE.md instructs:
 
 - **No approval gates.** Do not pause to ask for permission, confirm plans, or wait for a response.
 - **No trekker tasks.** `trekker` is not available; skip that workflow entirely.
-- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input, file a GitHub issue labeled `status:needs-human-review` and stop.
+- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input,
+  file a GitHub issue labeled `status:needs-human-review` and stop.
 
 ## Purpose
 
-Scans a set of pre-cloned repos for gaps in what users can accomplish with the system, filing GitHub issues for the top findings.
+Scans a set of pre-cloned repos for gaps in what users can accomplish with the system, filing GitHub
+issues for the top findings.
 
 ## Setup
 
@@ -104,7 +107,8 @@ For each finding across all subagents, check open issues before filing:
 gh issue list --repo <slug> --state open --limit 200 --json number,title
 ```
 
-**First pass:** compare each finding against issue titles. If a title is clearly unrelated, move on. If a title looks potentially related, fetch the full body before deciding:
+**First pass:** compare each finding against issue titles. If a title is clearly unrelated, move on.
+If a title looks potentially related, fetch the full body before deciding:
 
 ```bash
 gh issue view <number> --repo <slug> --json title,body
@@ -112,7 +116,8 @@ gh issue view <number> --repo <slug> --json title,body
 
 Compare semantically — same problem with different wording still counts as a duplicate.
 
-If a finding matches an existing open issue, add a comment capturing any context not already covered in the issue (finding, impact, starting point):
+If a finding matches an existing open issue, add a comment capturing any context not already covered
+in the issue (finding, impact, starting point):
 
 ```bash
 gh issue comment <number> --repo <slug> --body "<context>"
@@ -144,8 +149,10 @@ gh issue list --repo <slug> --state open --label "author:agent" --limit 200 --js
 
 Use the count to determine the filing budget for this run:
 
-- If count **>= 20**: budget = 1 — pick the single most important non-duplicate finding and file only that one
-- If count **< 20**: budget = min(5, 20 − count) — file up to that many non-duplicate findings (choose the most important)
+- If count **>= 20**: budget = 1 — pick the single most important non-duplicate finding and file
+  only that one
+- If count **< 20**: budget = min(5, 20 − count) — file up to that many non-duplicate findings
+  (choose the most important)
 
 ### 6. File confirmed findings
 

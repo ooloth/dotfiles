@@ -16,17 +16,24 @@ Add a new tool to this dotfiles repository. Follow these steps:
 
 Before writing any files:
 
-- **How is it installed?** Check its README/docs for the recommended installer. Common options: `brew install`, `npm install -g`, `bun install -g`, `uv tool install`, `cargo install`, or a custom install script.
-- **What does `{command} --version` output?** Run it (or check the docs) to know the exact format — you'll need this to write `parse_version`.
-- **Are there zsh completions?** Check the docs or the brew caveats after install. If completions require explicit shell setup (e.g. `eval "$(tool completion zsh)"`), note it — you'll need `shell.zsh`.
-- **Does it have dotfiles config to manage?** If it writes config to `~/.config/{tool}/` or similar, you'll need `link.bash` and a `config/` directory.
+- **How is it installed?** Check its README/docs for the recommended installer. Common options:
+  `brew install`, `npm install -g`, `bun install -g`, `uv tool install`, `cargo install`, or a
+  custom install script.
+- **What does `{command} --version` output?** Run it (or check the docs) to know the exact format —
+  you'll need this to write `parse_version`.
+- **Are there zsh completions?** Check the docs or the brew caveats after install. If completions
+  require explicit shell setup (e.g. `eval "$(tool completion zsh)"`), note it — you'll need
+  `shell.zsh`.
+- **Does it have dotfiles config to manage?** If it writes config to `~/.config/{tool}/` or similar,
+  you'll need `link.bash` and a `config/` directory.
 
 ### 2. Classify the tool
 
 **Simple tool** (no dotfiles config to symlink): needs only the 4 core files.
 Examples: `eza`, `sd`, `logcli`
 
-**Tool with config** (has config files to symlink): also needs `link.bash` and a `config/` directory.
+**Tool with config** (has config files to symlink): also needs `link.bash` and a `config/`
+directory.
 Examples: `claude`, `neovim`, `git`
 
 ### 3. Create `tools/{tool}/utils.bash`
@@ -57,7 +64,8 @@ Key variables:
 - `TOOL_EMOJI`: used in log output
 - `TOOL_CONFIG_DIR`: only needed for tools with config; omit the export if unused
 
-**`parse_version` by installer** — receives the raw output of the version command (arg 6) and must return a clean semver string:
+**`parse_version` by installer** — receives the raw output of the version command (arg 6) and must
+return a clean semver string:
 
 | Installer | Version command (arg 6) | Typical raw output | `parse_version` logic |
 |---|---|---|---|
@@ -69,7 +77,8 @@ Key variables:
 
 ### 4. Create `tools/{tool}/install.bash`
 
-Structure is always the same — only the install command (arg 5) and version command (arg 6) change by installer:
+Structure is always the same — only the install command (arg 5) and version command (arg 6) change
+by installer:
 
 **brew:**
 ```bash
@@ -143,7 +152,8 @@ update_and_symlink \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash"
 ```
 
-Update commands by installer: `brew upgrade --formula {pkg}` / `npm install --global {pkg}@latest` / `bun install --global {pkg}` / `uv tool upgrade {pkg}` / `cargo install {pkg}`
+Update commands by installer: `brew upgrade --formula {pkg}` / `npm install --global {pkg}@latest` /
+`bun install --global {pkg}` / `uv tool upgrade {pkg}` / `cargo install {pkg}`
 
 For **tools with config**, add the symlink script path as a 9th argument:
 
@@ -171,13 +181,17 @@ info "🔧 Uninstalling {tool}"
 {uninstall command}
 ```
 
-Uninstall commands: `npm uninstall --global {pkg}` / `bun uninstall --global {pkg}` / `uv tool uninstall {pkg}` / `cargo uninstall {pkg}`
+Uninstall commands: `npm uninstall --global {pkg}` / `bun uninstall --global {pkg}` / `uv tool
+uninstall {pkg}` / `cargo uninstall {pkg}`
 
 ### 7. Create `tools/{tool}/shell.zsh` (only if needed)
 
-Only create this file if the tool requires explicit shell setup: environment variables, aliases, or completions not auto-installed by the package manager.
+Only create this file if the tool requires explicit shell setup: environment variables, aliases, or
+completions not auto-installed by the package manager.
 
-Brew auto-installs completions to `/opt/homebrew/share/zsh/site-functions` — no `shell.zsh` needed for those. Only add completion setup if the tool's docs require something like `eval "$(tool completion zsh)"` or `source <(tool completions zsh)`.
+Brew auto-installs completions to `/opt/homebrew/share/zsh/site-functions` — no `shell.zsh` needed
+for those. Only add completion setup if the tool's docs require something like `eval "$(tool
+completion zsh)"` or `source <(tool completions zsh)`.
 
 ```zsh
 ########################
@@ -230,5 +244,9 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles" bash tools/{tool}/install.bash
 
 ## Notes
 
-- **Auto-discovery**: `features/install/tools.bash` and `features/update/tools.bash` use `find` to discover all `install.bash` / `update.bash` files under `tools/` automatically. No manual registration is needed.
-- **Shell manifest**: `shell.zsh` is sourced automatically in every new shell via the generated manifest at `$DOTFILES/.cache/shell-files-manifest.zsh`. Regenerate it with the `symlinks` alias after adding a new tool.
+- **Auto-discovery**: `features/install/tools.bash` and `features/update/tools.bash` use `find` to
+  discover all `install.bash` / `update.bash` files under `tools/` automatically. No manual
+  registration is needed.
+- **Shell manifest**: `shell.zsh` is sourced automatically in every new shell via the generated
+  manifest at `$DOTFILES/.cache/shell-files-manifest.zsh`. Regenerate it with the `symlinks` alias
+  after adding a new tool.

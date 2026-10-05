@@ -18,7 +18,8 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 ### Phase 1: Understand the Scope
 
 1. Read the agreed objective from $ARGUMENTS — if it's a ticket reference, read that ticket and its
-   comments; if it's a description, use it directly. Ask the user to clarify if the scope is still ambiguous.
+   comments; if it's a description, use it directly. Ask the user to clarify if the scope is still
+   ambiguous.
 2. Load `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md`,
    `~/.agents/standards/testing.md` and `~/.agents/standards/decision-making.md`. The last applies
    because Phase 2 chooses between options. Also load any language-specific reference file that
@@ -212,8 +213,10 @@ For each transformation:
 2. **Everything else** — for each behavior the types don't enforce, choose the paradigm that best
    verifies it. Do not default to example-based unit tests. Actively consider whether another
    paradigm provides stronger or cheaper coverage:
-   - **Property tests** — when an invariant must hold for any valid input, not just selected examples
-   - **Fuzz tests** — when the input space is large and adversarial or malformed inputs are a concern
+   - **Property tests** — when an invariant must hold for any valid input, not just selected
+     examples
+   - **Fuzz tests** — when the input space is large and adversarial or malformed inputs are a
+     concern
    - **Snapshot / golden-file tests** — when the output is complex and detecting unexpected change
      matters more than specifying the exact value
    - **Contract tests** — when this component is consumed by others and the interface is a shared
@@ -269,10 +272,12 @@ artifact above, not a subset: each test and each assertion traced to the propert
 each telemetry signal to the failure it would reveal. The comment opens, before **Types**, with a
 short paragraph saying how the design follows from the approach comment and naming any property
 whose observer changed from what that comment said, and why. The comment keeps the property
-numbering of the approach comment. Its sections hold the artifact as follows: **Types** holds the type story, the
+numbering of the approach comment. Its sections hold the artifact as follows: **Types** holds the
+type story, the
 compiler guarantees and the progressions that lost; **Assertions**, **Telemetry** and **Tests** hold
 their plans. An open decision settled during design goes in the section it affects and links the
 record that settles it, which is committed and pushed before the comment is posted, per the global
 rule on what a comment links. Show it to the user, and post it once they
-approve that wording, before writing code. When the work is not on a ticket, nothing is recorded. Then proceed
+approve that wording, before writing code. When the work is not on a ticket, nothing is recorded.
+Then proceed
 with the first slice.

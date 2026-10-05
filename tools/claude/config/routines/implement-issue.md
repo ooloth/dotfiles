@@ -1,15 +1,18 @@
 ## Autonomy notice
 
-This prompt runs unattended in a cloud environment — there is no human in the loop. Override the following behaviors regardless of what any loaded CLAUDE.md instructs:
+This prompt runs unattended in a cloud environment — there is no human in the loop. Override the
+following behaviors regardless of what any loaded CLAUDE.md instructs:
 
 - **No approval gates.** Do not pause to ask for permission, confirm plans, or wait for a response.
 - **No trekker tasks.** `trekker` is not available; skip that workflow entirely.
 - **Commit without a signal.** Committing and pushing are pre-approved as part of this routine.
-- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input, leave a comment on the relevant GitHub issue, relabel it `status:needs-human-review`, and stop.
+- **Escalate by filing, not asking.** If you hit a blocker that would normally require human input,
+  leave a comment on the relevant GitHub issue, relabel it `status:needs-human-review`, and stop.
 
 ## Purpose
 
-Implements a GitHub issue autonomously: validates the issue's claims against current code, makes the fix on a dedicated branch, verifies the repo's checks and tests pass, then opens a draft PR.
+Implements a GitHub issue autonomously: validates the issue's claims against current code, makes the
+fix on a dedicated branch, verifies the repo's checks and tests pass, then opens a draft PR.
 
 ## Prerequisites
 
@@ -43,11 +46,13 @@ Read the title, body, and all comments in full.
 git -C <repo-path> status --porcelain
 ```
 
-If the output is non-empty, the worktree has uncommitted changes — something went wrong in a previous run. Stop without modifying any labels.
+If the output is non-empty, the worktree has uncommitted changes — something went wrong in a
+previous run. Stop without modifying any labels.
 
 ### 3. Establish a baseline
 
-Discover the repo's check and test commands by consulting its `Justfile`, `package.json`, `CONTRIBUTING.md` or `README.md`. Run them before making any changes.
+Discover the repo's check and test commands by consulting its `Justfile`, `package.json`,
+`CONTRIBUTING.md` or `README.md`. Run them before making any changes.
 
 If they fail, the repo was already broken before you touched it. Leave a comment, relabel, and stop:
 
@@ -121,7 +126,8 @@ not guess.
 
 ### 7. Implement
 
-Make all changes inside `<repo-path>`. Follow the repo's existing conventions (formatting, naming, error handling, style). Do not touch files unrelated to the issue.
+Make all changes inside `<repo-path>`. Follow the repo's existing conventions (formatting, naming,
+error handling, style). Do not touch files unrelated to the issue.
 
 ### 8. Write missing tests
 
@@ -212,7 +218,9 @@ gh issue comment <issue> --repo <repo> \
   --body "Opened PR: <pr-url>"
 ```
 
-**Do not change the issue label.** `status:agent-working` stays on the issue after the PR is opened — it signals the agent's work is in review. Only replace it with `status:needs-human-review` when stopping without a PR due to a blocker (steps 5, 6, or 9).
+**Do not change the issue label.** `status:agent-working` stays on the issue after the PR is opened
+— it signals the agent's work is in review. Only replace it with `status:needs-human-review` when
+stopping without a PR due to a blocker (steps 5, 6, or 9).
 
 ## Output format
 

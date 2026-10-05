@@ -8,7 +8,8 @@ model: opus
 
 ## Context
 
-- The task (or issue, problem, ticket, etc) the user wants to discuss is what they mentioned here: $ARGUMENTS
+- The task (or issue, problem, ticket, etc) the user wants to discuss is what they mentioned here:
+  $ARGUMENTS
 
 ## Your task
 

@@ -137,7 +137,8 @@ Documentation and agent instructions are where unchecked invariants collect, so 
 look. An assertion that something matters in a docs without a corresponding check that
 automatically monitors is just a nudge that can drift from reality. An instruction aimed at agents
 or maintainers — remember X, never Y — is a check with no runner with no confirmation it's being
-followed. Both read as settled and neither is. Either give it a runner or say why it cannot have one.
+followed. Both read as settled and neither is. Either give it a runner or say why it cannot have
+one.
 
 How it runs is a separate choice: a type, a lint rule, a test, a automated agent skill, an automated
 script. Pick the most reliable, deterministic option available per case. Pair multiple methods when

@@ -49,7 +49,8 @@ trekker task update TREK-1 -s in_progress
 
 ## Writing Descriptions (invoke `write-ticket-description` skill first)
 
-Descriptions are the primary context a future agent has. Focus on **intent, constraints, and validation** — not one specific implementation.
+Descriptions are the primary context a future agent has. Focus on **intent, constraints, and
+validation** — not one specific implementation.
 
 **Structure every description around:**
 
@@ -82,7 +83,8 @@ Create a new parameter log_file: Path | None = None. Wire it in
 cli.py by adding --log-file to the argparse watch subparser.
 ```
 
-The bad example prescribes one implementation rather than capturing intent. A future agent can't tell *why* these changes exist or how to validate them.
+The bad example prescribes one implementation rather than capturing intent. A future agent can't
+tell *why* these changes exist or how to validate them.
 
 ## Closing Tasks
 
@@ -97,17 +99,26 @@ trekker comment add TREK-1 -a "claude" \
 trekker task update TREK-1 -s completed
 ```
 
-Always add the resolution comment **before** marking complete. The comment is the audit trail — without it, "completed" tells the next agent nothing about what happened.
+Always add the resolution comment **before** marking complete. The comment is the audit trail —
+without it, "completed" tells the next agent nothing about what happened.
 
 ## Creating Epics
 
-When approved work has multiple distinct pieces, create an **epic** with **child tasks**. The epic holds the *why* and *shape*; each child is self-contained.
+When approved work has multiple distinct pieces, create an **epic** with **child tasks**. The epic
+holds the *why* and *shape*; each child is self-contained.
 
-**Epic descriptions** — goal, constraints, key decisions, implementation order. No code snippets or per-step instructions. The epic description is a *summary* — it explains why the work exists and how the pieces fit together, not what to do.
+**Epic descriptions** — goal, constraints, key decisions, implementation order. No code snippets or
+per-step instructions. The epic description is a *summary* — it explains why the work exists and how
+the pieces fit together, not what to do.
 
-**All actionable work must be a child task.** If something needs to be implemented, tested, fixed, or validated, it's a task — not a bullet point in the epic description. The epic is complete when all its children are complete. If the epic description contains work items that aren't represented by children, the epic is malformed.
+**All actionable work must be a child task.** If something needs to be implemented, tested, fixed,
+or validated, it's a task — not a bullet point in the epic description. The epic is complete when
+all its children are complete. If the epic description contains work items that aren't represented
+by children, the epic is malformed.
 
-**Child descriptions** — each child gets its own problem/approach/constraints/done-when, even if derived from the parent. A fresh agent running `trekker task show TREK-N` must have enough context to start without reading the epic.
+**Child descriptions** — each child gets its own problem/approach/constraints/done-when, even if
+derived from the parent. A fresh agent running `trekker task show TREK-N` must have enough context
+to start without reading the epic.
 
 ```bash
 # 1. Create the epic (shape only — no actionable items here)
@@ -124,7 +135,8 @@ trekker task create -t "Add persistent log file" -p 1 -e EPIC-1 \
 trekker dep add TREK-2 TREK-1   # TREK-2 depends on TREK-1
 ```
 
-**Never** create an epic without children in the same step. **Never** leave actionable work described only in the epic — if it's worth mentioning, it's worth tracking as a child task.
+**Never** create an epic without children in the same step. **Never** leave actionable work
+described only in the epic — if it's worth mentioning, it's worth tracking as a child task.
 
 ## Task Lifecycle
 

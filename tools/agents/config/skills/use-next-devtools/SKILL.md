@@ -5,4 +5,5 @@ model: haiku
 effort: low
 ---
 
-Use the `nextjs-agent` subagent to answer your questions (it has scoped access to the next-devtools mcp).
+Use the `nextjs-agent` subagent to answer your questions (it has scoped access to the next-devtools
+mcp).
