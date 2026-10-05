@@ -300,6 +300,14 @@ every question in the group scores against it, adding only what is its own. The 
 skipped is the same option listed in two question files, or a gap found later that each question
 says belongs to the other.
 
+Working together is not the same as being ordered. Sharing a list is cheap, and a question included
+that turns out not to matter costs nothing. Moving, splitting, merging or reordering questions is a
+decision, and its evidence is the input test above, run on scored candidates: a question is coupled
+to another only through a named candidate whose verdict changes with its answer. An option named by
+category, such as "a CDN" or "a proxy", is split into the concrete arrangements it covers before
+any coupling is judged, because those arrangements usually couple differently. Coupling judged from
+topic alone produces confident rearrangements that the first scoring pass reverses.
+
 **A measured property is weighed beside the rest of the list, not in place of it.**
 A measurement is the strongest evidence a comparison holds, for the one property it measures. A
 candidate that loses a measured row has lost that row, read in light of what the difference costs

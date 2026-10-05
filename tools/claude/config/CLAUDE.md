@@ -234,6 +234,12 @@ The decision is whatever the table then yields. Worked this way, the final round
 recommendation offered before that point is the failure, however reasonable it sounds. The rules
 are in `decision-making.md` in the standards.
 
+**The same holds for how questions are arranged.** Proposing to split, merge, move or reorder open
+questions is a decision too, and its evidence is scored candidates: one question depends on another
+only through a named candidate whose verdict changes with the other's answer. Before anything is
+scored, say which questions share moments and stop there. Grouping by topic produces confident
+rearrangements that the first scoring pass reverses.
+
 ## Uphold Standards
 
 NEVER design, edit or review code, make a decision, or update documentation without first invoking
