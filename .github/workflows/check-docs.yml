@@ -1,0 +1,38 @@
+name: Check Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.md"
+      - "scripts/check-docs.py"
+      - "scripts/test_check_docs.py"
+      - ".github/workflows/check-docs.yml"
+
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.md"
+      - "scripts/check-docs.py"
+      - "scripts/test_check_docs.py"
+      - ".github/workflows/check-docs.yml"
+
+  workflow_dispatch:
+
+jobs:
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Check Markdown prose wraps at 100 columns
+        run: uv run scripts/check-docs.py
+
+      - name: Test the docs checker
+        run: uv run scripts/test_check_docs.py

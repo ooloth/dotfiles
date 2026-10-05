@@ -2,7 +2,8 @@
 
 This file provides Claude-specific guidance when working with this dotfiles repository.
 
-For general project information, installation instructions, and usage details, see the [README](./README.md).
+For general project information, installation instructions, and usage details, see the
+[README](./README.md).
 
 ## Uphold Project Invariants
 
@@ -49,9 +50,14 @@ See README.md for the complete overview. Key points for Claude:
 
 ### Symlink Management
 
-**Important for Git commits**: Files in `tools/claude/config/` are symlinked to `~/.claude/`. To commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at `tools/claude/config/CLAUDE.md` instead of trying to commit outside the repository.
+**Important for Git commits**: Files in `tools/claude/config/` are symlinked to `~/.claude/`. To
+commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at
+`tools/claude/config/CLAUDE.md` instead of trying to commit outside the repository.
 
-The symlink creation logic is in `features/update/symlinks.bash`, invoked by `features/update/tools.bash` and by the `symlinks` alias. (`features/install/zsh/deprecated/symlinks.zsh` is deprecated and only still sourced by `features/setup/setup.zsh`.)
+The symlink creation logic is in `features/update/symlinks.bash`, invoked by
+`features/update/tools.bash` and by the `symlinks` alias.
+(`features/install/zsh/deprecated/symlinks.zsh` is deprecated and only still sourced by
+`features/setup/setup.zsh`.)
 
 ### Claude Development Workflow
 
@@ -60,12 +66,13 @@ When making changes to this repository:
 1. **Verify file existence** before referencing scripts or commands
 1. **Use actual file paths** from the repository structure
 1. **Update all relevant README.md files** after making any user-facing changes
-1. **Update all relevant project-level CLAUDE.md files** after clarifying any Claude-specific workflows
+1. **Update all relevant project-level CLAUDE.md files** after clarifying any Claude-specific
+   workflows
 
 ### Testing and Verification
 
-- Never run `shellcheck` on `*.md` files or any file types other than `*.sh` and `*.bash`
-- Always run `shellcheck` on `*.sh` and `*.bash` files (they must pass `shellcheck` checks in order to pass CI)
-- **Use `.shellcheckrc` for project-wide settings** - centralized configuration in the `.shellcheckrc` file instead of using disable comments
+- The commands that check a change, and how to run what you changed, are in
+  [CONTRIBUTING.md](CONTRIBUTING.md). Read it before running anything, and run every check it lists
+  before reporting a change as done.
 - Run `symlinks` alias to recreate all symlinks
 - Test individual scripts by sourcing them
