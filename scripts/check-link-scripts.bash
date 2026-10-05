@@ -17,6 +17,13 @@ set -uo pipefail
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export DOTFILES
 
+# Run a link.bash the way CI does, wherever this check runs: macOS's own bash (3.2, not a newer
+# Homebrew bash) and no terminal. Without this, a script that only works in a newer bash or with
+# TERM set passes locally and fails in CI.
+run_link_script() {
+  env -u TERM /bin/bash "$@"
+}
+
 # tools/bash/utils.bash sources its siblings through ${HOME}/Repos/ooloth/dotfiles, so a temporary
 # HOME needs the repo at that path. It is a fixture, not a link any link.bash made, so the snapshot
 # and the list of links to remove both leave it out.
@@ -52,7 +59,7 @@ for link_script in "${DOTFILES}"/tools/*/link.bash; do
 
   checked=$((checked + 1))
   fake_home="$(make_fake_home)"
-  if ! output="$(HOME="${fake_home}" bash "${link_script}" 2>&1)"; then
+  if ! output="$(HOME="${fake_home}" run_link_script "${link_script}" 2>&1)"; then
     printf "❌ %s failed to create its links in an empty HOME:\n" "${name}"
     printf "%s\n" "${output//${fake_home}/\$HOME}" | sed 's/^/    /'
     failed+=("${name}")
@@ -72,7 +79,7 @@ for link_script in "${DOTFILES}"/tools/*/link.bash; do
     rm "${link}"
     before="$(snapshot "${fake_home}")"
 
-    HOME="${fake_home}" DOTFILES_CHECK=true bash "${link_script}" >/dev/null 2>&1
+    HOME="${fake_home}" DOTFILES_CHECK=true run_link_script "${link_script}" >/dev/null 2>&1
 
     after="$(snapshot "${fake_home}")"
     if [[ "${before}" != "${after}" ]]; then
