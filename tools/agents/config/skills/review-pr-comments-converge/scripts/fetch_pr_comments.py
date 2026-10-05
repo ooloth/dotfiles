@@ -12,6 +12,10 @@ Each inline comment shows:
   - comment_id  : used by reply_to_comment.py to post a reply
   - thread_id   : used by reply_to_comment.py --resolve to close the conversation
 
+PR conversation comments (the timeline, where some bots post their reviews) follow, oldest first.
+They have no threads, so a reply is simply a later comment; the viewer's own are marked "(you)" so
+an earlier comment they already answered can be recognised. Reply to these with `gh pr comment`.
+
 Usage: fetch_pr_comments.py <pr-number> [--repo OWNER/NAME]
 
 Without --repo the repo is inferred from $GH_REPO or the shell's working directory. Pass it
@@ -51,6 +55,15 @@ query($owner: String!, $name: String!, $number: Int!) {
           author { login }
           state
           body
+        }
+      }
+      comments(first: 100) {
+        nodes {
+          databaseId
+          author { login }
+          body
+          url
+          viewerDidAuthor
         }
       }
     }
@@ -132,6 +145,7 @@ def main() -> None:
     data = json.loads(raw)["data"]["repository"]["pullRequest"]
     threads = data["reviewThreads"]["nodes"]
     reviews = data["reviews"]["nodes"]
+    conversation = data["comments"]["nodes"]
 
     threads_by_review: dict[int, list[tuple[dict, list[dict]]]] = {}
     orphan_threads: list[tuple[dict, list[dict]]] = []
@@ -226,6 +240,27 @@ def main() -> None:
                 for reply in comments[1:]:
                     print(f"    {reply['author']['login']}: {reply['body'].strip()}")
             comment_idx += 1
+
+        print()
+        print(HEAVY)
+        print()
+
+    # GitHub returns these oldest first, so a reply always follows what it answers.
+    if conversation:
+        print(HEAVY)
+        print("# PR CONVERSATION COMMENTS (oldest first; reply with gh pr comment)")
+        print(HEAVY)
+        for comment in conversation:
+            print()
+            print(MEDIUM)
+            author = comment["author"]["login"] if comment.get("author") else "ghost"
+            you = " (you)" if comment["viewerDidAuthor"] else ""
+            print(f"CONVERSATION COMMENT  {author}{you}")
+            print(f"  comment_id : {comment['databaseId']}")
+            print(f"  url        : {comment['url']}")
+            print()
+            print("  BODY:")
+            print(indent(comment["body"].strip(), "    "))
 
         print()
         print(HEAVY)

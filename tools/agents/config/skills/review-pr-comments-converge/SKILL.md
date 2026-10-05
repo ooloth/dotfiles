@@ -45,8 +45,10 @@ check that line before trusting the output or the write.
 
 ### `scripts/fetch_pr_comments.py <pr-number>`
 
-Fetches all inline comments and review body comments via the GitHub GraphQL API. Each inline
-comment in the output includes:
+Fetches all inline comments, review body comments and PR conversation comments via the GitHub
+GraphQL API. Conversation comments are the PR timeline, where some review bots post their whole
+review; they appear last, oldest first, with your own marked `(you)`. Each inline comment in the
+output includes:
 
 - **`comment_id`** — the integer ID needed to post a reply
 - **`thread_id`** — the node ID needed to resolve the conversation thread
@@ -65,9 +67,10 @@ uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 "Fixed — ch
 It prints `Target: OWNER/NAME#PR, comment ID` before writing. Read that line — it is the only
 thing standing between a misresolved repo and a reply posted on a stranger's pull request.
 
-> **Note:** `reply_to_comment.py` handles inline review comments only. Review body comments
-> (the `=== Review Body Comments ===` section) show a `review_id` for reference but are not
-> replyable via this script — respond to them with `gh pr comment <pr-number> --body "..."`.
+> **Note:** `reply_to_comment.py` handles inline review comments only. Review bodies (the
+> `OVERVIEW:` under each review, which shows a `review_id` for reference) and conversation
+> comments (the `# PR CONVERSATION COMMENTS` section) are not replyable via this script —
+> respond to them with `gh pr comment <pr-number> --body-file <path>`.
 
 ---
 
@@ -78,6 +81,11 @@ thing standing between a misresolved repo and a reply posted on a stranger's pul
 ```bash
 uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number>
 ```
+
+Conversation comments have no threads, so a reply is just a later comment. Never validate a
+comment marked `(you)`. When a later `(you)` comment responds to an earlier one, treat the earlier
+one as already answered: leave it out of validation and out of Phase 4 replies, and list it in the
+report as previously answered.
 
 Also fetch the PR description for context on intent:
 
@@ -292,7 +300,7 @@ replies"), post replies and resolve threads:
 - For each auto-fixed or dismissed comment with an inline `comment_id`: run
   `reply_to_comment.py` with `--resolve`
 - For each escalated comment: post a reply summarising the options; do not resolve the thread
-- Review body comments (no `comment_id`): respond with `gh pr comment`
+- Review body comments (no `comment_id`) and conversation comments: respond with `gh pr comment`
 
 Do not run any of these commands before receiving explicit approval in Phase 3.
 
