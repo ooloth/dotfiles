@@ -47,8 +47,7 @@ check that line before trusting the output or the write.
 
 Fetches all inline comments, review body comments and PR conversation comments via the GitHub
 GraphQL API. Conversation comments are the PR timeline, where some review bots post their whole
-review; they appear last, oldest first, with your own marked `(you)`. Each inline comment in the
-output includes:
+review; they appear last, oldest first. Each inline comment in the output includes:
 
 - **`comment_id`** — the integer ID needed to post a reply
 - **`thread_id`** — the node ID needed to resolve the conversation thread
@@ -81,11 +80,6 @@ thing standing between a misresolved repo and a reply posted on a stranger's pul
 ```bash
 uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number>
 ```
-
-Conversation comments have no threads, so a reply is just a later comment. Never validate a
-comment marked `(you)`. When a later `(you)` comment responds to an earlier one, treat the earlier
-one as already answered: leave it out of validation and out of Phase 4 replies, and list it in the
-report as previously answered.
 
 Also fetch the PR description for context on intent:
 

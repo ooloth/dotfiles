@@ -13,8 +13,7 @@ Each inline comment shows:
   - thread_id   : used by reply_to_comment.py --resolve to close the conversation
 
 PR conversation comments (the timeline, where some bots post their reviews) follow, oldest first.
-They have no threads, so a reply is simply a later comment; the viewer's own are marked "(you)" so
-an earlier comment they already answered can be recognised. Reply to these with `gh pr comment`.
+Reply to these with `gh pr comment`.
 
 Usage: fetch_pr_comments.py <pr-number> [--repo OWNER/NAME]
 
@@ -63,7 +62,6 @@ query($owner: String!, $name: String!, $number: Int!) {
           author { login }
           body
           url
-          viewerDidAuthor
         }
       }
     }
@@ -254,8 +252,7 @@ def main() -> None:
             print()
             print(MEDIUM)
             author = comment["author"]["login"] if comment.get("author") else "ghost"
-            you = " (you)" if comment["viewerDidAuthor"] else ""
-            print(f"CONVERSATION COMMENT  {author}{you}")
+            print(f"CONVERSATION COMMENT  {author}")
             print(f"  comment_id : {comment['databaseId']}")
             print(f"  url        : {comment['url']}")
             print()
