@@ -127,8 +127,9 @@ Before presenting, review what you are about to claim:
 
 1. Every claim is either verified — with how — or explicitly tagged as an assumption. An untagged
    claim is a defect regardless of whether it turns out to be true.
-2. For each assumption, ask "would this being wrong change the recommendation?" If yes, it belongs
-   in open decisions, not assumptions — resolve it by asking or investigating before presenting.
+2. For each assumption, ask "would this being wrong change the recommendation?" If yes and
+   investigation can settle it, settle it before presenting. If only the user or someone outside the
+   repo can settle it, it goes in open decisions with a recommended answer, not in assumptions.
 3. An assumption that contradicts observable code or config is surfaced, not silently recorded as
    fact. If the user states how something works and the codebase disagrees, the contradiction
    becomes an open question — not a quietly resolved assumption in either direction.
