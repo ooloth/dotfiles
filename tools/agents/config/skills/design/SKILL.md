@@ -40,7 +40,11 @@ a measurement that already exists. A property nothing observes is a gap for Phas
 escalate, never one carried forward on trust.
 
 Where this phase derives a property rather than carrying one, it also says whether code outside
-this slice could break it. Such a property is cross-cutting, and is handled as Phase 6 describes.
+this slice could break it. Such a property is cross-cutting: Phase 6 plans a check over every
+instance, and the design includes an entry for it in `docs/invariants/` when it has no sanctioned
+exception or in `docs/standards/` when it has one, so whoever writes the code that could break it
+reads the rule before the check fails. Where the project has neither folder, creating one is an
+open decision.
 
 Then sketch 2–3 meaningfully different type progressions for the same feature. For each, state:
 - The shape of the progression (a one-line summary of the type structure)
