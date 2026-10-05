@@ -150,6 +150,11 @@ first. This is the failure that does not announce itself: a derivation from an u
 stays invisible precisely because the reasoning built on top of it is sound, so it reads as
 reasoned for months and is found by accident.
 
+One test finds an input nobody named: score each candidate under every answer an unsettled
+question could give. A candidate whose verdict changes with that answer makes the question an
+input, however unrelated its topic looks, and it is settled first. Where no verdict changes, the
+question is not an input and can stay open.
+
 **Each input names the record that established it.**
 Not "this is consistent with what we have written" — _which record settled this, and where is it._
 The two questions feel alike and catch different things: consistency is satisfied by any claim
@@ -229,6 +234,10 @@ never gets argued — it rides along on the other's reasoning and inherits autho
 given. Unpack a bundle into a chain instead, each link resting on the one before and carrying its
 own rationale. The chain is longer and every step is checkable.
 
+Separate records do not mean separate working. Questions that touch the same moments are worked
+from one property list, per the Should on coupled questions, and each still settles in its own
+record.
+
 **A decision that follows necessarily from an earlier one is still recorded.**
 It constrains implementation the same way a chosen one does, and a constraint that lives only
 inside another record's reasoning is invisible to anyone scanning the list. Its "rejected" section
@@ -278,6 +287,18 @@ itself known, how easily help is found, and what replacing the choice would cost
 derived only from adoption favours whatever is quickest to stand up, and says nothing about what the
 maintainer pays every month afterwards. The horizon is the system's expected life, as its problem
 statement or its maintainers set it. A throwaway prototype has a short one, and says so.
+
+**Questions that touch the same moments are worked from one property list, and each still settles
+in its own record.**
+Two questions can each be separable from the other, decidable either way, and still share the
+moments their properties come from: a request one of them serves and the other routes, a deploy one
+of them shapes and the other carries out. Worked one at a time, each derives its list from the
+moments its own topic brings to mind, and a property that spans both belongs to neither. Nothing
+then marks it as missing, because each file reads as complete and each assumes the other covered
+it. So the moments are listed once for the group, the property list is derived once from them, and
+every question in the group scores against it, adding only what is its own. The tell that this was
+skipped is the same option listed in two question files, or a gap found later that each question
+says belongs to the other.
 
 **A measured property is weighed beside the rest of the list, not in place of it.**
 A measurement is the strongest evidence a comparison holds, for the one property it measures. A
