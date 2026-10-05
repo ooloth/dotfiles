@@ -52,8 +52,9 @@ for link_script in "${DOTFILES}"/tools/*/link.bash; do
 
   checked=$((checked + 1))
   fake_home="$(make_fake_home)"
-  if ! HOME="${fake_home}" bash "${link_script}" >/dev/null 2>&1; then
-    printf "❌ %s failed to create its links in an empty HOME\n" "${name}"
+  if ! output="$(HOME="${fake_home}" bash "${link_script}" 2>&1)"; then
+    printf "❌ %s failed to create its links in an empty HOME:\n" "${name}"
+    printf "%s\n" "${output//${fake_home}/\$HOME}" | sed 's/^/    /'
     failed+=("${name}")
     rm -rf "${fake_home}"
     continue
@@ -64,7 +65,9 @@ for link_script in "${DOTFILES}"/tools/*/link.bash; do
     links+=("${link}")
   done < <(find "${fake_home}" -path "${fake_home}/Repos" -prune -o -type l -print | sort)
 
-  for link in "${links[@]}"; do
+  # A link.bash may create no links on this machine; ${arr[@]+...} keeps bash 3.2's set -u from
+  # treating the empty array as unbound
+  for link in ${links[@]+"${links[@]}"}; do
     target="$(readlink "${link}")"
     rm "${link}"
     before="$(snapshot "${fake_home}")"
