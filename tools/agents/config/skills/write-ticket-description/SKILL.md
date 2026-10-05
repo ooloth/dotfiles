@@ -79,31 +79,21 @@ Checkbox lists (`- [ ] #12`) are the fallback only when the sub-issue API is una
 
 ### Creating the hierarchy
 
-`gh issue create` has **no `--parent` flag** (checked through gh 2.92). Link after creation via the
-REST API, which needs the child's **database id**, not its issue number:
-
-```bash
-R=repos/OWNER/REPO
-CHILD_ID=$(gh api $R/issues/CHILD_NUMBER --jq '.id')
-gh api --method POST $R/issues/PARENT_NUMBER/sub_issues -F sub_issue_id="$CHILD_ID"
-```
-
-Works with the ordinary `repo` token scope — no `project` scope required.
+`gh issue create --parent PARENT_NUMBER` creates a child already linked to its parent (gh 2.102).
+To link an issue that already exists, use `gh issue edit CHILD_NUMBER --parent PARENT_NUMBER`, or
+`gh issue edit PARENT_NUMBER --add-sub-issue 12,13` for several at once. Both take an issue number
+or URL, and `--blocked-by` / `--add-blocked-by` record a blocking relationship the same way.
 
 ### Verifying the link
 
 ```bash
-gh api $R/issues/PARENT_NUMBER/sub_issues --jq '.[] | "#\(.number)  \(.title)"'
-gh api $R/issues/PARENT_NUMBER --jq '.sub_issues_summary'
+gh issue view PARENT_NUMBER -R OWNER/REPO --json subIssues,subIssuesSummary
+gh issue view CHILD_NUMBER -R OWNER/REPO --json parent
 ```
 
-From the child's side, REST exposes the parent as **`parent_issue_url`** — there is no `.parent`
-field, so `--jq '.parent.number'` silently prints nothing and looks like a broken link. To read the
-parent as a number, use GraphQL:
-
-```bash
-gh api graphql -f query='{repository(owner:"OWNER",name:"REPO"){issue(number:N){parent{number title}}}}'
-```
+These fields are printed only when requested by name; default `gh issue view` output shows no
+relationships, so their absence there says nothing about whether the link exists. `subIssues`
+comes back as `{nodes, totalCount}`, not a list, so a filter reads `.subIssues.nodes[].number`.
 
 ### Writing an epic body
 
