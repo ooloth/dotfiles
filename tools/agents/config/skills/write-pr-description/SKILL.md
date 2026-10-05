@@ -84,8 +84,9 @@ gh pr view --web
 - Steps must be sequential, each building on the previous so the list reads like a walkthrough, not
   a grab-bag of independent checks
 - Write each item in "Expect to see X" tutorial style
-- Include evidence-providing observability signals to confirm correct behavior; if gaps exist,
-  point them out now
+- Include evidence-providing observability signals to confirm correct behavior. Where a step has no
+  signal a reviewer could watch, tell the user before drafting, so the signal can be added to the
+  code; the PR body does not list gaps
 - Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
 - **Reviewer-frame**: every step must be executable on a laptop, before merging, without deploying
   anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any other
