@@ -154,7 +154,9 @@ End with a strategy artifact:
 When the work is on a ticket, the plan comment is drafted from three sections of this artifact:
 **Target properties**, **Recommendation** (including its alternatives) and **Open decisions**. A
 point from **Findings** that the approach rests on goes in beside the step it supports; the rest
-of **Findings** stays out. The comment's done-when is the ticket's Ideal state plus whatever the
+of **Findings** stays out. A diagram in **Recommendation** goes into the comment's **Approach**
+section as the full before and after pair, since a reader of the ticket alone has no other view of
+what the approach replaces. The comment's done-when is the ticket's Ideal state plus whatever the
 approach adds to it.
 
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
