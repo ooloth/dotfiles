@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-03
+updated: 2026-10-05
 update_when: a laptop is audited, the cleanup dry run runs cleanly, or `u` gains a cleanup step
 decays: fast
 status: open
@@ -74,3 +74,13 @@ Nothing here is settled until it graduates into a decision record.
   Brewfile declared @14. It was unlinked and uninstalled by hand. The same thing will happen at the
   next major version, because a versioned formula's link is not moved when the alias moves.
 - *Not yet measured:* the home laptop's dry-run output.
+- *Measured (2026-10-05, work laptop):* `brew upgrade` in `u` failed on two casks that no
+  Brewfile declares. `cursor` was still recorded as installed after `/Applications/Cursor.app`
+  was removed outside brew, so the upgrade failed with "It seems the App source
+  '/Applications/Cursor.app' is not there". `brave-browser` had been updated in place by
+  something running as root (unconfirmed which; Jamf and Automox are both present), so
+  replacing it needed sudo, which this account lacks. Both are tried on every run because
+  `HOMEBREW_UPGRADE_GREEDY=1` in `tools/homebrew/shell.zsh` makes `brew upgrade` include casks
+  that update themselves. Of the 20 installed casks, Brave was the only root-owned app. Both
+  were uninstalled by hand. Undeclared casks are therefore not only silent drift: under greedy
+  upgrades they can make `u` fail on every run.
