@@ -45,6 +45,7 @@ gh pr view --web
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Validation is manual e2e only — no automated checks
 - [ ] No implementation details snuck in
+- [ ] No hard-wrapped prose: each paragraph and list item is one line, because GitHub renders every newline as a line break
 - [ ] Diagram present only if the PR changes observable interactions, and it replaces prose or shows what prose cannot
 
 ---
@@ -117,6 +118,7 @@ gh pr view --web
 ❌ "Comprehensive" descriptions — less is more  
 ❌ Technical jargon when plain language is available
 ❌ Placeholder links — ask for real URLs  
+❌ Hard-wrapped prose — GitHub shows each newline as a line break, so a wrapped paragraph renders as ragged short lines; write each paragraph and list item as one line
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read
 ❌ Validation steps that run or reference automated tests — CI already shows this; zero marginal value to a reviewer
 ❌ Any step requiring a deployment — to DEV, UAT, staging, or prod — all require merging first and cannot be run by a reviewer before approving

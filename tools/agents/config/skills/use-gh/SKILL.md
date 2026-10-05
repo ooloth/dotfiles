@@ -44,6 +44,12 @@ event type before submitting, not after.
   first post. Write the body to a file (Write tool, not a bash heredoc) and pass
   `-F/--body-file <path>` instead. Supported by `gh pr comment`, `gh issue comment`,
   `gh pr review`, `gh pr create`, `gh issue create`, and `gh pr edit`.
+- **Hard-wrapped prose.** GitHub renders every newline in an issue, PR description, comment or
+  review as a line break, so a paragraph wrapped at 80 or 100 columns shows up as ragged short
+  lines. Each paragraph, list item and table row in a body is one line, and the GitHub UI wraps
+  it. This holds even though the skill and doc files you are reading are hard wrapped: they are
+  edited as plain text, and a GitHub body is read rendered. Before posting, check the body file
+  for a line break inside a paragraph or list item.
 - **Multi-comment PR reviews via `gh api`.** `-f key=value`/`-F key=value` is a flat syntax; it
   can express one nested level (`key[subkey]=value`, `key[]=value`) but gets unwieldy fast for an
   array of `{path, line, side, body}` objects. Write the full JSON payload to a file and pass it

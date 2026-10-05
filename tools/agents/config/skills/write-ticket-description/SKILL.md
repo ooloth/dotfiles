@@ -224,6 +224,7 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 
 ## What NOT to Do
 
+❌ Hard-wrapped prose in a GitHub issue — GitHub shows each newline as a line break, so a wrapped paragraph renders as ragged short lines; write each paragraph and list item as one line
 ❌ Describing implementation steps in "Ideal state" — those belong in a PR
 ❌ Current state that opens with a technical fact instead of the downstream impact
 ❌ Burying the consequence — "the export runs synchronously" before "large customers cannot export"
