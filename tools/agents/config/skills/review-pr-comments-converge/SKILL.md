@@ -227,7 +227,7 @@ option list must appear. Do not write to disk.
 the working tree changes and explicitly approve posting replies (e.g. "post the replies", "reply
 and resolve"). The report is the deliverable for this phase.
 
-```markdown
+````markdown
 # review-pr-comments-converge report
 
 **PR:** [number] — [title]
@@ -279,7 +279,7 @@ These require a decision from you. Reply with your decisions (e.g. "1b, 2a") and
 ## Working tree
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
-```
+````
 
 ---
 
