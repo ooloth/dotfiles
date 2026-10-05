@@ -84,6 +84,9 @@ jobs:
 
           echo "✅ All bash scripts passed shellcheck"
 
+      - name: Check that link.bash scripts write nothing in check mode
+        run: bash scripts/check-link-scripts.bash
+
       # TODO: does this make sense? what's it doing?
       - name: Test symlink verification
         run: |

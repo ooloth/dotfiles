@@ -17,6 +17,15 @@ symlink "${DOTFILES}/tools/pi/config/settings.json" "${config_dir}"
 agents_md="${DOTFILES}/tools/claude/config/CLAUDE.md"
 if [ -L "${config_dir}/AGENTS.md" ] && [ "$(readlink "${config_dir}/AGENTS.md")" = "${agents_md}" ]; then
   printf "✅ AGENTS.md → %s\n" "${config_dir}"
+elif [[ "${DOTFILES_CHECK:-}" == "true" ]]; then
+  # Check mode reports, like symlink() does, and never creates or replaces the link
+  if [ -L "${config_dir}/AGENTS.md" ]; then
+    printf "❌ WRONG TARGET: AGENTS.md → %s (points to: %s)\n" "${config_dir}" \
+      "$(readlink "${config_dir}/AGENTS.md")"
+  else
+    printf "❌ MISSING: AGENTS.md → %s\n" "${config_dir}"
+  fi
+  exit 1
 else
   mkdir -p "${config_dir}"
   printf "🔗 "

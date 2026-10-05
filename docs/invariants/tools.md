@@ -13,6 +13,9 @@ observations about typical practice.
   symlinked — never copied — into place. Editing the repo copy must be
   enough to change the live config; a copy would silently stop reflecting
   edits.
+- With `DOTFILES_CHECK=true`, a `link.bash` reports link status and writes nothing: no link,
+  file or directory is created, replaced or removed. `dcheck` and `u`'s final check depend on
+  this to be read-only. `scripts/check-link-scripts.bash` checks every `link.bash` in CI.
 - A `config/` directory with no `link.bash` is legitimate only for two
   reasons: the config is consumed directly by that tool's own install
   logic instead of being placed under `$HOME` (e.g. macOS defaults,
