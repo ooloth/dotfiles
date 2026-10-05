@@ -76,7 +76,7 @@ a false positive costs one read; a false negative means missed guidance.
 - **`data-integrity.md`** — data models, storage shapes, schema changes, migrations, write paths, transactions
 - **`decision-making.md`** — architecture decision records, spikes and benchmarks, any choice of tool, runtime, platform or data shape
 - **`dependencies.md`** — package manifests (package.json, Cargo.toml, pyproject.toml, go.mod)
-- **`deployment.md`** — CI/CD config, Dockerfiles, infrastructure manifests, migration files
+- **`deployment.md`** — any change to code that runs in a deployed environment; CI/CD config, Dockerfiles, infrastructure manifests, migration files
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions
 - **`documentation.md`** — any file change that affects documented behaviour or has accompanying docs; diagrams and tables in ticket comments and PR descriptions
 - **`error-handling.md`** — fallible operations, error propagation paths, user-facing error output
