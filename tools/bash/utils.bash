@@ -130,21 +130,22 @@ remove_broken_symlinks() {
 # LOGGING #
 ###########
 
-# Text colors
+# Text colors, empty when there is no terminal to ask (CI, cron, launchd), so a script sourcing
+# this under `set -e` prints plain text instead of exiting
 # see: https://stackoverflow.com/a/4332530/8802485
-TEXT_RED=$(tput setaf 1)
-TEXT_YELLOW=$(tput setaf 3)
-TEXT_WHITE=$(tput setaf 7)
-TEXT_BRIGHT=$(tput bold)
-TEXT_NORMAL=$(tput sgr0)
-# TEXT_BLACK=$(tput setaf 0)
-# TEXT_GREEN=$(tput setaf 2)
-# TEXT_BLUE=$(tput setaf 4)
-# TEXT_MAGENTA=$(tput setaf 5)
-# TEXT_CYAN=$(tput setaf 6)
-# TEXT_BLINK=$(tput blink)
-# TEXT_REVERSE=$(tput smso)
-# TEXT_UNDERLINE=$(tput smul)
+TEXT_RED=$(tput setaf 1 2>/dev/null || true)
+TEXT_YELLOW=$(tput setaf 3 2>/dev/null || true)
+TEXT_WHITE=$(tput setaf 7 2>/dev/null || true)
+TEXT_BRIGHT=$(tput bold 2>/dev/null || true)
+TEXT_NORMAL=$(tput sgr0 2>/dev/null || true)
+# TEXT_BLACK=$(tput setaf 0 2>/dev/null || true)
+# TEXT_GREEN=$(tput setaf 2 2>/dev/null || true)
+# TEXT_BLUE=$(tput setaf 4 2>/dev/null || true)
+# TEXT_MAGENTA=$(tput setaf 5 2>/dev/null || true)
+# TEXT_CYAN=$(tput setaf 6 2>/dev/null || true)
+# TEXT_BLINK=$(tput blink 2>/dev/null || true)
+# TEXT_REVERSE=$(tput smso 2>/dev/null || true)
+# TEXT_UNDERLINE=$(tput smul 2>/dev/null || true)
 
 function banner() {
   # Capture the text and color arguments
