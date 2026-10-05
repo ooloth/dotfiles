@@ -51,7 +51,7 @@ review; they appear last, oldest first. Each inline comment in the output includ
 
 - **`comment_id`** — the integer ID needed to post a reply
 - **`thread_id`** — the node ID needed to resolve the conversation thread
-- **`File:`** — the file path repeated immediately before the diff hunk
+- **`path:line`** — on the `COMMENT` header line, the file and line the comment is attached to
 
 ### `scripts/reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]`
 
@@ -81,11 +81,17 @@ thing standing between a misresolved repo and a reply posted on a stranger's pul
 uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number>
 ```
 
-Also fetch the PR description for context on intent:
+Also fetch the PR description for context on intent, and the PR's state and branch:
 
 ```bash
-gh pr view <pr-number> --json title,body,baseRefName
+gh pr view <pr-number> --json title,body,baseRefName,headRefName,state
 ```
+
+Stop before Phase 2 and ask the user how to proceed if either of these holds:
+
+- `state` is not `OPEN`. Fixes would have no PR to land on, and replies would go to a closed one.
+- `git branch --show-current` is not `headRefName`. Validation would read the wrong code, and fixes
+  would land on the wrong branch.
 
 Discover the **quality gate**: check `CLAUDE.md` and project docs for the standard lint/type/test
 commands. Record whatever you find. If nothing is documented, note it and skip the quality gate
