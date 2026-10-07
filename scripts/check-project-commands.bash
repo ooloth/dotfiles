@@ -15,6 +15,7 @@
 # stub on PATH that exits with UV_STUB_STATUS, so no real tool runs.
 #
 # T0  sourcing tools/bash/utils.bash keeps the COMPUTER this check sets, so is_work follows it.
+# T0b sourcing it with a COMPUTER that names no machine detects the machine instead.
 # T1  in a directory no case matches, every command exits non-zero.
 # T2  in the same runs, stderr names the command and the directory, and stdout does not.
 # T3  check and test in the shared projects exit 0 with no no-match message when uv exits 0.
@@ -24,6 +25,9 @@ set -uo pipefail
 CHECKOUT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 MACHINES=(work air)
+# Every COMPUTER value tools/macos/utils.bash can produce, and one it cannot
+KNOWN_MACHINES=(work air mini)
+UNKNOWN_MACHINE="not-a-machine"
 UNMATCHED_DIR_NAME="no-project-matches-this"
 # Every project command reads the current directory with this line, which is how this finds them
 DISPATCH_MARKER="current_dir=\$(basename"
@@ -110,16 +114,41 @@ source "${DOTFILES}/tools/bash/utils.bash"
 if is_work; then echo "is_work=true COMPUTER=${COMPUTER}"; else echo "is_work=false COMPUTER=${COMPUTER}"; fi
 PROBE
 
-for machine in "${MACHINES[@]}"; do
+# Run the probe with COMPUTER set to $1, or with COMPUTER unset when $1 is empty
+run_probe() {
+  if [[ -n "$1" ]]; then
+    HOME="${FAKE_HOME}" DOTFILES="${FAKE_DOTFILES}" COMPUTER="$1" \
+      env -u TERM /bin/bash "${probe}" 2>&1
+  else
+    HOME="${FAKE_HOME}" DOTFILES="${FAKE_DOTFILES}" \
+      env -u TERM -u COMPUTER /bin/bash "${probe}" 2>&1
+  fi
+}
+
+for machine in "${KNOWN_MACHINES[@]}"; do
   expected="false"
   [[ "${machine}" == "work" ]] && expected="true"
-  result="$(HOME="${FAKE_HOME}" DOTFILES="${FAKE_DOTFILES}" COMPUTER="${machine}" \
-    env -u TERM /bin/bash "${probe}" 2>&1)"
+  result="$(run_probe "${machine}")"
   if [[ "${result}" != "is_work=${expected} COMPUTER=${machine}" ]]; then
     fail "T0: with COMPUTER=${machine} set, sourcing tools/bash/utils.bash should leave is_work ${expected}"
     printf "    got: %s\n" "${result}"
   fi
 done
+
+# T0b: a COMPUTER that names no machine is replaced by detection, so a stray value cannot turn
+# is_work off on a work machine. The expected value is whatever detection gives this machine.
+detected="$(run_probe "")"
+detected_machine="${detected##*COMPUTER=}"
+if [[ " ${KNOWN_MACHINES[*]} " != *" ${detected_machine} "* ]]; then
+  fail "T0b: with COMPUTER unset, sourcing tools/bash/utils.bash should detect one of: ${KNOWN_MACHINES[*]}"
+  printf "    got: %s\n" "${detected}"
+else
+  result="$(run_probe "${UNKNOWN_MACHINE}")"
+  if [[ "${result}" != "${detected}" ]]; then
+    fail "T0b: with COMPUTER=${UNKNOWN_MACHINE} set, sourcing tools/bash/utils.bash should detect the machine as it does with COMPUTER unset"
+    printf "    expected: %s\n    got: %s\n" "${detected}" "${result}"
+  fi
+fi
 
 ##############
 # T1 and T2  #
