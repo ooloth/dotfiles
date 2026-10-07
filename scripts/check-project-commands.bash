@@ -113,9 +113,9 @@ no_match_message() {
 
 home_dir="$(project_dir home)"
 for machine in "${MACHINES[@]}"; do
-  # shellcheck disable=SC2016 # expanded by the inner bash, not this one
+  # The inner bash expands DOTFILES, not this one
   run_as "${machine}" "${uv_succeeds}" "${home_dir}" \
-    -c 'source "${DOTFILES}/tools/bash/utils.bash" && is_work'
+    -c "source \"\${DOTFILES}/tools/bash/utils.bash\" && is_work"
   if [[ "${machine}" == "work" ]]; then expected=0; else expected=1; fi
   if [[ "${expected}" -eq 0 && "${run_status}" -eq 0 ]] ||
     [[ "${expected}" -ne 0 && "${run_status}" -ne 0 ]]; then
@@ -135,8 +135,8 @@ done
 # A project command is any features/*/*.bash that dispatches on the current directory's name
 commands=()
 for script in "${DOTFILES}"/features/*/*.bash; do
-  # shellcheck disable=SC2016 # the literal text to find, not an expansion
-  if grep -qF 'current_dir=$(basename' "${script}"; then
+  # The literal text to find, not an expansion
+  if grep -qF "current_dir=\$(basename" "${script}"; then
     commands+=("${script#"${DOTFILES}/"}")
   fi
 done
