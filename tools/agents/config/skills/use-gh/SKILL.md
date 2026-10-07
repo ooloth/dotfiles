@@ -84,5 +84,9 @@ anything is missing.
 - **Silent pagination truncation.** `gh api --paginate` for any list endpoint that can exceed one
   page (comments, reviews, commits) — without it you can get a truncated result and mistake it
   for "that's everything."
+- **Every `gh ... list` stops at 30 results.** `gh issue list`, `gh pr list`, `gh label list` and
+  the rest return 30 rows unless given `--limit`, and print nothing to say they stopped. A count,
+  or a check that something is absent, read from a default listing is wrong once there are more
+  than 30. Pass a `--limit` above the largest count you expect.
 - **Wrong-repo actions in multi-repo sessions.** Pass `-R owner/repo` explicitly rather than
   relying on the cwd's git remote.
