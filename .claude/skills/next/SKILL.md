@@ -31,7 +31,7 @@ sentence goes in the report.
 ## Where work lives
 
 - **In flight:** uncommitted changes (`git status`), a branch other than `main`, and open PRs
-  (`gh pr list`).
+  (`gh pr list`). A branch whose PR was closed unmerged is not in flight; report it for deletion.
 - **Issues:** the GitHub tracker. Kind labels are `bug`, `feature` and `maintenance`. A feature
   spanning several issues is grouped in a milestone, or under a parent issue. Invoke `use-gh`
   before any `gh` call.
@@ -50,6 +50,12 @@ Who filed an issue does not affect its rank. If a top candidate depends on a dec
 made, that decision comes first. Check this only for the candidates you are about to recommend,
 never across the whole tracker. An unmade decision appears as a `docs/questions/` file the issue
 cites, or as an open decision recorded in the issue itself.
+
+An issue in a milestone ranks by its own kind label, so a milestone of maintenance work does not
+make its issues rank as a started feature.
+
+Before recommending an issue, confirm against the code that the problem it describes still
+exists. An issue whose problem is gone, or sits in code nothing calls, has no cost of delay.
 
 Within a rank, weigh how often the problem affects the user and how bad it is when it does. Say
 which of these decided each recommendation, including any cost-of-delay sentence that moved an
