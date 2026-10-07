@@ -206,3 +206,15 @@ function debug() {
   local text="$1"
   printf "\n%s\n" "$text" >&2
 }
+
+####################
+# PROJECT COMMANDS #
+####################
+
+# Report that a project command (check, test, start, ...) has no case for the current directory,
+# and exit non-zero so the alias that ran it does not report success when nothing ran
+no_case_defined() {
+  local command="${1:?no_case_defined needs the command name}"
+  error "🚨 No '${command}' case defined for '/$(basename "${PWD}")'"
+  exit 1
+}
