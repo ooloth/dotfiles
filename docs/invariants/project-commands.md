@@ -13,8 +13,9 @@ read the exit status to tell whether anything ran.
   no no-match message, and the tool's own code when it fails. Cases shared across machines form the
   outer `case`, with the machine-specific `case` under its `*)` branch, so a matched shared case
   never reaches a no-match branch.
-- Sourcing `tools/macos/utils.bash` keeps a `COMPUTER` that is already set and detects the machine
-  only when it is unset, so a caller can choose which machine's branch a command takes.
+- Sourcing `tools/macos/utils.bash` keeps a `COMPUTER` that is already set to `air`, `mini` or
+  `work`, so a caller can choose which machine's branch a command takes. When `COMPUTER` is unset or
+  holds any other value, it detects the machine.
 - Every project command reads its directory with `current_dir=$(basename "${PWD}")`. That line is
   how `scripts/check-project-commands.bash` finds the commands to check, so a command that reads
   its directory any other way is not checked. The check prints the commands it found.
