@@ -462,6 +462,7 @@ Skip and say nothing if execution went smoothly.
 
 - Put scratch work (spikes, throwaway repos, proofs of concept) in a directory from `mktemp -d`,
   never in bare `/tmp`.
+- I cannot open your scratchpad. Paste anything I must read or approve into the reply.
 - Never start a background process with `&` or `nohup`. Run it in a tmux window, or start, check
   and stop it within one Bash command.
 - For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
