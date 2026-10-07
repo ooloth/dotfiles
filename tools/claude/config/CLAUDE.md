@@ -53,7 +53,10 @@ If the user's message contains a `?`, "can we", "should we", "what if", "why", "
 
 1. **Clarify** what the user is asking (if unsure)
 2. **Proactively explore** the codebase and any other relevant sources using as many subagents as
-   needed to deeply understand the subject matter
+   needed to deeply understand the subject matter. A factual question that reading or a read-only
+   query can answer is answered that way, not posed to me. Read-only checks against external
+   services (`gh api` GETs, Jira and Linear reads, pipeline configs in other repos) need no
+   approval, because a read is not a side effect. Anything that writes still does.
 3. **ANSWER the question** with options/analysis/explanation
 4. **STOP and WAIT** for explicit implementation approval to act, or further discussion to reply to
    (returning to Step 1)
