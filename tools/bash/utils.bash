@@ -206,3 +206,17 @@ function debug() {
   local text="$1"
   printf "\n%s\n" "$text" >&2
 }
+
+###########
+# EXITING #
+###########
+
+# Ends a project command (features/*/<command>.bash) that has no case for the current directory.
+# It exits rather than returns, so the command fails wherever this is called, even inside an `if`
+# or `||`, where `set -e` does not apply.
+#   no_case_defined <command>
+function no_case_defined() {
+  local command="${1:?no_case_defined needs the command name}"
+  error "🚨 No '${command}' case defined for '/$(basename "${PWD}")'"
+  exit 1
+}

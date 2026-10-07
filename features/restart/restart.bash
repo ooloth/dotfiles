@@ -4,7 +4,6 @@ set -euo pipefail
 source "${DOTFILES}/tools/bash/utils.bash"
 
 current_dir=$(basename "${PWD}")
-error_msg="🚨 No 'restart' case defined for '/${current_dir}'"
 
 if is_work; then
   case "${current_dir}" in
@@ -13,9 +12,9 @@ if is_work; then
     ;;
 
   *)
-    error "${error_msg}"
+    no_case_defined restart
     ;;
   esac
 else
-  error "${error_msg}"
+  no_case_defined restart
 fi
