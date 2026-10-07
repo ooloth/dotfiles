@@ -90,26 +90,32 @@ files from step 2. If making the tests pass needs a choice the design did not ma
 When it returns, confirm with `git diff <tests commit> -- <test files>` that the test files are
 unchanged. If they changed, the implementation is not trusted: escalate with the diff.
 
+Keep this implementer's agent ID. Every later fix to the implementation goes back to it with
+SendMessage, so it works from what it already learned about the code rather than a fresh agent
+learning it again. Each time it returns, repeat the test-file check above.
+
 ## 4. Audit the plan against the work
 
 Make a table of every test, assertion and telemetry item in the design comment, each with the file
 and line that implements it and the artifacts showing it fail and then pass. Confirm each location
 with `grep` or `git` yourself rather than taking it from a summary. A row you cannot fill is
-unfinished work, so return to step 2 or 3. A planned item that was deliberately left out is an
-escalation.
+unfinished work: a missing test goes back to step 2, and a missing assertion or signal goes to the
+step 3 implementer. A planned item that was deliberately left out is an escalation.
 
 ## 5. Review
 
 Commit the work, then spawn a subagent to run `review-converge` on this branch. It applies the
 auto-fixes and returns its report, with every finding it could not auto-fix under `ESCALATION`.
 Escalate those findings on the ticket. Then spawn a fresh checks subagent to run the same commands
-again, rather than taking the review's word that the branch is still green.
+again, rather than taking the review's word that the branch is still green. If any fail, send the
+failures to the step 3 implementer and run the checks again once it returns.
 
 ## 6. Prove it
 
 Spawn a subagent to run `prove-it-works` on the change. Its artifacts are the commands it ran,
 their exit codes and the output it captured. "Tests pass" is not evidence for this step. Before
-using its verdict, open one captured output yourself.
+using its verdict, open one captured output yourself. If it shows the change does not work, send
+its evidence to the step 3 implementer, run the checks again, then run this step again.
 
 ## 7. Open the PR
 
