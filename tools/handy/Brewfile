@@ -1,0 +1,8 @@
+# see: https://handy.computer/
+# see: https://github.com/workos/aie-ai-native-workshop/blob/main/curriculum/01-voice-coding.md
+
+computer_name = `networksetup -getcomputername`.chomp
+
+unless computer_name == "Mini"
+  cask "handy" # local speech-to-text dictation
+end
