@@ -18,9 +18,28 @@ overrides any loaded CLAUDE.md that says otherwise:
 - Skills invoked below that end by asking the user something are run to their report, and the
   question is skipped.
 
-What the launch does not approve is a decision. Anything the approved approach and design do not
-settle is escalated, never defaulted. Escalating is a success for this skill. A PR built on a guess
-is a failure, even if every check is green.
+## Decisions the design did not make
+
+The approach and design will not settle everything. When they don't, decide like a senior engineer
+the user trusts to finish the slice and report back. Stopping to ask is the exception.
+
+**Decide it, record it and continue** when reverting this branch's commits would undo it and it
+contradicts no property, done-when item or recorded decision on the ticket. Choose the option that
+best delivers the ticket's properties. Record it as a departure: what the approach or design said,
+what you did instead, the options you weighed, the property that decided it, and how to reverse it.
+
+**Escalate** only when the decision:
+
+- contradicts a property, a done-when item or a recorded decision on the ticket, or would drop a
+  planned test, assertion or telemetry item;
+- adds a new dependency or external service, a persistent data shape, a public interface (an API,
+  a CLI contract, a file format), a new process or runtime, or a user-facing pattern people will
+  learn;
+- takes effect outside this branch: other repos, remote state, credentials;
+- risks security or data loss.
+
+Subagents follow the same rule. They decide what they may, report it under `DEPARTURES`, and return
+`escalate` only for the cases above.
 
 ## Your role
 
@@ -42,8 +61,11 @@ Tell each subagent to end its reply with exactly this block, and nothing after i
 STATUS: pass | fail | escalate
 ARTIFACTS: <absolute paths of the logs and files it wrote>
 SUMMARY: <150 words or fewer>
+DEPARTURES: <each decision it made that the approach or design did not, recorded as above, or "none">
 ESCALATION: <the decision needed and two or more numbered options, or "none">
 ```
+
+Keep every departure the subagents report, and your own, in one list for step 7.
 
 A subagent's report is evidence, not a finding. Before you act on a `pass`, confirm that its
 artifacts exist and read the exit-code line of at least one log. A `pass` you cannot confirm counts
@@ -52,7 +74,7 @@ as a `fail`.
 ## Escalate
 
 1. Comment on the ticket: what you found, the decision needed, and two or more numbered options,
-   each with its consequence and your recommendation.
+   each with its consequence and your recommendation. List the departures made so far below it.
 2. Commit any work in progress and push the branch, so nothing is lost when the worktree goes.
 3. Stop. Print `ESCALATED: <one sentence>` as the final line.
 
@@ -74,8 +96,10 @@ as a `fail`.
 Spawn a **test-writer** subagent. Give it the design comment and the repo path, and nothing about
 how the change will be implemented. It writes every test in the design comment's **Tests** section,
 runs them, and confirms that each fails for the reason the design gives, not because of a compile
-error, missing import or typo. It saves that failing output as an artifact and returns each planned
-test with the `file:line` where it lives.
+error, missing import or typo. Where the design says a test passes before the change, it confirms
+that instead. It saves that output as an artifact and returns each planned test with the
+`file:line` where it lives. If a test cannot be set up the way the design describes, it finds a
+setup that observes the same property and reports the change as a departure.
 
 Commit the tests once the status is `pass`, so step 3 can be checked against them.
 
@@ -85,7 +109,8 @@ Spawn an **implementer** subagent. Give it the approach and design comments, the
 step 2, and the list of check commands. It implements the approach in the smallest change that
 makes those tests pass, following `uphold-standards`, adds each assertion from **Assertions** and
 each signal from **Telemetry**, and runs the full checks until green. It does not edit the test
-files from step 2. If making the tests pass needs a choice the design did not make, it escalates.
+files from step 2. Choices the design did not make follow the rule under "Decisions the design did
+not make".
 
 When it returns, confirm with `git diff <tests commit> -- <test files>` that the test files are
 unchanged. If they changed, the implementation is not trusted: escalate with the diff.
@@ -121,5 +146,8 @@ its evidence to the step 3 implementer, run the checks again, then run this step
 
 Commit with the `commit` skill and push. Open a draft PR using `write-pr-description`, omitting any
 field that would need to ask the user. The body includes `Closes #<n>`, the step 4 table, the red
-output from step 2, the `prove-it-works` evidence, and the `review-converge` report. Comment on the
-ticket with the PR link. Print `PR: <url>` as the final line.
+output from step 2, the `prove-it-works` evidence, and the `review-converge` report.
+
+Comment on the ticket with the PR link and a numbered list of every departure from the approach and
+design, each with what was planned, what was done, the options weighed, the deciding property and
+how to reverse it. Write "No departures" when there were none. Print `PR: <url>` as the final line.
