@@ -11,9 +11,9 @@ allowed-tools: Bash
 
 This context comes from the session's working directory. When the changes to commit live in another
 repository or worktree, named in the arguments or earlier in the conversation, run
-`git -C <path> status --short` and `git -C <path> diff HEAD` there and work from that output, running
-every later step in that repository. There is nothing to commit only when both are empty in the
-repository that holds the changes; then say so and stop.
+`git -C <path> status --short` and `git -C <path> diff HEAD` there and work from that output,
+running every later step in that repository. There is nothing to commit only when both are empty in
+the repository that holds the changes; then say so and stop.
 
 ## Your task
 
