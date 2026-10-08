@@ -189,9 +189,11 @@ it, not whose change owns it.
 
 **Escalation discipline** — before writing an escalation:
 
-- Resolve all analytical sub-questions yourself by reading the code and tests. Never escalate
-  "is this a bug?", "is this intentional?", or "does X occur in production?" — answer those
-  yourself and state your conclusion. Only the _decision_ goes to the author.
+- Resolve all analytical sub-questions yourself by reading the code and tests, or by a read-only
+  query (`gh api` GETs, ticket reads, another repo's config) when the answer lives outside the
+  repo. These need no approval. Never escalate "is this a bug?", "is this intentional?", or "does
+  X occur in production?" — answer those yourself and state your conclusion. Only the _decision_
+  goes to the author.
 - Every escalated item must present ≥2 concrete lettered action options, each with a clear
   outcome. If you find yourself writing an option like "(a) No action — just confirming
   awareness", the item is not a genuine escalation; move it to Patterns Observed instead.

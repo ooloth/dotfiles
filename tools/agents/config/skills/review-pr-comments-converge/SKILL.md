@@ -152,8 +152,10 @@ The test: *does applying this require the author to make a choice?* If no, auto-
 
 **Escalation discipline:**
 
-- Resolve all analytical sub-questions yourself by reading the code. Never escalate "is this a
-  bug?" — answer it yourself. Only escalate the *decision*.
+- Resolve all analytical sub-questions yourself by reading the code, or by a read-only query
+  (`gh api` GETs, ticket reads, another repo's config) when the answer lives outside the repo.
+  These need no approval. Never escalate "is this a bug?" — answer it yourself. Only escalate the
+  *decision*.
 - Every escalation must present ≥2 concrete lettered options with outcomes. Mark your recommended
   option `(recommended)`.
 
