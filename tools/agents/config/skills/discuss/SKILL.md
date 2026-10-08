@@ -39,9 +39,14 @@ belongs to `/design`, which runs after the user approves the approach.
 2. If the user asked a question, answer the question before proposing anything.
 3. Use read-only exploration and subagents only as needed to understand the current code, docs,
    constraints, and likely impact.
-4. If the idea seems stale or poorly matched to the current codebase, investigate enough to help the
+4. Find out what the simplest fix would break by running it, not only by reading it. In a copy of
+   the repo under `mktemp -d`, apply the most obvious fix the ticket suggests, then run every path
+   that fix can reach, with external tools replaced by stubs that succeed and then fail. Compare
+   each result with today's. A path whose result changes in a way the ticket did not ask for is a
+   risk the approach must cover. Never edit the repo itself, and delete the copy when done.
+5. If the idea seems stale or poorly matched to the current codebase, investigate enough to help the
    user decide whether to redefine, defer, or skip it.
-5. Facts are your job, not the user's — dispatch subagents to find them. Ask the user only what
+6. Facts are your job, not the user's — dispatch subagents to find them. Ask the user only what
    blocks a correct approach decision, and batch those into one numbered round with a recommended
    answer for each rather than drip-feeding one question per turn. Don't ask about anything still
    gated on a question you haven't gotten an answer to yet. For a two-way-door decision, derive a
