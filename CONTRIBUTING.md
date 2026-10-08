@@ -19,6 +19,12 @@ the Python checks in `check-python.yml`, and the docs checker and its tests in `
 Each check fails when it finds nothing to check: pytest exits 5 when it collects no tests, and
 `check-python.bash` refuses a path with no Python files. A new check keeps that property.
 
+On a work laptop, uv installs packages through the work Artifact Registry index set in
+`~/.config/uv/uv.toml`. A 403 from `python.pkg.dev` means the Application Default Credentials
+belong to an account that cannot read that registry. Run `gcloud auth application-default login`
+with the internal work account. Do not point uv at public PyPI instead, because the managed config
+blocks that fallback on purpose.
+
 Shellcheck settings live in `.shellcheckrc`, not in disable comments. Run it only on `*.sh` and
 `*.bash` files.
 
