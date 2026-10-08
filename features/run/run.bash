@@ -14,6 +14,7 @@ if is_work; then
 
   *)
     error "${error_msg}"
+    exit 1
     ;;
   esac
 else
@@ -24,6 +25,7 @@ else
 
   *)
     error "${error_msg}"
+    exit 1
     ;;
   esac
 fi

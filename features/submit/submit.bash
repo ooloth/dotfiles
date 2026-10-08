@@ -12,5 +12,6 @@ advent-of-code)
   ;;
 *)
   error "${error_msg}"
+  exit 1
   ;;
 esac
