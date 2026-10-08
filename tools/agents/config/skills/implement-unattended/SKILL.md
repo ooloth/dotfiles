@@ -46,6 +46,10 @@ than an attended one, never less. A step that does not run in full, such as a re
 reviewers than its skill names, a skipped mutant or a missing proof, is run again. If it still
 cannot run in full, escalate. A small diff is never a reason to run less.
 
+A "must" or "should" finding from any review is resolved only by a change that makes it no longer
+true: a fix to the code or the tests, or a correction to a claim that says more than is true.
+Recording the gap as known, in a doc or a comment, does not resolve it. Fix it or escalate it.
+
 ## Your role
 
 You coordinate. Subagents do the heavy work, so that check output, diffs and review rounds stay
@@ -146,12 +150,20 @@ with `grep` or `git` yourself rather than taking it from a summary. A row you ca
 unfinished work: a missing test goes back to step 2, and a missing assertion or signal goes to the
 step 3 implementer. A planned item that was deliberately left out is an escalation.
 
-Then send the test-writer back, with SendMessage, to prove each property's tests can fail. For each
-property, it breaks the implementation in one place that property depends on, runs the suite,
-confirms it goes red, restores the file with `git checkout -- <file>` and confirms `git status` is
-clean. It reports each mutant and the test that caught it. A mutant the suite misses means a test
-is too weak: the test-writer strengthens it, as a departure, and the mutant is run again. Commit any
-strengthened tests, and confirm the implementation still passes them.
+Then prove each property's tests can fail, with mutants chosen by someone other than the person who
+wrote the tests. Spawn a **mutant** subagent. Give it the repo path, the check commands and the
+parts of the approach comment the test-writer got. Tell it not to open the test files, so its
+mutants aim at where the property could break rather than at what the tests already cover.
+
+For each property, it breaks the implementation in every kind of place that property depends on:
+each instance of a cross-cutting property (every command, every branch, every machine), not one
+representative. After each break it runs the full suite, records whether it went red, restores the
+file with `git checkout -- <file>` and confirms `git status` is clean. It reports each mutant and
+whether it was caught.
+
+A mutant the suite misses means a test is too weak. Send the survivors to the test-writer with
+SendMessage. It strengthens the tests, as departures, and the survivors are run again until all are
+caught. Commit any strengthened tests, and confirm the implementation still passes them.
 
 ## 5. Review
 
