@@ -1,9 +1,12 @@
-# Applies to every Python file under tools/agents/. Pinned here so a local run and CI check the
-# same rules whatever ruff version is installed.
+# Applies to every Python file in the repo. Pinned here so a local run and CI check the same rules
+# whatever ruff version is installed.
 # See: https://docs.astral.sh/ruff/settings/
 
 line-length = 100
 target-version = "py311"
+
+# Archived skills are kept for reference and not maintained. ty.toml excludes the same directory.
+extend-exclude = ["tools/claude/config/@archive"]
 
 [lint]
 select = [

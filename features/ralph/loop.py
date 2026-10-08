@@ -98,9 +98,7 @@ class LoopState:
                     # print(f"Looking for GOAL.md at: {prompt_file_path}")
                     return prompt_file_path
                 case _:
-                    prompt_file_path = (
-                        self.config.RALPH_DIR_GLOBAL / f"prompts/{file_name}"
-                    )
+                    prompt_file_path = self.config.RALPH_DIR_GLOBAL / f"prompts/{file_name}"
                     # print(f"Looking for {file_name} at: {prompt_file_path}")
                     return prompt_file_path
 
