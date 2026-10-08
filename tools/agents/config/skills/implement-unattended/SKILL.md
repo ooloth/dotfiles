@@ -35,6 +35,7 @@ what you did instead, the options you weighed, the property that decided it, and
 - adds a new dependency or external service, a persistent data shape, a public interface (an API,
   a CLI contract, a file format), a new process or runtime, or a user-facing pattern people will
   learn;
+- changes the runtime behaviour of code the approach does not name, even to satisfy a property;
 - takes effect outside this branch: other repos, remote state, credentials;
 - risks security or data loss.
 
@@ -168,17 +169,13 @@ A mutant the suite misses means a test is too weak. Send the survivors to the te
 SendMessage. It strengthens the tests, as departures, and the survivors are run again until all are
 caught. Commit any strengthened tests, and confirm the implementation still passes them.
 
-## 5. Review
+## 5. Commit and check again
 
-Commit the work, then spawn a subagent to run `review-converge` on this branch. Tell it to run every
-reviewer `review-code` names, whatever the size of the diff, and to return their names as a roster
-in its summary. It applies the auto-fixes and returns its report, with every finding it could not
-auto-fix under `ESCALATION`. A roster shorter than `review-code`'s set means the review did not run
-in full: run it again. Escalate the findings it could not auto-fix on the ticket.
+Commit the work. This skill runs no review before the PR: step 8's independent review loop is the
+only review, while we measure whether a review before the PR catches anything step 8 would not.
 
-Then spawn a fresh checks subagent to run the same commands again, rather than taking the review's
-word that the branch is still green. If any fail, send the failures to the step 3 implementer and
-run the checks again once it returns.
+Spawn a fresh checks subagent to run the same commands again on the committed work. If any fail,
+send the failures to the step 3 implementer and run the checks again once it returns.
 
 ## 6. Prove it
 
@@ -217,9 +214,8 @@ Post one run-report comment on the ticket, with these sections:
 1. **Properties:** a table with one row per property from the approach comment: what observes it,
    its result before the change, its result after, and the mutant it caught.
 2. **Evidence:** what `prove-it-works` ran and what it saw, before and after the change.
-3. **Reviews:** one line per review round, from step 5 and step 8, with its number of "must",
-   "should" and "consider" findings, how they were resolved, and the "consider" findings left open,
-   so it is visible which round found what.
+3. **Reviews:** one line per step 8 review round, with its number of "must", "should" and
+   "consider" findings, how they were resolved, and the "consider" findings left open.
 4. **Departures:** a numbered list of every departure from the approach and design, each with what
    was planned, what was done, the options weighed, the deciding property and how to reverse it.
    Write "No departures" when there were none.
