@@ -16,7 +16,7 @@
 # for a path like ./bin/test. PATH holds only the system directories besides the stubs.
 #
 #   T0  after sourcing tools/bash/utils.bash, is_work follows COMPUTER (work: true, air: false)
-#   T1  every project command, run in a directory no case matches, exits non-zero
+#   T1  every project command, run in a directory no case matches, exits non-zero and runs no tool
 #   T2  in those runs, stderr names the command and directory, and stdout does not
 #   T3  every matched case runs exactly its tools, and exits 0 with no no-match message when they
 #       all succeed
@@ -25,6 +25,9 @@
 #   T6  no_case_defined with no command name ends the script non-zero
 #   T7  MATCHED_CASES below lists every case label in every project command, so a case added later
 #       cannot go untested
+#   T8  a COMPUTER no is_* function recognises (Work, bogus) is replaced by a detected machine
+#   T9  a case for one machine only, run with the other machine's COMPUTER, reaches the no-match
+#       branch and runs none of its tools
 #
 # Adding, removing or changing a case in a project command (its labels, machine or the tools it
 # runs) means updating MATCHED_CASES below. T7 fails until the labels match, and T3/T4 fail until
@@ -249,10 +252,13 @@ for script in "${commands[@]}"; do
     where="${script} machine=${machine} dir=/${UNMATCHED_DIR}"
     run_as "${machine}" "${projects_dir}/${UNMATCHED_DIR}" 0 "${dotfiles_under_test}/${script}"
 
-    if [[ ${run_status} -ne 0 ]]; then
-      pass "T1 ${where}: exit ${run_status}"
+    problems=()
+    [[ ${run_status} -ne 0 ]] || problems+=("exit 0, want non-zero")
+    [[ -s "${calls_log}" ]] && problems+=("ran [$(tr '\n' ' ' <"${calls_log}")], want no tool")
+    if [[ ${#problems[@]} -eq 0 ]]; then
+      pass "T1 ${where}: exit ${run_status}, no tool ran"
     else
-      fail "T1 ${where}: exit 0, want non-zero"
+      fail "T1 ${where}: $(IFS=";"; echo "${problems[*]}")"
       show stdout "${out}"
       show stderr "${err}"
     fi
@@ -375,6 +381,77 @@ while IFS='|' read -r command _ _ _; do
   [[ -n "${command}" ]] || continue
   [[ -f "${REPO}/features/${command}/${command}.bash" ]] ||
     fail "T7 MATCHED_CASES names '${command}', which has no features/${command}/${command}.bash"
+done <<<"${MATCHED_CASES}"
+
+# ─── T8: an unrecognised COMPUTER is replaced by detection ──
+# A COMPUTER no is_* function recognises would send every command down the non-work branch with
+# no machine matching. utils.bash must detect the machine instead. networksetup is called by
+# absolute path, so the detected machine is whatever this Mac is; any known machine passes.
+
+for bad_value in Work bogus AIR; do
+  # shellcheck disable=SC2016 # expanded by the child bash, not here
+  run_as "${bad_value}" "${projects_dir}/${UNMATCHED_DIR}" 0 -c \
+    'source "${DOTFILES}/tools/bash/utils.bash"
+     matches=0
+     for check in is_air is_mini is_work; do "${check}" && matches=$((matches + 1)); done
+     printf "%s %s\n" "${COMPUTER}" "${matches}"'
+  read -r got_computer got_matches <"${out}"
+  where="COMPUTER=${bad_value}"
+  case "${got_computer:-}" in
+    air | mini | work) known_machine=yes ;;
+    *) known_machine=no ;;
+  esac
+  if [[ ${run_status} -eq 0 && "${known_machine}" == "yes" && "${got_matches:-}" == "1" ]]; then
+    pass "T8 ${where}: detected COMPUTER=${got_computer}, exactly one is_* true"
+  else
+    fail "T8 ${where}: exit ${run_status}, COMPUTER=${got_computer:-} with ${got_matches:-?} is_* true; want air, mini or work with exactly one"
+    show stderr "${err}"
+  fi
+done
+
+# ─── T9: a machine's case does not run on the other machine ─
+# Each case inside an is_work branch, run with the other machine's COMPUTER, must reach the no-match
+# branch and run none of its tools. A label that also has a case on the other machine is skipped.
+
+# Succeeds when MATCHED_CASES gives <command> a case for <label> on <machine> (or on any machine)
+has_case_on() {
+  local want_command="$1" want_label="$2" want_machine="$3" c m labels
+  while IFS='|' read -r c m labels _; do
+    [[ "${c}" == "${want_command}" ]] || continue
+    [[ "${m}" == "${want_machine}" || "${m}" == "any" ]] || continue
+    grep -qxF "${want_label}" <(tr ' ' '\n' <<<"${labels}") && return 0
+  done <<<"${MATCHED_CASES}"
+  return 1
+}
+
+while IFS='|' read -r command machine labels calls; do
+  [[ "${machine}" == "work" || "${machine}" == "air" ]] || continue
+  if [[ "${machine}" == "work" ]]; then other=air; else other=work; fi
+  script="features/${command}/${command}.bash"
+  read -r -a call_list <<<"${calls}"
+
+  for label in ${labels}; do
+    has_case_on "${command}" "${label}" "${other}" && continue
+    dir="${projects_dir}/${command}-${other}-crossed/${label}"
+    mkdir -p "${dir}"
+    for name in "${call_list[@]}"; do
+      [[ "${name}" == */* ]] && make_stub "${dir}/${name}" "${name}"
+    done
+    where="${script} machine=${other} dir=/${label} (case is only on ${machine})"
+    run_as "${other}" "${dir}" 0 "${dotfiles_under_test}/${script}"
+
+    problems=()
+    [[ ${run_status} -ne 0 ]] || problems+=("exit 0, want non-zero")
+    grep -qF "$(no_match_message "${command}" "${label}")" "${err}" ||
+      problems+=("no no-match message on stderr")
+    [[ -s "${calls_log}" ]] && problems+=("ran [$(tr '\n' ' ' <"${calls_log}")], want no tool")
+    if [[ ${#problems[@]} -eq 0 ]]; then
+      pass "T9 ${where}: exit ${run_status}, no tool ran"
+    else
+      fail "T9 ${where}: $(IFS=";"; echo "${problems[*]}")"
+      show stderr "${err}"
+    fi
+  done
 done <<<"${MATCHED_CASES}"
 
 printf "\n%d passed, %d failed\n" "${passed}" "${failed}"
