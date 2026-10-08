@@ -190,8 +190,8 @@ Commit with the `commit` skill and push. Open a draft PR using `write-pr-descrip
 field that would need to ask the user. Keep the body short: the ticket comments hold the detail, and
 the PR links to them. Add one line to each section:
 
-- **What:** `Design: <link to the design comment>`
-- **Why:** `Approach and the properties it had to deliver: <link to the approach comment>`
+- **What:** `Approach: <link to the approach comment>`, with `Design: <link to the design comment>`
+  on the line below it
 - **Related:** `Closes #<n>`
 
 Step 9 adds the link to the run report under **Validation** once that comment exists.
