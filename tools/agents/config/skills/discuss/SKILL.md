@@ -66,6 +66,12 @@ takes interpretation, whether it applies is also an open decision.
    this point. A property nobody can observe is an intention, and every option below is scored
    against this list.
 
+   Scope each property to the behaviour this work changes. Where a risk this work exposes could be
+   stated broadly enough to bind code the work does not otherwise touch, state it at the narrowest
+   scope that still covers that risk, and name what it deliberately leaves uncovered among the
+   properties that do not bind. A broad property becomes an instruction to change and test code the
+   ticket never asked about.
+
    An observer counts only if it covers every place the property could be broken, including code
    added later. A property that only this work's code can break is covered by tests of that code.
    A property that code elsewhere can break, such as a rule every handler or every config file
