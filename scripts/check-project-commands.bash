@@ -15,6 +15,9 @@
 #   - check and test in agency-1 and agent-1 with a stub uv exiting 0: exit 0, uv called, no
 #     no-match message
 #   - the same with a stub uv exiting 3: exit 3
+#   - in the unmatched directory and the shared cases: errexit, nounset and pipefail still on as it
+#     ends
+# It also checks once that error() in tools/bash/utils.bash prints and returns without exiting.
 #
 # Exit codes: 0 every run passed, 1 a command or the discovery rule failed, 2 the check's own setup
 # failed before any command was judged.
@@ -163,10 +166,11 @@ done
 # RUNNING #
 ###########
 
-# Run a command the way CI does: macOS's own bash 3.2, no terminal, no input, the stub uv first on
-# PATH. Sets run_status, run_stdout, run_stderr and run_uv_calls.
-run_command() {
-  local name="$1" machine="$2" dir="$3" uv_exit="$4"
+# Run the given program the way CI runs a command: macOS's own bash 3.2, no terminal, no input, the
+# stub uv first on PATH, in <fake HOME>/<dir> for the given machine.
+in_fixture() {
+  local machine="$1" dir="$2" uv_exit="$3"
+  shift 3
   local home repo
   home="$(fake_home "${machine}")"
   repo="$(fake_repo "${machine}")"
@@ -175,12 +179,52 @@ run_command() {
   (cd "${home}/${dir}" &&
     env -u TERM HOME="${home}" DOTFILES="${repo}" PATH="${stub_bin}:${PATH}" \
       STUB_UV_EXIT="${uv_exit}" STUB_UV_LOG="${scratch}/uv-calls" \
-      /bin/bash "${repo}/features/${name}/${name}.bash" \
-      </dev/null >"${scratch}/stdout" 2>"${scratch}/stderr")
+      "$@" </dev/null >"${scratch}/stdout" 2>"${scratch}/stderr")
+}
+
+# Sets run_status, run_stdout, run_stderr and run_uv_calls.
+run_command() {
+  local name="$1" machine="$2" dir="$3" uv_exit="$4"
+  in_fixture "${machine}" "${dir}" "${uv_exit}" \
+    /bin/bash "$(fake_repo "${machine}")/features/${name}/${name}.bash"
   run_status=$?
   run_stdout="$(cat "${scratch}/stdout")"
   run_stderr="$(cat "${scratch}/stderr")"
   run_uv_calls="$(cat "${scratch}/uv-calls")"
+}
+
+# A matched case with several steps (check in michaeluloth.com runs format, lint and typecheck)
+# passes a failing step's status through only because of `set -euo pipefail`. The shared arms are
+# one command each, so their exit status cannot tell whether those options are still on. This
+# sources the command into a shell whose EXIT trap records SHELLOPTS as the command ends, so it sees
+# an option turned off anywhere before then, in the command or in a file it sources. Sets
+# probe_options to the colon-separated option list, or empty when the trap never ran.
+probe_shell_options() {
+  local name="$1" machine="$2" dir="$3"
+  local probe_file="${scratch}/shell-options"
+  : >"${probe_file}"
+  # shellcheck disable=SC2016 # expanded by the probe's own shell
+  in_fixture "${machine}" "${dir}" 0 /bin/bash -c '
+    __probe_file="$1"
+    __command_script="$2"
+    shift 2
+    trap '\''printf "%s" "${SHELLOPTS}" >"${__probe_file}"'\'' EXIT
+    source "${__command_script}"' probe "${probe_file}" "$(fake_repo "${machine}")/features/${name}/${name}.bash"
+  probe_options="$(cat "${probe_file}")"
+}
+
+# T7: the command still has errexit, nounset and pipefail on when it ends
+check_shell_options() {
+  probe_shell_options "$@"
+  local option
+  if [[ -z "${probe_options}" ]]; then
+    problems+=("its shell options could not be read as it exited (did it replace the EXIT trap?)")
+    return
+  fi
+  for option in errexit nounset pipefail; do
+    [[ ":${probe_options}:" == *":${option}:"* ]] ||
+      problems+=("${option} was off when it exited; a project command must keep set -euo pipefail on to the end")
+  done
 }
 
 runs=0
@@ -224,6 +268,7 @@ for machine in "${MACHINES[@]}"; do
     # T3: nothing on stdout
     [[ -z "${run_stdout}" ]] ||
       problems+=("no match must print nothing on stdout")
+    check_shell_options "${name}" "${machine}" "${UNMATCHED_DIR}"
 
     judge_run "${name}" "${machine}" "${UNMATCHED_DIR}" 0
   done
@@ -239,6 +284,7 @@ for machine in "${MACHINES[@]}"; do
         problems+=("a matched case whose tool succeeds must exit 0, but exited ${run_status}")
       [[ "${run_stderr}" != *"case defined for"* ]] ||
         problems+=("a matched case printed the no-match message")
+      check_shell_options "${name}" "${machine}" "${dir}"
       judge_run "${name}" "${machine}" "${dir}" 0
 
       # T5: a matched shared case whose tool fails exits with the tool's status
@@ -252,6 +298,27 @@ for machine in "${MACHINES[@]}"; do
     done
   done
 done
+
+# T8: error() prints its message on stderr and returns 0 without exiting. Four other scripts call
+# it and carry on (two print more lines after it), so only each project command's own `exit 1` may
+# end the run. Checked once: error() does not depend on the machine.
+error_marker="error returned and the caller carried on"
+# shellcheck disable=SC2016 # expanded by the probe's own shell
+in_fixture "${MACHINES[0]}" "${UNMATCHED_DIR}" 0 /bin/bash -c '
+  set -euo pipefail
+  source "${DOTFILES}/tools/bash/utils.bash"
+  error "error probe message"
+  printf "%s" "$1"' probe "${error_marker}"
+run_status=$?
+run_stdout="$(cat "${scratch}/stdout")"
+run_stderr="$(cat "${scratch}/stderr")"
+run_uv_calls=""
+problems=()
+[[ "${run_status}" == "0" && "${run_stdout}" == "${error_marker}" ]] ||
+  problems+=("error() must return 0 without exiting, so callers that print more after it keep going")
+[[ "${run_stderr}" == *"error probe message"* ]] ||
+  problems+=("error() did not print its message on stderr")
+judge_run "error() in tools/bash/utils.bash" "${MACHINES[0]}" "${UNMATCHED_DIR}" 0
 
 ###########
 # SUMMARY #
