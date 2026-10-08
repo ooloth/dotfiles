@@ -18,6 +18,14 @@ it is confirmed against a deliberate break — a condition inverted, a term
 dropped, a constant returned — and the confirmation is that the right test fails
 and names the right thing.
 
+**A check that finds nothing to check fails.**
+A test runner, linter or type checker aimed at a glob, a directory or a config
+condition reports success when that selection matches nothing, and the success
+looks the same as a real pass. So an empty selection is a failure: the tool's
+own signal is used where it has one (pytest exits 5 when it collects no tests),
+and a guard runs ahead of the tool where it has none (ruff and ty exit 0 on a
+path with no Python files).
+
 **Critical paths have test coverage.**
 Authentication, authorization, payment flows, data integrity operations, and
 error handling paths are tested. The absence of tests here is a defect.

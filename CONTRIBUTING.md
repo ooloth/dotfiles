@@ -16,6 +16,9 @@ Expect all of them to pass. CI runs the same commands: shellcheck and the link c
 `.github/workflows/test-dotfiles.yml`, the skills check, Python checks and skill tests in
 `test-claude-skills.yml`, and the docs checker and its tests in `check-docs.yml`.
 
+Each check fails when it finds nothing to check: pytest exits 5 when it collects no tests, and
+`check-python.bash` refuses a path with no Python files. A new check keeps that property.
+
 Shellcheck settings live in `.shellcheckrc`, not in disable comments. Run it only on `*.sh` and
 `*.bash` files.
 
