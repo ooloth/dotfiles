@@ -32,16 +32,25 @@ Starting review-pr-comments-converge...
 
 ## Helper Scripts
 
-Two scripts live in `scripts/` relative to this skill's base directory (shown at the top of this
+Three scripts live in `scripts/` relative to this skill's base directory (shown at the top of this
 skill's content as "Base directory for this skill: ..."). Use them throughout the run.
 
 **Call them by absolute path from the target repo's root — never `cd` into `scripts/` first.**
-Both infer the repository from `$GH_REPO` or the working directory, so running them from the
+All three infer the repository from `$GH_REPO` or the working directory, so running them from the
 skill's own directory targets the *dotfiles* repo instead. That does not fail loudly: PR numbers
 are small and collide across repositories, so the wrong target is a real repo with a real PR of
 the same number, and a reply meant for one project lands on another. Pass `--repo OWNER/NAME`
-whenever the working directory is not the target. Both scripts print the repo they resolved —
+whenever the working directory is not the target. All three print the repo they resolved —
 check that line before trusting the output or the write.
+
+### `scripts/resolve_pr_checkout.py <pr-number> [--repo OWNER/NAME]`
+
+Prints the directory to work in, a checkout of the PR's head branch, or exits 1 with the reason it
+is unsafe to proceed. It uses a worktree that already has the branch, or switches the current
+checkout to it when nothing would be lost, and refuses when the PR is closed or on a fork, when the
+branch is behind or diverged from the remote, or when another checkout's uncommitted changes are in
+the way. After a switch it prints the command that undoes it. The script's docstring has the full
+rules.
 
 ### `scripts/fetch_pr_comments.py <pr-number>`
 
@@ -75,23 +84,32 @@ thing standing between a misresolved repo and a reply posted on a stranger's pul
 
 ## Phase 1: Fetch Comments & Load Context
 
-**Fetch all PR comments** by running the fetch helper:
+**Get onto the PR's head branch** by running the checkout helper from the session's working
+directory:
+
+```bash
+uv run <skill-base-dir>/scripts/resolve_pr_checkout.py <pr-number>
+```
+
+On exit 0, the last line of stdout is the **working root**. Run every later command from it, pass
+it to every subagent as the absolute path to read and edit in, and tell the user which path it is
+and whether the helper switched a branch, with the undo command it printed. Do not ask first: the
+helper only acts when nothing can be lost.
+
+On exit 1, stop before Phase 2. Relay the helper's reason to the user and ask how to proceed. Do
+not work around the refusal by switching branches yourself.
+
+**Fetch all PR comments** by running the fetch helper from the working root:
 
 ```bash
 uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number>
 ```
 
-Also fetch the PR description for context on intent, and the PR's state and branch:
+Also fetch the PR description for context on intent:
 
 ```bash
-gh pr view <pr-number> --json title,body,baseRefName,headRefName,state
+gh pr view <pr-number> --json title,body,baseRefName,headRefName
 ```
-
-Stop before Phase 2 and ask the user how to proceed if either of these holds:
-
-- `state` is not `OPEN`. Fixes would have no PR to land on, and replies would go to a closed one.
-- `git branch --show-current` is not `headRefName`. Validation would read the wrong code, and fixes
-  would land on the wrong branch.
 
 Discover the **quality gate**: check `CLAUDE.md` and project docs for the standard lint/type/test
 commands. Record whatever you find. If nothing is documented, note it and skip the quality gate
