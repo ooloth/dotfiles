@@ -247,13 +247,13 @@ and resolve"). The report is the deliverable for this phase.
 
 ---
 
-## Changes made
+## ✅ Changes made
 
 Leave a blank line before and after every diff block.
 
 ### Round 1
 
-- `file:line` — [reviewer] — [issue] — [fix applied]
+- ✅ `file:line` — [reviewer] — [issue] — [fix applied]
 
   ```diff
   - [before, max 3 lines]
@@ -265,21 +265,21 @@ Clean — no auto-fixable findings.
 
 ---
 
-## Dismissed comments
+## ❌ Dismissed comments
 
 Comments that were stale or mistaken — no action taken.
 
-- [reviewer] @ `file:line` — [Stale | Mistaken] — [reason]
+- ❌ [reviewer] @ `file:line` — [Stale | Mistaken] — [reason]
 
 (None)
 
 ---
 
-## Escalated items
+## 💬 Escalated items
 
 These require a decision from you. Reply with your decisions (e.g. "1b, 2a") and I'll apply them.
 
-1. [reviewer] @ `file:line` — [issue] — Why escalated: [reason]
+1. 💬 [reviewer] @ `file:line` — [issue] — Why escalated: [reason]
    - (a) [option] (recommended)
    - (b) [option]
 
@@ -306,21 +306,32 @@ replies"), post replies and resolve threads:
 
 Do not run any of these commands before receiving explicit approval in Phase 3.
 
+### Reply shape
+
+A reviewer should be able to read the whole reply in 10 seconds. Each finding gets one line, and
+that line opens with its verdict:
+
+- ✅ fixed: say what changed, in a few words, then the short hash of the pushed commit in parens,
+  e.g. `(2611d9d)`
+- ❌ no change: give the reason in one clause, with a `file:line` or a quote as evidence
+- 💬 needs your decision: list the lettered options; leave the thread open
+
+For an inline reply, the body is that one line. For a review body or conversation comment that
+covered several findings, write one bullet per finding, in the reviewer's order, and bold a short
+label naming each finding so the reviewer can match it to their comment. Don't add a legend, a
+summary paragraph, or the reviewer's point repeated back to them.
+
+A ✅ line cites a commit, so the fix is committed and pushed before the reply is posted. A reply
+claiming a fix the reviewer can't see on the PR is false until it is.
+
 ### Reply tone
 
-These replies go out as the PR author to their teammates. Write as a thoughtful colleague, not
-an automated system:
+These replies go out as the PR author to their teammates. Write as a colleague would:
 
-- **Acknowledge the feedback specifically** — reference what they pointed out, not a generic
-  "thanks for the feedback"
-- **State what you did** (for fixes) or **present the decision clearly** (for escalations) —
-  "Changed X to Y because Z" not "Fixed."
-- **Be direct but not terse** — one or two sentences is usually right; never a single word
-- **No bot-speak** — avoid "I have addressed your comment", "As per your request", "LGTM",
-  or any phrase that reads as automated
-- **For dismissals (stale/mistaken)**: explain briefly why no change was made — "This was
-  already handled in the previous commit at file:line" or "I think this is intentional
-  because X — happy to discuss if you see it differently"
+- **Name the specific point**, not "thanks for the feedback"
+- **No bot-speak**: avoid "I have addressed your comment", "As per your request", "LGTM"
+- **For ❌, give the reason without arguing**: "already handled at file:line", or "I think this is
+  intentional because X"
 
 ---
 
