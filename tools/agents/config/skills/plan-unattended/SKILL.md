@@ -49,8 +49,8 @@ it, so the user can overrule it later.
 
 1. Comment on the ticket: what you found, the decision needed, and two or more numbered options,
    each with its consequence and your recommendation.
-2. Stop without posting a plan or starting implementation. Print `ESCALATED: <one sentence>` as the
-   final line.
+2. Stop without starting implementation, and without posting anything further. Print
+   `ESCALATED: <one sentence>` as the final line.
 
 ## 1. Check the inputs
 
@@ -75,13 +75,24 @@ Then reconcile their outputs yourself:
    facts, not from any one run's recommendation. Apply `discuss` Phase 4's review of claims to it.
 4. Settle its open decisions under "Decisions nobody made".
 
+Post the approach comment now, before any design work, so the plan is visible and durable while
+design runs. Write each paragraph and list item on one line, and name no skill, command or agent:
+say what happened instead. Its sections are **What this must make true** (each property in one
+line, numbered, with what observes it), **What does not bind here**, **Approach**, **Alternatives
+that lost**, **Constraints**, **Decided without review** and **Done when**.
+
+Then print a short summary in this session: the approaches weighed, the one chosen and the property
+that decided it, and each decision taken without review. Anyone looking at this window should be
+able to tell what is being designed without opening the ticket.
+
 ## 3. Design: three runs, reconciled
 
-Spawn three new subagents in one message. Give each the ticket reference, the repo path, the path
-of the `design` skill (`~/.claude/skills/design/SKILL.md`) and the reconciled approach as the
-agreed task. Tell each to follow its Phases 1 to 6, to state its recommended answer wherever the
-skill says to ask, and to return its design, with every claim about how code or a test setup
-behaves beside the command that showed it.
+Spawn three new subagents in one message. Give each the ticket reference, the repo path and the
+path of the `design` skill (`~/.claude/skills/design/SKILL.md`), and tell it to read the agreed
+approach from the approach comment on the ticket, not from you, so design works from the same text
+implementation will read. Tell each to follow its Phases 1 to 6, to state its recommended answer
+wherever the skill says to ask, and to return its design, with every claim about how code or a
+test setup behaves beside the command that showed it.
 
 Then reconcile their outputs yourself:
 
@@ -92,18 +103,16 @@ Then reconcile their outputs yourself:
 3. Build one design from the reconciled result, not from any one run's design, and settle its open
    decisions under "Decisions nobody made".
 
-## 4. Post the plan
+If design needs an escalation, the approach comment stays on the ticket and the escalation comment
+follows it.
 
-Post two comments on the ticket, in this order. Write each paragraph and list item on one line, and
-name no skill, command or agent in them: say what happened instead.
+## 4. Post the design
 
-1. **The approach comment**, with these sections: **What this must make true** (each property in
-   one line, numbered, with what observes it), **What does not bind here**, **Approach**,
-   **Alternatives that lost**, **Constraints**, **Decided without review** and **Done when**.
-2. **The design comment**: an opening paragraph on how the design follows from the approach, then
-   **Types**, **Assertions**, **Telemetry** and **Tests**. Each test names the property it
-   observes, its setup, what it asserts and whether it passes or fails before the change. Keep the
-   approach comment's property numbering.
+Post the design comment, under the same rules for lines and naming: an opening paragraph on how the
+design follows from the approach, then **Types**, **Assertions**, **Telemetry** and **Tests**. Each
+test names the property it observes, its setup, what it asserts and whether it passes or fails
+before the change. Keep the approach comment's property numbering. If design decided anything
+without review, list it in the opening paragraph.
 
 ## 5. Start the implementation
 
