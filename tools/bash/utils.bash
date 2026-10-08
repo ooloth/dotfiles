@@ -206,3 +206,13 @@ function debug() {
   local text="$1"
   printf "\n%s\n" "$text" >&2
 }
+
+# Ends a project command (check, test, start, ...) that has no case for the current directory.
+# Exits non-zero so a caller (an agent, a loop, `&&`) cannot mistake "nothing ran" for "it passed".
+# See docs/invariants/project-commands.md.
+#   usage: no_case_defined <command>
+function no_case_defined() {
+  local command="${1:?no_case_defined needs the command name}"
+  error "🚨 No '${command}' case defined for '/$(basename "${PWD}")'"
+  exit 1
+}

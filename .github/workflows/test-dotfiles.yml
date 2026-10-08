@@ -87,6 +87,9 @@ jobs:
       - name: Check that link.bash scripts write nothing in check mode
         run: bash scripts/check-link-scripts.bash
 
+      - name: Check that project commands fail when no case matches
+        run: bash scripts/check-project-commands.bash
+
       # TODO: does this make sense? what's it doing?
       - name: Test symlink verification
         run: |

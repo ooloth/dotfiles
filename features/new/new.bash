@@ -4,7 +4,6 @@ set -euo pipefail
 source "${DOTFILES}/tools/bash/utils.bash"
 
 current_dir=$(basename "${PWD}")
-error_msg="🚨 No 'new' case defined for '/${current_dir}'"
 
 case "${current_dir}" in
 advent-of-code)
@@ -12,6 +11,6 @@ advent-of-code)
   ;;
 
 *)
-  error "${error_msg}"
+  no_case_defined new
   ;;
 esac
