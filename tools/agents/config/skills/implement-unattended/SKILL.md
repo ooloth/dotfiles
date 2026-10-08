@@ -103,7 +103,10 @@ as a `fail`.
    CONTRIBUTING.md, justfile, package.json, CI config), runs every one, and writes each command's
    full output to the artifacts directory. Its summary lists each command with its exit code and
    the first failing lines. Keep the list of commands it found, since every later checks subagent
-   runs the same list. If any fail before you change anything, escalate.
+   runs the same list. If any fail before you change anything, the base branch is already broken.
+   Where the fix is mechanical and needs no decision, such as a formatting or line-length problem,
+   send it to a subagent to fix in its own commit on this branch, record it as a departure, and run
+   the checks again. Escalate only a failure whose fix needs a decision.
 
 ## 2. Red
 
