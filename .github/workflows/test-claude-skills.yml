@@ -77,51 +77,11 @@ jobs:
           echo ""
           echo "✅ All mypy checks passed"
 
+      # pytest finds test_*.py at any depth and exits 5 when it collects nothing, so a skill test
+      # in a scripts/ subdirectory runs, and a run that finds no tests fails rather than passing.
+      # importlib mode keeps two skills' same-named test files from colliding on import.
       - name: Run tests
-        run: |
-          echo "Searching for skill tests..."
-          cd tools/agents/config/skills
-
-          FAILED_TESTS=""
-          PASSED_TESTS=0
-
-          # Find all test_*.py files
-          for test_file in */test_*.py; do
-            if [[ -f "$test_file" ]]; then
-              echo ""
-              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-              echo "Running: $test_file"
-              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-              if uv run "$test_file"; then
-                ((PASSED_TESTS++))
-                echo "✅ Passed: $test_file"
-              else
-                FAILED_TESTS="$FAILED_TESTS$test_file\n"
-                echo "❌ Failed: $test_file"
-              fi
-            fi
-          done
-
-          echo ""
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "Test Summary"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-          if [[ -n "$FAILED_TESTS" ]]; then
-            echo "❌ Failed tests:"
-            echo -e "$FAILED_TESTS"
-            echo ""
-            echo "Passed: $PASSED_TESTS"
-            exit 1
-          fi
-
-          if [[ $PASSED_TESTS -eq 0 ]]; then
-            echo "⚠️  No test files found"
-            exit 0
-          fi
-
-          echo "✅ All $PASSED_TESTS test file(s) passed"
+        run: uv run --with pytest pytest --import-mode=importlib tools/agents/config/skills
 
       - name: Summary
         if: always()
