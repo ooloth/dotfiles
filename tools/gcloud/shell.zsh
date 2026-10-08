@@ -37,7 +37,10 @@ alias gca="gcloud auth login michael.uloth@recursion.com --update-adc"
 # alias gca="gcloud auth login --update-adc && gcloud auth application-default"
 # alias gca="gcloud auth login --update-adc && gcloud auth application-default set-quota-project eng-infrastructure"
 
-alias gcat="gcloud auth login michael.uloth@rxrx.tech --update-adc"
+# The external org account is used only through the `external` gcloud configuration. ADC and the
+# default configuration stay on the internal account, because uv's package index authenticates with
+# ADC and only the internal account can read it.
+alias gcat="gcloud auth login michael.uloth@rxrx.tech --no-activate"
 
 ###############
 # COMPLETIONS #
