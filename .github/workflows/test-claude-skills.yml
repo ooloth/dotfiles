@@ -9,6 +9,8 @@ on:
       - 'tools/agents/config/skills/**/pyproject.toml'
       - 'tools/agents/config/skills/**/SKILL.md'
       - 'tools/agents/check-skills.py'
+      - 'tools/agents/check-python.bash'
+      - 'tools/agents/ruff.toml'
       - '.github/workflows/test-claude-skills.yml'
 
   # Run on pushes to main branch
@@ -19,6 +21,8 @@ on:
       - 'tools/agents/config/skills/**/pyproject.toml'
       - 'tools/agents/config/skills/**/SKILL.md'
       - 'tools/agents/check-skills.py'
+      - 'tools/agents/check-python.bash'
+      - 'tools/agents/ruff.toml'
       - '.github/workflows/test-claude-skills.yml'
 
   # Allow manual triggering for debugging
@@ -39,43 +43,10 @@ jobs:
       - name: Validate skill frontmatter
         run: uv run tools/agents/check-skills.py
 
-      - name: Run ruff checks
-        run: |
-          echo "Running ruff checks on all skills..."
-          cd tools/agents/config/skills
-
-          for skill_dir in */; do
-            if [[ -f "$skill_dir/pyproject.toml" ]]; then
-              echo ""
-              echo "Checking $skill_dir with ruff..."
-              cd "$skill_dir"
-              uv run --with ruff ruff check . || exit 1
-              cd ..
-              echo "✅ Passed"
-            fi
-          done
-
-          echo ""
-          echo "✅ All ruff checks passed"
-
-      - name: Run mypy checks
-        run: |
-          echo "Running mypy checks on all skills..."
-          cd tools/agents/config/skills
-
-          for skill_dir in */; do
-            if [[ -f "$skill_dir/pyproject.toml" ]]; then
-              echo ""
-              echo "Type checking $skill_dir with mypy..."
-              cd "$skill_dir"
-              uv run --with mypy --with notion-client --with pydantic --with pytest mypy --python-version 3.11 . || exit 1
-              cd ..
-              echo "✅ Passed"
-            fi
-          done
-
-          echo ""
-          echo "✅ All mypy checks passed"
+      # One script so CI and a local run check the same files with the same pinned rules and
+      # versions. It fails when it finds no Python files, which ruff and ty would pass.
+      - name: Lint, format-check and type-check Python
+        run: bash tools/agents/check-python.bash
 
       # pytest finds test_*.py at any depth and exits 5 when it collects nothing, so a skill test
       # in a scripts/ subdirectory runs, and a run that finds no tests fails rather than passing.

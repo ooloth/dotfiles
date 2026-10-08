@@ -61,11 +61,11 @@ def read_review_file(path: Path) -> Any:
     try:
         text = path.read_text()
     except OSError as e:
-        raise SystemExit(f"Could not read review file {path}: {e.strerror}.")
+        raise SystemExit(f"Could not read review file {path}: {e.strerror}.") from None
     try:
         return json.loads(text)
     except json.JSONDecodeError as e:
-        raise SystemExit(f"Review file {path} is not valid JSON: {e}.")
+        raise SystemExit(f"Review file {path} is not valid JSON: {e}.") from None
 
 
 def require_text(value: Any, field: str) -> str:
@@ -84,9 +84,7 @@ def parse_comment(raw: Any, index: int) -> InlineComment:
         raise SystemExit(f"{field}.line must be a positive integer, got {line!r}.")
     side = raw.get("side", "RIGHT")
     if side not in SIDES:
-        raise SystemExit(
-            f"{field}.side must be one of {', '.join(SIDES)}, got {side!r}."
-        )
+        raise SystemExit(f"{field}.side must be one of {', '.join(SIDES)}, got {side!r}.")
     return InlineComment(
         path=require_text(raw.get("path"), f"{field}.path"),
         line=line,
@@ -97,9 +95,7 @@ def parse_comment(raw: Any, index: int) -> InlineComment:
 
 def parse_review(raw: Any) -> Review:
     if not isinstance(raw, dict):
-        raise SystemExit(
-            f"The review file must contain a JSON object, got {type(raw).__name__}."
-        )
+        raise SystemExit(f"The review file must contain a JSON object, got {type(raw).__name__}.")
     event = raw.get("event")
     if event not in EVENTS:
         raise SystemExit(f"event must be one of {', '.join(EVENTS)}, got {event!r}.")
@@ -107,9 +103,7 @@ def parse_review(raw: Any) -> Review:
     if not isinstance(body, str):
         raise SystemExit(f"body must be a string, got {body!r}.")
     if event != "APPROVE" and not body:
-        raise SystemExit(
-            f"A {event} review needs a non-empty body; GitHub rejects it otherwise."
-        )
+        raise SystemExit(f"A {event} review needs a non-empty body; GitHub rejects it otherwise.")
     commit_id = raw.get("commit_id")
     if commit_id is not None:
         commit_id = require_text(commit_id, "commit_id")
@@ -155,9 +149,7 @@ def post(repo: str, pr: int, payload: dict[str, Any]) -> str:
         text=True,
     )
     if result.returncode != 0:
-        raise SystemExit(
-            f"GitHub rejected the review; nothing was posted.\n{result.stderr}"
-        )
+        raise SystemExit(f"GitHub rejected the review; nothing was posted.\n{result.stderr}")
     return json.loads(result.stdout).get("html_url", "")
 
 

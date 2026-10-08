@@ -57,9 +57,7 @@ class Harness:
         path.write_text(review if isinstance(review, str) else json.dumps(review))
         return path
 
-    def run(
-        self, *args: str, fail_gh: bool = False
-    ) -> subprocess.CompletedProcess[str]:
+    def run(self, *args: str, fail_gh: bool = False) -> subprocess.CompletedProcess[str]:
         env = {**self.env, **({"GH_FAIL": "1"} if fail_gh else {})}
         return subprocess.run(
             [sys.executable, str(SCRIPT), *args],
