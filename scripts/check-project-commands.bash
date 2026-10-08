@@ -44,7 +44,9 @@ UNMATCHED_DIR="no-project-command-case"
 
 # Every matched case, one line per case label line: command | machine | labels | calls
 #   machine  work or air for a case inside an is_work branch; any for a case that runs on both
-#   labels   the directory names on that label line
+#   labels   the labels on that label line, as written in the script without quotes. A glob label
+#            (one with *, ? or [...]) is written label=dir, where dir is a directory name the
+#            label matches; T3, T4 and T9 run the case in that directory.
 #   calls    the tools the case runs, in order. A name containing / is a path relative to the
 #            project directory; any other name is stubbed on PATH.
 # T7 fails when a command's case labels differ from this table, so a new case must be added here.
@@ -185,12 +187,76 @@ no_match_message() {
   printf "No '%s' case defined for '/%s'" "${command}" "${dir}"
 }
 
-# The directory names on every case label line of a script, one per line, sorted. `*)` is left
-# out. A line this misreads shows up as a difference from MATCHED_CASES, so T7 fails loudly.
+# Prints every label of every `case` on current_dir in a script, one per line, as written but
+# without quotes; a lone `*` is left out. Globs (`mapapp-*`, `agent-[12]`) are printed as they are.
+# It follows case/esac nesting and `;;`, so it reads a label line wherever one must start, and
+# prints "ERROR ..." for anything there it cannot read, and for a `case` it cannot follow, so T7
+# fails instead of skipping it.
 case_labels() {
-  grep -E '^[[:space:]]*"?[A-Za-z0-9._-]+"?([[:space:]]*\|[[:space:]]*"?[A-Za-z0-9._-]+"?)*\)' "$1" |
-    sed -E 's/\).*//' | tr '|' '\n' | tr -d ' \t"' | sort
+  awk '
+  function trim(s) { sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s }
+  function err(msg) { printf "ERROR line %d: %s: %s\n", NR, msg, trim(raw) }
+  function ends_item(s) { return s ~ /;;&?$/ || s ~ /;&$/ }
+  function close_case(s) {
+    depth--
+    if (depth > 0) mode[depth] = ends_item(s) ? "label" : "body"
+  }
+  # Reads one label line, prints its labels, and returns what follows the closing ")"
+  function read_labels(s,    i, j, c, quote, alt, n, alts, found, k) {
+    if (substr(s, 1, 1) == "(") s = substr(s, 2)
+    quote = ""; alt = ""; n = 0; found = 0
+    for (i = 1; i <= length(s); i++) {
+      c = substr(s, i, 1)
+      if (quote != "") { if (c == quote) quote = ""; else alt = alt c; continue }
+      if (c == "\"" || c == "\047") { quote = c; continue }
+      if (c == "\\") { i++; alt = alt substr(s, i, 1); continue }
+      if (c == "[") {
+        j = index(substr(s, i + 1), "]")
+        if (j > 0) { alt = alt substr(s, i, j + 1); i += j; continue }
+      }
+      if (c == "|") { alts[++n] = trim(alt); alt = ""; continue }
+      if (c == ")") { alts[++n] = trim(alt); found = 1; break }
+      alt = alt c
+    }
+    if (!found || quote != "") { err("cannot read this case label line"); return "" }
+    for (k = 1; k <= n; k++) {
+      if (alts[k] == "" || alts[k] ~ /[ \t$`(]/) { err("cannot read label \"" alts[k] "\""); continue }
+      if (dispatch[depth] && !(n == 1 && alts[k] == "*")) print alts[k]
+    }
+    return trim(substr(s, i + 1))
+  }
+  # Follows the structure of a line in a case body (or outside any case)
+  function read_body(s) {
+    if (s == "") { if (depth > 0) mode[depth] = "body"; return }
+    if (depth > 0 && s ~ /^esac([ \t;]|$)/) { close_case(s); return }
+    if (s ~ /(^|[ \t;(])case[ \t]/) {
+      if (s ~ /(^|[ \t;(])case[ \t].*[ \t]in$/) {
+        depth++; mode[depth] = "label"; dispatch[depth] = (s ~ /current_dir/); return
+      }
+      err("cannot follow this case statement")
+      return
+    }
+    if (depth > 0) mode[depth] = ends_item(s) ? "label" : "body"
+  }
+  { raw = $0; line = trim($0) }
+  line == "" || substr(line, 1, 1) == "#" { next }
+  depth > 0 && mode[depth] == "label" {
+    if (line ~ /^esac([ \t;]|$)/) { close_case(line); next }
+    read_body(read_labels(line))
+    next
+  }
+  { read_body(line) }
+  END { if (depth != 0) { NR = "end"; raw = ""; err("case without a matching esac") } }
+  ' "$1"
 }
+
+# The label part of a MATCHED_CASES entry (label or label=dir)
+entry_label() { printf '%s' "${1%%=*}"; }
+
+# The directory a MATCHED_CASES entry runs in: dir for label=dir, otherwise the label itself
+entry_dir() { printf '%s' "${1#*=}"; }
+
+is_glob() { [[ "$1" == *[\*\?\[]* ]]; }
 
 # ─── Setup ──────────────────────────────────────────────────
 # Every command must source this checkout's files, not ~/Repos/ooloth/dotfiles. utils.bash
@@ -298,8 +364,10 @@ while IFS='|' read -r command machine labels calls; do
   script="features/${command}/${command}.bash"
   read -r -a call_list <<<"${calls}"
   if [[ "${machine}" == "any" ]]; then machines=("${MACHINES[@]}"); else machines=("${machine}"); fi
+  read -r -a entries <<<"${labels}"
 
-  for label in ${labels}; do
+  for entry in "${entries[@]}"; do
+    label="$(entry_dir "${entry}")"
     for run_machine in "${machines[@]}"; do
       dir="${projects_dir}/${command}-${run_machine}/${label}"
       mkdir -p "${dir}"
@@ -365,11 +433,18 @@ done
 
 for script in "${commands[@]}"; do
   command="$(basename "${script}" .bash)"
-  in_script="$(case_labels "${REPO}/${script}")"
+  parsed="$(case_labels "${REPO}/${script}")"
+  unreadable="$(grep '^ERROR' <<<"${parsed}")"
+  in_script="$(grep -v '^ERROR' <<<"${parsed}" | sort)"
   in_table="$(while IFS='|' read -r c _ labels _; do
-    [[ "${c}" == "${command}" ]] && tr ' ' '\n' <<<"${labels}"
+    [[ "${c}" == "${command}" ]] || continue
+    read -r -a entries <<<"${labels}"
+    for entry in "${entries[@]}"; do printf '%s\n' "$(entry_label "${entry}")"; done
   done <<<"${MATCHED_CASES}" | sort)"
-  if [[ "${in_script}" == "${in_table}" ]]; then
+  if [[ -n "${unreadable}" ]]; then
+    fail "T7 ${script}: a case this check cannot read, so it cannot know the case is tested:"
+    while IFS= read -r line; do printf "      %s\n" "${line}"; done <<<"${unreadable}"
+  elif [[ "${in_script}" == "${in_table}" ]]; then
     pass "T7 ${script}: MATCHED_CASES lists its $(grep -c . <<<"${in_script}") case labels"
   else
     fail "T7 ${script}: case labels differ from MATCHED_CASES (< script, > table):"
@@ -377,10 +452,25 @@ for script in "${commands[@]}"; do
   fi
 done
 
-while IFS='|' read -r command _ _ _; do
+while IFS='|' read -r command _ labels _; do
   [[ -n "${command}" ]] || continue
   [[ -f "${REPO}/features/${command}/${command}.bash" ]] ||
     fail "T7 MATCHED_CASES names '${command}', which has no features/${command}/${command}.bash"
+
+  # A glob label runs in a directory it matches; a plain label is its own directory
+  read -r -a entries <<<"${labels}"
+  for entry in "${entries[@]}"; do
+    pattern="$(entry_label "${entry}")"
+    dir="$(entry_dir "${entry}")"
+    if is_glob "${pattern}"; then
+      # shellcheck disable=SC2053 # the right-hand side is the case label, matched as a glob
+      if [[ "${entry}" != *=* ]] || [[ -z "${dir}" ]] || is_glob "${dir}" || [[ "${dir}" != ${pattern} ]]; then
+        fail "T7 MATCHED_CASES ${command} '${entry}': a glob label needs =<directory> naming a directory it matches"
+      fi
+    elif [[ "${entry}" == *=* ]]; then
+      fail "T7 MATCHED_CASES ${command} '${entry}': only a glob label names a directory with ="
+    fi
+  done
 done <<<"${MATCHED_CASES}"
 
 # ─── T8: an unrecognised COMPUTER is replaced by detection ──
@@ -413,13 +503,20 @@ done
 # Each case inside an is_work branch, run with the other machine's COMPUTER, must reach the no-match
 # branch and run none of its tools. A label that also has a case on the other machine is skipped.
 
-# Succeeds when MATCHED_CASES gives <command> a case for <label> on <machine> (or on any machine)
+# Succeeds when MATCHED_CASES gives <command> a case on <machine> (or on any machine) whose label
+# matches directory <dir>, glob labels included
 has_case_on() {
-  local want_command="$1" want_label="$2" want_machine="$3" c m labels
+  local want_command="$1" dir="$2" want_machine="$3" c m labels entry pattern
+  local entries=()
   while IFS='|' read -r c m labels _; do
     [[ "${c}" == "${want_command}" ]] || continue
     [[ "${m}" == "${want_machine}" || "${m}" == "any" ]] || continue
-    grep -qxF "${want_label}" <(tr ' ' '\n' <<<"${labels}") && return 0
+    read -r -a entries <<<"${labels}"
+    for entry in "${entries[@]}"; do
+      pattern="$(entry_label "${entry}")"
+      # shellcheck disable=SC2053 # the right-hand side is the case label, matched as a glob
+      [[ "${dir}" == ${pattern} ]] && return 0
+    done
   done <<<"${MATCHED_CASES}"
   return 1
 }
@@ -429,8 +526,10 @@ while IFS='|' read -r command machine labels calls; do
   if [[ "${machine}" == "work" ]]; then other=air; else other=work; fi
   script="features/${command}/${command}.bash"
   read -r -a call_list <<<"${calls}"
+  read -r -a entries <<<"${labels}"
 
-  for label in ${labels}; do
+  for entry in "${entries[@]}"; do
+    label="$(entry_dir "${entry}")"
     has_case_on "${command}" "${label}" "${other}" && continue
     dir="${projects_dir}/${command}-${other}-crossed/${label}"
     mkdir -p "${dir}"
