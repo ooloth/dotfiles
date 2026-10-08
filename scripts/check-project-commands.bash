@@ -99,7 +99,7 @@ test|air|scripts|pytest
 # The exit status a failing stub returns, chosen to be distinguishable from 0 and 1
 TOOL_FAILURE_STATUS=3
 
-scratch="$(mktemp -d)"
+scratch="$(mktemp -d)" || { printf "FAIL could not create a temporary directory\n" >&2; exit 1; }
 trap 'rm -rf "${scratch}"' EXIT
 
 fake_home="${scratch}/home"
@@ -172,7 +172,7 @@ run_as() {
       PATH="${stub_bin}:/usr/bin:/bin:/usr/sbin:/sbin" \
       STUB_LOG="${calls_log}" \
       STUB_FAIL_CALL="${fail_call}" \
-      /bin/bash "$@" >"${out}" 2>"${err}"
+      /bin/bash "$@" </dev/null >"${out}" 2>"${err}"
   )
   run_status=$?
 }
@@ -253,6 +253,8 @@ for script in "${commands[@]}"; do
       pass "T1 ${where}: exit ${run_status}"
     else
       fail "T1 ${where}: exit 0, want non-zero"
+      show stdout "${out}"
+      show stderr "${err}"
     fi
 
     if grep -qF "${message}" "${err}" && ! grep -qF "${message}" "${out}"; then
