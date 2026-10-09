@@ -14,8 +14,8 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import UTC, datetime
+from typing import Any
 
 # Configuration
 MY_USERNAME = "ooloth"
@@ -25,12 +25,12 @@ CACHE_FILE = os.path.join(CACHE_DIR, "fetch-github-prs-to-review.json")
 HISTORY_FILE = os.path.join(CACHE_DIR, "fetch-github-prs-to-review-history.json")
 
 
-def get_login(obj: Optional[Dict[str, Any]], default: str = "") -> str:
+def get_login(obj: dict[str, Any] | None, default: str = "") -> str:
     """Safely extract login from a nullable author/actor object."""
     return (obj or {}).get("login", default)
 
 
-def fetch_prs_from_github() -> Dict[str, Any]:
+def fetch_prs_from_github() -> dict[str, Any]:
     """Fetch PRs from GitHub using GraphQL API."""
     # Build the ignored repos filter
     ignored_filter = " ".join(f"-repo:{repo}" for repo in IGNORED_REPOS)
@@ -101,10 +101,10 @@ def fetch_prs_from_github() -> Dict[str, Any]:
     return json.loads(result.stdout)
 
 
-def calculate_age(created_at_str: str) -> Tuple[str, int]:
+def calculate_age(created_at_str: str) -> tuple[str, int]:
     """Calculate human-readable age and days from ISO timestamp."""
     created = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     delta = now - created
 
     days = delta.days
@@ -142,7 +142,7 @@ def calculate_time_estimate(additions: int, deletions: int) -> str:
         return "45m"
 
 
-def get_ci_status(pr: Dict[str, Any]) -> str:
+def get_ci_status(pr: dict[str, Any]) -> str:
     """Get CI status with emoji."""
     if pr.get("isDraft"):
         return "⏸️ Draft"
@@ -164,16 +164,13 @@ def get_ci_status(pr: Dict[str, Any]) -> str:
         return "⏳ CI pending"
 
 
-def get_review_status(
-    pr: Dict[str, Any], my_username: str = MY_USERNAME
-) -> Tuple[str, Optional[str]]:
+def get_review_status(pr: dict[str, Any], my_username: str = MY_USERNAME) -> tuple[str, str | None]:
     """
     Get review status with emoji and details.
 
     Returns:
         (review_status_string, my_engagement_string)
     """
-    review_decision = pr.get("reviewDecision")
     reviews = pr.get("reviews", {}).get("nodes", [])
     pr_author = get_login(pr.get("author"))
 
@@ -207,15 +204,14 @@ def get_review_status(
                 my_latest_review = state
 
         # Track each reviewer's most recent state
-        if submitted_at:  # Only track submitted reviews in reviewer_states
-            if (
-                author_login not in reviewer_states
-                or submitted_at > reviewer_states[author_login]["timestamp"]
-            ):
-                reviewer_states[author_login] = {
-                    "state": state,
-                    "timestamp": submitted_at,
-                }
+        if submitted_at and (  # Only track submitted reviews in reviewer_states
+            author_login not in reviewer_states
+            or submitted_at > reviewer_states[author_login]["timestamp"]
+        ):
+            reviewer_states[author_login] = {
+                "state": state,
+                "timestamp": submitted_at,
+            }
 
     # Build review status string with reviewer names
     total_reviewers = len(reviewer_states)
@@ -244,7 +240,7 @@ def get_review_status(
     if my_latest_review:
         if my_latest_review == "PENDING":
             # PENDING reviews don't have a timestamp (not submitted yet)
-            my_engagement = f"⏳ You have pending comments (not submitted yet!)"
+            my_engagement = "⏳ You have pending comments (not submitted yet!)"
         elif my_latest_timestamp:
             age_str, _ = calculate_age(my_latest_timestamp)
             age = age_str.replace("📅 ", "")
@@ -268,7 +264,7 @@ def get_review_status(
     return status, my_engagement
 
 
-def get_conflict_status(pr: Dict[str, Any]) -> str:
+def get_conflict_status(pr: dict[str, Any]) -> str:
     """Get conflict status with emoji."""
     mergeable = pr.get("mergeable")
     if mergeable == "MERGEABLE":
@@ -279,7 +275,7 @@ def get_conflict_status(pr: Dict[str, Any]) -> str:
         return "❓ Unknown"
 
 
-def categorize_pr(pr: Dict[str, Any]) -> str:
+def categorize_pr(pr: dict[str, Any]) -> str:
     """Categorize PR into: feature/bug, dependency_updates, or chore."""
     author = get_login(pr.get("author"))
     title = pr.get("title", "").lower()
@@ -292,34 +288,34 @@ def categorize_pr(pr: Dict[str, Any]) -> str:
         return "feature"
 
 
-def load_or_create_history() -> Dict[str, Any]:
+def load_or_create_history() -> dict[str, Any]:
     """Load viewing history from cache or create new."""
     if os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, "r") as f:
+        with open(HISTORY_FILE) as f:
             return json.load(f)
     return {}
 
 
-def save_history(history: Dict[str, Any]) -> None:
+def save_history(history: dict[str, Any]) -> None:
     """Save viewing history to cache."""
     os.makedirs(CACHE_DIR, exist_ok=True)
     with open(HISTORY_FILE, "w") as f:
         json.dump(history, f, indent=2)
 
 
-def save_mapping(mapping: Dict[str, Any]) -> None:
+def save_mapping(mapping: dict[str, Any]) -> None:
     """Save PR lookup mapping to cache."""
     os.makedirs(CACHE_DIR, exist_ok=True)
     with open(CACHE_FILE, "w") as f:
         json.dump(mapping, f, indent=2)
 
 
-def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
+def process_prs(data: dict[str, Any]) -> str:
     """Process raw GitHub data into structured PR list."""
     history = load_or_create_history()
-    current_time = datetime.now(timezone.utc).isoformat()
+    current_time = datetime.now(UTC).isoformat()
 
-    prs = []
+    prs: list[dict[str, Any]] = []
     for edge in data["data"]["search"]["edges"]:
         pr_node = edge["node"]
 
@@ -327,9 +323,7 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
         age_str, age_days = calculate_age(pr_node["createdAt"])
 
         # Calculate time estimate
-        time_estimate = calculate_time_estimate(
-            pr_node["additions"], pr_node["deletions"]
-        )
+        time_estimate = calculate_time_estimate(pr_node["additions"], pr_node["deletions"])
 
         # Get statuses
         ci_status = get_ci_status(pr_node)
@@ -407,14 +401,12 @@ def process_prs(data: Dict[str, Any]) -> Dict[str, Any]:
     output_lines = []
 
     # Helper function to format a PR
-    def format_pr(pr: Dict[str, Any]) -> str:
+    def format_pr(pr: dict[str, Any]) -> str:
         lines = []
         new_badge = "🆕 " if pr["is_new"] else ""
 
         # Title line (non-breaking space at start to prevent list formatting)
-        lines.append(
-            f'\u00a0{pr["seq_num"]}. {new_badge}**@{pr["author"]} • "{pr["title"]}"**'
-        )
+        lines.append(f'\u00a0{pr["seq_num"]}. {new_badge}**@{pr["author"]} • "{pr["title"]}"**')
 
         # Review activity line (reviewers + my engagement) - first line after title
         review_activity_parts = []

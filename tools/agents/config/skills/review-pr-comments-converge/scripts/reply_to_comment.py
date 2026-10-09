@@ -91,13 +91,21 @@ def get_repo(explicit: str | None) -> tuple[str, str, str]:
 
 
 def find_thread_id(owner: str, name: str, pr_number: int, comment_id: int) -> str:
-    raw = run([
-        "gh", "api", "graphql",
-        "-f", f"query={THREAD_LOOKUP_QUERY}",
-        "-F", f"owner={owner}",
-        "-F", f"name={name}",
-        "-F", f"number={pr_number}",
-    ])
+    raw = run(
+        [
+            "gh",
+            "api",
+            "graphql",
+            "-f",
+            f"query={THREAD_LOOKUP_QUERY}",
+            "-F",
+            f"owner={owner}",
+            "-F",
+            f"name={name}",
+            "-F",
+            f"number={pr_number}",
+        ]
+    )
     threads = json.loads(raw)["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"]
     for thread in threads:
         for comment in thread["comments"]["nodes"]:
@@ -130,21 +138,32 @@ def main() -> None:
     # than an error — so the only thing that catches it is seeing the target first.
     print(f"Target: {nwo}#{pr_number}, comment {comment_id}")
 
-    run([
-        "gh", "api",
-        f"repos/{nwo}/pulls/{pr_number}/comments/{comment_id}/replies",
-        "-X", "POST",
-        "-f", f"body={body}",
-    ])
+    run(
+        [
+            "gh",
+            "api",
+            f"repos/{nwo}/pulls/{pr_number}/comments/{comment_id}/replies",
+            "-X",
+            "POST",
+            "-f",
+            f"body={body}",
+        ]
+    )
     print(f"Replied to comment {comment_id}.")
 
     if resolve:
         thread_id = find_thread_id(owner, name, pr_number, comment_id)
-        run([
-            "gh", "api", "graphql",
-            "-f", f"query={RESOLVE_MUTATION}",
-            "-F", f"threadId={thread_id}",
-        ])
+        run(
+            [
+                "gh",
+                "api",
+                "graphql",
+                "-f",
+                f"query={RESOLVE_MUTATION}",
+                "-F",
+                f"threadId={thread_id}",
+            ]
+        )
         print(f"Resolved thread {thread_id}.")
 
 

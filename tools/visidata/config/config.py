@@ -60,7 +60,9 @@ options.color_note_row = "yellow"
 
 # Menus & palette
 options.color_menu = "bold black on blue"
-options.color_menu_active = "bold white on black"  # controls active top menu item fg/bg + active status bar tab fg only
+options.color_menu_active = (
+    "bold white on black"  # controls active top menu item fg/bg + active status bar tab fg only
+)
 options.color_menu_spec = "bold white on black"
 options.color_menu_help = "italic black on blue"
 options.color_cmdpalette = "bold black on blue"

@@ -38,7 +38,8 @@
       "TodoWrite",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:code.claude.com)"
+      "WebFetch(domain:code.claude.com)",
+      "mcp__atlassian-rovo__addCommentToJiraIssue"
     ],
     "ask": [
       "Bash(git push --force*)",

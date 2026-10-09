@@ -133,13 +133,21 @@ def main() -> None:
     print(f"# Source: {name_with_owner}#{pr_number}")
     print()
 
-    raw = run([
-        "gh", "api", "graphql",
-        "-f", f"query={QUERY}",
-        "-F", f"owner={owner}",
-        "-F", f"name={name}",
-        "-F", f"number={pr_number}",
-    ])
+    raw = run(
+        [
+            "gh",
+            "api",
+            "graphql",
+            "-f",
+            f"query={QUERY}",
+            "-F",
+            f"owner={owner}",
+            "-F",
+            f"name={name}",
+            "-F",
+            f"number={pr_number}",
+        ]
+    )
     data = json.loads(raw)["data"]["repository"]["pullRequest"]
     threads = data["reviewThreads"]["nodes"]
     reviews = data["reviews"]["nodes"]
@@ -158,7 +166,9 @@ def main() -> None:
             orphan_threads.append((thread, comments))
 
     comment_idx = 1
-    for review in [r for r in reviews if r.get("body", "").strip() or threads_by_review.get(r["databaseId"])]:
+    for review in [
+        r for r in reviews if r.get("body", "").strip() or threads_by_review.get(r["databaseId"])
+    ]:
         rid = review["databaseId"]
         author = review["author"]["login"]
         state = review["state"]
@@ -176,7 +186,7 @@ def main() -> None:
             print(indent(body))
 
         if review_threads:
-            for i, (thread, comments) in enumerate(review_threads):
+            for thread, comments in review_threads:
                 print()
                 print(MEDIUM)
                 first = comments[0]
@@ -185,7 +195,9 @@ def main() -> None:
 
                 print(f"COMMENT [{comment_idx} of {n}]  {first['path']}:{line}")
                 print(f"  comment_id : {first['databaseId']}")
-                print(f"  thread_id  : {thread['id']}  (resolved: {'yes' if thread['isResolved'] else 'no'})")
+                print(
+                    f"  thread_id  : {thread['id']}  (resolved: {'yes' if thread['isResolved'] else 'no'})"
+                )
                 print()
                 print("  DIFF HUNK:")
                 print(indent(first["diffHunk"], "    "))
@@ -221,7 +233,9 @@ def main() -> None:
 
             print(f"COMMENT [{comment_idx}]  {first['author']['login']} @ {first['path']}:{line}")
             print(f"  comment_id : {first['databaseId']}")
-            print(f"  thread_id  : {thread['id']}  (resolved: {'yes' if thread['isResolved'] else 'no'})")
+            print(
+                f"  thread_id  : {thread['id']}  (resolved: {'yes' if thread['isResolved'] else 'no'})"
+            )
             print()
             print("  DIFF HUNK:")
             print(indent(first["diffHunk"], "    "))

@@ -68,7 +68,9 @@ def tracked_markdown() -> list[str]:
             ["git", "ls-files", "-z", "--", "*.md"], capture_output=True, text=True, check=True
         )
     except (OSError, subprocess.CalledProcessError) as error:
-        raise SystemExit(f"Could not list tracked files with git ({error}). Run this inside the repo.")
+        raise SystemExit(
+            f"Could not list tracked files with git ({error}). Run this inside the repo."
+        ) from None
     return sorted(name for name in result.stdout.split("\0") if name)
 
 
@@ -128,7 +130,7 @@ def main() -> int:
         try:
             text = Path(path).read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError) as error:
-            raise SystemExit(f"Could not read {path} as UTF-8 text ({error}).")
+            raise SystemExit(f"Could not read {path} as UTF-8 text ({error}).") from None
         problems.extend(problems_in(path, text))
 
     for problem in problems:

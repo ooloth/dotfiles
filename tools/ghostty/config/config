@@ -53,6 +53,10 @@ keybind = cmd+shift+h=goto_split:left
 keybind = cmd+shift+j=goto_split:down
 keybind = cmd+shift+k=goto_split:up
 keybind = cmd+shift+l=goto_split:right
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:down
+keybind = ctrl+shift+k=goto_split:up
+keybind = ctrl+shift+l=goto_split:right
 keybind = cmd+shift+m=toggle_split_zoom
 keybind = cmd+shift+semicolon=goto_split:next
 

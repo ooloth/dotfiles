@@ -1,0 +1,10 @@
+# Applies to every Python file in the repo, for scripts/check-python.bash and for editors.
+# See: https://docs.astral.sh/ty/reference/configuration/
+
+[environment]
+python-version = "3.11"
+
+[src]
+# Archived skills are kept for reference and not maintained. ruff.toml excludes the same directory.
+# ty globs treat @ as special, so it is escaped.
+exclude = ["**/\\@archive/**"]

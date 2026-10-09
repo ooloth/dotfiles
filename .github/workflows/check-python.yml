@@ -1,0 +1,39 @@
+name: Check Python
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.py"
+      - "ruff.toml"
+      - "ty.toml"
+      - "scripts/check-python.bash"
+      - ".github/workflows/check-python.yml"
+
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.py"
+      - "ruff.toml"
+      - "ty.toml"
+      - "scripts/check-python.bash"
+      - ".github/workflows/check-python.yml"
+
+  workflow_dispatch:
+
+jobs:
+  python:
+    name: Python
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      # One script so CI and a local run check the same files with the same pinned rules and
+      # versions. It fails when it finds no Python files, which ruff and ty would pass.
+      - name: Lint, format-check and type-check Python
+        run: bash scripts/check-python.bash
