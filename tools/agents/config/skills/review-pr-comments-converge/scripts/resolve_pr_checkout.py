@@ -11,11 +11,14 @@ stderr: the target, which path was taken, and how to undo a switch.
 Run it from a checkout of the target repo. It decides in this order:
 
 - The PR is not open, or its head branch lives on a fork: refuse.
-- A worktree already has the head branch: refuse if that branch is behind or diverged from the
-  remote. Use it if it is this checkout, uncommitted changes included, since nothing moves. Use it
-  if it is another worktree with no uncommitted tracked changes; refuse otherwise.
-- No worktree has it: refuse if this checkout has uncommitted tracked changes, or if a local branch
-  of that name is behind or diverged. Otherwise `git switch` this checkout to it.
+- A worktree holds the PR when its branch is named after the head branch or tracks it on the
+  remote, as a branch named `pr-531` tracking `origin/feature` does. This checkout wins when it
+  holds the PR. Otherwise one other holder is used, and two or more are refused as ambiguous.
+- A holder is refused if its branch is behind or diverged from the remote head. Use it if it is
+  this checkout, uncommitted changes included, since nothing moves. Use it if it is another
+  worktree with no uncommitted tracked changes; refuse otherwise.
+- No worktree holds it: refuse if this checkout has uncommitted tracked changes, or if a local
+  branch named after the head is behind or diverged. Otherwise `git switch` this checkout to it.
 
 Untracked files never block anything: git refuses a switch on its own if one would be overwritten.
 
@@ -51,6 +54,16 @@ class PullRequest:
 class Worktree:
     path: Path
     branch: str | None
+    upstream: str | None
+
+
+@dataclass(frozen=True)
+class Holder:
+    """A worktree whose branch carries the PR's head, by name or by tracking it."""
+
+    path: Path
+    local_branch: str
+    upstream: str | None
 
 
 def git(cwd: Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -121,13 +134,31 @@ def find_remote(root: Path, repo: str) -> str:
 
 def list_worktrees(root: Path) -> list[Worktree]:
     listing = git_out(root, "worktree", "list", "--porcelain", failure="Could not list worktrees")
+    refs = git_out(
+        root,
+        "for-each-ref",
+        "--format=%(refname:short) %(upstream)",
+        "refs/heads",
+        failure="Could not read branch upstreams",
+    )
+    upstreams = {
+        name: upstream
+        for name, _, upstream in (line.partition(" ") for line in refs.splitlines())
+        if upstream
+    }
     worktrees: list[Worktree] = []
     for block in listing.split("\n\n"):
         fields = dict(line.split(" ", 1) for line in block.splitlines() if " " in line)
         if "worktree" not in fields:
             continue
         branch = fields.get("branch", "").removeprefix("refs/heads/") or None
-        worktrees.append(Worktree(path=Path(fields["worktree"]).resolve(), branch=branch))
+        worktrees.append(
+            Worktree(
+                path=Path(fields["worktree"]).resolve(),
+                branch=branch,
+                upstream=upstreams.get(branch) if branch else None,
+            )
+        )
     return worktrees
 
 
@@ -143,26 +174,41 @@ def has_tracked_changes(path: Path) -> bool:
     )
 
 
-def refuse_if_behind(root: Path, branch: str, remote: str) -> None:
-    """Refuse when the local branch lacks commits the remote has. Ahead alone is the author's
+def holders(worktrees: list[Worktree], branch: str, remote: str) -> list[Holder]:
+    tracked = f"refs/remotes/{remote}/{branch}"
+    return [
+        Holder(path=w.path, local_branch=w.branch, upstream=w.upstream)
+        for w in worktrees
+        if w.branch is not None and (w.branch == branch or w.upstream == tracked)
+    ]
+
+
+def holding_reason(holder: Holder, branch: str, remote: str) -> str:
+    if holder.local_branch == branch:
+        return f"has {branch}"
+    return f"is on {holder.local_branch}, which tracks {remote}/{branch}"
+
+
+def refuse_if_behind(root: Path, local_branch: str, branch: str, remote: str) -> None:
+    """Refuse when the local branch lacks commits the remote head has. Ahead alone is the author's
     unpushed work, and is fine to build on."""
     counts = git_out(
         root,
         "rev-list",
         "--left-right",
         "--count",
-        f"refs/heads/{branch}...refs/remotes/{remote}/{branch}",
-        failure=f"Could not compare {branch} with {remote}/{branch}",
+        f"refs/heads/{local_branch}...refs/remotes/{remote}/{branch}",
+        failure=f"Could not compare {local_branch} with {remote}/{branch}",
     )
     ahead, behind = (int(n) for n in counts.split())
     if behind and ahead:
         raise Refused(
-            f"Local {branch} has diverged from {remote}/{branch} ({ahead} ahead, {behind} behind). "
-            "Reconcile them before reviewing, so fixes land on the code the reviewers saw."
+            f"Local {local_branch} has diverged from {remote}/{branch} ({ahead} ahead, {behind} "
+            "behind). Reconcile them before reviewing, so fixes land on the code the reviewers saw."
         )
     if behind:
         raise Refused(
-            f"Local {branch} is {behind} commit(s) behind {remote}/{branch}. "
+            f"Local {local_branch} is {behind} commit(s) behind {remote}/{branch}. "
             "Run `git pull --ff-only` in the checkout that has it, so fixes land on the current "
             "head."
         )
@@ -190,23 +236,40 @@ def resolve(pr: PullRequest, root: Path) -> Path:
         failure=f"Could not fetch {branch} from {remote}",
     )
 
-    holder = next((w for w in list_worktrees(root) if w.branch == branch), None)
+    found = holders(list_worktrees(root), branch, remote)
+    here = [h for h in found if h.path == root]
+    match here, found:
+        case [holder], _:
+            pass
+        case [], [holder]:
+            pass
+        case [], []:
+            holder = None
+        case _:
+            paths = ", ".join(str(h.path) for h in found)
+            raise Refused(
+                f"More than one worktree holds {branch}: {paths}. Rerun from the one to work in."
+            )
     if holder is not None:
-        refuse_if_behind(root, branch, remote)
+        assert holder.local_branch == branch or holder.upstream == (
+            f"refs/remotes/{remote}/{branch}"
+        ), f"{holder} neither is nor tracks {branch}"
+        refuse_if_behind(root, holder.local_branch, branch, remote)
+        reason = holding_reason(holder, branch, remote)
         if holder.path == root:
             note = (
                 " It has uncommitted changes; fixes will sit alongside them."
                 if has_tracked_changes(root)
                 else ""
             )
-            print(f"This checkout is already on {branch}.{note}", file=sys.stderr)
+            print(f"This checkout {reason}.{note}", file=sys.stderr)
             return root
         if has_tracked_changes(holder.path):
             raise Refused(
-                f"{branch} is checked out at {holder.path}, which has uncommitted tracked changes. "
+                f"{branch} is held by {holder.path}, which has uncommitted tracked changes. "
                 "Commit or stash them there first, so fixes do not mix with unrelated work."
             )
-        print(f"Using the existing worktree at {holder.path}, which has {branch}.", file=sys.stderr)
+        print(f"Using the existing worktree at {holder.path}, which {reason}.", file=sys.stderr)
         return holder.path
 
     if has_tracked_changes(root):
@@ -218,7 +281,7 @@ def resolve(pr: PullRequest, root: Path) -> Path:
         git(root, "rev-parse", "--verify", "--quiet", f"refs/heads/{branch}").returncode == 0
     )
     if local_exists:
-        refuse_if_behind(root, branch, remote)
+        refuse_if_behind(root, branch, branch, remote)
 
     previous = git_out(
         root, "branch", "--show-current", failure="Could not read the current branch"

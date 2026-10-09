@@ -46,11 +46,11 @@ check that line before trusting the output or the write.
 ### `scripts/resolve_pr_checkout.py <pr-number> [--repo OWNER/NAME]`
 
 Prints the directory to work in, a checkout of the PR's head branch, or exits 1 with the reason it
-is unsafe to proceed. It uses a worktree that already has the branch, or switches the current
-checkout to it when nothing would be lost, and refuses when the PR is closed or on a fork, when the
-branch is behind or diverged from the remote, or when another checkout's uncommitted changes are in
-the way. After a switch it prints the command that undoes it. The script's docstring has the full
-rules.
+is unsafe to proceed. It uses a worktree whose branch is named after the head branch or tracks it,
+or switches the current checkout to it when nothing would be lost, and refuses when the PR is
+closed or on a fork, when the branch is behind or diverged from the remote, when two other
+worktrees both hold it, or when another checkout's uncommitted changes are in the way. After a
+switch it prints the command that undoes it. The script's docstring has the full rules.
 
 ### `scripts/fetch_pr_comments.py <pr-number>`
 

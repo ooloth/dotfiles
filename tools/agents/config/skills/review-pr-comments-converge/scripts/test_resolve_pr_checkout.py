@@ -251,6 +251,60 @@ def test_a_checkout_already_on_the_head_branch_but_behind_is_refused(h: Harness)
     h.assert_refused(h.run(), before, "behind")
 
 
+def test_a_checkout_tracking_the_head_branch_is_used_despite_a_stale_branch_of_that_name(
+    h: Harness,
+) -> None:
+    h.git(h.main, "branch", HEAD, f"origin/{HEAD}")
+    h.push_from_elsewhere()
+    h.git(h.main, "fetch", "-q", "origin")
+    h.git(h.main, "switch", "-q", "-c", "pr-233", "--track", f"origin/{HEAD}")
+    before = h.snapshot()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == resolved(h.main)
+    assert f"pr-233, which tracks origin/{HEAD}" in result.stderr
+    assert h.snapshot() == before
+
+
+def test_a_sibling_worktree_tracking_the_head_branch_is_used(h: Harness) -> None:
+    edge = h.tmp_path / "edge"
+    h.git(h.main, "worktree", "add", "-q", "--track", "-b", "pr-233", str(edge), f"origin/{HEAD}")
+    before = h.snapshot()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == resolved(edge)
+    assert f"pr-233, which tracks origin/{HEAD}" in result.stderr
+    assert h.snapshot() == before
+
+
+def test_a_checkout_tracking_the_head_branch_but_behind_is_refused(h: Harness) -> None:
+    h.git(h.main, "switch", "-q", "-c", "pr-233", "--track", f"origin/{HEAD}")
+    h.push_from_elsewhere()
+    before = h.snapshot()
+    h.assert_refused(h.run(), before, "pr-233", "behind")
+
+
+def test_a_checkout_tracking_the_head_branch_is_used_even_with_uncommitted_changes(
+    h: Harness,
+) -> None:
+    h.git(h.main, "switch", "-q", "-c", "pr-233", "--track", f"origin/{HEAD}")
+    (h.main / "feature.txt").write_text("in progress\n")
+    before = h.snapshot()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == resolved(h.main)
+    assert "uncommitted" in result.stderr
+    assert h.snapshot() == before
+
+
+def test_two_other_worktrees_holding_the_head_branch_are_refused(h: Harness) -> None:
+    edge = h.sibling_worktree()
+    other = h.tmp_path / "other-edge"
+    h.git(h.main, "worktree", "add", "-q", "--track", "-b", "pr-233", str(other), f"origin/{HEAD}")
+    before = h.snapshot()
+    h.assert_refused(h.run(), before, str(edge.resolve()), str(other.resolve()))
+
+
 def test_a_checkout_of_a_different_repo_is_refused(h: Harness) -> None:
     before = h.snapshot()
     h.assert_refused(h.run("--repo", "octo/gadgets"), before, "octo/gadgets")
