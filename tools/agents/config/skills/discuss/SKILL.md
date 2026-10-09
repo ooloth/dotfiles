@@ -53,23 +53,6 @@ belongs to `/design`, which runs after the user approves the approach.
    recommendation from the properties rather than handing the choice to the user. Being easy to
    reverse does not excuse skipping the derivation.
 
-### Phase 2b: Independent Runs and Reconciliation
-
-One run misses risks and gets facts wrong at random, so the approach is built from three independent
-runs. Spawn three subagents in one message. Give each the task, the repo path and this file's path,
-and tell it to follow Phases 1, 2 and 3 but not this one, read files itself, spawn no subagents of
-its own, and return its target properties, findings and recommendation, with every number and
-behaviour claim beside the command that produced it. Do not share your own findings with them.
-
-Then reconcile their outputs yourself:
-
-1. List every risk any run raised and which runs raised it. Check each against the code, by running
-   it where you can. Keep every risk that is real, however many runs missed it.
-2. List every fact the runs disagree on, and settle each by running a command. Keep the command and
-   its output.
-3. Build Phase 3 and Phase 4 from the reconciled risks and facts, not from any one run's
-   recommendation.
-
 ### Phase 3: Recommend an Approach
 
 A recorded decision that covers the task is a constraint on every option below. An option that

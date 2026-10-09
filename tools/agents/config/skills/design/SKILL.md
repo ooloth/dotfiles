@@ -247,6 +247,12 @@ For each transformation:
    For each test case, state what it verifies in domain terms, why the type system doesn't cover
    it, and which paradigm is most appropriate and why.
 
+Every stub, override, fixture or environment value the test plan relies on is run once before it
+goes in the plan: set it up, run the code, and confirm the value actually takes effect and the test
+reaches the path it means to. Also confirm each test would fail without the change for the reason
+it states, not because the setup broke first. A setup that does not take effect is redesigned here,
+not discovered by whoever writes the tests.
+
 ### Phase 7: Present and Stop
 
 Present the design artifact:
