@@ -43,6 +43,16 @@ Business logic does not branch on environment name — no `if env == "production
 Environmental differences are expressed as config values. The code path is the
 same in all environments; only the config differs.
 
+**A default that would change an existing deployment's behaviour ships as opt-in.**
+A default reaches every deployment that does not set the value, so a new
+setting, or a changed default for an existing one, changes those deployments
+as soon as they take the new build, with no edit anyone reviewed. Such a
+setting defaults to the old behaviour, and each deployment that wants the new
+one declares it in its own configuration. Where one shape of deployment cannot
+run safely without the setting, startup refuses that shape rather than the
+code supplying a default for everyone. The exception is a default that closes
+a hazard every deployment shares, and the change says so.
+
 ## Consider
 
 **Config values have explicit documented defaults.**
