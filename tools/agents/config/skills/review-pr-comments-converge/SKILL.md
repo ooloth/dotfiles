@@ -340,7 +340,9 @@ label naming each finding so the reviewer can match it to their comment. Don't a
 summary paragraph, or the reviewer's point repeated back to them.
 
 A ✅ line cites a commit, so the fix is committed and pushed before the reply is posted. A reply
-claiming a fix the reviewer can't see on the PR is false until it is.
+claiming a fix the reviewer can't see on the PR is false until it is. When the working root's branch
+is named differently from the head branch it tracks, a plain `git push` is refused under git's
+default `push.default=simple`, so the push names both: `git push <remote> <local>:<head-branch>`.
 
 ### Reply tone
 
