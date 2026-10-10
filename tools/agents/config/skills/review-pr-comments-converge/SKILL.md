@@ -252,9 +252,39 @@ Return to the top of the loop.
 Emit the full report in the conversation. Never abbreviate — every escalation with its complete
 option list must appear. Do not write to disk.
 
+Draft every reply Phase 4 would post and put it in the report under Proposed replies, following
+the reply shape and tone below. A ✅ reply cites a commit that doesn't exist yet, so write `(<sha>)`
+where the hash goes. The hash is the only part filled in later.
+
 **Stop here.** Do not post any GitHub replies or resolve any threads. Wait for the user to review
 the working tree changes and explicitly approve posting replies (e.g. "post the replies", "reply
 and resolve"). The report is the deliverable for this phase.
+
+### Reply shape
+
+A reviewer should be able to read the whole reply in 10 seconds. Each finding gets one line, and
+that line opens with its verdict:
+
+- ✅ fixed: say what changed, in a few words, then the short hash of the pushed commit in parens,
+  e.g. `(2611d9d)`
+- ❌ no change: give the reason in one clause, with a `file:line` or a quote as evidence
+- 💬 needs your decision: list the lettered options; leave the thread open
+
+For an inline reply, the body is that one line. For a review body or conversation comment that
+covered several findings, write one bullet per finding, in the reviewer's order, and bold a short
+label naming each finding so the reviewer can match it to their comment. Don't add a legend, a
+summary paragraph, or the reviewer's point repeated back to them.
+
+### Reply tone
+
+These replies go out as the PR author to their teammates. Write as a colleague would:
+
+- **Name the specific point**, not "thanks for the feedback"
+- **No bot-speak**: avoid "I have addressed your comment", "As per your request", "LGTM"
+- **For ❌, give the reason without arguing**: "already handled at file:line", or "I think this is
+  intentional because X"
+
+### Report template
 
 ````markdown
 # review-pr-comments-converge report
@@ -305,6 +335,19 @@ These require a decision from you. Reply with your decisions (e.g. "1b, 2a") and
 
 ---
 
+## ✉️ Proposed replies
+
+Posted only after you approve this wording. `(<sha>)` becomes the pushed commit's short hash.
+
+- Inline [comment_id] — [reviewer] @ `file:line` — [resolve | leave open]
+  > [reply]
+- Conversation comment / review body [id] — [reviewer]
+  > [reply]
+
+(None)
+
+---
+
 ## Working tree
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
@@ -324,34 +367,13 @@ replies"), post replies and resolve threads:
 
 Do not run any of these commands before receiving explicit approval in Phase 3.
 
-### Reply shape
-
-A reviewer should be able to read the whole reply in 10 seconds. Each finding gets one line, and
-that line opens with its verdict:
-
-- ✅ fixed: say what changed, in a few words, then the short hash of the pushed commit in parens,
-  e.g. `(2611d9d)`
-- ❌ no change: give the reason in one clause, with a `file:line` or a quote as evidence
-- 💬 needs your decision: list the lettered options; leave the thread open
-
-For an inline reply, the body is that one line. For a review body or conversation comment that
-covered several findings, write one bullet per finding, in the reviewer's order, and bold a short
-label naming each finding so the reviewer can match it to their comment. Don't add a legend, a
-summary paragraph, or the reviewer's point repeated back to them.
+Post each reply exactly as approved in the report. The only change allowed is filling in the
+commit hash. A reworded reply is a new draft and needs its own approval.
 
 A ✅ line cites a commit, so the fix is committed and pushed before the reply is posted. A reply
 claiming a fix the reviewer can't see on the PR is false until it is. When the working root's branch
 is named differently from the head branch it tracks, a plain `git push` is refused under git's
 default `push.default=simple`, so the push names both: `git push <remote> <local>:<head-branch>`.
-
-### Reply tone
-
-These replies go out as the PR author to their teammates. Write as a colleague would:
-
-- **Name the specific point**, not "thanks for the feedback"
-- **No bot-speak**: avoid "I have addressed your comment", "As per your request", "LGTM"
-- **For ❌, give the reason without arguing**: "already handled at file:line", or "I think this is
-  intentional because X"
 
 ---
 
