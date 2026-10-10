@@ -1,0 +1,4 @@
+onboarding = false
+
+[ui.toast]
+delivery = "system"
