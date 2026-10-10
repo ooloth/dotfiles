@@ -96,9 +96,10 @@ as a `fail`.
 ## 1. Check the inputs
 
 1. Read the ticket with all its comments (`gh issue view <n> -R <repo> --json title,body,comments`).
-2. Find the approved approach comment (**What this must make true**, **Approach**, **Done when**)
-   and the design comment (**Types**, **Assertions**, **Telemetry**, **Tests**). If either is
-   missing, escalate: this skill does not plan.
+2. Find the approach comment (it starts with `# Approach`) and the design comment (it starts with
+   `# Design`). The approach's property table (`P1`, `P2`, …) is the done-when: the work is done
+   when every property in it holds. If either comment is missing, escalate: this skill does not
+   plan.
 3. Confirm the worktree is clean and on its own branch, not the default branch.
 4. Spawn a **checks** subagent. It finds the repo's check and test commands (CLAUDE.md, AGENTS.md,
    CONTRIBUTING.md, justfile, package.json, CI config), runs every one, and writes each command's
@@ -116,10 +117,13 @@ approach comment that say what must be true and why: **What this must make true*
 bind here**, **Constraints** and **Done when**. Do not give it the **Approach** or **Alternatives
 that lost**, so its tests describe behaviour rather than the planned mechanism.
 
-It writes every test in the design comment's **Tests** section, runs them, and confirms that each
-fails for the reason the design gives, not because of a compile error, missing import or typo.
-Where the design says a test passes before the change, it confirms that instead. It saves that
-output as an artifact and returns each planned test with the `file:line` where it lives.
+It writes a test for every row of the design comment's **Tests** table, using the technique the row
+names. The design leaves setup to it, so it works out how to set each test up and what each should
+do before the change: fail, for a behaviour the change adds, or pass, for one the change must
+preserve. It runs them and confirms each result is the one it predicted, and that a failure comes
+from the missing behaviour, not a compile error, missing import, typo or broken setup. It saves
+that output as an artifact and returns each test with the `file:line` where it lives and the
+property it observes.
 
 It owns the quality of the suite, not just its transcription. Where a planned test would not catch
 every way its property could break, including in code added later, it strengthens the test or adds
