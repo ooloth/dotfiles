@@ -4,7 +4,7 @@
   "defaultThinkingLevel": "high",
   "enableSkillCommands": true,
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.84.0",
+  "lastChangelogVersion": "1.1.0",
   "packages": [
     {
       "source": "git:github.com/mitsuhiko/agent-stuff@main",
