@@ -155,32 +155,46 @@ Before presenting, review what you are about to claim:
    fact. If the user states how something works and the codebase disagrees, the contradiction
    becomes an open question — not a quietly resolved assumption in either direction.
 
-End with a strategy artifact:
+End with the approach, written the same way in the terminal and in the ticket comment, so a reader
+sees what was chosen first and how it was chosen right after:
 
-1. **Understanding** — what the user wants and any assumptions
-2. **Target properties** — what a good answer must do, derived in Phase 3, with which of them bind
-   and which do not and why, what observes each one that binds, and which are cross-cutting. This
-   section comes before any option is named, and no recommendation below it is valid without it.
-3. **Findings** — relevant code/docs/current-state facts discovered, including each recorded
-   decision that binds the task (linked), or where you looked if none did
-4. **Recommendation** — preferred approach, scored against each target property, including what
-   ties events together across any process, async or run boundary it introduces, and where anything
-   durable that a later check reads is kept. Where the approach changes how components, processes
-   or runs interact, it includes a before and after diagram of that interaction, drawn to the
-   diagram standards in `~/.agents/standards/documentation.md`. It ends with the alternatives a
-   competent person would have chosen, each with the property it fails
-5. **Open decisions** — only decisions that block correct implementation
-6. **Approval request** — ask the user to approve this approach, and offer to run `/design` next
-   to produce the type story, assertion plan, telemetry plan, test plan, and implementation slices
+1. `# Approach`, then one paragraph saying what the chosen approach does.
+2. **What a good fix must achieve:** a table with an empty first header, a `Property` column and a
+   `Category` column, one row per binding property, numbered `P1`, `P2` and so on, each in one
+   line. `Category` is Safety, Performance or Experience. Safety covers everything about the system
+   going wrong or causing harm that is not about speed or ease of use: correctness, reliability,
+   security, data integrity and the like. Leave out
+   properties that do not bind. This table is also the done-when. A cross-cutting property's row
+   says it is checked over every instance and recorded in `docs/invariants/` or `docs/standards/`.
+3. **Assumptions:** only those that, if wrong, would change which option wins. Write what you
+   observed about each into its wording rather than labelling it checked or unchecked.
+4. **Constraints:** facts about the code or environment that limit which options can work. Only
+   when there are some.
+5. An options table: `Option`, then one column per property (`P1`, `P2`, …) and nothing else. The
+   chosen option is the first row, in bold, ending in "(chosen)". Every cell is ✓ or ✗. Leave no
+   cell unknown: settle it by running something.
+6. **Decided by …:** one short paragraph reasoning through what separated the options still
+   standing, including when they all score ✓.
+7. A Mermaid diagram of the chosen approach, only when it shows the approach more clearly than the
+   paragraph does. Where the approach changes how components, processes or runs interact, it shows
+   that, drawn to the diagram standards in `~/.agents/standards/documentation.md`, and marks what
+   ties events together across a boundary and where anything durable is kept.
+8. **Deferred:** only when discussion found something worth doing that this work does not do, such
+   as a fix to a deeper cause that lies outside the ticket, or a bug found on the way.
 
-When the work is on a ticket, the plan comment is drafted from three sections of this artifact:
-**Target properties**, **Recommendation** (including its alternatives) and **Open decisions**. A
-point from **Findings** that the approach rests on goes in beside the step it supports; the rest
-of **Findings** stays out. A diagram in **Recommendation** goes into the comment's **Approach**
-section as the full before and after pair, since a reader of the ticket alone has no other view of
-what the approach replaces. The comment's done-when is the ticket's Ideal state plus whatever the
-approach adds to it, including, for each cross-cutting property, the check over every instance and
-its entry in `docs/invariants/` or `docs/standards/`.
+In the terminal, follow it with **Open decisions**, only those that block correct implementation,
+numbered, each with a recommended answer, and then the approval request, offering to run `/design`
+next.
+
+Write for someone who opens the ticket with no context and a few seconds to spare: a teammate, or
+the user in three months. They came for the decision: what was chosen, what it had to achieve, and
+why it beat the alternatives. Everything you did to reach it, such as the runs, the commands, the
+line numbers and the dead ends, was for you, not them, and stays in this session. Say each thing
+once, in the plainest words that carry it, and stop when the decision is clear. A sentence that
+would not change what the reader understands, or what they would want to check, does not belong.
+
+When the work is on a ticket, the comment is the approach above without the open decisions and the
+approval request. Draft it for the user, and post it once they approve that wording.
 
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
 and stop again. Do not treat answers to questions as approach approval.
