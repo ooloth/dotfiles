@@ -242,48 +242,53 @@ not discovered by whoever writes the tests.
 
 ### Phase 7: Present and Stop
 
-Present the design artifact:
+Present the design, written the same way in the terminal and in the ticket comment, so a reader
+sees how the change fits together to solve the problem:
 
-1. **Target properties** — what the design must deliver, carried from `/discuss` or derived in
-   Phase 2, and which of them the type system can enforce
-2. **Alternatives considered** — the progressions sketched in Phase 2, each scored against those
-   properties, and the property that decided the choice
-3. **Type story** — the full progression with domain-named types at each step and what each step
-   rules out
-4. **Compiler guarantees** — what the type design enforces for free
-5. **Assertion plan** — which constraints are asserted and where, which are left to boundary
-   validation, and which states are deliberately allowed rather than asserted against. Where a
-   constraint is checked against a recorded signal, name the record, the check, and what a firing
-   means. Where that check spans processes, mark on the approach's interaction diagram where the
-   record is written and where the check reads it, rather than drawing a new one; draw one to the
-   diagram standards in `~/.agents/standards/documentation.md` only when the approach has none.
-   Omit this part entirely when no constraint landed there
-6. **Telemetry plan** — the questions the running system cannot answer, what each one needs
-   recorded, and what this slice deliberately leaves unobservable; omit it when the slice's
-   behaviour is fully visible in its inputs, outputs and exit code
-7. **Test plan** — what needs verification, which paradigm, and why
-8. **Open decisions** — any naming or structural choices the user should weigh in on before
-   implementation begins, including any mechanism Phase 5 found this slice does not own
+1. `# Design`, then one paragraph saying how the pieces of the change work together, and what is
+   carried by structure, by runtime checks and by tests.
+2. In the terminal only, **What the design must deliver:** the approach's property table (`P1`,
+   `P2`, …). On the ticket, the approach comment above already holds it.
+3. **Types**
+   - **Progressions considered:** the two or three from Phase 2 as an options table: `Option`, then
+     one column per property they were scored on. The chosen one is the first row, in bold, ending
+     in "(chosen)". Every cell is ✓ or ✗.
+   - **Decided by …:** why the chosen progression beat each of the others.
+   - **Progression:** the chosen type story as a code block, with a domain-named type at each stage
+     and the transformation between them. Then a list of what each step rules out, each ending with
+     the properties it delivers, such as `(P1, P4)`, and what each failure variant keeps for replay.
+4. **Assertions:** open with what the types cannot enforce. Then one item per constraint: what is
+   checked, which mechanism (boundary validation for input from outside the code, an assertion for
+   what only a bug can break, a recorded-signal check for what spans runs or processes), and why the
+   types can't rule it out. A legitimate outcome, such as no match, is not invalid input. A
+   recorded-signal check also gets four labelled lines: *Invariant*, *Record*, *Check* and *A firing
+   means*.
+5. **Telemetry:** one line saying why nothing needs recording, or a list of the questions the
+   running system cannot answer, each with what to record.
+6. **Tests:** open with one sentence on what neither the types nor the assertions cover, which is
+   why these need tests. Then a table with columns `Expectation` (one claim per row), `Property` and
+   `Technique`, and after it one line per technique used, saying why it fits the behaviour it tests.
+   Setup and how each test is run are left to the implementer.
 
-Ask for explicit approval.
+Write for someone who wants to see how the change fits together to solve the problem, so they can
+read the diff with that picture in mind. The story is the change itself: how input becomes outcome,
+and what can no longer go wrong. The tests and tooling around it are not the story. Everything you
+did to work the design out stays in this session. Say each thing once, plainly, and stop when the
+picture is clear. Every section answers why, not only what: why this progression beat the others,
+why each assertion can't be a type, why each behaviour needs a test, and why that technique. A
+reader shown only the conclusions can't check the decision.
+
+In the terminal, follow it with **Open decisions**: naming or structural choices the user should
+weigh in on before implementation, including any mechanism Phase 5 found this slice does not own.
+Then ask for explicit approval.
 
 If the user pushes back, requests changes, or raises questions: incorporate the feedback, revise
 the type story and/or test plan, re-present the full artifact, and stop again. Do not implement
 until the user gives explicit approval.
 
-When the user approves and the work is on a ticket (GitHub Issue, Linear, Jira, etc.), draft a
-comment recording the approved design (type progression, assertion plan, telemetry plan and test
-plan) and how it follows from the approach in the previous comment. The draft is the full approved
-artifact above, not a subset: each test and each assertion traced to the property it observes, and
-each telemetry signal to the failure it would reveal. The comment opens, before **Types**, with a
-short paragraph saying how the design follows from the approach comment and naming any property
-whose observer changed from what that comment said, and why. The comment keeps the property
-numbering of the approach comment. Its sections hold the artifact as follows: **Types** holds the
-type story, the
-compiler guarantees and the progressions that lost; **Assertions**, **Telemetry** and **Tests** hold
-their plans. An open decision settled during design goes in the section it affects and links the
-record that settles it, which is committed and pushed before the comment is posted, per the global
-rule on what a comment links. Show it to the user, and post it once they
-approve that wording, before writing code. When the work is not on a ticket, nothing is recorded.
-Then proceed
-with the first slice.
+When the user approves and the work is on a ticket (GitHub Issue, Linear, Jira, etc.), draft the
+comment: the design above without the property table, the open decisions and the approval request.
+An open decision settled during design goes in the section it affects and links the record that
+settles it, which is committed and pushed before the comment is posted. Show it to the user, and
+post it once they approve that wording, before writing code. When the work is not on a ticket,
+nothing is recorded. Then proceed with the first slice.
