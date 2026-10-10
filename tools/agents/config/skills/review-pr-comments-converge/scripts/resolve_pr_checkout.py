@@ -14,13 +14,19 @@ Run it from a checkout of the target repo. It decides in this order:
 - A worktree holds the PR when its branch is named after the head branch or tracks it on the
   remote, as a branch named `pr-531` tracking `origin/feature` does. This checkout wins when it
   holds the PR. Otherwise one other holder is used, and two or more are refused as ambiguous.
-- A holder is refused if its branch is behind or diverged from the remote head. Use it if it is
-  this checkout, uncommitted changes included, since nothing moves. Use it if it is another
-  worktree with no uncommitted tracked changes; refuse otherwise.
+- A holder is refused if its branch has diverged from the remote head.
+- This checkout holds it and is only behind: fast-forward it and print how to undo that, unless it
+  has uncommitted tracked changes, which refuses. Otherwise use it, uncommitted changes included,
+  since nothing moves.
+- Another worktree holds it: refuse if it is behind or has uncommitted tracked changes, since
+  another session may be working there. Otherwise use it.
 - No worktree holds it: refuse if this checkout has uncommitted tracked changes, or if a local
   branch named after the head is behind or diverged. Otherwise `git switch` this checkout to it.
 
-Untracked files never block anything: git refuses a switch on its own if one would be overwritten.
+Before either move, the fast-forward or the switch, refuse if it would replace an untracked or
+gitignored file or directory. Git refuses that on its own for untracked files, but overwrites
+gitignored ones without a word. The check runs a moment before the move, so a file created in
+between is not caught; nothing short of locking the working tree could close that gap.
 
 Usage:
   resolve_pr_checkout.py <pr-number> [--repo OWNER/NAME]
@@ -30,6 +36,7 @@ Exit status: 0 with a path on stdout, 1 refused (the reason is on stderr), 2 usa
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -189,9 +196,10 @@ def holding_reason(holder: Holder, branch: str, remote: str) -> str:
     return f"is on {holder.local_branch}, which tracks {remote}/{branch}"
 
 
-def refuse_if_behind(root: Path, local_branch: str, branch: str, remote: str) -> None:
-    """Refuse when the local branch lacks commits the remote head has. Ahead alone is the author's
-    unpushed work, and is fine to build on."""
+def commits_behind(root: Path, local_branch: str, branch: str, remote: str) -> int:
+    """How many commits the remote head has that the local branch lacks. Refuses when the local
+    branch also has commits of its own, since reconciling them is the author's choice. Ahead alone
+    is the author's unpushed work, and is fine to build on."""
     counts = git_out(
         root,
         "rev-list",
@@ -206,12 +214,76 @@ def refuse_if_behind(root: Path, local_branch: str, branch: str, remote: str) ->
             f"Local {local_branch} has diverged from {remote}/{branch} ({ahead} ahead, {behind} "
             "behind). Reconcile them before reviewing, so fixes land on the code the reviewers saw."
         )
-    if behind:
+    return behind
+
+
+def behind_refusal(local_branch: str, behind: int, branch: str, remote: str) -> Refused:
+    """Behind a remote head in a checkout this script does not move: another worktree, which
+    another session may be working in, or a branch it would switch to."""
+    return Refused(
+        f"Local {local_branch} is {behind} commit(s) behind {remote}/{branch}. "
+        "Run `git pull --ff-only` in the checkout that has it, so fixes land on the current head."
+    )
+
+
+def refuse_if_move_would_overwrite(root: Path, target: str, move: str) -> None:
+    """Refuse when moving to `target` would replace something on disk that git cannot restore.
+
+    Git overwrites gitignored files without a word when a commit brings a tracked file to the same
+    path, and deletes a gitignored directory to make room for one. So every path the target adds is
+    checked, and so is every parent of it, since a file or symlink standing where a directory has to
+    go is replaced too. A parent that is a tracked file about to become a directory is refused as
+    well, although git could restore it: telling the two apart is not worth the risk of a miss.
+    """
+    added = git_out(
+        root,
+        "diff",
+        "--name-only",
+        "--no-renames",
+        "--diff-filter=A",
+        "-z",
+        "HEAD",
+        target,
+        failure=f"Could not list the files {target} adds",
+    )
+    at_risk: set[str] = set()
+    for path in filter(None, added.split("\0")):
+        if os.path.lexists(root / path):
+            at_risk.add(path)
+        for parent in Path(path).parents:
+            on_disk = root / parent
+            if parent != Path(".") and (on_disk.is_symlink() or on_disk.is_file()):
+                at_risk.add(str(parent))
+    if at_risk:
         raise Refused(
-            f"Local {local_branch} is {behind} commit(s) behind {remote}/{branch}. "
-            "Run `git pull --ff-only` in the checkout that has it, so fixes land on the current "
-            "head."
+            f"{move} would overwrite or delete files git cannot restore: "
+            f"{', '.join(sorted(at_risk))}. Move them out of the way, then rerun."
         )
+
+
+def fast_forward(root: Path, local_branch: str, branch: str, remote: str, behind: int) -> None:
+    target = f"refs/remotes/{remote}/{branch}"
+    refuse_if_move_would_overwrite(root, target, f"Fast-forwarding {local_branch}")
+    old = git_out(root, "rev-parse", "HEAD", failure="Could not read HEAD")
+    git_out(
+        root,
+        "merge",
+        "--ff-only",
+        "--quiet",
+        target,
+        failure=f"Could not fast-forward {local_branch} to {remote}/{branch}",
+    )
+
+    head = git_out(root, "rev-parse", "HEAD", failure="Could not read HEAD")
+    remote_head = git_out(root, "rev-parse", target, failure=f"Could not read {target}")
+    assert head == remote_head, f"fast-forwarded to {head}, but {target} is at {remote_head}"
+    current = git_out(root, "branch", "--show-current", failure="Could not read the current branch")
+    assert current == local_branch, f"fast-forwarded {local_branch} but HEAD is on {current!r}"
+    print(
+        f"Fast-forwarded {local_branch} by {behind} commit(s) to {remote}/{branch}. "
+        f"Undo with: git -C {root} reset --keep {old}",
+        file=sys.stderr,
+    )
 
 
 def resolve(pr: PullRequest, root: Path) -> Path:
@@ -254,8 +326,20 @@ def resolve(pr: PullRequest, root: Path) -> Path:
         assert holder.local_branch == branch or holder.upstream == (
             f"refs/remotes/{remote}/{branch}"
         ), f"{holder} neither is nor tracks {branch}"
-        refuse_if_behind(root, holder.local_branch, branch, remote)
         reason = holding_reason(holder, branch, remote)
+        behind = commits_behind(root, holder.local_branch, branch, remote)
+        if behind and holder.path != root:
+            raise behind_refusal(holder.local_branch, behind, branch, remote)
+        if behind and has_tracked_changes(root):
+            raise Refused(
+                f"Local {holder.local_branch} is {behind} commit(s) behind {remote}/{branch}, and "
+                "this checkout has uncommitted tracked changes. Commit or stash them, then rerun "
+                "so the branch can be fast-forwarded."
+            )
+        if behind:
+            fast_forward(root, holder.local_branch, branch, remote, behind)
+            print(f"This checkout {reason}.", file=sys.stderr)
+            return root
         if holder.path == root:
             note = (
                 " It has uncommitted changes; fixes will sit alongside them."
@@ -280,8 +364,8 @@ def resolve(pr: PullRequest, root: Path) -> Path:
     local_exists = (
         git(root, "rev-parse", "--verify", "--quiet", f"refs/heads/{branch}").returncode == 0
     )
-    if local_exists:
-        refuse_if_behind(root, branch, branch, remote)
+    if local_exists and (behind := commits_behind(root, branch, branch, remote)):
+        raise behind_refusal(branch, behind, branch, remote)
 
     previous = git_out(
         root, "branch", "--show-current", failure="Could not read the current branch"
@@ -292,6 +376,8 @@ def resolve(pr: PullRequest, root: Path) -> Path:
         sha = git_out(root, "rev-parse", "HEAD", failure="Could not read HEAD")
         undo = f"git -C {root} switch --detach {sha}"
     switch_args = [branch] if local_exists else ["--track", f"{remote}/{branch}"]
+    target = f"refs/heads/{branch}" if local_exists else f"refs/remotes/{remote}/{branch}"
+    refuse_if_move_would_overwrite(root, target, f"Switching {root} to {branch}")
     git_out(root, "switch", "--quiet", *switch_args, failure=f"Could not switch {root} to {branch}")
 
     current = git_out(root, "branch", "--show-current", failure="Could not read the current branch")

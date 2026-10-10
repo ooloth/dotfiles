@@ -47,10 +47,12 @@ check that line before trusting the output or the write.
 
 Prints the directory to work in, a checkout of the PR's head branch, or exits 1 with the reason it
 is unsafe to proceed. It uses a worktree whose branch is named after the head branch or tracks it,
-or switches the current checkout to it when nothing would be lost, and refuses when the PR is
-closed or on a fork, when the branch is behind or diverged from the remote, when two other
-worktrees both hold it, or when another checkout's uncommitted changes are in the way. After a
-switch it prints the command that undoes it. The script's docstring has the full rules.
+or switches the current checkout to it when nothing would be lost. When the current checkout holds
+the branch and is only behind the remote, it fast-forwards it. It refuses when the PR is closed or
+on a fork, when the branch has diverged from the remote, when another worktree's copy is behind,
+when two other worktrees both hold it, when uncommitted tracked changes are in the way, or when a
+move would replace an untracked or gitignored file. After a switch or a fast-forward it prints the
+command that undoes it. The script's docstring has the full rules.
 
 ### `scripts/fetch_pr_comments.py <pr-number>`
 
@@ -93,8 +95,8 @@ uv run <skill-base-dir>/scripts/resolve_pr_checkout.py <pr-number>
 
 On exit 0, the last line of stdout is the **working root**. Run every later command from it, pass
 it to every subagent as the absolute path to read and edit in, and tell the user which path it is
-and whether the helper switched a branch, with the undo command it printed. Do not ask first: the
-helper only acts when nothing can be lost.
+and whether the helper switched or fast-forwarded a branch, with the undo command it printed. Do
+not ask first: the helper only acts when nothing can be lost.
 
 On exit 1, stop before Phase 2. Relay the helper's reason to the user and ask how to proceed. Do
 not work around the refusal by switching branches yourself.
