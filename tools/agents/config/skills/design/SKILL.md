@@ -40,6 +40,19 @@ observes each property that binds: a type, a test, an assertion, a check against
 a measurement that already exists. A property nothing observes is a gap for Phase 5 to close or to
 escalate, never one carried forward on trust.
 
+When the slice is one of several on a ticket or approach, the list also carries every property that
+governs the whole of that work, not only the ones this slice adds: a "nothing changes for existing
+deployments" requirement, a compatibility promise, a constraint from the approach comment. Read the
+approach record for them and list each one with its number, even where the slice seems not to touch
+it. A slice that numbers its own properties apart from the ticket's, or opens with "outside S1 to
+S7", has dropped them, and a regression against one then surfaces as a note after implementation
+rather than as a failed property here. Score every alternative against them like any other row.
+Score a "nothing changes" property by running one existing deployment through the alternative: take
+the configuration it actually has, including the defaults it inherits by setting nothing, and an
+input it handles today, and say what it got before and what it gets after. A new or changed default
+reaches every deployment that does not set the value, so an alternative whose default changes any
+answer fails the property, however correct the new answer is.
+
 Where this phase derives a property rather than carrying one, it also says whether code outside
 this slice could break it. Such a property is cross-cutting: Phase 6 plans a check over every
 instance, and the design includes an entry for it in `docs/invariants/` when it has no sanctioned

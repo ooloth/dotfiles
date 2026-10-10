@@ -85,12 +85,18 @@ class Harness:
         self.git(cwd, "add", name)
         self.git(cwd, "commit", "-q", "-m", f"change {name}")
 
-    def push_from_elsewhere(self) -> None:
+    def push_from_elsewhere(self, name: str = "feature.txt", text: str = "two\n") -> None:
         """Move the remote's head branch forward without touching any test checkout."""
         other = self.tmp_path / "other"
         self.git(self.tmp_path, "clone", "-q", "-b", HEAD, str(self.remote), str(other))
-        self.commit(other, "feature.txt", "two\n")
+        (other / name).parent.mkdir(parents=True, exist_ok=True)
+        self.commit(other, name, text)
         self.git(other, "push", "-q", "origin", HEAD)
+
+    def ignore(self, pattern: str) -> None:
+        """Gitignore a path in the test checkouts without committing a .gitignore."""
+        with (self.main / ".git" / "info" / "exclude").open("a") as exclude:
+            exclude.write(f"{pattern}\n")
 
     def sibling_worktree(self) -> Path:
         edge = self.tmp_path / "edge"
@@ -244,11 +250,140 @@ def test_a_checkout_already_on_the_head_branch_is_used_even_with_uncommitted_cha
     assert h.snapshot() == before
 
 
-def test_a_checkout_already_on_the_head_branch_but_behind_is_refused(h: Harness) -> None:
+def test_a_clean_checkout_on_the_head_branch_but_behind_is_fast_forwarded_with_an_undo(
+    h: Harness,
+) -> None:
+    h.git(h.main, "switch", "-q", HEAD)
+    old = h.git(h.main, "rev-parse", "HEAD")
+    h.push_from_elsewhere()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == resolved(h.main)
+    assert h.git(h.main, "branch", "--show-current") == HEAD
+    assert h.git(h.main, "rev-parse", "HEAD") == h.git(h.main, "rev-parse", f"origin/{HEAD}")
+    assert f"reset --keep {old}" in result.stderr
+
+
+def test_the_printed_undo_returns_a_fast_forwarded_checkout_to_where_it_was(h: Harness) -> None:
+    h.git(h.main, "switch", "-q", HEAD)
+    old = h.git(h.main, "rev-parse", "HEAD")
+    h.push_from_elsewhere()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    undo = result.stderr.split("Undo with: ", 1)[1].splitlines()[0]
+    subprocess.run(undo, shell=True, check=True, env=h.env, capture_output=True)
+    assert h.git(h.main, "rev-parse", "HEAD") == old
+    assert h.git(h.main, "branch", "--show-current") == HEAD
+
+
+def test_a_checkout_on_the_head_branch_behind_with_uncommitted_changes_is_refused(
+    h: Harness,
+) -> None:
     h.git(h.main, "switch", "-q", HEAD)
     h.push_from_elsewhere()
+    (h.main / "feature.txt").write_text("in progress\n")
     before = h.snapshot()
-    h.assert_refused(h.run(), before, "behind")
+    h.assert_refused(h.run(), before, "behind", "uncommitted")
+
+
+def test_a_checkout_on_the_head_branch_diverged_from_the_remote_is_refused(h: Harness) -> None:
+    h.git(h.main, "switch", "-q", HEAD)
+    h.push_from_elsewhere()
+    h.commit(h.main, "local.txt", "unpushed\n")
+    before = h.snapshot()
+    h.assert_refused(h.run(), before, "diverged")
+
+
+@pytest.mark.parametrize(
+    ("incoming", "local", "local_is_dir", "ignored"),
+    [
+        pytest.param("local.cfg", "local.cfg", False, True, id="ignored-file-at-the-same-path"),
+        pytest.param("notes.md", "notes.md", False, False, id="untracked-file-at-the-same-path"),
+        pytest.param("build/out.txt", "build", False, True, id="ignored-file-where-a-dir-arrives"),
+        pytest.param("cache", "cache", True, True, id="ignored-dir-where-a-file-arrives"),
+    ],
+)
+def test_a_fast_forward_that_would_destroy_a_local_file_is_refused(
+    h: Harness, incoming: str, local: str, local_is_dir: bool, ignored: bool
+) -> None:
+    h.git(h.main, "switch", "-q", HEAD)
+    h.push_from_elsewhere(incoming, "upstream\n")
+    if ignored:
+        h.ignore(local)
+    mine = h.main / local / "keep.txt" if local_is_dir else h.main / local
+    mine.parent.mkdir(parents=True, exist_ok=True)
+    mine.write_text("mine\n")
+    before = h.snapshot()
+    h.assert_refused(h.run(), before, local, "cannot restore")
+    assert mine.read_text() == "mine\n"
+
+
+def test_a_switch_that_would_overwrite_an_ignored_file_is_refused(h: Harness) -> None:
+    h.ignore("feature.txt")
+    (h.main / "feature.txt").write_text("mine\n")
+    before = h.snapshot()
+    h.assert_refused(h.run(), before, "feature.txt", "cannot restore")
+    assert (h.main / "feature.txt").read_text() == "mine\n"
+    assert h.git(h.main, "branch", "--show-current") == "trunk"
+
+
+def test_a_checkout_tracking_the_head_branch_is_used_despite_a_stale_branch_of_that_name(
+    h: Harness,
+) -> None:
+    h.git(h.main, "branch", HEAD, f"origin/{HEAD}")
+    h.push_from_elsewhere()
+    h.git(h.main, "fetch", "-q", "origin")
+    h.git(h.main, "switch", "-q", "-c", "pr-233", "--track", f"origin/{HEAD}")
+    before = h.snapshot()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == resolved(h.main)
+    assert f"pr-233, which tracks origin/{HEAD}" in result.stderr
+    assert h.snapshot() == before
+
+
+def test_a_sibling_worktree_tracking_the_head_branch_is_used(h: Harness) -> None:
+    edge = h.tmp_path / "edge"
+    h.git(h.main, "worktree", "add", "-q", "--track", "-b", "pr-233", str(edge), f"origin/{HEAD}")
+    before = h.snapshot()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == resolved(edge)
+    assert f"pr-233, which tracks origin/{HEAD}" in result.stderr
+    assert h.snapshot() == before
+
+
+def test_a_clean_checkout_tracking_the_head_branch_but_behind_is_fast_forwarded(
+    h: Harness,
+) -> None:
+    h.git(h.main, "switch", "-q", "-c", "pr-233", "--track", f"origin/{HEAD}")
+    h.push_from_elsewhere()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert h.git(h.main, "branch", "--show-current") == "pr-233"
+    assert h.git(h.main, "rev-parse", "HEAD") == h.git(h.main, "rev-parse", f"origin/{HEAD}")
+    assert "Fast-forwarded pr-233" in result.stderr
+
+
+def test_a_checkout_tracking_the_head_branch_is_used_even_with_uncommitted_changes(
+    h: Harness,
+) -> None:
+    h.git(h.main, "switch", "-q", "-c", "pr-233", "--track", f"origin/{HEAD}")
+    (h.main / "feature.txt").write_text("in progress\n")
+    before = h.snapshot()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == resolved(h.main)
+    assert "uncommitted" in result.stderr
+    assert h.snapshot() == before
+
+
+def test_two_other_worktrees_holding_the_head_branch_are_refused(h: Harness) -> None:
+    edge = h.sibling_worktree()
+    other = h.tmp_path / "other-edge"
+    h.git(h.main, "worktree", "add", "-q", "--track", "-b", "pr-233", str(other), f"origin/{HEAD}")
+    before = h.snapshot()
+    h.assert_refused(h.run(), before, str(edge.resolve()), str(other.resolve()))
 
 
 def test_a_checkout_of_a_different_repo_is_refused(h: Harness) -> None:

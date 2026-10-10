@@ -15,6 +15,16 @@ Stack traces, internal paths, database messages, and implementation details
 are logged internally and stripped from responses to callers. What a caller
 receives tells them what failed, not how the system is built.
 
+**Parsing untrusted input before authentication turns every failure into a rejection.**
+Code that reads a request before anything vouches for it, such as an
+unverified token, a raw header or a request body, catches every exception the
+parse can raise, not only the library's own error type, and returns the same
+rejection malformed input gets. Libraries raise other types on hostile input:
+a JSON decoder raises a recursion error on deep nesting, which an
+unauthenticated caller can send in a few kilobytes. Left uncaught, it becomes a
+server error and a stack trace for input that should have been refused. The
+exception's type name may be logged; the input itself is not.
+
 ## Should
 
 **Errors are represented in the type system.**
