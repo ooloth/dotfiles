@@ -247,25 +247,25 @@ sees how the change fits together to solve the problem:
 
 1. `# Design`, then one paragraph saying how the pieces of the change work together, and what is
    carried by structure, by runtime checks and by tests.
-2. In the terminal only, **What the design must deliver:** the approach's property table (`P1`,
+2. In the terminal only, `## What the design must deliver 🎯`: the approach's property table (`P1`,
    `P2`, …). On the ticket, the approach comment above already holds it.
-3. **Types**
+3. `## Types 🧬`
    - **Progressions considered:** the two or three from Phase 2 as an options table: `Option`, then
-     one column per property they were scored on. The chosen one is the first row, in bold, ending
-     in "(chosen)". Every cell is ✓ or ✗.
+     one column per property they were scored on. The chosen one is the first row, in bold,
+     starting with 🏆 and ending in "(chosen)". Every cell is ✅ or ❌.
    - **Decided by …:** why the chosen progression beat each of the others.
    - **Progression:** the chosen type story as a code block, with a domain-named type at each stage
      and the transformation between them. Then a list of what each step rules out, each ending with
      the properties it delivers, such as `(P1, P4)`, and what each failure variant keeps for replay.
-4. **Assertions:** open with what the types cannot enforce. Then one item per constraint: what is
-   checked, which mechanism (boundary validation for input from outside the code, an assertion for
-   what only a bug can break, a recorded-signal check for what spans runs or processes), and why the
-   types can't rule it out. A legitimate outcome, such as no match, is not invalid input. A
+4. `## Assertions 🛡️`: open with what the types cannot enforce. Then one item per constraint: what
+   is checked, which mechanism (boundary validation for input from outside the code, an assertion
+   for what only a bug can break, a recorded-signal check for what spans runs or processes), and
+   why the types can't rule it out. A legitimate outcome, such as no match, is not invalid input. A
    recorded-signal check also gets four labelled lines: *Invariant*, *Record*, *Check* and *A firing
    means*.
-5. **Telemetry:** one line saying why nothing needs recording, or a list of the questions the
+5. `## Telemetry 📡`: one line saying why nothing needs recording, or a list of the questions the
    running system cannot answer, each with what to record.
-6. **Tests:** open with one sentence on what neither the types nor the assertions cover, which is
+6. `## Tests 🧪`: open with one sentence on what neither the types nor the assertions cover, which is
    why these need tests. Then a table with columns `Expectation` (one claim per row), `Property` and
    `Technique`, and after it one line per technique used, saying why it fits the behaviour it tests.
    Setup and how each test is run are left to the implementer.
@@ -276,9 +276,12 @@ and what can no longer go wrong. The tests and tooling around it are not the sto
 did to work the design out stays in this session. Say each thing once, plainly, and stop when the
 picture is clear. Every section answers why, not only what: why this progression beat the others,
 why each assertion can't be a type, why each behaviour needs a test, and why that technique. A
-reader shown only the conclusions can't check the decision.
+reader shown only the conclusions can't check the decision. The opening paragraph says how the
+pieces fit, not what each file changes. A Technique cell names the technique and nothing else, and
+the reasons under the table say why it fits the behaviour, never how a test is set up. Nothing
+appears outside the sections above.
 
-In the terminal, follow it with **Open decisions**: naming or structural choices the user should
+In the terminal, follow it with `## Open decisions ❓`: naming or structural choices the user should
 weigh in on before implementation, including any mechanism Phase 5 found this slice does not own.
 Then ask for explicit approval.
 
