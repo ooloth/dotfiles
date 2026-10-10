@@ -159,30 +159,31 @@ End with the approach, written the same way in the terminal and in the ticket co
 sees what was chosen first and how it was chosen right after:
 
 1. `# Approach`, then one paragraph saying what the chosen approach does.
-2. **What a good fix must achieve:** a table with an empty first header, a `Property` column and a
-   `Category` column, one row per binding property, numbered `P1`, `P2` and so on, each in one
-   line. `Category` is Safety, Performance or Experience. Safety covers everything about the system
-   going wrong or causing harm that is not about speed or ease of use: correctness, reliability,
-   security, data integrity and the like. Leave out
-   properties that do not bind. This table is also the done-when. A cross-cutting property's row
-   says it is checked over every instance and recorded in `docs/invariants/` or `docs/standards/`.
-3. **Assumptions:** only those that, if wrong, would change which option wins. Write what you
+2. `## What a good fix must achieve 🎯`: a table with an empty first header, a `Property` column and
+   a `Category` column, one row per binding property, numbered `P1`, `P2` and so on, each in one
+   line. `Category` is `🛡️ Safety`, `⚡ Performance` or `🙂 Experience`. Safety covers everything
+   about the system going wrong or causing harm that is not about speed or ease of use:
+   correctness, reliability, security, data integrity and the like. Leave out properties that do
+   not bind. This table is also the done-when. A cross-cutting property's row says it is checked
+   over every instance.
+3. `## Assumptions 🤔`: only those that, if wrong, would change which option wins. Write what you
    observed about each into its wording rather than labelling it checked or unchecked.
-4. **Constraints:** facts about the code or environment that limit which options can work. Only
+4. `## Constraints 🧱`: facts about the code or environment that limit which options can work. Only
    when there are some.
-5. An options table: `Option`, then one column per property (`P1`, `P2`, …) and nothing else. The
-   chosen option is the first row, in bold, ending in "(chosen)". Every cell is ✓ or ✗. Leave no
-   cell unknown: settle it by running something.
-6. **Decided by …:** one short paragraph reasoning through what separated the options still
-   standing, including when they all score ✓.
-7. A Mermaid diagram of the chosen approach, only when it shows the approach more clearly than the
-   paragraph does. Where the approach changes how components, processes or runs interact, it shows
-   that, drawn to the diagram standards in `~/.agents/standards/documentation.md`, and marks what
-   ties events together across a boundary and where anything durable is kept.
-8. **Deferred:** only when discussion found something worth doing that this work does not do, such
-   as a fix to a deeper cause that lies outside the ticket, or a bug found on the way.
+5. `## Options ⚖️`: a table with `Option`, then one column per property (`P1`, `P2`, …) and nothing
+   else. The chosen option is the first row, in bold, starting with 🏆 and ending in "(chosen)".
+   Every cell is ✅ or ❌. Leave no cell unknown: settle it by running something.
+6. `## Decided by 🧭`: one short paragraph reasoning through what separated the options still
+   standing, including when they all score ✅.
+7. `## How it fits 🗺️`: a Mermaid diagram of the chosen approach, only when it shows the approach
+   more clearly than the paragraph does. Where the approach changes how components, processes or
+   runs interact, it shows that, drawn to the diagram standards in
+   `~/.agents/standards/documentation.md`, and marks what ties events together across a boundary
+   and where anything durable is kept.
+8. `## Deferred ⏳`: only when discussion found something worth doing that this work does not do,
+   such as a fix to a deeper cause that lies outside the ticket, or a bug found on the way.
 
-In the terminal, follow it with **Open decisions**, only those that block correct implementation,
+In the terminal, follow it with `## Open decisions ❓`, only those that block correct implementation,
 numbered, each with a recommended answer, and then the approval request, offering to run `/design`
 next.
 
@@ -191,7 +192,9 @@ the user in three months. They came for the decision: what was chosen, what it h
 why it beat the alternatives. Everything you did to reach it, such as the runs, the commands, the
 line numbers and the dead ends, was for you, not them, and stays in this session. Say each thing
 once, in the plainest words that carry it, and stop when the decision is clear. A sentence that
-would not change what the reader understands, or what they would want to check, does not belong.
+would not change what the reader understands, or what they would want to check, does not belong. The
+opening paragraph says what the approach does, not the evidence for it. A property says what must be
+true, not how it is checked or which files are involved. Nothing appears outside the sections above.
 
 When the work is on a ticket, the comment is the approach above without the open decisions and the
 approval request. Draft it for the user, and post it once they approve that wording.
