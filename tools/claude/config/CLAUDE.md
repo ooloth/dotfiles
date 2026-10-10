@@ -264,39 +264,25 @@ it three times.
 reasoning behind the implementation, one step per comment,** so a reviewer can check each step
 without re-deriving it. Each comment is posted before the step it records is acted on:
 
-- **After `/discuss`, or agreement on an approach:**
-  - the target properties, each with its source (the ticket's Ideal state, a linked record, or
-    derived from what the system does) and what observes it;
-  - which properties do not bind, and why;
-  - the approach, and how it delivers each binding property;
-  - the alternatives a competent person would have chosen, and why each lost;
-  - the constraints and the done-when criteria.
-- **After `/design`, or agreement on the design:** the type progression, the assertion plan, the
-  telemetry plan and the test plan, and how each follows from the approach. Each test and each
-  assertion is traced to the property it observes, and each telemetry signal to the failure it
-  would reveal.
+- **After `/discuss`, or agreement on an approach:** the approach, written as the `discuss` skill
+  writes it.
+- **After `/design`, or agreement on the design:** the design, written as the `design` skill
+  writes it.
 - **After any later change:** what changed, and which step of the chain it changes.
 
-A comment links records rather than restating their arguments, but states each property in one
-line so the chain reads without opening them. A choice that something else will be built on, or
-that an open question could reverse, is never settled in a comment: it goes through the project's
-decision process, and the comment links the result.
-
-Everything a comment links exists where its reader can open it before the comment is posted, so a
-record the work adds is committed and pushed first. A record already on the default branch is
-linked there. One added by this work is linked by a permalink to the commit that added it
+A choice that something else will be built on, or that an open question could reverse, is never
+settled in a comment: it goes through the project's decision process, and the comment links the
+result. Everything a comment links exists where its reader can open it before the comment is
+posted, so a record the work adds is committed and pushed first. A record already on the default
+branch is linked there. One added by this work is linked by a permalink to the commit that added it
 (`blob/<sha>/<path>`), because on a feature branch the default branch will not have it until the
 PR merges, and a link to the branch stops working once the branch is deleted.
 
 A comment is read by people outside this harness, so it names no skill, slash command or agent. It
 says what happened instead: "the design comment", not "`/design`"; "checked in a browser", not "the
-browser agent". Its sections are named for what each answers, never after a skill's artifact:
-**What this must make true**, **What does not bind here**, **Approach**, **Alternatives that
-lost**, **Deferred**, **Constraints** and **Done when**. A design comment uses **Types**,
-**Assertions**, **Telemetry** and **Tests**. Done when has no checkboxes: the comment records a
-point in time, and the tracker holds status. Where the approved artifact lacks something the comment
-needs, such as an alternative nobody weighed, the gap is raised with the user before drafting and
-never filled in by the drafter.
+browser agent". Where the approved artifact lacks something the comment needs, such as an
+alternative nobody weighed, the gap is raised with the user before drafting and never filled in by
+the drafter.
 
 The comment is a public side effect, so its draft is shown to the user and posted only once they
 approve that wording. When the work is not on a ticket, none of this is written anywhere.
