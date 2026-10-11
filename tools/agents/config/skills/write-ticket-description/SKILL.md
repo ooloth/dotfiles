@@ -1,6 +1,6 @@
 ---
 name: write-ticket-description
-description: Voice guide for writing issue/ticket/task/epic descriptions. Use this skill for ALL issue creation, and for every rewrite of an existing issue's body, — GitHub issues, Jira tasks, Monday tasks, Linear tasks, and epics. Contains section structure, voice rules, and anti-patterns. Never write ticket descriptions without invoking this skill first.
+description: Voice guide for writing issue/ticket/task/epic descriptions. Use this skill for ALL issue creation and for every rewrite of an existing issue's body — GitHub issues, Jira tasks, Monday tasks, Linear tasks, and epics. Contains section structure, voice rules, and anti-patterns. Never write ticket descriptions without invoking this skill first.
 allowed-tools: [Bash, Read, Glob, Grep]
 ---
 
@@ -27,9 +27,11 @@ allowed-tools: [Bash, Read, Glob, Grep]
 A body being narrowed, corrected or brought up to date follows this template exactly as a new one
 does. A section the template does not have, such as a QA plan, `Why` or `Done when`, is not kept
 because the original had it: its content moves into the template's sections, or is dropped when no
-section takes it. A QA plan is always dropped, for the reason under What NOT to Do. Bounds and
-exclusions the original author stated stay, since they came from the requester. The duplicate
-check is skipped, because the issue already exists.
+section takes it. A QA plan is always dropped, for the reason under What NOT to Do. Every
+section, kept or moved, follows the voice rules below, so a kept Ideal state bullet that names a
+mechanism is rewritten as the behaviour it was after. Bounds and exclusions the original author
+stated stay, since they came from the requester. The duplicate check is skipped, because the issue
+already exists.
 
 ---
 
