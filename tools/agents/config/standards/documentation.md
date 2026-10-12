@@ -77,7 +77,9 @@ surface is updated in the same change as the behavior it describes, and a
 surface that never received its entry is as wrong as one that went stale.
 
 **A decision reaches every reader it binds, each in the place that reader looks.**
-The reasoning and the rejected options sit in one decision record. What the
+The reasoning and the rejected options sit in one decision record, except for a
+decision taken on the spot under the decision-making standard's triage, whose
+commit message is its record. What the
 decision commits the project to sits wherever that commitment is checked: a
 rule for reviewers in the standards, a new way to run something in the run
 instructions, a misleading half-finished state in whatever file warns about

@@ -1,24 +1,55 @@
 # Decision Making
 
 A technical decision is well made when its answer was reasoned from first principles and supported
-by evidence, ideally first hand evidence, and when a reader who disagrees with it can see what would
-change it.
+by evidence, ideally first hand evidence, when a reader who disagrees with it can see what would
+change it, and when the depth of that reasoning matched what a wrong answer would cost.
 
 ## Must
+
+**How deeply a decision is derived follows from what a wrong answer would cost.**
+A decision gets the full derivation the rest of this file describes when any of three tests holds.
+Each is judged against the option that would be taken on the spot: the default an open question
+names, or the one whoever found the choice would reach for. A decision with no such option, because
+finding one needs research, gets the full derivation.
+
+1. If that option is wrong, the failure is silent and causes harm at the current milestone that the
+   system does not already allow by other means. Harm that would only begin at a later milestone,
+   such as once users or their data exist, does not hold this test now. The decision takes its
+   option, and the question is deferred to the milestone where the harm would begin, so it is
+   weighed again before then.
+2. Changing it gets more expensive as the system grows, because data, users or code built on it
+   accumulate.
+3. It closes an option open to a question that needs the full derivation, whether or not that
+   question has been asked yet, and reopening that option later would cost more than changing this
+   choice back.
+
+A decision that holds none of the three is taken when it is found, by whoever found it, and the
+reason it fails each test is stated where the change is reviewed: in a repository, the commit
+message. That is its whole record. It is not provisional. It is expected to stay, and keeping it is
+safe because changing it stays cheap and a wrong answer would show itself. A test held to be safe
+names the specific harm or the later work it guards against. One that can name neither does not
+hold, for the same reason an asymmetry that cannot be stated as concrete work is not evidence. A
+decision that holds test 3 is worked together with the question it narrows, from that question's
+property list, and is not taken ahead of it.
+
+Deriving every choice in full is the failure this prevents. The choices that matter then wait
+behind the ones that do not, and the running system that would give evidence for all of them is
+not built. The tell is a record whose own comparison says no property separated the options.
 
 **The order decisions are taken in is the order they depend on each other.**
 Speed and familiarity do not move a decision earlier. What is forbidden is moving a decision ahead
 of something it derives from, whatever it would unblock. An out-of-order answer is not
 wrong-looking — it is arbitrary and reads as considered, which is what makes the cost fall on
-whoever inherits it.
+whoever inherits it. A choice that narrows a question needing the full derivation is worked
+together with that question rather than ahead of it, per the first entry.
 
 **Among decisions that do not derive from one another, the one whose wrong answer is cheapest to
 unwind is taken first.**
 Two things follow from taking it. Being wrong is survivable, so it can be taken before evidence
 that only a later decision would produce. And making it produces evidence — a scaffold that runs,
 an observation, a thing that exists — which every later decision is then made with rather than
-without. Cheapness decides when a decision is taken, not how carefully it is derived: a
-cheap-to-unwind decision still gets its properties derived and scored like any other. This is the
+without. Cheapness also decides how carefully it is derived, per the first entry: a decision that
+holds none of its three tests is taken on the spot. This is the
 same principle as deferring, read from the other end: the expensive decision
 is the one that most needs what has not been learned yet, so it is the one that waits. Cheapest to
 unwind counts discovery. A wrong answer nobody notices is not cheap however small the
@@ -141,7 +172,8 @@ something another record already mandates.
 Dependency order is the mechanism; reaching a milestone in a state you would keep is the goal. If
 you would expect to redo a choice shortly after the milestone, it is missing an input or the
 milestone is drawn in the wrong place. Provisional is not a category: either the choice waits, or
-what it waits on joins the milestone.
+what it waits on joins the milestone. A decision taken on the spot under the first entry is not
+provisional either. It is expected to stay.
 
 **A decision's inputs are settled before it is taken.**
 Every input is a fact somebody established, a promise already made, a stated goal, or an
@@ -153,19 +185,26 @@ reasoned for months and is found by accident.
 One test finds an input nobody named: score each candidate under every answer an unsettled
 question could give. A candidate whose verdict changes with that answer makes the question an
 input, however unrelated its topic looks, and it is settled first. Where no verdict changes, the
-question is not an input and can stay open.
+question is not an input and can stay open. One exception: where the input is a choice that holds
+test 3 of the first entry, it is not settled first. It is worked together with the question it
+narrows, from that question's property list, so the narrower choice cannot decide the wider one.
 
 **Each input names the record that established it.**
 Not "this is consistent with what we have written" — _which record settled this, and where is it._
 The two questions feel alike and catch different things: consistency is satisfied by any claim
 nothing contradicts, which is exactly what an unrecorded assumption looks like from the inside.
 Where no record can be named, the input is an open question and it is asked rather than assumed,
-however obvious the answer seems and however many documents already repeat it.
+however obvious the answer seems and however many documents already repeat it. A decision taken on
+the spot under the first entry has its commit message as its record. Once a fully derived decision
+would cite it as an input, it is triaged again, and if it now holds any of the three tests it gets a
+decision record of its own.
 
 **A prerequisite found while deciding is settled before the decision that surfaced it.**
 Not noted and carried past. Not answered provisionally with a plan to revisit. The prerequisite
 is usually the less interesting of the two, which is exactly why writing it down and continuing
-feels like progress.
+feels like progress. Settling it starts with the first entry's triage. A prerequisite that holds
+none of the three tests is settled on the spot, which meets this entry. One that holds any of them
+gets the full derivation before the decision that found it continues.
 
 **A choice that two or more open questions each defer to the other is an open question in its own
 right.**
@@ -242,6 +281,8 @@ record.
 It constrains implementation the same way a chosen one does, and a constraint that lives only
 inside another record's reasoning is invisible to anyone scanning the list. Its "rejected" section
 says plainly that reversing it means reversing the parent, rather than inventing an alternative.
+This applies to decisions that get the full derivation. One taken on the spot under the first
+entry is recorded in its commit message.
 
 **A decision the next milestone does not need is not made.**
 The test is not whether the question could be answered — most could, badly. It is whether reaching
@@ -251,7 +292,9 @@ exists everything after it treats the choice as settled, so a premature decision
 indistinguishable from a load-bearing one.
 
 Deferring is not deciding provisionally. A deferred question stays open with nothing built on it.
-If a milestone appears to need a provisional answer, the milestone is drawn in the wrong place.
+If a milestone appears to need a provisional answer, the milestone is drawn in the wrong place. The
+one exception is a decision the first entry defers under its test 1: it takes its option in the
+meantime, and the deferral names the milestone at which the question is weighed again.
 
 **A claim's provenance is recorded alongside it, including when there is none.**
 Measured, sourced, reasoned, or unverified. The last is the most useful of the four, because an
@@ -461,3 +504,4 @@ An option that fails silently loses to one that fails loudly, even when it is ot
   for and belongs in the project's own standards
 - Choices inside an already-decided area: naming, file layout, formatting
 - Reversible experiments that nothing else depends on yet
+- Beyond the triage in the first entry, a choice that holds none of its three tests

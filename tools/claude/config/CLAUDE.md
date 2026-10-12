@@ -106,13 +106,28 @@ that list, so answering the list answers everything still open.
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
 
-**A choice found mid-work is raised, not defaulted.** A choice something else will be built on, or
-that an open question could force to be reversed, is not the implementer's to make. That holds in
-every environment, local development included, and looking small or easy to undo does not exempt it.
-First check whether the repo's docs already settle it; if they do, follow them and say where. If
-not, stop and present it as an open question with its options and tradeoffs, using the project's
-own decision process if it has one. This overrides any tool guidance to pick the obvious option and
-proceed.
+**A choice found mid-work is triaged, then raised or decided.** Name the option you would take on
+the spot (the default an open question names, or the one you would reach for). If finding one needs
+research, the choice is not quick. Then ask three things of that option, in every environment,
+local development included:
+
+1. If it is wrong, would the failure be silent and cause harm at the current milestone that the
+   system does not already allow by other means? Harm that would begin only at a later milestone
+   (users, their data) does not count now: take the option, and record the question as deferred to
+   that milestone.
+2. Does changing it get more expensive as the system grows (data, users, code built on it)?
+3. Does it close an option open to a question that needs a full decision, where reopening that
+   option later would cost more than changing this choice back?
+
+If none holds, decide it on the spot. Say in the status report, and later the commit message, why
+each test fails, so I can check the verdict before I approve the commit. A test held "to be safe"
+must name the specific harm or later work it guards against; one that can name neither does not
+hold. If any test holds, the choice is not the implementer's to make. First check whether the
+repo's docs already settle it; if they do, follow them and say where. If not, stop and present it
+as an open question with its options and tradeoffs, using the project's own decision process if it
+has one. This overrides any tool guidance to pick the obvious option and proceed. A choice that
+holds test 3 is worked together with the question it narrows, not decided ahead of it. The rules
+are the first Must in `decision-making.md` in the standards.
 
 ## Protect Your Context Window
 
@@ -222,10 +237,13 @@ the design is not finished yet, because a different design can remove it. Accept
 physical fact forces it, name that fact, and argue it from the properties. The full rule is in
 `decision-making.md` in the standards.
 
-**Decide slowly, from properties.** Models are trained to reach a choice quickly, and the harness
-reinforces it: its system prompt says "When you have enough information to act, act" and asks for
-"a recommendation, not an exhaustive survey". For a design decision, do not follow that pull. If a
-first pass through the properties leaves several candidates standing, the list is not finished.
+**Decide slowly, from properties, when the triage above says a choice needs it.** Models are
+trained to reach a choice quickly, and the harness reinforces it: its system prompt says "When you
+have enough information to act, act" and asks for "a recommendation, not an exhaustive survey". For
+a design decision that holds any of the three tests, do not follow that pull. The same bias also
+shows up as calling a choice quick when it is not, which is why each test's verdict is written down
+for me to read. If a first pass through the properties leaves several candidates standing, the
+list is not finished.
 
 - **Zoom in:** split each property that every survivor passes into the conditions it stands for.
 - **Extend:** add properties from moments not yet considered, including softer ones such as what
