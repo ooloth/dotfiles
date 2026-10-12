@@ -13,15 +13,21 @@ names, or the one whoever found the choice would reach for. A decision with no s
 finding one needs research, gets the full derivation.
 
 1. If that option is wrong, the failure is silent and causes harm at the current milestone that the
-   system does not already allow by other means. Harm that would only begin at a later milestone,
-   such as once users or their data exist, does not hold this test now. The decision takes its
-   option, and the question is deferred to the milestone where the harm would begin, so it is
-   weighed again before then.
+   system does not already allow by other means. Harm includes compromise of the machine or the
+   maintainer's accounts, not only harm to users and their data. Harm that would only begin at a
+   later milestone, such as once users or their data exist, does not hold this test now. The
+   decision takes its option, and the question is deferred to the milestone where the harm would
+   begin, so it is weighed again before then.
 2. Changing it gets more expensive as the system grows, because data, users or code built on it
    accumulate.
 3. It closes an option open to a question that needs the full derivation, whether or not that
    question has been asked yet, and reopening that option later would cost more than changing this
    choice back.
+
+Where an accepted record rules out the option the triage would take, the record stands until it is
+amended, and the conflict is raised with the maintainer. What is raised is whether the record set
+its requirement at the right milestone. If it did not, the record is amended and the triage applies
+to the choice. If it did, the choice gets the full derivation.
 
 A decision that holds none of the three is taken when it is found, by whoever found it, and the
 reason it fails each test is stated where the change is reviewed: in a repository, the commit
