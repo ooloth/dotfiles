@@ -184,8 +184,8 @@ sees what was chosen first and how it was chosen right after:
    such as a fix to a deeper cause that lies outside the ticket, or a bug found on the way.
 
 In the terminal, follow it with `## Open decisions ❓`, only those that block correct implementation,
-numbered, each with a recommended answer, and then the approval request, offering to run `/design`
-next.
+numbered, each with a recommended answer, and then the approval request, offering to post the
+approach above as the ticket comment when the work is on a ticket, and to run `/design` next.
 
 Write for someone who opens the ticket with no context and a few seconds to spare: a teammate, or
 the user in three months. They came for the decision: what was chosen, what it had to achieve, and
@@ -197,7 +197,9 @@ opening paragraph says what the approach does, not the evidence for it. A proper
 true, not how it is checked or which files are involved. Nothing appears outside the sections above.
 
 When the work is on a ticket, the comment is the approach above without the open decisions and the
-approval request. Draft it for the user, and post it once they approve that wording.
+approval request. Offer to post it, then post it once the user approves.
+If answers to the open decisions change the text, show the changed text and offer to post that
+instead.
 
 If the user answers clarifying questions, incorporate the answers, present the updated strategy,
 and stop again. Do not treat answers to questions as approach approval.

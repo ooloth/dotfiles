@@ -296,15 +296,17 @@ appears outside the sections above.
 
 In the terminal, follow it with `## Open decisions ❓`: naming or structural choices the user should
 weigh in on before implementation, including any mechanism Phase 5 found this slice does not own.
-Then ask for explicit approval.
+Then ask for explicit approval, offering to post the design above as the ticket comment when the
+work is on a ticket.
 
 If the user pushes back, requests changes, or raises questions: incorporate the feedback, revise
 the type story and/or test plan, re-present the full artifact, and stop again. Do not implement
 until the user gives explicit approval.
 
-When the user approves and the work is on a ticket (GitHub Issue, Linear, Jira, etc.), draft the
-comment: the design above without the property table, the open decisions and the approval request.
-An open decision settled during design goes in the section it affects and links the record that
-settles it, which is committed and pushed before the comment is posted. Show it to the user, and
-post it once they approve that wording, before writing code. When the work is not on a ticket,
+When the work is on a ticket (GitHub Issue, Linear, Jira, etc.), the comment is the design above
+without the property table, the open decisions and the approval request. An open decision settled
+during design goes in the section it affects and links the record that settles it, which is
+committed and pushed before the comment is posted. Offer to post it, then post it once the user
+approves, before writing code. If answers to the open decisions change the
+text, show the changed text and offer to post that instead. When the work is not on a ticket,
 nothing is recorded. Then proceed with the first slice.
