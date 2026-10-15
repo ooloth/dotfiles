@@ -478,6 +478,8 @@ Skip and say nothing if execution went smoothly.
   never in bare `/tmp`.
 - I cannot open your scratchpad. Paste anything I must read or approve into the reply. Never tell
   me to look at a file in it.
+- Anything I must read or approve goes in the final message of the turn, after the last tool call.
+  Text written before a tool call can be hidden from me.
 - Never start a background process with `&` or `nohup`. Run it in a tmux window, or start, check
   and stop it within one Bash command.
 - For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
