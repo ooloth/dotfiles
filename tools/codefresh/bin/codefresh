@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Runs the Codefresh CLI from its official Docker image.
+#
+# Both local installs are broken: the Homebrew tap's packaged binary crashes on startup
+# ("Cannot find module '/snapshot/cli/...'"), and the npm package depends on a git fork of firebase,
+# which npm 12 refuses to fetch by default. The container gets only ~/.cfconfig, read-only, so
+# commands that write it (such as `codefresh auth create-context`) fail here.
+set -euo pipefail
+
+if ! docker info >/dev/null 2>&1; then
+  echo "codefresh: Docker isn't running. Start it and try again." >&2
+  exit 1
+fi
+
+tty_flag=()
+if [[ -t 1 ]]; then
+  tty_flag=(--tty)
+fi
+
+# The ${...+...} form keeps an empty array from tripping `set -u` in macOS's bash 3.2
+exec docker run --rm ${tty_flag[@]+"${tty_flag[@]}"} \
+  --env TZ="${TZ:-$(readlink /etc/localtime | sed 's|.*/zoneinfo/||')}" \
+  --volume "${HOME}/.cfconfig:/root/.cfconfig:ro" \
+  codefresh/cli "$@"
