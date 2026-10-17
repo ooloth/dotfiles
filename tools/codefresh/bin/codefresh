@@ -3,8 +3,10 @@
 #
 # Both local installs are broken: the Homebrew tap's packaged binary crashes on startup
 # ("Cannot find module '/snapshot/cli/...'"), and the npm package depends on a git fork of firebase,
-# which npm 12 refuses to fetch by default. The container gets only ~/.cfconfig, read-only, so
-# commands that write it (such as `codefresh auth create-context`) fail here.
+# which npm 12 refuses to fetch by default. The container gets ~/.cfconfig, read-only, so
+# commands that write it (such as `codefresh auth create-context`) fail here. It also gets the
+# current directory, read-only and at the same path, so a file argument such as
+# `codefresh run ... --yaml build/pipelines/spec.yaml` resolves as it would on the host.
 set -euo pipefail
 
 if ! docker info >/dev/null 2>&1; then
@@ -21,4 +23,6 @@ fi
 exec docker run --rm ${tty_flag[@]+"${tty_flag[@]}"} \
   --env TZ="${TZ:-$(readlink /etc/localtime | sed 's|.*/zoneinfo/||')}" \
   --volume "${HOME}/.cfconfig:/root/.cfconfig:ro" \
+  --volume "${PWD}:${PWD}:ro" \
+  --workdir "${PWD}" \
   codefresh/cli "$@"

@@ -25,12 +25,17 @@ From `gh pr view <number> --json statusCheckRollup`:
 # The table's times are local but 12-hour with no AM/PM, so read `created` from -o json
 codefresh get builds --pipeline-name <project>/<pipeline> --limit 5
 
-# Build metadata
+# Build metadata, including "status", "started" and "finished". This is the way to watch a build
+# that is still running: poll it until the status is no longer running or pending
 codefresh get builds <build-id> -o json
 
-# Full logs (can exceed 30k lines — use grep to find errors quickly)
+# Full logs of a FINISHED build (can exceed 30k lines — use grep to find errors quickly)
 codefresh logs <build-id> | grep -E -B 10 -A 20 -i "error|fail|found.*error"
 ```
+
+`codefresh logs` on a build that is still running follows it live and returns only when the build
+ends, so a pipe to `grep` or `tail` waits until the build finishes or the command times out. Check
+the status with `codefresh get builds <build-id> -o json` first, and read logs once it has finished.
 
 ## Log Structure
 
@@ -68,6 +73,14 @@ codefresh run <pipeline-name-or-id> --trigger <trigger-name> -b <branch> -s <ful
 A new run loads the pipeline's spec as it is now, when the spec comes from git (`specTemplate` with
 `revision: trunk` in `codefresh get pipelines <name> -o json`). A restart of an old build may replay
 that build's spec, so to pick up a spec change, start a new run instead of restarting.
+
+To try a spec change before it merges, pass the local file with `--yaml`, run from the repo that
+holds it. The wrapper mounts the current directory, so a relative path works:
+
+```bash
+codefresh run <pipeline-name> --trigger <trigger-name> -b <branch> -s <full-sha> \
+  --yaml build/pipelines/<spec>.yaml --detach
+```
 
 ## Troubleshooting
 
