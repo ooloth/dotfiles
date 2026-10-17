@@ -261,7 +261,12 @@ sees how the change fits together to solve the problem:
 1. `# Design`, then one paragraph saying how the pieces of the change work together, and what is
    carried by structure, by runtime checks and by tests.
 2. In the terminal only, `## What the design must deliver 🎯`: the approach's property table (`P1`,
-   `P2`, …). On the ticket, the approach comment above already holds it.
+   `P2`, …), plus a row for each property Phase 2 derived, numbered after the approach's. On the
+   ticket, the approach comment above already holds the approach's rows. Every property the design
+   scores on that the approach comment does not define goes in the ticket comment as a table of just
+   those rows, after the opening paragraph, introduced by one line saying the approach's properties
+   still apply. A column or `(P5)` that the ticket defines nowhere leaves its reader unable to tell
+   what it means.
 3. `## Types 🧬`
    - **Progressions considered:** the two or three from Phase 2 as an options table: `Option`, then
      one column per property they were scored on. The chosen one is the first row, in bold,
@@ -304,7 +309,7 @@ the type story and/or test plan, re-present the full artifact, and stop again. D
 until the user gives explicit approval.
 
 When the work is on a ticket (GitHub Issue, Linear, Jira, etc.), the comment is the design above
-without the property table, the open decisions and the approval request. An open decision settled
+without the approach's rows of the property table, the open decisions and the approval request. An open decision settled
 during design goes in the section it affects and links the record that settles it, which is
 committed and pushed before the comment is posted. Offer to post it, then post it once the user
 approves, before writing code. If answers to the open decisions change the
