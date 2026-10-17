@@ -299,7 +299,9 @@ result. Everything a comment links exists where its reader can open it before th
 posted, so a record the work adds is committed and pushed first. A record already on the default
 branch is linked there. One added by this work is linked by a permalink to the commit that added it
 (`blob/<sha>/<path>`), because on a feature branch the default branch will not have it until the
-PR merges, and a link to the branch stops working once the branch is deleted.
+PR merges, and a link to the branch stops working once the branch is deleted. Once such a link is
+posted, that branch takes the default branch by merging it, never by rebasing onto it: a rebase
+gives the linked commit a new hash, and the force-push leaves the old one reachable from nothing.
 
 A comment is read by people outside this harness, so it names no skill, slash command or agent. It
 says what happened instead: "the design comment", not "`/design`"; "checked in a browser", not "the
@@ -459,6 +461,8 @@ Skip and say nothing if execution went smoothly.
 ## Available CLI Tools
 
 - `gh` - NEVER run a `gh` command without first invoking the `use-gh` skill
+- Jira (the Atlassian MCP tools) - NEVER call a Jira tool, reads included, without first invoking
+  the `use-jira` skill
 - `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
   programs (TUIs, REPLs). This is often the only way to visually verify an interactive program
   without asking the user to do it:
@@ -476,6 +480,8 @@ Skip and say nothing if execution went smoothly.
   never in bare `/tmp`.
 - I cannot open your scratchpad. Paste anything I must read or approve into the reply. Never tell
   me to look at a file in it.
+- Anything I must read or approve goes in the final message of the turn, after the last tool call.
+  Text written before a tool call can be hidden from me.
 - Never start a background process with `&` or `nohup`. Run it in a tmux window, or start, check
   and stop it within one Bash command.
 - For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
