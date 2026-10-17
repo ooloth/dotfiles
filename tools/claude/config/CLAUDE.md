@@ -299,7 +299,9 @@ result. Everything a comment links exists where its reader can open it before th
 posted, so a record the work adds is committed and pushed first. A record already on the default
 branch is linked there. One added by this work is linked by a permalink to the commit that added it
 (`blob/<sha>/<path>`), because on a feature branch the default branch will not have it until the
-PR merges, and a link to the branch stops working once the branch is deleted.
+PR merges, and a link to the branch stops working once the branch is deleted. Once such a link is
+posted, that branch takes the default branch by merging it, never by rebasing onto it: a rebase
+gives the linked commit a new hash, and the force-push leaves the old one reachable from nothing.
 
 A comment is read by people outside this harness, so it names no skill, slash command or agent. It
 says what happened instead: "the design comment", not "`/design`"; "checked in a browser", not "the
