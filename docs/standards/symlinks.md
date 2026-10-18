@@ -10,6 +10,12 @@ When a source moves or disappears, the links pointing at it go with it in
 the same change. Broken symlinks don't accumulate in `$HOME`. Creating a
 replacement link is not the same as retiring the one it supersedes.
 
+`symlinks` (and so `u`) removes broken links only in the directories that
+`any_broken_symlink_dirs` and `repo_symlink_dirs` list in
+`tools/bash/utils.bash`. A `link.bash` that links into a new directory adds
+it to `repo_symlink_dirs`, or `scripts/check-link-scripts.bash` fails and
+names the directory.
+
 ## Should
 
 **New symlinking logic uses the shared `symlink()` helper in
