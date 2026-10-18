@@ -20,15 +20,21 @@ the project's tracker, question files in `docs/questions/`, decision records not
 docs that describe a planned or unfinished state. Read the whole open backlog, not only search
 results, because tickets describe intent in concepts rather than identifiers. Load the tracker's
 skill (`use-gh`, `use-jira` or `use-linear`) before reading, so the read includes comments and
-relationships such as parent and blocked-by.
+relationships such as parent and blocked-by. The single fetch in "Order of work" is that read, and
+subagents work from its file. To find docs describing a planned or unfinished state, list
+`docs/questions/` and `docs/decisions/` (or their equivalents) and search the docs and agent
+instructions for words such as "future", "planned", "not yet", "TODO" and "WIP".
+
+A problem that predates the session is still in scope when it sits in a file the scope covers and
+a fresh agent working there would hit it. Mark it as pre-existing.
 
 The full transcript of this session is at `~/.claude/projects/<cwd-slug>/<session-id>.jsonl` if you
 need to check what was said. The slug is the starting directory with `/` and `.` replaced by `-`.
 The session ID is the name of the scratchpad's parent directory. The directory names start with
 `-`, so from inside `~/.claude/projects`, glob them as `./*/*.jsonl`, or tools like grep read them
 as options. Messages are the records whose top-level `type` is `user` or `assistant`. A `user`
-record is something the user typed only when its `message.content` is a string. Subagent
-transcripts are under `<session-id>/subagents/`.
+record is something the user typed only when its `message.content` is a string and it has no
+`isMeta: true`. Subagent transcripts are under `<session-id>/subagents/`.
 
 ## Order of work
 
@@ -36,7 +42,7 @@ The wait is set by the slowest subagent, so start the subagents first:
 
 1. Build the scope, running its searches several per turn.
 2. Fetch the whole open backlog once, with comments and relationships, into a scratch file. For
-   GitHub: `gh issue list --state open --limit 1000 --json
+   GitHub: `gh issue list -R <owner>/<repo> --state open --limit 1000 --json
    number,title,body,comments,labels,parent,blockedBy,blocking,subIssues > <file>`.
 3. Launch every subagent described under Step 2, in a single message.
 4. While they run, do Step 1, your own list from Step 2, and the repo's own checks (from
@@ -59,7 +65,8 @@ Give each one exactly one status, with its evidence:
 - **Done:** the commit, `file:line` or URL that shows it
 - **Deferred:** where it is recorded (a ticket, a `docs/questions/` file)
 - **Dropped:** the user's words deciding that
-- **Open:** none of the above
+- **Open:** none of the above. An item the user never ruled on is Open, even when they approved a
+  list that left it out.
 
 ## Step 2: Find what would mislead the next agent
 
@@ -88,7 +95,9 @@ trusted it, with a file and line for each."
 
 Grade its answer against what you know the next step is. It passes only if it picks the right next
 thing for the right reason. A right answer reached from a wrong signal fails, because that signal is
-what the next agent will follow.
+what the next agent will follow. When it names a procedure, such as a skill to run, grade where
+that procedure would lead. When the right next step is not written anywhere a fresh agent would
+look, that is a finding in itself: propose where to record it.
 
 **A backlog subagent.** Give it a short summary of what this session changed and decided, the path
 to the backlog file, and the list of intent files from the scope. Tell it to read each one in full
