@@ -63,7 +63,7 @@ root cause from different angles.
 
 **GitHub:**
 ```bash
-gh issue view NUMBER --json title,body,state,url
+gh issue view NUMBER --json title,body,state,url,comments,parent
 ```
 
 **Linear / Jira / Monday:** fetch the full issue body via the relevant tool.

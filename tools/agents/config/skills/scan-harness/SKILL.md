@@ -14,7 +14,9 @@ Use up to 25 subagents to explore the following data sources:
    from ~/Repos/ooloth/dotfiles/tools/agents/config/skills, agents and settings from
    ~/Repos/ooloth/dotfiles/tools/claude/config/)
 3. Study the project-level Claude Code configuration in `./.claude/`
-4. Study the user's recent Claude Code sessions in `~/.claude/projects/`
+4. Study the user's recent Claude Code sessions in `~/.claude/projects/`. The directory names
+   there start with `-`, so from inside `~/.claude/projects`, glob them as `./*/*.jsonl`, or tools
+   like grep read them as options
 5. Study the Claude Code skills docs: https://code.claude.com/docs/en/skills
 6. Study the Claude Code hooks docs: https://code.claude.com/docs/en/hooks-guide
 7. Study the Claude Code subagents docs: https://code.claude.com/docs/en/sub-agents
