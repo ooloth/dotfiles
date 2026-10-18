@@ -7,10 +7,8 @@ The @new template directory groups all the related files for a particular tool/u
 ```
 {tool}/
 ├── config/                # Configuration files
-├── shell/
-│   ├── aliases.zsh        # Shell aliases
-│   ├── integration.zsh    # Shell integration logic
-│   └── variables.zsh      # Shell environment variables
+├── Brewfile               # Homebrew formulae and casks (optional)
+├── shell.zsh              # Aliases, variables and shell integration (optional)
 ├── link.bash              # Symlink configuration files (optional)
 ├── install.bash           # Installation logic
 ├── uninstall.bash         # Non-brew cleanup only (optional)
@@ -34,8 +32,7 @@ The @new template directory groups all the related files for a particular tool/u
 
 1. Duplicate and rename the `@new` template directory at the root level of `/tools`
 1. Update or delete each example file
-1. Reference `{tool}/install.bash` in `features/setup/setup.bash` - _automate?_
-1. Reference `{tool}/update.bash` in `features/update/tools.bash` - _automate?_
+1. `u` finds each `update.bash` on its own, so nothing needs registering
 
 ## Deprecating a Tool
 

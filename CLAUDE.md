@@ -16,19 +16,20 @@ one carries what is true only here.
 
 See README.md for the overview. Key points for Claude:
 
-- Each tool lives in `tools/{tool}/`, with its config in `config/` and, where it needs them,
-  `install.bash`, `update.bash`, `link.bash`, `uninstall.bash` and `shell.zsh`. `tools/@new` is the
-  template, `tools/README.md` explains the approach, and `tools/eza/` or `tools/logcli/` show a brew
-  formula with no config.
+- Each tool lives in `tools/{tool}/`, with its config in `config/` and, where it needs them, a
+  `Brewfile`, `install.bash`, `update.bash`, `link.bash`, `uninstall.bash` and `shell.zsh`.
+  `tools/@new` is the template, `tools/README.md` explains the approach, and `tools/eza/` or
+  `tools/logcli/` show a brew formula with no config.
 - Workflows that span tools live in `features/{feature}/`, as bash scripts with a `shell.zsh` that
   defines their aliases.
 - `u` runs `features/update/tools.bash`, which updates the symlinks first
   (`features/update/symlinks.bash`) and then runs each tool's `update.bash`. The `symlinks` alias
   runs only the symlink step.
 - First-time setup on a new Mac is `features/setup/setup.zsh`, which sources the zsh scripts in
-  `features/install/zsh/`, several of them under `deprecated/`. A bash replacement is in progress in
-  `features/setup/wip/`, and nothing runs it yet. Other `wip/` folders, such as `tools/tmux/wip/`,
-  are the same kind of unfinished replacement.
+  `features/install/zsh/`, several of them under `deprecated/`. A bash replacement is planned in
+  #127. The `wip/` folders, such as `features/setup/wip/` and `tools/tmux/wip/`, are drafts that
+  #127 reviews and deletes. Nothing runs them, and some no longer work:
+  `tools/tmux/wip/install.bash` calls `install_tpm`, which only `tools/tmux/wip/utils.bash` defines.
 
 ### Symlink Management
 

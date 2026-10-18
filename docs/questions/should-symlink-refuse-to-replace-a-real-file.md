@@ -9,14 +9,15 @@ status: open
 
 ## Why it matters
 
-Every `link.bash` calls `symlink()` in `tools/bash/utils.bash`, which runs `ln -fsvw`. When the
-target path holds a real file rather than a link, `ln -f` deletes it and puts the link in its
-place. Nothing is copied first and nothing reports the loss. This happens on the first `u` after a
-tool is added for a config that already exists on that laptop, and on a new machine where an app
-wrote its default config before `u` ran. It also happens after a working link is broken by a tool
-that saves its config by writing a temporary file and renaming it over the target: the link becomes
-a real file holding the tool's additions, edits to the repo copy stop reaching it, and the next `u`
-deletes those additions. The content is gone unless it was already in the repo.
+Every `link.bash` but one calls `symlink()` in `tools/bash/utils.bash`, which runs `ln -fsvw`;
+`tools/pi/link.bash` runs the same `ln -fsvw` itself. When the target path holds a real file rather
+than a link, `ln -f` deletes it and puts the link in its place. Nothing is copied first and nothing
+reports the loss. This happens on the first `u` after a tool is added for a config that already
+exists on that laptop, and on a new machine where an app wrote its default config before `u` ran. It
+also happens after a working link is broken by a tool that saves its config by writing a temporary
+file and renaming it over the target: the link becomes a real file holding the tool's additions,
+edits to the repo copy stop reaching it, and the next `u` deletes those additions. The content is
+gone unless it was already in the repo.
 
 Check mode does not catch it either. With `DOTFILES_CHECK=true`, a real file at the target is
 reported as `MISSING`, which reads as "the link was never made" rather than "something else is in

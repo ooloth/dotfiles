@@ -20,7 +20,7 @@ gets the same files.
 
 ### Standards
 
-[The standards library](./tools/agents/config/standards/README.md) is 28 files the rest of this
+[The standards library](./tools/agents/config/standards/README.md) is 29 files the rest of this
 reads. Each standard is phrased as a claim about the code rather than an instruction to the agent:
 "Errors are handled at the level with enough context to act," not "Handle errors at the right
 level." That single rule is what lets one file serve three jobs unchanged, since a writing skill
@@ -47,8 +47,8 @@ imagined, an assertion covers the inputs production supplies.
 
 ### Reviewing
 
-[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs ten specialised reviewers in
-parallel, then assumes they're wrong. Every claim about library behaviour, API guarantees or
+[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs eleven specialised reviewers
+in parallel, then assumes they're wrong. Every claim about library behaviour, API guarantees or
 numbers is checked against the installed code before it reaches me, and a claim that fails is
 struck rather than softened. Findings are labelled introduced or pre-existing by reading the base
 ref, not by impression.
