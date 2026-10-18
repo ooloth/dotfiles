@@ -8,6 +8,7 @@ on:
       - "**/*.bash"
       - "**/*.sh"
       - "scripts/test_symlink_sweep.py"
+      - "tools/**"
       - ".github/workflows/test-dotfiles.yml"
 
   # Run on pull requests to main (covers feature branch testing)
@@ -17,6 +18,7 @@ on:
       - "**/*.bash"
       - "**/*.sh"
       - "scripts/test_symlink_sweep.py"
+      - "tools/**"
       - ".github/workflows/test-dotfiles.yml"
 
   # Allow manual triggering for debugging
