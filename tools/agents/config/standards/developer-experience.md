@@ -1,8 +1,9 @@
 # Developer Experience
 
 A project has sound DX when a human developer joining it for the first time
-can orient themselves, understand why the system is structured as it is, and
-make a confident first contribution without needing to ask anyone.
+can orient themselves, understand why the system is structured as it is, make
+a confident first contribution, and find out how to operate it, without needing
+to ask anyone.
 
 ## Must
 
@@ -68,7 +69,23 @@ case that requires manual intervention, a recoverable error state — the
 procedure is written down. Tribal knowledge that lives only in experienced
 contributors' heads is a single-point-of-failure.
 
+**One document in the repo tells an operator what the system is made of, where it runs, where its
+signals are, and how to deploy, roll back and restart it.**
+Someone moved onto the system, or alerted by it, needs its components, where
+each one runs, where its logs, dashboards and alerts are, and the exact steps
+to deploy, roll back and restart it, before they need its architecture. README
+and CONTRIBUTING.md say how to change the code; this document says how to keep
+it running. It links to consoles and saved queries rather than copying what
+they show, because copied state goes stale without anyone noticing. The known
+failure modes above belong in the same document.
+
 ## Consider
+
+**That document says when it was last checked against the running system.**
+Infrastructure changes without the document changing with it, so the date is
+the one signal a reader has of how far the two may have drifted. Whoever
+checks the document against the system updates the date, even when nothing
+else changed.
 
 **An architecture narrative exists.**
 Beyond describing what files exist, a document explains how the system
@@ -91,6 +108,7 @@ project evolved and what has already been considered and rejected.
 - README.md at the repo root
 - CONTRIBUTING.md or equivalent
 - Files under docs/, adr/, or equivalent documentation directories
+- An operator document such as SYSTEM.md
 - Inline comments that carry rationale for non-obvious decisions
 
 ## Out of scope

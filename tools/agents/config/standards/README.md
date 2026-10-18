@@ -84,15 +84,16 @@ a false positive costs one read; a false negative means missed guidance.
   tool, runtime, platform or data shape
 - **`dependencies.md`** — package manifests (package.json, Cargo.toml, pyproject.toml, go.mod)
 - **`deployment.md`** — any change to code that runs in a deployed environment; CI/CD config,
-  Dockerfiles, infrastructure manifests, migration files
-- **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions
+  Dockerfiles, infrastructure manifests, migration files, spend limits
+- **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions,
+  the operator document (SYSTEM.md)
 - **`documentation.md`** — any file change that affects documented behaviour or has accompanying
   docs; diagrams and tables in ticket comments and PR descriptions
 - **`error-handling.md`** — fallible operations, error propagation paths, user-facing error output
 - **`instrumentation.md`** — logging, metric and trace call sites; log format, levels and field
   content
 - **`observability.md`** — what a failure has to reveal, what must be recorded for it to, invariants
-  no call site can check
+  no call site can check, alerts and whether they reach a person
 - **`performance.md`** — design choices that put a network hop on a path, loop bodies, database
   queries, hot-path functions, large or unbounded data operations
 - **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API

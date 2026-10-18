@@ -2,8 +2,9 @@
 
 Code is observable when the system can answer questions about its own
 behaviour: whether something failed, why, what input produced it, and whether
-an invariant no call site can check still holds. How those signals are emitted
-and formatted is `instrumentation.md`.
+an invariant no call site can check still holds. It is also observed when a
+failure that needs a person reaches one. How those signals are emitted and
+formatted is `instrumentation.md`.
 
 ## Must
 
@@ -52,6 +53,39 @@ failure reconstructs it: the value itself, or a reference that still resolves
 to it. Where the input is personal data the reference is the only available
 form, because `privacy.md` rules out the value.
 
+**A failure that needs a person reaches one.**
+A deployed system raises an alert when its errors cross a threshold, when it
+stops serving, and when scheduled work does not complete in its window. Each
+alert goes to a place a person reads. A failure that is recorded but never
+surfaced is diagnosable only by someone who already suspects it, so a system
+can satisfy every other entry in this file and still run blind.
+`deployment.md` covers regressions a release introduces; this covers
+everything that breaks while nobody is deploying.
+
+**An alert has been seen to fire, end to end.**
+An alert that has never fired is assumed broken, because its query, its
+threshold, its routing and the channel at the end of it each fail silently.
+Each alert has been triggered by a real event and seen to arrive where it is
+meant to. Where triggering it in production would page someone, the proof is
+split in two: the alert's condition is shown to match a test event, and a test
+notification is shown to reach the channel. The split leaves the threshold and
+its timing unproven, and that gap is recorded where the alert is documented.
+
+**Each alert says what it means and links to where to look.**
+An alert's text names the condition that fired it and what that condition
+means for the system, and links to the logs or dashboard that show why. The
+person who receives it is often not the person who wrote it, and an alert only
+its author can interpret waits for its author.
+
+## Consider
+
+**Alerts are few enough that none gets muted.**
+Each alert that fires without needing action teaches its readers to ignore the
+channel, and once the channel is ignored, the alerts that matter go unread with
+the rest. A new system starts with the fewest alerts that cover errors,
+unavailability and missed scheduled work, and gains one only when a failure
+went unnoticed without it.
+
 ## In scope
 
 - Error paths
@@ -60,6 +94,7 @@ form, because `privacy.md` rules out the value.
   (rates, latencies, costs, capacity estimates)
 - Invariants that hold across processes, runs, or accumulated state rather than
   within a single call
+- Alert definitions, their thresholds and their routing
 
 ## Out of scope
 

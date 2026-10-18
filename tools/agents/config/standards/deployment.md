@@ -20,6 +20,12 @@ to land first. A large change ships as a sequence of small ones, each safe by
 itself. The exception is a coordinated cutover that cannot be split, such as
 moving between infrastructure providers, and that exception is named in the change.
 
+**Every change passes the project's automated checks before it reaches the main branch.**
+The checks the project's contributing guide lists run on every change in CI,
+and a failing check blocks the merge. A check that runs only on a developer's
+machine runs when that developer remembers to, so the main branch stays
+deployable only as long as everyone remembers.
+
 **Each deployed version works alongside the version before it.**
 During a rollout, and after a rollback, old and new code run against the same
 data, config and callers. New code reads what old code wrote, and old code
@@ -52,6 +58,15 @@ compared against the previous version, and those signals can tell which
 version produced them. A regression reaches someone, or something, that can
 act within minutes, and reversing it is a single action. Where nothing serves
 production traffic, such as a published library or CLI, this does not apply.
+
+**A deployed system's spend has a ceiling, and crossing a threshold below that ceiling raises an
+alert.**
+Hard limits, such as maximum instances, autoscaling caps and quotas, bound how
+fast a runaway loop or a traffic spike can spend. A budget alert set below the
+ceiling reaches a person before the ceiling is hit. The budget alert alone is
+not enough, because it reports spend only once billing has recorded it, and a
+runaway process can spend faster than billing reports. Where nothing deployed
+can scale or incur usage charges, this does not apply.
 
 **Migrations don't lock tables or corrupt existing data.**
 Schema changes on large tables use strategies that avoid long locks. Existing
