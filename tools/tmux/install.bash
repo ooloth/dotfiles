@@ -2,8 +2,7 @@
 set -euo pipefail
 
 source "${DOTFILES}/tools/bash/utils.bash"
-
-TPM_DIR="${HOME}/.config/tmux/plugins/tpm"
+source "${DOTFILES}/tools/tmux/utils.bash"
 
 info "🪟 Installing tmux"
 if [[ ! -d "${TPM_DIR}" ]]; then
