@@ -55,7 +55,9 @@ form, because `privacy.md` rules out the value.
 
 **A failure that needs a person reaches one.**
 A deployed system raises an alert when its errors cross a threshold, when it
-stops serving, and when scheduled work does not complete in its window. Each
+stops serving, and when scheduled work does not complete in its window. Work
+that should happen regularly but runs only when someone remembers to trigger it
+counts as scheduled work, because it can stop happening just as silently. Each
 alert goes to a channel that people read and that outlives any one person's
 assignment, such as a team channel rather than one person's inbox. People move
 between systems, and an alert sent to someone who has moved on reaches nobody.
