@@ -309,9 +309,9 @@ the type story and/or test plan, re-present the full artifact, and stop again. D
 until the user gives explicit approval.
 
 When the work is on a ticket (GitHub Issue, Linear, Jira, etc.), the comment is the design above
-without the approach's rows of the property table, the open decisions and the approval request. An open decision settled
-during design goes in the section it affects and links the record that settles it, which is
-committed and pushed before the comment is posted. Offer to post it, then post it once the user
-approves, before writing code. If answers to the open decisions change the
-text, show the changed text and offer to post that instead. When the work is not on a ticket,
+without the approach's rows of the property table, the open decisions and the approval request. An
+open decision settled during design goes in the section it affects and links the record that
+settles it, which is committed and pushed before the comment is posted. Offer to post it, then post
+it once the user approves, before writing code. If answers to the open decisions change the text,
+show the changed text and offer to post that instead. When the work is not on a ticket,
 nothing is recorded. Then proceed with the first slice.
