@@ -68,6 +68,14 @@ applying this require the author to make a choice.
 [prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) collects evidence from
 running the real system. The test suite doesn't count as any part of the proof.
 
+[wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session by finding what would
+mislead the next agent. Every action the session raised gets exactly one status (done, deferred,
+dropped or open) with evidence for it, so a request made in passing can't quietly disappear. It
+reads the whole open backlog for tickets the session's work made false or finished. A cold reader
+given only the repo path reports what it would do next and what told it to. It passes only if it
+picks the right thing for the right reason, because the signal it followed is the one the next
+agent will follow too.
+
 ### Writing
 
 [write-pr-description](./tools/agents/config/skills/write-pr-description/SKILL.md) writes the
