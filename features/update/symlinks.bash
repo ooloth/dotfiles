@@ -11,13 +11,14 @@ main() {
 
   info "🔗 Updating symlinks"
 
-  local home_config="${HOME}/.config"
-  local vscode_config="${HOME}/Library/Application Support/Code/User"
-
   # Remove broken symlinks first
-  for dir in "${HOME}" "${home_config}" "${vscode_config}"; do
+  local dir
+  while IFS= read -r dir; do
     remove_broken_symlinks "${dir}"
-  done
+  done < <(any_broken_symlink_dirs)
+  while IFS= read -r dir; do
+    remove_broken_repo_symlinks "${dir}"
+  done < <(repo_symlink_dirs)
 
   # If a specific tool is provided as an argument, symlink only that tool's configs
   if [[ ! -z "${tool}" ]]; then

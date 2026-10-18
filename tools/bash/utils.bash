@@ -96,7 +96,20 @@ symlink() {
   ln -fsvw "$source_file" "$target_dir"
 }
 
-# TODO: confirm this works; I've been seeing broken symlinks in ~/.claude and possibly elsewere...
+# Directories swept for any broken symlink, since only links this repo made are expected there.
+# ~/.config is swept two levels deep, so a tool's own folder under it is covered too.
+any_broken_symlink_dirs() {
+  printf "%s\n" "${HOME}" "${HOME}/.config" "${HOME}/Library/Application Support/Code/User"
+}
+
+# Directories other tools also link into, swept only for broken links into this repo.
+# scripts/check-link-scripts.bash fails when a link.bash links into a directory neither list covers.
+repo_symlink_dirs() {
+  printf "%s\n" "${HOME}/.claude" "${HOME}/.agents" "${HOME}/.codex" "${HOME}/.local/bin" \
+    "${HOME}/.config/pi/agent"
+}
+
+# Removes broken symlinks in a directory, whatever they point at.
 remove_broken_symlinks() {
   local directory="${1:-}"
 
@@ -122,6 +135,36 @@ remove_broken_symlinks() {
       trash "${symlink}"
     fi
   done < <(find "${directory}" -maxdepth "${max_depth}" -type l -print0 2>/dev/null)
+
+  return 0
+}
+
+# Removes broken symlinks in a directory that point into this repo, leaving other tools' links alone.
+remove_broken_repo_symlinks() {
+  local directory="${1:-}"
+
+  # An empty or relative DOTFILES would make every link look like it points into the repo
+  if [[ "${DOTFILES:-}" != /* || ! -d "${DOTFILES}" ]]; then
+    echo "🚨 Error: DOTFILES must be an absolute path to the repo, got '${DOTFILES:-}'" >&2
+    return 1
+  fi
+
+  if [[ -z "${directory}" ]]; then
+    echo "🚨 Error: Directory path is required" >&2
+    return 1
+  fi
+
+  if [[ ! -d "${directory}" ]]; then
+    return 0
+  fi
+
+  local symlink
+  while IFS= read -r -d '' symlink; do
+    if [[ "$(readlink "${symlink}")" == "${DOTFILES}/"* && ! -e "${symlink}" ]]; then
+      printf "🧼 Removing broken symlink: ${symlink}\n"
+      trash "${symlink}"
+    fi
+  done < <(find "${directory}" -maxdepth 1 -type l -print0 2>/dev/null)
 
   return 0
 }

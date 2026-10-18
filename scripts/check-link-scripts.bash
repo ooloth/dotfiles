@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
-# Check that every tools/*/link.bash writes nothing in check mode.
+# Check that every tools/*/link.bash writes nothing in check mode, and links only into directories
+# the broken-symlink sweep covers.
 #
 # Run with: bash scripts/check-link-scripts.bash
 #
 # dcheck runs each link.bash with DOTFILES_CHECK=true to report link status, and promises to change
 # nothing. A link.bash that hand-rolls `ln` instead of calling symlink() can break that promise
 # without anyone noticing.
+#
+# `symlinks` removes broken links only in the directories any_broken_symlink_dirs and
+# repo_symlink_dirs list in tools/bash/utils.bash. A link in any other directory stays behind,
+# broken, once its source is deleted, so each link a script creates must land in one of them.
 #
 # For each link.bash, this builds its links for real in an empty temporary HOME, then removes them
 # one at a time and runs the script in check mode, failing if check mode puts anything back.
@@ -33,6 +38,17 @@ make_fake_home() {
   mkdir -p "${dir}/Repos/ooloth"
   ln -s "${DOTFILES}" "${dir}/Repos/ooloth/dotfiles"
   echo "${dir}"
+}
+
+# Whether the sweep in `symlinks` reaches a link in this directory. ~/.config is swept two levels
+# deep, so its subdirectories count too.
+is_swept_dir() {
+  local fake_home="$1" dir="$2" swept
+  while IFS= read -r swept; do
+    [[ "${dir}" == "${swept}" ]] && return 0
+  done < <(HOME="${fake_home}" run_link_script -c \
+    "source '${fake_home}/Repos/ooloth/dotfiles/tools/bash/utils.bash'; any_broken_symlink_dirs; repo_symlink_dirs")
+  [[ "$(dirname "${dir}")" == "${fake_home}/.config" ]]
 }
 
 # Every path under a fake HOME except the repo fixture, with each symlink's target, in a stable
@@ -72,6 +88,19 @@ for link_script in "${DOTFILES}"/tools/*/link.bash; do
     links+=("${link}")
   done < <(find "${fake_home}" -path "${fake_home}/Repos" -prune -o -type l -print | sort)
 
+  unswept=()
+  for link in ${links[@]+"${links[@]}"}; do
+    is_swept_dir "${fake_home}" "$(dirname "${link}")" || unswept+=("${link}")
+  done
+  if [[ ${#unswept[@]} -gt 0 ]]; then
+    printf "❌ %s links into a directory the broken-symlink sweep does not cover:\n" "${name}"
+    printf "    %s\n" "${unswept[@]/#${fake_home}/\$HOME}"
+    printf "    Add the directory to repo_symlink_dirs in tools/bash/utils.bash\n"
+    failed+=("${name}")
+    rm -rf "${fake_home}"
+    continue
+  fi
+
   # A link.bash may create no links on this machine; ${arr[@]+...} keeps bash 3.2's set -u from
   # treating the empty array as unbound
   for link in ${links[@]+"${links[@]}"}; do
@@ -101,4 +130,5 @@ if [[ ${#failed[@]} -gt 0 ]]; then
   exit 1
 fi
 
-printf "✅ %d link.bash scripts wrote nothing in check mode\n" "${checked}"
+printf "✅ %d link.bash scripts wrote nothing in check mode and link only into swept directories\n" \
+  "${checked}"
