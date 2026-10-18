@@ -446,9 +446,9 @@ mechanism that fits, in this order, because they decay at different rates:
 
 1. **A check that runs** — a script, a lint rule, a test. It cannot be forgotten and does not depend
    on anyone reading anything. The standards already prefer this wherever a rule could be executed.
-2. **A scan in a review or handover skill**, where catching it needs judgement rather than a lookup:
-   a stale claim, a decision nobody argued, a promise nothing enforces. Say what to look for and
-   name where it has actually occurred.
+2. **A scan in a review skill or `wrap-up`**, where catching it needs judgement rather than a
+   lookup: a stale claim, a decision nobody argued, a promise nothing enforces. Say what to look for
+   and name where it has actually occurred.
 3. **A written rule**, last, because it holds only while somebody remembers it.
 
 **Whichever mechanism you pick, verify it by replaying the failing input through a fresh agent.**
