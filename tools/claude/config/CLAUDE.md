@@ -95,7 +95,9 @@ ticket comment about it, even in the same already-approved task — check separa
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
 cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and
-acting in the same turn makes the question rhetorical and bypasses the gate.
+acting in the same turn makes the question rhetorical and bypasses the gate. The one exception is
+an action my latest message explicitly approved that none of your questions are about: do it in the
+same turn, and say that you did.
 
 **Number every question the user has to answer.** When a response asks the user for decisions or
 answers, list them as a numbered list (1., 2., 3.), never as bullets, so the user can reply by
