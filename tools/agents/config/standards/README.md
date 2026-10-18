@@ -4,10 +4,10 @@ Shared standards files for code writing, reviewing and scanning skills.
 
 ## What these files are
 
-Each file states **standards** — descriptions of what correct code looks like,
-written in declarative form and graded by how strongly they hold. Standards are
-not instructions to the agent; they are descriptions of what is true about
-well-written code.
+Each file states **standards** — descriptions of what correct code, and a
+correctly running system, look like, written in declarative form and graded by
+how strongly they hold. Standards are not instructions to the agent; they are
+descriptions of what is true about well-written code and well-run systems.
 
 Only the **Must** tier holds unconditionally. **Should** allows documented
 exceptions and **Consider** is a judgment call with no default, so this content
