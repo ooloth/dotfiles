@@ -400,8 +400,9 @@ are for work already approved.
 
 **The signal exists so I can look at the working tree first.** That is the whole point of it. Work I
 have not seen cannot have been approved, whatever word appeared in my message. I never want you to
-commit changes I haven't reviewed. I always want you to show me the uncommitted changes in the
-working tree.
+commit changes I haven't reviewed. I review the working tree myself in lazygit, so name each file
+you changed and say what the change does. Don't paste diffs or whole files of the working tree
+into the reply: they bury the summary and the discussion.
 
 **A commit signal covers the tree as it stood when I sent it, and nothing changed afterwards.** Not
 the work my same message asked you to do next. Not the fix you thought of while working. Those go in
@@ -479,7 +480,8 @@ Skip and say nothing if execution went smoothly.
 - Put scratch work (spikes, throwaway repos, proofs of concept) in a directory from `mktemp -d`,
   never in bare `/tmp`.
 - I cannot open your scratchpad. Paste anything I must read or approve into the reply. Never tell
-  me to look at a file in it.
+  me to look at a file in it. Files in the working tree are the exception: I read those in
+  lazygit.
 - Anything I must read or approve goes in the final message of the turn, after the last tool call.
   Text written before a tool call can be hidden from me.
 - Never start a background process with `&` or `nohup`. Run it in a tmux window, or start, check
