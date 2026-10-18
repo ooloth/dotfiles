@@ -123,7 +123,9 @@ never about the implementation of any one child.
 
 ### Ordering
 
-Create the parent first so children can reference it, and open each child body with `Part of #N`.
+Create the parent first so each child can be created with `--parent`. A child body does not name
+its parent or its place in a sequence: the browser shows the parent beside the issue, and agents
+read it with `--json parent`, which `use-gh` makes part of every issue read.
 Sub-issues list in creation order, so create them in the order you intend to work them.
 
 ---

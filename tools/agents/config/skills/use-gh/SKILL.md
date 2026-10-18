@@ -65,9 +65,11 @@ event type before submitting, not after.
 `gh issue view N` and `gh pr view N` print the body only, so you read a stale picture with no hint
 anything is missing.
 
-- **Read the comments.** On a long-running issue the current plan usually lives in a comment, not
-  the body. `--comments` cannot be combined with `--json`, so ask for them as a field instead:
-  `gh issue view N --json title,body,comments`.
+- **Read the comments and the parent.** On a long-running issue the current plan usually lives in
+  a comment, not the body, and a sub-issue's body does not name its parent epic, whose plan
+  governs it. `--comments` cannot be combined with `--json`, so ask for both as fields:
+  `gh issue view N --json title,body,comments,parent`. When `parent` is set, read that issue's
+  comments too.
 - **Ask for relationships by name.** `parent`, `subIssues`, `blockedBy` and `blocking` are
   `--json` fields on `gh issue view` and `gh issue list` (gh 2.102), and are never printed unless
   requested: `gh issue view N --json parent,blockedBy,blocking,subIssues`.
