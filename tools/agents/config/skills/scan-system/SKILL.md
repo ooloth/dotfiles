@@ -6,9 +6,10 @@ argument-hint: 'Path to the system''s repo [optional, defaults to the current di
 
 Scope: $ARGUMENTS (if empty, the repo the user named, or else the repo in the current directory).
 
-This skill checks what a system is like while it runs: whether its alerts fire, its backups
-restore, its certificates renew and its processes come back after a crash. Reading the code can't
-answer those. `scan-standards` reviews the code itself, so don't repeat that work here.
+This skill checks what a system does while it runs: whether its alerts fire, its backups restore,
+its certificates renew, its calls time out and its processes come back after a crash. It judges
+that behaviour whether config or code decides it. `scan-standards` judges how the code is written,
+such as its structure, naming and types, so leave those claims to it.
 
 Read `~/.agents/standards/README.md` for what the tiers mean. Step 2 says which standards files to
 read for each kind of component.
@@ -17,7 +18,9 @@ read for each kind of component.
 
 - **Evidence or it doesn't hold.** A claim holds only when you can show what proves it: a CI run,
   a log line, an alert in its channel, a restore that finished, a certificate's renewal record.
-  Config that looks right is not evidence that it works.
+  Config that looks right is not evidence that it works. Where only code can answer a claim, such
+  as whether a call is idempotent or sets a timeout, the code is the evidence: cite the file and
+  line, and label it code evidence.
 - **Judge each claim by the failure it guards against.** Where a claim has no meaning for a
   component, such as runtime error alerts for a static site, it doesn't apply, but the failure
   behind it may take another form. A static site can still stop serving, and content can fail to
@@ -30,7 +33,10 @@ read for each kind of component.
   `gh` need no approval. Follow any skill that governs the tool, such as `use-gh` before `gh`.
   Anything that changes state needs the user's approval first. If a platform's CLI isn't installed
   or logged in, mark what depends on it as Blocked and suggest the command the user can run to log
-  in.
+  in, which may include installing it. That command is for the user; don't run it yourself. Don't
+  run the repo's own code, because it can have side effects. A read that sends data to a
+  third party, such as `npm audit` sending the lockfile to the registry, is allowed, but name it in
+  the report.
 - **Changes are made the way the project already manages infrastructure.** If it uses Terraform,
   change Terraform, and never create resources by hand alongside it. If the infrastructure was set
   up by hand, make the change by hand with approval, record it in `SYSTEM.md`, and raise bringing it
@@ -45,10 +51,12 @@ List the system's components. Start from `SYSTEM.md` if it exists, and check it 
 running system rather than trusting it. Otherwise work it out from the repo and the platform.
 
 Every system has a repository and pipeline, a cloud project or account, alerting, and an operator
-document, even when some of them are missing or empty. Add one entry for each service, scheduled
-job or worker, datastore, queue, static site, domain and external dependency the system actually
-has. For each, note where it runs and in which environments. Name the types
-it doesn't have in one line, and don't check their claims.
+document, even when some of them are missing or empty. Together these four make up one component,
+the system as a whole. Add one entry for each service, scheduled job or worker, datastore, queue,
+static site, domain and external dependency the system actually has. For each, note where it runs
+and in which environments. A component of two kinds, such as an external service that also holds
+the only copy of the content, is checked against both kinds' files. Name the kinds the system
+doesn't have in one line, and don't check their claims.
 
 Also establish:
 
@@ -57,8 +65,8 @@ Also establish:
 - which channel alerts go to, and whether people still read it
 - who is responsible for the system, and whether anyone has time set aside to support it
 
-List what you couldn't determine as numbered questions and ask them. Carry on with every check that
-doesn't depend on an answer, and mark the ones that do as Blocked, naming the question.
+List what you couldn't determine as numbered questions, and ask them together with the tool results
+below, so the user is interrupted once.
 
 ### Confirm the tools are ready
 
@@ -76,37 +84,45 @@ Pointed at this system matters as much as logged in. A tool aimed at the wrong p
 produces confident evidence about a different system, and nothing in the report would look wrong.
 
 Run these commands, like the inventory's reads, as parallel tool calls in one batch rather than one
-at a time. Report the results as one list. For each tool that is missing, logged out or aimed
-elsewhere, give the command the user can run to fix it, such as `! gcloud auth login`, and wait.
-Start the checks once the tools are ready, or once the user says to carry on without some of them.
-In that case, mark every claim that needs a missing tool as Blocked from the start, naming the
-tool.
+at a time. Report the results as one list, followed by the inventory's questions. For each tool
+that is missing, logged out or aimed elsewhere, give the command the user can run to fix it, such
+as `! gcloud auth login`. Then wait. Start the checks once the tools are ready, or once the user
+says to carry on without some of them or without answers. In that case, mark every claim that needs
+a missing tool or an unanswered question as Blocked from the start, naming it.
 
 ## 2. Check each component
 
-Check the components in parallel. Launch one subagent per component from the inventory, including
-each system-wide one, all in a single message, using the Opus model. The components don't depend
-on each other, so the wait is the slowest component rather than the sum of all of them, and each
-component's evidence stays out of your context. Opus is slower per component, but a wrong Holds or
-a check left unrun hides a gap, and in a side-by-side trial Opus caught failures and applied the
-evidence rule where Sonnet did not.
+Check the components in parallel. Launch one general-purpose subagent per component from the
+inventory, including the system as a whole, all in a single message, using the Opus model. The
+components don't depend on each other, so the wait is the slowest component rather than the sum of
+all of them, and each component's evidence stays out of your context. Opus is slower per component,
+but a wrong Holds or a check left unrun hides a gap, and in a side-by-side trial Opus caught
+failures and applied the evidence rule where Sonnet did not.
 
-Give each subagent:
+External dependencies the system calls the same way, such as several APIs fetched through one
+shared helper at build time, can share one subagent, so a small system doesn't get one agent per
+API. Every other component gets its own.
+
+Give each subagent the following. For the parts of this skill, give the path to this file and name
+the sections rather than pasting them.
 
 - the component, where it runs, and the environments it runs in
-- the standards files listed below for its kind, as the files to read
+- the standards files listed below for its kind, or for both kinds if it has two
 - the tool readiness results from step 1, and which tools it may use
-- the rest of this step, from the file list down, as its instructions
+- this skill's "Rules" section, which binds the subagent as much as you
+- the instructions below, from "Read the standards files" down to the "Validate" heading, but not
+  that section, which is yours
 - these limits: read the files itself, spawn no subagents, change nothing, and ask nothing. Where
   it would need to ask or to act, it reports the claim as Blocked or Unproven and names the
   question or the proposed action
-- the return format: one entry per claim, with the claim's lead sentence, its file and tier, its
-  status, and its evidence or reason
+- the return format: one entry per claim, with the claim's lead sentence, its file and tier, a
+  status field that holds exactly one of the six statuses below and nothing else, and its evidence
+  or reason
 
-The rest of this step is what each subagent does.
+The rest of this step, up to "Validate", is what each subagent does.
 
-For each component, read the standards files listed for its kind in `~/.agents/standards/`, and
-check every claim in them that bears on the component:
+Read the standards files listed for your component's kind in `~/.agents/standards/`, and check
+every claim in them that bears on the component:
 
 - **The system as a whole:** `deployment.md`, `dependencies.md`, `security.md`, `observability.md`,
   `developer-experience.md`, and `terraform.md` where Terraform is used
@@ -119,13 +135,16 @@ check every claim in them that bears on the component:
 - **Domain and edge:** `reliability.md`
 - **External dependency:** `reliability.md`
 
-Claims about how code is written belong to `scan-standards`, and claims about a different kind
-of component don't bear on this one. Name those together in one line per component rather than
-giving each a status. Judge each remaining claim against its own text and note its tier as you read
-it. Give each one a status:
+Claims about how code is written, such as its structure, naming or types, belong to
+`scan-standards`. Claims about what the system does at runtime, such as timeouts and retries, are
+checked here even when code is what decides them. Claims about a different kind of component don't
+bear on this one. Name the skipped claims together in one line rather than giving each a status.
+Judge each remaining claim against its own text and note its tier as you read it. Give each one
+exactly one of these six statuses, and put any nuance in the evidence, not in the status:
 
 - **Holds:** with the evidence that it works, as a link or as the command you ran and the part of
-  its output that proves it, so it can be checked again.
+  its output that proves it, so it can be checked again. Code evidence is labelled as such, with
+  file and line.
 - **Unproven:** the config or code is there, but nothing shows it working yet. Say what would
   prove it.
 - **Fails:** with what you found.
@@ -144,7 +163,11 @@ the alert's condition fires on a test input without notifying anyone: the alerti
 preview against a test event, or the script run against a failing input with notification turned
 off. If the script can't turn notification off, propose a way to. Second, send the channel a test
 notification and show it arrived. Record what the split leaves unproven, such as the threshold.
-Sending the test notification is an action, so a subagent proposes it rather than sending it.
+Running the alert script runs the repo's code, and sending the test notification is an action, so
+a subagent proposes both rather than doing them. You run them once the user approves.
+
+Where a finding comes from code other components share, such as a common retry helper, say so, so
+it can be reported once.
 
 Batch independent reads as parallel tool calls in one turn rather than one at a time.
 
@@ -160,12 +183,27 @@ evidence says the check wasn't run, such as "not checked" or "didn't review", is
 Run the check yourself, or report it as not examined, so the report doesn't claim more ground than
 was covered.
 
+Also:
+
+- **Fix statuses outside the six.** A status such as "Holds, partly" or "Holds by code, Unproven
+  live" is not one of the six. Settle it on one, checking the evidence yourself where needed.
+- **Reread code evidence.** For a Holds that rests on code evidence, open the file and line and
+  confirm the code says what the subagent said.
+- **Resolve contradictions.** Compare results that concern the same thing across components, such
+  as a redirect one subagent tested and another relied on. Where they disagree, check it yourself
+  and correct the wrong one.
+- **Report shared findings once.** A finding several subagents reported from shared code goes
+  under the component where the code lives, naming the others it affects. Code no single component
+  owns, such as a shared retry helper, goes under the system as a whole.
+
 Then gather the questions and proposed actions the subagents reported, remove duplicates, and ask
 the questions as one numbered list.
 
 ## 3. Rank what fails
 
-Order every Fails, Unproven and Blocked result, worst first:
+Order every Fails, Unproven and Blocked result, worst first, putting each in the first category
+it fits. Rank an Unproven or Blocked result by what it would mean if it turned out to fail, and
+mark it as unconfirmed:
 
 1. **Failures that happen with nobody changing anything.** Expiring certificates, domains and
    credentials, data growing without a bound, crashes nothing restarts, platforms past end of
@@ -189,8 +227,9 @@ evidence.
 Create or update `SYSTEM.md` at the repo root from the inventory and results. Link to consoles and
 saved queries rather than copying what they show. Link to it from the repo's agent context file
 (`AGENTS.md` or `CLAUDE.md`) so agents read it at the start of a session. Set the "last checked"
-date to today only if this run checked the running system, not just the repo. Creating or editing
-it is a change, so it needs approval like any other.
+date to today only if this run could see the platform's own state, through its console, CLI or
+API. Public probes such as `curl` and `whois` are not enough on their own. Creating or editing
+it is a change, so show the draft in the report and write it only once the user approves.
 
 ```markdown
 # <Project> system
@@ -243,8 +282,10 @@ What the last scan found that still fails or is unproven.
 End with:
 
 1. The inventory, one line per component.
-2. The results per component, one line per claim, with its status and evidence or reason. Claims
-   in one component that share a status and a reason can share a line.
+2. The results per component, grouped by status, one line per claim with its evidence or reason.
+   Claims that share a status and a reason can share a line. Name any read that sent data to a
+   third party.
 3. The ranked list from step 3, which can be read without the rest.
 4. The fixes proposed, waiting for approval.
-5. The numbered questions still open.
+5. The `SYSTEM.md` draft, waiting for approval.
+6. The numbered questions still open.
