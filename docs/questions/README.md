@@ -19,8 +19,7 @@ order, present even when empty — an empty section is the reminder that nobody'
 2. **What would settle it** — the evidence, measurement, or event that ends the question. Not
    another question. A question that genuinely can't be worked until another is answered says so
    here, in prose, as part of describing what an answer requires.
-3. **Resolves into** — where the answer lands (a decision, recorded in `../decisions/` once that
-   folder exists).
+3. **Resolves into** — where the answer lands (a decision, recorded in `../decisions/`).
 4. **Source** — where the question came from, so it survives whatever raised it being deleted.
 5. **Options** — each candidate answer, with its strongest case and its cost.
 6. **Findings** — evidence gathered so far, written in as it's established, not batched at the

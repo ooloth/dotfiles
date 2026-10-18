@@ -17,4 +17,6 @@ replacement link is not the same as retiring the one it supersedes.
 `ln -s` would still create a working symlink, so this isn't required for
 correctness — but the helper's check-mode support (`DOTFILES_CHECK=true`)
 and consistent handling of existing or incorrect symlinks are lost
-without it.
+without it. The helper does replace a real file at the target without
+copying it first; whether it should is open in
+`../questions/should-symlink-refuse-to-replace-a-real-file.md`.
