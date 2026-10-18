@@ -85,9 +85,11 @@ tool.
 ## 2. Check each component
 
 Check the components in parallel. Launch one subagent per component from the inventory, including
-each system-wide one, all in a single message, using the Sonnet model. The components don't depend
+each system-wide one, all in a single message, using the Opus model. The components don't depend
 on each other, so the wait is the slowest component rather than the sum of all of them, and each
-component's evidence stays out of your context.
+component's evidence stays out of your context. Opus is slower per component, but a wrong Holds or
+a check left unrun hides a gap, and in a side-by-side trial Opus caught failures and applied the
+evidence rule where Sonnet did not.
 
 Give each subagent:
 
