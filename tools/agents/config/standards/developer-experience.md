@@ -77,7 +77,10 @@ to deploy, roll back and restart it, before they need its architecture. README
 and CONTRIBUTING.md say how to change the code; this document says how to keep
 it running. It links to consoles and saved queries rather than copying what
 they show, because copied state goes stale without anyone noticing. The known
-failure modes above belong in the same document.
+failure modes above belong in the same document. It also names who is
+responsible for the system and whether anyone has time set aside to support
+it. When nobody does, it says so, because that tells the next person what they
+are taking on.
 
 ## Consider
 

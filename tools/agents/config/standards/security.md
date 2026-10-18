@@ -46,6 +46,13 @@ sequences are rejected or fully resolved before use.
 New dependencies are well-maintained and reputable. Integrity is verified
 via lockfiles or checksums.
 
+**Changes to production are traceable to who made them and when.**
+Deploys, configuration changes, permission grants and manual actions in a cloud
+console each leave a record naming the person or identity and the time. The
+platform's audit log is turned on and kept long enough to cover the gap between
+a change and the failure it causes. When a system breaks with no deploy to
+blame, this record is how a manual change is found.
+
 ## Consider
 
 **Access follows least privilege.**
@@ -69,6 +76,7 @@ form handlers; not to Bearer-token or API-key authenticated endpoints.
 - File I/O
 - Authentication and authorization enforcement
 - Secret handling
+- Audit logging and production access configuration for the cloud project or account
 
 ## Out of scope
 

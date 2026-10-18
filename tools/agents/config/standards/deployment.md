@@ -92,6 +92,12 @@ Where traffic is high enough for signals to separate a regression from noise,
 a canary or progressive rollout halts and rolls back without waiting for a
 person. Below that volume, automatic rollback fires on noise or never fires.
 
+**Deployed resources carry labels that make cost and ownership attributable.**
+Each resource names the system it belongs to and its environment, so a bill can
+be split by system and an unknown resource can be traced to an owner.
+`terraform.md` states this for resources Terraform manages. It holds equally
+for resources created any other way.
+
 ## In scope
 
 - Application code that runs in a deployed environment

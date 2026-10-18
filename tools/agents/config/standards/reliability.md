@@ -2,7 +2,9 @@
 
 A system is reliable when it handles external failures gracefully, recovers
 from transient problems automatically, and never silently hangs when a
-dependency is unavailable.
+dependency is unavailable. It stays reliable while nobody is changing it: the
+failures that come from time passing, such as expiry, growth and crashes nobody
+sees, are handled without a person.
 
 ## Must
 
@@ -69,6 +71,36 @@ that required them is done. Long-lived processes that accumulate open handles
 degrade over time — resource exhaustion is a reliability failure, not just
 a memory concern.
 
+**Everything that expires is listed, and raises an alert before it expires.**
+TLS certificates, domain registrations, API tokens, service account keys and
+other credentials each stop working on a date. A system that works today and
+changes nothing still fails on that date, with no deploy to blame. Each one is
+listed with its expiry in the operator document, and either renews
+automatically or raises an alert early enough for a person to act. Automatic
+renewal is still monitored, because renewal can fail silently too.
+
+**A crashed or hung process restarts without a person, and a restart loop raises an alert.**
+A process that dies stays dead until someone notices, and on a system nobody is
+assigned to, nobody notices. The platform restarts it when it exits and when a
+liveness check fails, so a hang counts as a failure instead of looking like a
+quiet process. Restarting hides a fault as well as recovering from it, so
+repeated restarts reach a person, as `observability.md` requires.
+
+**Each service has a health check that tests what it depends on.**
+The check answers whether the service can do its job: reach its database, its
+queue and the services it calls. A check that only confirms the process is
+running reports healthy while every request fails. Where the platform
+separates liveness from readiness, a dependency outage makes the service
+unready, not dead, so traffic stops without the platform restarting it in a
+loop.
+
+**Stored data that grows has a bound.**
+Logs, tables, buckets, disks and queues grow for as long as the system runs,
+and an unwatched system runs for a long time. Each one has a retention rule
+that removes what is no longer needed, or an alert at a threshold below its
+capacity. A full disk stops a system nobody changed. `privacy.md` bounds how
+long personal data is kept; this bounds everything else.
+
 ## Consider
 
 **Non-critical dependencies have a degraded fallback.**
@@ -81,11 +113,26 @@ When a dependency is consistently failing, requests to it are suspended for a
 period rather than repeatedly attempted. This protects the calling system from
 cascading failure and gives the dependency time to recover.
 
+**Each workload declares the CPU and memory it may use.**
+Container requests and limits, or the platform's equivalent, keep one workload
+from starving its neighbours and let the scheduler place it. Without them, a
+memory leak takes down whatever shares its machine, and the failure shows up in
+a component that did nothing wrong.
+
+**A message that keeps failing is set aside where it can be replayed.**
+Where work arrives through a queue, a message that fails every retry moves to a
+dead-letter queue instead of being dropped or retried forever. The dead-letter
+queue raises an alert when it holds anything, because each message there is
+work the system accepted and never did.
+
 ## In scope
 
 - Source files containing network requests, database queries, or calls to external services
 - Entry points and the call graph reachable from them, for the two standards about failure paths
 - Sites that raise, exit, or return early on failure, wherever they sit
+- Deployment and infrastructure config: restart policies, health and liveness checks, resource
+  limits, queue settings, retention rules
+- Certificates, domains and credentials, and how each one renews
 
 ## Out of scope
 

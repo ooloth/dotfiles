@@ -82,7 +82,8 @@ a false positive costs one read; a false negative means missed guidance.
   transactions
 - **`decision-making.md`** — architecture decision records, spikes and benchmarks, any choice of
   tool, runtime, platform or data shape
-- **`dependencies.md`** — package manifests (package.json, Cargo.toml, pyproject.toml, go.mod)
+- **`dependencies.md`** — package manifests (package.json, Cargo.toml, pyproject.toml, go.mod),
+  base images, automatic update config, platform and runtime versions
 - **`deployment.md`** — any change to code that runs in a deployed environment; CI/CD config,
   Dockerfiles, infrastructure manifests, migration files, spend limits
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions,
@@ -100,10 +101,11 @@ a false positive costs one read; a false negative means missed guidance.
   responses; analytics events
 - **`python.md`** — .py files; load alongside language-agnostic files
 - **`reliability.md`** — network requests, database queries, external service calls, file handles,
-  resource cleanup
+  resource cleanup; restarts, health checks, expiry, growth bounds and resource limits in
+  deployment config
 - **`rust.md`** — .rs files; load alongside language-agnostic files
 - **`security.md`** — HTTP handlers, auth and permission checks, file I/O, secret handling, input
-  parsing
+  parsing, audit logging of production changes
 - **`terraform.md`** — .tf and .tfvars files, CI/CD that runs plan or apply
 - **`testing.md`** — test files and test directories
 - **`type-design.md`** — type definitions, function signatures, domain models, API boundary types

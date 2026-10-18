@@ -39,6 +39,23 @@ Security audits run regularly — `npm audit`, `cargo audit`, `pip-audit`, or
 equivalent. Known vulnerabilities in transitive dependencies are not silently
 accumulated; they are triaged and resolved or explicitly accepted.
 
+**Dependency and base image updates arrive automatically as proposed changes, and CI checks each
+one.**
+A tool such as Dependabot or Renovate opens a change for each update to the
+manifest's dependencies, the container base image and the CI actions. CI runs
+on each one, so a passing update can be merged by whoever looks next, and a
+failing one says what broke. Without this, a system nobody is assigned to falls
+further behind every month, and the eventual upgrade is one large change made
+under pressure, usually because a vulnerability forced it.
+
+**The platforms the system runs on are within their support period, and their end dates are
+known.**
+The language runtime, the OS or base image, the cluster version and each
+managed service have an end-of-support date set by someone else. After it,
+security fixes stop, and the provider may upgrade or remove the platform on its
+own schedule. Each date is recorded in the operator document, and an upgrade is
+planned before the date arrives rather than forced after it.
+
 ## Consider
 
 **Frontend dependencies are scrutinized for bundle size.**
@@ -50,6 +67,9 @@ general-purpose alternatives when the use case is narrow.
 
 - Cargo.toml, package.json, requirements.txt, go.mod, Gemfile, and their lockfiles
 - Third-party code loaded at runtime: script tags, dynamic imports from external origins
+- Container base images, runtime version declarations, and update tool config such as
+  `dependabot.yml` or `renovate.json`
+- The versions of the platforms and managed services the system runs on
 
 ## Out of scope
 

@@ -56,11 +56,13 @@ form, because `privacy.md` rules out the value.
 **A failure that needs a person reaches one.**
 A deployed system raises an alert when its errors cross a threshold, when it
 stops serving, and when scheduled work does not complete in its window. Each
-alert goes to a place a person reads. A failure that is recorded but never
-surfaced is diagnosable only by someone who already suspects it, so a system
-can satisfy every other entry in this file and still run blind.
-`deployment.md` covers regressions a release introduces; this covers
-everything that breaks while nobody is deploying.
+alert goes to a channel that people read and that outlives any one person's
+assignment, such as a team channel rather than one person's inbox. People move
+between systems, and an alert sent to someone who has moved on reaches nobody.
+A failure that is recorded but never surfaced is diagnosable only by someone
+who already suspects it, so a system can satisfy every other entry in this file
+and still run blind. `deployment.md` covers regressions a release introduces;
+this covers everything that breaks while nobody is deploying.
 
 **An alert has been seen to fire, end to end.**
 An alert that has never fired is assumed broken, because its query, its
