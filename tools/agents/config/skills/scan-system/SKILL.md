@@ -153,7 +153,10 @@ Holds, because it hides a gap that nothing else will flag. So before ranking, re
 for every Holds on a Must or Should claim, in one parallel batch, and confirm the output says what
 the subagent said it did. Open each link. A Holds whose evidence doesn't reproduce becomes Unproven,
 and say in the report which results you re-checked. Fails, Blocked and Unproven results are already
-flagged for the user, so they don't need re-running.
+flagged for the user, so they don't need re-running. But read their evidence: a result whose
+evidence says the check wasn't run, such as "not checked" or "didn't review", is not a result.
+Run the check yourself, or report it as not examined, so the report doesn't claim more ground than
+was covered.
 
 Then gather the questions and proposed actions the subagents reported, remove duplicates, and ask
 the questions as one numbered list.
