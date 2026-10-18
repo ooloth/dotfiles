@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-04
+updated: 2026-10-17
 update_when: the helper's behaviour changes, or a laptop is found with a real file at a link target
 decays: fast
 status: open
@@ -13,7 +13,10 @@ Every `link.bash` calls `symlink()` in `tools/bash/utils.bash`, which runs `ln -
 target path holds a real file rather than a link, `ln -f` deletes it and puts the link in its
 place. Nothing is copied first and nothing reports the loss. This happens on the first `u` after a
 tool is added for a config that already exists on that laptop, and on a new machine where an app
-wrote its default config before `u` ran. The content is gone unless it was already in the repo.
+wrote its default config before `u` ran. It also happens after a working link is broken by a tool
+that saves its config by writing a temporary file and renaming it over the target: the link becomes
+a real file holding the tool's additions, edits to the repo copy stop reaching it, and the next `u`
+deletes those additions. The content is gone unless it was already in the repo.
 
 Check mode does not catch it either. With `DOTFILES_CHECK=true`, a real file at the target is
 reported as `MISSING`, which reads as "the link was never made" rather than "something else is in
@@ -62,4 +65,13 @@ Nothing here is settled until it graduates into a decision record.
   `❌ MISSING: config.toml → …`.
 - *Reasoned:* the exposure covers every `link.bash`, so the decision is about the shared helper
   rather than any one tool.
-- *Not yet measured:* how many link targets are real files on each laptop today.
+- *Measured (2026-10-17, Air):* `~/.claude/settings.json` was a real file, last written at the
+  same minute the `tmux-assistant-resurrect` tmux plugin was installed. It held the repo copy plus
+  that plugin's `SessionStart` and `SessionEnd` hooks and nothing else. The plugin's installer
+  writes its hooks to a temporary file and runs `mv` over `~/.claude/settings.json`, which replaces
+  a link with a file, and it does so on every load where its hooks are missing. A restored link
+  breaks again unless the repo copy carries the hooks or the plugin is gone.
+- *Measured (2026-10-17, Air):* with the plugin uninstalled and the link restored, every
+  `link.bash` in check mode reports its links `OK` except `codefresh → ~/.local/bin`, which is
+  `MISSING` because nothing is at the target. No link target on this laptop is a real file.
+- *Not yet measured:* how many link targets are real files on the work laptop.
