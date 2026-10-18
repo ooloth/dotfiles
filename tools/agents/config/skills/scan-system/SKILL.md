@@ -75,12 +75,33 @@ notification app, ask the user how they reach it, and treat it as Blocked until 
 Pointed at this system matters as much as logged in. A tool aimed at the wrong project or cluster
 produces confident evidence about a different system, and nothing in the report would look wrong.
 
-Report the results as one list. For each tool that is missing, logged out or aimed elsewhere, give
-the command the user can run to fix it, such as `! gcloud auth login`, and wait. Start the checks
-once the tools are ready, or once the user says to carry on without some of them. In that case,
-mark every claim that needs a missing tool as Blocked from the start, naming the tool.
+Run these commands, like the inventory's reads, as parallel tool calls in one batch rather than one
+at a time. Report the results as one list. For each tool that is missing, logged out or aimed
+elsewhere, give the command the user can run to fix it, such as `! gcloud auth login`, and wait.
+Start the checks once the tools are ready, or once the user says to carry on without some of them.
+In that case, mark every claim that needs a missing tool as Blocked from the start, naming the
+tool.
 
 ## 2. Check each component
+
+Check the components in parallel. Launch one subagent per component from the inventory, including
+each system-wide one, all in a single message, using the Sonnet model. The components don't depend
+on each other, so the wait is the slowest component rather than the sum of all of them, and each
+component's evidence stays out of your context.
+
+Give each subagent:
+
+- the component, where it runs, and the environments it runs in
+- the standards files listed below for its kind, as the files to read
+- the tool readiness results from step 1, and which tools it may use
+- the rest of this step, from the file list down, as its instructions
+- these limits: read the files itself, spawn no subagents, change nothing, and ask nothing. Where
+  it would need to ask or to act, it reports the claim as Blocked or Unproven and names the
+  question or the proposed action
+- the return format: one entry per claim, with the claim's lead sentence, its file and tier, its
+  status, and its evidence or reason
+
+The rest of this step is what each subagent does.
 
 For each component, read the standards files listed for its kind in `~/.agents/standards/`, and
 check every claim in them that bears on the component:
@@ -101,7 +122,8 @@ of component don't bear on this one. Name those together in one line per compone
 giving each a status. Judge each remaining claim against its own text and note its tier as you read
 it. Give each one a status:
 
-- **Holds:** with the evidence that it works.
+- **Holds:** with the evidence that it works, as a link or as the command you ran and the part of
+  its output that proves it, so it can be checked again.
 - **Unproven:** the config or code is there, but nothing shows it working yet. Say what would
   prove it.
 - **Fails:** with what you found.
@@ -120,6 +142,21 @@ the alert's condition fires on a test input without notifying anyone: the alerti
 preview against a test event, or the script run against a failing input with notification turned
 off. If the script can't turn notification off, propose a way to. Second, send the channel a test
 notification and show it arrived. Record what the split leaves unproven, such as the threshold.
+Sending the test notification is an action, so a subagent proposes it rather than sending it.
+
+Batch independent reads as parallel tool calls in one turn rather than one at a time.
+
+### Validate what the subagents report
+
+A subagent's results are evidence to check, not findings to relay. The costly mistake is a wrong
+Holds, because it hides a gap that nothing else will flag. So before ranking, re-run the evidence
+for every Holds on a Must or Should claim, in one parallel batch, and confirm the output says what
+the subagent said it did. Open each link. A Holds whose evidence doesn't reproduce becomes Unproven,
+and say in the report which results you re-checked. Fails, Blocked and Unproven results are already
+flagged for the user, so they don't need re-running.
+
+Then gather the questions and proposed actions the subagents reported, remove duplicates, and ask
+the questions as one numbered list.
 
 ## 3. Rank what fails
 
