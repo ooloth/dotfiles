@@ -97,7 +97,6 @@ symlink() {
 }
 
 # Directories swept for any broken symlink, since only links this repo made are expected there.
-# ~/.config is swept two levels deep, so a tool's own folder under it is covered too.
 any_broken_symlink_dirs() {
   printf "%s\n" "${HOME}" "${HOME}/.config" "${HOME}/Library/Application Support/Code/User"
 }
@@ -109,12 +108,27 @@ repo_symlink_dirs() {
     "${HOME}/.config/pi/agent"
 }
 
+# How many levels deep the sweep looks in a directory. ~/.config is swept two levels deep, so a
+# tool's own folder under it is covered too.
+symlink_sweep_depth() {
+  [[ "${1:-}" == "${HOME}/.config" ]] && echo 2 || echo 1
+}
+
+# Whether the sweep in `symlinks` reaches a link placed directly in this directory.
+is_swept_link_dir() {
+  local dir="${1:-}" swept
+  while IFS= read -r swept; do
+    [[ "${dir}" == "${swept}" ]] && return 0
+    [[ "$(symlink_sweep_depth "${swept}")" -ge 2 && "$(dirname "${dir}")" == "${swept}" ]] && return 0
+  done < <(any_broken_symlink_dirs; repo_symlink_dirs)
+  return 1
+}
+
 # Removes broken symlinks in a directory, whatever they point at.
 remove_broken_symlinks() {
   local directory="${1:-}"
-
-  # Remove broken symlinks at the top level of ~/.config subdirectories too
-  local max_depth=$([[ "${directory}" == *".config"* ]] && echo 2 || echo 1)
+  local max_depth
+  max_depth="$(symlink_sweep_depth "${directory}")"
 
   if [[ -z "${directory}" ]]; then
     echo "🚨 Error: Directory path is required" >&2
@@ -164,7 +178,8 @@ remove_broken_repo_symlinks() {
       printf "🧼 Removing broken symlink: ${symlink}\n"
       trash "${symlink}"
     fi
-  done < <(find "${directory}" -maxdepth 1 -type l -print0 2>/dev/null)
+  done < <(find "${directory}" -maxdepth "$(symlink_sweep_depth "${directory}")" -type l -print0 \
+    2>/dev/null)
 
   return 0
 }

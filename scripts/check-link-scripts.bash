@@ -40,15 +40,12 @@ make_fake_home() {
   echo "${dir}"
 }
 
-# Whether the sweep in `symlinks` reaches a link in this directory. ~/.config is swept two levels
-# deep, so its subdirectories count too.
+# Whether the sweep in `symlinks` reaches a link in this directory, asked of utils.bash so the two
+# can't disagree about which directories it covers or how deep.
 is_swept_dir() {
-  local fake_home="$1" dir="$2" swept
-  while IFS= read -r swept; do
-    [[ "${dir}" == "${swept}" ]] && return 0
-  done < <(HOME="${fake_home}" run_link_script -c \
-    "source '${fake_home}/Repos/ooloth/dotfiles/tools/bash/utils.bash'; any_broken_symlink_dirs; repo_symlink_dirs")
-  [[ "$(dirname "${dir}")" == "${fake_home}/.config" ]]
+  local fake_home="$1" dir="$2"
+  HOME="${fake_home}" run_link_script -c \
+    "source '${fake_home}/Repos/ooloth/dotfiles/tools/bash/utils.bash'; is_swept_link_dir '${dir}'"
 }
 
 # Every path under a fake HOME except the repo fixture, with each symlink's target, in a stable
