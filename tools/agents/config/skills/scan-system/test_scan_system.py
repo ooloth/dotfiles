@@ -1,7 +1,7 @@
 """Checks that every standards file scan-system's step 2 names still exists.
 
 The skill tells an agent which standards files to read for each kind of component. A renamed or
-deleted standards file would silently drop out of every scan, so this fails instead.
+deleted standards file would silently drop out of every scan-system run, so this fails instead.
 
 Run:
   uv run --with pytest pytest --import-mode=importlib tools/agents/config/skills/scan-system
