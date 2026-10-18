@@ -3,12 +3,13 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Tests for the broken-symlink sweep in tools/bash/utils.bash and features/update/symlinks.bash.
+"""Tests for how `symlinks` finds link scripts and sweeps broken links, in tools/bash/utils.bash and
+features/update/symlinks.bash.
 
-Run with: uv run scripts/test_symlink_sweep.py
+Run with: uv run scripts/test_symlinks.py
 
 Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it, and runs the sweep under macOS's own bash with no terminal, the way CI does. A `trash`
+expects it, and runs the code under macOS's own bash with no terminal, the way CI does. A `trash`
 stub on PATH records what it was asked to remove and removes it, so a run leaves nothing in the real
 Trash.
 """
@@ -72,6 +73,48 @@ class FakeHome:
         )
         log = self._trash_log.read_text().splitlines() if self._trash_log.exists() else []
         return Run(result.returncode, result.stdout + result.stderr, log)
+
+
+class LinkScriptsTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.home = FakeHome(Path(self._tmp.name))
+        self.repo = Path(self._tmp.name) / "repo"
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def _script(self, path: str) -> Path:
+        script = self.repo / "tools" / path
+        script.parent.mkdir(parents=True, exist_ok=True)
+        script.write_text("")
+        return script
+
+    def test_only_scripts_at_a_tools_root_are_listed(self) -> None:
+        a = self._script("a/link.bash")
+        b = self._script("b/link.bash")
+        self._script("a/wip/link.bash")
+        self._script("@new/link.bash")
+        self._script("@archive/old/link.bash")
+        run = self.home.run("link_scripts", dotfiles=str(self.repo))
+        self.assertEqual(run.status, 0, run.output)
+        self.assertEqual(run.output.splitlines(), [str(a), str(b)])
+
+    def test_every_link_script_in_the_repo_is_listed(self) -> None:
+        expected = sorted(
+            str(self.home.dotfiles / p.relative_to(REPO))
+            for p in REPO.glob("tools/*/link.bash")
+            if not p.parent.name.startswith("@")
+        )
+        run = self.home.run("link_scripts")
+        self.assertEqual(run.status, 0, run.output)
+        self.assertEqual(sorted(run.output.splitlines()), expected)
+
+    def test_no_link_scripts_is_an_error_naming_where_it_looked(self) -> None:
+        (self.repo / "tools").mkdir(parents=True)
+        run = self.home.run("link_scripts", dotfiles=str(self.repo))
+        self.assertNotEqual(run.status, 0, run.output)
+        self.assertIn(str(self.repo), run.output)
 
 
 class SweepTest(unittest.TestCase):

@@ -7,7 +7,7 @@ on:
     paths:
       - "**/*.bash"
       - "**/*.sh"
-      - "scripts/test_symlink_sweep.py"
+      - "scripts/test_symlinks.py"
       - "tools/**"
       - ".github/workflows/test-dotfiles.yml"
 
@@ -17,7 +17,7 @@ on:
     paths:
       - "**/*.bash"
       - "**/*.sh"
-      - "scripts/test_symlink_sweep.py"
+      - "scripts/test_symlinks.py"
       - "tools/**"
       - ".github/workflows/test-dotfiles.yml"
 
@@ -94,8 +94,8 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
 
-      - name: Test the broken-symlink sweep
-        run: uv run scripts/test_symlink_sweep.py
+      - name: Test how symlinks finds link scripts and sweeps broken links
+        run: uv run scripts/test_symlinks.py
 
       - name: Summary
         if: always()

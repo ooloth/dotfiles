@@ -96,6 +96,25 @@ symlink() {
   ln -fsvw "$source_file" "$target_dir"
 }
 
+# Every tools/<tool>/link.bash in alphabetical order by tool, one per line. tools/@new and
+# tools/@archive are a template and retired tools, and a link.bash deeper than a tool's root is a
+# draft, so neither is listed. `symlinks` runs this list and scripts/check-link-scripts.bash checks it.
+link_scripts() {
+  local script found=0
+  for script in "${DOTFILES}"/tools/*/link.bash; do
+    [[ -f "${script}" ]] || continue
+    [[ "${script}" == "${DOTFILES}/tools/@"* ]] && continue
+    printf "%s\n" "${script}"
+    found=$((found + 1))
+  done
+
+  # Every tool linking nothing only happens when DOTFILES points somewhere other than the repo
+  if [[ "${found}" -eq 0 ]]; then
+    echo "🚨 Error: no tools/*/link.bash found under DOTFILES='${DOTFILES:-}'" >&2
+    return 1
+  fi
+}
+
 # Directories swept for any broken symlink, since only links this repo made are expected there.
 any_broken_symlink_dirs() {
   printf "%s\n" "${HOME}" "${HOME}/.config" "${HOME}/Library/Application Support/Code/User"

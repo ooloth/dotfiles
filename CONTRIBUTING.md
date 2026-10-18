@@ -5,7 +5,7 @@
 ```sh
 shellcheck path/to/changed.bash               # every changed *.sh and *.bash file
 bash scripts/check-link-scripts.bash          # link.bash: check mode writes nothing; links are swept
-uv run scripts/test_symlink_sweep.py          # the broken-symlink sweep's tests
+uv run scripts/test_symlinks.py               # how `symlinks` finds link scripts and sweeps links
 uv run tools/agents/check-skills.py           # every shared skill's frontmatter parses
 bash scripts/check-python.bash                # ruff, ruff format and ty over every Python file
 uv run --with pytest pytest --import-mode=importlib tools/agents/config/skills  # skill tests
@@ -13,7 +13,7 @@ uv run scripts/check-docs.py                  # Markdown prose wraps at 100 colu
 uv run scripts/test_check_docs.py             # the docs checker's own tests
 ```
 
-Expect all of them to pass. CI runs the same commands: shellcheck, the link check and the sweep
+Expect all of them to pass. CI runs the same commands: shellcheck, the link check and the symlinks
 tests in `.github/workflows/test-dotfiles.yml`, the skills check and skill tests in
 `test-claude-skills.yml`, the Python checks in `check-python.yml`, and the docs checker and its
 tests in `check-docs.yml`.

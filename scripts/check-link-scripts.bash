@@ -65,9 +65,17 @@ snapshot() {
 failed=()
 checked=0
 
-for link_script in "${DOTFILES}"/tools/*/link.bash; do
-  # tools/@new and tools/@archive are a template and retired tools, not real tools
-  [[ "${link_script}" == "${DOTFILES}/tools/@"* ]] && continue
+# The scripts `symlinks` runs, asked of utils.bash so this checks exactly that list. utils.bash needs
+# a HOME holding the repo, and DOTFILES is set back afterwards so the paths are this checkout's.
+list_home="$(make_fake_home)"
+if ! link_scripts_list="$(HOME="${list_home}" run_link_script -c \
+  "source '${list_home}/Repos/ooloth/dotfiles/tools/bash/utils.bash'; DOTFILES='${DOTFILES}'; link_scripts")"; then
+  echo "❌ link_scripts in tools/bash/utils.bash found no link.bash scripts"
+  exit 1
+fi
+rm -rf "${list_home}"
+
+while IFS= read -r link_script; do
   name="${link_script#"${DOTFILES}/"}"
 
   checked=$((checked + 1))
@@ -120,7 +128,7 @@ for link_script in "${DOTFILES}"/tools/*/link.bash; do
   done
 
   rm -rf "${fake_home}"
-done
+done <<<"${link_scripts_list}"
 
 if [[ ${#failed[@]} -gt 0 ]]; then
   printf "\n%d of %d link.bash scripts failed\n" "${#failed[@]}" "${checked}"
