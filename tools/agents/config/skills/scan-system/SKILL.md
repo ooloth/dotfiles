@@ -60,6 +60,26 @@ Also establish:
 List what you couldn't determine as numbered questions and ask them. Carry on with every check that
 doesn't depend on an answer, and mark the ones that do as Blocked, naming the question.
 
+### Confirm the tools are ready
+
+Before checking anything, list the tools the inventory implies: `gh` for the repo, the cloud CLI
+for each project or account (`gcloud`, `aws`, `wrangler`), `kubectl` for each cluster, and whatever
+gives access to where alerts and logs live, such as Grafana. For each one, confirm with a read-only
+command that it is installed, logged in, and pointed at this system, for example `gh auth status`,
+`gcloud config get project`, `kubectl config current-context` or `wrangler whoami`.
+
+A tool that isn't installed counts as missing. Don't install it or fetch it with `npx` or similar
+to check it, because that downloads and runs code. For a service with no CLI, such as a
+notification app, ask the user how they reach it, and treat it as Blocked until they do.
+
+Pointed at this system matters as much as logged in. A tool aimed at the wrong project or cluster
+produces confident evidence about a different system, and nothing in the report would look wrong.
+
+Report the results as one list. For each tool that is missing, logged out or aimed elsewhere, give
+the command the user can run to fix it, such as `! gcloud auth login`, and wait. Start the checks
+once the tools are ready, or once the user says to carry on without some of them. In that case,
+mark every claim that needs a missing tool as Blocked from the start, naming the tool.
+
 ## 2. Check each component
 
 For each component, read the standards files listed for its kind in `~/.agents/standards/`, and
