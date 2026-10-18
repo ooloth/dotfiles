@@ -14,50 +14,32 @@ one carries what is true only here.
 
 ## Folder Structure
 
-See README.md for the complete overview. Key points for Claude:
+See README.md for the overview. Key points for Claude:
 
-**Current Active Structure:**
-
-- Installation scripts are in `features/install/zsh/` (individual .zsh files)
-- Update scripts are in `features/update/zsh/`
-- Main setup script is `features/setup/setup.zsh`
-- Configuration files are in `tools/{tool}/config/` directories
-
-**Folder Structure**
-
-- Common functionality being built in `features/common/` (bash modules for shared logic)
-- Tool-specific logic is in `tools/{tool}/` folders
-- Feature-specific code (leveraging one or more tools) is in `features/{feature}/` folders
-- Future main setup script will be `features/setup/setup.bash`
-- Future main update script will be `features/update/bash/tools.bash`
-- **Note**: These bash files are not yet functional or ready for use
-
-**Self-Contained Feature Modules** (`features/common/`) - Under construction:
-
-- `detection/` - Machine and macOS detection logic
-- `dry-run/` - Dry run utilities
-- `errors/` - Error handling
-- `permissions/` - Permission utilities
-- `prerequisites/` - Installation prerequisites validation
-- `symlinks/` - Symlink management
-- `testing/` - Testing utilities and test suite
-
-**Self-Contained Tool Modules** (`tools/{tool}/`)
-
-- See `tools/@new` for an example of the files in each folder
-- See `tools/README.md` for an explanation of the feature folder approach
-- For brew formulae without config, see `tools/eza/` or `tools/logcli/` as examples
+- Each tool lives in `tools/{tool}/`, with its config in `config/` and, where it needs them,
+  `install.bash`, `update.bash`, `link.bash`, `uninstall.bash` and `shell.zsh`. `tools/@new` is the
+  template, `tools/README.md` explains the approach, and `tools/eza/` or `tools/logcli/` show a brew
+  formula with no config.
+- Workflows that span tools live in `features/{feature}/`, as bash scripts with a `shell.zsh` that
+  defines their aliases.
+- `u` runs `features/update/tools.bash`, which updates the symlinks first
+  (`features/update/symlinks.bash`) and then runs each tool's `update.bash`. The `symlinks` alias
+  runs only the symlink step.
+- First-time setup on a new Mac is `features/setup/setup.zsh`, which sources the zsh scripts in
+  `features/install/zsh/`, several of them under `deprecated/`. A bash replacement is in progress in
+  `features/setup/wip/`, and nothing runs it yet. Other `wip/` folders, such as `tools/tmux/wip/`,
+  are the same kind of unfinished replacement.
 
 ### Symlink Management
 
-**Important for Git commits**: Files in `tools/claude/config/` are symlinked to `~/.claude/`. To
-commit changes to global Claude settings (like `~/.claude/CLAUDE.md`), commit the dotfiles copy at
-`tools/claude/config/CLAUDE.md` instead of trying to commit outside the repository.
+**Important for Git commits**: `~/.claude/` holds symlinks into this repo. `CLAUDE.md`,
+`settings.json`, `agents` and `statusline.sh` come from `tools/claude/config/`, and `skills` and
+`standards` come from `tools/agents/config/`. To change global Claude settings, edit and commit the
+repo copy, such as `tools/claude/config/CLAUDE.md`.
 
-The symlink creation logic is in `features/update/symlinks.bash`, invoked by
-`features/update/tools.bash` and by the `symlinks` alias.
-(`features/install/zsh/deprecated/symlinks.zsh` is deprecated and only still sourced by
-`features/setup/setup.zsh`.)
+The symlink creation logic is in `features/update/symlinks.bash`, run by
+`features/update/tools.bash` and by the `symlinks` alias. `features/setup/setup.zsh` sources the
+deprecated `features/install/zsh/deprecated/symlinks.zsh` instead.
 
 ### Claude Development Workflow
 
