@@ -9,6 +9,9 @@
 # '-', '[', '(', '{' or a quote, so every message and subtitle gets a backslash in front. osascript
 # reads an argument starting with '-' as an option unless '--' comes before it.
 #
+# settings.json runs this script by its repo path, not through a link in ~/.claude, so a pull
+# changes the hook and the script together. A link would not exist until the next `symlinks`.
+#
 # Input: the hook's JSON on stdin. See https://code.claude.com/docs/en/hooks#notification
 set -uo pipefail
 

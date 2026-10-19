@@ -16,7 +16,8 @@ terminal-notifier drops one leading backslash from a value and refuses a message
 '-', '[', '(', '{' or a quote, so the hook prefixes every message and subtitle with a backslash.
 osascript reads an argument starting with '-' as an option unless '--' comes first. The stubs
 accept anything, so these tests check the hook sends those forms. Neither rule can be checked
-without the real tools, which only the manual check in the commit runs.
+without the real tools: post a card whose message starts with '-' through the hook and read it
+back with `terminal-notifier -list ALL`.
 """
 
 from __future__ import annotations
@@ -209,6 +210,7 @@ class NotifyPropertyTest(unittest.TestCase):
             assert run.osascript is not None
             self.assertEqual(run.osascript[-3:-1], ["--", message])
 
+    # hub-daemon (the ooloth/hub repo) removes cards whose group starts with hub-<profile>-pr-.
     @settings(max_examples=50, deadline=None)
     @given(cwd=TEXT)
     def test_any_cwd_gives_a_claude_group_that_hub_never_claims(self, cwd: str) -> None:
