@@ -24,9 +24,13 @@ abstraction — that solution is used rather than reimplemented.
 
 **Implementation is complete and finished.**
 Every stated outcome exists in the code. There are no half-implemented paths,
-silently missing behaviors, known hacks, or deferred cleanup. Incomplete work
-and shortcuts don't ship as permanent fixtures — they compound and they're
-easiest to address while the context is still loaded.
+silently missing behaviors, known hacks, or deferred cleanup. A rule the change
+introduces holds everywhere its meaning reaches, including code the change did
+not touch. Those places are found by searching for every use of the thing the
+rule constrains, not for the rule's own name, because code that never mentions
+the rule is where it is most often broken. Incomplete work and shortcuts don't
+ship as permanent fixtures — they compound and they're easiest to address while
+the context is still loaded.
 
 **Runtime invariants and violable contracts are asserted, not only tested.**
 Conditions that must always hold — preconditions on inputs, postconditions on
