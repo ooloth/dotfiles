@@ -71,8 +71,8 @@ codefresh run <pipeline-name-or-id> --trigger <trigger-name> -b <branch> -s <ful
 ```
 
 A new run loads the pipeline's spec as it is now, when the spec comes from git (`specTemplate` with
-`revision: trunk` in `codefresh get pipelines <name> -o json`). A restart of an old build may replay
-that build's spec, so to pick up a spec change, start a new run instead of restarting.
+`revision: trunk` in `codefresh get pipelines <name> -o json`). A restart replays the spec the
+original build ran, so to pick up a spec change, start a new run instead of restarting.
 
 To try a spec change before it merges, pass the local file with `--yaml`, run from the repo that
 holds it. The wrapper mounts the current directory, so a relative path works:
