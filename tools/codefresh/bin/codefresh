@@ -14,8 +14,11 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+# `logs` prints nothing and never exits without a terminal, so it always gets one. Other
+# subcommands get one only when stdout is a terminal, because a terminal ends each line with \r and
+# that would corrupt captured output such as `id=$(codefresh run ... --detach)`.
 tty_flag=()
-if [[ -t 1 ]]; then
+if [[ -t 1 || "${1:-}" == logs ]]; then
   tty_flag=(--tty)
 fi
 
