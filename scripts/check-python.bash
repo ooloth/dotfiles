@@ -37,5 +37,5 @@ uv run --quiet --with "ruff==$RUFF_VERSION" ruff format --check "$target"
 echo "== ty check"
 env_dir="$DOTFILES/.cache/check-python-env"
 uv venv --quiet --allow-existing "$env_dir"
-uv pip install --quiet --python "$env_dir" "ty==$TY_VERSION" pytest pyyaml
+uv pip install --quiet --python "$env_dir" "ty==$TY_VERSION" pytest pyyaml hypothesis
 "$env_dir/bin/ty" check --python "$env_dir" --project "$DOTFILES" "$target"
