@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
-# Runs every tool's tests: each tools/{tool}/tests/test_*.py, with uv so its inline dependencies install.
-# Fails if it finds no tests, or a test_*.py at a tool's root, which this would otherwise never run.
+# Runs every tests/test_*.py in a tool or feature folder, with uv so its inline dependencies install.
+# Fails if it finds no tests, or a test_*.py at a tool's or feature's root, which it would never run.
 set -uo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+folders=("${repo}/tools" "${repo}/features")
 
-mapfile -t stray < <(find "${repo}/tools" -mindepth 2 -maxdepth 2 -name 'test_*.py' | sort)
+mapfile -t stray < <(find "${folders[@]}" -mindepth 2 -maxdepth 2 -name 'test_*.py' | sort)
 if [[ ${#stray[@]} -gt 0 ]]; then
-  printf '❌ Tool tests belong in tools/{tool}/tests/, so these would never run:\n' >&2
+  printf '❌ Tests belong in {tool or feature}/tests/, so these would never run:\n' >&2
   printf '  %s\n' "${stray[@]#"${repo}/"}" >&2
   exit 1
 fi
 
 mapfile -t tests < <(
-  find "${repo}/tools" -mindepth 3 -maxdepth 3 -path '*/tests/test_*.py' \
+  find "${folders[@]}" -mindepth 3 -maxdepth 3 -path '*/tests/test_*.py' \
     ! -path '*/@new/*' ! -path '*/@archive/*' | sort
 )
 if [[ ${#tests[@]} -eq 0 ]]; then
-  printf '❌ No tests found in tools/*/tests/\n' >&2
+  printf '❌ No tests found in tools/*/tests/ or features/*/tests/\n' >&2
   exit 1
 fi
 
@@ -33,4 +34,4 @@ if [[ ${#failed[@]} -gt 0 ]]; then
   exit 1
 fi
 
-printf '\n✅ All %d tool test files passed\n' "${#tests[@]}"
+printf '\n✅ All %d test files passed\n' "${#tests[@]}"

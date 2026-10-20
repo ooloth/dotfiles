@@ -17,14 +17,15 @@ one carries what is true only here.
 See README.md for the overview. Key points for Claude:
 
 - Each tool lives in `tools/{tool}/`, with its config in `config/` and, where it needs them, a
-  `Brewfile`, `install.bash`, `update.bash`, `link.bash`, `uninstall.bash`, `shell.zsh` and a
-  `tests/` folder.
+  `Brewfile`, `install.bash`, `update.bash`, `preflight.bash`, `link.bash`, `uninstall.bash`,
+  `shell.zsh` and a `tests/` folder.
   `tools/@new` is the template, `tools/README.md` explains the approach, and `tools/eza/` or
   `tools/logcli/` show a brew formula with no config.
 - Workflows that span tools live in `features/{feature}/`, as bash scripts with a `shell.zsh` that
   defines their aliases.
-- `u` runs `features/update/tools.bash`, which updates the symlinks first
-  (`features/update/symlinks.bash`) and then runs each tool's `update.bash`. The `symlinks` alias
+- `u` runs `features/update/tools.bash`. It first runs `features/update/preflight.bash`, which
+  checks every tool's `preflight.bash` and stops `u` if one fails. Then it updates the symlinks
+  (`features/update/symlinks.bash`) and runs each tool's `update.bash`. The `symlinks` alias
   runs only the symlink step.
 - First-time setup on a new Mac is `features/setup/setup.zsh`, which sources the zsh scripts in
   `features/install/zsh/`, several of them under `deprecated/`. A bash replacement is planned in

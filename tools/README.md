@@ -11,6 +11,7 @@ The @new template directory groups all the related files for a particular tool/u
 ├── Brewfile               # Homebrew formulae and casks (optional)
 ├── shell.zsh              # Aliases, variables and shell integration (optional)
 ├── link.bash              # Symlink configuration files (optional)
+├── preflight.bash         # Checks update prerequisites before `u` changes anything (optional)
 ├── install.bash           # Installation logic
 ├── uninstall.bash         # Non-brew cleanup only (optional)
 ├── update.bash            # Update logic (optional)

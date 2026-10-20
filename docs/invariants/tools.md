@@ -16,9 +16,13 @@ observations about typical practice.
 - With `DOTFILES_CHECK=true`, a `link.bash` reports link status and writes nothing: no link,
   file or directory is created, replaced or removed. `dcheck` and `u`'s final check depend on
   this to be read-only. `scripts/check-link-scripts.bash` checks every `link.bash` in CI.
-- A tool's tests are `tools/{name}/tests/test_*.py`. `scripts/test-tools.bash` runs only that
-  path, in CI and from `CONTRIBUTING.md`, and fails on a `test_*.py` placed directly in
-  `tools/{name}/`. Test files deeper in a tool's subtree, such as a skill's own tests under
+- A `preflight.bash` only checks and changes nothing. `features/update/preflight.bash` runs
+  every one before `u` updates anything, so a check that wrote something would write on every
+  run, including runs that then stop.
+- A tool's tests are `tools/{name}/tests/test_*.py`, and a feature's are
+  `features/{name}/tests/test_*.py`. `scripts/test-tools.bash` runs only those paths, in CI and
+  from `CONTRIBUTING.md`, and fails on a `test_*.py` placed directly in `tools/{name}/` or
+  `features/{name}/`. Test files deeper in a tool's subtree, such as a skill's own tests under
   `tools/agents/config/skills/`, are run by their own checks instead.
 - A `config/` directory with no `link.bash` is legitimate only for two
   reasons: the config is consumed directly by that tool's own install

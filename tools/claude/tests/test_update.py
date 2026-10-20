@@ -282,7 +282,7 @@ class UpdateOrderTest(unittest.TestCase):
             for path in [
                 "features/update/mode.bash",
                 "features/update/symlinks.bash",
-                "features/update/gcloud-auth.bash",
+                "features/update/preflight.bash",
                 "features/check/dotfiles.bash",
                 *(f"tools/{t}/update.bash" for t in ["aaa", "claude", "homebrew", "node", "uv"]),
             ]:

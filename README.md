@@ -150,7 +150,9 @@ u "homebrew"  # update one tool
 symlinks      # update symlinks
 ```
 
-The `u` function runs all updates and reloads your shell.
+The `u` function runs all updates and reloads your shell. Before updating anything, it checks
+each tool's prerequisites, such as the network or a running Docker daemon, and stops within a few
+seconds if one is missing, saying which tool needs it and how to fix it.
 
 ## Contributing
 

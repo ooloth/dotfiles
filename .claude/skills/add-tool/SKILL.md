@@ -247,6 +247,9 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles" bash tools/{tool}/install.bash
 - **Auto-discovery**: `features/install/tools.bash` and `features/update/tools.bash` use `find` to
   discover all `install.bash` / `update.bash` files under `tools/` automatically. No manual
   registration is needed.
+- **Prerequisites**: if the tool's update depends on outside state that would make it fail, such
+  as a running daemon or a login, add `tools/{tool}/preflight.bash` from `tools/@new/`. `u` runs
+  every one before any update and stops if one fails.
 - **Tests**: a tool's tests go in `tools/{tool}/tests/test_*.py`, which `scripts/test-tools.bash`
   finds and runs in CI. No registration is needed.
 - **Shell manifest**: `shell.zsh` is sourced automatically in every new shell via the generated

@@ -46,6 +46,6 @@ A failure that `u` used to catch starts surfacing late somewhere else.
 
 ## Also update
 
-- [ ] `features/update/gcloud-auth.bash` is removed, and `features/update/tools.bash` no longer
+- [x] `features/update/gcloud-auth.bash` is removed, and `features/update/tools.bash` no longer
   lists it
 - [ ] the `cc` alias checks gcloud credentials on the work laptop

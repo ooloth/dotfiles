@@ -58,7 +58,7 @@ A guard drifts between the two files, or #127 builds an install runner and has t
 
 ## Also update
 
-- [ ] `tools/README.md`, `tools/@new/`, `.claude/skills/add-tool/SKILL.md` and `CLAUDE.md`
+- [x] `tools/README.md`, `tools/@new/`, `.claude/skills/add-tool/SKILL.md` and `CLAUDE.md`
   describe `preflight.bash`
-- [ ] `docs/invariants/tools.md` states what `u` depends on: a `preflight.bash` only checks and
+- [x] `docs/invariants/tools.md` states what `u` depends on: a `preflight.bash` only checks and
   changes nothing

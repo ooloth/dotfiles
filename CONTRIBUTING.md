@@ -6,7 +6,7 @@
 shellcheck path/to/changed.bash               # every changed *.sh and *.bash file
 bash scripts/check-link-scripts.bash          # link.bash: check mode writes nothing; links are swept
 uv run scripts/test_symlinks.py               # how `symlinks` finds link scripts and sweeps links
-bash scripts/test-tools.bash                  # every tools/{tool}/tests/test_*.py
+bash scripts/test-tools.bash                  # every tools/*/tests/ and features/*/tests/ file
 uv run tools/agents/check-skills.py           # every shared skill's frontmatter parses
 bash scripts/check-python.bash                # ruff, ruff format and ty over every Python file
 uv run --with pytest pytest --import-mode=importlib tools/agents/config/skills  # skill tests

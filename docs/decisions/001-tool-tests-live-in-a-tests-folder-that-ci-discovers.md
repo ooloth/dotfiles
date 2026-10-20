@@ -2,6 +2,7 @@
 number: 001
 status: accepted
 date: 2026-10-20
+amended: 2026-10-20
 ---
 
 # 001 — Tool tests live in `tools/{tool}/tests/`, and one script finds and runs them all
@@ -48,3 +49,10 @@ than `tests/`.
 - [x] `tools/README.md`, `tools/@new/`, `.claude/skills/add-tool/SKILL.md`, `CLAUDE.md` and
   `docs/invariants/tools.md` describe the `tests/` folder
 - [x] `CONTRIBUTING.md` and `.github/workflows/test-dotfiles.yml` call `scripts/test-tools.bash`
+
+## Addendum (2026-10-20) — features
+
+The first feature test, `features/update/tests/test_preflight.py`, arrived the same day, so the
+convention now covers `features/{feature}/tests/test_*.py` too. `scripts/test-tools.bash` searches
+both `tools/` and `features/`, and fails on a `test_*.py` placed directly in either kind of
+folder. Tests that already live in `scripts/`, such as `test_symlinks.py`, stay there.

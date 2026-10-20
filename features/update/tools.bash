@@ -19,15 +19,18 @@ main() {
       return 1
     fi
 
+    bash "${DOTFILES}/features/update/preflight.bash" "${tool}" || return 1
     bash "${DOTFILES}/tools/${tool}/${file_name}"
     return
   fi
+
+  # Stop before changing anything if a prerequisite is missing, so it shows up in seconds
+  bash "${DOTFILES}/features/update/preflight.bash" || return 1
 
   # Otherwise, update all tools with an update.bash script
   priority_files=(
     "${DOTFILES}/features/update/mode.bash"
     "${DOTFILES}/features/update/symlinks.bash"
-    "${DOTFILES}/features/update/gcloud-auth.bash"
     "${DOTFILES}/tools/uv/${file_name}"
     "${DOTFILES}/tools/node/${file_name}"
     # Removes npm copies of Claude Code, which block `brew bundle` from linking its cask.

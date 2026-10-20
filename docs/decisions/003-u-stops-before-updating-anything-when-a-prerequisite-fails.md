@@ -47,5 +47,5 @@ A prerequisite fails often for reasons the maintainer cannot fix during the run.
 
 ## Also update
 
-- [ ] `features/update/tools.bash` runs the checks first
-- [ ] `README.md`, where `u` is described, says it stops on a failed prerequisite
+- [x] `features/update/tools.bash` runs the checks first
+- [x] `README.md`, where `u` is described, says it stops on a failed prerequisite
