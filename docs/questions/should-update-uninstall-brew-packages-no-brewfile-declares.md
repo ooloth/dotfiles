@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-19
+updated: 2026-10-20
 update_when: a laptop is audited, the cleanup dry run runs cleanly, or `u` gains a cleanup step
 decays: fast
 status: open
@@ -89,3 +89,12 @@ Nothing here is settled until it graduates into a decision record.
   (`installed_on_request: false`). Uninstalling that language server would have let the
   `brew autoremove` in `u` remove it. It is now declared in `tools/terminal-notifier/Brewfile`,
   and `brew bundle` marked it installed on request.
+- *Measured (2026-10-20, work laptop):* `brew upgrade` in `u` failed on five casks, `firefox`,
+  `notion`, `obsidian`, `rectangle` and `visual-studio-code`. Each app in `/Applications` was
+  owned by `root:admin` and already at the version brew was upgrading to, while brew's
+  `Caskroom` still recorded the older one. Replacing them needed sudo, and sudo refused `cp` and
+  `touch` as root for this account, which is not in the `admin` group. `appcleaner` and `vlc`
+  are also root-owned and will fail the same way at their next release. `firefox` is one of the
+  five, and `tools/firefox/Brewfile` declares it only on the Air, so it is installed on the work
+  laptop with no Brewfile declaring it. The other four are declared on every machine, so root
+  ownership breaks greedy upgrades of declared casks too, not only undeclared ones.
