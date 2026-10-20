@@ -191,6 +191,51 @@ def test_invalid_review_is_rejected_before_posting(
     assert not h.gh_was_called()
 
 
+# Shaped like every comment first posted on PR 257: the point and its reasoning run together in
+# one paragraph, so a skimming reader cannot pick the point out.
+UNBROKEN = "Can you add a bootstrap test for this line? Every frontend test mocks `useAuth`."
+BROKEN = "Can you add a bootstrap test for this line?\n\nEvery frontend test mocks `useAuth`."
+
+
+def test_dry_run_notes_a_comment_written_as_one_multi_sentence_paragraph(h: Harness) -> None:
+    rev = review(comments=[comment(body=BROKEN), comment(body=UNBROKEN, line=81)])
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO, "--dry-run")
+    assert result.returncode == 0, result.stderr
+    assert f"comments[1] {PATH_}:81" in result.stderr
+    assert "comments[0]" not in result.stderr
+    assert json.loads(result.stdout)["comments"][1]["body"] == UNBROKEN
+
+
+def test_dry_run_notes_a_review_body_written_as_one_multi_sentence_paragraph(h: Harness) -> None:
+    result = h.run("7", str(h.write_review(review(body=UNBROKEN))), "--repo", REPO, "--dry-run")
+    assert result.returncode == 0, result.stderr
+    assert "body" in result.stderr
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        BROKEN,
+        # How GitHub's web editor saved the same split on PR 257: a trailing space, then CRLF.
+        BROKEN.replace("?\n\n", "? \r\n\r\n"),
+        "Looks off, can you check the empty-queue case?",
+    ],
+    ids=["point-split-off", "point-split-off-crlf", "single-sentence"],
+)
+def test_dry_run_says_nothing_about_bodies_that_already_read_well(h: Harness, body: str) -> None:
+    rev = review(body=body, comments=[comment(body=body)])
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO, "--dry-run")
+    assert result.returncode == 0, result.stderr
+    assert result.stderr == ""
+
+
+def test_posting_prints_no_note(h: Harness) -> None:
+    rev = review(body=UNBROKEN, comments=[comment(body=UNBROKEN)])
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO)
+    assert result.returncode == 0, result.stderr
+    assert result.stderr == ""
+
+
 def test_missing_review_file_is_rejected_before_posting(h: Harness) -> None:
     result = h.run("7", str(h.tmp_path / "nope.json"), "--repo", REPO)
     assert result.returncode != 0

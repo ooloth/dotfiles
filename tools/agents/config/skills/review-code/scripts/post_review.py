@@ -26,11 +26,15 @@ Review file:
   the default) or LEFT (the base version, for deleted lines).
 
 --dry-run validates the file and prints the exact payload that would be sent, without posting.
+It also notes on stderr any body that runs several sentences together in one paragraph, so its
+point can be split off before posting. The note never blocks.
 """
 
 import argparse
 import json
+import re
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, get_args
@@ -132,6 +136,27 @@ def to_api_payload(review: Review) -> dict[str, Any]:
     return payload
 
 
+SENTENCE_BREAK = re.compile(r"[.?!]\s+\S")
+# GitHub's web editor saves a blank line as CRLF, often after a trailing space.
+BLANK_LINE = re.compile(r"\n[ \t\r]*\n")
+
+
+def is_unbroken(body: str) -> bool:
+    """True when several sentences share one paragraph, so the point does not stand out."""
+    return BLANK_LINE.search(body) is None and SENTENCE_BREAK.search(body) is not None
+
+
+def unbroken_bodies(review: Review) -> tuple[str, ...]:
+    """Where a reader skimming the review cannot pick out the point. Advice, never a refusal."""
+    found = ["body"] if is_unbroken(review.body) else []
+    found += [
+        f"comments[{i}] {c.path}:{c.line}"
+        for i, c in enumerate(review.comments)
+        if is_unbroken(c.body)
+    ]
+    return tuple(found)
+
+
 def post(repo: str, pr: int, payload: dict[str, Any]) -> str:
     result = subprocess.run(
         [
@@ -172,10 +197,17 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    payload = to_api_payload(parse_review(read_review_file(args.review_file)))
+    review = parse_review(read_review_file(args.review_file))
+    payload = to_api_payload(review)
 
     if args.dry_run:
         print(json.dumps(payload, indent=2, ensure_ascii=False))
+        for where in unbroken_bodies(review):
+            print(
+                f"note: {where} runs several sentences together in one paragraph. "
+                "Reread it, and split off its point unless it reads better whole.",
+                file=sys.stderr,
+            )
         return
 
     url = post(args.repo, args.pr, payload)

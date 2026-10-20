@@ -565,7 +565,9 @@ On any answer other than "skip":
 
 - Dry-run it and read the output. It prints the exact payload that would be sent. Check that every
   body reads as intended and every `path`/`line` points where you meant; fix the file and dry-run
-  again until it does:
+  again until it does. The dry run also notes any body that runs several sentences together in
+  one paragraph. Reread those and split off the point, unless the comment genuinely reads better
+  whole:
 
 ```bash
 uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo <owner>/<repo> --dry-run
