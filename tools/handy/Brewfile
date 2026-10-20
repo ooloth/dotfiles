@@ -3,6 +3,13 @@
 
 computer_name = `networksetup -getcomputername`.chomp
 
-unless computer_name == "Mini"
-  cask "handy" # local speech-to-text dictation
+# local speech-to-text dictation
+case computer_name
+when "Mini"
+  # not used
+when "Air"
+  cask "handy"
+else
+  # The work account is not an admin, so it cannot write to /Applications
+  cask "handy", args: { appdir: "~/Applications" }
 end
