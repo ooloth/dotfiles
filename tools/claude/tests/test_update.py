@@ -5,7 +5,7 @@
 # ///
 """Tests for tools/claude/update.bash, which moves Claude Code from npm to the Homebrew cask.
 
-Run with: uv run tools/claude/test_update.py
+Run with: uv run tools/claude/tests/test_update.py
 
 Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
 expects it, a fake Homebrew prefix and a fake fnm directory, and runs the script under macOS's own
@@ -26,7 +26,7 @@ from pathlib import Path
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-REPO = Path(__file__).resolve().parent.parent.parent
+REPO = Path(__file__).resolve().parent.parent.parent.parent
 SCRIPT = "tools/claude/update.bash"
 CASK = "claude-code@latest"
 PACKAGE = "lib/node_modules/@anthropic-ai/claude-code"

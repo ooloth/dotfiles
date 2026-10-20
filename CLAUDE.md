@@ -17,7 +17,8 @@ one carries what is true only here.
 See README.md for the overview. Key points for Claude:
 
 - Each tool lives in `tools/{tool}/`, with its config in `config/` and, where it needs them, a
-  `Brewfile`, `install.bash`, `update.bash`, `link.bash`, `uninstall.bash` and `shell.zsh`.
+  `Brewfile`, `install.bash`, `update.bash`, `link.bash`, `uninstall.bash`, `shell.zsh` and a
+  `tests/` folder.
   `tools/@new` is the template, `tools/README.md` explains the approach, and `tools/eza/` or
   `tools/logcli/` show a brew formula with no config.
 - Workflows that span tools live in `features/{feature}/`, as bash scripts with a `shell.zsh` that
