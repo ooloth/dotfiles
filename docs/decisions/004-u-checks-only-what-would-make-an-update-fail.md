@@ -2,6 +2,7 @@
 number: 004
 status: accepted
 date: 2026-10-20
+amended: 2026-10-20
 ---
 
 # 004 — `u` checks only what would make an update fail, and prints no warnings
@@ -48,4 +49,11 @@ A failure that `u` used to catch starts surfacing late somewhere else.
 
 - [x] `features/update/gcloud-auth.bash` is removed, and `features/update/tools.bash` no longer
   lists it
-- [ ] the `cc` alias checks gcloud credentials on the work laptop
+- [x] the `cc` alias checking gcloud credentials on the work laptop is dropped (see the addendum)
+
+## Addendum (2026-10-20) — the `cc` check is dropped
+
+The maintainer chose not to add a gcloud credentials check to the `cc` alias. Nothing checks
+those credentials before a Claude session starts, so a session that needs them finds out when a
+`gcloud` command fails. `ccy-vertex` in `tools/claude/shell.zsh` still checks them before starting
+a Vertex AI session.
