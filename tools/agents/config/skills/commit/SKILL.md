@@ -43,7 +43,19 @@ diff you saw when those runs completed. If any condition is false, run them now.
    Staging file hunks non-interactively" when staging some changes in a file but not others (hint:
    `git add -p` won't work in this environment)
 5. After each commit, run `git log --oneline -3` to confirm it was recorded correctly.
-6. If the user also asked you to push, run `git push origin <branch>`.
+6. If the user also asked you to push:
+   1. First read CI's result for the commit the remote branch already holds, so a red build is
+      caught before more commits land on it. Invoke the `use-gh` skill, then run:
+
+      ```sh
+      gh run list -R <owner/repo> --commit "$(git rev-parse origin/<branch>)" --json workflowName,status,conclusion
+      ```
+
+      This reads what has already finished and never waits: a run still in progress, a branch with
+      no remote yet, or a repo with no GitHub Actions runs is not a reason to wait or stop.
+   2. If any of those runs concluded `failure`, do not push. Tell the user which workflow failed on
+      which commit, and ask whether to push anyway or fix it first.
+   3. Otherwise, run `git push origin <branch>`.
 7. If a precommit hook fails and addressing the failure requires a design decision the user has not
    made, stop and present options and wait for approval.
 8. When finished making all commits, continue implementing your next approved task — but do not
