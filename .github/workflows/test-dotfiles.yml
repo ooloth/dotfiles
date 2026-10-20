@@ -97,6 +97,9 @@ jobs:
       - name: Test how symlinks finds link scripts and sweeps broken links
         run: uv run scripts/test_symlinks.py
 
+      - name: Test the Claude Code update moving it from npm to the Homebrew cask
+        run: uv run tools/claude/test_update.py
+
       - name: Summary
         if: always()
         run: |

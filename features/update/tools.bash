@@ -30,6 +30,9 @@ main() {
     "${DOTFILES}/features/update/gcloud-auth.bash"
     "${DOTFILES}/tools/uv/${file_name}"
     "${DOTFILES}/tools/node/${file_name}"
+    # Removes npm copies of Claude Code, which block `brew bundle` from linking its cask.
+    # Goes back to alphabetical order once every machine has migrated (#177).
+    "${DOTFILES}/tools/claude/${file_name}"
     "${DOTFILES}/tools/homebrew/${file_name}"
   )
 
