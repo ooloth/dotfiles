@@ -5,8 +5,8 @@
 # ///
 """Check that Markdown prose in this repo wraps at 100 columns.
 
-Run with: uv run scripts/check-docs.py [--verbose]
-Its tests: uv run scripts/test_check_docs.py
+Run with: uv run scripts/checks/docs.py [--verbose]
+Its tests: uv run scripts/checks/tests/test_docs.py
 
 Checks every Markdown file git tracks, so a new file is covered without editing this script and a
 scratch file nobody committed is not. Width is counted in characters, not bytes.

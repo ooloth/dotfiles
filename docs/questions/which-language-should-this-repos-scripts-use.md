@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-19
+updated: 2026-10-20
 update_when: the work laptop check below is run, #127 starts, or a script is rewritten in Python
 decays: slow
 status: open
@@ -75,10 +75,10 @@ prek hooks that ban `noqa` comments.
 ## Options
 
 - **Stay in shell, with stricter checks.** Turn SC1090 and SC1091 back on in `.shellcheckrc` and
-  write more Python tests that run the bash against a fake `HOME`, as `scripts/test_symlinks.py`
-  does. It costs almost nothing and changes no bootstrap. It does not give the tooling the
-  maintainer asked for, and shellcheck still cannot see misspelled function names or wrong
-  argument counts.
+  write more Python tests that run the bash against a fake `HOME`, as
+  `features/update/tests/test_symlinks.py` does. It costs almost nothing and changes no bootstrap.
+  It does not give the tooling the maintainer asked for, and shellcheck still cannot see
+  misspelled function names or wrong argument counts.
 - **Shell for glue, single-file `uv` scripts for logic.** A script moves to Python when it parses
   output, holds structured data or crosses about 100 lines. Each script is one file with inline
   dependencies, which the global Python standards allow for scripts. The cost is that shared

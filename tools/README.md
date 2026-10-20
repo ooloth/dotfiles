@@ -7,7 +7,7 @@ The @new template directory groups all the related files for a particular tool/u
 ```
 {tool}/
 ├── config/                # Configuration files
-├── tests/                 # test_*.py files, run by scripts/test-tools.bash (optional)
+├── tests/                 # test_*.py files, run by scripts/checks/tests.bash (optional)
 ├── Brewfile               # Homebrew formulae and casks (optional)
 ├── shell.zsh              # Aliases, variables and shell integration (optional)
 ├── link.bash              # Symlink configuration files (optional)

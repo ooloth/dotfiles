@@ -7,6 +7,11 @@ current_dir=$(basename "${PWD}")
 error_msg="🚨 No 'check' case defined for '/${current_dir}'"
 
 case $current_dir in
+dotfiles)
+  bash scripts/check.bash
+  exit
+  ;;
+
 agency-1 | agency-2)
   uv run --frozen prek run --all-files
   exit 0

@@ -2,7 +2,7 @@
 # Check that every tools/*/link.bash writes nothing in check mode, and links only into directories
 # the broken-symlink sweep covers.
 #
-# Run with: bash scripts/check-link-scripts.bash
+# Run with: bash scripts/checks/link-scripts.bash
 #
 # dcheck runs each link.bash with DOTFILES_CHECK=true to report link status, and promises to change
 # nothing. A link.bash that hand-rolls `ln` instead of calling symlink() can break that promise
@@ -19,7 +19,7 @@
 # ignored, because check mode returns non-zero whenever a link is missing.
 set -uo pipefail
 
-DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export DOTFILES
 
 # Run a link.bash the way CI does, wherever this check runs: macOS's own bash (3.2, not a newer

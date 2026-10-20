@@ -3,24 +3,25 @@
 ## Check a change
 
 ```sh
-shellcheck path/to/changed.bash               # every changed *.sh and *.bash file
-bash scripts/check-link-scripts.bash          # link.bash: check mode writes nothing; links are swept
-uv run scripts/test_symlinks.py               # how `symlinks` finds link scripts and sweeps links
-bash scripts/test-tools.bash                  # every tools/*/tests/ and features/*/tests/ file
-uv run tools/agents/check-skills.py           # every shared skill's frontmatter parses
-bash scripts/check-python.bash                # ruff, ruff format and ty over every Python file
-uv run --with pytest pytest --import-mode=importlib tools/agents/config/skills  # skill tests
-uv run scripts/check-docs.py                  # Markdown prose wraps at 100 columns; see the script
-uv run scripts/test_check_docs.py             # the docs checker's own tests
+check                                         # from the repo root; same as bash scripts/check.bash
 ```
 
-Expect all of them to pass. CI runs the same commands: shellcheck, the link check, the symlinks
-tests and the tool tests in `.github/workflows/test-dotfiles.yml`, the skills check and skill tests
-in `test-claude-skills.yml`, the Python checks in `check-python.yml`, and the docs checker and its
-tests in `check-docs.yml`.
+Expect it to pass. It runs five categories, fastest first, and stops at the first that fails. To
+run one on its own, run its script:
 
-Each check fails when it finds nothing to check: pytest exits 5 when it collects no tests, and
-`check-python.bash` refuses a path with no Python files. A new check keeps that property.
+```sh
+bash scripts/checks/formatting.bash           # ruff format
+uv run scripts/checks/docs.py                 # Markdown prose wraps at 100 columns; see the script
+bash scripts/checks/types.bash                # ty
+bash scripts/checks/linting.bash              # ruff check, shellcheck, skill frontmatter
+bash scripts/checks/tests.bash                # link.bash check mode, every tests/ folder, skill tests
+```
+
+CI runs the same five scripts in the same order, one step each, in `.github/workflows/check.yml`.
+A category is named for the kind of check, not the language, so a tool for a new language joins
+the matching script. Each check fails when it finds nothing to check: pytest exits 5 when it
+collects no tests, and each script refuses to run with no files of the kind it checks. A new check
+keeps that property.
 
 On a work laptop, uv installs packages through the work Artifact Registry index set in
 `~/.config/uv/uv.toml`. A 403 from `python.pkg.dev` means the Application Default Credentials

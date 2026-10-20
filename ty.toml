@@ -1,4 +1,4 @@
-# Applies to every Python file in the repo, for scripts/check-python.bash and for editors.
+# Applies to every Python file in the repo, for scripts/checks/types.bash and for editors.
 # See: https://docs.astral.sh/ty/reference/configuration/
 
 [environment]

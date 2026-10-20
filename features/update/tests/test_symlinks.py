@@ -6,7 +6,7 @@
 """Tests for how `symlinks` finds link scripts and sweeps broken links, in tools/bash/utils.bash and
 features/update/symlinks.bash.
 
-Run with: uv run scripts/test_symlinks.py
+Run with: uv run features/update/tests/test_symlinks.py
 
 Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
 expects it, and runs the code under macOS's own bash with no terminal, the way CI does. A `trash`
@@ -22,7 +22,7 @@ import unittest
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parents[3]
 
 TRASH_STUB = """#!/bin/bash
 printf '%s\\n' "$@" >> "${TRASH_LOG}"

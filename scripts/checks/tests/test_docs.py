@@ -3,9 +3,9 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Tests for scripts/check-docs.py.
+"""Tests for scripts/checks/docs.py.
 
-Run with: uv run scripts/test_check_docs.py
+Run with: uv run scripts/checks/tests/test_docs.py
 
 Each test builds a throwaway git repo, writes Markdown into it, and runs check-docs.py against it as
 a subprocess, so the checker stays a single file that nothing imports.
@@ -21,7 +21,7 @@ import unittest
 from dataclasses import dataclass
 from pathlib import Path
 
-CHECKER = Path(__file__).resolve().parent / "check-docs.py"
+CHECKER = Path(__file__).resolve().parent.parent / "docs.py"
 LIMIT = 100
 
 

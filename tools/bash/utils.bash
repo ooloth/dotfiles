@@ -98,7 +98,7 @@ symlink() {
 
 # Every tools/<tool>/link.bash in alphabetical order by tool, one per line. tools/@new and
 # tools/@archive are a template and retired tools, and a link.bash deeper than a tool's root is a
-# draft, so neither is listed. `symlinks` runs this list and scripts/check-link-scripts.bash checks it.
+# draft, so neither is listed. `symlinks` runs this list and scripts/checks/link-scripts.bash checks it.
 link_scripts() {
   local script found=0
   for script in "${DOTFILES}"/tools/*/link.bash; do
@@ -121,7 +121,7 @@ any_broken_symlink_dirs() {
 }
 
 # Directories other tools also link into, swept only for broken links into this repo.
-# scripts/check-link-scripts.bash fails when a link.bash links into a directory neither list covers.
+# scripts/checks/link-scripts.bash fails when a link.bash links into a directory neither list covers.
 repo_symlink_dirs() {
   printf "%s\n" "${HOME}/.claude" "${HOME}/.agents" "${HOME}/.codex" "${HOME}/.local/bin" \
     "${HOME}/.config/pi/agent"

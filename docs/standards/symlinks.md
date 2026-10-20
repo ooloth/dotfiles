@@ -13,7 +13,7 @@ replacement link is not the same as retiring the one it supersedes.
 `symlinks` (and so `u`) removes broken links only in the directories that
 `any_broken_symlink_dirs` and `repo_symlink_dirs` list in
 `tools/bash/utils.bash`. A `link.bash` that links into a new directory adds
-it to `repo_symlink_dirs`, or `scripts/check-link-scripts.bash` fails and
+it to `repo_symlink_dirs`, or `scripts/checks/link-scripts.bash` fails and
 names the directory.
 
 **A change to a linked config file is safe from the moment it is saved.**

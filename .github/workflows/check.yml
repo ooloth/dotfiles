@@ -1,0 +1,40 @@
+name: Check
+
+# Every push and pull request runs every check, so CI matches `bash scripts/check.bash`. The steps
+# run in the same order, fastest first, and a failed step skips the slower ones after it.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install shellcheck
+        run: brew install shellcheck
+
+      - name: Format
+        run: bash scripts/checks/formatting.bash
+
+      - name: Docs
+        run: uv run scripts/checks/docs.py
+
+      - name: Types
+        run: bash scripts/checks/types.bash
+
+      - name: Lint
+        run: bash scripts/checks/linting.bash
+
+      - name: Tests
+        run: bash scripts/checks/tests.bash
