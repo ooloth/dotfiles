@@ -8,8 +8,15 @@
 # PATH and shadow them.
 export HOMEBREW_NO_AUTO_UPDATE=1      # I'll update manually (don't slow down individual install/upgrade commands)
 export HOMEBREW_NO_INSTALL_CLEANUP=1  # I'll clean up manually (don't slow down individual install/upgrade commands)
-export HOMEBREW_UPGRADE_GREEDY=1      # Upgrade casks with auto-updates: true or version: latest as well
 export HOMEBREW_NO_ASK=1              # Don't ask for confirmation before upgrading (so `u` can run unattended)
+
+# The work laptop's IT updates some apps as root, which brew can't replace without admin rights.
+# Unset rather than skip, because tmux passes the variable on to new shells.
+if is_work; then
+  unset HOMEBREW_UPGRADE_GREEDY
+else
+  export HOMEBREW_UPGRADE_GREEDY=1    # Upgrade casks with auto-updates: true or version: latest as well
+fi
 
 ###########
 # ALIASES #
