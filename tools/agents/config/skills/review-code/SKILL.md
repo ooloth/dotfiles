@@ -547,6 +547,9 @@ On any answer other than "skip":
 - Collect every finding that has a `file:line` reference as an inline comment
 - Get the PR's head commit, so the comments stay pinned to the code you reviewed:
   `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid -q .headRefOid`
+- When you show the user drafts to approve, show each body exactly as it will be posted, line
+  breaks included (one blockquote per comment works), so approving the words also approves the
+  shape.
 - Write the review to a JSON file in the scratchpad with the **Write tool**. Never build it with a
   shell heredoc, `echo`, or command-line arguments: the shell rewrites backticks, `$(...)` and
   quotes, and a mangled review cannot be un-posted. `line` is the line number in the PR's version
@@ -584,11 +587,11 @@ generator. Approach it the way a mentor invested in someone's growth would: pati
 specific, not grading their work. Avoid em dashes; they're one of the more obvious signs a
 comment was generated rather than typed by a person.
 
-Structure: most of the time, ask your question first, then a line break, then why you're asking
-it. Don't make someone guess what prompted the question. Say what you noticed right after you ask.
-This two-part shape is the default, not a rule to force every time; when the ask and the reason
-fit naturally into one sentence, say it in one sentence rather than manufacturing a line break
-that isn't earning its place.
+Structure: make the point of the comment stand out. Its first paragraph is the one thing you want
+the author to take away: the question you're asking, or what you found. Then a blank line, then
+the reasoning and evidence. Someone skimming the review should get each comment's point from its
+first line alone. A comment that's a single sentence anyway needs no break. The review body works
+the same way: verdict and overall point first, detail after.
 
 Asking something you already have a strong idea about is fine, as long as the question genuinely
 invites them into the reasoning: their intent, an edge case, a judgment call. What's not fine is
