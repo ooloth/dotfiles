@@ -15,14 +15,21 @@ set -uo pipefail
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 folders=("${repo}/tools" "${repo}/features" "${repo}/scripts")
 
-mapfile -t stray < <(find "${folders[@]}" -mindepth 2 -maxdepth 2 -name 'test_*.py' | sort)
+# while-read rather than mapfile, which macOS's own bash 3.2, the one CI runs, does not have
+stray=()
+while IFS= read -r file; do
+  stray+=("${file}")
+done < <(find "${folders[@]}" -mindepth 2 -maxdepth 2 -name 'test_*.py' | sort)
 if [[ ${#stray[@]} -gt 0 ]]; then
   printf '❌ Tests belong in a tests/ folder beside the code they test, so these would never run:\n' >&2
   printf '  %s\n' "${stray[@]#"${repo}/"}" >&2
   exit 1
 fi
 
-mapfile -t tests < <(
+tests=()
+while IFS= read -r file; do
+  tests+=("${file}")
+done < <(
   find "${folders[@]}" -mindepth 3 -maxdepth 3 -path '*/tests/test_*.py' \
     ! -path '*/@new/*' ! -path '*/@archive/*' | sort
 )
