@@ -84,8 +84,8 @@ Nothing here is settled until it graduates into a decision record.
   that update themselves. Of the 20 installed casks, Brave was the only root-owned app. Both
   were uninstalled by hand. Undeclared casks are therefore not only silent drift: under greedy
   upgrades they can make `u` fail on every run.
-- *Measured (2026-10-19, work laptop):* `terminal-notifier`, which `hub-daemon` and the Claude Code
-  notification hook call at runtime, was installed only as a dependency of `sql-language-server`
+- *Measured (2026-10-19, work laptop):* `terminal-notifier`, which `hub-daemon` calls at runtime,
+  was installed only as a dependency of `sql-language-server`
   (`installed_on_request: false`). Uninstalling that language server would have let the
   `brew autoremove` in `u` remove it. It is now declared in `tools/terminal-notifier/Brewfile`,
   and `brew bundle` marked it installed on request.
