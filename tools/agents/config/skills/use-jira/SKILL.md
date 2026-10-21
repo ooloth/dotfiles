@@ -50,6 +50,10 @@ does not survive:
   `**New client in `x` (chosen)**` renders with only "New client in" in bold. This happens in table
   cells and list items alike. Leave the backticks out of a bold phrase, or put the code after the
   bold ends.
+- **A table, heading, horizontal rule or nested blockquote inside a list item.** Jira's format
+  cannot hold one there, so the tool refuses the whole post with "Markdown contains structure ADF
+  cannot represent". Nothing is posted. End the list before the table and continue it after, and
+  turn the item's lead-in sentence into a paragraph above the table.
 
 Read the `body` the tool returns after posting. It is the converted text, so a broken span shows up
 there without opening Jira.
