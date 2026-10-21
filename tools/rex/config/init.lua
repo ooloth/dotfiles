@@ -1,1 +1,3 @@
 -- https://www.superlogical.com/rex/docs/customize/config
+-- https://www.superlogical.com/rex/docs/reference/lua
+-- https://www.superlogical.com/rex/docs/customize/keyboard-shortcuts
