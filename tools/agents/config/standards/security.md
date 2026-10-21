@@ -38,6 +38,14 @@ database schemas, or user data. Internal details stay internal.
 
 ## Should
 
+**Secrets travel in request bodies or headers, never in URLs.**
+A URL is copied into places its sender does not control: HTTP libraries' debug
+logs and error messages, proxies, and the receiving service's access logs. A
+token, key or password in a query string reaches all of them, and redaction
+inside the process reaches none of the copies outside it. The exception is a
+provider that accepts the secret nowhere else, and that exception is recorded
+where the call is made.
+
 **File access is constrained.**
 File reads and writes are restricted to expected paths. Path traversal
 sequences are rejected or fully resolved before use.
