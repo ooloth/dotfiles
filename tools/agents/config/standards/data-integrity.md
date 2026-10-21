@@ -58,6 +58,17 @@ data before being enforced.
 A down migration exists and has been thought through. If rollback is genuinely
 impossible, that is documented and a compensating path is identified.
 
+**A value rejected while loading a row still leaves a way to repair that row.**
+A column type, ORM decoder or model hook that raises while loading a row breaks every reader of
+that row. That includes the code meant to fix it: a reconnect, overwrite or delete that loads the
+row first fails the same way as the read that found the problem. So a check made while loading
+takes one of two forms. Either it is lenient and returns a value that the code using it refuses, or
+it is strict and its error names a recovery step that does not load the row, such as which row to
+delete and how the system recreates it. Strict fits when only a direct edit to the database can
+produce the bad value, because a lenient type makes every reader handle a case the system never
+produces. The error should also say the system never writes that value, so whoever hits it looks
+for the edit rather than a bug in the write path.
+
 ## Consider
 
 **Uniqueness is enforced at the database level.**
@@ -71,6 +82,7 @@ windows.
 - Migration files
 - Write paths and transaction sites
 - Read-modify-write sequences
+- Column types and ORM decoders that validate on read
 
 ## Out of scope
 
