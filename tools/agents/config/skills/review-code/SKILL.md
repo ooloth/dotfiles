@@ -47,9 +47,19 @@ Output the reviewable file list and diff command before proceeding.
 Build a context block that every agent receives. Gather from these sources in priority order:
 
 1. **PR title and body** — from Step 1 fetch (if PR scope)
-2. **Linked issues** — if the PR body references issue numbers, fetch with `gh issue view <n>`
+2. **Linked tickets, body and every comment** — any ticket the PR body, branch name or commit
+   messages reference, on whatever tracker holds it (GitHub, Jira, Linear). Read the body and all
+   of its comments, not the body alone: the approach, the design and any later change are usually
+   recorded in comments, and a default read omits them. GitHub:
+   `gh issue view <n> --json title,body,comments`. Jira: invoke `use-jira` and request the
+   `comment` field.
 3. **Commit messages** — `git log <base>...HEAD --format="%s%n%b"`
 4. **The diff itself** — read for intent when other sources are thin
+
+Consider everything in the ticket for inclusion in the block below, and carry what binds the
+review: numbered properties (`P1`, `P2`, …), the options the ticket rejected and why, choices
+recorded as deliberate, and anything deferred to another ticket. A reviewer who has not seen these
+recommends reversing a choice the ticket already argued, or flags a deferral as a gap.
 
 Synthesize into a single crisp block:
 
@@ -57,11 +67,16 @@ Synthesize into a single crisp block:
 Problem: [what's broken, missing, or needed — and why it matters]
 Approach: [how this change addresses it, at a high level]
 Key outcomes: [invariants, constraints, or requirements the implementation must satisfy]
+Recorded decisions: [the ticket's numbered properties, rejected options, deliberate choices and
+  deferrals, each with where it is recorded; "none found in <where you looked>" when empty]
 Diff command: [exact command agents should run to read the diff]
 ```
 
 Enhance if needed: if raw sources are vague, read the diff and fill in the gaps. Never leave this
 block generic ("various improvements") or empty.
+
+A finding that would reverse a recorded decision is not dropped. It is reported as a challenge to
+that decision, naming the record, so the reader weighs the new argument against the old one.
 
 ## Step 3: Launch the agents in parallel
 
