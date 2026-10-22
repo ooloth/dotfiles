@@ -6,7 +6,7 @@ metadata:
 ---
 <!-- Installed by "rex skill setup". Remove it with "rex skill remove". -->
 
-Run `rex __internal skill` and follow the guide it prints. The guide comes from
+Run `rex __internal skill --feature-session-naming=false` and follow the guide it prints. The guide comes from
 the installed Rex CLI, so it describes the commands available in that version.
 
 If the command fails, the installed Rex version predates the guide. Start with
