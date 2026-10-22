@@ -27,6 +27,10 @@ jobs:
       - name: Install lua
         run: brew install lua
 
+      # Every script starts with `#!/usr/bin/env bash`, so this is the bash the checks run them with
+      - name: Show bash version
+        run: command -v bash && bash --version | head -n 1
+
       - name: Format
         run: bash scripts/checks/formatting.bash
 
