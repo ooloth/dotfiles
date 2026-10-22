@@ -2,9 +2,7 @@
 # ENVIRONMENT VARIABLES #
 ########################
 
-if is_work; then
-  # export JIRA_API_TOKEN="" # see: https://id.atlassian.com/manage-profile/security/api-tokens
-fi
+# The API token lives in the login keychain, never in JIRA_API_TOKEN (see README.md)
 
 ###########
 # ALIASES #
