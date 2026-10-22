@@ -173,6 +173,7 @@ class CmdKeys(unittest.TestCase):
             "cmd+shift+[BracketLeft]": ("session.previous", {}),
             "cmd+shift+[BracketRight]": ("session.next", {}),
             "cmd+[Backslash]": ("pane.split.right", {}),
+            "cmd+shift+m": ("pane.zoom", {}),
         }
         bound = action_bindings()
         for key, (action, args) in expected.items():
@@ -181,7 +182,7 @@ class CmdKeys(unittest.TestCase):
                 self.assertEqual(bound[key], {"action": action, "args": args})
 
     def test_no_other_keys_are_bound_to_actions(self) -> None:
-        self.assertEqual(len(action_bindings()), 8)
+        self.assertEqual(len(action_bindings()), 9)
 
 
 if __name__ == "__main__":

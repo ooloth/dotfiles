@@ -53,3 +53,4 @@ rex.bind("cmd+shift+[BracketRight]", "session.next")
 
 -- Panes
 rex.bind("cmd+[Backslash]", "pane.split.right")
+rex.bind("cmd+shift+m", "pane.zoom")

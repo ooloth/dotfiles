@@ -19,6 +19,7 @@ It also binds the cmd keys `tools/ghostty/config/config` sends to tmux to Rex's 
 | cmd+s | change session (picker) |
 | cmd+shift+[ / cmd+shift+] | previous / next session |
 | cmd+\\ | split right |
+| cmd+shift+m | zoom pane (toggle) |
 
 After editing it, run `rex config check`, then `rex config reload`. `rex keymap` lists what loaded.
 
