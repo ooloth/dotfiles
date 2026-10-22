@@ -87,5 +87,6 @@ or export it. Setup is in `tools/jira/README.md`.
   paragraph above as literal `h2.` text, a nested bullet and a numbered list after a bullet list
   become literal `**` and `#` lines, a table keeps its `|-|` separator as a row of dashes with no
   header row, and a code block lands inside a stray bullet tagged as Java. Post only paragraphs and
-  flat lists through the CLI. Read the comment back with `jira issue view KEY --comments 1 --raw`,
-  since `--plain` re-renders it and hides some breakage.
+  flat lists through the CLI, and keep the inline code, bold and links inside them: they survive,
+  and they make a long comment far faster to skim. Read the comment back with
+  `jira issue view KEY --comments 1 --raw`, since `--plain` re-renders it and hides some breakage.

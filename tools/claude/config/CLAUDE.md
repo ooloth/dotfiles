@@ -17,6 +17,12 @@ carry the logic. Say it out loud first, then write that down.
 Say the thing directly. Prefer the ordinary word. Leave out what the reader does not need — but
 brevity is a consequence of knowing what you mean, never the goal itself.
 
+**Format for a reader who skims.** Put identifiers, file paths, commands, values and config keys in
+inline code, bold the short label that leads a list item or paragraph, and link what you cite. These
+marks let a reader find the term they care about without reading every word. Use them wherever the
+destination renders them, ticket comments included. Where a tool's converter breaks some markdown,
+drop the structure it breaks, such as headings or tables, and keep the inline formatting it keeps.
+
 **The test is that the reader gets through it once, forward, without going back.** A reader who
 reaches the third paragraph and has to return to the first to remember why they are reading has been
 failed. Length is not the test. Something short that has to be re-read has failed; something longer
