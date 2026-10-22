@@ -99,6 +99,16 @@ code — absent config, malformed input, a failed network call? If yes, return
 an error. If only a bug within the codebase could trigger it, assert it.
 Assertion failures halt; they are not caught and recovered from.
 
+**Code that relies on what an external call removes, revokes or invalidates cites the provider's
+documentation of everything that call affects.**
+A revoke, delete, cancel or void can act on more than the identifier passed to
+it: an OAuth revoke can end every token an account has given the project, and
+deleting a namespace deletes everything in it. A test double of the provider
+encodes its author's belief about that reach, so no test against it can show the
+reach is wider. The reach is taken from the provider's documentation, quoted
+beside the call or in the decision that relies on it, and the code keeps its own
+records in step with everything the call ends.
+
 ## Consider
 
 **Assertions multiply the value of fuzzing.**
