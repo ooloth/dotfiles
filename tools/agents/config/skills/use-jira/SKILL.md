@@ -1,6 +1,6 @@
 ---
 name: use-jira
-description: Jira gotchas for the Atlassian MCP tools. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
+description: Jira gotchas for the Atlassian MCP tools and the jira CLI. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
 ---
 
 ## Cloud ID
@@ -66,3 +66,26 @@ there without opening Jira.
 `addCommentToJiraIssue` with `commentId` replaces that comment's body in place. Use it to correct a
 comment rather than posting a second one, which notifies watchers again and leaves both in the
 history. The replacement is a new draft: approved wording changes only with fresh approval.
+
+## The jira CLI
+
+`jira` (jira-cli) is set up on the work laptop as a fallback when the Atlassian MCP server will not
+connect. Its token is in the login keychain and jira-cli reads it there; never read it out, print it
+or export it. Setup is in `tools/jira/README.md`.
+
+- **Reads show one comment.** `jira issue view KEY --plain` prints the latest comment only. Pass
+  `--comments 50` (or more than the ticket has) when the plan is what you came for.
+- **Post from a file, never an argument.** `jira issue comment add KEY --template <file>
+  --no-input` reads the body from the file and skips the editor prompt. A body passed as an argument
+  goes through the shell, and a positional body silently wins over `--template`.
+- **A posted comment cannot be fixed from the CLI.** jira-cli has `comment add` and nothing else, so
+  a mistake stays until someone edits it in the web UI. Validate the body before posting, harder
+  than for the MCP tool.
+- **Markdown survives only in its simplest shapes.** jira-cli converts the body to Jira wiki markup
+  (blackfriday-confluence, posted to API v2). Tested on CENG-349: paragraphs, inline code, bold,
+  links (including code as link text) and a flat bullet list survive. A heading runs into the
+  paragraph above as literal `h2.` text, a nested bullet and a numbered list after a bullet list
+  become literal `**` and `#` lines, a table keeps its `|-|` separator as a row of dashes with no
+  header row, and a code block lands inside a stray bullet tagged as Java. Post only paragraphs and
+  flat lists through the CLI. Read the comment back with `jira issue view KEY --comments 1 --raw`,
+  since `--plain` re-renders it and hides some breakage.
