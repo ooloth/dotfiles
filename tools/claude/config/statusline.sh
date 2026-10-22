@@ -44,7 +44,9 @@ fi
 # Empty on a detached HEAD or outside a repo, which drops the separator and the branch
 branch=$(git -C "$dir" branch --show-current 2>/dev/null || true)
 branch_icon=$'\xee\x9c\xa5' # U+E725 nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
-left="${location}${branch:+ · $branch_icon $branch}"
+# Two spaces after it, because Rex draws this glyph wider than one cell and covers a single space
+folder_icon=$'\xef\x81\xbb' # U+F07B nf-fa-folder
+left="${folder_icon}  ${location}${branch:+ · $branch_icon $branch}"
 
 right_plain="${model} · ${ctx}"
 right_rendered="${model} · ${color}${ctx}${color:+$RESET}"

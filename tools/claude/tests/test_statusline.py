@@ -33,6 +33,7 @@ SETTINGS = CONFIG / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
 RIGHT = "claude-opus-5-5 · 10k/1000k"
 BRANCH_ICON = "\ue725 "  # nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
+FOLDER_ICON = "\uf07b  "  # nf-fa-folder, then two spaces because Rex draws it wider than a cell
 
 
 def edge_margin() -> int:
@@ -57,7 +58,11 @@ def repo_on_branch(parent: Path, branch: str) -> Path:
 
 
 def status_line(
-    directory: Path, columns: str | None, *, used_percentage: float = 1, agent: str | None = None
+    directory: Path,
+    columns: str | None,
+    *,
+    used_percentage: float = 1,
+    agent: str | None = None,
 ) -> str:
     session: dict[str, object] = {
         "model": {"id": "claude-opus-5-5"},
@@ -108,29 +113,31 @@ class LeftSide(unittest.TestCase):
         return worktree
 
     def test_repo_root_shows_repo_name_then_branch(self) -> None:
-        self.assertEqual(self.left(self.repo), "repo · " + BRANCH_ICON + "main")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main")
 
     def test_subdirectory_shows_path_from_the_repo_root(self) -> None:
         subdirectory = self.repo / "a" / "b"
         subdirectory.mkdir(parents=True)
-        self.assertEqual(self.left(subdirectory), "repo/a/b · " + BRANCH_ICON + "main")
+        self.assertEqual(
+            self.left(subdirectory), FOLDER_ICON + "repo/a/b · " + BRANCH_ICON + "main"
+        )
 
     def test_worktree_root_shows_worktree_name_then_its_branch(self) -> None:
-        self.assertEqual(self.left(self.worktree()), "wt · " + BRANCH_ICON + "feat")
+        self.assertEqual(self.left(self.worktree()), FOLDER_ICON + "wt · " + BRANCH_ICON + "feat")
 
     def test_worktree_subdirectory_shows_path_from_the_worktree_root(self) -> None:
         subdirectory = self.worktree() / "x"
         subdirectory.mkdir()
-        self.assertEqual(self.left(subdirectory), "wt/x · " + BRANCH_ICON + "feat")
+        self.assertEqual(self.left(subdirectory), FOLDER_ICON + "wt/x · " + BRANCH_ICON + "feat")
 
     def test_detached_head_shows_only_the_location(self) -> None:
         git(self.repo, "checkout", "-q", "--detach")
-        self.assertEqual(self.left(self.repo), "repo")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo")
 
     def test_directory_outside_a_repo_shows_its_name(self) -> None:
         plain = self.tmp / "plain"
         plain.mkdir()
-        self.assertEqual(self.left(plain), "plain")
+        self.assertEqual(self.left(plain), FOLDER_ICON + "plain")
 
 
 class RightSide(unittest.TestCase):
@@ -150,7 +157,7 @@ class Padding(unittest.TestCase):
         repo = repo_on_branch(self.tmp, "feature/x")
         line = visible(status_line(repo, "120"))
         self.assertEqual(len(line), 120 - edge_margin())
-        self.assertTrue(line.startswith(f"repo · {BRANCH_ICON}feature/x "), line)
+        self.assertTrue(line.startswith(f"{FOLDER_ICON}repo · {BRANCH_ICON}feature/x "), line)
         self.assertTrue(line.endswith(" " + RIGHT), line)
 
     @settings(max_examples=40, deadline=None)
@@ -163,7 +170,9 @@ class Padding(unittest.TestCase):
             directory = repo / subpath
             directory.mkdir(parents=True, exist_ok=True)
             line = visible(status_line(directory, str(columns)))
-        left = "repo" + (f"/{subpath}" if subpath else "") + f" · {BRANCH_ICON}{branch}"
+        left = (
+            FOLDER_ICON + "repo" + (f"/{subpath}" if subpath else "") + f" · {BRANCH_ICON}{branch}"
+        )
         if len(left) + 1 + len(RIGHT) <= columns - edge_margin():
             self.assertEqual(len(line), columns - edge_margin(), line)
             self.assertTrue(line.startswith(left + " "), line)
@@ -182,7 +191,8 @@ class Padding(unittest.TestCase):
         repo = repo_on_branch(self.tmp, "main")
         for columns in (None, "", "wide"):
             self.assertEqual(
-                visible(status_line(repo, columns)), f"repo · {BRANCH_ICON}main {RIGHT}"
+                visible(status_line(repo, columns)),
+                f"{FOLDER_ICON}repo · {BRANCH_ICON}main {RIGHT}",
             )
 
 
