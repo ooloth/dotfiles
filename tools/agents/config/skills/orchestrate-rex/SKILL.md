@@ -91,7 +91,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
   commit tab after its commit lands or a worker whose PR only waits on the user's merge. Leave
   alone any tab you didn't open.
 - **Merges:** merge in the agreed order, and confirm each change works in dev before the next
-  merge.
+  merge. The user merges with the "Squash and merge" button on GitHub, so tell them a PR is ready
+  to merge and give no command, unless something the button can't do is needed.
 
 ## 5. Report
 
