@@ -1,6 +1,6 @@
 ---
 updated: 2026-10-22
-update_when: CI prints its bash version, a script breaks under one version, or the language question is answered
+update_when: a script breaks under one version, or the language question is answered
 decays: slow
 status: open
 ---
@@ -22,14 +22,12 @@ fixing them gets more expensive with every script added.
 
 ## What would settle it
 
-Two things.
+Whether anything besides first-time setup must run before Homebrew is installed. Setup does, so
+those scripts need 3.2 whatever the answer is. The question is whether the rest of the repo also
+promises 3.2 or promises bash 5 with an exception for setup.
 
-1. **Which bash CI runs.** The `Show bash version` step in `.github/workflows/check.yml` prints
-   it. If it is 3.2, CI already fails on any 3.2 incompatibility the tests reach, and the local
-   `check` is the only place that hides them.
-2. **Whether anything must run before Homebrew is installed.** First-time setup does, so those
-   scripts need 3.2 whatever the answer is. The question is whether the rest of the repo also
-   promises 3.2 or promises bash 5 with an exception for setup.
+CI runs bash 3.2 (see Findings), so it already fails on any 3.2 incompatibility the tests reach.
+The local `check` runs Homebrew's bash 5, so it is the one place that hides them.
 
 The answer to `which-language-should-this-repos-scripts-use.md` changes how much code this
 covers. If scripts move to Python, only the bootstrap and anything left in bash remain.
@@ -65,10 +63,11 @@ Nothing here is settled until it moves into a decision record.
 
 - *Sourced:* GitHub's runner-images README maps `macos-latest` to macOS 26 Arm64, and that image's
   software list shows `Bash 3.2.57(1)-release`, with no Homebrew bash. Read on 2026-10-22.
-- *Unverified:* `scripts/checks/tests.bash:18` says "macOS's own bash 3.2, the one CI runs". No
-  CI log shows this yet; the new workflow step will.
+- *Measured:* CI runs `/bin/bash`, `GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)`,
+  printed by the `Show bash version` step in run 39731021324 on 2026-10-22. This confirms the
+  comment at `scripts/checks/tests.bash:18`.
 - *Measured:* `tools/homebrew/generate-brewfile.bash:8` and `tools/homebrew/update.bash:18` use
   `mapfile`, which bash 3.2 does not have.
 - *Reasoned:* those two work under `u` because Homebrew's bash comes first on this Mac's `PATH`.
-  CI passes either because it runs bash 5 or because no test runs those lines.
+  CI runs 3.2 and passes, so no CI test runs those lines.
 - *Measured:* `/bin/bash -c "printf %s \$'\\ue725'"` printed `\ue725` on this Mac on 2026-10-22.
