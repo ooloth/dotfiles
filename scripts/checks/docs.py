@@ -18,6 +18,7 @@ Not checked, because wrapping them would break them or because they are not pros
 - lines containing a URL
 - files under any `@archive/` directory, which are frozen
 - files under `.github/`, whose text is pasted into GitHub, where a single newline is a line break
+- files a tool's installer writes (INSTALLED_BY_TOOLS), which would overwrite any rewrapping
 
 A fence or frontmatter block that never closes is reported rather than exempting the rest of the
 file, so a typo cannot silently switch the check off.
@@ -57,9 +58,15 @@ class Problem:
         return f"{self.path}:{self.line}: {self.message}"
 
 
+# Written by a tool's own installer, which would overwrite any rewrapping
+INSTALLED_BY_TOOLS = {
+    "tools/agents/config/skills/rex/SKILL.md",  # rex skill setup
+}
+
+
 def is_exempt(path: str) -> bool:
     parts = Path(path).parts
-    return "@archive" in parts or parts[0] == ".github"
+    return "@archive" in parts or parts[0] == ".github" or path in INSTALLED_BY_TOOLS
 
 
 def tracked_markdown() -> list[str]:

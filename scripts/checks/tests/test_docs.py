@@ -133,6 +133,14 @@ class WhichFiles(unittest.TestCase):
         run = run_checker({".github/PULL_REQUEST_TEMPLATE.md": line(150) + "\n"})
         self.assertEqual(run.status, 0, run.stdout)
 
+    def test_a_skill_file_a_tool_installs_is_exempt(self) -> None:
+        run = run_checker({"tools/agents/config/skills/rex/SKILL.md": line(150) + "\n"})
+        self.assertEqual(run.status, 0, run.stdout)
+
+    def test_other_skill_files_are_still_checked(self) -> None:
+        run = run_checker({"tools/agents/config/skills/other/SKILL.md": line(101) + "\n"})
+        self.assertIn("tools/agents/config/skills/other/SKILL.md:1: 101 columns", run.stdout)
+
     def test_an_untracked_file_is_not_checked(self) -> None:
         run = run_checker({"a.md": "ok\n"}, untracked={"scratch.md": line(150) + "\n"})
         self.assertEqual(run.status, 0, run.stdout)
