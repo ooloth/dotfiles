@@ -31,7 +31,7 @@ CONFIG = Path(__file__).resolve().parent.parent / "config"
 SCRIPT = CONFIG / "statusline.sh"
 SETTINGS = CONFIG / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
-LEFT = "claude-opus-5-5 · 10k/1000k"
+RIGHT = "claude-opus-5-5 · 10k/1000k"
 BRANCH_ICON = "\ue725 "  # nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
 
 
@@ -56,12 +56,16 @@ def repo_on_branch(parent: Path, branch: str) -> Path:
     return repo
 
 
-def status_line(directory: Path, columns: str | None, *, used_percentage: float = 1) -> str:
-    session = {
+def status_line(
+    directory: Path, columns: str | None, *, used_percentage: float = 1, agent: str | None = None
+) -> str:
+    session: dict[str, object] = {
         "model": {"id": "claude-opus-5-5"},
         "workspace": {"current_dir": str(directory)},
         "context_window": {"used_percentage": used_percentage, "context_window_size": 1_000_000},
     }
+    if agent is not None:
+        session["agent"] = {"name": agent}
     env = {k: v for k, v in os.environ.items() if k != "COLUMNS"}
     if columns is not None:
         env["COLUMNS"] = columns
@@ -84,49 +88,57 @@ BRANCHES = st.from_regex(r"[a-z][a-z0-9/_-]{0,30}[a-z0-9]", fullmatch=True).filt
 SUBPATHS = st.lists(st.from_regex(r"[a-z0-9_-]{1,12}", fullmatch=True), max_size=3).map("/".join)
 
 
-def right_side(line: str) -> str:
-    assert line.startswith(LEFT + " "), line
-    return line[len(LEFT) :].lstrip(" ")
+def left_side(line: str) -> str:
+    assert line.endswith(" " + RIGHT), line
+    return line[: -len(RIGHT)].rstrip(" ")
 
 
-class RightSide(unittest.TestCase):
+class LeftSide(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
         self.repo = repo_on_branch(self.tmp, "main")
 
-    def right(self, directory: Path) -> str:
-        return right_side(visible(status_line(directory, "120")))
+    def left(self, directory: Path) -> str:
+        return left_side(visible(status_line(directory, "120")))
 
     def worktree(self) -> Path:
         worktree = self.tmp / "wt"
         git(self.repo, "worktree", "add", "-q", "-b", "feat", str(worktree))
         return worktree
 
-    def test_repo_root_shows_branch_then_repo_name(self) -> None:
-        self.assertEqual(self.right(self.repo), BRANCH_ICON + "main · repo")
+    def test_repo_root_shows_repo_name_then_branch(self) -> None:
+        self.assertEqual(self.left(self.repo), "repo · " + BRANCH_ICON + "main")
 
     def test_subdirectory_shows_path_from_the_repo_root(self) -> None:
         subdirectory = self.repo / "a" / "b"
         subdirectory.mkdir(parents=True)
-        self.assertEqual(self.right(subdirectory), BRANCH_ICON + "main · repo/a/b")
+        self.assertEqual(self.left(subdirectory), "repo/a/b · " + BRANCH_ICON + "main")
 
-    def test_worktree_root_shows_its_branch_then_worktree_name(self) -> None:
-        self.assertEqual(self.right(self.worktree()), BRANCH_ICON + "feat · wt")
+    def test_worktree_root_shows_worktree_name_then_its_branch(self) -> None:
+        self.assertEqual(self.left(self.worktree()), "wt · " + BRANCH_ICON + "feat")
 
     def test_worktree_subdirectory_shows_path_from_the_worktree_root(self) -> None:
         subdirectory = self.worktree() / "x"
         subdirectory.mkdir()
-        self.assertEqual(self.right(subdirectory), BRANCH_ICON + "feat · wt/x")
+        self.assertEqual(self.left(subdirectory), "wt/x · " + BRANCH_ICON + "feat")
 
     def test_detached_head_shows_only_the_location(self) -> None:
         git(self.repo, "checkout", "-q", "--detach")
-        self.assertEqual(self.right(self.repo), "repo")
+        self.assertEqual(self.left(self.repo), "repo")
 
     def test_directory_outside_a_repo_shows_its_name(self) -> None:
         plain = self.tmp / "plain"
         plain.mkdir()
-        self.assertEqual(self.right(plain), "plain")
+        self.assertEqual(self.left(plain), "plain")
+
+
+class RightSide(unittest.TestCase):
+    def test_agent_name_is_not_shown(self) -> None:
+        with tempfile.TemporaryDirectory() as parent:
+            line = visible(status_line(Path(parent), "120", agent="security-reviewer"))
+        self.assertNotIn("security-reviewer", line)
+        self.assertTrue(line.endswith(" " + RIGHT), line)
 
 
 class Padding(unittest.TestCase):
@@ -134,11 +146,12 @@ class Padding(unittest.TestCase):
         self.tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
 
-    def test_right_side_ends_at_the_right_edge_of_a_wide_terminal(self) -> None:
+    def test_model_and_usage_end_at_the_right_edge_of_a_wide_terminal(self) -> None:
         repo = repo_on_branch(self.tmp, "feature/x")
         line = visible(status_line(repo, "120"))
         self.assertEqual(len(line), 120 - edge_margin())
-        self.assertTrue(line.endswith(f" {BRANCH_ICON}feature/x · repo"), line)
+        self.assertTrue(line.startswith(f"repo · {BRANCH_ICON}feature/x "), line)
+        self.assertTrue(line.endswith(" " + RIGHT), line)
 
     @settings(max_examples=40, deadline=None)
     @given(branch=BRANCHES, subpath=SUBPATHS, columns=st.integers(min_value=1, max_value=140))
@@ -150,15 +163,15 @@ class Padding(unittest.TestCase):
             directory = repo / subpath
             directory.mkdir(parents=True, exist_ok=True)
             line = visible(status_line(directory, str(columns)))
-        right = f"{BRANCH_ICON}{branch} · repo" + (f"/{subpath}" if subpath else "")
-        if len(LEFT) + 1 + len(right) <= columns - edge_margin():
+        left = "repo" + (f"/{subpath}" if subpath else "") + f" · {BRANCH_ICON}{branch}"
+        if len(left) + 1 + len(RIGHT) <= columns - edge_margin():
             self.assertEqual(len(line), columns - edge_margin(), line)
-            self.assertTrue(line.startswith(LEFT + " "), line)
-            self.assertTrue(line.endswith(" " + right), line)
+            self.assertTrue(line.startswith(left + " "), line)
+            self.assertTrue(line.endswith(" " + RIGHT), line)
         else:
-            self.assertEqual(line, f"{LEFT} {right}")
+            self.assertEqual(line, f"{left} {RIGHT}")
 
-    def test_coloured_context_does_not_shift_the_right_side(self) -> None:
+    def test_coloured_context_still_ends_at_the_right_edge(self) -> None:
         repo = repo_on_branch(self.tmp, "main")
         for used_percentage in (6, 12):  # 60k is yellow, 120k is red
             line = status_line(repo, "100", used_percentage=used_percentage)
@@ -169,7 +182,7 @@ class Padding(unittest.TestCase):
         repo = repo_on_branch(self.tmp, "main")
         for columns in (None, "", "wide"):
             self.assertEqual(
-                visible(status_line(repo, columns)), f"{LEFT} {BRANCH_ICON}main · repo"
+                visible(status_line(repo, columns)), f"repo · {BRANCH_ICON}main {RIGHT}"
             )
 
 

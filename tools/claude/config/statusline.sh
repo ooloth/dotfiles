@@ -5,7 +5,6 @@ input=$(cat)
 
 # Available data: https://code.claude.com/docs/en/statusline#full-json-schema
 model=$(echo "$input" | jq -r '.model.id // "claude"')
-agent=$(echo "$input" | jq -r '.agent.name // ""')
 dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // "."')
 
 # Context window: used tokens / total tokens, rounded to k
@@ -32,10 +31,6 @@ else
   color=""
 fi
 
-middle="${model}${agent:+ · $agent}"
-left_plain="${middle} · ${ctx}"
-left_rendered="${middle} · ${color}${ctx}${color:+$RESET}"
-
 # The checkout root's name plus the path below it, so a linked worktree shows its own directory.
 # git computes the prefix itself, which stays right when $dir reaches the checkout through a symlink.
 if checkout=$(git -C "$dir" rev-parse --show-toplevel --show-prefix 2>/dev/null); then
@@ -46,17 +41,20 @@ else
   location=$(basename "$dir")
 fi
 
-# Empty on a detached HEAD or outside a repo, which drops the branch and its separator
+# Empty on a detached HEAD or outside a repo, which drops the separator and the branch
 branch=$(git -C "$dir" branch --show-current 2>/dev/null || true)
 branch_icon=$'\xee\x9c\xa5' # U+E725 nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
-right="${branch:+$branch_icon $branch · }${location}"
+left="${location}${branch:+ · $branch_icon $branch}"
+
+right_plain="${model} · ${ctx}"
+right_rendered="${model} · ${color}${ctx}${color:+$RESET}"
 
 # Claude Code indents the status line by 2 columns and cuts it off with "…" past COLUMNS - 4
 edge_margin=4
 gap=1
 if [[ "${COLUMNS:-}" =~ ^[0-9]+$ ]]; then
-  free=$((COLUMNS - edge_margin - ${#left_plain} - ${#right}))
+  free=$((COLUMNS - edge_margin - ${#left} - ${#right_plain}))
   [[ "$free" -gt 1 ]] && gap="$free"
 fi
 
-printf "%s%*s%s\n" "$left_rendered" "$gap" "" "$right"
+printf "%s%*s%s\n" "$left" "$gap" "" "$right_rendered"
