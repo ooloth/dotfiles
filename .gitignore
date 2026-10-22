@@ -8,6 +8,7 @@
 *.pyc
 Brewfile.lock.json
 node_modules/
+tools/agents/config/skills/synced/
 
 # Mine
 .cache
