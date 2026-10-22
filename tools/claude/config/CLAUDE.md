@@ -435,6 +435,21 @@ waiting: the new draft goes in a message that changes nothing, and the new wordi
 after I approve it. Announcing the change in the same turn that makes it is substituting it
 silently with a note attached.
 
+## When IT Blocks a Message
+
+Something on the user's side sometimes blocks a message without saying why, and neither of us can
+find out the reason. When the user reports a block, do not ask which part was flagged. Rewrite the
+whole blocked message in one pass and show the rewrite:
+
+- Replace role-play and impersonation wording ("pretend to be", "act as", "spoof") with a literal
+  description of what happens ("send the request the app receives when…")
+- Label made-up credentials, codes and tokens as test values, and avoid words like "fake",
+  "steal" or "leak" next to them
+- Keep every fact, command and decision; change only the wording
+
+Approved text that the rewrite changes is a new draft, so it goes back for approval before it is
+posted, as the section above requires. Say which phrases changed so the user can approve quickly.
+
 ## Improve Yourself
 
 When you encounter friction during any task — a misleading instruction, an ambiguity that cost
