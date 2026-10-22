@@ -83,6 +83,13 @@ confusing report, comes before the next work item. Resolve it with the user befo
   approve, goes in a new tab in that ticket's session. You or that ticket's worker may open it. A
   bounded question with one answer goes to a subagent instead. When you check a ticket, list its
   session's tabs, so a tab a worker opened shows up in your table.
+- **Tabs show the work in flight:** the user reads the sidebar as the list of what is happening.
+  Name each worker tab `pr-<number>-<phase>`, where the phase is a word or two saying why the PR
+  needs attention now, at the size of `designing`, `implementing`, `reviewing`, `replying`,
+  `merging` or `verifying` (after the merge, in dev). Those are examples, not a fixed list. Rename
+  the tab when the phase changes. In every sweep, close tabs whose job is finished, such as a
+  commit tab after its commit lands or a worker whose PR only waits on the user's merge. Leave
+  alone any tab you didn't open.
 - **Merges:** merge in the agreed order, and confirm each change works in dev before the next
   merge.
 
