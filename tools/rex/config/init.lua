@@ -4,13 +4,16 @@
 
 local terminal = "com.superlogical.terminal"
 
--- Programs that use ctrl+h/l for their own split navigation (the same list as is_vim in tmux.conf)
+-- Programs that use ctrl+h/j/k/l for their own split navigation (the same list as is_vim in tmux.conf)
 local navigates_itself = { nvim = true, vim = true, vi = true, view = true, fzf = true }
 
 -- Like vim-tmux-navigator: pass the key to a program that navigates itself, otherwise move focus.
 -- Wraps at the edge, as tmux's select-pane does.
 local function focus_pane_unless_program_navigates(direction)
-  assert(direction == "left" or direction == "right", "unexpected direction: " .. tostring(direction))
+  assert(
+    direction == "left" or direction == "right" or direction == "up" or direction == "down",
+    "unexpected direction: " .. tostring(direction)
+  )
 
   return function(ctx)
     local process, lookup_err = rex.block.call(terminal, "process", { block_id = ctx.block_id })
@@ -30,4 +33,23 @@ local function focus_pane_unless_program_navigates(direction)
 end
 
 rex.bind("ctrl+h", focus_pane_unless_program_navigates("left"))
+rex.bind("ctrl+j", focus_pane_unless_program_navigates("down"))
+rex.bind("ctrl+k", focus_pane_unless_program_navigates("up"))
 rex.bind("ctrl+l", focus_pane_unless_program_navigates("right"))
+
+-- The cmd keys Ghostty sent to tmux (tools/ghostty/config/config), bound to Rex's own actions.
+-- Physical key names keep them on the same keys whatever the keyboard layout.
+
+-- Tabs
+rex.bind("cmd+[BracketLeft]", "client.tab.previous")
+rex.bind("cmd+[BracketRight]", "client.tab.next")
+rex.bind("cmd+n", "client.tab.new")
+rex.bind("cmd+r", "client.tab.rename")
+
+-- Sessions
+rex.bind("cmd+s", "session.switch")
+rex.bind("cmd+shift+[BracketLeft]", "session.previous")
+rex.bind("cmd+shift+[BracketRight]", "session.next")
+
+-- Panes
+rex.bind("cmd+[Backslash]", "pane.split.right")
