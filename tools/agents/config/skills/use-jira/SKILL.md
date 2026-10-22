@@ -50,6 +50,9 @@ does not survive:
   `**New client in `x` (chosen)**` renders with only "New client in" in bold. This happens in table
   cells and list items alike. Leave the backticks out of a bold phrase, or put the code after the
   bold ends.
+- **Inline code as link text.** Jira keeps the code and drops the link:
+  ``[`DECISIONS.md`](https://…)`` came back as plain `DECISIONS.md` in an issue description, with
+  no URL anywhere. Write the link text without backticks: `[DECISIONS.md](https://…)`.
 - **A table, heading, horizontal rule or nested blockquote inside a list item.** Jira's format
   cannot hold one there, so the tool refuses the whole post with "Markdown contains structure ADF
   cannot represent". Nothing is posted. End the list before the table and continue it after, and
