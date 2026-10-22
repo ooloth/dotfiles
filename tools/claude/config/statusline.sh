@@ -6,6 +6,7 @@ input=$(cat)
 # Available data: https://code.claude.com/docs/en/statusline#full-json-schema
 model=$(echo "$input" | jq -r '.model.id // "claude"')
 agent=$(echo "$input" | jq -r '.agent.name // ""')
+dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // "."')
 
 # Context window: used tokens / total tokens, rounded to k
 # used_percentage is authoritative (server-side); raw token sums overcounted due to cache fields
@@ -18,10 +19,10 @@ total_k=$(echo "$input" | jq -r '
 ')
 ctx="${used_k}k/${total_k}k"
 
-# Color the context fraction based on usage: yellow >= 50%, red >= 75%
-YELLOW='\033[33m'
-RED='\033[31m'
-RESET='\033[0m'
+# Color the context fraction based on tokens used: yellow >= 50k, red >= 100k
+YELLOW=$'\033[33m'
+RED=$'\033[31m'
+RESET=$'\033[0m'
 
 if [[ "$used_k" -ge 100 ]]; then
   color="$RED"
@@ -32,9 +33,23 @@ else
 fi
 
 middle="${model}${agent:+ · $agent}"
+left_plain="${middle} · ${ctx}"
+left_rendered="${middle} · ${color}${ctx}${color:+$RESET}"
 
-if [[ -n "$color" ]]; then
-  printf "%s · ${color}%s${RESET}\n" "$middle" "$ctx"
-else
-  printf "%s · %s\n" "$middle" "$ctx"
+# Empty on a detached HEAD or outside a repo, which leaves the line as it was
+branch=$(git -C "$dir" branch --show-current 2>/dev/null || true)
+
+if [[ -z "$branch" ]]; then
+  printf "%s\n" "$left_rendered"
+  exit 0
 fi
+
+# Claude Code indents the status line by 2 columns and cuts it off with "…" past COLUMNS - 4
+edge_margin=4
+gap=1
+if [[ "${COLUMNS:-}" =~ ^[0-9]+$ ]]; then
+  free=$((COLUMNS - edge_margin - ${#left_plain} - ${#branch}))
+  [[ "$free" -gt 1 ]] && gap="$free"
+fi
+
+printf "%s%*s%s\n" "$left_rendered" "$gap" "" "$branch"

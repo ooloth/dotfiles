@@ -118,7 +118,8 @@
   "skipDangerousModePermissionPrompt": true,
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh"
+    "command": "~/.claude/statusline.sh",
+    "refreshInterval": 5
   },
   "theme": "dark-daltonized",
   "tui": "fullscreen"
