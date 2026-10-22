@@ -12,16 +12,18 @@ https://github.com/ankitpokhrel/jira-cli/wiki/Installation#homebrew
 1. Find the site's cloud ID: e.g. open https://recursion.atlassian.net/_edge/tenant_info and copy
    the `cloudId` value.
 2. Create an API token:
-   a. Go to https://id.atlassian.com/manage-profile/security/api-tokens
-   b. Click "Create API token with scopes"
-   c. Select "Jira" and click "Next"
-   d. Select the scopes `read:jira-work`, `write:jira-work`, `read:jira-user`, `read:me`,
-   `read:account`, `read:project:jira`, `read:board-scope:jira-software` and
-   `write:board-scope:jira-software`. `jira init` lists the project's boards through Jira
-   Software's agile API, which needs both `read:project:jira` and
-   `read:board-scope:jira-software`
-   ([Get all boards](https://developer.atlassian.com/cloud/jira/software/rest/api-group-board/)).
-   A scope cannot be added to a token later. The token expires within a year, so note the date.
+
+   - Go to https://id.atlassian.com/manage-profile/security/api-tokens
+   - Click "Create API token with scopes"
+   - Select "Jira" and click "Next"
+   - Select the scopes `read:jira-work`, `write:jira-work`, `read:jira-user`, `read:me`,
+     `read:account`, `read:project:jira`, `read:board-scope:jira-software` and
+     `write:board-scope:jira-software`. `jira init` lists the project's boards through Jira
+     Software's agile API, which needs both `read:project:jira` and
+     `read:board-scope:jira-software`
+     ([Get all boards](https://developer.atlassian.com/cloud/jira/software/rest/api-group-board/)).
+     A scope cannot be added to a token later. The token expires within a year, so note the date.
+
 3. Copy the token, store it in the login keychain from the clipboard, then clear the clipboard.
    The interactive prompt (`-w` with nothing after it) keeps only the first 128 characters, which
    cuts the token off. `$(pbpaste)` keeps the token out of shell history:
