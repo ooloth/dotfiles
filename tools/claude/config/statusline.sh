@@ -18,14 +18,20 @@ total_k=$(echo "$input" | jq -r '
 ')
 ctx="${used_k}k/${total_k}k"
 
-# Color the context fraction based on tokens used: yellow >= 50k, red >= 100k
+# Color the context fraction by tokens used: yellow from 125k, red from 250k, where measured
+# long-context quality stops being near its best and then clearly drops. Quality follows the token
+# count, not the share of the window, so the thresholds only shrink to half and three quarters of a
+# window too small to reach them, which still warns before the window fills.
 YELLOW=$'\033[33m'
 RED=$'\033[31m'
 RESET=$'\033[0m'
 
-if [[ "$used_k" -ge 100 ]]; then
+yellow_k=$((total_k / 2 < 125 ? total_k / 2 : 125))
+red_k=$((total_k * 3 / 4 < 250 ? total_k * 3 / 4 : 250))
+
+if [[ "$used_k" -ge "$red_k" ]]; then
   color="$RED"
-elif [[ "$used_k" -ge 50 ]]; then
+elif [[ "$used_k" -ge "$yellow_k" ]]; then
   color="$YELLOW"
 else
   color=""

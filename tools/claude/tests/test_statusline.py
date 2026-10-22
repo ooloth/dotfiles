@@ -62,12 +62,13 @@ def status_line(
     columns: str | None,
     *,
     used_percentage: float = 1,
+    window: int = 1_000_000,
     agent: str | None = None,
 ) -> str:
     session: dict[str, object] = {
         "model": {"id": "claude-opus-5-5"},
         "workspace": {"current_dir": str(directory)},
-        "context_window": {"used_percentage": used_percentage, "context_window_size": 1_000_000},
+        "context_window": {"used_percentage": used_percentage, "context_window_size": window},
     }
     if agent is not None:
         session["agent"] = {"name": agent}
@@ -182,7 +183,7 @@ class Padding(unittest.TestCase):
 
     def test_coloured_context_still_ends_at_the_right_edge(self) -> None:
         repo = repo_on_branch(self.tmp, "main")
-        for used_percentage in (6, 12):  # 60k is yellow, 120k is red
+        for used_percentage in (13, 26):  # 130k is yellow, 260k is red
             line = status_line(repo, "100", used_percentage=used_percentage)
             self.assertIn("\033[", line)
             self.assertEqual(len(visible(line)), 100 - edge_margin())
@@ -194,6 +195,42 @@ class Padding(unittest.TestCase):
                 visible(status_line(repo, columns)),
                 f"{FOLDER_ICON}repo · {BRANCH_ICON}main {RIGHT}",
             )
+
+
+YELLOW = "\033[33m"
+RED = "\033[31m"
+
+
+def usage_colour(used_k: int, window_k: int) -> str | None:
+    with tempfile.TemporaryDirectory() as parent:
+        line = status_line(
+            Path(parent), "120", used_percentage=used_k / window_k * 100, window=window_k * 1000
+        )
+    assert line.endswith(f"{used_k}k/{window_k}k") or line.endswith(
+        f"{used_k}k/{window_k}k\033[0m"
+    ), line
+    for colour in (YELLOW, RED):
+        if f"{colour}{used_k}k/" in line:
+            return colour
+    return None
+
+
+class ContextColour(unittest.TestCase):
+    def test_a_1m_window_turns_yellow_at_125k(self) -> None:
+        self.assertIsNone(usage_colour(124, 1000))
+        self.assertEqual(usage_colour(125, 1000), YELLOW)
+
+    def test_a_1m_window_turns_red_at_250k(self) -> None:
+        self.assertEqual(usage_colour(249, 1000), YELLOW)
+        self.assertEqual(usage_colour(250, 1000), RED)
+
+    def test_a_200k_window_turns_yellow_at_half_full(self) -> None:
+        self.assertIsNone(usage_colour(99, 200))
+        self.assertEqual(usage_colour(100, 200), YELLOW)
+
+    def test_a_200k_window_turns_red_at_three_quarters_full(self) -> None:
+        self.assertEqual(usage_colour(149, 200), YELLOW)
+        self.assertEqual(usage_colour(150, 200), RED)
 
 
 class Settings(unittest.TestCase):
