@@ -36,20 +36,26 @@ middle="${model}${agent:+ · $agent}"
 left_plain="${middle} · ${ctx}"
 left_rendered="${middle} · ${color}${ctx}${color:+$RESET}"
 
-# Empty on a detached HEAD or outside a repo, which leaves the line as it was
-branch=$(git -C "$dir" branch --show-current 2>/dev/null || true)
-
-if [[ -z "$branch" ]]; then
-  printf "%s\n" "$left_rendered"
-  exit 0
+# The checkout root's name plus the path below it, so a linked worktree shows its own directory.
+# git computes the prefix itself, which stays right when $dir reaches the checkout through a symlink.
+if checkout=$(git -C "$dir" rev-parse --show-toplevel --show-prefix 2>/dev/null); then
+  root=$(head -n 1 <<<"$checkout")
+  prefix=$(sed -n 2p <<<"$checkout")
+  location="$(basename "$root")${prefix:+/${prefix%/}}"
+else
+  location=$(basename "$dir")
 fi
+
+# Empty on a detached HEAD or outside a repo, which drops the branch and its separator
+branch=$(git -C "$dir" branch --show-current 2>/dev/null || true)
+right="${branch:+$branch · }${location}"
 
 # Claude Code indents the status line by 2 columns and cuts it off with "…" past COLUMNS - 4
 edge_margin=4
 gap=1
 if [[ "${COLUMNS:-}" =~ ^[0-9]+$ ]]; then
-  free=$((COLUMNS - edge_margin - ${#left_plain} - ${#branch}))
+  free=$((COLUMNS - edge_margin - ${#left_plain} - ${#right}))
   [[ "$free" -gt 1 ]] && gap="$free"
 fi
 
-printf "%s%*s%s\n" "$left_rendered" "$gap" "" "$branch"
+printf "%s%*s%s\n" "$left_rendered" "$gap" "" "$right"

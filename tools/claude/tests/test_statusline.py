@@ -8,8 +8,9 @@
 Run with: uv run tools/claude/tests/test_statusline.py
 
 Each test pipes the JSON Claude Code sends into the script, with COLUMNS set the way Claude Code sets
-it, and a session directory that is a throwaway git repo on a branch, on a detached HEAD, or no repo
-at all. Widths are measured with the colour codes removed, because those take no screen space.
+it, and a session directory in a throwaway git repo or linked worktree, on a branch or a detached
+HEAD, or in no repo at all. Widths are measured with the colour codes removed, because those take no
+screen space.
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ CONFIG = Path(__file__).resolve().parent.parent / "config"
 SCRIPT = CONFIG / "statusline.sh"
 SETTINGS = CONFIG / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
+LEFT = "claude-opus-5-5 · 10k/1000k"
 
 
 def edge_margin() -> int:
@@ -78,58 +80,94 @@ def visible(line: str) -> str:
 BRANCHES = st.from_regex(r"[a-z][a-z0-9/_-]{0,30}[a-z0-9]", fullmatch=True).filter(
     lambda name: "//" not in name
 )
+SUBPATHS = st.lists(st.from_regex(r"[a-z0-9_-]{1,12}", fullmatch=True), max_size=3).map("/".join)
 
 
-class BranchOnTheRight(unittest.TestCase):
+def right_side(line: str) -> str:
+    assert line.startswith(LEFT + " "), line
+    return line[len(LEFT) :].lstrip(" ")
+
+
+class RightSide(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
-        self.outside_repo = self.tmp / "plain"
-        self.outside_repo.mkdir()
+        self.repo = repo_on_branch(self.tmp, "main")
 
-    def test_branch_ends_at_the_right_edge_of_a_wide_terminal(self) -> None:
+    def right(self, directory: Path) -> str:
+        return right_side(visible(status_line(directory, "120")))
+
+    def worktree(self) -> Path:
+        worktree = self.tmp / "wt"
+        git(self.repo, "worktree", "add", "-q", "-b", "feat", str(worktree))
+        return worktree
+
+    def test_repo_root_shows_branch_then_repo_name(self) -> None:
+        self.assertEqual(self.right(self.repo), "main · repo")
+
+    def test_subdirectory_shows_path_from_the_repo_root(self) -> None:
+        subdirectory = self.repo / "a" / "b"
+        subdirectory.mkdir(parents=True)
+        self.assertEqual(self.right(subdirectory), "main · repo/a/b")
+
+    def test_worktree_root_shows_its_branch_then_worktree_name(self) -> None:
+        self.assertEqual(self.right(self.worktree()), "feat · wt")
+
+    def test_worktree_subdirectory_shows_path_from_the_worktree_root(self) -> None:
+        subdirectory = self.worktree() / "x"
+        subdirectory.mkdir()
+        self.assertEqual(self.right(subdirectory), "feat · wt/x")
+
+    def test_detached_head_shows_only_the_location(self) -> None:
+        git(self.repo, "checkout", "-q", "--detach")
+        self.assertEqual(self.right(self.repo), "repo")
+
+    def test_directory_outside_a_repo_shows_its_name(self) -> None:
+        plain = self.tmp / "plain"
+        plain.mkdir()
+        self.assertEqual(self.right(plain), "plain")
+
+
+class Padding(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
+
+    def test_right_side_ends_at_the_right_edge_of_a_wide_terminal(self) -> None:
         repo = repo_on_branch(self.tmp, "feature/x")
         line = visible(status_line(repo, "120"))
         self.assertEqual(len(line), 120 - edge_margin())
-        self.assertTrue(line.endswith(" feature/x"), line)
+        self.assertTrue(line.endswith(" feature/x · repo"), line)
 
     @settings(max_examples=40, deadline=None)
-    @given(branch=BRANCHES, columns=st.integers(min_value=1, max_value=140))
-    def test_branch_is_padded_to_the_edge_only_when_it_fits(
-        self, branch: str, columns: int
+    @given(branch=BRANCHES, subpath=SUBPATHS, columns=st.integers(min_value=1, max_value=140))
+    def test_right_side_is_padded_to_the_edge_only_when_it_fits(
+        self, branch: str, subpath: str, columns: int
     ) -> None:
         with tempfile.TemporaryDirectory() as parent:
             repo = repo_on_branch(Path(parent), branch)
-            left = visible(status_line(self.outside_repo, str(columns)))
-            line = visible(status_line(repo, str(columns)))
-        if len(left) + 1 + len(branch) <= columns - edge_margin():
+            directory = repo / subpath
+            directory.mkdir(parents=True, exist_ok=True)
+            line = visible(status_line(directory, str(columns)))
+        right = f"{branch} · repo" + (f"/{subpath}" if subpath else "")
+        if len(LEFT) + 1 + len(right) <= columns - edge_margin():
             self.assertEqual(len(line), columns - edge_margin(), line)
-            self.assertTrue(line.startswith(left + " "), line)
-            self.assertTrue(line.endswith(" " + branch), line)
+            self.assertTrue(line.startswith(LEFT + " "), line)
+            self.assertTrue(line.endswith(" " + right), line)
         else:
-            self.assertEqual(line, f"{left} {branch}")
+            self.assertEqual(line, f"{LEFT} {right}")
 
-    def test_coloured_context_does_not_shift_the_branch(self) -> None:
+    def test_coloured_context_does_not_shift_the_right_side(self) -> None:
         repo = repo_on_branch(self.tmp, "main")
         for used_percentage in (6, 12):  # 60k is yellow, 120k is red
             line = status_line(repo, "100", used_percentage=used_percentage)
             self.assertIn("\033[", line)
             self.assertEqual(len(visible(line)), 100 - edge_margin())
 
-    def test_missing_or_non_numeric_columns_gives_one_space_before_the_branch(self) -> None:
+    def test_missing_or_non_numeric_columns_gives_one_space_before_the_right_side(self) -> None:
         repo = repo_on_branch(self.tmp, "main")
-        left = visible(status_line(self.outside_repo, None))
         for columns in (None, "", "wide"):
-            self.assertEqual(visible(status_line(repo, columns)), f"{left} main")
-
-    def test_detached_head_shows_no_branch(self) -> None:
-        repo = repo_on_branch(self.tmp, "main")
-        git(repo, "checkout", "-q", "--detach")
-        self.assertEqual(status_line(repo, "120"), status_line(self.outside_repo, "120"))
-
-    def test_directory_outside_a_repo_shows_only_the_left_part(self) -> None:
-        line = status_line(self.outside_repo, "120")
-        self.assertEqual(visible(line), "claude-opus-5-5 · 10k/1000k")
+            self.assertEqual(visible(status_line(repo, columns)), f"{LEFT} main · repo")
 
 
 class Settings(unittest.TestCase):
