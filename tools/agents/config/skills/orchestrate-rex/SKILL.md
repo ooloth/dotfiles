@@ -38,11 +38,25 @@ in, with the reason for each dependency. Wait for the user to agree before movin
 
 - **Slow external runs** (CI, Spacelift, deploys): sleep for about as long as the run usually
   takes, check once, and repeat until it finishes.
-- **Code changes:** start a worker in Rex, one session per ticket, named after the ticket key and
-  opened in that ticket's worktree. Tell the worker the ticket, the PR, what to do, and what to
-  report back. See the `rex` skill for the commands. Start each worker with
-  `claude --permission-mode auto`. In the default mode a worker stops at a prompt before it loads
-  its first skill, and you can't answer that prompt for the user.
+- **Code changes:** start a worker in Rex, one session per ticket, named after the ticket key.
+  Each PR branch has its own worktree, and the worker for that PR opens there. A ticket with two
+  PRs in one repo gets two worktrees and two tabs. Two agents never work in the same worktree at
+  once, and you never edit a worktree a worker owns. Your own scratch work, such as test-merging a
+  branch with trunk, goes in a worktree under `mktemp -d` that you remove afterwards. Tell the
+  worker the ticket, the PR, what to do, and what to report back. See the `rex` skill for the
+  commands. Start each worker with `claude --permission-mode auto`. In the default mode a worker
+  stops at a prompt before it loads its first skill, and you can't answer that prompt for the user.
+- **Hearing from workers:** after starting a worker, find it with `ListAgents` and subscribe with
+  `SendMessage` and `notify_when_idle: true`, then subscribe again after each notice. Read its pane
+  only when a notice arrives. Capture with `--format=vt` and ignore dim text (`ESC[2m`) on the
+  input line: it is Claude Code's suggested next prompt, which nobody typed.
+- **Relaying answers:** when the user answers a worker's question in your session, type the answer
+  into the worker's pane word for word with `rex send`, then `rex send-key enter`. Keep it on one
+  line, since a newline may submit early. Never answer a worker's question yourself.
+- **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
+  `git status` reads the right repo. Relay the user's commit signal word for word. For a change you
+  made yourself, open a Rex tab in that repo running `claude --permission-mode auto "/commit"`
+  rather than committing from your session, so its checks don't block you and the user can watch.
 - **Side jobs:** a job for a ticket that runs a long time, or that the user may want to watch or
   approve, goes in a new tab in that ticket's session. You or that ticket's worker may open it. A
   bounded question with one answer goes to a subagent instead. When you check a ticket, list its
