@@ -352,6 +352,11 @@ Coverage:
 - Are critical paths tested? (auth, payments, data integrity, error paths)
 - Specify exact missing cases: not "add tests" but "add tests for: expired token, missing token, wrong signature"
 
+Sensitivity:
+- For each test the change adds or rewrites whose name or docstring says what it guards (a property, a commit, a rollback, an isolation), name the line of code it guards and a one-line break of that line: delete the commit, drop the savepoint, skip the reset, return a constant.
+- Make the cheapest breaks, at most three, and run only the test that should catch each. Never edit the reviewed tree, which other agents are reading: work in a scratch worktree, `REF=$(git stash create); DIR=$(mktemp -d); git worktree add --detach "$DIR" "${REF:-HEAD}"`, and `git worktree remove --force "$DIR"` when done.
+- A test that still passes under its break is a finding: name the test, the break, and why its setup cannot produce the failure (a shared session, a fixture that raises before writing, an environment that never holds the guarded value).
+
 For each issue: file:line | what's wrong | specific fix
 If tests are well-designed, report "Test design is solid and coverage is appropriate."
 ```

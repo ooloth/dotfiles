@@ -16,7 +16,12 @@ Every assertion can fail, and would fail if the behavior it covers were broken.
 A test written after the code it covers has not demonstrated that by passing, so
 it is confirmed against a deliberate break — a condition inverted, a term
 dropped, a constant returned — and the confirmation is that the right test fails
-and names the right thing.
+and names the right thing. The break is made in the code the test's name or
+docstring says it guards. A setup that never produces the condition that code
+handles passes whatever the code does: a test session shared across requests
+shows writes that were never committed, a fixture that raises before writing
+anything cannot show a rollback, and a check run where the environment never
+holds the value it guards against has nothing to catch.
 
 **A check that finds nothing to check fails.**
 A test runner, linter or type checker aimed at a glob, a directory or a config
