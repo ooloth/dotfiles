@@ -69,9 +69,11 @@ confusing report, comes before the next work item. Resolve it with the user befo
   next prompt, which nobody typed.
 - **Relaying answers:** when the user answers a worker's question in your session, type the answer
   into the worker's pane word for word with `rex send`, then `rex send-key enter`. Keep it on one
-  line, since a newline may submit early. Never answer a worker's question yourself. A worker's
-  permission check may still block a commit, push or post that you relayed, since it can't tell
-  your text from the user's. When it does, tell the user exactly what to type in the worker's tab,
+  line, since a newline may submit early. Never answer a worker's question yourself. The user's
+  settings allow commits, pushes and PR and ticket comments, because the auto-mode classifier can't
+  see an approval given in another session and would block them. A rule only reaches sessions
+  started after it was added, so restart a running worker with `claude --continue` to pick one up.
+  If an approved action is still blocked, tell the user exactly what to type in the worker's tab,
   and don't retry it yourself.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
   `git status` reads the right repo. Relay the user's commit signal word for word. For a change you

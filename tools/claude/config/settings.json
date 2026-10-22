@@ -53,7 +53,14 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:code.claude.com)",
-      "mcp__atlassian-rovo__addCommentToJiraIssue"
+      "mcp__atlassian-rovo__addCommentToJiraIssue",
+      "Bash(gh pr comment *)",
+      "Bash(gh api repos/recursionpharma/*/pulls/*/comments*)",
+      "Bash(jira issue comment add *)",
+      "Skill(commit)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ],
     "ask": [
       "Bash(git push --force*)",
