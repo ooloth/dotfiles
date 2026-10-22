@@ -34,7 +34,19 @@ Show the user a table with one row per PR and these columns: repo and number, ti
 waits on, next action, and whose action it is. Below it, propose the order the work should land
 in, with the reason for each dependency. Wait for the user to agree before moving anything.
 
-## 3. Move the work
+## 3. Work the critical path
+
+The item at the top of the order is the focus, along with whatever it waits on. Spend your effort
+and the user's attention there first. Later items wait, with two exceptions: work that can run in
+parallel without taking the user's attention from the top item, and work whose results the top
+item will need. Hold discussion of a later item until it becomes the next most important thing.
+That includes its approach and design. A decision made too early can be reversed by what lands
+before it, and the code it produces conflicts with that work.
+
+A problem with how the batch is being run, such as a mistake you made, a broken relay, or a
+confusing report, comes before the next work item. Resolve it with the user before moving on.
+
+## 4. Move the work
 
 - **Slow external runs** (CI, Spacelift, deploys): sleep for about as long as the run usually
   takes, check once, and repeat until it finishes.
@@ -46,10 +58,15 @@ in, with the reason for each dependency. Wait for the user to agree before movin
   worker the ticket, the PR, what to do, and what to report back. See the `rex` skill for the
   commands. Start each worker with `claude --permission-mode auto`. In the default mode a worker
   stops at a prompt before it loads its first skill, and you can't answer that prompt for the user.
-- **Hearing from workers:** after starting a worker, find it with `ListAgents` and subscribe with
-  `SendMessage` and `notify_when_idle: true`, then subscribe again after each notice. Read its pane
-  only when a notice arrives. Capture with `--format=vt` and ignore dim text (`ESC[2m`) on the
-  input line: it is Claude Code's suggested next prompt, which nobody typed.
+- **Hearing from workers:** don't subscribe to idle notices. Each notice starts a new turn, and a
+  run of them buries the user's open questions under several overlapping lists. Instead, only the
+  user's messages start your turns. Before every reply, read every worker's pane and every
+  external system the table depends on, so the reply covers whatever finished in between. When no
+  question to the user is open and work is in flight, stay in the turn: check every few minutes,
+  and end the turn only when something needs the user. A message the user sends meanwhile reaches
+  you at your next tool call, or at once if they press ctrl-enter. Capture panes with
+  `--format=vt` and ignore dim text (`ESC[2m`) on the input line: it is Claude Code's suggested
+  next prompt, which nobody typed.
 - **Relaying answers:** when the user answers a worker's question in your session, type the answer
   into the worker's pane word for word with `rex send`, then `rex send-key enter`. Keep it on one
   line, since a newline may submit early. Never answer a worker's question yourself. A worker's
@@ -67,12 +84,16 @@ in, with the reason for each dependency. Wait for the user to agree before movin
 - **Merges:** merge in the agreed order, and confirm each change works in dev before the next
   merge.
 
-## 4. Report
+## 5. Report
 
-Whenever something changes or needs the user, end your turn with the rows of the table that
-changed and a numbered list of what you need from the user.
+Whenever something changes or needs the user, show the status table. It lists every unfinished
+work item in priority order, with the same columns as the first table. A row leaves once its item
+is merged and verified in dev. A row joins when an issue comes up or a work item has to be
+inserted, such as a failing deploy or a fix to how the batch is run. Build each table from reads
+made for that reply, not from earlier ones, since a PR that was clean an hour ago may now conflict
+with something that merged. End the reply with one numbered list of what you need from the user.
 
-## 5. Finish
+## 6. Finish
 
 The batch is done when every PR is merged and verified in dev and every ticket is updated. Then
 tell the user what caused friction during the run, so this skill can improve.
