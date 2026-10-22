@@ -48,7 +48,8 @@ fi
 
 # Empty on a detached HEAD or outside a repo, which drops the branch and its separator
 branch=$(git -C "$dir" branch --show-current 2>/dev/null || true)
-right="${branch:+$branch · }${location}"
+branch_icon=$'\xee\x9c\xa5' # U+E725 nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
+right="${branch:+$branch_icon $branch · }${location}"
 
 # Claude Code indents the status line by 2 columns and cuts it off with "…" past COLUMNS - 4
 edge_margin=4

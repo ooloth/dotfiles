@@ -32,6 +32,7 @@ SCRIPT = CONFIG / "statusline.sh"
 SETTINGS = CONFIG / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
 LEFT = "claude-opus-5-5 · 10k/1000k"
+BRANCH_ICON = "\ue725 "  # nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
 
 
 def edge_margin() -> int:
@@ -103,20 +104,20 @@ class RightSide(unittest.TestCase):
         return worktree
 
     def test_repo_root_shows_branch_then_repo_name(self) -> None:
-        self.assertEqual(self.right(self.repo), "main · repo")
+        self.assertEqual(self.right(self.repo), BRANCH_ICON + "main · repo")
 
     def test_subdirectory_shows_path_from_the_repo_root(self) -> None:
         subdirectory = self.repo / "a" / "b"
         subdirectory.mkdir(parents=True)
-        self.assertEqual(self.right(subdirectory), "main · repo/a/b")
+        self.assertEqual(self.right(subdirectory), BRANCH_ICON + "main · repo/a/b")
 
     def test_worktree_root_shows_its_branch_then_worktree_name(self) -> None:
-        self.assertEqual(self.right(self.worktree()), "feat · wt")
+        self.assertEqual(self.right(self.worktree()), BRANCH_ICON + "feat · wt")
 
     def test_worktree_subdirectory_shows_path_from_the_worktree_root(self) -> None:
         subdirectory = self.worktree() / "x"
         subdirectory.mkdir()
-        self.assertEqual(self.right(subdirectory), "feat · wt/x")
+        self.assertEqual(self.right(subdirectory), BRANCH_ICON + "feat · wt/x")
 
     def test_detached_head_shows_only_the_location(self) -> None:
         git(self.repo, "checkout", "-q", "--detach")
@@ -137,7 +138,7 @@ class Padding(unittest.TestCase):
         repo = repo_on_branch(self.tmp, "feature/x")
         line = visible(status_line(repo, "120"))
         self.assertEqual(len(line), 120 - edge_margin())
-        self.assertTrue(line.endswith(" feature/x · repo"), line)
+        self.assertTrue(line.endswith(f" {BRANCH_ICON}feature/x · repo"), line)
 
     @settings(max_examples=40, deadline=None)
     @given(branch=BRANCHES, subpath=SUBPATHS, columns=st.integers(min_value=1, max_value=140))
@@ -149,7 +150,7 @@ class Padding(unittest.TestCase):
             directory = repo / subpath
             directory.mkdir(parents=True, exist_ok=True)
             line = visible(status_line(directory, str(columns)))
-        right = f"{branch} · repo" + (f"/{subpath}" if subpath else "")
+        right = f"{BRANCH_ICON}{branch} · repo" + (f"/{subpath}" if subpath else "")
         if len(LEFT) + 1 + len(right) <= columns - edge_margin():
             self.assertEqual(len(line), columns - edge_margin(), line)
             self.assertTrue(line.startswith(LEFT + " "), line)
@@ -167,7 +168,9 @@ class Padding(unittest.TestCase):
     def test_missing_or_non_numeric_columns_gives_one_space_before_the_right_side(self) -> None:
         repo = repo_on_branch(self.tmp, "main")
         for columns in (None, "", "wide"):
-            self.assertEqual(visible(status_line(repo, columns)), f"{LEFT} main · repo")
+            self.assertEqual(
+                visible(status_line(repo, columns)), f"{LEFT} {BRANCH_ICON}main · repo"
+            )
 
 
 class Settings(unittest.TestCase):
