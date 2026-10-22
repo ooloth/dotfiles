@@ -1,0 +1,1 @@
+brew "lua" # runs tools/rex/tests, which load config/init.lua under a stubbed rex API
