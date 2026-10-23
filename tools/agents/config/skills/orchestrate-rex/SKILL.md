@@ -51,6 +51,9 @@ item will need. Hold discussion of a later item until it becomes the next most i
 That includes its approach and design. A decision made too early can be reversed by what lands
 before it, and the code it produces conflicts with that work.
 
+An item is one PR. When the user groups several, such as one author's PRs, the group decides where
+they sit in the order, and each PR in it is still its own item, discussed on its own.
+
 A problem with how the batch is being run, such as a mistake you made, a broken relay, or a
 confusing report, comes before the next work item. Resolve it with the user before moving on.
 
@@ -84,7 +87,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
   the auto-mode classifier can't see an approval given in another session and would block them. A
   rule only reaches sessions started after it was added, so restart a running worker with
   `claude --continue` to pick one up. If an approved action is still blocked, tell the user exactly
-  what to type in the worker's tab, and don't retry it yourself.
+  what to type in the worker's tab, and don't retry it yourself. A question from the worker of a
+  later item waits until that item is at the top.
 - **Review feedback:** when a PR has review comments to assess or answer, tell its worker to run
   `/review-pr-comments-converge <pr-number>` rather than handle the comments one by one, so a
   single skill defines how feedback is assessed, fixed and answered. Relay the skill's escalations
@@ -149,17 +153,18 @@ inserted, such as a failing deploy or a fix to how the batch is run. Build each 
 made for that reply, not from earlier ones, since a PR that was clean an hour ago may now conflict
 with something that merged.
 
-End the reply with one numbered list of what you need from the user, about the top one or two
-items in the order and nothing below them. The table shows the rest, and that is enough. A
+End the reply with one numbered list of what you need from the user, about the top item in the
+order and nothing below it. The table shows the rest, and that is enough. A
 question about a later item switches the user's attention away from the work being finished, and
 its answer rests on assumptions the earlier items may still overturn. Leave it until the item
 rises to the top, when fewer assumptions stand under it and the question is easier to answer. A
 problem with how the batch is run always comes first (see section 3).
 
-This is a judgment about the user's time and focus, not a fixed count. When every top item is
-waiting on agents or external runs and needs nothing from the user, the user's attention is idle,
-so use it on the next item down rather than sleeping. Pick a question whose answer doesn't depend
-on how the work above it turns out, and ask it then.
+A reply discusses one PR: the top row. When the top item waits on agents or external runs and
+needs nothing from the user, say so and keep working; move to the next item only when the top one
+leaves the table or waits only on someone other than the user, such as its author. Work finished
+early on a later item, including a review report or a worker's question, stays in its tab until
+that item reaches the top. The table can say it is ready, and nothing more.
 
 Number each question, and letter the parts of a question that has several (a, b, c), so the
 user can answer "2b yes" without retyping it. Put your recommendation beside each part, so a
