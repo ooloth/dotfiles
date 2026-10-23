@@ -165,6 +165,17 @@ Number each question, and letter the parts of a question that has several (a, b,
 user can answer "2b yes" without retyping it. Put your recommendation beside each part, so a
 plain "yes" accepts it.
 
+This session is the only thing the user reads, so each reply carries everything its decisions
+rest on. A question refers only to something stated in that same reply, never to a report in a
+worker's tab or a file. A side effect the user is asked to approve is shown in full: the exact
+text, where it goes, and as what (for example, an approving review on PR 281).
+
+A summary of a review gives every finding its own bullet, dropped findings included, labelled
+with the PR and the review's own number (`280-1`, `280-2`), so the user can match it to the
+report. Each bullet states the finding in a sentence and the review's call on it (block, raise,
+drop). Every further point under a finding, such as an option, a caveat or a sub-question, is a
+nested bullet with a letter (`280-1a`, `280-1b`). Questions refer to these labels.
+
 ## 6. Finish
 
 The batch is done when every PR is merged and verified in dev and every ticket is updated. Then
