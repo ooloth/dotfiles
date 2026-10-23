@@ -365,7 +365,10 @@ are for work already approved.
    approved when the user approves the run.)
 9. When you receive a commit signal, commit via `/commit`. After committing, you may move to
    describing your plan for the next change (steps 1-2) — but as always, stop and wait for
-   approval before implementing it (step 3)
+   approval before implementing it (step 3). A PR you draft stays a draft until an independent
+   self-review has run on it, in a fresh session that did not write the change, which you start
+   yourself (a new Rex tab, or a subagent given none of this session's context), and the user has
+   seen its findings. Only then is it marked ready for teammates to review.
 10. Repeat for the remaining changes
 11. Before closing, ask: did this work establish an invariant that must always hold, or a reusable
     standard for approaching this kind of problem? If not, say nothing. If so, offer to record it in
