@@ -147,6 +147,12 @@ confusing report, comes before the next work item. Resolve it with the user befo
   disagree or overlap, reconcile them into one recommendation. The user should be able to accept
   your recommendations without reading the report. Disagreeing with a reviewer is part of the job:
   a list you relay without a verdict leaves the user to do the judging.
+- **Reviewing a PR for the user:** every review, a Dependabot bump included, runs in a worker tab
+  with review-code, never by hand in your session. Give the worker a detached worktree at the PR's
+  head and a tab named `pr-<n>-reviewing`, and put in its brief any bar the user has set for that
+  kind of PR. Every review posted under the user's name carries a body saying what was checked,
+  written under review-code's Step 5, because to a teammate an approval with no body looks the
+  same as a thoughtless one.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
   `git status` reads the right repo. Relay the user's commit signal word for word. For a change you
   made yourself, open a Rex tab in that repo running `claude --permission-mode auto "/commit"`
