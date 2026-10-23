@@ -168,9 +168,21 @@ confusing report, comes before the next work item. Resolve it with the user befo
   the tab when the phase changes. In every sweep, close tabs whose job is finished, such as a
   commit tab after its commit lands or a worker whose PR only waits on the user's merge. Leave
   alone any tab you didn't open.
+- **Re-measure what a design rests on:** when a design or a merge depends on an observation of
+  a live system, such as a claim in a token, a header, a config value or a response shape, check
+  that the record names exactly what was observed: which token, which endpoint, which host. Before
+  a merge depends on it, run the observation again yourself, on that exact artifact. An
+  observation of a neighbouring artifact (an identity endpoint in place of the token it
+  describes, or one environment's value in place of another's) is not evidence, however closely
+  the two seem to match.
 - **Merges:** merge in the agreed order, and confirm each change works in dev before the next
   merge. The user merges with the "Squash and merge" button on GitHub, so tell them a PR is ready
   to merge and give no command, unless something the button can't do is needed.
+- **Check what is serving, not only that a run finished:** after every deploy, read the serving
+  revision's image tag and the env vars the batch depends on, and compare them with trunk. Read
+  them again in each sweep for as long as work depends on that environment. Another person's
+  branch can apply to a shared stack, and a run that "finished" may have deployed something else.
+  When the serving state doesn't match trunk, that becomes the top row of the table.
 - **Behind trunk:** before calling a PR ready to merge, compare its head with trunk's head as it
   is now (`gh api repos/<owner>/<repo>/compare/<head-sha>...<trunk>`). List the commits trunk has
   that the branch lacks, and the files both sides changed. If merging trunk in could surface
@@ -225,6 +237,35 @@ nested bullet with a letter (`280-1a`, `280-1b`). Questions refer to these label
 
 The batch is done when every PR is merged and verified in dev and every ticket is updated. Then
 tell the user what caused friction during the run, so this skill can improve.
+
+When the user ends the day before the batch is done, hand it off, so a new orchestrator can pick
+it up from files alone:
+
+1. **Keep every artifact.** Copy every brief, report, draft and approved body from your scratch
+   directory into `handoffs/<date>-<batch-name>/`, in the folder that holds the batch's repos.
+   The scratch directory doesn't outlive the session. If a review is still running, point its
+   report path into that folder.
+2. **Write `handoffs/<date>-<batch-name>.md` beside it,** in the shape of the earlier handoffs
+   there:
+   - the goal;
+   - what is proven, with the evidence and where it is posted;
+   - what blocks the rest, step by step;
+   - a status table of every unfinished item, naming each file in the folder that holds its
+     details;
+   - the decisions the user made that still apply;
+   - where things are running (Rex sessions and tabs, branch worktrees, review worktrees);
+   - the day's lessons.
+
+   Name the instruction files a new orchestrator must read first, and give the path of your own
+   transcript.
+3. **Find what exists only in this session.** Look for reasoning, discoveries and decisions that
+   no ticket or PR records yet. Recommend final actions to the user that put them somewhere
+   durable, and draft each one, shown in full: a ticket comment for a change of approach, a close
+   or reply on a PR, a message only the user can send. Include anything a worker reported that
+   the user hasn't seen, such as unjudged review reports and open worker questions, so the handoff
+   lists them rather than losing them.
+4. **Post only what the user approves,** then tell them what caused friction during the run, as
+   when the batch finishes.
 
 ## 7. Improve this skill
 
