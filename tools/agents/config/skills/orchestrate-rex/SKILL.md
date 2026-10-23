@@ -25,6 +25,15 @@ and conclusions.
 
 ## 1. Learn the batch
 
+Read the instruction files that govern the batch's repos first. Claude Code loads `CLAUDE.md` and
+`CLAUDE.local.md` only from a session's working directory and the folders above it. A repo's
+files, and any in the folders between it and your working directory, never reach you unless your
+session started inside them. The same holds for every subagent you start. So for each repo in the
+batch, read those files in the repo and in each folder between it and your working directory. They
+often hold rules the work depends on, such as which account or configuration reaches which
+environment. Name the files, and the rules from them that apply, in the brief of every subagent
+that touches that repo.
+
 Read every ticket and PR in the batch, with their comments. For each PR, find what it waits on:
 a failing check, a review, another PR that has to merge first, or a deploy.
 
