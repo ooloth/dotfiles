@@ -88,14 +88,19 @@ confusing report, comes before the next work item. Resolve it with the user befo
   rule only reaches sessions started after it was added, so restart a running worker with
   `claude --continue` to pick one up. If an approved action is still blocked, tell the user exactly
   what to type in the worker's tab, and don't retry it yourself. A question from the worker of a
-  later item waits until that item is at the top.
+  later item waits until that item is at the top. The same holds for a decision the user makes in
+  your session about a worker's work: quote it rather than restating it.
 - **Review feedback:** when a PR has review comments to assess or answer, tell its worker to run
   `/review-pr-comments-converge <pr-number>` rather than handle the comments one by one, so a
   single skill defines how feedback is assessed, fixed and answered. Relay the skill's escalations
   and proposed replies to the user, and leave its full report in the worker's tab.
 - **Skill-shaped writing:** an approach or design comment, a PR or ticket description, review
-  replies and a commit message are each written under a skill (discuss, design,
-  write-pr-description, write-ticket-description, review-pr-comments-converge, commit). When a
+  replies, a review posted on someone else's PR, and a commit message are each written under a
+  skill (discuss, design, write-pr-description, write-ticket-description,
+  review-pr-comments-converge, review-code, commit). A brief to the worker who writes one names the
+  skill and passes on the user's decisions in the user's own words. It says nothing about the
+  shape, such as body or inline comments, line breaks or length, because the skill owns that; when
+  the user's words seem to call for a shape the skill doesn't, ask the user before briefing. When a
   worker produced one under its skill, post it as written. The only edits you make are the ones the
   destination forces, such as moving code out of bold for Jira, and you show the user each one.
   Never condense, reorder or restyle it. When you draft one yourself, invoke its skill first and
