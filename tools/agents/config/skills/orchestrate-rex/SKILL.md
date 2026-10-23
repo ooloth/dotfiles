@@ -165,6 +165,16 @@ confusing report, comes before the next work item. Resolve it with the user befo
 - **Merges:** merge in the agreed order, and confirm each change works in dev before the next
   merge. The user merges with the "Squash and merge" button on GitHub, so tell them a PR is ready
   to merge and give no command, unless something the button can't do is needed.
+- **Behind trunk:** before calling a PR ready to merge, compare its head with trunk's head as it
+  is now (`gh api repos/<owner>/<repo>/compare/<head-sha>...<trunk>`). List the commits trunk has
+  that the branch lacks, and the files both sides changed. If merging trunk in could surface
+  anything the PR's checks don't already cover, such as an overlapping file, a change in what
+  the PR depends on, or a migration or dependency on either side, tell the PR's worker to merge
+  trunk into the branch (merge, never rebase), run the checks, and push. This needs no separate
+  approval. Call the PR ready only once CI on the new head is green. Otherwise, put a line in the
+  PR's row saying it is N commits behind trunk, and why that can't hide a problem. For example,
+  no file changed on both sides, and none of trunk's commits touch what the PR relies on. A PR
+  called ready with no such line means the check was skipped.
 
 ## 5. Report
 
