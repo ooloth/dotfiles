@@ -69,16 +69,34 @@ confusing report, comes before the next work item. Resolve it with the user befo
   next prompt, which nobody typed.
 - **Relaying answers:** when the user answers a worker's question in your session, type the answer
   into the worker's pane word for word with `rex send`, then `rex send-key enter`. Keep it on one
-  line, since a newline may submit early. Never answer a worker's question yourself. The user's
-  settings allow commits, pushes and PR and ticket comments, because the auto-mode classifier can't
-  see an approval given in another session and would block them. A rule only reaches sessions
-  started after it was added, so restart a running worker with `claude --continue` to pick one up.
-  If an approved action is still blocked, tell the user exactly what to type in the worker's tab,
-  and don't retry it yourself.
+  line, since a newline may submit early. `rex send` can drop the start of a long message, so an
+  instruction longer than a line or two goes in a file in your scratch directory, and the text you
+  send is one line telling the worker to read that file and follow it. Never answer a worker's
+  question yourself. The user's settings allow commits, pushes and PR and ticket comments, because
+  the auto-mode classifier can't see an approval given in another session and would block them. A
+  rule only reaches sessions started after it was added, so restart a running worker with
+  `claude --continue` to pick one up. If an approved action is still blocked, tell the user exactly
+  what to type in the worker's tab, and don't retry it yourself.
 - **Review feedback:** when a PR has review comments to assess or answer, tell its worker to run
   `/review-pr-comments-converge <pr-number>` rather than handle the comments one by one, so a
   single skill defines how feedback is assessed, fixed and answered. Relay the skill's escalations
   and proposed replies to the user, and leave its full report in the worker's tab.
+- **Review before a PR opens:** after a worker pushes a draft PR, and before it is marked ready or
+  anyone is asked to review it, review it with review-code. Create a detached worktree at the PR's
+  head (`git worktree add --detach "$(mktemp -d)/review-<n>" <head-sha>`) and open a new tab there
+  named `pr-<n>-review-code`, running `claude --permission-mode auto` with a prompt that says:
+  - This is the author's own review before the PR opens, and no teammate will see the report. So
+    every finding is something to fix before opening, or a question for the user. Don't grade
+    findings as optional for a later reviewer, and don't suggest leaving one for the team review.
+  - Show the full report in this tab, and also write the same report to a file you name.
+  - Post nothing, edit nothing, commit nothing.
+
+  If the review asks whether to post, pass that question to the user. Read the file, check the
+  claims that decide something, and give the user a short summary that says what you checked.
+  Send every finding the user accepts to the PR's worker. When the change touches auth,
+  credentials, migrations or infrastructure, also run review-adversarial the same way, as a second
+  review in its own tab and worktree, named `pr-<n>-review-adversarial`. Remove each review
+  worktree once its tab is closed.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
   `git status` reads the right repo. Relay the user's commit signal word for word. For a change you
   made yourself, open a Rex tab in that repo running `claude --permission-mode auto "/commit"`
@@ -111,3 +129,10 @@ with something that merged. End the reply with one numbered list of what you nee
 
 The batch is done when every PR is merged and verified in dev and every ticket is updated. Then
 tell the user what caused friction during the run, so this skill can improve.
+
+## 7. Improve this skill
+
+You write every change to this skill yourself, from your own experience running it. Never hand
+the writing to a worker: a worker hasn't run the batch, and the user depends on you to fix how it
+is run. When the user agrees to a change, make it straight away, before the next work item. Only
+the commit is delegated, through a Rex tab running `/commit`, once the user gives the signal.
