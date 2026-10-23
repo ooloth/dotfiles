@@ -32,8 +32,9 @@ A PR's feedback lives in three places, and each needs its own read: the body of 
 (`pulls/<n>/reviews`), the inline comments (`pulls/<n>/comments`), and the conversation comments,
 bots included (`gh pr view <n> --json comments`). An approval often carries its findings in the
 review body alone. Any feedback in any of the three, approved or not, means the PR waits on its
-worker running `/review-pr-comments-converge` (see "Review feedback" below). Don't assess the
-comments yourself or call the PR ready to merge.
+worker running `/review-pr-comments-converge` (see "Review feedback" below). Don't fix, dismiss
+or answer the comments in its place, and don't call the PR ready to merge. Judging what the skill
+then reports is a separate step, and it is yours (see "Judge every finding" below).
 
 ## 2. Show the table and the order
 
@@ -111,6 +112,15 @@ confusing report, comes before the next work item. Resolve it with the user befo
   credentials, migrations or infrastructure, also run review-adversarial the same way, as a second
   review in its own tab and worktree, named `pr-<n>-review-adversarial`. Remove each review
   worktree once its tab is closed.
+- **Judge every finding:** a reviewer's findings, and a worker's fixes and escalations, reach the
+  user only with your own verdict on each one. The reviewer has already filtered its subagents'
+  findings, and you are the second reader of its judgment. For each finding, open the code it
+  cites and decide whether the claim is true, whether it matters at this PR's scope, and whether
+  the proposed fix is the right size. Then say plainly whether you agree, and why, and say when
+  you would take a smaller fix, a different one, or none. Where the reviewer and the worker
+  disagree or overlap, reconcile them into one recommendation. The user should be able to accept
+  your recommendations without reading the report. Disagreeing with a reviewer is part of the job:
+  a list you relay without a verdict leaves the user to do the judging.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
   `git status` reads the right repo. Relay the user's commit signal word for word. For a change you
   made yourself, open a Rex tab in that repo running `claude --permission-mode auto "/commit"`
