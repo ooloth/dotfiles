@@ -75,6 +75,10 @@ confusing report, comes before the next work item. Resolve it with the user befo
   started after it was added, so restart a running worker with `claude --continue` to pick one up.
   If an approved action is still blocked, tell the user exactly what to type in the worker's tab,
   and don't retry it yourself.
+- **Review feedback:** when a PR has review comments to assess or answer, tell its worker to run
+  `/review-pr-comments-converge <pr-number>` rather than handle the comments one by one, so a
+  single skill defines how feedback is assessed, fixed and answered. Relay the skill's escalations
+  and proposed replies to the user, and leave its full report in the worker's tab.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
   `git status` reads the right repo. Relay the user's commit signal word for word. For a change you
   made yourself, open a Rex tab in that repo running `claude --permission-mode auto "/commit"`

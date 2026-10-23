@@ -80,7 +80,7 @@ thing standing between a misresolved repo and a reply posted on a stranger's pul
 > **Note:** `reply_to_comment.py` handles inline review comments only. Review bodies (the
 > `OVERVIEW:` under each review, which shows a `review_id` for reference) and conversation
 > comments (the `# PR CONVERSATION COMMENTS` section) are not replyable via this script —
-> respond to them with `gh pr comment <pr-number> --body-file <path>`.
+> respond to them with a PR conversation comment, posted as Phase 4 describes.
 
 ---
 
@@ -147,12 +147,16 @@ it:
   - **Valid** — the comment identifies a real issue; include the issue and a suggested fix
   - **Stale** — the code has already been changed to address this; include evidence
   - **Mistaken** — the comment is wrong; include why
+  - **No ask** — the comment asks for no change, such as praise or a note on a consequence for a
+    later PR; include what it notes
 
 Wait for the subagent to return verdicts.
 
 ### Step B — Classify Valid Findings
 
 Ignore Stale and Mistaken comments (add to decided list; they appear in the report as Dismissed).
+Add No ask comments to the decided list too; they appear in the report as Acknowledged, so the
+user sees any consequence a reviewer flagged for later work.
 
 Partition Valid findings:
 
@@ -193,7 +197,7 @@ If the same location appeared in a prior round after a fix attempt, escalate ins
 Emit:
 
 ```
-Round N/3: [X] auto-fix, [Y] escalate, [Z] dismissed (stale/mistaken), [W] repeated
+Round N/3: [X] auto-fix, [Y] escalate, [Z] dismissed (stale/mistaken), [V] acknowledged, [W] repeated
 ```
 
 - If **no auto-fix findings**: exit the loop
@@ -271,6 +275,8 @@ that line opens with its verdict:
   e.g. `(2611d9d)`
 - ❌ no change: give the reason in one clause, with a `file:line` or a quote as evidence
 - 💬 needs your decision: list the lettered options; leave the thread open
+- 👍 noted: for a comment that asks for nothing, thank praise by naming the point it praised, and
+  answer a consequence for later work by saying where it will be handled; resolve the thread
 
 For an inline reply, the body is that one line. For a review body or conversation comment that
 covered several findings, write one bullet per finding, in the reviewer's order, and bold a short
@@ -325,6 +331,16 @@ Comments that were stale or mistaken — no action taken.
 
 ---
 
+## 👍 Acknowledged comments
+
+Comments that ask for no change. A consequence flagged for later work may need a ticket.
+
+- 👍 [reviewer] @ `file:line` — [praise | consequence for later work] — [what it notes]
+
+(None)
+
+---
+
 ## 💬 Escalated items
 
 These require a decision from you. Reply with your decisions (e.g. "1b, 2a") and I'll apply them.
@@ -362,10 +378,22 @@ All changes are uncommitted. Run `git diff` to review before committing.
 After the user has reviewed the working tree changes and explicitly approves (e.g. "post the
 replies"), post replies and resolve threads:
 
-- For each auto-fixed or dismissed comment with an inline `comment_id`: run
+- For each auto-fixed, dismissed or acknowledged comment with an inline `comment_id`: run
   `reply_to_comment.py` with `--resolve`
-- For each escalated comment: post a reply summarising the options; do not resolve the thread
-- Review body comments (no `comment_id`) and conversation comments: respond with `gh pr comment`
+- For each escalated inline comment: post a reply summarising the options; do not resolve the
+  thread
+- For each review body (no `comment_id`) or conversation comment: post one PR conversation comment
+  answering it, with one bullet per finding as the reply shape describes. Write the approved reply
+  to a file in a `mktemp -d` directory, outside the working root, with each bullet on one line,
+  since GitHub renders every newline as a line break. Then post it, passing the repo from the
+  `# Source:` line that `fetch_pr_comments.py` printed:
+
+  ```bash
+  gh pr comment <pr-number> -R <owner/repo> --body-file <file>
+  ```
+
+  These have no thread to resolve, so an escalated finding's bullet lists its options and nothing
+  more.
 
 Do not run any of these commands before receiving explicit approval in Phase 3.
 
