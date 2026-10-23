@@ -11,7 +11,8 @@ model: opus
 Act as a coordinator. You spawn subagents to validate and fix; your job is to route their output,
 track state across rounds, emit progress, and decide when to stop.
 
-**Never commit.** All changes land in the working tree for the user to review and commit.
+**Never commit on your own.** All changes land in the working tree for the user to review. They
+are committed through `/commit` only when the user gives a commit signal, as Phase 4 describes.
 
 ---
 
@@ -279,8 +280,9 @@ that line opens with its verdict:
   answer a consequence for later work by saying where it will be handled; resolve the thread
 
 For an inline reply, the body is that one line. For a review body or conversation comment that
-covered several findings, write one bullet per finding, in the reviewer's order, and bold a short
-label naming each finding so the reviewer can match it to their comment. Don't add a legend, a
+covered several findings, write one bullet per finding, in the reviewer's order. Each bullet opens
+with its verdict, then a bold short label naming the finding so the reviewer can match it to their
+comment, then the reply: `- ✅ **Negative TTL**: now rejected (2611d9d)`. Don't add a legend, a
 summary paragraph, or the reviewer's point repeated back to them.
 
 ### Reply tone
@@ -359,7 +361,9 @@ Posted only after you approve this wording. `(<sha>)` becomes the pushed commit'
 
 - Inline [comment_id] — [reviewer] @ `file:line` — [resolve | leave open]
   > [reply]
-- Conversation comment / review body [id] — [reviewer]
+- Review body [review_id] — [reviewer]
+  > [reply]
+- Conversation comment [comment_id] — [reviewer]
   > [reply]
 
 (None)
@@ -401,16 +405,19 @@ Post each reply exactly as approved in the report. The only change allowed is fi
 commit hash. A reworded reply is a new draft and needs its own approval.
 
 A ✅ line cites a commit, so the fix is committed and pushed before the reply is posted. A reply
-claiming a fix the reviewer can't see on the PR is false until it is. When the working root's branch
-is named differently from the head branch it tracks, a plain `git push` is refused under git's
-default `push.default=simple`, so the push names both: `git push <remote> <local>:<head-branch>`.
+claiming a fix the reviewer can't see on the PR is false until it is. The session that ran this
+skill commits the fix through `/commit` once the user gives a commit signal, then pushes it. When
+the working root's branch is named differently from the head branch it tracks, a plain `git push`
+is refused under git's default `push.default=simple`, so the push names both:
+`git push <remote> <local>:<head-branch>`.
 
 ---
 
 ## Guardrails
 
 - **Max 3 rounds** — always. Never loop indefinitely.
-- **No commits** — ever. Working tree only.
+- **No commits without the user's signal** — working tree only until then, and then only through
+  `/commit`.
 - **No scope creep** — only address findings derived from PR comments. Do not refactor or improve
   things outside the reported findings.
 - **No silent changes** — every change must appear in the report with a diff snippet.
