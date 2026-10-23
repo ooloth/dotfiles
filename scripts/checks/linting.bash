@@ -6,7 +6,8 @@
 # Python: ruff check, with rules from ruff.toml at the root.
 # Shell: shellcheck on every *.sh and *.bash file outside hidden directories, several at a time,
 # with settings from .shellcheckrc.
-# Skills: every shared skill's SKILL.md frontmatter parses (tools/agents/check-skills.py).
+# Skills: every shared skill's SKILL.md frontmatter parses, and no file in a skill names a fixed
+# temp path (tools/agents/check-skills.py).
 # Each fails when it finds nothing to check.
 set -uo pipefail
 
@@ -33,8 +34,8 @@ else
     xargs -0 -P 8 -n 16 shellcheck -s bash || failed+=("shellcheck")
 fi
 
-echo "== skill frontmatter"
-uv run tools/agents/check-skills.py || failed+=("skill frontmatter")
+echo "== skills"
+uv run tools/agents/check-skills.py || failed+=("skills")
 
 if [[ ${#failed[@]} -gt 0 ]]; then
   printf '\n❌ Linting failed: %s\n' "${failed[*]}" >&2
