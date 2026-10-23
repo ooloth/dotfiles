@@ -180,9 +180,11 @@ leaves the table or waits only on someone other than the user, such as its autho
 early on a later item, including a review report or a worker's question, stays in its tab until
 that item reaches the top. The table can say it is ready, and nothing more.
 
-Number each question, and letter the parts of a question that has several (a, b, c), so the
-user can answer "2b yes" without retyping it. Put your recommendation beside each part, so a
-plain "yes" accepts it.
+Number each question 1, 2, 3, as one flat list, so the user can answer "2 yes" without retyping
+it. Each yes-or-no decision gets its own number. Don't nest several under one number as 1a, 1b,
+because the user then has to answer by letter as well. Use letters only for the options within a
+single question, such as "(a) leave it or (b) add the line". Put your recommendation beside each
+question, so a plain "yes" accepts it.
 
 This session is the only thing the user reads, so each reply carries everything its decisions
 rest on. A question refers only to something stated in that same reply, never to a report in a
