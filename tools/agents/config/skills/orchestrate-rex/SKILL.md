@@ -28,6 +28,13 @@ and conclusions.
 Read every ticket and PR in the batch, with their comments. For each PR, find what it waits on:
 a failing check, a review, another PR that has to merge first, or a deploy.
 
+A PR's feedback lives in three places, and each needs its own read: the body of each review
+(`pulls/<n>/reviews`), the inline comments (`pulls/<n>/comments`), and the conversation comments,
+bots included (`gh pr view <n> --json comments`). An approval often carries its findings in the
+review body alone. Any feedback in any of the three, approved or not, means the PR waits on its
+worker running `/review-pr-comments-converge` (see "Review feedback" below). Don't assess the
+comments yourself or call the PR ready to merge.
+
 ## 2. Show the table and the order
 
 Show the user a table with one row per PR and these columns: repo and number, ticket, what it
@@ -130,7 +137,14 @@ work item in priority order, with the same columns as the first table. A row lea
 is merged and verified in dev. A row joins when an issue comes up or a work item has to be
 inserted, such as a failing deploy or a fix to how the batch is run. Build each table from reads
 made for that reply, not from earlier ones, since a PR that was clean an hour ago may now conflict
-with something that merged. End the reply with one numbered list of what you need from the user.
+with something that merged.
+
+End the reply with one numbered list of what you need from the user, about the top one or two
+items in the order and nothing below them. The table shows the rest, and that is enough. A
+question about a later item switches the user's attention away from the work being finished, and
+its answer rests on assumptions the earlier items may still overturn. Leave it until the item
+rises to the top, when fewer assumptions stand under it and the question is easier to answer. The
+one exception is a problem with how the batch is run, which always comes first (see section 3).
 
 ## 6. Finish
 
