@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# Prepares a fresh Amp orb (Debian 12) to run this repo's checks: `bash scripts/check.bash`.
+# The checks need uv (preinstalled in orbs), shellcheck and lua, the same tools
+# .github/workflows/check.yml installs. Safe to rerun: each step skips work that is already done.
+set -euo pipefail
+
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${repo}"
+
+SHELLCHECK_VERSION="0.11.0"
+
+step() {
+  local name="$1" start=${SECONDS}
+  shift
+  printf '\n== %s\n' "${name}"
+  "$@"
+  printf '== %s took %ds\n' "${name}" $((SECONDS - start))
+}
+
+# CI installs the latest shellcheck with brew; Debian's is older (0.9.0), so use the release binary
+install_shellcheck() {
+  if shellcheck --version 2>/dev/null | grep -q "version: ${SHELLCHECK_VERSION}$"; then
+    echo "shellcheck ${SHELLCHECK_VERSION} already installed"
+    return
+  fi
+  local tmp
+  tmp="$(mktemp -d)"
+  curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" |
+    tar -xJ -C "${tmp}"
+  sudo install -m 0755 "${tmp}/shellcheck-v${SHELLCHECK_VERSION}/shellcheck" /usr/local/bin/shellcheck
+  rm -rf "${tmp}"
+}
+
+# tools/rex/tests/test_init.py runs init.lua with a bare `lua`, and
+# tools/homebrew/tests/test_shell.py runs shell.zsh with `zsh`
+install_packages() {
+  if command -v lua >/dev/null && command -v zsh >/dev/null; then
+    echo "lua and zsh already installed"
+    return
+  fi
+  sudo apt-get update -qq
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq lua5.4 zsh
+}
+
+# The repo targets macOS, and CI runs on macos-latest. Tell agents in the orb which failures that
+# explains, so they don't try to "fix" them.
+write_agent_notes() {
+  local notes="${HOME}/.config/amp/AGENTS.md" marker="# dotfiles repo in an orb"
+  if grep -Fqx "${marker}" "${notes}" 2>/dev/null; then
+    echo "agent notes already written"
+    return
+  fi
+  mkdir -p "$(dirname "${notes}")"
+  cat >>"${notes}" <<'NOTES'
+
+# dotfiles repo in an orb
+
+- This orb is Debian Linux; the repo targets macOS and CI runs on macos-latest.
+- `bash scripts/check.bash` runs here. Formatting, docs, types and linting should pass.
+- In the tests step, failures that come from macOS-only commands are expected here, not
+  regressions: `/usr/sbin/networksetup` (tools/macos/utils.bash) and BSD `ln -w`. They break
+  scripts/checks/link-scripts.bash, features/update/tests/test_preflight.py and
+  features/update/tests/test_symlinks.py. Compare against the same check on unchanged `main`
+  before treating a test failure as yours.
+- Do not run `symlinks`, `u` or any `link.bash` without a temporary HOME: they write into $HOME.
+NOTES
+}
+
+# Fill uv's cache with ruff, ty, pytest and every test script's inline dependencies, so the first
+# `check` in a new orb doesn't download them. Warm runs only confirm the cache.
+warm_uv() {
+  # shellcheck source=../scripts/checks/versions.bash
+  source scripts/checks/versions.bash
+  uv run --quiet --with "ruff==${RUFF_VERSION}" ruff --version
+  uv run --quiet --with pytest pytest --version
+  env_dir=".cache/check-types-env"
+  uv venv --quiet --allow-existing "${env_dir}"
+  uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis
+  find tools features scripts -mindepth 3 -maxdepth 3 -path '*/tests/test_*.py' \
+    ! -path '*/@new/*' ! -path '*/@archive/*' -print0 |
+    xargs -0 -n 1 uv sync --quiet --script
+  uv sync --quiet --script scripts/checks/docs.py
+  uv sync --quiet --script tools/agents/check-skills.py
+}
+
+step "shellcheck" install_shellcheck
+step "lua and zsh" install_packages
+step "uv cache" warm_uv
+step "agent notes" write_agent_notes
