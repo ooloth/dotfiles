@@ -86,7 +86,15 @@ confusing report, comes before the next work item. Resolve it with the user befo
   and end the turn only when something needs the user. A message the user sends meanwhile reaches
   you at your next tool call, or at once if they press ctrl-enter. Capture panes with
   `--format=vt` and ignore dim text (`ESC[2m`) on the input line: it is Claude Code's suggested
-  next prompt, which nobody typed.
+  next prompt, which nobody typed. A capture holds only the current screen, so a report longer
+  than the screen has scrolled out of reach. Read it from the worker's transcript instead: the
+  newest `.jsonl` file in `~/.claude/projects/<worktree path with each / replaced by ->/`, whose
+  assistant messages hold the text the worker showed. Don't ask the worker to repeat or save its
+  report: on CENG-186 its model refused both requests as `reasoning_extraction`, and the refusals
+  stayed in its context. After that, it refused even a one-line instruction that asked for
+  nothing to be repeated. So once a worker's model refuses a message, stop messaging it. Close
+  its tab and start a fresh worker in the same worktree, giving it the original brief and the
+  last report from the old transcript, saved to a file in your scratch directory.
 - **Relaying answers:** when the user answers a worker's question in your session, type the answer
   into the worker's pane word for word with `rex send`, then `rex send-key enter`. Keep it on one
   line, since a newline may submit early. `rex send` can drop the start of a long message, so an
