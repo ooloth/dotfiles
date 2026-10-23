@@ -1,7 +1,7 @@
 ---
 name: write-pr-description
 description: Voice guide for writing PR descriptions. Use this skill for ALL PR creation and updates (via gh CLI or editing existing PRs). Contains your specific voice rules, anti-patterns, examples, and workflow. Never write PR descriptions without invoking this skill first.
-allowed-tools: [Bash, Read, Glob, Grep]
+allowed-tools: [Bash, Read, Write, Glob, Grep]
 ---
 
 # Writing PR Descriptions
@@ -18,19 +18,19 @@ allowed-tools: [Bash, Read, Glob, Grep]
    ```
 3. Ask user for: Jira URL, Slack thread, screen recording (if UI change)
 4. Draft using voice rules below
-5. Write body to `/tmp/pr-body.md`, then create the PR:
+5. Write the body to a file in a new directory, then create the PR:
+   1. Run `mktemp -d` and note the directory it prints. It is new on every run, so another
+      session opening a PR at the same time can't overwrite the body.
+   2. With the Write tool, write the body to `pr-body.md` in that directory. Writing it to a file
+      keeps the shell from mangling backticks in inline code. Read it back before posting.
+   3. Create the PR, using that file's full path:
 
 ```bash
 # Check for related issues
 gh issue list --state open
 
-# Write body to a file first — avoids escaped backticks mangling inline code in the GitHub UI
-cat > /tmp/pr-body.md << 'EOF'
-[PR body here]
-EOF
-
 # Create draft PR
-gh pr create --draft --title "Title" --body-file /tmp/pr-body.md
+gh pr create --draft --title "Title" --body-file <dir>/pr-body.md
 
 # View PR
 gh pr view --web

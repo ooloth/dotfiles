@@ -13,7 +13,7 @@ run one on its own, run its script:
 bash scripts/checks/formatting.bash           # ruff format
 uv run scripts/checks/docs.py                 # Markdown prose wraps at 100 columns; see the script
 bash scripts/checks/types.bash                # ty
-bash scripts/checks/linting.bash              # ruff check, shellcheck, skill frontmatter
+bash scripts/checks/linting.bash              # ruff check, shellcheck, skills
 bash scripts/checks/tests.bash                # link.bash check mode, every tests/ folder, skill tests
 ```
 

@@ -71,7 +71,7 @@ explicit is simpler and avoids disk cleanup concerns.
 Constraints: must not change existing stderr output format. Must
 work with the existing timestamped StreamHandler.
 
-Done when: running `agent-loop watch --log-file /tmp/test.log`
+Done when: running `agent-loop watch --log-file watch.log`
 writes timestamped output to the file while also printing to
 stderr. Killing and restarting appends rather than truncates.
 ```

@@ -118,8 +118,10 @@ instead of `git add -p`. The latter requires a TTY and will not work in this env
 
 Steps:
 
-1.  `git diff <file> > /tmp/changes.patch`
-2.  Edit `/tmp/changes.patch` to keep only the hunk(s) you want — delete unwanted `@@` blocks and
-    their lines, keeping the file headers (`--- a/...` / `+++ b/...`)
-3.  `git apply --cached /tmp/changes.patch` to stage just those hunks
+1.  `p="$(mktemp -d)/changes.patch" && git diff <file> > "$p" && echo "$p"`. The directory is new
+    on every run, so another session staging at the same time can't overwrite the patch. A shell
+    variable doesn't survive to the next command, so copy the printed path into the steps below.
+2.  Edit `<path>` to keep only the hunk(s) you want — delete unwanted `@@` blocks and their lines,
+    keeping the file headers (`--- a/...` / `+++ b/...`)
+3.  `git apply --cached <path>` to stage just those hunks
 4.  Commit, then stage the remaining changes normally for the next commit
