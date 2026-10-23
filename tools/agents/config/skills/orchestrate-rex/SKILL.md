@@ -143,8 +143,13 @@ End the reply with one numbered list of what you need from the user, about the t
 items in the order and nothing below them. The table shows the rest, and that is enough. A
 question about a later item switches the user's attention away from the work being finished, and
 its answer rests on assumptions the earlier items may still overturn. Leave it until the item
-rises to the top, when fewer assumptions stand under it and the question is easier to answer. The
-one exception is a problem with how the batch is run, which always comes first (see section 3).
+rises to the top, when fewer assumptions stand under it and the question is easier to answer. A
+problem with how the batch is run always comes first (see section 3).
+
+This is a judgment about the user's time and focus, not a fixed count. When every top item is
+waiting on agents or external runs and needs nothing from the user, the user's attention is idle,
+so use it on the next item down rather than sleeping. Pick a question whose answer doesn't depend
+on how the work above it turns out, and ask it then.
 
 ## 6. Finish
 
