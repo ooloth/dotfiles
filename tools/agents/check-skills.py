@@ -14,6 +14,11 @@ sessions on one machine read and write the same file, so one session can
 commit or post the other's content. Every file in a skill is checked, since
 its scripts can write to a fixed path as easily as its instructions can.
 
+Git decides which files are skills: tracked files, and untracked ones git does
+not ignore, so a new skill is checked before it is committed. A gitignored
+file, such as a third-party skill synced into skills/synced/, is not this
+repo's to fix and is never checked.
+
 Run it directly, or with uv, optionally passing a skills directory other than
 the shared one:
 
@@ -24,6 +29,7 @@ the shared one:
 from __future__ import annotations
 
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -77,11 +83,23 @@ def frontmatter_problem(path: Path) -> str | None:
 
 
 def skill_files(skills_dir: Path) -> list[Path]:
-    """Every file in every skill, except Python's compiled caches."""
+    """Every file git tracks or would track under skills_dir, except Python's compiled caches."""
+    listed = subprocess.run(
+        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+        cwd=skills_dir,
+        capture_output=True,
+        text=True,
+    )
+    if listed.returncode != 0:
+        raise SystemExit(
+            f"❌ Can't list the files in {skills_dir} with git: {listed.stderr.strip()}"
+        )
+
+    # --cached still lists a tracked file deleted from the working tree
     return sorted(
         path
-        for path in skills_dir.rglob("*")
-        if path.is_file() and "__pycache__" not in path.relative_to(skills_dir).parts
+        for name in listed.stdout.split("\0")
+        if name and "__pycache__" not in Path(name).parts and (path := skills_dir / name).is_file()
     )
 
 
@@ -107,7 +125,8 @@ def shown(path: Path, skills_dir: Path) -> Path:
 def main() -> int:
     skills_dir = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else SKILLS_DIR
 
-    paths = sorted(skills_dir.glob("*/SKILL.md"))
+    files = skill_files(skills_dir)
+    paths = [path for path in files if path.relative_to(skills_dir).parts[1:] == ("SKILL.md",)]
     if not paths:
         print(f"❌ No SKILL.md files found under {skills_dir}")
         return 1
@@ -123,7 +142,6 @@ def main() -> int:
     else:
         print("✅ All skill frontmatter parses")
 
-    files = skill_files(skills_dir)
     found: list[FixedTmpPath] = []
     unreadable: list[UnreadableFile] = []
     for path in files:
