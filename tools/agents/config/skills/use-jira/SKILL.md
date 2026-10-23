@@ -1,6 +1,6 @@
 ---
 name: use-jira
-description: Jira gotchas for the Atlassian MCP tools and the jira CLI. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
+description: Jira gotchas for the Atlassian MCP tools and the acli and jira CLIs. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
 ---
 
 ## Cloud ID
@@ -67,11 +67,40 @@ there without opening Jira.
 comment rather than posting a second one, which notifies watchers again and leaves both in the
 history. The replacement is a new draft: approved wording changes only with fresh approval.
 
+## The acli CLI
+
+`acli` is set up on the work laptop as the fallback when the Atlassian MCP server will not connect.
+It logs in with OAuth and keeps the token in the login keychain; never read it out or print it.
+Setup is in `tools/jira/README.md`. Tested with acli 1.3.39 on CENG-349:
+
+- **Bodies are ADF, never markdown.** `comment create` and `comment update` store markdown as
+  literal text. Write the body as an ADF JSON document (`{"version":1,"type":"doc","content":[…]}`)
+  in a file. Headings, nested and numbered lists, tables with a header row, code blocks, and inline
+  code as link text all render. ADF does not allow the `code` mark together with any mark except
+  `link`, so inline code inside bold is rejected: end the bold before the code.
+- **Post from a file, never an argument.** `acli jira workitem comment create --key KEY
+  --body-file <file>` reads ADF from the file. Pass one key and never `--jql` or `--filter`, which
+  comment on every ticket the query matches; the permission rules refuse those flags.
+- **Read every comment with its ID.** `acli jira workitem view KEY --fields comment --json`
+  returns all of them. Pipe it through `jq '.fields.comment.comments[] | {id, created, body}'` and
+  leave out `body` when only the IDs are needed.
+- **`--json` on create leaves out the new comment's ID.** Find it with the read above, as the last
+  comment.
+- **Fix a posted comment in place.** `acli jira workitem comment update --key KEY --id ID
+  --body-adf <file>` replaces the body and notifies nobody unless `--notify` is passed. Use
+  `--body-adf`: `update --body-file` takes plain text only. The replacement is a new draft:
+  approved wording changes only with fresh approval.
+- **A failure says only `unexpected error, trace id: …`.** Run the command again with
+  `ACLI_LOG_ENABLED=true ACLI_LOG_FILE=<file>` to log the request and response. The log redacts the
+  `Authorization` header; a 401 with `X-Failure-Category: FAILURE_CLIENT_SCOPE_CHECK` means the
+  login is an API token rather than OAuth.
+
 ## The jira CLI
 
-`jira` (jira-cli) is set up on the work laptop as a fallback when the Atlassian MCP server will not
-connect. Its token is in the login keychain and jira-cli reads it there; never read it out, print it
-or export it. Setup is in `tools/jira/README.md`.
+`jira` (jira-cli) is the second fallback until it is removed
+([#196](https://github.com/ooloth/dotfiles/issues/196)). Use it only when acli fails. Its token is
+in the login keychain and jira-cli reads it there; never read it out, print it or export it. Setup
+is in `tools/jira/README.md`.
 
 - **Reads show one comment.** `jira issue view KEY --plain` prints the latest comment only. Pass
   `--comments 50` (or more than the ticket has) when the plan is what you came for.
