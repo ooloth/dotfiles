@@ -81,6 +81,13 @@ confusing report, comes before the next work item. Resolve it with the user befo
   `/review-pr-comments-converge <pr-number>` rather than handle the comments one by one, so a
   single skill defines how feedback is assessed, fixed and answered. Relay the skill's escalations
   and proposed replies to the user, and leave its full report in the worker's tab.
+- **Skill-shaped writing:** an approach or design comment, a PR or ticket description, review
+  replies and a commit message are each written under a skill (discuss, design,
+  write-pr-description, write-ticket-description, review-pr-comments-converge, commit). When a
+  worker produced one under its skill, post it as written. The only edits you make are the ones the
+  destination forces, such as moving code out of bold for Jira, and you show the user each one.
+  Never condense, reorder or restyle it. When you draft one yourself, invoke its skill first and
+  follow it, as a worker would.
 - **Review before a PR opens:** after a worker pushes a draft PR, and before it is marked ready or
   anyone is asked to review it, review it with review-code. Create a detached worktree at the PR's
   head (`git worktree add --detach "$(mktemp -d)/review-<n>" <head-sha>`) and open a new tab there
