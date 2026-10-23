@@ -161,6 +161,10 @@ waiting on agents or external runs and needs nothing from the user, the user's a
 so use it on the next item down rather than sleeping. Pick a question whose answer doesn't depend
 on how the work above it turns out, and ask it then.
 
+Number each question, and letter the parts of a question that has several (a, b, c), so the
+user can answer "2b yes" without retyping it. Put your recommendation beside each part, so a
+plain "yes" accepts it.
+
 ## 6. Finish
 
 The batch is done when every PR is merged and verified in dev and every ticket is updated. Then
