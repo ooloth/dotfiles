@@ -24,7 +24,8 @@ background = 181825
 cursor-invert-fg-bg = true
 
 # Typography
-font-family = UbuntuMono Nerd Font Mono
+# Makes icons look larger and nicer than "UbuntuMono Nerd Font Mono"
+font-family = Ubuntu Mono
 font-size = 15.5
 adjust-cell-height = 35%
 
