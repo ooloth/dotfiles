@@ -44,6 +44,12 @@ read for each kind of component.
 - **Nothing that pages a person fires without the user's approval,** including test alerts in
   production.
 - **Ask rather than guess** about anything the system can't tell you.
+- **A claim that something is absent rests on two sources that agree.** "No open alerts" and "no
+  vulnerable dependencies" can be true. They can also be what a feed shows before it has been
+  populated, after a filter it silently ignored, or when a request failed and printed nothing. So
+  an absence holds only when an independent second source agrees, such as a local scanner checked
+  against GitHub's alert feed, or when the report says why only one source exists. Where two
+  sources disagree, report both, and the disagreement is the finding. Pick neither.
 
 ## 1. Inventory
 
@@ -134,6 +140,14 @@ every claim in them that bears on the component:
 - **Static site or frontend:** `observability.md`, `performance.md`
 - **Domain and edge:** `reliability.md`
 - **External dependency:** `reliability.md`
+
+For the system as a whole, run `scripts/security_feeds.py OWNER/REPO --path <checkout>`, found
+beside this file, with `uv run`. It reads the repo's Dependabot, code scanning and secret scanning
+alerts, runs a local scanner for each lockfile it knows, and prints one definite result per line.
+Use its output as the evidence for the `dependencies.md` claim that dependencies are scanned for
+known vulnerabilities, and for the `security.md` claims it bears on. A `DISAGREE` line is a finding
+to report, never a Holds. A `failed` line makes each claim it bears on Blocked. The script's npm
+check sends `package-lock.json` to the npm registry, which the report names, as the rules require.
 
 Claims about how code is written, such as its structure, naming or types, belong to
 `scan-standards`. Claims about what the system does at runtime, such as timeouts and retries, are

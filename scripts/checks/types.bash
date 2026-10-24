@@ -23,5 +23,5 @@ fi
 echo "== ty check"
 env_dir="${DOTFILES}/.cache/check-types-env"
 uv venv --quiet --allow-existing "${env_dir}"
-uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis
+uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis pydantic
 "${env_dir}/bin/ty" check --python "${env_dir}" --project "${DOTFILES}" "${DOTFILES}"
