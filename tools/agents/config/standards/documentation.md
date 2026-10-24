@@ -28,6 +28,16 @@ untraceable conversation or a model's recollection are marked unverified or
 left out. Once an unsourced figure sits in a document of facts it is
 indistinguishable from a measured one, and decisions get built on it.
 
+**A recorded absence rests on two sources that agree.**
+"No open alerts", "no errors in the logs" and "nothing calls this" are facts
+like any other, and one empty result supports them less than it seems to. A
+feed that has not been populated yet, a filter the source silently ignored, a
+query aimed at the wrong place and a request that failed without saying so all
+return the same empty answer as a true absence. So an absence is recorded only
+when an independent second source agrees, or with the reason only one source
+exists. Where two sources disagree, both are recorded and the disagreement is
+the finding.
+
 **Comments and documents describe the present, never the past.**
 What a value used to be, what a rule replaced, which record was removed, what
 an earlier pass got wrong, how far along the work is, when the content expires —
