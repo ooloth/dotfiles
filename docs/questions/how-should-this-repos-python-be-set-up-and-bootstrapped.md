@@ -1,33 +1,29 @@
 ---
-updated: 2026-10-20
+updated: 2026-10-25
 update_when: the work laptop check below is run, #127 starts, or a script is rewritten in Python
 decays: slow
 status: open
 ---
 
-# Which language should this repo's scripts use?
+# How should this repo's Python be set up and bootstrapped?
 
 ## Why it matters
 
-The repo has about 5,700 lines of bash and 3,900 of zsh. Writing tests for them means either bats
-or Python tests that run the bash as a subprocess, and the maintainer wants neither as the main
-way to test. Bash also has no tooling that catches a misspelled function name or a call with the
-wrong number of arguments before it runs. Several 2026 fixes were bugs of that kind.
+[Decision 007](../decisions/007-scripts-that-are-run-are-written-in-python.md) settled that
+scripts that are run, not sourced, are written in Python, and
+[decision 008](../decisions/008-the-repos-python-is-one-uv-project-at-the-repo-root.md) settled
+that it is one uv project at the repo root. What is left open is how a fresh Mac gets uv and
+Python before the first script needs them, and how unported bash calls the Python while both
+languages run.
 
-The answer gets more expensive to change the longer it waits. #127 plans to replace
-`features/setup/setup.zsh` with bash. If #127 is written in bash and the answer turns out to be
-Python, setup gets rewritten twice. Every new script written in the meantime adds to the rewrite.
-
-Some code stays in shell whatever the answer is. The `shell.zsh` files define aliases and
-functions that run inside the interactive shell and change its environment and working directory,
-which a separate process cannot do. The first step of setup also runs before any other language
-is installed.
+#127 plans to replace `features/setup/setup.zsh` and cannot start until the first of these is
+answered, because it decides how much of setup's first step has to be bash.
 
 ## What would settle it
 
-Three things, and #127 waits for all of them.
+Two things, and #127 waits for both.
 
-1. **Whether a fresh work laptop can run Python before gcloud is set up.** Option 3 needs uv to
+1. **Whether a fresh work laptop can run Python before gcloud is set up.** The project needs uv to
    download Python, and on a work laptop the managed uv config may route that download through
    Artifact Registry, which needs Application Default Credentials first. Run this on the work
    laptop:
@@ -49,20 +45,14 @@ Three things, and #127 waits for all of them.
    proxy re-signs HTTPS with a company certificate that uv does not trust without
    `--system-certs`, or the managed config disables or redirects Python downloads.
 
-2. **Whether option 1 would remove the pain on its own.** If stricter shellcheck plus Python tests
-   that drive the bash would be enough, options 2 and 3 are not worth their cost. The maintainer
-   has said the missing tooling is part of the pain, not only the bugs.
-
-3. **A plan for the time when both languages run.** About 90 files source
-   `tools/bash/utils.bash`, and Python cannot source bash. Option 3 needs a stated way for
-   unmigrated bash to reach the Python code, such as bash calling the package's command-line
-   entry point.
+2. **A plan for the time when both languages run.** About 90 files source
+   `tools/bash/utils.bash`, and Python cannot source bash. Unported bash needs a stated way to
+   reach the Python code, such as calling the package's command-line entry point.
 
 ## Resolves into
 
-A decision record in `../decisions/` naming the language for scripts that are run (not sourced),
-and, if Python, a second record on the package's shape and how it is bootstrapped. #127 then
-follows them.
+A decision record in `../decisions/` on how setup gets uv and Python onto a fresh Mac, and one on
+how bash calls the Python during the port. #127 follows the first.
 
 ## Source
 
@@ -70,30 +60,15 @@ Raised on 2026-10-19 by the maintainer, asking whether the repo should move to P
 that it can have a good test suite and normal programming tooling. The maintainer pointed at
 `~/Repos/ooloth/agency-1` as the Python setup they enjoy: a `pyproject.toml` with `uv.lock`, a
 package its tests import, ruff with `select = ["ALL"]`, `ty` over the whole program, pytest, and
-prek hooks that ban `noqa` comments.
+prek hooks that ban `noqa` comments. Narrowed on 2026-10-25, when the maintainer settled the
+language as Python (decision 007) and pointed at
+[ooloth/media](https://github.com/ooloth/media) as an example of repo-level uv config shared by
+all of a repo's Python tooling.
 
 ## Options
 
-- **Stay in shell, with stricter checks.** Turn SC1090 and SC1091 back on in `.shellcheckrc` and
-  write more Python tests that run the bash against a fake `HOME`, as
-  `features/update/tests/test_symlinks.py` does. It costs almost nothing and changes no bootstrap.
-  It does not give the tooling the maintainer asked for, and shellcheck still cannot see
-  misspelled function names or wrong argument counts.
-- **Shell for glue, single-file `uv` scripts for logic.** A script moves to Python when it parses
-  output, holds structured data or crosses about 100 lines. Each script is one file with inline
-  dependencies, which the global Python standards allow for scripts. The cost is that shared
-  helpers cannot exist: the moment one script imports another, it is an application under those
-  same standards. So this option either duplicates helpers or turns into option 3.
-- **A Python package set up like agency-1.** Shell remains only for the bootstrap step and the
-  sourced `shell.zsh` files. A tool's update could become a declaration, such as
-  `brew_formula("neovim", "nvim", "🦸", tool_dir)`, in place of a call with 9 positional
-  arguments. The costs are rewriting about 5,700 lines of bash over time, a period where bash and
-  Python both run and bash calls into Python, a bootstrap that installs uv and Python first, and
-  carrying the `DOTFILES_CHECK` guarantee in `../invariants/tools.md` into the new code.
-- **Rust.** It would need a Rust toolchain and a compile step before setup could do anything, and
-  `features/setup/setup.zsh` installs Rust only on personal machines. Its strengths, speed and
-  distributable binaries, do not help scripts that spend their time waiting on `brew`. Rejecting
-  it means accepting Python's slower startup, about 15 ms per run.
+None written yet for either part. The layout options this file used to hold are recorded in
+decision 008.
 
 ## Findings
 

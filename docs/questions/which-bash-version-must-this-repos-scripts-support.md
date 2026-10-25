@@ -29,8 +29,8 @@ promises 3.2 or promises bash 5 with an exception for setup.
 CI runs bash 3.2 (see Findings), so it already fails on any 3.2 incompatibility the tests reach.
 The local `check` runs Homebrew's bash 5, so it is the one place that hides them.
 
-The answer to `which-language-should-this-repos-scripts-use.md` changes how much code this
-covers. If scripts move to Python, only the bootstrap and anything left in bash remain.
+[Decision 007](../decisions/007-scripts-that-are-run-are-written-in-python.md) moves scripts that
+are run to Python, so this covers only the bootstrap and the bash not yet ported.
 
 ## Resolves into
 
