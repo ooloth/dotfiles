@@ -113,7 +113,8 @@ Nothing here is settled until it graduates into a decision record.
   on `PATH`. All 6 passed, and removing the link step from each version failed the 4 tests that
   cover it. The Python tests compare returned values such as `Upgraded("0.11.0", "0.12.0")`. The
   bash tests match text in stderr and need a fake `HOME`, because `tools/bash/utils.bash`
-  overwrites `DOTFILES` (see `should-utils-bash-respect-a-caller-set-dotfiles.md`).
+  overwrites `DOTFILES` (which `tools/agents/config/standards/bash.md` says a script should not
+  rely on).
 - *Measured (2026-10-19):* four bugs were injected into each version and checked with the repo's
   `.shellcheckrc` against ruff and `ty`:
   - A misspelled variable: shellcheck caught it (SC2154), and ruff caught it (F821).

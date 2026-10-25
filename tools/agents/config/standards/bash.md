@@ -20,9 +20,10 @@ beside it, so the exception is visible in review rather than silent.
 
 **The bash version a script needs is known, and an older bash fails loudly.**
 Features differ across versions, and some gaps fail silently: under bash 3.2, `$'\ue725'`
-prints the six characters `\ue725` rather than the glyph, and nothing reports an error. So either the
-script works under the oldest bash it can meet, or it checks `BASH_VERSINFO` first and exits with a
-message naming the version it needs. Wrong output under an older bash is never acceptable.
+prints the six characters `\ue725` rather than the glyph, and nothing reports an error. So
+either the script works under the oldest bash it can meet, or it checks `BASH_VERSINFO` first and
+exits with a message naming the version it needs. Wrong output under an older bash is never
+acceptable.
 
 ## Should
 
@@ -32,6 +33,16 @@ misspelled variable expands to nothing; without `pipefail` a failure early in a 
 by the success of the last command. The exception is a script whose job is to run every step and
 report all the failures together, such as a check runner. It uses `set -uo pipefail`, collects the
 failures, and exits non-zero at the end if there were any.
+
+**A script finds its own files from its own location, and keeps paths it points other things at
+separate.**
+The files a script sources, reads and writes are found from where the script is,
+`$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)`, so a copy, a worktree or a test fixture acts on
+itself. A fixed path or an inherited variable instead makes a copy silently act on a different
+checkout, and every test has to fake the fixed location to run at all. A path the script points
+something else at, such as where symlinks in `$HOME` should lead, is a different thing: it names a
+deliberate, stable destination, so it is a named constant of its own, and the script refuses to
+use any other location for it unless told to explicitly.
 
 **Temporary files come from `mktemp -d`.**
 A fixed path such as `/tmp/out.txt` is shared by every copy of the script running at once, so one
