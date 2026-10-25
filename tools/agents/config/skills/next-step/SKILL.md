@@ -1,5 +1,5 @@
 ---
-name: drive-goal
+name: next-step
 description: Find and keep revising the shortest safe path from a goal to a verified, shipped milestone, across tickets, repos and the running system. Use when the user names a goal (an epic, a milestone, an outcome or an existing plan file) and wants to know what to do next to reach it. Not for implementing a single ticket.
 argument-hint: '<goal: an epic, milestone, outcome, or a docs/plans/ file to resume>'
 disable-model-invocation: true
@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 Goal: $ARGUMENTS
 
-# Drive a goal
+# Next step toward a goal
 
 Your job is to minimize the time until the goal's next milestone is shipped and verified. Agent
 utilization, ticket throughput and parallel work are not the measure.
@@ -22,11 +22,11 @@ skill does not start, message or watch other sessions.
 
 ## Operating rules
 
-1. **Choose the milestone by cost of delay.** List the milestones the goal could reach next. For
-   each, name who it unblocks and what they can do once it ships: the team can build X, users can
-   try Y and give feedback, the user stops doing Z by hand. Choose the one whose delay costs the
-   most per day, then find the shortest safe path to it. When a milestone outside the stated goal
-   would unblock more, sooner, raise it as a question. Never switch goals on your own.
+1. **Drive to the milestone the user names.** When the user names a milestone, that is the
+   milestone. When they name a goal bigger than one milestone, such as an epic, propose its first
+   milestone, naming who it unblocks, and confirm it with the user. When the evidence suggests a
+   different milestone would unblock more, sooner, say so once, with that evidence, then carry on
+   with the user's choice.
 2. **Work backward from proof.** State the observable evidence that would prove the milestone is
    reached. Merged, deployed and verified in the environment are three different states, and only
    the last one proves a milestone.
