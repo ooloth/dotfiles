@@ -36,3 +36,8 @@ observations about typical practice.
   applied via `defaults write`), or the config has no filesystem target at
   all and is meant for manual copy-paste elsewhere (e.g. a browser
   extension's settings).
+- `tools/macos/utils.bash` keeps a `COMPUTER` its caller already set, and asks `networksetup` for
+  the machine only when `COMPUTER` is unset or empty. A test of a script that branches on
+  `is_work`, `is_air` or `is_mini` chooses the machine by setting `COMPUTER`, because
+  `networksetup` is called by absolute path and no stub on `PATH` reaches it.
+  `tools/macos/tests/test_utils.py` checks both halves.
