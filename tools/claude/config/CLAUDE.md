@@ -513,6 +513,9 @@ Skip and say nothing if execution went smoothly.
   Text written before a tool call can be hidden from me.
 - Never start a background process with `&` or `nohup`. Run it in a tmux window, or start, check
   and stop it within one Bash command.
+- The Bash tool runs zsh, not bash. Unquoted variables are not split into words (`cmd $args`,
+  `for x in $list` and `${list//,/ }` each pass one string), `read -a` is `read -A`, and arrays
+  start at 1. Run anything written for bash inside `bash -c '…'`.
 - For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
   Playwright tools; the main session has none.
 - To edit Claude's own config (this file, skills, agents, settings), use the Edit tool on the real
