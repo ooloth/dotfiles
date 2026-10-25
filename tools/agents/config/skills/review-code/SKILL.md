@@ -408,8 +408,8 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Identify which programming languages are present in the changed files by file extension (`.rs` → Rust, `.py` → Python, `.ts`/`.tsx` → TypeScript).
-2. Read `~/.agents/standards/README.md`, then load only the reference files that apply: `~/.agents/standards/rust.md` if Rust files are present, `~/.agents/standards/python.md` if Python files are present, `~/.agents/standards/typescript.md` if TypeScript files are present.
+1. Identify which programming languages are present in the changed files by file extension (`.rs` → Rust, `.py` → Python, `.ts`/`.tsx` → TypeScript, `.sh`/`.bash` → bash).
+2. Read `~/.agents/standards/README.md`, then load only the reference files that apply: `~/.agents/standards/rust.md` if Rust files are present, `~/.agents/standards/python.md` if Python files are present, `~/.agents/standards/typescript.md` if TypeScript files are present, `~/.agents/standards/bash.md` if bash scripts are present.
 3. If no language-specific reference files apply to the changed files, report "No language-specific reference files apply to this change." and stop.
 4. Otherwise, run the diff command from Context to read what changed.
 

@@ -1,7 +1,7 @@
 ---
 name: scan-standards
 description: Check whether a codebase upholds its standards — a specific theme or all themes in parallel. Use when asked to review conventions, check standards, or audit codebase health.
-argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | instrumentation | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | python | rust | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | instrumentation | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | bash | python | rust | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
 ---
@@ -83,6 +83,7 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    `~/.agents/standards/config.md`
 
    Note: include language-specific files in the relevant agents when applicable:
+   `~/.agents/standards/bash.md` → Types & Correctness (if bash scripts);
    `~/.agents/standards/python.md` → Types & Correctness (if Python);
    `~/.agents/standards/rust.md` → Types & Correctness (if Rust);
    `~/.agents/standards/typescript.md` → Types & Correctness (if TypeScript);
