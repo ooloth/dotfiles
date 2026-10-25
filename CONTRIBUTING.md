@@ -36,4 +36,7 @@ Then run what you changed. Tests passing is not evidence that it works:
 
 - **A `link.bash`:** run `symlinks`, then `dcheck`, and read the line for each link.
 - **An `update.bash`:** run `u <tool>` and check its exit status with `echo $?`.
-- **A shell function or alias:** open a new shell and call it.
+- **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
+  aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
+  interactive zsh, keeping the variables Claude Code needs to find its login:
+  `env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" TERM=xterm zsh -ic '<alias> <args>'`.
