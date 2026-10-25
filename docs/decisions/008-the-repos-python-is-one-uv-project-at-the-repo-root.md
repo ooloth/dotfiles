@@ -10,8 +10,8 @@ date: 2026-10-25
 
 [Decision 007](007-scripts-that-are-run-are-written-in-python.md) moves every script that is run
 to Python, and those scripts share helpers today: about 90 files source `tools/bash/utils.bash`.
-The 2026-10-19 spike in
-[`../questions/how-should-this-repos-python-be-set-up-and-bootstrapped.md`](../questions/how-should-this-repos-python-be-set-up-and-bootstrapped.md)
+The 2026-10-19 spike in the
+[question this answered](https://github.com/ooloth/dotfiles/blob/f923e2e55c6ac92cadf63f62b2e9c5829e5cf29e/docs/questions/how-should-this-repos-python-be-set-up-and-bootstrapped.md)
 ported `update_and_symlink`, which four `update.bash` files call, and needed a shared
 `brew_formula` helper to do it. Today the repo has no `pyproject.toml`: ruff and ty run through
 `uv run --with` at versions pinned in `scripts/checks/versions.bash`, and each test file is its
@@ -25,8 +25,8 @@ pytest that `check` runs over it. The maintainer pointed at `~/Repos/ooloth/agen
 [ooloth/media](https://github.com/ooloth/media) as the setups to follow.
 
 This settles the layout only. How a fresh Mac gets uv and Python before the first script needs
-them, and how unported bash calls the Python in the meantime, stay open in the question linked
-above.
+them, and how unported bash calls the Python in the meantime, stay open in the
+[bootstrap question][boot] and the [transition question][transition].
 
 ## Rejected
 
@@ -47,10 +47,13 @@ before gcloud is logged in, setup's first step has to get Python some other way.
 
 ## Revisit when
 
-The work-laptop check in the question above shows that a fresh work laptop cannot get Python
-before `u` first runs, or the ported scripts turn out to share no code.
+The work-laptop check in the bootstrap question shows that a fresh work laptop cannot get
+Python before `u` first runs, or the ported scripts turn out to share no code.
 
 ## Also update
 
-- [x] the question above records that the layout is settled
+- [x] what is still open is split into the two questions named above
 - [ ] `CONTRIBUTING.md` describes the project's commands once it exists
+
+[boot]: ../questions/how-does-a-fresh-mac-get-uv-and-python-before-the-first-script-needs-them.md
+[transition]: ../questions/how-does-unported-bash-call-the-repos-python.md

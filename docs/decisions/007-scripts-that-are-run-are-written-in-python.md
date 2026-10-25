@@ -9,8 +9,8 @@ date: 2026-10-25
 ## Forced by
 
 The repo has about 5,700 lines of bash, and the maintainer wants normal programming tooling and a
-test suite that does not drive bash through a subprocess. The findings in
-[`../questions/how-should-this-repos-python-be-set-up-and-bootstrapped.md`](../questions/how-should-this-repos-python-be-set-up-and-bootstrapped.md)
+test suite that does not drive bash through a subprocess. The findings in the
+[question this answered](https://github.com/ooloth/dotfiles/blob/f923e2e55c6ac92cadf63f62b2e9c5829e5cf29e/docs/questions/how-should-this-repos-python-be-set-up-and-bootstrapped.md)
 measured what that tooling catches. Of four bugs injected into the same code, shellcheck caught
 one (a misspelled variable). Ruff and `ty` caught all four, including a misspelled function name
 and a call missing an argument, which in bash shifts every later argument into the wrong
@@ -28,8 +28,9 @@ The work-laptop check (whether uv can download Python before gcloud is logged in
 this decision. It decides how early in setup Python becomes available, which is part of the
 bootstrap question that stays open. Scripts that `u` runs start after setup has finished.
 
-How the Python is laid out (a repo-level package, or single-file scripts) and how setup gets
-Python onto a fresh machine are a separate decision, still open in the question linked above.
+How the Python is laid out is settled by
+[decision 008](008-the-repos-python-is-one-uv-project-at-the-repo-root.md). How setup gets
+Python onto a fresh machine is open in the [bootstrap question][boot].
 
 ## Rejected
 
@@ -65,4 +66,6 @@ first runs.
 - [x] the language question is narrowed to how the Python is set up and bootstrapped
 - [x] `../questions/which-bash-version-must-this-repos-scripts-support.md` refers to this record
 - [ ] `CLAUDE.md` and `CONTRIBUTING.md` say new scripts that are run are written in Python, once
-      the setup question settles where they go
+      the project from decision 008 exists
+
+[boot]: ../questions/how-does-a-fresh-mac-get-uv-and-python-before-the-first-script-needs-them.md
