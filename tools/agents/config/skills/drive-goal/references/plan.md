@@ -1,26 +1,32 @@
 # Goal: [desired outcome]
 
 ## Next milestone
+
 [Smallest independently valuable shipped outcome]
 
-**Proof of done:** [Observable tests, deployment state, E2E checks, or user-visible outcome]
-**Current constraint:** [What most limits reaching the milestone]
-**Confidence / assumptions:** [Only material uncertainties]
+**Unblocks:** [who can do what once it ships]
+**Proof of done:** [observable tests, deployment state, end-to-end checks or user-visible outcome]
+**Current constraint:** [what most limits reaching the milestone]
+**Assumptions:** [only the uncertainties that could change the path]
+
+## In flight
+
+- [PR, branch or ticket]: [last remaining step]
 
 ## Execution path
 
 | Order | Ticket / step | State | Dependency / why this next | Evidence |
-| --- | --- | --- | --- | --- |
-| 1 | [link] | ready | [what it unlocks] | [link or pending] |
+| ----- | ------------- | ----- | -------------------------- | -------- |
+| 1     | [link]        | ready | [what it unlocks]          | [link or pending] |
 
 ## Decisions that shape the path
-- [Decision, rationale, and date; link to source where available]
+
+- [Decision, date, link to where it is recorded]
 
 ## Changes to the plan
-- [Only meaningful reorders, eliminated steps, newly discovered dependencies, or changed milestone definitions]
+
+- [Only meaningful reorders, dropped steps, new dependencies or changed milestone definitions]
 
 ## Next action
-[One precise action; owner or handoff if applicable]
 
-## Needs human input
-[Only unresolved cross-ticket decisions; otherwise None]
+[One precise action, with the brief for the session that will do it]
