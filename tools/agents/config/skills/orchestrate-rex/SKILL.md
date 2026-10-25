@@ -74,8 +74,12 @@ confusing report, comes before the next work item. Resolve it with the user befo
   Each PR branch has its own worktree, and the worker for that PR opens there. A ticket with two
   PRs in one repo gets two worktrees and two tabs. Two agents never work in the same worktree at
   once, and you never edit a worktree a worker owns. Your own scratch work, such as test-merging a
-  branch with trunk, goes in a worktree under `mktemp -d` that you remove afterwards. Tell the
-  worker the ticket, the PR, what to do, and what to report back. See the `rex` skill for the
+  branch with trunk, goes in a worktree under `mktemp -d` that you remove afterwards. Before a
+  worker opens in a new worktree, run whatever the repo's CLAUDE.md or CONTRIBUTING.md says a
+  fresh checkout needs, such as linking private modules or a first build. A worktree without it
+  fails the repo's checks for reasons that have nothing to do with the change, and the worker
+  stops at its first commit. Tell the worker the ticket, the PR, what to do, and what to report
+  back. See the `rex` skill for the
   commands. Start each worker with `claude --permission-mode auto`. In the default mode a worker
   stops at a prompt before it loads its first skill, and you can't answer that prompt for the user.
 - **Hearing from workers:** don't subscribe to idle notices. Each notice starts a new turn, and a
