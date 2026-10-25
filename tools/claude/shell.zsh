@@ -41,15 +41,13 @@ export DISABLE_TELEMETRY=1
 # ALIASES #
 ###########
 
-# TODO: consider auto after testing it at work for awhile (it uses more tokens)
-alias cc="claude --permission-mode bypassPermissions"
-alias ccc="claude --continue --permission-mode bypassPermissions"
+# cc.bash picks the permission mode for this machine and adds the repo's related folders
+# TODO: consider auto at home after testing it at work for awhile (it uses more tokens)
+# TODO: at work, consider a granular allowList if risky actions sneak through or redundant model-checking token use is too wasteful or slow
+alias cc="bash ${DOTFILES}/tools/claude/cc.bash"
+alias ccc="bash ${DOTFILES}/tools/claude/cc.bash --continue"
 
 if is_work; then
-  # TODO: consider granular allowList if risky actions sneak through or redundant model-checking token use is too wasteful or slow
-  alias cc="claude --permission-mode auto"
-  alias ccc="claude --continue --permission-mode auto"
-
   # Fallback to Vertex AI for current session only if I hit my subscription quota (Max 20x limit, I think)
   # See: https://recursion.atlassian.net/wiki/spaces/guildaicoding/pages/3943825434/Claude+Code+Installation
   ccy-vertex() {
