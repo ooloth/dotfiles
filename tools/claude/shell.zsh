@@ -19,6 +19,9 @@ export CLAUDE_CODE_ENABLE_TASKS=0
 
 export CLAUDE_CODE_ENABLE_TELEMETRY=0
 
+# A session started with --add-dir loads that folder's CLAUDE.md only when this is set
+export CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1
+
 # Default is 200, which I've hit in research-heavy sessions
 export CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=999
 
