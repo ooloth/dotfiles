@@ -232,23 +232,28 @@ def read_feed(repo: str, feed: Feed) -> FeedResult:
         return ReadFailed(feed.name, "gh is not installed", shown)
 
     done = subprocess.run(command, capture_output=True, text=True, check=False)
-    if done.returncode != 0:
+    return classify_gh_response(feed, done.returncode, done.stdout, done.stderr, shown)
+
+
+def classify_gh_response(
+    feed: Feed, returncode: int, stdout: str, stderr: str, command: str
+) -> FeedResult:
+    """Turn one `gh api --paginate --slurp` call into a definite result for the feed."""
+    if returncode != 0:
         # gh leaves a half-written body on stdout when a request fails, so only stderr is read
-        error = _GH_ERROR.search(done.stderr)
+        error = _GH_ERROR.search(stderr)
         if error is None:
-            return ReadFailed(
-                feed.name, f"gh exited {done.returncode}: {done.stderr.strip()[:300]}", shown
-            )
+            return ReadFailed(feed.name, f"gh exited {returncode}: {stderr.strip()[:300]}", command)
         message, status = error["message"], int(error["status"])
         if status in (403, 404) and message.startswith(feed.turned_off_message):
             return TurnedOff(feed.name, message)
-        return ReadFailed(feed.name, f"HTTP {status}: {message}", shown)
+        return ReadFailed(feed.name, f"HTTP {status}: {message}", command)
 
     try:
-        pages = _PAGES.validate_json(done.stdout)
+        pages = _PAGES.validate_json(stdout)
     except ValidationError as e:
         return ReadFailed(
-            feed.name, f"response is not a list of alerts: {e.errors()[0]['msg']}", shown
+            feed.name, f"response is not a list of alerts: {e.errors()[0]['msg']}", command
         )
 
     alerts = tuple(
@@ -258,7 +263,7 @@ def read_feed(repo: str, feed: Feed) -> FeedResult:
     )
     if len(alerts) != sum(len(page) for page in pages):
         raise AssertionError("an alert was dropped while flattening pages")
-    return Counted(feed.name, alerts, shown)
+    return Counted(feed.name, alerts, command)
 
 
 def scan(scanner: Scanner, project: Path) -> LocalScan:

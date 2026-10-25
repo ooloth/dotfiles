@@ -180,24 +180,6 @@ class TestFeeds:
         assert TURNED_OFF[feed] in line
         assert result.returncode == 0
 
-    # Each run reads all three feeds, so each feed gets its own status, covering 400-599 in 67 runs
-    @pytest.mark.parametrize("first", range(400, 600, 3))
-    def test_no_error_status_is_ever_counted(self, harness: Harness, first: int) -> None:
-        statuses = dict(zip(sorted(TURNED_OFF), range(first, first + 3), strict=False))
-        responses = {
-            feed: gh_error(min(status, 599), "Something went wrong")
-            for feed, status in statuses.items()
-        }
-
-        result = harness.run(responses)
-
-        for feed, status in statuses.items():
-            line = line_for(result.stdout, feed.split("/")[0])
-            assert "counted" not in line
-            assert "failed" in line
-            assert f"HTTP {min(status, 599)}" in line
-        assert result.returncode == 1
-
     def test_a_body_that_is_not_alerts_fails_instead_of_counting(self, harness: Harness) -> None:
         responses = all_clear()
         responses["dependabot/alerts"] = {"exit": 0, "stdout": json.dumps({"unexpected": True})}

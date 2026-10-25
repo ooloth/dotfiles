@@ -9,7 +9,8 @@
 #   a folder, which this would never run.
 # - the shared skills' tests, with pytest, which finds test_*.py at any depth under
 #   tools/agents/config/skills/ and exits 5 when it collects nothing. importlib mode keeps two
-#   skills' same-named test files from colliding on import.
+#   skills' same-named test files from colliding on import. hypothesis and pydantic are installed
+#   alongside, since skill tests load their scripts in-process and generate inputs for them.
 set -uo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -49,7 +50,7 @@ for test in "${tests[@]}"; do
 done
 
 printf '\n== skill tests\n'
-(cd "${repo}" && uv run --with pytest pytest --import-mode=importlib -q tools/agents/config/skills) ||
+(cd "${repo}" && uv run --with pytest --with hypothesis --with pydantic pytest --import-mode=importlib -q tools/agents/config/skills) ||
   failed+=("skill tests")
 
 if [[ ${#failed[@]} -gt 0 ]]; then
