@@ -61,6 +61,17 @@ carrying no memory of the discussion the instruction as it would be written and
 the input that would test it, withhold the expected answer, and read what it
 does.
 
+**A file a later session resumes from holds what that session would otherwise get wrong or redo,
+and nothing else.**
+A session that resumes from a file trusts what it finds there and skips what it does not, so each
+part of the file is tested by what goes wrong on resume without it. The user's goal in their own
+words stays, because the work was chosen against it. Each item's state stays, with when it was last
+read, so staleness shows. The reason behind an order stays, so the order is not reshuffled for
+nothing. What was left out stays, with why, so it is not read again and added back. Questions still
+open stay, so an answer can be matched to them. A history of changes, a record of past agreements
+and anything a ticket already holds fail the test, and each makes the file slower to read and
+quicker to go stale. A file saved after every reply makes ending a session cost nothing.
+
 **Usage patterns are described.**
 How users or callers interact with the system is documented. An agent
 understands the intended interaction model — what inputs the system accepts,
