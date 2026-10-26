@@ -24,6 +24,9 @@ cmd+shift+r to rename the session:
 | cmd+shift+m | zoom pane (toggle) |
 
 After editing it, run `rex config check`, then `rex config reload`. `rex keymap` lists what loaded.
+`config/init.lua` is linked into `~/.config/rex`, so saving it changes your running Rex at once,
+and `rex config check` runs it for real: both start the session saver below on your own server. To
+try a change to the saver without touching your sessions, run `tests/live_restore.py` instead.
 
 ## Sessions after a restart
 

@@ -690,6 +690,8 @@ class OneSaverAtATime(unittest.TestCase):
             finally:
                 first.kill()
                 first.wait()
+                if first.stdout is not None:
+                    first.stdout.close()
 
     def test_a_waiting_saver_takes_the_lock_once_the_first_exits(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -704,8 +706,11 @@ class OneSaverAtATime(unittest.TestCase):
             started = time.monotonic()
             lock = saver.acquire_lock(lock_path, timeout=10.0)
             first.wait()
+            first.stdout.close()
             self.assertIsNotNone(lock)
             self.assertLess(time.monotonic() - started, 10)
+            if lock is not None:
+                lock.close()
 
 
 # ----- The warning in Rex panes -----------------------------------------------------------------
