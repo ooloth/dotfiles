@@ -4,7 +4,7 @@ status: accepted
 date: 2026-10-25
 ---
 
-# 006 — A Python saver, run by `uv` and started from Rex's `init.lua`, saves and restores Rex sessions
+# 006 — A Python saver started from Rex's `init.lua` saves and restores Rex sessions
 
 ## Forced by
 
