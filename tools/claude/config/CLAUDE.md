@@ -307,9 +307,9 @@ result. Everything a comment links exists where its reader can open it before th
 posted, so a record the work adds is committed and pushed first. A record already on the default
 branch is linked there. One added by this work is linked by a permalink to the commit that added it
 (`blob/<sha>/<path>`), because on a feature branch the default branch will not have it until the
-PR merges, and a link to the branch stops working once the branch is deleted. Once such a link is
-posted, that branch takes the default branch by merging it, never by rebasing onto it: a rebase
-gives the linked commit a new hash, and the force-push leaves the old one reachable from nothing.
+PR merges, and a link to the branch stops working once the branch is deleted. This is one reason a
+branch never rebases (see Shell): a rebase gives the linked commit a new hash, and the force-push
+leaves the old one reachable from nothing.
 
 A comment is read by people outside this harness, so it names no skill, slash command or agent. It
 says what happened instead: "the design comment", not "`/design`"; "checked in a browser", not "the
@@ -516,6 +516,10 @@ Skip and say nothing if execution went smoothly.
 
 ## Shell
 
+- A branch always takes the default branch by merging it, never by rebasing onto it, even when a
+  reviewer asks for a rebase. A rebase gives every commit on the branch a new hash, so any hash
+  already cited in a review reply, ticket comment or permalink stops pointing at the branch, and
+  the force-push it needs rewrites history a reviewer has already read.
 - Put scratch work (spikes, throwaway repos, proofs of concept) in a directory from `mktemp -d`,
   never in bare `/tmp`.
 - I cannot open your scratchpad. Paste anything I must read or approve into the reply. Never tell
