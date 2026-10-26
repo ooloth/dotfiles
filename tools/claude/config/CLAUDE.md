@@ -365,9 +365,19 @@ are for work already approved.
 9. When you receive a commit signal, commit via `/commit`. After committing, you may move to
    describing your plan for the next change (steps 1-2) — but as always, stop and wait for
    approval before implementing it (step 3). A PR you draft stays a draft until an independent
-   self-review has run on it, in a fresh session that did not write the change, which you start
-   yourself (a new Rex tab, or a subagent given none of this session's context), and the user has
-   seen its findings. Only then is it marked ready for teammates to review.
+   self-review has run on it and the user has dealt with its findings. Only then is it marked ready
+   for teammates to review.
+   - **Offer to start the review; don't run it yourself.** Once the user accepts, open a fresh
+     session in a new terminal tab: a Rex tab when `REX_SESSION` is set, otherwise a tmux window in
+     the current tmux session. Name it after the PR and the review skill it runs (`review-code`,
+     `review-adversarial`, `review-pr-comments-converge`, …): a Rex tab as `👀 PR 573: review-code`,
+     a tmux window as `pr-573-review-code`. Give the reviewer the PR and nothing from this session.
+   - **The user works with the reviewer directly.** Don't read, verify, summarise or relay the
+     reviewer's findings, and don't ask the user about them. Being the go-between turns one
+     reviewer's report into a second, longer report the user has to untangle.
+   - **Track the review until it's resolved.** Every status report ends with a one-line list of the
+     reviews started and not yet resolved, each with its tab name, until the user says a review is
+     resolved. A PR with an unresolved review is not marked ready.
 10. Repeat for the remaining changes
 11. Before closing, ask: did this work establish an invariant that must always hold, or a reusable
     standard for approaching this kind of problem? If not, say nothing. If so, offer to record it in
