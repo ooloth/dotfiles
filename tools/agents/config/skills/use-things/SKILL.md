@@ -41,9 +41,9 @@ things search "<text>" --json -f uuid,title,status \
 
 `search` returns completed and cancelled items too, often hundreds, so filter it as above.
 
-Reads do not show headings: a project's to-dos are listed without the heading each sits under
-([things-cli#400](https://github.com/ryanlewis/things-cli/issues/400)). Say so when headings
-matter, rather than guessing.
+Each to-do in `things -p <project-uuid> --json` carries `headingTitle`, the heading it sits under,
+and `things show <uuid> --json` adds `headingUUID`. A project listing returns its to-dos without
+their notes, so read each to-do with `things show` when its notes matter.
 
 ## Writing
 
@@ -60,7 +60,9 @@ things complete <uuid> --json
 things cancel <uuid> --json
 ```
 
-- **Notes:** Things puts a newline before appended text itself, so start the text without one.
+- **Notes:** Things puts a newline before appended text itself, so start the text without one. A
+  note holds at most 10,000 characters: `things` refuses a longer one with "exceeds the
+  10000-character limit".
 - **Tags:** always pass `--strict-tags`. Without it, a tag that does not exist is dropped and the
   write still succeeds.
 - **Completing a project** completes every open to-do in it. Pass `things complete <uuid> --yes`
