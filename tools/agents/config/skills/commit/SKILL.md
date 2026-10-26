@@ -24,6 +24,11 @@ run, with no path filters or -k flags — and it passed; not the subset of tests
 relevant to the changed files — all the tests (c) `git diff HEAD` is byte-for-byte identical to the
 diff you saw when those runs completed. If any condition is false, run them now.
 
+When those runs were the worktree runs described under step 2, which held only `HEAD` plus what
+this commit will contain, condition (c) is met instead when `HEAD` is still that commit and
+`git diff HEAD -- <path>...` for the commit's paths is identical to what the worktree held. Changes
+to other files since then do not matter, because the worktree did not contain them.
+
 1. Run all relevant checks. Fix any errors that are mechanical and contained to files this commit
    will contain (e.g. formatting, unused imports, trivial lint), never to another session's files.
    If fixing an error would require touching new files, making design decisions, or adding
