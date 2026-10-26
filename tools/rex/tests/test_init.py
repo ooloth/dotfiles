@@ -12,6 +12,7 @@ key, and reads what the binding did: whether it handled the key, which way it as
 focus, where focus ended up, what it asked the app to do, and what it logged. A key bound to an
 action runs that action the way Rex does, with the app as its client. The fake session's tabs are rows of panes side by
 side, and its revision rises only when focus changes, as Rex's does.
+cmd+g opens lazygit beside the pane, and the fake records each split and zoom it asks for.
 Pressing <actions> instead lists every key bound to a named action, with its arguments, <action>
 runs the focus_pane_or_tab action as `rex do` would, and <sweep> presses ctrl+h or ctrl+l once in
 each of many layouts.
@@ -43,14 +44,17 @@ LUA = INTERPRETERS[0]
 # switch raise the revision, as if the server never settled. LAYOUT is each tab's pane count and
 # focused pane, such as "3:2,1:1", and ACTIVE is the active tab's position in it. APP is ok when an
 # app ran the key or action, none when none did, and fails when the app refuses to show a tab.
-# ORIGIN is how <action> was run: key, palette, cli or api.
+# ORIGIN is how <action> was run: key, palette, cli or api. CWD is the working directory the process
+# lookup reports, or empty for none. FAIL can also be new_split or zoom_block, or split_none,
+# split_two or split_same for a split that returns no block, two blocks, or the pane it split.
 HARNESS = r"""
 local init_lua, key, foreground, fail = arg[1], arg[2], arg[3], arg[4]
 local exec_mode = arg[5] or "ok"
 local layout, active, restless, cases = arg[6] or "3:2", tonumber(arg[7] or "1"), arg[8] == "true", arg[9]
 local app = arg[10] or "ok"
 local origin = arg[11] or "palette"
-local bindings, actions, focus_calls, logs, started, shown = {}, {}, {}, {}, {}, {}
+local cwd = arg[12] or ""
+local bindings, actions, focus_calls, logs, started, shown, opened = {}, {}, {}, {}, {}, {}, {}
 local fake
 
 local function reset(spec, active_tab)
@@ -84,7 +88,7 @@ rex = {
       assert(method == "process", "unexpected block method " .. method)
       assert(args.block_id == "block:test", "block_id not passed from ctx")
       if foreground == "<lookup fails>" then return nil, "lookup failed" end
-      return { foreground = { name = foreground } }
+      return { foreground = { name = foreground, cwd = cwd ~= "" and cwd or nil } }
     end,
   },
   exec = {
@@ -127,6 +131,25 @@ rex = {
         end
       end
       return { revision = fake.revision }
+    end,
+    new_split = function(args)
+      check_session(args)
+      local block = args.layout.block
+      local options = block.options
+      opened[#opened + 1] = string.format("new_split %s %s %s focus=%s %s shell=%s %s cwd=%s on_completion=%s",
+        args.anchor_id, args.direction, args.side, tostring(args.focus), block.flavor, tostring(options.shell),
+        table.concat(options.command, " "), tostring(options.cwd), tostring(options.exit and options.exit.on_completion))
+      if fail == "new_split" then return nil, "too many blocks" end
+      if fail == "split_none" then return { block_ids = {}, revision = 2 } end
+      if fail == "split_two" then return { block_ids = { "block:lazygit", "block:extra" }, revision = 2 } end
+      if fail == "split_same" then return { block_ids = { args.anchor_id }, revision = 2 } end
+      return { block_ids = { "block:lazygit" }, revision = 2 }
+    end,
+    zoom_block = function(args)
+      check_session(args)
+      opened[#opened + 1] = string.format("zoom_block %s zoom=%s", args.block_id, tostring(args.zoom))
+      if fail == "zoom_block" then return nil, "block gone" end
+      return { revision = 3 }
     end,
     focus_window = function(args)
       check_session(args)
@@ -229,8 +252,8 @@ if bindings[key] == nil then
   return
 end
 local handled, failure = press(key)
-io.write(string.format('{"handled":%s,"failure":%s,"focused":%s,"logs":%s,%s}', tostring(handled),
-  failure and string.format("%q", failure) or "null", list(focus_calls), list(logs), place()))
+io.write(string.format('{"handled":%s,"failure":%s,"focused":%s,"logs":%s,"opened":%s,%s}', tostring(handled),
+  failure and string.format("%q", failure) or "null", list(focus_calls), list(logs), list(opened), place()))
 """
 
 
@@ -254,6 +277,7 @@ class KeyOutcome:
     logs: list[str]
     place: Place
     shown: list[str]
+    opened: list[str]
 
 
 def shown_tab(tab: int) -> list[str]:
@@ -289,9 +313,20 @@ def press(
     active: int = 1,
     restless: bool = False,
     app: str = "ok",
+    cwd: str = "",
 ) -> KeyOutcome:
     outcome = run_harness(
-        key, foreground, fail, "ok", spec(tabs), str(active), str(restless).lower(), "", app
+        key,
+        foreground,
+        fail,
+        "ok",
+        spec(tabs),
+        str(active),
+        str(restless).lower(),
+        "",
+        app,
+        "palette",
+        cwd,
     )
     place = Place(outcome["tab"], outcome["pane"])
     return KeyOutcome(
@@ -301,6 +336,7 @@ def press(
         outcome["logs"],
         place,
         outcome["shown"],
+        outcome["opened"],
     )
 
 
@@ -561,6 +597,7 @@ class CmdKeys(unittest.TestCase):
             "cmd+shift+[BracketRight]": ("session.next", {}),
             "cmd+[Backslash]": ("pane.split.right", {}),
             "cmd+shift+m": ("pane.zoom", {}),
+            "cmd+g": ("lazygit", {}),
         }
         bound = action_bindings()
         for key, (action, args) in expected.items():
@@ -578,7 +615,70 @@ class CmdKeys(unittest.TestCase):
         )
 
     def test_no_other_keys_are_bound_to_actions(self) -> None:
-        self.assertEqual(len(action_bindings()), 12)
+        self.assertEqual(len(action_bindings()), 13)
+
+
+REPO = "/Users/someone/Repos/project"
+
+
+def split_beside(cwd: str) -> str:
+    """The split cmd+g asks for: lazygit to the right of the pressed pane, closing when it exits.
+    It starts through an interactive zsh, because PATH, EDITOR and XDG_CONFIG_HOME are set in .zshrc,
+    which the login shell Rex would otherwise use doesn't read."""
+    return (
+        "new_split block:test horizontal after focus=true com.superlogical.terminal.shell "
+        f"shell=none /opt/homebrew/bin/zsh -i -c lazygit cwd={cwd} on_completion=true"
+    )
+
+
+ZOOM_LAZYGIT = "zoom_block block:lazygit zoom=true"
+
+
+class Lazygit(unittest.TestCase):
+    def test_cmd_g_opens_lazygit_zoomed_in_the_pressed_panes_directory(self) -> None:
+        for program in ["zsh", "nvim", "fzf"]:
+            with self.subTest(program=program):
+                outcome = press("cmd+g", foreground=program, cwd=REPO)
+                self.assertTrue(outcome.handled)
+                self.assertEqual(outcome.opened, [split_beside(REPO), ZOOM_LAZYGIT])
+                self.assertEqual(outcome.logs, [])
+
+    def test_a_failed_process_lookup_still_opens_lazygit_without_a_directory(self) -> None:
+        outcome = press("cmd+g", foreground="<lookup fails>")
+        self.assertTrue(outcome.handled)
+        self.assertEqual(outcome.opened, [split_beside("nil"), ZOOM_LAZYGIT])
+        self.assertEqual(len(outcome.logs), 1)
+        self.assertIn("lookup failed", outcome.logs[0])
+
+    def test_a_process_with_no_directory_still_opens_lazygit_and_is_logged(self) -> None:
+        outcome = press("cmd+g", foreground="zsh", cwd="")
+        self.assertTrue(outcome.handled)
+        self.assertEqual(outcome.opened, [split_beside("nil"), ZOOM_LAZYGIT])
+        self.assertEqual(len(outcome.logs), 1)
+        self.assertIn("working directory", outcome.logs[0])
+
+    def test_a_failed_split_fails_with_the_reason_and_zooms_nothing(self) -> None:
+        outcome = press("cmd+g", foreground="zsh", cwd=REPO, fail="new_split")
+        self.assertFalse(outcome.handled)
+        self.assertIn("too many blocks", outcome.failure or "")
+        self.assertIn(REPO, outcome.failure or "")
+        self.assertEqual(outcome.opened, [split_beside(REPO)])
+
+    def test_a_failed_zoom_leaves_lazygit_open_and_is_logged(self) -> None:
+        outcome = press("cmd+g", foreground="zsh", cwd=REPO, fail="zoom_block")
+        self.assertTrue(outcome.handled)
+        self.assertEqual(outcome.opened, [split_beside(REPO), ZOOM_LAZYGIT])
+        self.assertEqual(len(outcome.logs), 1)
+        self.assertIn("block:lazygit", outcome.logs[0])
+        self.assertIn("block gone", outcome.logs[0])
+
+    def test_a_split_that_returns_anything_but_one_new_block_zooms_nothing(self) -> None:
+        for fail in ["split_none", "split_two", "split_same"]:
+            with self.subTest(fail=fail):
+                outcome = press("cmd+g", foreground="zsh", cwd=REPO, fail=fail)
+                self.assertFalse(outcome.handled)
+                self.assertIn("lazygit", outcome.failure or "")
+                self.assertEqual(outcome.opened, [split_beside(REPO)])
 
 
 class SessionSaver(unittest.TestCase):

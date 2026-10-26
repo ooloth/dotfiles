@@ -170,6 +170,75 @@ rex.bind("cmd+shift+[BracketRight]", "session.next")
 rex.bind("cmd+[Backslash]", "pane.split.right")
 rex.bind("cmd+shift+m", "pane.zoom")
 
+-- The working directory of the program running in BLOCK_ID, or nil and why it can't be read.
+local function program_directory(block_id)
+  local process, lookup_err = rex.block.call(terminal, "process", { block_id = block_id })
+  if process == nil then
+    return nil, "process lookup failed for " .. tostring(block_id) .. ": " .. tostring(lookup_err)
+  end
+  local cwd = process.foreground and process.foreground.cwd
+  if cwd == nil or cwd == "" then
+    return nil, "the program in " .. tostring(block_id) .. " has no readable working directory"
+  end
+  return cwd
+end
+
+-- Rex runs a command through a login shell that isn't interactive, which doesn't read .zshrc, where
+-- PATH, EDITOR and XDG_CONFIG_HOME are set (tools/zsh/config/core.zsh). Lazygit starts through an
+-- interactive zsh instead, so it finds itself, nvim and its config as it would in any other pane.
+local lazygit_command = { "/opt/homebrew/bin/zsh", "-i", "-c", "lazygit" }
+
+-- Like the full-screen tmux popup on prefix g (tools/tmux/config/tmux.conf): lazygit fills the tab,
+-- and quitting it closes its pane, which ends the zoom and leaves the tab as it was. The zoom names
+-- the new block, so it can't land on the pane lazygit was opened from.
+rex.action({
+  name = "lazygit",
+  title = "Lazygit",
+  description = "Open lazygit zoomed beside the focused pane, in that pane's directory.",
+  category = "Pane",
+  run = function(ctx)
+    assert(ctx.session_id ~= nil, "lazygit: ctx has no session_id")
+    assert(ctx.block_id ~= nil, "lazygit: ctx has no block_id")
+
+    -- Without a directory, lazygit starts in the home directory and says it isn't a repository.
+    local directory, directory_problem = program_directory(ctx.block_id)
+    if directory == nil then rex.log("lazygit: opening without a directory: " .. directory_problem) end
+
+    local split, split_err = rex.session.new_split({
+      session_id = ctx.session_id,
+      anchor_id = ctx.block_id,
+      direction = "horizontal",
+      side = "after",
+      focus = true,
+      layout = {
+        block = {
+          flavor = terminal .. ".shell",
+          label = "lazygit",
+          options = { shell = "none", command = lazygit_command, cwd = directory, exit = { on_completion = true } },
+        },
+      },
+    })
+    if split == nil then
+      error("lazygit: splitting " .. ctx.block_id .. " in " .. tostring(directory) .. " failed: " .. tostring(split_err), 0)
+    end
+
+    -- One block was asked for, so any other answer is a server bug.
+    local block_ids = split.block_ids
+    assert(type(block_ids) == "table", "lazygit: the split returned no block_ids")
+    assert(#block_ids == 1, "lazygit: the split returned " .. #block_ids .. " blocks, not 1")
+    local lazygit_id = block_ids[1]
+    assert(lazygit_id ~= ctx.block_id, "lazygit: the split returned the pane it split, " .. ctx.block_id)
+
+    local _, zoom_err = rex.session.zoom_block({ session_id = ctx.session_id, block_id = lazygit_id, zoom = true })
+    if zoom_err then
+      rex.log("lazygit: opened in " .. lazygit_id .. " but zooming it failed: " .. tostring(zoom_err))
+      return { outcome = "opened_unzoomed" }
+    end
+    return { outcome = "zoomed" }
+  end,
+})
+
+rex.bind("cmd+g", "lazygit")
 
 -- Session saver (tools/rex/saver.py): saves every session's layout and rebuilds the sessions after
 -- the server restarts. This file runs again on every reload and `rex config check`; the saver holds

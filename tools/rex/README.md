@@ -33,6 +33,13 @@ cmd+shift+r to rename the session:
 | cmd+\\ | split right |
 | cmd+shift+m | zoom pane (toggle) |
 
+cmd+g runs the `lazygit` action, which works like the full-screen tmux popup on prefix g. It splits
+the focused pane, starts lazygit in the directory of whatever runs there, and zooms lazygit to fill
+the tab. Quitting lazygit closes its pane, which ends the zoom. A zoom you had before pressing cmd+g
+does not come back, because the split ends it. Lazygit starts through an interactive zsh, because
+the login shell Rex uses for commands does not read `.zshrc`, where PATH, EDITOR and
+XDG_CONFIG_HOME are set.
+
 After editing it, run `rex config check`, then `rex config reload`. `rex keymap` lists what loaded.
 `config/init.lua` is linked into `~/.config/rex`, so saving it changes your running Rex at once,
 and `rex config check` runs it for real: both start the session saver below on your own server. To
