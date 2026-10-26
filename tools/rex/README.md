@@ -5,10 +5,20 @@ For now, manually download macOS application here: https://www.superlogical.com/
 ## Keybindings
 
 `config/init.lua` binds ctrl+h/j/k/l to move focus to the pane on the left, below, above or
-right, wrapping at the edge as tmux does. When nvim, vim, vi, view or fzf is in the foreground, the
-key goes to that program instead, the same way vim-tmux-navigator works in
-`tools/tmux/config/tmux.conf`. Neovim hands focus back to Rex at its own edge
-(`lua/config/plugins/specs/vim-tmux-navigator.lua` in `config.nvim`).
+right. At a tab's left or right edge, ctrl+h and ctrl+l move on to the previous or next tab,
+wrapping from the last tab to the first, and focus the pane on the side just entered, so the
+opposite key comes straight back. ctrl+j and ctrl+k wrap at the edge as tmux does.
+
+ctrl+h and ctrl+l run the `focus_pane_or_tab` action. Rex.app chooses which tab it shows, so the
+action asks the app to show the new tab, and only an action can ask the app for anything. The app
+refuses requests from the CLI unless Remote Control is on in its settings, so run from the CLI, as
+in `rex do focus_pane_or_tab direction=right`, the action still moves between panes but stops at a
+tab's edge.
+
+When nvim, vim, vi, view or fzf is in the foreground, the key goes to that program instead, the
+same way vim-tmux-navigator works in `tools/tmux/config/tmux.conf`. ctrl+j and ctrl+k pass the key
+on, and the action sends ctrl+h and ctrl+l on to the program. Neovim keeps the key at its own edge,
+because vim-tmux-navigator hands focus on only when `$TMUX` is set, and Rex does not set it.
 
 It also binds the cmd keys `tools/ghostty/config/config` sends to tmux to Rex's own actions, plus
 cmd+shift+r to rename the session:
