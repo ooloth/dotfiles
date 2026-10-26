@@ -141,6 +141,120 @@ class LeftSide(unittest.TestCase):
         self.assertEqual(self.left(plain), FOLDER_ICON + "plain")
 
 
+def repo_tracking_a_remote(parent: Path) -> Path:
+    """A repo on main with one committed file, pushed to a bare remote and tracking it."""
+    remote = parent / "remote.git"
+    git(parent, "init", "-q", "--bare", "-b", "main", str(remote))
+    repo = parent / "repo"
+    git(parent, "init", "-q", "-b", "main", str(repo))
+    (repo / "file").write_text("a\nb\nc\n")
+    git(repo, "add", "file")
+    git(repo, "commit", "-q", "-m", "initial")
+    git(repo, "remote", "add", "origin", str(remote))
+    git(repo, "push", "-q", "-u", "origin", "main")
+    return repo
+
+
+GREEN = "\033[32m"
+
+
+class GitStats(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
+        self.repo = repo_tracking_a_remote(self.tmp)
+        self.file = self.repo / "file"
+
+    def left(self, directory: Path) -> str:
+        return left_side(visible(status_line(directory, "120")))
+
+    def test_an_unpushed_commit_shows_ahead_by_one(self) -> None:
+        git(self.repo, "commit", "-q", "--allow-empty", "-m", "unpushed")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↑1")
+
+    def test_a_fetched_commit_not_yet_merged_shows_behind_by_one(self) -> None:
+        other = self.tmp / "other"
+        git(self.tmp, "clone", "-q", str(self.tmp / "remote.git"), str(other))
+        git(other, "commit", "-q", "--allow-empty", "-m", "theirs")
+        git(other, "push", "-q")
+        git(self.repo, "fetch", "-q")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↓1")
+
+    def test_staged_and_unstaged_edits_count_together_against_the_last_commit(self) -> None:
+        (self.repo / "staged").write_text("new\n")
+        git(self.repo, "add", "staged")
+        self.file.write_text("a\nX\nc\nd\n")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main +3 -1")
+
+    def test_untracked_files_add_no_lines(self) -> None:
+        (self.repo / "untracked").write_text("x\ny\n")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main")
+
+    def test_deletions_alone_show_no_insertions(self) -> None:
+        self.file.write_text("a\n")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main -2")
+
+    def test_all_four_counts_appear_in_order(self) -> None:
+        other = self.tmp / "other"
+        git(self.tmp, "clone", "-q", str(self.tmp / "remote.git"), str(other))
+        git(other, "commit", "-q", "--allow-empty", "-m", "theirs")
+        git(other, "push", "-q")
+        git(self.repo, "fetch", "-q")
+        git(self.repo, "commit", "-q", "--allow-empty", "-m", "ours")
+        self.file.write_text("a\nX\nc\nd\n")
+        self.assertEqual(
+            self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↑1 ↓1 +2 -1"
+        )
+
+    def test_insertions_are_green_and_deletions_red(self) -> None:
+        self.file.write_text("a\nX\nc\n")
+        line = status_line(self.repo, "120")
+        self.assertIn(f"{GREEN}+1", line)
+        self.assertIn(f"{RED}-1", line)
+
+    def test_a_linked_worktree_shows_its_own_changes(self) -> None:
+        worktree = self.tmp / "wt"
+        git(self.repo, "worktree", "add", "-q", "-b", "feat", str(worktree))
+        (worktree / "file").write_text("a\nb\nc\nd\n")
+        self.file.write_text("a\n")
+        self.assertEqual(self.left(worktree), FOLDER_ICON + "wt · " + BRANCH_ICON + "feat +1")
+
+    def test_detached_head_shows_line_counts_after_the_location(self) -> None:
+        git(self.repo, "checkout", "-q", "--detach")
+        self.file.write_text("a\nb\nc\nd\n")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · +1")
+
+    def test_a_branch_with_no_commits_shows_the_branch_without_counts_or_errors(self) -> None:
+        unborn = self.tmp / "unborn"
+        git(self.tmp, "init", "-q", "-b", "main", str(unborn))
+        (unborn / "file").write_text("x\n")
+        result = subprocess.run(
+            [str(SCRIPT)],
+            input=json.dumps({"workspace": {"current_dir": str(unborn)}}),
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, "")
+        self.assertTrue(
+            visible(result.stdout).startswith(FOLDER_ICON + "unborn · " + BRANCH_ICON + "main "),
+            result.stdout,
+        )
+
+    @settings(max_examples=25, deadline=None)
+    @given(
+        insertions=st.integers(min_value=0, max_value=3000),
+        deletions=st.integers(min_value=0, max_value=3),
+    )
+    def test_coloured_line_counts_still_end_at_the_right_edge(
+        self, insertions: int, deletions: int
+    ) -> None:
+        self.file.write_text("a\nb\nc\n"[: 6 - 2 * deletions] + "x\n" * insertions)
+        line = status_line(self.repo, "100")
+        self.assertEqual(len(visible(line)), 100 - edge_margin(), line)
+        self.assertTrue(visible(line).endswith(" " + RIGHT), line)
+
+
 class RightSide(unittest.TestCase):
     def test_agent_name_is_not_shown(self) -> None:
         with tempfile.TemporaryDirectory() as parent:

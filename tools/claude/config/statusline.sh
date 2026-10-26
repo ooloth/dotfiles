@@ -22,6 +22,7 @@ ctx="${used_k}k/${total_k}k"
 # long-context quality stops being near its best and then clearly drops. Quality follows the token
 # count, not the share of the window, so the thresholds only shrink to half and three quarters of a
 # window too small to reach them, which still warns before the window fills.
+GREEN=$'\033[32m'
 YELLOW=$'\033[33m'
 RED=$'\033[31m'
 RESET=$'\033[0m'
@@ -52,7 +53,36 @@ branch=$(git -C "$dir" branch --show-current 2>/dev/null || true)
 branch_icon=$'\xee\x9c\xa5' # U+E725 nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
 # Two spaces after it, because Rex draws this glyph wider than one cell and covers a single space
 folder_icon=$'\xef\x81\xbb' # U+F07B nf-fa-folder
-left="${folder_icon}  ${location}${branch:+ · $branch_icon $branch}"
+
+# Commits ahead of and behind the upstream as of the last fetch, then the lines inserted and deleted
+# by staged and unstaged changes against HEAD. git gives nothing here without an upstream or a first
+# commit, and each count is dropped when it is zero.
+divergence=$(git -C "$dir" rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null || true)
+read -r behind ahead <<<"$divergence" || true
+shortstat=$(git -C "$dir" diff HEAD --shortstat 2>/dev/null || true)
+insertions=$(sed -nE 's/.* ([0-9]+) insertions?\(\+\).*/\1/p' <<<"$shortstat")
+deletions=$(sed -nE 's/.* ([0-9]+) deletions?\(-\).*/\1/p' <<<"$shortstat")
+
+stats_plain=""
+stats_rendered=""
+append_stat() {
+  local count=$1 symbol=$2 colour=$3
+  [[ "$count" =~ ^[0-9]+$ && "$count" -gt 0 ]] || return 0
+  stats_plain+=" ${symbol}${count}"
+  stats_rendered+=" ${colour}${symbol}${count}${colour:+$RESET}"
+}
+append_stat "${ahead:-}" "↑" ""
+append_stat "${behind:-}" "↓" ""
+append_stat "$insertions" "+" "$GREEN"
+append_stat "$deletions" "-" "$RED"
+
+# On a detached HEAD the counts follow the location directly
+git_plain="${branch:+$branch_icon $branch}${stats_plain}"
+git_rendered="${branch:+$branch_icon $branch}${stats_rendered}"
+git_plain="${git_plain# }"
+git_rendered="${git_rendered# }"
+left_plain="${folder_icon}  ${location}${git_plain:+ · $git_plain}"
+left_rendered="${folder_icon}  ${location}${git_rendered:+ · $git_rendered}"
 
 right_plain="${model} · ${ctx}"
 right_rendered="${model} · ${color}${ctx}${color:+$RESET}"
@@ -61,8 +91,8 @@ right_rendered="${model} · ${color}${ctx}${color:+$RESET}"
 edge_margin=4
 gap=1
 if [[ "${COLUMNS:-}" =~ ^[0-9]+$ ]]; then
-  free=$((COLUMNS - edge_margin - ${#left} - ${#right_plain}))
+  free=$((COLUMNS - edge_margin - ${#left_plain} - ${#right_plain}))
   [[ "$free" -gt 1 ]] && gap="$free"
 fi
 
-printf "%s%*s%s\n" "$left" "$gap" "" "$right_rendered"
+printf "%s%*s%s\n" "$left_rendered" "$gap" "" "$right_rendered"
