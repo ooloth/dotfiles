@@ -89,3 +89,16 @@ back, and closes the session. It runs the action through `rex do`, so crossing i
 still checked by pressing the keys in the app.
 
 [006]: https://github.com/ooloth/dotfiles/blob/main/docs/decisions/006-a-python-saver-started-from-rex-init-lua-saves-and-restores-rex-sessions.md
+
+## Claude Code in a new tab
+
+`claude-tab.bash` opens a Rex tab running Claude Code through `tools/claude/cc.bash`, so the tab
+gets this machine's permission mode and the repo's related folders, as `cc` would give them:
+
+```sh
+bash "$DOTFILES/tools/rex/claude-tab.bash" [-s <session>] '<tab name>' <directory> [claude arguments]
+```
+
+The tab opens in `$REX_SESSION` unless `-s` names another session, and Rex's JSON for the new tab
+goes to stdout. Agents start every Claude tab this way, as the `use-rex` skill says, so no skill
+names a permission mode itself. Tests: `uv run tools/rex/tests/test_claude_tab.py`.
