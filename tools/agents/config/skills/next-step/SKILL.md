@@ -1,7 +1,7 @@
 ---
 name: next-step
-description: Find and keep revising the shortest safe path from a goal to a verified, shipped milestone, across tickets, repos and the running system. Use when the user names a goal (an epic, a milestone, an outcome or an existing plan file) and wants to know what to do next to reach it. Not for implementing a single ticket.
-argument-hint: '<goal: an epic, milestone, outcome, or a docs/plans/ file to resume>'
+description: Find and keep revising the shortest safe path from a goal to a verified, shipped milestone, across tickets, repos and the running system. Use when the user names a goal (an epic, a milestone, an outcome or an existing plan) and wants to know what to do next to reach it. Not for implementing a single ticket.
+argument-hint: '<goal: an epic, milestone, outcome, or a plans/ folder to resume>'
 disable-model-invocation: true
 ---
 
@@ -80,41 +80,53 @@ open PRs with their reviews and checks; git state, branches and worktrees; the r
 such as deploys, logs and daemons; and any other source the user names. Keep observed facts apart
 from assumptions.
 
-## The plan file
+## The plan
 
-The plan lives at `docs/plans/<goal-slug>.md` in the goal's main repo, which is the repo of the app
-the goal changes rather than its infrastructure repos. Sessions for the goal start in that repo.
+Each goal's plan lives in its own folder, `~/Repos/<org>/plans/<goal-slug>/`, where `<org>` is the
+folder that holds the goal's repos, such as `ooloth` or `recursionpharma`. `<org>` is the folder
+holding the repo's main checkout, which `git rev-parse --path-format=absolute --git-common-dir`
+names from inside any worktree. The folder sits outside
+every repo, so one copy serves every session, worktree and repo the goal touches, and nothing in it
+reaches a pull request. It holds `plan.md`, and anything else a later session needs, such as briefs
+and drafts waiting for the user's approval. Sessions for the goal start in the goal's main repo, so
+its instruction file loads.
 
-- **Template:** copy `references/plan.md` from this skill. Never edit the template itself.
-- **README:** if `docs/plans/README.md` does not exist, create it with this text:
+- **Template:** copy `references/plan.md` from this skill to `plan.md`. Never edit the template.
+- **README:** if `~/Repos/<org>/plans/README.md` does not exist, create it with this text:
 
   ```markdown
   # Plans
 
-  Each file here is the working plan for one goal: its next milestone, the proof that the milestone
-  is reached, the order of the work and the reasons for it. A plan is temporary. When its goal is
-  reached, what it found is moved into tickets, decision records or standards, and the file is
+  Each folder here is the working plan for one goal. Its `plan.md` holds the goal's next milestone,
+  the proof that the milestone is reached, the order of the work and the reasons for it, and the
+  folder also holds the briefs and drafts a later session needs. A plan is temporary. When its goal
+  is reached, what it found is moved into tickets, decision records or standards, and the folder is
   deleted.
 
-  The tracker holds each ticket's state. A plan's State column is rebuilt from the tracker each
-  session and is never the source of truth.
+  The tracker holds each ticket's state, and the goal's epic holds each milestone and order the
+  user agreed to. A plan's State column is rebuilt from the tracker each session and is never the
+  source of truth.
   ```
 
+- **Syncing:** when `plans/` is a git repository, pull before reading, and propose a commit and
+  push at the end of each session and whenever the order changes.
 - **What it holds:** the reasoning the tracker has no place for, which is the milestone, its proof,
   why this order, the assumptions it rests on and what was found. It links to tickets, PRs, designs
   and decision records rather than copying them. A decision is recorded through the project's
   decision process, and the plan links to that record.
+- **The epic comment:** each time the user agrees to the milestone and the order, draft a comment
+  for the goal's epic or parent ticket. The first states the milestone, its proof, and the order
+  with why each step comes where it does. Each later one says what changed and why. Save the draft
+  in the plan folder, and post it only after the user approves its text.
 - **Resuming:** rebuild the State and Evidence columns from fresh reads, and flag every place where
-  the file disagreed with them. Keep the reasoning unless new evidence replaces it.
-- **Committing:** propose a commit of the plan file at the end of each session and whenever the
-  order changes.
-- **Finishing:** when the goal is reached, propose where each finding in the plan should go, then
-  propose deleting the file.
+  the plan disagreed with them. Keep the reasoning unless new evidence replaces it.
+- **Finishing:** when the goal is reached, propose where each finding should go, then propose
+  deleting the folder.
 
 ## Loop
 
-1. **Orient.** Find the goal's plan file, or create one. Read the sources. List the work in flight.
-   Choose the milestone and its proof.
+1. **Orient.** Find the goal's plan folder, or create one. Read the sources. List the work in
+   flight. Choose the milestone and its proof.
 2. **Decide.** Choose the next action. Say why it comes next, what it unlocks and what evidence
    would change the order. When a decision needs the user, give the options, the evidence, your
    recommendation and what each option does to the path. Then wait for agreement.
