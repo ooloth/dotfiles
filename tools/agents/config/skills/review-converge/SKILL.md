@@ -115,10 +115,10 @@ quality gate throughout the run.
 
 ## Phase 2: Converge Loop
 
-Maintain a **decided list** across all rounds: every finding that has been auto-fixed or
-escalated in a prior round. Before classifying findings each round, filter out anything already
-on the decided list. This keeps review agents fresh and unbiased (they see everything anew) while
-preventing the coordinator from re-presenting already-handled items.
+Maintain a **decided list** across all rounds: every finding that has been auto-fixed, escalated or
+noted with no action in a prior round. Before classifying findings each round, filter out anything
+already on the decided list. This keeps review agents fresh and unbiased (they see everything anew)
+while preventing the coordinator from re-presenting already-handled items.
 
 Run up to **5 rounds**. Before each round, emit:
 
@@ -219,7 +219,7 @@ same issue at the same location appeared in a prior round after a fix was attemp
 Emit one of:
 
 ```
-Round N/5: [X] auto-fix, [Y] escalate, [Z] repeated
+Round N/5: [X] auto-fix, [Y] escalate, [Z] repeated, [W] noted
 ```
 
 Then:
@@ -336,6 +336,8 @@ Leave a blank line before and after every diff block so items don't run together
   - [before, max 3 lines]
   + [after, max 3 lines]
   ```
+
+- Noted, no action: `file:line`: [what the author may want to know, and your conclusion]
 ````
 
 - `file:line` — [issue] — [fix applied]
@@ -469,7 +471,8 @@ All changes are uncommitted. Run `git diff` to review before committing.
   The fix agent runs only what proves its own change.
 - **Proportional proof** — mutation-prove a guard test only for a fix that changes runtime
   behaviour, and defeat compilation caching when you do.
-- **No silent changes** — every change made must appear in the report with a diff snippet.
+- **No silent changes** — every change made must appear in the report with a diff snippet. A
+  `Noted, no action:` line changes nothing, so it has no diff.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
 - **Decided list** — never re-present a finding the coordinator has already classified.
