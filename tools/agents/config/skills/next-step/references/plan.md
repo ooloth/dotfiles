@@ -19,6 +19,14 @@
 | ----- | ------------- | ----- | -------------------------- | -------- |
 | 1     | [link]        | ready | [what it unlocks]          | [link or pending] |
 
+## Open questions
+
+- [question] Recommended: [option]. Answer: [pending, or the answer and its date]
+
+## Found
+
+- [finding, and where it came from]
+
 ## Decisions that shape the path
 
 - [Decision, date, link to where it is recorded]

@@ -82,45 +82,52 @@ from assumptions.
 
 ## The plan
 
-Each goal's plan lives in its own folder, `~/Repos/<org>/plans/<goal-slug>/`, where `<org>` is the
-folder that holds the goal's repos, such as `ooloth` or `recursionpharma`. `<org>` is the folder
-holding the repo's main checkout, which `git rev-parse --path-format=absolute --git-common-dir`
-names from inside any worktree. The folder sits outside every repo, so one copy serves every
-session, worktree and repo the goal touches, and nothing in it reaches a pull request. It holds
-`plan.md`, and anything else a later session needs, such as briefs and drafts waiting for the
-user's approval. Sessions for the goal start in the goal's main repo, so its instruction file loads.
+Each goal's plan lives in its own folder, `~/Repos/ooloth/content/plans/<folder name>/`, whatever
+org the goal belongs to. The `content` repo is the user's Obsidian vault, so the user reads plans
+there. If `~/Repos/ooloth/content` doesn't exist on this machine, say so and stop rather than
+putting the plan anywhere else. The folder sits outside every repo the goal touches, so one copy
+serves every session, worktree and repo, and nothing in it reaches a pull request. It holds
+`plan.md`, and anything else a later session needs, such as briefs and the epic-comment draft.
+Sessions for the goal start in the goal's main repo, so its instruction file loads.
 
 - **Folder name:** for a goal with a ticket, `<repo>-<issue number>-<short slug>`, such as
   `dotfiles-212-agents-carry-goals`, or `<jira key>-<short slug>`, so a resume finds the folder from
   the ticket the user names. For a goal with no ticket, a short slug of the outcome. Before creating
   a folder, check that no folder with that name exists.
 - **Template:** copy `references/plan.md` from this skill to `plan.md`. Never edit the template.
-- **README:** if `~/Repos/<org>/plans/README.md` does not exist, create it with this text:
+- **Line breaks:** write each paragraph and list item in the plan folder's files on one line.
+  Obsidian shows every line break, so text wrapped at a fixed width reads as ragged lines.
+- **README:** if `~/Repos/ooloth/content/plans/README.md` does not exist, create it with this text:
 
   ```markdown
   # Plans
 
-  Each folder here is the working plan for one goal. Its `plan.md` holds the goal's next milestone,
-  the proof that the milestone is reached, the order of the work and the reasons for it, and the
-  folder also holds the briefs and drafts a later session needs. A plan is temporary. When its goal
-  is reached, what it found is moved into tickets, decision records or standards, and the folder is
-  deleted.
+  Each folder here is the working plan for one goal. Its `plan.md` holds the goal's next milestone, the proof that the milestone is reached, the order of the work and the reasons for it, and the folder also holds the briefs and drafts a later session needs. A plan is temporary. When its goal is reached, what it found is moved into tickets, decision records or standards, and the folder is deleted.
 
-  The tracker holds each ticket's state, and the goal's epic holds each milestone and order the
-  user agreed to. A plan's State column is rebuilt from the tracker each session and is never the
-  source of truth.
+  The tracker holds each ticket's state, and the goal's ticket holds each milestone and order the user agreed to. A plan's State column is rebuilt from the tracker each session and is never the source of truth.
   ```
 
-- **Syncing:** when `plans/` is a git repository, pull before reading, and propose a commit and
-  push at the end of each session and whenever the order changes.
+- **Syncing:** Obsidian Sync carries `content/` between machines, and the user commits it to git.
+  Don't pull, commit or push in it. Read each file again just before changing it, because a session
+  on another machine may have changed it.
 - **What it holds:** the reasoning the tracker has no place for, which is the milestone, its proof,
   why this order, the assumptions it rests on and what was found. It links to tickets, PRs, designs
   and decision records rather than copying them. A decision is recorded through the project's
   decision process, and the plan links to that record.
 - **The epic comment:** each time the user agrees to the milestone and the order, draft a comment
-  for the goal's epic or parent ticket. The first states the milestone, its proof, and the order
-  with why each step comes where it does. Each later one says what changed and why. Save the draft
-  in the plan folder, and post it only after the user approves its text.
+  for the ticket the user named as the goal. The first states the milestone, its proof, and the
+  order with why each step comes where it does. Save it as `epic-comment-draft.md` in the plan
+  folder, and post it only after the user approves its text. Until it is posted, revise that draft
+  rather than starting another. Once it is posted, the next draft says what changed and why.
+- **Questions asked:** record each question you put to the user in the plan's `Open questions`
+  section, with your recommendation, and add the answer when it comes. A step that waits on the
+  user's go-ahead is a question too, so it goes there as well as in the step's State. That lets a
+  later session tell what "I accept your recommendations" covers.
+- **Approved, not done:** when the user approves a write that this session cannot make, say so in
+  that question's answer and keep the write in the next action until it is made.
+- **Reported, not observed:** when the user reports a step done and the tracker or git can't show
+  it, record its state as `done (reported, not observed)` with what the evidence shows instead,
+  and don't count it toward the milestone's proof.
 - **Resuming:** rebuild the State and Evidence columns from fresh reads, and flag every place where
   the plan disagreed with them. Keep the reasoning unless new evidence replaces it.
 - **Finishing:** when the goal is reached, propose where each finding should go, then propose
@@ -138,7 +145,8 @@ user's approval. Sessions for the goal start in the goal's main repo, so its ins
    such as findings from this plan and constraints from other tickets on the path.
 4. **Reconcile.** When the user returns, read the tracker, git state and verification evidence
    again. Update the order and the reasons where the evidence changed them, record the next action,
-   and save the plan before yielding.
+   and save the plan before yielding. When the order changes, read again the reason given for each
+   step that moved, and rewrite any that no longer fits its new place.
 
 ## Reporting format
 
