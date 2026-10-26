@@ -47,7 +47,7 @@ After running, answer two questions:
 Don't let this section distract from Steps 1–2. The primary goal is live evidence, not test design.
 Surface the gap, name the test type, move on.
 
-## Step 4 — Decide (internal, do not output yet)
+## Step 4 — Decide what to recommend
 
 Before writing the report, decide what you'll recommend. Ask yourself:
 
@@ -55,14 +55,12 @@ Before writing the report, decide what you'll recommend. Ask yourself:
 - Which missing tests from Step 3 are highest priority?
 - Is anything only verifiable in staging/prod — and if so, what should the user watch for?
 
-Produce a private prioritized list (3–5 bullets). Use these categories:
+Produce a prioritized list (3–5 bullets). Use these categories:
 
 - **Ship it** — all critical paths observed, no blockers
 - **Fix before shipping** — specific gap is a blocker; name it
 - **Add tests** — specific integration tests worth writing; name them
 - **Needs live infra** — name what to watch for in staging/prod
-
-Hold this list. Output nothing yet.
 
 ## Step 5 — Report
 
@@ -78,5 +76,3 @@ Now output the summary table followed immediately by the recommendations from St
 
 - Add integration test: ...
 - Ship it / Fix X before shipping / Watch for Y in staging
-
-> What would you like to do?

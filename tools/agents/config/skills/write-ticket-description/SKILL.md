@@ -287,7 +287,9 @@ paragraph renders as ragged short lines; write each paragraph and list item as o
 
 ---
 
-## Example: Good Ticket Description
+## Example (illustrative): Good Ticket Description
+
+Match its shape and voice, not its section lengths.
 
 ```markdown
 # Large order exports download without timing out

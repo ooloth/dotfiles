@@ -148,7 +148,7 @@ cannot be run by a reviewer before approving
 
 ## ✅ What
 
-- Adds an "Include archived items" toggle to all views — hidden when the dataset has none, with a tooltip explaining the concept
+- Adds an "Include archived items" toggle to all views, with a tooltip explaining what archived items are
 - Hides completely (no tooltip either) when the current dataset has no archived items
 - Since this toggle won't appear until datasets with archived items are in prod, it's safe to deploy backend and frontend together
 

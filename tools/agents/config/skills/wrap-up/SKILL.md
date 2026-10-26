@@ -114,8 +114,7 @@ Launch every subagent with the Agent tool's `model` set to `"opus"`. What a suba
 cannot appear as a finding, so a faster model that skims costs misses nobody sees.
 
 Tell every subagent to make its independent reads and searches several per turn, not one at a time,
-and to report in at most 400 words, one finding per line as `location | claim | why it misleads`.
-If more findings exist than fit, it says how many it left out.
+and to report one finding per line as `location | claim | why it misleads`, with nothing else.
 
 Check every subagent finding against the code before keeping it. Keep a list of the ones you reject
 and why.

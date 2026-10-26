@@ -1,7 +1,7 @@
 ---
 name: scan-standards
 description: Check whether a codebase upholds its standards — a specific theme or all themes in parallel. Use when asked to review conventions, check standards, or audit codebase health.
-argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | instrumentation | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | bash | python | rust | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | instrumentation | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | agent-harness | decision-making | developer-experience | user-experience | bash | css | python | rust | terraform | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
 ---
@@ -43,17 +43,18 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    Each subagent's prompt must include:
    - The full content of the relevant reference files
    - The tier definitions from README.md
-   - This shared task: "Use up to 50 subagents to explore the codebase. Identify violations of Must
-     standards, deviations from Should standards, and unresolved Consider tradeoffs. Focus
-     especially on patterns you would not want a future agent to spread. Return findings as a
-     structured list with severity (Must/Should/Consider), location, and recommendation. Report
-     separately any standard you could not evaluate against the code in front of you, quoting its
-     lead sentence and naming what you would have needed. A lead sentence whose truth depends on
-     knowing what recently changed cannot be checked against a codebase that has no diff, and
-     skipping it silently is how it stays that way."
+   - This shared task: "Read the files yourself and do not spawn subagents of your own. Identify
+     violations of Must standards, deviations from Should standards, and unresolved Consider
+     tradeoffs. Focus especially on patterns you would not want a future agent to spread. Return
+     findings as a structured list with severity (Must/Should/Consider), location, and
+     recommendation. Report separately any standard you could not evaluate against the code in
+     front of you, quoting its lead sentence and naming what you would have needed. A lead sentence
+     whose truth depends on knowing what recently changed cannot be checked against a codebase that
+     has no diff, and skipping it silently is how it stays that way."
 
    **Subagent 1 — Structure** (subagent_type: Explore, description: "review structure")
-   Inline: `~/.agents/standards/code-structure.md`, `~/.agents/standards/code-readability.md`
+   Inline: `~/.agents/standards/code-structure.md`, `~/.agents/standards/code-readability.md`,
+   `~/.agents/standards/user-experience.md`
 
    **Subagent 2 — Types & Correctness** (subagent_type: Explore, description: "review types and
    correctness")
@@ -77,16 +78,20 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    `~/.agents/standards/reliability.md`
 
    **Subagent 7 — Documentation & Release** (subagent_type: Explore, description: "review
-   documentation, API design, dependencies, deployment, and config")
+   documentation, API design, dependencies, deployment, config, agent harness, decisions and
+   developer experience")
    Inline: `~/.agents/standards/documentation.md`, `~/.agents/standards/api-design.md`,
    `~/.agents/standards/dependencies.md`, `~/.agents/standards/deployment.md`,
-   `~/.agents/standards/config.md`
+   `~/.agents/standards/config.md`, `~/.agents/standards/agent-harness.md`,
+   `~/.agents/standards/decision-making.md`, `~/.agents/standards/developer-experience.md`
 
    Note: include language-specific files in the relevant agents when applicable:
    `~/.agents/standards/bash.md` → Types & Correctness (if bash scripts);
    `~/.agents/standards/python.md` → Types & Correctness (if Python);
    `~/.agents/standards/rust.md` → Types & Correctness (if Rust);
    `~/.agents/standards/typescript.md` → Types & Correctness (if TypeScript);
+   `~/.agents/standards/css.md` → Structure (if the project has stylesheets);
+   `~/.agents/standards/terraform.md` → Documentation & Release (if the project has `.tf` files);
    `~/.agents/standards/cli-design.md` → Structure (if the project has a CLI binary).
 
 2. Wait for all subagents to return their results

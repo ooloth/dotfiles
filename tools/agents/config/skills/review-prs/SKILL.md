@@ -384,6 +384,7 @@ After user selects any action from the Post-Review Action Menu:
    # auth.py:78
    new_token = generate_refresh_token(user)
    # ⚠️ No check if old token has expired
+   ```
 ````
 
 **Previously Identified** (joining discussion):
@@ -394,6 +395,7 @@ After user selects any action from the Post-Review Action Menu:
 **Recommendation**: Request changes - address new expiry validation issue. Existing issues already
 have good feedback from alice.
 
+```
 ---
 
 📍 Key areas to review:
@@ -428,13 +430,17 @@ What would you like to do?
 2. Type "i" to add inline comments
 3. Select "1" for auth.py:78 (the NEW issue you found)
 4. See AI-suggested comments:
-   - Option 1: "I'm curious about the token expiry validation here. What happens if a user requests a refresh with an already-expired token?"
-   - Option 2: "How are we handling the case where old_token has expired? I'm wondering if this could be a security concern."
-   - Option 3: "Should we validate that old_token hasn't expired before issuing a new one? What's the intended behavior here?"
+   - Option 1: "I'm curious about the token expiry validation here. What happens if a user requests
+     a refresh with an already-expired token?"
+   - Option 2: "How are we handling the case where old_token has expired? I'm wondering if this
+     could be a security concern."
+   - Option 3: "Should we validate that old_token hasn't expired before issuing a new one? What's
+     the intended behavior here?"
 5. Select "1" to use first suggestion (or edit it, or write custom)
 6. Select "y" to add another
 7. Select "2" for auth.py:45-52 (alice already commented)
-8. Type custom: "Agree with alice's point about logging. I'm also curious if we should handle specific exception types differently here."
+8. Type custom: "Agree with alice's point about logging. I'm also curious if we should handle
+   specific exception types differently here."
 9. Select "n" when done
 10. Type "c" to submit as request changes with 2 inline comments
 11. Automatically return to PR list with continue prompt
@@ -466,8 +472,8 @@ What would you like to do?
 ## Notes
 
 - This command is **global** - run it from any directory
-- It searches across **all organization repos**
-- **Automatically filters out** repos specified in the query (e.g., myorg/ignored-repo)
+- It searches open `recursionpharma` PRs that request your review, skipping
+  `recursionpharma/build-pipelines`
 - Uses GraphQL API for private repo access (not `gh search prs`)
 - Groups PRs by type: Feature/Bug → Chores → Dependency Updates
 - Sorts PRs by age within each group (oldest first)
@@ -482,45 +488,3 @@ What would you like to do?
   - Seamless return to PR queue after posting review
 - Cache file is always fresh - run `/review-prs` again if PR list has changed
 - Formatting is handled by the skill for consistency
-
-## Implementation Details
-
-The `fetch-github-prs-to-review` skill (located at `~/.claude/skills/fetch-github-prs-to-review/`) handles all data fetching and processing:
-
-**What the skill does:**
-
-- Fetches PRs via GitHub GraphQL API
-- Calculates ages, time estimates, CI/review/conflict status
-- Counts unique reviewers and determines their latest review states
-- Groups PRs by category (Feature/Bug → Chores → Dependency Updates)
-- Sorts by age (oldest first) within each category
-- Formats output as markdown with proper spacing
-- Tracks viewing history (🆕 indicators)
-- Saves cache files:
-  - `~/.claude/.cache/fetch-github-prs-to-review.json` - PR lookup mapping (seq_num → repo#pr)
-  - `~/.claude/.cache/fetch-github-prs-to-review-history.json` - Viewing history
-- Returns formatted markdown ready to display
-
-**What the slash command does:**
-
-- Invokes the skill to fetch and display PR list
-- Uses TodoWrite to track session state throughout workflow
-- Manages interactive session with y/n/l/number navigation
-- When user selects a PR:
-  - Fetches PR data with reviews and comments via `gh pr view --json reviews,comments,...`
-  - Analyzes code changes via `gh pr diff`
-  - **Displays existing review context** (who reviewed, what they said, active discussions)
-  - Generates enhanced review avoiding duplication of existing feedback
-  - Shows inline code snippets with file:line references
-  - Provides post-review action menu (o/i/a/c/n/l)
-- Post-review actions:
-  - **o**: Opens PR in browser
-  - **i**: Interactive inline comment builder with **AI-assisted suggestions** (attaches comments to specific lines via gh api)
-  - **a/c**: Posts general review via gh CLI (approve/request changes)
-  - **n**: Skip to next PR
-  - **l**: Redisplay full queue
-- Automatically returns to PR queue after posting review
-- Clears todos when session ends
-
-See `~/.claude/skills/fetch-github-prs-to-review/SKILL.md` for complete skill documentation.
-```

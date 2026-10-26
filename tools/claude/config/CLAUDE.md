@@ -109,8 +109,9 @@ same turn, and say that you did.
 answers, list them as a numbered list (1., 2., 3.), never as bullets, so the user can reply by
 number. Each question appears once, in that list, at the end of the response. Every question
 raised anywhere in the response, including ones asked in passing in an explanation, is repeated in
-that list, so answering the list answers everything still open. Phrase each as yes/no, or ask for
-a letter; never offer an either/or that "yes" can answer.
+that list, so answering the list answers everything still open. Phrase each so a bare "yes" has one
+meaning: a yes/no question, or a choice between lettered options with your recommended letter
+named, which "yes" accepts.
 
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), stop and discuss those rather than quietly making an executive decision.
@@ -145,10 +146,8 @@ are the first Must in `decision-making.md` in the standards.
 
 ## Protect Your Context Window
 
-- Your context window has a limited budget and fills up quickly
-- Try to prevent that from happening by delegating as much exploration as you can to subagents
-- That will prevent intermediate/irrelevant details from accumulating and optimize for relevant
-  details only entering the conversation
+- Delegate exploration that would mean reading many files to subagents, so only conclusions enter
+  your context. Do a lookup of one or two known files yourself.
 - When spawning your own subagents, name what the task actually demands of a model before choosing
   one: how much of the reasoning is mechanical, what a wrong answer costs, and whether you would be
   able to tell it was wrong. Then pick the cheapest model that meets it. Cost rules a model out

@@ -88,7 +88,8 @@ as for staleness.
 
 Before the first round, understand the intent of the changes:
 
-- If scope is a **branch**: run `git log main..HEAD --oneline` and read the PR description if one
+- If scope is a **branch**: run `git log origin/<BASE>..HEAD --oneline` (the `<BASE>` from Phase
+  0.5) and read the PR description if one
   exists (`gh pr view` — skip if no PR yet)
 - If scope is a **PR number**: fetch the PR description with `gh pr view <number>`
 - If scope is a **file path**: read the file and any related context files
@@ -135,12 +136,12 @@ in Phase 1 and do not change between rounds. Jump straight to Step 3, supplying:
 - The reviewable file list from Phase 1
 - The problem statement from Phase 1 as the intent block
 
-Wait for `review-code` to return its merged findings in the standard format: Praise / Issues
-(Critical, Important, Minor) / Questions / Patterns Observed.
+Wait for `review-code` to return its findings in its Step 4 format: a verdict, then a findings
+table whose severities are `must`, `should`, `consider` and `?` (open design question).
 
 ### Step B — Classify Findings
 
-Filter out any finding already on the decided list. Then partition remaining Issue findings.
+Filter out any finding already on the decided list. Then partition the remaining findings.
 
 **Sort by provenance first.** Before deciding auto-fix versus escalate, establish for each finding
 whether this change introduced it or whether it is already true on the base ref. The review agents
@@ -180,10 +181,10 @@ The test is: _does applying this require the author to make a choice?_ If no, au
 - The fix would change a public API, data model, or contract
 - Correctly fixing it requires intent or context only the author has
 
-Note: severity and escalation status are independent. A Critical finding with an obvious correct
-fix is **auto-fix**. A Minor finding with two reasonable approaches is **escalate**.
+Note: severity and escalation status are independent. A `must` finding with an obvious correct
+fix is **auto-fix**. A `consider` finding with two reasonable approaches is **escalate**.
 
-Note also: provenance outranks severity. A Critical pre-existing defect is still pre-existing — it
+Note also: provenance outranks severity. A `must` pre-existing defect is still pre-existing — it
 goes in its one-line section, not into the loop. Severity decides how the user should feel about
 it, not whose change owns it.
 
@@ -196,7 +197,8 @@ it, not whose change owns it.
   goes to the author.
 - Every escalated item must present ≥2 concrete lettered action options, each with a clear
   outcome. If you find yourself writing an option like "(a) No action — just confirming
-  awareness", the item is not a genuine escalation; move it to Patterns Observed instead.
+  awareness", the item is not a genuine escalation. Give it one line under that round in the
+  report's **Changes made** section instead, starting `Noted, no action:`.
 - Mark your recommended option `(recommended)`.
 
 **Splitting rule:** If a finding contains both a mechanical sub-fix and a design sub-question,
@@ -366,13 +368,13 @@ speculating further.
 
 ## Escalated items
 
-These require a decision from you. Each lists the options; add a confidence parenthetical on any
-option where you have a strong lean (e.g. `(high confidence)`).
+These require a decision from you. Each lists the options, with my recommendation marked
+`(recommended)`.
 
 Reply with your decisions (e.g. "1b, 2a") and I'll apply them and do one final pass.
 
 1. `file:line` — [issue] — Why escalated: [reason]
-   - (a) [option] (high confidence)
+   - (a) [option] (recommended)
    - (b) [option]
    - (c) [option if applicable]
 

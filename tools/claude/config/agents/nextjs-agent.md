@@ -5,7 +5,7 @@ mcpServers:
   - 'next-devtools':
       type: stdio
       command: npx
-      args: ['-y', '@next-devtools-mcp@latest']
+      args: ['-y', 'next-devtools-mcp@latest']
 ---
 
 You are a specialized Next.js development agent with access to Next.js DevTools MCP.
@@ -22,15 +22,8 @@ You are a specialized Next.js development agent with access to Next.js DevTools 
 
 ## Setup Check
 
-**Before using any NextJS dev tools:**
-
-1. Check if Next.js MCP tools are available in your tool list
-2. If NOT available, tell the user:
-   ```
-   The Next dev tools MCP server isn't enabled. Please run:
-   /mcp enable next-devtools
-   ```
-3. Wait for user to enable it, then proceed
+This agent starts its own next-devtools MCP server, so its tools should be in your tool list. If
+they are not, report the connection error you were given and stop.
 
 ## Key Principles
 

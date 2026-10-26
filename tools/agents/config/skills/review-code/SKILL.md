@@ -87,12 +87,12 @@ The bar is a named question, not a topic. "Add a concurrency agent" is a topic. 
 retry path double-submit when the first attempt times out after the server committed?" is a
 question, and it earns an agent. If you cannot write the question down, do not add the agent.
 
-Add rather than enrich. Each agent returns 200 words and its top 3 findings, so appending a
-concern to an existing agent's prompt does not add coverage — it pushes that agent's fourth
-finding off the list. A new agent brings its own budget.
+Add rather than enrich. Each agent answers its own question, so a concern appended to an existing
+agent's prompt competes with that question for its attention. A new agent gives the concern a
+question of its own.
 
 Give an added agent the same shape as the eleven: the intent block, the file list, the provenance
-requirement, a word limit, and one question to answer. Record the question and why the eleven did
+requirement, and one question to answer. Record the question and why the eleven did
 not cover it — Step 4 reports it.
 
 Send a single message containing all Agent tool calls simultaneously. For each Agent tool call, set
@@ -101,6 +101,7 @@ the tool's `model` parameter to `"sonnet"`. Pass each agent:
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
 - Its specific instructions below
+- This line, verbatim: "Read the files yourself. Do not spawn subagents."
 - This provenance requirement, verbatim:
 
   > For every finding, state whether the change under review **introduced** it or whether it is
@@ -117,7 +118,7 @@ the tool's `model` parameter to `"sonnet"`. Pass each agent:
 ```
 Question: Does the implementation actually achieve the stated intent of this change?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -151,7 +152,7 @@ If implementation matches intent: report "Implementation aligns with stated inte
 ```
 Question: Is this the simplest correct solution to the stated problem, and is it the best available approach?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -163,7 +164,7 @@ Instructions:
 1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/code-readability.md` and `~/.agents/standards/code-structure.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
-4. Read related unchanged files and explore the broader codebase to understand existing patterns and available tools.
+4. Read the unchanged files the diff calls or imports, to see existing patterns and available utilities.
 
 Simplicity check — ask this first:
 What is the minimum code that correctly solves the stated problem? Compare it to what was written. If the answer is substantially less, that gap is the most important finding. Look for:
@@ -185,7 +186,7 @@ If the approach is well-chosen: report "Approach is well-suited to the problem."
 ```
 Question: Is the internal organisation of this code sound?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -210,7 +211,7 @@ If structure is sound, report "Structure and internal organisation look solid."
 ```
 Question: From the caller's perspective, is this code well-designed and discoverable?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -224,12 +225,6 @@ Instructions:
 3. Run the diff command from Context to read what changed.
 4. Find all documentation that could be affected: .md files, help text, docstrings, CLI --help output, code comments in changed files.
 
-Types & interfaces:
-
-API & CLI design:
-
-Documentation:
-
 For each issue: file:line | what's wrong | specific fix
 If the public surface is well-designed and documented, report "Public surface is well-designed and documented."
 ```
@@ -241,7 +236,7 @@ If the public surface is well-designed and documented, report "Public surface is
 ```
 Question: Does this code behave correctly across all inputs, states, and callers?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -266,7 +261,7 @@ Skip theoretical what-ifs — report actual problems in the code.
 ```
 Question: Is data protected from external threats, personal data mishandling, and write-time corruption?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -280,12 +275,6 @@ Instructions:
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. If database models or migrations changed, read them in full.
 
-Security:
-
-Privacy:
-
-Data integrity:
-
 For each issue: file:line | what's wrong | severity (Critical/High/Medium/Low) | specific fix
 Only report actual violations, not theoretical what-ifs.
 If no concerns found, report "No data safety concerns identified."
@@ -298,7 +287,7 @@ If no concerns found, report "No data safety concerns identified."
 ```
 Question: How does this code behave under real-world conditions — load, failure, and concurrency?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -311,12 +300,6 @@ Instructions:
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. Check how similar operations are handled in unchanged files.
-
-Performance:
-
-Concurrency:
-
-Reliability:
 
 Observability:
 - If this fails in production, would we know? Is the failure diagnosable from logs alone?
@@ -333,7 +316,7 @@ If no concerns found, report "No runtime behaviour concerns identified."
 ```
 Question: Is the test suite trustworthy and sufficient to catch regressions in this change?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -368,7 +351,7 @@ If tests are well-designed, report "Test design is solid and coverage is appropr
 ```
 Question: Is this change ready to ship responsibly — dependencies justified, deployment safe, config correct?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -382,12 +365,6 @@ Instructions:
 3. Run the diff command from Context to read what changed.
 4. If package files changed, read them in full. If config or env handling changed, read those files in full.
 
-Dependencies (if package files changed):
-
-Deployment safety:
-
-Configuration (if config or env handling changed):
-
 For each issue: file:line | what's wrong | specific recommendation
 If no concerns found, report "No release readiness concerns identified."
 ```
@@ -399,7 +376,7 @@ If no concerns found, report "No release readiness concerns identified."
 ```
 Question: Does this code use the language correctly, following the project's established idioms?
 
-**Return findings in 200 words or fewer. Report your top 3 issues only, ordered by severity. If nothing found, say so in one sentence.**
+**Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
 Context:
 [insert synthesized intent block]
@@ -426,7 +403,7 @@ If no language-specific issues found, report "No language-specific concerns iden
 ```
 Question: For each failure path this change adds or moves — a throw, a non-zero exit, an error return, a new branch that gives up — is it reachable from the program's real entry point, and when it fires, what does the process observably do?
 
-**Return findings in 250 words or fewer. Answer the question path by path first, then report your top 3 issues ordered by severity. If the change adds no failure path, say so in one sentence and stop.**
+**Answer the question path by path first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change adds no failure path, say so in one sentence and stop.**
 
 Context:
 [insert synthesized intent block]
@@ -465,11 +442,13 @@ claims — most likely to be subtly wrong — and the ones a reviewer would have
 
 **Apply the results:**
 
-- Strike claims that don't survive the check — remove them entirely, don't soften them.
+- Strike claims that don't survive the check rather than softening them, and list each one under
+  **Dropped** in Step 4.
 - Correct claims that are partially right — state what's actually true.
 - Merge duplicate findings — when multiple agents flag the same issue, keep the most precise version
   and note the convergence.
-- Drop findings you cannot verify and that are speculative rather than grounded in the diff.
+- Drop findings you cannot verify and that are speculative rather than grounded in the diff, and
+  list each one under **Dropped** in Step 4.
 
 Only carry verified findings into Step 4.
 
@@ -520,6 +499,11 @@ category — [what recurs] — close it by [adding a standing 11th agent for X /
 
 ### Looks Good
 [One sentence: what the change gets right, or which concern areas came back clean.]
+
+### Dropped
+[Omit this section entirely if nothing was dropped.]
+
+- [the claim, and its agent]: [why it was struck or could not be verified]
 ```
 
 **Formatting rules:**

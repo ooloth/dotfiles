@@ -1,6 +1,6 @@
 ---
 name: review-completion
-description: Confirm a task was fully executed and the change works — static completeness audit followed by empirical runtime evidence. TRIGGER when asked to confirm a task is complete, prove it works, or verify a change is ready to ship.
+description: Confirm a task was fully executed and the change works — static completeness audit followed by empirical runtime evidence. TRIGGER when asked to confirm a task is complete or that a change is ready to ship.
 argument-hint: '[task number, issue, or description — defaults to current branch]'
 effort: high
 model: opus

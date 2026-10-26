@@ -36,8 +36,8 @@ trekker epic complete EPIC-1                    # Archive epic + all tasks
 Before reading any files or writing code, record the problem, approach, and done-when criteria
 somewhere a future agent can find it — context loss can happen anytime.
 
-- **Known ticket exists** (GitHub Issue, Linear, Jira, etc.): add a comment there. Skip
-  `trekker task create`.
+- **Known ticket exists** (GitHub Issue, Linear, Jira, etc.): draft the comment, show it to the
+  user, and post it once they approve the wording. Skip `trekker task create`.
 - **No ticket exists** (spontaneous idea): create a trekker task:
 
 ```bash
@@ -160,14 +160,12 @@ described only in the epic — if it's worth mentioning, it's worth tracking as 
 ### After closing, present next options
 
 ```
-Task complete! What's next?
+Task complete.
 
-1. Continue with this epic:
-   - TREK-N: [next unblocked task]
+A. Continue this epic: TREK-N, [next unblocked task]
+B. Pick from other ready work (`trekker ready`)
 
-2. Other ready work: trekker ready
-
-3. Something else?
+1. Which should I start: A or B?
 ```
 
 ## Starting a New Session

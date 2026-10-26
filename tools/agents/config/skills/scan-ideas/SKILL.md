@@ -33,15 +33,9 @@ Possible sources of tracked work ideas include:
 2. Use as many subagents as you need to explore all relevant code paths and documentation to
    understand and validate each potential work item and its relevance to the project's current
    and ideal future state
-3. Proactively answer every question and follow-up question that occurs to you by exploring the
-   codebase and anything else that would help you
-4. If a potential work item seems stale or otherwise a poor fit for the current codebase and docs,
-   use as many subagents as you need to proactively investigate whatever would help you and the user
-   decide whether this work should be redefined, cancelled, etc
-5. Wait for all subagents to return their results
-6. Ensure you understand the results you have received and are equipped to compare their relative
-   importance (explore specific areas of the codebase yourself if that will help you)
-7. Once you understand each task and its present day validity, this phase is done
+3. Investigate until you can say, for each item, whether it still applies to the current code and
+   docs and how it compares with the others. For items that look stale, gather enough evidence to
+   recommend redefining or cancelling them.
 
 ### Phase 3: Prioritize all work items
 

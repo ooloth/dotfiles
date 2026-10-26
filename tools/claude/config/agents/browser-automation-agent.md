@@ -24,28 +24,6 @@ This agent starts its own Playwright MCP server, so its `mcp__playwright__*` too
 your tool list. If they are not, report the connection error you were given and stop. Do not fall
 back to headless Chrome through Bash.
 
-## Using Browser Automation Tools
-
-When an MCP server with browser automation is enabled, you'll have access to tools for:
-
-- Starting browser sessions
-- Navigating to URLs
-- Capturing screenshots
-- Checking console errors/warnings
-- Clicking elements
-- Typing into forms
-- Executing JavaScript
-- Closing browser sessions
-
-The MCP tools are self-documenting - their descriptions explain parameters and usage.
-
-## Common Tasks
-
-- Verify pages load correctly → Navigate and check response
-- Check for console errors → Get console messages
-- Test visual appearance → Capture screenshots
-- Multi-step workflows → Chain multiple browser actions
-
 ## Output Format
 
 Always structure your response as:

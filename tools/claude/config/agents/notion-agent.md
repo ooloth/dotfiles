@@ -20,21 +20,4 @@ You are a specialized Notion workspace agent.
 
 ## Using Notion MCP Tools
 
-When the MCP server is enabled, you'll have access to tools like:
-
-- `notion-search` - Search workspace
-- `notion-fetch-page` - Get page content
-- `notion-create-page` - Create pages with full markdown support
-- `notion-update-page` - Update existing pages
-- `notion-query-database` - Query database rows
-- And more...
-
-The MCP tools are self-documenting - their descriptions explain parameters and usage.
-
-## Common Tasks
-
-- Find pages/databases → Use `notion-search`
-- Inspect page structure → Use `notion-fetch-page`
-- Create formatted pages → Use `notion-create-page` (supports full markdown)
-- Update properties → Use `notion-update-page`
-- Query database rows → Use `notion-query-database`
+Use the `notion` MCP tools; their descriptions give parameters and usage.

@@ -9,6 +9,6 @@ description: Load the universal engineering standards relevant to the change at 
 2. List `~/.agents/standards/` to see all available standards files
 3. Load all files with a theme relevant to the current task. Include any language-specific file
    (e.g. `rust.md`, `python.md`) that matches the language(s) used in the current repository
-4. If you notice a gap in the available guidance, feel free to mention what should be added (if no
-   gap, say nothing)
+4. If you notice a gap in the available guidance, say what should be added. If there is none, say
+   nothing.
 5. Proactively apply the standards

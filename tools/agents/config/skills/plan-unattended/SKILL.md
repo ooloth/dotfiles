@@ -54,7 +54,8 @@ comments.
 
 ## 1. Check the inputs
 
-Read the ticket with all its comments (`gh issue view <n> -R <repo> --json title,body,comments`).
+Read the ticket with all its comments (`gh issue view <n> -R <repo> --json
+title,body,comments,parent`). When `parent` is set, read that issue with its comments too.
 If it already has an approach or design comment, escalate: this skill plans tickets that have none.
 
 ## 2. Approach: three lenses, reconciled, then challenged
