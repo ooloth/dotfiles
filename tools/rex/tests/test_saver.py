@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pydantic==2.14.1", "result==0.17.0", "hypothesis", "beartype"]
+# dependencies = ["pydantic==2.14.1", "hypothesis", "beartype"]
 # ///
 """Tests for tools/rex/saver.py, which saves Rex's sessions and restores them after a restart.
 
@@ -31,12 +31,12 @@ from typing import Any
 from beartype.claw import beartype_package
 from hypothesis import given, settings
 from hypothesis import strategies as st
-from result import Err, Ok
 
 REX_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REX_DIR))
 beartype_package("saver")
 import saver  # noqa: E402
+from saver import Err, Ok  # noqa: E402
 
 SHELL_ZSH = REX_DIR / "shell.zsh"
 SHELL_FLAVOR = "com.superlogical.terminal.shell"
@@ -209,7 +209,7 @@ def pane(label: str) -> saver.PaneLabel:
 def parsed(view: dict, cwds: dict[str, str]) -> saver.SavedSession:
     result = saver.parse_session(view, cwds)
     assert isinstance(result, Ok), result
-    return result.ok_value
+    return result.value
 
 
 def snapshot_of(*sessions: saver.SavedSession, saved_at: str = "2026-10-25T00:00:00Z"):
@@ -281,8 +281,8 @@ class ParsingRexInput(unittest.TestCase):
         result = saver.parse_session(value, {})
         self.assertIsInstance(result, Ok | Err)
         if isinstance(result, Err):
-            self.assertIsInstance(result.err_value, saver.SessionParseError)
-            self.assertTrue(result.err_value.reason)
+            self.assertIsInstance(result.error, saver.SessionParseError)
+            self.assertTrue(result.error.reason)
 
     @settings(max_examples=200, deadline=None)
     @given(json_values)
@@ -299,8 +299,8 @@ class ParsingRexInput(unittest.TestCase):
         view["windows"][0]["layers"][0]["layout"]["split"]["ratio"] = 1.5
         result = saver.parse_session(view, cwds)
         assert isinstance(result, Err), result
-        self.assertIn("ratio", result.err_value.reason)
-        self.assertEqual(result.err_value.session_id, view["session_id"])
+        self.assertIn("ratio", result.error.reason)
+        self.assertEqual(result.error.session_id, view["session_id"])
 
     def test_a_relative_directory_is_dropped(self) -> None:
         view, cwds = two_pane_view()
@@ -316,7 +316,7 @@ class ParsingRexInput(unittest.TestCase):
         view, cwds = simulate_create({"label": "deep", "initial_windows": [{"layout": node}]})
         result = saver.parse_session(view, cwds)
         assert isinstance(result, Err), result
-        self.assertIn("deep", result.err_value.reason)
+        self.assertIn("deep", result.error.reason)
 
     def test_osc7_urls_decode_to_paths(self) -> None:
         cases = {

@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pydantic==2.14.1", "result==0.17.0"]
+# dependencies = ["pydantic==2.14.1"]
 # ///
 """Save every Rex session's layout, and rebuild the sessions after the Rex server restarts.
 
@@ -39,15 +39,32 @@ from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import IO, Any, Literal, NewType
+from typing import IO, Any, Generic, Literal, NewType, TypeVar
 from urllib.parse import unquote, urlsplit
 
 from pydantic import BaseModel, ConfigDict, ValidationError, model_validator
-from result import Err, Ok, Result
 
 # ================================================================================================
 # DOMAIN: pure logic, no I/O. Becomes `domain.py` when this moves into the repo's project (#203).
 # ================================================================================================
+
+# Covariant: a frozen dataclass is read-only, so an Ok[Snapshot] is an Ok[Snapshot | None].
+T = TypeVar("T", covariant=True)
+E = TypeVar("E", covariant=True)
+
+
+@dataclass(frozen=True)
+class Ok(Generic[T]):
+    value: T
+
+
+@dataclass(frozen=True)
+class Err(Generic[E]):
+    error: E
+
+
+# An expected failure is returned as `Err`, never raised.
+Result = Ok[T] | Err[E]
 
 SessionLabel = NewType("SessionLabel", str)
 WindowLabel = NewType("WindowLabel", str)
@@ -829,7 +846,7 @@ class Saver:
             case AlreadyRestored():
                 self.log("restore skipped: this server was already restored into")
                 if isinstance(latest, Ok):
-                    self.last_written = latest.ok_value
+                    self.last_written = latest.value
                 return
             case NothingSaved():
                 self.log("restore skipped: nothing saved")
@@ -838,13 +855,11 @@ class Saver:
                 self.problem("snapshot_unreadable", reason)
             case Restore(sessions=sessions):
                 assert marker != self.instance_id, "never restore into a server twice"
-                saved_at = (
-                    latest.ok_value.saved_at if isinstance(latest, Ok) and latest.ok_value else "?"
-                )
+                saved_at = latest.value.saved_at if isinstance(latest, Ok) and latest.value else "?"
                 self.log(f"restoring {len(sessions)} session(s) saved at {saved_at}")
                 self.restore_sessions(sessions)
         if isinstance(latest, Ok):
-            self.last_written = latest.ok_value
+            self.last_written = latest.value
         write_atomic(marker_path, f"{self.instance_id}\n")
 
     def restore_sessions(self, sessions: Sequence[SavedSession]) -> None:

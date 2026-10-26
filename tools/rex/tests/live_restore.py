@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pydantic==2.14.1", "result==0.17.0"]
+# dependencies = ["pydantic==2.14.1"]
 # ///
 """Restart a throwaway Rex server and check that tools/rex/saver.py brings its sessions back.
 
@@ -127,7 +127,7 @@ class Server:
 def layout_of(view: dict[str, Any], cwds: dict[str, str]) -> saver.SavedSession:
     result = saver.parse_session(view, cwds)
     assert isinstance(result, saver.Ok), result
-    return result.ok_value
+    return result.value
 
 
 def resolved(layout: saver.Layout) -> saver.Layout:
@@ -216,7 +216,7 @@ def run(server: Server) -> None:
         if not latest.exists():
             return []
         loaded = saver.load_snapshot(latest.read_text())
-        return [s.label for s in loaded.ok_value.sessions] if isinstance(loaded, saver.Ok) else []
+        return [s.label for s in loaded.value.sessions] if isinstance(loaded, saver.Ok) else []
 
     check(
         "both sessions are saved within a few seconds",
@@ -227,7 +227,7 @@ def run(server: Server) -> None:
     before = {v["label"]: v for v in server.sessions()}
     loaded = saver.load_snapshot(latest.read_text())
     assert isinstance(loaded, saver.Ok)
-    saved: dict[str, saver.SavedSession] = {s.label: s for s in loaded.ok_value.sessions}
+    saved: dict[str, saver.SavedSession] = {s.label: s for s in loaded.value.sessions}
     check(
         "the saved layout matches the live one, with directories",
         resolved(saved["work"].windows[0].layout)
