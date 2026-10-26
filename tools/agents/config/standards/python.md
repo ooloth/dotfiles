@@ -37,8 +37,12 @@ CLI args) passes through a Pydantic model before entering domain code. Nothing
 unvalidated crosses the boundary.
 
 **Results are returned, not raised.**
-The `result` library (`Ok`/`Err`) is used instead of exceptions for expected failure
-paths. `try/except` is reserved for system boundaries and truly unexpected errors.
+An expected failure is returned as a sum type, not raised: either a generic
+`Ok[T] | Err[E]` made of two frozen dataclasses, or a union of named outcomes such as
+`AlreadyRestored | NothingSaved | Restore`, matched exhaustively like any other union.
+The `Ok`/`Err` pair is defined once in the project, in about 15 lines, rather than taken
+from a library. `try/except` is reserved for system boundaries and truly unexpected
+errors.
 
 **Import architecture is enforced by `import-linter` in CI.**
 A `.importlinter` contract defines which packages may import from which others,
@@ -98,8 +102,8 @@ feature. Nothing here is covered by the application standards because nothing th
 Exhaustiveness checking needs a sealed union, and a script branching over string literals has none.
 The readability argument still holds; the type argument does not.
 
-Not required of a script, and cluttering when added: Pydantic models at the boundary, the `result`
-library, `NewType` wrappers, frozen dataclass domain types, `import-linter` contracts, `beartype`.
+Not required of a script, and cluttering when added: Pydantic models at the boundary, an `Ok`/`Err`
+pair, `NewType` wrappers, frozen dataclass domain types, `import-linter` contracts, `beartype`.
 Argparse `choices` is the boundary validation a CLI needs.
 
 ## In scope
