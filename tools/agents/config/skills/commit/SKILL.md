@@ -24,15 +24,15 @@ run, with no path filters or -k flags — and it passed; not the subset of tests
 relevant to the changed files — all the tests (c) `git diff HEAD` is byte-for-byte identical to the
 diff you saw when those runs completed. If any condition is false, run them now.
 
-1. Run all relevant checks. Fix any errors that are mechanical and contained to files already in the
-   diff (e.g. formatting, unused imports, trivial lint). If fixing an error would require touching
-   new files, making design decisions, or adding non-trivial logic — stop, report what failed and
-   why, and wait for approval before proceeding. Discover what checks apply by consulting the
-   project's CONTRIBUTING.md, Justfile and CLAUDE.md.
+1. Run all relevant checks. Fix any errors that are mechanical and contained to files this commit
+   will contain (e.g. formatting, unused imports, trivial lint), never to another session's files.
+   If fixing an error would require touching new files, making design decisions, or adding
+   non-trivial logic — stop, report what failed and why, and wait for approval before proceeding.
+   Discover what checks apply by consulting the project's CONTRIBUTING.md, Justfile and CLAUDE.md.
 2. Run the full test suite — the same command CI runs, with no path filters. Not just the tests you
    think are relevant to the changed files — all the tests. Do not run only the tests for changed
-   files. Apply the same fix rule: mechanical failures in files already in the diff only; escalate
-   anything else.
+   files. Apply the same fix rule: mechanical failures in files this commit will contain only;
+   escalate anything else.
 
    When a check from step 1 or a test from step 2 fails only in files this commit leaves out, such
    as another session's uncommitted work in the same checkout, that failure is not a reason to stop
