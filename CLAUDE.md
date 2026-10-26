@@ -48,8 +48,6 @@ deprecated `features/install/zsh/deprecated/symlinks.zsh` instead.
 
 When making changes to this repository:
 
-1. **Verify file existence** before referencing scripts or commands
-1. **Use actual file paths** from the repository structure
 1. **Update all relevant README.md files** after making any user-facing changes
 1. **Update all relevant project-level CLAUDE.md files** after clarifying any Claude-specific
    workflows
@@ -59,5 +57,3 @@ When making changes to this repository:
 - The commands that check a change, and how to run what you changed, are in
   [CONTRIBUTING.md](CONTRIBUTING.md). Read it before running anything, and run every check it lists
   before reporting a change as done.
-- Run `symlinks` alias to recreate all symlinks
-- Test individual scripts by sourcing them

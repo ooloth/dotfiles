@@ -7,10 +7,14 @@ VisiData is a TUI, so use tmux to run it and verify changes.
 ### Start a test session
 
 ```bash
-printf 'name,role,salary,active\nAlice,Engineer,120000,true\nBob,Manager,95000,false\n' > /tmp/vd_test.csv
-tmux new-window -n "vd-test" "VD_CONFIG=$HOME/.config/visidata/config.py vd /tmp/vd_test.csv"
+dir="$(mktemp -d)"; echo "$dir"
+printf 'name,role,salary,active\nAlice,Engineer,120000,true\nBob,Manager,95000,false\n' > "$dir/vd_test.csv"
+tmux new-window -n "vd-test" "VD_CONFIG=$HOME/.config/visidata/config.py vd $dir/vd_test.csv"
 sleep 2
 ```
+
+Shell state does not persist between Bash calls, so later steps use the directory path this step
+printed in place of `<dir>`.
 
 Always pass `VD_CONFIG` explicitly — the env var is required for the config to be picked up (see
 `shell.zsh`).
@@ -19,7 +23,7 @@ Always pass `VD_CONFIG` explicitly — the env var is required for the config to
 
 ```bash
 tmux kill-window -t "vd-test" 2>/dev/null
-tmux new-window -n "vd-test" "VD_CONFIG=$HOME/.config/visidata/config.py vd /tmp/vd_test.csv"
+tmux new-window -n "vd-test" "VD_CONFIG=$HOME/.config/visidata/config.py vd <dir>/vd_test.csv"
 sleep 2
 ```
 

@@ -29,14 +29,19 @@ Before writing any files:
 
 ### 2. Classify the tool
 
-**Simple tool** (no dotfiles config to symlink): needs only the 4 core files.
-Examples: `eza`, `sd`, `logcli`
+**Brew tool**: add the formula or cask to `tools/{tool}/Brewfile`, starting from
+`tools/@new/Brewfile` (e.g. `brew "sd"`). `u` installs and upgrades it through the combined Brewfile
+that `tools/homebrew/update.bash` generates and bundles, so it needs no `utils.bash`,
+`install.bash` or `update.bash`. Skip to step 6. Examples: `eza`, `sd`, `logcli`. Add an
+`install.bash` only for setup brew can't do, as `tools/neovim/install.bash` clones its config repo.
 
-**Tool with config** (has config files to symlink): also needs `link.bash` and a `config/`
-directory.
-Examples: `claude`, `neovim`, `git`
+**Non-brew tool** (npm/bun/uv/cargo or a custom script): needs `utils.bash`, `install.bash` and
+`update.bash`, as in steps 3-5.
 
-### 3. Create `tools/{tool}/utils.bash`
+**Either kind with config** (has config files to symlink): also needs `link.bash` and a `config/`
+directory. Examples: `claude`, `neovim`, `git`
+
+### 3. Create `tools/{tool}/utils.bash` (non-brew tools only)
 
 ```bash
 #!/usr/bin/env bash
@@ -69,18 +74,17 @@ return a clean semver string:
 
 | Installer | Version command (arg 6) | Typical raw output | `parse_version` logic |
 |---|---|---|---|
-| `brew` | `brew list --version {pkg}` | `sd 1.0.0` | strip `"sd "` prefix |
 | `npm` / `bun` | `{command} --version` | `1.10.2` | print as-is |
 | `npm` (some) | `{command} --version` | `1.0.0 (Claude Code)` | strip suffix |
 | `uv tool` | `{pkg} --version` | `ty, version 0.0.1` | strip `"ty, version "` prefix |
 | `cargo` | `{command} --version` | `sd 1.0.0` | strip `"sd "` prefix |
 
-### 4. Create `tools/{tool}/install.bash`
+### 4. Create `tools/{tool}/install.bash` (non-brew tools only)
 
 Structure is always the same — only the install command (arg 5) and version command (arg 6) change
 by installer:
 
-**brew:**
+**npm:**
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -93,15 +97,9 @@ install_and_symlink \
   "${TOOL_UPPER}" \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
-  "brew install --formula ${TOOL_PACKAGE}" \
-  "brew list --version ${TOOL_PACKAGE}" \
-  "parse_version"
-```
-
-**npm:**
-```bash
   "npm install --global ${TOOL_PACKAGE}@latest" \
   "${TOOL_COMMAND} --version" \
+  "parse_version"
 ```
 
 **bun:**
@@ -129,11 +127,11 @@ For **tools with config**, add the symlink script path as an 8th argument:
   "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
 ```
 
-### 5. Create `tools/{tool}/update.bash`
+### 5. Create `tools/{tool}/update.bash` (non-brew tools only)
 
 Same pattern — update command varies by installer, 8th arg is always the install script fallback:
 
-**brew:**
+**npm:**
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -146,14 +144,14 @@ update_and_symlink \
   "${TOOL_UPPER}" \
   "${TOOL_COMMAND}" \
   "${TOOL_EMOJI}" \
-  "brew upgrade --formula ${TOOL_PACKAGE}" \
-  "brew list --version ${TOOL_PACKAGE}" \
+  "npm install --global ${TOOL_PACKAGE}@latest" \
+  "${TOOL_COMMAND} --version" \
   "parse_version" \
   "${DOTFILES}/tools/${TOOL_LOWER}/install.bash"
 ```
 
-Update commands by installer: `brew upgrade --formula {pkg}` / `npm install --global {pkg}@latest` /
-`bun install --global {pkg}` / `uv tool upgrade {pkg}` / `cargo install {pkg}`
+Update commands by installer: `npm install --global {pkg}@latest` / `bun install --global {pkg}` /
+`uv tool upgrade {pkg}` / `cargo install {pkg}`
 
 For **tools with config**, add the symlink script path as a 9th argument:
 
@@ -236,22 +234,23 @@ name, so passing a file path creates `settings.json/settings.json`.
 shellcheck tools/{tool}/*.bash
 ```
 
-Run the install script to confirm it works end-to-end:
+For a non-brew tool, run the install script to confirm it works end-to-end:
 
 ```bash
 DOTFILES="$HOME/Repos/ooloth/dotfiles" bash tools/{tool}/install.bash
 ```
 
+For a brew tool, run `u homebrew` and confirm the formula installed.
+
 ## Notes
 
-- **Auto-discovery**: `features/install/tools.bash` and `features/update/tools.bash` use `find` to
-  discover all `install.bash` / `update.bash` files under `tools/` automatically. No manual
-  registration is needed.
+- **Auto-discovery**: `u` runs every `update.bash` under `tools/` (except `@new` and `@archive`)
+  with no registration. `features/install/tools.bash` only lists `install.bash` files when run for
+  every tool, so run a new tool's `install.bash` directly.
 - **Prerequisites**: if the tool's update depends on outside state that would make it fail, such
   as a running daemon or a login, add `tools/{tool}/preflight.bash` from `tools/@new/`. `u` runs
   every one before any update and stops if one fails.
 - **Tests**: a tool's tests go in `tools/{tool}/tests/test_*.py`, which
   `scripts/checks/tests.bash` finds and runs in CI. No registration is needed.
-- **Shell manifest**: `shell.zsh` is sourced automatically in every new shell via the generated
-  manifest at `$DOTFILES/.cache/shell-files-manifest.zsh`. Regenerate it with the `symlinks` alias
-  after adding a new tool.
+- **Shell config**: `tools/zsh/config/tools.zsh` finds and sources every `shell.zsh` under `tools/`
+  and `features/` in each new shell. Open a new shell after adding one.
