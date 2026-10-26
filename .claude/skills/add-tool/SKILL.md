@@ -32,7 +32,7 @@ Before writing any files:
 **Brew tool**: add the formula or cask to `tools/{tool}/Brewfile`, starting from
 `tools/@new/Brewfile` (e.g. `brew "sd"`). `u` installs and upgrades it through the combined Brewfile
 that `tools/homebrew/update.bash` generates and bundles, so it needs no `utils.bash`,
-`install.bash` or `update.bash`. Skip to step 6. Examples: `eza`, `sd`, `logcli`. Add an
+`install.bash` or `update.bash`. Skip to step 7. Examples: `eza`, `sd`, `logcli`. Add an
 `install.bash` only for setup brew can't do, as `tools/neovim/install.bash` clones its config repo.
 
 **Non-brew tool** (npm/bun/uv/cargo or a custom script): needs `utils.bash`, `install.bash` and
@@ -230,6 +230,8 @@ name, so passing a file path creates `settings.json/settings.json`.
 
 ### 9. Verify
 
+If the tool has `.bash` files, lint them:
+
 ```bash
 shellcheck tools/{tool}/*.bash
 ```
@@ -240,7 +242,12 @@ For a non-brew tool, run the install script to confirm it works end-to-end:
 DOTFILES="$HOME/Repos/ooloth/dotfiles" bash tools/{tool}/install.bash
 ```
 
-For a brew tool, run `u homebrew` and confirm the formula installed.
+For a brew tool, install just its Brewfile and confirm the formula is there:
+
+```bash
+brew bundle --file=tools/{tool}/Brewfile
+brew list --versions {formula}
+```
 
 ## Notes
 
