@@ -31,8 +31,14 @@ class Run:
     stdout: str
 
 
-def run_checker(files: dict[str, str], *, untracked: dict[str, str] | None = None) -> Run:
-    """Commit `files` to a fresh repo, add `untracked` without committing, and run the checker."""
+def run_checker(
+    files: dict[str, str],
+    *,
+    untracked: dict[str, str] | None = None,
+    deleted: tuple[str, ...] = (),
+) -> Run:
+    """Stage `files` in a fresh repo, add `untracked` without staging, then delete each of
+    `deleted` from the working tree only, and run the checker."""
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
@@ -43,6 +49,8 @@ def run_checker(files: dict[str, str], *, untracked: dict[str, str] | None = Non
         subprocess.run(["git", "add", "-A"], cwd=root, check=True)
         for name, text in (untracked or {}).items():
             (root / name).write_text(text, encoding="utf-8")
+        for name in deleted:
+            (root / name).unlink()
         result = subprocess.run(
             [sys.executable, str(CHECKER)], cwd=root, capture_output=True, text=True
         )
@@ -141,8 +149,19 @@ class WhichFiles(unittest.TestCase):
         run = run_checker({"tools/agents/config/skills/other/SKILL.md": line(101) + "\n"})
         self.assertIn("tools/agents/config/skills/other/SKILL.md:1: 101 columns", run.stdout)
 
-    def test_an_untracked_file_is_not_checked(self) -> None:
-        run = run_checker({"a.md": "ok\n"}, untracked={"scratch.md": line(150) + "\n"})
+    def test_an_untracked_file_is_checked_as_ci_will_check_it_once_committed(self) -> None:
+        run = run_checker({"a.md": "ok\n"}, untracked={"new.md": line(150) + "\n"})
+        self.assertIn("new.md:1: 150 columns", run.stdout)
+
+    def test_an_ignored_file_is_not_checked(self) -> None:
+        run = run_checker(
+            {"a.md": "ok\n", ".gitignore": "scratch.md\n"},
+            untracked={"scratch.md": line(150) + "\n"},
+        )
+        self.assertEqual(run.status, 0, run.stdout)
+
+    def test_a_tracked_file_deleted_from_the_working_tree_is_skipped(self) -> None:
+        run = run_checker({"a.md": "ok\n", "gone.md": "ok\n"}, deleted=("gone.md",))
         self.assertEqual(run.status, 0, run.stdout)
 
     def test_a_new_tracked_file_is_checked_without_configuration(self) -> None:

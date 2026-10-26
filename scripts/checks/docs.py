@@ -8,8 +8,10 @@
 Run with: uv run scripts/checks/docs.py [--verbose]
 Its tests: uv run scripts/checks/tests/test_docs.py
 
-Checks every Markdown file git tracks, so a new file is covered without editing this script and a
-scratch file nobody committed is not. Width is counted in characters, not bytes.
+Checks every Markdown file git tracks or would track: committed, staged, or new and not ignored. So
+a new file fails here before it is committed, as it would in CI after, and a scratch file is kept
+out by listing it in .gitignore. A tracked file deleted from the working tree is skipped. Width is
+counted in characters, not bytes.
 
 Not checked, because wrapping them would break them or because they are not prose:
 - frontmatter, when the file opens with `---`
@@ -69,16 +71,20 @@ def is_exempt(path: str) -> bool:
     return "@archive" in parts or parts[0] == ".github" or path in INSTALLED_BY_TOOLS
 
 
-def tracked_markdown() -> list[str]:
+def markdown_to_commit() -> list[str]:
     try:
         result = subprocess.run(
-            ["git", "ls-files", "-z", "--", "*.md"], capture_output=True, text=True, check=True
+            ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "*.md"],
+            capture_output=True,
+            text=True,
+            check=True,
         )
     except (OSError, subprocess.CalledProcessError) as error:
         raise SystemExit(
-            f"Could not list tracked files with git ({error}). Run this inside the repo."
+            f"Could not list files with git ({error}). Run this inside the repo."
         ) from None
-    return sorted(name for name in result.stdout.split("\0") if name)
+    # --cached still lists a tracked file deleted from the working tree
+    return sorted(name for name in result.stdout.split("\0") if name and Path(name).is_file())
 
 
 def problems_in(path: str, text: str) -> list[Problem]:
@@ -128,7 +134,7 @@ def main() -> int:
     parser.add_argument("--verbose", action="store_true", help="also list the exempt files")
     args = parser.parse_args()
 
-    files = tracked_markdown()
+    files = markdown_to_commit()
     exempt = [path for path in files if is_exempt(path)]
     checked = [path for path in files if not is_exempt(path)]
 
