@@ -59,8 +59,31 @@ class Machine:
         claude.chmod(0o755)
         self._claude_log = root / "claude.log"
 
-    def sibling(self, name: str) -> None:
-        (self.repos / name).mkdir()
+    def sibling(self, name: str) -> Path:
+        folder = self.repos / name
+        folder.mkdir()
+        return folder
+
+    def make_git_repo(self, folder: Path) -> None:
+        """Turn `folder` into a git repo with one commit, so a worktree can be added to it."""
+        git = [
+            "git",
+            "-c",
+            "user.name=test",
+            "-c",
+            "user.email=test@example.com",
+            "-C",
+            str(folder),
+        ]
+        subprocess.run([*git, "init", "-q"], check=True)
+        subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "init"], check=True)
+
+    def add_worktree(self, repo: Path, folder: Path) -> None:
+        folder.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "worktree", "add", "-q", "-b", folder.name, str(folder)],
+            check=True,
+        )
 
     def _env(self, computer: str) -> dict[str, str]:
         return {
@@ -70,11 +93,11 @@ class Machine:
             "COMPUTER": computer,
         }
 
-    def _run(self, command: list[str], computer: str) -> Run:
+    def _run(self, command: list[str], computer: str, cwd: Path | None) -> Run:
         self._claude_log.unlink(missing_ok=True)
         result = subprocess.run(
             command,
-            cwd=self.app,
+            cwd=cwd or self.app,
             env=self._env(computer),
             capture_output=True,
             text=True,
@@ -88,15 +111,18 @@ class Machine:
         )
         return Run(result.returncode, result.stdout + result.stderr, claude)
 
-    def run(self, *args: str, computer: str = "air") -> Run:
+    def run(self, *args: str, computer: str = "air", cwd: Path | None = None) -> Run:
         """Run the shipped cc.bash, as the `cc` alias does."""
-        return self._run(["/bin/bash", str(REPO / SCRIPT), *args], computer)
+        return self._run(["/bin/bash", str(REPO / SCRIPT), *args], computer, cwd)
 
-    def run_with_map(self, related: list[str], *args: str, computer: str = "air") -> Run:
+    def run_with_map(
+        self, related: list[str], *args: str, computer: str = "air", cwd: Path | None = None
+    ) -> Run:
         """Run the shipped cc.bash with its lookup replaced by one that lists `related`."""
         lines = "".join(f"printf '%s\\n' {r!r}; " for r in related)
         program = f'source "$1"; related_dirs() {{ {lines}:; }}; shift; main "$@"'
-        return self._run(["/bin/bash", "-c", program, "_", str(REPO / SCRIPT), *args], computer)
+        command = ["/bin/bash", "-c", program, "_", str(REPO / SCRIPT), *args]
+        return self._run(command, computer, cwd)
 
 
 class UnmappedFolder(unittest.TestCase):
@@ -167,6 +193,84 @@ class MappedFolder(unittest.TestCase):
             run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", "../docs"]
         )
         self.assertIn("../infra", run.output)
+
+
+class PlansFolder(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.machine = Machine(Path(self._tmp.name))
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_adds_the_plans_folder_beside_a_repo_with_no_entry(self) -> None:
+        plans = self.machine.sibling("plans")
+        self.machine.make_git_repo(self.machine.app)
+
+        run = self.machine.run("--continue")
+
+        self.assertEqual(run.status, 0, run.output)
+        self.assertEqual(
+            run.claude,
+            ["--permission-mode", "bypassPermissions", "--add-dir", str(plans), "--continue"],
+        )
+        self.assertIn(str(plans), run.output)
+
+    def test_a_worktree_finds_the_plans_folder_beside_its_main_checkout(self) -> None:
+        plans = self.machine.sibling("plans")
+        self.machine.make_git_repo(self.machine.app)
+        worktree = self.machine.repos / "app-worktrees" / "feature"
+        self.machine.add_worktree(self.machine.app, worktree)
+
+        run = self.machine.run(cwd=worktree)
+
+        self.assertEqual(
+            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", str(plans)]
+        )
+
+    def test_comes_after_the_listed_folders_and_before_the_users_arguments(self) -> None:
+        plans = self.machine.sibling("plans")
+        self.machine.sibling("infra")
+
+        run = self.machine.run_with_map(["../infra"], "--continue")
+
+        self.assertEqual(
+            run.claude,
+            [
+                "--permission-mode",
+                "bypassPermissions",
+                "--add-dir",
+                "../infra",
+                "--add-dir",
+                str(plans),
+                "--continue",
+            ],
+        )
+
+    def test_is_not_added_twice_when_the_map_already_lists_it(self) -> None:
+        self.machine.sibling("plans")
+
+        run = self.machine.run_with_map(["../plans"])
+
+        self.assertEqual(
+            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", "../plans"]
+        )
+
+    def test_a_session_inside_the_plans_folder_does_not_add_it(self) -> None:
+        plans = self.machine.sibling("plans")
+
+        run = self.machine.run(cwd=plans)
+
+        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
+
+    def test_outside_a_git_repo_it_is_found_beside_the_current_folder(self) -> None:
+        plans = self.machine.sibling("plans")
+
+        run = self.machine.run()
+
+        self.assertEqual(
+            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", str(plans)]
+        )
 
 
 class Arguments(unittest.TestCase):
