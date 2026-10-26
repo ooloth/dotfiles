@@ -43,10 +43,11 @@ diff you saw when those runs completed. If any condition is false, run them now.
    paths this session changed, because another session may share this checkout, and a plain
    `git commit` also commits whatever that session has staged. Commit whole files with
    `git commit -F <message file> -- <path>...`, which commits those paths and leaves everything
-   else in the index alone. Write the message file into a new `mktemp -d` directory, so a session
-   committing at the same time can't overwrite it. To commit part of a file, see "Workflows >
-   Committing part of a file". Never run `git commit` without paths, `git commit -a`, or
-   `git add -A`.
+   else in the index alone. It refuses an untracked file, so add each new file by name first with
+   `git add -- <path>...`, which stages only those paths. Write the message file into a new
+   `mktemp -d` directory, so a session committing at the same time can't overwrite it. To commit
+   part of a file, see "Workflows > Committing part of a file". Never run `git commit` without
+   paths, `git commit -a`, or `git add -A`.
 5. After each commit, run `git show --stat --format=%h HEAD` and confirm it lists only the paths you
    meant to commit. Note the hash. If it lists another path, or a later check shows `HEAD` is not
    the commit you made, stop and tell the user rather than fixing it, because another session may
