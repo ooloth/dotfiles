@@ -746,6 +746,8 @@ class WarningInRexPanes(unittest.TestCase):
         self.state = Path(self.tmp.name)
         self.status = self.state / "status.json"
         self.status.write_text("{}")
+        self.log = self.state / "saver.log"
+        self.log.write_text("")
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
@@ -760,7 +762,36 @@ class WarningInRexPanes(unittest.TestCase):
 
     def test_a_missing_status_file_warns(self) -> None:
         self.status.unlink()
-        self.assertIn("not running", warnings_from("_rex_restore_check", self.state))
+        out = warnings_from("_rex_restore_check", self.state)
+        self.assertIn("not running", out)
+        self.assertIn("saver.log", out)
+
+    def test_a_stale_heartbeat_points_to_the_log(self) -> None:
+        old = time.time() - 300
+        os.utime(self.status, (old, old))
+        self.assertIn("saver.log", warnings_from("_rex_restore_check", self.state))
+
+    def test_a_saver_that_never_started_says_how_to_start_it(self) -> None:
+        self.status.unlink()
+        self.log.unlink()
+        out = warnings_from("_rex_restore_check", self.state)
+        self.assertIn("never started", out)
+        self.assertIn("rex config reload", out)
+
+    def test_a_saver_that_never_started_does_not_point_to_a_missing_log(self) -> None:
+        self.status.unlink()
+        self.log.unlink()
+        self.assertNotIn("saver.log", warnings_from("_rex_restore_check", self.state))
+
+    def test_a_running_saver_without_a_log_prints_nothing(self) -> None:
+        self.log.unlink()
+        self.assertEqual(warnings_from("_rex_restore_check", self.state), "")
+
+    def test_the_never_started_warning_is_printed_once(self) -> None:
+        self.status.unlink()
+        self.log.unlink()
+        out = warnings_from("_rex_restore_check; _rex_restore_check", self.state)
+        self.assertEqual(out.count("never started"), 1)
 
     def test_a_listed_problem_warns_with_its_text(self) -> None:
         (self.state / "warning").write_text("1 session failed to restore: work\n")

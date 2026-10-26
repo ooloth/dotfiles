@@ -66,8 +66,9 @@ within about a second and keeps the last 20 distinct layouts in `history/`.
 
 `shell.zsh` reports each pane's directory to Rex on `cd`, and prints a red warning above the prompt
 in Rex panes when the saver has stopped or reports a problem. `saver.log` in the same directory
-says why. To recover an older layout by hand, copy a file from `history/` over `latest.json`, then
-restart the Rex server.
+says why. When there is no `saver.log`, the saver has never started on this machine, and the
+warning says to run `u`, then `rex config reload`. To recover an older layout by hand, copy a
+file from `history/` over `latest.json`, then restart the Rex server.
 
 `update.bash` runs the saver once, so that its dependencies are in uv's cache for `--offline`.
 

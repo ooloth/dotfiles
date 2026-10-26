@@ -29,26 +29,31 @@ if [[ -n "${REX_BLOCK:-}" ]]; then
   _rex_osc7
 
   # Warn above the prompt when the saver is not running or reports a problem. A warning prints
-  # once, and again only when it changes, so it does not repeat before every prompt.
+  # once, and again only when it changes, so it does not repeat before every prompt. The saver
+  # creates saver.log when it starts, so with no log there is nothing to point to, and the warning
+  # says how to start it instead.
   _rex_restore_last_warning=""
   _rex_restore_check() {
     emulate -L zsh
     local dir="${REX_RESTORE_STATE_DIR:-${HOME}/.local/state/rex-restore}"
-    local message="" modified
-    if [[ ! -f "${dir}/status.json" ]]; then
-      message="the session saver is not running, so Rex sessions are not being saved"
-    else
-      modified="$(zstat +mtime "${dir}/status.json")"
-      if ((EPOCHSECONDS - modified > 90)); then
-        message="the session saver is not running, so Rex sessions are not being saved"
-      elif [[ -s "${dir}/warning" ]]; then
-        message="$(<"${dir}/warning")"
-      fi
+    local see_log=". See ${dir}/saver.log"
+    local message="" running=false
+    if [[ -f "${dir}/status.json" ]] &&
+      ((EPOCHSECONDS - $(zstat +mtime "${dir}/status.json") <= 90)); then
+      running=true
+    fi
+    if [[ "${running}" == false && ! -f "${dir}/saver.log" ]]; then
+      message="the session saver has never started on this machine, so Rex sessions are not being"
+      message+=" saved. Run \`u\`, then \`rex config reload\`"
+    elif [[ "${running}" == false ]]; then
+      message="the session saver is not running, so Rex sessions are not being saved${see_log}"
+    elif [[ -s "${dir}/warning" ]]; then
+      message="$(<"${dir}/warning")${see_log}"
     fi
     if [[ "${message}" != "${_rex_restore_last_warning}" ]]; then
       _rex_restore_last_warning="${message}"
       if [[ -n "${message}" ]]; then
-        print -P "%F{red}⚠ Rex: ${message//\%/%%}. See ${dir}/saver.log%f"
+        print -P "%F{red}⚠ Rex: ${message//\%/%%}%f"
       fi
     fi
   }
