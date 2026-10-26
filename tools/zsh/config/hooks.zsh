@@ -32,31 +32,29 @@ update_python_env_vars() {
   fi
 }
 
+# Sets venv to the nearest virtual environment at or above the current directory, or to "". It runs
+# on every shell start and every cd, so it walks up with ${dir:h} rather than starting a dirname
+# subprocess for each level.
+find_venv() {
+  local dir="${PWD}"
+  venv=""
+
+  while [[ "${dir}" != "/" && -n "${dir}" ]]; do # don't go past the root directory
+    if [[ -f "${dir}/.venv/bin/activate" ]]; then
+      venv="${dir}/.venv"
+      return
+    elif [[ -f "${dir}/venv/bin/activate" ]]; then
+      venv="${dir}/venv"
+      return
+    fi
+
+    dir="${dir:h}" # move up one directory and try again
+  done
+}
+
 activate_venv() {
-  local current_directory="${PWD}"
   local venv=""
-
-  # Function to find the nearest virtual environment
-  find_venv() {
-    local dir="$1" # start from the current directory
-
-    while [ "${dir}" != "/" ]; do # don't go past the root directory
-      local uv_venv_default="${dir}/.venv"
-      local uv_venv_roadie="${dir}/venv"
-
-      if [ -f "${uv_venv_default}/bin/activate" ]; then
-        echo "${uv_venv_default}"
-        return
-      elif [ -f "${uv_venv_roadie}/bin/activate" ]; then
-        echo "${uv_venv_roadie}"
-        return
-      fi
-
-      dir="$(dirname "${dir}")" # move up one directory and try again
-    done
-  }
-
-  venv=$(find_venv "${current_directory}")
+  find_venv
 
   if [ -n "${venv}" ]; then
     source "${venv}/bin/activate"

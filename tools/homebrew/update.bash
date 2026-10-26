@@ -46,6 +46,10 @@ fi
 debug "📦 Upgrading all installed packages"
 run_step "brew upgrade" brew upgrade
 
+# The next zsh writes the cache again from the upgraded brew (load_brew_shellenv in tools/zsh/utils.zsh)
+debug "🍺 Clearing the cached brew shellenv"
+run_step "clear brew shellenv cache" rm -f "${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/brew-shellenv.zsh"
+
 debug "🍺 Removing orphaned subdependencies"
 run_step "brew autoremove" brew autoremove
 

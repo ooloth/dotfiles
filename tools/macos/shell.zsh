@@ -6,7 +6,8 @@
 
 # A name inherited from the parent shell came from this same Mac, so it is kept rather than asked for
 # again. That saves a subprocess on every shell start, and this file is sourced twice per shell.
-export COMPUTER_NAME="${COMPUTER_NAME:-$(/usr/sbin/networksetup -getcomputername)}"
+# scutil reads the same ComputerName that `networksetup -getcomputername` prints, in 4 ms, not 12.
+export COMPUTER_NAME="${COMPUTER_NAME:-$(/usr/sbin/scutil --get ComputerName)}"
 
 case "$COMPUTER_NAME" in
   "Air")

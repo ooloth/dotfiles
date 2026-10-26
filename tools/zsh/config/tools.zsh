@@ -1,12 +1,10 @@
 # Add tool-specific environment variables, aliases and completions to zsh environment
 
-# Source all shell config files from features and tools (excluding @new and @archive)
-while IFS= read -r file; do
+# Source the shell.zsh of every feature and tool (excluding @new and @archive)
+shell_config_files
+for file in $reply; do
   source "$file"
-done < <(find "${DOTFILES}/features" "${DOTFILES}/tools" \
-  \( -name '@new' -o -name '@archive' \) -prune -o \
-  \( -name 'shell.zsh' -o -path '*/shell/variables.zsh' -o -path '*/shell/aliases.zsh' -o -path '*/shell/integration.zsh' \) \
-  -print | sort)
+done
 
 ###################################
 # LEGACY: ONE-OFF VARIABLES SETUP #

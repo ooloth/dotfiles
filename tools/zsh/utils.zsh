@@ -30,6 +30,20 @@ have() {
 
 ZSH_COMPLETIONS_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/completions"
 
+# Writes what COMMAND prints to FILE, or leaves FILE as it was when COMMAND fails or prints nothing.
+write_cache() {
+  local file="$1"
+  shift
+  mkdir -p "${file:h}" || return 1
+  local partial="${file}.partial.$$"
+  if "$@" >"$partial" 2>/dev/null && [[ -s "$partial" ]]; then
+    mv -f "$partial" "$file"
+  else
+    rm -f "$partial"
+    return 1
+  fi
+}
+
 # Whether the cached completion FILE is missing or older than COMMAND_PATH. The link counts as well as
 # the binary, because a brew cask upgrade points the link at a new version whose binary keeps the
 # older time it was built with.
@@ -56,21 +70,40 @@ cached_completion() {
   [[ -n "$command_path" ]] || return 1
   local file="${ZSH_COMPLETIONS_DIR}/_${command_name}"
 
+  # A completion from before a failed refresh still works, so it stays registered
   if completion_is_stale "$file" "$command_path"; then
-    mkdir -p "$ZSH_COMPLETIONS_DIR" || return 1
-    local partial="${file}.partial.$$"
-    if "$@" >"$partial" 2>/dev/null && [[ -s "$partial" ]]; then
-      mv -f "$partial" "$file" || return 1
-    else
-      rm -f "$partial"
-      # A completion from before the failed refresh still works, so it stays registered
-      [[ -s "$file" ]] || return 1
-    fi
+    write_cache "$file" "$@" || [[ -s "$file" ]] || return 1
   fi
 
   (( ${fpath[(Ie)$ZSH_COMPLETIONS_DIR]} )) || fpath=("$ZSH_COMPLETIONS_DIR" $fpath)
   autoload -Uz "_${command_name}"
   compdef "_${command_name}" "$command_name"
+}
+
+BREW_SHELLENV_CACHE="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/brew-shellenv.zsh"
+
+# Applies `BREW shellenv zsh` from a cache, because running brew cost 17 ms per shell start.
+# tools/homebrew/update.bash deletes the cache after upgrading Homebrew, so the next shell writes it
+# again.
+load_brew_shellenv() {
+  local brew="$1"
+  if [[ ! -s "$BREW_SHELLENV_CACHE" ]]; then
+    write_cache "$BREW_SHELLENV_CACHE" "$brew" shellenv zsh || return 1
+  fi
+  source "$BREW_SHELLENV_CACHE"
+}
+
+# Sets reply to the shell.zsh of every feature and tool, in the order .zshrc sources them
+# (tools/zsh/config/tools.zsh). A glob, because running find cost 14 ms per shell start. @new is the
+# template and @archive holds retired tools, so neither is sourced.
+shell_config_files() {
+  # null_glob rather than the (N) qualifier, so bash can still parse this file
+  setopt local_options null_glob
+  reply=()
+  local file
+  for file in "${DOTFILES}"/{features,tools}/*/shell.zsh; do
+    [[ "$file" == */@new/* || "$file" == */@archive/* ]] || reply+=("$file")
+  done
 }
 
 return_or_exit() {
@@ -82,21 +115,21 @@ return_or_exit() {
 # LOGGING #
 ###########
 
-# Text colors
-# see: https://stackoverflow.com/a/4332530/8802485
-TEXT_BLACK=$(tput setaf 0)
-TEXT_RED=$(tput setaf 1)
-TEXT_GREEN=$(tput setaf 2)
-TEXT_YELLOW=$(tput setaf 3)
-TEXT_BLUE=$(tput setaf 4)
-TEXT_MAGENTA=$(tput setaf 5)
-TEXT_CYAN=$(tput setaf 6)
-TEXT_WHITE=$(tput setaf 7)
-TEXT_BRIGHT=$(tput bold)
-TEXT_NORMAL=$(tput sgr0)
-TEXT_BLINK=$(tput blink)
-TEXT_REVERSE=$(tput smso)
-TEXT_UNDERLINE=$(tput smul)
+# Text colors: what `tput setaf 0`, `tput bold` and so on print for xterm-256color, written out because
+# running tput 13 times cost 20 ms per shell start
+TEXT_BLACK=$'\e[30m'
+TEXT_RED=$'\e[31m'
+TEXT_GREEN=$'\e[32m'
+TEXT_YELLOW=$'\e[33m'
+TEXT_BLUE=$'\e[34m'
+TEXT_MAGENTA=$'\e[35m'
+TEXT_CYAN=$'\e[36m'
+TEXT_WHITE=$'\e[37m'
+TEXT_BRIGHT=$'\e[1m'
+TEXT_NORMAL=$'\e(B\e[m'
+TEXT_BLINK=$'\e[5m'
+TEXT_REVERSE=$'\e[7m'
+TEXT_UNDERLINE=$'\e[4m'
 
 function banner() {
   # Capture the text and color arguments

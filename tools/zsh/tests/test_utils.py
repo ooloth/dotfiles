@@ -2,8 +2,10 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Tests for cached_completion in tools/zsh/utils.zsh, which keeps a tool's generated zsh completion
-in a file on fpath instead of generating and parsing it on every shell start.
+"""Tests for tools/zsh/utils.zsh: cached_completion, which keeps a tool's generated zsh completion in
+a file on fpath instead of generating and parsing it on every shell start; load_brew_shellenv, which
+caches `brew shellenv` the same way; shell_config_files, which lists the files .zshrc sources; and
+the TEXT_* colors.
 
 Run with: uv run tools/zsh/tests/test_utils.py
 
@@ -171,6 +173,139 @@ class EveryShellZsh(unittest.TestCase):
             if self.GENERATED.search(line) and not line.lstrip().startswith("#")
         ]
         self.assertEqual(offenders, [], "use cached_completion from tools/zsh/utils.zsh instead")
+
+
+def zsh(script: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["zsh", "-f", "-c", f"source '{UTILS}'\n{script}"],
+        env={"HOME": os.environ["HOME"], "TERM": "dumb", "COMPUTER_NAME": "Air", **env},
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+
+
+# Prints a zsh shellenv, or fails when FAKE_FAIL is set
+FAKE_BREW = """#!/bin/sh
+echo run >> "$FAKE_CALLS"
+if [ -n "$FAKE_FAIL" ]; then exit 1; fi
+[ "$1 $2" = "shellenv zsh" ] || exit 2
+echo 'export HOMEBREW_PREFIX="/fake/homebrew";'
+"""
+
+
+class LoadBrewShellenv(unittest.TestCase):
+    def setUp(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.brew = self.root / "brew"
+        self.brew.write_text(FAKE_BREW)
+        self.brew.chmod(0o755)
+        self.cache = self.root / "cache" / "zsh" / "brew-shellenv.zsh"
+        self.calls = self.root / "calls"
+
+    def load(self, *, fail: bool = False) -> tuple[int, str]:
+        result = zsh(
+            f"load_brew_shellenv '{self.brew}'\n"
+            'print -r -- "status=$? prefix=${HOMEBREW_PREFIX-<unset>}"',
+            {
+                "PATH": "/usr/bin:/bin",
+                "XDG_CACHE_HOME": str(self.root / "cache"),
+                "FAKE_CALLS": str(self.calls),
+                **({"FAKE_FAIL": "1"} if fail else {}),
+            },
+        )
+        loaded = re.fullmatch(r"status=(\d+) prefix=(.*)", result.stdout.strip())
+        assert loaded is not None, f"unexpected output: {result.stdout!r}"
+        return int(loaded[1]), loaded[2]
+
+    def runs(self) -> int:
+        return len(self.calls.read_text().splitlines()) if self.calls.exists() else 0
+
+    def test_the_first_shell_runs_brew_and_keeps_its_output(self) -> None:
+        self.assertEqual(self.load(), (0, "/fake/homebrew"))
+        self.assertEqual(self.runs(), 1)
+        self.assertIn("HOMEBREW_PREFIX", self.cache.read_text())
+
+    def test_later_shells_apply_the_cache_without_running_brew(self) -> None:
+        self.load()
+        self.assertEqual(self.load(), (0, "/fake/homebrew"))
+        self.assertEqual(self.runs(), 1)
+
+    def test_a_failing_brew_leaves_no_cache_and_sets_nothing(self) -> None:
+        status, prefix = self.load(fail=True)
+        self.assertNotEqual(status, 0)
+        self.assertEqual(prefix, "<unset>")
+        self.assertEqual(list(self.cache.parent.glob("*")), [])
+
+    def test_u_clears_the_same_cache_the_shell_writes(self) -> None:
+        # The next shell after `u` upgrades Homebrew writes the cache again
+        cache = '"${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/brew-shellenv.zsh"'
+        self.assertIn(cache, UTILS.read_text())
+        self.assertIn(f"rm -f {cache}", (REPO / "tools" / "homebrew" / "update.bash").read_text())
+
+
+class ShellConfigFiles(unittest.TestCase):
+    def test_it_lists_the_same_files_in_the_same_order_as_find(self) -> None:
+        dotfiles = Path(os.environ["HOME"]) / "Repos" / "ooloth" / "dotfiles"
+        env = {"PATH": "/usr/bin:/bin", "LANG": os.environ.get("LANG", "en_CA.UTF-8")}
+        found = subprocess.run(
+            [
+                "bash",
+                "-c",
+                'find "$1/features" "$1/tools" \\( -name @new -o -name @archive \\) -prune -o '
+                "-name shell.zsh -print | sort",
+                "_",
+                str(dotfiles),
+            ],
+            env=env,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.splitlines()
+        listed = zsh("shell_config_files; print -rl -- $reply", env).stdout.splitlines()
+        self.assertGreater(len(found), 0)
+        self.assertEqual(listed, found)
+
+    def test_every_shell_file_sits_where_the_glob_looks(self) -> None:
+        # The glob looks only at tools/*/shell.zsh and features/*/shell.zsh, so a deeper one would
+        # silently stop being sourced
+        deeper = [
+            str(path.relative_to(REPO))
+            for top in ("tools", "features")
+            for path in (REPO / top).rglob("*.zsh")
+            if (path.name == "shell.zsh" or path.parent.name == "shell")
+            and len(path.relative_to(REPO / top).parts) != 2
+            and not {"@new", "@archive", "wip"} & set(path.parts)
+        ]
+        self.assertEqual(deeper, [])
+
+
+class Colors(unittest.TestCase):
+    EXPECTED = {
+        "TEXT_BLACK": "\x1b[30m",
+        "TEXT_RED": "\x1b[31m",
+        "TEXT_GREEN": "\x1b[32m",
+        "TEXT_YELLOW": "\x1b[33m",
+        "TEXT_BLUE": "\x1b[34m",
+        "TEXT_MAGENTA": "\x1b[35m",
+        "TEXT_CYAN": "\x1b[36m",
+        "TEXT_WHITE": "\x1b[37m",
+        "TEXT_BRIGHT": "\x1b[1m",
+        "TEXT_NORMAL": "\x1b(B\x1b[m",
+        "TEXT_BLINK": "\x1b[5m",
+        "TEXT_REVERSE": "\x1b[7m",
+        "TEXT_UNDERLINE": "\x1b[4m",
+    }
+
+    def test_colors_are_what_tput_prints_and_need_no_tput(self) -> None:
+        # Without /usr/bin on PATH, tput can't run, so only codes written in the file come through
+        script = "".join(
+            f'print -rn -- "${{{name}}}"; print -rn -- "|"\n' for name in self.EXPECTED
+        )
+        values = zsh(script, {"PATH": "/bin", "TERM": "xterm-256color"}).stdout.split("|")[:-1]
+        self.assertEqual(dict(zip(self.EXPECTED, values, strict=True)), self.EXPECTED)
 
 
 if __name__ == "__main__":

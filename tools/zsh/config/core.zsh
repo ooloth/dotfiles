@@ -10,11 +10,10 @@ export PATH="/opt/local/bin:/opt/local/sbin:${PATH}" # Add MacPorts to PATH
 export PATH="${HOME}/.local/bin:${PATH}" # Add local bin to PATH
 
 # Homebrew must be activated before the tools/ sourcing loop runs (see tools/homebrew/shell.zsh):
-# `brew shellenv`'s underlying `path_helper -s` call unconditionally hoists /opt/homebrew/bin to
-# the front of PATH, so anything that needs to take precedence (e.g. fnm's shim) must prepend
-# to PATH *after* this runs.
+# `brew shellenv` puts /opt/homebrew/bin at the front of PATH, so anything that needs to take
+# precedence (e.g. fnm's shim) must prepend to PATH *after* this runs.
 if [ -x /opt/homebrew/bin/brew ]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  load_brew_shellenv /opt/homebrew/bin/brew
 fi
 
 # General
