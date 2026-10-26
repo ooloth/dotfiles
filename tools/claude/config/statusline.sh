@@ -23,6 +23,7 @@ ctx="${used_k}k/${total_k}k"
 # count, not the share of the window, so the thresholds only shrink to half and three quarters of a
 # window too small to reach them, which still warns before the window fills.
 GREEN=$'\033[32m'
+CYAN=$'\033[36m'
 YELLOW=$'\033[33m'
 RED=$'\033[31m'
 RESET=$'\033[0m'
@@ -71,8 +72,8 @@ append_stat() {
   stats_plain+=" ${symbol}${count}"
   stats_rendered+=" ${colour}${symbol}${count}${colour:+$RESET}"
 }
-append_stat "${ahead:-}" "↑" ""
-append_stat "${behind:-}" "↓" ""
+append_stat "${ahead:-}" "↑" "$CYAN"
+append_stat "${behind:-}" "↓" "$CYAN"
 append_stat "$insertions" "+" "$GREEN"
 append_stat "$deletions" "-" "$RED"
 

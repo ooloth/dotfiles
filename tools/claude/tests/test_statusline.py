@@ -156,6 +156,7 @@ def repo_tracking_a_remote(parent: Path) -> Path:
 
 
 GREEN = "\033[32m"
+CYAN = "\033[36m"
 
 
 class GitStats(unittest.TestCase):
@@ -168,16 +169,19 @@ class GitStats(unittest.TestCase):
     def left(self, directory: Path) -> str:
         return left_side(visible(status_line(directory, "120")))
 
-    def test_an_unpushed_commit_shows_ahead_by_one(self) -> None:
-        git(self.repo, "commit", "-q", "--allow-empty", "-m", "unpushed")
-        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↑1")
-
-    def test_a_fetched_commit_not_yet_merged_shows_behind_by_one(self) -> None:
+    def fetch_a_commit_from_another_clone(self) -> None:
         other = self.tmp / "other"
         git(self.tmp, "clone", "-q", str(self.tmp / "remote.git"), str(other))
         git(other, "commit", "-q", "--allow-empty", "-m", "theirs")
         git(other, "push", "-q")
         git(self.repo, "fetch", "-q")
+
+    def test_an_unpushed_commit_shows_ahead_by_one(self) -> None:
+        git(self.repo, "commit", "-q", "--allow-empty", "-m", "unpushed")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↑1")
+
+    def test_a_fetched_commit_not_yet_merged_shows_behind_by_one(self) -> None:
+        self.fetch_a_commit_from_another_clone()
         self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↓1")
 
     def test_staged_and_unstaged_edits_count_together_against_the_last_commit(self) -> None:
@@ -195,11 +199,7 @@ class GitStats(unittest.TestCase):
         self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main -2")
 
     def test_all_four_counts_appear_in_order(self) -> None:
-        other = self.tmp / "other"
-        git(self.tmp, "clone", "-q", str(self.tmp / "remote.git"), str(other))
-        git(other, "commit", "-q", "--allow-empty", "-m", "theirs")
-        git(other, "push", "-q")
-        git(self.repo, "fetch", "-q")
+        self.fetch_a_commit_from_another_clone()
         git(self.repo, "commit", "-q", "--allow-empty", "-m", "ours")
         self.file.write_text("a\nX\nc\nd\n")
         self.assertEqual(
@@ -211,6 +211,13 @@ class GitStats(unittest.TestCase):
         line = status_line(self.repo, "120")
         self.assertIn(f"{GREEN}+1", line)
         self.assertIn(f"{RED}-1", line)
+
+    def test_ahead_and_behind_are_cyan(self) -> None:
+        self.fetch_a_commit_from_another_clone()
+        git(self.repo, "commit", "-q", "--allow-empty", "-m", "ours")
+        line = status_line(self.repo, "120")
+        self.assertIn(f"{CYAN}↑1", line)
+        self.assertIn(f"{CYAN}↓1", line)
 
     def test_a_linked_worktree_shows_its_own_changes(self) -> None:
         worktree = self.tmp / "wt"
