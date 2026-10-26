@@ -48,6 +48,7 @@ rex.bind("cmd+r", "client.tab.rename")
 
 -- Sessions
 rex.bind("cmd+s", "session.switch")
+rex.bind("cmd+shift+r", "session.rename")
 rex.bind("cmd+shift+[BracketLeft]", "session.previous")
 rex.bind("cmd+shift+[BracketRight]", "session.next")
 

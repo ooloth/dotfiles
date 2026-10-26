@@ -219,6 +219,7 @@ class CmdKeys(unittest.TestCase):
             "cmd+n": ("client.tab.new", {}),
             "cmd+r": ("client.tab.rename", {}),
             "cmd+s": ("session.switch", {}),
+            "cmd+shift+r": ("session.rename", {}),
             "cmd+shift+[BracketLeft]": ("session.previous", {}),
             "cmd+shift+[BracketRight]": ("session.next", {}),
             "cmd+[Backslash]": ("pane.split.right", {}),
@@ -231,7 +232,7 @@ class CmdKeys(unittest.TestCase):
                 self.assertEqual(bound[key], {"action": action, "args": args})
 
     def test_no_other_keys_are_bound_to_actions(self) -> None:
-        self.assertEqual(len(action_bindings()), 9)
+        self.assertEqual(len(action_bindings()), 10)
 
 
 class SessionSaver(unittest.TestCase):

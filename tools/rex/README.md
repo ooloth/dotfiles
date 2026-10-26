@@ -10,13 +10,15 @@ key goes to that program instead, the same way vim-tmux-navigator works in
 `tools/tmux/config/tmux.conf`. Neovim hands focus back to Rex at its own edge
 (`lua/config/plugins/specs/vim-tmux-navigator.lua` in `config.nvim`).
 
-It also binds the cmd keys `tools/ghostty/config/config` sends to tmux to Rex's own actions:
+It also binds the cmd keys `tools/ghostty/config/config` sends to tmux to Rex's own actions, plus
+cmd+shift+r to rename the session:
 
 | Key | Action |
 | --- | --- |
 | cmd+[ / cmd+] | previous / next tab |
 | cmd+n / cmd+r | new tab / rename tab |
 | cmd+s | change session (picker) |
+| cmd+shift+r | rename session |
 | cmd+shift+[ / cmd+shift+] | previous / next session |
 | cmd+\\ | split right |
 | cmd+shift+m | zoom pane (toggle) |
