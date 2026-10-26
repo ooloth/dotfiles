@@ -4,21 +4,28 @@ For now, manually download macOS application here: https://www.superlogical.com/
 
 ## Keybindings
 
-`config/init.lua` binds ctrl+h/j/k/l to move focus to the pane on the left, below, above or
-right. At a tab's left or right edge, ctrl+h and ctrl+l move on to the previous or next tab,
-wrapping from the last tab to the first, and focus the pane on the side just entered, so the
-opposite key comes straight back. ctrl+j and ctrl+k wrap at the edge as tmux does.
+`config/init.lua` binds ctrl+h/j/k/l to move focus to the nvim window, pane or tab on the left,
+below, above or right. At a tab's left or right edge, ctrl+h and ctrl+l move on to the previous or
+next tab, wrapping from the last tab to the first, and focus the pane on the side just entered, so
+the opposite key comes straight back. ctrl+j and ctrl+k wrap at the edge as tmux does.
 
-ctrl+h and ctrl+l run the `focus_pane_or_tab` action. Rex.app chooses which tab it shows, so the
-action asks the app to show the new tab, and only an action can ask the app for anything. The app
-refuses requests from the CLI unless Remote Control is on in its settings, so run from the CLI, as
-in `rex do focus_pane_or_tab direction=right`, the action still moves between panes but stops at a
+All four keys run the `focus_pane_or_tab` action. Rex.app chooses which tab it shows, so the action
+asks the app to show the new tab, and only an action can ask the app for anything. The app refuses
+requests from the CLI unless Remote Control is on in its settings, so run from the CLI, as in
+`rex do focus_pane_or_tab direction=right`, the action still moves between panes but stops at a
 tab's edge.
 
-When nvim, vim, vi, view or fzf is in the foreground, the key goes to that program instead, the
-same way vim-tmux-navigator works in `tools/tmux/config/tmux.conf`. ctrl+j and ctrl+k pass the key
-on, and the action sends ctrl+h and ctrl+l on to the program. Neovim keeps the key at its own edge,
-because vim-tmux-navigator hands focus on only when `$TMUX` is set, and Rex does not set it.
+When nvim is in the foreground, the action first asks it to move between its own windows, over a
+socket at `~/.local/state/rex/nvim/<block id>.sock`, which nvim opens when it starts in a Rex pane
+(`lua/config/rex.lua` in `config.nvim`). nvim answers that it moved, that it's at its edge, or that
+it's busy typing text or at a prompt. Rex moves only at the edge, and otherwise sends the key on to
+nvim. Landing in a pane that runs nvim, Rex asks nvim to focus its window on the side Rex came in
+from. vim, vi, view and fzf have no socket, so they always get the key, the same way
+vim-tmux-navigator works in `tools/tmux/config/tmux.conf`.
+
+When something goes wrong, such as an nvim that doesn't answer within 0.5 s, the action writes why
+to `~/.local/state/rex/focus.log`, because `rex.log` output appears in neither the server log nor
+`rex events`. Past 1 MB the log moves to `focus.log.1`.
 
 It also binds the cmd keys `tools/ghostty/config/config` sends to tmux to Rex's own actions, plus
 cmd+shift+r to rename the session:
@@ -73,5 +80,11 @@ not installed there, so run it by hand after changing the saver.
 
 Run the `init.lua` tests with `uv run tools/rex/tests/test_init.py`. They need `lua` and `luajit`
 on the `PATH`, and run under both, because Rex runs its config on its own Lua 5.1.
+
+After changing how ctrl+h/j/k/l reach nvim, here or in `config.nvim`, run `rex config reload`, then
+`uv run tools/rex/tests/live_nvim.py`. It opens a throwaway session on your own server with nvim
+and a shell side by side, checks that focus moves through nvim's windows and out to the shell and
+back, and closes the session. It runs the action through `rex do`, so crossing into another tab is
+still checked by pressing the keys in the app.
 
 [006]: https://github.com/ooloth/dotfiles/blob/main/docs/decisions/006-a-python-saver-started-from-rex-init-lua-saves-and-restores-rex-sessions.md
