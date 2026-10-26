@@ -11,5 +11,5 @@
 ###############
 
 if have op; then
-  eval "$(op completion zsh)"; compdef _op op
+  cached_completion op op completion zsh
 fi

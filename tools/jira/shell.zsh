@@ -13,5 +13,5 @@
 ###############
 
 if is_work && have jira; then
-  eval "$(jira completion zsh)"
+  cached_completion jira jira completion zsh
 fi

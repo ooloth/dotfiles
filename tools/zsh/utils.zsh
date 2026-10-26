@@ -24,6 +24,55 @@ have() {
   fi
 }
 
+###############
+# COMPLETIONS #
+###############
+
+ZSH_COMPLETIONS_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/completions"
+
+# Whether the cached completion FILE is missing or older than COMMAND_PATH. The link counts as well as
+# the binary, because a brew cask upgrade points the link at a new version whose binary keeps the
+# older time it was built with.
+completion_is_stale() {
+  local file="$1" command_path="$2"
+  [[ -s "$file" ]] || return 0
+  [[ "$command_path" -nt "$file" ]] && return 0
+
+  zmodload -F zsh/stat b:zstat
+  local -a link_time file_time
+  zstat -L -A link_time +mtime -- "$command_path" || return 0
+  zstat -A file_time +mtime -- "$file" || return 0
+  (( link_time[1] > file_time[1] ))
+}
+
+# Registers the completion for COMMAND that GENERATOR prints, such as
+# `cached_completion uv uv generate-shell-completion zsh`. The script is kept in a file on fpath, so
+# GENERATOR runs only when COMMAND changes, and zsh reads the script only on the first tab after
+# COMMAND. Generating and parsing it with eval on every shell start cost up to 85 ms per tool.
+cached_completion() {
+  local command_name="$1"
+  shift
+  local command_path="${commands[$command_name]}"
+  [[ -n "$command_path" ]] || return 1
+  local file="${ZSH_COMPLETIONS_DIR}/_${command_name}"
+
+  if completion_is_stale "$file" "$command_path"; then
+    mkdir -p "$ZSH_COMPLETIONS_DIR" || return 1
+    local partial="${file}.partial.$$"
+    if "$@" >"$partial" 2>/dev/null && [[ -s "$partial" ]]; then
+      mv -f "$partial" "$file" || return 1
+    else
+      rm -f "$partial"
+      # A completion from before the failed refresh still works, so it stays registered
+      [[ -s "$file" ]] || return 1
+    fi
+  fi
+
+  (( ${fpath[(Ie)$ZSH_COMPLETIONS_DIR]} )) || fpath=("$ZSH_COMPLETIONS_DIR" $fpath)
+  autoload -Uz "_${command_name}"
+  compdef "_${command_name}" "$command_name"
+}
+
 return_or_exit() {
   local code="$1"                            # The exit code to return or exit with
   return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
