@@ -39,11 +39,23 @@ diff you saw when those runs completed. If any condition is false, run them now.
    just do your best to separate unrelated changes. Do NOT design commits that would require
    reverting and replaying changes; that's slow and risky and not worth it. A single commit is
    preferable in that case.
-4. Write each commit following the "Writing Commit Messages" style guide below. See "Workflows >
-   Staging file hunks non-interactively" when staging some changes in a file but not others (hint:
-   `git add -p` won't work in this environment)
-5. After each commit, run `git log --oneline -3` to confirm it was recorded correctly.
-6. If the user also asked you to push:
+4. Write each commit following the "Writing Commit Messages" style guide below. Commit only the
+   paths this session changed, because another session may share this checkout, and a plain
+   `git commit` also commits whatever that session has staged. Commit whole files with
+   `git commit -F <message file> -- <path>...`, which commits those paths and leaves everything
+   else in the index alone. Write the message file into a new `mktemp -d` directory, so a session
+   committing at the same time can't overwrite it. To commit part of a file, see "Workflows >
+   Committing part of a file". Never run `git commit` without paths, `git commit -a`, or
+   `git add -A`.
+5. After each commit, run `git show --stat --format=%h HEAD` and confirm it lists only the paths you
+   meant to commit. Note the hash. If it lists another path, or a later check shows `HEAD` is not
+   the commit you made, stop and tell the user rather than fixing it, because another session may
+   already have committed on top.
+6. Never reset or amend relative to `HEAD` (`HEAD~1`, `--amend`). Between two commands another
+   session can commit, and the command then rewrites its commit instead of yours. If the user
+   approves undoing your commit, first check that `git rev-parse HEAD` is the hash you noted, then
+   reset to that hash's parent by its full hash.
+7. If the user also asked you to push:
    1. First read CI's result for the commit the remote branch already holds, so a red build is
       caught before more commits land on it. Invoke the `use-gh` skill, then run:
 
@@ -55,10 +67,13 @@ diff you saw when those runs completed. If any condition is false, run them now.
       no remote yet, or a repo with no GitHub Actions runs is not a reason to wait or stop.
    2. If any of those runs concluded `failure`, do not push. Tell the user which workflow failed on
       which commit, and ask whether to push anyway or fix it first.
-   3. Otherwise, run `git push origin <branch>`.
-7. If a precommit hook fails and addressing the failure requires a design decision the user has not
+   3. Run `git log --oneline origin/<branch>..HEAD`. If it lists a commit this session did not
+      make, do not push, because the push would publish work the user has not approved you to
+      push. Tell the user which commits are there and ask.
+   4. Otherwise, run `git push origin <branch>`.
+8. If a precommit hook fails and addressing the failure requires a design decision the user has not
    made, stop and present options and wait for approval.
-8. When finished making all commits, continue implementing your next approved task — but do not
+9. When finished making all commits, continue implementing your next approved task — but do not
    ever commit again unless explicitly asked to again. Each commit requires a new, explicit user
    approval signal ("commit", "/commit", etc.). The invocation of /commit you just acted on
    authorized only the changes you just finished committing. It does not carry forward.
@@ -111,17 +126,23 @@ the project).
 
 ## Workflows
 
-### Staging file hunks non-interactively
+### Committing part of a file
 
-When a file has multiple unrelated changes destined for different commits, use `git apply --cached`
-instead of `git add -p`. The latter requires a TTY and will not work in this environment.
+When a file has multiple unrelated changes destined for different commits, build each commit in a
+private index. `git add -p` needs a TTY and will not work in this environment, and
+`git commit -- <path>` commits the whole file. A private index also keeps out whatever another
+session has staged in the shared one.
 
 Steps:
 
-1.  `p="$(mktemp -d)/changes.patch" && git diff <file> > "$p" && echo "$p"`. The directory is new
-    on every run, so another session staging at the same time can't overwrite the patch. A shell
+1.  `d="$(mktemp -d)" && git diff <file> > "$d/changes.patch" && echo "$d"`. The directory is new
+    on every run, so another session doing the same can't overwrite the patch or the index. A shell
     variable doesn't survive to the next command, so copy the printed path into the steps below.
-2.  Edit `<path>` to keep only the hunk(s) you want — delete unwanted `@@` blocks and their lines,
-    keeping the file headers (`--- a/...` / `+++ b/...`)
-3.  `git apply --cached <path>` to stage just those hunks
-4.  Commit, then stage the remaining changes normally for the next commit
+2.  Edit `<dir>/changes.patch` to keep only the hunk(s) you want — delete unwanted `@@` blocks and
+    their lines, keeping the file headers (`--- a/...` / `+++ b/...`)
+3.  `GIT_INDEX_FILE=<dir>/index git read-tree HEAD`, then
+    `GIT_INDEX_FILE=<dir>/index git apply --cached <dir>/changes.patch`, then
+    `GIT_INDEX_FILE=<dir>/index git commit -F <message file>`
+4.  `git reset -q -- <file>`, so the shared index's entry for that file matches the new commit. It
+    names the file, so it changes nothing else in the index. The remaining hunks stay in the working
+    tree for the next commit
