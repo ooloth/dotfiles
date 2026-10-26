@@ -33,6 +33,25 @@ diff you saw when those runs completed. If any condition is false, run them now.
    think are relevant to the changed files — all the tests. Do not run only the tests for changed
    files. Apply the same fix rule: mechanical failures in files already in the diff only; escalate
    anything else.
+
+   When a check from step 1 or a test from step 2 fails only in files this commit leaves out, such
+   as another session's uncommitted work in the same checkout, that failure is not a reason to stop
+   yet. Find out whether the commit itself passes. Run the full checks and tests again in a
+   temporary worktree that holds `HEAD` plus exactly what the commit will contain:
+
+   ```sh
+   wt="$(mktemp -d)/wt" && git worktree add -q --detach "$wt" HEAD && echo "$wt"
+   ```
+
+   Copy each whole file the commit takes into the same path under the printed directory, or apply
+   the commit's patch there with `git -C <dir> apply <patch>` when it takes only part of a file. Run
+   the suite with `cd <dir> &&` at the start of the same command, because a working directory set in
+   an earlier command may not carry over. Then remove the worktree with
+   `git worktree remove --force <dir>`. If everything passes there, the failures belong to the files
+   left out: commit, and tell the user which checks fail in the shared checkout and in which files.
+   If anything fails there, stop and report it as above. Before blaming the commit, check whether
+   the failure comes from an untracked or ignored file the worktree lacks, such as a local config
+   or a built dependency, and say so if it does.
 3. Try to divide the changes into themes. For example, pair one test case with its implementation
    and corresponding documentation updates. Or one new lint rule and all its fixes. Changes in one
    file or layer don't necessarily all belong in the same commit. Don't spend much time on this -
