@@ -61,4 +61,4 @@ unavailable at boot.
 
 ## Also update
 
-- [ ] `tools/rex/README.md` describes the saver, its warning and how to remove it
+- [x] `tools/rex/README.md` describes the saver, its warning and how to remove it

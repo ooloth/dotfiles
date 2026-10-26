@@ -23,5 +23,10 @@ fi
 echo "== ty check"
 env_dir="${DOTFILES}/.cache/check-types-env"
 uv venv --quiet --allow-existing "${env_dir}"
-uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis pydantic
-"${env_dir}/bin/ty" check --python "${env_dir}" --project "${DOTFILES}" "${DOTFILES}"
+uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis pydantic \
+  result beartype
+# tools/rex/tests/test_saver.py imports tools/rex/saver.py, a single-file uv script, by putting its
+# folder on sys.path. ty ignores `extra-paths` in ty.toml here, so the folder is passed on the
+# command line until #203 moves the saver into the repo's package.
+"${env_dir}/bin/ty" check --python "${env_dir}" --project "${DOTFILES}" \
+  --extra-search-path "${DOTFILES}/tools/rex" "${DOTFILES}"

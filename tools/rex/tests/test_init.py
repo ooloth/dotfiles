@@ -15,18 +15,27 @@ Pressing <actions> instead lists every key bound to a named action, with its arg
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import subprocess
+import sys
 import unittest
 from dataclasses import dataclass
 from pathlib import Path
 
 INIT_LUA = Path(__file__).resolve().parent.parent / "config" / "init.lua"
 
+# Rex runs init.lua on its own embedded Lua 5.1. LuaJIT implements Lua 5.1, so every test runs under
+# it as well as under Lua 5.5, which catches a feature from a later Lua that Rex would reject.
+INTERPRETERS = ("lua", "luajit")
+LUA = INTERPRETERS[0]
+
 # Stands in for Rex. FOREGROUND is the program the pane's process lookup reports, or <lookup fails>.
 # FOCUS_FAILS makes session.focus_direction return an error.
 HARNESS = r"""
 local init_lua, key, foreground, focus_fails = arg[1], arg[2], arg[3], arg[4] == "true"
-local bindings, focused, logs = {}, {}, {}
+local exec_mode = arg[5] or "ok"
+local bindings, focused, logs, started = {}, {}, {}, {}
 
 rex = {
   bind = function(k, target, args) bindings[k] = { target = target, args = args } end,
@@ -39,6 +48,15 @@ rex = {
       return { foreground = { name = foreground } }
     end,
   },
+  exec = {
+    start = function(argv, opts)
+      if exec_mode == "raises" then error("exec.start exploded") end
+      if exec_mode == "fails" then return nil, "no such file" end
+      assert(opts.detach == true, "the saver must outlive this call")
+      started[#started + 1] = argv
+      return { pid = 1 }
+    end,
+  },
   session = {
     focus_direction = function(args)
       assert(args.session_id == "session:test", "session_id not passed from ctx")
@@ -49,7 +67,23 @@ rex = {
   },
 }
 
+if exec_mode == "missing" then rex.exec = nil end
+
 dofile(init_lua)
+
+local function list(t)
+  local out = {}
+  for i, v in ipairs(t) do out[i] = string.format("%q", v) end
+  return "[" .. table.concat(out, ",") .. "]"
+end
+
+if key == "<startup>" then
+  local runs, count = {}, 0
+  for i, argv in ipairs(started) do runs[i] = list(argv) end
+  for _ in pairs(bindings) do count = count + 1 end
+  io.write(string.format('{"started":[%s],"logs":%s,"bindings":%d}', table.concat(runs, ","), list(logs), count))
+  return
+end
 
 if key == "<actions>" then
   local out = {}
@@ -70,11 +104,6 @@ if type(binding) ~= "function" then
   return
 end
 local handled = binding({ session_id = "session:test", block_id = "block:test" }, { keybinding = key })
-local function list(t)
-  local out = {}
-  for i, v in ipairs(t) do out[i] = string.format("%q", v) end
-  return "[" .. table.concat(out, ",") .. "]"
-end
 io.write(string.format('{"handled":%s,"focused":%s,"logs":%s}', tostring(handled == true), list(focused), list(logs)))
 """
 
@@ -88,7 +117,7 @@ class KeyOutcome:
 
 def press(key: str, *, foreground: str, focus_fails: bool = False) -> KeyOutcome:
     result = subprocess.run(
-        ["lua", "-", str(INIT_LUA), key, foreground, str(focus_fails).lower()],
+        [LUA, "-", str(INIT_LUA), key, foreground, str(focus_fails).lower()],
         input=HARNESS,
         capture_output=True,
         text=True,
@@ -100,12 +129,32 @@ def press(key: str, *, foreground: str, focus_fails: bool = False) -> KeyOutcome
     return KeyOutcome(outcome["handled"], outcome["focused"], outcome["logs"])
 
 
+@dataclass(frozen=True)
+class Startup:
+    started: list[list[str]]
+    logs: list[str]
+    bindings: int
+
+
+def start_rex(exec_mode: str = "ok", home: str = "/Users/someone") -> Startup:
+    result = subprocess.run(
+        [LUA, "-", str(INIT_LUA), "<startup>", "", "false", exec_mode],
+        input=HARNESS,
+        capture_output=True,
+        text=True,
+        check=True,
+        env={"HOME": home, "PATH": os.environ["PATH"]},
+    )
+    outcome = json.loads(result.stdout)
+    return Startup(outcome["started"], outcome["logs"], outcome["bindings"])
+
+
 DIRECTIONS = {"ctrl+h": "left", "ctrl+j": "down", "ctrl+k": "up", "ctrl+l": "right"}
 
 
 def action_bindings() -> dict[str, dict[str, object]]:
     result = subprocess.run(
-        ["lua", "-", str(INIT_LUA), "<actions>", "", "false"],
+        [LUA, "-", str(INIT_LUA), "<actions>", "", "false"],
         input=HARNESS,
         capture_output=True,
         text=True,
@@ -185,5 +234,54 @@ class CmdKeys(unittest.TestCase):
         self.assertEqual(len(action_bindings()), 9)
 
 
+class SessionSaver(unittest.TestCase):
+    def test_loading_the_config_starts_the_saver_once_with_uv(self) -> None:
+        startup = start_rex()
+        self.assertEqual(
+            startup.started,
+            [
+                [
+                    "/Users/someone/.local/bin/uv",
+                    "run",
+                    "--offline",
+                    "--quiet",
+                    "--script",
+                    "/Users/someone/Repos/ooloth/dotfiles/tools/rex/saver.py",
+                    "run",
+                    "--state-dir",
+                    "/Users/someone/.local/state/rex-restore",
+                ]
+            ],
+        )
+        self.assertEqual(startup.logs, [])
+
+    def test_every_binding_loads_when_the_saver_cannot_start(self) -> None:
+        expected = start_rex().bindings
+        for mode in ("missing", "raises", "fails"):
+            with self.subTest(mode=mode):
+                startup = start_rex(mode)
+                self.assertEqual(startup.started, [])
+                self.assertEqual(startup.bindings, expected)
+                self.assertEqual(len(startup.logs), 1)
+                self.assertIn("session saver", startup.logs[0])
+
+
+def main() -> int:
+    global LUA
+    failed = False
+    for interpreter in INTERPRETERS:
+        if shutil.which(interpreter) is None:
+            print(
+                f"{interpreter} is not installed, so init.lua is not tested under it",
+                file=sys.stderr,
+            )
+            return 1
+        LUA = interpreter
+        print(f"== {interpreter}", file=sys.stderr)
+        result = unittest.main(exit=False).result
+        failed = failed or not result.wasSuccessful()
+    return 1 if failed else 0
+
+
 if __name__ == "__main__":
-    unittest.main()
+    sys.exit(main())
