@@ -85,12 +85,15 @@ from assumptions.
 Each goal's plan lives in its own folder, `~/Repos/<org>/plans/<goal-slug>/`, where `<org>` is the
 folder that holds the goal's repos, such as `ooloth` or `recursionpharma`. `<org>` is the folder
 holding the repo's main checkout, which `git rev-parse --path-format=absolute --git-common-dir`
-names from inside any worktree. The folder sits outside
-every repo, so one copy serves every session, worktree and repo the goal touches, and nothing in it
-reaches a pull request. It holds `plan.md`, and anything else a later session needs, such as briefs
-and drafts waiting for the user's approval. Sessions for the goal start in the goal's main repo, so
-its instruction file loads.
+names from inside any worktree. The folder sits outside every repo, so one copy serves every
+session, worktree and repo the goal touches, and nothing in it reaches a pull request. It holds
+`plan.md`, and anything else a later session needs, such as briefs and drafts waiting for the
+user's approval. Sessions for the goal start in the goal's main repo, so its instruction file loads.
 
+- **Folder name:** for a goal with a ticket, `<repo>-<issue number>-<short slug>`, such as
+  `dotfiles-212-agents-carry-goals`, or `<jira key>-<short slug>`, so a resume finds the folder from
+  the ticket the user names. For a goal with no ticket, a short slug of the outcome. Before creating
+  a folder, check that no folder with that name exists.
 - **Template:** copy `references/plan.md` from this skill to `plan.md`. Never edit the template.
 - **README:** if `~/Repos/<org>/plans/README.md` does not exist, create it with this text:
 
