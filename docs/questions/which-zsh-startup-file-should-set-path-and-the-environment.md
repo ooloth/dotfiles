@@ -64,6 +64,20 @@ Nothing here is settled until it graduates into a decision record.
   pressed pane's directory.
 - *Measured (2026-10-25, this Mac):* `env -i HOME=$HOME TERM=xterm-256color
   /opt/homebrew/bin/zsh -i -c exit` took 0.57 s once and 0.28 s twice.
+- *Measured (2026-10-26, this Mac):* the same command took 0.27 to 0.28 s over five runs. Moving
+  the environment out of `.zshrc` would save that much on every `cmd+g` in Rex, because lazygit
+  would no longer need an interactive shell.
+- *Measured (2026-10-26, this Mac):* an `xtrace` of that startup showed most of the time going to
+  subprocesses that `tools/*/shell.zsh` runs on every start. `uv` completions took about 84 ms (the
+  `eval` of `uv generate-shell-completion zsh` plus `uvx --generate-shell-completion zsh`), `op
+  completion zsh` 45 ms, `/usr/sbin/networksetup -getcomputername` 25 ms (run twice),
+  `brew shellenv` 18 ms and `ty generate-shell-completion zsh` 6 ms. The trace adds its own
+  overhead, so the times are relative.
+- *Measured (2026-10-26, this Mac):* `compinit` with an up-to-date dump took 16 ms, and
+  `compinit -C` took 9 ms. Rebuilding the dump took 189 ms. `~/.zcompdump`'s `#files:` count
+  changed from 1138 to 1091 between two shells started with different environments, which
+  suggests that shells with different `fpath` values rebuild the dump in turn. This is not yet
+  confirmed.
 - *Sourced:* `.zshenv` runs `unsetopt GLOBAL_RCS`, so zsh skips `/etc/zprofile` and macOS's
   `path_helper`. The usual warning that `path_helper` reorders a PATH set in `.zshenv` doesn't
   apply to this setup.
