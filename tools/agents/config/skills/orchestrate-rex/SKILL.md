@@ -79,9 +79,10 @@ confusing report, comes before the next work item. Resolve it with the user befo
   fresh checkout needs, such as linking private modules or a first build. A worktree without it
   fails the repo's checks for reasons that have nothing to do with the change, and the worker
   stops at its first commit. Tell the worker the ticket, the PR, what to do, and what to report
-  back. See the `rex` skill for the
-  commands. Start each worker with `claude --permission-mode auto`. In the default mode a worker
-  stops at a prompt before it loads its first skill, and you can't answer that prompt for the user.
+  back. See the `rex` and `use-rex` skills for the commands. Start each worker with the launcher
+  `use-rex` names, which takes this machine's permission mode from `cc.bash`. In the default mode a
+  worker stops at a prompt before it loads its first skill, and you can't answer that prompt for
+  the user.
 - **Hearing from workers:** don't subscribe to idle notices. Each notice starts a new turn, and a
   run of them buries the user's open questions under several overlapping lists. Instead, only the
   user's messages start your turns. Before every reply, read every worker's pane and every
@@ -129,7 +130,7 @@ confusing report, comes before the next work item. Resolve it with the user befo
 - **Review before a PR opens:** after a worker pushes a draft PR, and before it is marked ready or
   anyone is asked to review it, review it with review-code. Create a detached worktree at the PR's
   head (`git worktree add --detach "$(mktemp -d)/review-<n>" <head-sha>`) and open a new tab there
-  named `pr-<n>-review-code`, running `claude --permission-mode auto` with a prompt that says:
+  named `pr-<n>-review-code`, started with the `use-rex` launcher, with a prompt that says:
   - This is the author's own review before the PR opens, and no teammate will see the report. So
     every finding is something to fix before opening, or a question for the user. Don't grade
     findings as optional for a later reviewer, and don't suggest leaving one for the team review.
@@ -159,7 +160,7 @@ confusing report, comes before the next work item. Resolve it with the user befo
   same as a thoughtless one.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
   `git status` reads the right repo. Relay the user's commit signal word for word. For a change you
-  made yourself, open a Rex tab in that repo running `claude --permission-mode auto "/commit"`
+  made yourself, open a Rex tab in that repo with the `use-rex` launcher and the prompt `/commit`
   rather than committing from your session, so its checks don't block you and the user can watch.
 - **Side jobs:** a job for a ticket that runs a long time, or that the user may want to watch or
   approve, goes in a new tab in that ticket's session. You or that ticket's worker may open it. A

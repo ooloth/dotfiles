@@ -368,8 +368,10 @@ are for work already approved.
    self-review has run on it and the user has dealt with its findings. Only then is it marked ready
    for teammates to review.
    - **Offer to start the review; don't run it yourself.** Once the user accepts, open a fresh
-     session in a new terminal tab: a Rex tab when `REX_SESSION` is set, otherwise a tmux window in
-     the current tmux session. Name it after the PR and the review skill it runs (`review-code`,
+     session in a new terminal tab: a Rex tab started with the launcher the `use-rex` skill names
+     when `REX_SESSION` is set, otherwise a tmux window running
+     `bash "$DOTFILES/tools/claude/cc.bash"`. Never start `claude` with a permission mode of your
+     own choosing. Name it after the PR and the review skill it runs (`review-code`,
      `review-adversarial`, `review-pr-comments-converge`, …): a Rex tab as `👀 PR 573: review-code`,
      a tmux window as `pr-573-review-code`. Give the reviewer the PR and nothing from this session.
    - **The user works with the reviewer directly.** Don't read, verify, summarise or relay the
@@ -498,6 +500,7 @@ Skip and say nothing if execution went smoothly.
 ## Available CLI Tools
 
 - `gh` - NEVER run a `gh` command without first invoking the `use-gh` skill
+- `rex` - NEVER run a `rex` command without first invoking the `use-rex` skill
 - Jira (the Atlassian MCP tools) - NEVER call a Jira tool, reads included, without first invoking
   the `use-jira` skill
 - `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
