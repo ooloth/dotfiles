@@ -4,7 +4,9 @@
 
 # TODO: zsh/variables.zsh should find all shell/variables.zsh files and source them
 
-export COMPUTER_NAME=$(/usr/sbin/networksetup -getcomputername)
+# A name inherited from the parent shell came from this same Mac, so it is kept rather than asked for
+# again. That saves a subprocess on every shell start, and this file is sourced twice per shell.
+export COMPUTER_NAME="${COMPUTER_NAME:-$(/usr/sbin/networksetup -getcomputername)}"
 
 case "$COMPUTER_NAME" in
   "Air")
