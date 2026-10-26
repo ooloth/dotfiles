@@ -180,6 +180,11 @@ class GitStats(unittest.TestCase):
         git(self.repo, "commit", "-q", "--allow-empty", "-m", "unpushed")
         self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↑1")
 
+    def test_ahead_alone_is_followed_by_the_line_counts_after_one_space(self) -> None:
+        git(self.repo, "commit", "-q", "--allow-empty", "-m", "unpushed")
+        self.file.write_text("a\nb\nc\nd\n")
+        self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↑1 +1")
+
     def test_a_fetched_commit_not_yet_merged_shows_behind_by_one(self) -> None:
         self.fetch_a_commit_from_another_clone()
         self.assertEqual(self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↓1")
@@ -203,7 +208,7 @@ class GitStats(unittest.TestCase):
         git(self.repo, "commit", "-q", "--allow-empty", "-m", "ours")
         self.file.write_text("a\nX\nc\nd\n")
         self.assertEqual(
-            self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↑1 ↓1 +2 -1"
+            self.left(self.repo), FOLDER_ICON + "repo · " + BRANCH_ICON + "main ↓1↑1 +2 -1"
         )
 
     def test_insertions_are_green_and_deletions_red(self) -> None:
@@ -216,8 +221,7 @@ class GitStats(unittest.TestCase):
         self.fetch_a_commit_from_another_clone()
         git(self.repo, "commit", "-q", "--allow-empty", "-m", "ours")
         line = status_line(self.repo, "120")
-        self.assertIn(f"{CYAN}↑1", line)
-        self.assertIn(f"{CYAN}↓1", line)
+        self.assertIn(f"{CYAN}↓1↑1\033[0m", line)
 
     def test_a_linked_worktree_shows_its_own_changes(self) -> None:
         worktree = self.tmp / "wt"

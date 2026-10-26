@@ -55,27 +55,32 @@ branch_icon=$'\xee\x9c\xa5' # U+E725 nf-dev-git_branch, as in tools/tmux/config/
 # Two spaces after it, because Rex draws this glyph wider than one cell and covers a single space
 folder_icon=$'\xef\x81\xbb' # U+F07B nf-fa-folder
 
-# Commits ahead of and behind the upstream as of the last fetch, then the lines inserted and deleted
-# by staged and unstaged changes against HEAD. git gives nothing here without an upstream or a first
-# commit, and each count is dropped when it is zero.
+# Commits behind and ahead of the upstream as of the last fetch, side by side, then the lines inserted
+# and deleted by staged and unstaged changes against HEAD. git gives nothing here without an upstream
+# or a first commit, and each count is dropped when it is zero.
 divergence=$(git -C "$dir" rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null || true)
 read -r behind ahead <<<"$divergence" || true
 shortstat=$(git -C "$dir" diff HEAD --shortstat 2>/dev/null || true)
 insertions=$(sed -nE 's/.* ([0-9]+) insertions?\(\+\).*/\1/p' <<<"$shortstat")
 deletions=$(sed -nE 's/.* ([0-9]+) deletions?\(-\).*/\1/p' <<<"$shortstat")
 
+counted() {
+  local count=$1 symbol=$2
+  [[ "$count" =~ ^[0-9]+$ && "$count" -gt 0 ]] || return 0
+  printf '%s%s' "$symbol" "$count"
+}
+
 stats_plain=""
 stats_rendered=""
 append_stat() {
-  local count=$1 symbol=$2 colour=$3
-  [[ "$count" =~ ^[0-9]+$ && "$count" -gt 0 ]] || return 0
-  stats_plain+=" ${symbol}${count}"
-  stats_rendered+=" ${colour}${symbol}${count}${colour:+$RESET}"
+  local text=$1 colour=$2
+  [[ -n "$text" ]] || return 0
+  stats_plain+=" ${text}"
+  stats_rendered+=" ${colour}${text}${RESET}"
 }
-append_stat "${ahead:-}" "↑" "$CYAN"
-append_stat "${behind:-}" "↓" "$CYAN"
-append_stat "$insertions" "+" "$GREEN"
-append_stat "$deletions" "-" "$RED"
+append_stat "$(counted "${behind:-}" "↓")$(counted "${ahead:-}" "↑")" "$CYAN"
+append_stat "$(counted "$insertions" "+")" "$GREEN"
+append_stat "$(counted "$deletions" "-")" "$RED"
 
 # On a detached HEAD the counts follow the location directly
 git_plain="${branch:+$branch_icon $branch}${stats_plain}"
