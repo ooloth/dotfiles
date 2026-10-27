@@ -120,7 +120,7 @@ closing line when it adds nothing. Two items is fine when that is all that matte
 :emoji: **Next up**
 1. **<What will be true, opening words>** <rest of the line> ([KEY](url))
 
-_<Optional: one short sentence on what comes after that, or a pointer to the thread reply>_
+_<One sentence on the roadmap after Next up, pointing to the thread reply if there is one>_
 ```
 
 - Reuse the header emojis and formatting, such as bold, from earlier updates in the series. Match
@@ -145,8 +145,11 @@ _<Optional: one short sentence on what comes after that, or a pointer to the thr
   its name is the clearest way to say what changed, and let the outcome lead.
 - Write standard markdown: links as `[text](url)`, mentions as `<@U…>`. Mention only people whose
   Slack user ID you have, and use their name without `@` otherwise.
-- When detail goes in a thread reply, the closing line points to it ("_The full plan is in the
-  :thread:_"). Otherwise the closing sentence is your guess. Say so to the user.
+- Next up covers about the next week. The closing line below it then sums up, in one sentence,
+  the rest of the roadmap after that week, from the user's plan when there is one and otherwise as
+  your guess, which you tell the user. When a thread reply holds the full plan, the closing
+  sentence also points to it ("_After that, PROD runs the app by about Nov 20; the full plan is in
+  the :thread:_").
 - A thread reply follows the same formatting: bold headings, numbered lists rather than bullets,
   and a link on every ticket key it names. The one-link limit applies only to the main message.
 
