@@ -46,9 +46,10 @@ Spawn one subagent per source (Jira, GitHub, Slack) in parallel, and tell each t
 itself and spawn no subagents. Tell each:
 
 - the window, and to convert it to that source's time handling. JQL bounds are in the user's Jira
-  timezone, which can differ from their local one: before the first real query, run a one-result
-  query for a ticket resolved inside the window and read the offset on its date (daylight saving
-  changes it). GitHub's `merged:` dates are UTC. Slack takes dates or Unix timestamps.
+  timezone, which can differ from their local one: read the offset on the returned dates that fall
+  inside the window (daylight saving changes it), and re-run with corrected bounds if the first
+  query used the wrong ones. GitHub's `merged:` dates are UTC. Slack takes dates or Unix
+  timestamps.
 - to check when something actually finished (Jira `resolutiondate`, PR `mergedAt`), not its
   current status, which may have changed since. Work open at the window's end has no resolution
   or one dated after the end. A Jira ticket closed as Won't Do, Duplicate or similar did not
@@ -57,7 +58,8 @@ itself and spawn no subagents. Tell each:
 - that a decision counts from when it was made (the Slack message, or the merged PR that records
   it), not from when its ticket closed
 - for Jira, to request only the fields it needs (summary, status, resolution, resolutiondate,
-  assignee), because wider requests overflow the response
+  assignee). Even then a large result is saved to a file instead of returned; read that file
+  rather than re-querying in smaller pieces
 - to look back as far as the update before the latest one, for finished work neither update
   mentioned
 - for Slack: read the named channels, and also search all channels and DMs for the topic's key
@@ -121,7 +123,7 @@ closing line when it adds nothing. Two items is fine when that is all that matte
 :emoji: Next up
 1. <What will be true> ([KEY](url))
 
-_<Optional: one sentence on what comes after that>_
+_<Optional: one short sentence on what comes after that>_
 ```
 
 - Reuse the header emojis from earlier updates in the series. Match sections by meaning (a "What
@@ -130,6 +132,10 @@ _<Optional: one sentence on what comes after that>_
 - One line per item, and at most one link per item: the ticket or doc that best explains it.
 - Every item makes sense to someone who does not click its link.
 - Lead with what a reader can now do or will be able to do, not with the work done.
+- When the work adds up to something bigger than any one item, such as a milestone the previous
+  update was working towards, make that the first Done item. Say plainly which of the previous
+  update's Next up items are now done.
+- An aside holds one short fact the reader needs, or is left out.
 - Say it the way you would say it to a colleague. Write to inform a junior teammate, not to impress
   a leader: the test is whether a reader got through it quickly and understood the facts. Ticket
   titles are often written as formal claims ("An internal user is an admin exactly when…"); never
