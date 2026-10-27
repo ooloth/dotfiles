@@ -43,15 +43,16 @@ main() {
   done
 
   # Poll rather than wait, so one hung check can't hold up the deadline for the rest
-  local i running ticks=0
-  while ((ticks < deadline_seconds * 10)); do
+  # Timed by the clock, not by counting polls, so a slow machine can't stretch the deadline.
+  # SECONDS counts whole seconds, so <= gives every check its full deadline and under 1 s more.
+  local i running start=${SECONDS}
+  while ((SECONDS - start <= deadline_seconds)); do
     running=0
     for i in "${!pids[@]}"; do
       kill -0 "${pids[i]}" 2>/dev/null && running=1
     done
     ((running)) || break
     sleep 0.1
-    ((ticks++))
   done
 
   local failures=() status

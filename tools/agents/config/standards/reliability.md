@@ -13,6 +13,17 @@ Network requests, database queries, and calls to external services always have
 an explicit timeout. An unanswered request does not block indefinitely. The
 timeout value is deliberate, not the runtime's default.
 
+**A timeout is measured by the clock, not by counting.**
+A deadline compares elapsed time with a limit. A loop that stops after a fixed
+number of polls or retries waits that number times the cost of one pass, and
+the cost grows when the machine is busy or the dependency is slow, which is
+when the timeout matters most. A poll interval sets how often a loop checks,
+not how long it waits, and a cap on attempts bounds the work, not the time.
+Where the clock is coarse, such as bash's whole-second `SECONDS`, the
+comparison rounds so that the full limit always passes before the deadline
+fires. A monotonic clock is used where one exists, so a change to the system
+time does not move the deadline.
+
 **Transient and permanent failures are distinguished.**
 A failure safe to retry (network timeout, rate limit, temporary unavailability)
 is handled differently from one that is not (invalid input, not found,
