@@ -63,6 +63,13 @@ class FakeHome:
         self.markers = root / "updated"
         self.markers.mkdir()
 
+    def slow_polls(self) -> None:
+        # Stands in for a busy machine: each 0.1 s poll takes 0.3 s, while a hung check's
+        # `sleep 30` still lasts 30 s
+        sleep = self.bin / "sleep"
+        sleep.write_text('#!/bin/sh\n[ "$1" = 0.1 ] && exec /bin/sleep 0.3\nexec /bin/sleep "$@"\n')
+        sleep.chmod(0o755)
+
     def tool(self, name: str, preflight: str | None) -> None:
         folder = self.repo / "tools" / name
         folder.mkdir(parents=True)
@@ -132,6 +139,14 @@ class PreflightTest(unittest.TestCase):
         run = home.u()
         self.assertNotEqual(run.status, 0)
         self.assertIn("slow", run.output)
+        self.assertIn("timed out", run.output)
+        self.assertLess(run.seconds, 10)
+
+    def test_slow_polls_do_not_stretch_the_deadline(self) -> None:
+        home = FakeHome(self.root)
+        home.slow_polls()
+        home.tool("slow", HANG)
+        run = home.u()
         self.assertIn("timed out", run.output)
         self.assertLess(run.seconds, 10)
 

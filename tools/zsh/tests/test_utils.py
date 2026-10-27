@@ -248,8 +248,12 @@ class LoadBrewShellenv(unittest.TestCase):
 
 class ShellConfigFiles(unittest.TestCase):
     def test_it_lists_the_same_files_in_the_same_order_as_find(self) -> None:
-        dotfiles = Path(os.environ["HOME"]) / "Repos" / "ooloth" / "dotfiles"
-        env = {"PATH": "/usr/bin:/bin", "LANG": os.environ.get("LANG", "en_CA.UTF-8")}
+        # The checkout under test, not ~/Repos/ooloth/dotfiles, so CI and worktrees test themselves
+        env = {
+            "PATH": "/usr/bin:/bin",
+            "LANG": os.environ.get("LANG", "en_CA.UTF-8"),
+            "DOTFILES": str(REPO),
+        }
         found = subprocess.run(
             [
                 "bash",
@@ -257,7 +261,7 @@ class ShellConfigFiles(unittest.TestCase):
                 'find "$1/features" "$1/tools" \\( -name @new -o -name @archive \\) -prune -o '
                 "-name shell.zsh -print | sort",
                 "_",
-                str(dotfiles),
+                str(REPO),
             ],
             env=env,
             capture_output=True,
