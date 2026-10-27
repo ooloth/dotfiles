@@ -17,7 +17,6 @@ The user names, in one line, as much of this as they know:
 - **Topic**: what the update covers, such as the whole project or one part of it. Do not assume it.
   Take it from the request, or from the previous update's content, and ask when neither settles it.
 - **Scope**: Jira epics, a JQL query or project, GitHub repos, and Slack channels to read.
-- **Audience**: engineers, leaders, or a description.
 - **Destination**: the Slack channel the update will be posted in.
 
 Ask in one message for anything missing that you cannot find. A scope can often be filled in from
@@ -73,10 +72,8 @@ Each returns findings, each with:
 - the date it finished (merged, closed or decided), or "open"
 - the people involved, with their Slack user ID where known. An ID taken from an existing `<@U…>`
   mention counts, and so does matching a PR or ticket author to a Slack user by name with
-  `slack_search_users`; neither makes the credit depend on a private source
-- where it came from: for Slack, the channel name and whether it is public, private or a DM. When
-  a message result does not say, look the channel up with `slack_search_channels`; if the type
-  still cannot be confirmed, treat it as private
+  `slack_search_users`
+- where it came from: for Slack, the channel name, or who the DM is with
 
 A source that fails to load is reported as failed, never as an empty list. A source that loads but
 has nothing in the window is reported as empty.
@@ -95,19 +92,19 @@ Show:
 - the latest update's link (or the two-week fallback)
 - a numbered **Done** list: work finished and not yet reported, and decisions made
 - a numbered **Next up** list: open work, and decisions still to make
-- for each item: one line, its links, its finish date, who did it, and a ⚠️ on each source that is
-  a DM or a private channel other than the destination. The ⚠️ marks a source, not the item
+- for each item: one line, its links, its finish date and who did it
 - a short **Left out** list: what you found but judged off-topic or minor, so the user can add it
   back
 
-Describe a DM or private-channel source in a few neutral words ("DM with Jan about the Gmail
-client"), never by quoting it, and leave out DMs that matched a search but have nothing to do with
-the update.
+A DM or private channel is a source like any other, and an item that came only from one is kept
+or cut on how much it matters, like every other item. Leave out DMs that matched a search but have
+nothing to do with the update.
+
+The Done and Next up lists stand alone. No item refers to an earlier update's items by number or
+says which of them it finishes; the previous update's lists are only for finding progress.
 
 Ask the user to cut, merge, add, reword, and mark detail for a thread reply. Items the user adds
-need no link. Unless the user keeps a ⚠️ source, the draft uses none of what came only from it. An
-item with any other source stays, built from those sources alone; an item whose only sources are ⚠️
-is left out by default.
+need no link.
 
 ## 5. Write the draft
 
@@ -133,8 +130,7 @@ _<Optional: one short sentence on what comes after that>_
 - Every item makes sense to someone who does not click its link.
 - Lead with what a reader can now do or will be able to do, not with the work done.
 - When the work adds up to something bigger than any one item, such as a milestone the previous
-  update was working towards, make that the first Done item. Say plainly which of the previous
-  update's Next up items are now done.
+  update was working towards, make that the first Done item.
 - An aside holds one short fact the reader needs, or is left out.
 - Say it the way you would say it to a colleague. Write to inform a junior teammate, not to impress
   a leader: the test is whether a reader got through it quickly and understood the facts. Ticket
@@ -142,8 +138,8 @@ _<Optional: one short sentence on what comes after that>_
   copy one, and say what it means plainly.
 - A decision reads "Decided with <@U…>: <what was decided>", naming who decided it.
 - A PR is a fine link when no ticket covers the item.
-- For leaders, leave out system names. For engineers, system names are fine, but outcomes still
-  lead.
+- Every update is written in the same plain voice, whoever is in the channel. Name a system when
+  its name is the clearest way to say what changed, and let the outcome lead.
 - Write standard markdown: links as `[text](url)`, mentions as `<@U…>`. Mention only people whose
   Slack user ID you have, and use their name without `@` otherwise.
 - The closing sentence is your guess. Say so to the user.
