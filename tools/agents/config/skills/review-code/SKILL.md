@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 11 parallel specialized agents, and presents actionable findings with a verdict. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 12 parallel specialized agents, and presents actionable findings with a verdict. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob
 effort: high
@@ -80,8 +80,8 @@ that decision, naming the record, so the reader weighs the new argument against 
 
 ## Step 3: Launch the agents in parallel
 
-The eleven agents below always run. You may add more in the same fan-out when this particular
-change raises a question none of the eleven prompts ask.
+The twelve agents below always run. You may add more in the same fan-out when this particular
+change raises a question none of the twelve prompts ask.
 
 The bar is a named question, not a topic. "Add a concurrency agent" is a topic. "Does the new
 retry path double-submit when the first attempt times out after the server committed?" is a
@@ -91,8 +91,8 @@ Add rather than enrich. Each agent answers its own question, so a concern append
 agent's prompt competes with that question for its attention. A new agent gives the concern a
 question of its own.
 
-Give an added agent the same shape as the eleven: the intent block, the file list, the provenance
-requirement, and one question to answer. Record the question and why the eleven did
+Give an added agent the same shape as the twelve: the intent block, the file list, the provenance
+requirement, and one question to answer. Record the question and why the twelve did
 not cover it — Step 4 reports it.
 
 Send a single message containing all Agent tool calls simultaneously. For each Agent tool call, set
@@ -424,6 +424,32 @@ For each issue: file:line | the path | reachable from where, or not at all | wha
 
 ---
 
+### Agent 12: Out-of-Diff References
+
+```
+Question: For each thing this change withdraws, restricts or renames — a route, page, command, flag, field, column, config key, file path, URL, message or permission that is removed, gated, renamed or narrowed — which references to it live OUTSIDE the diff, and does each one still work, or is it now broken, dead or misleading?
+
+**Answer thing by thing first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change withdraws, restricts or renames nothing, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/correctness.md` (the Must "Implementation is complete and finished") and `~/.agents/standards/config.md` (the Should on combinations of switches). Use these as your evaluation criteria.
+2. Run the diff command from Context. List every thing the diff withdraws, restricts or renames, and for each, every identifier a reference to it could use: its name, its path or URL, its key, its label, and any helper that builds it.
+3. Search the whole repository for each identifier, excluding the changed files. Search for the identifier itself, not for the rule the change introduces, because a reference that never mentions the rule is the one most likely to be broken. Include code that generates links or messages the system sends (emails, notifications, redirects), documentation, config and deployment files, and tests. If the project's deployment config or consumers live in another repository you can read, search there too; if you cannot, say which repository and what you would have searched for.
+4. For each reference found, decide whether it still works after the change. A reference is broken when it calls, links, navigates or points to something that is now gone, refused or renamed; misleading when it describes the old state as current.
+5. Where the change introduces switches, modes or options that can be combined, list each combination the system accepts (does not refuse at startup). For each accepted combination, check every consumer of those switches, including consumers outside the diff, and report any that misbehaves under it. Treat a comment or doc calling a combination supported as a claim to check.
+6. Pre-existing references the change newly breaks are findings for this change: label them `[pre-existing]` for the line and say the change is what breaks them.
+
+For each issue: file:line | the reference | the thing it points to | why it is broken or misleading after this change | what would fix it, or which ticket should own it
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific
@@ -490,11 +516,11 @@ Produce a prioritized action list — not a categorized findings report. The rea
 ### Added agents
 [Omit this section entirely if you added none.]
 
-- **[the question you added it to answer]** — Why the eleven did not cover it: [reason] — What it
+- **[the question you added it to answer]** — Why the twelve did not cover it: [reason] — What it
   found: [finding, or "nothing"]
 
 **Generalisable?** [One of: this was specific to this change, nothing to close. | This is a
-category — [what recurs] — close it by [adding a standing 11th agent for X / adding a standard to
+category — [what recurs] — close it by [adding a standing 13th agent for X / adding a standard to
 `~/.agents/standards/<file>.md` saying Y / both].]
 
 ### Looks Good
