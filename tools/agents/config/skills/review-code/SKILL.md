@@ -62,30 +62,35 @@ machine or CI runner), and a matching lockfile hash says nothing about that: it 
 lockfile agrees with the registry. This applies to dev dependencies as much as to runtime ones,
 because install scripts run wherever the package is installed.
 
-1. **Run the check for npm lockfiles:**
+1. **Run the check for npm and uv lockfiles.** Skip this when no `package-lock.json` or `uv.lock`
+   changed; the script would only exit 2 to say there is nothing for it to check. It reads
+   everything through `gh`, the registries and OSV, so it runs from any directory.
 
    ```bash
    uv run <skill-base-dir>/scripts/review_dependency_bump.py <pr-number> --repo <owner>/<repo>
    ```
 
-   It compares each changed `package-lock.json` at the merge base and the PR head. For each bumped
-   package it checks the hash against the registry, the resolved host, the publisher, install
-   scripts, new dependencies, `engines`, provenance and publish age. `npm ls` checks every parent's
-   range and `npm audit` on both sides lists the advisories fixed, introduced and left in place.
-   Exit 0 means nothing is flagged, 1 means something is, and 2 means the check could not run. On
-   2, stderr says why: fix that, or do the checks by hand. Never read exit 2 as clean.
+   It compares each changed lockfile at the merge base and the PR head, and lists every entry
+   that changed. For each bumped npm package it checks the hash against the registry, the resolved
+   host, the publisher, install scripts, new dependencies, `engines`, provenance and publish age;
+   `npm ls` checks every parent's range. For each bumped PyPI package it checks every locked file's
+   hash, the registry source, the publisher its attestations name, new requirements,
+   `requires_python`, yanked files, whether a wheel is still locked and upload age, and that every
+   package depending on it still allows the new version. A package locked from an index other than
+   PyPI is flagged `unchecked`, because the script never contacts a project's own index. `npm audit`
+   or `uv audit` on both sides lists the advisories fixed, introduced and left in place. Exit 0
+   means nothing is flagged, 1 means something is, and 2 means the check could not run. On 2,
+   stderr says why: fix that, or do the checks by hand. Never read exit 2 as clean.
 
-2. **Check other lockfiles by hand.** The script flags them as `unchecked`; `uv.lock` is the common
-   one. For each bumped package, compare the lockfile's `sha256` hashes with the `digests` that
-   `https://pypi.org/pypi/<name>/<version>/json` lists, and from the same response read the upload
-   time (`upload_time_iso_8601`), any new entries in `info.requires_dist`, and whether the release
-   ships only a source distribution where the old one had a wheel, since building one runs its
-   code on install.
+2. **Check other lockfiles by hand.** The script flags each one it cannot read as `unchecked`. Do
+   the same checks against that ecosystem's registry: each locked hash, the publisher, new
+   dependencies, install-time code, and publish age.
 
 3. **Judge what a lookup cannot:**
    - **Every flag.** For a flagged release, read what changed in the published package, which is
-     not the same as its repository:
-     `npm diff --diff=<name>@<old> --diff=<name>@<new>`. Look for code that runs on install or
+     not the same as its repository. For npm, `npm diff --diff=<name>@<old> --diff=<name>@<new>`.
+     For PyPI, download both releases' sdists from the URLs in the lockfile into a `mktemp -d`
+     directory, unpack them, and diff the two trees. Look for code that runs on install or
      import and reaches the network, the environment, credentials or files outside the package.
      Facts the script reports without a flag are not findings. Provenance absent on both releases,
      for one, is common and changes nothing; only a release that drops provenance its predecessor
@@ -94,16 +99,31 @@ because install scripts run wherever the package is installed.
      `~/.agents/standards/dependencies.md`: what it covers, whether the standard library or an
      existing dependency already covers it, and the transitive tree it brings in, which the
      script's `added-entry` lines list.
-   - **A major bump, or any bump of a runtime dependency** (one whose heading lacks `(dev)`). Read
-     the changelog between the two versions, and find where the repo imports the package, to
-     judge whether a breaking change reaches this code.
+   - **A major bump, or any bump of a runtime dependency.** A runtime dependency is one the
+     running app loads, which the script marks with a heading without `(dev)`. Read the
+     release notes in the PR body first, then the changelog between the two versions, and find
+     where the repo imports the package, to judge whether a breaking change reaches this code. A
+     package the repo never imports reaches it through the packages that depend on it, so look at
+     how they use it.
    - **CI.** The check neither builds nor tests. Read the PR's check results
      (`gh pr checks <n> -R <owner>/<repo>`). A failing check rules out Approve. Name a skipped or
      pending check in the "Looks Good" line, so the reader knows the Approve did not rest on it.
+   - **Tests CI may not have run.** When you cannot tell from the checks whether the tests ran
+     against the new version, run the tests that exercise the bumped package yourself, in a copy
+     of the PR head that touches no checkout:
+
+     ```bash
+     dir="$(mktemp -d)" && gh api repos/<owner>/<repo>/tarball/<head-sha> > "$dir/src.tar.gz" \
+       && mkdir "$dir/src" && tar -xzf "$dir/src.tar.gz" -C "$dir/src" --strip-components=1
+     ```
+
+     Install and test inside `$dir/src` with the project's own commands. Never fetch, check out or
+     add a worktree in the reviewed repository: a review only reads.
 
 4. **Report in Step 4's format.** A flag that survives step 3 is a finding. Anchor it on the
    lockfile line of that entry's `version`, which is in the diff. A clean run is the evidence for
-   an Approve: say in the "Looks Good" line which checks ran and what they found.
+   an Approve. For this path, "Looks Good" may be a short list rather than one sentence: one item
+   per check that ran, with what it found, so a reader can see what the Approve rests on.
 
 ## Step 2: Synthesize intent
 
