@@ -27,13 +27,17 @@ the previous updates' links (step 2).
 
 Search Slack for messages from the user `in:` the destination channel only, newest first, using the
 title's main words without quotes. Titles drift between posts ("update" or "updates", a colon), so
-confirm a match by its shape: a title line followed by sections of numbered items. The user often
-drafts in a DM to themselves, so a search not limited to the destination channel finds drafts.
+confirm a match by its shape: a title line followed by one or more numbered lists. Use the title as
+the user gives it now, even if earlier posts worded it differently.
 
-Read the last two updates in full. What they reported is already reported; match items to them by
-ticket key, not by title, because tickets get renamed. The latest one's forward-looking lists
-(whatever they are called) are the first thing to check progress against. The window runs from the
-latest update until now. If there is no previous update, cover the last two weeks and say so.
+The user's DM to themselves is a scratchpad for drafts. Nothing in it is ever a source or a
+previous update: leave it out of every search and read in this skill.
+
+Read the last two updates in full, with their thread replies. What they or their replies reported
+is already reported; match items to them by ticket key, not by title, because tickets get renamed.
+The latest one's forward-looking lists (whatever they are called) are the first thing to check
+progress against. The window runs from the latest update until now. If there is no previous
+update, cover the last two weeks and say so.
 
 ## 3. Gather, one subagent per source
 
@@ -41,15 +45,19 @@ Spawn one subagent per source (Jira, GitHub, Slack) in parallel, and tell each t
 itself and spawn no subagents. Tell each:
 
 - the window, and to convert it to that source's time handling. Jira returns dates with the user's
-  Jira timezone offset (read it from a returned date) and JQL bounds are in that timezone. GitHub's
-  `merged:` dates are UTC. Slack takes dates or Unix timestamps.
+  Jira timezone offset and JQL bounds are in that timezone; read the offset from a returned date
+  inside the window, since daylight saving changes it. GitHub's `merged:` dates are UTC. Slack
+  takes dates or Unix timestamps.
 - to check when something actually finished (Jira `resolutiondate`, PR `mergedAt`), not its
-  current status, which may have changed since
+  current status, which may have changed since. A Jira ticket resolved as Won't Do, Duplicate or
+  similar did not finish; it is left out, or listed as a decision when closing it was one.
+- for Jira, to request only the fields it needs (summary, status, resolution, resolutiondate,
+  assignee), because wider requests overflow the response
 - to look back as far as the update before the latest one, for finished work neither update
   mentioned
 - for Slack: read the named channels, and also search all channels and DMs for the topic's key
   words and the names of systems in scope, since decisions and plans are often discussed in DMs
-- to ignore any draft or post of the update being written
+- to ignore the user's DM to themselves entirely
 
 Each returns findings, each with:
 
@@ -57,7 +65,9 @@ Each returns findings, each with:
 - the date it finished (merged, closed or decided), or "open"
 - the people involved, with their Slack user ID where known (an ID taken from an existing
   `<@U…>` mention counts)
-- where it came from: for Slack, the channel name and whether it is public, private or a DM
+- where it came from: for Slack, the channel name and whether it is public, private or a DM. When
+  a message result does not say, look the channel up with `slack_search_channels`; if the type
+  still cannot be confirmed, treat it as private
 
 A source that fails to load is reported as failed, never as an empty list. A source that loads but
 has nothing in the window is reported as empty.
@@ -67,7 +77,8 @@ has nothing in the window is reported as empty.
 Group findings into a few candidate items before writing any prose. An item is something a reader
 cares about, which usually spans several tickets and PRs: "the new dev deployment is ready for most
 app work" rather than one line per ticket. Aim for the handful of items that matter most, not for
-completeness.
+completeness. Order each list by how much it matters to the reader, most first, and suggest which
+items to cut.
 
 Show:
 
@@ -76,12 +87,14 @@ Show:
 - a numbered **Done** list: work finished and not yet reported, and decisions made
 - a numbered **Next up** list: open work, and decisions still to make
 - for each item: one line, its links, its finish date, who did it, and a ⚠️ on each source that is
-  a DM or a private channel other than the destination
+  a DM or a private channel other than the destination. The ⚠️ marks a source, not the item
 - a short **Left out** list: what you found but judged off-topic or minor, so the user can add it
   back
 
 Ask the user to cut, merge, add, reword, and mark detail for a thread reply. Items the user adds
-need no link. Leave a ⚠️ source out of the draft unless the user keeps it.
+need no link. Unless the user keeps a ⚠️ source, the draft uses none of what came only from it. An
+item with any other source stays, built from those sources alone; an item whose only sources are ⚠️
+is left out by default.
 
 ## 5. Write the draft
 
@@ -100,7 +113,8 @@ closing line when it adds nothing. Two items is fine when that is all that matte
 _<Optional: one sentence on what comes after that>_
 ```
 
-- Reuse the header emojis from the previous updates where they have them.
+- Reuse the header emojis from earlier updates in the series, looking further back when the latest
+  ones lack a section.
 - One line per item, and at most one link per item: the ticket or doc that best explains it.
 - Every item makes sense to someone who does not click its link.
 - Lead with what a reader can now do or will be able to do, not with the work done.
