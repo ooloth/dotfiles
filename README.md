@@ -87,6 +87,11 @@ you prove without running tests or deploying.
 issues and epics, including a coverage table that maps each externally-defined requirement to the
 sub-issue satisfying it, so "did we miss anything" is a lookup rather than a judgment call.
 
+[write-progress-update](./tools/agents/config/skills/write-progress-update/SKILL.md) drafts a short
+Slack update on what a work project finished and what comes next, gathered from Jira, GitHub and
+Slack since the last update. It shows the candidate items with their sources first, flags anything
+from a DM or private channel, and saves the result as a Slack draft that it never sends.
+
 They're opinionated and evolving because they're mostly an attempt to encode how I already like to
 work.
 
