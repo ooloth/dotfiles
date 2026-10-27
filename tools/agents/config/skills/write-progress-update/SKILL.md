@@ -31,7 +31,8 @@ confirm a match by its shape: a title line followed by one or more numbered list
 the user gives it now, even if earlier posts worded it differently.
 
 The user's DM to themselves is a scratchpad for drafts. Nothing in it is ever a source or a
-previous update: leave it out of every search and read in this skill.
+previous update. Add `-in:<@U…>`, with the user's own Slack user ID, to the filters of every Slack
+search in this skill, which excludes that DM from the results.
 
 Read the last two updates in full, with their thread replies. What they or their replies reported
 is already reported; match items to them by ticket key, not by title, because tickets get renamed.
@@ -44,27 +45,33 @@ update, cover the last two weeks and say so.
 Spawn one subagent per source (Jira, GitHub, Slack) in parallel, and tell each to read the sources
 itself and spawn no subagents. Tell each:
 
-- the window, and to convert it to that source's time handling. Jira returns dates with the user's
-  Jira timezone offset and JQL bounds are in that timezone; read the offset from a returned date
-  inside the window, since daylight saving changes it. GitHub's `merged:` dates are UTC. Slack
-  takes dates or Unix timestamps.
+- the window, and to convert it to that source's time handling. JQL bounds are in the user's Jira
+  timezone, which can differ from their local one: before the first real query, run a one-result
+  query for a ticket resolved inside the window and read the offset on its date (daylight saving
+  changes it). GitHub's `merged:` dates are UTC. Slack takes dates or Unix timestamps.
 - to check when something actually finished (Jira `resolutiondate`, PR `mergedAt`), not its
-  current status, which may have changed since. A Jira ticket resolved as Won't Do, Duplicate or
-  similar did not finish; it is left out, or listed as a decision when closing it was one.
+  current status, which may have changed since. Work open at the window's end has no resolution
+  or one dated after the end. A Jira ticket closed as Won't Do, Duplicate or similar did not
+  finish, whichever of `status` or `resolution` says so (some projects record it only in the
+  status); it is left out, or listed as a decision when closing it was one.
+- that a decision counts from when it was made (the Slack message, or the merged PR that records
+  it), not from when its ticket closed
 - for Jira, to request only the fields it needs (summary, status, resolution, resolutiondate,
   assignee), because wider requests overflow the response
 - to look back as far as the update before the latest one, for finished work neither update
   mentioned
 - for Slack: read the named channels, and also search all channels and DMs for the topic's key
   words and the names of systems in scope, since decisions and plans are often discussed in DMs
-- to ignore the user's DM to themselves entirely
+- to add `-in:<@U…>` with the user's Slack user ID to every Slack search, and to ignore the user's
+  DM to themselves entirely
 
 Each returns findings, each with:
 
 - a link
 - the date it finished (merged, closed or decided), or "open"
-- the people involved, with their Slack user ID where known (an ID taken from an existing
-  `<@U…>` mention counts)
+- the people involved, with their Slack user ID where known. An ID taken from an existing `<@U…>`
+  mention counts, and so does matching a PR or ticket author to a Slack user by name with
+  `slack_search_users`; neither makes the credit depend on a private source
 - where it came from: for Slack, the channel name and whether it is public, private or a DM. When
   a message result does not say, look the channel up with `slack_search_channels`; if the type
   still cannot be confirmed, treat it as private
@@ -91,6 +98,10 @@ Show:
 - a short **Left out** list: what you found but judged off-topic or minor, so the user can add it
   back
 
+Describe a DM or private-channel source in a few neutral words ("DM with Jan about the Gmail
+client"), never by quoting it, and leave out DMs that matched a search but have nothing to do with
+the update.
+
 Ask the user to cut, merge, add, reword, and mark detail for a thread reply. Items the user adds
 need no link. Unless the user keeps a ⚠️ source, the draft uses none of what came only from it. An
 item with any other source stays, built from those sources alone; an item whose only sources are ⚠️
@@ -113,11 +124,16 @@ closing line when it adds nothing. Two items is fine when that is all that matte
 _<Optional: one sentence on what comes after that>_
 ```
 
-- Reuse the header emojis from earlier updates in the series, looking further back when the latest
-  ones lack a section.
+- Reuse the header emojis from earlier updates in the series. Match sections by meaning (a "What
+  remains" list is Next up), prefer the most recent, and look further back when the latest ones
+  lack a section.
 - One line per item, and at most one link per item: the ticket or doc that best explains it.
 - Every item makes sense to someone who does not click its link.
 - Lead with what a reader can now do or will be able to do, not with the work done.
+- Say it the way you would say it to a colleague. Ticket titles are often written as formal claims
+  ("An internal user is an admin exactly when…"); never copy one, and say what it means plainly.
+- A decision reads "Decided with <@U…>: <what was decided>", naming who decided it.
+- A PR is a fine link when no ticket covers the item.
 - For leaders, leave out system names. For engineers, system names are fine, but outcomes still
   lead.
 - Write standard markdown: links as `[text](url)`, mentions as `<@U…>`. Mention only people whose
