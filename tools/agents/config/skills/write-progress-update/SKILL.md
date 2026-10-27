@@ -112,20 +112,20 @@ This is the default shape, not a form to fill. Drop a section with nothing in it
 closing line when it adds nothing. Two items is fine when that is all that matters.
 
 ```
-:emoji: <Series title>
+:emoji: **<Series title>**
 
-:emoji: Done
+:emoji: **Done**
 1. <What is now true or possible> <link on the key words, or ([KEY](url)) at the end> _(<optional aside>)_
 
-:emoji: Next up
+:emoji: **Next up**
 1. <What will be true> ([KEY](url))
 
 _<Optional: one short sentence on what comes after that>_
 ```
 
-- Reuse the header emojis from earlier updates in the series. Match sections by meaning (a "What
-  remains" list is Next up), prefer the most recent, and look further back when the latest ones
-  lack a section.
+- Reuse the header emojis and formatting, such as bold, from earlier updates in the series. Match
+  sections by meaning (a "What remains" list is Next up), prefer the most recent, and look further
+  back when the latest ones lack a section.
 - One line per item, and at most one link per item: the ticket or doc that best explains it.
 - Every item makes sense to someone who does not click its link.
 - Lead with what a reader can now do or will be able to do, not with the work done.
