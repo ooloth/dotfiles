@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 12 parallel specialized agents, and presents actionable findings with a verdict. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 12 parallel specialized agents, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob
 effort: high
@@ -11,17 +11,18 @@ model: opus
 
 Identify what to review and the exact diff command to pass agents.
 
-| Argument                      | File list                              | Diff command                             |
-| ----------------------------- | -------------------------------------- | ---------------------------------------- |
-| PR number or URL              | `gh pr diff <n> --name-only`           | `gh pr diff <n>`                         |
-| Branch name                   | `git diff <branch>...HEAD --name-only` | `git diff <branch>...HEAD`               |
-| File path(s)                  | use provided paths                     | `git diff HEAD -- <files>`               |
-| None, on feature branch       | `git diff main...HEAD --name-only`     | `git diff main...HEAD`                   |
-| None, on main, staged         | `git diff --staged --name-only`        | `git diff --staged`                      |
-| None, on main, nothing staged | —                                      | ask: "What would you like me to review?" |
+| Argument                      | File list                                       | Diff command                             |
+| ----------------------------- | ----------------------------------------------- | ---------------------------------------- |
+| PR number or URL              | `gh pr diff <n> -R <owner>/<repo> --name-only` | `gh pr diff <n> -R <owner>/<repo>`       |
+| Branch name                   | `git diff <branch>...HEAD --name-only`          | `git diff <branch>...HEAD`               |
+| File path(s)                  | use provided paths                              | `git diff HEAD -- <files>`               |
+| None, on feature branch       | `git diff main...HEAD --name-only`              | `git diff main...HEAD`                   |
+| None, on main, staged         | `git diff --staged --name-only`                 | `git diff --staged`                      |
+| None, on main, nothing staged | —                                               | ask: "What would you like me to review?" |
 
 Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with
-`git symbolic-ref --short HEAD`.
+`git symbolic-ref --short HEAD`. Every `gh` command in this skill names its repository with `-R` (or
+`--repo`), so it cannot act on a same-numbered PR or issue in whatever repo the shell is in.
 
 **Skip non-reviewable files:**
 
@@ -35,12 +36,74 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **For PR scope — fetch PR context before Step 2:**
 
 ```bash
-gh pr view <n> --json title,body,number
+gh pr view <n> -R <owner>/<repo> --json title,body,number
 ```
 
 Store the title and body for use in Step 2. Store the PR number for Step 5.
 
-Output the reviewable file list and diff command before proceeding.
+Output the reviewable file list and diff command before proceeding. When the skip rules leave
+nothing because every changed file is a lockfile or package manifest, say so and name those files
+as going to Step 1a.
+
+**A dependency update takes Step 1a.** When the changed files include a lockfile or a package
+manifest (`package.json`, `pyproject.toml`, `Cargo.toml` and the like), run Step 1a. If those are
+the only files changed and the PR only changes the versions of dependencies already present, Step
+1a replaces Steps 2 to 3.5 and you continue at Step 4. If the PR adds a direct dependency (a name
+new to a manifest's dependency lists), also run Step 2, because whether a dependency earns its place
+depends on what the change is for. If other files changed too, review those through Steps 2 to 3.5
+as usual. Either way, bring Step 1a's findings into Step 4 alongside anything else found.
+
+## Step 1a: Dependency updates
+
+A lockfile is skipped above because nobody reads one line by line, not because it carries no risk.
+The risk is in the releases the update adopts, and no diff shows them. A release can be malicious
+(a compromised maintainer account, an install script that steals the credentials on a developer
+machine or CI runner), and a matching lockfile hash says nothing about that: it proves only that the
+lockfile agrees with the registry. This applies to dev dependencies as much as to runtime ones,
+because install scripts run wherever the package is installed.
+
+1. **Run the check for npm lockfiles:**
+
+   ```bash
+   uv run <skill-base-dir>/scripts/review_dependency_bump.py <pr-number> --repo <owner>/<repo>
+   ```
+
+   It compares each changed `package-lock.json` at the merge base and the PR head. For each bumped
+   package it checks the hash against the registry, the resolved host, the publisher, install
+   scripts, new dependencies, `engines`, provenance and publish age. `npm ls` checks every parent's
+   range and `npm audit` on both sides lists the advisories fixed, introduced and left in place.
+   Exit 0 means nothing is flagged, 1 means something is, and 2 means the check could not run. On
+   2, stderr says why: fix that, or do the checks by hand. Never read exit 2 as clean.
+
+2. **Check other lockfiles by hand.** The script flags them as `unchecked`; `uv.lock` is the common
+   one. For each bumped package, compare the lockfile's `sha256` hashes with the `digests` that
+   `https://pypi.org/pypi/<name>/<version>/json` lists, and from the same response read the upload
+   time (`upload_time_iso_8601`), any new entries in `info.requires_dist`, and whether the release
+   ships only a source distribution where the old one had a wheel, since building one runs its
+   code on install.
+
+3. **Judge what a lookup cannot:**
+   - **Every flag.** For a flagged release, read what changed in the published package, which is
+     not the same as its repository:
+     `npm diff --diff=<name>@<old> --diff=<name>@<new>`. Look for code that runs on install or
+     import and reaches the network, the environment, credentials or files outside the package.
+     Facts the script reports without a flag are not findings. Provenance absent on both releases,
+     for one, is common and changes nothing; only a release that drops provenance its predecessor
+     had is flagged.
+   - **A new direct dependency.** Judge it against the Must in
+     `~/.agents/standards/dependencies.md`: what it covers, whether the standard library or an
+     existing dependency already covers it, and the transitive tree it brings in, which the
+     script's `added-entry` lines list.
+   - **A major bump, or any bump of a runtime dependency** (one whose heading lacks `(dev)`). Read
+     the changelog between the two versions, and find where the repo imports the package, to
+     judge whether a breaking change reaches this code.
+   - **CI.** The check neither builds nor tests. Read the PR's check results
+     (`gh pr checks <n> -R <owner>/<repo>`). A failing check rules out Approve. Name a skipped or
+     pending check in the "Looks Good" line, so the reader knows the Approve did not rest on it.
+
+4. **Report in Step 4's format.** A flag that survives step 3 is a finding. Anchor it on the
+   lockfile line of that entry's `version`, which is in the diff. A clean run is the evidence for
+   an Approve: say in the "Looks Good" line which checks ran and what they found.
 
 ## Step 2: Synthesize intent
 
@@ -51,8 +114,8 @@ Build a context block that every agent receives. Gather from these sources in pr
    messages reference, on whatever tracker holds it (GitHub, Jira, Linear). Read the body and all
    of its comments, not the body alone: the approach, the design and any later change are usually
    recorded in comments, and a default read omits them. GitHub:
-   `gh issue view <n> --json title,body,comments`. Jira: invoke `use-jira` and request the
-   `comment` field.
+   `gh issue view <n> -R <owner>/<repo> --json title,body,comments`. Jira: invoke `use-jira` and
+   request the `comment` field.
 3. **Commit messages** — `git log <base>...HEAD --format="%s%n%b"`
 4. **The diff itself** — read for intent when other sources are thin
 

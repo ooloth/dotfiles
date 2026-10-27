@@ -26,6 +26,16 @@ uncertainty about future compatibility and security response.
 Lockfiles or checksums confirm that installed versions match what was
 reviewed. Dependencies come from trusted, official sources.
 
+**Each new release of a dependency is checked for signs of a compromised publish before it is
+adopted.**
+A matching lockfile hash proves only that the lockfile agrees with the registry, not that the
+registry serves what the maintainer meant to publish. Compromised releases share signs a lookup can
+find: a publisher different from the previous release's, install scripts that were not there
+before, new dependencies, provenance the previous release had and this one lacks, and a publish
+date only hours or days old. A release showing any of them is read before it is adopted. An update
+tool's cooldown, which holds new releases back for a few days, keeps most compromised releases out
+before anyone reviews them, because they are usually found and pulled within that time.
+
 **Third-party code loaded at runtime is pinned and verified too.**
 A script fetched from a CDN when a page loads has no manifest, no lockfile
 and no install step, so nothing confirms that what runs today is what was
@@ -73,4 +83,7 @@ general-purpose alternatives when the use case is narrow.
 
 ## Out of scope
 
-- Dev-only and test-only dependencies, which carry lower risk than production dependencies
+- Dev-only and test-only dependencies, for vulnerability triage only. A vulnerability in their
+  code rarely reaches users. They stay in scope for the release-trust standard above, because a
+  malicious release runs on install wherever it is installed, including developer machines and CI
+  runners that hold credentials.
