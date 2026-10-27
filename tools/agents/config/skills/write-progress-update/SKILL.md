@@ -115,18 +115,21 @@ closing line when it adds nothing. Two items is fine when that is all that matte
 :emoji: **<Series title>**
 
 :emoji: **Done**
-1. <What is now true or possible> <link on the key words, or ([KEY](url)) at the end> _(<optional aside>)_
+1. **<What is now true or possible, opening words>** <rest of the line> <link on the key words, or ([KEY](url)) at the end> _(<optional aside>)_
 
 :emoji: **Next up**
-1. <What will be true> ([KEY](url))
+1. **<What will be true, opening words>** <rest of the line> ([KEY](url))
 
-_<Optional: one short sentence on what comes after that>_
+_<Optional: one short sentence on what comes after that, or a pointer to the thread reply>_
 ```
 
 - Reuse the header emojis and formatting, such as bold, from earlier updates in the series. Match
   sections by meaning (a "What remains" list is Next up), prefer the most recent, and look further
   back when the latest ones lack a section.
 - One line per item, and at most one link per item: the ticket or doc that best explains it.
+- The opening words of each item are bold: the first few words of the line itself, or a label
+  such as "This week:", so a reader skimming the bold gets the gist. The bold is never a separate
+  title that the rest of the line repeats. A decision's lead is "Decided with <@U…>:".
 - Every item makes sense to someone who does not click its link.
 - Lead with what a reader can now do or will be able to do, not with the work done.
 - When the work adds up to something bigger than any one item, such as a milestone the previous
@@ -142,17 +145,25 @@ _<Optional: one short sentence on what comes after that>_
   its name is the clearest way to say what changed, and let the outcome lead.
 - Write standard markdown: links as `[text](url)`, mentions as `<@U…>`. Mention only people whose
   Slack user ID you have, and use their name without `@` otherwise.
-- The closing sentence is your guess. Say so to the user.
+- When detail goes in a thread reply, the closing line points to it ("_The full plan is in the
+  :thread:_"). Otherwise the closing sentence is your guess. Say so to the user.
+- A thread reply follows the same formatting: bold headings, numbered lists rather than bullets,
+  and a link on every ticket key it names. The one-link limit applies only to the main message.
 
 ## 6. Save it as a Slack draft
 
 Save the draft with `slack_send_message_draft` in the user's DM to themselves, never in the
-destination channel. If a draft already exists there, tell the user and stop; do not replace it.
-Tell the user where it is and that nothing was sent. Never send or schedule a message.
+destination channel. Slack keeps one draft per channel, and the tool cannot replace or delete
+one. If a draft already exists there, ask the user to delete it and save once they say they have;
+when the user asks for a revision, say this before they need to. Tell the user where the draft is
+and that nothing was sent. Never send or schedule a message.
 
 If the user marked detail for a thread reply, show it in the terminal and ask them to say when
-they have posted the main message. Then find it: search messages from the user `in:` the
-destination channel, posted after the draft was saved, whose first line is the series title. Show
+they have posted the main message. Then find it: look for messages from the user in the
+destination channel and in their DM to themselves, where users often post first to see how it
+renders, posted after the draft was saved, whose first line is the series title. Read the DM with
+`slack_read_channel`; this is the one use of that DM, and it is not a source. When the match is in
+the DM, remind the user that a thread draft saved there does not move with the message. Show
 the user its permalink and first line and ask them to confirm it. Save the thread reply with
 `slack_send_message_draft` and that message's `thread_ts` only after they confirm. If no message or
 more than one matches, ask the user for the link instead.
