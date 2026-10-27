@@ -35,11 +35,11 @@ import subprocess
 import sys
 import tempfile
 import time
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import IO, Any, Generic, Literal, NewType, TypeVar
+from typing import IO, Any, Generic, Literal, NewType, TypeVar, assert_never
 from urllib.parse import unquote, urlsplit
 
 from pydantic import BaseModel, ConfigDict, ValidationError, model_validator
@@ -193,6 +193,41 @@ class Problem:
     detail: str
 
 
+# An event this close to a poll, before or after it, explains a change the poll found. Rex sends an
+# event within a second of the change, but the poll may read the change before the saver has
+# handled the event that reports it.
+EVENT_GRACE = 5.0
+
+
+@dataclass(frozen=True)
+class Suspect:
+    """A session whose layout a poll found changed, waiting for an event to explain it."""
+
+    session_id: str
+    raised_at: float
+    change: str
+
+
+@dataclass(frozen=True)
+class Explained:
+    session_id: str
+    after: float
+
+
+@dataclass(frozen=True)
+class Missed:
+    session_id: str
+    change: str
+
+
+@dataclass(frozen=True)
+class Waiting:
+    pass
+
+
+Verdict = Explained | Missed | Waiting
+
+
 def restore_request(session: SavedSession) -> RestoreRequest:
     windows = []
     for window in session.windows:
@@ -311,16 +346,49 @@ def unexplained_changes(
 def _structure(session: SavedSession | None) -> object:
     if session is None:
         return None
-
-    def layout(node: Layout) -> object:
-        match node:
-            case SavedPane(label=label):
-                return ("pane", label)
-            case SavedSplit(direction=d, ratio=r, before=b, after=a):
-                return ("split", d, r, layout(b), layout(a))
-
-    windows = tuple((w.label, layout(w.layout)) for w in session.windows)
+    windows = tuple((w.label, _layout_structure(w.layout)) for w in session.windows)
     return (session.label, windows, session.active_index)
+
+
+def _layout_structure(node: Layout) -> object:
+    match node:
+        case SavedPane(label=label):
+            return ("pane", label)
+        case SavedSplit(direction=d, ratio=r, before=b, after=a):
+            return ("split", d, r, _layout_structure(b), _layout_structure(a))
+
+
+def describe_change(cached: SavedSession | None, fresh: SavedSession | None) -> str:
+    """Which parts of a session's layout differ, ignoring working directories, for `saver.log`."""
+    if cached is None:
+        return "session appeared"
+    if fresh is None:
+        return "session disappeared"
+    parts: list[str] = []
+    if cached.label != fresh.label:
+        parts.append("session label")
+    if len(cached.windows) != len(fresh.windows):
+        parts.append(f"tabs {len(cached.windows)}→{len(fresh.windows)}")
+    else:
+        if [w.label for w in cached.windows] != [w.label for w in fresh.windows]:
+            parts.append("tab labels")
+        if [_layout_structure(w.layout) for w in cached.windows] != [
+            _layout_structure(w.layout) for w in fresh.windows
+        ]:
+            parts.append("split layout")
+    if cached.active_index != fresh.active_index:
+        parts.append(f"active tab {cached.active_index}→{fresh.active_index}")
+    return ", ".join(parts) or "nothing the saver compares"
+
+
+def judge(suspect: Suspect, last_event_at: float | None, now: float) -> Verdict:
+    """Whether an event since the poll explains the suspect's change, or the grace has run out."""
+    assert now >= suspect.raised_at, f"the clock ran backwards: {now} < {suspect.raised_at}"
+    if last_event_at is not None and last_event_at >= suspect.raised_at:
+        return Explained(suspect.session_id, after=last_event_at - suspect.raised_at)
+    if now - suspect.raised_at >= EVENT_GRACE:
+        return Missed(suspect.session_id, suspect.change)
+    return Waiting()
 
 
 def warning_text(problems: Sequence[Problem]) -> str:
@@ -332,7 +400,10 @@ def warning_text(problems: Sequence[Problem]) -> str:
         "session_unreadable": "a session could not be read, so its last good copy is kept",
         "snapshot_unreadable": "the saved layout could not be read, so nothing was restored",
         "restore_failed": "a session failed to restore",
-        "events_missed": "Rex changed a layout without an event; saving every 30 seconds",
+        "events_missed": (
+            "Rex changed a layout without sending an event, "
+            "so changes like it are saved only by the 30-second poll"
+        ),
         "saver_crashed": "the saver stopped on an unexpected error",
     }
     seen: list[str] = []
@@ -664,7 +735,6 @@ def _layout_from_file(node: NodeFile, depth: int) -> Layout:
 
 FLUSH_EVERY = 1.0
 POLL_EVERY = 30.0
-RECENT_EVENT = 5.0
 LOG_MAX_BYTES = 1_000_000
 REX_SERVER_APP = Path.home() / "Library/Application Support/com.superlogical.rex/RexServer/Versions"
 REX_IN_APP = "Rex Server.app/Contents/MacOS/rex"
@@ -815,6 +885,8 @@ class Saver:
     osc7_blocks: set[str] = field(default_factory=set)
     dirty: set[str] = field(default_factory=set)
     last_event: dict[str, float] = field(default_factory=dict)
+    suspects: dict[str, Suspect] = field(default_factory=dict)
+    clock: Callable[[], float] = time.monotonic
     session_order: list[str] = field(default_factory=list)
     last_written: Snapshot | None = None
 
@@ -959,18 +1031,40 @@ class Saver:
         return [p.name for p in history.glob("*.json")] if history.exists() else []
 
     def poll(self) -> None:
-        """Re-read everything, and check that events explained every change."""
+        """Re-read everything, and suspect each change no event has explained yet."""
+        started = self.clock()
         self.flush()
         live = self.list_sessions()
         self.session_order = live
         fresh = self.refresh(live, poll_cwds=True)
-        cutoff = time.monotonic() - RECENT_EVENT
-        recent = {s for s, t in self.last_event.items() if t > cutoff}
+        recent = {s for s, t in self.last_event.items() if t > started - EVENT_GRACE}
         for session_id in unexplained_changes(self.cache, fresh, recent):
-            self.problem("events_missed", session_id)
+            change = describe_change(self.cache.get(session_id), fresh.get(session_id))
+            self.suspects.setdefault(session_id, Suspect(session_id, started, change))
         self.cache = fresh
         self.save()
         self.write_status()
+
+    def judge_suspects(self) -> None:
+        """Drop each suspect an event has explained, and report each the grace ran out on."""
+        now = self.clock()
+        for suspect in list(self.suspects.values()):
+            match judge(suspect, self.last_event.get(suspect.session_id), now):
+                case Explained(session_id=session_id, after=after):
+                    self.log(
+                        f"change to {session_id} explained by an event {after:.1f}s after the poll"
+                    )
+                    del self.suspects[session_id]
+                case Missed(session_id=session_id, change=change):
+                    self.log(f"no event explained a change to {session_id}: {change}")
+                    del self.suspects[session_id]
+                    self.problem("events_missed", session_id)
+                case Waiting():
+                    pass
+                case unreachable:
+                    assert_never(unreachable)
+        for suspect in self.suspects.values():
+            assert now - suspect.raised_at < EVENT_GRACE, f"{suspect} outlived the grace"
 
     # ----- events -----
 
@@ -1013,7 +1107,7 @@ class Saver:
     def mark(self, session_id: str) -> None:
         if session_id:
             self.dirty.add(session_id)
-            self.last_event[session_id] = time.monotonic()
+            self.last_event[session_id] = self.clock()
 
     # ----- status -----
 
@@ -1061,6 +1155,7 @@ class Saver:
             if now >= next_poll:
                 self.poll()
                 next_poll = now + POLL_EVERY
+            self.judge_suspects()
         events.wait()
         self.log("event stream ended: the Rex server stopped")
 

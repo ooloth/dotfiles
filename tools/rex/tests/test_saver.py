@@ -567,9 +567,178 @@ class CheckingEventsAgainstPolling(unittest.TestCase):
         )
 
 
+times = st.floats(min_value=0, max_value=1e6, allow_nan=False)
+waits = st.floats(min_value=0, max_value=60, allow_nan=False)
+
+
+class JudgingASuspect(unittest.TestCase):
+    """A poll's unexplained change waits `EVENT_GRACE` seconds for its event before it counts."""
+
+    def suspect(self, raised_at: float) -> saver.Suspect:
+        return saver.Suspect("s", raised_at, change="active tab 1→0")
+
+    @given(times, waits, waits)
+    def test_an_event_at_or_after_the_poll_explains_the_change(
+        self, raised_at: float, event_after: float, judged_after: float
+    ) -> None:
+        verdict = saver.judge(
+            self.suspect(raised_at),
+            last_event_at=raised_at + event_after,
+            now=raised_at + max(event_after, judged_after),
+        )
+        assert isinstance(verdict, saver.Explained), verdict
+        self.assertAlmostEqual(verdict.after, event_after, places=6)
+
+    @given(times, waits)
+    def test_with_no_event_the_change_waits_then_counts_as_missed(
+        self, raised_at: float, judged_after: float
+    ) -> None:
+        verdict = saver.judge(
+            self.suspect(raised_at), last_event_at=None, now=raised_at + judged_after
+        )
+        if judged_after < saver.EVENT_GRACE:
+            self.assertEqual(verdict, saver.Waiting())
+        else:
+            self.assertEqual(verdict, saver.Missed("s", change="active tab 1→0"))
+
+    @given(times, st.floats(min_value=1e-3, max_value=60, allow_nan=False), waits)
+    def test_an_event_before_the_poll_does_not_explain_the_change(
+        self, raised_at: float, event_before: float, judged_after: float
+    ) -> None:
+        verdict = saver.judge(
+            self.suspect(raised_at),
+            last_event_at=raised_at - event_before,
+            now=raised_at + judged_after,
+        )
+        self.assertNotIsInstance(verdict, saver.Explained)
+
+    def test_a_clock_that_runs_backwards_stops_the_saver(self) -> None:
+        with self.assertRaises(AssertionError):
+            saver.judge(self.suspect(10.0), last_event_at=None, now=9.0)
+
+
+class DescribingAChange(unittest.TestCase):
+    def setUp(self) -> None:
+        self.view, self.cwds = two_pane_view()
+        self.before = parsed(self.view, self.cwds)
+
+    def after(self, edit) -> saver.SavedSession:
+        view = json.loads(json.dumps(self.view))
+        edit(view)
+        return parsed(view, self.cwds)
+
+    def test_a_switch_of_tab_names_both_positions(self) -> None:
+        first = self.view["windows"][0]["window_id"]
+        after = self.after(lambda v: v.update(active_window_id=first))
+        self.assertEqual(saver.describe_change(self.before, after), "active tab 1→0")
+
+    def test_a_renamed_tab_is_named_as_tab_labels(self) -> None:
+        after = self.after(lambda v: v["windows"][0].update(label="renamed"))
+        self.assertEqual(saver.describe_change(self.before, after), "tab labels")
+
+    def test_a_closed_tab_names_the_counts(self) -> None:
+        after = self.after(lambda v: v.update(windows=v["windows"][:1]))
+        self.assertIn("tabs 2→1", saver.describe_change(self.before, after))
+
+    def test_a_session_that_appears_or_disappears_says_so(self) -> None:
+        self.assertEqual(saver.describe_change(None, self.before), "session appeared")
+        self.assertEqual(saver.describe_change(self.before, None), "session disappeared")
+
+
+class RecordedRex(saver.Rex):
+    """Answers `rex api call` from views recorded on a throwaway server, without a subprocess."""
+
+    def __init__(self, views: dict[str, dict]) -> None:
+        super().__init__(Path("/nonexistent/rex"), None)
+        self.views = views
+
+    def call(self, method: str, args: Any = None) -> Any:
+        match method:
+            case "session.list":
+                return {"sessions": [{"session_id": s} for s in self.views]}
+            case "session.view":
+                return self.views[args["session_id"]]
+        raise saver.RexError(f"{method}: not recorded")
+
+
+class Clock:
+    def __init__(self) -> None:
+        self.now = 1000.0
+
+    def __call__(self) -> float:
+        return self.now
+
+
+class PollRacingAnEvent(unittest.TestCase):
+    """A tab switch the poll reads before the saver has handled the event that reports it."""
+
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        state = Path(self.tmp.name)
+        self.view, cwds = two_pane_view()
+        self.session_id = self.view["session_id"]
+        self.rex = RecordedRex({self.session_id: self.view})
+        self.clock = Clock()
+        self.saver = saver.Saver(self.rex, state, saver.Log(state / "saver.log"), clock=self.clock)
+        self.saver.cache = {self.session_id: parsed(self.view, cwds)}
+        self.log = state / "saver.log"
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def switch_tab_during_the_poll(self) -> None:
+        moved = json.loads(json.dumps(self.view))
+        moved["active_window_id"] = moved["windows"][0]["window_id"]
+        self.rex.views[self.session_id] = moved
+        self.saver.poll()
+
+    def tab_switch_event(self) -> str:
+        return json.dumps(
+            {
+                "type": "session_event",
+                "payload": {
+                    "session_id": self.session_id,
+                    "event": {"type": "active_window_changed", "payload": {}},
+                },
+            }
+        )
+
+    def test_an_event_just_after_the_poll_raises_no_problem_and_is_logged(self) -> None:
+        self.switch_tab_during_the_poll()
+        self.clock.now += 0.2
+        self.saver.handle(self.tab_switch_event())
+        self.clock.now += saver.EVENT_GRACE
+        self.saver.judge_suspects()
+        self.assertEqual(self.saver.problems, [])
+        self.assertIn("explained by an event 0.2s after the poll", self.log.read_text())
+
+    def test_no_event_counts_as_missed_only_after_the_grace(self) -> None:
+        self.switch_tab_during_the_poll()
+        self.clock.now += saver.EVENT_GRACE - 0.1
+        self.saver.judge_suspects()
+        self.assertEqual(self.saver.problems, [])
+        self.clock.now += 0.1
+        self.saver.judge_suspects()
+        self.assertEqual(self.saver.problems, [saver.Problem("events_missed", self.session_id)])
+        self.assertIn("active tab 1→0", self.log.read_text())
+
+    def test_a_later_poll_keeps_the_first_stamp(self) -> None:
+        self.switch_tab_during_the_poll()
+        first = self.saver.suspects[self.session_id]
+        self.clock.now += 1.0
+        self.saver.cache = {}
+        self.saver.poll()
+        self.assertEqual(self.saver.suspects[self.session_id], first)
+
+
 class WarningText(unittest.TestCase):
     def test_no_problems_means_no_warning(self) -> None:
         self.assertEqual(saver.warning_text(()), "")
+
+    def test_a_missed_event_names_the_poll_and_stays_one_clause(self) -> None:
+        text = saver.warning_text((saver.Problem("events_missed", "s1"),))
+        self.assertIn("30-second poll", text)
+        self.assertNotIn(";", text)
 
     def test_each_problem_is_named_once_with_its_detail(self) -> None:
         problem = saver.Problem("restore_failed", "work")
