@@ -76,7 +76,8 @@ a false positive costs one read; a false negative means missed guidance.
   handling
 - **`code-readability.md`** — all non-generated source files; load for every code task
 - **`code-structure.md`** — directory layout, import graphs, module boundaries, feature organisation
-- **`config.md`** — startup code, env var read sites, config parsing and validation
+- **`config.md`** — startup code, env var read sites, feature flag and mode switch read sites,
+  config parsing and validation
 - **`correctness.md`** — all non-generated source files; load for every code task
 - **`css.md`** — stylesheets, style blocks, CSS-in-JS, design tokens; contrast, motion, responsive
   layout

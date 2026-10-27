@@ -25,10 +25,12 @@ abstraction — that solution is used rather than reimplemented.
 **Implementation is complete and finished.**
 Every stated outcome exists in the code. There are no half-implemented paths,
 silently missing behaviors, known hacks, or deferred cleanup. A rule the change
-introduces holds everywhere its meaning reaches, including code the change did
-not touch. Those places are found by searching for every use of the thing the
-rule constrains, not for the rule's own name, because code that never mentions
-the rule is where it is most often broken. Incomplete work and shortcuts don't
+introduces holds everywhere its meaning reaches, including places the change
+did not touch: other code, links and messages the system generates,
+documentation, and configuration kept elsewhere. Those places are found by
+searching for every use of the thing the rule constrains — its name, its path,
+its key — not for the rule's own name, because what never mentions the rule is
+where it is most often broken. Incomplete work and shortcuts don't
 ship as permanent fixtures — they compound and they're easiest to address while
 the context is still loaded.
 
@@ -123,4 +125,5 @@ to deterministic tests.
 ## Out of scope
 
 - Code explicitly marked as experimental or draft
-- Code gated behind a flag that disables it in production
+- Code gated behind a flag that disables it in every deployment, when no accepted
+  combination enables it

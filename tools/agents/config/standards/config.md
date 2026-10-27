@@ -53,6 +53,16 @@ run safely without the setting, startup refuses that shape rather than the
 code supplying a default for everyone. The exception is a default that closes
 a hazard every deployment shares, and the change says so.
 
+**Every combination of switches the system accepts is one every consumer of those switches
+handles.**
+Independent switches multiply the states a system can be in, and each state the
+configuration allows is a state some deployment will reach. Each consumer of a
+switch behaves correctly under every accepted value of every other switch it
+interacts with. A combination that some consumer does not handle is refused at
+startup, as an invalid value would be, rather than left accepted and broken.
+Documentation that names a combination as supported is backed by consumers that
+handle it.
+
 ## Consider
 
 **Config values have explicit documented defaults.**
@@ -63,6 +73,7 @@ defaults. The default is stated in the code and documented alongside the key.
 
 - Startup and main entry points
 - Environment variable read sites
+- Feature flag and mode switch read sites, in any layer
 - Configuration parsing and validation code
 - Config files consumed by external tools, such as CI workflow definitions,
   editor and agent config, and container manifests
