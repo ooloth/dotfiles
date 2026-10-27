@@ -11,7 +11,7 @@ CodeFresh responses.
 
 ## Extract Build ID from PR Status Checks
 
-From `gh pr view <number> --json statusCheckRollup`:
+From `gh pr view <number> -R <owner>/<repo> --json statusCheckRollup`:
 
 - Failing checks have `"state": "FAILURE"` (StatusContext) or `"conclusion": "FAILURE"` (CheckRun)
 - Build URL is in `targetUrl` (StatusContext) or `detailsUrl` (CheckRun)

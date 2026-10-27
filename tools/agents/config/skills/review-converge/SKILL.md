@@ -91,7 +91,7 @@ Before the first round, understand the intent of the changes:
 - If scope is a **branch**: run `git log origin/<BASE>..HEAD --oneline` (the `<BASE>` from Phase
   0.5) and read the PR description if one
   exists (`gh pr view` — skip if no PR yet)
-- If scope is a **PR number**: fetch the PR description with `gh pr view <number>`
+- If scope is a **PR number**: fetch the PR description with `gh pr view <number> -R <owner>/<repo>`
 - If scope is a **file path**: read the file and any related context files
 
 Also discover what quality checks this project has documented. Look for:

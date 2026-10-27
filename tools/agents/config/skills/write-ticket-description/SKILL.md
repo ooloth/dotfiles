@@ -47,7 +47,7 @@ the exact phrasing the user gave you.
 
 **GitHub:**
 ```bash
-gh issue list --search "KEYWORDS" --state all --limit 20 --json number,title,state
+gh issue list -R <owner>/<repo> --search "KEYWORDS" --state all --limit 20 --json number,title,state
 ```
 
 **Linear:** use the Linear MCP search tool with keyword queries.
@@ -63,7 +63,7 @@ root cause from different angles.
 
 **GitHub:**
 ```bash
-gh issue view NUMBER --json title,body,state,url,comments,parent
+gh issue view NUMBER -R <owner>/<repo> --json title,body,state,url,comments,parent
 ```
 
 **Linear / Jira / Monday:** fetch the full issue body via the relevant tool.
@@ -92,10 +92,12 @@ Checkbox lists (`- [ ] #12`) are the fallback only when the sub-issue API is una
 
 ### Creating the hierarchy
 
-`gh issue create --parent PARENT_NUMBER` creates a child already linked to its parent (gh 2.102).
-To link an issue that already exists, use `gh issue edit CHILD_NUMBER --parent PARENT_NUMBER`, or
-`gh issue edit PARENT_NUMBER --add-sub-issue 12,13` for several at once. Both take an issue number
-or URL, and `--blocked-by` / `--add-blocked-by` record a blocking relationship the same way.
+`gh issue create -R <owner>/<repo> --parent PARENT_NUMBER` creates a child already linked to its
+parent (gh 2.102). To link an issue that already exists, use
+`gh issue edit CHILD_NUMBER -R <owner>/<repo> --parent PARENT_NUMBER`, or
+`gh issue edit PARENT_NUMBER -R <owner>/<repo> --add-sub-issue 12,13` for several at once. Both
+take an issue number or URL, and `--blocked-by` / `--add-blocked-by` record a blocking relationship
+the same way.
 
 ### Verifying the link
 

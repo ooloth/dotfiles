@@ -68,19 +68,20 @@ anything is missing.
 - **Read the comments and the parent.** On a long-running issue the current plan usually lives in
   a comment, not the body, and a sub-issue's body does not name its parent epic, whose plan
   governs it. `--comments` cannot be combined with `--json`, so ask for both as fields:
-  `gh issue view N --json title,body,comments,parent`. When `parent` is set, read that issue's
-  comments too.
+  `gh issue view N -R <owner>/<repo> --json title,body,comments,parent`. When `parent` is set,
+  read that issue's comments too.
 - **Ask for relationships by name.** `parent`, `subIssues`, `blockedBy` and `blocking` are
   `--json` fields on `gh issue view` and `gh issue list` (gh 2.102), and are never printed unless
-  requested: `gh issue view N --json parent,blockedBy,blocking,subIssues`.
+  requested: `gh issue view N -R <owner>/<repo> --json parent,blockedBy,blocking,subIssues`.
 - **Put ordering in the title.** Default `gh issue list` output shows no relationships, so an
   ordering signal that must reach an agent belongs where that output prints it for every row.
 
 ## Other gotchas worth avoiding
 
-- **Context bloat from unfiltered reads.** `gh pr view N --json files -q '.files[].path'`, not
-  the unfiltered `--json files` — the latter includes `patch`/`blob_url`/`raw_url` per file,
-  which adds up fast on a PR with many files.
+- **Context bloat from unfiltered reads.**
+  `gh pr view N -R <owner>/<repo> --json files -q '.files[].path'`, not the unfiltered
+  `--json files` — the latter includes `patch`/`blob_url`/`raw_url` per file, which adds up fast on
+  a PR with many files.
 - **Unknown `--json` field names.** `gh pr view --json <bogus>` errors out and lists every valid
   field name — cheaper than guessing or searching docs.
 - **Silent pagination truncation.** `gh api --paginate` for any list endpoint that can exceed one

@@ -111,7 +111,7 @@ uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number>
 Also fetch the PR description for context on intent:
 
 ```bash
-gh pr view <pr-number> --json title,body,baseRefName,headRefName
+gh pr view <pr-number> -R <owner>/<repo> --json title,body,baseRefName,headRefName
 ```
 
 Discover the **quality gate**: check `CLAUDE.md` and project docs for the standard lint/type/test

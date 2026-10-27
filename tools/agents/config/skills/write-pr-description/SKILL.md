@@ -27,7 +27,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 
 ```bash
 # Check for related issues
-gh issue list --state open
+gh issue list -R <owner>/<repo> --state open
 
 # Create draft PR
 gh pr create --draft --title "Title" --body-file <dir>/pr-body.md

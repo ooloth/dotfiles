@@ -39,11 +39,12 @@ a failing check, a review, another PR that has to merge first, or a deploy.
 
 A PR's feedback lives in three places, and each needs its own read: the body of each review
 (`pulls/<n>/reviews`), the inline comments (`pulls/<n>/comments`), and the conversation comments,
-bots included (`gh pr view <n> --json comments`). An approval often carries its findings in the
-review body alone. Any feedback in any of the three, approved or not, means the PR waits on its
-worker running `/review-pr-comments-converge` (see "Review feedback" below). Don't fix, dismiss
-or answer the comments in its place, and don't call the PR ready to merge. Judging what the skill
-then reports is a separate step, and it is yours (see "Judge every finding" below).
+bots included (`gh pr view <n> -R <owner>/<repo> --json comments`). An approval often carries
+its findings in the review body alone. Any feedback in any of the three, approved or not, means the
+PR waits on its worker running `/review-pr-comments-converge` (see "Review feedback" below).
+Don't fix, dismiss or answer the comments in its place, and don't call the PR ready to merge.
+Judging what the skill then reports is a separate step, and it is yours (see "Judge every finding"
+below).
 
 ## 2. Show the table and the order
 
