@@ -130,8 +130,10 @@ _<Optional: one sentence on what comes after that>_
 - One line per item, and at most one link per item: the ticket or doc that best explains it.
 - Every item makes sense to someone who does not click its link.
 - Lead with what a reader can now do or will be able to do, not with the work done.
-- Say it the way you would say it to a colleague. Ticket titles are often written as formal claims
-  ("An internal user is an admin exactly when…"); never copy one, and say what it means plainly.
+- Say it the way you would say it to a colleague. Write to inform a junior teammate, not to impress
+  a leader: the test is whether a reader got through it quickly and understood the facts. Ticket
+  titles are often written as formal claims ("An internal user is an admin exactly when…"); never
+  copy one, and say what it means plainly.
 - A decision reads "Decided with <@U…>: <what was decided>", naming who decided it.
 - A PR is a fine link when no ticket covers the item.
 - For leaders, leave out system names. For engineers, system names are fine, but outcomes still
