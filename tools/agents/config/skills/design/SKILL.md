@@ -30,6 +30,12 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
    - Any related types or transformations this feature extends or composes with
 4. Identify: what raw input enters the system, what final output exits, and what intermediate states
    exist between them.
+5. Run once every call to another program that the design's I/O makes and this work has not run
+   yet: a CLI command, an API method, an action in another app. The approach may have named a call
+   without running it, and the design adds calls of its own. Use arguments that change nothing,
+   such as an ID that does not exist, and read what comes back. A call that is refused, or that
+   answers in a shape the boundary types don't expect, goes back to the user before Phase 2, since
+   the approach may no longer hold.
 
 ### Phase 2: Consider Alternatives
 
