@@ -163,7 +163,7 @@ class RelatedFolders(MachineTest):
 
         self.assertEqual(
             run.claude,
-            ["--permission-mode", "bypassPermissions", "--add-dir", str(plans), "/review"],
+            ["--permission-mode", "bypassPermissions", f"--add-dir={plans}", "/review"],
             run.stderr,
         )
 

@@ -59,7 +59,7 @@ main() {
   local dirs=() added=() dir
   while IFS= read -r dir; do
     if [[ -d "${dir}" ]]; then
-      dirs+=(--add-dir "${dir}")
+      dirs+=("--add-dir=${dir}")
       added+=("$(cd "${dir}" && pwd -P)")
       debug "📂 Adding ${dir}"
     else
@@ -71,10 +71,12 @@ main() {
   local plans
   plans="$(org_plans_dir ${added[@]+"${added[@]}"})"
   if [[ -n "${plans}" ]]; then
-    dirs+=(--add-dir "${plans}")
+    dirs+=("--add-dir=${plans}")
     debug "📂 Adding ${plans}"
   fi
 
+  # Each folder is one --add-dir=<dir> argument. --add-dir takes every argument up to the next flag,
+  # so as a separate pair it would read the caller's prompt as one more folder.
   # The guarded expansion keeps an empty list from failing under bash 3.2's set -u
   exec claude --permission-mode "${mode}" ${dirs[@]+"${dirs[@]}"} "$@"
 }

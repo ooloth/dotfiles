@@ -173,10 +173,8 @@ class MappedFolder(unittest.TestCase):
             [
                 "--permission-mode",
                 "bypassPermissions",
-                "--add-dir",
-                "../infra",
-                "--add-dir",
-                "../docs",
+                "--add-dir=../infra",
+                "--add-dir=../docs",
                 "--continue",
             ],
         )
@@ -190,7 +188,7 @@ class MappedFolder(unittest.TestCase):
 
         self.assertEqual(run.status, 0, run.output)
         self.assertEqual(
-            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", "../docs"]
+            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir=../docs"]
         )
         self.assertIn("../infra", run.output)
 
@@ -212,7 +210,7 @@ class PlansFolder(unittest.TestCase):
         self.assertEqual(run.status, 0, run.output)
         self.assertEqual(
             run.claude,
-            ["--permission-mode", "bypassPermissions", "--add-dir", str(plans), "--continue"],
+            ["--permission-mode", "bypassPermissions", f"--add-dir={plans}", "--continue"],
         )
         self.assertIn(str(plans), run.output)
 
@@ -225,7 +223,7 @@ class PlansFolder(unittest.TestCase):
         run = self.machine.run(cwd=worktree)
 
         self.assertEqual(
-            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", str(plans)]
+            run.claude, ["--permission-mode", "bypassPermissions", f"--add-dir={plans}"]
         )
 
     def test_comes_after_the_listed_folders_and_before_the_users_arguments(self) -> None:
@@ -239,10 +237,8 @@ class PlansFolder(unittest.TestCase):
             [
                 "--permission-mode",
                 "bypassPermissions",
-                "--add-dir",
-                "../infra",
-                "--add-dir",
-                str(plans),
+                "--add-dir=../infra",
+                f"--add-dir={plans}",
                 "--continue",
             ],
         )
@@ -253,7 +249,7 @@ class PlansFolder(unittest.TestCase):
         run = self.machine.run_with_map(["../plans"])
 
         self.assertEqual(
-            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", "../plans"]
+            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir=../plans"]
         )
 
     def test_a_session_inside_the_plans_folder_does_not_add_it(self) -> None:
@@ -269,8 +265,38 @@ class PlansFolder(unittest.TestCase):
         run = self.machine.run()
 
         self.assertEqual(
-            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", str(plans)]
+            run.claude, ["--permission-mode", "bypassPermissions", f"--add-dir={plans}"]
         )
+
+
+# Claude Code's flags that take every following argument until the next flag. Written as a separate
+# argument before the caller's own, any of these would swallow the caller's prompt.
+VARIADIC_FLAGS = {
+    "--add-dir",
+    "--allowedTools",
+    "--allowed-tools",
+    "--betas",
+    "--disallowedTools",
+    "--disallowed-tools",
+    "--file",
+    "--mcp-config",
+    "--tools",
+}
+
+
+class AddedFolders(unittest.TestCase):
+    def test_none_leaves_a_flag_waiting_for_the_callers_arguments(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            machine = Machine(Path(tmp))
+            machine.sibling("plans")
+            machine.sibling("infra")
+
+            run = machine.run_with_map(["../infra"], "review this")
+
+        assert run.claude is not None, run.output
+        added = run.claude[:-1]
+        self.assertEqual(run.claude[-1], "review this")
+        self.assertEqual(VARIADIC_FLAGS.intersection(added), set(), added)
 
 
 class Arguments(unittest.TestCase):
@@ -289,6 +315,27 @@ class Arguments(unittest.TestCase):
             run = Machine(Path(tmp)).run(*args)
 
         self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions", *args], run.output)
+
+    @settings(max_examples=50, deadline=None)
+    @given(
+        st.lists(
+            st.text(
+                st.characters(blacklist_categories=("Cs",), blacklist_characters="\x00"),
+                max_size=12,
+            )
+        )
+    )
+    def test_reach_claude_unchanged_after_an_added_folder(self, args: list[str]) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            machine = Machine(Path(tmp))
+            plans = machine.sibling("plans")
+            run = machine.run(*args)
+
+        self.assertEqual(
+            run.claude,
+            ["--permission-mode", "bypassPermissions", f"--add-dir={plans}", *args],
+            run.output,
+        )
 
 
 if __name__ == "__main__":
