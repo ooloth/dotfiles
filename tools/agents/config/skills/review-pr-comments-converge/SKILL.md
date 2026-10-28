@@ -55,7 +55,7 @@ when two other worktrees both hold it, when uncommitted tracked changes are in t
 move would replace an untracked or gitignored file. After a switch or a fast-forward it prints the
 command that undoes it. The script's docstring has the full rules.
 
-### `scripts/fetch_pr_comments.py <pr-number>`
+### `scripts/fetch_pr_comments.py <pr-number> [--repo OWNER/NAME]`
 
 Fetches all inline comments, review body comments and PR conversation comments via the GitHub
 GraphQL API. Conversation comments are the PR timeline, where some review bots post their whole
@@ -108,10 +108,11 @@ not ask first: the helper only acts when nothing can be lost.
 On exit 1, stop before Phase 2. Relay the helper's reason to the user and ask how to proceed. Do
 not work around the refusal by switching branches yourself.
 
-**Fetch all PR comments** by running the fetch helper from the working root:
+**Fetch all PR comments** by running the fetch helper from the working root, naming the repo the
+checkout helper resolved:
 
 ```bash
-uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number>
+uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number> --repo <owner>/<repo>
 ```
 
 Also fetch the PR description for context on intent:
