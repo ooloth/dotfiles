@@ -39,6 +39,17 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 
 ### Phase 2: Consider Alternatives
 
+When the slice changes what an agent does, such as a skill, an agent definition or an instruction
+file, the design is the instructions rather than a type progression: the bar the agent's output
+must meet, and replays that test it, each a real input given to a fresh agent and what its output
+must show to pass. Phase 7 then presents `# Design`, the bar, and a `## Replays 🧪` table with
+`Input`, `A pass shows` and `Property` columns, in place of the types, assertions and telemetry
+sections. Code in the slice, whether the approach named it or this design adds it, is justified
+only by a replay that showed the instructions failing, or by a property prose cannot deliver at
+all, such as narrowing a permission. Code without that justification, even when the approach
+calls for it, is the first open decision, and the design presents the instructions-only version
+beside it. Phases 3 to 6 apply only to code that is justified.
+
 First, state the properties the design is scored against. Where `/discuss` produced a target
 properties list, carry it forward and translate each into what it demands of the types. Do not
 re-derive it. Where none exists, derive it here from what the code will actually do, and name what

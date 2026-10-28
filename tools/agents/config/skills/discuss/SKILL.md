@@ -67,6 +67,16 @@ contradicts one is not taken quietly: superseding the record is an open decision
 presented under **Open decisions** with the record linked. Where applying a record to this task
 takes interpretation, whether it applies is also an open decision.
 
+When the work changes what an agent does, such as a skill, an agent definition or an instruction
+file, the system is the agent, and what it mostly runs on is the model's judgement. Its properties
+are observed by replaying fresh agents on real inputs, not by types or tests of code. The first
+option scored is instructions alone: the bar the agent's output must meet, with the method left to
+the model. An option that adds code to the skill, such as a script, a parser or a fixed output
+format, is scored against that one. It wins only on a property a replay showed the instructions
+failing, or on one that prose cannot deliver at all, such as narrowing a permission. Code that
+makes a judgement the model could make limits what the model can produce, and is scored as that
+cost.
+
 1. Derive the properties a good answer must have, from what the system will actually do, before
    considering any option. Not from what the ticket or existing docs say it needs; that is the
    previous author's list and it reads as complete because it was written as a summary. State each
