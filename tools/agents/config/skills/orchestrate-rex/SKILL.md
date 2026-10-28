@@ -248,9 +248,9 @@ When the user ends the day before the batch is done, hand it off, so a new orche
 it up from files alone:
 
 1. **Keep every artifact.** Copy every brief, report, draft and approved body from your scratch
-   directory into `handoffs/<date>-<batch-name>/`, in the folder that holds the batch's repos.
-   The scratch directory doesn't outlive the session. If a review is still running, point its
-   report path into that folder.
+   directory into `~/Repos/agents/handoffs/<date>-<batch-name>/`, whichever org the batch's
+   repos belong to. The scratch directory doesn't outlive the session. If a review is still
+   running, point its report path into that folder.
 2. **Write `handoffs/<date>-<batch-name>.md` beside it,** in the shape of the earlier handoffs
    there:
    - the goal;
