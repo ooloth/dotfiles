@@ -113,6 +113,11 @@ gh pr view --web
 - Link actual Jira/Slack (ask user if not provided)
 - Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or bare GitHub Issue
   URL (since GitHub auto-renders those with a preview)
+- A GitHub issue the PR fully resolves is listed under Related links as `Fixes #N`, one per line,
+  not as a bare URL. A squash merge can take its commit message from the PR body, which drops the
+  branch's own commits and every `Fixes` line in them, so only a closing keyword in the body closes
+  the issue on merge (seen on ooloth/hub#384, 2026-10-28). An issue the PR only relates to stays a
+  bare URL
 
 ### Anti-patterns
 
