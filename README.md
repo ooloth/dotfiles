@@ -71,6 +71,11 @@ bar for proof and leaves the method to the model: every observation's raw output
 quote points to its file, so a reader who wasn't there can check each verdict. The test suite
 doesn't count as any part of the proof.
 
+[merge-and-verify](./tools/agents/config/skills/merge-and-verify/SKILL.md) watches a merged PR's
+rollout and then proves its effect with prove-it-works. It reads the deploy chain from the repo's
+docs, counts the change as serving only when the live artifact's commit contains the merge, and
+checks every five minutes or so in a fresh turn until the watch reaches one of its named endings.
+
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session by finding what would
 mislead the next agent. Every action the session raised gets exactly one status (done, deferred,
 dropped or open) with evidence for it, so a request made in passing can't quietly disappear. It
