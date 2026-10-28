@@ -5,7 +5,16 @@ mcpServers:
   - playwright:
       type: stdio
       command: npx
-      args: ["-y", "@playwright/mcp@0.0.82"]
+      # Screenshots and page snapshots go to a capped cache folder rather than the repo the
+      # session runs in. A screenshot given a filename still lands in the repo, so take them
+      # without one.
+      args:
+        - "-y"
+        - "@playwright/mcp@0.0.82"
+        - "--output-dir"
+        - "${HOME}/Library/Caches/playwright-mcp"
+        - "--output-max-size"
+        - "209715200"
 ---
 
 You are a specialized browser automation agent.

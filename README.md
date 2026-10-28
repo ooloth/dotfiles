@@ -65,8 +65,11 @@ comment is checked against the current code and marked valid, stale or mistaken 
 acts on it. What gets fixed automatically and what gets escalated turns on one question, does
 applying this require the author to make a choice.
 
-[prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) collects evidence from
-running the real system. The test suite doesn't count as any part of the proof.
+[prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) proves or disproves a claim
+about the running system, given one sentence naming the claim or a PR, commit or URL. A recorder
+script saves every command it runs with its raw output, and the report quotes those files rather
+than retyping them, so a verdict can be checked against what actually printed. The test suite
+doesn't count as any part of the proof.
 
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session by finding what would
 mislead the next agent. Every action the session raised gets exactly one status (done, deferred,

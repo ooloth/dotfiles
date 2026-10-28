@@ -353,8 +353,9 @@ are for work already approved.
 5. Run all automated checks
 6. Check: does any behavior this change introduces lack test coverage? If so, add a test before
    moving on. Then run all tests.
-7. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint,
-   trigger the event, eyeball the output, whatever applies. The status report must include one of:
+7. Manually verify the change works with `prove-it-works`, giving it the claim to prove. Do not
+   rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output,
+   whatever applies. The status report must include one of:
    - **What you ran and what you observed** (e.g. "ran X, saw Y in the output")
    - **Why end-to-end execution is impossible here** and what the user should run and look for
      instead.

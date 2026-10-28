@@ -183,9 +183,10 @@ send the failures to the step 3 implementer and run the checks again once it ret
 
 ## 6. Prove it
 
-Spawn a subagent to run `prove-it-works` on the change. Its artifacts are the commands it ran,
-their exit codes and the output it captured. "Tests pass" is not evidence for this step. Before
-using its verdict, open one captured output yourself. If it shows the change does not work, send
+Spawn a subagent to run `prove-it-works`, giving it the approach comment's property table as the
+claim to prove. Its report quotes every observation from the evidence folder it names, and lists
+the observations no finding cites. "Tests pass" is not evidence for this step. Before using its
+verdicts, open one cited observation file in that folder yourself. If a finding is disproven, send
 its evidence to the step 3 implementer, run the checks again, then run this step again.
 
 ## 7. Open the PR
@@ -217,7 +218,8 @@ Post one run-report comment on the ticket, with these sections:
 
 1. **Properties:** a table with one row per property from the approach comment: what observes it,
    its result before the change, its result after, and the mutant it caught.
-2. **Evidence:** what `prove-it-works` ran and what it saw, before and after the change.
+2. **Evidence:** the findings from the `prove-it-works` report, with their before and after
+   observations, and the path of its evidence folder.
 3. **Reviews:** one line per step 8 review round, with its number of "must", "should" and
    "consider" findings, how they were resolved, and the "consider" findings left open.
 4. **Departures:** a numbered list of every departure from the approach and design, each with what
