@@ -3,15 +3,15 @@
 # requires-python = ">=3.11"
 # dependencies = ["hypothesis"]
 # ///
-"""Tests for tools/claude/cc.bash, which starts Claude Code with a repo's related folders.
+"""Tests for tools/claude/cc.bash, which starts Claude Code told where a repo's related repos are.
 
 Run with: uv run tools/claude/tests/test_cc.py
 
 Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
 expects it, and runs the script under macOS's own bash from a folder beside its siblings. A `claude`
-stub on PATH records its arguments separated by NUL bytes, so no test reaches the real Claude Code. The
-shipped map lists no folders, so the tests of the map's handling source the real cc.bash and
-replace only its `related_dirs` lookup before calling `main`.
+stub on PATH records its arguments separated by NUL bytes, so no test reaches the real Claude Code.
+The tests of the map's handling in general source the real cc.bash and replace only its
+`related_repos` lookup before calling `main`; the shipped entries are tested as shipped.
 """
 
 from __future__ import annotations
@@ -120,7 +120,7 @@ class Machine:
     ) -> Run:
         """Run the shipped cc.bash with its lookup replaced by one that lists `related`."""
         lines = "".join(f"printf '%s\\n' {r!r}; " for r in related)
-        program = f'source "$1"; related_dirs() {{ {lines}:; }}; shift; main "$@"'
+        program = f'source "$1"; related_repos() {{ {lines}:; }}; shift; main "$@"'
         command = ["/bin/bash", "-c", program, "_", str(REPO / SCRIPT), *args]
         return self._run(command, computer, cwd)
 
@@ -161,11 +161,11 @@ class MappedFolder(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def test_adds_each_related_folder_in_order_before_the_users_arguments(self) -> None:
-        self.machine.sibling("infra")
-        self.machine.sibling("docs")
+    def test_names_each_related_repo_in_order_before_the_users_arguments(self) -> None:
+        infra = self.machine.sibling("infra")
+        docs = self.machine.sibling("docs")
 
-        run = self.machine.run_with_map(["../infra", "../docs"], "--continue")
+        run = self.machine.run_with_map(["infra", "docs"], "--continue")
 
         self.assertEqual(run.status, 0, run.output)
         self.assertEqual(
@@ -173,26 +173,98 @@ class MappedFolder(unittest.TestCase):
             [
                 "--permission-mode",
                 "bypassPermissions",
-                "--add-dir",
-                "../infra",
-                "--add-dir",
-                "../docs",
+                "--append-system-prompt",
+                f"{hint('infra', infra)}\n{hint('docs', docs)}",
                 "--continue",
             ],
         )
-        self.assertIn("../infra", run.output)
-        self.assertIn("../docs", run.output)
 
-    def test_skips_a_related_folder_that_is_not_cloned_and_names_it(self) -> None:
-        self.machine.sibling("docs")
+    def test_says_a_related_repo_is_not_cloned_where_it_was_looked_for(self) -> None:
+        docs = self.machine.sibling("docs")
 
-        run = self.machine.run_with_map(["../infra", "../docs"])
+        run = self.machine.run_with_map(["infra", "docs"])
 
         self.assertEqual(run.status, 0, run.output)
+        infra = self.machine.repos / "infra"
         self.assertEqual(
-            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", "../docs"]
+            run.claude,
+            [
+                "--permission-mode",
+                "bypassPermissions",
+                "--append-system-prompt",
+                f"Related repo: `infra` is not cloned at `{infra}`.\n{hint('docs', docs)}",
+            ],
         )
-        self.assertIn("../infra", run.output)
+
+    def test_a_worktree_finds_related_repos_beside_its_main_checkout(self) -> None:
+        infra = self.machine.sibling("infra")
+        self.machine.make_git_repo(self.machine.app)
+        worktree = self.machine.repos / "app-worktrees" / "feature"
+        self.machine.add_worktree(self.machine.app, worktree)
+
+        run = self.machine.run_with_map(["infra"], cwd=worktree)
+
+        self.assertEqual(
+            run.claude,
+            [
+                "--permission-mode",
+                "bypassPermissions",
+                "--append-system-prompt",
+                hint("infra", infra),
+            ],
+            run.output,
+        )
+
+
+def hint(name: str, path: Path) -> str:
+    """The system prompt line that tells a session about one related repo."""
+    return (
+        f"Related repo: `{name}` at `{path}`. It is a working checkout that may be on a feature"
+        " branch or behind origin. To read origin's current default branch, run"
+        " `git -C <path> fetch origin` and then `git -C <path> show origin/HEAD:<file>`. Don't"
+        " change its branch or files; to change that repo, add a worktree beside it."
+    )
+
+
+class SiteOutreachRepos(unittest.TestCase):
+    """react-clinops-siteoutreach and bc-eng-clinical each tell a session about the other."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.machine = Machine(Path(self._tmp.name))
+        self.app_repo = self.machine.sibling("react-clinops-siteoutreach")
+        self.infra_repo = self.machine.sibling("bc-eng-clinical")
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_each_checkout_worktree_and_clone_names_the_other_repo_on_the_work_laptop(
+        self,
+    ) -> None:
+        cases = {
+            "react-clinops-siteoutreach": ("bc-eng-clinical", self.infra_repo),
+            "react-clinops-siteoutreach-ceng-186": ("bc-eng-clinical", self.infra_repo),
+            "bc-eng-clinical": ("react-clinops-siteoutreach", self.app_repo),
+            "bc-eng-clinical-ceng-295": ("react-clinops-siteoutreach", self.app_repo),
+            "bc-eng-clinical-valid": ("react-clinops-siteoutreach", self.app_repo),
+        }
+        for folder_name, (name, path) in cases.items():
+            with self.subTest(folder=folder_name):
+                folder = self.machine.repos / folder_name
+                folder.mkdir(exist_ok=True)
+
+                run = self.machine.run(computer="work", cwd=folder)
+
+                self.assertEqual(
+                    run.claude,
+                    ["--permission-mode", "auto", "--append-system-prompt", hint(name, path)],
+                    run.output,
+                )
+
+    def test_personal_macs_name_nothing(self) -> None:
+        run = self.machine.run(cwd=self.infra_repo)
+
+        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
 
 
 class PlansFolder(unittest.TestCase):
@@ -228,11 +300,11 @@ class PlansFolder(unittest.TestCase):
             run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", str(plans)]
         )
 
-    def test_comes_after_the_listed_folders_and_before_the_users_arguments(self) -> None:
+    def test_comes_before_the_related_repos_and_the_users_arguments(self) -> None:
         plans = self.machine.sibling("plans")
-        self.machine.sibling("infra")
+        infra = self.machine.sibling("infra")
 
-        run = self.machine.run_with_map(["../infra"], "--continue")
+        run = self.machine.run_with_map(["infra"], "--continue")
 
         self.assertEqual(
             run.claude,
@@ -240,20 +312,11 @@ class PlansFolder(unittest.TestCase):
                 "--permission-mode",
                 "bypassPermissions",
                 "--add-dir",
-                "../infra",
-                "--add-dir",
                 str(plans),
+                "--append-system-prompt",
+                hint("infra", infra),
                 "--continue",
             ],
-        )
-
-    def test_is_not_added_twice_when_the_map_already_lists_it(self) -> None:
-        self.machine.sibling("plans")
-
-        run = self.machine.run_with_map(["../plans"])
-
-        self.assertEqual(
-            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", "../plans"]
         )
 
     def test_a_session_inside_the_plans_folder_does_not_add_it(self) -> None:
