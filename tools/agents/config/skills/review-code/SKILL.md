@@ -41,6 +41,18 @@ gh pr view <n> -R <owner>/<repo> --json title,body,number
 
 Store the title and body for use in Step 2. Store the PR number for Step 5.
 
+**For PR scope, also fetch what earlier reviewers said:**
+
+```bash
+uv run <skill-base-dir>/../review-pr-comments-converge/scripts/fetch_pr_comments.py <n> --repo <owner>/<repo>
+```
+
+It prints every review, every inline thread with its replies, and every PR conversation comment,
+which is where some bots post their reviews. A default `gh pr view` shows none of these. Keep the
+output in this session for Step 4 and out of every agent's prompt and the Step 2 intent block: an
+agent handed an earlier verdict tends to return it confirmed, and the point of this review is a
+read that isn't anchored on anyone else's.
+
 Output the reviewable file list and diff command before proceeding. When the skip rules leave
 nothing because every changed file is a lockfile or package manifest, say so and name those files
 as going to Step 1a.
@@ -187,6 +199,7 @@ the tool's `model` parameter to `"sonnet"`. Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
+- Nothing from the earlier reviews fetched in Step 1, not even that they exist
 - Its specific instructions below
 - This line, verbatim: "Read the files yourself. Do not spawn subagents."
 - This provenance requirement, verbatim:
@@ -570,6 +583,19 @@ Only carry verified findings into Step 4.
 Produce a prioritized action list — not a categorized findings report. The reader's question is
 "what should I change?" Answer it directly.
 
+**First, reconcile with the earlier reviews fetched in Step 1.** Both paths reach this step, the
+agents' and Step 1a's. Read each earlier finding and open question, and give it one verdict:
+
+- **agreed**: your own evidence supports it. Cite that evidence, not theirs.
+- **disputed**: your evidence contradicts it. Say what you found.
+- **answered**: it was an open question, or a check the reviewer could not run, and your work
+  settles it.
+- **not checked**: nothing you did bears on it. Say so rather than adopting their claim.
+
+An earlier finding is a claim to verify, not a finding of yours. One you have not checked does not
+enter Findings, however confident it sounds. Note where a review describes an older commit than the
+one you reviewed, and whether a thread is already resolved. Skip praise, summaries and boilerplate.
+
 ```
 ## Code Review
 
@@ -609,6 +635,12 @@ Produce a prioritized action list — not a categorized findings report. The rea
 **Generalisable?** [One of: this was specific to this change, nothing to close. | This is a
 category — [what recurs] — close it by [adding a standing 13th agent for X / adding a standard to
 `~/.agents/standards/<file>.md` saying Y / both].]
+
+### Prior reviews
+[Omit this section entirely if nobody else has reviewed or commented.]
+
+- **[reviewer] ([date]), [their claim in a few words]:** [agreed | disputed | answered | not
+  checked]. [Your evidence in one sentence.]
 
 ### Looks Good
 [One sentence: what the change gets right, or which concern areas came back clean.]
@@ -660,7 +692,9 @@ On any answer other than "skip":
 
 - Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE;
   request-changes → REQUEST_CHANGES; comment → COMMENT
-- Write a 2–3 sentence overall summary for the review body (see audience guidance below)
+- Write a 2–3 sentence overall summary for the review body (see audience guidance below). Where an
+  earlier review raised a point, refer to it by reviewer instead of restating it, and say so when
+  your work answered a question it left open or disputes something it claimed.
 - Collect every finding that has a `file:line` reference as an inline comment
 - Get the PR's head commit, so the comments stay pinned to the code you reviewed:
   `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid -q .headRefOid`
