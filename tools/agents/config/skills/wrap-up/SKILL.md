@@ -28,14 +28,6 @@ instructions for words such as "future", "planned", "not yet", "TODO" and "WIP".
 A problem that predates the session is still in scope when it sits in a file the scope covers and
 a fresh agent working there would hit it. Mark it as pre-existing.
 
-The full transcript of this session is at `~/.claude/projects/<cwd-slug>/<session-id>.jsonl` if you
-need to check what was said. The slug is the starting directory with `/` and `.` replaced by `-`.
-The session ID is the name of the scratchpad's parent directory. The directory names start with
-`-`, so from inside `~/.claude/projects`, glob them as `./*/*.jsonl`, or tools like grep read them
-as options. Messages are the records whose top-level `type` is `user` or `assistant`. A `user`
-record is something the user typed only when its `message.content` is a string and it has no
-`isMeta: true`. Subagent transcripts are under `<session-id>/subagents/`.
-
 ## Order of work
 
 The wait is set by the slowest subagent, so start the subagents first:
@@ -51,22 +43,8 @@ The wait is set by the slowest subagent, so start the subagents first:
 
 ## Step 1: Account for every action
 
-List every action that came up in the session:
-
-- What the user asked for, including requests made in passing inside longer messages
-- What you said you would do ("I'll also", "later", "next", "follow-up")
-- Questions you asked that the user never answered
-- Approvals the user gave that you never acted on
-- Tool calls that failed or were denied and were never retried or worked around, including calls
-  whose output looked fine but hid an error, such as empty output with stderr discarded
-
-Give each one exactly one status, with its evidence:
-
-- **Done:** the commit, `file:line` or URL that shows it
-- **Deferred:** where it is recorded (a ticket, a `docs/questions/` file)
-- **Dropped:** the user's words deciding that
-- **Open:** none of the above. An item the user never ruled on is Open, even when they approved a
-  list that left it out.
+Account for every action as the `wrap-up-session` skill's first section describes. Step 3's
+ledger reports the result.
 
 ## Step 2: Find what would mislead the next agent
 
