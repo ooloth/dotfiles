@@ -268,6 +268,8 @@ class SiteOutreachRepos(unittest.TestCase):
 
 
 class PlansFolder(unittest.TestCase):
+    """Plans moved to the content vault, which the next-step skill finds by its own path."""
+
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
         self.machine = Machine(Path(self._tmp.name))
@@ -275,65 +277,14 @@ class PlansFolder(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def test_adds_the_plans_folder_beside_a_repo_with_no_entry(self) -> None:
-        plans = self.machine.sibling("plans")
+    def test_a_plans_folder_beside_the_repo_is_not_added(self) -> None:
+        self.machine.sibling("plans")
         self.machine.make_git_repo(self.machine.app)
 
         run = self.machine.run("--continue")
 
         self.assertEqual(run.status, 0, run.output)
-        self.assertEqual(
-            run.claude,
-            ["--permission-mode", "bypassPermissions", "--add-dir", str(plans), "--continue"],
-        )
-        self.assertIn(str(plans), run.output)
-
-    def test_a_worktree_finds_the_plans_folder_beside_its_main_checkout(self) -> None:
-        plans = self.machine.sibling("plans")
-        self.machine.make_git_repo(self.machine.app)
-        worktree = self.machine.repos / "app-worktrees" / "feature"
-        self.machine.add_worktree(self.machine.app, worktree)
-
-        run = self.machine.run(cwd=worktree)
-
-        self.assertEqual(
-            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", str(plans)]
-        )
-
-    def test_comes_before_the_related_repos_and_the_users_arguments(self) -> None:
-        plans = self.machine.sibling("plans")
-        infra = self.machine.sibling("infra")
-
-        run = self.machine.run_with_map(["infra"], "--continue")
-
-        self.assertEqual(
-            run.claude,
-            [
-                "--permission-mode",
-                "bypassPermissions",
-                "--add-dir",
-                str(plans),
-                "--append-system-prompt",
-                hint("infra", infra),
-                "--continue",
-            ],
-        )
-
-    def test_a_session_inside_the_plans_folder_does_not_add_it(self) -> None:
-        plans = self.machine.sibling("plans")
-
-        run = self.machine.run(cwd=plans)
-
-        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
-
-    def test_outside_a_git_repo_it_is_found_beside_the_current_folder(self) -> None:
-        plans = self.machine.sibling("plans")
-
-        run = self.machine.run()
-
-        self.assertEqual(
-            run.claude, ["--permission-mode", "bypassPermissions", "--add-dir", str(plans)]
-        )
+        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions", "--continue"])
 
 
 class Arguments(unittest.TestCase):

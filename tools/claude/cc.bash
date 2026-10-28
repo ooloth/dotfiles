@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Starts Claude Code with the permission mode for this machine, told where the repos related to the
 # current repo are cloned. A repo with no entry starts exactly as plain
-# `claude --permission-mode <mode>`. The org's plans folder, where the next-step skill keeps each
-# goal's plan, is added whenever it exists.
+# `claude --permission-mode <mode>`.
 #
 # Related repos are named in the system prompt rather than added with --add-dir, because a clone is
 # a working checkout that may be on any branch: adding it would load its CLAUDE.md and present its
@@ -43,16 +42,6 @@ org_folder() {
   fi
 }
 
-# The org's plans folder, unless it is missing or is the current folder
-org_plans_dir() {
-  local plans
-  plans="$(org_folder)/plans"
-  [[ -d "${plans}" ]] || return 0
-  plans="$(cd "${plans}" && pwd -P)"
-  [[ "${plans}" != "$(pwd -P)" ]] || return 0
-  printf '%s\n' "${plans}"
-}
-
 # The system prompt line about one related repo, given its name and where it should be cloned
 # shellcheck disable=SC2016 # The backticks are markdown for the session, not command substitution
 related_repo_hint() {
@@ -71,14 +60,7 @@ main() {
     mode="auto"
   fi
 
-  local claude_args=() plans
-  plans="$(org_plans_dir)"
-  if [[ -n "${plans}" ]]; then
-    claude_args+=(--add-dir "${plans}")
-    debug "📂 Adding ${plans}"
-  fi
-
-  local org hints="" name
+  local claude_args=() org hints="" name
   org="$(org_folder)"
   while IFS= read -r name; do
     hints+="$(related_repo_hint "${name}" "${org}/${name}")"$'\n'
