@@ -367,19 +367,27 @@ are for work already approved.
    approval before implementing it (step 3). A PR you draft stays a draft until an independent
    self-review has run on it and the user has dealt with its findings. Only then is it marked ready
    for teammates to review.
-   - **Offer to start the review; don't run it yourself.** Once the user accepts, open a fresh
+   - **Offer to start the review once every slice this session will complete is committed; don't
+     run it yourself.** The review comes before shipping, not after each slice, so thin slices
+     don't each wait on one. Once the user accepts, open a fresh
      session in a new terminal tab: a Rex tab started with the launcher the `use-rex` skill names
      when `REX_SESSION` is set, otherwise a tmux window running
      `bash "$DOTFILES/tools/claude/cc.bash"`. Never start `claude` with a permission mode of your
      own choosing. Name it after the PR and the review skill it runs (`review-code`,
      `review-adversarial`, `review-pr-comments-converge`, …): a Rex tab as `👀 PR 573: review-code`,
      a tmux window as `pr-573-review-code`. Give the reviewer the PR and nothing from this session.
-   - **The user works with the reviewer directly.** Don't read, verify, summarise or relay the
-     reviewer's findings, and don't ask the user about them. Being the go-between turns one
-     reviewer's report into a second, longer report the user has to untangle.
-   - **Track the review until it's resolved.** Every status report ends with a one-line list of the
-     reviews started and not yet resolved, each with its tab name, until the user says a review is
-     resolved. A PR with an unresolved review is not marked ready.
+   - **Starting the review ends this session's part in the work.** This session does not read,
+     verify, summarise or relay the reviewer's findings, and does not wait for them.
+   - **The message that starts the review is the handoff.** It is written for a user about to close
+     this session for good. It makes step 11's offer, then lists everything the session leaves
+     open:
+     - changes in the working tree that are not committed, and commits that are not pushed
+     - drafts shown to the user and not yet posted, and decisions still open in the conversation
+     - anything this session knows that is written nowhere a fresh session can read, with where it
+       belongs (a ticket comment, the PR body, a decision record) and an offer to put it there
+
+     It ends by saying the session can be closed once each item is dealt with, or now if there are
+     none.
 10. Repeat for the remaining changes
 11. Before closing, ask: did this work establish an invariant that must always hold, or a reusable
     standard for approaching this kind of problem? If not, say nothing. If so, offer to record it in

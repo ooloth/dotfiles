@@ -136,8 +136,12 @@ Build a context block that every agent receives. Gather from these sources in pr
    recorded in comments, and a default read omits them. GitHub:
    `gh issue view <n> -R <owner>/<repo> --json title,body,comments`. Jira: invoke `use-jira` and
    request the `comment` field.
-3. **Commit messages** — `git log <base>...HEAD --format="%s%n%b"`
-4. **The diff itself** — read for intent when other sources are thin
+3. **Decision records the PR, its tickets or the diff cite** — each cited record in full
+   (`DECISIONS.md` entries, ADRs, `docs/decisions/`), read at the PR's head commit, including any
+   record the diff amends. Carry its decision, rejected options and revisit triggers into Recorded
+   decisions.
+4. **Commit messages** — `git log <base>...HEAD --format="%s%n%b"`
+5. **The diff itself** — read for intent when other sources are thin
 
 Consider everything in the ticket for inclusion in the block below, and carry what binds the
 review: numbered properties (`P1`, `P2`, …), the options the ticket rejected and why, choices
