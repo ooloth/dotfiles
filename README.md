@@ -66,9 +66,9 @@ acts on it. What gets fixed automatically and what gets escalated turns on one q
 applying this require the author to make a choice.
 
 [prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) proves or disproves a claim
-about the running system, given one sentence naming the claim or a PR, commit or URL. A recorder
-script saves every command it runs with its raw output, and the report quotes those files rather
-than retyping them, so a verdict can be checked against what actually printed. The test suite
+about the running system, given one sentence naming the claim or a PR, commit or URL. It sets the
+bar for proof and leaves the method to the model: every observation's raw output is saved and every
+quote points to its file, so a reader who wasn't there can check each verdict. The test suite
 doesn't count as any part of the proof.
 
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session by finding what would

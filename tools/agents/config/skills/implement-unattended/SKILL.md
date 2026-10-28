@@ -184,10 +184,11 @@ send the failures to the step 3 implementer and run the checks again once it ret
 ## 6. Prove it
 
 Spawn a subagent to run `prove-it-works`, giving it the approach comment's property table as the
-claim to prove. Its report quotes every observation from the evidence folder it names, and lists
-the observations no finding cites. "Tests pass" is not evidence for this step. Before using its
-verdicts, open one cited observation file in that folder yourself. If a finding is disproven, send
-its evidence to the step 3 implementer, run the checks again, then run this step again.
+claim to prove. Its report points each quote at the raw output it saved in the evidence folder
+it names, and shows the attempts that failed. "Tests pass" is not evidence for this step. Before
+using its verdicts, open one cited observation file in that folder yourself. If a finding is
+disproven, send its evidence to the step 3 implementer, run the checks again, then run this step
+again.
 
 ## 7. Open the PR
 
