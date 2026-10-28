@@ -59,11 +59,17 @@ command that undoes it. The script's docstring has the full rules.
 
 Fetches all inline comments, review body comments and PR conversation comments via the GitHub
 GraphQL API. Conversation comments are the PR timeline, where some review bots post their whole
-review; they appear last, oldest first. Each inline comment in the output includes:
+review; they appear last, oldest first, each with when it was posted. Each review shows the commit
+it was submitted against and when. Each inline comment in the output includes:
 
 - **`comment_id`** — the integer ID needed to post a reply
 - **`thread_id`** — the node ID needed to resolve the conversation thread
+- **`outdated`** — `yes` when the code the comment was left on has changed since
 - **`path:line`** — on the `COMMENT` header line, the file and line the comment is attached to
+
+It fetches every page of every list. When it cannot (a thread with more replies than one request
+returns, or `gh` failing), it exits 1 with the reason instead of printing a partial picture. The
+review-code skill calls this script too, so a change to its output reaches both.
 
 ### `scripts/reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]`
 
