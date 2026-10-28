@@ -56,13 +56,23 @@ try a change to the saver without touching your sessions, run `tests/live_restor
 
 Rex keeps sessions only in the server's memory, so a reboot or a server restart loses them.
 `saver.py` brings them back: each session's tabs, splits and split sizes, labels, working
-directories and active tab. Running programs and terminal output do not come back, and nothing but
-layouts and directories is written to disk. [Decision 006][006] records why it is a Python script.
+directories and active tab, and the session the app was showing. Running programs and terminal
+output do not come back, and nothing but layouts, directories and the position of the session the
+app showed is written to disk. [Decision 006][006] records why it is a Python script.
 
 `config/init.lua` starts it with `uv run --offline` each time the server loads its config. Only one
 copy runs, because each holds a lock in `~/.local/state/rex-restore/`. The first time it runs on a
 newly started server, it rebuilds the sessions in `latest.json`. After that it saves each change
 within about a second and keeps the last 20 distinct layouts in `history/`.
+
+It also saves which session Rex.app was showing, read from the app's `Workspace.lastFocusedSession`
+preference. Switching sessions rewrites `latest.json` but adds nothing to `history/`. When the app
+finds a new server empty, it opens an empty session of its own and shows it. The saver rebuilds the
+saved focused session inside that one, then closes the app's original tab, so the app ends up
+showing the right session without being asked. It has to work that way because the app refuses
+actions such as `session.select` from scripts unless Remote Control is on in its settings. It reuses
+only a session with one tab, one pane and a shell running nothing. If the app connects after the
+restore, there is no empty session, and the app shows the first session instead.
 
 `shell.zsh` reports each pane's directory to Rex on `cd`, and prints a red warning above the prompt
 in Rex panes when the saver has stopped or reports a problem. `saver.log` in the same directory

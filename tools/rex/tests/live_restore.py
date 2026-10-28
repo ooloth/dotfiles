@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import plistlib
 import re
 import subprocess
 import sys
@@ -59,7 +60,15 @@ class Server:
         self.scratch = scratch
         self.state = scratch / "state"
         self.config = scratch / "init.lua"
+        self.preferences = scratch / "app.plist"
+        # The saver starts only while this file exists, so a test can make a session first, as the
+        # app does when it finds a new server empty.
+        self.gate = scratch / "start-saver"
+        self.gate.touch()
         self.config.write_text(
+            f"local gate = io.open({json.dumps(str(self.gate))})\n"
+            "if gate then\n"
+            "gate:close()\n"
             "rex.exec.start({"
             + ", ".join(
                 json.dumps(str(a))
@@ -77,9 +86,12 @@ class Server:
                     self.socket,
                     "--rex",
                     rex,
+                    "--app-preferences",
+                    self.preferences,
                 ]
             )
             + "}, { detach = true, stdout = false, stderr = false })\n"
+            "end\n"
         )
         self.session = f"rexlive{os.getpid()}"
 
@@ -122,6 +134,12 @@ class Server:
         pattern = f"[Pp]ython[^ ]* [^ ]*saver\\.py run --state-dir {self.state}"
         done = subprocess.run(["pgrep", "-f", "--", pattern], capture_output=True)
         return len(done.stdout.split())
+
+
+def focus_the_app_on(server: Server, session_id: str) -> None:
+    """Write the preference the Rex app keeps for the session it shows."""
+    value = json.dumps({"sessionID": session_id}).encode()
+    server.preferences.write_bytes(plistlib.dumps({"Workspace.lastFocusedSession": value}))
 
 
 def layout_of(view: dict[str, Any], cwds: dict[str, str]) -> saver.SavedSession:
@@ -223,6 +241,18 @@ def run(server: Server) -> None:
         wait_for("latest.json to list both sessions", lambda: saved_labels() == ["work", "notes"]),
         str(saved_labels()),
     )
+    notes_id = next(v["session_id"] for v in server.sessions() if v["label"] == "notes")
+    focus_the_app_on(server, notes_id)
+
+    def saved_focus() -> int | None:
+        loaded = saver.load_snapshot(latest.read_text())
+        return loaded.value.focused_index if isinstance(loaded, saver.Ok) else None
+
+    check(
+        "the session the app shows is saved by the next poll",
+        wait_for("latest.json to save the focus", lambda: saved_focus() == 1, 40),
+        str(saved_focus()),
+    )
     time.sleep(2)
     before = {v["label"]: v for v in server.sessions()}
     loaded = saver.load_snapshot(latest.read_text())
@@ -259,9 +289,27 @@ def run(server: Server) -> None:
     check("no saved file holds a Rex ID", REX_ID.search(text) is None)
     check("the state directory is private", (server.state.stat().st_mode & 0o077) == 0)
 
-    # Restart the server: everything in memory is gone, and the saver should rebuild it.
+    # Restart the server: everything in memory is gone, and the saver should rebuild it. The app
+    # makes an empty session as soon as it finds the new server empty, before the saver starts.
     server.stop()
+    server.gate.unlink()
     server.start()
+    empty = server.call(
+        "session.create",
+        {"label": "polished-hollow", "initial_windows": [{"layout": {"block": {"flavor": shell}}}]},
+    )
+    empty_block = empty["initial_windows"][0]["block_ids"][0]
+
+    def shell_started() -> bool:
+        process = server.call(
+            "com.superlogical.terminal.process",
+            {"session_id": empty["session_id"], "block_id": empty_block},
+        )
+        return bool(process.get("foreground"))
+
+    wait_for("the empty session's shell", shell_started)
+    server.gate.touch()
+    server.cli("config", "reload")
 
     def restored() -> bool:
         try:
@@ -272,6 +320,25 @@ def run(server: Server) -> None:
 
     check("both sessions come back after the restart", wait_for("the restore", restored, 40))
     after = {v["label"]: v for v in server.sessions()}
+    if "notes" in after:
+        focus_the_app_on(server, after["notes"]["session_id"])
+        check(
+            "the focused session is built into the app's empty session",
+            after["notes"]["session_id"] == empty["session_id"],
+            f"{after['notes']['session_id']} != {empty['session_id']}",
+        )
+        check(
+            "the app's original tab is gone, leaving the saved one",
+            [w["window_id"] for w in after["notes"]["windows"]]
+            != [empty["initial_windows"][0]["window_id"]]
+            and len(after["notes"]["windows"]) == 1,
+            str(after["notes"]["windows"]),
+        )
+        check(
+            "the sessions are in their saved order",
+            [v["label"] for v in server.sessions()] == ["work", "notes"],
+            str([v["label"] for v in server.sessions()]),
+        )
     if "work" in after:
         check(
             "the restored session has the same tabs, splits, labels and active tab",

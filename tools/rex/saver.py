@@ -12,12 +12,15 @@ its config:
     uv run --offline --script tools/rex/saver.py run --state-dir ~/.local/state/rex-restore
 
 One copy runs per server, held by a lock in the state directory. On a server it has not restored
-into yet, it rebuilds the sessions in `latest.json` first. It then follows `rex events`, writes
+into yet, it rebuilds the sessions in `latest.json` first. The session Rex.app last showed is
+rebuilt inside the empty session the app opens when it finds the server empty, so the app shows it
+again. It then follows `rex events`, writes
 each change to `latest.json` within about a second, keeps the last 20 distinct layouts in
 `history/`, and writes `status.json` every 30 seconds. `tools/rex/shell.zsh` reads that file and
 prints a warning in Rex panes when the saver stops or something fails. `saver.log` says why.
 
-Only layouts and working directories are written: never terminal output or commands.
+Only layouts, working directories and the position of the session the app showed are written:
+never terminal output or commands.
 
 The file is three sections, marked below, that become modules when the script moves into the
 repo's Python project (#203): pure domain logic, the Pydantic models at the boundary, and the I/O.
@@ -30,6 +33,7 @@ import contextlib
 import fcntl
 import json
 import os
+import plistlib
 import selectors
 import subprocess
 import sys
@@ -71,6 +75,8 @@ WindowLabel = NewType("WindowLabel", str)
 PaneLabel = NewType("PaneLabel", str)
 AbsolutePath = NewType("AbsolutePath", str)
 InstanceId = NewType("InstanceId", str)
+SessionId = NewType("SessionId", str)
+WindowId = NewType("WindowId", str)
 Ratio = NewType("Ratio", float)
 Direction = Literal["horizontal", "vertical"]
 
@@ -119,10 +125,20 @@ class SavedSession:
 
 @dataclass(frozen=True)
 class Snapshot:
-    format: Literal[1]
+    format: Literal[2]
     instance_id: InstanceId
     saved_at: str
     sessions: tuple[SavedSession, ...]
+    # The position in `sessions` of the session the app showed, from its preferences.
+    focused_index: int | None = None
+
+    def __post_init__(self) -> None:
+        if self.focused_index is not None:
+            assert self.focused_index >= 0, f"focused_index {self.focused_index} is negative"
+            assert self.focused_index < len(self.sessions), (
+                f"focused_index {self.focused_index} is past the last of "
+                f"{len(self.sessions)} session(s)"
+            )
 
 
 @dataclass(frozen=True)
@@ -158,6 +174,7 @@ class SnapshotUnreadable:
 @dataclass(frozen=True)
 class Restore:
     sessions: tuple[SavedSession, ...]
+    focused_index: int | None = None
 
 
 RestorePlan = AlreadyRestored | NothingSaved | SnapshotUnreadable | Restore
@@ -175,7 +192,57 @@ class Changed:
     evict: tuple[str, ...]
 
 
-HistoryDecision = Unchanged | Changed
+@dataclass(frozen=True)
+class FocusOnly:
+    pass
+
+
+HistoryDecision = Unchanged | FocusOnly | Changed
+
+
+@dataclass(frozen=True)
+class Unused:
+    """A session nobody has used: one tab, one pane, an idle shell. The app makes one at startup."""
+
+    session_id: SessionId
+    window_id: WindowId
+
+
+@dataclass(frozen=True)
+class InUse:
+    session_id: SessionId
+    reason: str
+
+
+@dataclass(frozen=True)
+class Unjudgeable:
+    session_id: str
+    reason: str
+
+
+CandidateVerdict = Unused | InUse | Unjudgeable
+
+
+@dataclass(frozen=True)
+class Adopt:
+    """Build `target` into the unused session `into`, which the app is showing, in place of its tab.
+
+    `position` is where `target` sits among the saved sessions, and `rest` is every other one.
+    """
+
+    into: SessionId
+    original_window: WindowId
+    target: SavedSession
+    position: int
+    rest: tuple[SavedSession, ...]
+
+
+@dataclass(frozen=True)
+class CreateEach:
+    sessions: tuple[SavedSession, ...]
+
+
+Adoption = Adopt | CreateEach
 
 ProblemKind = Literal[
     "rex_methods_missing",
@@ -184,6 +251,9 @@ ProblemKind = Literal[
     "restore_failed",
     "events_missed",
     "saver_crashed",
+    "adopt_failed",
+    "focus_unreadable",
+    "focus_unknown",
 ]
 
 
@@ -267,27 +337,36 @@ def build_snapshot(
     last_good: Mapping[str, SavedSession],
     instance_id: str,
     saved_at: str,
+    focused: str | None = None,
 ) -> tuple[Snapshot, tuple[SessionParseError, ...]]:
     """Every live session in order, using a session's last good copy when it fails to parse.
 
     Keeping the last good copy means a Rex change that breaks parsing cannot drop a session from
-    `latest.json` before the next reboot. A session that never parsed is left out.
+    `latest.json` before the next reboot. A session that never parsed is left out. `focused` is the
+    session the app showed, saved as its position, or as no focus when it isn't saved.
     """
     sessions: list[SavedSession] = []
     errors: list[SessionParseError] = []
+    focused_index: int | None = None
     for session_id, result in current.items():
+        saved: SavedSession | None = None
         match result:
             case Ok(session):
-                sessions.append(session)
+                saved = session
             case Err(error):
                 errors.append(error)
-                if session_id in last_good:
-                    sessions.append(last_good[session_id])
+                saved = last_good.get(session_id)
+        if saved is None:
+            continue
+        if session_id == focused:
+            focused_index = len(sessions)
+        sessions.append(saved)
     snapshot = Snapshot(
-        format=1,
+        format=2,
         instance_id=InstanceId(instance_id),
         saved_at=saved_at,
         sessions=tuple(sessions),
+        focused_index=focused_index,
     )
     return snapshot, tuple(errors)
 
@@ -305,8 +384,8 @@ def plan_restore(
             return NothingSaved()
         case Ok(Snapshot(sessions=())):
             return NothingSaved()
-        case Ok(Snapshot(sessions=sessions)):
-            return Restore(sessions=sessions)
+        case Ok(Snapshot(sessions=sessions, focused_index=focused_index)):
+            return Restore(sessions=sessions, focused_index=focused_index)
     raise AssertionError(f"unexpected snapshot result: {latest!r}")
 
 
@@ -318,7 +397,8 @@ def record_history(
     History file names sort oldest first, and the old `latest.json` is about to join them.
     """
     if previous is not None and previous.sessions == new.sessions:
-        return Unchanged()
+        # Switching sessions changes only the focus, which is not worth one of the 20 layouts.
+        return Unchanged() if previous.focused_index == new.focused_index else FocusOnly()
     joining = 1 if previous is not None else 0
     oldest_first = sorted(existing)
     overflow = max(0, len(oldest_first) + joining - HISTORY_KEEP)
@@ -381,6 +461,34 @@ def describe_change(cached: SavedSession | None, fresh: SavedSession | None) -> 
     return ", ".join(parts) or "nothing the saver compares"
 
 
+def plan_adoption(
+    sessions: tuple[SavedSession, ...],
+    focused_index: int | None,
+    verdicts: tuple[CandidateVerdict, ...],
+) -> Adoption:
+    """Which saved session to build into the app's unused session, if there is one.
+
+    The app shows the session it made when it found the new server empty. Building the focused
+    session into it brings that session back into view without asking the app, which refuses
+    actions from scripts. With no focus saved, the first session takes its place.
+    """
+    into = next((v for v in verdicts if isinstance(v, Unused)), None)
+    if into is None or not sessions:
+        return CreateEach(sessions)
+    position = focused_index if focused_index is not None else 0
+    assert 0 <= position < len(sessions), f"focus {position} is outside {len(sessions)} sessions"
+    adoption = Adopt(
+        into=into.session_id,
+        original_window=into.window_id,
+        target=sessions[position],
+        position=position,
+        rest=sessions[:position] + sessions[position + 1 :],
+    )
+    rebuilt = adoption.rest[:position] + (adoption.target,) + adoption.rest[position:]
+    assert rebuilt == sessions, "building into the app's session must keep every saved session"
+    return adoption
+
+
 def judge(suspect: Suspect, last_event_at: float | None, now: float) -> Verdict:
     """Whether an event since the poll explains the suspect's change, or the grace has run out."""
     assert now >= suspect.raised_at, f"the clock ran backwards: {now} < {suspect.raised_at}"
@@ -405,6 +513,12 @@ def warning_text(problems: Sequence[Problem]) -> str:
             "so changes like it are saved only by the 30-second poll"
         ),
         "saver_crashed": "the saver stopped on an unexpected error",
+        "adopt_failed": (
+            "the focused session could not be built into the app's empty session, "
+            "so it was restored on its own"
+        ),
+        "focus_unreadable": "the app's focused session could not be read",
+        "focus_unknown": "the app's focused session is not one the server has",
     }
     seen: list[str] = []
     for problem in problems:
@@ -429,6 +543,10 @@ REQUIRED_METHODS = (
     "session.attach",
     "session.disown_block",
     "session.focus_window",
+    "session.new_window",
+    "session.close_window",
+    "session.set_label",
+    "session.move",
     "com.superlogical.terminal.process",
 )
 
@@ -526,8 +644,18 @@ class ProcessForeground(_RexModel):
     cwd: str | None = None
 
 
+class ProcessAncestor(_RexModel):
+    name: str
+
+
 class TerminalProcess(_RexModel):
     foreground: ProcessForeground | None = None
+    ancestors: list[ProcessAncestor] = []
+
+
+class AppFocus(BaseModel):
+    model_config = ConfigDict(extra="ignore", frozen=True)
+    sessionID: str
 
 
 class RexEvent(_RexModel):
@@ -568,10 +696,12 @@ class SessionFile(_StateModel):
 
 
 class SnapshotFile(_StateModel):
-    format: Literal[1]
+    # Format 1 was written before the focused session was saved.
+    format: Literal[1, 2]
     instance_id: str
     saved_at: str
     sessions: list[SessionFile]
+    focused_index: int | None = None
 
 
 def parse_session(view: object, cwds: Mapping[str, str]) -> Result[SavedSession, SessionParseError]:
@@ -643,6 +773,62 @@ def _window_label(window: ViewWindow) -> WindowLabel | None:
     return WindowLabel(window.label)
 
 
+def judge_candidate(view: object, process: object) -> CandidateVerdict:
+    """Whether a session the saver didn't make is one nobody has used.
+
+    `process` is `com.superlogical.terminal.process` for its first pane. A shell with nothing
+    running in it is the foreground program and has only `login` above it.
+    """
+    session_id = view.get("session_id", "?") if isinstance(view, dict) else "?"
+    try:
+        model = SessionView.model_validate(view)
+        running = TerminalProcess.model_validate(process)
+    except ValidationError as error:
+        first = error.errors()[0]
+        where = ".".join(str(part) for part in first["loc"])
+        return Unjudgeable(str(session_id), f"{where}: {first['msg']}")
+    sid = SessionId(model.session_id)
+    if len(model.windows) != 1:
+        return InUse(sid, f"{len(model.windows)} tabs")
+    window = model.windows[0]
+    blocks = [b for layer in window.layers for b in layer.blocks]
+    if len(blocks) != 1:
+        return InUse(sid, f"{len(blocks)} panes")
+    if running.foreground is None:
+        return Unjudgeable(model.session_id, "its shell has not started")
+    parents = [a.name for a in running.ancestors]
+    if parents != ["login"]:
+        return InUse(sid, f"a program is running under {' > '.join(reversed(parents))}")
+    return Unused(sid, WindowId(window.window_id))
+
+
+FOCUS_KEY = "Workspace.lastFocusedSession"
+
+
+def read_app_focus(export: bytes) -> Result[SessionId, str]:
+    """The session the Rex app last showed, from `defaults export com.superlogical.rex -`.
+
+    The app keeps it as JSON bytes, `{"sessionID": "session:…"}`, under `Workspace.lastFocusedSession`.
+    It is the app's private setting, so each way it can change is a named error, not a guess.
+    """
+    try:
+        preferences = plistlib.loads(export)
+    except Exception as error:  # plistlib raises several unrelated types for bad input
+        return Err(f"the preferences are not a plist ({type(error).__name__})")
+    if not isinstance(preferences, dict) or FOCUS_KEY not in preferences:
+        return Err(f"{FOCUS_KEY} is missing")
+    raw = preferences[FOCUS_KEY]
+    if not isinstance(raw, bytes):
+        return Err(f"{FOCUS_KEY} is {type(raw).__name__}, not data")
+    try:
+        focus = AppFocus.model_validate_json(raw)
+    except ValidationError as error:
+        return Err(f"{FOCUS_KEY} ({len(raw)} bytes): {error.errors()[0]['msg']}")
+    if not focus.sessionID.startswith("session:"):
+        return Err(f"{FOCUS_KEY} holds {len(focus.sessionID)} characters that are not a session ID")
+    return Ok(SessionId(focus.sessionID))
+
+
 def decode_osc7(url: str) -> AbsolutePath | None:
     """The path in a `file://host/path` URL that a shell reports with OSC 7."""
     if url.startswith("/"):
@@ -675,6 +861,7 @@ def snapshot_json(snapshot: Snapshot) -> str:
             }
             for s in snapshot.sessions
         ],
+        "focused_index": snapshot.focused_index,
     }
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
@@ -702,7 +889,10 @@ def load_snapshot(text: str) -> Result[Snapshot, str]:
         )
     except _Unreadable as error:
         return Err(f"{error.path}: {error.reason}")
-    return Ok(Snapshot(1, InstanceId(model.instance_id), model.saved_at, sessions))
+    focused = model.focused_index
+    if focused is not None and not 0 <= focused < len(sessions):
+        return Err(f"focused_index: {focused} is not one of the {len(sessions)} saved sessions")
+    return Ok(Snapshot(2, InstanceId(model.instance_id), model.saved_at, sessions, focused))
 
 
 def _layout_from_file(node: NodeFile, depth: int) -> Layout:
@@ -735,6 +925,9 @@ def _layout_from_file(node: NodeFile, depth: int) -> Layout:
 
 FLUSH_EVERY = 1.0
 POLL_EVERY = 30.0
+# How long a session's shell may take to start before the session counts as not unused.
+CANDIDATE_WAIT = 2.0
+CANDIDATE_TRIES = 9
 LOG_MAX_BYTES = 1_000_000
 REX_SERVER_APP = Path.home() / "Library/Application Support/com.superlogical.rex/RexServer/Versions"
 REX_IN_APP = "Rex Server.app/Contents/MacOS/rex"
@@ -759,6 +952,48 @@ if index ~= nil and index ~= rex.json.null then
   end
 end
 return { session_id = created.session_id }
+"""
+
+# Run with `rex do -`: build a saved session's tabs into the app's unused session, which the app is
+# showing. The original tab closes only once a saved tab exists beside it, because Rex can close
+# its macOS window when the session it shows loses its last tab.
+ADOPT_LUA = """
+local f = assert(io.open(rex.args.request))
+local request = rex.json.decode(f:read("*a"))
+f:close()
+local sid = request.into
+rex.call("session.attach", { session_id = sid })
+local made = {}
+for _, window in ipairs(request.windows) do
+  local args = { session_id = sid, layout = window.layout, focus = false }
+  if window.window_label then args.window_label = window.window_label end
+  local created, err = rex.call("session.new_window", args)
+  if not created then
+    return { error = "building tab " .. (#made + 1) .. ": " .. tostring(err) }
+  end
+  table.insert(made, created.window_id)
+end
+if #made == 0 then return { error = "no saved tab was built, so the original tab was kept" } end
+rex.call("session.disown_block", { session_id = sid })
+local active = made[1]
+local index = request.active_index
+if index ~= nil and index ~= rex.json.null and made[index + 1] then active = made[index + 1] end
+rex.call("session.focus_window", { session_id = sid, window_id = active })
+local closed, close_err = rex.call("session.close_window", { session_id = sid, window_id = request.original_window })
+if close_err then return { error = "closing the original tab: " .. tostring(close_err) } end
+local labelled, label_err = rex.call("session.set_label", { session_id = sid, label = request.label })
+if label_err then return { error = "setting the label: " .. tostring(label_err) } end
+return { session_id = sid }
+"""
+
+# Run with `rex do -`: Rex moves only a session the connection is attached to.
+MOVE_LUA = """
+rex.call("session.attach", { session_id = rex.args.session })
+local args = { session_id = rex.args.session }
+if rex.args.before ~= "" then args.before_session_id = rex.args.before end
+local moved, err = rex.call("session.move", args)
+if err then return { error = tostring(err) } end
+return {}
 """
 
 
@@ -831,13 +1066,10 @@ class Rex:
             raise RexError(f"api list: {done.stderr.strip()}")
         return done.stdout
 
-    def restore(self, request: RestoreRequest, scratch: Path) -> str:
-        path = scratch / "request.json"
-        payload = {"create": request.create, "active_index": request.active_index}
-        path.write_text(json.dumps(payload))
+    def _do(self, script: str, *pairs: str) -> dict[str, Any]:
         done = subprocess.run(
-            [*self._base(), "do", "-", f"request={path}", "--json"],
-            input=RESTORE_LUA,
+            [*self._base(), "do", "-", *pairs, "--json"],
+            input=script,
             capture_output=True,
             text=True,
             timeout=60,
@@ -845,9 +1077,33 @@ class Rex:
         if done.returncode != 0:
             raise RexError(done.stderr.strip() or f"rex do exited {done.returncode}")
         result = json.loads(done.stdout or "{}")
+        if not isinstance(result, dict):
+            raise RexError(f"rex do returned {type(result).__name__}, not an object")
         if "error" in result:
             raise RexError(str(result["error"]))
-        return str(result.get("session_id", "?"))
+        return result
+
+    def restore(self, request: RestoreRequest, scratch: Path) -> str:
+        path = scratch / "request.json"
+        payload = {"create": request.create, "active_index": request.active_index}
+        path.write_text(json.dumps(payload))
+        return str(self._do(RESTORE_LUA, f"request={path}").get("session_id", "?"))
+
+    def adopt(self, adopt: Adopt, scratch: Path) -> str:
+        request = restore_request(adopt.target)
+        path = scratch / "adopt.json"
+        payload = {
+            "into": adopt.into,
+            "original_window": adopt.original_window,
+            "label": request.create["label"],
+            "windows": request.create.get("initial_windows", []),
+            "active_index": request.active_index,
+        }
+        path.write_text(json.dumps(payload))
+        return str(self._do(ADOPT_LUA, f"request={path}").get("session_id", "?"))
+
+    def move(self, session_id: str, before: str | None) -> None:
+        self._do(MOVE_LUA, f"session={session_id}", f"before={before or ''}")
 
     def events(self) -> subprocess.Popen[str]:
         return subprocess.Popen(
@@ -887,8 +1143,13 @@ class Saver:
     last_event: dict[str, float] = field(default_factory=dict)
     suspects: dict[str, Suspect] = field(default_factory=dict)
     clock: Callable[[], float] = time.monotonic
+    sleep: Callable[[float], None] = time.sleep
     session_order: list[str] = field(default_factory=list)
     last_written: Snapshot | None = None
+    # A domain or plist path for `defaults export`, or None to save no focus.
+    app_preferences: str | None = None
+    focused: SessionId | None = None
+    focus_dirty: bool = False
 
     # ----- startup -----
 
@@ -925,27 +1186,108 @@ class Saver:
             case SnapshotUnreadable(reason=reason):
                 self.log(f"restore skipped: latest.json is unreadable: {reason}")
                 self.problem("snapshot_unreadable", reason)
-            case Restore(sessions=sessions):
+            case Restore(sessions=sessions, focused_index=focused_index):
                 assert marker != self.instance_id, "never restore into a server twice"
                 saved_at = latest.value.saved_at if isinstance(latest, Ok) and latest.value else "?"
-                self.log(f"restoring {len(sessions)} session(s) saved at {saved_at}")
-                self.restore_sessions(sessions)
+                self.log(
+                    f"restoring {len(sessions)} session(s) saved at {saved_at}, "
+                    f"focus {focused_index}"
+                )
+                self.restore_sessions(sessions, focused_index)
         if isinstance(latest, Ok):
             self.last_written = latest.value
         write_atomic(marker_path, f"{self.instance_id}\n")
 
-    def restore_sessions(self, sessions: Sequence[SavedSession]) -> None:
+    def restore_sessions(self, sessions: Sequence[SavedSession], focused_index: int | None) -> None:
+        plan = plan_adoption(tuple(sessions), focused_index, self.find_candidates())
         failed: list[str] = []
-        with tempfile.TemporaryDirectory() as scratch:
-            for session in sessions:
-                try:
-                    session_id = self.rex.restore(restore_request(session), Path(scratch))
-                    self.log(f"restored {session.label!r} as {session_id}")
-                except (RexError, subprocess.TimeoutExpired, json.JSONDecodeError) as error:
-                    self.log(f"failed to restore {session.label!r}: {error}")
-                    failed.append(session.label)
+        with tempfile.TemporaryDirectory() as tmp:
+            scratch = Path(tmp)
+            match plan:
+                case CreateEach(sessions=each):
+                    self.log("no unused session to build into, so each session is created")
+                    self.create_each(each, scratch, failed)
+                case Adopt(into=into, target=target, position=position, rest=rest):
+                    self.log(f"building {target.label!r} into the unused session {into}")
+                    try:
+                        self.rex.adopt(plan, scratch)
+                    except (RexError, subprocess.TimeoutExpired, json.JSONDecodeError) as error:
+                        self.log(f"failed to build {target.label!r} into {into}: {error}")
+                        self.problem("adopt_failed", target.label)
+                        self.create_each(
+                            rest[:position] + (target,) + rest[position:], scratch, failed
+                        )
+                    else:
+                        self.log(f"restored {target.label!r} into {into}")
+                        created = self.create_each(rest, scratch, failed)
+                        self.move_into_place(into, created[position:])
+                case unreachable:
+                    assert_never(unreachable)
         if failed:
             self.problem("restore_failed", ", ".join(failed))
+
+    def create_each(
+        self, sessions: Sequence[SavedSession], scratch: Path, failed: list[str]
+    ) -> list[str | None]:
+        """Create each session, returning its new ID, or None for one that failed."""
+        created: list[str | None] = []
+        for session in sessions:
+            try:
+                session_id = self.rex.restore(restore_request(session), scratch)
+                self.log(f"restored {session.label!r} as {session_id}")
+                created.append(session_id)
+            except (RexError, subprocess.TimeoutExpired, json.JSONDecodeError) as error:
+                self.log(f"failed to restore {session.label!r}: {error}")
+                failed.append(session.label)
+                created.append(None)
+        return created
+
+    def move_into_place(self, session_id: str, following: Sequence[str | None]) -> None:
+        """Move the adopted session before the first restored session that followed it."""
+        before = next((s for s in following if s is not None), None)
+        try:
+            self.rex.move(session_id, before)
+        except (RexError, subprocess.TimeoutExpired, json.JSONDecodeError) as error:
+            self.log(f"could not move {session_id} to its saved place: {error}")
+
+    def find_candidates(self) -> tuple[CandidateVerdict, ...]:
+        """Judge every session on the new server, waiting briefly for shells still starting.
+
+        The saver has created nothing yet, so each one was made by the app or by someone else.
+        """
+        verdicts: tuple[CandidateVerdict, ...] = ()
+        for attempt in range(CANDIDATE_TRIES):
+            verdicts = tuple(self.judge_session(s) for s in self.list_sessions())
+            if not any(isinstance(v, Unjudgeable) for v in verdicts):
+                break
+            if attempt < CANDIDATE_TRIES - 1:
+                self.sleep(CANDIDATE_WAIT / (CANDIDATE_TRIES - 1))
+        for verdict in verdicts:
+            match verdict:
+                case Unused(session_id=session_id):
+                    self.log(f"candidate {session_id}: unused")
+                case InUse(session_id=session_id, reason=reason):
+                    self.log(f"candidate {session_id}: in use, {reason}")
+                case Unjudgeable(session_id=session_id, reason=reason):
+                    self.log(f"candidate {session_id}: not judged, {reason}")
+                case unreachable:
+                    assert_never(unreachable)
+        return verdicts
+
+    def judge_session(self, session_id: str) -> CandidateVerdict:
+        try:
+            view = self.rex.call("session.view", {"session_id": session_id})
+        except RexError as error:
+            return Unjudgeable(session_id, str(error))
+        blocks = _block_ids(view) if isinstance(view, dict) else []
+        process: object = {}
+        if blocks:
+            with contextlib.suppress(RexError):
+                process = self.rex.call(
+                    "com.superlogical.terminal.process",
+                    {"session_id": session_id, "block_id": blocks[0]},
+                )
+        return judge_candidate(view, process)
 
     # ----- saving -----
 
@@ -994,7 +1336,27 @@ class Saver:
         listing = SessionList.model_validate(self.rex.call("session.list"))
         return [s.session_id for s in listing.sessions]
 
+    def read_focus(self) -> None:
+        """Read which session the app shows, from its preferences."""
+        if self.app_preferences is None:
+            return
+        try:
+            done = subprocess.run(
+                ["defaults", "export", self.app_preferences, "-"], capture_output=True, timeout=10
+            )
+        except subprocess.TimeoutExpired:
+            self.problem("focus_unreadable", "defaults export timed out")
+            return
+        match read_app_focus(done.stdout):
+            case Ok(session_id):
+                self.focused = session_id
+            case Err(reason):
+                self.problem("focus_unreadable", reason)
+
     def flush(self) -> None:
+        if self.focus_dirty:
+            self.focus_dirty = False
+            self.read_focus()
         if self.dirty:
             live = self.list_sessions()
             self.session_order = live
@@ -1009,11 +1371,16 @@ class Saver:
         current: dict[str, Result[SavedSession, SessionParseError]] = {
             s: Ok(self.cache[s]) for s in self.session_order if s in self.cache
         }
-        snapshot, _ = build_snapshot(current, self.cache, self.instance_id, now_iso())
+        snapshot, _ = build_snapshot(
+            current, self.cache, self.instance_id, now_iso(), focused=self.focused
+        )
         decision = record_history(self.last_written, snapshot, self._history_files())
         match decision:
             case Unchanged():
                 return
+            case FocusOnly():
+                write_atomic(self.state / "latest.json", snapshot_json(snapshot))
+                self.last_written = snapshot
             case Changed(evict=evict):
                 history = self.state / "history"
                 history.mkdir(exist_ok=True)
@@ -1025,6 +1392,8 @@ class Saver:
                     (history / name).unlink(missing_ok=True)
                 write_atomic(latest, snapshot_json(snapshot))
                 self.last_written = snapshot
+            case unreachable:
+                assert_never(unreachable)
 
     def _history_files(self) -> list[str]:
         history = self.state / "history"
@@ -1033,9 +1402,12 @@ class Saver:
     def poll(self) -> None:
         """Re-read everything, and suspect each change no event has explained yet."""
         started = self.clock()
+        self.read_focus()
         self.flush()
         live = self.list_sessions()
         self.session_order = live
+        if self.focused is not None and self.focused not in live:
+            self.problem("focus_unknown", self.focused)
         fresh = self.refresh(live, poll_cwds=True)
         recent = {s for s, t in self.last_event.items() if t > started - EVENT_GRACE}
         for session_id in unexplained_changes(self.cache, fresh, recent):
@@ -1096,6 +1468,10 @@ class Saver:
             if name == "pwd_changed" and (path := decode_osc7(str(data.get("pwd", "")))):
                 self.cwds[block_id] = path
                 self.osc7_blocks.add(block_id)
+            elif name == "size_changed":
+                # The app resizes a session's panes when it shows them, so focus may have moved.
+                self.focus_dirty = True
+                return
             elif name == "process_changed" and block_id not in self.osc7_blocks:
                 cwd = (data.get("foreground") or {}).get("cwd")
                 if isinstance(cwd, str):
@@ -1140,6 +1516,7 @@ class Saver:
         assert events.stdout is not None
         self.session_order = self.list_sessions()
         self.cache = self.refresh(self.session_order, poll_cwds=True)
+        self.read_focus()
         self.save()
         selector = selectors.DefaultSelector()
         selector.register(events.stdout, selectors.EVENT_READ)
@@ -1197,6 +1574,11 @@ def main(argv: Sequence[str] | None = None) -> None:
     run.add_argument("--state-dir", required=True, type=Path)
     run.add_argument("--rex", help="the rex binary (default: the one inside the Rex app)")
     run.add_argument("--server", help="the server address (default: rex's own default)")
+    run.add_argument(
+        "--app-preferences",
+        default="com.superlogical.rex",
+        help="the Rex app's preferences domain or plist path, read for its focused session",
+    )
     args = parser.parse_args(argv)
 
     state: Path = args.state_dir.expanduser()
@@ -1209,7 +1591,9 @@ def main(argv: Sequence[str] | None = None) -> None:
         return
     saver: Saver | None = None
     try:
-        saver = Saver(Rex(find_rex(args.rex), args.server), state, log)
+        saver = Saver(
+            Rex(find_rex(args.rex), args.server), state, log, app_preferences=args.app_preferences
+        )
         saver.start()
         saver.run()
     except SystemExit:

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import plistlib
 import re
 import shlex
 import subprocess
@@ -212,13 +213,24 @@ def parsed(view: dict, cwds: dict[str, str]) -> saver.SavedSession:
     return result.value
 
 
-def snapshot_of(*sessions: saver.SavedSession, saved_at: str = "2026-10-25T00:00:00Z"):
+def snapshot_of(
+    *sessions: saver.SavedSession,
+    saved_at: str = "2026-10-25T00:00:00Z",
+    focused_index: int | None = None,
+):
     return saver.Snapshot(
-        format=1,
+        format=2,
         instance_id=saver.InstanceId("instance-1"),
         saved_at=saved_at,
         sessions=tuple(sessions),
+        focused_index=focused_index,
     )
+
+
+def named(label: str) -> saver.SavedSession:
+    """A one-tab session called `label`."""
+    request = {"label": label, "initial_windows": [{"layout": {"block": {"flavor": SHELL_FLAVOR}}}]}
+    return parsed(*simulate_create(request))
 
 
 # ----- Saving and restoring a layout ------------------------------------------------------------
@@ -350,6 +362,7 @@ class WhatReachesDisk(unittest.TestCase):
                 "instance_id",
                 "saved_at",
                 "sessions",
+                "focused_index",
                 "label",
                 "windows",
                 "active_index",
@@ -373,6 +386,51 @@ class WhatReachesDisk(unittest.TestCase):
         for text in ("", "{", '{"format": 2, "sessions": []}', '{"format": 1}'):
             with self.subTest(text=text):
                 self.assertIsInstance(saver.load_snapshot(text), Err)
+
+    @settings(max_examples=100, deadline=None)
+    @given(st.lists(labels, min_size=1, max_size=5), st.data())
+    def test_a_snapshot_with_any_focus_loads_back_unchanged(
+        self, names: list[str], data: st.DataObject
+    ) -> None:
+        focused = data.draw(st.none() | st.integers(min_value=0, max_value=len(names) - 1))
+        snap = snapshot_of(*(named(n) for n in names), focused_index=focused)
+        self.assertEqual(saver.load_snapshot(saver.snapshot_json(snap)), Ok(snap))
+
+    def test_a_snapshot_written_before_focus_was_saved_loads_with_no_focus(self) -> None:
+        text = json.dumps(
+            {
+                "format": 1,
+                "instance_id": "instance-1",
+                "saved_at": "t",
+                "sessions": [
+                    {
+                        "label": "work",
+                        "windows": [
+                            {"label": None, "layout": {"pane": {"label": None, "cwd": "/"}}}
+                        ],
+                        "active_index": 0,
+                    }
+                ],
+            }
+        )
+        result = saver.load_snapshot(text)
+        assert isinstance(result, Ok), result
+        self.assertIsNone(result.value.focused_index)
+        self.assertEqual([s.label for s in result.value.sessions], ["work"])
+
+    def test_a_saved_focus_past_the_last_session_is_a_named_error(self) -> None:
+        text = saver.snapshot_json(snapshot_of(named("a"), focused_index=0))
+        data = json.loads(text)
+        data["focused_index"] = 1
+        result = saver.load_snapshot(json.dumps(data))
+        assert isinstance(result, Err), result
+        self.assertIn("focused_index", result.error)
+
+    def test_a_snapshot_cannot_hold_a_focus_past_its_last_session(self) -> None:
+        with self.assertRaises(AssertionError):
+            snapshot_of(named("a"), focused_index=1)
+        with self.assertRaises(AssertionError):
+            snapshot_of(named("a"), focused_index=-1)
 
 
 def _all_keys(value: Any) -> set[str]:
@@ -411,6 +469,40 @@ class BuildingASnapshot(unittest.TestCase):
         snap, errors = saver.build_snapshot(current={}, last_good={}, instance_id="i", saved_at="t")
         self.assertEqual(snap.sessions, ())
         self.assertEqual(errors, ())
+
+    @settings(max_examples=200, deadline=None)
+    @given(
+        st.lists(st.sampled_from(["ok", "bad", "bad-with-last-good"]), min_size=1, max_size=6),
+        st.data(),
+    )
+    def test_the_focused_session_is_saved_as_its_position_among_the_saved_sessions(
+        self, kinds: list[str], data: st.DataObject
+    ) -> None:
+        ids = [f"session:{i}" for i in range(len(kinds))]
+        current: dict[str, Any] = {}
+        last_good: dict[str, saver.SavedSession] = {}
+        for session_id, kind in zip(ids, kinds, strict=True):
+            session = named(session_id)
+            if kind == "ok":
+                current[session_id] = Ok(session)
+            else:
+                current[session_id] = Err(saver.SessionParseError(session_id, "", "bad"))
+                if kind == "bad-with-last-good":
+                    last_good[session_id] = session
+        focused = data.draw(st.sampled_from([*ids, "session:gone"]))
+
+        snap, _ = saver.build_snapshot(current, last_good, "i", "t", focused=focused)
+
+        saved_labels = [s.label for s in snap.sessions]
+        if focused in saved_labels:
+            assert snap.focused_index is not None
+            self.assertEqual(snap.sessions[snap.focused_index].label, focused)
+        else:
+            self.assertIsNone(snap.focused_index)
+
+    def test_with_no_focus_known_none_is_saved(self) -> None:
+        snap, _ = saver.build_snapshot({"session:a": Ok(named("a"))}, {}, "i", "t", focused=None)
+        self.assertIsNone(snap.focused_index)
 
 
 class CheckingRexOffersWhatTheSaverNeeds(unittest.TestCase):
@@ -515,6 +607,17 @@ class KeepingHistory(unittest.TestCase):
             snapshot_of(self.session), snapshot_of(self.other), existing=tuple(reversed(existing))
         )
         self.assertEqual(decision, saver.Changed(evict=(existing[0],)))
+
+    def test_switching_sessions_rewrites_the_latest_but_adds_no_history(self) -> None:
+        old = snapshot_of(self.session, self.other, saved_at="t1", focused_index=0)
+        new = snapshot_of(self.session, self.other, saved_at="t2", focused_index=1)
+        existing = tuple(f"2026-10-25T00-00-{i:02d}Z.json" for i in range(20))
+        self.assertEqual(saver.record_history(old, new, existing=existing), saver.FocusOnly())
+
+    def test_a_layout_change_with_a_focus_change_is_still_history(self) -> None:
+        old = snapshot_of(self.session, self.other, focused_index=0)
+        new = snapshot_of(self.other, self.session, focused_index=1)
+        self.assertEqual(saver.record_history(old, new, existing=()), saver.Changed(evict=()))
 
     def test_history_that_somehow_grew_past_20_is_trimmed_back(self) -> None:
         existing = tuple(f"2026-10-25T00-00-{i:02d}Z.json" for i in range(25))
@@ -825,9 +928,358 @@ class FollowingEvents(unittest.TestCase):
         )
         self.assertNotIn(SESSION, self.saver.cache)
 
+    def test_a_resized_pane_asks_for_the_focus_to_be_read_again_and_changes_no_layout(
+        self,
+    ) -> None:
+        self.saver.handle(block_event("size_changed", {"columns": 95, "rows": 44}))
+        self.assertTrue(self.saver.focus_dirty)
+        self.assertEqual(self.saver.dirty, set())
+
     def test_a_line_that_is_not_an_event_is_ignored(self) -> None:
         self.saver.handle("Error: interrupted")
         self.assertEqual(self.saver.dirty, set())
+
+
+# ----- The session the app had in focus ---------------------------------------------------------
+
+
+def app_preferences(**values: Any) -> bytes:
+    """What `defaults export com.superlogical.rex -` prints: an XML plist."""
+    return plistlib.dumps(values)
+
+
+def focus_value(value: Any) -> bytes:
+    return json.dumps(value).encode()
+
+
+class ReadingTheAppsFocus(unittest.TestCase):
+    def test_the_focused_session_is_read_from_the_apps_preferences(self) -> None:
+        export = app_preferences(
+            **{"Workspace.lastFocusedSession": focus_value({"sessionID": SESSION}), "other": 1}
+        )
+        self.assertEqual(saver.read_app_focus(export), Ok(saver.SessionId(SESSION)))
+
+    def test_each_way_the_preference_can_break_is_a_named_error(self) -> None:
+        cases = {
+            "no key": app_preferences(other=1),
+            "not data": app_preferences(**{"Workspace.lastFocusedSession": "text"}),
+            "not json": app_preferences(**{"Workspace.lastFocusedSession": b"{nope"}),
+            "no sessionID": app_preferences(
+                **{"Workspace.lastFocusedSession": focus_value({"id": SESSION})}
+            ),
+            "not a session ID": app_preferences(
+                **{"Workspace.lastFocusedSession": focus_value({"sessionID": "window:x"})}
+            ),
+            "not a plist": b"Domain com.superlogical.rex does not exist",
+        }
+        for name, export in cases.items():
+            with self.subTest(name):
+                result = saver.read_app_focus(export)
+                assert isinstance(result, Err), result
+                self.assertTrue(result.error)
+
+    @settings(max_examples=300, deadline=None)
+    @given(st.binary(max_size=200) | json_values.map(lambda v: focus_value(v)))
+    def test_any_bytes_give_a_session_or_a_named_error_without_raising(self, raw: bytes) -> None:
+        for export in (raw, app_preferences(**{"Workspace.lastFocusedSession": raw})):
+            result = saver.read_app_focus(export)
+            self.assertIsInstance(result, Ok | Err)
+
+
+class SavingTheFocus(unittest.TestCase):
+    """The saver reads the app's preferences from a plist file, as `defaults export` allows."""
+
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        self.state = Path(self.tmp.name)
+        self.first = app_session("first")
+        self.second = app_session("second")
+        self.rex = RecordedRex(
+            {self.first["session_id"]: self.first, self.second["session_id"]: self.second}
+        )
+        self.preferences = self.state / "app.plist"
+        self.saver = saver.Saver(
+            self.rex,
+            self.state,
+            saver.Log(self.state / "saver.log"),
+            app_preferences=str(self.preferences),
+        )
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def focus_on(self, session_id: str) -> None:
+        value = focus_value({"sessionID": session_id})
+        self.preferences.write_bytes(app_preferences(**{"Workspace.lastFocusedSession": value}))
+
+    def latest(self) -> dict:
+        return json.loads((self.state / "latest.json").read_text())
+
+    def history(self) -> list[Path]:
+        return list((self.state / "history").glob("*.json"))
+
+    def test_the_session_the_app_shows_is_saved_with_the_layouts(self) -> None:
+        self.focus_on(self.second["session_id"])
+        self.saver.poll()
+        self.assertEqual(self.latest()["focused_index"], 1)
+        self.assertEqual(self.saver.problems, [])
+
+    def test_switching_sessions_rewrites_the_latest_without_adding_history(self) -> None:
+        self.focus_on(self.first["session_id"])
+        self.saver.poll()
+        before = self.history()
+        self.focus_on(self.second["session_id"])
+        self.saver.handle(block_event("size_changed", {"columns": 95, "rows": 44}))
+        self.saver.flush()
+        self.assertEqual(self.latest()["focused_index"], 1)
+        self.assertEqual(self.history(), before)
+        rotated = [json.loads(f.read_text()).get("focused_index") for f in self.history()]
+        self.assertNotIn(0, rotated, "the snapshot before the switch must not enter history")
+
+    def test_a_focused_session_the_server_lacks_warns_at_the_poll(self) -> None:
+        self.focus_on("session:01a1759d-c604-7b62-911f-000000000000")
+        self.saver.poll()
+        self.assertEqual(
+            self.saver.problems,
+            [saver.Problem("focus_unknown", "session:01a1759d-c604-7b62-911f-000000000000")],
+        )
+        self.assertIsNone(self.latest()["focused_index"])
+
+    def test_preferences_that_cannot_be_read_warn(self) -> None:
+        self.saver.poll()
+        self.assertEqual([p.kind for p in self.saver.problems], ["focus_unreadable"])
+
+
+# ----- Rebuilding the focused session in the app's empty one ------------------------------------
+
+# What `com.superlogical.terminal.process` returned on this Mac for an idle shell and a busy pane.
+IDLE_SHELL = {
+    "foreground": {"pid": 2306, "name": "zsh", "argv0": "-zsh", "cwd": "/Users/me"},
+    "ancestors": [{"pid": 2304, "name": "login"}],
+}
+BUSY_PANE = {
+    "foreground": {"pid": 79294, "name": "claude", "argv0": "claude", "cwd": "/Users/me"},
+    "ancestors": [{"pid": 42752, "name": "zsh"}, {"pid": 42751, "name": "login"}],
+}
+SHELL_STARTING: dict = {}
+
+
+def app_session(label: str = "polished-hollow") -> dict:
+    """The session the app creates when it finds none: one tab with one shell."""
+    view, _ = simulate_create(
+        {"label": label, "initial_windows": [{"layout": {"block": {"flavor": SHELL_FLAVOR}}}]}
+    )
+    return view
+
+
+class JudgingACandidate(unittest.TestCase):
+    def test_one_tab_with_an_idle_shell_is_unused(self) -> None:
+        view = app_session()
+        self.assertEqual(
+            saver.judge_candidate(view, IDLE_SHELL),
+            saver.Unused(
+                saver.SessionId(view["session_id"]), saver.WindowId(view["windows"][0]["window_id"])
+            ),
+        )
+
+    def test_a_running_program_keeps_the_session(self) -> None:
+        self.assertIsInstance(saver.judge_candidate(app_session(), BUSY_PANE), saver.InUse)
+
+    def test_a_second_tab_keeps_the_session(self) -> None:
+        view, _ = simulate_create(
+            {
+                "label": "two",
+                "initial_windows": [
+                    {"layout": {"block": {"flavor": SHELL_FLAVOR}}},
+                    {"layout": {"block": {"flavor": SHELL_FLAVOR}}},
+                ],
+            }
+        )
+        self.assertIsInstance(saver.judge_candidate(view, IDLE_SHELL), saver.InUse)
+
+    def test_a_split_keeps_the_session(self) -> None:
+        view, _ = two_pane_view()
+        view["windows"] = view["windows"][:1]
+        self.assertIsInstance(saver.judge_candidate(view, IDLE_SHELL), saver.InUse)
+
+    def test_a_floating_pane_keeps_the_session(self) -> None:
+        view = app_session()
+        view["windows"][0]["layers"].append(
+            {"kind": "floating", "blocks": [{"block_id": new_id("block"), "label": "shell"}]}
+        )
+        self.assertIsInstance(saver.judge_candidate(view, IDLE_SHELL), saver.InUse)
+
+    def test_a_shell_that_has_not_started_cannot_be_judged_yet(self) -> None:
+        self.assertIsInstance(
+            saver.judge_candidate(app_session(), SHELL_STARTING), saver.Unjudgeable
+        )
+
+    @settings(max_examples=200, deadline=None)
+    @given(json_values, json_values)
+    def test_any_json_gives_a_verdict_without_raising_and_is_never_unused(
+        self, view: Any, process: Any
+    ) -> None:
+        self.assertNotIsInstance(saver.judge_candidate(view, process), saver.Unused)
+
+
+def unused(n: int) -> saver.Unused:
+    return saver.Unused(saver.SessionId(f"session:app{n}"), saver.WindowId(f"window:app{n}"))
+
+
+verdicts = st.lists(
+    st.integers(min_value=0, max_value=3).map(
+        lambda n: (
+            unused(n) if n % 2 == 0 else saver.InUse(saver.SessionId(f"session:busy{n}"), "busy")
+        )
+    ),
+    max_size=3,
+)
+
+
+class PlanningAnAdoption(unittest.TestCase):
+    @settings(max_examples=300, deadline=None)
+    @given(st.lists(labels, min_size=1, max_size=5, unique=True), verdicts, st.data())
+    def test_the_focused_session_is_built_into_the_first_unused_one_and_none_is_lost(
+        self, names: list[str], found: list[saver.CandidateVerdict], data: st.DataObject
+    ) -> None:
+        sessions = tuple(named(n) for n in names)
+        focused = data.draw(st.none() | st.integers(min_value=0, max_value=len(names) - 1))
+
+        plan = saver.plan_adoption(sessions, focused, tuple(found))
+
+        first_unused = next((v for v in found if isinstance(v, saver.Unused)), None)
+        match plan:
+            case saver.Adopt(
+                into=into, original_window=window, target=target, position=pos, rest=rest
+            ):
+                assert first_unused is not None
+                self.assertEqual((into, window), (first_unused.session_id, first_unused.window_id))
+                self.assertEqual(target, sessions[focused if focused is not None else 0])
+                self.assertEqual(sessions[pos], target)
+                self.assertEqual(rest, sessions[:pos] + sessions[pos + 1 :])
+            case saver.CreateEach(sessions=created):
+                self.assertIsNone(first_unused)
+                self.assertEqual(created, sessions)
+            case _:
+                self.fail(f"unexpected plan {plan!r}")
+
+
+class RestoringRex(RecordedRex):
+    """Answers the calls a restore makes, and records what it builds."""
+
+    def __init__(self, views: dict[str, dict], processes: list[dict]) -> None:
+        super().__init__(views)
+        self.processes = processes
+        self.adopted: list[tuple[str, str]] = []
+        self.created: list[str] = []
+        self.moves: list[dict] = []
+        self.adopt_error: str | None = None
+
+    def call(self, method: str, args: Any = None) -> Any:
+        match method:
+            case "com.superlogical.terminal.process":
+                return self.processes.pop(0) if len(self.processes) > 1 else self.processes[0]
+        return super().call(method, args)
+
+    def move(self, session_id: str, before: str | None) -> None:
+        self.moves.append({"session_id": session_id, "before": before})
+
+    def adopt(self, adopt: saver.Adopt, scratch: Path) -> str:
+        if self.adopt_error is not None:
+            raise saver.RexError(self.adopt_error)
+        self.adopted.append((adopt.into, adopt.target.label))
+        return adopt.into
+
+    def restore(self, request: saver.RestoreRequest, scratch: Path) -> str:
+        self.created.append(request.create["label"])
+        session_id = new_id("session")
+        return session_id
+
+
+class AdoptingTheAppsSession(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        self.state = Path(self.tmp.name)
+        snap = snapshot_of(named("work"), named("notes"), focused_index=1)
+        (self.state / "latest.json").write_text(saver.snapshot_json(snap))
+        self.app = app_session()
+        self.clock = Clock()
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def restore(self, processes: list[dict]) -> tuple[saver.Saver, RestoringRex]:
+        rex = RestoringRex({self.app["session_id"]: self.app}, processes)
+
+        def sleep(seconds: float) -> None:
+            self.clock.now += seconds
+
+        restorer = saver.Saver(
+            rex, self.state, saver.Log(self.state / "saver.log"), clock=self.clock, sleep=sleep
+        )
+        restorer.instance_id = saver.InstanceId("instance-2")
+        restorer.restore_once()
+        return restorer, rex
+
+    def test_the_focused_session_is_built_into_the_apps_session(self) -> None:
+        restorer, rex = self.restore([IDLE_SHELL])
+        self.assertEqual(rex.adopted, [(self.app["session_id"], "notes")])
+        self.assertEqual(rex.created, ["work"])
+        self.assertEqual(restorer.problems, [])
+
+    def test_a_shell_still_starting_is_checked_again_and_then_used(self) -> None:
+        _, rex = self.restore([SHELL_STARTING, SHELL_STARTING, IDLE_SHELL])
+        self.assertEqual(rex.adopted, [(self.app["session_id"], "notes")])
+        self.assertEqual(rex.created, ["work"])
+
+    def test_a_shell_that_never_starts_leaves_the_apps_session_alone(self) -> None:
+        restorer, rex = self.restore([SHELL_STARTING])
+        self.assertEqual(rex.adopted, [])
+        self.assertEqual(rex.created, ["work", "notes"])
+        self.assertLessEqual(self.clock.now - 1000.0, saver.CANDIDATE_WAIT + 1)
+
+    def test_a_busy_session_is_left_alone_and_everything_is_created(self) -> None:
+        _, rex = self.restore([BUSY_PANE])
+        self.assertEqual(rex.adopted, [])
+        self.assertEqual(rex.created, ["work", "notes"])
+
+    def test_a_failed_adoption_creates_the_session_instead_and_warns(self) -> None:
+        rex = RestoringRex({self.app["session_id"]: self.app}, [IDLE_SHELL])
+        rex.adopt_error = "boom"
+        restorer = saver.Saver(
+            rex,
+            self.state,
+            saver.Log(self.state / "saver.log"),
+            clock=self.clock,
+            sleep=lambda s: None,
+        )
+        restorer.instance_id = saver.InstanceId("instance-2")
+        restorer.restore_once()
+        self.assertEqual(sorted(rex.created), ["notes", "work"])
+        self.assertEqual(restorer.problems, [saver.Problem("adopt_failed", "notes")])
+
+    def test_the_adopted_session_is_moved_to_its_saved_place(self) -> None:
+        _, rex = self.restore([IDLE_SHELL])
+        self.assertEqual(len(rex.moves), 1)
+        self.assertEqual(rex.moves[0]["session_id"], self.app["session_id"])
+
+    def test_the_log_says_what_was_judged_and_chosen(self) -> None:
+        self.restore([IDLE_SHELL])
+        log = (self.state / "saver.log").read_text()
+        self.assertIn("unused", log)
+        self.assertIn("notes", log)
+
+
+class CheckingTheMethodsAdoptionNeeds(unittest.TestCase):
+    def test_every_method_adoption_calls_is_checked_at_startup(self) -> None:
+        for method in (
+            "session.new_window",
+            "session.close_window",
+            "session.set_label",
+            "session.move",
+        ):
+            with self.subTest(method):
+                self.assertIn(method, saver.REQUIRED_METHODS)
 
 
 # ----- One saver at a time ----------------------------------------------------------------------
