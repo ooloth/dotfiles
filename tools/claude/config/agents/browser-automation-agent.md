@@ -4,17 +4,16 @@ description: Use to see or verify anything a web browser shows - that a page or 
 mcpServers:
   - playwright:
       type: stdio
-      command: npx
       # Screenshots and page snapshots go to a capped cache folder rather than the repo the
       # session runs in. A screenshot given a filename still lands in the repo, so take them
-      # without one.
+      # without one. The server starts through sh because this file's args are passed as
+      # written: a "${HOME}" here became a folder by that name inside the repo.
+      command: sh
       args:
-        - "-y"
-        - "@playwright/mcp@0.0.82"
-        - "--output-dir"
-        - "${HOME}/Library/Caches/playwright-mcp"
-        - "--output-max-size"
-        - "209715200"
+        - "-c"
+        - >-
+          exec npx -y @playwright/mcp@0.0.82
+          --output-dir "$HOME/Library/Caches/playwright-mcp" --output-max-size 209715200
 ---
 
 You are a specialized browser automation agent.
