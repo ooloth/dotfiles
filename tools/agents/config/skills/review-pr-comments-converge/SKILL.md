@@ -55,15 +55,21 @@ when two other worktrees both hold it, when uncommitted tracked changes are in t
 move would replace an untracked or gitignored file. After a switch or a fast-forward it prints the
 command that undoes it. The script's docstring has the full rules.
 
-### `scripts/fetch_pr_comments.py <pr-number>`
+### `scripts/fetch_pr_comments.py <pr-number> [--repo OWNER/NAME]`
 
 Fetches all inline comments, review body comments and PR conversation comments via the GitHub
 GraphQL API. Conversation comments are the PR timeline, where some review bots post their whole
-review; they appear last, oldest first. Each inline comment in the output includes:
+review; they appear last, oldest first, each with when it was posted. Each review shows the commit
+it was submitted against and when. Each inline comment in the output includes:
 
 - **`comment_id`** — the integer ID needed to post a reply
 - **`thread_id`** — the node ID needed to resolve the conversation thread
+- **`outdated`** — `yes` when the code the comment was left on has changed since
 - **`path:line`** — on the `COMMENT` header line, the file and line the comment is attached to
+
+It fetches every page of every list. When it cannot (a thread with more replies than one request
+returns, or `gh` failing), it exits 1 with the reason instead of printing a partial picture. The
+review-code skill calls this script too, so a change to its output reaches both.
 
 ### `scripts/reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]`
 
@@ -88,11 +94,17 @@ thing standing between a misresolved repo and a reply posted on a stranger's pul
 ## Phase 1: Fetch Comments & Load Context
 
 **Get onto the PR's head branch** by running the checkout helper from the session's working
-directory:
+directory, naming the PR's repo: the one the user gave, or `gh repo view`'s answer when they gave
+only a number.
 
 ```bash
-uv run <skill-base-dir>/scripts/resolve_pr_checkout.py <pr-number>
+uv run <skill-base-dir>/scripts/resolve_pr_checkout.py <pr-number> --repo <owner>/<repo>
 ```
+
+The helper switches branches in the checkout it runs from, and `--repo` is what keeps it out of
+the wrong one: it refuses when no remote of that checkout points at the named repo. Without
+`--repo` it takes the repo from the working directory, so a session started in another project
+would act on that project's PR of the same number.
 
 On exit 0, the last line of stdout is the **working root**. Run every later command from it, pass
 it to every subagent as the absolute path to read and edit in, and tell the user which path it is
@@ -100,12 +112,15 @@ and whether the helper switched or fast-forwarded a branch, with the undo comman
 not ask first: the helper only acts when nothing can be lost.
 
 On exit 1, stop before Phase 2. Relay the helper's reason to the user and ask how to proceed. Do
-not work around the refusal by switching branches yourself.
+not work around the refusal by switching branches yourself. When the reason is that this is a
+checkout of a different repo, ask the user which checkout of the PR's repo to use rather than
+picking one, since another checkout may hold another task's work.
 
-**Fetch all PR comments** by running the fetch helper from the working root:
+**Fetch all PR comments** by running the fetch helper from the working root, naming the repo the
+checkout helper resolved:
 
 ```bash
-uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number>
+uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number> --repo <owner>/<repo>
 ```
 
 Also fetch the PR description for context on intent:

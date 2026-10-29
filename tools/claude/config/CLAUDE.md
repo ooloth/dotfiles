@@ -353,8 +353,9 @@ are for work already approved.
 5. Run all automated checks
 6. Check: does any behavior this change introduces lack test coverage? If so, add a test before
    moving on. Then run all tests.
-7. Manually verify the change works. Do not rely on tests alone — run the CLI, hit the endpoint,
-   trigger the event, eyeball the output, whatever applies. The status report must include one of:
+7. Manually verify the change works with `prove-it-works`, giving it the claim to prove. Do not
+   rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output,
+   whatever applies. The status report must include one of:
    - **What you ran and what you observed** (e.g. "ran X, saw Y in the output")
    - **Why end-to-end execution is impossible here** and what the user should run and look for
      instead.
@@ -367,19 +368,24 @@ are for work already approved.
    approval before implementing it (step 3). A PR you draft stays a draft until an independent
    self-review has run on it and the user has dealt with its findings. Only then is it marked ready
    for teammates to review.
-   - **Offer to start the review; don't run it yourself.** Once the user accepts, open a fresh
-     session in a new terminal tab: a Rex tab started with the launcher the `use-rex` skill names
-     when `REX_SESSION` is set, otherwise a tmux window running
-     `bash "$DOTFILES/tools/claude/cc.bash"`. Never start `claude` with a permission mode of your
-     own choosing. Name it after the PR and the review skill it runs (`review-code`,
+   - **Once every slice this session will complete is committed and its draft PR is open, start
+     the review without asking; don't run it yourself.** The review comes before shipping, not
+     after each slice, so thin slices don't each wait on one. Open a fresh session in whichever
+     terminal encloses this one, and `TMUX` decides first, because tmux started inside a Rex pane
+     inherits `REX_SESSION` while the windows the user sees are tmux's. When `TMUX` is set, open a
+     tmux window in the repo's directory (`tmux new-window -c <repo> -n <name>`) running
+     `bash "$DOTFILES/tools/claude/cc.bash"`. Otherwise, when `REX_SESSION` is
+     set, open a Rex tab with the launcher the `use-rex` skill names. With neither, open nothing:
+     give the user the command to run. Never start `claude` with a permission mode of your own
+     choosing. Name it after the PR and the review skill it runs (`review-code`,
      `review-adversarial`, `review-pr-comments-converge`, …): a Rex tab as `👀 PR 573: review-code`,
      a tmux window as `pr-573-review-code`. Give the reviewer the PR and nothing from this session.
-   - **The user works with the reviewer directly.** Don't read, verify, summarise or relay the
-     reviewer's findings, and don't ask the user about them. Being the go-between turns one
-     reviewer's report into a second, longer report the user has to untangle.
-   - **Track the review until it's resolved.** Every status report ends with a one-line list of the
-     reviews started and not yet resolved, each with its tab name, until the user says a review is
-     resolved. A PR with an unresolved review is not marked ready.
+   - **Starting the review ends this session's part in the work.** This session does not read,
+     verify, summarise or relay the reviewer's findings, and does not wait for them.
+   - **The message that starts the review is the handoff.** It names the review tab, makes step
+     11's offer, and then runs `wrap-up-session`, so the user can see whether this session can be
+     closed. The review it starts belongs to the review session, so it is not one of this session's
+     Open items.
 10. Repeat for the remaining changes
 11. Before closing, ask: did this work establish an invariant that must always hold, or a reusable
     standard for approaching this kind of problem? If not, say nothing. If so, offer to record it in

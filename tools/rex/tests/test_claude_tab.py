@@ -154,18 +154,19 @@ class PermissionMode(MachineTest):
                 )
 
 
-class RelatedFolders(MachineTest):
-    def test_tab_gets_the_plans_folder_cc_adds(self) -> None:
-        plans = self.machine.repos / "plans"
-        plans.mkdir()
+class RelatedRepos(MachineTest):
+    def test_tab_gets_the_related_repo_hint_cc_adds(self) -> None:
+        app = self.machine.repos / "react-clinops-siteoutreach"
+        app.mkdir()
+        infra = self.machine.repos / "bc-eng-clinical"
+        infra.mkdir()
 
-        run = self.machine.run("Review", str(self.machine.app), "/review")
+        run = self.machine.run("Review", str(app), "/review", computer="work")
 
-        self.assertEqual(
-            run.claude,
-            ["--permission-mode", "bypassPermissions", f"--add-dir={plans}", "/review"],
-            run.stderr,
-        )
+        assert run.claude is not None, run.stderr
+        self.assertEqual(run.claude[:3], ["--permission-mode", "auto", "--append-system-prompt"])
+        self.assertIn(f"Related repo: `bc-eng-clinical` at `{infra}`.", run.claude[3])
+        self.assertEqual(run.claude[4:], ["/review"])
 
 
 class TabRequest(MachineTest):

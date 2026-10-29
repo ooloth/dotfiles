@@ -1,78 +1,41 @@
 ---
 name: prove-it-works
-description: Survey observable paths, run the real system, capture evidence, and surface gaps. TRIGGER when asked to prove a change works or write a QA plan.
-argument-hint: 'Scope to check (e.g. "current branch", "the /login endpoint", "the retry logic in src/queue.ts") [optional]'
+description: Prove or disprove a claim about the running system, given one sentence naming a claim or a pointer (PR, branch, commit, endpoint or URL). TRIGGER when asked to prove a change works, to verify a claim, or when a session needs evidence of a change's effect.
+argument-hint: 'A claim, or a pointer such as "#238", a commit, an endpoint or a URL'
 ---
 
-Scope: $ARGUMENTS (if empty, assume the current change).
+Input: $ARGUMENTS
 
-## Step 1 — Survey: what paths exist?
+## What you are given
 
-Before running anything, produce a short report:
+One sentence is enough. It is either a claim, a ticket's property table or Ideal state, or only a
+pointer: a PR, branch, commit, endpoint or URL. Given a claim, prove that claim; don't re-derive the
+change's intent. Given only a pointer, work out what to prove from what it names. For a PR, that is
+each behaviour that differs between its base and its head.
 
-- **Entry points**: how can this code be reached? (CLI flag, HTTP endpoint, import, event, etc.)
-- **Branches**: what distinct paths does execution take? (happy path, error case, edge inputs, etc.)
-- **Observable outputs**: what does the system emit that you can check? (stdout, log lines, HTTP
-  response, file on disk, UI state, exit code, etc.)
-- **Gaps**: what paths exist that you cannot observe directly, and why?
+Get everything else from the environment: the PR and its ticket, the diff, the repo's docs for
+which host each environment serves and how to read what is serving there. Ask the user only for
+what none of these hold, and never ask them to restate the claim in a template.
 
-This is a planning artifact, not prose — use a list.
+## The bar
 
-## Step 2 — Run: execute against the real system
+How you gather the proof is yours to decide. What you return must meet this bar:
 
-Pick the real entry point. Real inputs. Real outputs. Not a test runner.
+- **Every part of the claim gets a verdict:** proven, disproven, or not observable here, with what
+  would make it observable. "Not observable" comes only after the obvious alternatives (a retry,
+  another model, account, host or tool) have been tried.
+- **The evidence comes from the running system,** not from tests or from reading code, and covers
+  every path the change can take, including its main purpose end to end.
+- **A reader who wasn't there can check every observation.** Save each command's raw output as it
+  runs, in a new folder under `~/Repos/agents/prove-it-works/<owner>-<repo>/<commit>/`, and name the
+  exact artifact it observed (host, revision, image, token, file). Every quote in the report points
+  to the file it came from, and matches it exactly.
+- **Before and after,** wherever a before state can be observed.
+- **Every attempt is shown,** including the ones that failed or cut against the claim.
+- **What a browser shows is a screenshot or recording,** saved in the same folder.
+- **Nothing secret appears** in the saved files or the report.
+- **Nothing in a deployed environment changes** unless the user approves that specific action.
 
-If you find yourself reaching for a test file, stop and ask: how would I observe this behaviour
-if I had no test suite at all? That's the question to answer.
-
-Cover every branch from Step 1 that you can reach. For each run, record:
-- What you ran (exact command, request, or interaction)
-- What you observed (stdout, response, file content, UI — not "it seemed fine")
-
-❌ "The tests pass and the logic looks correct."
-✅ "I ran `npm run dev`, navigated to /settings, toggled the feature, and saw the config update in
-the network response."
-
-## Step 3 — Gap audit
-
-After running, answer two questions:
-
-1. **What remains unobserved?** List any paths from Step 1 you couldn't reach, and why (missing
-   fixture, needs live infra, too slow to set up locally, etc.)
-2. **What tests are missing?** Focus on integration tests and black-box tests that run the real
-   system and assert from outside — not unit tests that mock internals. A good integration test here
-   would reproduce what you just ran manually. If a gap from #1 could be closed by adding such a
-   test, say so explicitly.
-
-Don't let this section distract from Steps 1–2. The primary goal is live evidence, not test design.
-Surface the gap, name the test type, move on.
-
-## Step 4 — Decide what to recommend
-
-Before writing the report, decide what you'll recommend. Ask yourself:
-
-- Are any unobserved paths blockers to shipping?
-- Which missing tests from Step 3 are highest priority?
-- Is anything only verifiable in staging/prod — and if so, what should the user watch for?
-
-Produce a prioritized list (3–5 bullets). Use these categories:
-
-- **Ship it** — all critical paths observed, no blockers
-- **Fix before shipping** — specific gap is a blocker; name it
-- **Add tests** — specific integration tests worth writing; name them
-- **Needs live infra** — name what to watch for in staging/prod
-
-## Step 5 — Report
-
-Now output the summary table followed immediately by the recommendations from Step 4:
-
-| Path | Observed? | Evidence | Notes |
-|------|-----------|----------|-------|
-| Happy path | ✅ | `npm run dev` → navigated to /settings → saw config update in network response | |
-| Invalid input | ✅ | `curl -X POST /api/foo -d '{}'` → 400 response with expected error body | |
-| DB unreachable | ❌ | Can't simulate locally without stopping the DB container | Missing integration test |
-
-**Recommended next steps:**
-
-- Add integration test: ...
-- Ship it / Fix X before shipping / Watch for Y in staging
+Write the report however makes the proof clearest to a reader, as long as it opens with the claim,
+gives each verdict with its evidence, and ends with what could not be observed. Return it as your
+final message.

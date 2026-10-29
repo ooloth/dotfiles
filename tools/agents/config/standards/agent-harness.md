@@ -72,6 +72,15 @@ open stay, so an answer can be matched to them. A history of changes, a record o
 and anything a ticket already holds fail the test, and each makes the file slower to read and
 quicker to go stale. A file saved after every reply makes ending a session cost nothing.
 
+**Evidence an agent reports is written by the tool that observed it, and the report quotes it
+from there.**
+An agent that retypes a command's output can trim it, misremember it, or leave out the run that
+cut against its conclusion, and a reader can't tell, because a retyped quote looks the same as a
+faithful one. So each command and its raw output are saved as they run, with the artifact they
+observed named beside them. The report quotes the saved files and lists every observation it
+doesn't cite. The exception is an observation no tool can capture, such as a person reading a
+device's screen, which the report labels as reported by that person.
+
 **Usage patterns are described.**
 How users or callers interact with the system is documented. An agent
 understands the intended interaction model — what inputs the system accepts,

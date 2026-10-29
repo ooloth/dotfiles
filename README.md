@@ -65,8 +65,16 @@ comment is checked against the current code and marked valid, stale or mistaken 
 acts on it. What gets fixed automatically and what gets escalated turns on one question, does
 applying this require the author to make a choice.
 
-[prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) collects evidence from
-running the real system. The test suite doesn't count as any part of the proof.
+[prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) proves or disproves a claim
+about the running system, given one sentence naming the claim or a PR, commit or URL. It sets the
+bar for proof and leaves the method to the model: every observation's raw output is saved and every
+quote points to its file, so a reader who wasn't there can check each verdict. The test suite
+doesn't count as any part of the proof.
+
+[merge-and-verify](./tools/agents/config/skills/merge-and-verify/SKILL.md) watches a merged PR's
+rollout and then proves its effect with prove-it-works. It reads the deploy chain from the repo's
+docs, counts the change as serving only when the live artifact's commit contains the merge, and
+checks every five minutes or so in a fresh turn until the watch reaches one of its named endings.
 
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session by finding what would
 mislead the next agent. Every action the session raised gets exactly one status (done, deferred,
