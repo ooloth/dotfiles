@@ -4,11 +4,11 @@ Facts about how `tools/{name}/` directories actually work — properties
 this repo's install/update automation and symlink model depend on, not
 observations about typical practice.
 
-- The scripts and their tests target macOS, and CI runs them on `macos-latest`.
-  `tools/bash/utils.bash` sources `tools/macos/utils.bash`, which calls
-  `/usr/sbin/networksetup`, and `symlink()` calls BSD `ln -w`. On Linux, such as an Amp orb,
-  `scripts/checks/link-scripts.bash` and the tests in `features/update/tests/` fail for that
-  reason alone.
+- The scripts target macOS, and CI runs them on `macos-latest`, but `tools/bash/utils.bash` and
+  every `link.bash` also run on Debian Linux with GNU coreutils. `.agents/setup` runs
+  `tools/claude/link.bash` and `tools/agents/link.bash` in every new Amp orb. So they use flags
+  both BSD and GNU tools accept (no `ln -w`), and call macOS-only commands such as
+  `/usr/sbin/networksetup` only after checking they exist.
 - Every tool lives in its own `tools/{name}/` directory. `tools/@new/` is
   the template for creating one; `tools/@archive/` holds deprecated ones —
   neither is a real tool.

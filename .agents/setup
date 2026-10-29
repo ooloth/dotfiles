@@ -56,13 +56,13 @@ write_agent_notes() {
 # dotfiles repo in an orb
 
 - This orb is Debian Linux; the repo targets macOS and CI runs on macos-latest.
-- `bash scripts/check.bash` runs here. Formatting, docs, types and linting should pass.
-- In the tests step, failures that come from macOS-only commands are expected here, not
-  regressions: `/usr/sbin/networksetup` (tools/macos/utils.bash) and BSD `ln -w`. They break
-  scripts/checks/link-scripts.bash, features/update/tests/test_preflight.py and
-  features/update/tests/test_symlinks.py. Compare against the same check on unchanged `main`
-  before treating a test failure as yours.
-- Do not run `symlinks`, `u` or any `link.bash` without a temporary HOME: they write into $HOME.
+- `bash scripts/check.bash` runs here. Tests that call macOS-only commands, such as
+  `/usr/sbin/networksetup` or `defaults`, fail here and pass in CI. Run a failing test on unchanged
+  `origin/main` before treating its failure as yours.
+- ~/.claude and ~/.agents link into this checkout through ~/Repos/ooloth/dotfiles, so editing
+  tools/claude/config/ or tools/agents/config/ changes this orb's live config.
+- Do not run `symlinks`, `u` or any other `link.bash` without a temporary HOME: they write into
+  $HOME.
 NOTES
 }
 
@@ -83,7 +83,21 @@ warm_uv() {
   uv sync --quiet --script tools/agents/check-skills.py
 }
 
+# Link Michael's Claude config (CLAUDE.md, settings, agents) and shared skills and standards into
+# ~/.claude and ~/.agents, as `symlinks` does on his Macs. tools/bash/utils.bash and settings.json
+# expect the repo at ~/Repos/ooloth/dotfiles, so that path points at this checkout.
+link_claude_config() {
+  local dotfiles="${HOME}/Repos/ooloth/dotfiles"
+  if [[ ! -e "${dotfiles}" ]]; then
+    mkdir -p "$(dirname "${dotfiles}")"
+    ln -s "${repo}" "${dotfiles}"
+  fi
+  DOTFILES="${dotfiles}" bash tools/claude/link.bash
+  DOTFILES="${dotfiles}" bash tools/agents/link.bash
+}
+
 step "shellcheck" install_shellcheck
 step "lua and zsh" install_packages
 step "uv cache" warm_uv
 step "agent notes" write_agent_notes
+step "claude config" link_claude_config
