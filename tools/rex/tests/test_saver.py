@@ -1045,6 +1045,36 @@ class SavingTheFocus(unittest.TestCase):
         )
         self.assertIsNone(self.latest()["focused_index"])
 
+    def test_the_unknown_focus_warning_clears_once_the_app_shows_a_live_session(self) -> None:
+        # After a restart, the app's preferences name the old server's session until it writes
+        # the new one.
+        self.focus_on("session:01a1759d-c604-7b62-911f-000000000000")
+        self.saver.poll()
+        self.assertTrue((self.state / "warning").exists())
+        self.focus_on(self.second["session_id"])
+        self.saver.poll()
+        self.assertEqual(self.saver.problems, [])
+        self.assertFalse((self.state / "warning").exists())
+        self.assertIn("resolved: focus_unknown", (self.state / "saver.log").read_text())
+
+    def test_an_unknown_focus_still_unknown_at_the_next_poll_stays_reported(self) -> None:
+        self.focus_on("session:01a1759d-c604-7b62-911f-000000000000")
+        self.saver.poll()
+        self.saver.poll()
+        self.assertEqual([p.kind for p in self.saver.problems], ["focus_unknown"])
+
+    def test_a_live_focus_leaves_every_other_problem_reported(self) -> None:
+        self.saver.problem("events_missed", self.first["session_id"])
+        self.focus_on(self.second["session_id"])
+        self.saver.poll()
+        self.assertEqual(
+            self.saver.problems, [saver.Problem("events_missed", self.first["session_id"])]
+        )
+
+    def test_a_problem_that_records_an_event_is_never_resolved(self) -> None:
+        with self.assertRaises(AssertionError):
+            self.saver.resolve("events_missed")
+
     def test_preferences_that_cannot_be_read_warn(self) -> None:
         self.saver.poll()
         self.assertEqual([p.kind for p in self.saver.problems], ["focus_unreadable"])
