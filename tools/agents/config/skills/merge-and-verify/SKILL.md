@@ -93,12 +93,38 @@ finds.
 Read remote state through `gh` and each provider's own CLI or API. Don't `git fetch` or otherwise
 change a local clone to read it.
 
+A rehearsal that stands in a fake command for a real one, such as a stub `gcloud`, saves its
+evidence in a `mktemp -d` folder, never in `~/Repos/agents/prove-it-works/`, where a later run would
+take its made-up answers for real ones.
+
 ## The proof
 
 Once the change is serving, or nothing deploys, run `prove-it-works` with the claim, using the same
 evidence folder. Show the user a draft report: the PR, merge commit and ticket, the claim and where
 each part came from, the rollout from merge to its ending, and the `prove-it-works` report
-unchanged. Post nothing, and change nothing in any deployed environment.
+unchanged. Change nothing in any deployed environment.
+
+## Posting the report
+
+The report goes on the ticket it proves: a Jira issue, or a GitHub issue. A PR with neither gets
+the report on the PR. Show the user the full draft and its destination, plus the one-line PR comment
+that links to it, and post only after they approve that wording. Post approved wording as approved;
+a change is a new draft.
+
+Before showing the draft, check it for credentials (tokens, keys, cookies, bearer headers, signed
+URLs). Remove any you find, and say so in the draft.
+
+- **Jira:** post the comment with the Atlassian MCP tool, following `use-jira` for how markdown
+  converts.
+- **A GitHub issue or PR:** post with `gh issue comment` or `gh pr comment` from a file, following
+  `use-gh`.
+
+Screenshots and recordings are not uploaded. The report names each one by its path in the evidence
+folder.
+- **The PR link:** once the ticket comment exists, post one line on the PR linking to it.
+
+Then list every PR that names the ticket, and whether each has merged and has its proof on the
+ticket. Only when all have, offer to close the ticket, and close it only if the user says yes.
 
 ## Cleaning up
 

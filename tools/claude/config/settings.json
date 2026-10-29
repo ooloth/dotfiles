@@ -77,8 +77,8 @@
       "Edit(~/Repos/ooloth/dotfiles/tools/claude/config/settings.json)",
       "Bash(gh pr merge *)",
       "Bash(uv run *merge-and-verify/scripts/merge.py *)",
-      "Edit(~/Repos/ooloth/dotfiles/tools/agents/config/skills/merge-and-verify/scripts/**)",
-      "Edit(~/.claude/skills/merge-and-verify/scripts/**)"
+      "Edit(~/Repos/ooloth/dotfiles/tools/agents/config/skills/merge-and-verify/scripts/merge.py)",
+      "Edit(~/.claude/skills/merge-and-verify/scripts/merge.py)"
     ],
     "deny": [
       "Bash(git push --force origin main:*)",
