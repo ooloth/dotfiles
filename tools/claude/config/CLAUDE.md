@@ -543,3 +543,24 @@ Skip and say nothing if execution went smoothly.
 - To edit Claude's own config (this file, skills, agents, settings), use the Edit tool on the real
   path under `~/Repos/ooloth/dotfiles/tools/`, not the `~/.claude/` symlink. `~/.claude/` is a
   protected path that auto mode may refuse. Edits to `settings.json` ask the user first.
+
+## In an Amp Orb
+
+When `AMP_ORB=1`, you are in an Amp orb, a Linux sandbox, not my Mac. Amp's own instructions for
+orbs take precedence over these rules where they differ:
+
+- **Review:** I review changes in Amp's Changes pane, not lazygit. Still name each file you changed
+  and what the change does.
+- **Background work:** run servers and other long-lived processes as orb services
+  (`amp orb service start`), not in tmux windows or with `&`. They survive Amp restarts and orb
+  pauses, and tmux does not. Short-lived tmux sessions for testing interactive programs are fine.
+- **Browser:** use `agent-browser`. `browser-automation-agent` does not exist in an orb.
+- **Skills and standards:** this file reaches an orb only as a copy inside
+  `~/.config/amp/AGENTS.md`, written by the dotfiles repo's `.agents/setup`. Nothing links
+  `~/.claude` or `~/.agents`, so the skills and standards named here, such as `uphold-standards`,
+  `/commit` and `decision-making.md`, are not installed. In the dotfiles repo, read them from
+  `tools/agents/config/skills/<name>/SKILL.md` and `tools/agents/config/standards/`. Elsewhere, say
+  which one you could not load and carry on without it.
+- **Your own config:** edit `tools/claude/config/` in the dotfiles checkout, which in an orb is the
+  repository root, not `~/Repos/ooloth/dotfiles`. The copy in `~/.config/amp/AGENTS.md` does not
+  change until a new orb is set up from the pushed commit.

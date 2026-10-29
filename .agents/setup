@@ -42,28 +42,41 @@ install_packages() {
   sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq lua5.4 zsh
 }
 
-# The repo targets macOS, and CI runs on macos-latest. Tell agents in the orb which failures that
-# explains, so they don't try to "fix" them.
-write_agent_notes() {
-  local notes="${HOME}/.config/amp/AGENTS.md" marker="# dotfiles repo in an orb"
-  if grep -Fqx "${marker}" "${notes}" 2>/dev/null; then
-    echo "agent notes already written"
-    return
-  fi
-  mkdir -p "$(dirname "${notes}")"
-  cat >>"${notes}" <<'NOTES'
-
+# Amp gives every thread ~/.config/amp/AGENTS.md as guidance, Claude Code threads included, but
+# never reads ~/.claude: the agent itself runs outside the orb. So this writes Michael's CLAUDE.md
+# into that file, after notes on this orb, between markers it replaces on every run. Text Amp wrote
+# before the markers is kept. An earlier version of this script appended only the notes, starting
+# at the legacy heading and running to the end of the file, so that is removed too. Amp reads the
+# file when a thread starts, so this has to happen in setup rather than in a plugin or resume.
+write_agent_guidance() {
+  local guidance="${HOME}/.config/amp/AGENTS.md" kept
+  local start="<!-- dotfiles: start -->" end="<!-- dotfiles: end -->"
+  mkdir -p "$(dirname "${guidance}")"
+  touch "${guidance}"
+  kept="$(awk -v s="${start}" -v e="${end}" -v legacy="# dotfiles repo in an orb" '
+    $0 == s { skip = 1; next }
+    skip && $0 == e { skip = 0; next }
+    skip { next }
+    $0 == legacy { exit }
+    { print }' "${guidance}")"
+  {
+    printf '%s\n\n%s\n\n' "${kept}" "${start}"
+    cat <<'NOTES'
 # dotfiles repo in an orb
 
 - This orb is Debian Linux; the repo targets macOS and CI runs on macos-latest.
 - `bash scripts/check.bash` runs here. Tests that call macOS-only commands, such as
   `/usr/sbin/networksetup` or `defaults`, fail here and pass in CI. Run a failing test on unchanged
   `origin/main` before treating its failure as yours.
-- ~/.claude and ~/.agents link into this checkout through ~/Repos/ooloth/dotfiles, so editing
-  tools/claude/config/ or tools/agents/config/ changes this orb's live config.
-- Do not run `symlinks`, `u` or any other `link.bash` without a temporary HOME: they write into
-  $HOME.
+- Do not run `symlinks`, `u` or any `link.bash` without a temporary HOME: they write into $HOME.
+- What follows is a copy of tools/claude/config/CLAUDE.md, made when this orb was set up. Editing
+  that file does not change this copy; a new orb picks up the change once it is pushed.
+
 NOTES
+    cat tools/claude/config/CLAUDE.md
+    printf '\n%s\n' "${end}"
+  } >"${guidance}"
+  echo "wrote $(wc -c <"${guidance}") bytes to ${guidance}"
 }
 
 # Fill uv's cache with ruff, ty, pytest and every test script's inline dependencies, so the first
@@ -83,21 +96,7 @@ warm_uv() {
   uv sync --quiet --script tools/agents/check-skills.py
 }
 
-# Link Michael's Claude config (CLAUDE.md, settings, agents) and shared skills and standards into
-# ~/.claude and ~/.agents, as `symlinks` does on his Macs. tools/bash/utils.bash and settings.json
-# expect the repo at ~/Repos/ooloth/dotfiles, so that path points at this checkout.
-link_claude_config() {
-  local dotfiles="${HOME}/Repos/ooloth/dotfiles"
-  if [[ ! -e "${dotfiles}" ]]; then
-    mkdir -p "$(dirname "${dotfiles}")"
-    ln -s "${repo}" "${dotfiles}"
-  fi
-  DOTFILES="${dotfiles}" bash tools/claude/link.bash
-  DOTFILES="${dotfiles}" bash tools/agents/link.bash
-}
-
 step "shellcheck" install_shellcheck
 step "lua and zsh" install_packages
 step "uv cache" warm_uv
-step "agent notes" write_agent_notes
-step "claude config" link_claude_config
+step "agent guidance" write_agent_guidance
