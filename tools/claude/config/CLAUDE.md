@@ -537,7 +537,10 @@ Skip and say nothing if execution went smoothly.
   and stop it within one Bash command.
 - The Bash tool runs zsh, not bash. Unquoted variables are not split into words (`cmd $args`,
   `for x in $list` and `${list//,/ }` each pass one string), `read -a` is `read -A`, and arrays
-  start at 1. Run anything written for bash inside `bash -c '…'`.
+  start at 1. A colon and a letter after a variable is a modifier even inside double quotes
+  (with `c=abc`, `"$c:refs/x"` prints `abcefs/x`), so a variable followed by a colon is always
+  written in braces: `git push origin "${sha}:refs/heads/x"`. Run anything written for bash inside
+  `bash -c '…'`.
 - For anything a browser shows, delegate to `browser-automation-agent`. It brings its own
   Playwright tools; the main session has none.
 - To edit Claude's own config (this file, skills, agents, settings), use the Edit tool on the real
