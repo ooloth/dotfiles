@@ -109,6 +109,10 @@ gets this machine's permission mode and the repo's related folders, as `cc` woul
 bash "$DOTFILES/tools/rex/claude-tab.bash" [-s <session>] '<tab name>' <directory> [claude arguments]
 ```
 
-The tab opens in `$REX_SESSION` unless `-s` names another session, and Rex's JSON for the new tab
-goes to stdout. Agents start every Claude tab this way, as the `use-rex` skill says, so no skill
-names a permission mode itself. Tests: `uv run tools/rex/tests/test_claude_tab.py`.
+The tab opens in the Rex session labelled `Workers` unless `-s` names another session. When no
+`Workers` session exists, the launcher creates one with this tab as its first window. Rex's JSON
+for the new tab goes to stdout, with its pane at `.block_ids[0]`. Capture that pane with
+`rex capture -s Workers -b <pane>`, or with the session passed to `-s`, because Rex looks for a pane
+only in the caller's own session otherwise. Tab names start with a word, not an emoji. Agents start
+every Claude tab this way, as the `use-rex` skill says, so no skill names a permission mode itself.
+Tests: `uv run tools/rex/tests/test_claude_tab.py`.

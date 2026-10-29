@@ -378,7 +378,7 @@ are for work already approved.
      set, open a Rex tab with the launcher the `use-rex` skill names. With neither, open nothing:
      give the user the command to run. Never start `claude` with a permission mode of your own
      choosing. Name it after the PR and the review skill it runs (`review-code`,
-     `review-adversarial`, `review-pr-comments-converge`, …): a Rex tab as `👀 PR 573: review-code`,
+     `review-adversarial`, `review-pr-comments-converge`, …): a Rex tab as `PR 123: review-code`,
      a tmux window as `pr-573-review-code`. Give the reviewer the PR and nothing from this session.
    - **Starting the review ends this session's part in the work.** This session does not read,
      verify, summarise or relay the reviewer's findings, and does not wait for them.

@@ -164,7 +164,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
   made yourself, open a Rex tab in that repo with the `use-rex` launcher and the prompt `/commit`
   rather than committing from your session, so its checks don't block you and the user can watch.
 - **Side jobs:** a job for a ticket that runs a long time, or that the user may want to watch or
-  approve, goes in a new tab in that ticket's session. You or that ticket's worker may open it. A
+  approve, goes in a new tab in that ticket's session, opened with `-s` naming that session,
+  because the launcher otherwise puts it in `Workers`. You or that ticket's worker may open it. A
   bounded question with one answer goes to a subagent instead. When you check a ticket, list its
   session's tabs, so a tab a worker opened shows up in your table.
 - **Tabs show the work in flight:** the user reads the sidebar as the list of what is happening.
@@ -176,9 +177,9 @@ confusing report, comes before the next work item. Resolve it with the user befo
   alone any tab you didn't open.
 - **Merging and verifying:** each PR goes through `merge-and-verify`, which owns every rule for
   when a PR is ready, how it merges, when it counts as serving and how its effect is proven. Open a
-  tab for it in the ticket's session, named `pr-<n>-merging`, in the repo's main checkout rather
-  than the PR's worktree, so its cleanup step can remove that worktree. Start it with the `use-rex`
-  launcher and the prompt `/merge-and-verify <owner>/<repo>#<n>`, and rename it
+  tab for it in the ticket's session (pass `-s`), named `pr-<n>-merging`, in the repo's main
+  checkout rather than the PR's worktree, so its cleanup step can remove that worktree. Start it
+  with the `use-rex` launcher and the prompt `/merge-and-verify <owner>/<repo>#<n>`, and rename it
   `pr-<n>-verifying` once the PR merges. Close it once its report is posted and its cleanup offer
   is answered; the PR's row leaves the table then too.
   Name the environment in the prompt when the repo deploys to more than one. A permission prompt,
