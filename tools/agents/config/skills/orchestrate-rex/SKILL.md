@@ -174,40 +174,35 @@ confusing report, comes before the next work item. Resolve it with the user befo
   the tab when the phase changes. In every sweep, close tabs whose job is finished, such as a
   commit tab after its commit lands or a worker whose PR only waits on the user's merge. Leave
   alone any tab you didn't open.
-- **Re-measure what a design rests on:** when a design or a merge depends on an observation of
-  a live system, such as a claim in a token, a header, a config value or a response shape, check
-  that the record names exactly what was observed: which token, which endpoint, which host. Before
-  a merge depends on it, run the observation again yourself, on that exact artifact. An
-  observation of a neighbouring artifact (an identity endpoint in place of the token it
-  describes, or one environment's value in place of another's) is not evidence, however closely
-  the two seem to match.
-- **Merges:** merge in the agreed order, and confirm each change works in dev before the next
-  merge. The user merges with the "Squash and merge" button on GitHub, so tell them a PR is ready
-  to merge and give no command, unless something the button can't do is needed.
-- **Check what is serving, not only that a run finished:** after every deploy, read the serving
-  revision's image tag and the env vars the batch depends on, and compare them with trunk. Read
-  them again in each sweep for as long as work depends on that environment. Another person's
-  branch can apply to a shared stack, and a run that "finished" may have deployed something else.
-  When the serving state doesn't match trunk, that becomes the top row of the table.
-- **Behind trunk:** before calling a PR ready to merge, compare its head with trunk's head as it
-  is now (`gh api repos/<owner>/<repo>/compare/<head-sha>...<trunk>`). List the commits trunk has
-  that the branch lacks, and the files both sides changed. If merging trunk in could surface
-  anything the PR's checks don't already cover, such as an overlapping file, a change in what
-  the PR depends on, or a migration or dependency on either side, tell the PR's worker to merge
-  trunk into the branch (merge, never rebase), run the checks, and push. This needs no separate
-  approval. Call the PR ready only once CI on the new head is green. Otherwise, put a line in the
-  PR's row saying it is N commits behind trunk, and why that can't hide a problem. For example,
-  no file changed on both sides, and none of trunk's commits touch what the PR relies on. A PR
-  called ready with no such line means the check was skipped.
+- **Merging and verifying:** each PR goes through `merge-and-verify`, which owns every rule for
+  when a PR is ready, how it merges, when it counts as serving and how its effect is proven. Open a
+  tab for it in the ticket's session, named `pr-<n>-merging`, in the repo's main checkout rather
+  than the PR's worktree, so its cleanup step can remove that worktree. Start it with the `use-rex`
+  launcher and the prompt `/merge-and-verify <owner>/<repo>#<n>`, and rename it
+  `pr-<n>-verifying` once the PR merges. Close it once its report is posted and its cleanup offer
+  is answered; the PR's row leaves the table then too.
+  Name the environment in the prompt when the repo deploys to more than one. A permission prompt,
+  such as the merge gate's, is answered by the user in that tab. A question or a wording to
+  approve, such as the report it would post, is relayed as any worker's is. Merge in the agreed
+  order: start the next PR's tab only after the previous one's watch has ended "serving" and its
+  proof report exists; approving and posting that report can trail. Relay each report, and never
+  tell the user to press "Squash and merge".
+- **What serves, for the rest of the batch:** a `merge-and-verify` watch ends once its own PR is
+  serving, but another person's merge can still land on a shared stack. In each sweep, for as long
+  as work depends on an environment, check that what serves there still contains every PR the
+  batch has merged, by `merge-and-verify`'s rule for serving. When it doesn't, that becomes the top
+  row of the table: hold every merge and every check that reads that environment, find out what
+  replaced the batch's build and who deployed it, and bring that to the user. Another person's
+  deploy is theirs to undo, never this session's.
 
 ## 5. Report
 
 Whenever something changes or needs the user, show the status table. It lists every unfinished
 work item in priority order, with the same columns as the first table. A row leaves once its item
-is merged and verified in dev. A row joins when an issue comes up or a work item has to be
-inserted, such as a failing deploy or a fix to how the batch is run. Build each table from reads
-made for that reply, not from earlier ones, since a PR that was clean an hour ago may now conflict
-with something that merged.
+is merged, serving and its proof report is posted. A row joins when an issue comes up or a work
+item has to be inserted, such as a failing deploy or a fix to how the batch is run. Build each
+table from reads made for that reply, not from earlier ones, since a PR that was clean an hour ago
+may now conflict with something that merged.
 
 End the reply with one numbered list of what you need from the user, about the top item in the
 order and nothing below it. The table shows the rest, and that is enough. A

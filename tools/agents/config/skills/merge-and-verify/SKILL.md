@@ -36,6 +36,11 @@ Before merging, report each check that takes judgement, with its result:
   or "not addressed". Unresolved threads are normal here. A finding blocks only when nothing
   addressed it and the reviewer didn't mark it optional, a nit or non-blocking; list the rest
   without blocking on them.
+- **Live observations the merge relies on:** any claim about a live system the PR's design or its
+  merge depends on, such as a claim in a token, a header, a config value or a response shape. Run
+  each again now on that exact artifact (which token, which endpoint, which host). An observation
+  of a neighbouring artifact, such as one environment's value in place of another's, is not
+  evidence, however closely the two seem to match.
 - **The repo's merge-time steps:** anything its docs say must happen before or after a merge, such
   as running a migration before the deploy reaches it.
 - **Timing:** whether another PR has to land first, or anything else makes now the wrong moment.
