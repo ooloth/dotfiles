@@ -93,7 +93,9 @@ symlink() {
   mkdir -p "$target_dir"
 
   printf "🔗 " # inline prefix for the output of the next line
-  ln -fsvw "$source_file" "$target_dir"
+  # No -w: it only warns about a missing source, which the check above already rejects, and GNU ln
+  # (Linux, such as an Amp orb) refuses the flag
+  ln -fsv "$source_file" "$target_dir"
 }
 
 # Every tools/<tool>/link.bash in alphabetical order by tool, one per line. tools/@new and

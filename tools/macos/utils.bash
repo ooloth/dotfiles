@@ -5,7 +5,8 @@
 # A COMPUTER the caller already set is kept, so a test can choose the machine.
 
 if [[ -z "${COMPUTER:-}" ]]; then
-  case "$(/usr/sbin/networksetup -getcomputername)" in
+  # networksetup exists only on macOS. Elsewhere, such as an Amp orb, the name is empty, so "work".
+  case "$([[ -x /usr/sbin/networksetup ]] && /usr/sbin/networksetup -getcomputername)" in
     "Air")  export COMPUTER="air" ;;
     "Mini") export COMPUTER="mini" ;;
     *)      export COMPUTER="work" ;;
