@@ -56,6 +56,14 @@ mirroring the intended layering (e.g. `api → domain`, never `domain → api`).
 boundary between typed and untyped code. Enable it in the test suite, not in
 production.
 
+**A module run with `python -m` names its logger explicitly.**
+Run that way, the module's `__name__` is `"__main__"`, so `logging.getLogger(__name__)` creates a
+logger outside the package whose logging configuration was meant to cover it. Its records then fall
+through to the root logger's level and can be dropped with no error. In react-clinops-siteoutreach,
+a migrate command's outcome line vanished this way, and only a test that ran the module as a
+subprocess caught it. `logging.getLogger("package.module")` keeps the name the same whether the
+module is imported or run.
+
 **Return types are not quoted.**
 Add `from __future__ import annotations` at the top of any file targeting
 Python < 3.14 rather than quoting return type annotations. Quoted annotations
