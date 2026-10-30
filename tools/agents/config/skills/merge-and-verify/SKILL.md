@@ -31,7 +31,9 @@ the trunk merge's commit (made by `git merge`) and a mechanical fix's commit (ma
 - **Watch the rollout and run the proof.**
 
 **An approval holds.** A push to an approved PR never undoes its approval, whatever the push
-changes. Never tell the user an approval is stale, and never ask for a new one.
+changes. Never tell the user an approval is stale, and never ask for a new one. A change request
+is not an approval: it stands until the reviewer who made it reviews again, so asking them to
+re-review is settling their request, not renewing anyone's approval.
 
 **Stop and discuss when:**
 
@@ -42,6 +44,9 @@ changes. Never tell the user an approval is stale, and never ask for a new one.
 - a live observation the merge relies on no longer holds
 - the gate or GitHub refuses for any reason not listed under "Do these yourself"
 - verifying would need a change to a deployed environment beyond the normal deploy
+
+**Never roll back, revert or change anything in a deployed environment yourself,** in the rollout
+watch or the production watch. Say what you would do and wait for the user.
 
 **Still ask before** posting the report or any comment, closing the ticket, watching production and
 removing branches. Each keeps the approval its section describes.
@@ -181,8 +186,7 @@ The watch ends in exactly one of these, and the report names which:
 Whatever the ending, draft the watch's summary as a second comment for the destination the proof
 went to, and post it as "Posting the report" describes, without a second PR link.
 
-The watch only reports. Never roll back, revert or change anything in a deployed environment
-yourself; say what you would do and wait for the user.
+The watch only reports, as the rule under "What invoking this skill approves" requires.
 
 ## Posting the report
 
