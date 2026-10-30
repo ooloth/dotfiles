@@ -60,6 +60,7 @@
       "Bash(acli jira workitem view *)",
       "Bash(acli jira workitem comment create *)",
       "Bash(acli jira workitem comment update *)",
+      "Bash(acli jira workitem link delete *)",
       "Skill(commit)",
       "Bash(git add *)",
       "Bash(git commit *)",
@@ -73,6 +74,7 @@
       "Bash(git clean *)",
       "Bash(acli *--jql*)",
       "Bash(acli *--filter*)",
+      "Bash(acli jira workitem link delete *--from-*)",
       "Edit(~/.claude/settings.json)",
       "Edit(~/Repos/ooloth/dotfiles/tools/claude/config/settings.json)",
       "Bash(gh pr merge *)"
