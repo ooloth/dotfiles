@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-25
+updated: 2026-10-29
 update_when: the work laptop check below is run, or #127 starts
 decays: slow
 status: open
@@ -40,6 +40,10 @@ A failure tells you which of these is in the way: the network blocks the downloa
 re-signs HTTPS with a company certificate that uv does not trust without `--system-certs`, or the
 managed config disables or redirects Python downloads.
 
+Run the PyPI check in the
+[start command question](what-command-starts-the-repos-python.md) in the same
+sitting. It asks whether the same laptop can download packages from PyPI directly.
+
 ## Resolves into
 
 A decision record in `../decisions/` naming what setup's first step does before handing over to
@@ -68,5 +72,8 @@ Nothing here is settled until it graduates into a decision record.
 - *Reasoned:* the global Python standards call for Pydantic at boundaries. A setup that has to run
   before gcloud is logged in cannot install third-party packages on a work laptop, so the code it
   runs would be limited to the standard library, with ruff, `ty` and pytest only in the dev group.
-  Whether `uv run --no-dev` on a project with no runtime dependencies reaches the package index at
-  all is *Unverified*.
+- *Measured (2026-10-29):* with uv 0.13.5 on a personal machine, `uv run --frozen --no-dev` on a
+  project with no runtime dependencies and no `.venv` started a module with `UV_NO_CACHE=1` and
+  `UV_DEFAULT_INDEX` set to an unreachable host. This held for a packaged project built with
+  `uv_build` and for one with `package = false`. Beyond an installed Python, it needed nothing
+  from the network. A work laptop's managed uv config has not been tried.

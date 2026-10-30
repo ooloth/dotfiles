@@ -25,7 +25,7 @@ pytest that `check` runs over it. The maintainer pointed at `~/Repos/ooloth/agen
 [ooloth/media](https://github.com/ooloth/media) as the setups to follow.
 
 This settles the layout only. How a fresh Mac gets uv and Python before the first script needs
-them, and how unported bash calls the Python in the meantime, stay open in the
+them, and what command starts the Python while both languages run, stay open in the
 [bootstrap question][boot] and the [transition question][transition].
 
 ## Rejected
@@ -56,4 +56,4 @@ Python before `u` first runs, or the ported scripts turn out to share no code.
 - [ ] `CONTRIBUTING.md` describes the project's commands once it exists
 
 [boot]: ../questions/how-does-a-fresh-mac-get-uv-and-python-before-the-first-script-needs-them.md
-[transition]: ../questions/how-does-unported-bash-call-the-repos-python.md
+[transition]: ../questions/what-command-starts-the-repos-python.md
