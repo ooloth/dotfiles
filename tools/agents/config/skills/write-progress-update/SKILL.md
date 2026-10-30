@@ -118,7 +118,7 @@ closing line when it adds nothing. Two items is fine when that is all that matte
 1. **<What is now true or possible, opening words>** <rest of the line> <link on the key words, or ([KEY](url)) at the end> _(<optional aside>)_
 
 :emoji: **Next up**
-1. **<What will be true, opening words>** <rest of the line> ([KEY](url))
+1. <What will be true> <rest of the line> ([KEY](url))
 
 _<One sentence on the roadmap after Next up, pointing to the thread reply if there is one>_
 ```
@@ -127,9 +127,10 @@ _<One sentence on the roadmap after Next up, pointing to the thread reply if the
   sections by meaning (a "What remains" list is Next up), prefer the most recent, and look further
   back when the latest ones lack a section.
 - One line per item, and at most one link per item: the ticket or doc that best explains it.
-- The opening words of each item are bold: the first few words of the line itself, or a label
-  such as "This week:", so a reader skimming the bold gets the gist. The bold is never a separate
-  title that the rest of the line repeats. A decision's lead is "Decided with <@U…>:".
+- Bold and italics go wherever they make the update quicker to scan: an item's opening words, a
+  label such as "This week:", or one key phrase mid-line. No item needs them. Bold is never a
+  separate title that the rest of the line repeats. A decision's bold is "Decided with <@U…>:" and
+  stops at the colon.
 - Every item makes sense to someone who does not click its link.
 - Lead with what a reader can now do or will be able to do, not with the work done.
 - When the work adds up to something bigger than any one item, such as a milestone the previous
@@ -137,8 +138,24 @@ _<One sentence on the roadmap after Next up, pointing to the thread reply if the
 - An aside holds one short fact the reader needs, or is left out.
 - Say it the way you would say it to a colleague. Write to inform a junior teammate, not to impress
   a leader: the test is whether a reader got through it quickly and understood the facts. Ticket
-  titles are often written as formal claims ("An internal user is an admin exactly when…"); never
-  copy one, and say what it means plainly.
+  titles are often written as formal claims ("The importer rejects any row whose total does not
+  match its line items"); never copy one, and say what it means plainly.
+- Use the words the readers use for the system, such as "backend" rather than "API" or "image",
+  and name the old state when that is what makes the change clear ("at `/` instead of `/app`").
+- Claim no more than the source does. An answer that was verbal, partial or still pending keeps
+  that hedge ("it still sounds like…", "should make it less likely…"), and its follow-up goes in
+  an aside.
+- Anything not yet true is written in the future tense and goes in Next up, even when it follows
+  from a decision already listed in Done.
+- When a ticket names a mechanism (a table, a token claim, a Terraform plan), say what it changes
+  for the team instead ("tests will run against the same kind of db as production", not "the CI
+  test job gets a database service container").
+- A hedge reports who said it and how, in the source's own terms ("Legal told <@U…> it still
+  sounds like…", "<@U…> said on a call…"). It never adds a role or a conclusion the source did not
+  state.
+- Credit for work in progress goes in an aside: "_(<@U…> is working on this)_".
+- The team's everyday shorthand is fine and reads like a colleague: "db", "staging + prod",
+  "e.g.", and short parentheses such as "(by hand is fine)".
 - A decision reads "Decided with <@U…>: <what was decided>", naming who decided it.
 - A PR is a fine link when no ticket covers the item.
 - Every update is written in the same plain voice, whoever is in the channel. Name a system when
@@ -148,10 +165,31 @@ _<One sentence on the roadmap after Next up, pointing to the thread reply if the
 - Next up covers about the next week. The closing line below it then sums up, in one sentence,
   the rest of the roadmap after that week, from the user's plan when there is one and otherwise as
   your guess, which you tell the user. When a thread reply holds the full plan, the closing
-  sentence also points to it ("_After that, PROD runs the app by about Nov 20; the full plan is in
-  the :thread:_").
+  sentence also points to it ("_After that, the beta opens to customers by about mid-March; the
+  full plan is in the :thread:_").
 - A thread reply follows the same formatting: bold headings, numbered lists rather than bullets,
-  and a link on every ticket key it names. The one-link limit applies only to the main message.
+  and a link on every ticket key it names. Its items have the main message's shape: the sentence
+  first, links at the end. The one-link limit applies only to the main message.
+
+These pairs show the user's voice: a draft line, then what the user changed it to. They show how
+to phrase, not what to say.
+
+- Draft: "A merge to `main` now reaches staging with no manual step. Each new build runs its
+  database migration first, and if the migration fails, the API keeps serving the version before
+  it"
+  User: "A merge to `main` now reaches staging with no manual steps. New migrations are
+  automatically run before the backend is updated to a version that depends on them, and if the
+  migration fails, the backend stays on the older version"
+- Draft: "Legal said the signup form meets the privacy rules, as long as consent is stored in the
+  CRM and exported monthly _(a written review will follow)_"
+  User: "Legal told <@U…> it still sounds like the signup form meets the privacy rules, as long as
+  consent is stored in an approved system (e.g. the CRM) and exported monthly (by hand is fine)
+  _(Legal's full written review will follow)_"
+- Draft: "Password reset emails will come from a company address, not the email provider's default
+  sender, so they stop landing in spam (<@U…>)"
+  User: "Customers' password reset emails will be sent from a company address, not the email
+  provider's default sender, which should make it less likely for them to land in spam _(<@U…> is
+  working on this)_"
 
 ## 6. Save it as a Slack draft
 
