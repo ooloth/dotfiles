@@ -182,7 +182,9 @@ Before presenting, review what you are about to claim:
 End with the approach, written the same way in the terminal and in the ticket comment, so a reader
 sees what was chosen first and how it was chosen right after:
 
-1. `# Approach`, then one paragraph saying what the chosen approach does.
+1. `# Approach`, then one paragraph saying what the chosen approach does. For a change users will
+   see, the paragraph starts with what they will be able to do or notice afterwards, in words a
+   user would follow, and then says how the approach delivers it.
 2. `## What a good fix must achieve 🎯`: a table with an empty first header, a `Property` column and
    a `Category` column, one row per binding property, numbered `P1`, `P2` and so on, each in one
    line. `Category` is `🛡️ Safety`, `⚡ Performance` or `🙂 Experience`. Safety covers everything
