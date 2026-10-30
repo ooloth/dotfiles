@@ -204,8 +204,20 @@ Give an added agent the same shape as the twelve: the intent block, the file lis
 requirement, and one question to answer. Record the question and why the twelve did
 not cover it — Step 4 reports it.
 
-Send a single message containing all Agent tool calls simultaneously. For each Agent tool call, set
-the tool's `model` parameter to `"sonnet"`. Pass each agent:
+Send a single message containing all Agent tool calls simultaneously. When the harness caps how
+many subagents run at once, it refuses the calls past the cap, and each refused call's result says
+so, often with "Do not retry". That forbids resending them at once, not later. Each time a running
+agent reports, launch one refused agent, with the same prompt and model. Keep going until every
+agent has run, and only then start Step 3.5. A review of several scopes, such as
+several commits each reviewed on its own, often needs more agents than the cap allows.
+
+Choose each agent's `model` from what its question demands of this change. The same agent can need
+different models on different changes: Language on a docs-only commit reads one file list and
+stops, while Correctness on a change to retry logic has to reason about states nobody wrote down.
+Ask how much of the answer is judgement rather than lookup, and what a wrong answer would cost.
+Step 3.5 catches a wrong claim, but not a finding the agent never made, so an agent whose question
+needs judgement on this diff gets a model strong enough to make it. Pick the cheapest model that
+meets that; cost rules a model out, never in. Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
