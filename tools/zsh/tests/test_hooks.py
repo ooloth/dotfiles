@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # ///
 """Tests for activate_venv in tools/zsh/config/hooks.zsh, which activates the nearest Python virtual
-environment when zsh starts and on every cd.
+environment when zsh starts and on every cd, and for the Python search paths the shell leaves unset.
 
 Run with: uv run tools/zsh/tests/test_hooks.py
 
@@ -23,6 +23,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[3]
 UTILS = REPO / "tools" / "zsh" / "utils.zsh"
 HOOKS = REPO / "tools" / "zsh" / "config" / "hooks.zsh"
+TOOLS = REPO / "tools" / "zsh" / "config" / "tools.zsh"
 
 
 class ActivateVenv(unittest.TestCase):
@@ -98,6 +99,43 @@ class ActivateVenv(unittest.TestCase):
         self.venv("one/.venv")
         two = self.venv("two/.venv")
         self.assertEqual(self.virtual_env(self.root / "one", then=self.root / "two"), str(two))
+
+
+class PythonSearchPaths(unittest.TestCase):
+    # Every Python process started from the shell reads PYTHONPATH, so a project folder exported
+    # there could shadow the modules of programs that have nothing to do with the project
+    def test_a_python_project_gets_no_pythonpath_or_mypypath(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        root = Path(directory.name).resolve()
+        home = root / "home"
+        home.mkdir()
+        project = root / "project"
+        project.mkdir()
+        (project / "pyproject.toml").write_text("")
+
+        # tools.zsh also sources every tool's shell.zsh, so a variable any of them sets shows here
+        script = (
+            f"source '{UTILS}'\nsource '{TOOLS}'\nsource '{HOOKS}'\n"
+            f"cd /\ncd '{project}'\n"
+            'print -r -- "${PYTHONPATH-<none>} ${MYPYPATH-<none>}"\n'
+        )
+        result = subprocess.run(
+            ["zsh", "-f", "-c", script],
+            cwd=project,
+            env={
+                "HOME": str(home),
+                "PATH": "/usr/bin:/bin",
+                "TERM": "dumb",
+                "COMPUTER": "Air",
+                "DOTFILES": str(REPO),
+            },
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=30,
+        )
+        self.assertEqual(result.stdout.strip(), "<none> <none>")
 
 
 if __name__ == "__main__":

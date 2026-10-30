@@ -26,8 +26,6 @@ if have brew; then
 fi
 
 # Python
-export MYPYPATH="${HOME}"
-export PYTHONPATH="${HOME}"
 export VIRTUAL_ENV_PROMPT='' # avoid extra (venv) prompt prefix
 
 if is_work; then
