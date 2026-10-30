@@ -82,10 +82,10 @@ class FakeHome:
         self.markers.mkdir()
 
     def slow_polls(self) -> None:
-        # Stands in for a busy machine: each 0.1 s poll takes 0.3 s, while a hung check's
-        # `sleep 30` still lasts 30 s
+        # Stands in for a busy machine: each 0.1 s poll takes 0.6 s, while a hung check's
+        # `sleep 30` still lasts 30 s. A deadline that counted its 50 polls would last 30 s.
         sleep = self.bin / "sleep"
-        sleep.write_text('#!/bin/sh\n[ "$1" = 0.1 ] && exec /bin/sleep 0.3\nexec /bin/sleep "$@"\n')
+        sleep.write_text('#!/bin/sh\n[ "$1" = 0.1 ] && exec /bin/sleep 0.6\nexec /bin/sleep "$@"\n')
         sleep.chmod(0o755)
 
     def tool(self, name: str, preflight: str | None) -> None:
@@ -158,7 +158,9 @@ class PreflightTest(unittest.TestCase):
         self.assertNotEqual(run.status, 0)
         self.assertIn("slow", run.output)
         self.assertIn("timed out", run.output)
-        self.assertLess(run.seconds, 10)
+        # The deadline is 5 s and the hung check sleeps 30 s. 20 s leaves room for a machine busy
+        # running every other test at once.
+        self.assertLess(run.seconds, 20)
 
     def test_slow_polls_do_not_stretch_the_deadline(self) -> None:
         home = FakeHome(self.root)
@@ -166,7 +168,7 @@ class PreflightTest(unittest.TestCase):
         home.tool("slow", HANG)
         run = home.u()
         self.assertIn("timed out", run.output)
-        self.assertLess(run.seconds, 10)
+        self.assertLess(run.seconds, 20)
 
     def test_checks_run_in_parallel(self) -> None:
         # Each check passes only once all three have started, which checks run one at a time can

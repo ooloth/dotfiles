@@ -8,9 +8,9 @@ For general project information, installation instructions, and usage details, s
 ## Uphold Project Invariants
 
 Before designing, writing, or editing any code — invoke the `uphold-project-invariants` skill. It
-loads this repo's own `docs/invariants/` and `docs/standards/`. This is in addition to the global
-`uphold-standards` skill, not instead of it: that one carries portable engineering guidance, this
-one carries what is true only here.
+loads this repo's own `docs/invariants/`, `docs/standards/` and accepted `docs/decisions/`. This is
+in addition to the global `uphold-standards` skill, not instead of it: that one carries portable
+engineering guidance, this one carries what is true only here.
 
 ## No Work Facts
 

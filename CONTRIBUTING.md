@@ -14,10 +14,10 @@ bash scripts/checks/formatting.bash           # ruff format
 uv run scripts/checks/docs.py                 # Markdown prose wraps at 100 columns; see the script
 bash scripts/checks/types.bash                # ty
 bash scripts/checks/linting.bash              # ruff check, shellcheck, zsh utils parse as bash, skills
-bash scripts/checks/tests.bash                # link.bash check mode, then every test in one pytest run
+bash scripts/checks/tests.bash                # link.bash check mode alongside one pytest run of every test
 ```
 
-The tests run across every core with pytest-xdist and end with the ten slowest, and `check` prints
+The tests run across every core with pytest-xdist and print the ten slowest, and `check` prints
 how long each category took. pytest ignores a test file's inline script header, so `tests.bash`
 installs what `scripts/checks/test-dependencies.py` reads from the headers. Declare a test's
 dependencies in its header and nowhere else; it still runs on its own with `uv run <file>`.

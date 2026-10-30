@@ -258,7 +258,9 @@ class Harness:
             capture_output=True,
             text=True,
             env={**self.env, **env},
-            timeout=60,
+            # Only catches a hang. A run takes seconds alone and has taken over 60 s with every
+            # test running at once on a busy machine.
+            timeout=300,
         )
 
     def calls(self) -> list[list[str]]:

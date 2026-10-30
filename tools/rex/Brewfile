@@ -1,2 +1,1 @@
-brew "lua" # runs tools/rex/tests, which load config/init.lua under a stubbed rex API
-brew "luajit" # runs the init.lua tests under Lua 5.1, the version Rex embeds
+brew "luajit" # runs tools/rex/tests, which load config/init.lua under Lua 5.1, the version Rex embeds

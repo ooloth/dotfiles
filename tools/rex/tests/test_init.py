@@ -7,7 +7,7 @@ panes and Rex tabs, and cmd keys to tabs, sessions, splits and lazygit.
 
 Run with: uv run tools/rex/tests/test_init.py
 
-Each test loads init.lua in a bare `lua` with the `rex` API stubbed by a fake session, presses one
+Each test loads init.lua in `luajit` with the `rex` API stubbed by a fake session, presses one
 key, and reads what happened: whether the key was handled, which way Rex was asked to move focus,
 where focus ended up, what the app was asked to do, which calls went to nvim, what was recorded in
 focus.log, and which splits and zooms were asked for. The fake session's tabs are rows of panes
@@ -24,9 +24,7 @@ from __future__ import annotations
 import itertools
 import json
 import os
-import shutil
 import subprocess
-import sys
 import tempfile
 import unittest
 from collections.abc import Iterator
@@ -35,10 +33,9 @@ from pathlib import Path
 
 INIT_LUA = Path(__file__).resolve().parent.parent / "config" / "init.lua"
 
-# Rex runs init.lua on its own embedded Lua 5.1. LuaJIT implements Lua 5.1, so every test runs under
-# it as well as under Lua 5.5, which catches a feature from a later Lua that Rex would reject.
-INTERPRETERS = ("lua", "luajit")
-LUA = INTERPRETERS[0]
+# Rex runs init.lua on its own embedded Lua 5.1, and LuaJIT implements Lua 5.1, so a feature from a
+# later Lua that Rex would reject fails here too
+LUA = "luajit"
 
 # Stands in for Rex. LAYOUT lists tabs separated by |, the active one marked with *. Each tab is its
 # panes separated by commas, then @ and the focused pane. A pane is the name of its foreground
@@ -956,22 +953,5 @@ class SessionSaver(unittest.TestCase):
                 self.assertIn("session saver", startup.logs[0])
 
 
-def main() -> int:
-    global LUA
-    failed = False
-    for interpreter in INTERPRETERS:
-        if shutil.which(interpreter) is None:
-            print(
-                f"{interpreter} is not installed, so init.lua is not tested under it",
-                file=sys.stderr,
-            )
-            return 1
-        LUA = interpreter
-        print(f"== {interpreter}", file=sys.stderr)
-        result = unittest.main(exit=False).result
-        failed = failed or not result.wasSuccessful()
-    return 1 if failed else 0
-
-
 if __name__ == "__main__":
-    sys.exit(main())
+    unittest.main()

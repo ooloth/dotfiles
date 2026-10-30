@@ -24,9 +24,9 @@ jobs:
       - name: Install shellcheck
         run: brew install shellcheck
 
-      # tools/rex/tests run init.lua under both: Lua 5.5, and LuaJIT for the Lua 5.1 that Rex embeds
-      - name: Install lua
-        run: brew install lua luajit
+      # tools/rex/tests run init.lua under LuaJIT, for the Lua 5.1 that Rex embeds
+      - name: Install luajit
+        run: brew install luajit
 
       # Every script starts with `#!/usr/bin/env bash`, so this is the bash the checks run them with
       - name: Show bash version

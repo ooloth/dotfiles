@@ -89,8 +89,8 @@ Run its tests with `uv run tools/rex/tests/test_saver.py`. `uv run tools/rex/tes
 restarts a throwaway Rex server and checks the sessions come back. CI cannot run it, because Rex is
 not installed there, so run it by hand after changing the saver.
 
-Run the `init.lua` tests with `uv run tools/rex/tests/test_init.py`. They need `lua` and `luajit`
-on the `PATH`, and run under both, because Rex runs its config on its own Lua 5.1.
+Run the `init.lua` tests with `uv run tools/rex/tests/test_init.py`. They need `luajit` on
+the `PATH`, because Rex runs its config on its own Lua 5.1 and LuaJIT implements the same version.
 
 After changing how ctrl+h/j/k/l reach nvim, here or in `config.nvim`, run `rex config reload`, then
 `uv run tools/rex/tests/live_nvim.py`. It opens a throwaway session on your own server with nvim

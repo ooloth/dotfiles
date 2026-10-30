@@ -20,7 +20,8 @@ A tool's tests are `tools/{tool}/tests/test_*.py`. `scripts/checks/tests.bash` f
 with `uv run` so its inline script dependencies install, and fails if any test fails or none are
 found. It also fails on a `test_*.py` placed directly in `tools/{tool}/`, because the runner would
 otherwise skip it. CI and `CONTRIBUTING.md` each call the script once. `tools/@new/tests/.gitkeep`
-puts the folder in the template.
+puts the folder in the template. The 2026-10-30 addendum replaces the `uv run` per file with one
+pytest run.
 
 ## Rejected
 
@@ -28,7 +29,8 @@ puts the folder in the template.
   layout).** A test left off either list never runs, and nothing reports the omission.
 - **`uv run --with pytest pytest tools/*/tests`.** pytest ignores each file's inline dependency
   header, so `hypothesis`, which `tools/claude/tests/test_update.py` needs, would have to be listed
-  by hand in CI. This reverses if the tests move to a shared `pyproject.toml`.
+  by hand in CI. This reverses if the tests move to a shared `pyproject.toml`. The 2026-10-30
+  addendum reverses it before then.
 - **A glob loop written into the CI workflow.** It cannot also run from `CONTRIBUTING.md` as the
   same command, so a local run and CI could drift apart.
 
@@ -37,7 +39,7 @@ puts the folder in the template.
 The runner only looks at depth 3 (`tools/{tool}/tests/`) and depth 2 (a misplaced test). A
 `test_*.py` deeper in a tool's subtree is not run by it. That is deliberate for skills, whose
 tests under `tools/agents/config/skills/` run through pytest in the same script, but a tool test
-nested anywhere else would go unrun.
+nested anywhere else would go unrun. Since the 2026-10-30 addendum, pytest runs tests at any depth.
 
 ## Revisit when
 
