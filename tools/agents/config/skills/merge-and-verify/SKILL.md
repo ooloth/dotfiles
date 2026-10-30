@@ -107,7 +107,9 @@ take its made-up answers for real ones.
 Once the change is serving, or nothing deploys, run `prove-it-works` with the claim, using the same
 evidence folder. Show the user a draft report: the PR, merge commit and ticket, the claim and where
 each part came from, the rollout from merge to its ending, and the `prove-it-works` report
-unchanged. Change nothing in any deployed environment.
+unchanged except for any reference to the local evidence folder, which teammates cannot open: drop
+the line naming the folder, and each file name cited from it. Change nothing in any deployed
+environment.
 
 ## Watching production
 
@@ -159,8 +161,8 @@ URLs). Remove any you find, and say so in the draft.
   `use-gh`.
 - **The PR link:** once the ticket comment exists, post one line on the PR linking to it.
 
-Screenshots and recordings are not uploaded. The report names each one by its path in the evidence
-folder.
+Screenshots and recordings are not uploaded, and the posted report does not name their local
+paths. It describes what each one shows.
 
 Then list every PR that names the ticket, and whether each has merged and has its proof on the
 ticket. Only when all have, offer to close the ticket, and close it only if the user says yes.
