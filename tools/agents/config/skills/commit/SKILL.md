@@ -92,10 +92,10 @@ to other files since then do not matter, because the worktree did not contain th
       no remote yet, or a repo with no GitHub Actions runs is not a reason to wait or stop.
    2. If any of those runs concluded `failure`, do not push. Tell the user which workflow failed on
       which commit, and ask whether to push anyway or fix it first.
-   3. Run `git log --oneline origin/<branch>..HEAD`. If it lists a commit this session did not
-      make, do not push, because the push would publish work the user has not approved you to
-      push. Tell the user which commits are there and ask.
-   4. Otherwise, run `git push origin <branch>`.
+   3. Run `git push origin <branch>`. It pushes every commit on the branch, including any another
+      session made, and the user wants that whole batch pushed, so it needs no check or question.
+   4. In the report, list what the push sent, from the `old..new` range it printed
+      (`git log --oneline <old>..<new>`), and name the commits this session did not make.
 8. If a precommit hook fails and addressing the failure requires a design decision the user has not
    made, stop and present options and wait for approval.
 9. When finished making all commits, continue implementing your next approved task — but do not
