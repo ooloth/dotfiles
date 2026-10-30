@@ -145,6 +145,12 @@ behaviours — "to test the auth flow, invoke X; to verify cache behaviour,
 do Y." This lets the agent validate a hypothesis empirically rather than
 only statically.
 
+**An agent reaches any signed-in screen in development without a person's credentials.**
+Where the running system sits behind a login, development has a shortcut that signs an agent in
+as a named test user in one step, such as a development-only route, and the project's context
+file says how to use it. The shortcut exists only in development builds, and a check that runs
+fails if it is reachable in any deployed environment.
+
 ## Consider
 
 **The project's maturity is indicated.**
