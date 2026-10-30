@@ -9,7 +9,8 @@ effort: high
 
 Use up to 25 subagents to explore the following data sources:
 
-1. Study the current project's documented agent harness intentions (if any)
+1. Study the current project's documented agent harness intentions (if any), starting with every
+   `CLAUDE.md` and `AGENTS.md` in the repo
 2. Study the user's global Claude Code configuration in `~/.claude/` (custom skills are symlinked
    from ~/Repos/ooloth/dotfiles/tools/agents/config/skills, agents and settings from
    ~/Repos/ooloth/dotfiles/tools/claude/config/)
@@ -31,16 +32,19 @@ Use up to 25 subagents to explore the following data sources:
 4. Look for opportunities that would provide the context needed to help agents understand the intent
    of the project and make correct judgement calls
 5. Look for opportunities to introduce clear guardrails helping agents validate their work
-6. Focus especially on opportunities to introduce deterministic mechanisms that introduce reliable
+6. Test whether the harness is enough on its own: give two or three fresh agents, with no hints
+   beyond the repo, a routine task (start the app and reach a signed-in screen, run the checks,
+   reproduce a recent bug), and report where each got stuck
+7. Focus especially on opportunities to introduce deterministic mechanisms that introduce reliable
    back pressure and a feedback loop that makes it obvious to agents what choices are correct and
    what invariants they must uphold at all times
-7. Rank the findings by priority for the user to address (based on impact, cost of delay, ROI, etc)
-8. Present the prioritized findings to the user, ensuring a summary table is included near the end
+8. Rank the findings by priority for the user to address (based on impact, cost of delay, ROI, etc)
+9. Present the prioritized findings to the user, ensuring a summary table is included near the end
    of your response for clarity
-9. Generate a self-contained HTML slide deck of the prioritized findings:
+10. Generate a self-contained HTML slide deck of the prioritized findings:
    - `mkdir -p .outputs/<yyyy-mm-dd>`
    - Write the report to `.outputs/<yyyy-mm-dd>/scan-harness.html` — clean minimal styling, one
      slide per category plus a summary/title slide, keyboard arrow-key and click navigation between
      slides
    - `open .outputs/<yyyy-mm-dd>/scan-harness.html`
-10. Recommend a next action and wait for the user's response
+11. Recommend a next action and wait for the user's response
