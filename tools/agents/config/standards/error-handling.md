@@ -53,6 +53,18 @@ each layer adds domain meaning, not stack details.
 When an error reaches a user, the message describes what failed and, where
 possible, what to do next. "Something went wrong" is not a user-facing message.
 
+**A failure is recognised by the code its source defines, not by the class a client library
+maps it to.**
+A server's error code, such as a Postgres SQLSTATE, an HTTP status or an
+`errno`, is fixed by the server's specification, while the exception class
+carrying it is one library's choice and differs between libraries: SQLAlchemy
+over pg8000 raises every Postgres server error as `DatabaseError`, so a handler
+matching `OperationalError` for a lock timeout never runs. Code that handles a
+specific failure reads the code, and the test that covers it raises what the
+real client raises for that code, confirmed against the real client, because a
+test double raising the class its author expected passes while production never
+matches.
+
 ## Consider
 
 **Errors are aggregated where multiple can occur.**
