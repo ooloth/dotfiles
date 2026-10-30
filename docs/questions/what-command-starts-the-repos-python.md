@@ -106,6 +106,11 @@ How `uv.lock` is shared, which the work laptop check decides between:
 - **`--locked` with a shared PyPI lock.** Rejected by the finding below: it fails on any machine
   whose uv is set to a different index.
 
+Whichever option wins, the project can also refuse packages uploaded in the last seven days, so a
+compromised release is likely pulled before a lock picks it up. Set as `exclude-newer = "7 days"`
+under `[tool.uv]` in `pyproject.toml`, it reaches every machine. Set in one machine's `uv.toml`
+instead, it breaks `--locked` everywhere else (see Findings).
+
 ## Findings
 
 Nothing here is settled until it graduates into a decision record. Every *Measured* finding dated
@@ -126,6 +131,10 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
   only if its managed config is the user-level file `CONTRIBUTING.md` describes, and not an
   environment variable or a system-level file. The first command under **What would settle it**
   shows the file; `env | grep '^UV_'` on the work laptop shows any variables.
+- *Measured (2026-10-29):* a lock made with `exclude-newer = "7 days"` in a user-level `uv.toml`
+  recorded `exclude-newer-span = "P7D"` under `[options]` in `uv.lock`. Without that setting,
+  `uv run --locked` then failed with `To update the lockfile, run uv lock`. With it, `--locked`
+  started.
 - *Sourced:* `CONTRIBUTING.md` says that on a work laptop uv installs packages through the work
   Artifact Registry index set in `~/.config/uv/uv.toml`, which needs `gcloud auth login
   --update-adc`, and that the managed config blocks falling back to public PyPI on purpose.
