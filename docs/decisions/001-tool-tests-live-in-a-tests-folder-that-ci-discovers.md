@@ -2,7 +2,7 @@
 number: 001
 status: accepted
 date: 2026-10-20
-amended: 2026-10-20
+amended: 2026-10-30
 ---
 
 # 001 — Tool tests live in `tools/{tool}/tests/`, and one script finds and runs them all
