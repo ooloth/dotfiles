@@ -49,7 +49,7 @@ with a check that fails on any start of the repo's Python that does not use it.
 - It starts on this Mac, in CI, in Amp orbs and on the work laptop, including at Rex's boot with
   no network and on a work laptop before gcloud is logged in.
 - A `uv.lock` out of step with `pyproject.toml` is caught before it reaches `main`.
-- The directory the caller is in cannot change which code runs.
+- Neither the directory the caller is in nor the caller's `PYTHONPATH` can change which code runs.
 - Adding a tool or a step needs no registration, as adding a `*.bash` step needs none today.
 - Tests and `ty` import the same code the command starts.
 
@@ -73,17 +73,17 @@ design found that `--locked` fails wherever uv is set to a different index.
 
 How the command starts the code:
 
-- **By file path: `uv run <lock flag> --no-dev --project "$DOTFILES" python -P
+- **By file path: `uv run <lock flag> --no-dev --project "$DOTFILES" python -I
   "$DOTFILES/tools/<tool>/<step>.py"`, with the repo root on `sys.path` through the project's
   editable install.** Each step stays in its tool's folder, runners find steps by globbing paths as
   they do today, and tests import the same file as `tools.<tool>.<step>`. A script started by path
-  puts its own folder first on `sys.path`, not the caller's, so it is safe even when someone types
-  it without `-P`. Its cost is the longest command of the options, and a step must use absolute
-  imports. This was the drafted choice.
-- **As a module: `... python -P -m tools.<tool>.<step>`.** Callers and tests name the code the same
-  way. Without `-P`, `python -m` puts the caller's directory first on `sys.path`, so run inside
-  another repo that has its own `tools/` package, it runs that repo's code. It is safe only while
-  every caller remembers `-P`.
+  puts its own folder first on `sys.path`, not the caller's directory, but `PYTHONPATH` still comes
+  before the repo root, so it needs `-I` as much as the module form does (see Findings). Its cost
+  is the longest command of the options, and a step must use absolute imports. This was the
+  drafted choice, with `-P`.
+- **As a module: `... python -I -m tools.<tool>.<step>`.** Callers and tests name the code the same
+  way. Without `-I` or `-P`, `python -m` puts the caller's directory first on `sys.path`, so run
+  inside another repo that has its own `tools/` package, it runs that repo's code.
 - **A console script per entry point in `[project.scripts]`.** Short commands, and a console script
   never puts the caller's directory on `sys.path`. Every tool step would need an entry, so adding a
   tool would need registering it, which no step needs today.
@@ -118,6 +118,14 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
   `--no-dev`. `uv run --frozen --offline` started. The lock records each package as
   `source = { registry = "https://pypi.org/simple" }`, so a lock made on the work laptop would
   record the work registry instead, which CI and the personal machines cannot read.
+- *Measured (2026-10-29):* with PyPI named as the project's default index in `[[tool.uv.index]]`
+  and a user-level `uv.toml` (through `XDG_CONFIG_HOME`) setting an unreachable default index,
+  `uv run --locked --no-dev --offline` started, because project settings outrank user settings.
+  With the same index set through `UV_DEFAULT_INDEX` or `UV_CONFIG_FILE` instead, the project's
+  setting lost and `--locked` failed. So naming PyPI in the project holds against the work laptop
+  only if its managed config is the user-level file `CONTRIBUTING.md` describes, and not an
+  environment variable or a system-level file. The first command under **What would settle it**
+  shows the file; `env | grep '^UV_'` on the work laptop shows any variables.
 - *Sourced:* `CONTRIBUTING.md` says that on a work laptop uv installs packages through the work
   Artifact Registry index set in `~/.config/uv/uv.toml`, which needs `gcloud auth login
   --update-adc`, and that the managed config blocks falling back to public PyPI on purpose.
@@ -131,6 +139,12 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
 - *Measured (2026-10-29):* run from a directory holding its own `tools/neovim/link.py`,
   `uv run --project <repo> python -m tools.neovim.link` ran the caller's file, not the repo's.
   With `python -P -m` it ran the repo's.
+- *Measured (2026-10-29):* `tools/zsh/config/hooks.zsh` exports `PYTHONPATH="${PWD}"` inside a
+  Python project and `PYTHONPATH="${HOME}"` elsewhere, and `-P` does not drop `PYTHONPATH`. From a
+  directory holding its own `tools/lib/x.py`, with `PYTHONPATH` set to that directory, a step
+  started by path with `python -P` imported the caller's `tools.lib.x`, not the repo's. With
+  `python -I`, which also ignores `PYTHONPATH` and the user site, it imported the repo's, and the
+  editable install still put the repo root on `sys.path`.
 - *Measured (2026-10-29):* with a `pyproject.toml` edited after locking, `uv run --locked
   --offline` stopped with an error, while `uv run --frozen` started and failed only when the code
   imported the missing package. With an up-to-date lock and the index it was made against,
