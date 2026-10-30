@@ -244,7 +244,8 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 - An open decision is settled through the project's decision process (a decision record, an ADR),
   not by the requester in chat. The requester may answer what users get; how the system provides it
   stays open. On a project tracked in Jira, Linear or similar, suggest a decide task on that
-  tracker for each open decision; suggest a `docs/questions/` file only on a personal project
+  tracker for each open decision; on a personal project, the open decision stays listed in the
+  ticket, with no separate question file
 - When a list is empty, say so and name where you looked: "No recorded decisions found in
   `docs/decisions/`, `DECISIONS.md` (searched for ADR)." / "No open decisions."
 

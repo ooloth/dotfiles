@@ -320,20 +320,24 @@ the drafter.
 The comment is a public side effect, so its draft is shown to the user and posted only once they
 approve that wording. When the work is not on a ticket, none of this is written anywhere.
 
-**Keep open questions current, not just at creation.** When a discussion surfaces a genuine open
-question (real options, not yet settled, worth surviving context loss or a future session),
-recommend capturing it where the project's team discusses decisions:
+**Record found work as a task, and keep its open questions inside it.** When a discussion
+surfaces something to do, such as a bug, a slowdown, a feature or maintenance, recommend a task on
+the project's tracker. That means GitHub issues on a personal repo, or Jira, Linear or similar on a
+work project. A choice the task needs that nobody has made goes into the task as an open question,
+deferred to the project's decision process. It is not split into a separate record, because a
+separate record stops the task's outcome from being tracked.
+
+A question gets its own record only when it is independent research with no task behind it:
 
 - **On a work project whose team tracks work in Jira, Linear or similar,** a decide task on that
   tracker, titled as the decision to record. The team discusses through ticket comments, and the
   outcome still lands in the repo's decision record.
-- **On a personal project,** its own file in `docs/questions/` (one question per file, kebab-case
-  name, phrased as the question), so the discussion can happen locally without a tracker.
+- **On a personal project,** a file in `docs/questions/`, which is rare. Recommend one only in
+  `ooloth/puzzles` or when I ask for one.
 
-If later work turns up a finding, option or decision relevant to an existing decide task or
+If later work turns up a finding, option or decision relevant to an existing task, decide task or
 question file, propose updating it then, not only while it's the topic of discussion. Posting to a
-tracker still needs approval. This is for still-open design questions. The ticket comments above
-are for work already approved.
+tracker still needs approval. The ticket comments above are for work already approved.
 
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
