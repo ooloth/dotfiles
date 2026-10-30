@@ -27,6 +27,8 @@ should not have to discover these by making mistakes.
 The agent can exercise real code paths — not only run tests. A CLI command,
 script, or documented invocation sequence lets the agent observe what the
 system actually does, not only what tests assert it should do.
+That invocation brings the system to a running, healthy state from whatever state it is in
+(stopped, already running, or stuck), so the agent never has to work out which.
 
 ## Should
 
@@ -144,6 +146,13 @@ Beyond "run the test suite", the harness documents how to exercise particular
 behaviours — "to test the auth flow, invoke X; to verify cache behaviour,
 do Y." This lets the agent validate a hypothesis empirically rather than
 only statically.
+
+**Any state a bug depends on can be recreated from a command or a URL.**
+Where a failure depends on state, such as a position in a game, a half-filled form, a component's
+props or a very large record, that state can be set exactly from arguments or query parameters.
+The agent then reproduces the same case on every run, and a person can hand it over as one link
+or command. A reproduction that depends on clicking through the app to get there is slow and
+differs each time.
 
 **An agent reaches any signed-in screen in development without a person's credentials.**
 Where the running system sits behind a login, development has a shortcut that signs an agent in
