@@ -75,9 +75,7 @@
       "Bash(acli *--filter*)",
       "Edit(~/.claude/settings.json)",
       "Edit(~/Repos/ooloth/dotfiles/tools/claude/config/settings.json)",
-      "Bash(gh pr merge *)",
-      "Edit(~/Repos/ooloth/dotfiles/tools/agents/config/skills/merge-and-verify/scripts/merge.py)",
-      "Edit(~/.claude/skills/merge-and-verify/scripts/merge.py)"
+      "Bash(gh pr merge *)"
     ],
     "deny": [
       "Bash(git push --force origin main:*)",
