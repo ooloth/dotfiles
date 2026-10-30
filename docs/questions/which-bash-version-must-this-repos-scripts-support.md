@@ -65,7 +65,7 @@ Nothing here is settled until it moves into a decision record.
   software list shows `Bash 3.2.57(1)-release`, with no Homebrew bash. Read on 2026-10-22.
 - *Measured:* CI runs `/bin/bash`, `GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)`,
   printed by the `Show bash version` step in run 39731021324 on 2026-10-22. This confirms the
-  comment at `scripts/checks/tests.bash:18`.
+  comment about `mapfile` in `scripts/checks/tests.bash`.
 - *Measured:* `tools/homebrew/generate-brewfile.bash:8` and `tools/homebrew/update.bash:18` use
   `mapfile`, which bash 3.2 does not have.
 - *Reasoned:* those two work under `u` because Homebrew's bash comes first on this Mac's `PATH`.

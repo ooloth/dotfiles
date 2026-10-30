@@ -64,3 +64,24 @@ It now also searches `scripts/*/tests/`, and it runs the `link.bash` check and t
 suite as well, so every test runs from one script. `test_symlinks.py` moved to
 `features/update/tests/`, beside the feature it tests, and the docs checker's tests moved to
 `scripts/checks/tests/test_docs.py`.
+
+## Addendum (2026-10-30) — one pytest run
+
+`scripts/checks/tests.bash` now runs every test in one pytest run, spread across the machine's
+cores by pytest-xdist, instead of one `uv run` per file and a separate pytest run for the skills.
+Run one file at a time, the suite took 5 to 8 minutes on a work laptop, and most commits waited on
+it. In one run it took 88 s, collecting the same tests from each file.
+
+This is the option rejected above as `uv run --with pytest pytest tools/*/tests`. Its reversal
+condition, a shared `pyproject.toml`, is the end state of decision 008, and that migration has
+started. Until #204 creates the project, the objection to it, that each file's dependencies would
+be listed by hand, is met another way: `scripts/checks/test-dependencies.py` reads each test file's
+inline script header, and `tests.bash` installs every package it prints. The header stays the one
+place a test file's dependencies are written, so each file still runs on its own with
+`uv run <file>`. A package missing from every header fails the run with an `ImportError`, and two
+headers that pin different versions of one package fail when uv resolves them.
+
+pytest searches `tools/`, `features/` and `scripts/` at any depth, skipping `@archive/` and
+`@new/`, so the depth limits in the risk above no longer leave a test unrun. A `test_*.py` placed
+directly in a tool or feature folder still fails the check, because it breaks the layout this
+record sets.

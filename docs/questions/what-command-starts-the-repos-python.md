@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-29
+updated: 2026-10-30
 update_when: the work laptop check below is run, or #204's design resumes
 decays: slow
 status: open
@@ -171,6 +171,13 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
   `uv run --locked pytest` collected every test file `scripts/checks/tests.bash` runs, with the same
   number of tests in each file. All 505 passed in 183 s, against 193 s for `tests.bash`. ruff and
   `ty --extra-search-path tools/rex` passed from the project.
+- *Measured (2026-10-30):* on the work laptop, with no project, one `uv run --with` pytest run with
+  pytest-xdist (`-n auto --dist worksteal`, 14 cores) over `tools`, `features` and `scripts`
+  collected the same number of tests from each of the 16 `tests/test_*.py` files as unittest did,
+  and all 200 skill tests. It took 132 s at load average 9.7, against about 500 s for one `uv run`
+  per file. Its floor is the slowest single test, because xdist does not split one: Hypothesis
+  tests that run a subprocess per example took 47 to 115 s each. `scripts/checks/tests.bash` now
+  runs this way until the project exists (decision 001's addendum of 2026-10-30).
 - *Sourced:* every call from a runner to a step is a process start. `features/update/tools.bash`
   runs each `update.bash` with `bash "$file"`, `features/update/symlinks.bash` runs each
   `link.bash` the same way, and `update_and_symlink` runs a tool's link step with `bash -c`.

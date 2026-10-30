@@ -25,11 +25,10 @@ observations about typical practice.
   every one before `u` updates anything, so a check that wrote something would write on every
   run, including runs that then stop.
 - A tool's tests are `tools/{name}/tests/test_*.py`, and a feature's are
-  `features/{name}/tests/test_*.py`. `scripts/checks/tests.bash` runs only those paths and
-  `scripts/*/tests/`, in CI and from `scripts/check.bash`, and fails on a `test_*.py` placed
-  directly in `tools/{name}/` or `features/{name}/`. Test files deeper in a tool's subtree, such
-  as a skill's own tests under `tools/agents/config/skills/`, run through pytest in the same
-  script instead.
+  `features/{name}/tests/test_*.py`. `scripts/checks/tests.bash` runs them, the tests in
+  `scripts/*/tests/` and a skill's own tests under `tools/agents/config/skills/` in one pytest
+  run, in CI and from `scripts/check.bash`, and fails on a `test_*.py` placed directly in
+  `tools/{name}/` or `features/{name}/`.
 - A `config/` directory with no `link.bash` is legitimate only for two
   reasons: the config is consumed directly by that tool's own install
   logic instead of being placed under `$HOME` (e.g. macOS defaults,

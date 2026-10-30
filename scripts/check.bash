@@ -11,10 +11,13 @@ checks="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/checks"
 
 run() {
   printf '\n### %s\n' "$1"
+  local start=${SECONDS}
   "${@:2}" || {
-    printf '\n❌ %s failed, so the checks after it did not run\n' "$1" >&2
+    printf '\n❌ %s failed after %ss, so the checks after it did not run\n' "$1" \
+      "$((SECONDS - start))" >&2
     exit 1
   }
+  printf '\n### %s took %ss\n' "$1" "$((SECONDS - start))"
 }
 
 run "formatting" /bin/bash "${checks}/formatting.bash"
