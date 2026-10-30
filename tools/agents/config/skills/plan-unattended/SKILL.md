@@ -168,7 +168,7 @@ directory is the repo root. Pick a worktree name `afk-<issue>`, adding `-2`, `-3
 that name is already under `<repo root>/.claude/worktrees/`. Then run:
 
 ```
-tmux new-window -d -n <worktree name> -c <repo root> "bash \"$DOTFILES/tools/claude/cc.bash\" -w <worktree name> '/implement-unattended <owner/repo#issue>'"
+tmux new-window -d -n <worktree name> -c <repo root> "bash ~/Repos/ooloth/dotfiles/tools/claude/cc.bash -w <worktree name> '/implement-unattended <owner/repo#issue>'"
 ```
 
 Confirm with `tmux list-windows` that the window exists. Print
