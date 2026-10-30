@@ -240,6 +240,11 @@ A cross-cutting property gets a check over every instance in the codebase, not o
 slice's transformations, so that a violation in code this slice never touched fails it. The test
 plan names that check, what it enumerates, and the property it observes.
 
+Before choosing paradigms, list the dimensions the behavior varies along, as `testing.md` names
+them, and the values each takes. Each test case names the values it covers. Every value of each
+dimension appears in some test, and so does each combination the code makes interact. A
+combination left out is named as not covered, with the reason.
+
 For each transformation:
 
 1. **Compiler guarantees** — list what correct code gets for free from the type design. No tests

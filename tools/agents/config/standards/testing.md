@@ -47,10 +47,13 @@ tell a reader what broke without reading the test body.
 A test has one reason to fail. Multiple unrelated assertions in a single test
 obscure which behavior broke.
 
-**Test inputs span the meaningful space.**
-Happy path, empty input, boundary values, and error conditions are all
-represented. Parametrization is used when the same behavior holds across a
-range of inputs.
+**Tests span every dimension the behavior varies along.**
+Inputs are one dimension: happy path, empty input, boundary values and error conditions are all
+represented. Others are who is acting (a role or account type), how the system is configured (each
+state of a flag the code reads), and when the data was written (before the change, or by an older
+version). Each value of each dimension is covered, and so is each combination the code makes
+interact. A combination left out is named as not covered. Parametrization is used when the same
+behavior holds across a range of values.
 
 **A generator produces the inputs that exercise the behaviour under test.**
 A property test whose generator rarely reaches the branch in question passes
