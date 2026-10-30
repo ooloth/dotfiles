@@ -10,7 +10,7 @@ say.
 ## Start Claude in a tab only through the launcher
 
 ```sh
-bash "$DOTFILES/tools/rex/claude-tab.bash" [-s <session>] '<tab name>' <directory> [claude arguments]
+bash ~/Repos/ooloth/dotfiles/tools/rex/claude-tab.bash [-s <session>] '<tab name>' <directory> [claude arguments]
 ```
 
 It runs Claude through `tools/claude/cc.bash`, which picks this machine's permission mode and adds

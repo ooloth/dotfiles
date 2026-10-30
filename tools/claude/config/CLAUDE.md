@@ -374,7 +374,7 @@ are for work already approved.
      terminal encloses this one, and `TMUX` decides first, because tmux started inside a Rex pane
      inherits `REX_SESSION` while the windows the user sees are tmux's. When `TMUX` is set, open a
      tmux window in the repo's directory (`tmux new-window -c <repo> -n <name>`) running
-     `bash "$DOTFILES/tools/claude/cc.bash"`. Otherwise, when `REX_SESSION` is
+     `bash ~/Repos/ooloth/dotfiles/tools/claude/cc.bash`. Otherwise, when `REX_SESSION` is
      set, open a Rex tab with the launcher the `use-rex` skill names. With neither, open nothing:
      give the user the command to run. Never start `claude` with a permission mode of your own
      choosing. Name it after the PR and the review skill it runs (`review-code`,
