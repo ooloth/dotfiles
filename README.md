@@ -82,6 +82,12 @@ rollout and then proves its effect with prove-it-works. It reads the deploy chai
 docs, counts the change as serving only when the live artifact's commit contains the merge, and
 checks every five minutes or so in a fresh turn until the watch reaches one of its named endings.
 
+[monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so
+for the pull requests where it's my move, and says why, using the same rules hub's daemon does. Each
+check reads one snapshot from GitHub and decides from that alone, so two checks of the same state
+agree. A truncated or failed fetch is reported as such rather than as nothing waiting. It is
+read-only for now; preparing the next step for each turn comes later.
+
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session by finding what would
 mislead the next agent. Every action the session raised gets exactly one status (done, deferred,
 dropped or open) with evidence for it, so a request made in passing can't quietly disappear. It
