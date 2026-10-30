@@ -27,7 +27,9 @@ allowed-tools: [Bash, Read, Glob, Grep]
 A body being narrowed, corrected or brought up to date follows this template exactly as a new one
 does. A section the template does not have, such as a QA plan, `Why` or `Done when`, is not kept
 because the original had it: its content moves into the template's sections, or is dropped when no
-section takes it. A QA plan is always dropped, for the reason under What NOT to Do. Every
+section takes it. A QA plan is always dropped, for the reason under What NOT to Do. A `Depends on`
+section, or any line naming the parent or a prerequisite, leaves the body and becomes the tracker's
+relationship, as Relationships describes. Every
 section, kept or moved, follows the voice rules below, so a kept Ideal state bullet that names a
 mechanism is rewritten as the behaviour it was after. Bounds and exclusions the original author
 stated stay, since they came from the requester. The duplicate check is skipped, because the issue
@@ -126,8 +128,9 @@ never about the implementation of any one child.
 ### Ordering
 
 Create the parent first so each child can be created with `--parent`. A child body does not name
-its parent or its place in a sequence: the browser shows the parent beside the issue, and agents
-read it with `--json parent`, which `use-gh` makes part of every issue read.
+its parent, its prerequisites or its place in a sequence: the browser shows the parent beside the
+issue, and agents read it with `--json parent`, which `use-gh` makes part of every issue read. Once
+every child exists, record each hard prerequisite with `--add-blocked-by`.
 Sub-issues list in creation order, so create them in the order you intend to work them.
 
 ---
@@ -177,10 +180,6 @@ Sub-issues list in creation order, so create them in the order you intend to wor
 ## Starting points
 
 [2-3 file paths that explain today's behavior. Helps a cold reader orient fast.]
-
-## Depends on
-
-[Optional. List issues that must be complete before this one can start, with a one-line reason each is a hard prerequisite. Omit if no hard dependencies exist.]
 ```
 
 ---
@@ -261,12 +260,18 @@ Sub-issues list in creation order, so create them in the order you intend to wor
   change should go
 - 2-3 max; more than that is noise
 
-### Depends on
+### Relationships
 
-- List only hard prerequisites — issues this cannot start without, not issues it would merely
-  benefit from coming after
-- One line per dependency: issue reference + why it blocks
-- Omit entirely if no hard dependencies exist
+- A relationship the tracker can record, such as a parent, a prerequisite or a duplicate, is
+  recorded with the tracker's own mechanism and never written into the body. On GitHub that is
+  `--parent` and `--add-blocked-by`; Linear and Jira have their own relations
+- The body names no other ticket as its parent, its prerequisite or its place in a sequence. Text
+  like "depends on sub-issue 2" is stale as soon as tickets are renumbered, closed or reordered,
+  while the tracker's relationship stays true and shows in its own UI
+- A prerequisite is recorded only when it is hard: this ticket cannot start without it, not merely
+  goes better after it
+- Relationships are recorded once every ticket they connect exists, so a draft never needs a
+  placeholder for a ticket that has no number yet
 
 ---
 
@@ -286,6 +291,8 @@ paragraph renders as ragged short lines; write each paragraph and list item as o
 ❌ A choice the implementer can easily reverse listed as an open decision
 ❌ A QA plan or verification steps — they assume an approach nobody has chosen yet
 ❌ Starting points that name directories instead of files, or point to where the change should go
+❌ A parent, prerequisite or place in a sequence written into the body instead of recorded as the
+tracker's relationship
 
 ---
 
