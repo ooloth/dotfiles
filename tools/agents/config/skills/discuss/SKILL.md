@@ -101,6 +101,12 @@ cost.
    observed only in production, where a flag enabled for the person testing lets it be proven before
    anyone else sees it. `deployment.md` sets the defaults.
 
+   Where the change is hard to make in the code as it stands, such as a value read globally in many
+   places that must become a parameter, the approach makes the change easy first, then makes the
+   easy change. The reshaping ships on its own, before the change, and changes no behavior: running
+   every entry point on the same input gives the same result before and after. How each part is
+   sliced is left to `/design`.
+
    Scope each property to the behaviour this work changes. Where a risk this work exposes could be
    stated broadly enough to bind code the work does not otherwise touch, state it at the narrowest
    scope that still covers that risk, and name what it deliberately leaves uncovered among the
