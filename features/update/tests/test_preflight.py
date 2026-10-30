@@ -39,6 +39,24 @@ def fail(message: str) -> str:
     return f"#!/usr/bin/env bash\necho '{message}' >&2\nexit 1\n"
 
 
+def barrier(started: Path, name: str, count: int) -> str:
+    """A check that marks itself started, then passes only once `count` checks have started.
+
+    It gives up after 4 s, inside preflight's 5 s deadline, so a check left waiting fails rather
+    than timing out.
+    """
+    return (
+        "#!/usr/bin/env bash\n"
+        f"touch '{started / name}'\n"
+        "for _ in $(seq 40); do\n"
+        f"  [ \"$(ls '{started}' | wc -l)\" -ge {count} ] && exit 0\n"
+        "  sleep 0.1\n"
+        "done\n"
+        f"echo '{name} never saw the other checks running' >&2\n"
+        "exit 1\n"
+    )
+
+
 @dataclass(frozen=True)
 class Run:
     status: int
@@ -151,12 +169,16 @@ class PreflightTest(unittest.TestCase):
         self.assertLess(run.seconds, 10)
 
     def test_checks_run_in_parallel(self) -> None:
+        # Each check passes only once all three have started, which checks run one at a time can
+        # never see. No clock is involved, so a busy machine can't fail it.
         home = FakeHome(self.root)
+        started = self.root / "started"
+        started.mkdir()
         for name in ("a", "b", "c"):
-            home.tool(name, "#!/usr/bin/env bash\nsleep 2\n")
+            home.tool(name, barrier(started, name, 3))
         run = home.u()
+        self.assertEqual(run.status, 0, run.output)
         self.assertEqual(run.updated, {"a", "b", "c"})
-        self.assertLess(run.seconds, 5)
 
     def test_one_tool_runs_only_its_own_check(self) -> None:
         home = FakeHome(self.root)
