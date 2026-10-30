@@ -150,12 +150,25 @@ def test_a_ready_pr_is_merged_once_with_the_allowed_method_and_the_checked_head(
     assert MERGED in result.stdout
 
 
-def test_an_approval_on_an_older_head_does_not_count(h: Harness) -> None:
+def test_an_approval_on_an_older_head_still_counts(h: Harness) -> None:
+    # A push to an approved PR never undoes its approval, whatever the push changes.
     result = h.run(pull_request(reviews=[review(commit=OLD)]))
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert h.merge_calls() == [f"pr merge {PR} -R {REPO} --squash --match-head-commit {HEAD}"]
+
+
+@pytest.mark.parametrize(
+    "reviews",
+    [[], [review(state="COMMENTED")], [review(), review(state="DISMISSED")]],
+    ids=["no-reviews", "only-comments", "approval-dismissed"],
+)
+def test_a_pr_nobody_has_approved_is_refused(h: Harness, reviews: list[dict[str, Any]]) -> None:
+    result = h.run(pull_request(reviews=reviews))
 
     assert result.returncode == 1
     assert h.merge_calls() == []
-    assert "no approval on the current head" in result.stdout
+    assert "nobody has approved" in result.stdout
 
 
 def test_a_head_that_moved_since_the_check_is_refused_naming_both_commits(h: Harness) -> None:
@@ -171,12 +184,11 @@ def test_a_head_that_moved_since_the_check_is_refused_naming_both_commits(h: Har
     ("checks", "named"),
     [
         ([check_run("tests", conclusion="FAILURE")], "tests"),
-        ([check_run("tests", conclusion="", status="IN_PROGRESS")], "tests"),
-        ([status_context("deploy", state="PENDING")], "deploy"),
+        ([status_context("deploy", state="ERROR")], "deploy"),
         ([], "no checks"),
     ],
 )
-def test_a_pending_failed_or_missing_check_is_refused(
+def test_a_failed_or_missing_check_is_refused(
     h: Harness, checks: list[dict[str, Any]], named: str
 ) -> None:
     result = h.run(pull_request(statusCheckRollup=checks))
@@ -184,6 +196,49 @@ def test_a_pending_failed_or_missing_check_is_refused(
     assert result.returncode == 1
     assert h.merge_calls() == []
     assert named in result.stdout
+
+
+@pytest.mark.parametrize(
+    "checks",
+    [
+        [check_run("tests", conclusion="", status="IN_PROGRESS")],
+        [check_run("tests", conclusion="", status="QUEUED")],
+        [status_context("deploy", state="PENDING")],
+        [status_context("deploy", state="EXPECTED")],
+    ],
+    ids=["in-progress", "queued", "status-pending", "status-expected"],
+)
+@pytest.mark.parametrize("merge_state", ["CLEAN", "BLOCKED", "UNSTABLE"])
+def test_a_check_still_running_is_a_wait_that_exits_3_and_merges_nothing(
+    h: Harness, checks: list[dict[str, Any]], merge_state: str
+) -> None:
+    result = h.run(pull_request(statusCheckRollup=checks, mergeStateStatus=merge_state))
+
+    assert result.returncode == 3, result.stdout + result.stderr
+    assert h.merge_calls() == []
+    assert "still running" in result.stdout
+
+
+def test_a_running_check_beside_a_real_refusal_is_not_a_wait(h: Harness) -> None:
+    pr = pull_request(
+        statusCheckRollup=[
+            check_run("tests", conclusion="", status="IN_PROGRESS"),
+            check_run("lint", conclusion="FAILURE"),
+        ]
+    )
+
+    result = h.run(pr)
+
+    assert result.returncode == 1
+    assert "lint" in result.stdout
+    assert "tests" in result.stdout
+
+
+def test_github_blocking_with_every_check_passed_is_not_a_wait(h: Harness) -> None:
+    result = h.run(pull_request(mergeStateStatus="BLOCKED"))
+
+    assert result.returncode == 1
+    assert "BLOCKED" in result.stdout
 
 
 def test_an_outstanding_change_request_is_refused(h: Harness) -> None:
@@ -228,27 +283,32 @@ def test_a_head_that_is_not_a_full_sha_is_refused_before_any_call(h: Harness) ->
 CONDITIONS = ["closed", "draft", "unapproved", "changes", "failing", "unmergeable"]
 
 
-def broken_pull_request(broken: set[str]) -> dict[str, Any]:
+def broken_pull_request(broken: set[str], running: bool = False) -> dict[str, Any]:
     """A ready PR with each named condition broken, each one independently of the others."""
-    reviews = [review(commit=OLD if "unapproved" in broken else HEAD)]
+    reviews = [] if "unapproved" in broken else [review(commit=OLD)]
     if "changes" in broken:
         reviews.append(review(state="CHANGES_REQUESTED", login="janz"))
+    checks = [check_run("tests", conclusion="FAILURE" if "failing" in broken else "SUCCESS")]
+    if running:
+        checks.append(check_run("deploy", conclusion="", status="IN_PROGRESS"))
     return pull_request(
         state="MERGED" if "closed" in broken else "OPEN",
         isDraft="draft" in broken,
         reviews=reviews,
-        statusCheckRollup=[
-            check_run("tests", conclusion="FAILURE" if "failing" in broken else "SUCCESS")
-        ],
+        statusCheckRollup=checks,
         mergeStateStatus="DIRTY" if "unmergeable" in broken else "CLEAN",
     )
 
 
-@given(broken=st.sets(st.sampled_from(CONDITIONS), min_size=1), moved=st.booleans())
-def test_no_combination_of_failing_conditions_is_judged_ready(
-    broken: set[str], moved: bool
+@given(
+    broken=st.sets(st.sampled_from(CONDITIONS), min_size=1),
+    moved=st.booleans(),
+    running=st.booleans(),
+)
+def test_no_combination_of_failing_conditions_is_judged_ready_or_a_wait(
+    broken: set[str], moved: bool, running: bool
 ) -> None:
-    state = mg.parse_pull_request(broken_pull_request(broken), SQUASH_ONLY)
+    state = mg.parse_pull_request(broken_pull_request(broken, running), SQUASH_ONLY)
 
     verdict = mg.judge(state, mg.CommitSha(OLD if moved else HEAD))
 

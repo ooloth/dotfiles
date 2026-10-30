@@ -11,9 +11,13 @@ The script reads the PR from GitHub and refuses unless all of these hold:
 
 - the head is still the commit the caller checked
 - the PR is open and not a draft
-- someone approved it on that exact head, and no reviewer's latest review requests changes
-- every check on that head passed
+- someone approved it, on any commit, and no reviewer's latest review requests changes or was
+  dismissed: a push to an approved PR never undoes its approval
+- every check on the head passed
 - GitHub says it can merge
+
+A check still running is a wait, not a refusal: when the running checks are all that stands
+between the PR and merging, the script exits 3 so the caller checks again later.
 
 Then it merges with the repo's allowed method (squash first) and `--match-head-commit`, so a push in
 the moment between checking and merging fails at GitHub instead of merging an unchecked head. It is
@@ -27,6 +31,7 @@ Exit codes:
   0  merged (or, with --check-only, ready to merge)
   1  not merged: a condition failed or GitHub refused the merge; every reason is printed
   2  could not run: bad arguments or a GitHub read failed
+  3  not merged yet: only checks still running stand in the way; check again later
 
 Requires `gh`, authenticated.
 """
@@ -48,7 +53,10 @@ MergeMethod = Literal["squash", "merge", "rebase"]
 PR_FIELDS = "state,isDraft,headRefOid,mergeStateStatus,reviews,statusCheckRollup"
 REPO_FIELDS = "squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed"
 PASSING_CONCLUSIONS = {"SUCCESS", "NEUTRAL", "SKIPPED"}
+RUNNING_CONTEXT_STATES = {"PENDING", "EXPECTED"}
 MERGEABLE_STATES = {"CLEAN", "HAS_HOOKS"}
+# What GitHub reports while a check is still running, so it is part of the same wait.
+WAITING_MERGE_STATES = {"BLOCKED", "UNSTABLE", "UNKNOWN"}
 
 
 # GitHub's answers, parsed at the boundary
@@ -104,7 +112,11 @@ class _Repo(_Answer):
 class Check:
     name: str
     passed: bool
+    running: bool
     shown_state: str
+
+    def __post_init__(self) -> None:
+        assert not (self.passed and self.running), f"check {self.name} both passed and running"
 
 
 @dataclass(frozen=True)
@@ -113,7 +125,7 @@ class PullRequestState:
     shown_state: str
     draft: bool
     head: CommitSha
-    approved_heads: frozenset[str]
+    approved_by: tuple[str, ...]
     changes_requested_by: tuple[str, ...]
     checks: tuple[Check, ...]
     merge_state: str
@@ -137,8 +149,8 @@ class Draft:
 
 
 @dataclass(frozen=True)
-class NoApprovalOnHead:
-    head: CommitSha
+class NoApproval:
+    pass
 
 
 @dataclass(frozen=True)
@@ -147,7 +159,13 @@ class ChangesRequested:
 
 
 @dataclass(frozen=True)
-class CheckNotPassed:
+class CheckFailed:
+    name: str
+    state: str
+
+
+@dataclass(frozen=True)
+class CheckRunning:
     name: str
     state: str
 
@@ -171,9 +189,10 @@ Refusal = (
     HeadMoved
     | Closed
     | Draft
-    | NoApprovalOnHead
+    | NoApproval
     | ChangesRequested
-    | CheckNotPassed
+    | CheckFailed
+    | CheckRunning
     | NoChecks
     | NotMergeable
     | NoAllowedMethod
@@ -186,11 +205,18 @@ class Ready:
 
 
 @dataclass(frozen=True)
+class Waiting:
+    """Only checks still running, and GitHub's state while they run, stand in the way."""
+
+    waits: tuple[CheckRunning | NotMergeable, ...]
+
+
+@dataclass(frozen=True)
 class NotReady:
     refusals: tuple[Refusal, ...]
 
 
-Verdict = Ready | NotReady
+Verdict = Ready | Waiting | NotReady
 
 
 @dataclass(frozen=True)
@@ -220,9 +246,7 @@ def parse_pull_request(raw: dict[str, Any], repo: dict[str, Any]) -> PullRequest
         login = review.author.login if review.author else "(unknown)"
         if review.state in {"APPROVED", "CHANGES_REQUESTED", "DISMISSED"}:
             latest[login] = review
-    approved = frozenset(
-        r.commit.oid for r in latest.values() if r.state == "APPROVED" and r.commit is not None
-    )
+    approved = tuple(sorted(login for login, r in latest.items() if r.state == "APPROVED"))
     changes = tuple(sorted(login for login, r in latest.items() if r.state == "CHANGES_REQUESTED"))
     methods: list[MergeMethod] = []
     if allowed.squashMergeAllowed:
@@ -236,7 +260,7 @@ def parse_pull_request(raw: dict[str, Any], repo: dict[str, Any]) -> PullRequest
         shown_state=pr.state,
         draft=pr.isDraft,
         head=CommitSha(pr.headRefOid),
-        approved_heads=approved,
+        approved_by=approved,
         changes_requested_by=changes,
         checks=tuple(_check(c) for c in pr.statusCheckRollup or []),
         merge_state=pr.mergeStateStatus,
@@ -248,11 +272,11 @@ def _check(raw: _Check) -> Check:
     name = raw.name or raw.context or "(unnamed check)"
     if raw.context is not None and raw.name is None:
         state = raw.state or "UNKNOWN"
-        return Check(name, state == "SUCCESS", state)
+        return Check(name, state == "SUCCESS", state in RUNNING_CONTEXT_STATES, state)
     if raw.status != "COMPLETED":
-        return Check(name, False, raw.status or "UNKNOWN")
+        return Check(name, False, True, raw.status or "UNKNOWN")
     conclusion = raw.conclusion or "UNKNOWN"
-    return Check(name, conclusion in PASSING_CONCLUSIONS, conclusion)
+    return Check(name, conclusion in PASSING_CONCLUSIONS, False, conclusion)
 
 
 # Judging
@@ -266,22 +290,44 @@ def judge(state: PullRequestState, checked_head: CommitSha) -> Verdict:
         refusals.append(Closed(state.shown_state))
     if state.draft:
         refusals.append(Draft())
-    if state.head not in state.approved_heads:
-        refusals.append(NoApprovalOnHead(state.head))
+    if not state.approved_by:
+        refusals.append(NoApproval())
     refusals.extend(ChangesRequested(by) for by in state.changes_requested_by)
     if not state.checks:
         refusals.append(NoChecks())
-    refusals.extend(CheckNotPassed(c.name, c.shown_state) for c in state.checks if not c.passed)
+    running = [CheckRunning(c.name, c.shown_state) for c in state.checks if c.running]
+    refusals.extend(running)
+    refusals.extend(
+        CheckFailed(c.name, c.shown_state) for c in state.checks if not c.passed and not c.running
+    )
     if state.merge_state not in MERGEABLE_STATES:
         refusals.append(NotMergeable(state.merge_state))
     if not state.allowed_methods:
         refusals.append(NoAllowedMethod())
-    if refusals:
-        verdict: Verdict = NotReady(tuple(refusals))
-        assert verdict.refusals, "NotReady with no refusal"
+    if not refusals:
+        return Ready(state.allowed_methods[0])
+    waits = [
+        r
+        for r in refusals
+        if isinstance(r, CheckRunning | NotMergeable) and _is_wait(r, any_running=bool(running))
+    ]
+    if len(waits) == len(refusals):
+        verdict: Verdict = Waiting(tuple(waits))
+        assert running, "a wait with no check still running"
         return verdict
-    verdict = Ready(state.allowed_methods[0])
+    verdict = NotReady(tuple(refusals))
+    assert verdict.refusals, "NotReady with no refusal"
     return verdict
+
+
+def _is_wait(refusal: CheckRunning | NotMergeable, any_running: bool) -> bool:
+    match refusal:
+        case CheckRunning():
+            return True
+        case NotMergeable(merge_state):
+            return any_running and merge_state in WAITING_MERGE_STATES
+        case _:
+            assert_never(refusal)
 
 
 def describe(refusal: Refusal) -> str:
@@ -292,12 +338,14 @@ def describe(refusal: Refusal) -> str:
             return f"the PR is {state.lower()}, not open"
         case Draft():
             return "the PR is a draft"
-        case NoApprovalOnHead(head):
-            return f"no approval on the current head {head}"
+        case NoApproval():
+            return "nobody has approved the PR"
         case ChangesRequested(by):
             return f"{by}'s latest review requests changes"
-        case CheckNotPassed(name, state):
+        case CheckFailed(name, state):
             return f"check {name!r} has not passed ({state})"
+        case CheckRunning(name, state):
+            return f"check {name!r} is still running ({state})"
         case NoChecks():
             return "no checks ran on the head"
         case NotMergeable(merge_state):
@@ -374,6 +422,11 @@ def main(argv: list[str]) -> int:
             for refusal in refusals:
                 print(f"- {describe(refusal)}")
             return 1
+        case Waiting(waits):
+            print("Not merged yet. Waiting on:")
+            for wait in waits:
+                print(f"- {describe(wait)}")
+            return 3
         case Ready(method) if args.check_only:
             print(f"Ready to merge #{args.pr} at {head} with {method}. Nothing was merged.")
             return 0
