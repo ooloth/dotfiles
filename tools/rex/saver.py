@@ -256,6 +256,9 @@ ProblemKind = Literal[
     "focus_unknown",
 ]
 
+# The kinds that describe a state the saver checks again on every poll, rather than an event.
+RESOLVABLE: frozenset[ProblemKind] = frozenset({"focus_unknown"})
+
 
 @dataclass(frozen=True)
 class Problem:
@@ -1406,8 +1409,13 @@ class Saver:
         self.flush()
         live = self.list_sessions()
         self.session_order = live
-        if self.focused is not None and self.focused not in live:
-            self.problem("focus_unknown", self.focused)
+        match self.focused:
+            case None:
+                pass
+            case focused if focused in live:
+                self.resolve("focus_unknown")
+            case focused:
+                self.problem("focus_unknown", focused)
         fresh = self.refresh(live, poll_cwds=True)
         recent = {s for s, t in self.last_event.items() if t > started - EVENT_GRACE}
         for session_id in unexplained_changes(self.cache, fresh, recent):
@@ -1492,6 +1500,20 @@ class Saver:
         if problem not in self.problems:
             self.problems.append(problem)
             self.log(f"problem: {kind}: {detail}")
+            self.write_status()
+
+    def resolve(self, kind: ProblemKind) -> None:
+        """Stop reporting a problem that describes a state, once that state has passed.
+
+        Every other kind records something that happened, so it stays reported until the saver
+        restarts. After a restart, the app's preferences name the old server's session until the
+        app writes the new one.
+        """
+        assert kind in RESOLVABLE, f"{kind} records an event, so it is never resolved"
+        kept = [p for p in self.problems if p.kind != kind]
+        if len(kept) < len(self.problems):
+            self.problems = kept
+            self.log(f"resolved: {kind}")
             self.write_status()
 
     def write_status(self) -> None:

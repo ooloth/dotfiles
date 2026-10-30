@@ -67,6 +67,11 @@ it was submitted against and when. Each inline comment in the output includes:
 - **`outdated`** — `yes` when the code the comment was left on has changed since
 - **`path:line`** — on the `COMMENT` header line, the file and line the comment is attached to
 
+Each review and conversation comment also shows **`thank`**, the line a reply to it opens with. A
+person is tagged by login. A bot is thanked by its name in the script's `BOT_NAMES` and never
+tagged, because mentioning a review bot asks it to review again. A bot missing from `BOT_NAMES`, or
+an author of a kind the script does not know, shows `UNKNOWN`.
+
 It fetches every page of every list. When it cannot (a thread with more replies than one request
 returns, or `gh` failing), it exits 1 with the reason instead of printing a partial picture. The
 review-code skill calls this script too, so a change to its output reaches both.
@@ -300,11 +305,18 @@ with its verdict, then a bold short label naming the finding so the reviewer can
 comment, then the reply: `- ✅ **Negative TTL**: now rejected (2611d9d)`. Don't add a legend, a
 summary paragraph, or the reviewer's point repeated back to them.
 
+A reply to a review body or conversation comment opens with the `thank` line the fetch script
+printed for it, copied exactly, then a blank line, then the bullets. Never write a greeting of your
+own or add an `@` to it: an `@` on a review bot's handle starts another review. When `thank` reads
+`UNKNOWN`, ask the user what to call that author as an escalated item, and propose the answer as a
+`BOT_NAMES` entry in `scripts/fetch_pr_comments.py`. An inline reply has no greeting; its body is
+the one line.
+
 ### Reply tone
 
 These replies go out as the PR author to their teammates. Write as a colleague would:
 
-- **Name the specific point**, not "thanks for the feedback"
+- **Name the specific point** in each bullet. The `thank` line is the only general thanks
 - **No bot-speak**: avoid "I have addressed your comment", "As per your request", "LGTM"
 - **For ❌, give the reason without arguing**: "already handled at file:line", or "I think this is
   intentional because X"
@@ -377,8 +389,12 @@ Posted only after you approve this wording. `(<sha>)` becomes the pushed commit'
 - Inline [comment_id] — [reviewer] @ `file:line` — [resolve | leave open]
   > [reply]
 - Review body [review_id] — [reviewer]
+  > [thank line]
+  >
   > [reply]
 - Conversation comment [comment_id] — [reviewer]
+  > [thank line]
+  >
   > [reply]
 
 (None)

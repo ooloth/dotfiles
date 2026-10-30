@@ -81,6 +81,16 @@ means for the system, and links to the logs or dashboard that show why. The
 person who receives it is often not the person who wrote it, and an alert only
 its author can interpret waits for its author.
 
+**A warning about a state stops once the state has passed.**
+Some warnings report a state the system checks again later, such as a value
+that does not match what the system expects. Others report an event, such as
+a change that arrived without notice. An event cannot be checked again, so its
+warning stays until someone has seen it. A state's warning is withdrawn when a
+later check finds the state has passed, and the withdrawal is recorded, so the
+record shows how long the state lasted. A warning that outlives its cause tells
+its readers something false, and teaches them to ignore the channel that
+carries it.
+
 ## Consider
 
 **Alerts are few enough that none gets muted.**

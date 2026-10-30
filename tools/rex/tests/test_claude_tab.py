@@ -8,9 +8,10 @@
 Run with: uv run tools/rex/tests/test_claude_tab.py
 
 Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it, and runs the launcher under macOS's own bash. A `rex` stub on PATH records its arguments
-and then does what the real tab would: it runs the command after `--` in the `-c` directory. A
-`claude` stub records the arguments cc.bash hands it, so a test sees the permission mode the tab's
+expects it, and runs the launcher under macOS's own bash. A `rex` stub on PATH records the arguments
+of every call. It answers `session list` with the sessions the test sets, and for `window new` and
+`session new` it does what the real tab would: it runs the command after `--` in the `-c` directory.
+A `claude` stub records the arguments cc.bash hands it, so a test sees the permission mode the tab's
 Claude would really start with, and nothing reaches the real Rex or Claude Code.
 """
 
@@ -31,19 +32,36 @@ REPO = Path(__file__).resolve().parent.parent.parent.parent
 SCRIPT = Path("tools/rex/claude-tab.bash")
 CC = Path("tools/claude/cc.bash")
 
-REX_JSON = '{"window_id":"window:1","block_ids":["block:1"]}'
+WINDOW_JSON = '{"window_id":"window:1","block_ids":["block:1"]}'
+SESSION_JSON = (
+    '{"session_id":"session:new",'
+    '"initial_windows":[{"window_id":"window:2","block_ids":["block:2"]}]}'
+)
+WORKERS = '{"sessions":[{"session_id":"session:workers","label":"Workers"}]}'
 
-# Records its arguments, prints what `rex window new --json` prints, then runs the tab's command in
-# the tab's directory, as the real tab would
+# Records each call's arguments in its own numbered file. `session list` prints $REX_SESSIONS, or
+# fails when $REX_LIST_FAILS is set. `window new` and `session new` print what the real ones print
+# with --json, then run the tab's command in the tab's directory, as the real tab would.
 REX_STUB = f"""#!/bin/bash
-for arg in "$@"; do printf '%s\\0' "$arg"; done > "${{REX_LOG}}"
+calls=("${{REX_LOG}}"/*)
+[[ -e "${{calls[0]}}" ]] || calls=()
+for arg in "$@"; do printf '%s\\0' "$arg"; done > "${{REX_LOG}}/$(printf '%03d' "${{#calls[@]}}")"
+case "$1 $2" in
+  "session list")
+    if [[ -n "${{REX_LIST_FAILS:-}}" ]]; then echo "Error: no server" >&2; exit 3; fi
+    printf '%s\\n' "${{REX_SESSIONS}}"
+    exit 0
+    ;;
+  "session new") json='{SESSION_JSON}' ;;
+  *) json='{WINDOW_JSON}' ;;
+esac
 dir=""
 while [[ $# -gt 0 && "$1" != "--" ]]; do
   if [[ "$1" == "-c" ]]; then dir="$2"; shift; fi
   shift
 done
 shift
-echo '{REX_JSON}'
+echo "${{json}}"
 (cd "${{dir}}" && "$@") > "${{TAB_LOG}}" 2>&1
 """
 
@@ -57,8 +75,13 @@ class Run:
     status: int
     stdout: str
     stderr: str
-    rex: list[str] | None
+    rex_calls: list[list[str]]
     claude: list[str] | None
+
+    @property
+    def rex(self) -> list[str] | None:
+        """The call that opened the tab, which is always the last one."""
+        return self.rex_calls[-1] if self.rex_calls else None
 
 
 def _read_args(log: Path) -> list[str] | None:
@@ -84,7 +107,7 @@ class Machine:
             stub = self.stubs / name
             stub.write_text(body)
             stub.chmod(0o755)
-        self._rex_log = self.root / "rex.log"
+        self._rex_log = self.root / "rex-calls"
         self._claude_log = self.root / "claude.log"
         self.tab_log = self.root / "tab.log"
 
@@ -93,11 +116,14 @@ class Machine:
         *args: str,
         computer: str = "air",
         session: str | None = "session:here",
+        sessions: str = WORKERS,
+        list_fails: bool = False,
         script: Path | None = None,
         cwd: Path | None = None,
     ) -> Run:
         """Run the launcher, by default the shipped one, as an agent in a Rex pane would."""
-        self._rex_log.unlink(missing_ok=True)
+        shutil.rmtree(self._rex_log, ignore_errors=True)
+        self._rex_log.mkdir()
         self._claude_log.unlink(missing_ok=True)
         env = {
             "HOME": str(self.home),
@@ -106,7 +132,10 @@ class Machine:
             "CLAUDE_LOG": str(self._claude_log),
             "TAB_LOG": str(self.tab_log),
             "COMPUTER": computer,
+            "REX_SESSIONS": sessions,
         }
+        if list_fails:
+            env["REX_LIST_FAILS"] = "1"
         if session is not None:
             env["REX_SESSION"] = session
         result = subprocess.run(
@@ -121,7 +150,7 @@ class Machine:
             result.returncode,
             result.stdout,
             result.stderr,
-            _read_args(self._rex_log),
+            [_read_args(call) or [] for call in sorted(self._rex_log.iterdir())],
             _read_args(self._claude_log),
         )
 
@@ -170,8 +199,8 @@ class RelatedRepos(MachineTest):
 
 
 class TabRequest(MachineTest):
-    def test_opens_the_named_tab_in_the_current_session_and_directory(self) -> None:
-        run = self.machine.run("👀 PR 573: review", "repos/app", "/review", cwd=self.machine.root)
+    def test_opens_the_named_tab_in_the_workers_session_and_directory(self) -> None:
+        run = self.machine.run("PR 573: review", "repos/app", "/review", cwd=self.machine.root)
 
         self.assertEqual(run.status, 0, run.stderr)
         self.assertEqual(
@@ -180,8 +209,8 @@ class TabRequest(MachineTest):
                 "window",
                 "new",
                 "-s",
-                "session:here",
-                "👀 PR 573: review",
+                "session:workers",
+                "PR 573: review",
                 "-c",
                 str(self.machine.app),
                 "--json",
@@ -192,10 +221,11 @@ class TabRequest(MachineTest):
             ],
         )
 
-    def test_s_names_another_session(self) -> None:
+    def test_s_names_another_session_without_looking_up_workers(self) -> None:
         run = self.machine.run("-s", "session:other", "Review", str(self.machine.app))
 
         self.assertEqual(run.status, 0, run.stderr)
+        self.assertEqual(len(run.rex_calls), 1, run.rex_calls)
         assert run.rex is not None
         self.assertEqual(run.rex[:4], ["window", "new", "-s", "session:other"])
 
@@ -235,11 +265,90 @@ class TabRequest(MachineTest):
         self.assertEqual(run.claude[2:], args)
 
 
+class WorkersSession(MachineTest):
+    def test_the_first_of_two_workers_sessions_gets_the_tab(self) -> None:
+        sessions = json.dumps(
+            {
+                "sessions": [
+                    {"session_id": "session:goals", "label": "Goals"},
+                    {"session_id": "session:first", "label": "Workers"},
+                    {"session_id": "session:second", "label": "Workers"},
+                ]
+            }
+        )
+
+        run = self.machine.run("Review", str(self.machine.app), sessions=sessions)
+
+        self.assertEqual(run.status, 0, run.stderr)
+        self.assertEqual(
+            [call[:2] for call in run.rex_calls], [["session", "list"], ["window", "new"]]
+        )
+        assert run.rex is not None
+        self.assertEqual(run.rex[2:4], ["-s", "session:first"])
+
+    def test_with_no_workers_session_one_is_created_with_the_tab_as_its_first_window(self) -> None:
+        for sessions in (
+            '{"sessions":[]}',
+            '{"sessions":[{"session_id":"session:a","label":"workers"},'
+            '{"session_id":"session:b","label":"Workers 2"}]}',
+        ):
+            with self.subTest(sessions=sessions):
+                run = self.machine.run(
+                    "Review", str(self.machine.app), "/review", sessions=sessions
+                )
+
+                self.assertEqual(run.status, 0, run.stderr)
+                self.assertEqual(len(run.rex_calls), 2, run.rex_calls)
+                self.assertEqual(
+                    run.rex,
+                    [
+                        "session",
+                        "new",
+                        "Workers",
+                        "--window",
+                        "Review",
+                        "-c",
+                        str(self.machine.app),
+                        "--json",
+                        "--",
+                        "bash",
+                        str(REPO / CC),
+                        "/review",
+                    ],
+                )
+                self.assertIn("Created Rex session Workers", run.stderr)
+
+    def test_a_created_session_still_prints_the_new_tabs_pane(self) -> None:
+        run = self.machine.run("Review", str(self.machine.app), sessions='{"sessions":[]}')
+
+        self.assertEqual(run.status, 0, run.stderr)
+        self.assertEqual(json.loads(run.stdout)["block_ids"], ["block:2"])
+
+    def test_the_created_sessions_tab_starts_claude_through_cc(self) -> None:
+        run = self.machine.run(
+            "Review", str(self.machine.app), "/review", sessions='{"sessions":[]}', computer="work"
+        )
+
+        self.assertEqual(run.claude, ["--permission-mode", "auto", "/review"], run.stderr)
+
+    def test_a_failed_session_list_opens_nothing(self) -> None:
+        run = self.machine.run("Review", str(self.machine.app), list_fails=True)
+
+        self.assertNotEqual(run.status, 0)
+        self.assertEqual([call[:2] for call in run.rex_calls], [["session", "list"]])
+
+    def test_a_session_list_that_is_not_json_opens_nothing(self) -> None:
+        run = self.machine.run("Review", str(self.machine.app), sessions="not json")
+
+        self.assertNotEqual(run.status, 0)
+        self.assertEqual([call[:2] for call in run.rex_calls], [["session", "list"]])
+
+
 class UsageErrors(MachineTest):
     def assert_refused(self, run: Run, message: str) -> None:
         self.assertEqual(run.status, 2, run.stderr)
         self.assertIn(message, run.stderr)
-        self.assertIsNone(run.rex, "no tab may open")
+        self.assertEqual(run.rex_calls, [], "no Rex call may run")
 
     def test_no_arguments(self) -> None:
         self.assert_refused(self.machine.run(), "Usage:")

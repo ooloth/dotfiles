@@ -11,6 +11,10 @@ don't break unexpectedly.
 "No description" is not acceptable for public interfaces. Help text explains what the
 command does, not how it is implemented.
 
+**A command parses its arguments before any side effect.**
+`--help`, a mistyped flag or an unknown subcommand ends the run before the command reads or
+changes any state, so asking how to use a command never runs it.
+
 **Errors go to stderr; output goes to stdout.**
 Error messages and diagnostic output use stderr. Machine-readable output and primary
 content use stdout. This allows piping stdout while still seeing errors.

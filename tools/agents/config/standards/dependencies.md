@@ -17,6 +17,16 @@ place to look when something breaks.
 
 ## Should
 
+**Every package the code imports directly is declared in its manifest.**
+A package that arrives only because another dependency requires it can
+disappear when that dependency changes, and the import then fails at run
+time rather than at install. When the import sits behind a guard that
+degrades gracefully, the failure is silent and its message names the wrong
+cause. Declaring the package, or the extra a library publishes for it,
+makes the resolver keep it. A check such as `deptry` for Python or
+`depcheck` for JavaScript compares imports with the manifest in CI, and
+catches the next undeclared import as well as the current one.
+
 **Dependencies are well-maintained.**
 Added dependencies have recent activity, a responsive maintainer, and no
 known critical vulnerabilities. A dependency with no recent activity carries

@@ -29,5 +29,5 @@ elif [[ "${DOTFILES_CHECK:-}" == "true" ]]; then
 else
   mkdir -p "${config_dir}"
   printf "🔗 "
-  ln -fsvw "${agents_md}" "${config_dir}/AGENTS.md"
+  ln -fsv "${agents_md}" "${config_dir}/AGENTS.md"
 fi

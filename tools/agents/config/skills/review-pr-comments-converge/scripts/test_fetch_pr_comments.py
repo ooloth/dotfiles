@@ -62,10 +62,19 @@ print(json.dumps({"data": {"repository": {"pullRequest": pull_request}}}))
 """
 
 
-def review(review_id: int, body: str, sha: str = "a" * 40) -> dict:
+def author(login: str, kind: str = "User") -> dict:
+    return {"login": login, "__typename": kind}
+
+
+# Who wrote each item when a test doesn't say. Never mutated, so sharing one dict is safe.
+REVIEWER = author("reviewer")
+BOT = author("bot", "Bot")
+
+
+def review(review_id: int, body: str, sha: str = "a" * 40, by: dict | None = REVIEWER) -> dict:
     return {
         "databaseId": review_id,
-        "author": {"login": "reviewer"},
+        "author": by,
         "state": "COMMENTED",
         "body": body,
         "submittedAt": "2026-10-01T12:00:00Z",
@@ -87,7 +96,7 @@ def thread(
     def comment(cid: int, text: str) -> dict:
         return {
             "databaseId": cid,
-            "author": {"login": "reviewer"},
+            "author": author("reviewer"),
             "path": path,
             "line": None if outdated else line,
             "originalLine": line,
@@ -111,10 +120,10 @@ def thread(
     }
 
 
-def conversation(comment_id: int, body: str) -> dict:
+def conversation(comment_id: int, body: str, by: dict | None = BOT) -> dict:
     return {
         "databaseId": comment_id,
-        "author": {"login": "bot"},
+        "author": by,
         "body": body,
         "url": f"https://github.com/{REPO}/pull/{PR}#issuecomment-{comment_id}",
         "createdAt": "2026-10-02T08:30:00Z",
@@ -356,3 +365,87 @@ def test_a_gh_failure_exits_with_a_sentence(harness: Harness) -> None:
     assert f"{REPO}#{PR}" in result.stderr
     assert "Could not resolve to a PullRequest" in result.stderr
     assert "Traceback" not in result.stderr
+
+
+def thank_lines(stdout: str) -> list[str]:
+    return [line for line in stdout.splitlines() if line.startswith("  thank      :")]
+
+
+def test_a_person_who_reviewed_is_tagged_in_the_greeting(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[review(1, "Looks good.", by=author("jan"))]],
+        "comments": [[]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    lines = result.stdout.splitlines()
+    header = lines.index("# REVIEW by jan (COMMENTED)  [review_id: 1]")
+    assert "  thank      : @jan Thanks for the feedback:" in lines[header:]
+    assert thank_lines(result.stdout) == ["  thank      : @jan Thanks for the feedback:"]
+
+
+def test_a_bot_with_a_name_is_thanked_by_name_and_never_tagged(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[]],
+        "comments": [[conversation(9001, "Review body.", by=author("rex-rx-agent", "Bot"))]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert thank_lines(result.stdout) == ["  thank      : Thanks for the feedback, Rex:"]
+    assert "@" not in thank_lines(result.stdout)[0]
+
+
+def test_a_bot_without_a_name_asks_for_one(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[]],
+        "comments": [[conversation(9001, "Review body.", by=author("copilot", "Bot"))]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert thank_lines(result.stdout) == ["  thank      : UNKNOWN (bot copilot)"]
+
+
+def test_an_actor_type_the_script_does_not_know_asks_rather_than_failing(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[review(1, "Imported.", by=author("old-user", "Mannequin"))]],
+        "comments": [[]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert thank_lines(result.stdout) == ["  thank      : UNKNOWN (Mannequin old-user)"]
+
+
+def test_a_deleted_account_is_thanked_without_a_tag(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[review(1, "Gone now.", by=None)]],
+        "comments": [[conversation(9001, "Also gone.", by=None)]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert thank_lines(result.stdout) == ["  thank      : Thanks for the feedback:"] * 2
+
+
+def test_inline_comments_carry_no_greeting(harness: Harness) -> None:
+    result = harness.run(FULL)
+
+    assert result.returncode == 0, result.stderr
+    # FULL has one review and one conversation comment, and three inline threads.
+    assert len(thank_lines(result.stdout)) == 2
+    for block in result.stdout.split("─" * 80)[1:]:
+        if block.lstrip("\n").startswith("COMMENT ["):
+            assert "thank      :" not in block

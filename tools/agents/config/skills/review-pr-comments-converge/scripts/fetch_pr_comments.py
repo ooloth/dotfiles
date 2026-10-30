@@ -16,6 +16,11 @@ Each review shows the commit it was submitted against and when. Each inline comm
 PR conversation comments (the timeline, where some bots post their reviews) follow, oldest first,
 each with when it was posted. Reply to these with `gh pr comment`.
 
+Each review and conversation comment also shows `thank`, the line a reply to it opens with. A person
+is tagged by login. A bot is thanked by its name in BOT_NAMES and never tagged, because mentioning a
+review bot asks it to review again. A bot missing from BOT_NAMES, or an author of a kind this script
+does not know, shows `UNKNOWN` so the caller asks rather than guesses.
+
 Every page of every list is fetched, so nothing is left out. The script exits 1 instead of printing
 a partial picture when a thread has more replies than one request returns, when a list runs past
 MAX_PAGES, or when gh fails.
@@ -76,7 +81,7 @@ query(
         pageInfo { hasNextPage endCursor }
         nodes {
           databaseId
-          author { login }
+          author { login __typename }
           state
           body
           submittedAt
@@ -87,7 +92,7 @@ query(
         pageInfo { hasNextPage endCursor }
         nodes {
           databaseId
-          author { login }
+          author { login __typename }
           body
           url
           createdAt
@@ -109,6 +114,69 @@ class Discussion:
     threads: list[dict]
     reviews: list[dict]
     conversation: list[dict]
+
+
+# The name each review bot is thanked by. A bot is never @-mentioned: rex-rx starts a new review
+# whenever its handle is mentioned on a PR.
+BOT_NAMES = {"rex-rx-agent": "Rex"}
+
+
+@dataclass(frozen=True)
+class Person:
+    login: str
+
+
+@dataclass(frozen=True)
+class Bot:
+    login: str
+
+
+@dataclass(frozen=True)
+class Ghost:
+    """An author whose account was deleted. GitHub returns no author at all."""
+
+
+@dataclass(frozen=True)
+class UnrecognisedActor:
+    kind: str
+    login: str
+
+
+Reviewer = Person | Bot | Ghost | UnrecognisedActor
+
+
+def parse_reviewer(author: dict | None) -> Reviewer:
+    if author is None:
+        return Ghost()
+    match author.get("__typename"):
+        case "User":
+            return Person(author["login"])
+        case "Bot":
+            return Bot(author["login"])
+        case kind:
+            return UnrecognisedActor(str(kind), author["login"])
+
+
+def login_of(reviewer: Reviewer) -> str:
+    match reviewer:
+        case Ghost():
+            return "ghost"
+        case Person(login) | Bot(login) | UnrecognisedActor(_, login):
+            return login
+
+
+def thank_line(reviewer: Reviewer) -> str:
+    match reviewer:
+        case Person(login):
+            return f"@{login} Thanks for the feedback:"
+        case Bot(login) if login in BOT_NAMES:
+            return f"Thanks for the feedback, {BOT_NAMES[login]}:"
+        case Bot(login):
+            return f"UNKNOWN (bot {login})"
+        case Ghost():
+            return "Thanks for the feedback:"
+        case UnrecognisedActor(kind, login):
+            return f"UNKNOWN ({kind} {login})"
 
 
 HEAVY = "#" * 80
@@ -254,18 +322,19 @@ def print_discussion(target: str, discussion: Discussion) -> None:
         r for r in reviews if r.get("body", "").strip() or threads_by_review.get(r["databaseId"])
     ]:
         rid = review["databaseId"]
-        author = review["author"]["login"]
+        reviewer = parse_reviewer(review.get("author"))
         state = review["state"]
         body = review.get("body", "").strip()
         review_threads = threads_by_review.get(rid, [])
         n = len(review_threads)
 
         print(HEAVY)
-        print(f"# REVIEW by {author} ({state})  [review_id: {rid}]")
+        print(f"# REVIEW by {login_of(reviewer)} ({state})  [review_id: {rid}]")
         # Commit is null when the reviewed commit no longer exists, e.g. after a force-push.
         commit = (review.get("commit") or {}).get("oid") or "unknown"
         print(f"# commit {commit}  submitted {review.get('submittedAt') or 'unknown'}")
         print(HEAVY)
+        print(f"  thank      : {thank_line(reviewer)}")
 
         if body:
             print()
@@ -354,8 +423,9 @@ def print_discussion(target: str, discussion: Discussion) -> None:
         for comment in conversation:
             print()
             print(MEDIUM)
-            author = comment["author"]["login"] if comment.get("author") else "ghost"
-            print(f"CONVERSATION COMMENT  {author}")
+            reviewer = parse_reviewer(comment.get("author"))
+            print(f"CONVERSATION COMMENT  {login_of(reviewer)}")
+            print(f"  thank      : {thank_line(reviewer)}")
             print(f"  comment_id : {comment['databaseId']}")
             print(f"  url        : {comment['url']}")
             print(f"  created    : {comment['createdAt']}")

@@ -24,10 +24,15 @@ collects no tests, and each script refuses to run with no files of the kind it c
 keeps that property.
 
 On a work laptop, uv installs packages through the work Artifact Registry index set in
-`~/.config/uv/uv.toml`. A 403 from `python.pkg.dev` means the Application Default Credentials
-belong to an account that cannot read that registry. Run `gcloud auth application-default login`
-with the internal work account. Do not point uv at public PyPI instead, because the managed config
-blocks that fallback on purpose.
+`~/.config/uv/uv.toml`, which authenticates with Application Default Credentials. Before running
+`check`, log in:
+
+```sh
+gcloud auth login <you>@recursion.com --update-adc
+```
+
+Without it, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. Do not
+point uv at public PyPI instead, because the managed config blocks that fallback on purpose.
 
 Shellcheck settings live in `.shellcheckrc`, not in disable comments. Run it only on `*.sh` and
 `*.bash` files.
