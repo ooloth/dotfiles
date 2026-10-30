@@ -1,6 +1,6 @@
 ---
 name: merge-and-verify
-description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, and offer to clean up its branches. Given one sentence naming the PR. TRIGGER when an approved PR is ready to merge, when a merged PR's deploy needs watching, or when asked to verify a PR in its environment.
+description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. TRIGGER when an approved PR is ready to merge, when a merged PR's deploy needs watching, or when asked to verify a PR in its environment.
 argument-hint: 'An approved or merged PR, such as "react-clinops-siteoutreach#305"'
 ---
 
@@ -109,12 +109,45 @@ evidence folder. Show the user a draft report: the PR, merge commit and ticket, 
 each part came from, the rollout from merge to its ending, and the `prove-it-works` report
 unchanged. Change nothing in any deployed environment.
 
+## Watching production
+
+Where the change is serving, offer with the draft report to watch production, and ask for how long.
+Start only once the user names a duration. The duration counts from when the change started serving.
+
+Each check reads production's warnings and errors since the deploy, and compares them with the same
+window one day earlier, so both cover the same hours of the day. It also reads any report-only logs
+the PR added, the ones that record what a new restriction would reject. Find where the logs live
+from the repo's docs, the same way the rollout watch finds its stages. Save each command's raw
+output in a new subfolder of the evidence folder, and report only what changed since the last check,
+as a finished message. Each report states the time window its check searched, so a gap left by logs
+that arrive late can be seen.
+
+Between checks, schedule the next one about 30 minutes out with a one-shot `CronCreate` whose
+prompt says to continue this watch, and end the turn. Where that would fall after the end time,
+schedule it at the end time instead, and that check is the last. Where `CronCreate` doesn't exist,
+sleep between checks instead and say that reports will arrive together.
+
+The watch ends in exactly one of these, and the report names which:
+
+- **The time is up,** with a summary of every check.
+- **A new kind of warning or error appeared that the change could have caused,** quoting it.
+- **The logs can't be read,** with the command the user runs to refresh the credentials.
+
+Whatever the ending, draft the watch's summary as a second comment for the destination the proof
+went to, and post it as "Posting the report" describes, without a second PR link.
+
+The watch only reports. Never roll back, revert or change anything in a deployed environment
+yourself; say what you would do and wait for the user.
+
 ## Posting the report
 
 The report goes on the ticket it proves: a Jira issue, or a GitHub issue. A PR with neither gets
-the report on the PR. Show the user the full draft and its destination, plus the one-line PR comment
-that links to it, and post only after they approve that wording. Post approved wording as approved;
-a change is a new draft.
+the report on the PR. Post it without waiting for a watch to end. Where a watch is offered, the
+draft shows below its last line the line it gains if the user asks for one: "Watching production
+until <time>; a follow-up will report." Approving the draft approves it with or without that line,
+and `<time>` is filled in from the duration the user names. Show the user the full draft and its
+destination, plus the one-line PR comment that links to it, and post only after they approve that
+wording. Post approved wording as approved; a change is a new draft.
 
 Before showing the draft, check it for credentials (tokens, keys, cookies, bearer headers, signed
 URLs). Remove any you find, and say so in the draft.
@@ -123,13 +156,14 @@ URLs). Remove any you find, and say so in the draft.
   converts.
 - **A GitHub issue or PR:** post with `gh issue comment` or `gh pr comment` from a file, following
   `use-gh`.
+- **The PR link:** once the ticket comment exists, post one line on the PR linking to it.
 
 Screenshots and recordings are not uploaded. The report names each one by its path in the evidence
 folder.
-- **The PR link:** once the ticket comment exists, post one line on the PR linking to it.
 
 Then list every PR that names the ticket, and whether each has merged and has its proof on the
 ticket. Only when all have, offer to close the ticket, and close it only if the user says yes.
+While a watch is running, make that offer once the watch's summary is posted instead.
 
 ## Cleaning up
 
