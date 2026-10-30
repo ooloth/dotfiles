@@ -22,6 +22,12 @@ how long each category took. pytest ignores a test file's inline script header, 
 installs what `scripts/checks/test-dependencies.py` reads from the headers. Declare a test's
 dependencies in its header and nowhere else; it still runs on its own with `uv run <file>`.
 
+A test that puts a stub or fake tool on `PATH` writes it once per test class or module, in a folder
+it then makes read-only, and keeps everything each test changes in that test's own temporary
+directory. On a work laptop a newly written executable takes about 200 ms more to start the first
+time, so a stub written for every Hypothesis example can cost more than the script under test.
+`tools/claude/tests/test_cc.py` shows the pattern in `write_stubs`.
+
 CI runs the same five scripts in the same order, one step each, in `.github/workflows/check.yml`.
 A category is named for the kind of check, not the language, so a tool for a new language joins
 the matching script. Each check fails when it finds nothing to check: pytest exits 5 when it

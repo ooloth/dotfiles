@@ -67,6 +67,16 @@ deliberate break.
 No test depends on the execution order of other tests or on state left behind
 by a previous test. Each test sets up what it needs and cleans up after itself.
 
+**Fixture parts that never change are built once and shared read-only, and parts a test changes are
+built fresh for each test.**
+A stub executable with fixed content, or a fake tool that reads its answers from a file each test
+writes, is written once per test class or module, in a folder made read-only so that no test can
+change what another one runs. Everything a test writes to, such as its home directory, logs and
+response tables, stays in that test's own temporary directory. Rebuilding the unchanging parts for
+every example multiplies a property test's cost by its example count, and on a machine running
+endpoint security a newly written executable is slow to start the first time, so a stub written per
+example can cost more than the code under test.
+
 **Test code is held to the same standard as production code.**
 Duplicated setup is extracted to fixtures or helpers. Names are as descriptive
 as in production code. Dead test code is removed.
