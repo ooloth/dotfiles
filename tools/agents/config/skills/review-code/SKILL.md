@@ -51,7 +51,8 @@ It prints every review, every inline thread with its replies, and every PR conve
 which is where some bots post their reviews. A default `gh pr view` shows none of these. Keep the
 output in this session for Step 4 and out of every agent's prompt and the Step 2 intent block: an
 agent handed an earlier verdict tends to return it confirmed, and the point of this review is a
-read that isn't anchored on anyone else's.
+read that isn't anchored on anyone else's. The one exception is a dry run that CI posted, which
+Step 2 carries to the agents.
 
 Output the reviewable file list and diff command before proceeding. When the skip rules leave
 nothing because every changed file is a lockfile or package manifest, say so and name those files
@@ -154,6 +155,12 @@ Build a context block that every agent receives. Gather from these sources in pr
    decisions.
 4. **Commit messages** — `git log <base>...HEAD --format="%s%n%b"`
 5. **The diff itself** — read for intent when other sources are thin
+6. **The change's dry-run output**: when CI posted what the change will do to running systems,
+   such as a Terraform or OpenTofu plan, a Spacelift or Atlantis comment, a migration dry run or a
+   `kubectl diff`, take the newest one from the Step 1 fetch. It reports what the change does, not
+   a reviewer's opinion of it, so it goes to every agent. Note the commit it ran against, and say
+   so when that is older than the PR's head. Save the whole dry run to a file in the scratchpad,
+   because the attribute values it shows answer questions that the action lines alone leave open.
 
 Consider everything in the ticket for inclusion in the block below, and carry what binds the
 review: numbered properties (`P1`, `P2`, …), the options the ticket rejected and why, choices
@@ -168,6 +175,9 @@ Approach: [how this change addresses it, at a high level]
 Key outcomes: [invariants, constraints, or requirements the implementation must satisfy]
 Recorded decisions: [the ticket's numbered properties, rejected options, deliberate choices and
   deferrals, each with where it is recorded; "none found in <where you looked>" when empty]
+Dry-run output: [each planned action and the summary line, verbatim, then the path of a file
+  holding the full dry run, attribute lines included, for agents to read; "none posted" when CI
+  posted none]
 Diff command: [exact command agents should run to read the diff]
 ```
 
