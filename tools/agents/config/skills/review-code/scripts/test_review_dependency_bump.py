@@ -37,6 +37,7 @@ UV_AUDIT = (
     "audit --frozen --no-config --system-certs --preview-features audit-command,json-output "
     "--output-format json"
 )
+TOOLS = ("gh", "npm", "curl", "uv")
 NOT_FOUND = {"stderr": "curl: (22) The requested URL returned error: 404\n", "code": 22}
 
 # Answers each call from a table keyed by its arguments. ls and audit run in a `base` or `head`
@@ -265,7 +266,8 @@ class Scenario:
     UV_LOCK in `files`.
     """
 
-    def __init__(self, tmp_path: Path) -> None:
+    def __init__(self, tmp_path: Path, fake_bin: Path) -> None:
+        self.fake_bin = fake_bin
         self.uv_base: list[dict[str, Any]] | None = lib_lock("1.0.0")
         self.uv_head: list[dict[str, Any]] = lib_lock("1.0.1")
         self.pypi = {
@@ -362,8 +364,6 @@ class Scenario:
         return {**table, **self.npm_overrides}
 
     def run(self, *extra: str) -> subprocess.CompletedProcess[str]:
-        bin_dir = self.tmp_path / "bin"
-        bin_dir.mkdir(exist_ok=True)
         tables = {
             "gh": self.gh_table(),
             "npm": self.npm_table(),
@@ -372,13 +372,10 @@ class Scenario:
         }
         env = {
             **os.environ,
-            "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+            "PATH": f"{self.fake_bin}{os.pathsep}{os.environ['PATH']}",
             "FAKE_CALLS": str(self.calls_file),
         }
         for tool, table in tables.items():
-            path = bin_dir / tool
-            path.write_text(FAKE_TOOL)
-            path.chmod(0o755)
             (self.tmp_path / f"{tool}.json").write_text(json.dumps(table))
             env[f"FAKE_{tool.upper()}"] = str(self.tmp_path / f"{tool}.json")
         return subprocess.run(
@@ -399,9 +396,28 @@ class Scenario:
         return [json.loads(line) for line in self.calls_file.read_text().splitlines()]
 
 
+@pytest.fixture(scope="module")
+def fake_bin(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """The fake tools, written once for the module and then made read-only. Each test's tables and
+    call log live in its own tmp_path, so the tools are the same for every test, and a newly written
+    executable is slow to start the first time on a Mac running endpoint security."""
+    folder = tmp_path_factory.mktemp("bin")
+    for tool in TOOLS:
+        path = folder / tool
+        path.write_text(FAKE_TOOL)
+        path.chmod(0o755)
+    folder.chmod(0o555)
+    return folder
+
+
+def test_a_fake_tool_cannot_write_beside_itself_in_the_shared_folder(fake_bin: Path) -> None:
+    with pytest.raises(PermissionError):
+        (fake_bin / "written-by-a-test").write_text("x")
+
+
 @pytest.fixture
-def s(tmp_path: Path) -> Scenario:
-    return Scenario(tmp_path)
+def s(tmp_path: Path, fake_bin: Path) -> Scenario:
+    return Scenario(tmp_path, fake_bin)
 
 
 def flags(result: subprocess.CompletedProcess[str]) -> list[str]:
@@ -754,8 +770,8 @@ Compared head headsha0000 with merge base mergebase00. Releases looked up in htt
 
 
 @pytest.fixture
-def u(tmp_path: Path) -> Scenario:
-    scenario = Scenario(tmp_path)
+def u(tmp_path: Path, fake_bin: Path) -> Scenario:
+    scenario = Scenario(tmp_path, fake_bin)
     scenario.files = [UV_LOCK]
     return scenario
 

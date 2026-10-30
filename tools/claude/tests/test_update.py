@@ -61,10 +61,26 @@ class Run:
     claude: list[str]
 
 
-class Machine:
-    """A temporary HOME, Homebrew prefix and fnm directory for update.bash to run against."""
+def write_stubs(folder: Path) -> Path:
+    """Write the `brew` stub into `folder`, then make the folder read-only, so examples that share
+    it can't change what the others run."""
+    folder.mkdir(parents=True, exist_ok=True)
+    brew = folder / "brew"
+    brew.write_text(BREW_STUB)
+    brew.chmod(0o755)
+    folder.chmod(0o555)
+    return folder
 
-    def __init__(self, root: Path) -> None:
+
+class Machine:
+    """A temporary HOME, Homebrew prefix and fnm directory for update.bash to run against.
+
+    `stubs` is a folder from write_stubs to share between Machines. A newly written executable is
+    slow to start the first time on a Mac running endpoint security, so a property test that builds
+    a Machine per example shares one folder rather than writing the stub again each time.
+    """
+
+    def __init__(self, root: Path, stubs: Path | None = None) -> None:
         root = root.resolve()
         self.home = root / "home"
         dotfiles = self.home / "Repos" / "ooloth" / "dotfiles"
@@ -75,11 +91,7 @@ class Machine:
         self.fnm = root / "fnm"
         for version in NODE_VERSIONS:
             (self.node(version) / "bin").mkdir(parents=True)
-        self.stubs = root / "stubs"
-        self.stubs.mkdir()
-        brew = self.stubs / "brew"
-        brew.write_text(BREW_STUB)
-        brew.chmod(0o755)
+        self.stubs = stubs or write_stubs(root / "stubs")
         self.extra_path: list[Path] = []
         self._brew_log = root / "brew.log"
         self._claude_log = root / "claude.log"
@@ -248,13 +260,26 @@ INSTALLS = st.sets(st.sampled_from(["homebrew", *NODE_VERSIONS]))
 
 
 class UpdatePropertyTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls._stubs_tmp = tempfile.TemporaryDirectory()
+        cls.stubs = write_stubs(Path(cls._stubs_tmp.name) / "stubs")
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls._stubs_tmp.cleanup()  # resets the read-only folder's permissions first
+
+    def test_a_stub_cannot_write_beside_itself_in_the_shared_folder(self) -> None:
+        with self.assertRaises(PermissionError):
+            (self.stubs / "written-by-an-example").write_text("x")
+
     @settings(max_examples=30, deadline=None)
     @given(holding=INSTALLS)
     def test_exactly_the_installs_holding_a_copy_lose_it_and_each_is_named(
         self, holding: set[str]
     ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            machine = Machine(Path(tmp))
+            machine = Machine(Path(tmp), self.stubs)
             installs = {
                 name: machine.prefix if name == "homebrew" else machine.node(name)
                 for name in ["homebrew", *NODE_VERSIONS]

@@ -40,10 +40,26 @@ class Run:
     claude: list[str] | None
 
 
-class Machine:
-    """A temporary HOME and a folder of sibling repos for cc.bash to run in."""
+def write_stubs(folder: Path) -> Path:
+    """Write the `claude` stub into `folder`, then make the folder read-only, so examples that share
+    it can't change what the others run."""
+    folder.mkdir(parents=True, exist_ok=True)
+    claude = folder / "claude"
+    claude.write_text(CLAUDE_STUB)
+    claude.chmod(0o755)
+    folder.chmod(0o555)
+    return folder
 
-    def __init__(self, root: Path) -> None:
+
+class Machine:
+    """A temporary HOME and a folder of sibling repos for cc.bash to run in.
+
+    `stubs` is a folder from write_stubs to share between Machines. A newly written executable is
+    slow to start the first time on a Mac running endpoint security, so a property test that builds
+    a Machine per example shares one folder rather than writing the stub again each time.
+    """
+
+    def __init__(self, root: Path, stubs: Path | None = None) -> None:
         root = root.resolve()
         self.home = root / "home"
         dotfiles = self.home / "Repos" / "ooloth" / "dotfiles"
@@ -52,11 +68,7 @@ class Machine:
         self.repos = root / "repos"
         self.app = self.repos / "app"
         self.app.mkdir(parents=True)
-        self.stubs = root / "stubs"
-        self.stubs.mkdir()
-        claude = self.stubs / "claude"
-        claude.write_text(CLAUDE_STUB)
-        claude.chmod(0o755)
+        self.stubs = stubs or write_stubs(root / "stubs")
         self._claude_log = root / "claude.log"
 
     def sibling(self, name: str) -> Path:
@@ -327,6 +339,19 @@ class AddedArguments(unittest.TestCase):
 
 
 class Arguments(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls._stubs_tmp = tempfile.TemporaryDirectory()
+        cls.stubs = write_stubs(Path(cls._stubs_tmp.name) / "stubs")
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls._stubs_tmp.cleanup()  # resets the read-only folder's permissions first
+
+    def test_a_stub_cannot_write_beside_itself_in_the_shared_folder(self) -> None:
+        with self.assertRaises(PermissionError):
+            (self.stubs / "written-by-an-example").write_text("x")
+
     @settings(max_examples=50, deadline=None)
     # A process argument can't hold a NUL or an unpaired surrogate, so those are left out
     @given(
@@ -339,7 +364,7 @@ class Arguments(unittest.TestCase):
     )
     def test_reach_claude_unchanged(self, args: list[str]) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            run = Machine(Path(tmp)).run(*args)
+            run = Machine(Path(tmp), self.stubs).run(*args)
 
         self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions", *args], run.output)
 

@@ -174,7 +174,11 @@ class GeneratedDocuments(unittest.TestCase):
     the expected report is computed independently of the checker's own classification."""
 
     def test_reported_lines_are_exactly_the_overlong_prose_lines(self) -> None:
+        # Every case is a file in one repo, checked by one run, because a repo and a checker run per
+        # case cost a few hundred milliseconds each and the checker reports each file separately
         rng = random.Random(20261004)
+        documents: dict[str, str] = {}
+        expected_by_name: dict[str, set[int]] = {}
         for case in range(150):
             lines: list[str] = []
             expected: set[int] = set()
@@ -196,14 +200,21 @@ class GeneratedDocuments(unittest.TestCase):
                     lines.append(f"https://x.dev/{line(width)}")
                 else:
                     lines.append("")
-            run = run_checker({"g.md": "\n".join(lines) + "\n"})
-            reported = {
-                int(part.split(":")[1])
-                for part in run.stdout.splitlines()
-                if part.startswith("g.md:")
-            }
-            self.assertEqual(reported, expected, f"case {case}:\n" + "\n".join(lines))
-            self.assertEqual(run.status, 1 if expected else 0, f"case {case}")
+            name = f"case-{case:03}.md"
+            documents[name] = "\n".join(lines) + "\n"
+            expected_by_name[name] = expected
+
+        run = run_checker(documents)
+        reported_by_name: dict[str, set[int]] = {name: set() for name in documents}
+        for report in run.stdout.splitlines():
+            if report.startswith("checked "):
+                continue
+            name, number, _ = report.split(":", 2)
+            self.assertIn(name, reported_by_name, f"a report for a file never written: {report}")
+            reported_by_name[name].add(int(number))
+        for name, expected in expected_by_name.items():
+            self.assertEqual(reported_by_name[name], expected, f"{name}:\n{documents[name]}")
+        self.assertEqual(run.status, 1 if any(expected_by_name.values()) else 0)
 
 
 if __name__ == "__main__":
