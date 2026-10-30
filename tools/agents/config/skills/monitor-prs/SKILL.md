@@ -106,7 +106,7 @@ name any undecided pull requests, anything incomplete, any team repository that 
 and when the next check runs.
 
 When every key matches the previous check in this session and nothing is incomplete, report one
-line instead, such as "No change since 14:05: 8 turns. Next check 14:35."
+line instead, such as "No change since 14:05. Next check 14:35."
 
 ## Scheduling the next check
 

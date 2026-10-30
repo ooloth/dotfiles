@@ -20,7 +20,7 @@ gets the same files.
 
 ### Standards
 
-[The standards library](./tools/agents/config/standards/README.md) is 29 files the rest of this
+[The standards library](./tools/agents/config/standards/README.md) is 30 files the rest of this
 reads. Each standard is phrased as a claim about the code rather than an instruction to the agent:
 "Errors are handled at the level with enough context to act," not "Handle errors at the right
 level." That single rule is what lets one file serve three jobs unchanged, since a writing skill
@@ -53,7 +53,7 @@ to the whole backlog and lists what has gone stale.
 
 ### Reviewing
 
-[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs eleven specialised reviewers
+[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs twelve specialised reviewers
 in parallel, then assumes they're wrong. Every claim about library behaviour, API guarantees or
 numbers is checked against the installed code before it reaches me, and a claim that fails is
 struck rather than softened. Findings are labelled introduced or pre-existing by reading the base
@@ -83,7 +83,8 @@ docs, counts the change as serving only when the live artifact's commit contains
 checks every five minutes or so in a fresh turn until the watch reaches one of its named endings.
 
 [monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so
-for the pull requests where it's my move, and says why, using the same rules hub's daemon does. Each
+for the pull requests where it's my move, and says why, using the same rules
+[hub](https://github.com/ooloth/hub)'s daemon does. Each
 check reads one snapshot from GitHub and decides from that alone, so two checks of the same state
 agree. A truncated or failed fetch is reported as such rather than as nothing waiting. It is
 read-only for now; preparing the next step for each turn comes later.
@@ -104,8 +105,8 @@ cutting any step that can't run on a laptop before merging. The bar is what a sk
 you prove without running tests or deploying.
 
 [write-ticket-description](./tools/agents/config/skills/write-ticket-description/SKILL.md) covers
-issues and epics, including a coverage table that maps each externally-defined requirement to the
-sub-issue satisfying it, so "did we miss anything" is a lookup rather than a judgment call.
+issues and epics, and records how tickets relate (parent, prerequisite) with the tracker's own
+links rather than in the body, so a body never goes stale when tickets are renumbered or closed.
 
 [write-progress-update](./tools/agents/config/skills/write-progress-update/SKILL.md) drafts a short
 Slack update on what a work project finished and what comes next, gathered from Jira, GitHub and
