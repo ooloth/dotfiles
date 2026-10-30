@@ -19,8 +19,10 @@ bash scripts/checks/tests.bash                # link.bash check mode alongside o
 
 The tests run across every core with pytest-xdist and print the ten slowest, and `check` prints
 how long each category took. pytest ignores a test file's inline script header, so `tests.bash`
-installs what `scripts/checks/test-dependencies.py` reads from the headers. Declare a test's
-dependencies in its header and nowhere else; it still runs on its own with `uv run <file>`.
+installs each header with `uv run --with-requirements`, and a test file with no header fails the
+run. Declare a test's dependencies in its header and nowhere else. Every test shares one
+environment, so a missing declaration shows up only when the file runs on its own with
+`uv run <file>`.
 
 A test that puts a stub or fake tool on `PATH` writes it once per test class or module, in a folder
 it then makes read-only, and keeps everything each test changes in that test's own temporary

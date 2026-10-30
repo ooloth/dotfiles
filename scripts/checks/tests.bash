@@ -12,9 +12,9 @@
 #   5 when it collects nothing. importlib mode keeps same-named test files, such as the two
 #   tests/test_update.py, from colliding on import.
 #
-# pytest ignores each file's inline script header, so scripts/checks/test-dependencies.py reads the
-# headers and each package it prints is installed alongside (decision 001's addendum). The skill
-# tests have no headers; hypothesis and pydantic are installed for them, since they load their
+# pytest ignores each file's inline script header, so uv installs each tests/test_*.py file's header
+# with --with-requirements (decision 001's addendum), and a file with no header fails the run. The
+# skill tests have no headers; hypothesis and pydantic are installed for them, since they load their
 # scripts in-process and generate inputs for them.
 set -uo pipefail
 
@@ -44,14 +44,10 @@ if [[ ${#tests[@]} -eq 0 ]]; then
   exit 1
 fi
 
-if ! declared="$(uv run --quiet "${repo}/scripts/checks/test-dependencies.py" "${tests[@]}")"; then
-  printf '❌ Could not read the test files'"'"' dependencies\n' >&2
-  exit 1
-fi
 with=(--with pytest --with pytest-xdist --with hypothesis --with pydantic)
-while IFS= read -r package; do
-  [[ -n "${package}" ]] && with+=(--with "${package}")
-done <<<"${declared}"
+for test in "${tests[@]}"; do
+  with+=(--with-requirements "${test}")
+done
 
 failed=()
 

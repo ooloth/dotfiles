@@ -77,11 +77,14 @@ it. In one run it took 88 s, collecting the same tests from each file.
 This is the option rejected above as `uv run --with pytest pytest tools/*/tests`. Its reversal
 condition, a shared `pyproject.toml`, is the end state of decision 008, and that migration has
 started. Until #204 creates the project, the objection to it, that each file's dependencies would
-be listed by hand, is met another way: `scripts/checks/test-dependencies.py` reads each test file's
-inline script header, and `tests.bash` installs every package it prints. The header stays the one
-place a test file's dependencies are written, so each file still runs on its own with
-`uv run <file>`. A package missing from every header fails the run with an `ImportError`, and two
-headers that pin different versions of one package fail when uv resolves them.
+be listed by hand, is met another way: `tests.bash` passes each test file to
+`uv run --with-requirements`, which reads the file's inline script header, and a file with no header
+fails the run. The header stays the one place a test file's dependencies are written, so each file
+still runs on its own with `uv run <file>`. Every test shares one environment, so the run does not
+check that a header is complete: a package one file uses but only another declares passes here and
+fails when that file runs alone. A package missing from every header fails the run with an
+`ImportError`, and two headers that pin different versions of one package fail when uv resolves
+them.
 
 pytest searches `tools/`, `features/` and `scripts/` at any depth, skipping `@archive/` and
 `@new/`, so the depth limits in the risk above no longer leave a test unrun. A `test_*.py` placed
