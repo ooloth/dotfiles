@@ -88,6 +88,13 @@ cost.
    this point. A property nobody can observe is an intention, and every option below is scored
    against this list.
 
+   Some properties can be observed only in production: which callers rely on a behavior, what old
+   data looks like when it is read, how often a path runs. Where a binding property is one of these
+   and nothing records it yet, its measurement is a deploy of its own. That deploy records each case
+   the change would affect without changing behavior, and the approach puts it first and waits for
+   its records before the slice that relies on them. `deployment.md` states this for new
+   restrictions.
+
    Scope each property to the behaviour this work changes. Where a risk this work exposes could be
    stated broadly enough to bind code the work does not otherwise touch, state it at the narrowest
    scope that still covers that risk, and name what it deliberately leaves uncovered among the

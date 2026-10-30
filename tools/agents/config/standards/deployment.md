@@ -34,6 +34,16 @@ format, API or config key ships as expand, migrate, contract: the new form is
 added alongside the old one, existing use moves to it, and the old form is
 removed in a later deploy.
 
+**A new restriction on existing callers or data is enforced only after a report-only phase shows
+what it would reject.**
+When the requests or records a new check would reject can't be listed by a query (old clients,
+links already shared, data whose problem shows only when it is read), the check first ships in
+report-only mode. It logs each case it would reject and lets it through. Enforcement waits until
+the logs have covered enough traffic to show each kind of case, and each kind is either fixed or
+rejected on purpose. Enforcement can then proceed one kind at a time. Where a query can list every
+violator, as with a constraint on stored rows, "Migrations handle existing data" in
+`data-integrity.md` applies instead. The report-only logging is removed once enforcement ships.
+
 **Rollout is coordinated when consumers exist.**
 When a change breaks existing consumers — a removed endpoint, a renamed
 config key, a dropped CLI flag — the deployment sequence ensures consumers

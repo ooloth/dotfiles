@@ -193,7 +193,7 @@ the running system can already answer it. A question it can answer produces noth
 it cannot answer names one thing to record, and the entry states the question rather than the log
 line, so a later reader can tell when the record stops being worth keeping.
 
-Three sources of questions, beyond those the type story suggests on its own:
+Four sources of questions, beyond those the type story suggests on its own:
 
 1. **What each failure variant retains.** Phase 3 named this per variant, because it constrains the
    types. Carry those forward rather than re-deriving them, and check that what is retained answers
@@ -204,6 +204,10 @@ Three sources of questions, beyond those the type story suggests on its own:
 3. **A branch the inputs and outputs do not reveal.** Where the code chose between paths and an
    observer holding the input and the output cannot tell which it took, the choice is recorded. This
    is the case neither of the others catches, because nothing failed.
+4. **What a later slice decides from.** Where the approach puts a report-only deploy ahead of a
+   change, this slice records what that later decision reads: each kind of case the change would
+   affect, with enough detail to fix it or reject it on purpose. The entry names the slice that
+   reads it, and the record is removed when that slice ships.
 
 State for each entry: the question, why the system cannot answer it today, and the smallest thing
 that would let it. Where the answer needs a mechanism this slice does not own — an identifier that
