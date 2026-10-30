@@ -482,6 +482,11 @@ When you encounter friction during any task — a misleading instruction, an amb
 time, a missing doc, or anything else a future agent would trip on — the user wants you to flag and
 help prevent that issue going forward with the most effective available fix.
 
+**First find the instruction that caused it.** When an agent's misbehaviour came from instructions
+(this file, a skill, a standard, a project's context file), name the line that produced it.
+Rewording or deleting that line is often the cheapest fix, and a new rule added on top of it
+leaves the conflict in place.
+
 **Ask yourself whether you've found an instance or a category.** If the same mistake could be made
 again in a different file, fixing the one in front of you leaves the rest. Recommend the strongest
 mechanism that fits, in this order, because they decay at different rates:
