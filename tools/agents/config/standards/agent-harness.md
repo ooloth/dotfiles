@@ -56,8 +56,13 @@ files and the exact input that failed produces a result the author can hold
 against the original failure. The replay uses the input that failed rather
 than a friendly one, withholds the expected answer from the agent, and runs
 again after every subsequent edit, since a result already reported describes
-a file state that no longer exists. This is the closest an instruction file
-gets to a test, and instruction files are otherwise unverified.
+a file state that no longer exists. One input passing can be luck or wording
+that fits only that input, so two or three variations of it run too. The same
+inputs also run against the file as it was before the change, and the change
+counts as verified only where the new file does better than the old one; an
+agent that already behaves well without the change shows the change is not
+what produced the result. This is the closest an instruction file gets to a
+test, and instruction files are otherwise unverified.
 
 **A claim about how an instruction will behave is replayed before it is argued
 from.**
