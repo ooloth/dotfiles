@@ -112,7 +112,8 @@ unchanged. Change nothing in any deployed environment.
 ## Watching production
 
 Where the change is serving, offer with the draft report to watch production, and ask for how long.
-Start only once the user names a duration. The duration counts from when the change started serving.
+Start only once the user names a duration, and run the first check right away. The duration counts
+from when the change started serving.
 
 Each check reads production's warnings and errors since the deploy, and compares them with the same
 window one day earlier, so both cover the same hours of the day. It also reads any report-only logs
@@ -145,9 +146,9 @@ The report goes on the ticket it proves: a Jira issue, or a GitHub issue. A PR w
 the report on the PR. Post it without waiting for a watch to end. Where a watch is offered, the
 draft shows below its last line the line it gains if the user asks for one: "Watching production
 until <time>; a follow-up will report." Approving the draft approves it with or without that line,
-and `<time>` is filled in from the duration the user names. Show the user the full draft and its
-destination, plus the one-line PR comment that links to it, and post only after they approve that
-wording. Post approved wording as approved; a change is a new draft.
+and `<time>` is the watch's end time with its date in UTC, such as `2026-10-29 17:05 UTC`. Show
+the user the full draft and its destination, plus the one-line PR comment that links to it, and post
+only after they approve that wording. Post approved wording as approved; a change is a new draft.
 
 Before showing the draft, check it for credentials (tokens, keys, cookies, bearer headers, signed
 URLs). Remove any you find, and say so in the draft.
