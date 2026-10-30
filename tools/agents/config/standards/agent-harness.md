@@ -147,10 +147,11 @@ An agent should know whether it is working on a prototype, an internal tool,
 or a production system. That context changes how aggressively Should
 violations should be treated and how much churn is acceptable.
 
-**Health check or status commands are documented.**
-A quick invocation the agent can run to assess overall system state — before
-and after a change — is described. A health check provides a fast outside-in
-signal that the system is behaving normally.
+**Health check and status reads are commands the agent can run.**
+A quick invocation the agent can run to assess overall system state, before and after a change,
+is described. So is each read a person otherwise makes by hand to answer an operational question,
+such as which version is deployed, which flags are on for a user, or which users hit an error. A
+health check provides a fast outside-in signal that the system is behaving normally.
 
 **Representative output is documented.**
 Example log lines, trace snippets, or metric values under normal conditions
