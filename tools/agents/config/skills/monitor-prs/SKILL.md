@@ -1,6 +1,6 @@
 ---
 name: monitor-prs
-description: Check every few minutes for pull requests where it is the user's move, and say why each one is waiting on them. Read-only for now. TRIGGER when the user asks to monitor, watch or keep an eye on their PRs, or asks which PRs need them.
+description: Check every few minutes for pull requests where it is the user's move, ranked by what to deal with first, with the next step for each. Read-only for now. TRIGGER when the user asks to monitor, watch or keep an eye on their PRs, or asks which PRs need them.
 argument-hint: 'Optional: "stop" to end monitoring'
 ---
 
@@ -34,7 +34,7 @@ see. So on the first check in a session, confirm each listed repository with
 Make one `gh api graphql` request that runs all three searches as aliases, and write its response
 to a file in a new directory from `mktemp -d`. Read the file with `jq` and never print the raw
 response: it is tens of kilobytes, and other people's comment text has no place in this session.
-For each pull request ask for: number, title, url, createdAt, isDraft, headRefOid, reviewDecision,
+For each pull request ask for: number, title, url, createdAt, isDraft, reviewDecision,
 mergeStateStatus, repository name, author login, the last commit's statusCheckRollup state,
 reviewRequests (requested reviewer's `__typename` and login), latestOpinionatedReviews (id, state,
 submittedAt, author), the last 50 reviews (id, state, body, submittedAt, author), the last 50
@@ -63,25 +63,28 @@ Decide from this one response alone. Nothing from an earlier check decides a tur
 Someone else's pull request that asks for my review, by name or through a listed team's search, is
 **review requested** unless it is a draft, in which case it is not my move.
 
+My pull request **has feedback** when any of these holds:
+
+- an unresolved thread whose newest comment is not mine. A bot's counts.
+- a reviewer whose latest verdict is changes requested and whose review is not requested again. A
+  team being requested does not count as asking that reviewer again.
+- a review with a non-empty body, from a person rather than a bot, in state approved, changes
+  requested or commented, that is newer than my newest review or top-level comment. My replies
+  inside threads do not count here.
+
 For my own pull request, the first of these that holds is the reason:
 
-1. **Feedback**, when any of these holds, naming whoever left the newest of them:
-   - an unresolved thread whose newest comment is not mine. A bot's counts.
-   - a reviewer whose latest verdict is changes requested and whose review is not requested again.
-     A team being requested does not count as asking that reviewer again.
-   - a review with a non-empty body, from a person rather than a bot, in state approved, changes
-     requested or commented, that is newer than my newest review or top-level comment. My replies
-     inside threads do not count here.
-2. **Checks failing**, when the rollup is FAILURE or ERROR.
-3. **Draft**, when it is a draft.
-4. When it is approved: reviewDecision is APPROVED, or reviewDecision is empty and the latest
-   verdicts include an approval and no changes requested.
-   - mergeStateStatus CLEAN, UNSTABLE, HAS_HOOKS or BEHIND: **ready to merge**.
-   - BLOCKED while the rollup is PENDING or EXPECTED: **ready to merge**.
-   - DIRTY: **conflicts**.
+1. **Approved**, when reviewDecision is APPROVED, or reviewDecision is empty and the latest verdicts
+   include an approval and no changes requested. mergeStateStatus decides what is left to do:
+   - CLEAN, UNSTABLE, HAS_HOOKS, BEHIND or DIRTY, or BLOCKED while the rollup is PENDING, EXPECTED,
+     FAILURE or ERROR: approved, with its preparation named in the next step (see Reporting).
+   - BLOCKED otherwise: carry on to the next reason as if it were not approved, because something
+     other than its checks blocks it, such as a missing approval.
    - UNKNOWN, DRAFT or anything else: **undecided**, because GitHub has not worked out whether it
      can merge. Not a turn.
-   - BLOCKED otherwise: carry on as if it were not approved.
+2. **Feedback**, when it has feedback.
+3. **Draft**, when it is a draft.
+4. **Checks failing**, when the rollup is FAILURE or ERROR.
 5. **Not my move** when someone else holds it: any review is requested (a person, a bot or a team),
    or an unresolved thread ends with my comment and a person other than me commented in its last 10.
 6. **No reviewer** otherwise.
@@ -91,35 +94,55 @@ to work around.
 
 ## Reporting
 
-Give each turn a key: `owner/name#number:reason:headRefOid`, followed for feedback by
-`:<id of the newest comment or review that made it feedback>`. The reason in a key is spelled
-exactly one of `feedback`, `checks-failing`, `review-requested`, `conflicts`, `ready-to-merge`,
-`draft` or `no-reviewer`. Where several items share the newest timestamp, the newest is the one
-that comes last in the response. Keys are compared between checks, so the same state must always
-give the same key.
+A report states what is true now and nothing else. It keeps nothing between checks and compares
+nothing with an earlier one, so every report lists every turn.
 
-Report turns grouped by reason, in this order, with the reason as a bold heading and only the
-reasons that have turns: feedback, checks failing, review requested, conflicts, ready to merge,
-draft, no reviewer. Within a reason, list the oldest first, one bullet each: `name#n` linked to the
-pull request's url, then its title. Write the repository without its owner; the key keeps the full
-name.
+Report the turns in one table, sorted so that the turn to deal with first is row 1. Rank by these
+tiers, top first, and within a tier put the pull request opened earliest first:
 
-- **Feedback** bullets end with what made it feedback, in a few words: who left the newest of it
-  and how many unresolved threads do not end with my comment, such as "Copilot, 4 unresolved
-  threads" or "dntn requested changes". Name authors and count things only. Never quote or
-  summarise what a comment says.
-- **Review requested** bullets end with the date the pull request was opened. When that is more
-  than 30 days before the check, add "stale?", because a request left that long may have been
-  abandoned rather than waiting on me.
+1. Approved.
+2. Review requested, on a pull request opened 30 days or less before the check.
+3. Feedback.
+4. Checks failing.
+5. No reviewer.
+6. Draft.
+7. Review requested, on a pull request opened more than 30 days before the check, because a request
+   left that long has more likely been abandoned than kept waiting on me.
 
-Give no count of turns: the list is the count, and a number written beside it can disagree with
-it. After the list, give one line naming the pull requests that are not my move, then name any
-undecided pull requests, anything incomplete, any team repository that failed its check, and when
-the next check runs. End with every turn's key in one fenced block, one per line in the order the
-turns were listed, so the next check can compare them.
+The table has these columns:
 
-When every key matches the previous check in this session and nothing is incomplete, report one
-line instead, such as "No change since 14:05. Next check 14:35."
+- **#**: the row number, from 1, so I can name a row by it.
+- **Next step**: what I do next.
+  - **Approved:** every step that applies, in this order, then "merge": "Resolve conflicts" when
+    DIRTY, "Update branch" when BEHIND, "Fix checks" when the rollup is FAILURE or ERROR, and
+    "Reply to feedback" when it has feedback. So "Merge" alone, or "Fix checks, then merge". When
+    the rollup is PENDING or EXPECTED and nothing else applies, "Merge once checks pass".
+  - **Review requested:** "Review", or "Review, or ask if still needed" in tier 7.
+  - **Feedback:** "Reply to feedback".
+  - **Draft:** "Make it reviewable", or "Fix checks, then make it reviewable" when the rollup is
+    FAILURE or ERROR.
+  - **Checks failing:** "Fix checks".
+  - **No reviewer:** "Request a reviewer".
+- **Author**: the author's login, on every row, mine included.
+- **Title**, in full. The table wraps a long cell, so a title is never cut short.
+- **Note**: when it has feedback, who left the newest of it and how many unresolved threads do not
+  end with my comment, such as "Copilot, 4 unresolved threads" or "dntn requested changes". Name
+  authors and count things only; never quote or summarise what a comment says. For review
+  requested, the date the pull request was opened, such as "opened Jun 24". Otherwise empty.
+- **Link**: the pull request's `url` field, copied from the response rather than built from the
+  repository name, and bare rather than a markdown link, because the terminal prints a markdown
+  link's url beside its text.
+
+Above the table, one line each: the pull requests that are not my move, any undecided pull
+requests, anything incomplete, any team repository that failed its check, and when the next check
+runs. Name each pull request there as `name#n`, with the repository's full name less its owner,
+such as `clintech-gxp-datalake-ops#231`. Give no count of turns: the table is the count, and a
+number written beside it can disagree with it. The reply ends with the table, followed only by any
+numbered questions for me.
+
+While checks are pending in a session, every reply ends this way, not only the scheduled checks. A
+reply that is not a scheduled check first reads GitHub as a check does, so its table is current,
+and leaves the pending check as it is.
 
 ## Scheduling the next check
 
