@@ -91,6 +91,15 @@ record shows how long the state lasted. A warning that outlives its cause tells
 its readers something false, and teaches them to ignore the channel that
 carries it.
 
+So an alert about a state is raised by a check that can also see the state
+pass, such as a threshold evaluated over a window. A trigger that fires each
+time a matching log line or event arrives sees only arrivals, and can never
+see that they stopped, so the alerts it raises stay open until a person or a
+timeout closes them. Alerting tools often offer both, and the trigger is the
+easier one to set up. Cloud Monitoring's log-match conditions, for example,
+only ever send "opened" notifications, while a threshold on a log-based metric
+also sends "closed".
+
 ## Consider
 
 **Alerts are few enough that none gets muted.**
