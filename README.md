@@ -45,6 +45,12 @@ plan and test plan before anything is implemented. A constraint that can be asse
 asserted _and_ tested, never one instead of the other: a test covers the inputs its author
 imagined, an assertion covers the inputs production supplies.
 
+[next](./tools/agents/config/skills/next/SKILL.md) recommends one to three things to work on next in
+any repo and stops. It ranks by cost of delay, not by how long the work would take, and it learns
+each repo's trackers and conventions from that repo's own docs rather than from a copy of the skill
+kept per repo. [scan-ideas](./tools/agents/config/skills/scan-ideas/SKILL.md) applies the same rule
+to the whole backlog and lists what has gone stale.
+
 ### Reviewing
 
 [review-code](./tools/agents/config/skills/review-code/SKILL.md) runs eleven specialised reviewers
