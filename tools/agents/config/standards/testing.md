@@ -77,6 +77,13 @@ every example multiplies a property test's cost by its example count, and on a m
 endpoint security a newly written executable is slow to start the first time, so a stub written per
 example can cost more than the code under test.
 
+**A test that concurrent work overlaps observes the overlap, not the elapsed time.**
+Each concurrent unit records that it started, then waits, up to a bound of its own, until the
+others have started too, so the test passes only when they really ran together. A bound on the
+total run time fails on a loaded machine while the code is correct, because the gap between the
+concurrent and serial times is usually small next to the slowdown a busy machine adds. The test is
+shown to fail against a version of the code changed to run the units one at a time.
+
 **Test code is held to the same standard as production code.**
 Duplicated setup is extracted to fixtures or helpers. Names are as descriptive
 as in production code. Dead test code is removed.
