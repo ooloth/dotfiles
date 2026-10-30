@@ -34,6 +34,12 @@ format, API or config key ships as expand, migrate, contract: the new form is
 added alongside the old one, existing use moves to it, and the old form is
 removed in a later deploy.
 
+**Compatibility code serves a version or caller that exists.**
+A shim, fallback or alias for an old shape of data or an old interface is written only for a
+version that shipped or a caller that uses it, and is removed with the last of them.
+Compatibility code for something never released keeps a second path alive that nothing
+exercises.
+
 **A new restriction on existing callers or data is enforced only after a report-only phase shows
 what it would reject.**
 When the requests or records a new check would reject can't be listed by a query (old clients,
