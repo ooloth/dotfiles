@@ -95,6 +95,12 @@ cost.
    its records before the slice that relies on them. `deployment.md` states this for new
    restrictions.
 
+   Where the change runs in a deployed environment, how it reaches users is part of the approach:
+   all at once, behind a flag, or one group at a time. The choice follows from the properties, such
+   as how many users a defect could reach before anyone notices, and from whether a claim can be
+   observed only in production, where a flag enabled for the person testing lets it be proven before
+   anyone else sees it. `deployment.md` sets the defaults.
+
    Scope each property to the behaviour this work changes. Where a risk this work exposes could be
    stated broadly enough to bind code the work does not otherwise touch, state it at the narrowest
    scope that still covers that risk, and name what it deliberately leaves uncovered among the
