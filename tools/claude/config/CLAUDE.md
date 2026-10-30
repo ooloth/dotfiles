@@ -148,11 +148,7 @@ are the first Must in `decision-making.md` in the standards.
 
 - Delegate exploration that would mean reading many files to subagents, so only conclusions enter
   your context. Do a lookup of one or two known files yourself.
-- When spawning your own subagents, name what the task actually demands of a model before choosing
-  one: how much of the reasoning is mechanical, what a wrong answer costs, and whether you would be
-  able to tell it was wrong. Then pick the cheapest model that meets it. Cost rules a model out
-  against a budget; it never rules one in. A task whose output you cannot check is not a place to
-  save tokens
+- Choose each subagent's model by what its task needs, including subagents a skill launches.
 
 **Tell every subagent to read the files itself and not to spawn subagents of its own.** Say it
 explicitly in the prompt; agents fan out by default when the scope looks large. Two reasons, and the

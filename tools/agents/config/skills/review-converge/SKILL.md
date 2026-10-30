@@ -234,7 +234,7 @@ Before spawning, verify any file paths referenced in the findings actually exist
 Correct a wrong path before passing it; if the right path is ambiguous, escalate.
 
 **Spawn one fix subagent for the whole round**, carrying every auto-fix finding from this round.
-Set the Agent tool call's `model` parameter to `"sonnet"`.
+Choose its model by what the task needs.
 
 One agent, not one per file. Fixes within a round depend on each other — a test has to be written
 against the source fix it guards — so splitting by file produces a serial chain of handoffs that

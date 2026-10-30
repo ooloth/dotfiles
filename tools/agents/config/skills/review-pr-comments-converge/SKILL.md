@@ -156,8 +156,7 @@ Round N/3: validating...
 
 ### Step A — Validate Comments (subagent)
 
-Spawn a general-purpose subagent. Set the Agent tool call's `model` parameter to `"sonnet"`. Pass
-it:
+Spawn a general-purpose subagent. Choose its model by what the task needs. Pass it:
 
 - The full list of comments from Phase 1 (minus any already on the decided list)
 - The problem statement and PR description
@@ -228,7 +227,7 @@ Round N/3: [X] auto-fix, [Y] escalate, [Z] dismissed (stale/mistaken), [V] ackno
 ### Step E — Fix (one subagent per round)
 
 Verify file paths exist before spawning. **Spawn one fix subagent for the whole round**, carrying
-every auto-fix finding from this round. Set the Agent tool call's `model` parameter to `"sonnet"`.
+every auto-fix finding from this round. Choose its model by what the task needs.
 
 One agent, not one per file. Fixes within a round depend on each other — a test has to be written
 against the source fix it guards — so splitting by file produces a serial chain of handoffs that
