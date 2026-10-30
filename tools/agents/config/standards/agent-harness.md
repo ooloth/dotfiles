@@ -37,6 +37,16 @@ check what can be checked, put the load step inside the procedure where it is
 needed, phrase triggers as recurring rather than preconditional, and keep the
 rules short enough that re-reading is cheap.
 
+**A fact a shared skill needs about one project lives in that project's docs, not in a copy of the
+skill kept in that project.**
+Copies of one skill kept in several projects drift apart: an improvement made in one copy never
+reaches the others, and each copy's project facts reach only the sessions that run it. The shared
+skill reads the project's context file and the docs it points to, and the project states there
+what the skill needs, such as where work is tracked, how it is ordered and what makes a delay
+costly, where every agent and maintainer reads it. A shared skill that does not yet read those docs
+gains the step that reads them, rather than gaining a copy. A skill scoped to one project holds a
+procedure no other project runs, not project facts wrapped around a shared procedure.
+
 **A change to an agent instruction file is verified by replaying the failing
 input through a fresh agent.**
 Re-reading the edited file confirms only that it says what its author meant.
