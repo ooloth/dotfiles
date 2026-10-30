@@ -28,9 +28,13 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
    - Existing domain types and naming conventions
    - Existing testing patterns and what paradigms are already in use
    - Any related types or transformations this feature extends or composes with
-4. Identify: what raw input enters the system, what final output exits, and what intermediate states
+4. Where the change touches code whose current form was chosen on purpose, such as auth, billing,
+   a data migration or a hot path, read the commits that last changed it, with their messages and
+   any ticket or PR they link. A reason recorded there constrains the design like any other, and a
+   design that would undo one raises it with the user.
+5. Identify: what raw input enters the system, what final output exits, and what intermediate states
    exist between them.
-5. Run once every call to another program that the design's I/O makes and this work has not run
+6. Run once every call to another program that the design's I/O makes and this work has not run
    yet: a CLI command, an API method, an action in another app. The approach may have named a call
    without running it, and the design adds calls of its own. Use arguments that change nothing,
    such as an ID that does not exist, and read what comes back. A call that is refused, or that
