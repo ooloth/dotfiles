@@ -12,6 +12,19 @@ loads this repo's own `docs/invariants/` and `docs/standards/`. This is in addit
 `uphold-standards` skill, not instead of it: that one carries portable engineering guidance, this
 one carries what is true only here.
 
+## No Work Facts
+
+This repository is public. No tracked file names anything from work: not the employer, an
+organisation, a repository, a project, a colleague or their GitHub handle, a hostname, an account,
+a cloud project or dataset ID, a ticket or an internal URL. That covers examples, test fixtures,
+comments, commit messages and issue text as much as code. An example uses made-up names, such as
+`alice` or `example-repo#123`, never a value copied from a real session.
+
+A value a tool needs on the work laptop lives in a local file that `.gitignore` lists, the way
+`tools/agents/config/skills/monitor-prs/team-repos.local` does, and the tracked file describes
+only what that local file holds. Some tracked files still name work values. They are known, and
+moving them out is tracked separately, so they are not a precedent for adding more.
+
 ## Folder Structure
 
 See README.md for the overview. Key points for Claude:
