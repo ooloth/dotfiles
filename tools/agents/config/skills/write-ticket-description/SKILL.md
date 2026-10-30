@@ -245,7 +245,7 @@ Sub-issues list in creation order, so create them in the order you intend to wor
   not by the requester in chat. The requester may answer what users get; how the system provides it
   stays open. On a project tracked in Jira, Linear or similar, suggest a decide task on that
   tracker for each open decision; on a personal project, the open decision stays listed in the
-  ticket, with no separate question file
+  ticket; a `docs/questions/` file is only for `ooloth/puzzles` or when the user asks for one
 - When a list is empty, say so and name where you looked: "No recorded decisions found in
   `docs/decisions/`, `DECISIONS.md` (searched for ADR)." / "No open decisions."
 

@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-04
+updated: 2026-10-30
 update_when: a decision is made, a question is split, or an active initiative changes
 decays: fast
 status: active
@@ -9,6 +9,10 @@ status: active
 
 The sibling of `../decisions/`: the decisions not yet made. A directory listing of this folder is
 the full inventory — every filename asks its question plainly, so there's no separate index.
+
+New open decisions that a task needs are listed in that task's GitHub issue, not filed here. A file
+here is for a question with no task behind it, and only when the maintainer asks for one. The files
+already here stay until each is answered.
 
 ## What goes in a question file
 
