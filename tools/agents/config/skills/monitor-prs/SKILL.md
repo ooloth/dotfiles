@@ -98,12 +98,25 @@ exactly one of `feedback`, `checks-failing`, `review-requested`, `conflicts`, `r
 that comes last in the response. Keys are compared between checks, so the same state must always
 give the same key.
 
-Report turns in this order, oldest first within each reason: feedback, checks failing, review
-requested, conflicts, ready to merge, draft, no reviewer. One line each: reason, `owner/name#n`,
-title, url, key. Give no count of turns: the list is the count, and a number written beside it can
-disagree with it. After the list, give one line naming the pull requests that are not my move, then
-name any undecided pull requests, anything incomplete, any team repository that failed its check,
-and when the next check runs.
+Report turns grouped by reason, in this order, with the reason as a bold heading and only the
+reasons that have turns: feedback, checks failing, review requested, conflicts, ready to merge,
+draft, no reviewer. Within a reason, list the oldest first, one bullet each: `name#n` linked to the
+pull request's url, then its title. Write the repository without its owner; the key keeps the full
+name.
+
+- **Feedback** bullets end with what made it feedback, in a few words: who left the newest of it
+  and how many unresolved threads do not end with my comment, such as "Copilot, 4 unresolved
+  threads" or "dntn requested changes". Name authors and count things only. Never quote or
+  summarise what a comment says.
+- **Review requested** bullets end with the date the pull request was opened. When that is more
+  than 30 days before the check, add "stale?", because a request left that long may have been
+  abandoned rather than waiting on me.
+
+Give no count of turns: the list is the count, and a number written beside it can disagree with
+it. After the list, give one line naming the pull requests that are not my move, then name any
+undecided pull requests, anything incomplete, any team repository that failed its check, and when
+the next check runs. End with every turn's key in one fenced block, one per line in the order the
+turns were listed, so the next check can compare them.
 
 When every key matches the previous check in this session and nothing is incomplete, report one
 line instead, such as "No change since 14:05. Next check 14:35."
