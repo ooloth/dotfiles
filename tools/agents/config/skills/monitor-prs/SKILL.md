@@ -95,10 +95,11 @@ to work around.
 ## Reporting
 
 A report states what is true now and nothing else. It keeps nothing between checks and compares
-nothing with an earlier one, so every report lists every turn.
+nothing with an earlier one, so every report lists every pull request the searches found.
 
-Report the turns in one table, sorted so that the turn to deal with first is row 1. Rank by these
-tiers, top first, and within a tier put the pull request opened earliest first:
+Report them in one table, sorted so that the turn to deal with first is row 1 and the pull requests
+that are not my move come last. Rank by these tiers, top first, and within a tier put the pull
+request opened earliest first, comparing the whole `createdAt` timestamp and not only its date:
 
 1. Approved.
 2. Review requested, on a pull request opened 30 days or less before the check.
@@ -108,6 +109,9 @@ tiers, top first, and within a tier put the pull request opened earliest first:
 6. Draft.
 7. Review requested, on a pull request opened more than 30 days before the check, because a request
    left that long has more likely been abandoned than kept waiting on me.
+8. Not my move, which includes someone else's draft that asks for my review. These rows need
+   nothing from me; they are listed so the table shows every pull request that involves me, with
+   who holds each one.
 
 The table has these columns:
 
@@ -123,21 +127,27 @@ The table has these columns:
     FAILURE or ERROR.
   - **Checks failing:** "Fix checks".
   - **No reviewer:** "Request a reviewer".
+  - **Not my move:** "Wait for a review" when a review is requested, "Wait for a reply" when an
+    unresolved thread ends with my comment, and "Wait until it's out of draft" for someone else's
+    draft.
 - **Author**: the author's login, on every row, mine included.
 - **Title**, in full. The table wraps a long cell, so a title is never cut short.
 - **Note**: when it has feedback, who left the newest of it and how many unresolved threads do not
-  end with my comment, such as "Copilot, 4 unresolved threads" or "dntn requested changes". Name
+  end with my comment, such as "Copilot, 4 unresolved threads" or "alice requested changes". Name
   authors and count things only; never quote or summarise what a comment says. For review
-  requested, the date the pull request was opened, such as "opened Jun 24". Otherwise empty.
+  requested, the date the pull request was opened, such as "opened Jun 24". For not my move, who
+  holds it: each requested person or bot by login, and each requested team as "a team" or "two
+  teams" and so on, since a team's name is not read, such as "alice, bob, a team"; or the
+  person whose reply a thread waits on. Otherwise empty.
 - **Link**: the pull request's `url` field, copied from the response rather than built from the
   repository name, and bare rather than a markdown link, because the terminal prints a markdown
   link's url beside its text.
 
-Above the table, one line each: the pull requests that are not my move, any undecided pull
-requests, anything incomplete, any team repository that failed its check, and when the next check
-runs. Name each pull request there as `name#n`, with the repository's full name less its owner,
-such as `clintech-gxp-datalake-ops#231`. Give no count of turns: the table is the count, and a
-number written beside it can disagree with it. The reply ends with the table, followed only by any
+Above the table, one line each: any undecided pull requests, anything incomplete, any team
+repository that failed its check, and when the next check runs. Name each pull request there as
+`name#n`, with the repository's full name less its owner, such as `example-data-pipeline#231`.
+Give no count of turns: the table is the count, and a number written beside it can disagree with
+it. The reply ends with the table, followed only by any
 numbered questions for me.
 
 While checks are pending in a session, every reply ends this way, not only the scheduled checks. A
