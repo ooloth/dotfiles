@@ -75,6 +75,17 @@ version produced them. A regression reaches someone, or something, that can
 act within minutes, and reversing it is a single action. Where nothing serves
 production traffic, such as a published library or CLI, this does not apply.
 
+**A value the system cannot read back is confirmed by its effect.**
+Once a write-only value is set, such as a secret held by another service, a
+credential in a store the deployer cannot read, or a header or token pushed
+through someone else's API, nothing shows what was stored. A plan, a diff or a
+successful write proves only that something was sent. A change that sets such
+a value is confirmed after it takes effect by exercising what the value
+enables, such as one authenticated request through the path it secures, and
+reading the result. A change to how the value is set, whether a new attribute,
+a library or provider upgrade, or a rotation, is confirmed the same way,
+because the old value stops working at the moment the new one fails silently.
+
 **A deployed system's spend has a ceiling, and crossing a threshold below that ceiling raises an
 alert.**
 Hard limits, such as maximum instances, autoscaling caps and quotas, bound how
