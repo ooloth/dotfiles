@@ -48,6 +48,13 @@ process reporting success, whatever the message said on the way past.
 
 ## Should
 
+**A timeout inside a supervised operation is shorter than its supervisor's.**
+A statement, request or step that runs under a job, container or platform
+deadline gives up before that deadline, so the inner layer fails with its own
+diagnosis and releases what it holds. Killed from outside instead, it leaves no
+record of why, and its work can carry on holding resources after the process
+that started it is gone.
+
 **Transient failures are retried with bounded backoff.**
 When a transient failure is detected, the operation is retried with exponential
 backoff and jitter. Retry attempts are explicitly bounded. Jitter prevents
