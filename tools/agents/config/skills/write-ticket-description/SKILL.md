@@ -114,13 +114,8 @@ comes back as `{nodes, totalCount}`, not a list, so a filter reads `.subIssues.n
 
 ### Writing an epic body
 
-An epic uses the same template as any other ticket, with two additions:
-
-- **A coverage table** mapping each externally-defined requirement (a spec, a brief, a checklist in
-  a README) to the sub-issue that satisfies it. This is what makes "did we miss anything?"
-  answerable at a glance. Fill the numbers in *after* the children exist, then edit the epic.
-- **A note naming any sub-issue that has no corresponding requirement** and why it earns its place.
-  Unexplained extra scope in an epic reads as scope creep.
+An epic uses the same template as any other ticket. Its children are the tracker's sub-issues, so
+the body lists none of them, as Relationships describes.
 
 Keep the epic's own Ideal state about the aggregate — all children closed, all requirements met —
 never about the implementation of any one child.
