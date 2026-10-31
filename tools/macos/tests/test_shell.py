@@ -15,6 +15,7 @@ called, and the tests compare against that.
 from __future__ import annotations
 
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -39,6 +40,9 @@ def this_mac() -> str:
     ).stdout.strip()
 
 
+# Each test compares against this Mac's own name from networksetup, which exists only on macOS. A
+# platform check rather than "networksetup is missing", so a Mac that lost it fails instead of skipping.
+@unittest.skipUnless(sys.platform == "darwin", "needs macOS's /usr/sbin/networksetup")
 class ComputerName(unittest.TestCase):
     def test_a_new_shell_asks_this_mac_for_its_name(self) -> None:
         self.assertEqual(sourced({})[0], this_mac())

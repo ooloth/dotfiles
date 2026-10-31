@@ -91,6 +91,9 @@ not installed there, so run it by hand after changing the saver.
 
 Run the `init.lua` tests with `uv run tools/rex/tests/test_init.py`. They need `luajit` on
 the `PATH`, because Rex runs its config on its own Lua 5.1 and LuaJIT implements the same version.
+So syntax and libraries from later Luas that LuaJIT also lacks, such as `&`, `utf8` and
+`table.unpack`, fail the tests as they would in Rex. LuaJIT accepts some things plain Lua 5.1 does
+not, such as `1LL`, the `bit` library and `goto`, so those pass the tests and may still fail in Rex.
 
 After changing how ctrl+h/j/k/l reach nvim, here or in `config.nvim`, run `rex config reload`, then
 `uv run tools/rex/tests/live_nvim.py`. It opens a throwaway session on your own server with nvim

@@ -82,9 +82,8 @@ write_agent_guidance() {
 # dotfiles repo in an orb
 
 - This orb is Debian Linux; the repo targets macOS and CI runs on macos-latest.
-- `bash scripts/check.bash` runs here. Tests that call macOS-only commands, such as
-  `/usr/sbin/networksetup` or `defaults`, fail here and pass in CI. Run a failing test on unchanged
-  `origin/main` before treating its failure as yours.
+- `bash scripts/check.bash` runs here and should pass in full. Tests that need macOS's
+  `/usr/sbin/networksetup` are skipped here and run in CI.
 - Do not run `symlinks`, `u` or any `link.bash` without a temporary HOME: they write into $HOME.
 NOTES
     printf '%s\n' "${end}"

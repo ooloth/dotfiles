@@ -24,7 +24,9 @@ from __future__ import annotations
 import itertools
 import json
 import os
+import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from collections.abc import Iterator
@@ -33,8 +35,10 @@ from pathlib import Path
 
 INIT_LUA = Path(__file__).resolve().parent.parent / "config" / "init.lua"
 
-# Rex runs init.lua on its own embedded Lua 5.1, and LuaJIT implements Lua 5.1, so a feature from a
-# later Lua that Rex would reject fails here too
+# Rex runs init.lua on its own embedded Lua 5.1, and LuaJIT implements Lua 5.1, so syntax and
+# libraries from later Luas that LuaJIT also lacks, such as `&`, `utf8` and `table.unpack`, fail here
+# as they would in Rex. LuaJIT accepts more than plain Lua 5.1, though: `1LL`, the `bit` library and
+# `goto` pass here and may still fail in Rex.
 LUA = "luajit"
 
 # Stands in for Rex. LAYOUT lists tabs separated by |, the active one marked with *. Each tab is its
@@ -52,6 +56,11 @@ local init_lua, key, direction, fail = arg[1], arg[2], arg[3], arg[4]
 local exec_mode = arg[5] or "ok"
 local layout, restless, cases = arg[6] or "*zsh,zsh,zsh@2", arg[7] == "true", arg[8]
 local app, origin, nvim_mode, cwd = arg[9] or "ok", arg[10] or "palette", arg[11] or "ok", arg[12] or ""
+if cases and cases:sub(1, 1) == "@" then
+  local file = assert(io.open(cases:sub(2)))
+  cases = file:read("*a")
+  file:close()
+end
 local bindings, actions, logs, started = {}, {}, {}, {}
 local focus_calls, nvim_calls, shown, opened = {}, {}, {}, {}
 local fake
@@ -516,7 +525,13 @@ def action_bindings() -> dict[str, dict[str, object]]:
 
 def sweep(cases: list[tuple[Layout, str]]) -> list[dict]:
     encoded = ";".join(f"{spec(layout)}/{key}" for layout, key in cases)
-    outcome = run_harness("<sweep>", "", "", "ok", spec(DEFAULT_LAYOUT), "false", encoded).outcome
+    # Through a file rather than argv: a sweep's cases run past Linux's 128 KiB limit on one argument
+    # (macOS has none), so the harness reads them back from the path after the @
+    with tempfile.NamedTemporaryFile("w", suffix=".cases") as file:
+        file.write(encoded)
+        file.flush()
+        run = run_harness("<sweep>", "", "", "ok", spec(DEFAULT_LAYOUT), "false", f"@{file.name}")
+    outcome = run.outcome
     assert isinstance(outcome, list)
     return outcome
 
@@ -954,4 +969,7 @@ class SessionSaver(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    # Fail once with what to install, rather than once per test with a FileNotFoundError
+    if shutil.which(LUA) is None:
+        sys.exit(f"{LUA} is not on the PATH. Install it with `brew install luajit` on macOS.")
     unittest.main()

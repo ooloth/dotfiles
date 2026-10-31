@@ -84,7 +84,9 @@ class FakeHome:
 
     def slow_polls(self) -> None:
         # Stands in for a busy machine: each 0.1 s poll takes 0.6 s, while a hung check's
-        # `sleep 30` still lasts 30 s. A deadline that counted its 50 polls would last 30 s.
+        # `sleep 30` still lasts 30 s. A deadline that counted its 50 polls would also end at 30 s,
+        # by which time the hung check has finished on its own, so the test would fail on the
+        # missing "timed out" before it reached the 20 s bound.
         sleep = self.bin / "sleep"
         sleep.write_text('#!/bin/sh\n[ "$1" = 0.1 ] && exec /bin/sleep 0.6\nexec /bin/sleep "$@"\n')
         sleep.chmod(0o755)
