@@ -24,7 +24,9 @@ from __future__ import annotations
 import itertools
 import json
 import os
+import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from collections.abc import Iterator
@@ -33,8 +35,10 @@ from pathlib import Path
 
 INIT_LUA = Path(__file__).resolve().parent.parent / "config" / "init.lua"
 
-# Rex runs init.lua on its own embedded Lua 5.1, and LuaJIT implements Lua 5.1, so a feature from a
-# later Lua that Rex would reject fails here too
+# Rex runs init.lua on its own embedded Lua 5.1, and LuaJIT implements Lua 5.1, so syntax and
+# libraries from later Luas that LuaJIT also lacks, such as `&`, `utf8` and `table.unpack`, fail here
+# as they would in Rex. LuaJIT accepts more than plain Lua 5.1, though: `1LL`, the `bit` library and
+# `goto` pass here and may still fail in Rex.
 LUA = "luajit"
 
 # Stands in for Rex. LAYOUT lists tabs separated by |, the active one marked with *. Each tab is its
@@ -965,4 +969,7 @@ class SessionSaver(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    # Fail once with what to install, rather than once per test with a FileNotFoundError
+    if shutil.which(LUA) is None:
+        sys.exit(f"{LUA} is not on the PATH. Install it with `brew install luajit` on macOS.")
     unittest.main()
