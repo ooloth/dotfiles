@@ -149,6 +149,10 @@ are the first Must in `decision-making.md` in the standards.
 - Delegate exploration that would mean reading many files to subagents, so only conclusions enter
   your context. Do a lookup of one or two known files yourself.
 - Choose each subagent's model by what its task needs, including subagents a skill launches.
+- When the harness refuses Agent calls because too many subagents are running, resend one refused
+  call with the same prompt and model each time one of yours finishes, even if the refusal says
+  "Do not retry". Stop when a call is refused for another reason or with none of yours running, and
+  say which subagents never ran, so their absence is not read as a clean result.
 
 **Tell every subagent to read the files itself and not to spawn subagents of its own.** Say it
 explicitly in the prompt; agents fan out by default when the scope looks large. Two reasons, and the

@@ -204,14 +204,9 @@ Give an added agent the same shape as the twelve: the intent block, the file lis
 requirement, and one question to answer. Record the question and why the twelve did
 not cover it — Step 4 reports it.
 
-Send a single message containing all Agent tool calls simultaneously. When the harness caps how
-many subagents run at once, it refuses the calls past the cap, and each refused call's result says
-so, often with "Do not retry". That forbids resending them at once, not later. Each time a running
-agent reports, launch one refused agent, with the same prompt and model. Keep going until every
-agent has run, and only then start Step 3.5. A review of several scopes, such as
-several commits each reviewed on its own, often needs more agents than the cap allows.
+Choose each agent's model by what its task needs, and keep the reason, because Step 4 reports both.
 
-Choose each agent's model by what its task needs. Pass each agent:
+Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
@@ -226,6 +221,14 @@ Choose each agent's model by what its task needs. Pass each agent:
   > say which you ran. A line that appears in the diff as unchanged context is pre-existing even
   > when it sits inside a function the change rewrote. Label each finding `[introduced]` or
   > `[pre-existing]`. If you cannot determine it, say `[provenance unknown]` rather than guessing.
+
+Send a single message containing all Agent tool calls simultaneously. Review several scopes, such
+as several commits, one scope at a time, so each fan-out stays under the harness's limit on
+concurrent subagents. If calls are refused at that limit anyway, even with "Do not retry", resend
+one with the same prompt and model each time an agent finishes. An agent that errors counts as
+finished, and is itself resent one time in the same way. Stop resending when a call is refused for
+another reason or with none of your agents running, and treat the calls left as never run. Start
+Step 3.5 when no agent is running or waiting to be resent.
 
 ---
 
@@ -652,6 +655,11 @@ one you reviewed, and whether a thread is already resolved. Skip praise, summari
 category — [what recurs] — close it by [adding a standing 13th agent for X / adding a standard to
 `~/.agents/standards/<file>.md` saying Y / both].]
 
+### Agents
+
+- **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
+  errored or never ran, and why.]
+
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
 
@@ -659,7 +667,8 @@ category — [what recurs] — close it by [adding a standing 13th agent for X /
   checked]. [Your evidence in one sentence.]
 
 ### Looks Good
-[One sentence: what the change gets right, or which concern areas came back clean.]
+[One sentence: what the change gets right, or which concern areas came back clean. An area whose
+agent errored or never ran did not come back clean.]
 
 ### Dropped
 [Omit this section entirely if nothing was dropped.]
@@ -682,10 +691,13 @@ category — [what recurs] — close it by [adding a standing 13th agent for X /
   line.
 - If there are no recommended changes, say so in one sentence under the verdict and skip the
   Findings section.
+- If any agent errored or never ran, the sentence under the verdict names it, so the reader knows
+  the verdict did not rest on it.
 
 **Verdict mapping:**
 
-- **Approve** — no blockers; all remaining items are optional
+- **Approve** — no blockers; all remaining items are optional; every agent finished with a report
+  (when one errored or never ran, the verdict is Comment at most)
 - **Request Changes** — one or more `must` items
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
 
