@@ -31,15 +31,32 @@ install_shellcheck() {
   rm -rf "${tmp}"
 }
 
-# tools/rex/tests/test_init.py runs init.lua with a bare `lua`, and
+# tools/rex/tests/test_init.py runs init.lua with `luajit`, and
 # tools/homebrew/tests/test_shell.py runs shell.zsh with `zsh`
 install_packages() {
-  if command -v lua >/dev/null && command -v zsh >/dev/null; then
-    echo "lua and zsh already installed"
+  if command -v luajit >/dev/null && command -v zsh >/dev/null; then
+    echo "luajit and zsh already installed"
     return
   fi
   sudo apt-get update -qq
-  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq lua5.4 zsh
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq luajit zsh
+}
+
+# tools/rex/claude-tab.bash passes `jq --arg label`, which jq 1.7 accepts and Debian's jq 1.6
+# rejects because `label` is a keyword there. tools/rex/tests/test_claude_tab.py runs it with PATH
+# set to /usr/bin:/bin, where macOS keeps its own jq 1.7, so the release binary replaces
+# /usr/bin/jq here. dpkg-divert moves Debian's copy aside so apt never puts it back.
+install_jq() {
+  local version="1.7.1" tmp
+  if [[ "$(/usr/bin/jq --version 2>/dev/null)" == "jq-${version}" ]]; then
+    echo "jq ${version} already installed"
+    return
+  fi
+  tmp="$(mktemp -d)"
+  curl -fsSL -o "${tmp}/jq" "https://github.com/jqlang/jq/releases/download/jq-${version}/jq-linux-amd64"
+  sudo dpkg-divert --quiet --local --rename --add /usr/bin/jq
+  sudo install -m 0755 "${tmp}/jq" /usr/bin/jq
+  rm -rf "${tmp}"
 }
 
 # Amp gives every thread ~/.config/amp/AGENTS.md as guidance, Claude Code threads included. This
@@ -106,7 +123,8 @@ link_agent_config() {
 }
 
 step "shellcheck" install_shellcheck
-step "lua and zsh" install_packages
+step "luajit and zsh" install_packages
+step "jq" install_jq
 step "uv cache" warm_uv
 step "agent guidance" write_agent_guidance
 step "agent config" link_agent_config
