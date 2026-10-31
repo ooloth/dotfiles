@@ -576,9 +576,15 @@ side effect, raise mid-work choices as this file describes, and merge rather tha
   in the dotfiles repo) runs on every orb start and wake. It clones or fast-forwards the dotfiles
   repo to `~/Repos/ooloth/dotfiles`, links `~/.agents/skills` and `~/.agents/standards` into it, and
   links this file as `~/.config/AGENTS.md`. If one you need is missing, say which and carry on.
-- **Your own config:** `~/Repos/ooloth/dotfiles` is my dotfiles repo, and `~/.agents/skills`,
-  `~/.agents/standards` and `~/.config/AGENTS.md` link into it, so I can improve a skill from any
-  orb. Make those edits there, not in the project repo. Amp's Changes pane doesn't show that repo,
-  so show me the diff in chat. Then commit and push from that directory only on my signal, merging
-  rather than rebasing if the push is rejected. Uncommitted edits there stop the workspace resume
-  script from updating that orb's copy.
+- **Your own config:** `~/Repos/ooloth/dotfiles` is a clone of my dotfiles repo, and
+  `~/.agents/skills`, `~/.agents/standards` and `~/.config/AGENTS.md` link into it. When I ask to
+  improve a skill or standard during other work, that request is my approval to start a thread in
+  the `dotfiles` project (`ooloth/dotfiles`) with `create_thread`, in this thread's agent mode.
+  Brief it with the file to change, what went wrong, the fix we agreed on, and this thread's URL so
+  it can read the context. Ask it to make the change, run the repo's checks, wait for my approval
+  and my signal before it commits or ships, and then use `send_thread_message` to send this thread
+  the pushed commit's SHA. When that arrives, run `git -C ~/Repos/ooloth/dotfiles pull --ff-only`
+  so this orb uses the new version, and carry on. Edit the clone here only for a one-line wording
+  change I ask to apply at once: show me the diff in chat, then commit and push from that directory
+  only on my signal, merging rather than rebasing if the push is rejected. Uncommitted edits there
+  stop the workspace resume script from updating that orb's copy.
