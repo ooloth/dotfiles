@@ -18,12 +18,18 @@ if [[ -L "${dotfiles}" ]]; then
 elif [[ -d "${dotfiles}/.git" ]]; then
   # Pull only a clean copy, and only fast-forward, so local edits are never overwritten
   if [[ -z "$(git -C "${dotfiles}" status --porcelain)" ]]; then
+    # A clone made by an earlier version of this script was shallow; give it full history once
+    if [[ -f "${dotfiles}/.git/shallow" ]]; then
+      timeout 6 git -C "${dotfiles}" fetch --quiet --unshallow ||
+        echo "dotfiles: unshallow failed, keeping the shallow copy" >&2
+    fi
     timeout 6 git -C "${dotfiles}" pull --quiet --ff-only ||
       echo "dotfiles: pull failed, keeping the existing copy" >&2
   fi
 else
+  # Full history, so agents editing skills here can read git log and blame. It took 1 s here.
   mkdir -p "$(dirname "${dotfiles}")"
-  timeout 6 git clone --quiet --depth 1 https://github.com/ooloth/dotfiles.git "${dotfiles}"
+  timeout 6 git clone --quiet https://github.com/ooloth/dotfiles.git "${dotfiles}"
 fi
 
 DOTFILES="${dotfiles}" bash "${dotfiles}/tools/agents/link.bash"
