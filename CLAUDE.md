@@ -12,18 +12,17 @@ loads this repo's own `docs/invariants/`, `docs/standards/` and accepted `docs/d
 in addition to the global `uphold-standards` skill, not instead of it: that one carries portable
 engineering guidance, this one carries what is true only here.
 
-## No Work Facts
+## No Private Values
 
-This repository is public. No tracked file names anything from work: not the employer, an
-organisation, a repository, a project, a colleague or their GitHub handle, a hostname, an account,
-a cloud project or dataset ID, a ticket or an internal URL. That covers examples, test fixtures,
-comments, commit messages and issue text as much as code. An example uses made-up names, such as
-`alice` or `example-repo#123`, never a value copied from a real session.
+This repository is public. No file, path, commit message or issue text names a private value: an
+internal hostname or URL, a cloud project, dataset, table or cluster ID, a private repo or internal
+project, the Jira cloud ID, or a colleague or their GitHub handle. Names that are already public,
+such as the employer, its GitHub org and the tools it uses, may appear. An example uses made-up
+names, such as `alice` or `example-repo#123`, never a value copied from a real session.
 
-A value a tool needs on the work laptop lives in a local file that `.gitignore` lists, the way
-`tools/agents/config/skills/monitor-prs/team-repos.local` does, and the tracked file describes
-only what that local file holds. Some tracked files still name work values. They are known, and
-moving them out is tracked separately, so they are not a precedent for adding more.
+A value a tool needs lives in the ignored `private.env` as a `PRIVATE_*` key, listed in
+`private.env.example`. The full rule, and the check that enforces it, are in
+[docs/invariants/public-repo.md](docs/invariants/public-repo.md).
 
 ## Folder Structure
 

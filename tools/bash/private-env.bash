@@ -1,13 +1,15 @@
 # shellcheck shell=bash
-# Loads this machine's private values: the PRIVATE_KEY=value lines in the ignored private.env at the
-# repo root, which hold what must not appear in this public repo. private.env.example lists every key.
+# Loads this machine's private values: the PRIVATE_<NAME>=value lines in the ignored private.env at
+# the repo root, which hold what must not appear in this public repo. private.env.example lists
+# every key.
 #
-# .zshrc calls load_private_env --warn at startup, and tools/bash/utils.bash calls it quietly for a
-# script started outside a configured zsh, such as a Rex tab. Both bash 3.2 and zsh source this file.
+# tools/zsh/config/core.zsh calls load_private_env --warn at startup, and tools/bash/utils.bash
+# calls it quietly for a script started outside a configured zsh, such as a Rex tab. Both bash 3.2
+# and zsh source this file.
 
-# Exports each PRIVATE_KEY=value line of FILE, removing one pair of quotes around the value. FILE is
-# read as text and never sourced, so a value cannot run a command and a line cannot set a variable
-# outside PRIVATE_*.
+# Exports each PRIVATE_<NAME>=value line of FILE, removing one pair of quotes around the value.
+# FILE is read as text and never sourced, so a value cannot run a command and a line cannot set a
+# variable outside PRIVATE_*.
 #
 # With --warn, also names on stderr each line that is not such an assignment, a missing FILE, and
 # each key EXAMPLE marks with `# machines:` for this machine ($COMPUTER) that FILE leaves unset or
@@ -43,7 +45,7 @@ load_private_env() {
     value="${line#*=}"
     if [[ "${line}" != *=* || ! "${key}" =~ ^PRIVATE_[A-Z0-9_]+$ ]]; then
       if ${warn}; then
-        printf '⚠️  %s line %d is not a PRIVATE_KEY=value line, so it was skipped.\n' "${file}" "${line_no}" >&2
+        printf '⚠️  %s line %d is not a PRIVATE_<NAME>=value line, so it was skipped.\n' "${file}" "${line_no}" >&2
       fi
       continue
     fi

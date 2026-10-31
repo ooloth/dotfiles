@@ -8,8 +8,8 @@ DOTFILES="$HOME/Repos/ooloth/dotfiles"
 
 info "🔑 Adding SSH key pair to GitHub"
 
-PRIVATE_KEY="$HOME/.ssh/id_rsa"
-PUBLIC_KEY="$PRIVATE_KEY.pub"
+SSH_PRIVATE_KEY="$HOME/.ssh/id_rsa"
+PUBLIC_KEY="$SSH_PRIVATE_KEY.pub"
 
 # FIXME: this is failing in the script flow even though this command works directly
 i_can_connect_to_github_via_ssh() {
@@ -22,7 +22,7 @@ if i_can_connect_to_github_via_ssh; then
   return
 fi
 
-if [[ ! -s "$PRIVATE_KEY" || ! -s "$PUBLIC_KEY" ]]; then
+if [[ ! -s "$SSH_PRIVATE_KEY" || ! -s "$PUBLIC_KEY" ]]; then
   printf "\n❌ SSH keys not found. Generating a new key pair...\n"
   source "$DOTFILES/features/install/zsh/ssh.zsh"
 

@@ -13,7 +13,7 @@ run one on its own, run its script:
 bash scripts/checks/formatting.bash           # ruff format
 uv run scripts/checks/docs.py                 # Markdown prose wraps at 100 columns; see the script
 bash scripts/checks/types.bash                # ty
-bash scripts/checks/linting.bash              # ruff check, shellcheck, zsh utils parse as bash, skills
+bash scripts/checks/linting.bash              # ruff check, shellcheck, zsh utils, skills, private values
 bash scripts/checks/tests.bash                # link.bash check mode alongside one pytest run of every test
 ```
 
@@ -46,6 +46,11 @@ gcloud auth login <you>@recursion.com --update-adc
 
 Without it, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. Do not
 point uv at public PyPI instead, because the managed config blocks that fallback on purpose.
+
+The private values check needs this machine's `private.env` (see `private.env.example`). Without
+it, `check` fails on a Mac, and skips only that search in CI and in an Amp orb. A finding names the
+file, line and word: replace the value with its `PRIVATE_*` variable or a made-up name, as
+[docs/invariants/public-repo.md](docs/invariants/public-repo.md) describes.
 
 Shellcheck settings live in `.shellcheckrc`, not in disable comments. Run it only on `*.sh` and
 `*.bash` files.
