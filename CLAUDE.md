@@ -21,7 +21,7 @@ such as the employer, its GitHub org and the tools it uses, may appear. An examp
 names, such as `alice` or `example-repo#123`, never a value copied from a real session.
 
 A value a tool needs lives in the ignored `private.env` as a `PRIVATE_*` key, listed in
-`private.env.example`. The full rule, and the check that enforces it, are in
+`private.env.example`. The full rule is in
 [docs/invariants/public-repo.md](docs/invariants/public-repo.md).
 
 ## Folder Structure

@@ -14,8 +14,8 @@ export PATH="${HOME}/google-cloud-sdk/bin:$PATH"
 # see: https://cloud.google.com/docs/authentication/application-default-credentials
 export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.config/gcloud/application_default_credentials.json"
 
-# The project and BigQuery IDs come from private.env (see private.env.example). A new shell names any
-# that are unset, so they are exported only when set rather than as empty values.
+# The project and BigQuery IDs come from private.env (see private.env.example). Each is exported
+# only when set, rather than as an empty value.
 if is_work; then
   if [[ -n "${PRIVATE_GCLOUD_PROJECT:-}" ]]; then
     export CLOUDSDK_CORE_PROJECT="${PRIVATE_GCLOUD_PROJECT}"

@@ -156,7 +156,7 @@ This will:
 
 Values this public repo must not name, such as internal hostnames and cloud project IDs, live in
 `private.env` at the repo root, which git ignores. Copy `private.env.example` there and fill in the
-keys it marks for this machine. Every new shell names a key this machine needs that is still unset.
+keys this machine reads. Each tool names its key when it runs without one.
 
 ## Checking
 
