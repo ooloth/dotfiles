@@ -7,9 +7,10 @@
 # calls it quietly for a script started outside a configured zsh, such as a Rex tab. Both bash 3.2
 # and zsh source this file.
 
-# Exports each PRIVATE_<NAME>=value line of FILE, removing one pair of quotes around the value.
-# FILE is read as text and never sourced, so a value cannot run a command and a line cannot set a
-# variable outside PRIVATE_*.
+# Exports each PRIVATE_<NAME>=value line of FILE, removing one pair of quotes around the value and
+# any whitespace, such as a CR, after it. FILE is read as text and never sourced, so a value cannot
+# run a command and a line cannot set a variable outside PRIVATE_*. A value that opens a quote and
+# does not close it is skipped, so no reader gets a stray quote.
 #
 # With --warn, also names on stderr each line that is not such an assignment, a missing FILE, and
 # each key EXAMPLE marks with `# machines:` for this machine ($COMPUTER) that FILE leaves unset or
@@ -38,12 +39,18 @@ load_private_env() {
   local line key value line_no=0 loaded=" "
   while IFS= read -r line || [[ -n "${line}" ]]; do
     line_no=$((line_no + 1))
+    line="${line%"${line##*[![:space:]]}"}"
     if [[ -z "${line//[[:space:]]/}" || "${line}" == "#"* ]]; then
       continue
     fi
     key="${line%%=*}"
     value="${line#*=}"
-    if [[ "${line}" != *=* || ! "${key}" =~ ^PRIVATE_[A-Z0-9_]+$ ]]; then
+    # Globs spelled out letter by letter, not =~ or a range: zsh's =~ lets a key with a NUL byte
+    # through and errors on an invalid byte, ranges follow the locale, and both shells' =~ leave
+    # match variables set
+    if [[ "${line}" != *=* || "${key}" != PRIVATE_?* ||
+      "${key#PRIVATE_}" == *[!ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_]* ||
+      ("${value}" == [\"\']* && ("${#value}" -lt 2 || "${value: -1}" != "${value:0:1}")) ]]; then
       if ${warn}; then
         printf '⚠️  %s line %d is not a PRIVATE_<NAME>=value line, so it was skipped.\n' "${file}" "${line_no}" >&2
       fi
