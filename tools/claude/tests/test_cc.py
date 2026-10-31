@@ -97,17 +97,23 @@ class Machine:
             check=True,
         )
 
-    def _env(self, computer: str, related: str) -> dict[str, str]:
+    def _env(self, computer: str, related: str | None) -> dict[str, str]:
+        # A PRIVATE_* variable is always set, even when empty, so cc.bash keeps what it inherited
+        # rather than reading the repo's private.env. None leaves PRIVATE_RELATED_REPOS unset.
+        private = (
+            {"PRIVATE_UNRELATED": ""} if related is None else {"PRIVATE_RELATED_REPOS": related}
+        )
         return {
             "HOME": str(self.home),
             "PATH": f"{self.stubs}:/usr/bin:/bin:/usr/sbin:/sbin",
             "CLAUDE_LOG": str(self._claude_log),
             "COMPUTER": computer,
-            # Set even when empty, so cc.bash keeps it rather than reading the repo's private.env
-            "PRIVATE_RELATED_REPOS": related,
+            **private,
         }
 
-    def _run(self, command: list[str], computer: str, cwd: Path | None, related: str = "") -> Run:
+    def _run(
+        self, command: list[str], computer: str, cwd: Path | None, related: str | None = ""
+    ) -> Run:
         self._claude_log.unlink(missing_ok=True)
         result = subprocess.run(
             command,
@@ -126,10 +132,10 @@ class Machine:
         return Run(result.returncode, result.stdout + result.stderr, claude)
 
     def run(
-        self, *args: str, computer: str = "air", cwd: Path | None = None, related: str = ""
+        self, *args: str, computer: str = "air", cwd: Path | None = None, related: str | None = ""
     ) -> Run:
         """Run the shipped cc.bash, as the `cc` alias does, with PRIVATE_RELATED_REPOS set to
-        `related`."""
+        `related`, or unset when it is None."""
         return self._run(["/bin/bash", str(REPO / SCRIPT), *args], computer, cwd, related)
 
     def run_with_map(
@@ -257,7 +263,9 @@ class RelatedReposFromPrivateEnv(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def test_each_checkout_worktree_and_clone_names_its_related_repo(self) -> None:
+    def test_on_the_work_laptop_each_checkout_worktree_and_clone_names_its_related_repo(
+        self,
+    ) -> None:
         cases = {
             "example-app": ("example-infra", self.infra_repo),
             "example-app-ticket-186": ("example-infra", self.infra_repo),
@@ -265,28 +273,39 @@ class RelatedReposFromPrivateEnv(unittest.TestCase):
             "example-infra-ticket-295": ("example-app", self.app_repo),
         }
         for folder_name, (name, path) in cases.items():
-            for computer, mode in (("work", "auto"), ("air", "bypassPermissions")):
-                with self.subTest(folder=folder_name, computer=computer):
-                    folder = self.machine.repos / folder_name
-                    folder.mkdir(exist_ok=True)
+            with self.subTest(folder=folder_name):
+                folder = self.machine.repos / folder_name
+                folder.mkdir(exist_ok=True)
 
-                    run = self.machine.run(computer=computer, cwd=folder, related=self.PAIRS)
+                run = self.machine.run(computer="work", cwd=folder, related=self.PAIRS)
 
-                    self.assertEqual(
-                        run.claude,
-                        ["--permission-mode", mode, "--append-system-prompt", hint(name, path)],
-                        run.output,
-                    )
+                self.assertEqual(
+                    run.claude,
+                    ["--permission-mode", "auto", "--append-system-prompt", hint(name, path)],
+                    run.output,
+                )
+
+    def test_a_personal_mac_names_nothing_even_with_pairs_set(self) -> None:
+        run = self.machine.run(computer="air", cwd=self.infra_repo, related=self.PAIRS)
+
+        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
+
+    def test_on_the_work_laptop_an_unset_key_is_named_and_claude_still_starts(self) -> None:
+        run = self.machine.run(computer="work", cwd=self.infra_repo, related=None)
+
+        self.assertEqual(run.claude, ["--permission-mode", "auto"], run.output)
+        self.assertIn("PRIVATE_RELATED_REPOS is unset", run.output)
 
     def test_a_folder_no_prefix_matches_names_nothing(self) -> None:
         run = self.machine.run(computer="work", related=self.PAIRS)
 
         self.assertEqual(run.claude, ["--permission-mode", "auto"], run.output)
 
-    def test_with_no_pairs_a_session_names_nothing(self) -> None:
+    def test_with_an_empty_key_a_session_names_nothing_and_prints_nothing(self) -> None:
         run = self.machine.run(computer="work", cwd=self.infra_repo)
 
         self.assertEqual(run.claude, ["--permission-mode", "auto"], run.output)
+        self.assertEqual(run.output, "")
 
 
 class PlansFolder(unittest.TestCase):

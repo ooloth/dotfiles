@@ -15,10 +15,18 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../bash/utils.bash"
 # Repos a session in the named folder should be told about, one name per line, each cloned beside
 # the current repo's main checkout. The pairs come from PRIVATE_RELATED_REPOS in private.env, as
 # space-separated FOLDER_PREFIX=RELATED_REPO, because the repos' names are private. A prefix matches
-# the repo's worktrees and clones beside it too.
+# the repo's worktrees and clones beside it too. Only the work laptop has related repos, and there
+# an unset key is named on stderr; one set but empty means no pairs.
 related_repos() {
+  if ! is_work; then
+    return 0
+  fi
+  if [[ -z "${PRIVATE_RELATED_REPOS+set}" ]]; then
+    printf '⚠️  PRIVATE_RELATED_REPOS is unset (see private.env.example), so no related repos are named\n' >&2
+    return 0
+  fi
   local pair pairs=()
-  read -r -a pairs <<<"${PRIVATE_RELATED_REPOS:-}"
+  read -r -a pairs <<<"${PRIVATE_RELATED_REPOS}"
   # The guarded expansion keeps an empty list from failing under bash 3.2's set -u
   for pair in ${pairs[@]+"${pairs[@]}"}; do
     if [[ "$1" == "${pair%%=*}"* ]]; then
