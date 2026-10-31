@@ -576,7 +576,9 @@ side effect, raise mid-work choices as this file describes, and merge rather tha
   in the dotfiles repo) runs on every orb start and wake. It clones or fast-forwards the dotfiles
   repo to `~/Repos/ooloth/dotfiles`, links `~/.agents/skills` and `~/.agents/standards` into it, and
   links this file as `~/.config/AGENTS.md`. If one you need is missing, say which and carry on.
-- **Your own config:** edit `tools/claude/config/` and `tools/agents/config/` in a thread on the
-  dotfiles project, where `~/Repos/ooloth/dotfiles` is the working checkout. In any other orb it is
-  a clone that the next wake fast-forwards, so an edit there is lost unless it is pushed. Other orbs
-  get a change on their next start or wake after it reaches `main`.
+- **Your own config:** `~/Repos/ooloth/dotfiles` is my dotfiles repo, and `~/.agents/skills`,
+  `~/.agents/standards` and `~/.config/AGENTS.md` link into it, so I can improve a skill from any
+  orb. Make those edits there, not in the project repo. Amp's Changes pane doesn't show that repo,
+  so show me the diff in chat. Then commit and push from that directory only on my signal, merging
+  rather than rebasing if the push is rejected. Uncommitted edits there stop the workspace resume
+  script from updating that orb's copy.
