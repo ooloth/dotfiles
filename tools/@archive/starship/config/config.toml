@@ -76,7 +76,7 @@ $all\
   # symbol = "  "
 
 [gcloud.project_aliases]
-  example-project = 'eng-infra'
+  example-project = 'example'
   example-prod-1234 = 'example-prod'
 
 [gcloud.region_aliases]

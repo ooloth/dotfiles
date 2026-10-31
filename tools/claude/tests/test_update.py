@@ -313,7 +313,11 @@ class UpdateOrderTest(unittest.TestCase):
             ]:
                 (repo / path).parent.mkdir(parents=True, exist_ok=True)
                 (repo / path).write_text(stub)
-            for path in ["tools/bash/utils.bash", "tools/macos/utils.bash"]:
+            for path in [
+                "tools/bash/utils.bash",
+                "tools/bash/private-env.bash",
+                "tools/macos/utils.bash",
+            ]:
                 (repo / path).parent.mkdir(parents=True, exist_ok=True)
                 (repo / path).symlink_to(REPO / path)
             (repo / "features/update/tools.bash").symlink_to(REPO / "features/update/tools.bash")
@@ -328,6 +332,7 @@ class UpdateOrderTest(unittest.TestCase):
                 line for line in log.read_text().splitlines() if line not in {"update", "check"}
             ]
             self.assertEqual(order, ["uv", "node", "claude", "homebrew", "aaa"], result.stderr)
+            self.assertNotIn("private-env.bash", result.stderr)
 
 
 if __name__ == "__main__":
