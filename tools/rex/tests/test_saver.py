@@ -21,6 +21,7 @@ import os
 import plistlib
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -28,6 +29,7 @@ import time
 import unittest
 from pathlib import Path
 from typing import Any
+from unittest import mock
 
 from beartype.claw import beartype_package
 from hypothesis import given, settings
@@ -986,12 +988,28 @@ class ReadingTheAppsFocus(unittest.TestCase):
             self.assertIsInstance(result, Ok | Err)
 
 
+# Stands in for macOS's `defaults export <file> -` where it does not exist, such as in an Amp orb:
+# it prints the plist file, which the tests write as XML, and nothing when the file is missing.
+DEFAULTS_STUB = """#!/bin/sh
+[ "$1" = export ] && [ "$3" = - ] && exec cat -- "$2" 2>/dev/null
+exit 1
+"""
+
+
 class SavingTheFocus(unittest.TestCase):
     """The saver reads the app's preferences from a plist file, as `defaults export` allows."""
 
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
         self.state = Path(self.tmp.name)
+        # Only where the real command is missing, so on a Mac these tests still run Apple's defaults
+        if shutil.which("defaults") is None:
+            stub = self.state / "bin" / "defaults"
+            stub.parent.mkdir()
+            stub.write_text(DEFAULTS_STUB)
+            stub.chmod(0o755)
+            path = f"{stub.parent}{os.pathsep}{os.environ['PATH']}"
+            self.enterContext(mock.patch.dict(os.environ, {"PATH": path}))
         self.first = app_session("first")
         self.second = app_session("second")
         self.rex = RecordedRex(

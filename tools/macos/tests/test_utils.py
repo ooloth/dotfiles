@@ -15,6 +15,7 @@ detected value is whatever this Mac is called and the tests compare against that
 from __future__ import annotations
 
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -40,15 +41,22 @@ def detected() -> str:
     return NAMES.get(name, "work")
 
 
+# Detection compares against this Mac's own name from networksetup, which exists only on macOS. A
+# platform check rather than "networksetup is missing", so a Mac that lost it fails instead of skipping.
+ON_MACOS = unittest.skipUnless(sys.platform == "darwin", "needs macOS's /usr/sbin/networksetup")
+
+
 class Computer(unittest.TestCase):
     def test_keeps_the_machine_the_caller_already_named(self) -> None:
         for value in ("air", "mini", "work"):
             with self.subTest(value=value):
                 self.assertEqual(computer({"COMPUTER": value}), value)
 
+    @ON_MACOS
     def test_detects_the_machine_when_the_caller_named_none(self) -> None:
         self.assertEqual(computer({}), detected())
 
+    @ON_MACOS
     def test_detects_the_machine_when_the_callers_value_is_empty(self) -> None:
         self.assertEqual(computer({"COMPUTER": ""}), detected())
 
