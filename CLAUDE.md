@@ -68,7 +68,8 @@ When making changes to this repository:
 Work in this repository is committed straight to `main`, with no pull request, so the global step
 that opens a draft PR and starts its review does not apply here. The review it exists for still
 does: after a session's last commit, a fresh session runs `review-code` on that session's commits,
-named by hash, before the session hands off.
+named by hash, before the session hands off. A session whose commits answer that review's findings
+starts no further review, as the global rule that a change gets one review round says.
 
 ### Testing and Verification
 

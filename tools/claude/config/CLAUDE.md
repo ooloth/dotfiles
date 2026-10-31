@@ -390,6 +390,9 @@ tracker still needs approval. The ticket comments above are for work already app
      11's offer, and then runs `wrap-up-session`, so the user can see whether this session can be
      closed. The review it starts belongs to the review session, so it is not one of this session's
      Open items.
+   - **A change gets one review round.** A session whose commits answer a review's findings starts
+     no further review of them. Its fixes ship on its own checks and manual verification, because
+     each fresh review finds something and so never ends the rounds by itself.
 10. Repeat for the remaining changes
 11. Before closing, ask: did this work establish an invariant that must always hold, or a reusable
     standard for approaching this kind of problem? If not, say nothing. If so, offer to record it in
