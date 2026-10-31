@@ -571,11 +571,11 @@ orbs take precedence over these rules where they differ:
   pauses, and tmux does not. Short-lived tmux sessions for testing interactive programs are fine.
 - **Browser:** use `agent-browser`. `browser-automation-agent` does not exist in an orb.
 - **Skills and standards:** this file reaches an orb only as a copy inside
-  `~/.config/amp/AGENTS.md`, written by the dotfiles repo's `.agents/setup`. Nothing links
-  `~/.claude` or `~/.agents`, so the skills and standards named here, such as `uphold-standards`,
-  `/commit` and `decision-making.md`, are not installed. In the dotfiles repo, read them from
-  `tools/agents/config/skills/<name>/SKILL.md` and `tools/agents/config/standards/`. Elsewhere, say
-  which one you could not load and carry on without it.
+  `~/.config/amp/AGENTS.md`, written by the dotfiles repo's `.agents/setup`. In orbs on the dotfiles
+  project, that setup also links `~/.agents/skills` and `~/.agents/standards` into the checkout. In
+  any other orb, the skills and standards named here, such as `uphold-standards`, `/commit` and
+  `decision-making.md`, are not installed: say which one you could not load and carry on without
+  it.
 - **Your own config:** edit `tools/claude/config/` in the dotfiles checkout, which in an orb is the
   repository root, not `~/Repos/ooloth/dotfiles`. The copy in `~/.config/amp/AGENTS.md` does not
   change until a new orb is set up from the pushed commit.

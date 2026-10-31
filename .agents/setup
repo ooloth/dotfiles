@@ -96,7 +96,21 @@ warm_uv() {
   uv sync --quiet --script tools/agents/check-skills.py
 }
 
+# Link the shared skills and standards into ~/.agents (and ~/.claude), as `symlinks` does on
+# Michael's Macs. Amp reads ~/.agents/skills when a thread starts, Claude Code threads included, and
+# skills read ~/.agents/standards/ during a turn. tools/bash/utils.bash expects the repo at
+# ~/Repos/ooloth/dotfiles, so that path points at this checkout, and edits here take effect at once.
+link_agent_config() {
+  local dotfiles="${HOME}/Repos/ooloth/dotfiles"
+  if [[ ! -e "${dotfiles}" ]]; then
+    mkdir -p "$(dirname "${dotfiles}")"
+    ln -s "${repo}" "${dotfiles}"
+  fi
+  DOTFILES="${dotfiles}" bash tools/agents/link.bash
+}
+
 step "shellcheck" install_shellcheck
 step "lua and zsh" install_packages
 step "uv cache" warm_uv
 step "agent guidance" write_agent_guidance
+step "agent config" link_agent_config
