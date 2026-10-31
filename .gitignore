@@ -13,7 +13,9 @@ tools/agents/config/skills/synced/
 # Mine
 .cache
 .secrets
+private.env
 tools/homebrew/Brewfile.generated
+tools/kubernetes/config/k9s/clusters/
 tools/agents/config/skills/monitor-prs/team-repos.local
 
 # Amp orbs

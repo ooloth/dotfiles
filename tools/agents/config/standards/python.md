@@ -59,7 +59,7 @@ production.
 **A module run with `python -m` names its logger explicitly.**
 Run that way, the module's `__name__` is `"__main__"`, so `logging.getLogger(__name__)` creates a
 logger outside the package whose logging configuration was meant to cover it. Its records then fall
-through to the root logger's level and can be dropped with no error. In react-clinops-siteoutreach,
+through to the root logger's level and can be dropped with no error. In one work repo,
 a migrate command's outcome line vanished this way, and only a test that ran the module as a
 subprocess caught it. `logging.getLogger("package.module")` keeps the name the same whether the
 module is imported or run.

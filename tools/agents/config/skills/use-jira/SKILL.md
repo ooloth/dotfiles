@@ -5,10 +5,12 @@ description: Jira gotchas for the Atlassian MCP tools and the acli and jira CLIs
 
 ## Cloud ID
 
-Pass `59cf1bda-d77b-4f71-9550-c99e58dd7572` as `cloudId`. It is the `recursion.atlassian.net`
-site. The hostname `recursionpharma.atlassian.net` belongs to a different site this account is not
-granted, and the call fails with "isn't explicitly granted by the user". Call
-`getAccessibleAtlassianResources` only when that ID is refused.
+Pass the value of `$PRIVATE_JIRA_CLOUD_ID` as `cloudId`: run `echo "$PRIVATE_JIRA_CLOUD_ID"` to
+read it. It is the site whose hostname `$PRIVATE_JIRA_SITE` holds. A site with a similar hostname,
+such as one named after the GitHub org, is a different site this account is not granted, and the
+call fails with "isn't explicitly granted by the user". Call `getAccessibleAtlassianResources` only
+when that ID is refused, or when the variable is empty because this machine's `private.env` doesn't
+set it.
 
 ## Reads omit comments
 

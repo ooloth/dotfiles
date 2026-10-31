@@ -357,7 +357,7 @@ After user selects any action from the Post-Review Action Menu:
 **Example enhanced review with action menu:**
 
 ````
-## PR Review: recursionpharma/auth-service#144 "Add JWT refresh token rotation"
+## PR Review: example-org/example-repo#123 "Add JWT refresh token rotation"
 
 📝 Existing Review Activity:
 

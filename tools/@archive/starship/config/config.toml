@@ -76,8 +76,8 @@ $all\
   # symbol = "  "
 
 [gcloud.project_aliases]
-  eng-infrastructure = 'eng-infra'
-  rp006-prod-49a893d8 = 'rp006-prod'
+  example-project = 'eng-infra'
+  example-prod-1234 = 'example-prod'
 
 [gcloud.region_aliases]
   asia-northeast1 = 'an1'
@@ -136,15 +136,15 @@ $all\
 
 [[kubernetes.contexts]]
   context_alias = 'principal'
-  context_pattern = 'gke_eng-infrastructure_us-east1_principal'
+  context_pattern = 'gke_example-project_us-east1_principal'
 
 [[kubernetes.contexts]]
   context_alias = 'prod-cluster'
-  context_pattern = 'gke_prod-cluster-cc74bd08_us-central1_prod-cluster'
+  context_pattern = 'gke_example-cluster-1234_us-central1_prod-cluster'
 
 [[kubernetes.contexts]]
-  context_alias = 'rp006-prod'
-  context_pattern = 'gke_rp006-prod-49a893d8_us-central1_rp006-prod'
+  context_alias = 'example-prod'
+  context_pattern = 'gke_example-prod-1234_us-central1_example-prod'
 
 [lua]
   disabled = true

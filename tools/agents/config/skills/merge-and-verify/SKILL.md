@@ -1,7 +1,7 @@
 ---
 name: merge-and-verify
 description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. TRIGGER when an approved PR is ready to merge, when a merged PR's deploy needs watching, or when asked to verify a PR in its environment.
-argument-hint: 'An approved or merged PR, such as "react-clinops-siteoutreach#305"'
+argument-hint: 'An approved or merged PR, such as "example-app#305"'
 ---
 
 Input: $ARGUMENTS

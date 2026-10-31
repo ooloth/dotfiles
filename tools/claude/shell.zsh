@@ -30,8 +30,6 @@ export DISABLE_TELEMETRY=1
 
 # if is_work; then
   # export ANTHROPIC_MODEL=sonnet
-  # See: https://github.com/recursionpharma/ai-coding-guild-docs/blob/trunk/public/claude/settings.json
-  # export ANTHROPIC_VERTEX_PROJECT_ID=vertexai-sandbox-e8a925d0
   # Work uses subscription login instead of Vertex AI now (/login -> subscription -> work email address)
   # export CLAUDE_CODE_USE_VERTEX=0
   # export CLOUD_ML_REGION=global
@@ -49,8 +47,12 @@ alias ccc="bash ${DOTFILES}/tools/claude/cc.bash --continue"
 
 if is_work; then
   # Fallback to Vertex AI for current session only if I hit my subscription quota (Max 20x limit, I think)
-  # See: https://recursion.atlassian.net/wiki/spaces/guildaicoding/pages/3943825434/Claude+Code+Installation
   ccy-vertex() {
+    if [[ -z "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
+      error "PRIVATE_VERTEX_PROJECT is unset (see private.env.example), so there is no Vertex AI project"
+      return 1
+    fi
+
     # Vertex AI requires gcloud credentials to be valid, so check that first
     if timeout 5 gcloud auth application-default print-access-token &>/dev/null; then
       debug "✅ gcloud credentials are valid"
@@ -60,6 +62,6 @@ if is_work; then
     fi
 
     # Point to Vertex AI for this session only
-    claude --settings '{"env":{"CLAUDE_CODE_USE_VERTEX":"1","CLOUD_ML_REGION":"global","ANTHROPIC_VERTEX_PROJECT_ID":"vertexai-sandbox-e8a925d0"}}' --dangerously-skip-permissions "$@"
+    claude --settings '{"env":{"CLAUDE_CODE_USE_VERTEX":"1","CLOUD_ML_REGION":"global","ANTHROPIC_VERTEX_PROJECT_ID":"'"${PRIVATE_VERTEX_PROJECT}"'"}}' --dangerously-skip-permissions "$@"
   }
 fi

@@ -21,7 +21,7 @@ From `gh pr view <number> -R <owner>/<repo> --json statusCheckRollup`:
 
 ```bash
 # A pipeline's recent builds, newest first. The name includes the project prefix
-# (bc-eng-clinical/external-siteoutreach-dev-backend); --branch and --status also filter.
+# (example-project/example-pipeline); --branch and --status also filter.
 # The table's times are local but 12-hour with no AM/PM, so read `created` from -o json
 codefresh get builds --pipeline-name <project>/<pipeline> --limit 5
 

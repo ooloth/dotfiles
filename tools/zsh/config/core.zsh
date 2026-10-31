@@ -21,6 +21,9 @@ export EDITOR=nvim
 export SHELL=/opt/homebrew/bin/zsh
 export XDG_CONFIG_HOME="${HOME}/.config"
 
+# Private values (PRIVATE_*) from the ignored private.env at the repo root; see private.env.example
+source "${DOTFILES}/tools/bash/private-env.bash" && load_private_env --warn
+
 # History variables
 export HISTFILE="${HOME}/.zsh_history"
 export HISTORY_IGNORE="git*"

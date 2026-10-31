@@ -154,6 +154,10 @@ This will:
 3. Set up symlinks for all configurations
 4. Configure macOS system preferences
 
+Values this public repo must not name, such as internal hostnames and cloud project IDs, live in
+`private.env` at the repo root, which git ignores. Copy `private.env.example` there and fill in the
+keys it marks for this machine. Every new shell names a key this machine needs that is still unset.
+
 ## Checking
 
 ```sh

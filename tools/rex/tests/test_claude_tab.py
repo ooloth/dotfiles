@@ -120,8 +120,10 @@ class Machine:
         list_fails: bool = False,
         script: Path | None = None,
         cwd: Path | None = None,
+        related: str = "",
     ) -> Run:
-        """Run the launcher, by default the shipped one, as an agent in a Rex pane would."""
+        """Run the launcher, by default the shipped one, as an agent in a Rex pane would, with
+        PRIVATE_RELATED_REPOS set to `related`."""
         shutil.rmtree(self._rex_log, ignore_errors=True)
         self._rex_log.mkdir()
         self._claude_log.unlink(missing_ok=True)
@@ -133,6 +135,8 @@ class Machine:
             "TAB_LOG": str(self.tab_log),
             "COMPUTER": computer,
             "REX_SESSIONS": sessions,
+            # Set even when empty, so cc.bash keeps it rather than reading the repo's private.env
+            "PRIVATE_RELATED_REPOS": related,
         }
         if list_fails:
             env["REX_LIST_FAILS"] = "1"
@@ -185,16 +189,18 @@ class PermissionMode(MachineTest):
 
 class RelatedRepos(MachineTest):
     def test_tab_gets_the_related_repo_hint_cc_adds(self) -> None:
-        app = self.machine.repos / "react-clinops-siteoutreach"
+        app = self.machine.repos / "example-app"
         app.mkdir()
-        infra = self.machine.repos / "bc-eng-clinical"
+        infra = self.machine.repos / "example-infra"
         infra.mkdir()
 
-        run = self.machine.run("Review", str(app), "/review", computer="work")
+        run = self.machine.run(
+            "Review", str(app), "/review", computer="work", related="example-app=example-infra"
+        )
 
         assert run.claude is not None, run.stderr
         self.assertEqual(run.claude[:3], ["--permission-mode", "auto", "--append-system-prompt"])
-        self.assertIn(f"Related repo: `bc-eng-clinical` at `{infra}`.", run.claude[3])
+        self.assertIn(f"Related repo: `example-infra` at `{infra}`.", run.claude[3])
         self.assertEqual(run.claude[4:], ["/review"])
 
 

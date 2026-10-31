@@ -61,7 +61,7 @@ def review(state: str = "APPROVED", commit: str = HEAD, login: str = "ooloth") -
 
 
 def pull_request(**overrides: Any) -> dict[str, Any]:
-    """A PR shaped like `gh pr view --json` answered for react-clinops-siteoutreach#305."""
+    """A PR shaped like `gh pr view --json` answered for example-app#305."""
     return {
         "state": "OPEN",
         "isDraft": False,
@@ -70,7 +70,7 @@ def pull_request(**overrides: Any) -> dict[str, Any]:
         "reviews": [review()],
         "statusCheckRollup": [
             check_run("Analyze (javascript-typescript)"),
-            status_context("bc-eng-clinical/external-siteoutreach-api"),
+            status_context("example-project/example-api"),
         ],
         **overrides,
     }
@@ -242,12 +242,14 @@ def test_github_blocking_with_every_check_passed_is_not_a_wait(h: Harness) -> No
 
 
 def test_an_outstanding_change_request_is_refused(h: Harness) -> None:
-    pr = pull_request(reviews=[review(), review(state="CHANGES_REQUESTED", login="janz")])
+    pr = pull_request(
+        reviews=[review(), review(state="CHANGES_REQUESTED", login="second-reviewer")]
+    )
 
     result = h.run(pr)
 
     assert result.returncode == 1
-    assert "janz" in result.stdout
+    assert "second-reviewer" in result.stdout
 
 
 def test_check_only_reports_readiness_and_never_merges(h: Harness) -> None:
@@ -287,7 +289,7 @@ def broken_pull_request(broken: set[str], running: bool = False) -> dict[str, An
     """A ready PR with each named condition broken, each one independently of the others."""
     reviews = [] if "unapproved" in broken else [review(commit=OLD)]
     if "changes" in broken:
-        reviews.append(review(state="CHANGES_REQUESTED", login="janz"))
+        reviews.append(review(state="CHANGES_REQUESTED", login="second-reviewer"))
     checks = [check_run("tests", conclusion="FAILURE" if "failing" in broken else "SUCCESS")]
     if running:
         checks.append(check_run("deploy", conclusion="", status="IN_PROGRESS"))

@@ -26,8 +26,9 @@ upgrades it with every other formula.
 acli jira auth login --web
 ```
 
-Choose `recursion.atlassian.net` at the site prompt and accept the grant in the browser. Then
-`acli jira auth status` reports `Authenticated` with `Authentication Type: oauth`.
+Choose the site in `$PRIVATE_JIRA_SITE` (see `private.env.example`) at the site prompt and
+accept the grant in the browser. Then `acli jira auth status` reports `Authenticated` with
+`Authentication Type: oauth`.
 
 ### Why it is set up this way
 
@@ -70,8 +71,9 @@ https://github.com/ankitpokhrel/jira-cli/wiki/Installation#homebrew
 
 ### Set up the token
 
-1. Find the site's cloud ID: e.g. open https://recursion.atlassian.net/_edge/tenant_info and copy
-   the `cloudId` value.
+1. Find the site's cloud ID: open `https://$PRIVATE_JIRA_SITE/_edge/tenant_info` and copy
+   the `cloudId` value. `$PRIVATE_JIRA_CLOUD_ID` already holds it on a machine whose `private.env`
+   sets it.
 2. Create an API token:
 
    - Go to https://id.atlassian.com/manage-profile/security/api-tokens
@@ -121,4 +123,4 @@ support of its own ([PR #928](https://github.com/ankitpokhrel/jira-cli/pull/928)
 and setting `--server` to the gateway is the workaround reported in
 [issue #850](https://github.com/ankitpokhrel/jira-cli/issues/850). If `jira me` returns 401
 through the gateway, create an unscoped token instead and run step 4 with
-`--server https://recursion.atlassian.net`.
+`--server "https://$PRIVATE_JIRA_SITE"`.

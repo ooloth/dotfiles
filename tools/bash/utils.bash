@@ -6,6 +6,13 @@ export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 # Include is_air, is_mini, is_work in this commonly-sourced file
 source "${DOTFILES}/tools/macos/utils.bash"
 
+# A script started outside a configured zsh, such as a Rex tab, inherits no private values, so it
+# reads them from private.env itself. One started from zsh keeps the ones it inherited.
+source "${DOTFILES}/tools/bash/private-env.bash"
+if [[ -z "$(compgen -v PRIVATE_)" ]]; then
+  load_private_env
+fi
+
 ##############
 # INSPECTING #
 ##############

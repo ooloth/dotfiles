@@ -376,7 +376,7 @@ def thank_lines(stdout: str) -> list[str]:
 def test_a_person_who_reviewed_is_tagged_in_the_greeting(harness: Harness) -> None:
     fixture = {
         "threads": [[]],
-        "reviews": [[review(1, "Looks good.", by=author("jan"))]],
+        "reviews": [[review(1, "Looks good.", by=author("first-reviewer"))]],
         "comments": [[]],
     }
 
@@ -384,9 +384,9 @@ def test_a_person_who_reviewed_is_tagged_in_the_greeting(harness: Harness) -> No
 
     assert result.returncode == 0, result.stderr
     lines = result.stdout.splitlines()
-    header = lines.index("# REVIEW by jan (COMMENTED)  [review_id: 1]")
-    assert "  thank      : @jan Thanks for the feedback:" in lines[header:]
-    assert thank_lines(result.stdout) == ["  thank      : @jan Thanks for the feedback:"]
+    header = lines.index("# REVIEW by first-reviewer (COMMENTED)  [review_id: 1]")
+    assert "  thank      : @first-reviewer Thanks for the feedback:" in lines[header:]
+    assert thank_lines(result.stdout) == ["  thank      : @first-reviewer Thanks for the feedback:"]
 
 
 def test_a_bot_with_a_name_is_thanked_by_name_and_never_tagged(harness: Harness) -> None:

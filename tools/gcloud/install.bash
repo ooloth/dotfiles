@@ -22,7 +22,11 @@ source "${HOME}/google-cloud-sdk/path.bash.inc"
 # See: https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin
 info "📦 Installing required gcloud components"
 gcloud components install gke-gcloud-auth-plugin
-gcloud container clusters get-credentials prod-cluster --region us-central1 --project prod-cluster-cc74bd08
+if [[ -n "${PRIVATE_GKE_PROJECT:-}" ]]; then
+  gcloud container clusters get-credentials prod-cluster --region us-central1 --project "${PRIVATE_GKE_PROJECT}"
+else
+  warn "PRIVATE_GKE_PROJECT is unset (see private.env.example), so kubectl gets no cluster credentials"
+fi
 
 # Adds credentials to ~/.docker/config.json so Docker can pull from us-central1-docker.pkg.dev
 info "🐳 Configuring Docker to authenticate with gcloud"

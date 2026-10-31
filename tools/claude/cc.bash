@@ -12,23 +12,19 @@ set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../bash/utils.bash"
 
-# Repos a session in the named repo should be told about, one name per line, each cloned beside
-# the current repo's main checkout
+# Repos a session in the named folder should be told about, one name per line, each cloned beside
+# the current repo's main checkout. The pairs come from PRIVATE_RELATED_REPOS in private.env, as
+# space-separated FOLDER_PREFIX=RELATED_REPO, because the repos' names are private. A prefix matches
+# the repo's worktrees and clones beside it too.
 related_repos() {
-  if is_work; then
-    case "$1" in
-    # mapapp-1 | mapapp-2 | mapapp-3) printf '%s\n' mapapp-infra ;;
-    # The prefixes match each repo's worktrees and clones beside it too
-    react-clinops-siteoutreach*) printf '%s\n' bc-eng-clinical ;;
-    bc-eng-clinical*) printf '%s\n' react-clinops-siteoutreach ;;
-    *) ;;
-    esac
-  else
-    case "$1" in
-    # media) printf '%s\n' media-ops ;;
-    *) ;;
-    esac
-  fi
+  local pair pairs=()
+  read -r -a pairs <<<"${PRIVATE_RELATED_REPOS:-}"
+  # The guarded expansion keeps an empty list from failing under bash 3.2's set -u
+  for pair in ${pairs[@]+"${pairs[@]}"}; do
+    if [[ "$1" == "${pair%%=*}"* ]]; then
+      printf '%s\n' "${pair#*=}"
+    fi
+  done
 }
 
 # The folder holding the current repo's main checkout, so every worktree of a repo gets the same

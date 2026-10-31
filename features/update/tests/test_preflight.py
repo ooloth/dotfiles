@@ -26,6 +26,7 @@ REPO = Path(__file__).resolve().parents[3]
 
 LINKED = [
     "tools/bash/utils.bash",
+    "tools/bash/private-env.bash",
     "tools/macos/utils.bash",
     "features/update/tools.bash",
     "features/update/preflight.bash",

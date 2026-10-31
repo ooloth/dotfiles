@@ -97,20 +97,22 @@ class Machine:
             check=True,
         )
 
-    def _env(self, computer: str) -> dict[str, str]:
+    def _env(self, computer: str, related: str) -> dict[str, str]:
         return {
             "HOME": str(self.home),
             "PATH": f"{self.stubs}:/usr/bin:/bin:/usr/sbin:/sbin",
             "CLAUDE_LOG": str(self._claude_log),
             "COMPUTER": computer,
+            # Set even when empty, so cc.bash keeps it rather than reading the repo's private.env
+            "PRIVATE_RELATED_REPOS": related,
         }
 
-    def _run(self, command: list[str], computer: str, cwd: Path | None) -> Run:
+    def _run(self, command: list[str], computer: str, cwd: Path | None, related: str = "") -> Run:
         self._claude_log.unlink(missing_ok=True)
         result = subprocess.run(
             command,
             cwd=cwd or self.app,
-            env=self._env(computer),
+            env=self._env(computer, related),
             capture_output=True,
             text=True,
             check=False,
@@ -123,9 +125,12 @@ class Machine:
         )
         return Run(result.returncode, result.stdout + result.stderr, claude)
 
-    def run(self, *args: str, computer: str = "air", cwd: Path | None = None) -> Run:
-        """Run the shipped cc.bash, as the `cc` alias does."""
-        return self._run(["/bin/bash", str(REPO / SCRIPT), *args], computer, cwd)
+    def run(
+        self, *args: str, computer: str = "air", cwd: Path | None = None, related: str = ""
+    ) -> Run:
+        """Run the shipped cc.bash, as the `cc` alias does, with PRIVATE_RELATED_REPOS set to
+        `related`."""
+        return self._run(["/bin/bash", str(REPO / SCRIPT), *args], computer, cwd, related)
 
     def run_with_map(
         self, related: list[str], *args: str, computer: str = "air", cwd: Path | None = None
@@ -238,45 +243,50 @@ def hint(name: str, path: Path) -> str:
     )
 
 
-class SiteOutreachRepos(unittest.TestCase):
-    """react-clinops-siteoutreach and bc-eng-clinical each tell a session about the other."""
+class RelatedReposFromPrivateEnv(unittest.TestCase):
+    """PRIVATE_RELATED_REPOS pairs a folder prefix with the repo a session there is told about."""
+
+    PAIRS = "example-app=example-infra example-infra=example-app"
 
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
         self.machine = Machine(Path(self._tmp.name))
-        self.app_repo = self.machine.sibling("react-clinops-siteoutreach")
-        self.infra_repo = self.machine.sibling("bc-eng-clinical")
+        self.app_repo = self.machine.sibling("example-app")
+        self.infra_repo = self.machine.sibling("example-infra")
 
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def test_each_checkout_worktree_and_clone_names_the_other_repo_on_the_work_laptop(
-        self,
-    ) -> None:
+    def test_each_checkout_worktree_and_clone_names_its_related_repo(self) -> None:
         cases = {
-            "react-clinops-siteoutreach": ("bc-eng-clinical", self.infra_repo),
-            "react-clinops-siteoutreach-ceng-186": ("bc-eng-clinical", self.infra_repo),
-            "bc-eng-clinical": ("react-clinops-siteoutreach", self.app_repo),
-            "bc-eng-clinical-ceng-295": ("react-clinops-siteoutreach", self.app_repo),
-            "bc-eng-clinical-valid": ("react-clinops-siteoutreach", self.app_repo),
+            "example-app": ("example-infra", self.infra_repo),
+            "example-app-ticket-186": ("example-infra", self.infra_repo),
+            "example-infra": ("example-app", self.app_repo),
+            "example-infra-ticket-295": ("example-app", self.app_repo),
         }
         for folder_name, (name, path) in cases.items():
-            with self.subTest(folder=folder_name):
-                folder = self.machine.repos / folder_name
-                folder.mkdir(exist_ok=True)
+            for computer, mode in (("work", "auto"), ("air", "bypassPermissions")):
+                with self.subTest(folder=folder_name, computer=computer):
+                    folder = self.machine.repos / folder_name
+                    folder.mkdir(exist_ok=True)
 
-                run = self.machine.run(computer="work", cwd=folder)
+                    run = self.machine.run(computer=computer, cwd=folder, related=self.PAIRS)
 
-                self.assertEqual(
-                    run.claude,
-                    ["--permission-mode", "auto", "--append-system-prompt", hint(name, path)],
-                    run.output,
-                )
+                    self.assertEqual(
+                        run.claude,
+                        ["--permission-mode", mode, "--append-system-prompt", hint(name, path)],
+                        run.output,
+                    )
 
-    def test_personal_macs_name_nothing(self) -> None:
-        run = self.machine.run(cwd=self.infra_repo)
+    def test_a_folder_no_prefix_matches_names_nothing(self) -> None:
+        run = self.machine.run(computer="work", related=self.PAIRS)
 
-        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
+        self.assertEqual(run.claude, ["--permission-mode", "auto"], run.output)
+
+    def test_with_no_pairs_a_session_names_nothing(self) -> None:
+        run = self.machine.run(computer="work", cwd=self.infra_repo)
+
+        self.assertEqual(run.claude, ["--permission-mode", "auto"], run.output)
 
 
 class PlansFolder(unittest.TestCase):

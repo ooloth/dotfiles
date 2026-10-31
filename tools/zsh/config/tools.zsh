@@ -34,7 +34,6 @@ if is_work; then
 
   # Griphook
   # TODO: still need this?
-  # see: https://github.com/recursionpharma/data-science-onboarding#setting-up-griphook
   # source "${HOME}/.griphook/env"
 
   # Kafka
@@ -44,7 +43,6 @@ if is_work; then
   export LIBRARY_PATH="/opt/homebrew/Cellar/librdkafka/$librdkafka_version/lib"
 
   # Netskope
-  # see: https://github.com/recursionpharma/netskope_dev_tools
   source "${HOME}/.config/netskope/env.sh"
 
   # Roadie
