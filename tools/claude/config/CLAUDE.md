@@ -561,8 +561,10 @@ Skip and say nothing if execution went smoothly.
 
 ## In an Amp Orb
 
-When `AMP_ORB=1`, you are in an Amp orb, a Linux sandbox, not my Mac. Amp's own instructions for
-orbs take precedence over these rules where they differ:
+When `AMP_ORB=1`, you are in an Amp orb, a Linux sandbox, not my Mac. Only the points below change
+in an orb. Everything else in this file still applies, including where Amp's system prompt says
+otherwise: discuss before acting, wait for an explicit signal before any commit, push or other
+side effect, raise mid-work choices as this file describes, and merge rather than rebase.
 
 - **Review:** I review changes in Amp's Changes pane, not lazygit. Still name each file you changed
   and what the change does.
