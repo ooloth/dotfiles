@@ -24,7 +24,9 @@ prints Rex's JSON for the new tab, and `.block_ids[0]` is its pane. Rex looks fo
 your own session unless `-s` names another, so capture it with `rex capture -s Workers -b <pane>`,
 or with the session you passed to `-s`.
 
-Tab names start with a word, never an emoji: `PR 123: review-code`, not `👀 PR 123: review-code`.
+Tab names start with a word, never an emoji: `PR 123 (alice): review-code`, not
+`👀 PR 123 (alice): review-code`. A tab working on a PR names the PR's author's login in the
+parentheses, so the sidebar shows which tabs are the user's own PRs and which are other people's.
 
 ## Gotchas
 

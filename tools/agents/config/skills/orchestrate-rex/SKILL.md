@@ -131,7 +131,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
 - **Review before a PR opens:** after a worker pushes a draft PR, and before it is marked ready or
   anyone is asked to review it, review it with review-code. Create a detached worktree at the PR's
   head (`git worktree add --detach "$(mktemp -d)/review-<n>" <head-sha>`) and open a new tab there
-  named `pr-<n>-review-code`, started with the `use-rex` launcher, with a prompt that says:
+  named `PR <n> (<author>): review-code`, started with the `use-rex` launcher, with a prompt that
+  says:
   - This is the author's own review before the PR opens, and no teammate will see the report. So
     every finding is something to fix before opening, or a question for the user. Don't grade
     findings as optional for a later reviewer, and don't suggest leaving one for the team review.
@@ -142,8 +143,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
   claims that decide something, and give the user a short summary that says what you checked.
   Send every finding the user accepts to the PR's worker. When the change touches auth,
   credentials, migrations or infrastructure, also run review-adversarial the same way, as a second
-  review in its own tab and worktree, named `pr-<n>-review-adversarial`. Remove each review
-  worktree once its tab is closed.
+  review in its own tab and worktree, named `PR <n> (<author>): review-adversarial`. Remove each
+  review worktree once its tab is closed.
 - **Judge every finding:** a reviewer's findings, and a worker's fixes and escalations, reach the
   user only with your own verdict on each one. The reviewer has already filtered its subagents'
   findings, and you are the second reader of its judgment. For each finding, open the code it
@@ -155,10 +156,10 @@ confusing report, comes before the next work item. Resolve it with the user befo
   a list you relay without a verdict leaves the user to do the judging.
 - **Reviewing a PR for the user:** every review, a Dependabot bump included, runs in a worker tab
   with review-code, never by hand in your session. Give the worker a detached worktree at the PR's
-  head and a tab named `pr-<n>-reviewing`, and put in its brief any bar the user has set for that
-  kind of PR. Every review posted under the user's name carries a body saying what was checked,
-  written under review-code's Step 5, because to a teammate an approval with no body looks the
-  same as a thoughtless one.
+  head and a tab named `PR <n> (<author>): review-code`, as `use-rex` describes, and put in its
+  brief any bar the user has set for that kind of PR. Every review posted under the user's name
+  carries a body saying what was checked, written under review-code's Step 5, because to a
+  teammate an approval with no body looks the same as a thoughtless one.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
   `git status` reads the right repo. Relay the user's commit signal word for word. For a change you
   made yourself, open a Rex tab in that repo with the `use-rex` launcher and the prompt `/commit`
@@ -169,18 +170,21 @@ confusing report, comes before the next work item. Resolve it with the user befo
   bounded question with one answer goes to a subagent instead. When you check a ticket, list its
   session's tabs, so a tab a worker opened shows up in your table.
 - **Tabs show the work in flight:** the user reads the sidebar as the list of what is happening.
-  Name each worker tab `pr-<number>-<phase>`, where the phase is a word or two saying why the PR
-  needs attention now, at the size of `designing`, `implementing`, `reviewing`, `replying`,
-  `merging` or `verifying` (after the merge, in dev). Those are examples, not a fixed list. Rename
-  the tab when the phase changes. In every sweep, close tabs whose job is finished, such as a
-  commit tab after its commit lands or a worker whose PR only waits on the user's merge. Leave
-  alone any tab you didn't open.
+  Name each worker tab `PR <number> (<author>): <skill>`: the PR, its author's login and the skill
+  the tab runs, such as `PR 88 (ooloth): review-pr-comments-converge` or
+  `PR 123 (alice): review-code`. The author shows which tabs are the user's own PRs and which are
+  other people's, and the skill shows what the tab is doing, since each phase of the work is a
+  skill. Before the PR exists, the ticket takes the PR's place and the user's login the author's,
+  such as `ENG-45 (ooloth): design`.
+  Rename the tab when it starts a different skill. In every sweep, close tabs whose job is
+  finished, such as a commit tab after its commit lands or a worker whose PR only waits on the
+  user's merge. Leave alone any tab you didn't open.
 - **Merging and verifying:** each PR goes through `merge-and-verify`, which owns every rule for
   when a PR is ready, how it merges, when it counts as serving and how its effect is proven. Open a
-  tab for it in the ticket's session (pass `-s`), named `pr-<n>-merging`, in the repo's main
-  checkout rather than the PR's worktree, so its cleanup step can remove that worktree. Start it
-  with the `use-rex` launcher and the prompt `/merge-and-verify <owner>/<repo>#<n>`, and rename it
-  `pr-<n>-verifying` once the PR merges. Close it once its report is posted and its cleanup offer
+  tab for it in the ticket's session (pass `-s`), named `PR <n> (<author>): merge-and-verify`, in
+  the repo's main checkout rather than the PR's worktree, so its cleanup step can remove that
+  worktree. Start it with the `use-rex` launcher and the prompt
+  `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its cleanup offer
   is answered; the PR's row leaves the table then too.
   Name the environment in the prompt when the repo deploys to more than one. A permission prompt,
   such as the merge gate's, is answered by the user in that tab. A question or a wording to

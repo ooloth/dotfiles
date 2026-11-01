@@ -206,7 +206,9 @@ class RelatedRepos(MachineTest):
 
 class TabRequest(MachineTest):
     def test_opens_the_named_tab_in_the_workers_session_and_directory(self) -> None:
-        run = self.machine.run("PR 573: review", "repos/app", "/review", cwd=self.machine.root)
+        run = self.machine.run(
+            "PR 573 (alice): review-code", "repos/app", "/review", cwd=self.machine.root
+        )
 
         self.assertEqual(run.status, 0, run.stderr)
         self.assertEqual(
@@ -216,7 +218,7 @@ class TabRequest(MachineTest):
                 "new",
                 "-s",
                 "session:workers",
-                "PR 573: review",
+                "PR 573 (alice): review-code",
                 "-c",
                 str(self.machine.app),
                 "--focus=false",
