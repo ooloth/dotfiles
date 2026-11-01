@@ -74,7 +74,7 @@ twice. The server's log, `~/Library/Application Support/rex/servers/<id>.log`, s
 - [x] #216 — a comment saying what Rex's own restore does with the extra empty session and focus
 - [x] `docs/questions/what-command-starts-the-repos-python.md` — `init.lua` at Rex's boot is no
   longer a caller of the repo's Python
-- [ ] #203 — a comment saying `init.lua` no longer starts Python at Rex's boot
+- [x] #203 — a comment saying `init.lua` no longer starts Python at Rex's boot
 
 ## Addendum (2026-11-01) — the real restart, and the saver's state
 
