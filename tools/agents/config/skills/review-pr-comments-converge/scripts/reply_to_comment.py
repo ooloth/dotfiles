@@ -140,6 +140,10 @@ def main() -> None:
     # than an error — so the only thing that catches it is seeing the target first.
     print(f"Target: {nwo}#{pr_number}, comment {comment_id}")
 
+    # Found before posting, so a comment that is in no thread stops the run with nothing posted,
+    # rather than leaving a live reply on a thread that was meant to be resolved.
+    thread_id = find_thread_id(owner, name, pr_number, comment_id) if resolve else None
+
     run(
         [
             "gh",
@@ -153,8 +157,7 @@ def main() -> None:
     )
     print(f"Replied to comment {comment_id}.")
 
-    if resolve:
-        thread_id = find_thread_id(owner, name, pr_number, comment_id)
+    if thread_id is not None:
         run(
             [
                 "gh",

@@ -126,11 +126,18 @@ def test_resolve_for_a_comment_in_no_thread_exits_with_a_sentence(tmp_path: Path
     assert "Traceback" not in result.stderr
 
 
+def test_resolve_for_a_comment_in_no_thread_posts_nothing(tmp_path: Path) -> None:
+    env = setup(tmp_path)
+    result = reply(env, "5", "999", "Fixed", "--resolve", "--repo", "octo/widgets")
+    assert result.returncode != 0
+    assert posts(env) == []
+
+
 def test_a_failed_post_resolves_nothing(tmp_path: Path) -> None:
     env = setup(tmp_path, GH_FAIL="1")
     result = reply(env, "5", "123", "Fixed", "--resolve", "--repo", "octo/widgets")
     assert result.returncode != 0
-    assert graphql(env) == []
+    assert not any("resolveReviewThread" in " ".join(call) for call in calls(env))
 
 
 def test_an_extra_argument_is_refused_before_anything_is_posted(tmp_path: Path) -> None:
