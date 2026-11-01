@@ -438,9 +438,11 @@ Do not run any of these commands before receiving explicit approval in Phase 3.
 **Before the first post, check what changed since Phase 1.** Once the fix is pushed, run the fetch
 helper and read the PR's commits again. List every review, comment and reply that is not in the
 saved Phase 1 output, and every commit this run did not make. When the list is empty, say so in
-one line and post. Otherwise post nothing yet: show the list, and ask whether to (a) post the
-approved replies anyway, or (b) run another round on the new feedback first, whose replies are a
-new draft for approval.
+one line and post. Otherwise post nothing: show the list and run another round at once, from Phase
+2, with the new feedback added to the comments still open. A reply posted into a thread that moved
+on would ignore what was said after it, and posting part of the batch now would mean replying to
+the PR twice. The new round's report is a new draft, so its replies wait for approval like the
+first ones did, and the check runs again before they are posted.
 
 Post each reply exactly as approved in the report. The only change allowed is filling in the
 commit hash. A reworded reply is a new draft and needs its own approval.

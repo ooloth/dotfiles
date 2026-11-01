@@ -32,8 +32,15 @@ see. So on the first check in a session, confirm each listed repository with
 ## Reading them
 
 Make one `gh api graphql` request that runs all three searches as aliases, and write its response
-to a file in a new directory from `mktemp -d`. Read the file with `jq` and never print the raw
-response: it is tens of kilobytes, and other people's comment text has no place in this session.
+to a file in a new directory from `mktemp -d`. Write the query to a file in that directory and pass
+it with `-F`, which reads the file named after `@`; `-f` would send the text `@<file>` itself:
+
+```sh
+gh api graphql -F query=@<dir>/query.graphql > <dir>/response.json
+```
+
+Read the file with `jq` and never print the raw response: it is tens of kilobytes, and other
+people's comment text has no place in this session.
 For each pull request ask for: number, title, url, createdAt, isDraft, headRefName, reviewDecision,
 mergeStateStatus, repository name, author login, the last commit's statusCheckRollup state,
 reviewRequests (requested reviewer's `__typename` and login), latestOpinionatedReviews (id, state,
@@ -100,11 +107,12 @@ to work around.
 
 Each of my pull requests whose next step includes "Reply to feedback" gets a session that runs
 `review-pr-comments-converge` on it, so its report is waiting when I look. Prepare only in Rex:
-when `TMUX` is set or `REX_SESSION` is not, prepare nothing and say so above the table.
+when `TMUX` is non-empty or `REX_SESSION` is empty, prepare nothing and say so above the table.
 
 List the tabs of the session labelled `Workers` once per check, with
 `rex window ls -s Workers --json`, whose labels are at `.windows[].label`. When there is no
-`Workers` session, no tab is open. A pull request's tab is
+`Workers` session, the command fails with `session target "Workers" not found`, which means no tab
+is open. A pull request's tab is
 `PR <number> (<author login>): review-pr-comments-converge`, and a prepared session is any open tab
 whose label ends in `: review-pr-comments-converge`. Then take each such pull request in table
 order:
@@ -126,7 +134,9 @@ order:
        <clone>/.claude/worktrees/pr-<number>-<time> origin/<headRefName>
      ```
 
-  4. Open the tab, and confirm with `jq -e .window_id` that Rex returned it:
+  4. Open the tab, and confirm that Rex returned it by piping the launcher's stdout alone into
+     `jq -e .window_id`. Its stderr carries messages such as `Created Rex session Workers`, which
+     are not JSON:
 
      ```sh
      bash ~/Repos/ooloth/dotfiles/tools/rex/claude-tab.bash '<tab>' <worktree> \
@@ -179,7 +189,8 @@ The table has these columns:
 - **Author**: the author's login, on every row, mine included.
 - **Title**, in full. The table wraps a long cell, so a title is never cut short.
 - **Note**: when it has feedback, who left the newest of it and how many unresolved threads do not
-  end with my comment, such as "Copilot, 4 unresolved threads" or "alice requested changes". When
+  end with my comment, such as "Copilot, 4 unresolved threads" or "alice requested changes", or
+  "rex-rx-agent commented" when the feedback is a review bot's top-level comment. When
   its prepared session's tab is open, the Note ends with "report in" and the tab's name. Name
   authors and count things only; never quote or summarise what a comment says. For review
   requested, the date the pull request was opened, such as "opened Jun 24". For not my move, who
