@@ -143,6 +143,13 @@ order:
        '/review-pr-comments-converge <owner>/<name>#<number>'
      ```
 
+  5. Wait about 10 seconds, then read the new tab's screen with
+     `rex capture -s Workers -b <pane>`, where `<pane>` is `.block_ids[0]` from the launcher's
+     JSON. A session that stops at a question, such as Claude Code asking whether to trust a folder
+     it has not opened before, waits there with nobody watching. When the screen shows a question
+     waiting for an answer, say above the table that the pull request's tab is waiting for me, and
+     quote the question. Never answer it: trusting a folder, or any other answer, is mine to give.
+
   When a step fails, stop preparing that pull request and say above the table which one, which
   step, and the error, quoted. The next check tries again. When the launch fails after the worktree
   was added, remove both first, with `git -C <clone> worktree remove <worktree>` and then
