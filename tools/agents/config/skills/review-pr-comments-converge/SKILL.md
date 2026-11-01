@@ -128,6 +128,10 @@ checkout helper resolved:
 uv run <skill-base-dir>/scripts/fetch_pr_comments.py <pr-number> --repo <owner>/<repo>
 ```
 
+Save its output to a file in a new `mktemp -d` directory, along with the PR's commits from
+`gh pr view <pr-number> -R <owner>/<repo> --json commits`. Phase 4 compares both with the PR as it
+stands just before posting, because a report can wait hours for the user while the PR moves on.
+
 Also fetch the PR description for context on intent:
 
 ```bash
@@ -431,6 +435,13 @@ replies"), post replies and resolve threads:
 
 Do not run any of these commands before receiving explicit approval in Phase 3.
 
+**Before the first post, check what changed since Phase 1.** Once the fix is pushed, run the fetch
+helper and read the PR's commits again. List every review, comment and reply that is not in the
+saved Phase 1 output, and every commit this run did not make. When the list is empty, say so in
+one line and post. Otherwise post nothing yet: show the list, and ask whether to (a) post the
+approved replies anyway, or (b) run another round on the new feedback first, whose replies are a
+new draft for approval.
+
 Post each reply exactly as approved in the report. The only change allowed is filling in the
 commit hash. A reworded reply is a new draft and needs its own approval.
 
@@ -440,6 +451,9 @@ skill commits the fix through `/commit` once the user gives a commit signal, the
 the working root's branch is named differently from the head branch it tracks, a plain `git push`
 is refused under git's default `push.default=simple`, so the push names both:
 `git push <remote> <local>:<head-branch>`.
+
+Once every reply is posted, say that closing this session's tab lets `monitor-prs` prepare the PR's
+next feedback, since it prepares nothing for a PR while that PR's tab is open.
 
 ---
 

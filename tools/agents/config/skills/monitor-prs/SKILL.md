@@ -1,6 +1,6 @@
 ---
 name: monitor-prs
-description: Check every few minutes for pull requests where it is the user's move, ranked by what to deal with first, with the next step for each. Read-only for now. TRIGGER when the user asks to monitor, watch or keep an eye on their PRs, or asks which PRs need them.
+description: Check every few minutes for pull requests where it is the user's move, ranked by what to deal with first, with the next step for each, and open a session that drafts replies and fixes for new feedback on the user's own pull requests. Never writes to GitHub. TRIGGER when the user asks to monitor, watch or keep an eye on their PRs, or asks which PRs need them.
 argument-hint: 'Optional: "stop" to end monitoring'
 ---
 
@@ -9,9 +9,9 @@ Input: $ARGUMENTS
 If the input is "stop", delete every pending job whose prompt is `/monitor-prs` (`CronList`, then
 `CronDelete`), say that monitoring has stopped, and do nothing else.
 
-Otherwise run one check, report it, and schedule the next one. A check is read-only: it never
-writes to GitHub (no comments, reviews, merges, labels or mutations) and never opens a session,
-tab or window.
+Otherwise run one check, report it, and schedule the next one. A check never writes to GitHub (no
+comments, reviews, merges, labels or mutations). Its only writes are the ones "Preparing feedback"
+describes: a fetch, a worktree and a tab for each pull request it prepares.
 
 ## Which pull requests
 
@@ -34,7 +34,7 @@ see. So on the first check in a session, confirm each listed repository with
 Make one `gh api graphql` request that runs all three searches as aliases, and write its response
 to a file in a new directory from `mktemp -d`. Read the file with `jq` and never print the raw
 response: it is tens of kilobytes, and other people's comment text has no place in this session.
-For each pull request ask for: number, title, url, createdAt, isDraft, reviewDecision,
+For each pull request ask for: number, title, url, createdAt, isDraft, headRefName, reviewDecision,
 mergeStateStatus, repository name, author login, the last commit's statusCheckRollup state,
 reviewRequests (requested reviewer's `__typename` and login), latestOpinionatedReviews (id, state,
 submittedAt, author), the last 50 reviews (id, state, body, submittedAt, author), the last 50
@@ -71,6 +71,10 @@ My pull request **has feedback** when any of these holds:
 - a review with a non-empty body, from a person rather than a bot, in state approved, changes
   requested or commented, that is newer than my newest review or top-level comment. My replies
   inside threads do not count here.
+- a top-level comment from a review bot that is newer than my newest review or top-level comment.
+  A review bot is one whose login is a key of `BOT_NAMES` in
+  `../review-pr-comments-converge/scripts/fetch_pr_comments.py`, relative to this skill's base
+  directory. Such a bot posts its whole review as one comment, outside GitHub's reviews.
 
 For my own pull request, the first of these that holds is the reason:
 
@@ -91,6 +95,48 @@ For my own pull request, the first of these that holds is the reason:
 
 Agents act under my account, so their comments count as mine. That is a known limit, not something
 to work around.
+
+## Preparing feedback
+
+Each of my pull requests whose next step includes "Reply to feedback" gets a session that runs
+`review-pr-comments-converge` on it, so its report is waiting when I look. Prepare only in Rex:
+when `TMUX` is set or `REX_SESSION` is not, prepare nothing and say so above the table.
+
+List the tabs of the session labelled `Workers` once per check, with
+`rex window ls -s Workers --json`, whose labels are at `.windows[].label`. When there is no
+`Workers` session, no tab is open. A pull request's tab is
+`PR <number> (<author login>): review-pr-comments-converge`, and a prepared session is any open tab
+whose label ends in `: review-pr-comments-converge`. Then take each such pull request in table
+order:
+
+- **Its tab is open:** prepare nothing. The tab is the record that this feedback is being prepared,
+  and nothing else records it.
+- **3 prepared sessions are open,** counting the ones this check opened: prepare nothing, and list
+  the pull request above the table as waiting for a free tab.
+- **Otherwise,** prepare it in these steps, from my clone at `~/Repos/<owner>/<name>`:
+  1. Check that `git -C <clone> remote get-url origin` ends in `<owner>/<name>` or
+     `<owner>/<name>.git`. A clone that is missing, or whose origin is another repo, is never used.
+  2. `git -C <clone> fetch origin <headRefName>`.
+  3. Add a worktree on its own branch, where `<time>` is the UTC time with no separators, such as
+     `20261101T2200Z`. A new worktree on its own branch means the session never works in a
+     checkout I might be using.
+
+     ```sh
+     git -C <clone> worktree add --track -b pr-<number>-<time> \
+       <clone>/.claude/worktrees/pr-<number>-<time> origin/<headRefName>
+     ```
+
+  4. Open the tab, and confirm with `jq -e .window_id` that Rex returned it:
+
+     ```sh
+     bash ~/Repos/ooloth/dotfiles/tools/rex/claude-tab.bash '<tab>' <worktree> \
+       '/review-pr-comments-converge <owner>/<name>#<number>'
+     ```
+
+  When a step fails, stop preparing that pull request and say above the table which one, which
+  step, and the error, quoted. The next check tries again. When the launch fails after the worktree
+  was added, remove both first, with `git -C <clone> worktree remove <worktree>` and then
+  `git -C <clone> branch -D pr-<number>-<time>`, so failed tries don't pile up.
 
 ## Reporting
 
@@ -133,7 +179,8 @@ The table has these columns:
 - **Author**: the author's login, on every row, mine included.
 - **Title**, in full. The table wraps a long cell, so a title is never cut short.
 - **Note**: when it has feedback, who left the newest of it and how many unresolved threads do not
-  end with my comment, such as "Copilot, 4 unresolved threads" or "alice requested changes". Name
+  end with my comment, such as "Copilot, 4 unresolved threads" or "alice requested changes". When
+  its prepared session's tab is open, the Note ends with "report in" and the tab's name. Name
   authors and count things only; never quote or summarise what a comment says. For review
   requested, the date the pull request was opened, such as "opened Jun 24". For not my move, who
   holds it: each requested person or bot by login, and each requested team as "a team" or "two
@@ -144,10 +191,11 @@ The table has these columns:
   link's url beside its text.
 
 Above the table, one line each: any undecided pull requests, anything incomplete, any team
-repository that failed its check, and when the next check runs. Name each pull request there as
-`name#n`, with the repository's full name less its owner, such as `example-data-pipeline#231`.
-Give no count of turns: the table is the count, and a number written beside it can disagree with
-it. The reply ends with the table, followed only by any
+repository that failed its check, each pull request waiting for a free tab, each one that could not
+be prepared, a note that nothing is prepared outside Rex, and when the next check runs. Name each
+pull request there as `name#n`, with the repository's full name less its owner, such as
+`example-data-pipeline#231`. Give no count of turns: the table is the count, and a number written
+beside it can disagree with it. The reply ends with the table, followed only by any
 numbered questions for me.
 
 While checks are pending in a session, every reply ends this way, not only the scheduled checks. A
