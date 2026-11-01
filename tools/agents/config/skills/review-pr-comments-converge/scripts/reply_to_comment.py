@@ -120,7 +120,9 @@ def main() -> None:
     args = [a for a in args if a != "--resolve"]
     args, repo_arg = take_option(args, "--repo")
 
-    if len(args) < 3:
+    # Exactly three: an extra word is most often a mistyped flag, such as --reslove, and posting
+    # anyway would drop what it asked for without a word.
+    if len(args) != 3:
         print(
             "Usage: reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]",
             file=sys.stderr,
