@@ -403,6 +403,20 @@ def test_a_bot_with_a_name_is_thanked_by_name_and_never_tagged(harness: Harness)
     assert "@" not in thank_lines(result.stdout)[0]
 
 
+def test_copilots_review_is_thanked_as_copilot_and_never_tagged(harness: Harness) -> None:
+    copilot = author("copilot-pull-request-reviewer", "Bot")
+    fixture = {
+        "threads": [[]],
+        "reviews": [[review(1, "No open issues.", by=copilot)]],
+        "comments": [[]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert thank_lines(result.stdout) == ["  thank      : Thanks for the feedback, Copilot:"]
+
+
 def test_a_bot_without_a_name_asks_for_one(harness: Harness) -> None:
     fixture = {
         "threads": [[]],

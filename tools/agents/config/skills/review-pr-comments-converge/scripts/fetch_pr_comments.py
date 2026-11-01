@@ -118,7 +118,7 @@ class Discussion:
 
 # The name each review bot is thanked by. A bot is never @-mentioned: rex-rx starts a new review
 # whenever its handle is mentioned on a PR.
-BOT_NAMES = {"rex-rx-agent": "Rex"}
+BOT_NAMES = {"rex-rx-agent": "Rex", "copilot-pull-request-reviewer": "Copilot"}
 
 
 @dataclass(frozen=True)
