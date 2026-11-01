@@ -52,9 +52,8 @@ LUA = "luajit"
 # fails, timeout or garbage. CWD is the working directory the process lookup reports, or empty.
 HARNESS = r"""
 local init_lua, key, direction, fail = arg[1], arg[2], arg[3], arg[4]
-local exec_mode = arg[5] or "ok"
-local layout, restless, cases = arg[6] or "*zsh,zsh,zsh@2", arg[7] == "true", arg[8]
-local app, origin, nvim_mode, cwd = arg[9] or "ok", arg[10] or "palette", arg[11] or "ok", arg[12] or ""
+local layout, restless, cases = arg[5] or "*zsh,zsh,zsh@2", arg[6] == "true", arg[7]
+local app, origin, nvim_mode, cwd = arg[8] or "ok", arg[9] or "palette", arg[10] or "ok", arg[11] or ""
 if cases and cases:sub(1, 1) == "@" then
   local file = assert(io.open(cases:sub(2)))
   cases = file:read("*a")
@@ -127,9 +126,6 @@ end
 
 local exec = setmetatable({
   start = function(argv, opts)
-    if exec_mode == "raises" then error("exec.start exploded") end
-    if exec_mode == "fails" then return nil, "no such file" end
-    assert(opts.detach == true, "the saver must outlive this call")
     started[#started + 1] = argv
     return { pid = 1 }
   end,
@@ -233,8 +229,6 @@ rex = {
     end,
   },
 }
-
-if exec_mode == "missing" then rex.exec = nil end
 
 reset(layout)
 dofile(init_lua)
@@ -384,9 +378,9 @@ class Run:
         return path.read_text() if path.exists() else ""
 
 
-def run_harness(*args: str, home: Path | None = None, saver_home: str | None = None) -> Run:
+def run_harness(*args: str, home: Path | None = None) -> Run:
     home = home or Path(tempfile.mkdtemp())
-    env = {"HOME": saver_home or str(home), "PATH": os.environ["PATH"]}
+    env = {"HOME": str(home), "PATH": os.environ["PATH"]}
     result = subprocess.run(
         [LUA, "-", str(INIT_LUA), *args],
         input=HARNESS,
@@ -436,7 +430,6 @@ def press(
         key,
         "",
         fail,
-        "ok",
         spec(layout),
         str(restless).lower(),
         "",
@@ -481,9 +474,7 @@ def run_action(
     origin: str = "palette",
     nvim: str = "ok",
 ) -> ActionOutcome:
-    run = run_harness(
-        "<action>", direction, fail, "ok", spec(layout), "false", "", app, origin, nvim
-    )
+    run = run_harness("<action>", direction, fail, spec(layout), "false", "", app, origin, nvim)
     outcome = run.outcome
     assert isinstance(outcome, dict)
     return ActionOutcome(
@@ -504,8 +495,8 @@ class Startup:
     bindings: int
 
 
-def start_rex(exec_mode: str = "ok", home: str = "/Users/someone") -> Startup:
-    run = run_harness("<startup>", "", "", exec_mode, saver_home=home)
+def start_rex() -> Startup:
+    run = run_harness("<startup>", "", "")
     outcome = run.outcome
     assert isinstance(outcome, dict)
     return Startup(outcome["started"], outcome["logs"], outcome["bindings"])
@@ -529,7 +520,7 @@ def sweep(cases: list[tuple[Layout, str]]) -> list[dict]:
     with tempfile.NamedTemporaryFile("w", suffix=".cases") as file:
         file.write(encoded)
         file.flush()
-        run = run_harness("<sweep>", "", "", "ok", spec(DEFAULT_LAYOUT), "false", f"@{file.name}")
+        run = run_harness("<sweep>", "", "", spec(DEFAULT_LAYOUT), "false", f"@{file.name}")
     outcome = run.outcome
     assert isinstance(outcome, list)
     return outcome
@@ -909,36 +900,14 @@ class Lazygit(unittest.TestCase):
         self.assertEqual(outcome.opened, [float_over_tab(REPO)])
 
 
-class SessionSaver(unittest.TestCase):
-    def test_loading_the_config_starts_the_saver_once_with_uv(self) -> None:
+class LoadingTheConfig(unittest.TestCase):
+    def test_loading_the_config_starts_no_background_program(self) -> None:
+        # Rex restores sessions itself after a server restart, so a program started here to rebuild
+        # them would restore every session a second time (docs/decisions/009).
         startup = start_rex()
-        self.assertEqual(
-            startup.started,
-            [
-                [
-                    "/Users/someone/.local/bin/uv",
-                    "run",
-                    "--offline",
-                    "--quiet",
-                    "--script",
-                    "/Users/someone/Repos/ooloth/dotfiles/tools/rex/saver.py",
-                    "run",
-                    "--state-dir",
-                    "/Users/someone/.local/state/rex-restore",
-                ]
-            ],
-        )
+        self.assertEqual(startup.started, [])
         self.assertEqual(startup.logs, [])
-
-    def test_every_binding_loads_when_the_saver_cannot_start(self) -> None:
-        expected = start_rex().bindings
-        for mode in ("missing", "raises", "fails"):
-            with self.subTest(mode=mode):
-                startup = start_rex(mode)
-                self.assertEqual(startup.started, [])
-                self.assertEqual(startup.bindings, expected)
-                self.assertEqual(len(startup.logs), 1)
-                self.assertIn("session saver", startup.logs[0])
+        self.assertEqual(startup.bindings, 15)
 
 
 if __name__ == "__main__":

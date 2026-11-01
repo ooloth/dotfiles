@@ -338,32 +338,3 @@ rex.action({
 })
 
 rex.bind("cmd+g", "lazygit")
-
--- Session saver (tools/rex/saver.py): saves every session's layout and rebuilds the sessions after
--- the server restarts. This file runs again on every reload and `rex config check`; the saver holds
--- a lock, so only one copy keeps running. It starts last, and guarded, so that a failure here can
--- never stop the bindings above from loading.
-local function start_session_saver()
-  local home = os.getenv("HOME")
-  if not home then
-    rex.log("session saver: HOME is not set, so the saver was not started")
-    return
-  end
-  if not (rex.exec and rex.exec.start) then
-    rex.log("session saver: rex.exec.start is unavailable, so the saver was not started")
-    return
-  end
-  local ok, started, err = pcall(rex.exec.start, {
-    home .. "/.local/bin/uv", "run", "--offline", "--quiet", "--script",
-    home .. "/Repos/ooloth/dotfiles/tools/rex/saver.py",
-    "run", "--state-dir", home .. "/.local/state/rex-restore",
-  }, { detach = true, stdout = false, stderr = false })
-  if not ok then
-    rex.log("session saver: failed to start: " .. tostring(started))
-  elseif not started then
-    rex.log("session saver: failed to start: " .. tostring(err))
-  end
-end
--- Off while testing Rex's own session restore (preview.23). Running both would restore every
--- session twice after a server restart.
--- start_session_saver()

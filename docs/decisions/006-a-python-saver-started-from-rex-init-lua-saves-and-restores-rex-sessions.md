@@ -1,10 +1,12 @@
 ---
 number: 006
-status: accepted
+status: superseded by 009
 date: 2026-10-25
 ---
 
 # 006 — A Python saver started from Rex's `init.lua` saves and restores Rex sessions
+
+> Status: Superseded by [Decision 009](009-rexs-built-in-session-restore-replaces-the-saver.md)
 
 ## Forced by
 

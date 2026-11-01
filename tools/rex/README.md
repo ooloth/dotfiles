@@ -49,46 +49,7 @@ starts through an interactive zsh, because the login shell Rex uses for commands
 `.zshrc`, where PATH, EDITOR and XDG_CONFIG_HOME are set.
 
 After editing it, run `rex config check`, then `rex config reload`. `rex keymap` lists what loaded.
-`config/init.lua` is linked into `~/.config/rex`, so saving it changes your running Rex at once,
-and `rex config check` runs it for real: both start the session saver below on your own server. To
-try a change to the saver without touching your sessions, run `tests/live_restore.py` instead.
-
-## Sessions after a restart
-
-Rex keeps sessions only in the server's memory, so a reboot or a server restart loses them.
-`saver.py` brings them back: each session's tabs, splits and split sizes, labels, working
-directories and active tab, and the session the app was showing. Running programs and terminal
-output do not come back, and nothing but layouts, directories and the position of the session the
-app showed is written to disk. [Decision 006][006] records why it is a Python script.
-
-`config/init.lua` starts it with `uv run --offline` each time the server loads its config. Only one
-copy runs, because each holds a lock in `~/.local/state/rex-restore/`. The first time it runs on a
-newly started server, it rebuilds the sessions in `latest.json`. After that it saves each change
-within about a second and keeps the last 20 distinct layouts in `history/`.
-
-It also saves which session Rex.app was showing, read from the app's `Workspace.lastFocusedSession`
-preference. Switching sessions rewrites `latest.json` but adds nothing to `history/`. When the app
-finds a new server empty, it opens an empty session of its own and shows it. The saver rebuilds the
-saved focused session inside that one, then closes the app's original tab, so the app ends up
-showing the right session without being asked. It has to work that way because the app refuses
-actions such as `session.select` from scripts unless Remote Control is on in its settings. It reuses
-only a session with one tab, one pane and a shell running nothing. If the app connects after the
-restore, there is no empty session, and the app shows the first session instead.
-
-`shell.zsh` reports each pane's directory to Rex on `cd`, and prints a red warning above the prompt
-in Rex panes when the saver has stopped or reports a problem. `saver.log` in the same directory
-says why. When there is no `saver.log`, the saver has never started on this machine, and the
-warning says to run `u`, then `rex config reload`. To recover an older layout by hand, copy a
-file from `history/` over `latest.json`, then restart the Rex server.
-
-`update.bash` runs the saver once, so that its dependencies are in uv's cache for `--offline`.
-
-To remove it, delete `saver.py`, `shell.zsh`, `update.bash`, the tests named below, and the
-`start_session_saver` block at the end of `config/init.lua`.
-
-Run its tests with `uv run tools/rex/tests/test_saver.py`. `uv run tools/rex/tests/live_restore.py`
-restarts a throwaway Rex server and checks the sessions come back. CI cannot run it, because Rex is
-not installed there, so run it by hand after changing the saver.
+`config/init.lua` is linked into `~/.config/rex`, so saving it changes your running Rex at once.
 
 Run the `init.lua` tests with `uv run tools/rex/tests/test_init.py`. They need `luajit` on
 the `PATH`, because Rex runs its config on its own Lua 5.1 and LuaJIT implements the same version.
@@ -102,7 +63,17 @@ and a shell side by side, checks that focus moves through nvim's windows and out
 back, and closes the session. It runs the action through `rex do`, so crossing into another tab is
 still checked by pressing the keys in the app.
 
-[006]: https://github.com/ooloth/dotfiles/blob/main/docs/decisions/006-a-python-saver-started-from-rex-init-lua-saves-and-restores-rex-sessions.md
+## Sessions after a restart
+
+The Rex server restores its sessions itself when it starts again, after a reboot or a server
+restart. Each session comes back with its tabs, splits, floating layers, labels and active tab, and
+each pane opens a new shell in the directory its program was in. Running programs and scrollback do
+not come back. The server keeps this in the `snapshot/` folder beside its log, under
+`~/Library/Application Support/rex/servers/`. `config/init.lua` starts nothing of its own to save or
+restore sessions, because a second restorer would bring every session back twice.
+[Decision 009][009] records why.
+
+[009]: https://github.com/ooloth/dotfiles/blob/main/docs/decisions/009-rexs-built-in-session-restore-replaces-the-saver.md
 
 ## Claude Code in a new tab
 
