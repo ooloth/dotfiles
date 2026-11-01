@@ -63,7 +63,7 @@ twice.
 
 - [x] `tools/rex/README.md` — "Sessions after a restart" describes Rex's own restore
 - [x] Decision 006 — status line saying 009 supersedes it
-- [ ] #210 — a comment saying `saver.py` no longer needs moving into the Python project
-- [ ] #214 — a comment saying the saver is gone, so the conversation resume needs another home
-- [ ] #215 — a comment adding the open question of where closed tabs and sessions are kept
-- [ ] #216 — a comment saying what Rex's own restore does with the extra empty session and focus
+- [x] #210 — a comment saying `saver.py` no longer needs moving into the Python project
+- [x] #214 — a comment saying the saver is gone, so the conversation resume needs another home
+- [x] #215 — a comment adding the open question of where closed tabs and sessions are kept
+- [x] #216 — a comment saying what Rex's own restore does with the extra empty session and focus
