@@ -88,7 +88,9 @@ bash "$DOTFILES/tools/rex/claude-tab.bash" [-s <session>] '<tab name>' <director
 ```
 
 The tab opens in the Rex session labelled `Workers` unless `-s` names another session. When no
-`Workers` session exists, the launcher creates one with this tab as its first window. Rex's JSON
+`Workers` session exists, the launcher creates one with this tab as its first window. The tab opens
+without taking focus: Rex.app would keep showing its own tab anyway, and key bindings such as cmd+g
+would then act on the new tab out of sight, because they go to the server's focused pane. Rex's JSON
 for the new tab goes to stdout, with its pane at `.block_ids[0]`. Capture that pane with
 `rex capture -s Workers -b <pane>`, or with the session passed to `-s`, because Rex looks for a pane
 only in the caller's own session otherwise. Tab names start with a word, not an emoji. Agents start

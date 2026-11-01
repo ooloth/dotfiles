@@ -219,6 +219,7 @@ class TabRequest(MachineTest):
                 "PR 573: review",
                 "-c",
                 str(self.machine.app),
+                "--focus=false",
                 "--json",
                 "--",
                 "bash",
@@ -226,6 +227,16 @@ class TabRequest(MachineTest):
                 "/review",
             ],
         )
+
+    def test_a_tab_opened_with_s_leaves_rex_focus_where_it_was(self) -> None:
+        # Rex.app keeps showing its tab when the server's focus moves, and sends key bindings to the
+        # server's focused pane, so a new tab that took focus would get every key pressed in the tab
+        # still on screen.
+        run = self.machine.run("-s", "session:other", "Review", str(self.machine.app))
+
+        self.assertEqual(run.status, 0, run.stderr)
+        assert run.rex is not None
+        self.assertIn("--focus=false", run.rex)
 
     def test_s_names_another_session_without_looking_up_workers(self) -> None:
         run = self.machine.run("-s", "session:other", "Review", str(self.machine.app))

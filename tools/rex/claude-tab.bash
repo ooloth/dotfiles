@@ -54,7 +54,10 @@ main() {
 
   [[ -n "${session}" ]] || session="$(find_workers)"
   if [[ -n "${session}" ]]; then
-    exec rex window new -s "${session}" "${name}" -c "${dir}" --json -- bash "${cc}" "$@"
+    # Rex.app keeps showing its tab when the server's focus moves, and sends key bindings to the
+    # server's focused pane. A new tab that took focus would get every key pressed in the tab still
+    # on screen, such as cmd+g opening lazygit out of sight, so it leaves focus where it was.
+    exec rex window new -s "${session}" "${name}" -c "${dir}" --focus=false --json -- bash "${cc}" "$@"
   fi
 
   # A new session's JSON nests its first window, so print that window to match `window new`
