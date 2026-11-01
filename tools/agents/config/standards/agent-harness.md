@@ -78,6 +78,17 @@ carrying no memory of the discussion the instruction as it would be written and
 the input that would test it, withhold the expected answer, and read what it
 does.
 
+**A change that starts sessions or processes on its own has run once on the real
+system before it counts as done.**
+A replay against fake commands shows only what the fakes were written to show.
+What the real harness asks interactively, such as Claude Code's question about
+trusting a folder it has not opened before, appears in no fake, so a session
+that would stop there passes every replay and then waits unseen. One run on the
+real system, with its output read back, such as the new tab's screen, is what
+shows the chain gets as far as doing its work. When that run is impossible, the
+change is reported as unproven on the real system, with what to run and what to
+look for.
+
 **A file a later session resumes from holds what that session would otherwise get wrong or redo,
 and nothing else.**
 A session that resumes from a file trusts what it finds there and skips what it does not, so each
