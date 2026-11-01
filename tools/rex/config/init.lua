@@ -302,9 +302,10 @@ end
 local lazygit_command = { "/opt/homebrew/bin/zsh", "-i", "-c", "lazygit" }
 
 -- Like the tmux popup on prefix g (tools/tmux/config/tmux.conf): lazygit floats over the tab, and
--- quitting it closes the floating layer, leaving the tab's panes as they were. Rex ends a zoom when
--- the float takes focus, and refocuses the tab's last pane when it closes. A new float starts in the
--- home directory, so it is given the pressed pane's directory.
+-- quitting it closes the floating layer. Current Rex ends a zoom when the float takes focus (an open
+-- Rex bug, "Focused floating layer clears pane zoom, and closing it doesn't restore it") and
+-- refocuses the tab's last pane when it closes. A new float starts in the home directory, so it is
+-- given the pressed pane's directory.
 rex.action({
   name = "lazygit",
   title = "Lazygit",

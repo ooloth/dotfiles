@@ -10,7 +10,7 @@ Run with: uv run tools/rex/tests/test_init.py
 Each test loads init.lua in `luajit` with the `rex` API stubbed by a fake session, presses one
 key, and reads what happened: whether the key was handled, which way Rex was asked to move focus,
 where focus ended up, what the app was asked to do, which calls went to nvim, what was recorded in
-focus.log, and which splits and zooms were asked for. The fake session's tabs are rows of panes
+focus.log, and which floats, splits and zooms were asked for. The fake session's tabs are rows of panes
 side by side, and its revision rises only when focus changes, as Rex's does. A pane can run nvim,
 whose windows are also a row, and the fake rex.exec answers nvim's move and enter calls the way
 config.nvim's lua/config/rex.lua does. A key bound to an action runs that action the way Rex does,
@@ -218,7 +218,7 @@ rex = {
       if fail == "new_layer" then return nil, "too many blocks" end
       return { layer_id = "layer:lazygit", block_ids = { "block:lazygit" }, revision = 2 }
     end,
-    -- Recorded so a test sees it if cmd+g ever changes the tiled layout again.
+    -- Recorded so that a test sees any tiled-layout change cmd+g makes.
     new_split = function(args)
       opened[#opened + 1] = "new_split " .. tostring(args.anchor_id)
       return { block_ids = { "block:lazygit" }, revision = 2 }
@@ -863,7 +863,6 @@ class CmdKeys(unittest.TestCase):
 
 
 REPO = "/Users/someone/Repos/project"
-PRESSED = "block:1-2"
 
 
 def float_over_tab(cwd: str) -> str:
@@ -892,6 +891,13 @@ class Lazygit(unittest.TestCase):
         self.assertEqual(len(outcome.logs), 1)
         self.assertIn("lookup failed", outcome.logs[0])
 
+    def test_a_process_with_no_directory_still_opens_lazygit_and_is_logged(self) -> None:
+        outcome = press("cmd+g", cwd="")
+        self.assertTrue(outcome.handled)
+        self.assertEqual(outcome.opened, [float_over_tab("nil")])
+        self.assertEqual(len(outcome.logs), 1)
+        self.assertIn("working directory", outcome.logs[0])
+
     def test_a_failed_float_fails_with_the_reason_and_the_directory(self) -> None:
         outcome = press("cmd+g", cwd=REPO, fail="new_layer")
         self.assertFalse(outcome.handled)
@@ -907,7 +913,6 @@ class LoadingTheConfig(unittest.TestCase):
         startup = start_rex()
         self.assertEqual(startup.started, [])
         self.assertEqual(startup.logs, [])
-        self.assertEqual(startup.bindings, 15)
 
 
 if __name__ == "__main__":

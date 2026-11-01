@@ -43,10 +43,11 @@ cmd+shift+r to rename the session:
 cmd+g runs the `lazygit` action, which works like the tmux popup on prefix g. It opens lazygit in a
 floating layer over the tab, inset 2.5% on each side, in the directory of whatever runs in the
 focused pane. A new float would otherwise start in the home directory. Quitting lazygit closes the
-float and leaves the tab's panes as they were. Rex ends a zoom when the float takes focus, and after
-the float closes it focuses the tab's last pane rather than the one cmd+g was pressed in. Lazygit
-starts through an interactive zsh, because the login shell Rex uses for commands does not read
-`.zshrc`, where PATH, EDITOR and XDG_CONFIG_HOME are set.
+float. Two things in current Rex differ from the tmux popup: a float that takes focus ends any zoom,
+which an open Rex bug ("Focused floating layer clears pane zoom, and closing it doesn't restore
+it") reports, and after the float closes Rex focuses the tab's last pane rather than the one cmd+g
+was pressed in. Lazygit starts through an interactive zsh, because the login shell Rex uses for
+commands does not read `.zshrc`, where PATH, EDITOR and XDG_CONFIG_HOME are set.
 
 After editing it, run `rex config check`, then `rex config reload`. `rex keymap` lists what loaded.
 `config/init.lua` is linked into `~/.config/rex`, so saving it changes your running Rex at once.
@@ -68,8 +69,10 @@ still checked by pressing the keys in the app.
 The Rex server restores its sessions itself when it starts again, after a reboot or a server
 restart. Each session comes back with its tabs, splits, floating layers, labels and active tab, and
 each pane opens a new shell in the directory its program was in. Running programs and scrollback do
-not come back. The server keeps this in the `snapshot/` folder beside its log, under
-`~/Library/Application Support/rex/servers/`. `config/init.lua` starts nothing of its own to save or
+not come back. Each server keeps this in `servers/<id>/snapshot/` under
+`~/Library/Application Support/rex/`, next to its log, `servers/<id>.log`. After a restart that log
+has a `restored saved sessions` line, and non-zero `skipped_sessions` or `skipped_blocks` counts on
+it mean something did not come back. `config/init.lua` starts nothing of its own to save or
 restore sessions, because a second restorer would bring every session back twice.
 [Decision 009][009] records why.
 

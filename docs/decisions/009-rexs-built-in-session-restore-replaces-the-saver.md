@@ -36,12 +36,15 @@ background program.
 
 ## Rejected
 
-- **Keep the saver in the repo but never start it.** The README, the shell warning and four tests
-  would describe and check a program that never runs.
+- **Keep the saver in the repo but never start it.** It would be ready to start again at once if
+  Rex's restore failed. It is rejected because the README, the shell warning and four tests would
+  describe and check a program that never runs. It would be worth reconsidering only if Rex's
+  restore failed often enough that switching back had to take minutes rather than a `git revert`.
 - **Keep the saver running to save layout history, without restoring.** It keeps the one thing Rex
   lacks, the last 20 layouts in `history/`. It is rejected because it would still read the Rex CLI
   and server API on every change, and 006 named that as its risk: Rex publishes no compatibility
-  policy for either, so an update could break it.
+  policy for either, so an update could break it. A published compatibility policy for the CLI or
+  the server API would reverse this.
 
 ## Risk
 
@@ -57,7 +60,9 @@ bug reports that restoring after a quit brought back only one tab per session.
 ## Revisit when
 
 A restart brings back fewer sessions, tabs or directories than were open, or brings any session back
-twice.
+twice. The server's log, `~/Library/Application Support/rex/servers/<id>.log`, shows the first: its
+`restored saved sessions` line after a restart has a non-zero `skipped_sessions` or
+`skipped_blocks` count.
 
 ## Also update
 
@@ -67,3 +72,17 @@ twice.
 - [x] #214 — a comment saying the saver is gone, so the conversation resume needs another home
 - [x] #215 — a comment adding the open question of where closed tabs and sessions are kept
 - [x] #216 — a comment saying what Rex's own restore does with the extra empty session and focus
+- [x] `docs/questions/what-command-starts-the-repos-python.md` — `init.lua` at Rex's boot is no
+  longer a caller of the repo's Python
+- [ ] #203 — a comment saying `init.lua` no longer starts Python at Rex's boot
+
+## Addendum (2026-11-01) — the real restart, and the saver's state
+
+A restart of the app's own server, on Rex Beta build 1736, brought back both sessions once each with
+the same IDs, no extra empty session or tab, and the session and tab that were in focus before. That
+settles the part of the Risk above that the throwaway server could not, and #216 is closed on it.
+
+The saver's state folder, `~/.local/state/rex-restore/`, was deleted from this Mac, so its
+`history/` is gone and the Risk's "an older layout can no longer be recovered by hand" holds. Any
+other Mac that ran the saver still has the folder, and nothing reads it, so it can be deleted
+there too.

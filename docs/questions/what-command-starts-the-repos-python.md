@@ -14,7 +14,7 @@ are run to Python over time, and the approach on #203 keeps every crossing betwe
 a process start: a ported step is started from wherever its bash version was. So every caller
 needs a way to start one of the repo's Python entry points. The callers are bash runners such as
 `u`, zsh aliases such as `symlinks`, `check` and `cc`, the hook in
-`tools/claude/config/settings.json`, `tools/rex/config/init.lua` at Rex's boot, the CI workflow,
+`tools/claude/config/settings.json`, the CI workflow,
 Amp orbs running `scripts/check.bash` on Debian, and the instruction in
 `tools/claude/config/CLAUDE.md` that starts `cc.bash`. Without one stated command, each sub-issue
 of the port picks its own, and a start that rewrites `uv.lock`, needs the network, or runs code
@@ -46,8 +46,8 @@ with a check that fails on any start of the repo's Python that does not use it.
 
 - It works from any working directory without changing it, because the project commands act on
   the directory they are run in.
-- It starts on this Mac, in CI, in Amp orbs and on the work laptop, including at Rex's boot with
-  no network and on a work laptop before gcloud is logged in.
+- It starts on this Mac, in CI, in Amp orbs and on the work laptop, including on a work laptop
+  before gcloud is logged in.
 - A `uv.lock` out of step with `pyproject.toml` is caught before it reaches `main`.
 - Neither the directory the caller is in nor the caller's `PYTHONPATH` can change which code runs.
 - Adding a tool or a step needs no registration, as adding a `*.bash` step needs none today.
