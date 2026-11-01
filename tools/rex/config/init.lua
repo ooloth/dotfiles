@@ -301,13 +301,14 @@ end
 -- interactive zsh instead, so it finds itself, nvim and its config as it would in any other pane.
 local lazygit_command = { "/opt/homebrew/bin/zsh", "-i", "-c", "lazygit" }
 
--- Like the full-screen tmux popup on prefix g (tools/tmux/config/tmux.conf): lazygit fills the tab,
--- and quitting it closes its pane, which ends the zoom and leaves the tab as it was. The zoom names
--- the new block, so it can't land on the pane lazygit was opened from.
+-- Like the tmux popup on prefix g (tools/tmux/config/tmux.conf): lazygit floats over the tab, and
+-- quitting it closes the floating layer, leaving the tab's panes as they were. Rex ends a zoom when
+-- the float takes focus, and refocuses the tab's last pane when it closes. A new float starts in the
+-- home directory, so it is given the pressed pane's directory.
 rex.action({
   name = "lazygit",
   title = "Lazygit",
-  description = "Open lazygit zoomed beside the focused pane, in that pane's directory.",
+  description = "Open lazygit floating over the tab, in the focused pane's directory.",
   category = "Pane",
   run = function(ctx)
     assert(ctx.session_id ~= nil, "lazygit: ctx has no session_id")
@@ -317,11 +318,9 @@ rex.action({
     local directory, directory_problem = program_directory(ctx.block_id)
     if directory == nil then rex.log("lazygit: opening without a directory: " .. directory_problem) end
 
-    local split, split_err = rex.session.new_split({
+    local layer, layer_err = rex.session.new_layer({
       session_id = ctx.session_id,
-      anchor_id = ctx.block_id,
-      direction = "horizontal",
-      side = "after",
+      bounds = { 0.025, 0.025, 0.95, 0.95 },
       focus = true,
       layout = {
         block = {
@@ -331,23 +330,10 @@ rex.action({
         },
       },
     })
-    if split == nil then
-      error("lazygit: splitting " .. ctx.block_id .. " in " .. tostring(directory) .. " failed: " .. tostring(split_err), 0)
+    if layer == nil then
+      error("lazygit: opening a floating layer in " .. tostring(directory) .. " failed: " .. tostring(layer_err), 0)
     end
-
-    -- One block was asked for, so any other answer is a server bug.
-    local block_ids = split.block_ids
-    assert(type(block_ids) == "table", "lazygit: the split returned no block_ids")
-    assert(#block_ids == 1, "lazygit: the split returned " .. #block_ids .. " blocks, not 1")
-    local lazygit_id = block_ids[1]
-    assert(lazygit_id ~= ctx.block_id, "lazygit: the split returned the pane it split, " .. ctx.block_id)
-
-    local _, zoom_err = rex.session.zoom_block({ session_id = ctx.session_id, block_id = lazygit_id, zoom = true })
-    if zoom_err then
-      rex.log("lazygit: opened in " .. lazygit_id .. " but zooming it failed: " .. tostring(zoom_err))
-      return { outcome = "opened_unzoomed" }
-    end
-    return { outcome = "zoomed" }
+    return { outcome = "floating" }
   end,
 })
 

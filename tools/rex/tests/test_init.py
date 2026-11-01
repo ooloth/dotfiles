@@ -45,8 +45,7 @@ LUA = "luajit"
 # panes separated by commas, then @ and the focused pane. A pane is the name of its foreground
 # program, or nvim:WINDOWS:FOCUSED (with :busy when nvim is typing text). FAIL names the call that
 # returns an error: view, focus_direction, focus_window, landing (focus_direction, but only after a
-# tab switch), lookup (the process lookup), new_split or zoom_block, or split_none, split_two or
-# split_same for a split that returns no block, two blocks, or the pane it split. RESTLESS makes
+# tab switch), lookup (the process lookup) or new_layer (the floating layer cmd+g opens). RESTLESS makes
 # every focus_direction after a tab switch raise the revision, as if the server never settled. APP
 # is ok when an app ran the key or action, none when none did, and fails when the app refuses to
 # show a tab. ORIGIN is how <action> was run. NVIM is ok, or how every call to nvim goes wrong:
@@ -213,23 +212,23 @@ rex = {
       end
       return { revision = fake.revision }
     end,
-    new_split = function(args)
+    new_layer = function(args)
       check_session(args)
       local block = args.layout.block
       local options = block.options
-      opened[#opened + 1] = string.format("new_split %s %s %s focus=%s %s shell=%s %s cwd=%s on_completion=%s",
-        args.anchor_id, args.direction, args.side, tostring(args.focus), block.flavor, tostring(options.shell),
+      opened[#opened + 1] = string.format("new_layer bounds=%s focus=%s %s shell=%s %s cwd=%s on_completion=%s",
+        table.concat(args.bounds, ","), tostring(args.focus), block.flavor, tostring(options.shell),
         table.concat(options.command, " "), tostring(options.cwd), tostring(options.exit and options.exit.on_completion))
-      if fail == "new_split" then return nil, "too many blocks" end
-      if fail == "split_none" then return { block_ids = {}, revision = 2 } end
-      if fail == "split_two" then return { block_ids = { "block:lazygit", "block:extra" }, revision = 2 } end
-      if fail == "split_same" then return { block_ids = { args.anchor_id }, revision = 2 } end
+      if fail == "new_layer" then return nil, "too many blocks" end
+      return { layer_id = "layer:lazygit", block_ids = { "block:lazygit" }, revision = 2 }
+    end,
+    -- Recorded so a test sees it if cmd+g ever changes the tiled layout again.
+    new_split = function(args)
+      opened[#opened + 1] = "new_split " .. tostring(args.anchor_id)
       return { block_ids = { "block:lazygit" }, revision = 2 }
     end,
     zoom_block = function(args)
-      check_session(args)
-      opened[#opened + 1] = string.format("zoom_block %s zoom=%s", args.block_id, tostring(args.zoom))
-      if fail == "zoom_block" then return nil, "block gone" end
+      opened[#opened + 1] = "zoom_block " .. tostring(args.block_id)
       return { revision = 3 }
     end,
   },
@@ -876,64 +875,38 @@ REPO = "/Users/someone/Repos/project"
 PRESSED = "block:1-2"
 
 
-def split_beside(cwd: str) -> str:
-    """The split cmd+g asks for: lazygit to the right of the pressed pane, closing when it exits.
-    It starts through an interactive zsh, because PATH, EDITOR and XDG_CONFIG_HOME are set in .zshrc,
-    which the login shell Rex would otherwise use doesn't read."""
+def float_over_tab(cwd: str) -> str:
+    """The floating layer cmd+g asks for: lazygit focused over the tab, inset 2.5% on each side,
+    closing when it exits. It starts through an interactive zsh, because PATH, EDITOR and
+    XDG_CONFIG_HOME are set in .zshrc, which the login shell Rex would otherwise use doesn't read."""
     return (
-        f"new_split {PRESSED} horizontal after focus=true com.superlogical.terminal.shell "
+        "new_layer bounds=0.025,0.025,0.95,0.95 focus=true com.superlogical.terminal.shell "
         f"shell=none /opt/homebrew/bin/zsh -i -c lazygit cwd={cwd} on_completion=true"
     )
 
 
-ZOOM_LAZYGIT = "zoom_block block:lazygit zoom=true"
-
-
 class Lazygit(unittest.TestCase):
-    def test_cmd_g_opens_lazygit_zoomed_in_the_pressed_panes_directory(self) -> None:
+    def test_cmd_g_floats_lazygit_over_the_tab_in_the_pressed_panes_directory(self) -> None:
         for program in ["zsh", "nvim", "fzf"]:
             with self.subTest(program=program):
                 outcome = press("cmd+g", layout=Layout((shells(3, 2, program),)), cwd=REPO)
                 self.assertTrue(outcome.handled)
-                self.assertEqual(outcome.opened, [split_beside(REPO), ZOOM_LAZYGIT])
+                self.assertEqual(outcome.opened, [float_over_tab(REPO)])
                 self.assertEqual(outcome.logs, [])
 
     def test_a_failed_process_lookup_still_opens_lazygit_without_a_directory(self) -> None:
         outcome = press("cmd+g", fail="lookup")
         self.assertTrue(outcome.handled)
-        self.assertEqual(outcome.opened, [split_beside("nil"), ZOOM_LAZYGIT])
+        self.assertEqual(outcome.opened, [float_over_tab("nil")])
         self.assertEqual(len(outcome.logs), 1)
         self.assertIn("lookup failed", outcome.logs[0])
 
-    def test_a_process_with_no_directory_still_opens_lazygit_and_is_logged(self) -> None:
-        outcome = press("cmd+g", cwd="")
-        self.assertTrue(outcome.handled)
-        self.assertEqual(outcome.opened, [split_beside("nil"), ZOOM_LAZYGIT])
-        self.assertEqual(len(outcome.logs), 1)
-        self.assertIn("working directory", outcome.logs[0])
-
-    def test_a_failed_split_fails_with_the_reason_and_zooms_nothing(self) -> None:
-        outcome = press("cmd+g", cwd=REPO, fail="new_split")
+    def test_a_failed_float_fails_with_the_reason_and_the_directory(self) -> None:
+        outcome = press("cmd+g", cwd=REPO, fail="new_layer")
         self.assertFalse(outcome.handled)
         self.assertIn("too many blocks", outcome.failure or "")
         self.assertIn(REPO, outcome.failure or "")
-        self.assertEqual(outcome.opened, [split_beside(REPO)])
-
-    def test_a_failed_zoom_leaves_lazygit_open_and_is_logged(self) -> None:
-        outcome = press("cmd+g", cwd=REPO, fail="zoom_block")
-        self.assertTrue(outcome.handled)
-        self.assertEqual(outcome.opened, [split_beside(REPO), ZOOM_LAZYGIT])
-        self.assertEqual(len(outcome.logs), 1)
-        self.assertIn("block:lazygit", outcome.logs[0])
-        self.assertIn("block gone", outcome.logs[0])
-
-    def test_a_split_that_returns_anything_but_one_new_block_zooms_nothing(self) -> None:
-        for fail in ["split_none", "split_two", "split_same"]:
-            with self.subTest(fail=fail):
-                outcome = press("cmd+g", cwd=REPO, fail=fail)
-                self.assertFalse(outcome.handled)
-                self.assertIn("lazygit", outcome.failure or "")
-                self.assertEqual(outcome.opened, [split_beside(REPO)])
+        self.assertEqual(outcome.opened, [float_over_tab(REPO)])
 
 
 class SessionSaver(unittest.TestCase):
