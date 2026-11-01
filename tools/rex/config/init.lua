@@ -364,4 +364,6 @@ local function start_session_saver()
     rex.log("session saver: failed to start: " .. tostring(err))
   end
 end
-start_session_saver()
+-- Off while testing Rex's own session restore (preview.23). Running both would restore every
+-- session twice after a server restart.
+-- start_session_saver()
