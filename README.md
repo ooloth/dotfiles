@@ -11,8 +11,8 @@ treat this repo as inspiration and fork and customize it if you'd like stability
 I've been experimenting with coding agents as a way to make good engineering practices explicit and
 repeatable, rather than just using them to generate code. Most of what's here exists because an
 agent failed in a specific way and the fix had to be something that runs, not something I remember.
-The same rules keep surfacing in different places: three separate skills independently ask what
-you'd do to observe a change if the test suite didn't exist.
+The same rules keep surfacing in different places: prove-it-works, the global instructions and
+write-pr-description each refuse to count a passing test suite as evidence that a change works.
 
 It all lives in [`tools/agents/config/`](./tools/agents/config), symlinked into both `~/.claude/`
 and `~/.agents/` so it belongs to no single harness and any agent that reads the shared location

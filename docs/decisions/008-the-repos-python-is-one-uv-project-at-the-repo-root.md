@@ -35,8 +35,8 @@ them, and what command starts the Python while both languages run, stay open in 
   import another, so helpers shared across tools, such as the spike's `brew_formula`, would be
   copied into every script that uses them. It reverses if the ported scripts turn out to share
   nothing.
-- **Not yet.** Each test keeps running as its own uv script until #127 starts. It is rejected
-  because every sub-issue of the Python migration needs the shared config first, and the
+- **Not yet.** Each test keeps running as its own uv script until #204 creates the root project. It
+  is rejected because every sub-issue of the Python migration needs the shared config first, and the
   migration has started.
 
 ## Risk

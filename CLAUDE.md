@@ -40,10 +40,12 @@ See README.md for the overview. Key points for Claude:
   (`features/update/symlinks.bash`) and runs each tool's `update.bash`. The `symlinks` alias
   runs only the symlink step.
 - First-time setup on a new Mac is `features/setup/setup.zsh`, which sources the zsh scripts in
-  `features/install/zsh/`, several of them under `deprecated/`. A bash replacement is planned in
-  #127. The `wip/` folders, such as `features/setup/wip/` and `tools/tmux/wip/`, are drafts that
-  #127 reviews and deletes. Nothing runs them, and some no longer work:
-  `tools/tmux/wip/install.bash` calls `install_tpm`, which only `tools/tmux/wip/utils.bash` defines.
+  `features/install/zsh/`, several of them under `deprecated/`. #127 replaces it, in Python except
+  where decision 007 keeps shell. How a fresh Mac gets uv and Python before that first script is
+  still an open question in `docs/questions/`. The `wip/` folders, such as `features/setup/wip/`
+  and `tools/tmux/wip/`, are drafts that #127 reviews and deletes. Nothing runs them, and some no
+  longer work: `tools/tmux/wip/install.bash` calls `install_tpm`, which only
+  `tools/tmux/wip/utils.bash` defines.
 
 ### Symlink Management
 
