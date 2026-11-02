@@ -68,6 +68,14 @@ differently from the last person. A step that cannot be automated, such as a
 change at a third-party provider, has its required order written down beside
 the pipeline.
 
+**A manual step's gate names a state the system is known to enter, and the command that reads it.**
+A runbook step that waits on a condition, such as a controller having seen a commit or a resource
+having gone, holds only if that condition is reachable. Controllers often skip work rather than
+record it: a GitOps parent with pruning off never runs a sync for a commit that only removes its
+children, so "shows the merge commit as synced" never becomes true, and the operator either waits
+or guesses. Each gate names the field or output that changes, the command that reads it, and the
+value expected, and that value is one the author has seen the system produce.
+
 **A deploy is checked against production signals and a regression is reversed in one step.**
 After a release, error rates, latency and the system's health checks are
 compared against the previous version, and those signals can tell which
