@@ -3,10 +3,12 @@
 ## Check a change
 
 ```sh
-check                                         # from the repo root; same as bash scripts/check.bash
+bash scripts/check.bash                       # from the repo root or a worktree
 ```
 
-Expect it to pass. It runs five categories, fastest first, and stops at the first that fails. To
+The `check` alias runs the same thing from the main checkout, but it picks what to run from the
+folder's name, so it finds nothing in a worktree, and an agent's shell has no aliases. Expect it to
+pass. It runs five categories, fastest first, and stops at the first that fails. To
 run one on its own, run its script:
 
 ```sh

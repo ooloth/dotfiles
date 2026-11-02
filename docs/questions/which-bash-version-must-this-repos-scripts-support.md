@@ -17,8 +17,10 @@ started with a minimal `PATH`, such as a launchd job.
 Bash 3.2 lacks features bash 5 has, and some of the gaps fail silently. `$'\ue725'` prints the
 six characters `\ue725` in 3.2 instead of the glyph, and nothing reports an error. A script
 written and checked under bash 5 can then print wrong output for a user whose `PATH` differs.
-Nothing in the repo says which version is the target, so each script picks one by accident, and
-fixing them gets more expensive with every script added.
+`scripts/check.bash` runs every check under macOS's bash 3.2, and `features/update/preflight.bash`
+says it was written for 3.2, but no rule says which version scripts must support. Each other script
+picks one by accident: `tools/homebrew/update.bash` and `tools/homebrew/generate-brewfile.bash` use
+`mapfile`, which 3.2 lacks. Fixing them gets more expensive with every script added.
 
 ## What would settle it
 

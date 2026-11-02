@@ -93,7 +93,7 @@ if [ -d "$DOTFILES" ]; then
   cd "$DOTFILES"
   git pull
 else
-  # Otherwise, clone via https (will be converted to ssh by install/github.zsh)
+  # Otherwise, clone via https (features/install/zsh/github.zsh converts it to ssh)
   printf "📂 Installing dotfiles"
   mkdir -p "$DOTFILES"
   git clone "https://github.com/ooloth/dotfiles.git" "$DOTFILES"

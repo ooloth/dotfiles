@@ -6,7 +6,8 @@
 # Python: ruff check, with rules from ruff.toml at the root.
 # Shell: shellcheck on every *.sh and *.bash file outside hidden directories, several at a time,
 # with settings from .shellcheckrc.
-# zsh utils: tools/zsh/utils.zsh parses as bash, because features/setup/wip/setup.bash sources it.
+# zsh utils: tools/zsh/utils.zsh parses as bash, because features/setup/wip/setup.bash, a draft
+# that #127 reviews and nothing runs yet, sources it.
 # Skills: every shared skill's SKILL.md frontmatter parses, and no file in a skill names a fixed
 # temp path (tools/agents/check-skills.py).
 # Each fails when it finds nothing to check.

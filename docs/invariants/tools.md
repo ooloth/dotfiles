@@ -22,9 +22,10 @@ observations about typical practice.
 - With `DOTFILES_CHECK=true`, a `link.bash` reports link status and writes nothing: no link,
   file or directory is created, replaced or removed. `dcheck` and `u`'s final check depend on
   this to be read-only. `scripts/checks/link-scripts.bash` checks every `link.bash` in CI.
-- `.github/workflows/check.yml` and `.agents/setup` install the same tools for the checks, so
-  `scripts/check.bash` passes in CI and in an Amp orb. A tool a check starts or stops needing
-  changes in both, and in its tool's Brewfile.
+- `.github/workflows/check.yml` and `.agents/setup` install the same tools for the checks, beyond
+  what each platform already ships, such as the zsh, luajit and newer jq that `.agents/setup` adds
+  for an Amp orb, so `scripts/check.bash` passes in CI and in an Amp orb. A tool a check starts or
+  stops needing changes in both, and in its tool's Brewfile.
 - A `preflight.bash` only checks and changes nothing. `features/update/preflight.bash` runs
   every one before `u` updates anything, so a check that wrote something would write on every
   run, including runs that then stop.
