@@ -3,7 +3,8 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml"]
 # ///
-"""Validate every shared skill: its YAML frontmatter, and that it names no fixed temp path.
+"""Validate every shared skill: its YAML frontmatter, that it names no fixed temp path, and that its
+scripts open Claude tabs only with --unattended.
 
 A skill whose frontmatter is not valid YAML is silently dropped by strict
 loaders while lenient ones still load it, so the skill works in one harness
@@ -13,6 +14,12 @@ A skill that names a fixed path such as /tmp/changes.patch lets two agent
 sessions on one machine read and write the same file, so one session can
 commit or post the other's content. Every file in a skill is checked, since
 its scripts can write to a fixed path as easily as its instructions can.
+
+A script in a skill that opens a Claude Code tab through the Rex launcher starts
+a session nobody watches start, which then reads text other people wrote. It
+passes --unattended, so cc.bash starts that session in auto mode and it asks
+before any push, comment or review. A tab an agent opens from a skill's
+instructions, with the user there, is not checked.
 
 Git decides which files are skills: tracked files, and untracked ones git does
 not ignore, so a new skill is checked before it is committed. A gitignored
@@ -50,6 +57,10 @@ class FixedTmpPath:
     path: Path
     line: int
     fixed_path: str
+
+
+SCRIPT_SUFFIXES = (".py", ".bash", ".sh")
+LAUNCHER = "claude-tab.bash"
 
 
 @dataclass(frozen=True)
@@ -117,6 +128,19 @@ def fixed_tmp_paths(path: Path) -> list[FixedTmpPath] | UnreadableFile:
     ]
 
 
+def opens_tab_unattended(path: Path) -> bool:
+    """False when this skill script names the Rex launcher without passing --unattended."""
+    if path.suffix not in SCRIPT_SUFFIXES or path.name.startswith("test_"):
+        return True
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return True  # reported by the fixed temp path check
+    # A mention in a comment does not pass the flag, so it doesn't count
+    code = [line for line in text.splitlines() if not line.lstrip().startswith("#")]
+    return LAUNCHER not in text or any("--unattended" in line for line in code)
+
+
 def shown(path: Path, skills_dir: Path) -> Path:
     """The path as a reader of the output would look for it."""
     return path.relative_to(REPO_ROOT if path.is_relative_to(REPO_ROOT) else skills_dir)
@@ -168,7 +192,19 @@ def main() -> int:
     else:
         print("✅ No skill names a fixed temp path")
 
-    return 1 if failures or found or unreadable else 0
+    attended = [path for path in files if not opens_tab_unattended(path)]
+    print(f"\nChecked {len(files)} skill files for Claude tabs opened without --unattended")
+    for path in attended:
+        print(f"❌ {shown(path, skills_dir)}: opens a Claude tab without --unattended")
+    if attended:
+        print(
+            "\nA session a script opens starts with nobody watching and reads other people's "
+            "text. See docs/invariants/skills.md."
+        )
+    else:
+        print("✅ No skill script opens a Claude tab without --unattended")
+
+    return 1 if failures or found or unreadable or attended else 0
 
 
 if __name__ == "__main__":

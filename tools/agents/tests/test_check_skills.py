@@ -160,6 +160,45 @@ class WhatCannotBeChecked(unittest.TestCase):
         self.assertNotIn("Traceback", result.stderr)
 
 
+LAUNCH = 'subprocess.run(["bash", "tools/rex/claude-tab.bash", label, folder, prompt])\n'
+
+
+class UnattendedTabs(unittest.TestCase):
+    def test_a_script_opening_a_tab_without_unattended_fails_naming_the_file(self) -> None:
+        files = skill("Fine.\n") | {"example/scripts/open.py": LAUNCH}
+        run = run_checker(files)
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn(
+            "example/scripts/open.py: opens a Claude tab without --unattended", run.stdout
+        )
+
+    def test_bash_scripts_are_checked_too(self) -> None:
+        for name in ("open.bash", "open.sh"):
+            with self.subTest(name=name):
+                files = skill("Fine.\n") | {f"example/scripts/{name}": "bash claude-tab.bash x .\n"}
+                run = run_checker(files)
+                self.assertEqual(run.status, 1, run.stdout)
+                self.assertIn(f"example/scripts/{name}: opens a Claude tab", run.stdout)
+
+    def test_a_script_passing_unattended_passes(self) -> None:
+        launch = LAUNCH.replace("folder, prompt", 'folder, "--unattended", prompt')
+        run = run_checker(skill("Fine.\n") | {"example/scripts/open.py": launch})
+        self.assertEqual(run.status, 0, run.stdout)
+        self.assertIn("✅ No skill script opens a Claude tab without --unattended", run.stdout)
+
+    def test_a_mention_only_in_a_comment_does_not_count(self) -> None:
+        launch = "# cc.bash takes --unattended\n" + LAUNCH
+        run = run_checker(skill("Fine.\n") | {"example/scripts/open.py": launch})
+        self.assertEqual(run.status, 1, run.stdout)
+
+    def test_tests_and_instructions_naming_the_launcher_are_not_checked(self) -> None:
+        files = skill("Open it with `claude-tab.bash`.\n") | {
+            "example/scripts/test_open.py": LAUNCH,
+        }
+        run = run_checker(files)
+        self.assertEqual(run.status, 0, run.stdout)
+
+
 class Frontmatter(unittest.TestCase):
     def test_a_valid_skill_passes(self) -> None:
         run = run_checker(skill("Fine.\n"))

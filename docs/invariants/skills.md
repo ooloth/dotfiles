@@ -11,3 +11,9 @@ Facts about the shared skills in `tools/agents/config/skills/`, which `~/.claude
   `tools/agents/check-skills.py` checks every file in every skill that git does not ignore, from
   `scripts/checks/linting.bash`. The third-party skills synced into `skills/synced/` are gitignored,
   so it does not check them.
+- A script in a shared skill that opens a Claude Code tab passes `--unattended` to the Rex launcher,
+  so the session starts in auto mode and asks before any push, comment or review. Nobody watches a
+  session a script starts, and it reads text other people wrote. A tab an agent opens from a skill's
+  instructions while the user is at the keyboard needs no flag. `tools/agents/check-skills.py`
+  fails a `.py`, `.bash` or `.sh` file, other than a `test_*` file, that names `claude-tab.bash`
+  with no `--unattended` outside a comment.
