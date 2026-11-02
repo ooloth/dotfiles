@@ -68,6 +68,9 @@ other programs.
 ## In scope
 
 - `.sh` and `.bash` files, and executable files whose shebang names bash
+- Code in any language that builds a command line for a command-line tool, such as
+  `std::process::Command` in Rust or `subprocess.run` in Python, for the entry on putting options
+  before the first operand
 
 ## Out of scope
 

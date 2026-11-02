@@ -70,8 +70,8 @@ a false positive costs one read; a false negative means missed guidance.
   declarations
 - **`async-coordination.md`** — async functions, awaited operations, concurrent tasks, lifecycle
   state (loading/error/success/cancelled), event handlers
-- **`bash.md`** — .sh and .bash files and other bash scripts; load alongside language-agnostic
-  files
+- **`bash.md`** — .sh and .bash files and other bash scripts, and any code that builds a command
+  line for a command-line tool; load alongside language-agnostic files
 - **`cli-design.md`** — CLI binaries, command definitions, flag declarations, help text, exit code
   handling
 - **`code-readability.md`** — all non-generated source files; load for every code task
