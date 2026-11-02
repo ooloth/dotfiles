@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-29
+updated: 2026-11-02
 update_when: the work laptop check below is run, or #127 starts
 decays: slow
 status: open
@@ -40,9 +40,7 @@ A failure tells you which of these is in the way: the network blocks the downloa
 re-signs HTTPS with a company certificate that uv does not trust without `--system-certs`, or the
 managed config disables or redirects Python downloads.
 
-Run the PyPI check in the
-[start command question](what-command-starts-the-repos-python.md) in the same
-sitting. It asks whether the same laptop can download packages from PyPI directly.
+The first command has been run (see Findings), so only the second is left.
 
 ## Resolves into
 
@@ -76,4 +74,12 @@ Nothing here is settled until it graduates into a decision record.
   project with no runtime dependencies and no `.venv` started a module with `UV_NO_CACHE=1` and
   `UV_DEFAULT_INDEX` set to an unreachable host. This held for a packaged project built with
   `uv_build` and for one with `package = false`. Beyond an installed Python, it needed nothing
-  from the network. A work laptop's managed uv config has not been tried.
+  from the network.
+- *Sourced (2026-11-02):* the work laptop's managed `~/.config/uv/uv.toml` sets none of
+  `python-downloads`, `python-install-mirror` or `python-preference`, and no `UV_*` variable or
+  system-level uv config is set. It names one package index. Its effect on PyPI downloads is in the
+  [start command question](what-command-starts-the-repos-python.md)'s 2026-11-02 findings.
+- *Measured (2026-11-02):* on the work laptop with uv 0.13.6 and gcloud logged in, `uv run
+  --frozen` on a project with one PyPI dependency fetched it from the lock's
+  `files.pythonhosted.org` URL and sent no request to the managed index. Whether this holds before
+  gcloud is logged in has not been tried.
