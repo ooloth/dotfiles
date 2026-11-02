@@ -80,10 +80,12 @@ confusing report, comes before the next work item. Resolve it with the user befo
   fresh checkout needs, such as linking private modules or a first build. A worktree without it
   fails the repo's checks for reasons that have nothing to do with the change, and the worker
   stops at its first commit. Tell the worker the ticket, the PR, what to do, and what to report
-  back. See the `rex` and `use-rex` skills for the commands. Start each worker with the launcher
-  `use-rex` names, which takes this machine's permission mode from `cc.bash`. In the default mode a
-  worker stops at a prompt before it loads its first skill, and you can't answer that prompt for
-  the user.
+  back. See the `rex` and `use-rex` skills for the commands. Start every tab you open with the
+  launcher `use-rex` names, passing `--unattended` as the first Claude argument, before the prompt.
+  `cc.bash` then starts the tab in auto mode on every machine, and the session asks in its tab
+  before any push, comment, review or merge, because nobody watches a worker work. Never start a
+  worker in the default mode: it stops at a prompt before it loads its first skill, and you can't
+  answer that prompt for the user.
 - **Hearing from workers:** don't subscribe to idle notices. Each notice starts a new turn, and a
   run of them buries the user's open questions under several overlapping lists. Instead, only the
   user's messages start your turns. Before every reply, read every worker's pane and every

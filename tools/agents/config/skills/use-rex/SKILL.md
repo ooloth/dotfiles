@@ -18,6 +18,10 @@ the repo's related folders. Never start `claude` in a tab yourself, with or with
 `--permission-mode`. The right mode differs between machines, and a session started in the default
 mode stops at its first skill prompt, where nobody is watching.
 
+A tab nobody will watch work, such as one `monitor-prs` or `orchestrate-rex` opens, passes
+`--unattended` as its first Claude argument, before the prompt. `cc.bash` then starts it in auto
+mode on every machine, and it asks in the tab before any push, comment, review or merge.
+
 The tab opens in the Rex session labelled `Workers` unless `-s` names another session. When no
 `Workers` session exists, the launcher creates one with this tab as its first window. The launcher
 prints Rex's JSON for the new tab, and `.block_ids[0]` is its pane. Rex looks for a pane only in
