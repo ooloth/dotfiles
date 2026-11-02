@@ -2,7 +2,8 @@
 
 The script runs as a subprocess with a fake `gh` first on PATH, so no test can reach GitHub. The
 fake logs every call, answers a reply POST the way GitHub does, and serves two review threads to
-the thread lookup: PRRT_100 holding comment 100, and PRRT_123 holding comment 123.
+the thread lookup: PRRT_100 holding comment 100, and PRRT_123 holding comment 123. With
+GH_FAIL_POST set, it fails the reply POST and answers every other call.
 
 Run:
   uv run --with pytest pytest \
@@ -24,7 +25,7 @@ args = sys.argv[1:]
 with open(os.environ["FAKE_LOG"], "a") as log:
     log.write(json.dumps(args) + "\\n")
 
-if os.environ.get("GH_FAIL"):
+if os.environ.get("GH_FAIL_POST") and "POST" in args:
     print("gh: Not Found (HTTP 404)", file=sys.stderr)
     sys.exit(1)
 
@@ -134,10 +135,12 @@ def test_resolve_for_a_comment_in_no_thread_posts_nothing(tmp_path: Path) -> Non
 
 
 def test_a_failed_post_resolves_nothing(tmp_path: Path) -> None:
-    env = setup(tmp_path, GH_FAIL="1")
+    env = setup(tmp_path, GH_FAIL_POST="1")
     result = reply(env, "5", "123", "Fixed", "--resolve", "--repo", "octo/widgets")
     assert result.returncode != 0
-    assert not any("resolveReviewThread" in " ".join(call) for call in calls(env))
+    [lookup] = graphql(env)
+    assert "resolveReviewThread" not in " ".join(lookup)
+    assert len(posts(env)) == 1
 
 
 def test_an_extra_argument_is_refused_before_anything_is_posted(tmp_path: Path) -> None:
