@@ -64,7 +64,7 @@ noise.
 
 ## Also update
 
-- [ ] #221 — tick the open question about where the record of prepared turns is kept, linking this
-  record
-- [ ] #224 — a comment saying the preparation steps are now a script and prepared sessions run
+- [x] #221 — its Decisions section links this record as a constraint, in place of the open question
+  about where the record of prepared turns is kept
+- [x] #224 — a comment saying the preparation steps are now a script and prepared sessions run
   with `--unattended`
