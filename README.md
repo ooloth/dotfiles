@@ -86,8 +86,9 @@ checks every five minutes or so in a fresh turn until the watch reaches one of i
 for the pull requests where it's my move, and says why, using the same rules
 [hub](https://github.com/ooloth/hub)'s daemon does. Each
 check reads one snapshot from GitHub and decides from that alone, so two checks of the same state
-agree. A truncated or failed fetch is reported as such rather than as nothing waiting. It is
-read-only for now; preparing the next step for each turn comes later.
+agree. A truncated or failed fetch is reported as such rather than as nothing waiting. It never
+writes to GitHub. In Rex, each of my pull requests with new feedback gets a worktree and a tab
+running review-pr-comments-converge, so its draft replies and fixes are waiting when I look.
 
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session by finding what would
 mislead the next agent. Every action the session raised gets exactly one status (done, deferred,
