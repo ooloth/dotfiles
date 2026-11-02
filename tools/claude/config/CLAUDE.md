@@ -88,7 +88,9 @@ look approved:
 - Answering questions you asked — you're in "answer incorporation" mode, not implementation mode;
   next present the full plan and ask again, don't fold "answered" into "approved"
 - An unresolved sub-decision inside an otherwise-approved task (which name, which approach) —
-  approval for the parent task does not extend through it; resolve it, then implement
+  approval for the parent task does not extend through it; resolve it, then implement. This covers
+  a choice still open when I approve. A choice you find once the work has started is triaged as
+  "A choice found mid-work" below describes.
 - Context or material offered to inform the discussion, even material you asked for yourself
 
 **This applies to all side effects**, not just file edits — GitHub/Jira comments, issue state
