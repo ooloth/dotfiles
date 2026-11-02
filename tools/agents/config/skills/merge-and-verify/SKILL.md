@@ -1,7 +1,8 @@
 ---
 name: merge-and-verify
-description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, post the proof on the ticket, bring the backlog up to date with what shipped, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. TRIGGER when an approved PR is ready to merge, when a merged PR's deploy needs watching, or when asked to verify a PR in its environment.
+description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, post the proof on the ticket, list the backlog changes what shipped calls for, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. TRIGGER when an approved PR is ready to merge, when a merged PR's deploy needs watching, or when asked to verify a PR in its environment.
 argument-hint: 'An approved or merged PR, such as "example-app#305"'
+disable-model-invocation: true
 ---
 
 Input: $ARGUMENTS
@@ -30,8 +31,9 @@ the trunk merge's commit (made by `git merge`) and a mechanical fix's commit (ma
 - **Merge through the gate** once it reports ready.
 - **Watch the rollout and run the proof.**
 - **Post the report and its PR link,** as "Posting the report" describes.
-- **Close the ticket** once every PR that names it has merged with its proof on the ticket.
-- **Bring the backlog up to date,** as "Updating the backlog" describes, posting each fix.
+- **Close the ticket** once every PR that names it has merged with a proven verdict on the ticket.
+- **Find what the backlog needs,** as "Updating the backlog" describes. Its changes wait for the
+  user's approval.
 
 **An approval holds.** A push to an approved PR never undoes its approval, whatever the push
 changes. Never tell the user an approval is stale, and never ask for a new one. A change request
@@ -47,6 +49,8 @@ re-review is settling their request, not renewing anyone's approval.
 - a live observation the merge relies on no longer holds
 - the gate or GitHub refuses for any reason not listed under "Do these yourself"
 - verifying would need a change to a deployed environment beyond the normal deploy
+- the proof disproves any part of the claim, or cannot observe it. Post nothing, close nothing and
+  update no backlog: show the draft report with each verdict and wait.
 
 **Never roll back, revert or change anything in a deployed environment yourself,** in the rollout
 watch or the production watch. Say what you would do and wait for the user.
@@ -200,6 +204,12 @@ skill approves it. The final message quotes what was posted and links to it.
 Before posting, check the report for credentials (tokens, keys, cookies, bearer headers, signed
 URLs). Remove any you find, and say so in the report.
 
+When the destination is public, such as an issue in a repo whose
+`gh repo view <owner>/<repo> --json visibility` says `PUBLIC`, also check it for private values.
+Search it for each value in the repo's ignored `private.env`, if there is one, and remove any match.
+If anything else in it looks private, such as an internal hostname or URL, or a person's name or
+handle that the ticket does not already show, post nothing and show the user the draft.
+
 - **Jira:** post the comment with the Atlassian MCP tool, following `use-jira` for how markdown
   converts.
 - **A GitHub issue or PR:** post with `gh issue comment` or `gh pr comment` from a file, following
@@ -209,30 +219,33 @@ URLs). Remove any you find, and say so in the report.
 Screenshots and recordings are not uploaded, and the posted report does not name their local
 paths. It describes what each one shows.
 
-Then list every PR that names the ticket, and whether each has merged and has its proof on the
-ticket. Only when all have, close the ticket, saying in the closing comment which PRs finished it.
+Then list every PR that names the ticket, and whether each has merged and has a proven verdict on
+the ticket. Only when all have, close the ticket, saying in the closing comment which PRs finished
+it.
 While a watch is running, close it once the watch's summary is posted instead.
 
 ## Updating the backlog
 
 Once the report is posted, run `wrap-up-backlog` on what this PR shipped: the PR, its commits, its
-ticket and the decisions it settled. Act on its list:
+ticket and the decisions it settled. Post none of it yourself, because a change to another ticket
+notifies the people watching it. Put its list in the final message as one numbered list:
 
-- **Each fix** is posted as it stands: the comment, the description rewrite, the relationship
+- **Each fix** as it would be posted: the comment, the description rewrite, the relationship
   change, or the closing of a ticket this change finished, with a comment saying what finished it.
-- **Each ask** goes in the final message as a numbered question with its lettered options and its
-  recommendation. None of them blocks anything: the change has shipped, and the backlog can wait
-  for the user's answer.
+  A bare "yes" to a fix posts it as shown.
+- **Each ask** as a question with its lettered options and its recommendation.
 
-The final message lists every ticket changed, with a link to each.
+None of them blocks anything: the change has shipped, and the backlog can wait for the user's
+answer. Once the user answers, post what they approved, and list every ticket changed with a link
+to each.
 
 ## Cleaning up
 
-Only after a "serving" ending with a proof, offer to remove the PR's leftover local branches and
-worktrees, in every clone and worktree of the repo on this machine. A branch qualifies only when its
-tip is one of the PR's own commits, as GitHub lists them for the PR, so trunk and branches resting
-on older trunk commits never match. A worktree qualifies when its checked-out branch does. Never
-offer:
+Only after a "serving" ending with a proven verdict, offer to remove the PR's leftover local
+branches and worktrees, in every clone and worktree of the repo on this machine. A branch qualifies
+only when its tip is one of the PR's own commits, as GitHub lists them for the PR, so trunk and
+branches resting on older trunk commits never match. A worktree qualifies when its checked-out
+branch does. Never offer:
 
 - a worktree with uncommitted or untracked files
 - a worktree a running session, terminal tab or process has open

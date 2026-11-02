@@ -101,7 +101,8 @@ to other files since then do not matter, because the worktree did not contain th
 8. If a precommit hook fails and addressing the failure requires a design decision the user has not
    made, stop and present options and wait for approval.
 9. When finished making all commits, continue implementing your next approved task. On the default
-   branch, do not ever commit again unless explicitly asked to again. Each commit there requires a
+   branch, or on any branch in a repo that commits straight to it, do not ever commit again unless
+   explicitly asked to again. Each commit there requires a
    new, explicit user approval signal ("commit", "/commit", etc.). The invocation of /commit you
    just acted on authorized only the changes you just finished committing. It does not carry
    forward. On a feature branch in a repo that ships through PRs, commit each later slice the same

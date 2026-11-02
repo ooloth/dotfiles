@@ -27,9 +27,11 @@ rather than a chain of `if/elif`. It is more readable and enables exhaustiveness
 checking.
 
 **`match` blocks are exhaustive.**
-The default case of every `match` statement calls `assert_never` to make
-exhaustive handling explicit. A new variant added to the matched type becomes
-a type error, not a silent fallthrough.
+The default case of every `match` over a union or an enum calls `assert_never`
+to make exhaustive handling explicit. A new variant added to the matched type
+becomes a type error, not a silent fallthrough. A `match` over an open set of
+values, such as an `int` or a `str`, ends in a wildcard case that handles the
+rest.
 
 **External data is validated at the boundary with Pydantic.**
 All data entering from outside the process (API responses, env vars, config files,

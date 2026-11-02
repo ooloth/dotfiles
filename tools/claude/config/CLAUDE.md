@@ -91,8 +91,8 @@ look approved:
   the approval that question needed.
 - An unresolved sub-decision inside an otherwise-approved task (which name, which approach) —
   approval for the parent task does not extend through it; resolve it, then implement. This covers
-  a choice still open when I approve. A choice you find once the work has started is triaged as
-  "A choice found mid-work" below describes.
+  a choice that was named but left open when I approve. A choice nobody named is found mid-work,
+  and is triaged as "A choice found mid-work" below describes.
 - Context or material offered to inform the discussion, even material you asked for yourself
 
 **This applies to all side effects**, not just file edits — GitHub/Jira comments, issue state
@@ -100,11 +100,12 @@ changes, PR creation, API calls, Slack messages, shell commands that mutate stat
 External/public side effects (posting a comment visible to others) need this same gate — arguably
 more so, since they cannot be locally reverted. Approval for one kind of side effect does not
 transfer to another: being approved to edit files does not mean you're also approved to post a
-ticket comment about it, even in the same already-approved task — check separately. The one
-exception is "Working Through to a Draft PR" below: approving a task's approach and design also
-approves the commits, the push and the draft PR that section describes, and applying the fixes
+ticket comment about it, even in the same already-approved task — check separately. There are two
+exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and design
+also approves the commits, the push and the draft PR that section describes, and applying the fixes
 `wrap-up-codebase` returns, on any branch, in the same turn as its questions. It approves nothing
-beyond them.
+beyond them. The other is `merge-and-verify`, which only I start: invoking it approves the steps
+its "What invoking this skill approves" section lists, and nothing beyond them.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
@@ -307,7 +308,8 @@ it three times.
 
 **When the work is on a ticket** (GitHub Issue, Linear, Jira, etc.), **its comments carry the
 reasoning behind the implementation, one step per comment,** so a reviewer can check each step
-without re-deriving it. Each comment is posted before the step it records is acted on:
+without re-deriving it. Each comment is posted before the step it records is acted on, except a
+change made while "Working Through to a Draft PR", which the last item below covers:
 
 - **After `/discuss`, or agreement on an approach:** the approach, written as the `discuss` skill
   writes it.
@@ -353,7 +355,8 @@ A question gets its own record only when it is independent research with no task
 
 If later work turns up a finding, option or decision relevant to an existing task, decide task or
 question file, propose updating it then, not only while it's the topic of discussion. Posting to a
-tracker still needs approval. The ticket comments above are for work already approved.
+tracker still needs approval, except what an invoked `merge-and-verify` posts. The ticket comments
+above are for work already approved.
 
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
@@ -382,7 +385,8 @@ tracker still needs approval. The ticket comments above are for work already app
      instead.
      Omitting this section is not allowed. "Tests pass" is not a substitute.
 8. Write a status report. What happens next depends on the branch the work is on:
-   - **The default branch:** once per session, before writing the report that asks for the commit
+   - **The default branch, or any branch in a repo that commits straight to it:** once per
+     session, before writing the report that asks for the commit
      signal on what you expect to be the session's last change, run `wrap-up-codebase` on
      everything the session changed and apply its fixes in the working tree, uncommitted, for my
      review. The report then covers them, and its asks go at the end as numbered questions. If more
@@ -468,9 +472,9 @@ tracker still needs approval. The ticket comments above are for work already app
 
 ## What a Commit Signal Covers
 
-This section governs commits to a repo's default branch, which is where commits land in a repo that
-commits straight to it, such as dotfiles. A commit to a feature branch in a repo that ships through
-PRs follows "Working Through to a Draft PR" instead.
+This section governs every commit in a repo that commits straight to its default branch, such as
+dotfiles, on any branch, and every commit to a default branch anywhere. A commit to a feature
+branch in a repo that ships through PRs follows "Working Through to a Draft PR" instead.
 
 **The signal exists so I can look at the working tree first.** That is the whole point of it. Work I
 have not seen cannot have been approved, whatever word appeared in my message. I never want you to
@@ -501,7 +505,8 @@ without stopping for me in between:
    claim, and then `wrap-up-codebase`, once. Apply and commit each fix it returns. If it returns
    any asks, stop and put them to me in the session as numbered questions, then apply my answers
    and commit them before going on. My answer to an ask is the approval it needed, including for an
-   edit to agent instructions. A question for me never goes in the PR instead.
+   edit to agent instructions. A question for me never goes in the PR instead. A commit that only
+   adds a record a ticket comment must link may be pushed on its own before then.
 3. **Push the branch and open a draft PR** without asking, using `create-pr`. Besides what
    `write-pr-description` asks for, the description lists:
    - every divergence from the approved approach or design, and why
@@ -570,9 +575,9 @@ mechanism that fits, in this order, because they decay at different rates:
 
 1. **A check that runs** — a script, a lint rule, a test. It cannot be forgotten and does not depend
    on anyone reading anything. The standards already prefer this wherever a rule could be executed.
-2. **A scan in a review skill or `wrap-up`**, where catching it needs judgement rather than a
-   lookup: a stale claim, a decision nobody argued, a promise nothing enforces. Say what to look for
-   and name where it has actually occurred.
+2. **A scan in a review skill or `wrap-up-codebase`**, where catching it needs judgement rather
+   than a lookup: a stale claim, a decision nobody argued, a promise nothing enforces. Say what to
+   look for and name where it has actually occurred.
 3. **A written rule**, last, because it holds only while somebody remembers it.
 
 **Whichever mechanism you pick, verify it by replaying the failing input through a fresh agent.**

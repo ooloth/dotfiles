@@ -16,7 +16,10 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
    git log $BASE..HEAD --oneline
    git diff $BASE...HEAD --stat
    ```
-3. Ask user for: Jira URL, Slack thread, screen recording (if UI change)
+3. Take the ticket and any links from the branch name, the commits and the approved task. Inside
+   "Working Through to a Draft PR", ask nothing: leave out what you can't find and say in the
+   description that it is missing. Otherwise, ask the user for what you can't find (Jira URL,
+   Slack thread), and for a screen recording of a UI change.
 4. Draft using voice rules below
 5. Write the body to a file in a new directory, then create the PR:
    1. Run `mktemp -d` and note the directory it prints. It is new on every run, so another
@@ -41,8 +44,8 @@ gh pr view --web
 - [ ] Read project PR template if exists
 - [ ] Reviewed all commits: `git log $BASE..HEAD`
 - [ ] Reviewed file changes: `git diff $BASE...HEAD --stat`
-- [ ] Asked user for Jira/Slack links
-- [ ] Asked user for screen recording (if UI change)
+- [ ] Found the Jira/Slack links, or got them as step 3 describes
+- [ ] Got a screen recording of a UI change as step 3 describes
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Validation is manual e2e only — no automated checks
 - [ ] No implementation details snuck in
@@ -110,7 +113,7 @@ gh pr view --web
   observe, add a before and after diagram of that interaction under What, drawn
   to the diagram standards in `~/.agents/standards/documentation.md`. Most PRs
   have nothing to draw and include no diagram
-- Link actual Jira/Slack (ask user if not provided)
+- Link actual Jira/Slack, found or asked for as step 3 describes
 - Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or bare GitHub Issue
   URL (since GitHub auto-renders those with a preview)
 - A GitHub issue the PR fully resolves is listed under Related links as `Fixes #N`, one per line,
@@ -125,7 +128,7 @@ gh pr view --web
 ❌ Listing every test written (again, the diff)
 ❌ "Comprehensive" descriptions — less is more  
 ❌ Technical jargon when plain language is available
-❌ Placeholder links — ask for real URLs  
+❌ Placeholder links — link real URLs, or say which link is missing  
 ❌ Hard-wrapped prose — GitHub shows each newline as a line break, so a wrapped paragraph renders as
 ragged short lines; write each paragraph and list item as one line
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read

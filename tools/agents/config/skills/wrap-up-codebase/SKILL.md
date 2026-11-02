@@ -18,8 +18,8 @@ list's first line.
 ## Scope
 
 Start from what the change touched, and follow it outward to whatever a fresh agent would meet that
-describes it: comments in distant files, docs and agent instructions (`CLAUDE.md`, `AGENTS.md`,
-skills, READMEs, CONTRIBUTING), decision records and question files, and callers or tests that rely
+describes it: comments in distant files, docs (READMEs, CONTRIBUTING), agent instruction files
+(defined under "Ask" below), decision records and question files, and callers or tests that rely
 on how it works. Search the repo for the names of what the change added, renamed, moved or deleted,
 several searches per turn. Judge each file by what it says now, not by what changed in it.
 
@@ -88,13 +88,17 @@ edit: the file, the old text and the new text.
 **Ask:** the right answer depends on a decision only the user can make. Several valid approaches
 depend on requirements or preferences; the fix would change a public interface, a data shape or a
 contract; or it needs intent only the user has. Every finding in an agent instruction file is an
-ask, because editing one waits for the user's approval. Answer every analytical sub-question
+ask, because editing one waits for the user's approval. An agent instruction file is any file the
+list under "These stop the loop" in the global `CLAUDE.md` names: `CLAUDE.md`, `AGENTS.md`,
+skills, standards, `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`.
+Answer every analytical sub-question
 yourself, by reading or by a read-only query, so the ask is only the decision: never ask whether
 something is a bug. Each ask gives at least two lettered options with what each would do, and marks
 one recommended.
 
 When a finding has a mechanical part and a decision, the mechanical part is a fix and only the
-decision is an ask.
+decision is an ask, except in an agent instruction file, where the whole finding is an ask, its
+mechanical part included.
 
 **Dismiss:** a subagent finding that does not hold up against the files, with the reason.
 
