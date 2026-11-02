@@ -86,7 +86,9 @@ look approved:
 - A feasibility question ("I'd like to X — is that doable?" is a question even when it describes
   exactly what the user wants; the trailing `?` means answer and stop)
 - Answering questions you asked — you're in "answer incorporation" mode, not implementation mode;
-  next present the full plan and ask again, don't fold "answered" into "approved"
+  next present the full plan and ask again, don't fold "answered" into "approved". The exception is
+  my answer to a question `wrap-up-codebase` raised in "Working Through to a Draft PR", which is
+  the approval that question needed.
 - An unresolved sub-decision inside an otherwise-approved task (which name, which approach) —
   approval for the parent task does not extend through it; resolve it, then implement. This covers
   a choice still open when I approve. A choice you find once the work has started is triaged as
@@ -107,9 +109,11 @@ beyond them.
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
 cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and
-acting in the same turn makes the question rhetorical and bypasses the gate. The one exception is
-an action my latest message explicitly approved that none of your questions are about: do it in the
-same turn, and say that you did.
+acting in the same turn makes the question rhetorical and bypasses the gate. There are two
+exceptions. One is an action my latest message explicitly approved that none of your questions are
+about: do it in the same turn, and say that you did. The other is applying the fixes
+`wrap-up-codebase` returns in the same turn as its questions, which the side-effects paragraph
+above allows.
 
 **Number every question the user has to answer.** When a response asks the user for decisions or
 answers, list them as a numbered list (1., 2., 3.), never as bullets, so the user can reply by
@@ -376,11 +380,14 @@ tracker still needs approval. The ticket comments above are for work already app
      instead.
      Omitting this section is not allowed. "Tests pass" is not a substitute.
 8. Write a status report. What happens next depends on the branch the work is on:
-   - **The default branch:** before writing the report, run `wrap-up-codebase` on the change and
-     apply its fixes in the working tree, uncommitted, for my review. The report then covers them,
-     and its asks go at the end as numbered questions. Do not commit without an explicit user
-     signal ("commit", "/commit", etc.). See "What a Commit Signal Covers" below. When I run
-     `wrap-up` myself, its own rule holds instead: it applies nothing I haven't approved.
+   - **The default branch:** once per session, before writing the report that asks for the commit
+     signal on what you expect to be the session's last change, run `wrap-up-codebase` on
+     everything the session changed and apply its fixes in the working tree, uncommitted, for my
+     review. The report then covers them, and its asks go at the end as numbered questions. If more
+     work follows after all, the review after the session's last commit covers it. Do not commit
+     without an explicit user signal ("commit", "/commit", etc.). See "What a Commit Signal Covers"
+     below. When I run `wrap-up` myself, its own rule holds instead: it applies nothing I haven't
+     approved.
    - **A feature branch in a repo that ships through PRs:** commit the slice via `/commit` without
      waiting for a signal, once its checks and proof pass, and carry on to the next approved slice.
      See "Working Through to a Draft PR" below.

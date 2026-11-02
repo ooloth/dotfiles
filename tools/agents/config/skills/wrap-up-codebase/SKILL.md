@@ -1,6 +1,6 @@
 ---
 name: wrap-up-codebase
-description: Find everything in the repo that a change made untrue or that would mislead the next agent, and sort each finding into a fix, a question for the user, or a dismissal. Changes nothing itself; the caller acts on the list. Run it once before opening a draft PR, before asking for a commit signal in a repo that commits straight to its default branch, and from wrap-up.
+description: Find everything in the repo that a change made untrue or that would mislead the next agent, and sort each finding into a fix, a question for the user, or a dismissal. Changes nothing itself; the caller acts on the list. Run it once before opening a draft PR, once per session before asking for the commit signal on the session's last change in a repo that commits straight to its default branch, and from wrap-up.
 effort: high
 model: opus
 ---
