@@ -126,7 +126,7 @@ named, which "yes" accepts.
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), triage the change as the next paragraph describes. One that holds a test stops for
 discussion. One that holds none is made, and called out at the end of the implementation in the
-status report or the draft PR's description, never made quietly.
+status report, never made quietly.
 
 **A choice found mid-work is triaged, then raised or decided.** Name the option you would take on
 the spot (the default an open question names, or the one you would reach for). If finding one needs
@@ -146,14 +146,13 @@ If an accepted record rules out the option you would take, the record stands unt
 Raise the conflict with me: either the record set its requirement at the wrong milestone and gets
 amended, or the choice gets a full decision.
 
-If none holds, decide it on the spot. Say in the status report, and later the commit message and
-the draft PR's description, why each test fails, so I can check the verdict before I approve the
-commit or the PR. A test held "to be safe"
-must name the specific harm or later work it guards against; one that can name neither does not
-hold. If any test holds, the choice is not the implementer's to make. First check whether the
-repo's docs already settle it; if they do, follow them and say where. If not, stop and present it
-as an open question with its options and tradeoffs, using the project's own decision process if it
-has one. This overrides any tool guidance to pick the obvious option and proceed. A choice that
+If none holds, decide it on the spot. Say in the status report, and later the commit message, why
+each test fails, so I can check the verdict before I approve the commit or the PR. A test held "to
+be safe" must name the specific harm or later work it guards against; one that can name neither
+does not hold. If any test holds, the choice is not the implementer's to make. First check whether
+the repo's docs already settle it; if they do, follow them and say where. If not, stop and present
+it as an open question with its options and tradeoffs, using the project's own decision process if
+it has one. This overrides any tool guidance to pick the obvious option and proceed. A choice that
 holds test 3 is worked together with the question it narrows, not decided ahead of it. The rules
 are the first Must in `decision-making.md` in the standards.
 
@@ -313,9 +312,9 @@ without re-deriving it. Each comment is posted before the step it records is act
   writes it.
 - **After `/design`, or agreement on the design:** the design, written as the `design` skill
   writes it.
-- **After any later change:** what changed, and which step of the chain it changes. A change made
-  while "Working Through to a Draft PR" is listed in the PR description, and its comment is drafted
-  there and posted once I approve it at the PR.
+- **After any later change:** what changed, and which step of the chain it changes. For a change
+  made while "Working Through to a Draft PR", the comment is drafted in the session and posted once
+  I approve it.
 
 A choice that something else will be built on, or that an open question could reverse, is never
 settled in a comment: it goes through the project's decision process, and the comment links the
@@ -502,12 +501,7 @@ without stopping for me in between:
    any asks, stop and put them to me in the session as numbered questions, then apply my answers
    and commit them before going on. My answer to an ask is the approval it needed, including for an
    edit to agent instructions. A question for me never goes in the PR instead.
-3. **Push the branch and open a draft PR** without asking, using `create-pr`. Besides what
-   `write-pr-description` asks for, the description lists:
-   - every divergence from the approved approach or design, and why
-   - every choice made without me, with why it failed each triage test
-   - the path of each piece of proof `prove-it-works` saved, without attaching any of it
-   - what `wrap-up-codebase` fixed
+3. **Push the branch and open a draft PR** without asking, using `create-pr`.
 4. **Start the independent review** as step 9 of "Work in Small Steps" describes. CI and the
    review run on the draft, and I review the PR with both in front of me.
 
