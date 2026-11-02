@@ -219,6 +219,10 @@ Pass each agent:
 - Nothing from the earlier reviews fetched in Step 1, not even that they exist
 - Its specific instructions below
 - This line, verbatim: "Read the files yourself. Do not spawn subagents."
+- This line, verbatim, because the other agents are reading the same checkout at the same time:
+  "Never change the checkout under review: no checkout, switch, stash, reset or edit. To run
+  something against another commit, add a scratch worktree with
+  `git worktree add --detach "$(mktemp -d)/wt" <commit>` and remove it when done."
 - This provenance requirement, verbatim:
 
   > For every finding, state whether the change under review **introduced** it or whether it is
