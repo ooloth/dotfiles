@@ -1,7 +1,6 @@
 ---
 name: wrap-up
-description: End a session by confirming every action it mentioned was dealt with, then finding what in the codebase and the backlog would mislead the next agent. Reports both and fixes only what the user approves.
-disable-model-invocation: true
+description: End a session by confirming every action it mentioned was dealt with, then finding what in the codebase and the backlog would mislead the next agent. Reports both and fixes only what the user approves. Also run it on your own as the last local check before opening a draft PR, where it fixes what the change made untrue and lists the rest.
 effort: high
 model: opus
 ---
@@ -138,3 +137,17 @@ Then stop and wait.
 Make the approved fixes in the working tree, then name each file you changed and say what the
 change does. Do not commit, post, or close anything. Each of those needs its own signal from the
 user. A ticket change is posted only after the user approves its exact wording.
+
+## Before a draft PR
+
+When you run this on your own as the last local check before opening a draft PR, Steps 3 and 4
+change, because nobody is waiting to approve fixes:
+
+- Fix on the branch every doc, comment or name that the branch's change made untrue, and commit the
+  fixes with the rest of the work. A finding in an agent instruction file (`CLAUDE.md`,
+  `AGENTS.md`, skills, standards) is not fixed: write it as a proposed edit.
+- Everything else goes into the draft PR's description unfixed: proposed edits to instruction
+  files, ticket changes with their drafted wording, decisions for the user, pre-existing problems
+  and out-of-scope problems. Post nothing and close nothing.
+- Skip the cold read and the ledger. The PR's own review covers what a fresh agent would make of
+  the change.

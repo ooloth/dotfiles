@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit the changes in the working tree. Only invoke when the user explicitly signals to commit ("commit", "/commit", etc.). Never invoke this skill on your own initiative — implementation approval is not a commit signal.
+description: Commit the changes in the working tree. On a repo's default branch, invoke only when the user explicitly signals to commit ("commit", "/commit", etc.), because implementation approval is not a commit signal there. On a feature branch in a repo that ships through PRs, invoke it on your own once a slice's checks and proof pass.
 allowed-tools: Bash
 ---
 
@@ -80,7 +80,9 @@ to other files since then do not matter, because the worktree did not contain th
    session can commit, and the command then rewrites its commit instead of yours. If the user
    approves undoing your commit, first check that `git rev-parse HEAD` is the hash you noted, then
    reset to that hash's parent by its full hash.
-7. If the user also asked you to push:
+7. Push when the user asked you to, or when the commit is on a feature branch in a repo that ships
+   through PRs and the work is ready for its draft PR or already has one. Never push the default
+   branch without the user asking. To push:
    1. First read CI's result for the commit the remote branch already holds, so a red build is
       caught before more commits land on it. Invoke the `use-gh` skill, then run:
 
@@ -98,10 +100,12 @@ to other files since then do not matter, because the worktree did not contain th
       (`git log --oneline <old>..<new>`), and name the commits this session did not make.
 8. If a precommit hook fails and addressing the failure requires a design decision the user has not
    made, stop and present options and wait for approval.
-9. When finished making all commits, continue implementing your next approved task — but do not
-   ever commit again unless explicitly asked to again. Each commit requires a new, explicit user
-   approval signal ("commit", "/commit", etc.). The invocation of /commit you just acted on
-   authorized only the changes you just finished committing. It does not carry forward.
+9. When finished making all commits, continue implementing your next approved task. On the default
+   branch, do not ever commit again unless explicitly asked to again. Each commit there requires a
+   new, explicit user approval signal ("commit", "/commit", etc.). The invocation of /commit you
+   just acted on authorized only the changes you just finished committing. It does not carry
+   forward. On a feature branch in a repo that ships through PRs, commit each later slice the same
+   way once its checks and proof pass.
 
 ## Writing Commit Messages
 

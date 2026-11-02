@@ -96,7 +96,9 @@ changes, PR creation, API calls, Slack messages, shell commands that mutate stat
 External/public side effects (posting a comment visible to others) need this same gate — arguably
 more so, since they cannot be locally reverted. Approval for one kind of side effect does not
 transfer to another: being approved to edit files does not mean you're also approved to post a
-ticket comment about it, even in the same already-approved task — check separately.
+ticket comment about it, even in the same already-approved task — check separately. The one
+exception is "Working Through to a Draft PR" below: approving a task's approach and design also
+approves the commits, the push and the draft PR that section describes, and nothing beyond them.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
@@ -114,7 +116,9 @@ meaning: a yes/no question, or a choice between lettered options with your recom
 named, which "yes" accepts.
 
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
-decisions), stop and discuss those rather than quietly making an executive decision.
+decisions), triage the change as the next paragraph describes. One that holds a test stops for
+discussion. One that holds none is made, and called out at the end of the implementation in the
+status report or the draft PR's description, never made quietly.
 
 **A choice found mid-work is triaged, then raised or decided.** Name the option you would take on
 the spot (the default an open question names, or the one you would reach for). If finding one needs
@@ -134,8 +138,9 @@ If an accepted record rules out the option you would take, the record stands unt
 Raise the conflict with me: either the record set its requirement at the wrong milestone and gets
 amended, or the choice gets a full decision.
 
-If none holds, decide it on the spot. Say in the status report, and later the commit message, why
-each test fails, so I can check the verdict before I approve the commit. A test held "to be safe"
+If none holds, decide it on the spot. Say in the status report, and later the commit message and
+the draft PR's description, why each test fails, so I can check the verdict before I approve the
+commit or the PR. A test held "to be safe"
 must name the specific harm or later work it guards against; one that can name neither does not
 hold. If any test holds, the choice is not the implementer's to make. First check whether the
 repo's docs already settle it; if they do, follow them and say where. If not, stop and present it
@@ -299,7 +304,9 @@ without re-deriving it. Each comment is posted before the step it records is act
   writes it.
 - **After `/design`, or agreement on the design:** the design, written as the `design` skill
   writes it.
-- **After any later change:** what changed, and which step of the chain it changes.
+- **After any later change:** what changed, and which step of the chain it changes. A change made
+  while "Working Through to a Draft PR" is listed in the PR description, and its comment is drafted
+  there and posted once I approve it at the PR.
 
 A choice that something else will be built on, or that an open question could reverse, is never
 settled in a comment: it goes through the project's decision process, and the comment links the
@@ -364,14 +371,21 @@ tracker still needs approval. The ticket comments above are for work already app
    - **Why end-to-end execution is impossible here** and what the user should run and look for
      instead.
      Omitting this section is not allowed. "Tests pass" is not a substitute.
-8. Write a status report. **Do not commit without an explicit user signal** ("commit", "/commit",
-   etc.). See "What a Commit Signal Covers" below. (Commits that are part of an autonomous loop are
-   approved when the user approves the run.)
-9. When you receive a commit signal, commit via `/commit`. After committing, you may move to
-   describing your plan for the next change (steps 1-2) — but as always, stop and wait for
-   approval before implementing it (step 3). A PR you draft stays a draft until an independent
-   self-review has run on it and the user has dealt with its findings. Only then is it marked ready
-   for teammates to review.
+8. Write a status report. What happens next depends on the branch the work is on:
+   - **The default branch:** do not commit without an explicit user signal ("commit", "/commit",
+     etc.). See "What a Commit Signal Covers" below.
+   - **A feature branch in a repo that ships through PRs:** commit the slice via `/commit` without
+     waiting for a signal, once its checks and proof pass, and carry on to the next approved slice.
+     See "Working Through to a Draft PR" below.
+
+   (Commits that are part of an autonomous loop are approved when the user approves the run.)
+9. On the default branch, when you receive a commit signal, commit via `/commit`. After committing,
+   you may move to describing your plan for the next change (steps 1-2) — but as always, stop and
+   wait for approval before implementing it (step 3). On a feature branch, once every approved
+   slice is committed, finish the local verification, push and open the draft PR as "Working
+   Through to a Draft PR" describes. A PR you draft stays a draft until an independent self-review
+   has run on it and the user has dealt with its findings. Only then is it marked ready for
+   teammates to review.
    - **Once every slice this session will complete is committed and its draft PR is open, start
      the review without asking; don't run it yourself.** The review comes before shipping, not
      after each slice, so thin slices don't each wait on one. Open a fresh session in whichever
@@ -408,9 +422,12 @@ tracker still needs approval. The ticket comments above are for work already app
     rather than picking one. If the project has no `docs/standards/` or `docs/invariants/`, offer
     the nearest equivalent it does have, or offer to create the folder. Read the existing files
     first and extend the closest match — a new theme file needs justification. Recording anything
-    here is a commit-worthy change: it re-enters steps 4–9 and needs its own commit signal.
+    here is a commit-worthy change: it re-enters steps 4–9, and it edits agent instructions, so it
+    waits for my approval on any branch.
 
-12. When all changes are committed, close the ticket if the work is on one.
+12. When all changes are on the default branch, close the ticket if the work is on one and nothing
+    has closed it already. Work that ships through a PR reaches the default branch only when the PR
+    merges.
 13. After closing, check whether related open tasks (or issues or tickets) need their descriptions
     updated — the approach may have changed, a prerequisite may now be satisfied, or the task may
     have become unnecessary
@@ -435,6 +452,10 @@ tracker still needs approval. The ticket comments above are for work already app
 
 ## What a Commit Signal Covers
 
+This section governs commits to a repo's default branch, which is where commits land in a repo that
+commits straight to it, such as dotfiles. A commit to a feature branch in a repo that ships through
+PRs follows "Working Through to a Draft PR" instead.
+
 **The signal exists so I can look at the working tree first.** That is the whole point of it. Work I
 have not seen cannot have been approved, whatever word appeared in my message. I never want you to
 commit changes I haven't reviewed. I review the working tree myself in lazygit, so name each file
@@ -451,6 +472,37 @@ X". The signal is only for what already exists. X ends up uncommitted, and you t
 and ask.
 
 **Every commit goes through `/commit`. Never run `git commit` from Bash directly.**
+
+## Working Through to a Draft PR
+
+In a repo that ships through PRs, I review code at the draft PR, not at each commit. A repo ships
+through PRs unless its own instructions say work is committed straight to the default branch. Start
+the work on a feature branch. Once I approve a task's approach and design, carry it to a draft PR
+without stopping for me in between:
+
+1. **Commit each slice** via `/commit` once its checks and proof pass. No signal is needed.
+2. **Verify locally before anything is pushed:** the project's full checks, `prove-it-works` on the
+   claim, and then `wrap-up`. Fix on the branch every doc or comment the change made untrue, and
+   commit those fixes. A stale line in an agent instruction file is not fixed: list it as a
+   proposed edit.
+3. **Push the branch and open a draft PR** without asking, using `write-pr-description`. Besides
+   what that skill asks for, the description lists:
+   - every divergence from the approved approach or design, and why
+   - every choice made without me, with why it failed each triage test
+   - the path of each piece of proof `prove-it-works` saved, without attaching any of it
+   - what `wrap-up` found and did not fix, including proposed edits to instruction files
+4. **Start the independent review** as step 9 of "Work in Small Steps" describes. CI and the
+   review run on the draft, and I review the PR with both in front of me.
+
+**These stop the loop wherever they come up, and wait for my approval:**
+
+- Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills, standards,
+  `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`
+- Posting anything that notifies other people, such as a comment, a review, a request for reviewers
+  or marking the PR ready. Opening the draft PR is the one exception.
+- Anything that cannot be undone, such as merging, deploying, deleting a branch or data, or a force
+  push
+- Any commit to the default branch
 
 ## Issue and Ticket Writing
 
@@ -564,8 +616,9 @@ Skip and say nothing if execution went smoothly.
 
 When `AMP_ORB=1`, you are in an Amp orb, a Linux sandbox, not my Mac. Only the points below change
 in an orb. Everything else in this file still applies, including where Amp's system prompt says
-otherwise: discuss before acting, wait for an explicit signal before any commit, push or other
-side effect, raise mid-work choices as this file describes, and merge rather than rebase.
+otherwise: discuss before acting, commit and push only as "What a Commit Signal Covers" and
+"Working Through to a Draft PR" allow, wait for an explicit signal before any other side effect,
+raise mid-work choices as this file describes, and merge rather than rebase.
 
 - **Review:** I review changes in Amp's Changes pane, not lazygit. Still name each file you changed
   and what the change does.
