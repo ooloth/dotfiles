@@ -30,8 +30,8 @@ them, and what command starts the Python while both languages run, stay open in 
 
 ## Rejected
 
-- **Single-file uv scripts with inline dependencies.** The global Python standards allow them for
-  scripts, and each runs with no project around it. It is rejected because one script cannot
+- **Single-file uv scripts with inline dependencies.** Each runs with no project around it. It is
+  rejected because one script cannot
   import another, so helpers shared across tools, such as the spike's `brew_formula`, would be
   copied into every script that uses them. It reverses if the ported scripts turn out to share
   nothing.
