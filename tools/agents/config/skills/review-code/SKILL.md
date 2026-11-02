@@ -36,10 +36,12 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **For PR scope — fetch PR context before Step 2:**
 
 ```bash
-gh pr view <n> -R <owner>/<repo> --json title,body,number
+gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefOid
 ```
 
-Store the title and body for use in Step 2. Store the PR number for Step 5.
+Store the title and body for use in Step 2. Store the PR number and `headRefOid`, the reviewed
+head, for Step 5. The review describes the PR at that commit, so Step 5 pins its comments there and
+checks that the PR has not moved since.
 
 **For PR scope, also fetch what earlier reviewers said:**
 
@@ -48,11 +50,15 @@ uv run <skill-base-dir>/../review-pr-comments-converge/scripts/fetch_pr_comments
 ```
 
 It prints every review, every inline thread with its replies, and every PR conversation comment,
-which is where some bots post their reviews. A default `gh pr view` shows none of these. Keep the
-output in this session for Step 4 and out of every agent's prompt and the Step 2 intent block: an
-agent handed an earlier verdict tends to return it confirmed, and the point of this review is a
-read that isn't anchored on anyone else's. The one exception is a dry run that CI posted, which
-Step 2 carries to the agents.
+which is where some bots post their reviews. A default `gh pr view` shows none of these. Save the
+output to a file in a new `mktemp -d` directory, with the PR's reviews from
+`gh pr view <n> -R <owner>/<repo> --json reviews` beside it, since the fetch helper leaves out a
+review with no body and no comments, such as a bare approval. With the reviewed head, these are the
+**saved state** that Step 5 compares with the PR before posting.
+Keep the output in this session for Step 4 and out of every agent's prompt and the Step 2 intent
+block: an agent handed an earlier verdict tends to return it confirmed, and the point of this
+review is a read that isn't anchored on anyone else's. The one exception is a dry run that CI
+posted, which Step 2 carries to the agents.
 
 Output the reviewable file list and diff command before proceeding. When the skip rules leave
 nothing because every changed file is a lockfile or package manifest, say so and name those files
@@ -718,17 +724,32 @@ separate, unambiguous reply to the posting question before posting anything to G
 
 On any answer other than "skip":
 
+- **Check what changed since the saved state.** Read the head and reviews again with
+  `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid,reviews`, and run the fetch helper
+  from Step 1 again. A review can wait hours for its posting answer while the PR moves on.
+  - **A read fails:** post nothing, and say which one failed, quoting the error. What changed is
+    unknown, not empty.
+  - **The head moved:** post nothing. Say which commits are new, discard this review, and run it
+    again from Step 1 on the new head, which saves a new state, with all twelve agents and any
+    added ones, as Step 3 always does. A review of an older head can be wrong about the code now
+    on the PR, and nothing would show it.
+  - **Only new reviews, comments or replies:** the code is unchanged, so the findings stand. Add
+    the new ones to Prior reviews, rewrite the summary to account for them, and show the user the
+    new draft before posting. This read becomes the saved state.
+  - **Nothing changed:** say so in one line and continue.
+
+  A review runs at most twice after its first run. When the head moves a third time, post nothing,
+  and tell the user the PR keeps moving, naming the new commits, so they decide when to review it.
+  Run the same check again immediately before posting, since approving the drafts can take
+  another turn.
 - Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE;
   request-changes → REQUEST_CHANGES; comment → COMMENT
 - Write a 2–3 sentence overall summary for the review body (see audience guidance below). Where an
   earlier review raised a point, refer to it by reviewer instead of restating it, and say so when
   your work answered a question it left open or disputes something it claimed.
 - Collect every finding that has a `file:line` reference as an inline comment
-- Get the PR's head commit, so the comments stay pinned to the code you reviewed:
-  `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid -q .headRefOid`
-- When you show the user drafts to approve, show each body exactly as it will be posted, line
-  breaks included (one blockquote per comment works), so approving the words also approves the
-  shape.
+- Pin the review to the reviewed head from Step 1, so the comments stay on the code you reviewed.
+  The check above makes sure it is still the PR's head.
 - Write the review to a JSON file in the scratchpad with the **Write tool**. Never build it with a
   shell heredoc, `echo`, or command-line arguments: the shell rewrites backticks, `$(...)` and
   quotes, and a mangled review cannot be un-posted. `line` is the line number in the PR's version
@@ -738,7 +759,7 @@ On any answer other than "skip":
 {
   "event": "APPROVE",
   "body": "<summary>",
-  "commit_id": "<head SHA>",
+  "commit_id": "<reviewed head SHA>",
   "comments": [
     { "path": "<file>", "line": 42, "side": "RIGHT", "body": "<comment>" }
   ]
@@ -755,6 +776,10 @@ On any answer other than "skip":
 uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo <owner>/<repo> --dry-run
 ```
 
+- Only once the dry run is clean, show the user the drafts to approve, taken from its payload:
+  each body exactly as it will be posted, line breaks included (one blockquote per comment works),
+  so approving the words also approves the shape. Their approval is the last change to the
+  wording. A fix after it is a new draft that needs approving again.
 - Post it by running the same command without `--dry-run`. `--repo` is required, so the review
   cannot land on a same-numbered PR in whatever repo the shell is in.
 
