@@ -54,6 +54,17 @@ Schema changes account for rows that already exist. New non-nullable columns
 have a backfill or a default. New constraints are validated against existing
 data before being enforced.
 
+**A stored shape's version is derived from the shape's definition, not bumped by hand.**
+A version stored with data, which readers compare to decide whether they can
+read it, is computed from the text that defines the shape, such as a hash of
+the `CREATE TABLE` statement taken at compile time. A hand-bumped number is a
+second copy of the shape that a change can forget to update, and tests rarely
+notice, because they build the current shape fresh every time. Where the shape
+lives in code that cannot be hashed as one definition, such as serialization
+types, a test fails when the serialized shape changes and the version does
+not. A version kept as a small hand-set number, because people or other
+systems read it, is the documented exception.
+
 **Migrations are reversible.**
 A down migration exists and has been thought through. If rollback is genuinely
 impossible, that is documented and a compensating path is identified.
