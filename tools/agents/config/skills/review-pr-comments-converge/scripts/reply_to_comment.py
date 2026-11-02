@@ -53,8 +53,11 @@ mutation($threadId: ID!) {
 """
 
 
-def run(cmd: list[str]) -> str:
-    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+def run(cmd: list[str], failure: str) -> str:
+    """Run gh and return its output, or exit with `failure` and gh's own reason when it fails."""
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        raise SystemExit(f"error: {failure}: {(result.stderr or result.stdout).strip()}")
     return result.stdout.strip()
 
 
@@ -80,7 +83,10 @@ def get_repo(explicit: str | None) -> tuple[str, str, str]:
     if explicit:
         nwo = explicit
     else:
-        raw = run(["gh", "repo", "view", "--json", "nameWithOwner"])
+        raw = run(
+            ["gh", "repo", "view", "--json", "nameWithOwner"],
+            failure="could not read the repo from the working directory",
+        )
         nwo = json.loads(raw)["nameWithOwner"]
 
     if nwo.count("/") != 1 or not all(nwo.split("/")):
@@ -104,7 +110,8 @@ def find_thread_id(owner: str, name: str, pr_number: int, comment_id: int) -> st
             f"name={name}",
             "-F",
             f"number={pr_number}",
-        ]
+        ],
+        failure=f"could not look up the thread for comment {comment_id}; nothing was posted",
     )
     threads = json.loads(raw)["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"]
     for thread in threads:
@@ -122,6 +129,12 @@ def main() -> None:
 
     # Exactly three: an extra word is most often a mistyped flag, such as --reslove, and posting
     # anyway would drop what it asked for without a word.
+    if len(args) > 3:
+        print(
+            f"error: unexpected argument(s): {' '.join(args[3:])}. "
+            "The flags are --resolve and --repo OWNER/NAME.",
+            file=sys.stderr,
+        )
     if len(args) != 3:
         print(
             "Usage: reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]",
@@ -153,7 +166,8 @@ def main() -> None:
             "POST",
             "-f",
             f"body={body}",
-        ]
+        ],
+        failure="could not post the reply; nothing was posted",
     )
     print(f"Replied to comment {comment_id}.")
 
@@ -167,7 +181,8 @@ def main() -> None:
                 f"query={RESOLVE_MUTATION}",
                 "-F",
                 f"threadId={thread_id}",
-            ]
+            ],
+            failure=f"the reply was posted, but resolving thread {thread_id} failed",
         )
         print(f"Resolved thread {thread_id}.")
 

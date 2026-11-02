@@ -2,8 +2,8 @@
 
 The script runs as a subprocess with a fake `gh` first on PATH, so no test can reach GitHub. The
 fake logs every call, answers a reply POST the way GitHub does, and serves two review threads to
-the thread lookup: PRRT_100 holding comment 100, and PRRT_123 holding comment 123. With
-GH_FAIL_POST set, it fails the reply POST and answers every other call.
+the thread lookup: PRRT_100 holding comment 100, and PRRT_123 holding comment 123. A call
+whose arguments contain GH_FAIL_MATCH fails with gh's 404 message, and every other call is answered.
 
 Run:
   uv run --with pytest pytest \
@@ -28,7 +28,8 @@ args = sys.argv[1:]
 with open(os.environ["FAKE_LOG"], "a") as log:
     log.write(json.dumps(args) + "\\n")
 
-if os.environ.get("GH_FAIL_POST") and "POST" in args:
+fail = os.environ.get("GH_FAIL_MATCH")
+if fail and fail in " ".join(args):
     print("gh: Not Found (HTTP 404)", file=sys.stderr)
     sys.exit(1)
 
@@ -166,7 +167,7 @@ def test_resolve_for_a_comment_in_no_thread_posts_nothing(
 
 
 def test_a_failed_post_resolves_nothing(setup: Callable[..., dict[str, str]]) -> None:
-    env = setup(GH_FAIL_POST="1")
+    env = setup(GH_FAIL_MATCH="POST")
     result = reply(env, "5", "123", "Fixed", "--resolve", "--repo", "octo/widgets")
     assert result.returncode != 0
     [lookup] = graphql(env)
@@ -181,6 +182,7 @@ def test_an_extra_argument_is_refused_before_anything_is_posted(
     result = reply(env, "5", "123", "Fixed", "--reslove", "--repo", "octo/widgets")
     assert result.returncode != 0
     assert "Usage:" in result.stderr
+    assert "unexpected argument(s): --reslove" in result.stderr
     assert calls(env) == []
 
 
@@ -202,3 +204,36 @@ def test_a_malformed_repo_is_refused_before_anything_is_posted(
     assert result.returncode != 0
     assert "repo must be OWNER/NAME" in result.stderr
     assert calls(env) == []
+
+
+def test_a_failed_lookup_says_nothing_was_posted_and_why(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup(GH_FAIL_MATCH="reviewThreads")
+    result = reply(env, "5", "123", "Fixed", "--resolve", "--repo", "octo/widgets")
+    assert result.returncode == 1
+    assert "could not look up the thread for comment 123; nothing was posted" in result.stderr
+    assert "HTTP 404" in result.stderr
+    assert "Traceback" not in result.stderr
+    assert posts(env) == []
+
+
+def test_a_failed_post_says_nothing_was_posted_and_why(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup(GH_FAIL_MATCH="POST")
+    result = reply(env, "5", "123", "Fixed", "--repo", "octo/widgets")
+    assert result.returncode == 1
+    assert "could not post the reply; nothing was posted" in result.stderr
+    assert "HTTP 404" in result.stderr
+    assert "Traceback" not in result.stderr
+
+
+def test_a_failed_resolve_says_the_reply_is_live(setup: Callable[..., dict[str, str]]) -> None:
+    env = setup(GH_FAIL_MATCH="resolveReviewThread")
+    result = reply(env, "5", "123", "Fixed", "--resolve", "--repo", "octo/widgets")
+    assert result.returncode == 1
+    assert "the reply was posted, but resolving thread PRRT_123 failed" in result.stderr
+    assert "HTTP 404" in result.stderr
+    assert "Traceback" not in result.stderr
+    assert len(posts(env)) == 1
