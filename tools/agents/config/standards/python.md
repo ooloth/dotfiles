@@ -44,6 +44,23 @@ The `Ok`/`Err` pair is defined once in the project, in about 15 lines, rather th
 from a library. `try/except` is reserved for system boundaries and truly unexpected
 errors.
 
+**An expected failure ends the program with a sentence a person can act on, not a traceback.**
+Missing input, absent state and a precondition that does not hold each end the run with a message
+that says what to do next and a non-zero exit status. The failure travels as a returned outcome up
+to the entry point, which is the one place that turns it into that message and exit, with
+`SystemExit("…")` as the usual form. A traceback is kept for the genuinely unexpected, where the
+stack is what the reader needs.
+
+**Code that changes a developer's own machine can be undone, and refuses to run when it could not
+be.**
+Caches, databases, config and checkouts on the machine the code runs on are backed up before they
+are written, and the inverse operation exists. A run refuses rather than overwrite a backup that an
+earlier run left behind, because that backup may be the only copy of the developer's state.
+
+**A script's module docstring says what the script does and how to run it.**
+It is the first documentation a reader meets, and `--help` is built from it, so a reader can tell
+from those lines whether this is the tool they want.
+
 **Import architecture is enforced by `import-linter` in CI.**
 A `.importlinter` contract defines which packages may import from which others,
 mirroring the intended layering (e.g. `api → domain`, never `domain → api`).
@@ -63,6 +80,12 @@ through to the root logger's level and can be dropped with no error. In one work
 a migrate command's outcome line vanished this way, and only a test that ran the module as a
 subprocess caught it. `logging.getLogger("package.module")` keeps the name the same whether the
 module is imported or run.
+
+**A script outside a project is one file run by `uv`, with its dependencies declared inline.**
+PEP 723 metadata at the top and a `#!/usr/bin/env -S uv run --script` shebang leave no virtualenv
+to activate, no install step and no doubt about which interpreter the script wants. A script in a
+repo with a `pyproject.toml` runs through that project instead, so it can import the project's
+shared code, such as its `Ok`/`Err` pair.
 
 **Return types are not quoted.**
 Add `from __future__ import annotations` at the top of any file targeting
