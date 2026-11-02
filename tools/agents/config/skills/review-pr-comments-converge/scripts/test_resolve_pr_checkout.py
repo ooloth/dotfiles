@@ -417,3 +417,14 @@ def test_running_outside_a_git_checkout_is_refused(h: Harness) -> None:
     assert result.returncode == 1
     assert "git checkout" in result.stderr
     assert "Traceback" not in result.stderr
+
+
+def test_a_remote_at_a_path_with_a_space_is_found(h: Harness) -> None:
+    spaced = h.tmp_path / "My Repos" / "octo" / "widgets.git"
+    spaced.parent.mkdir(parents=True)
+    h.git(h.tmp_path, "clone", "-q", "--bare", str(h.remote), str(spaced))
+    h.git(h.main, "remote", "set-url", "origin", str(spaced))
+    edge = h.sibling_worktree()
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == resolved(edge)

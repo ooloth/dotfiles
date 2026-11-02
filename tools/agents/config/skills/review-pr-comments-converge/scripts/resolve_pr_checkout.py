@@ -128,11 +128,15 @@ def read_pr(number: int, repo: str) -> PullRequest:
 def find_remote(root: Path, repo: str) -> str:
     """The remote whose URL ends in OWNER/NAME, for SSH, HTTPS and local-path URLs alike."""
     pattern = re.compile(rf"[:/]{re.escape(repo)}(\.git)?/?$", re.IGNORECASE)
-    listing = git_out(root, "remote", "-v", failure="Could not list remotes")
-    for line in listing.splitlines():
-        name, url, *_ = line.split()
+    # Read from config rather than `git remote -v`, whose lines split wrongly when a URL has a
+    # space, such as a local path under "My Repos". Exit 1 means there are no remotes.
+    listing = git(root, "config", "--get-regexp", r"^remote\..*\.url$")
+    if listing.returncode not in (0, 1):
+        raise Refused(f"Could not list remotes: {listing.stderr.strip()}")
+    for line in listing.stdout.splitlines():
+        key, url = line.split(" ", 1)
         if pattern.search(url):
-            return name
+            return key.removeprefix("remote.").removesuffix(".url")
     raise Refused(
         f"No remote of {root} points at {repo}. This is a checkout of a different repo: run "
         f"from a checkout of {repo}, or pass the right --repo."
