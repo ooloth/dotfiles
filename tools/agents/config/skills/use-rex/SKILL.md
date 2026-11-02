@@ -20,7 +20,7 @@ mode stops at its first skill prompt, where nobody is watching.
 
 A tab nobody will watch work, such as one `monitor-prs` or `orchestrate-rex` opens, passes
 `--unattended` as its first Claude argument, before the prompt. `cc.bash` then starts it in auto
-mode on every machine, and it asks in the tab before any push, comment, review or merge.
+mode on every machine, never in bypass mode.
 
 The tab opens in the Rex session labelled `Workers` unless `-s` names another session. When no
 `Workers` session exists, the launcher creates one with this tab as its first window. The launcher

@@ -17,8 +17,8 @@ its scripts can write to a fixed path as easily as its instructions can.
 
 A script in a skill that opens a Claude Code tab through the Rex launcher starts
 a session nobody watches start, which then reads text other people wrote. It
-passes --unattended, so cc.bash starts that session in auto mode and it asks
-before any push, comment or review. A tab an agent opens from a skill's
+passes --unattended, so cc.bash starts that session in auto mode, where a
+classifier checks each action, never in bypass mode. A tab an agent opens from a skill's
 instructions, with the user there, is not checked.
 
 Git decides which files are skills: tracked files, and untracked ones git does

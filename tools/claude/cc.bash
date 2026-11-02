@@ -8,25 +8,11 @@
 # files as current, while a hint lets the session check before relying on it.
 #
 # Run with: cc [claude arguments], or ccc to continue the last session. A first argument of
-# --unattended, which monitor-prs passes through the Rex launcher for the sessions it opens, starts in auto mode on
-# every machine with the ask rules in UNATTENDED_SETTINGS.
+# --unattended, which monitor-prs and orchestrate-rex pass through the Rex launcher for the tabs they
+# open, starts in auto mode on every machine.
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../bash/utils.bash"
-
-# The ask rules an unattended session adds to the user's own, which still apply: Claude Code
-# combines an ask list passed with --settings with the one in settings.json. Each is a way a session
-# would ordinarily push, comment, review, or edit a pull request or issue. `gh api` sends a POST
-# when given fields, so -f and -F ask too.
-UNATTENDED_SETTINGS='{"permissions":{"ask":[
-"Bash(*git push*)","Bash(*git * push*)",
-"Bash(*gh pr comment*)","Bash(*gh pr review*)","Bash(*gh pr edit*)","Bash(*gh pr close*)",
-"Bash(*gh pr ready*)","Bash(*gh pr merge*)",
-"Bash(*gh issue comment*)","Bash(*gh issue create*)","Bash(*gh issue edit*)","Bash(*gh issue close*)",
-"Bash(*gh api *-X *)","Bash(*gh api *--method*)","Bash(*gh api *-f *)","Bash(*gh api *-F *)",
-"Bash(*gh api *--field*)","Bash(*gh api *--raw-field*)","Bash(*gh api *--input*)",
-"Bash(*reply_to_comment.py*)"
-]}}'
 
 # Repos a session in the named folder should be told about, one name per line, each cloned beside
 # the current repo's main checkout. The pairs come from PRIVATE_RELATED_REPOS in private.env, as
@@ -83,11 +69,13 @@ main() {
   local claude_args=() org hints="" name
   # A session nobody watches as it starts, such as one monitor-prs opens to draft replies, reads
   # text other people wrote. It runs in auto mode on every machine, so a classifier checks each
-  # action, and it asks before each way it could make something visible to others.
+  # action and blocks one that looks driven by that text. Its posts and pushes wait on the skill's
+  # own approval step. Ask rules were tried and dropped: their prompts showed long gh commands cut
+  # short, which could not be reviewed. Auto mode approves a push to the session's own repo by
+  # itself, so against a session steered by what it read, the classifier is the only guard.
   if [[ "${1:-}" == "--unattended" ]]; then
     shift
     mode="auto"
-    claude_args+=(--settings "${UNATTENDED_SETTINGS}")
   fi
   org="$(org_folder)"
   while IFS= read -r name; do
