@@ -44,6 +44,14 @@ something else at, such as where symlinks in `$HOME` should lead, is a different
 deliberate, stable destination, so it is a named constant of its own, and the script refuses to
 use any other location for it unless told to explicitly.
 
+**A command line puts every option before the first operand.**
+macOS ships the BSD versions of tools such as `pgrep`, `ls` and `cp`, and BSD's `getopt` stops
+reading options at the first argument that is not one. Everything after it is an operand, so in
+`pgrep -x sleep -P 1234` the `-P 1234` becomes two more patterns, and the command matches every
+`sleep` on the machine rather than the children of 1234, with no error. GNU tools reorder their
+arguments, so the same line works on Linux and the mistake only shows on a Mac, and only when the
+filter it lost would have excluded something. Writing options first gives one meaning everywhere.
+
 **Temporary files come from `mktemp -d`.**
 A fixed path such as `/tmp/out.txt` is shared by every copy of the script running at once, so one
 run can read or overwrite another's file. A new directory from `mktemp -d` each run, removed when
