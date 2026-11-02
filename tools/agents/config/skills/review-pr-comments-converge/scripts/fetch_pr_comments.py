@@ -117,7 +117,8 @@ class Discussion:
 
 
 # The name each review bot is thanked by. A bot is never @-mentioned: rex-rx starts a new review
-# whenever its handle is mentioned on a PR.
+# whenever its handle is mentioned on a PR. monitor-prs also reads these keys as its list of review
+# bots, so a top-level comment from any bot listed here counts there as feedback to prepare.
 BOT_NAMES = {"rex-rx-agent": "Rex", "copilot-pull-request-reviewer": "Copilot"}
 
 
