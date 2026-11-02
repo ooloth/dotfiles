@@ -27,7 +27,7 @@ machines. Its design had reached the findings recorded below when it stopped.
 ## What would settle it
 
 **Whether the work laptop can download packages from PyPI directly** is answered under Findings: it
-can, and the maintainer allows this repo's dev tools to come from PyPI there. A `uv.lock` made
+can, and the maintainer allows this repo's packages to come from PyPI there. A `uv.lock` made
 against PyPI can be shared between every machine.
 
 **What is left is a command that meets every property below**, chosen from the options, tried on
@@ -136,9 +136,9 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
   "always"`, and its comments say the single index guards against name-collision attacks between
   internal and public package names. `env | grep '^UV_'` printed nothing, and neither
   `/etc/uv/uv.toml` nor `/Library/Application Support/uv/uv.toml` exists.
-- *Decided (2026-11-02) by the maintainer:* this repo's dev tools may be downloaded from PyPI on
-  the work laptop, because the repo depends only on public packages and so has no internal name
-  for a public package to collide with.
+- *Decided (2026-11-02) by the maintainer:* this repo's packages, runtime and dev alike, may be
+  downloaded from PyPI on the work laptop, because the repo depends only on public packages and so
+  has no internal name for a public package to collide with.
 - *Measured (2026-11-02):* on the work laptop with uv 0.13.6, `UV_NO_CACHE=1 uv run --no-project
   --no-config --index https://pypi.org/simple --with six==1.17.0` downloaded and imported `six`.
   The network allows PyPI.

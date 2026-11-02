@@ -49,8 +49,10 @@ On a work laptop, uv installs packages through the work Artifact Registry index 
 gcloud auth login <you>@recursion.com --update-adc
 ```
 
-Without it, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. Do not
-point uv at public PyPI instead, because the managed config blocks that fallback on purpose.
+Without it, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. The managed
+config names that index as the only default, so uv never falls back to public PyPI on its own.
+Whether the repo's own Python project installs from PyPI on a work laptop is open in
+[what-command-starts-the-repos-python.md](docs/questions/what-command-starts-the-repos-python.md).
 
 Shellcheck settings live in `.shellcheckrc`, not in disable comments. Run it only on `*.sh` and
 `*.bash` files.

@@ -68,8 +68,10 @@ Nothing here is settled until it graduates into a decision record.
 - *Unverified:* whether a fresh work laptop can download Python with uv before gcloud is logged
   in. The check under **What would settle it** answers it.
 - *Reasoned:* the global Python standards call for Pydantic at boundaries. A setup that has to run
-  before gcloud is logged in cannot install third-party packages on a work laptop, so the code it
-  runs would be limited to the standard library, with ruff, `ty` and pytest only in the dev group.
+  before gcloud is logged in can install third-party packages on a work laptop only if they come
+  from PyPI without touching the managed index, as a lock made against PyPI does. That was measured
+  with gcloud logged in (see the 2026-11-02 finding below). If it fails before login, the code
+  setup runs is limited to the standard library, with ruff, `ty` and pytest only in the dev group.
 - *Measured (2026-10-29):* with uv 0.13.5 on a personal machine, `uv run --frozen --no-dev` on a
   project with no runtime dependencies and no `.venv` started a module with `UV_NO_CACHE=1` and
   `UV_DEFAULT_INDEX` set to an unreachable host. This held for a packaged project built with
