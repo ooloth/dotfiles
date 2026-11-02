@@ -14,6 +14,7 @@ import json
 import os
 import subprocess
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -234,13 +235,25 @@ CONVERSATION COMMENT  bot
 """
 
 
+@pytest.fixture(scope="module")
+def stubs(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Path]:
+    """The fake `gh`, written once and made read-only, so no test can change what another runs."""
+    folder = tmp_path_factory.mktemp("stubs")
+    gh = folder / "gh"
+    gh.write_text(FAKE_GH)
+    gh.chmod(0o755)
+    folder.chmod(0o555)
+    yield folder
+    folder.chmod(0o755)
+
+
+def test_a_test_cannot_write_beside_the_shared_stub(stubs: Path) -> None:
+    with pytest.raises(PermissionError):
+        (stubs / "other").write_text("x")
+
+
 class Harness:
-    def __init__(self, tmp_path: Path) -> None:
-        bin_dir = tmp_path / "bin"
-        bin_dir.mkdir()
-        gh = bin_dir / "gh"
-        gh.write_text(FAKE_GH)
-        gh.chmod(0o755)
+    def __init__(self, tmp_path: Path, bin_dir: Path) -> None:
         self.log = tmp_path / "gh.log"
         self.fixture = tmp_path / "fixture.json"
         self.env = {
@@ -270,8 +283,8 @@ class Harness:
 
 
 @pytest.fixture
-def harness(tmp_path: Path) -> Harness:
-    return Harness(tmp_path)
+def harness(tmp_path: Path, stubs: Path) -> Harness:
+    return Harness(tmp_path, stubs)
 
 
 def test_items_on_every_page_are_each_printed_once(harness: Harness) -> None:

@@ -14,7 +14,10 @@ import json
 import os
 import subprocess
 import sys
+from collections.abc import Callable, Iterator
 from pathlib import Path
+
+import pytest
 
 SCRIPT = Path(__file__).with_name("reply_to_comment.py")
 
@@ -43,18 +46,36 @@ else:
 """
 
 
-def setup(tmp_path: Path, **extra: str) -> dict[str, str]:
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    gh = bin_dir / "gh"
+@pytest.fixture(scope="module")
+def stubs(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Path]:
+    """The fake `gh`, written once and made read-only, so no test can change what another runs."""
+    folder = tmp_path_factory.mktemp("stubs")
+    gh = folder / "gh"
     gh.write_text(FAKE_GH.replace("#!/usr/bin/env python3", f"#!{sys.executable}"))
     gh.chmod(0o755)
-    return {
-        **os.environ,
-        "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
-        "FAKE_LOG": str(tmp_path / "gh.log"),
-        **extra,
-    }
+    folder.chmod(0o555)
+    yield folder
+    folder.chmod(0o755)
+
+
+@pytest.fixture
+def setup(tmp_path: Path, stubs: Path) -> Callable[..., dict[str, str]]:
+    """Builds a test's environment: the shared fake first on PATH, and a call log of its own."""
+
+    def env(**extra: str) -> dict[str, str]:
+        return {
+            **os.environ,
+            "PATH": f"{stubs}{os.pathsep}{os.environ['PATH']}",
+            "FAKE_LOG": str(tmp_path / "gh.log"),
+            **extra,
+        }
+
+    return env
+
+
+def test_a_test_cannot_write_beside_the_shared_stub(stubs: Path) -> None:
+    with pytest.raises(PermissionError):
+        (stubs / "other").write_text("x")
 
 
 def reply(env: dict[str, str], *args: str) -> subprocess.CompletedProcess:
@@ -76,8 +97,10 @@ def graphql(env: dict[str, str]) -> list[list[str]]:
     return [call for call in calls(env) if call[1] == "graphql"]
 
 
-def test_a_reply_posts_its_body_to_the_comments_replies(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_a_reply_posts_its_body_to_the_comments_replies(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup()
     result = reply(env, "5", "123", "Fixed `x` (abc1234)", "--repo", "octo/widgets")
     assert result.returncode == 0, result.stderr
     [post] = posts(env)
@@ -86,24 +109,28 @@ def test_a_reply_posts_its_body_to_the_comments_replies(tmp_path: Path) -> None:
     assert "Target: octo/widgets#5, comment 123" in result.stdout
 
 
-def test_a_body_that_starts_with_a_dash_is_posted_as_the_body(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_a_body_that_starts_with_a_dash_is_posted_as_the_body(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup()
     result = reply(env, "5", "123", "--not a flag", "--repo", "octo/widgets")
     assert result.returncode == 0, result.stderr
     [post] = posts(env)
     assert "body=--not a flag" in post
 
 
-def test_the_repo_can_be_given_with_an_equals_sign(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_the_repo_can_be_given_with_an_equals_sign(setup: Callable[..., dict[str, str]]) -> None:
+    env = setup()
     result = reply(env, "--repo=octo/widgets", "5", "123", "Thanks")
     assert result.returncode == 0, result.stderr
     [post] = posts(env)
     assert post[1] == "repos/octo/widgets/pulls/5/comments/123/replies"
 
 
-def test_resolve_closes_the_thread_holding_that_comment(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_resolve_closes_the_thread_holding_that_comment(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup()
     result = reply(env, "5", "123", "Fixed", "--resolve", "--repo", "octo/widgets")
     assert result.returncode == 0, result.stderr
     lookup, resolve = graphql(env)
@@ -112,30 +139,34 @@ def test_resolve_closes_the_thread_holding_that_comment(tmp_path: Path) -> None:
     assert "Resolved thread PRRT_123." in result.stdout
 
 
-def test_without_resolve_no_thread_is_touched(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_without_resolve_no_thread_is_touched(setup: Callable[..., dict[str, str]]) -> None:
+    env = setup()
     result = reply(env, "5", "123", "Fixed", "--repo", "octo/widgets")
     assert result.returncode == 0, result.stderr
     assert graphql(env) == []
 
 
-def test_resolve_for_a_comment_in_no_thread_exits_with_a_sentence(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_resolve_for_a_comment_in_no_thread_exits_with_a_sentence(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup()
     result = reply(env, "5", "999", "Fixed", "--resolve", "--repo", "octo/widgets")
     assert result.returncode != 0
     assert "no thread found for comment_id 999" in result.stderr
     assert "Traceback" not in result.stderr
 
 
-def test_resolve_for_a_comment_in_no_thread_posts_nothing(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_resolve_for_a_comment_in_no_thread_posts_nothing(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup()
     result = reply(env, "5", "999", "Fixed", "--resolve", "--repo", "octo/widgets")
     assert result.returncode != 0
     assert posts(env) == []
 
 
-def test_a_failed_post_resolves_nothing(tmp_path: Path) -> None:
-    env = setup(tmp_path, GH_FAIL_POST="1")
+def test_a_failed_post_resolves_nothing(setup: Callable[..., dict[str, str]]) -> None:
+    env = setup(GH_FAIL_POST="1")
     result = reply(env, "5", "123", "Fixed", "--resolve", "--repo", "octo/widgets")
     assert result.returncode != 0
     [lookup] = graphql(env)
@@ -143,24 +174,30 @@ def test_a_failed_post_resolves_nothing(tmp_path: Path) -> None:
     assert len(posts(env)) == 1
 
 
-def test_an_extra_argument_is_refused_before_anything_is_posted(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_an_extra_argument_is_refused_before_anything_is_posted(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup()
     result = reply(env, "5", "123", "Fixed", "--reslove", "--repo", "octo/widgets")
     assert result.returncode != 0
     assert "Usage:" in result.stderr
     assert calls(env) == []
 
 
-def test_a_missing_body_is_refused_before_anything_is_posted(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_a_missing_body_is_refused_before_anything_is_posted(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup()
     result = reply(env, "5", "123", "--repo", "octo/widgets")
     assert result.returncode != 0
     assert "Usage:" in result.stderr
     assert calls(env) == []
 
 
-def test_a_malformed_repo_is_refused_before_anything_is_posted(tmp_path: Path) -> None:
-    env = setup(tmp_path)
+def test_a_malformed_repo_is_refused_before_anything_is_posted(
+    setup: Callable[..., dict[str, str]],
+) -> None:
+    env = setup()
     result = reply(env, "5", "123", "Fixed", "--repo", "widgets")
     assert result.returncode != 0
     assert "repo must be OWNER/NAME" in result.stderr
