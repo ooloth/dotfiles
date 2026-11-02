@@ -41,7 +41,7 @@ cmd+shift+r to rename the session:
 | cmd+shift+m | zoom pane (toggle) |
 
 cmd+g runs the `lazygit` action, which works like the tmux popup on prefix g. It opens lazygit in a
-floating layer over the tab, inset 2.5% on each side, in the directory of whatever runs in the
+floating layer covering the whole tab, in the directory of whatever runs in the
 focused pane. A new float would otherwise start in the home directory. Quitting lazygit closes the
 float. Two things in current Rex differ from the tmux popup: a float that takes focus ends any zoom,
 which an open Rex bug ("Focused floating layer clears pane zoom, and closing it doesn't restore

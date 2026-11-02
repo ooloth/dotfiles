@@ -866,11 +866,11 @@ REPO = "/Users/someone/Repos/project"
 
 
 def float_over_tab(cwd: str) -> str:
-    """The floating layer cmd+g asks for: lazygit focused over the tab, inset 2.5% on each side,
+    """The floating layer cmd+g asks for: lazygit focused over the whole tab,
     closing when it exits. It starts through an interactive zsh, because PATH, EDITOR and
     XDG_CONFIG_HOME are set in .zshrc, which the login shell Rex would otherwise use doesn't read."""
     return (
-        "new_layer bounds=0.025,0.025,0.95,0.95 focus=true com.superlogical.terminal.shell "
+        "new_layer bounds=0,0,1,1 focus=true com.superlogical.terminal.shell "
         f"shell=none /opt/homebrew/bin/zsh -i -c lazygit cwd={cwd} on_completion=true"
     )
 

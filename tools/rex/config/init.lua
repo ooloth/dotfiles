@@ -321,7 +321,7 @@ rex.action({
 
     local layer, layer_err = rex.session.new_layer({
       session_id = ctx.session_id,
-      bounds = { 0.025, 0.025, 0.95, 0.95 },
+      bounds = { 0, 0, 1, 1 },
       focus = true,
       layout = {
         block = {
