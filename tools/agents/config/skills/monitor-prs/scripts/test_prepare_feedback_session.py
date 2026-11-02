@@ -188,7 +188,7 @@ def test_a_pr_gets_a_worktree_tracking_its_head_and_a_tab(machine: Machine) -> N
     assert machine.git("branch", "--show-current", cwd=worktree) == worktree.name
     [new] = [call for call in machine.rex_calls() if call[:2] == ["window", "new"]]
     assert LABEL in new
-    assert new[-1] == "/review-pr-comments-converge octo/widgets#5"
+    assert new[-2:] == ["--unattended", "/review-pr-comments-converge octo/widgets#5"]
 
 
 def test_the_main_checkout_is_left_on_its_branch(machine: Machine) -> None:

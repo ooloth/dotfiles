@@ -16,6 +16,7 @@ The tests of the map's handling in general source the real cc.bash and replace o
 
 from __future__ import annotations
 
+import json
 import subprocess
 import tempfile
 import unittest
@@ -174,6 +175,69 @@ class UnmappedFolder(unittest.TestCase):
                 run = self.machine.run(computer=computer)
 
                 self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
+
+
+# Every way a session would ordinarily make something visible to others. An unattended session asks
+# before each of these, so nothing posts or pushes until someone is at the tab to approve it.
+UNATTENDED_ASK = [
+    f"Bash({pattern})"
+    for pattern in [
+        "*git push*",
+        "*git * push*",
+        "*gh pr comment*",
+        "*gh pr review*",
+        "*gh pr edit*",
+        "*gh pr close*",
+        "*gh pr ready*",
+        "*gh pr merge*",
+        "*gh issue comment*",
+        "*gh issue create*",
+        "*gh issue edit*",
+        "*gh issue close*",
+        "*gh api *-X *",
+        "*gh api *--method*",
+        "*gh api *-f *",
+        "*gh api *-F *",
+        "*gh api *--field*",
+        "*gh api *--raw-field*",
+        "*gh api *--input*",
+        "*reply_to_comment.py*",
+    ]
+]
+
+
+class Unattended(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.machine = Machine(Path(self._tmp.name))
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_starts_in_auto_mode_on_every_machine_with_the_ask_rules(self) -> None:
+        for computer in ("air", "mini", "work"):
+            with self.subTest(computer=computer):
+                run = self.machine.run("--unattended", "/review x", computer=computer)
+
+                self.assertEqual(run.status, 0, run.output)
+                assert run.claude is not None
+                self.assertEqual(run.claude[:2], ["--permission-mode", "auto"])
+                self.assertEqual(run.claude[2], "--settings")
+                self.assertEqual(
+                    json.loads(run.claude[3]), {"permissions": {"ask": UNATTENDED_ASK}}
+                )
+                self.assertEqual(run.claude[4:], ["/review x"])
+
+    def test_the_option_never_reaches_claude(self) -> None:
+        run = self.machine.run("--unattended", "/review x")
+
+        assert run.claude is not None
+        self.assertNotIn("--unattended", run.claude)
+
+    def test_without_the_option_nothing_changes(self) -> None:
+        run = self.machine.run("/review x")
+
+        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions", "/review x"])
 
 
 class MappedFolder(unittest.TestCase):

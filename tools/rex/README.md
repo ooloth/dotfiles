@@ -95,4 +95,6 @@ for the new tab goes to stdout, with its pane at `.block_ids[0]`. Capture that p
 `rex capture -s Workers -b <pane>`, or with the session passed to `-s`, because Rex looks for a pane
 only in the caller's own session otherwise. Tab names start with a word, not an emoji. Agents start
 every Claude tab this way, as the `use-rex` skill says, so no skill names a permission mode itself.
-Tests: `uv run tools/rex/tests/test_claude_tab.py`.
+A first Claude argument of `--unattended`, which `monitor-prs` passes for the sessions it opens,
+reaches `cc.bash`, which then starts the tab in auto mode on every machine and asks before each
+push, comment, review or other write to GitHub. Tests: `uv run tools/rex/tests/test_claude_tab.py`.

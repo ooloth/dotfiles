@@ -245,7 +245,8 @@ def open_labels() -> list[str] | None:
 def launch(clone: Clone, target: PrTarget, worktree: Worktree) -> str:
     """Open the tab and return its pane, or clean up after a failed launch and raise."""
     result = subprocess.run(
-        ["bash", str(LAUNCHER), target.label, str(worktree.path), target.prompt],
+        # --unattended is cc.bash's: auto mode, and a prompt before anything others would see
+        ["bash", str(LAUNCHER), target.label, str(worktree.path), "--unattended", target.prompt],
         capture_output=True,
         text=True,
     )
