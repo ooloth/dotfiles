@@ -101,16 +101,13 @@ that was never derived is invisible in exactly the way a derived one is. The lis
 part of the record a reader can disagree with before the conclusion has framed the question for
 them.
 
-**Implementation effort is a constraint, never a merit.**
-A stated budget rules an option out. Nothing rules one in on effort. "Simpler to build", "a smaller
-diff", "less to configure" and "fewer moving parts" each name what an option costs, and none of
-them names anything the system requires, so an option that wins on one of them has not been
-compared on anything. The tell is a comparison whose merit column contains a cost. Where effort
-seems
-to be the only thing separating the candidates, the property list is not finished: it is extended
-and zoomed, per the entry on comparisons that leave several candidates standing. A cost the
-maintainer has stated a view on, such as a budget or a strong wish for something to be free, enters
-that list as a cited row rather than deciding from outside it.
+**The effort to build an option is a constraint, never a merit, and the complexity it leaves behind
+is a cost.**
+A stated budget rules an option out, and nothing rules one in on how easy it is to build: "simpler
+to build" and "a smaller diff" name a one-time cost, not anything the system requires. What an
+option leaves behind is different. Each moving part, file, concept and rule a maintainer has to keep
+in mind is something they live with for as long as the system runs, so it enters the property list
+as an experience cost and is weighed against what the option delivers.
 
 **A predicted failure mode is a constraint on the design, never a reason to drop the requirement.**
 "It would degrade into busywork" and "it would be ignored" describe how a bad version of the thing
@@ -119,6 +116,12 @@ so the work is to find one that survives it, and the tell that this went wrong i
 justified by the good version being hard to specify. Where no design survives the constraint, that
 is the finding and it is recorded as one, rather than arriving as a preference for leaving the
 requirement out.
+
+This holds for a requirement that names a harm. A requirement is held only while it names the
+specific harm that dropping it would cause, and that harm is weighed against what keeping it costs.
+When the design that keeps a requirement grows out of proportion to the harm it prevents, such as a
+rule every machine must follow to guard against a leak no machine has, the requirement and its cost
+go to the maintainer as a decision rather than being built.
 
 **Every architectural decision considers CPU, memory, storage and network, and records which of them
 do not bind and why.**
@@ -163,7 +166,9 @@ can undo. Writing the failures out first, category by category, is what widens i
 
 The three are not ranked, and none is traded for another by default. A tradeoff between them often
 means the design is not finished, because a different design can remove it. A tradeoff that
-survives the search names the physical fact that forces it, and is then argued from the properties.
+survives the search is accepted only where a physical fact forces it, or where reaching the maximum
+would cost more than the harm it prevents and the maintainer agrees after seeing both. It names the
+fact or the cost, and is then argued from the properties.
 
 The tell that this step was skipped is options presented as points on one curve, such as "fast or
 correct", "fast or validated" or "simple or safe", with no option asking whether the curve can be

@@ -240,6 +240,10 @@ with the pairing named, so that none of them is mistaken for full coverage on it
 named a question the running system cannot answer and this slice cannot make answerable, the
 behaviour behind it is a candidate for heavier coverage, since production will not report it.
 
+Before choosing paradigms, weigh what a failure of each behaviour would cost against what its tests
+would cost to keep. A behaviour whose failure shows itself at once and harms nothing beyond itself
+can go untested, with that reason stated, and a test plan can be empty.
+
 A cross-cutting property gets a check over every instance in the codebase, not only a test of this
 slice's transformations, so that a violation in code this slice never touched fails it. The test
 plan names that check, what it enumerates, and the property it observes.

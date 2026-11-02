@@ -260,8 +260,9 @@ theoretical maximum of each kind before accepting any tradeoff between them:
 
 Then look for a design that comes close to all three. They are not ranked. A tradeoff often means
 the design is not finished yet, because a different design can remove it. Accept one only where a
-physical fact forces it, name that fact, and argue it from the properties. The full rule is in
-`decision-making.md` in the standards.
+physical fact forces it, or where reaching the maximum would cost more than the harm it prevents
+and I agree after seeing both. Name the fact or the cost, and argue it from the properties. The
+full rule is in `decision-making.md` in the standards.
 
 **Decide slowly, from properties, when the triage above says a choice needs it.** Models are
 trained to reach a choice quickly, and the harness reinforces it: its system prompt says "When you

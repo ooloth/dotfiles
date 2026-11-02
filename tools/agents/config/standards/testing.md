@@ -31,6 +31,10 @@ own signal is used where it has one (pytest exits 5 when it collects no tests),
 and a guard runs ahead of the tool where it has none (ruff and ty exit 0 on a
 path with no Python files).
 
+This is about a selection that came up empty by mistake. A check whose input is
+legitimately empty in some environment, such as a machine with nothing
+configured, says it skipped and why instead of failing.
+
 **Critical paths have test coverage.**
 Authentication, authorization, payment flows, data integrity operations, and
 error handling paths are tested. The absence of tests here is a defect.

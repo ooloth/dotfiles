@@ -126,11 +126,12 @@ cost.
    reached cheaply, never a reason to drop one. Push back on scope, abstraction, configurability or
    compatibility work that no stated property requires.
 
-3. Implementation effort is a constraint, never a merit. It rules an option out only against a
-   budget the user stated. "X is simpler to build" is not a reason to prefer X unless it also names
-   a property X delivers better. Cost is what an option spends to deliver the properties, not a
-   score it competes on, unless the user has stated a view on it, in which case it enters the table
-   as a row citing that statement.
+3. The effort to build an option is a constraint, never a merit, and the complexity it leaves
+   behind is a cost. Effort rules an option out only against a budget the user stated. "X is
+   simpler to build" is not a reason to prefer X unless it also names a property X delivers better.
+   What an option leaves behind is different: each moving part, file, concept and rule a maintainer
+   has to keep in mind enters the table as an experience cost, weighed against what the option
+   delivers.
 
 4. Score every option against every property in one table, options as rows and properties as
    columns. Before accepting any tradeoff, state the theoretical maximums for safety, performance
@@ -140,7 +141,9 @@ cost.
    is about. Options
    framed as points on one curve,
    such as "fast or correct" or "simple or safe", are the sign this step was skipped. A tradeoff
-   that remains names the physical fact that forces it.
+   that remains is accepted only where a physical fact forces it, or where reaching the maximum
+   would cost more than the harm it prevents and the user agrees after seeing both. It names the
+   fact or the cost.
 
    If more than one option survives, the list is not finished. Zoom into each property every
    survivor passes, and extend the list to moments and softer properties not yet covered, each

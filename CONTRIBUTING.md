@@ -34,7 +34,8 @@ CI runs the same five scripts in the same order, one step each, in `.github/work
 A category is named for the kind of check, not the language, so a tool for a new language joins
 the matching script. Each check fails when it finds nothing to check: pytest exits 5 when it
 collects no tests, and each script refuses to run with no files of the kind it checks. A new check
-keeps that property.
+keeps that property, except where its input is legitimately empty on some machine: then it says it
+skipped and why, as `testing.md` in the shared standards describes.
 
 On a work laptop, uv installs packages through the work Artifact Registry index set in
 `~/.config/uv/uv.toml`, which authenticates with Application Default Credentials. Before running
