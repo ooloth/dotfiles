@@ -50,17 +50,13 @@ codebase. Starting from these files, what would you believe that is not true, wh
 unfinished, and what is named or placed in a way that would send you in the wrong direction? Give a
 file and line for each."
 
-**A cold reader.** Give it only the repo path. Ask it: "You are a new agent starting work on the
-repo at `<path>`, with no prior context. Read what you would naturally read to orient yourself,
-starting from whatever entry point you would choose, and stop once you know what you would do next.
-Then report what you would do next and what told you to, which files you read and in what order,
+**A cold reader.** Give it only the repo path, plus any extra question the caller passes. Ask it:
+"You are a new agent starting work on the repo at `<path>`, with no prior context. Read what you
+would naturally read to orient yourself, starting from whatever entry point you would choose, and
+stop once you understand how the repo works. Then report which files you read and in what order,
 and what confused you, contradicted itself, looked stale, or would have led you astray if you had
-trusted it, with a file and line for each."
-
-Grade the cold reader's answer against what you know the next step is. It passes only if it picks
-the right next thing for the right reason, because the signal it followed is the one the next agent
-will follow. When it names a procedure, such as a skill to run, grade where that procedure would
-lead. When the right next step is written nowhere a fresh agent would look, that is a finding.
+trusted it, with a file and line for each." Orienting from the entry points is what sends it past
+the README, the agent instructions and CONTRIBUTING, where stale claims about a change show up.
 
 Your own list and the fresh subagent both look for:
 
@@ -106,7 +102,8 @@ decision is an ask.
 
 One list, in this order:
 
-1. **The cold read:** what it would do next, the signal it followed, and whether that passes.
+1. **The cold read:** the files it read in order, and its answer to any extra question the caller
+   passed.
 2. **Fixes,** each with its location, what misleads, and the exact edit. Lead with whatever would
    actively mislead: a confident wrong signal before a gap, because a gap announces itself.
 3. **Asks,** each with its location, what misleads, and its lettered options with one recommended.

@@ -96,18 +96,19 @@ running review-pr-comments-converge, so its draft replies and fixes are waiting 
 
 [wrap-up-codebase](./tools/agents/config/skills/wrap-up-codebase/SKILL.md) finds everything in the
 repo that a change made untrue or that would mislead the next agent, and sorts each finding into a
-fix, a question for me or a dismissal. A cold reader given only the repo path reports what it would
-do next and what told it to, and passes only if it picks the right thing for the right reason. It
-runs once before a draft PR opens, so its fixes merge with the code, and in a repo like this one
-that commits straight to `main`, once per session before asking for the last commit signal.
+fix, a question for me or a dismissal. A cold reader given only the repo path orients itself from
+the entry points and reports whatever confused it or looked stale. It runs once before a draft PR
+opens, so its fixes merge with the code, and in a repo like this one that commits straight to
+`main`, once per session before asking for the last commit signal.
 [wrap-up-backlog](./tools/agents/config/skills/wrap-up-backlog/SKILL.md) does the same for the
 tracker's open tickets, and merge-and-verify runs it once the change is serving. Neither changes
 anything itself: whoever runs it acts on the list.
 
-[wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session with both passes, plus a
-ledger in which every action the session raised gets exactly one status (done, deferred, dropped or
-open) with evidence for it, so a request made in passing can't quietly disappear. It fixes only
-what I approve.
+[wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session with both passes, asking
+the cold reader what it would do next and passing it only if it picks the right thing for the right
+reason, plus a ledger in which every action the session raised gets exactly one status (done,
+deferred, dropped or open) with evidence for it, so a request made in passing can't quietly
+disappear. It fixes only what I approve.
 
 ### Writing
 

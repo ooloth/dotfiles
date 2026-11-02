@@ -13,6 +13,8 @@ track state across rounds, emit progress, and decide when to stop.
 
 **Never commit on your own.** All changes land in the working tree for the user to review. They
 are committed through `/commit` only when the user gives a commit signal, as Phase 4 describes.
+This holds on a feature branch too, where the global instructions would otherwise let an agent
+commit on its own: fixes to a reviewer's findings are the user's to see before they reach the PR.
 
 ---
 

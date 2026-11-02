@@ -19,9 +19,11 @@ and conclusions.
 - **You may:** read anything (tickets, PRs, checks, run logs, deploy state); start, message and
   stop worker sessions; tell a worker to investigate something or to implement a design the user
   approved.
-- **The user approves:** approaches, designs, commits, pushes, merges, and anything posted where
-  other people will see it (ticket comments, PR comments, Slack). When a worker reaches one of
-  these, bring it to the user. Never answer it on the user's behalf.
+- **The user approves:** approaches, designs, commits to a default branch, merges, and anything
+  posted where other people will see it (ticket comments, PR comments, Slack). When a worker reaches
+  one of these, bring it to the user. Never answer it on the user's behalf. A worker on a feature
+  branch whose approach and design the user approved commits, pushes and opens its draft PR on its
+  own, as "Working Through to a Draft PR" in the global instructions describes.
 
 ## 1. Learn the batch
 
@@ -163,7 +165,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
   carries a body saying what was checked, written under review-code's Step 5, because to a
   teammate an approval with no body looks the same as a thoughtless one.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
-  `git status` reads the right repo. Relay the user's commit signal word for word. For a change you
+  `git status` reads the right repo. On a feature branch it needs no signal. For a commit to a
+  default branch, relay the user's commit signal word for word. For a change you
   made yourself, open a Rex tab in that repo with the `use-rex` launcher and the prompt `/commit`
   rather than committing from your session, so its checks don't block you and the user can watch.
 - **Side jobs:** a job for a ticket that runs a long time, or that the user may want to watch or

@@ -86,9 +86,11 @@ Then sketch 2–3 meaningfully different type progressions for the same feature.
 - How it scores against each target property, and which properties it fails to deliver
 - Its main tradeoff
 
-Then recommend one, naming the property that decides it. Implementation effort is a constraint,
-never a merit: "fewer types", "less refactoring" and "a smaller diff" describe what an option costs
-and never why it wins. Only carry the recommended design forward.
+Then recommend one, naming the property that decides it. The effort to build an option is a
+constraint, never a merit: "less refactoring" and "a smaller diff" name a one-time cost and never
+why it wins. The types, concepts and moving parts an option leaves behind are different: a
+maintainer lives with them, so they are weighed as a cost against what the option delivers. Only
+carry the recommended design forward.
 
 ### Phase 3: Design the Type Story
 
@@ -240,15 +242,15 @@ with the pairing named, so that none of them is mistaken for full coverage on it
 named a question the running system cannot answer and this slice cannot make answerable, the
 behaviour behind it is a candidate for heavier coverage, since production will not report it.
 
-Before choosing paradigms, weigh what a failure of each behaviour would cost against what its tests
-would cost to keep. A behaviour whose failure shows itself at once and harms nothing beyond itself
-can go untested, with that reason stated, and a test plan can be empty.
-
 A cross-cutting property gets a check over every instance in the codebase, not only a test of this
 slice's transformations, so that a violation in code this slice never touched fails it. The test
 plan names that check, what it enumerates, and the property it observes.
 
-Before choosing paradigms, list the dimensions the behavior varies along, as `testing.md` names
+Before choosing paradigms, weigh what a failure of each behaviour would cost against what its tests
+would cost to keep. A behaviour whose failure shows itself at once and harms nothing beyond itself
+can go untested, with that reason stated, and a test plan can be empty.
+
+Then list the dimensions the behavior varies along, as `testing.md` names
 them, and the values each takes. Each test case names the values it covers. Every value of each
 dimension appears in some test, and so does each combination the code makes interact. A
 combination left out is named as not covered, with the reason.

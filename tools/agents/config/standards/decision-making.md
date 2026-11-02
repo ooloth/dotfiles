@@ -109,7 +109,8 @@ option leaves behind is different. Each moving part, file, concept and rule a ma
 in mind is something they live with for as long as the system runs, so it enters the property list
 as an experience cost and is weighed against what the option delivers.
 
-**A predicted failure mode is a constraint on the design, never a reason to drop the requirement.**
+**A predicted failure mode is a constraint on the design, never a reason to drop a requirement that
+names its harm.**
 "It would degrade into busywork" and "it would be ignored" describe how a bad version of the thing
 fails. Neither says the thing is not needed. The prediction narrows which designs are acceptable,
 so the work is to find one that survives it, and the tell that this went wrong is a recommendation

@@ -61,10 +61,12 @@ earlier run left behind, because that backup may be the only copy of the develop
 It is the first documentation a reader meets, and `--help` is built from it, so a reader can tell
 from those lines whether this is the tool they want.
 
-**Import architecture is enforced by `import-linter` in CI.**
+**Import architecture is enforced by `import-linter` in CI, wherever there is more than one module
+to layer.**
 A `.importlinter` contract defines which packages may import from which others,
 mirroring the intended layering (e.g. `api → domain`, never `domain → api`).
-`lint-imports` runs in CI. A violation fails the build.
+`lint-imports` runs in CI. A violation fails the build. A single-file script has nothing to layer,
+so it has no contract.
 
 ## Should
 

@@ -363,7 +363,8 @@ tracker still needs approval. The ticket comments above are for work already app
 3. Wait for approval
 4. Implement using red-green-refactor:
    1. Write all failing test(s) that specify the intended behavior. If `/design` was run, translate
-      the approved test plan into tests now.
+      the approved test plan into tests now. A behaviour the approved plan leaves untested, with its
+      reason stated, gets no test.
    2. Run them and confirm they fail for the right reason — not a compile error or missing import.
       Report what failure you saw.
    3. Write the code needed to make them pass, translating the approved type plan into types now if
@@ -371,8 +372,8 @@ tracker still needs approval. The ticket comments above are for work already app
    4. Run the tests and confirm green
    5. If the green implementation is obviously rough, refactor — keeping tests green throughout.
 5. Run all automated checks
-6. Check: does any behavior this change introduces lack test coverage? If so, add a test before
-   moving on. Then run all tests.
+6. Check: does any behavior this change introduces lack test coverage that the approved test plan
+   calls for, or that no plan covered? If so, add a test before moving on. Then run all tests.
 7. Manually verify the change works with `prove-it-works`, giving it the claim to prove. Do not
    rely on tests alone — run the CLI, hit the endpoint, trigger the event, eyeball the output,
    whatever applies. The status report must include one of:
@@ -385,10 +386,10 @@ tracker still needs approval. The ticket comments above are for work already app
      signal on what you expect to be the session's last change, run `wrap-up-codebase` on
      everything the session changed and apply its fixes in the working tree, uncommitted, for my
      review. The report then covers them, and its asks go at the end as numbered questions. If more
-     work follows after all, the review after the session's last commit covers it. Do not commit
-     without an explicit user signal ("commit", "/commit", etc.). See "What a Commit Signal Covers"
-     below. When I run `wrap-up` myself, its own rule holds instead: it applies nothing I haven't
-     approved.
+     work follows after all, the review after the session's last commit covers it, where the repo
+     has one. Do not commit without an explicit user signal ("commit", "/commit", etc.). See "What a
+     Commit Signal Covers" below. When I run `wrap-up` myself, its own rule holds instead: it
+     applies nothing I haven't approved.
    - **A feature branch in a repo that ships through PRs:** commit the slice via `/commit` without
      waiting for a signal, once its checks and proof pass, and carry on to the next approved slice.
      See "Working Through to a Draft PR" below.
