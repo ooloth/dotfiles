@@ -1,14 +1,20 @@
 ---
 name: create-pr
-description: Draft a PR for the changes on the current branch using the "commit" and "write-pr-description" skills.
-disable-model-invocation: true
+description: Open a draft PR for the changes on the current branch using the "commit" and "write-pr-description" skills, then open it in the browser. Run it when the user asks, or as the step that opens the draft PR in "Working Through to a Draft PR".
 ---
 
 ## Steps
 
-1. Run quality checks (formatting, linting, types, tests). If any fail, fix them and stop so the
-   user can review the fixes.
+1. Run quality checks (formatting, linting, types, tests), unless they already passed on the
+   current branch earlier in this session with nothing changed since. If any fail when the user
+   invoked this skill, fix them and stop so the user can review the fixes. Inside "Working Through
+   to a Draft PR", fix what is mechanical and carry on, since the loop already ran its checks.
 2. Use the `commit` skill to commit the non-temporary changes in the working tree that belong in
-   the PR
-3. Use the `write-pr-description` skill to draft and create the PR following my voice guide
-4. Open the PR in the browser with `gh pr view --web`
+   the PR.
+3. Push the branch as the `commit` skill's step 7 describes, with `git push -u origin <branch>` so
+   it tracks the remote. Push even when step 2 had nothing to commit: the branch may hold commits
+   the remote doesn't have yet.
+4. Use the `write-pr-description` skill to draft the description following my voice guide, and
+   create the PR as a draft with `gh pr create --draft`.
+5. Open the PR in the browser with `gh pr view --web`. Where that fails, such as in a sandbox with
+   no browser, say so in one line and carry on: the PR exists either way.

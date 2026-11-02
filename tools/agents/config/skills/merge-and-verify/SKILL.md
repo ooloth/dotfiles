@@ -1,6 +1,6 @@
 ---
 name: merge-and-verify
-description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. TRIGGER when an approved PR is ready to merge, when a merged PR's deploy needs watching, or when asked to verify a PR in its environment.
+description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, post the proof on the ticket, bring the backlog up to date with what shipped, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. TRIGGER when an approved PR is ready to merge, when a merged PR's deploy needs watching, or when asked to verify a PR in its environment.
 argument-hint: 'An approved or merged PR, such as "example-app#305"'
 ---
 
@@ -29,6 +29,9 @@ the trunk merge's commit (made by `git merge`) and a mechanical fix's commit (ma
   registry timeout, and say so.
 - **Merge through the gate** once it reports ready.
 - **Watch the rollout and run the proof.**
+- **Post the report and its PR link,** as "Posting the report" describes.
+- **Close the ticket** once every PR that names it has merged with its proof on the ticket.
+- **Bring the backlog up to date,** as "Updating the backlog" describes, posting each fix.
 
 **An approval holds.** A push to an approved PR never undoes its approval, whatever the push
 changes. Never tell the user an approval is stale, and never ask for a new one. A change request
@@ -48,8 +51,8 @@ re-review is settling their request, not renewing anyone's approval.
 **Never roll back, revert or change anything in a deployed environment yourself,** in the rollout
 watch or the production watch. Say what you would do and wait for the user.
 
-**Still ask before** posting the report or any comment, closing the ticket, watching production and
-removing branches. Each keeps the approval its section describes.
+**Still ask before** watching production and removing branches. Each keeps the approval its section
+describes.
 
 ## What to work out first
 
@@ -152,7 +155,7 @@ take its made-up answers for real ones.
 ## The proof
 
 Once the change is serving, or nothing deploys, run `prove-it-works` with the claim, using the same
-evidence folder. Show the user a draft report: the PR, merge commit and ticket, the claim and where
+evidence folder. Write the report: the PR, merge commit and ticket, the claim and where
 each part came from, the rollout from merge to its ending, and the `prove-it-works` report
 unchanged except for any reference to the local evidence folder, which teammates cannot open: drop
 the line naming the folder, and each file name cited from it. Change nothing in any deployed
@@ -160,7 +163,7 @@ environment.
 
 ## Watching production
 
-Where the change is serving, offer with the draft report to watch production, and ask for how long.
+Where the change is serving, offer in the final message to watch production, and ask for how long.
 Start only once the user names a duration, and run the first check right away. The duration counts
 from when the change started serving.
 
@@ -191,15 +194,11 @@ The watch only reports, as the rule under "What invoking this skill approves" re
 ## Posting the report
 
 The report goes on the ticket it proves: a Jira issue, or a GitHub issue. A PR with neither gets
-the report on the PR. Post it without waiting for a watch to end. Where a watch is offered, the
-draft shows below its last line the line it gains if the user asks for one: "Watching production
-until <time>; a follow-up will report." Approving the draft approves it with or without that line,
-and `<time>` is the watch's end time with its date in UTC, such as `2026-10-29 17:05 UTC`. Show
-the user the full draft and its destination, plus the one-line PR comment that links to it, and post
-only after they approve that wording. Post approved wording as approved; a change is a new draft.
+the report on the PR. Post it as soon as the proof is done, without asking, because invoking this
+skill approves it. The final message quotes what was posted and links to it.
 
-Before showing the draft, check it for credentials (tokens, keys, cookies, bearer headers, signed
-URLs). Remove any you find, and say so in the draft.
+Before posting, check the report for credentials (tokens, keys, cookies, bearer headers, signed
+URLs). Remove any you find, and say so in the report.
 
 - **Jira:** post the comment with the Atlassian MCP tool, following `use-jira` for how markdown
   converts.
@@ -211,8 +210,21 @@ Screenshots and recordings are not uploaded, and the posted report does not name
 paths. It describes what each one shows.
 
 Then list every PR that names the ticket, and whether each has merged and has its proof on the
-ticket. Only when all have, offer to close the ticket, and close it only if the user says yes.
-While a watch is running, make that offer once the watch's summary is posted instead.
+ticket. Only when all have, close the ticket, saying in the closing comment which PRs finished it.
+While a watch is running, close it once the watch's summary is posted instead.
+
+## Updating the backlog
+
+Once the report is posted, run `wrap-up-backlog` on what this PR shipped: the PR, its commits, its
+ticket and the decisions it settled. Act on its list:
+
+- **Each fix** is posted as it stands: the comment, the description rewrite, the relationship
+  change, or the closing of a ticket this change finished, with a comment saying what finished it.
+- **Each ask** goes in the final message as a numbered question with its lettered options and its
+  recommendation. None of them blocks anything: the change has shipped, and the backlog can wait
+  for the user's answer.
+
+The final message lists every ticket changed, with a link to each.
 
 ## Cleaning up
 

@@ -100,7 +100,9 @@ more so, since they cannot be locally reverted. Approval for one kind of side ef
 transfer to another: being approved to edit files does not mean you're also approved to post a
 ticket comment about it, even in the same already-approved task — check separately. The one
 exception is "Working Through to a Draft PR" below: approving a task's approach and design also
-approves the commits, the push and the draft PR that section describes, and nothing beyond them.
+approves the commits, the push and the draft PR that section describes, and applying the fixes
+`wrap-up-codebase` returns, on any branch, in the same turn as its questions. It approves nothing
+beyond them.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
@@ -374,8 +376,11 @@ tracker still needs approval. The ticket comments above are for work already app
      instead.
      Omitting this section is not allowed. "Tests pass" is not a substitute.
 8. Write a status report. What happens next depends on the branch the work is on:
-   - **The default branch:** do not commit without an explicit user signal ("commit", "/commit",
-     etc.). See "What a Commit Signal Covers" below.
+   - **The default branch:** before writing the report, run `wrap-up-codebase` on the change and
+     apply its fixes in the working tree, uncommitted, for my review. The report then covers them,
+     and its asks go at the end as numbered questions. Do not commit without an explicit user
+     signal ("commit", "/commit", etc.). See "What a Commit Signal Covers" below. When I run
+     `wrap-up` myself, its own rule holds instead: it applies nothing I haven't approved.
    - **A feature branch in a repo that ships through PRs:** commit the slice via `/commit` without
      waiting for a signal, once its checks and proof pass, and carry on to the next approved slice.
      See "Working Through to a Draft PR" below.
@@ -484,15 +489,16 @@ without stopping for me in between:
 
 1. **Commit each slice** via `/commit` once its checks and proof pass. No signal is needed.
 2. **Verify locally before anything is pushed:** the project's full checks, `prove-it-works` on the
-   claim, and then `wrap-up`. Fix on the branch every doc or comment the change made untrue, and
-   commit those fixes. A stale line in an agent instruction file is not fixed: list it as a
-   proposed edit.
-3. **Push the branch and open a draft PR** without asking, using `write-pr-description`. Besides
-   what that skill asks for, the description lists:
+   claim, and then `wrap-up-codebase`, once. Apply and commit each fix it returns. If it returns
+   any asks, stop and put them to me in the session as numbered questions, then apply my answers
+   and commit them before going on. My answer to an ask is the approval it needed, including for an
+   edit to agent instructions. A question for me never goes in the PR instead.
+3. **Push the branch and open a draft PR** without asking, using `create-pr`. Besides what
+   `write-pr-description` asks for, the description lists:
    - every divergence from the approved approach or design, and why
    - every choice made without me, with why it failed each triage test
    - the path of each piece of proof `prove-it-works` saved, without attaching any of it
-   - what `wrap-up` found and did not fix, including proposed edits to instruction files
+   - what `wrap-up-codebase` fixed
 4. **Start the independent review** as step 9 of "Work in Small Steps" describes. CI and the
    review run on the draft, and I review the PR with both in front of me.
 

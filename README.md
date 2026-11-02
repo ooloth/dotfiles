@@ -75,12 +75,16 @@ applying this require the author to make a choice.
 about the running system, given one sentence naming the claim or a PR, commit or URL. It sets the
 bar for proof and leaves the method to the model: every observation's raw output is saved and every
 quote points to its file, so a reader who wasn't there can check each verdict. The test suite
-doesn't count as any part of the proof.
+doesn't count as any part of the proof, and neither does server state for a claim about what an app
+shows: that comes from the app itself, as a terminal's text or a screenshot of one window that never
+includes another app's.
 
-[merge-and-verify](./tools/agents/config/skills/merge-and-verify/SKILL.md) watches a merged PR's
-rollout and then proves its effect with prove-it-works. It reads the deploy chain from the repo's
-docs, counts the change as serving only when the live artifact's commit contains the merge, and
-checks every five minutes or so in a fresh turn until the watch reaches one of its named endings.
+[merge-and-verify](./tools/agents/config/skills/merge-and-verify/SKILL.md) takes an approved PR
+through merge to proof of its effect without asking along the way. It reads the deploy chain from
+the repo's docs, counts the change as serving only when the live artifact's commit contains the
+merge, and checks every five minutes or so in a fresh turn until the watch reaches one of its named
+endings. Then it posts the proof on the ticket, closes the ticket once every PR for it has proof,
+and brings the rest of the backlog up to date with what shipped.
 
 [monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so
 for the pull requests where it's my move, and says why, using the same rules
@@ -90,13 +94,19 @@ agree. A truncated or failed fetch is reported as such rather than as nothing wa
 writes to GitHub. In Rex, each of my pull requests with new feedback gets a worktree and a tab
 running review-pr-comments-converge, so its draft replies and fixes are waiting when I look.
 
-[wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session by finding what would
-mislead the next agent. Every action the session raised gets exactly one status (done, deferred,
-dropped or open) with evidence for it, so a request made in passing can't quietly disappear. It
-reads the whole open backlog for tickets the session's work made false or finished. A cold reader
-given only the repo path reports what it would do next and what told it to. It passes only if it
-picks the right thing for the right reason, because the signal it followed is the one the next
-agent will follow too.
+[wrap-up-codebase](./tools/agents/config/skills/wrap-up-codebase/SKILL.md) finds everything in the
+repo that a change made untrue or that would mislead the next agent, and sorts each finding into a
+fix, a question for me or a dismissal. A cold reader given only the repo path reports what it would
+do next and what told it to, and passes only if it picks the right thing for the right reason. It
+runs once before a draft PR opens, so its fixes merge with the code.
+[wrap-up-backlog](./tools/agents/config/skills/wrap-up-backlog/SKILL.md) does the same for the
+tracker's open tickets, and merge-and-verify runs it once the change is serving. Neither changes
+anything itself: whoever runs it acts on the list.
+
+[wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session with both passes, plus a
+ledger in which every action the session raised gets exactly one status (done, deferred, dropped or
+open) with evidence for it, so a request made in passing can't quietly disappear. It fixes only
+what I approve.
 
 ### Writing
 
