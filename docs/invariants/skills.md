@@ -17,3 +17,10 @@ Facts about the shared skills in `tools/agents/config/skills/`, which `~/.claude
   instructions while the user is at the keyboard needs no flag. `tools/agents/check-skills.py`
   fails a `.py`, `.bash` or `.sh` file, other than a `test_*` file, that names `claude-tab.bash`
   with no `--unattended` outside a comment.
+- Only the `create-pr` skill runs `gh pr create`. It writes the description with
+  `write-pr-description`, opens the draft and links it on its Jira, Linear or Monday ticket, and an
+  instruction file that opens a PR itself skips all three. No other file in a skill, and no file in
+  `tools/claude/config/` (`CLAUDE.md`, the agents and the routines), names the command.
+  `use-gh/SKILL.md` may, because it only lists the commands that take `--body-file`.
+  `tools/agents/check-skills.py` checks every file git does not ignore in both places, from
+  `scripts/checks/linting.bash`.

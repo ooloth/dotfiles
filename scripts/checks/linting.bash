@@ -8,8 +8,9 @@
 # with settings from .shellcheckrc.
 # zsh utils: tools/zsh/utils.zsh parses as bash, because features/setup/wip/setup.bash, a draft
 # that #127 reviews and nothing runs yet, sources it.
-# Skills: every shared skill's SKILL.md frontmatter parses, and no file in a skill names a fixed
-# temp path (tools/agents/check-skills.py).
+# Skills: every shared skill's SKILL.md frontmatter parses, no file in a skill names a fixed temp
+# path, no skill script opens a Claude tab without --unattended, and no instruction file but
+# create-pr's runs gh pr create (tools/agents/check-skills.py).
 # Each fails when it finds nothing to check.
 set -uo pipefail
 

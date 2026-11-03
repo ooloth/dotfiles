@@ -32,12 +32,18 @@ class Run:
 
 
 def run_checker(
-    files: dict[str, str | bytes], *, gitignore: str = "", tracked: tuple[str, ...] = ()
+    files: dict[str, str | bytes],
+    *,
+    gitignore: str = "",
+    tracked: tuple[str, ...] = (),
+    extra: dict[str, str] | None = None,
 ) -> Run:
     """Write `files` into a skills directory inside a fresh git repo and run the checker on it.
 
     `gitignore` becomes the repo's root .gitignore, as in the dotfiles repo, and each path in
     `tracked` is force-added to the index, so it is tracked even where `gitignore` ignores it.
+    `extra`, when given, is written to a `config` directory beside the skills, which the checker is
+    also given as an extra instruction directory, as `tools/claude/config` is in the real repo.
     """
     with tempfile.TemporaryDirectory() as tmp:
         repo = Path(tmp)
@@ -54,8 +60,17 @@ def run_checker(
                 path.write_text(content, encoding="utf-8")
         if tracked:
             subprocess.run(["git", "-C", str(skills), "add", "--force", *tracked], check=True)
+        roots = [str(skills)]
+        if extra is not None:
+            config = repo / "config"
+            config.mkdir()
+            for name, content in extra.items():
+                path = config / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+            roots.append(str(config))
         result = subprocess.run(
-            ["uv", "run", "--quiet", "--script", str(CHECKER), str(skills)],
+            ["uv", "run", "--quiet", "--script", str(CHECKER), *roots],
             capture_output=True,
             text=True,
         )
@@ -197,6 +212,62 @@ class UnattendedTabs(unittest.TestCase):
         }
         run = run_checker(files)
         self.assertEqual(run.status, 0, run.stdout)
+
+
+OPEN_PR = "gh pr create --draft --body-file body.md\n"
+
+
+class OnlyCreatePrOpensAPr(unittest.TestCase):
+    """create-pr is the one way a PR gets opened, so no other instruction file runs gh pr create."""
+
+    def test_a_skill_naming_gh_pr_create_fails_reporting_every_line(self) -> None:
+        run = run_checker(skill("Open it:\n\n" + OPEN_PR + "\nOr again:\n" + OPEN_PR))
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("example/SKILL.md:8: runs `gh pr create`", run.stdout)
+        self.assertIn("example/SKILL.md:11: runs `gh pr create`", run.stdout)
+
+    def test_a_script_inside_another_skill_naming_it_fails(self) -> None:
+        files = skill("Fine.\n") | {"example/scripts/open.py": f'CMD = "{OPEN_PR.strip()}"\n'}
+        run = run_checker(files)
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("example/scripts/open.py:1: runs `gh pr create`", run.stdout)
+
+    def test_the_create_pr_skill_and_its_scripts_may_name_it(self) -> None:
+        files = skill("Fine.\n") | {
+            "create-pr/SKILL.md": FRONTMATTER + OPEN_PR,
+            "create-pr/scripts/open.py": f'CMD = "{OPEN_PR.strip()}"\n',
+        }
+        run = run_checker(files)
+        self.assertEqual(run.status, 0, run.stdout)
+        self.assertIn("✅ Only create-pr opens a PR", run.stdout)
+
+    def test_use_gh_may_list_it(self) -> None:
+        files = skill("Fine.\n") | {
+            "use-gh/SKILL.md": FRONTMATTER + "`gh pr create`, `gh pr edit`\n"
+        }
+        run = run_checker(files)
+        self.assertEqual(run.status, 0, run.stdout)
+
+    def test_an_extra_instruction_directory_is_checked_with_no_exemptions(self) -> None:
+        run = run_checker(
+            skill("Fine.\n"),
+            extra={"routines/open.md": "Step 13:\n" + OPEN_PR, "use-gh/SKILL.md": OPEN_PR},
+        )
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("config/routines/open.md:2: runs `gh pr create`", run.stdout)
+        self.assertIn("config/use-gh/SKILL.md:1: runs `gh pr create`", run.stdout)
+
+    def test_a_gitignored_skill_naming_it_is_not_reported(self) -> None:
+        files = skill("Fine.\n") | {"synced/theirs/SKILL.md": FRONTMATTER + OPEN_PR}
+        run = run_checker(files, gitignore="skills/synced/\n")
+        self.assertEqual(run.status, 0, run.stdout)
+        self.assertNotIn("synced/", run.stdout)
+
+    def test_an_extra_directory_with_no_files_fails_with_a_sentence(self) -> None:
+        run = run_checker(skill("Fine.\n"), extra={})
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("No files found under", run.stdout)
+        self.assertNotIn("Traceback", run.stdout)
 
 
 class Frontmatter(unittest.TestCase):
