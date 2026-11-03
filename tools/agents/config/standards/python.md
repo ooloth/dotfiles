@@ -33,10 +33,16 @@ becomes a type error, not a silent fallthrough. A `match` over an open set of
 values, such as an `int` or a `str`, ends in a wildcard case that handles the
 rest.
 
-**External data is validated at the boundary with Pydantic.**
-All data entering from outside the process (API responses, env vars, config files,
-CLI args) passes through a Pydantic model before entering domain code. Nothing
-unvalidated crosses the boundary.
+**External data is parsed at the boundary into domain types.**
+Data entering from outside the process (CLI arguments, environment variables,
+files, subprocess output, API responses) is turned into the `NewType`s, frozen
+dataclasses and unions the domain code uses, in one function per source.
+Nothing typed `Any`, a raw `dict` or an `argparse.Namespace` crosses into domain
+code. The parse checks every invariant the domain relies on, reports every
+problem it finds at once, and runs before any side effect. Structured data is
+parsed with Pydantic. Command-line arguments are parsed by a library whose
+result the type checker knows, or by `argparse` with its `Namespace` read only
+inside that function.
 
 **Results are returned, not raised.**
 An expected failure is returned as a sum type, not raised: either a generic
