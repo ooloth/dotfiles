@@ -526,7 +526,7 @@ without stopping for me in between:
 ## Pull Requests
 
 NEVER open a pull request without invoking the `create-pr` skill. It writes the body with
-`write-pr-description` and links the PR on its ticket.
+`write-pr-description` and links the PR on its Jira, Linear or Monday ticket.
 
 ## Issue and Ticket Writing
 

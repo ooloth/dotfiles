@@ -21,11 +21,12 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
    git diff $BASE...HEAD --stat
    ```
 3. Take the ticket and any links from the ticket `create-pr` passes in, the branch name, the
-   commits and the approved task. Run `gh issue list -R <owner>/<repo> --state open` to find any
-   GitHub issue the PR fully resolves. Inside "Working Through to a Draft PR", ask nothing: leave
-   out what you can't find and say in the description that it is missing. In an unattended run,
-   ask nothing and leave out what you can't find without mentioning it. Otherwise, ask the user
-   for what you can't find (Jira URL, Slack thread), and for a screen recording of a UI change.
+   commits and the approved task. Run `gh issue list -R <owner>/<repo> --state open --limit 200`
+   to find any GitHub issue the PR fully resolves. Inside "Working Through to a Draft PR", ask
+   nothing: leave out what you can't find and say in the description that it is missing. In an
+   unattended run, ask nothing and leave out what you can't find without mentioning it. Otherwise,
+   ask the user for what you can't find (Jira URL, Slack thread), and for a screen recording of a
+   UI change.
 4. Draft using voice rules below, and a title: one line, in plain words, saying what the PR
    changes.
 5. Write the title and body to files in a new directory, and hand the directory's path back to the
@@ -92,7 +93,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - Write each item in "Expect to see X" tutorial style
 - Include evidence-providing observability signals to confirm correct behavior. Where a step has no
   signal a reviewer could watch, tell the user before drafting, so the signal can be added to the
-  code; the PR body does not list gaps
+  code; the PR body does not list gaps. Inside "Working Through to a Draft PR" or an unattended run,
+  name the gap in the caller's final report instead
 - Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
 - **Reviewer-frame**: every step must be executable on a laptop, before merging, without deploying
   anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any other
@@ -113,8 +115,9 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   to the diagram standards in `~/.agents/standards/documentation.md`. Most PRs
   have nothing to draw and include no diagram
 - Link actual Jira/Slack, found or asked for as step 3 describes
-- Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or bare GitHub Issue
-  URL (since GitHub auto-renders those with a preview)
+- Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or, for a GitHub
+  issue the PR does not fully resolve, a bare issue URL (since GitHub auto-renders those with a
+  preview). An issue the PR resolves gets `Fixes #N`, as the next item says
 - A GitHub issue the PR fully resolves is listed under Related links as `Fixes #N`, one per line,
   not as a bare URL. A squash merge can take its commit message from the PR body, which drops the
   branch's own commits and every `Fixes` line in them, so only a closing keyword in the body closes
@@ -127,7 +130,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 ❌ Listing every test written (again, the diff)
 ❌ "Comprehensive" descriptions — less is more  
 ❌ Technical jargon when plain language is available
-❌ Placeholder links — link real URLs, or say which link is missing  
+❌ Placeholder links — link real URLs, or say which link is missing, except in an unattended run,
+which leaves it out (see step 3)  
 ❌ Hard-wrapped prose — GitHub shows each newline as a line break, so a wrapped paragraph renders as
 ragged short lines; write each paragraph and list item as one line
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read

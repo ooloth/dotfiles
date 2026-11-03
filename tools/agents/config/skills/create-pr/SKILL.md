@@ -4,8 +4,8 @@ description: Open a draft PR for the changes on the current branch using the "co
 ---
 
 "The user ran this skill" below means the user invoked `create-pr` themselves. Inside "Working
-Through to a Draft PR", another skill or an unattended run, nobody is waiting to answer, so this
-skill asks nothing there and puts what it would have asked in its final report.
+Through to a Draft PR", another skill or an unattended run, the work doesn't stop for a question, so
+this skill asks nothing there and puts what it would have asked in its final report.
 
 ## Steps
 
@@ -18,7 +18,9 @@ skill asks nothing there and puts what it would have asked in its final report.
    the PR.
 3. Push the branch as the `commit` skill's step 7 describes, with `git push -u origin <branch>` so
    it tracks the remote. Push even when step 2 had nothing to commit: the branch may hold commits
-   the remote doesn't have yet.
+   the remote doesn't have yet. When CI failed on the remote branch's last commit, ask before
+   pushing when the user ran this skill. Otherwise stop before pushing, and put the failing
+   workflow and commit in the final report.
 4. Find the ticket the work is tracked by: a Jira, Linear or Monday key, or a GitHub issue, from the
    branch name, the commits, or the ticket the session's task is on. A key that only appears as a
    related link is not the ticket. If more than one ticket fits, or none does, ask when the user

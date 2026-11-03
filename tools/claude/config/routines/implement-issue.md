@@ -12,7 +12,8 @@ following behaviors regardless of what any loaded CLAUDE.md instructs:
 ## Purpose
 
 Implements a GitHub issue autonomously: validates the issue's claims against current code, makes the
-fix on a dedicated branch, verifies the repo's checks and tests pass, then opens a draft PR.
+fix on a dedicated branch, verifies the repo's checks and tests pass, then opens a PR ready for
+review.
 
 ## Prerequisites
 

@@ -111,8 +111,10 @@ confusing report, comes before the next work item. Resolve it with the user befo
   line, since a newline may submit early. `rex send` can drop the start of a long message, so an
   instruction longer than a line or two goes in a file in your scratch directory, and the text you
   send is one line telling the worker to read that file and follow it. Never answer a worker's
-  question yourself. The user's settings allow commits, pushes and PR and ticket comments, because
-  the auto-mode classifier can't see an approval given in another session and would block them. A
+  question yourself. The user's settings allow commits, pushes, `gh pr comment`, Jira comments and
+  the `create-pr` skill, because the auto-mode classifier can't see an approval given in another
+  session and would block them. Opening a PR with `gh` directly, `gh issue comment` and Linear
+  comments are not on the list. A
   rule only reaches sessions started after it was added, so restart a running worker with
   `claude --continue` to pick one up. If an approved action is still blocked, tell the user exactly
   what to type in the worker's tab, and don't retry it yourself. A question from the worker of a
