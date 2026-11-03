@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 12 parallel specialized agents, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob
 effort: high
@@ -195,8 +195,8 @@ that decision, naming the record, so the reader weighs the new argument against 
 
 ## Step 3: Launch the agents in parallel
 
-The twelve agents below always run. You may add more in the same fan-out when this particular
-change raises a question none of the twelve prompts ask.
+The thirteen agents below always run. You may add more in the same fan-out when this particular
+change raises a question none of the thirteen prompts ask.
 
 The bar is a named question, not a topic. "Add a concurrency agent" is a topic. "Does the new
 retry path double-submit when the first attempt times out after the server committed?" is a
@@ -206,8 +206,8 @@ Add rather than enrich. Each agent answers its own question, so a concern append
 agent's prompt competes with that question for its attention. A new agent gives the concern a
 question of its own.
 
-Give an added agent the same shape as the twelve: the intent block, the file list, the provenance
-requirement, and one question to answer. Record the question and why the twelve did
+Give an added agent the same shape as the thirteen: the intent block, the file list, the
+provenance requirement, and one question to answer. Record the question and why the thirteen did
 not cover it — Step 4 reports it.
 
 Choose each agent's model by what its task needs, and keep the reason, because Step 4 reports both.
@@ -579,6 +579,36 @@ For each issue: file:line | the reference | the thing it points to | why it is b
 
 ---
 
+### Agent 13: Coupled Changes
+
+Agent 12 follows what a change takes away. This agent follows what it adds: a new consumer of an
+existing setting makes that setting's validators and other readers answer for the new use, and a
+new side effect on a shared path reaches every caller and every screen in front of that path. The
+code that has to change with it is outside the diff, so no other agent's reading reaches it.
+
+```
+Question: For each thing this change adds or gives a new meaning to — a new consumer of an existing setting, field, function or table; a new side effect on an existing path (a send that now copies someone, a write that now notifies); a new exemption, permission or default; a value an existing consumer will now receive — which code outside the diff must change with it for the system to stay consistent, and did the change make that change?
+
+**Answer thing by thing first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change adds nothing that code outside the diff depends on, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/correctness.md` (the Must "Implementation is complete and finished") and `~/.agents/standards/config.md`. Use these as your evaluation criteria.
+2. Run the diff command from Context. List every thing the diff adds or gives a new meaning to, in the sense of the Question.
+3. For each, find what outside the diff shares it: the other readers of the setting or field, the validators and boot checks that guard it, every caller of the path that gained the side effect, and every screen, endpoint or message in front of those callers. Search for the identifier itself and follow callers up to the entry point. Read each one you find.
+4. For each, decide whether it still holds now that the thing means more than it did. Examples of what fails: a validator that runs only in a mode the new consumer does not need; a second reader that parses the value differently; a stored copy of the value that is never compared with the new one; a screen that triggers the path but does not show the new effect; a pre-existing gap the new behaviour now depends on.
+5. Label each finding `[coupled change missing]` when the change should have made the coupled change itself, or `[pre-existing gap made relevant]` when the gap was already there and this change is what makes it matter. Say whether the PR's author could fix it in this PR, or whether it needs another repository, another team's code, or a decision the author cannot make.
+
+For each issue: file:line (outside the diff) | the thing the change added | what at that location now has to change | what it does instead | label | fixable in this PR or not, and why
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific
@@ -658,7 +688,7 @@ one you reviewed, and whether a thread is already resolved. Skip praise, summari
 ### Added agents
 [Omit this section entirely if you added none.]
 
-- **[the question you added it to answer]** — Why the twelve did not cover it: [reason] — What it
+- **[the question you added it to answer]** — Why the thirteen did not cover it: [reason] — What it
   found: [finding, or "nothing"]
 
 **Generalisable?** [One of: this was specific to this change, nothing to close. | This is a
@@ -697,6 +727,12 @@ agent errored or never ran did not come back clean.]
 - Use hedging language within the prose when confidence is less than certain — don't assert facts
   you haven't confirmed.
 - Open question items (`?`) get the (a)/(b) tradeoff format instead of prose.
+- A finding located outside the PR's diff carries `(outside the diff)` after its location in the
+  table and its detail heading, and one label in its detail: **coupled change missing** (the PR
+  should have made it) or **pre-existing gap made relevant** (it was already true; this change is
+  what makes it matter). A pre-existing gap also says whether the author can fix it in this PR. It
+  meets the same severity bar as any other finding: one that would not be reported inside the diff
+  is not reported outside it.
 - Omit "What's Working Well" and "All Clear" sections — consolidate into the single "Looks Good"
   line.
 - If there are no recommended changes, say so in one sentence under the verdict and skip the
@@ -751,7 +787,13 @@ On any answer other than "skip":
 - Write a 2–3 sentence overall summary for the review body (see audience guidance below). Where an
   earlier review raised a point, refer to it by reviewer instead of restating it, and say so when
   your work answered a question it left open or disputes something it claimed.
-- Collect every finding that has a `file:line` reference as an inline comment
+- Collect every finding whose line is in the PR's diff as an inline comment. GitHub accepts inline
+  comments only on lines the diff shows.
+- List every finding outside the diff in the review body instead, one bullet each: a bold lead
+  naming the problem, then where it is and what to do. Keep each one's label in the wording, so the
+  author can tell a coupled change the PR missed from a gap that was already there. When any are
+  pre-existing gaps, the body invites the author to decide for each one whether to fix it in the
+  PR, ticket it, or leave it. The reviewer files no ticket for a gap the author can fix.
 - Pin the review to the reviewed head from Step 1, so the comments stay on the code you reviewed.
   The check above makes sure it is still the PR's head.
 - Write the review to a JSON file in the scratchpad with the **Write tool**. Never build it with a
@@ -786,6 +828,12 @@ uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo 
   wording. A fix after it is a new draft that needs approving again.
 - Post it by running the same command without `--dry-run`. `--repo` is required, so the review
   cannot land on a same-numbered PR in whatever repo the shell is in.
+- **After posting, offer tickets only for gaps the author cannot fix in this PR:** one that needs
+  another repository, another team's code, or a decision the author cannot make. Left to the
+  author, such a gap has no owner, and the review comment is buried once the PR merges. Name each
+  finding the offer covers, so the user can decline one at a time. Search the tracker first: when
+  an open ticket already owns the area, offer a comment on it instead of a new ticket. Draft with
+  `write-ticket-description`, and post nothing until the user approves the wording.
 
 **Summary audience:** The review body is read by GitHub users who only know what's in the PR diff —
 they have no context from this review session. Write for that audience:
