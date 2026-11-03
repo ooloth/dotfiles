@@ -40,9 +40,11 @@ dataclasses and unions the domain code uses, in one function per source.
 Nothing typed `Any`, a raw `dict` or an `argparse.Namespace` crosses into domain
 code. The parse checks every invariant the domain relies on, reports every
 problem it finds at once, and runs before any side effect. Structured data is
-parsed with Pydantic. Command-line arguments are parsed by a library whose
-result the type checker knows, or by `argparse` with its `Namespace` read only
-inside that function.
+parsed with Pydantic wherever third-party packages can be installed, and code
+that runs before then parses it into the same domain types with the standard
+library. Command-line arguments are parsed by a library whose result the type
+checker knows, or by `argparse` with its `Namespace` read only inside that
+function.
 
 **Results are returned, not raised.**
 An expected failure is returned as a sum type, not raised: either a generic
