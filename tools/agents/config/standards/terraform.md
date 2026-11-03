@@ -85,6 +85,17 @@ Pre-existing formatting drift in a file is not folded into a change with its
 own review stakes — a security or privilege diff should contain nothing but the
 change being reviewed.
 
+**A check that only the apply evaluates is run before merge where the provider allows it.**
+Some checks run only when the provider sends the change, such as the `test`
+blocks on a GCP URL map, which GCP evaluates on the update call and nowhere
+else. A plan shows none of them passing. A failure shows up as a failed apply,
+and on a stack that applies on merge, every later run fails the same way until
+the change is fixed or reverted. Where the provider has a dry-run call that runs
+the check without changing anything, such as `gcloud compute url-maps validate`,
+the PR carries its result. Where there is none, or the reviewer lacks the
+permission it needs, the PR says so and names the check that confirms it after
+the apply.
+
 ## Consider
 
 **A repeated shape becomes a module.**

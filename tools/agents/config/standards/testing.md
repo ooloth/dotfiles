@@ -131,6 +131,17 @@ the properties the test states plus every invariant the implementation
 asserts. Code that asserts its invariants is worth more generator effort than
 code that does not.
 
+**Code that reads another system's payload is run against a payload that system actually sent, not
+only its documented example.**
+A vendor's example is written separately from the code that sends the payload,
+and the two drift. Google's documented Cloud Monitoring webhook example spells a
+link's fields `url` and `displayName`, while real deliveries send `URL` and
+`DisplayName`. A transform, parser or mapping tested only against the example
+passes, then reads nothing from the field that differs, and a fallback value
+hides the miss. So before its output is relied on, the code is run once on a
+real payload, captured from the receiving side or a log. That payload is kept
+beside the code's tests wherever it holds no secrets or personal data.
+
 ## Consider
 
 **Flakiness risk is minimized.**

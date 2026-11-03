@@ -1,6 +1,6 @@
 ---
-updated: 2026-10-30
-update_when: the work laptop check below is run, or #204's design resumes
+updated: 2026-11-02
+update_when: a command is tried on #206's link steps, or #204's design resumes
 decays: slow
 status: open
 ---
@@ -21,28 +21,14 @@ of the port picks its own, and a start that rewrites `uv.lock`, needs the networ
 from the caller's directory goes unnoticed until it misbehaves.
 
 #204, which creates `pyproject.toml` and `uv.lock`, waits on this answer, because the answer
-decides how the project is packaged and whether `uv.lock` can be shared between this repo's
-machines. Its design had reached the findings recorded below when it stopped.
+decides how the project is packaged and how `uv.lock` is shared between this repo's machines. Its
+design had reached the findings recorded below when it stopped.
 
 ## What would settle it
 
-**First, whether the work laptop can download packages from PyPI directly.** A lock shared between
-machines records PyPI as each package's source, and the work laptop's `~/.config/uv/uv.toml` points
-uv at the work Artifact Registry instead (see `CONTRIBUTING.md`). Run this on the work laptop:
-
-```sh
-cat ~/.config/uv/uv.toml
-UV_NO_CACHE=1 uv run --no-project --no-config --index https://pypi.org/simple --with six==1.17.0 python -c 'import six; print("pypi reachable")'
-```
-
-The first command shows which index the managed config sets and whether it blocks other indexes.
-The second downloads one small package straight from PyPI, ignoring that config, with no cache.
-`pypi reachable` means the network allows PyPI. A connection, certificate or 403 error means it
-does not. The [bootstrap question][boot] asks for the first command too.
-
-**Then, a command that meets every property below**, chosen from the options with the lock option
-the answer above leaves standing, tried on #206's link steps before the other categories copy it,
-with a check that fails on any start of the repo's Python that does not use it.
+**A command that meets every property below**, chosen from the options, tried on #206's link steps
+before the other categories copy it, with a check that fails on any start of the repo's Python that
+does not use it.
 
 - It works from any working directory without changing it, because the project commands act on
   the directory they are run in.
@@ -52,12 +38,16 @@ with a check that fails on any start of the repo's Python that does not use it.
 - Neither the directory the caller is in nor the caller's `PYTHONPATH` can change which code runs.
 - Adding a tool or a step needs no registration, as adding a `*.bash` step needs none today.
 - Tests and `ty` import the same code the command starts.
+- Every package the project depends on is public, because the permission to use PyPI on the work
+  laptop covers only public packages (see Findings). A lock records PyPI as the source of an
+  internal name resolved from PyPI too, so no check of `uv.lock` can hold this, and whoever adds a
+  dependency confirms it.
 
 ## Resolves into
 
 A decision record in `../decisions/` naming the command that starts the repo's Python, how
 `uv.lock` is shared between machines, and the check that every caller uses the command. If the
-lock cannot be shared, decision 008, which commits one `uv.lock`, is superseded too.
+chosen option commits no lock, decision 008, which commits one `uv.lock`, is superseded too.
 
 ## Source
 
@@ -79,8 +69,7 @@ How the command starts the code:
   they do today, and tests import the same file as `tools.<tool>.<step>`. A script started by path
   puts its own folder first on `sys.path`, not the caller's directory, but `PYTHONPATH` still comes
   before the repo root, so it needs `-I` as much as the module form does (see Findings). Its cost
-  is the longest command of the options, and a step must use absolute imports. This was the
-  drafted choice, with `-P`.
+  is the longest command of the options, and a step must use absolute imports.
 - **As a module: `... python -I -m tools.<tool>.<step>`.** Callers and tests name the code the same
   way. Without `-I` or `-P`, `python -m` puts the caller's directory first on `sys.path`, so run
   inside another repo that has its own `tools/` package, it runs that repo's code.
@@ -90,21 +79,32 @@ How the command starts the code:
 - **`"$DOTFILES/.venv/bin/python"` directly.** About 6 ms faster per start. It never checks
   `uv.lock`, and it fails on a machine where the `.venv` has not been created yet.
 
-How `uv.lock` is shared, which the work laptop check decides between:
+How `uv.lock` is shared. Both options that share a lock download from PyPI on the work laptop,
+because `uv.lock` records each file's `files.pythonhosted.org` URL and an install fetches that URL
+whichever index the machine's config names. Only committing no lock keeps the work laptop on its
+managed index. Under either shared-lock option, an internal package added later would resolve its
+name from public PyPI, which is why the maintainer's permission covers only public packages (see
+Findings).
 
 - **Start with `--frozen`, and catch a stale lock in CI with `uv lock --check`.** A start with no
-  runtime dependencies installs nothing, so it works on the work laptop. `check` there installs
-  ruff, ty and pytest from the lock's PyPI addresses, which works only if the work laptop can reach
-  PyPI.
-- **Name PyPI as the project's index in `pyproject.toml`.** A project setting overrides
-  `~/.config/uv/uv.toml`, so `--locked` would hold everywhere. `CONTRIBUTING.md` says not to point
-  uv at public PyPI on the work laptop, because the managed config blocks that on purpose, so this
-  needs the maintainer to decide whether work policy allows it.
+  runtime dependencies installs nothing. `check` on the work laptop installs ruff, ty and pytest
+  from the lock's PyPI URLs, as the measured `six` install did (see Findings); ruff, ty and pytest
+  themselves have not been installed this way there. The managed index stays in force on the work
+  laptop for every command but `--frozen`, so every other lock command there needs `--no-config`.
+  Without it, `uv lock` or `uv add` records the managed index in `uv.lock`, a URL CI cannot read
+  and a private value this public repo cannot hold, and `uv lock --check` fails as `--locked` does
+  (see Findings).
+- **Name PyPI as the project's index in `pyproject.toml`.** A project setting outranks the work
+  laptop's user-level `~/.config/uv/uv.toml`, so `--locked` holds everywhere and a stale lock stops
+  the start on any machine, with no `--no-config` needed. It stops holding if the work laptop's
+  managed config moves to a `UV_*` environment variable, which outranks the project (see Findings).
 - **Commit no `uv.lock`.** Each machine locks against its own index, and `pyproject.toml` pins
   ruff, ty and pytest with `==`. Their dependencies are no longer pinned, and decision 008's
-  committed lock is superseded.
-- **`--locked` with a shared PyPI lock.** Rejected by the finding below: it fails on any machine
-  whose uv is set to a different index.
+  committed lock is superseded. On the work laptop, locking goes through the managed index, so it
+  needs gcloud logged in, and setup before login is limited to the standard library (see the
+  [bootstrap question][boot]).
+- **`--locked` with a shared PyPI lock and no project index.** Rejected by the findings below: it
+  fails on any machine whose uv is set to a different index.
 
 Whichever option wins, the project can also refuse packages uploaded in the last seven days, so a
 compromised release is likely pulled before a lock picks it up. Set as `exclude-newer = "7 days"`
@@ -128,16 +128,54 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
   `uv run --locked --no-dev --offline` started, because project settings outrank user settings.
   With the same index set through `UV_DEFAULT_INDEX` or `UV_CONFIG_FILE` instead, the project's
   setting lost and `--locked` failed. So naming PyPI in the project holds against the work laptop
-  only if its managed config is the user-level file `CONTRIBUTING.md` describes, and not an
-  environment variable or a system-level file. The first command under **What would settle it**
-  shows the file; `env | grep '^UV_'` on the work laptop shows any variables.
+  only if its managed config is a user-level or system-level file, and not a `UV_*` environment
+  variable. The work laptop's is the user-level file (see the 2026-11-02 findings).
+- *Measured (2026-11-02):* with uv 0.13.6, in a scratch project with a lock made against PyPI, a
+  system-level `uv.toml` found through `XDG_CONFIG_DIRS` and naming an unreachable default index
+  made `uv run --locked` fail with a DNS error. With PyPI named as the default in
+  `[[tool.uv.index]]`, the same system-level file lost and `uv run --locked` started.
 - *Measured (2026-10-29):* a lock made with `exclude-newer = "7 days"` in a user-level `uv.toml`
   recorded `exclude-newer-span = "P7D"` under `[options]` in `uv.lock`. Without that setting,
   `uv run --locked` then failed with `To update the lockfile, run uv lock`. With it, `--locked`
   started.
 - *Sourced:* `CONTRIBUTING.md` says that on a work laptop uv installs packages through the work
   Artifact Registry index set in `~/.config/uv/uv.toml`, which needs `gcloud auth login
-  --update-adc`, and that the managed config blocks falling back to public PyPI on purpose.
+  --update-adc`, and that the managed config names that index as the only default.
+- *Sourced (2026-11-02):* the work laptop's managed config is only the user-level
+  `~/.config/uv/uv.toml`. It names one index, marked `default = true` with `authenticate =
+  "always"`, and its comments say the single index guards against name-collision attacks between
+  internal and public package names. `env | grep '^UV_'` printed nothing, and neither
+  `/etc/uv/uv.toml` nor `/Library/Application Support/uv/uv.toml` exists. `XDG_CONFIG_DIRS` is
+  unset and `/etc/xdg/uv/uv.toml` does not exist, so uv finds no system-level config there either.
+- *Sourced (2026-11-02), the maintainer:* this repo's packages, runtime and dev alike, may be
+  downloaded from PyPI on the work laptop, because the repo depends only on public packages and so
+  has no internal name for a public package to collide with. The permission holds only while every
+  dependency is a public package. With PyPI named as the project's index, an internal package
+  added later would resolve its name from public PyPI, which is the collision the managed config's
+  single index guards against.
+- *Measured (2026-11-02):* on the work laptop with uv 0.13.6, `UV_NO_CACHE=1 uv run --no-project
+  --no-config --index https://pypi.org/simple --with six==1.17.0` downloaded and imported `six`.
+  The network allows PyPI.
+- *Measured (2026-11-02):* on the work laptop with uv 0.13.6, its managed config active and gcloud
+  logged in, in scratch projects depending on `six==1.17.0`:
+  - With a lock made against PyPI using `--no-config`, `UV_NO_CACHE=1 uv run --frozen` fetched the
+    wheel from the lock's `files.pythonhosted.org` URL and started, and its `-v` log named no
+    `pkg.dev` host. `uv run --locked` on the same lock stopped with `The lockfile at uv.lock needs
+    to be updated`, and `uv lock --check` exited 1 with `To update the lockfile, run uv lock`. With
+    `--no-config`, `uv lock --check` passed.
+  - With no project index, a plain `UV_NO_CACHE=1 uv lock` recorded `six` from a `pkg.dev`
+    registry and no `files.pythonhosted.org` URL.
+  - With PyPI named as the default index in `[[tool.uv.index]]`, `uv lock` run with the managed
+    config active recorded `source = { registry = "https://pypi.org/simple" }`, and
+    `UV_NO_CACHE=1 uv run --locked` fetched the wheel from `files.pythonhosted.org` and started.
+    No request went to the managed index.
+- *Measured (2026-11-02):* on the work laptop with uv 0.13.6, its managed config active,
+  `UV_NO_CACHE=1`, and gcloud's credentials hidden from uv (`CLOUDSDK_CONFIG` set to an empty
+  directory and `GOOGLE_APPLICATION_CREDENTIALS` to a missing file), `uv run --no-project --with
+  six==1.17.0` failed with `Incomplete credentials`, as a laptop before gcloud login does. In the
+  same environment both shared-lock options installed `six`: `uv run --frozen` on a lock made
+  against PyPI, and `uv lock` then `uv run --locked` with PyPI named in `[[tool.uv.index]]`. None
+  of their `-v` logs, which name each URL fetched, named a `pkg.dev` host.
 - *Measured (2026-10-29):* in a project without packaging (`package = false`), `python -m` run
   from another directory with `--project` could not find the project's modules. In a packaged
   project with `module-root = ""` under `[tool.uv.build-backend]`, the editable install's `.pth`
@@ -148,10 +186,9 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
 - *Measured (2026-10-29):* run from a directory holding its own `tools/neovim/link.py`,
   `uv run --project <repo> python -m tools.neovim.link` ran the caller's file, not the repo's.
   With `python -P -m` it ran the repo's.
-- *Measured (2026-10-29):* `tools/zsh/config/hooks.zsh` exports `PYTHONPATH="${PWD}"` inside a
-  Python project and `PYTHONPATH="${HOME}"` elsewhere, and `-P` does not drop `PYTHONPATH`. From a
-  directory holding its own `tools/lib/x.py`, with `PYTHONPATH` set to that directory, a step
-  started by path with `python -P` imported the caller's `tools.lib.x`, not the repo's. With
+- *Measured (2026-10-29):* `-P` does not drop a caller's `PYTHONPATH`. From a directory holding
+  its own `tools/lib/x.py`, with `PYTHONPATH` set to that directory, a step started by path with
+  `python -P` imported the caller's `tools.lib.x`, not the repo's. With
   `python -I`, which also ignores `PYTHONPATH` and the user site, it imported the repo's, and the
   editable install still put the repo root on `sys.path`.
 - *Measured (2026-10-29):* with a `pyproject.toml` edited after locking, `uv run --locked
@@ -182,14 +219,14 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
   runs each `update.bash` with `bash "$file"`, `features/update/symlinks.bash` runs each
   `link.bash` the same way, and `update_and_symlink` runs a tool's link step with `bash -c`.
 - *Sourced:* `symlink()` in `tools/bash/utils.bash` is the only sourced helper that an invariant
-  governs (`DOTFILES_CHECK`). The 29 `link.bash` files and `tools/pi/update.bash` are its only
-  callers. The helpers most other scripts source (`info`, `debug`, `error`, `warn`, `have`) only
-  print output or check that a command exists.
+  governs (`DOTFILES_CHECK`). The 28 `link.bash` files outside `@new` and `@archive` and
+  `tools/pi/update.bash` are its only callers. The helpers most other scripts source (`info`,
+  `debug`, `error`, `warn`, `have`) only print output or check that a command exists.
 - *Sourced:* Amp orbs have uv preinstalled (`.agents/setup`), and CI installs it with
   `astral-sh/setup-uv`.
 - *Sourced:* the tool folders with hyphens or a leading digit in their names (`1password`,
   `carbon-copy-cloner`, `google-chrome`, `terminal-notifier`, `vimium-c`) hold no scripts.
-- *Sourced:* of the 25 `update.bash` files under `tools/`, counting the `@new` template, 4 call
+- *Sourced:* of the 27 `update.bash` files under `tools/`, counting the `@new` template, 4 call
   `update_and_symlink` (neovim, node, uv and `@new`).
 - *Measured (2026-10-19):* bash tests of `update_and_symlink` need a fake `HOME`, because
   `tools/bash/utils.bash` overwrites `DOTFILES`.
