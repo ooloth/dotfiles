@@ -2,7 +2,7 @@
 name: review-code
 description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
-allowed-tools: Bash Read Grep Glob
+allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
 model: opus
 ---
@@ -36,12 +36,13 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **For PR scope — fetch PR context before Step 2:**
 
 ```bash
-gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefOid
+gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefOid,baseRefOid
 ```
 
-Store the title and body for use in Step 2. Store the PR number and `headRefOid`, the reviewed
-head, for Step 5. The review describes the PR at that commit, so Step 5 pins its comments there and
-checks that the PR has not moved since.
+Store the title and body for use in Step 2. Store the PR number, `headRefOid` (the reviewed head)
+and `baseRefOid` for Step 5. The review describes the PR at that commit, so Step 5 checks that
+the PR has not moved since, compares the PR's own changes against that base if it has, and pins its
+comments to the saved head.
 
 **For PR scope, also fetch what earlier reviewers said:**
 
@@ -165,8 +166,9 @@ Build a context block that every agent receives. Gather from these sources in pr
    such as a Terraform or OpenTofu plan, a Spacelift or Atlantis comment, a migration dry run or a
    `kubectl diff`, take the newest one from the Step 1 fetch. It reports what the change does, not
    a reviewer's opinion of it, so it goes to every agent. Note the commit it ran against, and say
-   so when that is older than the PR's head. Save the whole dry run to a file in the scratchpad,
-   because the attribute values it shows answer questions that the action lines alone leave open.
+   so when that is older than the PR's head. Save the whole dry run to a file in a new
+   `mktemp -d` directory, because the attribute values it shows answer questions that the action
+   lines alone leave open.
 
 Consider everything in the ticket for inclusion in the block below, and carry what binds the
 review: numbered properties (`P1`, `P2`, …), the options the ticket rejected and why, choices
@@ -769,16 +771,45 @@ On any answer other than "skip":
   from Step 1 again. A review can wait hours for its posting answer while the PR moves on.
   - **A read fails:** post nothing, and say which one failed, quoting the error. What changed is
     unknown, not empty.
-  - **The head moved:** post nothing. Say which commits are new, discard this review, and run it
-    again from Step 1 on the new head, which saves a new state, with all twelve agents and any
-    added ones, as Step 3 always does. A review of an older head can be wrong about the code now
-    on the PR, and nothing would show it.
+  - **The head moved:** post nothing yet. A review of an older head can be wrong about the code
+    now on the PR, and nothing would show it. Compare the PR's own changes at the two heads, and
+    show the user the output, which names the new commits:
+
+    ```bash
+    uv run <skill-base-dir>/scripts/compare_heads.py <pr-number> --repo <owner>/<repo> --old-base <saved baseRefOid> --old-head <saved headRefOid>
+    ```
+
+    - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
+      the new head, with all thirteen agents and any added ones over the whole PR diff, as Step 3
+      always does.
+    - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with all
+      thirteen agents and any added ones. Give them the lines the script printed as the change to
+      review, and the full PR diff for context. As Step 3 says, they get nothing from the drafted
+      findings; in Step 3.5, drop any new finding that repeats a drafted one. Then do everything
+      the next item lists as well.
+    - **Exit 0 (the PR's own changes are identical):** keep the drafted findings, and at the new
+      head:
+      - re-check every finding whose evidence cites a file the script shows as changed, in the
+        PR's diff or outside it. Read each such file at the new head in a scratch worktree
+        (`git fetch origin <new-head>`, then `git worktree add --detach "$(mktemp -d)/wt"
+        <new-head>`, removed when done). Keep, correct or strike each finding, and say which;
+      - unless the script lists no files outside the PR's diff, launch one agent shaped like an
+        added agent in Step 3, with this question: "Do the changes between the two heads, in the
+        files outside the PR's diff that the script lists, break or contradict anything this PR's
+        code relies on?" Its file list is those files and the PR's changed files. Drop any finding
+        it reports that repeats a drafted one;
+      - re-pin every comment to the new head, and check that each line still holds the code its
+        comment is about.
+
+    Either way, the summary says which findings were re-checked against the new head, and the new
+    head and base become the saved state.
   - **Only new reviews, comments or replies:** the code is unchanged, so the findings stand. Add
     the new ones to Prior reviews, rewrite the summary to account for them, and show the user the
     new draft before posting. This read becomes the saved state.
   - **Nothing changed:** say so in one line and continue.
 
-  A review runs at most twice after its first run. When the head moves a third time, post nothing,
+  A review handles at most two head moves after its first run, whichever exit each one takes.
+  When the head moves a third time, post nothing,
   and tell the user the PR keeps moving, naming the new commits, so they decide when to review it.
   Run the same check again immediately before posting, since approving the drafts can take
   another turn.
@@ -794,18 +825,19 @@ On any answer other than "skip":
   author can tell a coupled change the PR missed from a gap that was already there. When any are
   pre-existing gaps, the body invites the author to decide for each one whether to fix it in the
   PR, ticket it, or leave it. The reviewer files no ticket for a gap the author can fix.
-- Pin the review to the reviewed head from Step 1, so the comments stay on the code you reviewed.
-  The check above makes sure it is still the PR's head.
-- Write the review to a JSON file in the scratchpad with the **Write tool**. Never build it with a
-  shell heredoc, `echo`, or command-line arguments: the shell rewrites backticks, `$(...)` and
-  quotes, and a mangled review cannot be un-posted. `line` is the line number in the PR's version
-  of the file; `side` is `RIGHT` for those and `LEFT` only for a line the PR deletes.
+- Pin the review to the saved head: the one from Step 1, or the new head once a head move has
+  updated the saved state. The comments then stay on the code you reviewed, and the check above
+  makes sure it is still the PR's head.
+- Write the review to a JSON file in a new `mktemp -d` directory with the **Write tool**. Never
+  build it with a shell heredoc, `echo`, or command-line arguments: the shell rewrites backticks,
+  `$(...)` and quotes, and a mangled review cannot be un-posted. `line` is the line number in the
+  PR's version of the file; `side` is `RIGHT` for those and `LEFT` only for a line the PR deletes.
 
 ```json
 {
   "event": "APPROVE",
   "body": "<summary>",
-  "commit_id": "<reviewed head SHA>",
+  "commit_id": "<saved head SHA>",
   "comments": [
     { "path": "<file>", "line": 42, "side": "RIGHT", "body": "<comment>" }
   ]
