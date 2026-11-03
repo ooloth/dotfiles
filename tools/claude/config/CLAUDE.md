@@ -359,8 +359,11 @@ question file, propose updating it then, not only while it's the topic of discus
 tracker still needs approval, except what an invoked `merge-and-verify` posts and the PR link
 `create-pr` posts. The ticket comments above are for work already approved.
 
-1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
-   (rather than a horizontal layer slice that can't)
+1. Choose your next thematic change aiming for a thin vertical slice that can be verified end to
+   end (rather than a horizontal layer that can't). A slice here is a commit. How the work divides
+   into PRs is settled with the approach, by the vertical-slice and design-coupling Shoulds in
+   `deployment.md` in the standards
+
 2. Describe your implementation plan, including the "/design" skill's type and test design plan
    for any slice that changes code, and calling out any design decisions or questions the user
    should make
@@ -457,7 +460,8 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
 
 - Prefer batching changes as thin vertical slices (tracer bullets) that can be validated by
   running the actual system, rather than batching in a single horizontal layer without integrating
-  the new code in any runtime path
+  the new code in any runtime path. Split only where checking the pieces apart gains something:
+  pieces that cannot be verified without each other stay together
 - Immediately after every commit-worthy change (and before reporting success), ask yourself: "how
   can I run this myself and confirm it actually works?"
 - Use your ability to run the system locally to confirm what you see happening; if the relevant

@@ -16,22 +16,22 @@ ships. Rollback is not assumed to be impossible without examination.
 
 **Changes are small and independently deployable, and the main branch is always deployable.**
 Each merge can go to production on its own, without waiting for another change
-to land first. A large change ships as a sequence of small ones, each safe by
-itself. The exception is a coordinated cutover that cannot be split, such as
+to land first. The exception is a coordinated cutover that cannot be split, such as
 moving between infrastructure providers, and that exception is named in the change.
 
 **A large change ships as thin vertical slices, each verified end to end before the next builds
 on it.**
-Each slice runs through every layer it needs, from the entry point a user or caller reaches down
-to storage, so it can be checked by running the system and not only by its tests. The first slice
-carries the assumption most likely to be wrong, usually how an external system actually behaves,
-so the slices after it build on something observed rather than assumed. Splitting below the point
-where a piece has a caller produces a layer nothing can exercise, so parts that cannot be verified
-without each other stay in one slice.
+Each slice runs end to end through every layer it needs, so it can be checked by running the
+system and not only by its tests. The first slice carries the assumption most likely to be wrong,
+usually how an external system actually behaves, so the slices after it build on something
+observed rather than assumed. Splitting below the point where a piece has a caller produces a layer
+nothing can exercise, so parts that cannot be verified without each other stay in one slice. A
+change that alters no behaviour, such as a refactor or the expand step of expand, migrate,
+contract, is a slice of its own.
 
 **A change couples independent designs only when separating them would gain nothing.**
-A change that introduces decisions that do not depend on each other, such as a new data shape, a
-change to how existing readers order records and a parser for a new input, is split along them
+A change that introduces decisions that do not depend on each other, such as a new data model, a
+change to behaviour existing callers rely on and a new integration, is split along them
 when reviewing or observing them apart would pay for the extra change: one rests on an
 assumption only the running system can confirm, or each needs a reviewer's full attention. Lines
 changed measure this poorly: tests and fixtures are cheap to read, and one decision spread over
@@ -157,7 +157,9 @@ for resources created any other way.
 - CI/CD pipeline configs
 - Migration files
 - Deployment scripts, Dockerfiles, and infrastructure-as-code manifests
+- How a change is divided into PRs, in any repo that ships through them
 
 ## Out of scope
 
-- Code that never runs outside a developer's machine
+- Code that never runs outside a developer's machine, apart from how its changes are divided
+  into PRs

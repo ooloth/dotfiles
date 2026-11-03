@@ -15,8 +15,8 @@ model: opus
 
 This is a discussion/strategy skill. Do not make side-effecting changes while using it: no edits,
 writes, mutating shell commands, commits, posted comments, or ticket creation. Read-only exploration
-is allowed when needed. Do not plan fine implementation details (type design, slices, tests) — that
-belongs to `/design`, which runs after the user approves the approach.
+is allowed when needed. Do not plan fine implementation details (type design, commit-level slices,
+tests) — that belongs to `/design`, which runs after the user approves the approach.
 
 ### Phase 1: Load Context Progressively
 
@@ -104,8 +104,12 @@ cost.
    Where the change is hard to make in the code as it stands, such as a value read globally in many
    places that must become a parameter, the approach makes the change easy first, then makes the
    easy change. The reshaping ships on its own, before the change, and changes no behavior: running
-   every entry point on the same input gives the same result before and after. How each part is
-   sliced is left to `/design`.
+   every entry point on the same input gives the same result before and after.
+
+   The approach says how the work divides into PRs when dividing it gains something: independent
+   designs, or an assumption only the running system can confirm that later work would build on
+   (the vertical-slice and design-coupling Shoulds in `deployment.md`). How each PR is sliced into
+   commits is left to `/design`.
 
    Scope each property to the behaviour this work changes. Where a risk this work exposes could be
    stated broadly enough to bind code the work does not otherwise touch, state it at the narrowest

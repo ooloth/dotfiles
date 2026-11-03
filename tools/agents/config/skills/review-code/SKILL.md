@@ -206,7 +206,9 @@ question, and it earns an agent. If you cannot write the question down, do not a
 
 Add rather than enrich. Each agent answers its own question, so a concern appended to an existing
 agent's prompt competes with that question for its attention. A new agent gives the concern a
-question of its own.
+question of its own. Agent 2's slicing check is the one standing exception: whether a change should
+have been several is a question about its approach, and replays on a large PR and a small one
+showed one agent answering both without dropping either.
 
 Give an added agent the same shape as the thirteen: the intent block, the file list, the
 provenance requirement, and one question to answer. Record the question and why the thirteen did
@@ -281,7 +283,7 @@ If implementation matches intent: report "Implementation aligns with stated inte
 ### Agent 2: Approach
 
 ```
-Question: Is this the simplest correct solution to the stated problem, and is it the best available approach?
+Question: Is this the simplest correct solution to the stated problem, is it the best available approach, and would delivering it as several smaller changes have paid for itself?
 
 **Report every finding you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If nothing found, say so in one sentence.**
 
@@ -292,7 +294,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/code-readability.md`, `~/.agents/standards/code-structure.md` and `~/.agents/standards/deployment.md`. Use these standards as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/code-readability.md` and `~/.agents/standards/code-structure.md`, and from `~/.agents/standards/deployment.md` only the two Shoulds headed "A large change ships as thin vertical slices" and "A change couples independent designs only when separating them would gain nothing". Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Read the unchanged files the diff calls or imports, to see existing patterns and available utilities.
@@ -306,10 +308,11 @@ What is the minimum code that correctly solves the stated problem? Compare it to
 
 Ground every observation in the actual code and the problem being solved. Don't flag superficial rewrites.
 
-Slicing check: would delivering this as several smaller changes, each mergeable and verifiable end to end on its own, have paid for itself (the vertical-slice and independent-design Shoulds in `deployment.md`)? If so, name the cut points: which files, modules and migration columns go in each, in what order, and what running the system would verify each by. Judge size by the designs a reviewer must weigh, not by lines; tests and fixtures count for little. If splitting would not have paid for itself, say why in one line.
+Slicing check: would delivering this as several smaller changes, each mergeable and verifiable end to end on its own, have paid for itself (the two `deployment.md` Shoulds named in step 1)? If so, name the cut points: which files and modules go in each, in what order, and what running the system would verify each by. Judge size by the designs a reviewer must weigh, not by lines; tests and fixtures count for little.
 
 If a simpler or better approach exists: describe it concretely, explain what makes it better, and note the cost of switching.
 If the approach is well-chosen: report "Approach is well-suited to the problem."
+For slicing: report the cut points, or "Splitting would not have paid for itself" and why in one line.
 ```
 
 ---
