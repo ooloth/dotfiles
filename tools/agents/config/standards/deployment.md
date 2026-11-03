@@ -20,6 +20,24 @@ to land first. A large change ships as a sequence of small ones, each safe by
 itself. The exception is a coordinated cutover that cannot be split, such as
 moving between infrastructure providers, and that exception is named in the change.
 
+**A large change ships as thin vertical slices, each verified end to end before the next builds
+on it.**
+Each slice runs through every layer it needs, from the entry point a user or caller reaches down
+to storage, so it can be checked by running the system and not only by its tests. The first slice
+carries the assumption most likely to be wrong, usually how an external system actually behaves,
+so the slices after it build on something observed rather than assumed. Splitting below the point
+where a piece has a caller produces a layer nothing can exercise, so parts that cannot be verified
+without each other stay in one slice.
+
+**A change couples independent designs only when separating them would gain nothing.**
+A change that introduces decisions that do not depend on each other, such as a new data shape, a
+change to how existing readers order records and a parser for a new input, is split along them
+when reviewing or observing them apart would pay for the extra change: one rests on an
+assumption only the running system can confirm, or each needs a reviewer's full attention. Lines
+changed measure this poorly: tests and fixtures are cheap to read, and one decision spread over
+many files is still one decision. Splitting where nothing is gained is churn, in the way that
+splitting a function for its own sake is.
+
 **Every change passes the project's automated checks before it reaches the main branch.**
 The checks the project's contributing guide lists run on every change in CI,
 and a failing check blocks the merge. A check that runs only on a developer's

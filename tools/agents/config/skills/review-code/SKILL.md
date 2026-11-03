@@ -292,7 +292,7 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/code-readability.md` and `~/.agents/standards/code-structure.md`. Use these standards as your evaluation criteria.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/code-readability.md`, `~/.agents/standards/code-structure.md` and `~/.agents/standards/deployment.md`. Use these standards as your evaluation criteria.
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. Read the unchanged files the diff calls or imports, to see existing patterns and available utilities.
@@ -305,6 +305,8 @@ What is the minimum code that correctly solves the stated problem? Compare it to
 - Complexity whose justification isn't obvious to a competent reader of the problem statement
 
 Ground every observation in the actual code and the problem being solved. Don't flag superficial rewrites.
+
+Slicing check: would delivering this as several smaller changes, each mergeable and verifiable end to end on its own, have paid for itself (the vertical-slice and independent-design Shoulds in `deployment.md`)? If so, name the cut points: which files, modules and migration columns go in each, in what order, and what running the system would verify each by. Judge size by the designs a reviewer must weigh, not by lines; tests and fixtures count for little. If splitting would not have paid for itself, say why in one line.
 
 If a simpler or better approach exists: describe it concretely, explain what makes it better, and note the cost of switching.
 If the approach is well-chosen: report "Approach is well-suited to the problem."
