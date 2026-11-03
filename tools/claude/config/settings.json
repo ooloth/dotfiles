@@ -62,6 +62,7 @@
       "Bash(acli jira workitem comment update *)",
       "Bash(acli jira workitem link delete *)",
       "Skill(commit)",
+      "Skill(create-pr)",
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(git push *)"

@@ -189,34 +189,39 @@ steps that require waiting for user approval.
 Locate the `create-pr` skill file. Try
 `<dotfiles-path>/tools/agents/config/skills/create-pr/SKILL.md` first, falling back to
 `../dotfiles/tools/agents/config/skills/create-pr/SKILL.md`. **Read it, and the
-`write-pr-description` file beside it, before proceeding,** then follow them to open the PR. The
-checks already passed in step 9, so its check step is skipped. The body must include
-`Closes #<issue>`, which also puts the PR on the issue's timeline. Skip any steps that require
-interactive user input (Jira URL, Slack links, screen recordings). Omit those fields rather than
-using placeholders. Its browser step fails here; carry on.
+`write-pr-description` file beside it, before proceeding.**
 
-Add `--assignee ooloth --label "author:agent"` to the `gh pr create` command. Ensure the label
-exists first:
+Before following them, note what the body needs, because `create-pr` opens the PR as soon as the
+body is written:
+
+- `Closes #<issue>`, which also puts the PR on the issue's timeline.
+- A Related Links section with a link to this session:
+
+  ```bash
+  echo "https://claude.ai/code/$CLAUDE_SESSION_ID"
+  ```
+
+Then follow them to open the PR. Its check step decides by its own rule whether to run the checks
+again, so a fix made in step 11 is checked. Skip any steps that require interactive user input
+(Jira URL, Slack links, screen recordings). Omit those fields rather than using placeholders. Its
+browser step fails here; carry on.
+
+`create-pr` reports the PR number. Add the assignee and label, creating the label first, then mark
+the PR ready, because `create-pr` opens a draft and this routine's PR must be open:
 
 ```bash
 gh label create "author:agent" --color "0075ca" --repo <repo> --force
-```
-
-Always include a Related Links section with a link to this session:
-
-```bash
-echo "https://claude.ai/code/$CLAUDE_SESSION_ID"
-```
-
-`create-pr` opens a draft, and this routine's PR must be open, so mark it ready:
-
-```bash
+gh pr edit <pr-number> --repo <repo> --add-assignee ooloth --add-label "author:agent"
 gh pr ready <pr-number> --repo <repo>
 ```
 
-**Do not change the issue label.** `status:agent-working` stays on the issue after the PR is opened
-— it signals the agent's work is in review. Only replace it with `status:needs-human-review` when
-stopping without a PR due to a blocker (steps 5, 6, or 9).
+If `gh pr ready` fails, the PR is still a draft: report **Stopped** with its error, and relabel the
+issue `status:needs-human-review`.
+
+**Do not change the issue label otherwise.** `status:agent-working` stays on the issue after the PR
+is opened — it signals the agent's work is in review. Only replace it with
+`status:needs-human-review` when stopping due to a blocker (steps 5, 6, or 9) or when the PR could
+not be marked ready.
 
 ## Output format
 

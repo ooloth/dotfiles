@@ -116,8 +116,10 @@ disappear. It fixes only what I approve.
 verification checklist a reviewer actually needs, which means never citing the test suite or CI, and
 cutting any step that can't run on a laptop before merging. The bar is what a skeptic would demand
 you prove without running tests or deploying.
-[create-pr](./tools/agents/config/skills/create-pr/SKILL.md) runs it whenever a PR is opened, and
-links the new PR on its Jira, Linear or Monday ticket.
+
+[create-pr](./tools/agents/config/skills/create-pr/SKILL.md) is the one way a PR gets opened. It
+commits and pushes the branch, opens a draft PR with the description `write-pr-description` writes,
+and links the new PR on its Jira, Linear or Monday ticket.
 
 [write-ticket-description](./tools/agents/config/skills/write-ticket-description/SKILL.md) covers
 issues and epics, and records how tickets relate (parent, prerequisite) with the tracker's own

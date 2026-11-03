@@ -100,13 +100,14 @@ changes, PR creation, API calls, Slack messages, shell commands that mutate stat
 External/public side effects (posting a comment visible to others) need this same gate — arguably
 more so, since they cannot be locally reverted. Approval for one kind of side effect does not
 transfer to another: being approved to edit files does not mean you're also approved to post a
-ticket comment about it, even in the same already-approved task — check separately. There are two
-exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and design
-also approves the commits, the push and the draft PR that section describes, the one-line comment
-linking that PR on its ticket, and applying the fixes `wrap-up-codebase` returns, on any branch, in
-the same turn as its questions. It approves nothing beyond them. The other is `merge-and-verify`,
-which only I start: invoking it approves the steps its "What invoking this skill approves" section
-lists, and nothing beyond them.
+ticket comment about it, even in the same already-approved task — check separately. There are
+three exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and
+design also approves the commits, the push and the draft PR that section describes, the one-line
+comment linking that PR on its ticket, and applying the fixes `wrap-up-codebase` returns, on any
+branch, in the same turn as its questions. It approves nothing beyond them. Another is
+`merge-and-verify`, which only I start: invoking it approves the steps its "What invoking this
+skill approves" section lists, and nothing beyond them. The third is `create-pr`: invoking it
+approves the one-line comment it posts linking the new PR on its ticket, and nothing beyond that.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
@@ -355,8 +356,8 @@ A question gets its own record only when it is independent research with no task
 
 If later work turns up a finding, option or decision relevant to an existing task, decide task or
 question file, propose updating it then, not only while it's the topic of discussion. Posting to a
-tracker still needs approval, except what an invoked `merge-and-verify` posts. The ticket comments
-above are for work already approved.
+tracker still needs approval, except what an invoked `merge-and-verify` posts and the PR link
+`create-pr` posts. The ticket comments above are for work already approved.
 
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
