@@ -20,10 +20,11 @@ and conclusions.
   stop worker sessions; tell a worker to investigate something or to implement a design the user
   approved.
 - **The user approves:** approaches, designs, commits to a default branch, merges, and anything
-  posted where other people will see it (ticket comments, PR comments, Slack). When a worker reaches
-  one of these, bring it to the user. Never answer it on the user's behalf. A worker on a feature
-  branch whose approach and design the user approved commits, pushes and opens its draft PR on its
-  own, as "Working Through to a Draft PR" in the global instructions describes.
+  posted where other people will see it (ticket comments, PR comments, Slack), except the one-line
+  PR link `create-pr` posts on the ticket. When a worker reaches one of these, bring it to the
+  user. Never answer it on the user's behalf. A worker on a feature branch whose approach and design
+  the user approved commits, pushes and opens its draft PR on its own, as "Working Through to a
+  Draft PR" in the global instructions describes.
 
 ## 1. Learn the batch
 
@@ -123,7 +124,7 @@ confusing report, comes before the next work item. Resolve it with the user befo
   and proposed replies to the user, and leave its full report in the worker's tab.
 - **Skill-shaped writing:** an approach or design comment, a PR or ticket description, review
   replies, a review posted on someone else's PR, and a commit message are each written under a
-  skill (discuss, design, write-pr-description, write-ticket-description,
+  skill (discuss, design, create-pr, write-pr-description, write-ticket-description,
   review-pr-comments-converge, review-code, commit). A brief to the worker who writes one names the
   skill and passes on the user's decisions in the user's own words. It says nothing about the
   shape, such as body or inline comments, line breaks or length, because the skill owns that; when

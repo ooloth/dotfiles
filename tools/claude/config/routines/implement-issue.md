@@ -186,20 +186,17 @@ steps that require waiting for user approval.
 
 ### 13. Open PR
 
-Locate the `write-pr-description` skill file — try
-`<dotfiles-path>/tools/agents/config/skills/write-pr-description/SKILL.md`
-first, falling back to
-`../dotfiles/tools/agents/config/skills/write-pr-description/SKILL.md`.
-**You must read this file before proceeding.** Once read, invoke that
-file's prompt using the Skill tool and follow its instructions to open
-the PR. The PR must be open (not a
-draft) and the body must include `Closes #<issue>`. Omit `--draft` from
-the `gh pr create` command even if the skill includes it. Skip any steps
-that require interactive user input (Jira URL, Slack links, screen
-recordings) — omit those fields rather than using placeholders.
+Locate the `create-pr` skill file. Try
+`<dotfiles-path>/tools/agents/config/skills/create-pr/SKILL.md` first, falling back to
+`../dotfiles/tools/agents/config/skills/create-pr/SKILL.md`. **Read it, and the
+`write-pr-description` file beside it, before proceeding,** then follow them to open the PR. The
+checks already passed in step 9, so its check step is skipped. The body must include
+`Closes #<issue>`, which also puts the PR on the issue's timeline. Skip any steps that require
+interactive user input (Jira URL, Slack links, screen recordings). Omit those fields rather than
+using placeholders. Its browser step fails here; carry on.
 
-Add `--assignee ooloth --label "author:agent"` to the `gh pr create`
-command. Ensure the label exists first:
+Add `--assignee ooloth --label "author:agent"` to the `gh pr create` command. Ensure the label
+exists first:
 
 ```bash
 gh label create "author:agent" --color "0075ca" --repo <repo> --force
@@ -211,11 +208,10 @@ Always include a Related Links section with a link to this session:
 echo "https://claude.ai/code/$CLAUDE_SESSION_ID"
 ```
 
-### 14. Comment on the issue
+`create-pr` opens a draft, and this routine's PR must be open, so mark it ready:
 
 ```bash
-gh issue comment <issue> --repo <repo> \
-  --body "Opened PR: <pr-url>"
+gh pr ready <pr-number> --repo <repo>
 ```
 
 **Do not change the issue label.** `status:agent-working` stays on the issue after the PR is opened

@@ -102,9 +102,9 @@ more so, since they cannot be locally reverted. Approval for one kind of side ef
 transfer to another: being approved to edit files does not mean you're also approved to post a
 ticket comment about it, even in the same already-approved task — check separately. The one
 exception is "Working Through to a Draft PR" below: approving a task's approach and design also
-approves the commits, the push and the draft PR that section describes, and applying the fixes
-`wrap-up-codebase` returns, on any branch, in the same turn as its questions. It approves nothing
-beyond them.
+approves the commits, the push and the draft PR that section describes, the one-line comment
+linking that PR on its ticket, and applying the fixes `wrap-up-codebase` returns, on any branch, in
+the same turn as its questions. It approves nothing beyond them.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
@@ -312,8 +312,6 @@ without re-deriving it. Each comment is posted before the step it records is act
   writes it.
 - **After `/design`, or agreement on the design:** the design, written as the `design` skill
   writes it.
-- **After the draft PR opens:** a one-line link to it, posted without approval, as `create-pr`
-  describes.
 - **After any later change:** what changed, and which step of the chain it changes. For a change
   made while "Working Through to a Draft PR", the comment is drafted in the session and posted once
   I approve it.

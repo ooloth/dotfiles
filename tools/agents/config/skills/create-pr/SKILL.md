@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Open a draft PR for the changes on the current branch using the "commit" and "write-pr-description" skills, then open it in the browser. Run it when the user asks, or as the step that opens the draft PR in "Working Through to a Draft PR".
+description: Open a draft PR for the changes on the current branch using the "commit" and "write-pr-description" skills, link it on its ticket, then open it in the browser. Run it when the user asks, or as the step that opens the draft PR in "Working Through to a Draft PR".
 ---
 
 ## Steps
@@ -15,8 +15,9 @@ description: Open a draft PR for the changes on the current branch using the "co
 3. Push the branch as the `commit` skill's step 7 describes, with `git push -u origin <branch>` so
    it tracks the remote. Push even when step 2 had nothing to commit: the branch may hold commits
    the remote doesn't have yet.
-4. Use the `write-pr-description` skill to draft the description following my voice guide, and
-   create the PR as a draft with `gh pr create --draft`.
+4. Use the `write-pr-description` skill to write the description to a file following my voice
+   guide, then create the PR as a draft with
+   `gh pr create --draft --title "<title>" --body-file <that file's full path>`.
 5. If the work is tracked by a Jira, Linear or Monday ticket, post one comment on it:
    `Draft PR: <PR URL>`. Find the ticket from a key in the branch name, PR title or body, or from
    the session. Skip GitHub issues, because the PR's `Fixes #N` or `#N` already shows on the

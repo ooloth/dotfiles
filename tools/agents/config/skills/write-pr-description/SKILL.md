@@ -16,33 +16,25 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
    git log $BASE..HEAD --oneline
    git diff $BASE...HEAD --stat
    ```
-3. Ask user for: Jira URL, Slack thread, screen recording (if UI change)
+3. Find the links: use the ticket `create-pr` found. Ask the user for a Jira URL, Slack thread or
+   screen recording (if UI change) only when they invoked a skill directly, never inside a loop or
+   an unattended run; there, omit what you don't have.
 4. Draft using voice rules below
-5. Write the body to a file in a new directory, then create the PR:
+5. Write the body to a file in a new directory, and hand its path back to the caller:
    1. Run `mktemp -d` and note the directory it prints. It is new on every run, so another
-      session opening a PR at the same time can't overwrite the body.
+      session writing a PR body at the same time can't overwrite it.
    2. With the Write tool, write the body to `pr-body.md` in that directory. Writing it to a file
       keeps the shell from mangling backticks in inline code. Read it back before posting.
-   3. Create the PR, using that file's full path:
-
-```bash
-# Check for related issues
-gh issue list -R <owner>/<repo> --state open
-
-# Create draft PR
-gh pr create --draft --title "Title" --body-file <dir>/pr-body.md
-
-# View PR
-gh pr view --web
-```
+   3. This skill does not open the PR. `create-pr` opens it with this file. To update an existing
+      PR, run `gh pr edit <n> --body-file <dir>/pr-body.md`.
 
 **Self-check before posting:**
 
 - [ ] Read project PR template if exists
 - [ ] Reviewed all commits: `git log $BASE..HEAD`
 - [ ] Reviewed file changes: `git diff $BASE...HEAD --stat`
-- [ ] Asked user for Jira/Slack links
-- [ ] Asked user for screen recording (if UI change)
+- [ ] Linked the ticket, and asked for Jira/Slack links and a screen recording (if UI change)
+  only where step 3 allows asking
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Validation is manual e2e only — no automated checks
 - [ ] No implementation details snuck in
@@ -110,7 +102,7 @@ gh pr view --web
   observe, add a before and after diagram of that interaction under What, drawn
   to the diagram standards in `~/.agents/standards/documentation.md`. Most PRs
   have nothing to draw and include no diagram
-- Link actual Jira/Slack (ask user if not provided)
+- Link actual Jira/Slack (ask the user only where workflow step 3 allows)
 - Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or bare GitHub Issue
   URL (since GitHub auto-renders those with a preview)
 - A GitHub issue the PR fully resolves is listed under Related links as `Fixes #N`, one per line,
@@ -125,7 +117,7 @@ gh pr view --web
 ❌ Listing every test written (again, the diff)
 ❌ "Comprehensive" descriptions — less is more  
 ❌ Technical jargon when plain language is available
-❌ Placeholder links — ask for real URLs  
+❌ Placeholder links — use real URLs, asking for them only where workflow step 3 allows  
 ❌ Hard-wrapped prose — GitHub shows each newline as a line break, so a wrapped paragraph renders as
 ragged short lines; write each paragraph and list item as one line
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read
