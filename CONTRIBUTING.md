@@ -50,8 +50,11 @@ gcloud auth login <you>@recursion.com --update-adc
 ```
 
 Without it, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. The managed
-config names that index as the only default, so uv never falls back to public PyPI on its own.
-Whether the repo's own Python project installs from PyPI on a work laptop is open in
+config names that index as the only default, so uv resolves packages only through it unless a
+project names another index, and an install from a lock fetches the URLs the lock records. The
+maintainer allows the packages this repo's Python project depends on to come from PyPI on a work
+laptop, as long as every one of them is a public package. Which command and `uv.lock` option the
+project uses to get them is open in
 [what-command-starts-the-repos-python.md](docs/questions/what-command-starts-the-repos-python.md).
 
 Shellcheck settings live in `.shellcheckrc`, not in disable comments. Run it only on `*.sh` and

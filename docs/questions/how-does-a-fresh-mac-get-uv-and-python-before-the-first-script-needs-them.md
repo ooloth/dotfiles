@@ -19,28 +19,24 @@ without it.
 
 ## What would settle it
 
-**Whether a fresh work laptop can download Python with uv before gcloud is set up.** On a work
-laptop the managed uv config may route that download through Artifact Registry, which needs
-Application Default Credentials first. Run this on the work laptop:
+**Whether a fresh work laptop can download Python with uv before gcloud is set up.** The work
+laptop's managed uv config sets no Python download settings (see Findings), so what could still be
+in the way is the network blocking the download host, or a proxy that re-signs HTTPS with a company
+certificate uv does not trust without `--system-certs`. Run this on the work laptop:
 
 ```sh
-cat ~/.config/uv/uv.toml
 UV_PYTHON_INSTALL_DIR=$(mktemp -d) uv python install 3.10 -v
 ```
 
-The first command shows whether the managed config sets `python-downloads`, a
-`python-install-mirror`, or `python-preference`. The second downloads a Python into a scratch
-directory without touching the installed ones. Look for which URL it downloads from and whether
-it fails. A laptop that already has gcloud logged in can hide an Artifact Registry dependency, so
-to see what a fresh laptop sees, run the second command again after
-`gcloud auth application-default revoke`, then log back in with
-`gcloud auth application-default login`.
+It downloads a Python into a scratch directory without touching the installed ones. Look for which
+URL it downloads from and whether it fails. To see what a laptop before gcloud login sees without
+logging out, run it with gcloud's credentials hidden from uv, as the
+[start command question](what-command-starts-the-repos-python.md)'s 2026-11-02 findings did:
+`CLOUDSDK_CONFIG` set to an empty directory and `GOOGLE_APPLICATION_CREDENTIALS` to a missing file.
 
-A failure tells you which of these is in the way: the network blocks the download host, a proxy
-re-signs HTTPS with a company certificate that uv does not trust without `--system-certs`, or the
-managed config disables or redirects Python downloads.
-
-The first command has been run (see Findings), so only the second is left.
+Whether setup can also install third-party packages before login depends on the start command
+question's lock option: a lock made against PyPI allows it, and committing no lock does not (see
+Findings).
 
 ## Resolves into
 
@@ -67,11 +63,13 @@ Nothing here is settled until it graduates into a decision record.
   `uv.toml`.
 - *Unverified:* whether a fresh work laptop can download Python with uv before gcloud is logged
   in. The check under **What would settle it** answers it.
-- *Reasoned:* the global Python standards call for Pydantic at boundaries. A setup that has to run
-  before gcloud is logged in can install third-party packages on a work laptop only if they come
-  from PyPI without touching the managed index, as a lock made against PyPI does. That was measured
-  with gcloud logged in (see the 2026-11-02 finding below). If it fails before login, the code
-  setup runs is limited to the standard library, with ruff, `ty` and pytest only in the dev group.
+- *Reasoned:* the global Python standards call for Pydantic at boundaries. A setup that runs before
+  gcloud is logged in can still install third-party packages on a work laptop from a lock made
+  against PyPI, because installing from that lock sends nothing to the managed index (the
+  2026-11-02 *Measured* finding below) and the maintainer allows this repo's public packages from
+  PyPI there (see the start command question). Under the start command question's option that
+  commits no `uv.lock`, the work laptop locks against its managed index instead, and the code setup
+  runs is limited to the standard library, with ruff, `ty` and pytest only in the dev group.
 - *Measured (2026-10-29):* with uv 0.13.5 on a personal machine, `uv run --frozen --no-dev` on a
   project with no runtime dependencies and no `.venv` started a module with `UV_NO_CACHE=1` and
   `UV_DEFAULT_INDEX` set to an unreachable host. This held for a packaged project built with
@@ -81,7 +79,10 @@ Nothing here is settled until it graduates into a decision record.
   `python-downloads`, `python-install-mirror` or `python-preference`, and no `UV_*` variable or
   system-level uv config is set. It names one package index. Its effect on PyPI downloads is in the
   [start command question](what-command-starts-the-repos-python.md)'s 2026-11-02 findings.
-- *Measured (2026-11-02):* on the work laptop with uv 0.13.6 and gcloud logged in, `uv run
-  --frozen` on a project with one PyPI dependency fetched it from the lock's
-  `files.pythonhosted.org` URL and sent no request to the managed index. Whether this holds before
-  gcloud is logged in has not been tried.
+- *Measured (2026-11-02):* on the work laptop with uv 0.13.6 and its managed config active,
+  `UV_NO_CACHE=1 uv run --frozen -v` on a lock made against PyPI for `six==1.17.0` fetched the
+  wheel from `files.pythonhosted.org`, and its log, which names each URL fetched, named no
+  `pkg.dev` host. This held with gcloud logged in, and with gcloud's credentials hidden from uv,
+  under which an install through the managed index failed with `Incomplete credentials`. The
+  [start command question](what-command-starts-the-repos-python.md)'s 2026-11-02 findings have the
+  details.
