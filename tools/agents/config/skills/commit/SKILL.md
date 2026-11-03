@@ -29,15 +29,24 @@ this commit will contain, condition (c) is met instead when `HEAD` is still that
 `git diff HEAD -- <path>...` for the commit's paths is identical to what the worktree held. Changes
 to other files since then do not matter, because the worktree did not contain them.
 
+**A commit no test can see skips step 2, and the script alone decides that.** Before step 2, run
+`uv run <skill-base-dir>/scripts/check_unread.py <path>...` from the repository that holds the
+changes, with the paths the commit will contain. It exits 0 only when every path is a Markdown file
+and no file outside Markdown names it or a directory above it in a string, or reads Markdown files
+by extension. Then skip step 2, and quote the script's output in the report so the reader can see
+why. Step 1 still runs, because linters and formatters can read Markdown. Exit 1 or 2 means step 2
+runs as usual. Nothing else skips step 2: a change that looks small, safe or documentation-only
+still runs the full suite unless the script says otherwise.
+
 1. Run all relevant checks. Fix any errors that are mechanical and contained to files this commit
    will contain (e.g. formatting, unused imports, trivial lint), never to another session's files.
    If fixing an error would require touching new files, making design decisions, or adding
    non-trivial logic — stop, report what failed and why, and wait for approval before proceeding.
    Discover what checks apply by consulting the project's CONTRIBUTING.md, Justfile and CLAUDE.md.
-2. Run the full test suite — the same command CI runs, with no path filters. Not just the tests you
-   think are relevant to the changed files — all the tests. Do not run only the tests for changed
-   files. Apply the same fix rule: mechanical failures in files this commit will contain only;
-   escalate anything else.
+2. Unless `check_unread.py` exited 0 above, run the full test suite — the same command CI runs,
+   with no path filters. Not just the tests you think are relevant to the changed files — all the
+   tests. Do not run only the tests for changed files. Apply the same fix rule: mechanical failures
+   in files this commit will contain only; escalate anything else.
 
    When a check from step 1 or a test from step 2 fails only in files this commit leaves out, such
    as another session's uncommitted work in the same checkout, that failure is not a reason to stop
