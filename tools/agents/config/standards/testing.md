@@ -23,7 +23,7 @@ shows writes that were never committed, a fixture that raises before writing
 anything cannot show a rollback, and a check run where the environment never
 holds the value it guards against has nothing to catch.
 
-**A check that finds nothing to check by mistake fails.**
+**A check whose selection matches nothing fails, unless its input is legitimately empty there.**
 A test runner, linter or type checker aimed at a glob, a directory or a config
 condition reports success when that selection matches nothing, and the success
 looks the same as a real pass. So an empty selection is a failure: the tool's

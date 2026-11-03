@@ -166,8 +166,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
   carries a body saying what was checked, written under review-code's Step 5, because to a
   teammate an approval with no body looks the same as a thoughtless one.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
-  `git status` reads the right repo. On a feature branch it needs no signal. For a commit to a
-  default branch, relay the user's commit signal word for word. For a change you
+  `git status` reads the right repo. On a feature branch in a repo that ships through PRs it needs
+  no signal. For any other commit, relay the user's commit signal word for word. For a change you
   made yourself, open a Rex tab in that repo with the `use-rex` launcher and the prompt `/commit`
   rather than committing from your session, so its checks don't block you and the user can watch.
 - **Side jobs:** a job for a ticket that runs a long time, or that the user may want to watch or
@@ -190,11 +190,12 @@ confusing report, comes before the next work item. Resolve it with the user befo
   tab for it in the ticket's session (pass `-s`), named `PR <n> (<author>): merge-and-verify`, in
   the repo's main checkout rather than the PR's worktree, so its cleanup step can remove that
   worktree. Start it with the `use-rex` launcher and the prompt
-  `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its cleanup offer
-  is answered; the PR's row leaves the table then too.
+  `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its backlog list
+  and cleanup offer are answered; the PR's row leaves the table then too.
   Name the environment in the prompt when the repo deploys to more than one. A permission prompt,
   such as the merge gate's, is answered by the user in that tab. A question or a wording to
-  approve, such as the report it would post, is relayed as any worker's is. Merge in the agreed
+  approve, such as a backlog change it lists or a report it held back, is relayed as any worker's
+  is. Merge in the agreed
   order: start the next PR's tab only after the previous one's watch has ended "serving" and its
   proof report exists; approving and posting that report can trail. Relay each report, and never
   tell the user to press "Squash and merge".

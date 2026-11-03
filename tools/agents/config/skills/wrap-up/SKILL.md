@@ -3,6 +3,7 @@ name: wrap-up
 description: End a session by confirming every action it mentioned was dealt with, then finding what in the codebase and the backlog would mislead the next agent. Reports both and fixes only what the user approves.
 effort: high
 model: opus
+disable-model-invocation: true
 ---
 
 ## Order of work

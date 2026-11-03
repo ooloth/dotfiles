@@ -15,7 +15,7 @@
 # pytest ignores each file's inline script header, so uv installs each tests/test_*.py file's header
 # with --with-requirements (decision 001's addendum), and a file with no header fails the run. The
 # skill tests have no headers; hypothesis and pydantic are installed for them, since they load their
-# scripts in-process and generate inputs for them.
+# scripts in-process or run them as a subprocess, and generate inputs for them.
 set -uo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

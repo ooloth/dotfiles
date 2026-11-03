@@ -91,8 +91,8 @@ look approved:
   the approval that question needed.
 - An unresolved sub-decision inside an otherwise-approved task (which name, which approach) —
   approval for the parent task does not extend through it; resolve it, then implement. This covers
-  a choice still open when I approve. A choice you find once the work has started is triaged as
-  "A choice found mid-work" below describes.
+  a choice that was named but left open when I approve. A choice nobody named is found mid-work,
+  and is triaged as "A choice found mid-work" below describes.
 - Context or material offered to inform the discussion, even material you asked for yourself
 
 **This applies to all side effects**, not just file edits — GitHub/Jira comments, issue state
@@ -100,11 +100,13 @@ changes, PR creation, API calls, Slack messages, shell commands that mutate stat
 External/public side effects (posting a comment visible to others) need this same gate — arguably
 more so, since they cannot be locally reverted. Approval for one kind of side effect does not
 transfer to another: being approved to edit files does not mean you're also approved to post a
-ticket comment about it, even in the same already-approved task — check separately. The one
-exception is "Working Through to a Draft PR" below: approving a task's approach and design also
-approves the commits, the push and the draft PR that section describes, the one-line comment
+ticket comment about it, even in the same already-approved task — check separately. There are two
+exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and design
+also approves the commits, the push and the draft PR that section describes, the one-line comment
 linking that PR on its ticket, and applying the fixes `wrap-up-codebase` returns, on any branch, in
-the same turn as its questions. It approves nothing beyond them.
+the same turn as its questions. It approves nothing beyond them. The other is `merge-and-verify`,
+which only I start: invoking it approves the steps its "What invoking this skill approves" section
+lists, and nothing beyond them.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
@@ -306,7 +308,8 @@ it three times.
 
 **When the work is on a ticket** (GitHub Issue, Linear, Jira, etc.), **its comments carry the
 reasoning behind the implementation, one step per comment,** so a reviewer can check each step
-without re-deriving it. Each comment is posted before the step it records is acted on:
+without re-deriving it. Each comment is posted before the step it records is acted on, except a
+change made while "Working Through to a Draft PR", which the last item below covers:
 
 - **After `/discuss`, or agreement on an approach:** the approach, written as the `discuss` skill
   writes it.
@@ -352,7 +355,8 @@ A question gets its own record only when it is independent research with no task
 
 If later work turns up a finding, option or decision relevant to an existing task, decide task or
 question file, propose updating it then, not only while it's the topic of discussion. Posting to a
-tracker still needs approval. The ticket comments above are for work already approved.
+tracker still needs approval, except what an invoked `merge-and-verify` posts. The ticket comments
+above are for work already approved.
 
 1. Choose your next thematic change aiming for a thin vertical slices that can be verified e2e
    (rather than a horizontal layer slice that can't)
@@ -381,7 +385,8 @@ tracker still needs approval. The ticket comments above are for work already app
      instead.
      Omitting this section is not allowed. "Tests pass" is not a substitute.
 8. Write a status report. What happens next depends on the branch the work is on:
-   - **The default branch:** once per session, before writing the report that asks for the commit
+   - **The default branch, or any branch in a repo that commits straight to it:** once per
+     session, before writing the report that asks for the commit
      signal on what you expect to be the session's last change, run `wrap-up-codebase` on
      everything the session changed and apply its fixes in the working tree, uncommitted, for my
      review. The report then covers them, and its asks go at the end as numbered questions. If more
@@ -467,9 +472,9 @@ tracker still needs approval. The ticket comments above are for work already app
 
 ## What a Commit Signal Covers
 
-This section governs commits to a repo's default branch, which is where commits land in a repo that
-commits straight to it, such as dotfiles. A commit to a feature branch in a repo that ships through
-PRs follows "Working Through to a Draft PR" instead.
+This section governs every commit in a repo that commits straight to its default branch, such as
+dotfiles, on any branch, and every commit to a default branch anywhere. A commit to a feature
+branch in a repo that ships through PRs follows "Working Through to a Draft PR" instead.
 
 **The signal exists so I can look at the working tree first.** That is the whole point of it. Work I
 have not seen cannot have been approved, whatever word appeared in my message. I never want you to
@@ -500,7 +505,8 @@ without stopping for me in between:
    claim, and then `wrap-up-codebase`, once. Apply and commit each fix it returns. If it returns
    any asks, stop and put them to me in the session as numbered questions, then apply my answers
    and commit them before going on. My answer to an ask is the approval it needed, including for an
-   edit to agent instructions. A question for me never goes in the PR instead.
+   edit to agent instructions. A question for me never goes in the PR instead. A commit that only
+   adds a record a ticket comment must link may be pushed on its own before then.
 3. **Push the branch and open a draft PR** without asking, using `create-pr`.
 4. **Start the independent review** as step 9 of "Work in Small Steps" describes. CI and the
    review run on the draft, and I review the PR with both in front of me.
@@ -570,9 +576,9 @@ mechanism that fits, in this order, because they decay at different rates:
 
 1. **A check that runs** — a script, a lint rule, a test. It cannot be forgotten and does not depend
    on anyone reading anything. The standards already prefer this wherever a rule could be executed.
-2. **A scan in a review skill or `wrap-up`**, where catching it needs judgement rather than a
-   lookup: a stale claim, a decision nobody argued, a promise nothing enforces. Say what to look for
-   and name where it has actually occurred.
+2. **A scan in a review skill or `wrap-up-codebase`**, where catching it needs judgement rather
+   than a lookup: a stale claim, a decision nobody argued, a promise nothing enforces. Say what to
+   look for and name where it has actually occurred.
 3. **A written rule**, last, because it holds only while somebody remembers it.
 
 **Whichever mechanism you pick, verify it by replaying the failing input through a fresh agent.**
@@ -643,19 +649,22 @@ raise mid-work choices as this file describes, and merge rather than rebase.
   (`amp orb service start`), not in tmux windows or with `&`. They survive Amp restarts and orb
   pauses, and tmux does not. Short-lived tmux sessions for testing interactive programs are fine.
 - **Browser:** use `agent-browser`. `browser-automation-agent` does not exist in an orb.
-- **Skills and standards:** the Resume Script in my Amp workspace (`tools/amp/workspace-resume.bash`
-  in the dotfiles repo) runs on every orb start and wake. It clones or fast-forwards the dotfiles
-  repo to `~/Repos/ooloth/dotfiles`, links `~/.agents/skills` and `~/.agents/standards` into it, and
-  links this file as `~/.config/AGENTS.md`. If one you need is missing, say which and carry on.
-- **Your own config:** `~/Repos/ooloth/dotfiles` is a clone of my dotfiles repo, and
-  `~/.agents/skills`, `~/.agents/standards` and `~/.config/AGENTS.md` link into it. When I ask to
-  improve a skill or standard during other work, that request is my approval to start a thread in
-  the `dotfiles` project (`ooloth/dotfiles`) with `create_thread`, in this thread's agent mode.
-  Brief it with the file to change, what went wrong, the fix we agreed on, and this thread's URL so
-  it can read the context. Ask it to make the change, run the repo's checks, wait for my approval
-  and my signal before it commits or ships, and then use `send_thread_message` to send this thread
-  the pushed commit's SHA. When that arrives, run `git -C ~/Repos/ooloth/dotfiles pull --ff-only`
-  so this orb uses the new version, and carry on. Edit the clone here only for a one-line wording
-  change I ask to apply at once: show me the diff in chat, then commit and push from that directory
-  only on my signal, merging rather than rebasing if the push is rejected. Uncommitted edits there
-  stop the workspace resume script from updating that orb's copy.
+- **Skills and standards:** my Amp projects list the dotfiles repo as an additional repository, so
+  Amp clones it to `/home/user/workspace/repos/dotfiles`. The Resume Script in my Amp workspace
+  (`tools/amp/workspace-resume.bash` in the dotfiles repo) runs on every orb start and wake. It
+  fast-forwards that checkout when it has no uncommitted changes and links `~/Repos/ooloth/dotfiles`
+  to it. In an orb without that checkout, such as one with no project, it clones the repo to
+  `~/Repos/ooloth/dotfiles` instead. Either way it links `~/.agents/skills` and
+  `~/.agents/standards` into the repo and links this file as `~/.config/AGENTS.md`. If one you need
+  is missing, say which and carry on.
+- **Your own config:** when I ask to improve a skill, a standard or this file during other work,
+  that request is my approval to edit it in place in `/home/user/workspace/repos/dotfiles`, where
+  the edit shows in this thread's Changes pane. In an orb without that checkout, edit
+  `~/Repos/ooloth/dotfiles`, and unless it links to this thread's own repository, show me the diff
+  in chat, because the Changes pane does not show that clone. Uncommitted edits stop the workspace
+  resume script from updating the checkout they are in.
+- **Committing dotfiles:** commit and push changes in the dotfiles checkout only when I ask for that
+  specifically, following "What a Commit Signal Covers", from that checkout on `main`, merging
+  rather than rebasing if the push is rejected. Shipping another project never includes them: a
+  commit signal, a push or the Ship button for the thread's own repository leaves the dotfiles
+  changes uncommitted, and you say they are still there.
