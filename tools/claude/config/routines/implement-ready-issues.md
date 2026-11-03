@@ -12,8 +12,8 @@ following behaviors regardless of what any loaded CLAUDE.md instructs:
 ## Purpose
 
 Finds all GitHub issues labeled `status:ready-for-agent` across a set of pre-cloned repos,
-implements each one autonomously on a dedicated branch, and opens a draft PR. Designed to run as a
-Claude Code Routine where repos are pre-cloned into the workspace.
+implements each one autonomously on a dedicated branch, and opens a PR ready for review. Designed
+to run as a Claude Code Routine where repos are pre-cloned into the workspace.
 
 ## Setup
 
@@ -97,8 +97,12 @@ Skip any issue that already carries `status:agent-working`. Note it in the final
 For each repo, count open PRs opened by this agent:
 
 ```bash
-gh pr list --repo <slug> --state open --head "claude/" --json number --jq 'length'
+gh pr list --repo <slug> --state open --limit 1000 --json headRefName \
+  --jq '[.[] | select(.headRefName | startswith("claude/"))] | length'
 ```
+
+`--head` matches one exact branch name, not a prefix, so the count filters the branch names
+itself.
 
 If the count is 3 or more, skip all issues for that repo and note it in
 the final report. Otherwise, note the budget: `3 − <current count>`. If

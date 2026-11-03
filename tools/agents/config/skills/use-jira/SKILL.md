@@ -73,7 +73,7 @@ history. The replacement is a new draft: approved wording changes only with fres
 
 `acli` is set up on the work laptop as the fallback when the Atlassian MCP server will not connect.
 It logs in with OAuth and keeps the token in the login keychain; never read it out or print it.
-Setup is in `tools/jira/README.md`. Tested with acli 1.3.39 on CENG-349:
+Setup is in `tools/jira/README.md`. Tested with acli 1.3.39 on a work ticket:
 
 - **Bodies are ADF, never markdown.** `comment create` and `comment update` store markdown as
   literal text. Write the body as an ADF JSON document (`{"version":1,"type":"doc","content":[…]}`)
@@ -113,8 +113,8 @@ is in `tools/jira/README.md`.
   a mistake stays until someone edits it in the web UI. Validate the body before posting, harder
   than for the MCP tool.
 - **Markdown survives only in its simplest shapes.** jira-cli converts the body to Jira wiki markup
-  (blackfriday-confluence, posted to API v2). Tested on CENG-349: paragraphs, inline code, bold,
-  links (including code as link text) and a flat bullet list survive. A heading runs into the
+  (blackfriday-confluence, posted to API v2). Tested on a work ticket: paragraphs, inline code,
+  bold, links (including code as link text) and a flat bullet list survive. A heading runs into the
   paragraph above as literal `h2.` text, a nested bullet and a numbered list after a bullet list
   become literal `**` and `#` lines, a table keeps its `|-|` separator as a row of dashes with no
   header row, and a code block lands inside a stray bullet tagged as Java. Post only paragraphs and
