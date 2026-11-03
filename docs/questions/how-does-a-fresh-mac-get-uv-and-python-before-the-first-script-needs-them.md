@@ -63,7 +63,8 @@ Nothing here is settled until it graduates into a decision record.
   `uv.toml`.
 - *Unverified:* whether a fresh work laptop can download Python with uv before gcloud is logged
   in. The check under **What would settle it** answers it.
-- *Reasoned:* the global Python standards call for Pydantic at boundaries. A setup that runs before
+- *Reasoned:* the global Python standards call for Pydantic at boundaries wherever third-party
+  packages can be installed, and the standard library before then. A setup that runs before
   gcloud is logged in can still install third-party packages on a work laptop from a lock made
   against PyPI, because installing from that lock sends nothing to the managed index (the
   2026-11-02 *Measured* finding below) and the maintainer allows this repo's public packages from
