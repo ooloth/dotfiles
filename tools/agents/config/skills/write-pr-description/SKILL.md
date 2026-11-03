@@ -12,7 +12,11 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
    `.github/pull_request_template.md`
 2. Detect base branch and gather changes:
    ```bash
-   BASE=$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||' || echo main)
+   # Each fallback runs only when the step before it printed nothing. A `||` after a pipeline
+   # would never fire, because the pipeline returns `sed`'s status, which is 0.
+   BASE=$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null)
+   [ -n "$BASE" ] || BASE=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
+   [ -n "$BASE" ] || BASE=main
    git log $BASE..HEAD --oneline
    git diff $BASE...HEAD --stat
    ```
