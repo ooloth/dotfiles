@@ -121,13 +121,16 @@ def thread(
     }
 
 
-def conversation(comment_id: int, body: str, by: dict | None = BOT) -> dict:
+def conversation(
+    comment_id: int, body: str, by: dict | None = BOT, edited: str | None = None
+) -> dict:
     return {
         "databaseId": comment_id,
         "author": by,
         "body": body,
         "url": f"https://github.com/{REPO}/pull/{PR}#issuecomment-{comment_id}",
         "createdAt": "2026-10-02T08:30:00Z",
+        "lastEditedAt": edited,
     }
 
 
@@ -362,6 +365,31 @@ def test_each_item_says_which_code_it_describes(harness: Harness) -> None:
     assert "  outdated   : yes" in lines
     url = lines.index(f"  url        : https://github.com/{REPO}/pull/{PR}#issuecomment-9001")
     assert lines[url + 1] == "  created    : 2026-10-02T08:30:00Z"
+
+
+def test_a_comment_edited_after_posting_says_when(harness: Harness) -> None:
+    # rex-rx posts a placeholder and later edits its whole review into that same comment, so a
+    # comment whose created time has not changed can still hold new feedback.
+    fixture = {
+        "threads": [[]],
+        "reviews": [[]],
+        "comments": [
+            [
+                conversation(9001, "Never edited."),
+                conversation(9002, "Full review.", edited="2026-10-03T10:00:00Z"),
+            ]
+        ],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    lines = result.stdout.splitlines()
+    for comment_id, edited in ((9001, "no"), (9002, "2026-10-03T10:00:00Z")):
+        url = lines.index(
+            f"  url        : https://github.com/{REPO}/pull/{PR}#issuecomment-{comment_id}"
+        )
+        assert lines[url + 2] == f"  edited     : {edited}"
 
 
 def test_every_line_printed_before_paging_is_still_printed_in_order(harness: Harness) -> None:

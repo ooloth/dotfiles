@@ -42,14 +42,13 @@ gh api graphql -F query=@<dir>/query.graphql > <dir>/response.json
 Read the file with `jq` and never print the raw response: it is tens of kilobytes, and other
 people's comment text has no place in this session.
 For each pull request ask for: number, title, url, createdAt, isDraft, headRefName,
-isCrossRepository, reviewDecision,
-mergeStateStatus, repository name, author login, the last commit's statusCheckRollup state,
-reviewRequests (requested reviewer's `__typename` and login), latestOpinionatedReviews (id, state,
-submittedAt, author), the last 50 reviews (id, state, body, submittedAt, author), the last 50
-top-level comments (id, createdAt, author), and the last 50 reviewThreads (totalCount, isResolved,
-and each thread's last 10 comments with id, createdAt and author). Ask for `__typename` and `login`
-on every author so a bot can be told from a person. Do not ask for a team's slug: it needs a scope
-the token may lack, and the whole query then fails.
+isCrossRepository, reviewDecision, mergeStateStatus, repository name, author login, the last
+commit's statusCheckRollup state, reviewRequests (requested reviewer's `__typename` and login),
+latestOpinionatedReviews (id, state, submittedAt, author), the last 50 reviews (id, state, body,
+submittedAt, author), the last 50 top-level comments (id, createdAt, lastEditedAt, author), and the
+last 50 reviewThreads (totalCount, isResolved, and each thread's last 10 comments with id, createdAt
+and author). Ask for `__typename` and `login` on every author so a bot can be told from a person. Do
+not ask for a team's slug: it needs a scope the token may lack, and the whole query then fails.
 
 A pull request found by more than one search is one pull request, and is decided and listed once.
 
@@ -79,10 +78,12 @@ My pull request **has feedback** when any of these holds:
 - a review with a non-empty body, from a person rather than a bot, in state approved, changes
   requested or commented, that is newer than my newest review or top-level comment. My replies
   inside threads do not count here.
-- a top-level comment from a review bot that is newer than my newest review or top-level comment.
-  A review bot is one whose login is a key of `BOT_NAMES` in
-  `../review-pr-comments-converge/scripts/fetch_pr_comments.py`, relative to this skill's base
-  directory. Such a bot posts its whole review as one comment, outside GitHub's reviews.
+- a top-level comment from a review bot whose lastEditedAt, or createdAt when it was never edited,
+  is newer than my newest review or top-level comment. A review bot can post a placeholder and edit
+  its review into it later, so the edit is when its feedback arrived. A review bot is one whose
+  login is a key of `BOT_NAMES` in `../review-pr-comments-converge/scripts/fetch_pr_comments.py`,
+  relative to this skill's base directory. Such a bot posts its whole review as one comment,
+  outside GitHub's reviews.
 
 For my own pull request, the first of these that holds is the reason:
 

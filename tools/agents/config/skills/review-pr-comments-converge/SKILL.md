@@ -62,8 +62,9 @@ command that undoes it. The script's docstring has the full rules.
 
 Fetches all inline comments, review body comments and PR conversation comments via the GitHub
 GraphQL API. Conversation comments are the PR timeline, where some review bots post their whole
-review; they appear last, oldest first, each with when it was posted. Each review shows the commit
-it was submitted against and when. Each inline comment in the output includes:
+review; they appear last, oldest first, each with when it was posted and when it was last edited,
+or `no`, since a review bot can edit its review into a placeholder it posted earlier. Each review
+shows the commit it was submitted against and when. Each inline comment in the output includes:
 
 - **`comment_id`** — the integer ID needed to post a reply
 - **`thread_id`** — the node ID needed to resolve the conversation thread

@@ -14,7 +14,9 @@ Each review shows the commit it was submitted against and when. Each inline comm
   - outdated    : whether the code it was left on has changed since
 
 PR conversation comments (the timeline, where some bots post their reviews) follow, oldest first,
-each with when it was posted. Reply to these with `gh pr comment`.
+each with when it was posted and when it was last edited, or `no`. A bot such as rex-rx posts a
+placeholder and later edits its whole review into it, so an unchanged created time does not mean
+nothing new was said. Reply to these with `gh pr comment`.
 
 Each review and conversation comment also shows `thank`, the line a reply to it opens with. A person
 is tagged by login. A bot is thanked by its name in BOT_NAMES and never tagged, because mentioning a
@@ -96,6 +98,7 @@ query(
           body
           url
           createdAt
+          lastEditedAt
         }
       }
     }
@@ -430,6 +433,7 @@ def print_discussion(target: str, discussion: Discussion) -> None:
             print(f"  comment_id : {comment['databaseId']}")
             print(f"  url        : {comment['url']}")
             print(f"  created    : {comment['createdAt']}")
+            print(f"  edited     : {comment.get('lastEditedAt') or 'no'}")
             print()
             print("  BODY:")
             print(indent(comment["body"].strip(), "    "))
