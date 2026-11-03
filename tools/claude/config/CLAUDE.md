@@ -312,6 +312,8 @@ without re-deriving it. Each comment is posted before the step it records is act
   writes it.
 - **After `/design`, or agreement on the design:** the design, written as the `design` skill
   writes it.
+- **After the draft PR opens:** a one-line link to it, posted without approval, as `create-pr`
+  describes.
 - **After any later change:** what changed, and which step of the chain it changes. For a change
   made while "Working Through to a Draft PR", the comment is drafted in the session and posted once
   I approve it.
@@ -510,10 +512,16 @@ without stopping for me in between:
 - Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills, standards,
   `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`
 - Posting anything that notifies other people, such as a comment, a review, a request for reviewers
-  or marking the PR ready. Opening the draft PR is the one exception.
+  or marking the PR ready. Opening the draft PR, and the one-line comment linking it on its ticket,
+  are the exceptions.
 - Anything that cannot be undone, such as merging, deploying, deleting a branch or data, or a force
   push
 - Any commit to the default branch
+
+## Pull Requests
+
+NEVER open a pull request without invoking the `create-pr` skill. It writes the body with
+`write-pr-description` and links the PR on its ticket.
 
 ## Issue and Ticket Writing
 

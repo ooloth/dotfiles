@@ -192,9 +192,9 @@ again.
 
 ## 7. Open the PR
 
-Commit with the `commit` skill and push. Open a draft PR using `write-pr-description`, omitting any
-field that would need to ask the user. Keep the body short: the ticket comments hold the detail, and
-the PR links to them. Add one line to each section:
+Open the draft PR with the `create-pr` skill. Its checks already passed in step 5, and its
+description omits any field that would need to ask the user. Keep the body short: the ticket
+comments hold the detail, and the PR links to them. Add one line to each section:
 
 - **What:** `Approach: <link to the approach comment>`, with `Design: <link to the design comment>`
   on the line below it
