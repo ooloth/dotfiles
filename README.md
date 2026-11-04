@@ -104,8 +104,8 @@ the entry points and reports whatever confused it or looked stale. It runs once 
 opens, so its fixes merge with the code, and in a repo like this one that commits straight to
 `main`, once per session before asking for the last commit signal.
 [wrap-up-backlog](./tools/agents/config/skills/wrap-up-backlog/SKILL.md) does the same for the
-tracker's open tickets, and merge-and-verify runs it once the change is serving. Neither changes
-anything itself: whoever runs it acts on the list.
+tracker's open tickets, and merge-and-verify runs it once its proven report is posted. Neither
+changes anything itself: whoever runs it acts on the list.
 
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session with both passes, asking
 the cold reader what it would do next and passing it only if it picks the right thing for the right

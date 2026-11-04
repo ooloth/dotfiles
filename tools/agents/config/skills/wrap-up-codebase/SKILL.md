@@ -1,6 +1,6 @@
 ---
 name: wrap-up-codebase
-description: Find everything in the repo that a change made untrue or that would mislead the next agent, and sort each finding into a fix, a question for the user, or a dismissal. Changes nothing itself; the caller acts on the list. Run it once before opening a draft PR, once per session before asking for the commit signal on the session's last change in a repo that commits straight to its default branch, and from wrap-up.
+description: Find everything in the repo that a change made untrue or that would mislead the next agent, and sort each finding into a fix, a question for the user, or a dismissal. Changes nothing itself; the caller acts on the list. Run it once before opening a draft PR, once per session before asking for the commit signal on the session's last change on a default branch or on any branch in a repo that commits straight to its default branch, and from wrap-up.
 effort: high
 model: opus
 ---
@@ -10,9 +10,10 @@ acts on the list it returns, because what to do with a fix depends on who is wai
 
 ## The change
 
-On a feature branch, the change is the branch against the default branch
-(`git diff <default>...HEAD`). In a repo that commits straight to its default branch, it is the
-working tree against `HEAD` plus any commits this session made. Name the range you used in the
+On a feature branch in a repo that ships through PRs, the change is the branch against the default
+branch (`git diff <default>...HEAD`). On a default branch, or on any branch in a repo that commits
+straight to its default branch, it is the working tree against `HEAD` plus any commits this
+session made. Name the range you used in the
 list's first line.
 
 ## Scope

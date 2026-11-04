@@ -406,7 +406,8 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
      waiting for a signal, once its checks and proof pass, and carry on to the next approved slice.
      See "Working Through to a Draft PR" below.
 
-   (Commits that are part of an autonomous loop are approved when the user approves the run.)
+   (Commits that are part of an autonomous loop, such as a `/loop` run or an unattended routine, are
+   approved when the user approves the run.)
 9. On the default branch, when you receive a commit signal, commit via `/commit`. After committing,
    you may move to describing your plan for the next change (steps 1-2) — but as always, stop and
    wait for approval before implementing it (step 3). In a repo that commits straight to its
@@ -506,6 +507,10 @@ and ask.
 
 **Every commit goes through `/commit`. Never run `git commit` from Bash directly.** Push the default
 branch only when I ask.
+
+**A feature branch in a repo that commits straight to its default branch reaches it by a merge
+that waits for its own signal.** That merge is a commit to the default branch, so the signals for
+the branch's commits don't cover it, and it is a merge, never a rebase, as Shell says.
 
 ## Working Through to a Draft PR
 

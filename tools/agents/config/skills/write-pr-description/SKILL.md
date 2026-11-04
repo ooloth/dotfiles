@@ -23,7 +23,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 3. Take the ticket and any links from the ticket `create-pr` passes in, the branch name, the
    commits and the approved task. Run `gh issue list -R <owner>/<repo> --state open --limit 200`
    to find any GitHub issue the PR fully resolves. Inside "Working Through to a Draft PR", ask
-   nothing: leave out what you can't find and say in the description that it is missing. In an
+   nothing: leave out what you can't find, say in the description that it is missing, and hand
+   the same list back so `create-pr` puts it in its final report. In an
    unattended run, ask nothing and leave out what you can't find without mentioning it. Otherwise,
    ask the user for what you can't find (Jira URL, Slack thread), and for a screen recording of a
    UI change.
@@ -121,7 +122,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - A GitHub issue the PR fully resolves is listed under Related links as `Fixes #N`, one per line,
   not as a bare URL. A squash merge can take its commit message from the PR body, which drops the
   branch's own commits and every `Fixes` line in them, so only a closing keyword in the body closes
-  the issue on merge (seen on ooloth/hub#384, 2026-10-28). An issue the PR only relates to stays a
+  the issue on merge (ooloth/hub#384 shows it). An issue the PR only relates to stays a
   bare URL
 - In a repo whose `CLAUDE.md` or `AGENTS.md` says its PRs merge through `merge-and-verify`, a
   resolved issue is listed as `Resolves (closed by merge-and-verify once proven): #N` instead of

@@ -1,6 +1,6 @@
 ---
 name: wrap-up-backlog
-description: Find every ticket on the project's tracker that a change made false, finished or out of date, and sort each into a fix with its exact wording, a question for the user, or a dismissal. Changes nothing itself; the caller acts on the list. merge-and-verify runs it once the change is serving, and wrap-up runs it at the end of a session.
+description: Find every ticket on the project's tracker that a change made false, finished or out of date, and sort each into a fix with its exact wording, a question for the user, or a dismissal. Changes nothing itself; the caller acts on the list. merge-and-verify runs it once its proven report is posted, and wrap-up runs it at the end of a session.
 effort: high
 model: opus
 ---

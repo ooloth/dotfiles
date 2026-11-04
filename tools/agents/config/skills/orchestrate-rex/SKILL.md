@@ -20,9 +20,9 @@ and conclusions.
   stop worker sessions; tell a worker to investigate something or to implement a design the user
   approved.
 - **The user approves:** approaches, designs, every commit except one on a feature branch in a repo
-  that ships through PRs, merges, and anything
-  posted where other people will see it (ticket comments, PR comments, Slack), except the one-line
-  PR link `create-pr` posts on the ticket. When a worker reaches one of these, bring it to the
+  that ships through PRs, merges, and anything posted where other people will see it (ticket
+  comments, PR comments, Slack), except the one-line PR link `create-pr` posts on the ticket and
+  what an invoked `merge-and-verify` posts. When a worker reaches one of these, bring it to the
   user. Never answer it on the user's behalf. A worker on a feature branch in a repo that ships
   through PRs, whose approach and design the user approved, commits, pushes and opens its draft PR
   on its own, as "Working Through to a Draft PR" in the global instructions describes.
@@ -30,13 +30,14 @@ and conclusions.
 ## 1. Learn the batch
 
 Read the instruction files that govern the batch's repos first. Claude Code loads `CLAUDE.md` and
-`CLAUDE.local.md` only from a session's working directory and the folders above it. A repo's
-files, and any in the folders between it and your working directory, never reach you unless your
-session started inside them. The same holds for every subagent you start. So for each repo in the
-batch, read those files in the repo and in each folder between it and your working directory. They
-often hold rules the work depends on, such as which account or configuration reaches which
-environment. Name the files, and the rules from them that apply, in the brief of every subagent
-that touches that repo.
+`CLAUDE.local.md` at launch only from a session's working directory and the folders above it. A
+repo's files below your working directory load only once you read, write or edit a file in that
+repo. A repo outside it never loads them, and one added with `--add-dir` does only when set to. A
+subagent starts with only what your session had loaded. So for each repo in the batch, read those
+files in the repo and in each folder between it and your working directory before you brief anyone.
+They often hold rules the work depends on, such as which account or configuration reaches which
+environment. Name the files, and the rules from them that apply, in the brief of every subagent that
+touches that repo.
 
 Read every ticket and PR in the batch, with their comments. For each PR, find what it waits on:
 a failing check, a review, another PR that has to merge first, or a deploy.
@@ -227,7 +228,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
 
 Whenever something changes or needs the user, show the status table. It lists every unfinished
 work item in priority order, with the same columns as the first table. A row leaves once its item
-is merged, serving and its proof report is posted. A row joins when an issue comes up or a work
+is merged, serving and its proof report is posted, or once the user has answered a report its
+merge tab held back. A row joins when an issue comes up or a work
 item has to be inserted, such as a failing deploy or a fix to how the batch is run. Build each
 table from reads made for that reply, not from earlier ones, since a PR that was clean an hour ago
 may now conflict with something that merged.
