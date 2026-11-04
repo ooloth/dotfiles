@@ -39,9 +39,10 @@ How you gather the proof is yours to decide. What you return must meet this bar:
   in tmux, because text can be quoted exactly.
 - **Any other window is captured on its own, never the whole screen,** with
   `uv run <this skill's folder>/scripts/capture_window.py --app <name> --out <folder>/<name>.png`,
-  adding `--title` when the app has several windows. Window titles can hold private information,
-  so look up no other app's windows. What a browser shows can instead be a screenshot or recording
-  taken by the browser automation.
+  adding `--title` when the app has several windows, or `--window-id` with an ID a failure
+  message printed, to pick an untitled window or one of several with the same title. Window titles
+  can hold private information, so look up no other app's windows. What a browser shows can
+  instead be a screenshot or recording taken by the browser automation.
 - **Each screenshot is opened and checked before it is cited:** it shows the expected window, and
   nothing secret.
 - **Nothing secret appears** in the saved files or the report.
