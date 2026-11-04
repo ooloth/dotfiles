@@ -15,10 +15,15 @@ Identify what to review and the exact diff command to pass agents.
 | ----------------------------- | ----------------------------------------------- | ---------------------------------------- |
 | PR number or URL              | `gh pr diff <n> -R <owner>/<repo> --name-only` | `gh pr diff <n> -R <owner>/<repo>`       |
 | Branch name                   | `git diff <branch>...HEAD --name-only`          | `git diff <branch>...HEAD`               |
+| Commits (hashes or a range)   | `git diff <oldest>^ <newest> --name-only`       | `git diff <oldest>^ <newest>`, or `git show <hash> <hash> …` when the commits are not consecutive |
 | File path(s)                  | use provided paths                              | `git diff HEAD -- <files>`               |
 | None, on feature branch       | `git diff main...HEAD --name-only`              | `git diff main...HEAD`                   |
 | None, on main, staged         | `git diff --staged --name-only`                 | `git diff --staged`                      |
 | None, on main, nothing staged | —                                               | ask: "What would you like me to review?" |
+
+Everything the argument names is one scope, however many commits, PRs or files it lists. "Each
+against its own parent" says what each commit's base is; it does not ask for a separate review per
+commit. Agents name the commit a finding comes from.
 
 Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with
 `git symbolic-ref --short HEAD`. Every `gh` command in this skill names its repository with `-R` (or
@@ -237,13 +242,13 @@ Pass each agent:
   > when it sits inside a function the change rewrote. Label each finding `[introduced]` or
   > `[pre-existing]`. If you cannot determine it, say `[provenance unknown]` rather than guessing.
 
-Send a single message containing all Agent tool calls simultaneously. Review several scopes, such
-as several commits, one scope at a time, so each fan-out stays under the harness's limit on
-concurrent subagents. If calls are refused at that limit anyway, even with "Do not retry", resend
-one with the same prompt and model each time an agent finishes. An agent that errors counts as
-finished, and is itself resent one time in the same way. Stop resending when a call is refused for
-another reason or with none of your agents running, and treat the calls left as never run. Start
-Step 3.5 when no agent is running or waiting to be resent.
+Send a single message containing all Agent tool calls simultaneously. Run one fan-out for the whole
+scope. Never split a scope into one review per commit or per file. If calls are refused at the
+harness's limit on concurrent subagents, even with "Do not retry", resend one with the same prompt
+and model each time an agent finishes. An agent that errors counts as finished, and is itself
+resent one time in the same way. Stop resending when a call is refused for another reason or with
+none of your agents running, and treat the calls left as never run. Start Step 3.5 when no agent
+is running or waiting to be resent.
 
 ---
 
