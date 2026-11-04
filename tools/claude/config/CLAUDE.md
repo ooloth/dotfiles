@@ -406,8 +406,7 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
      waiting for a signal, once its checks and proof pass, and carry on to the next approved slice.
      See "Working Through to a Draft PR" below.
 
-   (Commits that are part of an autonomous loop, such as a `/loop` run or an unattended routine, are
-   approved when the user approves the run.)
+   (An autonomous run signals its own commits only as "What a Commit Signal Covers" says.)
 9. On the default branch, when you receive a commit signal, commit via `/commit`. After committing,
    you may move to describing your plan for the next change (steps 1-2) — but as always, stop and
    wait for approval before implementing it (step 3). In a repo that commits straight to its
@@ -505,12 +504,19 @@ X". The signal is only for what already exists. X ends up uncommitted, and you t
 `commit`. If you are unsure whether a signal covers something, it does not. Say what is in the tree
 and ask.
 
-**Every commit goes through `/commit`. Never run `git commit` from Bash directly.** Push the default
-branch only when I ask.
+**A run I approve that works unattended, such as a `/loop` run or a routine, signals the commits its
+prompt asks for, and nothing else.** A prompt that says to commit each fix approves those commits,
+on any branch. A prompt that says nothing about committing approves none: the run leaves its changes
+in the tree and says they are there.
 
-**A feature branch in a repo that commits straight to its default branch reaches it by a merge
-that waits for its own signal.** That merge is a commit to the default branch, so the signals for
-the branch's commits don't cover it, and it is a merge, never a rebase, as Shell says.
+**Every commit goes through `/commit`, except the merge the next paragraph describes. Never run
+`git commit` from Bash directly.** Push the default branch only when I ask.
+
+**A feature branch in a repo that commits straight to its default branch reaches it by a merge that
+waits for its own signal.** The signals for the branch's commits don't cover it. Once I give it, run
+`git merge --no-ff <branch>` on the default branch. It does not go through `/commit`, and `--no-ff`
+makes it a commit even when the default branch has not moved. Never rebase the branch onto the
+default branch to land it, for the reason Shell gives.
 
 ## Working Through to a Draft PR
 
