@@ -83,10 +83,10 @@ includes another app's.
 through merge to proof of its effect, and only I start it. It reads the deploy chain from the
 repo's docs, counts the change as serving only when the live artifact's commit contains the merge,
 and checks every five minutes or so in a fresh turn until the watch reaches one of its named
-endings. When the proof proves the whole claim, it posts the proof on the ticket and closes the
-ticket once every PR for it has a proven verdict. When the proof disproves or can't observe part
-of the claim, it posts nothing and shows me the draft. Either way it lists the backlog changes what
-shipped calls for, and posts only the ones I approve.
+endings. When the proof proves the whole claim, it posts the proof on the ticket, closes the ticket
+once every PR for it has a proven verdict, and lists the backlog changes what shipped calls for,
+posting only the ones I approve. When the proof disproves or can't observe part of the claim, it
+posts nothing and shows me the draft.
 
 [monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so
 for the pull requests where it's my move, and says why, using the same rules

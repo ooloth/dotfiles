@@ -193,7 +193,9 @@ confusing report, comes before the next work item. Resolve it with the user befo
   tab for it in the ticket's session (pass `-s`), named `PR <n> (<author>): merge-and-verify`, in
   the repo's main checkout rather than the PR's worktree, so its cleanup step can remove that
   worktree. Open the tab only after the user approves this PR's merge in your session, and quote
-  that approval in your report; an agreed merge order is not that approval, because the tab's
+  that approval in your report. An agreed merge order is not that approval, and neither is an
+  instruction given ahead of time, such as "merge #10 and #11 in that order once they're
+  approved": ask for each PR when its turn comes, because the tab's
   prompt counts as the user starting `merge-and-verify`, which approves posting its report and
   closing the ticket. Start it with the `use-rex` launcher and the prompt
   `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its backlog list
