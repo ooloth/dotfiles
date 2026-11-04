@@ -80,7 +80,8 @@ shows: that comes from the app itself, as a terminal's text or a screenshot of o
 includes another app's.
 
 [merge-and-verify](./tools/agents/config/skills/merge-and-verify/SKILL.md) takes an approved PR
-through merge to proof of its effect, and only I start it. It reads the deploy chain from the
+through merge to proof of its effect. It starts when I ask to merge a PR, or runs only the verifying
+when I say I merged one. It reads the deploy chain from the
 repo's docs, counts the change as serving only when the live artifact's commit contains the merge,
 and checks every five minutes or so in a fresh turn until the watch reaches one of its named
 endings. When the proof proves the whole claim, it posts the proof on the ticket, closes the ticket

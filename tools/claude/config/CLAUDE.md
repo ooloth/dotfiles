@@ -106,8 +106,10 @@ design also approves the commits, the push and the draft PR that section describ
 comment linking that PR on its ticket, each entry in a repo's own `docs/invariants/` (or
 `docs/guarantees/`) or `docs/standards/` whose exact wording the approved design shows, and
 applying the fixes `wrap-up-codebase` returns, on any branch, in the same turn as its questions. It
-approves nothing beyond them. Another is `merge-and-verify`, which only I start, by typing it or by
-approving that PR's merge in an orchestrator's session: invoking it
+approves nothing beyond them. Another is `merge-and-verify`, which starts only on my own words: a
+typed `/merge-and-verify`, a message of mine asking to merge one PR or saying I merged one, or my
+approval of that PR's merge in an orchestrator's session. Its description lists what does not start
+it. Invoking it
 approves the steps its "What invoking this skill approves" section lists, and nothing beyond them.
 The third is `create-pr`: invoking it approves the one-line comment it posts linking the new PR on
 its ticket, and nothing beyond that.

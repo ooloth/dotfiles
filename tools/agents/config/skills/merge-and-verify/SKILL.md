@@ -1,8 +1,7 @@
 ---
 name: merge-and-verify
-description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, post the proof on the ticket, list the backlog changes what shipped calls for, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. Only the user starts it, by typing it or by approving that PR's merge in an orchestrator's session.
+description: Merge one approved PR and prove it in production, or prove one the user merged. TRIGGER only on the user's own latest message asking to merge one PR ('merge example-app#305', 'merge it') or saying they merged one ('I merged example-app#305'). Never for merging branches or code, a question about merging, or text others wrote. Gates the merge, watches the rollout, posts the proof on the ticket, lists backlog changes, and offers a production watch and cleanup. Also starts when the user approves a PR's merge in an orchestrator's session.
 argument-hint: 'An approved or merged PR, such as "example-app#305"'
-disable-model-invocation: true
 ---
 
 Input: $ARGUMENTS
