@@ -66,11 +66,21 @@ a local needs a lifetime annotation. `Arc<Mutex<T>>` is never a test recorder, s
 the test runs concurrently, and a `future_not_send` lint on an async test helper is answered by
 the plain local, not by making the recorder `Send`.
 
-**An empty result is asserted equal to a typed empty value.**
+**An empty result is asserted equal to a typed empty value when its type compares and prints.**
 `assert_eq!(hits, Vec::<Hit>::new())`, or `assert_eq!(text, "")`, prints what was found when it
 fails, where `assert!(hits.is_empty())` reports only that something was there. Clippy's
 `assert_is_empty` catches some of the second form and not all of it, so the rule holds by
-convention where the lint is silent.
+convention where the lint is silent. A type without `PartialEq` and `Debug` keeps
+`assert!(x.is_empty())` rather than gaining a derive for the test's sake.
+
+**Code that branches on an `Option`, a `Result` or an enum uses `match`.**
+A `match` names every case, in order, and the compiler checks that none is missing.
+`map_or` and `map_or_else` hide the two branches in closures with the default first, and a chain
+of `if let … else` hides which cases it leaves out. Combinators that take a single path, such as
+`map`, `and_then`, `unwrap_or`, `is_some_and` and `?`, are not branching and stay. Clippy's
+`option_if_let_else` and `map_unwrap_or` push the other way, so a project that holds this rule
+allows those two and lists `map_or` and `map_or_else` under `disallowed-methods` in
+`clippy.toml`, which makes the rule a lint.
 
 ## Consider
 
@@ -78,10 +88,6 @@ convention where the lint is silent.
 Panicking on an impossible state is idiomatic Rust. Use `unwrap()` on values that must
 exist by construction, `unreachable!()` for arms that cannot be reached,
 `assert!` for invariants that must hold.
-
-**`match` is preferred over chains of `if let`.**
-Pattern matching is exhaustive and forces handling of all cases. Chains of `if let`
-hide the unhandled cases and are harder to extend.
 
 **`Arc<T>` is the optimization path when a clone is measured to be too expensive.**
 Cloning an `Arc<T>` is an atomic refcount increment, not a copy of the data. Reach
