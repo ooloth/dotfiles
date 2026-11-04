@@ -12,9 +12,8 @@ acts on the list it returns, because what to do with a fix depends on who is wai
 
 On a feature branch in a repo that ships through PRs, the change is the branch against the default
 branch (`git diff <default>...HEAD`). On a default branch, or on any branch in a repo that commits
-straight to its default branch, it is the working tree against `HEAD` plus any commits this
-session made. Name the range you used in the
-list's first line.
+straight to its default branch, it is the working tree against `HEAD` plus any commits this session
+made. Name the range you used in the list's first line.
 
 ## Scope
 

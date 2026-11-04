@@ -243,9 +243,9 @@ it closes now.
 
 ## Updating the backlog
 
-Once the report is posted, run `wrap-up-backlog` on what this PR shipped: the PR, its commits, its
-ticket and the decisions it settled. Post none of it yourself, because a change to another ticket
-notifies the people watching it. Put its list in the final message as one numbered list:
+Once a proven report is posted, run `wrap-up-backlog` on what this PR shipped: the PR, its commits,
+its ticket and the decisions it settled. Post none of it yourself, because a change to another
+ticket notifies the people watching it. Put its list in the final message as one numbered list:
 
 - **Each fix** as it would be posted: the comment, the description rewrite, the relationship
   change, or the closing of a ticket this change finished, with a comment saying what finished it.

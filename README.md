@@ -101,8 +101,8 @@ running review-pr-comments-converge, so its draft replies and fixes are waiting 
 repo that a change made untrue or that would mislead the next agent, and sorts each finding into a
 fix, a question for me or a dismissal. A cold reader given only the repo path orients itself from
 the entry points and reports whatever confused it or looked stale. It runs once before a draft PR
-opens, so its fixes merge with the code, and in a repo like this one that commits straight to
-`main`, once per session before asking for the last commit signal.
+opens, so its fixes merge with the code, and, on a default branch or on any branch of a repo like
+this one that commits straight to `main`, once per session before asking for the last commit signal.
 [wrap-up-backlog](./tools/agents/config/skills/wrap-up-backlog/SKILL.md) does the same for the
 tracker's open tickets, and merge-and-verify runs it once its proven report is posted. Neither
 changes anything itself: whoever runs it acts on the list.

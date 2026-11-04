@@ -30,14 +30,17 @@ and conclusions.
 ## 1. Learn the batch
 
 Read the instruction files that govern the batch's repos first. Claude Code loads `CLAUDE.md` and
-`CLAUDE.local.md` at launch only from a session's working directory and the folders above it. A
-repo's files below your working directory load only once you read, write or edit a file in that
-repo. A repo outside it never loads them, and one added with `--add-dir` does only when set to. A
-subagent starts with only what your session had loaded. So for each repo in the batch, read those
-files in the repo and in each folder between it and your working directory before you brief anyone.
-They often hold rules the work depends on, such as which account or configuration reaches which
-environment. Name the files, and the rules from them that apply, in the brief of every subagent that
-touches that repo.
+`CLAUDE.local.md` at launch only from a session's working directory and the folders above it. A file
+in a folder below your working directory loads once you read, write or edit a file in that folder.
+One outside your working directory does not load, unless its folder was added with `--add-dir` while
+`CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` is set
+([memory docs](https://code.claude.com/docs/en/memory), read 2026-11-04). A subagent gets the files
+loaded at launch and does not see the files your session has read, and the built-in Explore and Plan
+agents get none ([subagent docs](https://code.claude.com/docs/en/sub-agents), read 2026-11-04). So
+for each repo in the batch, read those files in the repo and in each folder between it and your
+working directory before you brief anyone. They often hold rules the work depends on, such as which
+account or configuration reaches which environment. Name the files, and the rules from them that
+apply, in the brief of every subagent that touches that repo.
 
 Read every ticket and PR in the batch, with their comments. For each PR, find what it waits on:
 a failing check, a review, another PR that has to merge first, or a deploy.
@@ -206,7 +209,7 @@ confusing report, comes before the next work item. Resolve it with the user befo
   section lists, the merge itself included. Start it with the `use-rex` launcher and the prompt
   `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its backlog list
   and cleanup offer are answered, or once the user has answered a report it held back; the PR's row
-  leaves the table then too.
+  leaves the table then too, and any work the user's answer leaves joins as its own row.
   Name the environment in the prompt when the repo deploys to more than one. A permission prompt,
   such as the merge gate's, is answered by the user in that tab. A question or a wording to
   approve, such as a backlog change it lists or a report it held back, is relayed as any worker's
@@ -226,13 +229,12 @@ confusing report, comes before the next work item. Resolve it with the user befo
 
 ## 5. Report
 
-Whenever something changes or needs the user, show the status table. It lists every unfinished
-work item in priority order, with the same columns as the first table. A row leaves once its item
-is merged, serving and its proof report is posted, or once the user has answered a report its
-merge tab held back. A row joins when an issue comes up or a work
-item has to be inserted, such as a failing deploy or a fix to how the batch is run. Build each
-table from reads made for that reply, not from earlier ones, since a PR that was clean an hour ago
-may now conflict with something that merged.
+Whenever something changes or needs the user, show the status table. It lists every unfinished work
+item in priority order, with the same columns as the first table. A PR's row leaves when its
+`merge-and-verify` tab closes, as section 4 says, and any other row once its item is done. A row
+joins when an issue comes up or a work item has to be inserted, such as a failing deploy or a fix to
+how the batch is run. Build each table from reads made for that reply, not from earlier ones, since
+a PR that was clean an hour ago may now conflict with something that merged.
 
 End the reply with one numbered list of what you need from the user, about the top item in the
 order and nothing below it. The table shows the rest, and that is enough. A

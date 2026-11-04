@@ -37,8 +37,8 @@ read it, then read each item's ticket, PRs and branch again. In your first reply
 where the plan disagrees with what you read. The tracker wins: update the plan to match.
 
 Read the instruction files (`CLAUDE.md`, `AGENTS.md`) of every repo the goal touches. Claude Code
-loads them only from the folder a session starts in and the folders above it, so the others have to
-be read explicitly.
+loads them at launch only from the folder a session starts in and the folders above it, so the
+others have to be read explicitly.
 
 ## Every reply
 
