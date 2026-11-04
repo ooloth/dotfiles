@@ -112,11 +112,12 @@ approves the one-line comment it posts linking the new PR on its ticket, and not
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
 cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and
-acting in the same turn makes the question rhetorical and bypasses the gate. There are two
+acting in the same turn makes the question rhetorical and bypasses the gate. There are three
 exceptions. One is an action my latest message explicitly approved that none of your questions are
-about: do it in the same turn, and say that you did. The other is applying the fixes
-`wrap-up-codebase` returns in the same turn as its questions, which the side-effects paragraph
-above allows.
+about: do it in the same turn, and say that you did. Another is applying the fixes
+`wrap-up-codebase` returns in the same turn as its questions, and committing them inside "Working
+Through to a Draft PR", which the side-effects paragraph above allows. The third is the one-line
+comment `create-pr` posts linking the new PR on its ticket, which that paragraph also allows.
 
 **Number every question the user has to answer.** When a response asks the user for decisions or
 answers, list them as a numbered list (1., 2., 3.), never as bullets, so the user can reply by
@@ -496,7 +497,8 @@ X". The signal is only for what already exists. X ends up uncommitted, and you t
 `commit`. If you are unsure whether a signal covers something, it does not. Say what is in the tree
 and ask.
 
-**Every commit goes through `/commit`. Never run `git commit` from Bash directly.**
+**Every commit goes through `/commit`. Never run `git commit` from Bash directly.** Push the default
+branch only when I ask.
 
 ## Working Through to a Draft PR
 
@@ -519,7 +521,8 @@ without stopping for me in between:
 **These stop the loop wherever they come up, and wait for my approval:**
 
 - Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills, standards,
-  `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`
+  `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`, and a repo's own
+  `docs/invariants/`, `docs/standards/` and `docs/decisions/`
 - Posting anything that notifies other people, such as a comment, a review, a request for reviewers
   or marking the PR ready. Opening the draft PR, and the one-line comment linking it on its ticket,
   are the exceptions.
