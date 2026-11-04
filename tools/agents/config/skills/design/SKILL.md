@@ -58,8 +58,10 @@ First, state the properties the design is scored against. Where `/discuss` produ
 properties list, carry it forward and translate each into what it demands of the types. Do not
 re-derive it. Where none exists, derive it here from what the code will actually do, and name what
 observes each property that binds: a type, a test, an assertion, a check against recorded state, or
-a measurement that already exists. A property nothing observes is a gap for Phase 5 to close or to
-escalate, never one carried forward on trust.
+a measurement that already exists. A check that already runs, such as a lint, a test, a CI step or
+a type, is that observer. New code whose only job is to observe a property is justified only when
+no running check would fail on that property's breach. A property nothing observes is a gap for
+Phase 5 to close or to escalate, never one carried forward on trust.
 
 When the slice is one of several on a ticket or approach, the list also carries every property that
 governs the whole of that work, not only the ones this slice adds: a "nothing changes for existing
@@ -81,16 +83,35 @@ exception or in `docs/standards/` when it has one, so whoever writes the code th
 reads the rule before the check fails. Where the project has neither folder, creating one is an
 open decision.
 
-Then sketch 2–3 meaningfully different type progressions for the same feature. For each, state:
-- The shape of the progression (a one-line summary of the type structure)
+Before any alternative, name the smallest change that delivers every carried property, and score
+it first. Each alternative is that change plus something, and the addition has to deliver a carried
+property the smallest change fails. A property this phase adds to the carried list does not count
+for that until the user accepts it: list it under Open decisions with the option it would favour,
+and score the options without it. A property whose content is that this change is guarded against
+being undone later, such as "a test fails if someone removes the flag", is never added, because
+every change could claim one and the checks that already run are what notice a later edit.
+
+The type story is required when that smallest change adds or changes a type or a function
+signature. Where it does neither, such as a change to configuration or data, there is no
+progression to design: the alternatives below compare the concrete changes instead, Phase 3 is
+skipped, and the Types section says in one line that the slice adds no types and why, the same way
+a test plan can be empty. A type or function an alternative introduces does not make the story
+required; it is the addition that alternative has to justify.
+
+Then sketch 2–3 meaningfully different type progressions for the same feature, or concrete changes
+where the slice adds no types. For each, state:
+- The shape of the progression (a one-line summary of the type structure), or the change itself
 - How it scores against each target property, and which properties it fails to deliver
+- What it leaves behind: the new functions, types, files, concepts or rules a maintainer keeps in
+  mind
 - Its main tradeoff
 
 Then recommend one, naming the property that decides it. The effort to build an option is a
 constraint, never a merit: "less refactoring" and "a smaller diff" name a one-time cost and never
 why it wins. The types, concepts and moving parts an option leaves behind are different: a
-maintainer lives with them, so they are weighed as a cost against what the option delivers. Only
-carry the recommended design forward.
+maintainer lives with them, so they are scored as a cost against what the option delivers, and a
+mechanism earns its place only through a property it delivers. Only carry the recommended design
+forward.
 
 ### Phase 3: Design the Type Story
 
@@ -244,7 +265,9 @@ behaviour behind it is a candidate for heavier coverage, since production will n
 
 A cross-cutting property gets a check over every instance in the codebase, not only a test of this
 slice's transformations, so that a violation in code this slice never touched fails it. The test
-plan names that check, what it enumerates, and the property it observes.
+plan names that check, what it enumerates, and the property it observes. Where a check that already
+runs covers every instance, such as a lint over the whole tree, the plan names that check and adds
+none.
 
 Before choosing paradigms, weigh what a failure of each behaviour would cost against what its tests
 would cost to keep. A behaviour whose failure shows itself at once and harms nothing beyond itself
@@ -303,10 +326,14 @@ sees how the change fits together to solve the problem:
    those rows, after the opening paragraph, introduced by one line saying the approach's properties
    still apply. A column or `(P5)` that the ticket defines nowhere leaves its reader unable to tell
    what it means.
-3. `## Types 🧬`
+3. `## Types 🧬`. When the slice adds or changes no type or function signature, this section opens
+   with one line saying so and why, the options table below compares the concrete changes as
+   **Changes considered**, and there is no Progression.
    - **Progressions considered:** the two or three from Phase 2 as an options table: `Option`, then
-     one column per property they were scored on. The chosen one is the first row, in bold,
-     starting with 🏆 and ending in "(chosen)". Every cell is ✅ or ❌.
+     one column per property they were scored on, then `Leaves behind`. The chosen one is the first
+     row, in bold, starting with 🏆 and ending in "(chosen)". Every cell is ✅ or ❌. A
+     `Leaves behind` cell is ✅ when the option adds nothing a maintainer keeps in mind that a
+     property does not need, and otherwise ❌ followed by what it adds.
    - **Decided by …:** why the chosen progression beat each of the others.
    - **Progression:** the chosen type story as a code block, with a domain-named type at each stage
      and the transformation between them. Then a list of what each step rules out, each ending with
@@ -316,13 +343,14 @@ sees how the change fits together to solve the problem:
    for what only a bug can break, a recorded-signal check for what spans runs or processes), and
    why the types can't rule it out. A legitimate outcome, such as no match, is not invalid input. A
    recorded-signal check also gets four labelled lines: *Invariant*, *Record*, *Check* and *A firing
-   means*.
+   means*. When nothing needs a runtime check, the section is one line saying why.
 5. `## Telemetry 📡`: one line saying why nothing needs recording, or a list of the questions the
    running system cannot answer, each with what to record.
 6. `## Tests 🧪`: open with one sentence on what neither the types nor the assertions cover, which is
    why these need tests. Then a table with columns `Expectation` (one claim per row), `Property` and
    `Technique`, and after it one line per technique used, saying why it fits the behaviour it tests.
-   Setup and how each test is run are left to the implementer.
+   Setup and how each test is run are left to the implementer. When the test plan is empty, the
+   section is one line saying why.
 7. `## Recorded rules 📜`, only when Phase 2 found a cross-cutting property: for each one, the file
    in `docs/invariants/` or `docs/standards/` its entry goes in, and the entry's exact wording.
    Approving the design approves that wording, so the implementer writes it without stopping.
@@ -335,8 +363,9 @@ picture is clear. Every section answers why, not only what: why this progression
 why each assertion can't be a type, why each behaviour needs a test, and why that technique. A
 reader shown only the conclusions can't check the decision. The opening paragraph says how the
 pieces fit, not what each file changes. A Technique cell names the technique and nothing else, and
-the reasons under the table say why it fits the behaviour, never how a test is set up. Nothing
-appears outside the sections above.
+the reasons under the table say why it fits the behaviour, never how a test is set up. A section
+with nothing to say is one line saying so, so the design's length follows the size of the change.
+Nothing appears outside the sections above.
 
 In the terminal, follow it with `## Open decisions ❓`: naming or structural choices the user should
 weigh in on before implementation, including any mechanism Phase 5 found this slice does not own.

@@ -83,10 +83,12 @@ cost.
    as an observable property, and say which bind and which do not.
 
    Observable means something observes it. For each property that binds, name what does: a type, a
-   test, an assertion, a check against recorded state, or a measurement that already exists. Where
-   nothing does, taking that measurement is part of the work rather than an assumption carried past
-   this point. A property nobody can observe is an intention, and every option below is scored
-   against this list.
+   test, an assertion, a check against recorded state, or a measurement that already exists. A
+   check that already runs, such as a lint, a test, a CI step or a type, counts as that observer.
+   New code whose only job is to observe a property is justified only when no running check would
+   fail on that property's breach. Where nothing observes it, taking that measurement is part of
+   the work rather than an assumption carried past this point. A property nobody can observe is an
+   intention, and every option below is scored against this list.
 
    Some properties can be observed only in production: which callers rely on a behavior, what old
    data looks like when it is read, how often a path runs. Where a binding property is one of these
@@ -118,7 +120,9 @@ cost.
    ticket never asked about.
 
    An observer counts only if it covers every place the property could be broken, including code
-   added later. A property that only this work's code can break is covered by tests of that code.
+   added later. A check that runs on every change, such as a lint over the whole tree or a CI step,
+   covers code added later too, so it counts without new code beside it. A property that only this
+   work's code can break is covered by tests of that code.
    A property that code elsewhere can break, such as a rule every handler or every config file
    follows, is cross-cutting: its observer is a check over every instance, not a test of the
    instances this work creates. Mark each cross-cutting property as such. The project also records
@@ -138,21 +142,26 @@ cost.
    delivers.
 
 4. Score every option against every property in one table, options as rows and properties as
-   columns. Before accepting any tradeoff, state the theoretical maximums for safety, performance
-   and experience for the thing being decided, as `decision-making.md` defines them, and look for a
-   design that comes close to all three. First list the ways a bad design could go wrong or cause
-   harm, be slow, or be hard to use or change, in all three categories and not only the one the task
-   is about. Options
+   columns, plus one `Leaves behind` column for the new functions, types, files, concepts or rules
+   each option leaves a maintainer to keep in mind. That column is scored like any property, so a
+   mechanism earns its place only through a property it delivers. Before accepting any tradeoff,
+   state the theoretical maximums for safety, performance and experience for the thing being
+   decided, as `decision-making.md` defines them, and look for a design that comes close to all
+   three. First list the ways a bad design could go wrong or cause harm, be slow, or be hard to use
+   or change, in all three categories and not only the one the task is about. Options
    framed as points on one curve,
    such as "fast or correct" or "simple or safe", are the sign this step was skipped. A tradeoff
    that remains is accepted only where a physical fact forces it, or where reaching the maximum
    would cost more than the harm it prevents and the user agrees after seeing both. It names the
    fact or the cost.
 
-   If more than one option survives, the list is not finished. Zoom into each property every
-   survivor passes, and extend the list to moments and softer properties not yet covered, each
-   citing its source. Score again. An unknown cell is resolved before the option it belongs to is
-   kept or dropped. Recommend only what the table yields, and present the passes that got there.
+   If more than one option survives and they tie on every column, including `Leaves behind`, the
+   one with fewer moving parts wins. That is the zoom into `Leaves behind`, taken first because the
+   property easiest to add to the list is one the more elaborate option happens to have. Only when
+   they tie on that too is the list not finished. Zoom into each property every survivor passes,
+   and extend the list to moments and softer properties not yet covered, each citing its source.
+   Score again. An unknown cell is resolved before the option it belongs to is kept or dropped.
+   Recommend only what the table yields, and present the passes that got there.
 
 5. Flag reversibility for each significant decision:
    - **Two-way door** (easily reversible) — it may be taken earlier than a one-way door, but it is
@@ -215,9 +224,11 @@ sees what was chosen first and how it was chosen right after:
    observed about each into its wording rather than labelling it checked or unchecked.
 4. `## Constraints 🧱`: facts about the code or environment that limit which options can work. Only
    when there are some.
-5. `## Options ⚖️`: a table with `Option`, then one column per property (`P1`, `P2`, …) and nothing
-   else. The chosen option is the first row, in bold, starting with 🏆 and ending in "(chosen)".
-   Every cell is ✅ or ❌. Leave no cell unknown: settle it by running something.
+5. `## Options ⚖️`: a table with `Option`, then one column per property (`P1`, `P2`, …), then
+   `Leaves behind`, and nothing else. The chosen option is the first row, in bold, starting with 🏆
+   and ending in "(chosen)". Every cell is ✅ or ❌. A `Leaves behind` cell is ✅ when the option adds
+   nothing a maintainer keeps in mind that a property does not need, and otherwise ❌ followed by
+   what it adds. Leave no cell unknown: settle it by running something.
 6. `## Decided by 🧭`: one short paragraph reasoning through what separated the options still
    standing, including when they all score ✅.
 7. `## How it fits 🗺️`: a Mermaid diagram of the chosen approach, only when it shows the approach
@@ -239,7 +250,9 @@ line numbers and the dead ends, was for you, not them, and stays in this session
 once, in the plainest words that carry it, and stop when the decision is clear. A sentence that
 would not change what the reader understands, or what they would want to check, does not belong. The
 opening paragraph says what the approach does, not the evidence for it. A property says what must be
-true, not how it is checked or which files are involved. Nothing appears outside the sections above.
+true, not how it is checked or which files are involved. A section with nothing to say is one line
+saying so, or is left out where its item above says "only when", so the approach's length follows
+the size of the change. Nothing appears outside the sections above.
 
 When the work is on a ticket, the comment is the approach above without the open decisions and the
 approval request. Offer to post it, then post it once the user approves.

@@ -57,6 +57,21 @@ Don't reach for `tokio::spawn`, channels, or `Arc<Mutex<T>>` just because an asy
 runtime is present. Those introduce synchronization complexity. Use synchronous code
 when there is no concurrency benefit.
 
+**A test records what a stub was asked in a plain local that the stub's closure captures by
+`&mut`.**
+`let mut calls = Vec::new();` beside `|call| calls.push(call)` needs no shared ownership, and
+the test reads `calls` once the code under test returns. `Rc<RefCell<T>>` is the recorder only
+where a helper reused by several tests returns the stub, because a returned closure that borrows
+a local needs a lifetime annotation. `Arc<Mutex<T>>` is never a test recorder, since nothing in
+the test runs concurrently, and a `future_not_send` lint on an async test helper is answered by
+the plain local, not by making the recorder `Send`.
+
+**An empty result is asserted equal to a typed empty value.**
+`assert_eq!(hits, Vec::<Hit>::new())`, or `assert_eq!(text, "")`, prints what was found when it
+fails, where `assert!(hits.is_empty())` reports only that something was there. Clippy's
+`assert_is_empty` catches some of the second form and not all of it, so the rule holds by
+convention where the lint is silent.
+
 ## Consider
 
 **`assert!`, `unwrap()`, and `unreachable!()` are correct for invariant violations.**
