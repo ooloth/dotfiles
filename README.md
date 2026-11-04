@@ -53,11 +53,11 @@ to the whole backlog and lists what has gone stale.
 
 ### Reviewing
 
-[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs twelve specialised reviewers
-in parallel, then assumes they're wrong. Every claim about library behaviour, API guarantees or
-numbers is checked against the installed code before it reaches me, and a claim that fails is
-struck rather than softened. Findings are labelled introduced or pre-existing by reading the base
-ref, not by impression.
+[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs thirteen specialised reviewers
+in parallel, plus one that checks rule consistency when instruction files change, then assumes
+they're wrong. Every claim about library behaviour, API guarantees or numbers is checked against
+the installed code before it reaches me, and a claim that fails is struck rather than softened.
+Findings are labelled introduced or pre-existing by reading the base ref, not by impression.
 
 [review-converge](./tools/agents/config/skills/review-converge/SKILL.md) reviews and fixes in rounds
 until nothing auto-fixable is left, escalating only the decisions that need an author, and never

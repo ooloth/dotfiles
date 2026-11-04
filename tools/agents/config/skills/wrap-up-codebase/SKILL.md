@@ -90,8 +90,9 @@ depend on requirements or preferences; the fix would change a public interface, 
 contract; or it needs intent only the user has. Every finding in an agent instruction file is an
 ask, because editing one waits for the user's approval. An agent instruction file is any file the
 list under "These stop the loop" in the global `CLAUDE.md` names: `CLAUDE.md`, `AGENTS.md`,
-skills, standards, `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`,
-and a repo's own `docs/invariants/`, `docs/standards/` and `docs/decisions/`.
+skills, standards, subagent definitions, routines, `settings.json` and hooks, in any repo or under
+`~/.claude/` and `~/.agents/`, and a repo's own `docs/invariants/` (or `docs/guarantees/`),
+`docs/standards/` and `docs/decisions/`.
 Answer every analytical sub-question
 yourself, by reading or by a read-only query, so the ask is only the decision: never ask whether
 something is a bug. Each ask gives at least two lettered options with what each would do, and marks

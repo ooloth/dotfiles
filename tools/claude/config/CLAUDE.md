@@ -103,21 +103,20 @@ transfer to another: being approved to edit files does not mean you're also appr
 ticket comment about it, even in the same already-approved task — check separately. There are
 three exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and
 design also approves the commits, the push and the draft PR that section describes, the one-line
-comment linking that PR on its ticket, and applying the fixes `wrap-up-codebase` returns, on any
-branch, in the same turn as its questions. It approves nothing beyond them. Another is
-`merge-and-verify`, which only I start: invoking it approves the steps its "What invoking this
-skill approves" section lists, and nothing beyond them. The third is `create-pr`: invoking it
+comment linking that PR on its ticket, the invariant and standard entries whose exact wording the
+approved design shows, and applying the fixes `wrap-up-codebase` returns, on any branch, in the
+same turn as its questions. It approves nothing beyond them. Another is `merge-and-verify`, which
+only I start: invoking it approves the steps its "What invoking this skill approves" section lists,
+and nothing beyond them. The third is `create-pr`: invoking it
 approves the one-line comment it posts linking the new PR on its ticket, and nothing beyond that.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
 cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and
-acting in the same turn makes the question rhetorical and bypasses the gate. There are three
+acting in the same turn makes the question rhetorical and bypasses the gate. There are two
 exceptions. One is an action my latest message explicitly approved that none of your questions are
-about: do it in the same turn, and say that you did. Another is applying the fixes
-`wrap-up-codebase` returns in the same turn as its questions, and committing them inside "Working
-Through to a Draft PR", which the side-effects paragraph above allows. The third is the one-line
-comment `create-pr` posts linking the new PR on its ticket, which that paragraph also allows.
+about: do it in the same turn, and say that you did. The other is a side effect that one of the
+side-effects paragraph's exceptions above approves, when none of your questions are about it.
 
 **Number every question the user has to answer.** When a response asks the user for decisions or
 answers, list them as a numbered list (1., 2., 3.), never as bullets, so the user can reply by
@@ -521,8 +520,10 @@ without stopping for me in between:
 **These stop the loop wherever they come up, and wait for my approval:**
 
 - Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills, standards,
-  `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`, and a repo's own
-  `docs/invariants/`, `docs/standards/` and `docs/decisions/`
+  subagent definitions, routines, `settings.json` and hooks, in any repo or under `~/.claude/` and
+  `~/.agents/`, and a repo's own `docs/invariants/` (or `docs/guarantees/`), `docs/standards/` and
+  `docs/decisions/`. An entry in `docs/invariants/` or `docs/standards/` whose exact wording the
+  approved design shows is approved with the design.
 - Posting anything that notifies other people, such as a comment, a review, a request for reviewers
   or marking the PR ready. Opening the draft PR, and the one-line comment linking it on its ticket,
   are the exceptions.

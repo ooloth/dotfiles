@@ -197,9 +197,9 @@ that decision, naming the record, so the reader weighs the new argument against 
 
 ## Step 3: Launch the agents in parallel
 
-The thirteen agents below always run, and Agent 14 joins them when the diff touches an agent
-instruction file. You may add more in the same fan-out when this particular change raises a
-question none of these prompts ask.
+Agents 1 to 13 always run, and Agent 14 runs when the diff touches an agent instruction file.
+Together these are the standing agents. You may add more in the same fan-out when this particular
+change raises a question none of these prompts ask.
 
 The bar is a named question, not a topic. "Add a concurrency agent" is a topic. "Does the new
 retry path double-submit when the first attempt times out after the server committed?" is a
@@ -619,13 +619,13 @@ For each issue: file:line (outside the diff) | the thing the change added | what
 
 ### Agent 14: Rule Consistency
 
-Runs only when the diff touches an agent instruction file: `CLAUDE.md`, `AGENTS.md`, a skill, a
-standard, `settings.json` or a hook, in any repo or under `~/.claude/` and `~/.agents/`.
+Runs only when the diff touches an agent instruction file, which is any file the list under
+"These stop the loop" in the global `CLAUDE.md` names.
 
 ```
 Question: Across the agent instruction files this change edits and the ones they refer to, can an agent follow every rule at once, or do two rules conflict, overlap without saying which wins, or leave a situation none of them covers?
 
-**Answer rule by rule first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change edits no agent instruction file, say so in one sentence and stop.**
+**Answer rule by rule first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change edits no agent instruction file (any file the list under "These stop the loop" in the global `CLAUDE.md` names), say so in one sentence and stop.**
 
 Context:
 [insert synthesized intent block]
@@ -737,7 +737,8 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
 ### Agents
 
 - **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
-  errored or never ran, and why.]
+  errored or never ran, and why.] An Agent 14 not launched because the diff touches no agent
+  instruction file is listed as "not applicable", and does not count as never ran.
 
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
@@ -781,7 +782,8 @@ agent errored or never ran did not come back clean.]
 
 **Verdict mapping:**
 
-- **Approve** — no blockers; all remaining items are optional; every agent finished with a report
+- **Approve** — no blockers; all remaining items are optional; every agent Step 3 launched finished
+  with a report
   (when one errored or never ran, the verdict is Comment at most)
 - **Request Changes** — one or more `must` items
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
@@ -817,10 +819,12 @@ On any answer other than "skip":
     ```
 
     - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
-      the new head, with every standing agent that applies and any added ones over the whole PR
-      diff, as Step 3 always does.
+      the new head, with every standing agent that applies (Agent 14 applies when the full PR
+      diff touches an agent instruction file) and any added ones over the whole PR diff, as Step 3
+      always does.
     - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
-      standing agent that applies and any added ones. Give them the lines the script printed as
+      standing agent that applies (Agent 14 applies when the full PR diff touches an agent
+      instruction file) and any added ones. Give them the lines the script printed as
       the change to review, and the full PR diff for context. As Step 3 says, they get nothing
       from the drafted findings; in Step 3.5, drop any new finding that repeats a drafted one.
       Then do everything the next item lists as well.
