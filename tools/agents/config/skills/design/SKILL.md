@@ -323,6 +323,9 @@ sees how the change fits together to solve the problem:
    why these need tests. Then a table with columns `Expectation` (one claim per row), `Property` and
    `Technique`, and after it one line per technique used, saying why it fits the behaviour it tests.
    Setup and how each test is run are left to the implementer.
+7. `## Recorded rules 📜`, only when Phase 2 found a cross-cutting property: for each one, the file
+   in `docs/invariants/` or `docs/standards/` its entry goes in, and the entry's exact wording.
+   Approving the design approves that wording, so the implementer writes it without stopping.
 
 Write for someone who wants to see how the change fits together to solve the problem, so they can
 read the diff with that picture in mind. The story is the change itself: how input becomes outcome,

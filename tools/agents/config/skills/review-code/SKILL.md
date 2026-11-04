@@ -782,8 +782,8 @@ agent errored or never ran did not come back clean.]
 
 **Verdict mapping:**
 
-- **Approve** — no blockers; all remaining items are optional; every agent Step 3 launched finished
-  with a report
+- **Approve** — no blockers; all remaining items are optional; every agent Step 3 should have
+  launched finished with a report
   (when one errored or never ran, the verdict is Comment at most)
 - **Request Changes** — one or more `must` items
 - **Comment** — open questions or suggestions worth discussing, nothing blocking

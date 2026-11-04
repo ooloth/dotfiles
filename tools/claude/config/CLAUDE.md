@@ -103,12 +103,13 @@ transfer to another: being approved to edit files does not mean you're also appr
 ticket comment about it, even in the same already-approved task — check separately. There are
 three exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and
 design also approves the commits, the push and the draft PR that section describes, the one-line
-comment linking that PR on its ticket, the invariant and standard entries whose exact wording the
-approved design shows, and applying the fixes `wrap-up-codebase` returns, on any branch, in the
-same turn as its questions. It approves nothing beyond them. Another is `merge-and-verify`, which
-only I start: invoking it approves the steps its "What invoking this skill approves" section lists,
-and nothing beyond them. The third is `create-pr`: invoking it
-approves the one-line comment it posts linking the new PR on its ticket, and nothing beyond that.
+comment linking that PR on its ticket, each entry in a repo's own `docs/invariants/` (or
+`docs/guarantees/`) or `docs/standards/` whose exact wording the approved design shows, and
+applying the fixes `wrap-up-codebase` returns, on any branch, in the same turn as its questions. It
+approves nothing beyond them. Another is `merge-and-verify`, which only I start: invoking it
+approves the steps its "What invoking this skill approves" section lists, and nothing beyond them.
+The third is `create-pr`: invoking it approves the one-line comment it posts linking the new PR on
+its ticket, and nothing beyond that.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
@@ -447,7 +448,8 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
     the nearest equivalent it does have, or offer to create the folder. Read the existing files
     first and extend the closest match — a new theme file needs justification. Recording anything
     here is a commit-worthy change: it re-enters steps 4–9, and it edits agent instructions, so it
-    waits for my approval on any branch.
+    waits for my approval on any branch, unless the approved design already shows its exact
+    wording.
 
 12. When all changes are on the default branch, close the ticket if the work is on one and nothing
     has closed it already. Work that ships through a PR reaches the default branch only when the PR
@@ -522,8 +524,8 @@ without stopping for me in between:
 - Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills, standards,
   subagent definitions, routines, `settings.json` and hooks, in any repo or under `~/.claude/` and
   `~/.agents/`, and a repo's own `docs/invariants/` (or `docs/guarantees/`), `docs/standards/` and
-  `docs/decisions/`. An entry in `docs/invariants/` or `docs/standards/` whose exact wording the
-  approved design shows is approved with the design.
+  `docs/decisions/`. An entry in a repo's own `docs/invariants/` (or `docs/guarantees/`) or
+  `docs/standards/` whose exact wording the approved design shows is approved with the design.
 - Posting anything that notifies other people, such as a comment, a review, a request for reviewers
   or marking the PR ready. Opening the draft PR, and the one-line comment linking it on its ticket,
   are the exceptions.
