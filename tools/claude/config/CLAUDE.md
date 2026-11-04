@@ -456,7 +456,8 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
 
 12. When all changes are on the default branch, close the ticket if the work is on one and nothing
     has closed it already. Work that ships through a PR reaches the default branch only when the PR
-    merges.
+    merges. A PR that merges through `merge-and-verify` is the exception: that skill closes its
+    ticket, and only on a proven verdict.
 13. After closing, check whether related open tasks (or issues or tickets) need their descriptions
     updated — the approach may have changed, a prerequisite may now be satisfied, or the task may
     have become unnecessary

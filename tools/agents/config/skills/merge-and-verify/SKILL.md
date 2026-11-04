@@ -31,7 +31,9 @@ the trunk merge's commit (made by `git merge`) and a mechanical fix's commit (ma
 - **Merge through the gate** once it reports ready.
 - **Watch the rollout and run the proof.**
 - **Post the report and its PR link,** as "Posting the report" describes.
-- **Close the ticket** once every PR that names it has merged with a proven verdict on the ticket.
+- **Close the ticket** once every PR that names it has merged with a proven verdict on the ticket,
+  and the production watch, if this skill offers one, is declined or ends "The time is up" with no
+  new warning or error.
 - **Find what the backlog needs,** as "Updating the backlog" describes. Its changes wait for the
   user's approval.
 
@@ -214,7 +216,8 @@ cookies, bearer headers, signed URLs) and for references to the local evidence f
 you find, and say so in the post.
 
 Every post this skill makes gets the next check, judged by that post's own destination: the
-report, the PR link, the closing comment and the watch's summary. When the destination is public,
+report, the PR link, the closing comment, the watch's summary and each backlog change the user
+approves. When the destination is public,
 such as an issue or PR in a repo whose `gh repo view <owner>/<repo> --json visibility` says
 `PUBLIC`, check the post for private values. Search it for each `PRIVATE_*` value in the dotfiles
 repo's ignored `private.env` (`~/Repos/ooloth/dotfiles/private.env`), and for each value in the
@@ -233,10 +236,11 @@ Screenshots and recordings are not uploaded, and the posted report does not name
 paths. It describes what each one shows.
 
 Then list every PR that names the ticket, and whether each has merged and has a proven verdict on
-the ticket. Only when all have, close the ticket, saying in the closing comment which PRs finished
-it.
-While a watch is running, close it only once the watch ends "The time is up" with no new warning
-or error and its summary is posted.
+the ticket. Only when all have can the ticket close, with a closing comment saying which PRs
+finished it. When this run offers a production watch, the ticket waits for the user's answer to
+that offer: it closes once they decline it, or once the watch ends "The time is up" with no new
+warning or error and its summary is posted. When no watch is offered, because nothing deploys,
+it closes now.
 
 ## Updating the backlog
 

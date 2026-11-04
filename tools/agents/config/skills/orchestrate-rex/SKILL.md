@@ -114,8 +114,9 @@ confusing report, comes before the next work item. Resolve it with the user befo
   send is one line telling the worker to read that file and follow it. Never answer a worker's
   question yourself. The user's settings allow commits, pushes, `gh pr comment`, Jira comments and
   the `create-pr` skill, because the auto-mode classifier can't see an approval given in another
-  session and would block them. Opening a PR with `gh` directly, `gh issue comment` and Linear
-  comments are not on the list. A
+  session and would block them. Opening a PR with `gh` directly, `gh issue comment`, `gh issue
+  close` and Linear comments are not on the list, so a `merge-and-verify` tab that posts its
+  report on a GitHub issue, or closes one, can be blocked there. A
   rule only reaches sessions started after it was added, so restart a running worker with
   `claude --continue` to pick one up. If an approved action is still blocked, tell the user exactly
   what to type in the worker's tab, and don't retry it yourself. A question from the worker of a
@@ -136,12 +137,16 @@ confusing report, comes before the next work item. Resolve it with the user befo
   destination forces, such as moving code out of bold for Jira, and you show the user each one.
   Never condense, reorder or restyle it. When you draft one yourself, invoke its skill first and
   follow it, as a worker would.
-- **Review before a PR opens:** after a worker pushes a draft PR, and before it is marked ready or
-  anyone is asked to review it, review it with review-code. Create a detached worktree at the PR's
-  head (`git worktree add --detach "$(mktemp -d)/review-<n>" <head-sha>`) and open a new tab there
+- **Review before a PR is marked ready:** after a worker pushes a draft PR, and before it is marked
+  ready or anyone is asked to review it, review it with review-code. The worker's global
+  instructions also tell it to start this review itself, so first read the worker's pane and its
+  session's tabs: if a `PR <n> (<author>): review-code` tab already exists, use that one and open
+  no second. Otherwise create a detached worktree at the PR's head
+  (`git worktree add --detach "$(mktemp -d)/review-<n>" <head-sha>`) and open a new tab there
   named `PR <n> (<author>): review-code`, started with the `use-rex` launcher, with a prompt that
   says:
-  - This is the author's own review before the PR opens, and no teammate will see the report. So
+  - This is the author's own review before the PR is marked ready, and no teammate will see the
+    report. So
     every finding is something to fix before opening, or a question for the user. Don't grade
     findings as optional for a later reviewer, and don't suggest leaving one for the team review.
   - Show the full report in this tab, and also write the same report to a file you name.
@@ -195,9 +200,9 @@ confusing report, comes before the next work item. Resolve it with the user befo
   worktree. Open the tab only after the user approves this PR's merge in your session, and quote
   that approval in your report. An agreed merge order is not that approval, and neither is an
   instruction given ahead of time, such as "merge #10 and #11 in that order once they're
-  approved": ask for each PR when its turn comes, because the tab's
-  prompt counts as the user starting `merge-and-verify`, which approves posting its report and
-  closing the ticket. Start it with the `use-rex` launcher and the prompt
+  approved": ask for each PR when its turn comes, because the tab's prompt counts as the user
+  starting `merge-and-verify`, which approves every step its "What invoking this skill approves"
+  section lists, the merge itself included. Start it with the `use-rex` launcher and the prompt
   `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its backlog list
   and cleanup offer are answered, or once the user has answered a report it held back; the PR's row
   leaves the table then too.
@@ -259,7 +264,8 @@ nested bullet with a letter (`280-1a`, `280-1b`). Questions refer to these label
 
 ## 6. Finish
 
-The batch is done when every PR is merged and verified in dev and every ticket is updated. Then
+The batch is done when every PR is merged and verified in the environment its `merge-and-verify`
+tab named, and every ticket is updated. Then
 tell the user what caused friction during the run, so this skill can improve.
 
 When the user ends the day before the batch is done, hand it off, so a new orchestrator can pick
