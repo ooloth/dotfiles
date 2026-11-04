@@ -75,12 +75,17 @@ convention where the lint is silent. A type without `PartialEq` and `Debug` keep
 
 **Code that branches on an `Option`, a `Result` or an enum uses `match`.**
 A `match` names every case, in order, and the compiler checks that none is missing.
-`map_or` and `map_or_else` hide the two branches in closures with the default first, and a chain
-of `if let … else` hides which cases it leaves out. Combinators that take a single path, such as
-`map`, `and_then`, `unwrap_or`, `is_some_and` and `?`, are not branching and stay. Clippy's
-`option_if_let_else` and `map_unwrap_or` push the other way, so a project that holds this rule
-allows those two and lists `map_or` and `map_or_else` under `disallowed-methods` in
-`clippy.toml`, which makes the rule a lint.
+`map_or` and `map_or_else` hide the two branches in closures with the default case passed first,
+`.map(f).unwrap_or(d)` hides them the same way, and a chain of `if let … else` hides which cases
+it leaves out. Combinators that take a single path, such as `map`, `and_then`, `unwrap_or`,
+`is_some_and` and `?`, are not branching when used alone and stay. Clippy's `option_if_let_else`
+and `single_match_else` push the other way, so a project that holds this rule allows those two and
+lists `map_or` and `map_or_else` under `disallowed-methods` in `clippy.toml`. It keeps
+`map_unwrap_or` on, because that lint flags `.map(f).unwrap_or(d)`, and the `map_or` it suggests
+is then refused with the reason to write a `match`. `clippy --fix` applies that suggestion, so a
+`map_or` it writes is rewritten as a `match` by hand. `.map(f).unwrap_or_default()` has the same
+shape and no lint flags it, and with `option_if_let_else` allowed nothing flags an `if let … else`
+chain either, so both hold by convention.
 
 ## Consider
 
