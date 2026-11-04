@@ -20,7 +20,8 @@ needs it and that no tab for it is open. Working in my clone at ~/Repos/<owner>/
    open, or the tabs cannot be listed.
 
 It never calls gh and never pushes. It prints one JSON line: {"prepared": true, ...} with the tab's
-pane, or {"prepared": false, "step": ..., "error": ...} naming the step that failed.
+pane and the session it opened in, or {"prepared": false, "step": ..., "error": ...} naming the step
+that failed.
 
 Exit status: 0 prepared, 1 not prepared, 2 usage error.
 
@@ -62,6 +63,14 @@ class PrTarget:
 class Clone:
     path: Path
     remote: str
+
+
+@dataclass(frozen=True)
+class Tab:
+    """Where the launcher opened the tab: capture it with `rex capture -s <session> -b <pane>`."""
+
+    pane: str
+    session: str
 
 
 @dataclass(frozen=True)
@@ -242,24 +251,24 @@ def open_labels() -> list[str] | None:
     return labels
 
 
-def launch(clone: Clone, target: PrTarget, worktree: Worktree) -> str:
-    """Open the tab and return its pane, or clean up after a failed launch and raise."""
+def launch(clone: Clone, target: PrTarget, worktree: Worktree) -> Tab:
+    """Open the tab and return where it is, or clean up after a failed launch and raise."""
     result = subprocess.run(
         # --unattended is cc.bash's: auto mode on every machine, since nobody watches this session
         ["bash", str(LAUNCHER), target.label, str(worktree.path), "--unattended", target.prompt],
         capture_output=True,
         text=True,
     )
-    pane = None
+    tab = None
     if result.returncode == 0:
         try:
-            tab = json.loads(result.stdout)
-            if tab.get("window_id") and tab.get("block_ids"):
-                pane = tab["block_ids"][0]
+            opened = json.loads(result.stdout)
+            if opened.get("window_id") and opened.get("block_ids") and opened.get("session_id"):
+                tab = Tab(pane=opened["block_ids"][0], session=opened["session_id"])
         except (json.JSONDecodeError, AttributeError, TypeError):
-            pane = None
-    if pane:
-        return pane
+            tab = None
+    if tab:
+        return tab
 
     error = failure(result) or f"the launcher printed no tab: {result.stdout.strip()!r}"
     labels = open_labels()
@@ -292,11 +301,12 @@ def prepare(target: PrTarget) -> dict[str, object]:
     fetch_head(clone, target)
     pruned = prune_stale(clone, target)
     worktree = add_worktree(clone, target)
-    pane = launch(clone, target, worktree)
+    tab = launch(clone, target, worktree)
     return {
         "prepared": True,
         "tab": target.label,
-        "pane": pane,
+        "pane": tab.pane,
+        "session": tab.session,
         "worktree": str(worktree.path),
         "branch": worktree.branch,
         "removed": [str(path) for path in pruned.removed],

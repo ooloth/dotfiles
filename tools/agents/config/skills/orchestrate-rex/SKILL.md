@@ -180,9 +180,9 @@ confusing report, comes before the next work item. Resolve it with the user befo
   rather than committing from your session, so its checks don't block you and the user can watch.
 - **Side jobs:** a job for a ticket that runs a long time, or that the user may want to watch or
   approve, goes in a new tab in that ticket's session, opened with `-s` naming that session,
-  because the launcher otherwise puts it in `Workers`. You or that ticket's worker may open it. A
-  bounded question with one answer goes to a subagent instead. When you check a ticket, list its
-  session's tabs, so a tab a worker opened shows up in your table.
+  because the launcher otherwise puts it in the repository's `Workers (<repo>)` session. You or
+  that ticket's worker may open it. A bounded question with one answer goes to a subagent instead.
+  When you check a ticket, list its session's tabs, so a tab a worker opened shows up in your table.
 - **Tabs show the work in flight:** the user reads the sidebar as the list of what is happening.
   Name each worker tab `PR <number> (<author>): <skill>`: the PR, its author's login and the skill
   the tab runs, such as `PR 88 (ooloth): review-pr-comments-converge` or

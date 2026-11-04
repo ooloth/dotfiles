@@ -87,13 +87,18 @@ gets this machine's permission mode and the repo's related folders, as `cc` woul
 bash "$DOTFILES/tools/rex/claude-tab.bash" [-s <session>] '<tab name>' <directory> [claude arguments]
 ```
 
-The tab opens in the Rex session labelled `Workers` unless `-s` names another session. When no
-`Workers` session exists, the launcher creates one with this tab as its first window. The tab opens
+The tab opens in the session for its directory's repository, labelled `Workers (<repo>)`, where
+`<repo>` is the name the repository's `origin` remote ends in, so every checkout and worktree of a
+repository shares one session whatever its folder is called
+([decision 011](../../docs/decisions/011-claude-tabs-open-in-their-repositorys-rex-session.md)). A
+directory outside any repository, or a repository with no `origin`, uses `Workers`, and `-s` names
+another session instead. When the session doesn't exist, the launcher creates it with this tab as
+its first window. The tab opens
 without taking focus: Rex.app would keep showing its own tab anyway, and key bindings such as cmd+g
 would then act on the new tab out of sight, because they go to the server's focused pane. Rex's JSON
-for the new tab goes to stdout, with its pane at `.block_ids[0]`. Capture that pane with
-`rex capture -s Workers -b <pane>`, or with the session passed to `-s`, because Rex looks for a pane
-only in the caller's own session otherwise. Tab names start with a word, not an emoji. Agents start
+for the new tab goes to stdout, with its pane at `.block_ids[0]` and its session at `.session_id`.
+Capture that pane with `rex capture -s <session_id> -b <pane>`, because Rex looks for a pane only in
+the caller's own session otherwise. Tab names start with a word, not an emoji. Agents start
 every Claude tab this way, as the `use-rex` skill says, so no skill names a permission mode itself.
 A first Claude argument of `--unattended`, which `monitor-prs` and `orchestrate-rex` pass for the
 tabs they open, reaches `cc.bash`, which then starts the tab in auto mode on every machine. Tests:
