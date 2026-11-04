@@ -8,7 +8,10 @@ scripts open Claude tabs only with --unattended, and that only create-pr opens a
 
 A skill whose frontmatter is not valid YAML is silently dropped by strict
 loaders while lenient ones still load it, so the skill works in one harness
-and is absent from another.
+and is absent from another. A valid one can still lose text: in an unquoted
+value, a space before # starts a YAML comment, so a description such as
+"merge #305 when asked" reaches the skill listing as "merge". Each top-level
+value that parses shorter than it is written fails too.
 
 A skill that names a fixed path such as /tmp/changes.patch lets two agent
 sessions on one machine read and write the same file, so one session can
@@ -134,7 +137,45 @@ def frontmatter_problem(path: Path) -> str | None:
     if missing:
         return f"frontmatter is missing {', '.join(missing)}"
 
+    for cut in cut_values(parts[1], parsed):
+        dropped = cut.written[len(cut.kept) :].lstrip()
+        return (
+            f"{cut.key} loses {dropped!r}, because a space before # starts a YAML comment. "
+            "Remove the space or quote the value."
+        )
+
     return None
+
+
+@dataclass(frozen=True)
+class CutValue:
+    """A one-line value YAML kept only part of: `written` is the raw text, `kept` what parsed."""
+
+    key: str
+    written: str
+    kept: str
+
+
+# A top-level `key: value` line. Indented lines belong to a block or nested value.
+TOP_LEVEL_LINE = re.compile(r"^([A-Za-z][\w-]*):[ \t]+(\S.*?)[ \t]*$")
+
+
+def cut_values(block: str, parsed: dict[object, object]) -> list[CutValue]:
+    """Every top-level, unquoted string value that parses to a shorter start of its first line."""
+    cuts: list[CutValue] = []
+    for line in block.splitlines():
+        match = TOP_LEVEL_LINE.match(line)
+        if match is None:
+            continue
+        key, written = match.groups()
+        kept = parsed.get(key)
+        # Quoted and block values are reshaped on purpose, and non-strings (true, 3) are typed.
+        if written[0] in "'\"|>" or not isinstance(kept, str):
+            continue
+        # A value continued on indented lines parses longer than its first line, which is fine.
+        if len(kept) < len(written) and written.startswith(kept):
+            cuts.append(CutValue(key, written, kept))
+    return cuts
 
 
 def skill_files(skills_dir: Path) -> list[Path]:
@@ -258,7 +299,9 @@ def main() -> int:
         print(f"❌ {shown(path, skills_dir)}: {problem}")
 
     if failures:
-        print(f"\n{len(failures)} skill(s) have frontmatter a strict loader will reject.")
+        print(
+            f"\n{len(failures)} skill(s) have frontmatter a strict loader will reject or cut short."
+        )
     else:
         print("✅ All skill frontmatter parses")
 
