@@ -13,6 +13,8 @@ Run:
     tools/agents/config/skills/prove-it-works/scripts/test_capture_window.py
 """
 
+from __future__ import annotations
+
 import errno
 import importlib.util
 import json

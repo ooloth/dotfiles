@@ -25,7 +25,7 @@ in the way is the network blocking the download host, or a proxy that re-signs H
 certificate uv does not trust without `--system-certs`. Run this on the work laptop:
 
 ```sh
-UV_PYTHON_INSTALL_DIR=$(mktemp -d) uv python install 3.10 -v
+UV_PYTHON_INSTALL_DIR=$(mktemp -d) uv python install 3.11 -v
 ```
 
 It downloads a Python into a scratch directory without touching the installed ones. Look for which

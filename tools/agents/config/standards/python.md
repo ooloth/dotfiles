@@ -1,6 +1,6 @@
 # Python
 
-Python-specific invariants. Read alongside the general reference files.
+Python-specific standards. Read alongside the general reference files.
 
 ## Must
 

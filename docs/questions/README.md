@@ -8,7 +8,8 @@ status: active
 # Questions
 
 The sibling of `../decisions/`: the decisions not yet made. A directory listing of this folder is
-the full inventory — every filename asks its question plainly, so there's no separate index.
+the full inventory — every filename asks its question plainly, so there's no separate index. The
+one list kept here is the grouping for an active initiative, described at the end.
 
 New open decisions that a task needs are listed in that task's GitHub issue, not filed here. A file
 here is for a question with no task behind it, and only when the maintainer asks for one. The files
@@ -46,8 +47,8 @@ survive the deletion otherwise.
 
 ## Working on an active initiative
 
-When several open questions belong to one current push, not just isolated one-offs, group them
-under a heading naming that push's end state in one sentence, order them by what has to be
-answered first, and say for each what actually breaks if it's skipped — not just that work "can't
+When several open questions belong to one current push, not just isolated one-offs, group them in
+this file, under a heading naming that push's end state in one sentence, order them by what has to
+be answered first, and say for each what actually breaks if it's skipped — not just that work "can't
 start" or restating the topic. Leave anything not currently being pushed on as a flat, ungrouped
 list; expanding it before it's next is planning against a system that doesn't exist yet.

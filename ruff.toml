@@ -5,7 +5,8 @@
 line-length = 100
 target-version = "py311"
 
-# Archived skills are kept for reference and not maintained. ty.toml excludes the same directory.
+# Archived skills are kept for reference and not maintained. ty.toml excludes every @archive
+# folder, this one included.
 extend-exclude = ["tools/claude/config/@archive"]
 
 [lint]
