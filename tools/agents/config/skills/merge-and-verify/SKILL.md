@@ -21,6 +21,12 @@ the trunk merge's commit (made by `git merge`) and a mechanical fix's commit (ma
 
 - **Merge trunk into the PR's branch** (merge, never rebase) when "Trunk since the review" calls for
   it, run the project's checks and full test suite on the result, and push it.
+- **Bring a stacked PR up to date once its base merges.** When the PR was based on another PR's
+  branch and that PR squash-merged, GitHub retargets this one to trunk, and it usually conflicts,
+  because its branch still carries the base PR's commits. Merge trunk into it. Where a conflict is
+  the base PR's earlier text against its own squashed version, take trunk's side. Before pushing,
+  confirm the PR's diff against trunk is only its own change; anything else in it is a conflict
+  that needs a judgement about intent.
 - **Fix a check failure the trunk merge caused** when the fix is mechanical, such as formatting,
   import order or a lockfile resync, and push it.
 - **Wait for checks that are still running.** While the gate reports only waiting conditions
@@ -92,9 +98,17 @@ Before merging, report each check that takes judgement, with its result:
   each again now on that exact artifact (which token, which endpoint, which host). An observation
   of a neighbouring artifact, such as one environment's value in place of another's, is not
   evidence, however closely the two seem to match.
+- **The plan, for a change an infrastructure tool applies on merge,** such as Terraform: read the
+  plan for the exact head you are about to merge, and compare it resource by resource with the plan
+  the reviewers read and with the PR's description. Explain every difference before merging. A
+  difference nobody can explain is a live observation that no longer holds. A branch behind trunk
+  can plan trunk's newer infrastructure changes as reverts, so read the plan after trunk is merged
+  in. How to read the stack's plans and runs comes from the repo's docs.
 - **The repo's merge-time steps:** anything its docs say must happen before or after a merge, such
   as running a migration before the deploy reaches it.
-- **Timing:** whether another PR has to land first, or anything else makes now the wrong moment.
+- **Timing:** whether another PR has to land first, or anything else makes now the wrong moment. A
+  PR stacked on another merges only once the base PR's watch has ended in "Serving", since its own
+  plan or build is read against what the base left behind.
 
 When a check needs one of the steps under "Do these yourself", take it and carry on. Stop and say
 what would fix it only for a problem under "Stop and discuss". Where the claim's before state will
@@ -121,6 +135,11 @@ built from the merge commit or from a later trunk commit that contains it, as Gi
 the two says. A run's status, a pipeline's "success" or a health badge never counts. Name the
 artifact you read.
 
+A change an infrastructure tool applies builds no artifact. There, serving means that in every
+stack the merge touches, the apply run on the merge commit, or on a later trunk commit that
+contains it, finished, and the resources it changed match the plan read before merging, as direct
+queries of the live system show. Name each run and the queries.
+
 Each check reads the whole chain from scratch, so a check after a restart, a closed session or a
 missed check needs nothing remembered. Save each command's raw output in the evidence folder
 `prove-it-works` uses for the merge commit, `~/Repos/agents/prove-it-works/<owner>-<repo>/<merge
@@ -134,7 +153,8 @@ reports will arrive together.
 
 The watch ends in exactly one of these, and the report names which:
 
-- **Serving,** with the artifact and the compare that shows it contains the merge.
+- **Serving,** with the artifact and the compare that shows it contains the merge, or for an
+  infrastructure apply, the run and the live queries that show its resources match its plan.
 - **A stage failed,** naming the stage and quoting its output.
 - **A new revision failed to start while an older one still serves,** quoting its condition.
 - **Waiting on a person,** saying who and for what, such as an approval step or a manual migration.
