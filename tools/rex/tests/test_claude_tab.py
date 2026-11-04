@@ -290,6 +290,8 @@ class TabRequest(MachineTest):
 
 
 class WorkersSession(MachineTest):
+    """A directory outside any repository, as these tests use, opens in the plain Workers session."""
+
     def test_the_first_of_two_workers_sessions_gets_the_tab(self) -> None:
         sessions = json.dumps(
             {

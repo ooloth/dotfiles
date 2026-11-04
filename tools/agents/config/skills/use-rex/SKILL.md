@@ -40,8 +40,7 @@ a PR is already being handled. A tab that runs no skill names its activity in on
 as `investigate`, `lazygit` or `diff`.
 
 Tab names start with a word, never an emoji: `PR 123 (alice): review-code`, not
-`👀 PR 123 (alice): review-code`. They carry no hashes or IDs, except a short hash where two tabs
-would otherwise share a name.
+`👀 PR 123 (alice): review-code`.
 
 ## Gotchas
 

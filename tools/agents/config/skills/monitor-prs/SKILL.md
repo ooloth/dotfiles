@@ -128,8 +128,10 @@ where it stands (see Reporting). Then take each pull request to prepare in table
 
 - **Its tab is open:** prepare nothing. The tab is the record that this feedback is being prepared,
   and nothing else records it.
-- **3 prepared sessions are open,** counting the ones this check opened: prepare nothing, and list
-  the pull request above the table as waiting for a free tab.
+- **3 PR review tabs are open,** counting the ones this check opened: prepare nothing, and list the
+  pull request above the table as waiting for a free tab. A PR review tab is any open tab, in any
+  session, labelled `PR <number> (<login>): <skill>` where the skill's name starts with `review-`,
+  whoever opened it, because each one is a review I have to read.
 - **Otherwise,** prepare it with this skill's script, which works in my clone at
   `~/Repos/<owner>/<name>`. `<skill-base-dir>` is the "Base directory for this skill" shown at the
   top of this skill's content:
