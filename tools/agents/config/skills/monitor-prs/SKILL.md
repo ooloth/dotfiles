@@ -128,8 +128,10 @@ where it stands (see Reporting). Then take each pull request to prepare in table
 
 - **Its tab is open:** prepare nothing. The tab is the record that this feedback is being prepared,
   and nothing else records it.
-- **3 prepared sessions are open,** counting the ones this check opened: prepare nothing, and list
-  the pull request above the table as waiting for a free tab.
+- **3 PR review tabs are open,** counting the ones this check opened: prepare nothing, and list the
+  pull request above the table as waiting for a free tab. A PR review tab is any open tab, in any
+  session, labelled `PR <number> (<login>): <skill>` where the skill's name starts with `review-`,
+  whoever opened it, because each one is a review I have to read.
 - **Otherwise,** prepare it with this skill's script, which works in my clone at
   `~/Repos/<owner>/<name>`. `<skill-base-dir>` is the "Base directory for this skill" shown at the
   top of this skill's content:
@@ -144,12 +146,12 @@ where it stands (see Reporting). Then take each pull request to prepare in table
   under `<clone>/.claude/worktrees/`, and opens the tab. Its docstring has the full rules. It prints
   one JSON line:
 
-  - **`"prepared": true`:** the tab is open. Its pane is `.pane`, in the `Workers` session. Name
+  - **`"prepared": true`:** the tab is open. Its pane is `.pane`, in the session `.session`. Name
     each worktree in `.kept` above the table with its reason, since it holds work an earlier
-    session left. Then read the tab's screen with `rex capture -s Workers -b <pane>` until it shows
-    Claude Code at work or a question waiting for an answer, for up to about a minute. A session
-    that stops at a question, such as Claude Code asking whether to trust a folder it has not
-    opened before, waits there with nobody watching. When the screen shows one, say above the
+    session left. Then read the tab's screen with `rex capture -s <session> -b <pane>` until it
+    shows Claude Code at work or a question waiting for an answer, for up to about a minute. A
+    session that stops at a question, such as Claude Code asking whether to trust a folder it has
+    not opened before, waits there with nobody watching. When the screen shows one, say above the
     table that the pull request's tab is waiting for me, and quote the question. Never answer it:
     trusting a folder, or any other answer, is mine to give. When a minute passes with neither, say
     above the table that the tab's start is unconfirmed.

@@ -283,5 +283,53 @@ class Frontmatter(unittest.TestCase):
         self.assertIn("skill(s) have frontmatter a strict loader will reject", run.stdout)
 
 
+def frontmatter(*lines: str) -> dict[str, str | bytes]:
+    return {"example/SKILL.md": "---\n" + "\n".join(lines) + "\n---\n\nBody.\n"}
+
+
+class CutValues(unittest.TestCase):
+    """A space before # starts a YAML comment, so an unquoted value silently loses the rest."""
+
+    def test_a_description_cut_by_a_comment_fails_quoting_what_was_dropped(self) -> None:
+        run = run_checker(
+            frontmatter("name: example", "description: Merge one PR ('merge #305') and more")
+        )
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("example/SKILL.md: description loses", run.stdout)
+        self.assertIn("#305') and more", run.stdout)
+
+    def test_the_same_cut_in_another_key_fails(self) -> None:
+        run = run_checker(
+            frontmatter("name: example", "description: Fine.", "argument-hint: run #3 first")
+        )
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("argument-hint loses", run.stdout)
+        self.assertIn("#3 first", run.stdout)
+
+    def test_values_yaml_keeps_whole_pass(self) -> None:
+        for line in (
+            "description: merge example-app#305 when asked",
+            "description: 'see #12 for why'",
+            'description: "see #12 for why"',
+            "disable-model-invocation: true",
+        ):
+            with self.subTest(line=line):
+                lines = ("name: example", line)
+                if not line.startswith("description"):
+                    lines += ("description: Fine.",)
+                run = run_checker(frontmatter(*lines))
+                self.assertEqual(run.status, 0, run.stdout)
+
+    def test_a_plain_value_continued_on_the_next_line_passes(self) -> None:
+        run = run_checker(
+            frontmatter("name: example", "description: Starts here", "  and goes on.")
+        )
+        self.assertEqual(run.status, 0, run.stdout)
+
+    def test_a_block_value_with_a_hash_passes(self) -> None:
+        run = run_checker(frontmatter("name: example", "description: >-", "  see #12 for why"))
+        self.assertEqual(run.status, 0, run.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

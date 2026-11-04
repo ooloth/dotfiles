@@ -9,14 +9,15 @@ bash scripts/check.bash                       # from the repo root or a worktree
 The `check` alias runs the same thing from the main checkout, but it picks what to run from the
 folder's name, so it finds nothing in a worktree, and an agent's shell has no aliases. Expect it to
 pass. It runs five categories, fastest first, and stops at the first that fails. To
-run one on its own, run its script:
+run one on its own, run its script under `/bin/bash`, as `check` does, so a newer bash on `PATH`
+can't pass what CI's bash 3.2 fails:
 
 ```sh
-bash scripts/checks/formatting.bash           # ruff format
+/bin/bash scripts/checks/formatting.bash      # ruff format
 uv run scripts/checks/docs.py                 # Markdown prose wraps at 100 columns; see the script
-bash scripts/checks/types.bash                # ty
-bash scripts/checks/linting.bash              # ruff check, shellcheck, zsh utils, skills
-bash scripts/checks/tests.bash                # link.bash check mode alongside one pytest run of every test
+/bin/bash scripts/checks/types.bash           # ty
+/bin/bash scripts/checks/linting.bash         # ruff check, shellcheck, zsh utils, skills
+/bin/bash scripts/checks/tests.bash           # link.bash check mode alongside one pytest run of every test
 ```
 
 The tests run across every core with pytest-xdist and print the ten slowest, and `check` prints

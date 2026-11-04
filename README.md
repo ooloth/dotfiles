@@ -53,11 +53,11 @@ to the whole backlog and lists what has gone stale.
 
 ### Reviewing
 
-[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs twelve specialised reviewers
-in parallel, then assumes they're wrong. Every claim about library behaviour, API guarantees or
-numbers is checked against the installed code before it reaches me, and a claim that fails is
-struck rather than softened. Findings are labelled introduced or pre-existing by reading the base
-ref, not by impression.
+[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs thirteen specialised reviewers
+in parallel, plus one that checks rule consistency when instruction files change, then assumes
+they're wrong. Every claim about library behaviour, API guarantees or numbers is checked against
+the installed code before it reaches me, and a claim that fails is struck rather than softened.
+Findings are labelled introduced or pre-existing by reading the base ref, not by impression.
 
 [review-converge](./tools/agents/config/skills/review-converge/SKILL.md) reviews and fixes in rounds
 until nothing auto-fixable is left, escalating only the decisions that need an author, and never
@@ -80,11 +80,14 @@ shows: that comes from the app itself, as a terminal's text or a screenshot of o
 includes another app's.
 
 [merge-and-verify](./tools/agents/config/skills/merge-and-verify/SKILL.md) takes an approved PR
-through merge to proof of its effect without asking along the way. It reads the deploy chain from
-the repo's docs, counts the change as serving only when the live artifact's commit contains the
-merge, and checks every five minutes or so in a fresh turn until the watch reaches one of its named
-endings. Then it posts the proof on the ticket, closes the ticket once every PR for it has proof,
-and brings the rest of the backlog up to date with what shipped.
+through merge to proof of its effect. It starts when I ask to merge a PR, or runs only the verifying
+when I say I merged one. It reads the deploy chain from the
+repo's docs, counts the change as serving only when the live artifact's commit contains the merge,
+and checks every five minutes or so in a fresh turn until the watch reaches one of its named
+endings. When the proof proves the whole claim, it posts the proof on the ticket, closes the ticket
+once every PR for it has a proven verdict, and lists the backlog changes what shipped calls for,
+posting only the ones I approve. When the proof disproves or can't observe part of the claim, it
+posts nothing and shows me the draft.
 
 [monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so
 for the pull requests where it's my move, and says why, using the same rules
@@ -98,11 +101,11 @@ running review-pr-comments-converge, so its draft replies and fixes are waiting 
 repo that a change made untrue or that would mislead the next agent, and sorts each finding into a
 fix, a question for me or a dismissal. A cold reader given only the repo path orients itself from
 the entry points and reports whatever confused it or looked stale. It runs once before a draft PR
-opens, so its fixes merge with the code, and in a repo like this one that commits straight to
-`main`, once per session before asking for the last commit signal.
+opens, so its fixes merge with the code, and, on a default branch or on any branch of a repo like
+this one that commits straight to `main`, once per session before asking for the last commit signal.
 [wrap-up-backlog](./tools/agents/config/skills/wrap-up-backlog/SKILL.md) does the same for the
-tracker's open tickets, and merge-and-verify runs it once the change is serving. Neither changes
-anything itself: whoever runs it acts on the list.
+tracker's open tickets, and merge-and-verify runs it once its proven report is posted. Neither
+changes anything itself: whoever runs it acts on the list.
 
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session with both passes, asking
 the cold reader what it would do next and passing it only if it picks the right thing for the right

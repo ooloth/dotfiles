@@ -22,15 +22,25 @@ A tab nobody will watch work, such as one `monitor-prs` or `orchestrate-rex` ope
 `--unattended` as its first Claude argument, before the prompt. `cc.bash` then starts it in auto
 mode on every machine, never in bypass mode.
 
-The tab opens in the Rex session labelled `Workers` unless `-s` names another session. When no
-`Workers` session exists, the launcher creates one with this tab as its first window. The launcher
-prints Rex's JSON for the new tab, and `.block_ids[0]` is its pane. Rex looks for a pane only in
-your own session unless `-s` names another, so capture it with `rex capture -s Workers -b <pane>`,
-or with the session you passed to `-s`.
+The tab opens in the session for its directory's repository, labelled `Workers (<repo>)`, where
+`<repo>` is the name the repository's `origin` remote ends in, so every checkout and worktree of a
+repository shares one session whatever its folder is called. A directory outside any repository, or
+a repository with no `origin`, uses `Workers`, and `-s` names another session instead. When the
+session doesn't exist, the launcher creates it with this tab as its first window. The launcher
+prints Rex's JSON for the new tab: `.block_ids[0]` is its pane and `.session_id` its session. Rex
+looks for a pane only in your own session unless `-s` names another, so capture it with
+`rex capture -s <session_id> -b <pane>`.
+
+A tab's name says what is happening in it: `<subject> (<person>): <activity>`. The subject is what
+the tab works on, such as `PR 123`, `Issue 412` or `ENG-45`. The person is the login of whoever
+wrote the subject: the PR's or issue's author, or your user's login for a ticket with no PR yet.
+Leave out the parentheses when no person wrote it, as in `CI test-suite: investigate`. The activity
+is the skill the tab runs, such as `review-code`, so other skills can tell from the label alone that
+a PR is already being handled. A tab that runs no skill names its activity in one plain word, such
+as `investigate`, `lazygit` or `diff`.
 
 Tab names start with a word, never an emoji: `PR 123 (alice): review-code`, not
-`👀 PR 123 (alice): review-code`. A tab working on a PR names the PR's author's login in the
-parentheses, so the sidebar shows which tabs are the user's own PRs and which are other people's.
+`👀 PR 123 (alice): review-code`.
 
 ## Gotchas
 

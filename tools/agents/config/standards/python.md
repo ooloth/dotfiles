@@ -1,6 +1,6 @@
 # Python
 
-Python-specific invariants. Read alongside the general reference files.
+Python-specific standards. Read alongside the general reference files.
 
 ## Must
 
@@ -39,7 +39,10 @@ files, subprocess output, API responses) is turned into the `NewType`s, frozen
 dataclasses and unions the domain code uses, in one function per source.
 Nothing typed `Any`, a raw `dict` or an `argparse.Namespace` crosses into domain
 code. The parse checks every invariant the domain relies on, reports every
-problem it finds at once, and runs before any side effect. Structured data is
+problem it finds in the values it reads at once, and runs before anything acts
+on that data. A malformed flag that `argparse` cannot read at all, such as an
+unknown flag or one missing its value, may end the parse on its own; whether
+scripts move to a parse that reports those too is open in #248. Structured data is
 parsed with Pydantic wherever third-party packages can be installed, and code
 that runs before then parses it into the same domain types with the standard
 library. Command-line arguments are parsed by a library whose result the type

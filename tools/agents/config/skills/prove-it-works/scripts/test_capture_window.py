@@ -1,23 +1,28 @@
 """Black-box tests for capture_window.py.
 
-The script runs as a subprocess, never imported, so it stays a single file. A fake `osascript` on
-PATH prints a window list from a fixture file, and a fake `screencapture` records its arguments and
-writes an image (or fails, or writes nothing), so no test reads the real screen. That keeps every
-property checkable in CI, where there is no screen to capture.
+Most tests run the script as a subprocess. A fake `osascript` on PATH prints a window list from a
+fixture file, and a fake `screencapture` records its arguments and then writes an image, fails,
+hangs, writes nothing or an empty file, or races a file onto the output path, so no test reads the
+real screen and every property is checked without one.
 
-The timeout test is the exception: it loads the script in-process and shortens its timeout, because
-a subprocess would wait the full 30 seconds.
+Two tests load the script in-process instead: the hung-tool test, which shortens the timeout that
+a subprocess would wait out in full, and the hard-link test, which replaces `os.link`.
 
 Run:
   uv run --with pytest --with pytest-xdist --with hypothesis --with pydantic pytest \
     tools/agents/config/skills/prove-it-works/scripts/test_capture_window.py
 """
 
+from __future__ import annotations
+
+import errno
 import importlib.util
 import json
 import os
+import signal
 import subprocess
 import sys
+import time
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,6 +37,8 @@ SCRIPT = Path(__file__).with_name("capture_window.py")
 # The fakes name this interpreter in their shebang, so they run with PATH holding only the stubs.
 FAKE_OSASCRIPT = f"""#!{sys.executable}
 import os, sys, time
+if os.environ.get("FAKE_OSASCRIPT_RAN"):
+    open(os.environ["FAKE_OSASCRIPT_RAN"], "w").close()
 if os.environ.get("FAKE_OSASCRIPT_HANG"):
     time.sleep(60)
 if os.environ.get("FAKE_OSASCRIPT_FAIL"):
@@ -45,6 +52,8 @@ import json, os, sys, time
 with open(os.environ["FAKE_LOG"], "a") as log:
     log.write(json.dumps(sys.argv[1:]) + "\\n")
 mode = os.environ.get("FAKE_CAPTURE", "ok")
+if os.environ.get("FAKE_PID"):
+    open(os.environ["FAKE_PID"], "w").write(str(os.getpid()))
 if mode == "hang":
     time.sleep(60)
 if mode == "fail":
@@ -182,6 +191,28 @@ def test_a_name_inside_another_word_does_not_match(tmp_path: Path, stubs: Path) 
     assert "No on-screen window of fox" in result.stderr
 
 
+def test_an_exact_app_name_wins_over_a_longer_app_it_starts(tmp_path: Path, stubs: Path) -> None:
+    preview = Window(5, "Safari Technology Preview", "A preview page")
+    result = run(tmp_path, stubs, [preview, SAFARI], "--app", "Safari")
+    assert result.code == 0, result.output
+    assert result.captured_ids == ["-l139"]
+    assert "Technology Preview" not in result.output
+    assert "A preview page" not in result.output
+
+
+def test_a_name_that_starts_several_apps_captures_nothing_and_names_none(
+    tmp_path: Path, stubs: Path
+) -> None:
+    nightly = Window(5, "Rex Nightly", "A nightly tab")
+    result = run(tmp_path, stubs, [REX, nightly], "--app", "Rex")
+    assert result.code == 1
+    assert result.captures == []
+    assert "more than one app" in result.stderr
+    for text in ("Rex Beta", "Rex Nightly", "A nightly tab", "Agent scaling options"):
+        assert text not in result.output
+    assert "Traceback" not in result.stderr
+
+
 # Choosing one window
 
 
@@ -247,6 +278,25 @@ def test_a_hidden_title_on_the_apps_window_reports_screen_recording_even_when_ot
     assert "Screen Recording" in result.stderr
 
 
+def test_one_hidden_title_beside_a_visible_one_reports_screen_recording(
+    tmp_path: Path, stubs: Path
+) -> None:
+    windows = [Window(727, "Rex Beta", None), Window(728, "Rex Beta", "Another tab")]
+    result = run(tmp_path, stubs, windows, "--app", "Rex", "--title", "another")
+    assert result.code == 1
+    assert result.captures == []
+    assert "Screen Recording" in result.stderr
+
+
+def test_a_title_search_on_an_app_with_no_windows_says_the_app_has_none(
+    tmp_path: Path, stubs: Path
+) -> None:
+    result = run(tmp_path, stubs, [MESSAGES], "--app", "Rex", "--title", "x")
+    assert result.code == 1
+    assert "No on-screen window of Rex found" in result.stderr
+    assert "Traceback" not in result.stderr
+
+
 def test_a_window_id_picks_an_untitled_window_among_several(tmp_path: Path, stubs: Path) -> None:
     untitled = Window(137, "Safari", "")
     result = run(tmp_path, stubs, [untitled, SAFARI], "--app", "Safari", "--window-id", "137")
@@ -260,6 +310,9 @@ def test_a_window_id_of_another_apps_window_is_refused_without_naming_it(
     result = run(tmp_path, stubs, [REX, MESSAGES], "--app", "Rex", "--window-id", "620")
     assert result.code == 1
     assert result.captures == []
+    assert "has no on-screen window 620" in result.stderr
+    assert "727" in result.stderr
+    assert "Traceback" not in result.stderr
     assert "Messages" not in result.output
     assert "A private contact" not in result.output
 
@@ -328,9 +381,31 @@ def test_an_output_folder_that_cannot_be_created_exits_with_a_sentence(
 
 def test_an_output_path_that_is_not_a_png_is_refused(tmp_path: Path, stubs: Path) -> None:
     result = run(tmp_path, stubs, [REX], "--app", "Rex", out=tmp_path / "shot.jpg")
-    assert result.code != 0
+    assert result.code == 2
     assert result.captures == []
     assert ".png" in result.stderr
+    assert "Traceback" not in result.stderr
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root can write to a read-only folder")
+def test_a_read_only_output_folder_is_reported_before_any_tool_runs(
+    tmp_path: Path, stubs: Path
+) -> None:
+    folder = tmp_path / "evidence"
+    folder.mkdir()
+    folder.chmod(0o555)
+    ran = tmp_path / "osascript-ran"
+    try:
+        result = run(tmp_path, stubs, [REX], "--app", "Rex", FAKE_OSASCRIPT_RAN=str(ran))
+    finally:
+        folder.chmod(0o755)
+    assert result.code == 1
+    assert result.captures == []
+    assert not ran.exists()
+    assert "Choose an --out" in result.stderr
+    assert "Run this once more" not in result.stderr
+    assert "Traceback" not in result.stderr
+    assert sorted(folder.iterdir()) == []
 
 
 # Failures at the boundaries
@@ -341,6 +416,7 @@ def test_osascript_failing_exits_with_a_sentence(tmp_path: Path, stubs: Path) ->
     assert result.code == 1
     assert result.captures == []
     assert "Could not list windows" in result.stderr
+    assert "Run this once more" in result.stderr
     assert "Traceback" not in result.stderr
 
 
@@ -363,6 +439,7 @@ def test_a_missing_osascript_exits_with_a_sentence_naming_it(
     assert result.code == 1
     assert result.captures == []
     assert "osascript was not found" in result.stderr
+    assert "Run this once more" not in result.stderr
     assert "Traceback" not in result.stderr
 
 
@@ -372,6 +449,7 @@ def test_a_missing_screencapture_exits_with_a_sentence_naming_it(
     result = run(tmp_path, without_screencapture, [REX], "--app", "Rex")
     assert result.code == 1
     assert "screencapture was not found" in result.stderr
+    assert "Run this once more" not in result.stderr
     assert "Traceback" not in result.stderr
     assert sorted((tmp_path / "evidence").iterdir()) == []
 
@@ -381,6 +459,9 @@ def test_screencapture_failing_exits_with_a_sentence(tmp_path: Path, stubs: Path
     assert result.code == 1
     assert "could not create image from window" in result.stderr
     assert "727" in result.stderr
+    assert "Run this once more" in result.stderr
+    assert "Traceback" not in result.stderr
+    assert sorted((tmp_path / "evidence").iterdir()) == []
 
 
 def test_screencapture_succeeding_without_an_image_exits_with_a_sentence(
@@ -401,7 +482,7 @@ def test_a_zero_byte_capture_exits_with_a_sentence_and_leaves_no_file(
     assert sorted((tmp_path / "evidence").iterdir()) == []
 
 
-# Hung tools, in-process so the timeout can be shortened
+# In-process, so the timeout can be shortened and os.link replaced
 
 
 def load_script(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
@@ -431,11 +512,78 @@ def test_a_hung_tool_ends_in_a_sentence_once_the_timeout_passes(
     script = load_script(monkeypatch)
     monkeypatch.setattr(script, "TOOL_TIMEOUT_SECONDS", 1)
     request = script.parse_arguments(["--app", "Rex", "--out", str(tmp_path / "out" / "shot.png")])
+    started = time.monotonic()
     outcome = script.run(request)
+    assert time.monotonic() - started < 10
     assert isinstance(outcome, script.Failed)
     assert tool in outcome.message
     assert "did not finish within 1 seconds" in outcome.message
+    assert "Run this once more" in outcome.message
     assert sorted((tmp_path / "out").iterdir()) == []
+
+
+def test_a_folder_without_hard_links_is_reported_before_any_tool_runs(
+    tmp_path: Path, stubs: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ran = tmp_path / "osascript-ran"
+    listing = tmp_path / "windows.json"
+    listing.write_text(json.dumps([REX.__dict__]))
+    monkeypatch.setenv("PATH", str(stubs))
+    monkeypatch.setenv("FAKE_WINDOWS", str(listing))
+    monkeypatch.setenv("FAKE_LOG", str(tmp_path / "capture.log"))
+    monkeypatch.setenv("FAKE_OSASCRIPT_RAN", str(ran))
+    script = load_script(monkeypatch)
+
+    def refuse(*_: object) -> None:
+        raise OSError(errno.EPERM, "Operation not permitted")
+
+    monkeypatch.setattr(script.os, "link", refuse)
+    request = script.parse_arguments(["--app", "Rex", "--out", str(tmp_path / "out" / "shot.png")])
+    outcome = script.run(request)
+    assert isinstance(outcome, script.Failed)
+    assert "hard link" in outcome.message
+    assert "Choose an --out" in outcome.message
+    assert "Run this once more" not in outcome.message
+    assert not ran.exists()
+    assert sorted((tmp_path / "out").iterdir()) == []
+
+
+# Stop signals
+
+
+@pytest.mark.parametrize("signum", [signal.SIGTERM, signal.SIGHUP])
+def test_a_stop_signal_leaves_no_staging_folder_and_no_running_tool(
+    tmp_path: Path, stubs: Path, signum: signal.Signals
+) -> None:
+    listing = tmp_path / "windows.json"
+    listing.write_text(json.dumps([REX.__dict__]))
+    pid_file = tmp_path / "screencapture.pid"
+    evidence = tmp_path / "evidence"
+    process = subprocess.Popen(
+        [sys.executable, str(SCRIPT), "--app", "Rex", "--out", str(evidence / "shot.png")],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        env={
+            **os.environ,
+            "PATH": str(stubs),
+            "FAKE_WINDOWS": str(listing),
+            "FAKE_LOG": str(tmp_path / "capture.log"),
+            "FAKE_CAPTURE": "hang",
+            "FAKE_PID": str(pid_file),
+        },
+    )
+    deadline = time.monotonic() + 10
+    while not (pid_file.exists() and pid_file.read_text()) and time.monotonic() < deadline:
+        time.sleep(0.05)
+    child = int(pid_file.read_text())
+    process.send_signal(signum)
+    _, stderr = process.communicate(timeout=10)
+    assert process.returncode == 128 + signum, stderr
+    assert "Traceback" not in stderr
+    assert sorted(evidence.iterdir()) == []
+    with pytest.raises(ProcessLookupError):
+        os.kill(child, 0)
 
 
 # The command line
@@ -469,11 +617,34 @@ def test_missing_required_arguments_are_reported_together(stubs: Path) -> None:
     assert "--out is required" in result.stderr
 
 
+@pytest.mark.parametrize(
+    ("args", "problem"),
+    [
+        (["--title", " "], "pass --window-id instead"),
+        (["--window-id", "0"], "--window-id must be a positive whole number"),
+    ],
+)
+def test_a_blank_title_or_a_zero_window_id_is_refused(
+    stubs: Path, args: list[str], problem: str
+) -> None:
+    result = run_bare(stubs, "--app", "Rex", *args, "--out", "shot.png")
+    assert result.returncode == 2
+    assert problem in result.stderr
+    assert "Traceback" not in result.stderr
+
+
 def test_help_shows_the_whole_docstring(stubs: Path) -> None:
     result = run_bare(stubs, "--help")
     assert result.returncode == 0
     assert "Screen Recording" in result.stdout
     assert "this script cannot judge that" in result.stdout
+
+
+def test_help_shows_which_flags_are_required_and_which_exclude_each_other(stubs: Path) -> None:
+    result = run_bare(stubs, "--help")
+    usage = result.stdout.splitlines()[0]
+    assert "--app APP --out OUT" in usage
+    assert "[--title TITLE | --window-id WINDOW_ID]" in usage
 
 
 def test_a_capture_reports_the_window_it_captured(tmp_path: Path, stubs: Path) -> None:
@@ -493,25 +664,29 @@ NEAR_MISSES = ["Rexy", "Apex Rex", "SafariDriver", "Mailbox", "Brex"]
 
 
 @st.composite
-def screens(draw: st.DrawFn) -> tuple[str, list[Window], str | None]:
-    """An app to ask for, a window list mixing its windows with others, and an optional title.
+def screens(draw: st.DrawFn) -> tuple[str, list[Window], list[str]]:
+    """An app to ask for, a window list mixing its windows with others, and how to pick one.
 
-    Every window that must not match gets a sentinel owner or title, so finding the sentinel in
-    the output proves another app's window leaked.
+    Every window that must not be described gets a sentinel owner or a `leak-` title, so finding
+    the sentinel in the output proves another app's window leaked. A sibling app, whose name the
+    asked-for name starts, sits beside the app often, so the one-app rule is exercised.
     """
     app = draw(st.sampled_from(APPS))
     # Hidden titles end every run early, so they are drawn rarely, and short lists make a single
-    # candidate (the case that gets captured) common. "some" hides each window's title at random,
-    # as macOS does when the terminal's own windows show their titles and other apps' do not.
+    # candidate (the case that gets captured) common. "some" hides every other window's title, so a
+    # list with two of the app's windows mixes hidden and visible ones.
     hiding = draw(st.sampled_from(["none", "none", "none", "all", "some"]))
     count = draw(st.integers(min_value=0, max_value=4))
     windows: list[Window] = []
     for n in range(count):
-        hidden = hiding == "all" or (hiding == "some" and draw(st.booleans()))
-        kind = draw(st.sampled_from(["match", "other", "near"]))
+        hidden = hiding == "all" or (hiding == "some" and n % 2 == 0)
+        kind = draw(st.sampled_from(["match", "match", "sibling", "other", "near"]))
         if kind == "match":
             owner = draw(st.sampled_from([app, app.upper(), f"{app} Beta"]))
             title = None if hidden else draw(st.sampled_from(["", f"tab {n}", "Goals"]))
+        elif kind == "sibling":
+            owner = f"{app} Nightly"
+            title = None if hidden else f"leak-{n}"
         elif kind == "other":
             owner = f"Otherapp{n}"
             title = None if hidden else f"leak-{n}"
@@ -519,12 +694,29 @@ def screens(draw: st.DrawFn) -> tuple[str, list[Window], str | None]:
             owner = draw(st.sampled_from(NEAR_MISSES))
             title = None if hidden else f"leak-{n}"
         windows.append(Window(1000 + n, owner, title))
-    title = draw(st.sampled_from([None, "tab", "Goals", "leak"]))
-    return app, windows, title
+    pick = draw(st.sampled_from(["any", "title", "id"]))
+    if pick == "title":
+        args = ["--title", draw(st.sampled_from(["tab", "Goals", "leak"]))]
+    elif pick == "id":
+        ids = [w.id for w in windows] + [9999]
+        args = ["--window-id", str(draw(st.sampled_from(ids)))]
+    else:
+        args = []
+    return app, windows, args
 
 
-def matches(app: str, owner: str) -> bool:
-    return owner.casefold() == app.casefold() or owner.casefold().startswith(f"{app.casefold()} ")
+def the_apps_windows(app: str, windows: list[Window]) -> list[Window]:
+    """The windows the one-app rule gives `app`, written independently of the script.
+
+    An exact owner name wins. Otherwise owners that start with the name and a space count, but only
+    when they are all one app; several such apps give none.
+    """
+    name = app.casefold()
+    exact = [w for w in windows if w.owner.casefold() == name]
+    if exact:
+        return exact
+    longer = [w for w in windows if w.owner.casefold().startswith(f"{name} ")]
+    return longer if len({w.owner.casefold() for w in longer}) == 1 else []
 
 
 @settings(
@@ -534,17 +726,19 @@ def matches(app: str, owner: str) -> bool:
 def test_no_output_names_another_apps_window(
     tmp_path_factory: pytest.TempPathFactory, stubs: Path, screen: tuple
 ) -> None:
-    app, windows, title = screen
-    args = ["--app", app] + (["--title", title] if title else [])
-    result = run(tmp_path_factory.mktemp("case"), stubs, windows, *args)
+    app, windows, args = screen
+    result = run(tmp_path_factory.mktemp("case"), stubs, windows, "--app", app, *args)
     assert result.code in (0, 1), result.output
     assert "Traceback" not in result.stderr
+    mine = the_apps_windows(app, windows)
     for window in windows:
-        if not matches(app, window.owner):
-            if window.owner.startswith("Otherapp"):
-                assert window.owner not in result.output
-            if window.title:
-                assert window.title not in result.output
+        if window in mine:
+            continue
+        if window.owner.startswith("Otherapp") or window.owner.endswith("Nightly"):
+            assert window.owner not in result.output
+        assert f"window {window.id} " not in result.output
+        if window.title and window.title.startswith("leak"):
+            assert window.title not in result.output
 
 
 @settings(
@@ -554,16 +748,16 @@ def test_no_output_names_another_apps_window(
 def test_a_captured_window_always_belongs_to_the_app(
     tmp_path_factory: pytest.TempPathFactory, stubs: Path, screen: tuple
 ) -> None:
-    app, windows, title = screen
-    args = ["--app", app] + (["--title", title] if title else [])
-    result = run(tmp_path_factory.mktemp("case"), stubs, windows, *args)
+    app, windows, args = screen
+    result = run(tmp_path_factory.mktemp("case"), stubs, windows, "--app", app, *args)
     assert result.code in (0, 1), result.output
     assert "Traceback" not in result.stderr
+    mine = the_apps_windows(app, windows)
     by_id = {f"-l{w.id}": w for w in windows}
     for capture in result.captures:
-        assert matches(app, by_id[capture[2]].owner)
+        assert by_id[capture[2]] in mine
         assert capture[:2] == ["-o", "-x"]
-    if any(matches(app, w.owner) and w.title is None for w in windows):
+    if any(w.title is None for w in mine):
         assert result.captures == []
         assert "Screen Recording" in result.stderr
 
@@ -575,10 +769,9 @@ def test_a_captured_window_always_belongs_to_the_app(
 def test_no_run_leaves_anything_but_the_evidence_in_its_folder(
     tmp_path_factory: pytest.TempPathFactory, stubs: Path, screen: tuple, mode: str
 ) -> None:
-    app, windows, title = screen
-    args = ["--app", app] + (["--title", title] if title else [])
+    app, windows, args = screen
     root = tmp_path_factory.mktemp("case")
-    result = run(root, stubs, windows, *args, FAKE_CAPTURE=mode)
+    result = run(root, stubs, windows, "--app", app, *args, FAKE_CAPTURE=mode)
     assert "Traceback" not in result.stderr
     left = sorted(p.name for p in (root / "evidence").iterdir())
     assert left == (["shot.png"] if result.code == 0 else [])

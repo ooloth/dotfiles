@@ -23,7 +23,8 @@ import pytest
 
 SCRIPT = Path(__file__).with_name("prepare_feedback_session.py")
 
-WORKERS = '{"sessions":[{"session_id":"session:workers","label":"Workers"}]}'
+# The launcher puts a clone's tab in the session named after its origin remote, here widgets.git
+WORKERS = '{"sessions":[{"session_id":"session:workers","label":"Workers (widgets)"}]}'
 LABEL = "PR 5 (ooloth): review-pr-comments-converge"
 
 # `session list` prints $REX_SESSIONS, or fails when $REX_LIST_FAILS is set. `window ls` prints
@@ -189,6 +190,12 @@ def test_a_pr_gets_a_worktree_tracking_its_head_and_a_tab(machine: Machine) -> N
     [new] = [call for call in machine.rex_calls() if call[:2] == ["window", "new"]]
     assert LABEL in new
     assert new[-2:] == ["--unattended", "/review-pr-comments-converge octo/widgets#5"]
+
+
+def test_the_output_names_the_session_the_tab_opened_in(machine: Machine) -> None:
+    result = machine.prepare()
+    assert result.returncode == 0, result.stderr
+    assert output(result)["session"] == "session:workers"
 
 
 def test_the_main_checkout_is_left_on_its_branch(machine: Machine) -> None:

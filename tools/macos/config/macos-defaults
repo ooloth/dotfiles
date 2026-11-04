@@ -5,7 +5,7 @@
 echo "Quitting System Preferences..."
 osascript -e 'tell application "System Preferences" to quit'
 
-# Save screenshots in JPG format (other options: BMP, GIF, JPG, PDF, TIFF)
+# Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"
 
 # Finder: show status bar

@@ -29,7 +29,8 @@ How you gather the proof is yours to decide. What you return must meet this bar:
 - **A reader who wasn't there can check every observation.** Save each command's raw output as it
   runs, in a new folder under `~/Repos/agents/prove-it-works/<owner>-<repo>/<commit>/`, and name the
   exact artifact it observed (host, revision, image, token, file). Every quote in the report points
-  to the file it came from, and matches it exactly.
+  to the file it came from, and matches it exactly. For a change not committed yet, `<commit>` is
+  the short `HEAD` hash followed by `-uncommitted`.
 - **Before and after,** wherever a before state can be observed.
 - **Every attempt is shown,** including the ones that failed or cut against the claim.
 - **What an app shows is observed in the app itself,** never inferred from server or internal
@@ -39,9 +40,13 @@ How you gather the proof is yours to decide. What you return must meet this bar:
   in tmux, because text can be quoted exactly.
 - **Any other window is captured on its own, never the whole screen,** with
   `uv run <this skill's folder>/scripts/capture_window.py --app <name> --out <folder>/<name>.png`,
-  adding `--title` when the app has several windows. Window titles can hold private information,
-  so look up no other app's windows. What a browser shows can instead be a screenshot or recording
-  taken by the browser automation.
+  adding `--title` when the app has several windows, or `--window-id` with an ID a failure
+  message printed, to pick an untitled window or one of several with the same title. Window titles
+  can hold private information, so look up no other app's windows. The terminal it runs in needs
+  macOS's Screen Recording permission, and on a work laptop `uv` fetches its `pydantic` only after
+  `gcloud auth login --update-adc`, as `CONTRIBUTING.md` in the dotfiles repo describes. What a
+  browser shows can instead be a screenshot or recording taken by the browser automation. Those land
+  in `~/Library/Caches/playwright-mcp`, so copy each one cited into the evidence folder.
 - **Each screenshot is opened and checked before it is cited:** it shows the expected window, and
   nothing secret.
 - **Nothing secret appears** in the saved files or the report.

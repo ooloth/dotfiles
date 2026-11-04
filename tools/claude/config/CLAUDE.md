@@ -103,20 +103,24 @@ transfer to another: being approved to edit files does not mean you're also appr
 ticket comment about it, even in the same already-approved task — check separately. There are
 three exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and
 design also approves the commits, the push and the draft PR that section describes, the one-line
-comment linking that PR on its ticket, and applying the fixes `wrap-up-codebase` returns, on any
-branch, in the same turn as its questions. It approves nothing beyond them. Another is
-`merge-and-verify`, which only I start: invoking it approves the steps its "What invoking this
-skill approves" section lists, and nothing beyond them. The third is `create-pr`: invoking it
-approves the one-line comment it posts linking the new PR on its ticket, and nothing beyond that.
+comment linking that PR on its ticket, each entry in a repo's own `docs/invariants/` (or
+`docs/guarantees/`) or `docs/standards/` whose exact wording the approved design shows, and
+applying the fixes `wrap-up-codebase` returns, on any branch, in the same turn as its questions. It
+approves nothing beyond them. Another is `merge-and-verify`, which starts only on my own words: a
+typed `/merge-and-verify`, a message of mine asking to merge one PR or saying I merged one, or my
+approval of that PR's merge in an orchestrator's session. Its description lists what does not start
+it. Invoking it
+approves the steps its "What invoking this skill approves" section lists, and nothing beyond them.
+The third is `create-pr`: invoking it approves the one-line comment it posts linking the new PR on
+its ticket, and nothing beyond that.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response
 cannot also call Edit, Write, Bash (mutating), or any other tool that changes state. Asking and
 acting in the same turn makes the question rhetorical and bypasses the gate. There are two
 exceptions. One is an action my latest message explicitly approved that none of your questions are
-about: do it in the same turn, and say that you did. The other is applying the fixes
-`wrap-up-codebase` returns in the same turn as its questions, which the side-effects paragraph
-above allows.
+about: do it in the same turn, and say that you did. The other is a side effect that one of the
+side-effects paragraph's exceptions above approves, when none of your questions are about it.
 
 **Number every question the user has to answer.** When a response asks the user for decisions or
 answers, list them as a numbered list (1., 2., 3.), never as bullets, so the user can reply by
@@ -402,11 +406,13 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
      waiting for a signal, once its checks and proof pass, and carry on to the next approved slice.
      See "Working Through to a Draft PR" below.
 
-   (Commits that are part of an autonomous loop are approved when the user approves the run.)
+   (An autonomous run signals its own commits only as "What a Commit Signal Covers" says.)
 9. On the default branch, when you receive a commit signal, commit via `/commit`. After committing,
    you may move to describing your plan for the next change (steps 1-2) — but as always, stop and
-   wait for approval before implementing it (step 3). On a feature branch, once every approved
-   slice is committed, finish the local verification, push and open the draft PR as "Working
+   wait for approval before implementing it (step 3). In a repo that commits straight to its
+   default branch, the same holds on any branch. On a feature branch in a repo that ships through
+   PRs, once every approved slice is committed, finish the local verification, push and open the
+   draft PR as "Working
    Through to a Draft PR" describes. A PR you draft stays a draft until an independent self-review
    has run on it and the user has dealt with its findings. Only then is it marked ready for
    teammates to review.
@@ -447,11 +453,13 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
     the nearest equivalent it does have, or offer to create the folder. Read the existing files
     first and extend the closest match — a new theme file needs justification. Recording anything
     here is a commit-worthy change: it re-enters steps 4–9, and it edits agent instructions, so it
-    waits for my approval on any branch.
+    waits for my approval on any branch, unless the approved design already shows its exact
+    wording.
 
 12. When all changes are on the default branch, close the ticket if the work is on one and nothing
     has closed it already. Work that ships through a PR reaches the default branch only when the PR
-    merges.
+    merges. A PR that merges through `merge-and-verify` is the exception: that skill closes its
+    ticket, and only on a proven verdict.
 13. After closing, check whether related open tasks (or issues or tickets) need their descriptions
     updated — the approach may have changed, a prerequisite may now be satisfied, or the task may
     have become unnecessary
@@ -496,7 +504,19 @@ X". The signal is only for what already exists. X ends up uncommitted, and you t
 `commit`. If you are unsure whether a signal covers something, it does not. Say what is in the tree
 and ask.
 
-**Every commit goes through `/commit`. Never run `git commit` from Bash directly.**
+**A run I approve that works unattended, such as a `/loop` run or a routine, signals the commits its
+prompt asks for, and nothing else.** A prompt that says to commit each fix approves those commits,
+on any branch. A prompt that says nothing about committing approves none: the run leaves its changes
+in the tree and says they are there.
+
+**Every commit goes through `/commit`, except the merge the next paragraph describes. Never run
+`git commit` from Bash directly.** Push the default branch only when I ask.
+
+**A feature branch in a repo that commits straight to its default branch reaches it by a merge that
+waits for its own signal.** The signals for the branch's commits don't cover it. Once I give it, run
+`git merge --no-ff <branch>` on the default branch. It does not go through `/commit`, and `--no-ff`
+makes it a commit even when the default branch has not moved. Never rebase the branch onto the
+default branch to land it, for the reason Shell gives.
 
 ## Working Through to a Draft PR
 
@@ -518,8 +538,12 @@ without stopping for me in between:
 
 **These stop the loop wherever they come up, and wait for my approval:**
 
-- Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills, standards,
-  `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`
+- Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills (each `SKILL.md`;
+  a skill's scripts and their tests are code), standards,
+  subagent definitions, routines, `settings.json` and hooks, in any repo or under `~/.claude/` and
+  `~/.agents/`, and a repo's own `docs/invariants/` (or `docs/guarantees/`), `docs/standards/` and
+  `docs/decisions/`. An entry in a repo's own `docs/invariants/` (or `docs/guarantees/`) or
+  `docs/standards/` whose exact wording the approved design shows is approved with the design.
 - Posting anything that notifies other people, such as a comment, a review, a request for reviewers
   or marking the PR ready. Opening the draft PR, and the one-line comment linking it on its ticket,
   are the exceptions.

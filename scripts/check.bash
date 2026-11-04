@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Runs every check this repo has, fastest first, and stops at the first category that fails.
 # CI runs the same scripts in the same order, one step each (.github/workflows/check.yml).
-# Each runs under /bin/bash, macOS's own bash 3.2, because that is the `bash` CI has. A newer
-# Homebrew bash first on PATH would otherwise let a script that needs bash 4 pass here and fail there.
+# Each category script runs under /bin/bash, macOS's own bash 3.2, because that is the `bash` CI
+# has. A newer Homebrew bash first on PATH would otherwise let a script that needs bash 4 pass here
+# and fail there. A script a category starts with `bash`, such as link-scripts.bash from tests.bash,
+# still gets the first bash on PATH.
 #
-# Run with: bash scripts/check.bash, or `check` from the repo root
+# Run with: bash scripts/check.bash, or `check` from the main checkout (the alias finds nothing in a
+# worktree)
 set -uo pipefail
 
 checks="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/checks"

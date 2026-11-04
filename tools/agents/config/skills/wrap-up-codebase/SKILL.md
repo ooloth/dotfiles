@@ -1,6 +1,6 @@
 ---
 name: wrap-up-codebase
-description: Find everything in the repo that a change made untrue or that would mislead the next agent, and sort each finding into a fix, a question for the user, or a dismissal. Changes nothing itself; the caller acts on the list. Run it once before opening a draft PR, once per session before asking for the commit signal on the session's last change in a repo that commits straight to its default branch, and from wrap-up.
+description: Find everything in the repo that a change made untrue or that would mislead the next agent, and sort each finding into a fix, a question for the user, or a dismissal. Changes nothing itself; the caller acts on the list. Run it once before opening a draft PR, once per session before asking for the commit signal on the session's last change on a default branch or on any branch in a repo that commits straight to its default branch, and from wrap-up.
 effort: high
 model: opus
 ---
@@ -10,10 +10,10 @@ acts on the list it returns, because what to do with a fix depends on who is wai
 
 ## The change
 
-On a feature branch, the change is the branch against the default branch
-(`git diff <default>...HEAD`). In a repo that commits straight to its default branch, it is the
-working tree against `HEAD` plus any commits this session made. Name the range you used in the
-list's first line.
+On a feature branch in a repo that ships through PRs, the change is the branch against the default
+branch (`git diff <default>...HEAD`). On a default branch, or on any branch in a repo that commits
+straight to its default branch, it is the working tree against `HEAD` plus any commits this session
+made. Name the range you used in the list's first line.
 
 ## Scope
 
@@ -89,12 +89,10 @@ edit: the file, the old text and the new text.
 depend on requirements or preferences; the fix would change a public interface, a data shape or a
 contract; or it needs intent only the user has. Every finding in an agent instruction file is an
 ask, because editing one waits for the user's approval. An agent instruction file is any file the
-list under "These stop the loop" in the global `CLAUDE.md` names: `CLAUDE.md`, `AGENTS.md`,
-skills, standards, `settings.json` and hooks, in any repo or under `~/.claude/` and `~/.agents/`.
-Answer every analytical sub-question
-yourself, by reading or by a read-only query, so the ask is only the decision: never ask whether
-something is a bug. Each ask gives at least two lettered options with what each would do, and marks
-one recommended.
+list under "These stop the loop" in the global `CLAUDE.md` names. Answer every analytical
+sub-question yourself, by reading or by a read-only query, so the ask is only the decision: never
+ask whether something is a bug. Each ask gives at least two lettered options with what each would
+do, and marks one recommended.
 
 When a finding has a mechanical part and a decision, the mechanical part is a fix and only the
 decision is an ask, except in an agent instruction file, where the whole finding is an ask, its

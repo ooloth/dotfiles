@@ -57,16 +57,42 @@ Don't reach for `tokio::spawn`, channels, or `Arc<Mutex<T>>` just because an asy
 runtime is present. Those introduce synchronization complexity. Use synchronous code
 when there is no concurrency benefit.
 
+**A test records what a stub was asked in a plain local that the stub's closure captures by
+`&mut`.**
+`let mut calls = Vec::new();` beside `|call| calls.push(call)` needs no shared ownership, and
+the test reads `calls` once the code under test returns. `Rc<RefCell<T>>` is the recorder only
+where a helper reused by several tests returns the stub, because a returned closure that borrows
+a local needs a lifetime annotation. `Arc<Mutex<T>>` is never a test recorder, since nothing in
+the test runs concurrently, and a `future_not_send` lint on an async test helper is answered by
+the plain local, not by making the recorder `Send`.
+
+**An empty result is asserted equal to a typed empty value when its type compares and prints.**
+`assert_eq!(hits, Vec::<Hit>::new())`, or `assert_eq!(text, "")`, prints what was found when it
+fails, where `assert!(hits.is_empty())` reports only that something was there. Clippy's
+`assert_is_empty` catches some of the second form and not all of it, so the rule holds by
+convention where the lint is silent. A type without `PartialEq` and `Debug` keeps
+`assert!(x.is_empty())` rather than gaining a derive for the test's sake.
+
+**Code that branches on an `Option`, a `Result` or an enum uses `match`.**
+A `match` names every case, in order, and the compiler checks that none is missing.
+`map_or` and `map_or_else` hide the two branches in closures with the default case passed first,
+`.map(f).unwrap_or(d)` hides them the same way, and a chain of `if let … else` hides which cases
+it leaves out. Combinators that take a single path, such as `map`, `and_then`, `unwrap_or`,
+`is_some_and` and `?`, are not branching when used alone and stay. Clippy's `option_if_let_else`
+and `single_match_else` push the other way, so a project that holds this rule allows those two and
+lists `map_or` and `map_or_else` under `disallowed-methods` in `clippy.toml`. It keeps
+`map_unwrap_or` on, because that lint flags `.map(f).unwrap_or(d)`, and the `map_or` it suggests
+is then refused with the reason to write a `match`. `clippy --fix` applies that suggestion, so a
+`map_or` it writes is rewritten as a `match` by hand. `.map(f).unwrap_or_default()` has the same
+shape and no lint flags it, and with `option_if_let_else` allowed nothing flags an `if let … else`
+chain either, so both hold by convention.
+
 ## Consider
 
 **`assert!`, `unwrap()`, and `unreachable!()` are correct for invariant violations.**
 Panicking on an impossible state is idiomatic Rust. Use `unwrap()` on values that must
 exist by construction, `unreachable!()` for arms that cannot be reached,
 `assert!` for invariants that must hold.
-
-**`match` is preferred over chains of `if let`.**
-Pattern matching is exhaustive and forces handling of all cases. Chains of `if let`
-hide the unhandled cases and are harder to extend.
 
 **`Arc<T>` is the optimization path when a clone is measured to be too expensive.**
 Cloning an `Arc<T>` is an atomic refcount increment, not a copy of the data. Reach

@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -15,10 +15,15 @@ Identify what to review and the exact diff command to pass agents.
 | ----------------------------- | ----------------------------------------------- | ---------------------------------------- |
 | PR number or URL              | `gh pr diff <n> -R <owner>/<repo> --name-only` | `gh pr diff <n> -R <owner>/<repo>`       |
 | Branch name                   | `git diff <branch>...HEAD --name-only`          | `git diff <branch>...HEAD`               |
+| Commits (hashes or a range)   | `git diff <oldest>^ <newest> --name-only`       | `git diff <oldest>^ <newest>`, or `git show <hash> <hash> …` when the commits are not consecutive |
 | File path(s)                  | use provided paths                              | `git diff HEAD -- <files>`               |
 | None, on feature branch       | `git diff main...HEAD --name-only`              | `git diff main...HEAD`                   |
 | None, on main, staged         | `git diff --staged --name-only`                 | `git diff --staged`                      |
 | None, on main, nothing staged | —                                               | ask: "What would you like me to review?" |
+
+Everything the argument names is one scope, however many commits, PRs or files it lists. "Each
+against its own parent" says what each commit's base is; it does not ask for a separate review per
+commit. Agents name the commit a finding comes from.
 
 Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with
 `git symbolic-ref --short HEAD`. Every `gh` command in this skill names its repository with `-R` (or
@@ -197,8 +202,9 @@ that decision, naming the record, so the reader weighs the new argument against 
 
 ## Step 3: Launch the agents in parallel
 
-The thirteen agents below always run. You may add more in the same fan-out when this particular
-change raises a question none of the thirteen prompts ask.
+Agents 1 to 13 always run, and Agent 14 runs when the diff touches an agent instruction file.
+Together these are the standing agents. You may add more in the same fan-out when this particular
+change raises a question none of these prompts ask.
 
 The bar is a named question, not a topic. "Add a concurrency agent" is a topic. "Does the new
 retry path double-submit when the first attempt times out after the server committed?" is a
@@ -210,9 +216,9 @@ question of its own. Agent 2's slicing check is the one standing exception: whet
 have been several is a question about its approach, and replays on a large PR and a small one
 showed one agent answering both without dropping either.
 
-Give an added agent the same shape as the thirteen: the intent block, the file list, the
-provenance requirement, and one question to answer. Record the question and why the thirteen did
-not cover it — Step 4 reports it.
+Give an added agent the same shape as the standing agents: the intent block, the file list, the
+provenance requirement, and one question to answer. Record the question and why the standing
+agents did not cover it — Step 4 reports it.
 
 Choose each agent's model by what its task needs, and keep the reason, because Step 4 reports both.
 
@@ -236,13 +242,13 @@ Pass each agent:
   > when it sits inside a function the change rewrote. Label each finding `[introduced]` or
   > `[pre-existing]`. If you cannot determine it, say `[provenance unknown]` rather than guessing.
 
-Send a single message containing all Agent tool calls simultaneously. Review several scopes, such
-as several commits, one scope at a time, so each fan-out stays under the harness's limit on
-concurrent subagents. If calls are refused at that limit anyway, even with "Do not retry", resend
-one with the same prompt and model each time an agent finishes. An agent that errors counts as
-finished, and is itself resent one time in the same way. Stop resending when a call is refused for
-another reason or with none of your agents running, and treat the calls left as never run. Start
-Step 3.5 when no agent is running or waiting to be resent.
+Send a single message containing all Agent tool calls simultaneously. Run one fan-out for the whole
+scope. Never split a scope into one review per commit or per file. If calls are refused at the
+harness's limit on concurrent subagents, even with "Do not retry", resend one with the same prompt
+and model each time an agent finishes. An agent that errors counts as finished, and is itself
+resent one time in the same way. Stop resending when a call is refused for another reason or with
+none of your agents running, and treat the calls left as never run. Start Step 3.5 when no agent
+is running or waiting to be resent.
 
 ---
 
@@ -616,6 +622,37 @@ For each issue: file:line (outside the diff) | the thing the change added | what
 
 ---
 
+### Agent 14: Rule Consistency
+
+Runs only when the diff touches an agent instruction file, which is any file the list under
+"These stop the loop" in the global `CLAUDE.md` names.
+
+```
+Question: Across the agent instruction files this change edits and the ones they refer to, can an agent follow every rule at once, or do two rules conflict, overlap without saying which wins, or leave a situation none of them covers?
+
+**Answer rule by rule first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change edits no agent instruction file (any file the list under "These stop the loop" in the global `CLAUDE.md` names), say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/agent-harness.md` and `~/.agents/standards/documentation.md`. Use these as your evaluation criteria.
+2. Run the diff command from Context. List every rule the diff adds, changes or removes in an agent instruction file: each sentence that tells an agent to do or not do something, to ask, or to stop.
+3. For each rule, find every other rule about the same situation: the same action (commit, push, post, merge, ask, approve, edit instructions), the same kind of branch or repo, or the same skill. Look in the changed files and in the files they name or that name them: the global and project `CLAUDE.md`, each skill a rule mentions, each skill that invokes a changed skill, and the permissions in `settings.json`. Search for the action's words ("commit", "push", "approval", "exception", "only", "never", "without asking"), not for the rule's own wording, because the rule it conflicts with will be worded differently.
+4. For each pair, decide which holds: both can be followed in every case; they conflict, so following one breaks the other, in a situation you name; one overrides the other without saying so; or a situation falls between them, which you name.
+5. Check order. Where a rule says one action happens before or after another ("before anything is pushed", "first", "once", "only after"), find every rule that requires one of those actions earlier or later, such as a record that must be pushed before a comment can link it. Name the sequence an agent would have to follow, and say whether any sequence satisfies every rule.
+6. Check every category a rule applies to, such as "agent instruction files", "a repo that ships through PRs" or "every finding in X". Find each place that lists or defines its members, and say whether the lists agree, and whether a rule that relies on the category can tell which files or cases are in it.
+7. Check every count and cross-reference a changed rule makes or that points at a changed rule, such as "the one exception", "two exceptions", "step 3 below" or "the list under X": does what it points to still say that?
+8. A conflict between a changed rule and one the diff did not touch is a finding for this change when the diff introduced it.
+
+For each issue: file:line | the rule | file:line of the rule it meets | the situation where an agent cannot follow both, or that neither covers | which should win, or what wording would reconcile them
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific
@@ -695,17 +732,18 @@ one you reviewed, and whether a thread is already resolved. Skip praise, summari
 ### Added agents
 [Omit this section entirely if you added none.]
 
-- **[the question you added it to answer]** — Why the thirteen did not cover it: [reason] — What it
+- **[the question you added it to answer]** — Why the standing agents did not cover it: [reason] — What it
   found: [finding, or "nothing"]
 
 **Generalisable?** [One of: this was specific to this change, nothing to close. | This is a
-category — [what recurs] — close it by [adding a standing 13th agent for X / adding a standard to
+category — [what recurs] — close it by [adding a standing agent for X / adding a standard to
 `~/.agents/standards/<file>.md` saying Y / both].]
 
 ### Agents
 
 - **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
-  errored or never ran, and why.]
+  errored or never ran, and why.] An Agent 14 not launched because the diff touches no agent
+  instruction file is listed as "not applicable", and does not count as never ran.
 
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
@@ -749,7 +787,8 @@ agent errored or never ran did not come back clean.]
 
 **Verdict mapping:**
 
-- **Approve** — no blockers; all remaining items are optional; every agent finished with a report
+- **Approve** — no blockers; all remaining items are optional; every agent Step 3 should have
+  launched finished with a report
   (when one errored or never ran, the verdict is Comment at most)
 - **Request Changes** — one or more `must` items
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
@@ -785,13 +824,15 @@ On any answer other than "skip":
     ```
 
     - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
-      the new head, with all thirteen agents and any added ones over the whole PR diff, as Step 3
+      the new head, with every standing agent that applies (Agent 14 applies when the full PR
+      diff touches an agent instruction file) and any added ones over the whole PR diff, as Step 3
       always does.
-    - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with all
-      thirteen agents and any added ones. Give them the lines the script printed as the change to
-      review, and the full PR diff for context. As Step 3 says, they get nothing from the drafted
-      findings; in Step 3.5, drop any new finding that repeats a drafted one. Then do everything
-      the next item lists as well.
+    - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
+      standing agent that applies (Agent 14 applies when the full PR diff touches an agent
+      instruction file) and any added ones. Give them the lines the script printed as
+      the change to review, and the full PR diff for context. As Step 3 says, they get nothing
+      from the drafted findings; in Step 3.5, drop any new finding that repeats a drafted one.
+      Then do everything the next item lists as well.
     - **Exit 0 (the PR's own changes are identical):** keep the drafted findings, and at the new
       head:
       - re-check every finding whose evidence cites a file the script shows as changed, in the

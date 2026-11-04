@@ -19,23 +19,28 @@ and conclusions.
 - **You may:** read anything (tickets, PRs, checks, run logs, deploy state); start, message and
   stop worker sessions; tell a worker to investigate something or to implement a design the user
   approved.
-- **The user approves:** approaches, designs, commits to a default branch, merges, and anything
-  posted where other people will see it (ticket comments, PR comments, Slack), except the one-line
-  PR link `create-pr` posts on the ticket. When a worker reaches one of these, bring it to the
-  user. Never answer it on the user's behalf. A worker on a feature branch whose approach and design
-  the user approved commits, pushes and opens its draft PR on its own, as "Working Through to a
-  Draft PR" in the global instructions describes.
+- **The user approves:** approaches, designs, every commit except one on a feature branch in a repo
+  that ships through PRs, merges, and anything posted where other people will see it (ticket
+  comments, PR comments, Slack), except the one-line PR link `create-pr` posts on the ticket and
+  what an invoked `merge-and-verify` posts. When a worker reaches one of these, bring it to the
+  user. Never answer it on the user's behalf. A worker on a feature branch in a repo that ships
+  through PRs, whose approach and design the user approved, commits, pushes and opens its draft PR
+  on its own, as "Working Through to a Draft PR" in the global instructions describes.
 
 ## 1. Learn the batch
 
 Read the instruction files that govern the batch's repos first. Claude Code loads `CLAUDE.md` and
-`CLAUDE.local.md` only from a session's working directory and the folders above it. A repo's
-files, and any in the folders between it and your working directory, never reach you unless your
-session started inside them. The same holds for every subagent you start. So for each repo in the
-batch, read those files in the repo and in each folder between it and your working directory. They
-often hold rules the work depends on, such as which account or configuration reaches which
-environment. Name the files, and the rules from them that apply, in the brief of every subagent
-that touches that repo.
+`CLAUDE.local.md` at launch only from a session's working directory and the folders above it. A file
+in a folder below your working directory loads once you read, write or edit a file in that folder.
+One outside your working directory does not load, unless its folder was added with `--add-dir` while
+`CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` is set
+([memory docs](https://code.claude.com/docs/en/memory), read 2026-11-04). A subagent gets the files
+loaded at launch and does not see the files your session has read, and the built-in Explore and Plan
+agents get none ([subagent docs](https://code.claude.com/docs/en/sub-agents), read 2026-11-04). So
+for each repo in the batch, read those files in the repo and in each folder between it and your
+working directory before you brief anyone. They often hold rules the work depends on, such as which
+account or configuration reaches which environment. Name the files, and the rules from them that
+apply, in the brief of every subagent that touches that repo.
 
 Read every ticket and PR in the batch, with their comments. For each PR, find what it waits on:
 a failing check, a review, another PR that has to merge first, or a deploy.
@@ -113,8 +118,9 @@ confusing report, comes before the next work item. Resolve it with the user befo
   send is one line telling the worker to read that file and follow it. Never answer a worker's
   question yourself. The user's settings allow commits, pushes, `gh pr comment`, Jira comments and
   the `create-pr` skill, because the auto-mode classifier can't see an approval given in another
-  session and would block them. Opening a PR with `gh` directly, `gh issue comment` and Linear
-  comments are not on the list. A
+  session and would block them. Opening a PR with `gh` directly, `gh issue comment`, `gh issue
+  close` and Linear comments are not on the list, so a `merge-and-verify` tab that posts its
+  report on a GitHub issue, or closes one, can be blocked there. A
   rule only reaches sessions started after it was added, so restart a running worker with
   `claude --continue` to pick one up. If an approved action is still blocked, tell the user exactly
   what to type in the worker's tab, and don't retry it yourself. A question from the worker of a
@@ -135,12 +141,16 @@ confusing report, comes before the next work item. Resolve it with the user befo
   destination forces, such as moving code out of bold for Jira, and you show the user each one.
   Never condense, reorder or restyle it. When you draft one yourself, invoke its skill first and
   follow it, as a worker would.
-- **Review before a PR opens:** after a worker pushes a draft PR, and before it is marked ready or
-  anyone is asked to review it, review it with review-code. Create a detached worktree at the PR's
-  head (`git worktree add --detach "$(mktemp -d)/review-<n>" <head-sha>`) and open a new tab there
+- **Review before a PR is marked ready:** after a worker pushes a draft PR, and before it is marked
+  ready or anyone is asked to review it, review it with review-code. The worker's global
+  instructions also tell it to start this review itself, so first read the worker's pane and its
+  session's tabs: if a `PR <n> (<author>): review-code` tab already exists, use that one and open
+  no second. Otherwise create a detached worktree at the PR's head
+  (`git worktree add --detach "$(mktemp -d)/review-<n>" <head-sha>`) and open a new tab there
   named `PR <n> (<author>): review-code`, started with the `use-rex` launcher, with a prompt that
   says:
-  - This is the author's own review before the PR opens, and no teammate will see the report. So
+  - This is the author's own review before the PR is marked ready, and no teammate will see the
+    report. So
     every finding is something to fix before opening, or a question for the user. Don't grade
     findings as optional for a later reviewer, and don't suggest leaving one for the team review.
   - Show the full report in this tab, and also write the same report to a file you name.
@@ -174,9 +184,9 @@ confusing report, comes before the next work item. Resolve it with the user befo
   rather than committing from your session, so its checks don't block you and the user can watch.
 - **Side jobs:** a job for a ticket that runs a long time, or that the user may want to watch or
   approve, goes in a new tab in that ticket's session, opened with `-s` naming that session,
-  because the launcher otherwise puts it in `Workers`. You or that ticket's worker may open it. A
-  bounded question with one answer goes to a subagent instead. When you check a ticket, list its
-  session's tabs, so a tab a worker opened shows up in your table.
+  because the launcher otherwise puts it in the repository's `Workers (<repo>)` session. You or
+  that ticket's worker may open it. A bounded question with one answer goes to a subagent instead.
+  When you check a ticket, list its session's tabs, so a tab a worker opened shows up in your table.
 - **Tabs show the work in flight:** the user reads the sidebar as the list of what is happening.
   Name each worker tab `PR <number> (<author>): <skill>`: the PR, its author's login and the skill
   the tab runs, such as `PR 88 (ooloth): review-pr-comments-converge` or
@@ -191,15 +201,23 @@ confusing report, comes before the next work item. Resolve it with the user befo
   when a PR is ready, how it merges, when it counts as serving and how its effect is proven. Open a
   tab for it in the ticket's session (pass `-s`), named `PR <n> (<author>): merge-and-verify`, in
   the repo's main checkout rather than the PR's worktree, so its cleanup step can remove that
-  worktree. Start it with the `use-rex` launcher and the prompt
+  worktree. Open the tab only after the user approves this PR's merge in your session, and quote
+  that approval in your report. An agreed merge order is not that approval, and neither is an
+  instruction given ahead of time, such as "merge #10 and #11 in that order once they're
+  approved": ask for each PR when its turn comes, because the tab's prompt counts as the user
+  starting `merge-and-verify`, which approves every step its "What invoking this skill approves"
+  section lists, the merge itself included. Start it with the `use-rex` launcher and the prompt
   `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its backlog list
-  and cleanup offer are answered; the PR's row leaves the table then too.
+  and cleanup offer are answered, or once the user has answered a report it held back; the PR's row
+  leaves the table then too, and any work the user's answer leaves joins as its own row.
   Name the environment in the prompt when the repo deploys to more than one. A permission prompt,
   such as the merge gate's, is answered by the user in that tab. A question or a wording to
   approve, such as a backlog change it lists or a report it held back, is relayed as any worker's
   is. Merge in the agreed
   order: start the next PR's tab only after the previous one's watch has ended "serving" and its
-  proof report exists; approving and posting that report can trail. Relay each report, and never
+  proof proved every part of its claim. A report it held back, because the proof disproved or
+  could not observe part of the claim, stops the batch until the user decides what to do. Relay
+  each report, and never
   tell the user to press "Squash and merge".
 - **What serves, for the rest of the batch:** a `merge-and-verify` watch ends once its own PR is
   serving, but another person's merge can still land on a shared stack. In each sweep, for as long
@@ -211,12 +229,12 @@ confusing report, comes before the next work item. Resolve it with the user befo
 
 ## 5. Report
 
-Whenever something changes or needs the user, show the status table. It lists every unfinished
-work item in priority order, with the same columns as the first table. A row leaves once its item
-is merged, serving and its proof report is posted. A row joins when an issue comes up or a work
-item has to be inserted, such as a failing deploy or a fix to how the batch is run. Build each
-table from reads made for that reply, not from earlier ones, since a PR that was clean an hour ago
-may now conflict with something that merged.
+Whenever something changes or needs the user, show the status table. It lists every unfinished work
+item in priority order, with the same columns as the first table. A PR's row leaves when its
+`merge-and-verify` tab closes, as section 4 says, and any other row once its item is done. A row
+joins when an issue comes up or a work item has to be inserted, such as a failing deploy or a fix to
+how the batch is run. Build each table from reads made for that reply, not from earlier ones, since
+a PR that was clean an hour ago may now conflict with something that merged.
 
 End the reply with one numbered list of what you need from the user, about the top item in the
 order and nothing below it. The table shows the rest, and that is enough. A
@@ -250,7 +268,8 @@ nested bullet with a letter (`280-1a`, `280-1b`). Questions refer to these label
 
 ## 6. Finish
 
-The batch is done when every PR is merged and verified in dev and every ticket is updated. Then
+The batch is done when every PR is merged and verified in the environment its `merge-and-verify`
+tab named, and every ticket is updated. Then
 tell the user what caused friction during the run, so this skill can improve.
 
 When the user ends the day before the batch is done, hand it off, so a new orchestrator can pick

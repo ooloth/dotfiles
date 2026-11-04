@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit the changes in the working tree. On a repo's default branch, invoke only when the user explicitly signals to commit ("commit", "/commit", etc.), because implementation approval is not a commit signal there. On a feature branch in a repo that ships through PRs, invoke it on your own once a slice's checks and proof pass.
+description: Commit the changes in the working tree. On a repo's default branch, or on any branch in a repo that commits straight to its default branch, invoke only when the user explicitly signals to commit ("commit", "/commit", etc.), because implementation approval is not a commit signal there. On a feature branch in a repo that ships through PRs, invoke it on your own once a slice's checks and proof pass.
 allowed-tools: Bash
 ---
 
@@ -147,6 +147,9 @@ the project).
 - Before writing this section, decide: **does this commit fully resolve a linked GitHub issue?**
   - Yes → write `Fixes #X` (or `Closes #X`). This both references the issue and auto-closes it
     when the commit lands on the default branch — including a direct push, not just a merged PR.
+    On a feature branch the keyword usually does nothing: a squash merge drops the branch's
+    commit messages, so what closes the issue, or keeps it open until `merge-and-verify` has
+    proof, is the PR description, as `write-pr-description` says.
   - No, but it relates to one → write the bare number instead, e.g. `#1234`.
 - List each reference on its own line after the subject, separated by a blank line.
 - If there are no references, omit this section entirely (no blank line).

@@ -41,8 +41,10 @@ WORKERS = '{"sessions":[{"session_id":"session:workers","label":"Workers"}]}'
 
 # Records each call's arguments in its own numbered file. `session list` prints $REX_SESSIONS, or
 # fails when $REX_LIST_FAILS is set. `window new` and `session new` print what the real ones print
-# with --json, then run the tab's command in the tab's directory, as the real tab would.
+# with --json, or $REX_WINDOW_JSON for `window new` when it is set, then run the tab's command in
+# the tab's directory, as the real tab would.
 REX_STUB = f"""#!/bin/bash
+window_json='{WINDOW_JSON}'
 calls=("${{REX_LOG}}"/*)
 [[ -e "${{calls[0]}}" ]] || calls=()
 for arg in "$@"; do printf '%s\\0' "$arg"; done > "${{REX_LOG}}/$(printf '%03d' "${{#calls[@]}}")"
@@ -53,7 +55,7 @@ case "$1 $2" in
     exit 0
     ;;
   "session new") json='{SESSION_JSON}' ;;
-  *) json='{WINDOW_JSON}' ;;
+  *) json="${{REX_WINDOW_JSON:-${{window_json}}}}" ;;
 esac
 dir=""
 while [[ $# -gt 0 && "$1" != "--" ]]; do
@@ -118,6 +120,7 @@ class Machine:
         session: str | None = "session:here",
         sessions: str = WORKERS,
         list_fails: bool = False,
+        window_json: str | None = None,
         script: Path | None = None,
         cwd: Path | None = None,
         related: str = "",
@@ -140,6 +143,8 @@ class Machine:
         }
         if list_fails:
             env["REX_LIST_FAILS"] = "1"
+        if window_json is not None:
+            env["REX_WINDOW_JSON"] = window_json
         if session is not None:
             env["REX_SESSION"] = session
         result = subprocess.run(
@@ -285,6 +290,8 @@ class TabRequest(MachineTest):
 
 
 class WorkersSession(MachineTest):
+    """A directory outside any repository, as these tests use, opens in the plain Workers session."""
+
     def test_the_first_of_two_workers_sessions_gets_the_tab(self) -> None:
         sessions = json.dumps(
             {
@@ -361,6 +368,215 @@ class WorkersSession(MachineTest):
 
         self.assertNotEqual(run.status, 0)
         self.assertEqual([call[:2] for call in run.rex_calls], [["session", "list"]])
+
+
+def sessions(*labels: str) -> str:
+    """A `session list` answer holding one session per label, with ids session:0, session:1, …"""
+    return json.dumps(
+        {
+            "sessions": [
+                {"session_id": f"session:{i}", "label": label} for i, label in enumerate(labels)
+            ]
+        }
+    )
+
+
+# Each form a remote URL takes, holding the repository name in place of {}.
+URL_FORMS = (
+    "git@github.com:owner/{}.git",
+    "https://github.com/owner/{}",
+    "https://github.com/owner/{}.git/",
+    "ssh://git@example.com/owner/{}.git",
+    "/srv/git/{}.git",
+)
+
+
+class RepositorySession(MachineTest):
+    """A tab for a directory in a repository opens in the session named after its origin remote."""
+
+    def git(self, *args: str, cwd: Path) -> None:
+        env = {
+            "HOME": str(self.machine.home),
+            "PATH": "/usr/bin:/bin",
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_AUTHOR_NAME": "t",
+            "GIT_AUTHOR_EMAIL": "t@example.com",
+            "GIT_COMMITTER_NAME": "t",
+            "GIT_COMMITTER_EMAIL": "t@example.com",
+        }
+        subprocess.run(["git", *args], cwd=cwd, env=env, capture_output=True, check=True)
+
+    def repo(self, folder: str, origin: str | None) -> Path:
+        """A repository with one commit at repos/<folder>, whose origin is `origin` when given."""
+        path = self.machine.repos / folder
+        path.mkdir(parents=True)
+        self.git("init", "-q", "-b", "main", cwd=path)
+        self.git("commit", "-q", "--allow-empty", "-m", "start", cwd=path)
+        if origin is not None:
+            self.git("remote", "add", "origin", origin, cwd=path)
+        return path
+
+    def assert_opened_in(self, run: Run, session: str) -> None:
+        self.assertEqual(run.status, 0, run.stderr)
+        assert run.rex is not None
+        self.assertEqual(run.rex[:4], ["window", "new", "-s", session])
+
+    def assert_created(self, run: Run, label: str) -> None:
+        self.assertEqual(run.status, 0, run.stderr)
+        assert run.rex is not None
+        self.assertEqual(run.rex[:3], ["session", "new", label])
+
+    def test_a_clone_named_differently_from_its_repository_opens_in_the_repositorys_session(
+        self,
+    ) -> None:
+        clone = self.repo("agency-1", "git@github.com:ooloth/agency.git")
+
+        run = self.machine.run(
+            "Review", str(clone), sessions=sessions("Workers", "Workers (agency)")
+        )
+
+        self.assert_opened_in(run, "session:1")
+
+    def test_a_subdirectory_and_a_linked_worktree_open_in_their_repositorys_session(self) -> None:
+        clone = self.repo("app-checkout", "git@github.com:ooloth/web.git")
+        subdirectory = clone / "src"
+        subdirectory.mkdir()
+        worktree = clone / ".claude" / "worktrees" / "pr-5"
+        self.git("worktree", "add", "-q", "-b", "pr-5", str(worktree), cwd=clone)
+
+        for directory in (subdirectory, worktree):
+            with self.subTest(directory=directory):
+                run = self.machine.run(
+                    "Review", str(directory), sessions=sessions("Workers", "Workers (web)")
+                )
+
+                self.assert_opened_in(run, "session:1")
+
+    def test_a_bare_repositorys_worktree_opens_in_its_repositorys_session(self) -> None:
+        # hub keeps a bare clone at ~/.hub/repos/<name> and its worktrees inside it
+        source = self.repo("source", None)
+        bare = self.machine.repos / "hub"
+        self.git("clone", "-q", "--bare", str(source), str(bare), cwd=self.machine.repos)
+        self.git("remote", "set-url", "origin", "git@github.com:ooloth/hub.git", cwd=bare)
+        main = bare / "main"
+        self.git("worktree", "add", "-q", str(main), "main", cwd=bare)
+
+        run = self.machine.run("Review", str(main), sessions=sessions("Workers (hub)"))
+
+        self.assert_opened_in(run, "session:0")
+
+    @settings(max_examples=40, deadline=None)
+    @given(
+        name=st.text(
+            alphabet=st.characters(blacklist_categories=["Cs", "Cc"], blacklist_characters="/:"),
+            min_size=1,
+            max_size=20,
+        ).filter(lambda name: not name.endswith(".git") and name.strip() == name),
+        form=st.sampled_from(URL_FORMS),
+    )
+    def test_every_url_form_names_the_session_after_the_repository(
+        self, name: str, form: str
+    ) -> None:
+        clone = self.machine.repos / "named"
+        if not clone.exists():
+            self.repo("named", "placeholder")
+        self.git("remote", "set-url", "origin", form.format(name), cwd=clone)
+
+        run = self.machine.run("Review", str(clone), sessions='{"sessions":[]}')
+
+        self.assert_created(run, f"Workers ({name})")
+
+    def test_a_missing_repository_session_is_created_holding_the_tab(self) -> None:
+        clone = self.repo("web", "https://github.com/ooloth/web.git")
+
+        run = self.machine.run("Review", str(clone), "/review", sessions=sessions("Workers"))
+
+        self.assertEqual(
+            run.rex,
+            [
+                "session",
+                "new",
+                "Workers (web)",
+                "--window",
+                "Review",
+                "-c",
+                str(clone),
+                "--json",
+                "--",
+                "bash",
+                str(REPO / CC),
+                "/review",
+            ],
+        )
+        self.assertIn("Created Rex session Workers (web)", run.stderr)
+
+    def test_a_repository_without_a_usable_origin_opens_in_workers(self) -> None:
+        for folder, origin in (
+            ("no-remote", None),
+            ("only-segment-missing", "git@github.com:"),
+            ("only-slashes", "//"),
+        ):
+            with self.subTest(origin=origin):
+                clone = self.repo(folder, origin)
+
+                run = self.machine.run("Review", str(clone), sessions=sessions("Workers"))
+
+                self.assert_opened_in(run, "session:0")
+
+    def test_a_repository_whose_only_remote_is_not_origin_opens_in_workers(self) -> None:
+        clone = self.repo("fork", None)
+        self.git("remote", "add", "upstream", "git@github.com:ooloth/fork.git", cwd=clone)
+
+        run = self.machine.run("Review", str(clone), sessions=sessions("Workers", "Workers (fork)"))
+
+        self.assert_opened_in(run, "session:0")
+
+    def test_s_wins_over_the_repositorys_session(self) -> None:
+        clone = self.repo("web", "git@github.com:ooloth/web.git")
+
+        run = self.machine.run(
+            "-s", "session:other", "Review", str(clone), sessions=sessions("Workers (web)")
+        )
+
+        self.assertEqual(len(run.rex_calls), 1, run.rex_calls)
+        self.assert_opened_in(run, "session:other")
+
+    def test_only_a_session_with_exactly_the_repositorys_label_matches(self) -> None:
+        clone = self.repo("dot", "git@github.com:ooloth/dot.git")
+        near_misses = ("Workers (dotfiles)", "Workers", "workers (dot)", "Workers (dot) ")
+
+        run = self.machine.run("Review", str(clone), sessions=sessions(*near_misses))
+        self.assert_created(run, "Workers (dot)")
+
+        run = self.machine.run(
+            "Review", str(clone), sessions=sessions(*near_misses, "Workers (dot)")
+        )
+        self.assert_opened_in(run, "session:4")
+
+    def test_the_output_names_the_session_the_tab_opened_in(self) -> None:
+        clone = self.repo("web", "git@github.com:ooloth/web.git")
+
+        found = self.machine.run("Review", str(clone), sessions=sessions("Workers (web)"))
+        created = self.machine.run("Review", str(clone), sessions='{"sessions":[]}')
+
+        self.assertEqual(json.loads(found.stdout)["session_id"], "session:0", found.stderr)
+        self.assertEqual(json.loads(found.stdout)["block_ids"], ["block:1"])
+        self.assertEqual(json.loads(created.stdout)["session_id"], "session:new", created.stderr)
+        self.assertEqual(json.loads(created.stdout)["block_ids"], ["block:2"])
+
+    def test_s_output_names_the_session_it_was_given(self) -> None:
+        run = self.machine.run("-s", "session:other", "Review", str(self.machine.app))
+
+        self.assertEqual(json.loads(run.stdout)["session_id"], "session:other", run.stderr)
+
+    def test_a_new_tab_without_a_pane_is_refused(self) -> None:
+        run = self.machine.run(
+            "Review", str(self.machine.app), window_json='{"window_id":"window:1","block_ids":[]}'
+        )
+
+        self.assertNotEqual(run.status, 0)
+        self.assertEqual(run.stdout, "")
+        self.assertIn("no pane", run.stderr)
 
 
 class UsageErrors(MachineTest):
