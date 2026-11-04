@@ -80,11 +80,13 @@ shows: that comes from the app itself, as a terminal's text or a screenshot of o
 includes another app's.
 
 [merge-and-verify](./tools/agents/config/skills/merge-and-verify/SKILL.md) takes an approved PR
-through merge to proof of its effect without asking along the way. It reads the deploy chain from
-the repo's docs, counts the change as serving only when the live artifact's commit contains the
-merge, and checks every five minutes or so in a fresh turn until the watch reaches one of its named
-endings. Then it posts the proof on the ticket, closes the ticket once every PR for it has proof,
-and brings the rest of the backlog up to date with what shipped.
+through merge to proof of its effect, and only I start it. It reads the deploy chain from the
+repo's docs, counts the change as serving only when the live artifact's commit contains the merge,
+and checks every five minutes or so in a fresh turn until the watch reaches one of its named
+endings. When the proof proves the whole claim, it posts the proof on the ticket and closes the
+ticket once every PR for it has a proven verdict. When the proof disproves or can't observe part
+of the claim, it posts nothing and shows me the draft. Either way it lists the backlog changes what
+shipped calls for, and posts only the ones I approve.
 
 [monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so
 for the pull requests where it's my move, and says why, using the same rules

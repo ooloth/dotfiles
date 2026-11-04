@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit the changes in the working tree. On a repo's default branch, invoke only when the user explicitly signals to commit ("commit", "/commit", etc.), because implementation approval is not a commit signal there. On a feature branch in a repo that ships through PRs, invoke it on your own once a slice's checks and proof pass.
+description: Commit the changes in the working tree. On a repo's default branch, or on any branch in a repo that commits straight to its default branch, invoke only when the user explicitly signals to commit ("commit", "/commit", etc.), because implementation approval is not a commit signal there. On a feature branch in a repo that ships through PRs, invoke it on your own once a slice's checks and proof pass.
 allowed-tools: Bash
 ---
 

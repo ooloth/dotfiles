@@ -1,6 +1,6 @@
 ---
 name: merge-and-verify
-description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, post the proof on the ticket, list the backlog changes what shipped calls for, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. TRIGGER when an approved PR is ready to merge, when a merged PR's deploy needs watching, or when asked to verify a PR in its environment.
+description: Merge an approved pull request through a gate that checks it, watch the rollout until it is serving, prove its effect with prove-it-works, post the proof on the ticket, list the backlog changes what shipped calls for, offer to watch production for a while after, and offer to clean up its branches. Given one sentence naming the PR. Only the user starts it, by typing it or by approving that PR's merge in an orchestrator's session.
 argument-hint: 'An approved or merged PR, such as "example-app#305"'
 disable-model-invocation: true
 ---
@@ -49,8 +49,11 @@ re-review is settling their request, not renewing anyone's approval.
 - a live observation the merge relies on no longer holds
 - the gate or GitHub refuses for any reason not listed under "Do these yourself"
 - verifying would need a change to a deployed environment beyond the normal deploy
-- the proof disproves any part of the claim, or cannot observe it. Post nothing, close nothing and
-  update no backlog: show the draft report with each verdict and wait.
+- the proof disproves any part of the claim, or cannot observe it. Post nothing, close nothing,
+  update no backlog and offer no production watch or cleanup: show the draft report with each
+  verdict and wait. A yes to that draft posts it as shown and closes nothing.
+- a post to a public destination holds something that looks private, as "Posting the report"
+  describes
 
 **Never roll back, revert or change anything in a deployed environment yourself,** in the rollout
 watch or the production watch. Say what you would do and wait for the user.
@@ -167,7 +170,8 @@ environment.
 
 ## Watching production
 
-Where the change is serving, offer in the final message to watch production, and ask for how long.
+Where the change is serving and the proof proved every part of the claim, offer in the final
+message to watch production, and ask for how long.
 Start only once the user names a duration, and run the first check right away. The duration counts
 from when the change started serving.
 
@@ -191,24 +195,33 @@ The watch ends in exactly one of these, and the report names which:
 - **The logs can't be read,** with the command the user runs to refresh the credentials.
 
 Whatever the ending, draft the watch's summary as a second comment for the destination the proof
-went to, and post it as "Posting the report" describes, without a second PR link.
+went to, and post it as "Posting the report" describes, without a second PR link. Only "The time is
+up" with no new warning or error lets the ticket close. After either other ending, leave the ticket
+open and say why in the final message.
 
 The watch only reports, as the rule under "What invoking this skill approves" requires.
 
 ## Posting the report
 
 The report goes on the ticket it proves: a Jira issue, or a GitHub issue. A PR with neither gets
-the report on the PR. Post it as soon as the proof is done, without asking, because invoking this
-skill approves it. The final message quotes what was posted and links to it.
+the report on the PR. Once the proof has proved every part of the claim, post it without asking,
+because invoking this skill approves it. A proof that disproves or cannot observe any part stops
+the skill instead, as "Stop and discuss" says. The final message quotes what was posted and links
+to it.
 
-Before posting, check the report for credentials (tokens, keys, cookies, bearer headers, signed
-URLs). Remove any you find, and say so in the report.
+Before posting, check the report, and later the watch's summary, for credentials (tokens, keys,
+cookies, bearer headers, signed URLs) and for references to the local evidence folder. Remove any
+you find, and say so in the post.
 
-When the destination is public, such as an issue in a repo whose
-`gh repo view <owner>/<repo> --json visibility` says `PUBLIC`, also check it for private values.
-Search it for each value in the repo's ignored `private.env`, if there is one, and remove any match.
-If anything else in it looks private, such as an internal hostname or URL, or a person's name or
-handle that the ticket does not already show, post nothing and show the user the draft.
+Every post this skill makes gets the next check, judged by that post's own destination: the
+report, the PR link, the closing comment and the watch's summary. When the destination is public,
+such as an issue or PR in a repo whose `gh repo view <owner>/<repo> --json visibility` says
+`PUBLIC`, check the post for private values. Search it for each `PRIVATE_*` value in the dotfiles
+repo's ignored `private.env` (`~/Repos/ooloth/dotfiles/private.env`), and for each value in the
+PR repo's own ignored `private.env` if it has one. Remove any match and say so in the report. On a
+public PR, the link to a Jira ticket names the key only, never its URL. If anything else in a post
+looks private, such as an internal hostname or URL, or a person's name or handle that the ticket
+does not already show, post nothing and show the user the draft.
 
 - **Jira:** post the comment with the Atlassian MCP tool, following `use-jira` for how markdown
   converts.
@@ -222,7 +235,8 @@ paths. It describes what each one shows.
 Then list every PR that names the ticket, and whether each has merged and has a proven verdict on
 the ticket. Only when all have, close the ticket, saying in the closing comment which PRs finished
 it.
-While a watch is running, close it once the watch's summary is posted instead.
+While a watch is running, close it only once the watch ends "The time is up" with no new warning
+or error and its summary is posted.
 
 ## Updating the backlog
 

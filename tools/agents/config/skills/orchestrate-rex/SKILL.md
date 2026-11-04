@@ -19,12 +19,13 @@ and conclusions.
 - **You may:** read anything (tickets, PRs, checks, run logs, deploy state); start, message and
   stop worker sessions; tell a worker to investigate something or to implement a design the user
   approved.
-- **The user approves:** approaches, designs, commits to a default branch, merges, and anything
+- **The user approves:** approaches, designs, every commit except one on a feature branch in a repo
+  that ships through PRs, merges, and anything
   posted where other people will see it (ticket comments, PR comments, Slack), except the one-line
   PR link `create-pr` posts on the ticket. When a worker reaches one of these, bring it to the
-  user. Never answer it on the user's behalf. A worker on a feature branch whose approach and design
-  the user approved commits, pushes and opens its draft PR on its own, as "Working Through to a
-  Draft PR" in the global instructions describes.
+  user. Never answer it on the user's behalf. A worker on a feature branch in a repo that ships
+  through PRs, whose approach and design the user approved, commits, pushes and opens its draft PR
+  on its own, as "Working Through to a Draft PR" in the global instructions describes.
 
 ## 1. Learn the batch
 
@@ -191,15 +192,21 @@ confusing report, comes before the next work item. Resolve it with the user befo
   when a PR is ready, how it merges, when it counts as serving and how its effect is proven. Open a
   tab for it in the ticket's session (pass `-s`), named `PR <n> (<author>): merge-and-verify`, in
   the repo's main checkout rather than the PR's worktree, so its cleanup step can remove that
-  worktree. Start it with the `use-rex` launcher and the prompt
+  worktree. Open the tab only after the user approves this PR's merge in your session, and quote
+  that approval in your report; an agreed merge order is not that approval, because the tab's
+  prompt counts as the user starting `merge-and-verify`, which approves posting its report and
+  closing the ticket. Start it with the `use-rex` launcher and the prompt
   `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its backlog list
-  and cleanup offer are answered; the PR's row leaves the table then too.
+  and cleanup offer are answered, or once the user has answered a report it held back; the PR's row
+  leaves the table then too.
   Name the environment in the prompt when the repo deploys to more than one. A permission prompt,
   such as the merge gate's, is answered by the user in that tab. A question or a wording to
   approve, such as a backlog change it lists or a report it held back, is relayed as any worker's
   is. Merge in the agreed
   order: start the next PR's tab only after the previous one's watch has ended "serving" and its
-  proof report exists; approving and posting that report can trail. Relay each report, and never
+  proof proved every part of its claim. A report it held back, because the proof disproved or
+  could not observe part of the claim, stops the batch until the user decides what to do. Relay
+  each report, and never
   tell the user to press "Squash and merge".
 - **What serves, for the rest of the batch:** a `merge-and-verify` watch ends once its own PR is
   serving, but another person's merge can still land on a shared stack. In each sweep, for as long

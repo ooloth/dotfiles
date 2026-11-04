@@ -42,8 +42,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 **Self-check before handing the path back:**
 
 - [ ] Read project PR template if exists
-- [ ] Reviewed all commits: `git log $BASE..HEAD`
-- [ ] Reviewed file changes: `git diff $BASE...HEAD --stat`
+- [ ] Reviewed all commits and file changes from step 2's output (run in a later command, `BASE`
+      is no longer set, so `git log $BASE..HEAD` would print nothing)
 - [ ] Found the Jira/Slack links, or got them as step 3 describes
 - [ ] Got a screen recording of a UI change as step 3 describes
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
@@ -123,6 +123,10 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   branch's own commits and every `Fixes` line in them, so only a closing keyword in the body closes
   the issue on merge (seen on ooloth/hub#384, 2026-10-28). An issue the PR only relates to stays a
   bare URL
+- In a repo whose `CLAUDE.md` or `AGENTS.md` says its PRs merge through `merge-and-verify`, a
+  resolved issue is listed as `Resolves (closed by merge-and-verify once proven): #N` instead of
+  `Fixes #N`, because a closing keyword closes the issue at merge, before any proof, and
+  `merge-and-verify` closes it only on a proven verdict
 
 ### Anti-patterns
 

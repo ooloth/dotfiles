@@ -106,7 +106,8 @@ design also approves the commits, the push and the draft PR that section describ
 comment linking that PR on its ticket, each entry in a repo's own `docs/invariants/` (or
 `docs/guarantees/`) or `docs/standards/` whose exact wording the approved design shows, and
 applying the fixes `wrap-up-codebase` returns, on any branch, in the same turn as its questions. It
-approves nothing beyond them. Another is `merge-and-verify`, which only I start: invoking it
+approves nothing beyond them. Another is `merge-and-verify`, which only I start, by typing it or by
+approving that PR's merge in an orchestrator's session: invoking it
 approves the steps its "What invoking this skill approves" section lists, and nothing beyond them.
 The third is `create-pr`: invoking it approves the one-line comment it posts linking the new PR on
 its ticket, and nothing beyond that.
@@ -406,8 +407,10 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
    (Commits that are part of an autonomous loop are approved when the user approves the run.)
 9. On the default branch, when you receive a commit signal, commit via `/commit`. After committing,
    you may move to describing your plan for the next change (steps 1-2) — but as always, stop and
-   wait for approval before implementing it (step 3). On a feature branch, once every approved
-   slice is committed, finish the local verification, push and open the draft PR as "Working
+   wait for approval before implementing it (step 3). In a repo that commits straight to its
+   default branch, the same holds on any branch. On a feature branch in a repo that ships through
+   PRs, once every approved slice is committed, finish the local verification, push and open the
+   draft PR as "Working
    Through to a Draft PR" describes. A PR you draft stays a draft until an independent self-review
    has run on it and the user has dealt with its findings. Only then is it marked ready for
    teammates to review.
@@ -521,7 +524,8 @@ without stopping for me in between:
 
 **These stop the loop wherever they come up, and wait for my approval:**
 
-- Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills, standards,
+- Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills (each `SKILL.md`;
+  a skill's scripts and their tests are code), standards,
   subagent definitions, routines, `settings.json` and hooks, in any repo or under `~/.claude/` and
   `~/.agents/`, and a repo's own `docs/invariants/` (or `docs/guarantees/`), `docs/standards/` and
   `docs/decisions/`. An entry in a repo's own `docs/invariants/` (or `docs/guarantees/`) or
