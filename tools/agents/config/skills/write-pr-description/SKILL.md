@@ -20,23 +20,23 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
    git log $BASE..HEAD --oneline
    git diff $BASE...HEAD --stat
    ```
-3. Take the ticket and any links from the ticket `create-pr` passes in, the branch name, the
-   commits and the approved task. Run `gh issue list -R <owner>/<repo> --state open --limit 200`
-   to find any GitHub issue the PR fully resolves. Inside "Working Through to a Draft PR", ask
-   nothing: leave out what you can't find, say in the description that it is missing, and hand
-   the same list back so `create-pr` puts it in its final report. In an
-   unattended run, ask nothing and leave out what you can't find without mentioning it. Otherwise,
-   ask the user for what you can't find (Jira URL, Slack thread), and for a screen recording of a
-   UI change.
+3. Take the ticket and any links from the ticket `create-pr` passes in, the branch name, the commits
+   and the approved task. Run `gh issue list -R <owner>/<repo> --state open --limit 200` to find any
+   GitHub issue the PR fully resolves. Inside "Working Through to a Draft PR", ask nothing: leave
+   out what you can't find, say in the description that it is missing, and list it in `missing.txt`
+   for `create-pr` to report. In an unattended run, ask nothing and leave out what you can't find
+   without mentioning it. Otherwise, ask the user for what you can't find (Jira URL, Slack thread),
+   and for a screen recording of a UI change.
 4. Draft using voice rules below, and a title: one line, in plain words, saying what the PR
    changes.
-5. Write the title and body to files in a new directory, and hand the directory's path back to the
-   caller:
+5. Write the title, the body and any `missing.txt` to files in a new directory, and hand the
+   directory's path back to the caller:
    1. Run `mktemp -d` and note the directory it prints. It is new on every run, so another
       session writing a PR body at the same time can't overwrite it.
    2. With the Write tool, write the title to `title.txt` and the body to `pr-body.md` in that
       directory. Writing them to files keeps the shell from mangling backticks in inline code.
-      Read them back before handing the path back.
+      When step 3 left something out, write each missing item to `missing.txt`, one per line. Read
+      them back before handing the path back.
    3. This skill does not open the PR. `create-pr` opens it with these files. To update an
       existing PR, run `gh pr edit <n> --body-file <dir>/pr-body.md`.
 
@@ -95,7 +95,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - Include evidence-providing observability signals to confirm correct behavior. Where a step has no
   signal a reviewer could watch, tell the user before drafting, so the signal can be added to the
   code; the PR body does not list gaps. Inside "Working Through to a Draft PR" or an unattended run,
-  name the gap in the caller's final report instead
+  name the gap in `missing.txt` instead
 - Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
 - **Reviewer-frame**: every step must be executable on a laptop, before merging, without deploying
   anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any other
