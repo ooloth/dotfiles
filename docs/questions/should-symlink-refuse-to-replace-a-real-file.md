@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-17
+updated: 2026-11-04
 update_when: the helper's behaviour changes, or a laptop is found with a real file at a link target
 decays: fast
 status: open
@@ -9,15 +9,15 @@ status: open
 
 ## Why it matters
 
-Every `link.bash` but one calls `symlink()` in `tools/bash/utils.bash`, which runs `ln -fsvw`;
-`tools/pi/link.bash` runs the same `ln -fsvw` itself. When the target path holds a real file rather
-than a link, `ln -f` deletes it and puts the link in its place. Nothing is copied first and nothing
-reports the loss. This happens on the first `u` after a tool is added for a config that already
-exists on that laptop, and on a new machine where an app wrote its default config before `u` ran. It
-also happens after a working link is broken by a tool that saves its config by writing a temporary
-file and renaming it over the target: the link becomes a real file holding the tool's additions,
-edits to the repo copy stop reaching it, and the next `u` deletes those additions. The content is
-gone unless it was already in the repo.
+Every `link.bash` calls `symlink()` in `tools/bash/utils.bash`, which runs `ln -fsv`, and
+`tools/pi/link.bash` also runs `ln -fsv` itself for its `AGENTS.md` link. When the target path holds
+a real file rather than a link, `ln -f` deletes it and puts the link in its place. Nothing is copied
+first and nothing reports the loss. This happens on the first `u` after a tool is added for a config
+that already exists on that laptop, and on a new machine where an app wrote its default config
+before `u` ran. It also happens after a working link is broken by a tool that saves its config by
+writing a temporary file and renaming it over the target: the link becomes a real file holding the
+tool's additions, edits to the repo copy stop reaching it, and the next `u` deletes those additions.
+The content is gone unless it was already in the repo.
 
 Check mode does not catch it either. With `DOTFILES_CHECK=true`, a real file at the target is
 reported as `MISSING`, which reads as "the link was never made" rather than "something else is in
@@ -57,7 +57,7 @@ laptop's existing `~/.config/helix/config.toml` would be lost on its first `u`.
 
 Nothing here is settled until it graduates into a decision record.
 
-- *Sourced:* `symlink()` runs `ln -fsvw "$source_file" "$target_dir"` (`tools/bash/utils.bash`).
+- *Sourced:* `symlink()` runs `ln -fsv "$source_file" "$target_dir"` (`tools/bash/utils.bash`).
   `man ln` on macOS: "`-f` If the target file already exists, then unlink it so that the link may
   occur. (The `-f` option overrides any previous `-i` and `-w` options.)"
 - *Measured (2026-10-04, Air):* in a scratch directory, a real `config.toml` containing
