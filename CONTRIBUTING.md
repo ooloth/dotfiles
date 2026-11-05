@@ -1,5 +1,9 @@
 # Contributing
 
+A new script that is run, rather than sourced, is written in Python
+([decision 007](docs/decisions/007-scripts-that-are-run-are-written-in-python.md)): for now a
+single-file uv script, as decision 008's addendum allows until the root project exists.
+
 ## Check a change
 
 ```sh

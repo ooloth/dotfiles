@@ -65,7 +65,6 @@ first runs.
 
 - [x] the language question is narrowed to how the Python is set up and bootstrapped
 - [x] `../questions/which-bash-version-must-this-repos-scripts-support.md` refers to this record
-- [ ] `CLAUDE.md` and `CONTRIBUTING.md` say new scripts that are run are written in Python, once
-      the project from decision 008 exists
+- [x] `CLAUDE.md` and `CONTRIBUTING.md` say new scripts that are run are written in Python
 
 [boot]: ../questions/how-does-a-fresh-mac-get-uv-and-python-before-the-first-script-needs-them.md
