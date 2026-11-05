@@ -3,7 +3,8 @@
 # requires-python = ">=3.11"
 # ///
 """Tests for activate_venv in tools/zsh/config/hooks.zsh, which activates the nearest Python virtual
-environment when zsh starts and on every cd, and for the Python search paths the shell leaves unset.
+environment when zsh starts and on every cd, for the Python search paths the shell leaves unset, and
+for warn_secret_in_history, which keeps lines holding a literal secret out of the history file.
 
 Run with: uv run tools/zsh/tests/test_hooks.py
 

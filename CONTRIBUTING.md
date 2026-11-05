@@ -47,8 +47,11 @@ On a work laptop, uv installs packages through the work Artifact Registry index 
 `check`, log in:
 
 ```sh
-gcloud auth login <you>@recursion.com --update-adc
+gcloud auth login --quiet --update-adc <you>@recursion.com
 ```
+
+On the work laptop, `auth` runs this login along with the other work logins, and only for the ones
+that have expired (see `features/auth/README.md`).
 
 Without it, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. The managed
 config names that index as the only default, so uv resolves packages only through it unless a

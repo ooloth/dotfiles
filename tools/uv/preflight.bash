@@ -11,6 +11,6 @@ if ! is_work; then
 fi
 
 if ! gcloud auth application-default print-access-token &>/dev/null; then
-  echo "uv installs tools through the work Artifact Registry, and gcloud's application-default credentials have expired. Refresh them: gca" >&2
+  echo "uv installs tools through the work Artifact Registry, and gcloud's application-default credentials have expired. Refresh them: auth (or gca)" >&2
   exit 1
 fi

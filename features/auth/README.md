@@ -17,7 +17,8 @@ It checks these all at once, then logs in to the expired ones one at a time:
   in with `gcloud auth login --quiet --no-activate <account>`.
 - **Spacelift:** checks with `spacectl whoami` and logs in with
   `spacectl profile login --method browser recursion`.
-- **Argo CD:** checks with `argocd account get-user-info --output json` and logs in with
+- **Argo CD:** checks with
+  `argocd account get-user-info --grpc-web --output json --server <server>` and logs in with
   `argocd login --sso --grpc-web <server>`.
 
 After each login it checks again, and the summary reports what that check found. It exits 0 only

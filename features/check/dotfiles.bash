@@ -100,10 +100,10 @@ printf "\nFeature aliases\n\n"
 for file in "${DOTFILES}"/features/*/shell.zsh; do
   feature=$(basename "$(dirname "$file")")
   while IFS= read -r line; do
-    name=$(sed -E 's/^alias ([^=]+)=.*/\1/' <<<"$line")
+    name=$(sed -E 's/^[[:space:]]*alias ([^=]+)=.*/\1/' <<<"$line")
     target=$(sed -E 's|.*/features/([^/]+)/.*|\1|' <<<"$line")
     report "$([[ "$target" == "$feature" ]] && echo true)" "${feature}: ${name}" "runs a script from features/${target}"
-  done < <(grep -E '^alias [^=]+=.*/features/[^/]+/' "$file" || true)
+  done < <(grep -E '^[[:space:]]*alias [^=]+=.*/features/[^/]+/' "$file" || true)
 done
 
 # ─── Summary ────────────────────────────────────────────────
