@@ -25,10 +25,12 @@ After each login it checks again, and the summary reports what that check found.
 when every login ends up valid, so `auth && <command>` runs the command only once you're logged in.
 
 - **The Argo CD server** comes from `PRIVATE_ARGOCD_SERVER` in `private.env` (see
-  `private.env.example`). Without it, the Argo CD line says so and the other logins still run.
-- **`argocd account get-user-info` exits 0 even when the session has expired**, so the script reads
-  its `loggedIn` field. A check that fails for another reason, such as an unreachable server, is
-  reported as not checked and its login is not run.
+  `private.env.example`). Without it, the Argo CD line says so and the other logins still run, and
+  `auth` exits 1.
+- **`argocd account get-user-info` usually exits 0 even when the session has expired**, so the
+  script reads its `loggedIn` field. A failure that names a revoked token (`invalid_grant`) or a
+  rejected session (`code = Unauthenticated`) also counts as expired. Any other failure, such as
+  an unreachable server, is reported as not checked and its login is not run.
 - **`--quiet`** answers the Y/n prompt gcloud shows after the browser step with its default, and
   **`--method browser`** skips Spacelift's menu asking which kind of login to use.
 - **Pomerium** is left out: `griphook` has no command that reports whether a session is still valid.

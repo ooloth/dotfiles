@@ -9,7 +9,7 @@ Run with: uv run features/auth/tests/test_auth.py
 
 Most tests load the script in-process and hand `run` a FakeShell. It answers each check the way the
 real tool answered when its credential was valid or expired, or, for argocd, when the server could
-not be reached, and it records each login it is asked to run. The end-to-end tests run the script as
+not be reached or had revoked the refresh token, and it records each login it is asked to run. The end-to-end tests run the script as
 a subprocess with stub gcloud, spacectl and argocd commands on PATH that record their arguments.
 """
 
@@ -36,7 +36,7 @@ sys.modules["auth"] = auth
 _spec.loader.exec_module(auth)
 
 SERVER = auth.ArgoServer("cd.example.com")
-State = Literal["valid", "expired", "unreachable"]
+State = Literal["valid", "expired", "unreachable", "revoked"]
 
 # What each tool printed on this laptop in each state, checked against the real commands
 ARGOCD_ANSWERS = {
@@ -192,7 +192,7 @@ class ArgoCdStatus(unittest.TestCase):
             1, "", '{"level":"fatal","msg":"oauth2: \\"invalid_grant\\""}\n'
         )
         self.addCleanup(ARGOCD_ANSWERS.pop, "revoked")
-        shell.states["Argo CD"] = "revoked"  # ty: ignore[invalid-assignment]
+        shell.states["Argo CD"] = "revoked"
 
         outcomes = auth.run(auth.Mode.REFRESH, items, shell)
 
