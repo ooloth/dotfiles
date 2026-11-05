@@ -174,6 +174,9 @@ This will:
 3. Set up symlinks for all configurations
 4. Configure macOS system preferences
 
+Keep the repo at `~/Repos/ooloth/dotfiles`, including in a fork. Every link in `$HOME` leads there,
+and the link step refuses to run from a checkout anywhere else.
+
 Values this public repo must not name, such as internal hostnames and cloud project IDs, live in
 `private.env` at the repo root, which git ignores. Copy `private.env.example` there and fill in the
 keys this machine reads. Each tool names its key when it runs without one.
