@@ -22,6 +22,11 @@ observations about typical practice.
 - With `DOTFILES_CHECK=true`, a `link.bash` reports link status and writes nothing: no link,
   file or directory is created, replaced or removed. `dcheck` and `u`'s final check depend on
   this to be read-only. `scripts/checks/link-scripts.bash` checks every `link.bash` in CI.
+- Every link the link step makes in `$HOME` names a file under `~/Repos/ooloth/dotfiles`
+  (`DOTFILES_INSTALL` in `tools/bash/utils.bash`), and `private.env` is read from there. Run from
+  any other checkout, the link step, check mode included, changes nothing in `$HOME` and says why.
+  A test or an Amp orb links from another checkout by giving it a `HOME` whose
+  `Repos/ooloth/dotfiles` resolves to that checkout.
 - `.github/workflows/check.yml` and `.agents/setup` install the same tools for the checks, beyond
   what each platform already ships, such as the zsh, luajit and newer jq that `.agents/setup` adds
   for an Amp orb, so `scripts/check.bash` passes in CI and in an Amp orb. A tool a check starts or

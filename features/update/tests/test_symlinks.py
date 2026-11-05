@@ -173,5 +173,45 @@ class SweepTest(unittest.TestCase):
         self.assertIn(str(link), run.trashed)
 
 
+class OtherCheckoutTest(unittest.TestCase):
+    """Run with DOTFILES naming a checkout that is not the install at ~/Repos/ooloth/dotfiles."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.home = FakeHome(Path(self._tmp.name))
+        self.copy = Path(self._tmp.name) / "copy"
+        (self.copy / "tools/claude/config").mkdir(parents=True)
+        (self.copy / "tools/claude/config/CLAUDE.md").write_text("")
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def assert_refused_naming_both_checkouts(self, run: Run) -> None:
+        self.assertNotEqual(run.status, 0, run.output)
+        self.assertIn(str(self.copy), run.output)
+        self.assertIn(str(self.home.dotfiles), run.output)
+
+    def test_every_home_write_site_changes_nothing_and_says_why(self) -> None:
+        broken_into_copy = self.home.link(".claude/hooks", self.copy / "tools/claude/config/hooks")
+        broken_elsewhere = self.home.link(".old-tool-rc", "/nonexistent/old-tool-rc")
+        sites = {
+            "symlink": 'symlink "$DOTFILES/tools/claude/config/CLAUDE.md" "$HOME/.claude"',
+            "symlink in check mode": (
+                'DOTFILES_CHECK=true symlink "$DOTFILES/tools/claude/config/CLAUDE.md" '
+                '"$HOME/.claude"'
+            ),
+            "remove_broken_symlinks": 'remove_broken_symlinks "$HOME"',
+            "remove_broken_repo_symlinks": 'remove_broken_repo_symlinks "$HOME/.claude"',
+        }
+        for site, script in sites.items():
+            with self.subTest(site=site):
+                run = self.home.run(script, dotfiles=str(self.copy))
+                self.assert_refused_naming_both_checkouts(run)
+                self.assertEqual(run.trashed, [])
+                self.assertFalse((self.home.path / ".claude/CLAUDE.md").exists())
+                self.assertTrue(broken_into_copy.is_symlink())
+                self.assertTrue(broken_elsewhere.is_symlink())
+
+
 if __name__ == "__main__":
     unittest.main()

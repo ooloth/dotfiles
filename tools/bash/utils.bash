@@ -3,6 +3,10 @@
 # In case this file is sourced before shell variables have been symlinked
 export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
 
+# The install: the one checkout that links in $HOME lead to and that holds private.env. Set here
+# whatever the environment says, so nothing a caller exports can move it.
+DOTFILES_INSTALL="${HOME}/Repos/ooloth/dotfiles"
+
 # Include is_air, is_mini, is_work in this commonly-sourced file
 source "${DOTFILES}/tools/macos/utils.bash"
 
@@ -10,7 +14,7 @@ source "${DOTFILES}/tools/macos/utils.bash"
 # reads them from private.env itself. One started from zsh keeps the ones it inherited.
 source "${DOTFILES}/tools/bash/private-env.bash"
 if [[ -z "$(compgen -v PRIVATE_)" ]]; then
-  load_private_env
+  load_private_env "${DOTFILES_INSTALL}/private.env"
 fi
 
 ##############
@@ -49,7 +53,21 @@ return_or_exit() {
 # SYMLINKING #
 ##############
 
+# Succeeds only when this script runs from the install. Every function that changes or reports on
+# links in $HOME calls it first, so a worktree or scratch copy can never point $HOME at itself.
+require_install_checkout() {
+  if [[ "${DOTFILES:-}" == "${DOTFILES_INSTALL}" ]]; then
+    return 0
+  fi
+  echo "🚨 Not linking from ${DOTFILES:-an unset DOTFILES}: links in \$HOME lead only to the" \
+    "install at ${DOTFILES_INSTALL}. To link from this checkout, run with a HOME whose" \
+    "Repos/ooloth/dotfiles is this checkout." >&2
+  return 1
+}
+
 symlink() {
+  require_install_checkout || return 1
+
   # Both arguments should be absolute paths
   local source_file="${1:-}"
   local target_dir="${2:-}"
@@ -154,6 +172,8 @@ is_swept_link_dir() {
 
 # Removes broken symlinks in a directory, whatever they point at.
 remove_broken_symlinks() {
+  require_install_checkout || return 1
+
   local directory="${1:-}"
   local max_depth
   max_depth="$(symlink_sweep_depth "${directory}")"
@@ -183,13 +203,11 @@ remove_broken_symlinks() {
 
 # Removes broken symlinks in a directory that point into this repo, leaving other tools' links alone.
 remove_broken_repo_symlinks() {
-  local directory="${1:-}"
+  # Also rules out an empty or relative DOTFILES, which would make every link look like it points
+  # into the repo, since the install is always an absolute path
+  require_install_checkout || return 1
 
-  # An empty or relative DOTFILES would make every link look like it points into the repo
-  if [[ "${DOTFILES:-}" != /* || ! -d "${DOTFILES}" ]]; then
-    echo "🚨 Error: DOTFILES must be an absolute path to the repo, got '${DOTFILES:-}'" >&2
-    return 1
-  fi
+  local directory="${1:-}"
 
   if [[ -z "${directory}" ]]; then
     echo "🚨 Error: Directory path is required" >&2
