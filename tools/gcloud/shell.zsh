@@ -36,13 +36,14 @@ alias bqq='bq query --use_legacy_sql=false --project_id="${PRIVATE_BQ_PROJECT:?i
 
 # see: https://stackoverflow.com/a/51563857/8802485
 # see: https://cloud.google.com/docs/authentication/gcloud#gcloud-credentials
-alias gca="gcloud auth login michael.uloth@recursion.com --update-adc"
+# --quiet answers the Y/n prompt gcloud shows after the browser step with its default
+alias gca="gcloud auth login --quiet --update-adc michael.uloth@recursion.com"
 # alias gca="gcloud auth login --update-adc && gcloud auth application-default"
 
 # The external org account is used only through the `external` gcloud configuration. ADC and the
 # default configuration stay on the internal account, because uv's package index authenticates with
 # ADC and only the internal account can read it.
-alias gcat="gcloud auth login michael.uloth@rxrx.tech --no-activate"
+alias gcat="gcloud auth login --quiet --no-activate michael.uloth@rxrx.tech"
 
 ###############
 # COMPLETIONS #
