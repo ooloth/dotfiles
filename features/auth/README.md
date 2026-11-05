@@ -8,14 +8,17 @@ auth          # check every login, then run the browser login for each expired o
 auth --check  # only report; logs in to nothing
 ```
 
-It checks these, all at once, and logs in to the expired ones one at a time:
+It checks these all at once, then logs in to the expired ones one at a time:
 
-| Login | Check | Login |
-| --- | --- | --- |
-| Google (recursion.com), with ADC | `gcloud auth application-default print-access-token` | `gcloud auth login --quiet --update-adc <account>` |
-| Google (rxrx.tech) | `gcloud auth print-access-token --account=<account>` | `gcloud auth login --quiet --no-activate <account>` |
-| Spacelift | `spacectl whoami` | `spacectl profile login --method browser recursion` |
-| Argo CD | `argocd account get-user-info --output json` | `argocd login --sso --grpc-web <server>` |
+- **Google (recursion.com), with ADC:** checks with
+  `gcloud auth application-default print-access-token` and logs in with
+  `gcloud auth login --quiet --update-adc <account>`.
+- **Google (rxrx.tech):** checks with `gcloud auth print-access-token --account=<account>` and logs
+  in with `gcloud auth login --quiet --no-activate <account>`.
+- **Spacelift:** checks with `spacectl whoami` and logs in with
+  `spacectl profile login --method browser recursion`.
+- **Argo CD:** checks with `argocd account get-user-info --output json` and logs in with
+  `argocd login --sso --grpc-web <server>`.
 
 After each login it checks again, and the summary reports what that check found. It exits 0 only
 when every login ends up valid, so `auth && <command>` runs the command only once you're logged in.
