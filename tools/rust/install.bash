@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 source "${DOTFILES}/tools/rust/utils.bash"
 
 export CARGO_HOME="${HOME}/.config/cargo"

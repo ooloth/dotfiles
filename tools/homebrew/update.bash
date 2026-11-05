@@ -2,7 +2,7 @@
 # Intentionally omitting -e: a failing step must not block the steps that don't depend on it
 set -uo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 failed_steps=()
 

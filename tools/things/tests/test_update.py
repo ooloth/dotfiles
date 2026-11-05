@@ -7,8 +7,8 @@
 
 Run with: uv run tools/things/tests/test_update.py
 
-Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it, and runs the script under macOS's own bash. A `go` stub on PATH answers `go env`,
+Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, the install path
+in utils.bash, and runs the script under macOS's own bash. A `go` stub on PATH answers `go env`,
 writes a fake `things` binary on `go install` whose content is the version it was installed at, and
 reports that version on `go version -m` the way Go prints a binary's main module. No test reaches
 the network or the real things-cli.

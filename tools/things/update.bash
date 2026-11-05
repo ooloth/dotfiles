@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 # Pinned because things-cli reads the whole Things database, including its URL auth token. Bump it
 # only after reading the release's changes, and update tools/agents/config/skills/use-things to

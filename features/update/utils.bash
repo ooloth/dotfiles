@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-# In case this file is sourced before shell variables have been symlinked
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
-
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 source "${DOTFILES}/features/utils.bash"
-source "${DOTFILES}/tools/bash/utils.bash"
 
 update_and_symlink() {
   local tool_lower="${1}"

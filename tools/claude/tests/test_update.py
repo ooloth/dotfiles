@@ -7,8 +7,8 @@
 
 Run with: uv run tools/claude/tests/test_update.py
 
-Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it, a fake Homebrew prefix and a fake fnm directory, and runs the script under macOS's own
+Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, the install path
+in utils.bash, a fake Homebrew prefix and a fake fnm directory, and runs the script under macOS's own
 bash. A `brew` stub on PATH installs the cask into the fake prefix the way Homebrew lays it out, and
 refuses to link over an existing `bin/claude` the way Homebrew does. The cask's `claude` is a stub
 that records its arguments, so no test reaches the real Claude Code.

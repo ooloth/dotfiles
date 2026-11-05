@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 export TOOL_LOWER="uv"
 export TOOL_UPPER="uv"

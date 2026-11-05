@@ -36,7 +36,7 @@ class Config:
     DEBUG_MODE: bool = True
     ITERATIONS: int = 3
     # MODEL: str # Vary MODEL per prompt by default? One env var per prompt?
-    RALPH_DIR_GLOBAL: Path = Path.home() / "Repos/ooloth/dotfiles/features/ralph"
+    RALPH_DIR_GLOBAL: Path = Path(__file__).parent
     RALPH_DIR_PROJECT: Path = Path.cwd() / ".ralph"
 
 

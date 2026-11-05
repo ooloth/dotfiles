@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 source "${DOTFILES}/tools/node/utils.bash"
 
 # Install LTS rather than the newest release: see latest_lts_node_version for why

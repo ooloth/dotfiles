@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOTFILES="${DOTFILES:-$HOME/Repos/ooloth/dotfiles}"
-
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 # Check if running on macOS
 is_macos() {

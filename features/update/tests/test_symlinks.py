@@ -8,8 +8,8 @@ features/update/symlinks.bash.
 
 Run with: uv run features/update/tests/test_symlinks.py
 
-Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it, and runs the code under macOS's own bash with no terminal, the way CI does. A `trash`
+Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, the install path
+in utils.bash, and runs the code under macOS's own bash with no terminal, the way CI does. A `trash`
 stub on PATH records what it was asked to remove and removes it, so a run leaves nothing in the real
 Trash.
 """
@@ -38,7 +38,7 @@ class Run:
 
 
 class FakeHome:
-    """A temporary HOME with the repo where utils.bash sources it from."""
+    """A temporary HOME whose install path is the repo, so the link step links from it."""
 
     def __init__(self, root: Path) -> None:
         self.path = root / "home"

@@ -229,6 +229,7 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
 - *Sourced:* of the 27 `update.bash` files under `tools/`, counting the `@new` template, 4 call
   `update_and_symlink` (neovim, node, uv and `@new`).
 - *Measured (2026-10-19):* bash tests of `update_and_symlink` need a fake `HOME`, because
-  `tools/bash/utils.bash` overwrites `DOTFILES`.
+  `update_and_symlink` links, and the link step links only from the install at
+  `~/Repos/ooloth/dotfiles`.
 
 [boot]: how-does-a-fresh-mac-get-uv-and-python-before-the-first-script-needs-them.md

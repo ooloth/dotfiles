@@ -96,7 +96,7 @@ class ScriptsStartedOutsideZsh(unittest.TestCase):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         self.home = Path(directory.name)
-        # utils.bash fixes DOTFILES to this path, so the checkout it reads lives under HOME
+        # The install. utils.bash reads private.env from here, whichever checkout it is sourced from
         checkout = self.home / "Repos" / "ooloth" / "dotfiles"
         checkout.mkdir(parents=True)
         (checkout / "tools").symlink_to(REPO / "tools")

@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 export DOTFILES_CHECK=true
-
-source "${DOTFILES}/tools/bash/utils.bash"
 
 failures=0
 

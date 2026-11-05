@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 # TODO: delete this file unless update.bash depends on outside state, such as a daemon or login,
 # that would make it fail. `u` runs every preflight.bash before any update and stops if one fails.

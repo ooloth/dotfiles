@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
 
-# In case this file is sourced before shell variables have been symlinked
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
-
 # The install: the one checkout that links in $HOME lead to and that holds private.env. Set here
 # whatever the environment says, so nothing a caller exports can move it.
 DOTFILES_INSTALL="${HOME}/Repos/ooloth/dotfiles"
+
+# The checkout this file is in, which every script that sources it acts on, whatever DOTFILES the
+# caller exported. When that checkout is the install, it is spelled as the install path, so link
+# text stays the same however the script was reached, such as through an Amp orb's symlink.
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+if [[ "$(cd -P "${DOTFILES}" && pwd)" == "$(cd -P "${DOTFILES_INSTALL}" 2>/dev/null && pwd)" ]]; then
+  DOTFILES="${DOTFILES_INSTALL}"
+fi
+if [[ ! -f "${DOTFILES}/tools/bash/utils.bash" ]]; then
+  echo "🚨 Bug: DOTFILES='${DOTFILES}' does not hold tools/bash/utils.bash" >&2
+  return 1 2>/dev/null || exit 1
+fi
+export DOTFILES
 
 # Include is_air, is_mini, is_work in this commonly-sourced file
 source "${DOTFILES}/tools/macos/utils.bash"

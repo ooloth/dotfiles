@@ -5,10 +5,7 @@
 # Written for macOS's own bash 3.2, with no `timeout`, which only Homebrew's coreutils provides.
 set -uo pipefail
 
-# In case this file is sourced before shell variables have been symlinked
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
-
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 deadline_seconds=5
 

@@ -63,7 +63,10 @@ Shellcheck settings live in `.shellcheckrc`, not in disable comments. Run it onl
 
 Then run what you changed. Tests passing is not evidence that it works:
 
-- **A `link.bash`:** run `symlinks`, then `dcheck`, and read the line for each link.
+- **A `link.bash`:** run `symlinks`, then `dcheck`, and read the line for each link. Both run the
+  main checkout's scripts, and a worktree's own link step refuses to link, so check a `link.bash`
+  change from the main checkout, or let `scripts/checks/link-scripts.bash` run it in a temporary
+  `HOME`.
 - **An `update.bash`:** run `u <tool>` and check its exit status with `echo $?`.
 - **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
   aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
