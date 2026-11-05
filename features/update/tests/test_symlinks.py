@@ -8,8 +8,8 @@ features/update/symlinks.bash.
 
 Run with: uv run features/update/tests/test_symlinks.py
 
-Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it, and runs the code under macOS's own bash with no terminal, the way CI does. A `trash`
+Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, the install path
+in utils.bash, and runs the code under macOS's own bash with no terminal, the way CI does. A `trash`
 stub on PATH records what it was asked to remove and removes it, so a run leaves nothing in the real
 Trash.
 """
@@ -38,7 +38,7 @@ class Run:
 
 
 class FakeHome:
-    """A temporary HOME with the repo where utils.bash sources it from."""
+    """A temporary HOME whose install path is the repo, so the link step links from it."""
 
     def __init__(self, root: Path) -> None:
         self.path = root / "home"
@@ -171,6 +171,46 @@ class SweepTest(unittest.TestCase):
         run = self.home.run('bash "$DOTFILES/features/update/symlinks.bash" claude')
         self.assertEqual(run.status, 0, run.output)
         self.assertIn(str(link), run.trashed)
+
+
+class OtherCheckoutTest(unittest.TestCase):
+    """Run with DOTFILES naming a checkout that is not the install at ~/Repos/ooloth/dotfiles."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.home = FakeHome(Path(self._tmp.name))
+        self.copy = Path(self._tmp.name) / "copy"
+        (self.copy / "tools/claude/config").mkdir(parents=True)
+        (self.copy / "tools/claude/config/CLAUDE.md").write_text("")
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def assert_refused_naming_both_checkouts(self, run: Run) -> None:
+        self.assertNotEqual(run.status, 0, run.output)
+        self.assertIn(str(self.copy), run.output)
+        self.assertIn(str(self.home.dotfiles), run.output)
+
+    def test_every_home_write_site_changes_nothing_and_says_why(self) -> None:
+        broken_into_copy = self.home.link(".claude/hooks", self.copy / "tools/claude/config/hooks")
+        broken_elsewhere = self.home.link(".old-tool-rc", "/nonexistent/old-tool-rc")
+        sites = {
+            "symlink": 'symlink "$DOTFILES/tools/claude/config/CLAUDE.md" "$HOME/.claude"',
+            "symlink in check mode": (
+                'DOTFILES_CHECK=true symlink "$DOTFILES/tools/claude/config/CLAUDE.md" '
+                '"$HOME/.claude"'
+            ),
+            "remove_broken_symlinks": 'remove_broken_symlinks "$HOME"',
+            "remove_broken_repo_symlinks": 'remove_broken_repo_symlinks "$HOME/.claude"',
+        }
+        for site, script in sites.items():
+            with self.subTest(site=site):
+                run = self.home.run(script, dotfiles=str(self.copy))
+                self.assert_refused_naming_both_checkouts(run)
+                self.assertEqual(run.trashed, [])
+                self.assertFalse((self.home.path / ".claude/CLAUDE.md").exists())
+                self.assertTrue(broken_into_copy.is_symlink())
+                self.assertTrue(broken_elsewhere.is_symlink())
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@
 # open, starts in auto mode on every machine.
 set -euo pipefail
 
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 # Repos a session in the named folder should be told about, one name per line, each cloned beside
 # the current repo's main checkout. The pairs come from PRIVATE_RELATED_REPOS in private.env, as

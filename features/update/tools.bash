@@ -2,10 +2,7 @@
 # Intentionally omitting -e: a failing tool update must not block subsequent tools
 set -uo pipefail
 
-# In case this file is sourced before shell variables have been symlinked
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
-
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 main() {
   local tool="${1:-}"

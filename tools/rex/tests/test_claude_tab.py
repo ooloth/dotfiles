@@ -7,8 +7,8 @@
 
 Run with: uv run tools/rex/tests/test_claude_tab.py
 
-Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it, and runs the launcher under macOS's own bash. A `rex` stub on PATH records the arguments
+Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, the install path in
+utils.bash, and runs the launcher under macOS's own bash. A `rex` stub on PATH records the arguments
 of every call. It answers `session list` with the sessions the test sets, and for `window new` and
 `session new` it does what the real tab would: it runs the command after `--` in the `-c` directory.
 A `claude` stub records the arguments cc.bash hands it, so a test sees the permission mode the tab's

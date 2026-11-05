@@ -7,8 +7,8 @@
 
 Run with: uv run tools/claude/tests/test_cc.py
 
-Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it, and runs the script under macOS's own bash from a folder beside its siblings. A `claude`
+Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, the install path in
+utils.bash, and runs the script under macOS's own bash from a folder beside its siblings. A `claude`
 stub on PATH records its arguments separated by NUL bytes, so no test reaches the real Claude Code.
 The tests of the map's handling in general source the real cc.bash and replace only its
 `related_repos` lookup before calling `main`; the shipped entries are tested as shipped.

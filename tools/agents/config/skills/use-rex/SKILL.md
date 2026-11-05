@@ -34,6 +34,8 @@ looks for a pane only in your own session unless `-s` names another, so capture 
 A tab's name says what is happening in it: `<subject> (<person>): <activity>`. The subject is what
 the tab works on, such as `PR 123`, `Issue 412` or `ENG-45`. The person is the login of whoever
 wrote the subject: the PR's or issue's author, or your user's login for a ticket with no PR yet.
+An app's login is spelled as GraphQL spells it, such as `dependabot`, not `gh`'s `app/dependabot`
+or REST's `dependabot[bot]`, because hub and `monitor-prs` find a tab by that spelling.
 Leave out the parentheses when no person wrote it, as in `CI test-suite: investigate`. The activity
 is the skill the tab runs, such as `review-code`, so other skills can tell from the label alone that
 a PR is already being handled. A tab that runs no skill names its activity in one plain word, such
@@ -48,3 +50,7 @@ Tab names start with a word, never an emoji: `PR 123 (alice): review-code`, not
   close` fails and the new tab never opens. List the tabs first, or run the two separately.
 - **Read IDs with `jq -e`.** `jq -r` turns a missing ID into an empty string, and
   `rex capture -b ""` captures your own pane instead of failing.
+- **Build every commit hash in a tab's prompt from git output.** A hash typed from memory can name
+  a commit that doesn't exist, and the new session spends its start looking for it. Put
+  `$(git rev-parse --short <ref>)` in the prompt, or check each hash with `git cat-file -t <hash>`
+  before opening the tab.

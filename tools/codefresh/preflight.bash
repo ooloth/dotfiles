@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 # Same guard as update.bash: Codefresh is only used on the work laptop, through its Docker image
 if ! is_work || ! have docker; then

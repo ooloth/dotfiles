@@ -1,7 +1,27 @@
 #!/usr/bin/env bash
 
-# In case this file is sourced before shell variables have been symlinked
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+# The install: the one checkout that links in $HOME lead to and that holds private.env. Set here
+# whatever the environment says, so nothing a caller exports can move it.
+DOTFILES_INSTALL="${HOME}/Repos/ooloth/dotfiles"
+
+# Succeeds when DOTFILES is the install, however either path is spelled. -ef compares the files
+# themselves, so a symlink, a firmlink or a path typed in another case on macOS still matches.
+is_install_checkout() {
+  [[ -n "${DOTFILES:-}" && "${DOTFILES}" -ef "${DOTFILES_INSTALL}" ]]
+}
+
+# The checkout this file is in, which every script that sources it acts on, whatever DOTFILES the
+# caller exported. When that checkout is the install, it is spelled as the install path, so link
+# text stays the same however the script was reached, such as through an Amp orb's symlink.
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+if is_install_checkout; then
+  DOTFILES="${DOTFILES_INSTALL}"
+fi
+if [[ ! -f "${DOTFILES}/tools/bash/utils.bash" ]]; then
+  echo "🚨 Bug: DOTFILES='${DOTFILES}' does not hold tools/bash/utils.bash" >&2
+  return 1 2>/dev/null || exit 1
+fi
+export DOTFILES
 
 # Include is_air, is_mini, is_work in this commonly-sourced file
 source "${DOTFILES}/tools/macos/utils.bash"
@@ -10,7 +30,7 @@ source "${DOTFILES}/tools/macos/utils.bash"
 # reads them from private.env itself. One started from zsh keeps the ones it inherited.
 source "${DOTFILES}/tools/bash/private-env.bash"
 if [[ -z "$(compgen -v PRIVATE_)" ]]; then
-  load_private_env
+  load_private_env "${DOTFILES_INSTALL}/private.env"
 fi
 
 ##############
@@ -49,7 +69,33 @@ return_or_exit() {
 # SYMLINKING #
 ##############
 
+# Succeeds only when this script runs from the install. Every function that changes or reports on
+# links in $HOME calls it first, so a worktree or scratch copy can never point $HOME at itself.
+require_install_checkout() {
+  if is_install_checkout; then
+    return 0
+  fi
+  echo "🚨 Links in \$HOME are made and checked only from the install at ${DOTFILES_INSTALL}," \
+    "and this is ${DOTFILES:-an unset DOTFILES}. To use this checkout's links, run with a HOME" \
+    "whose Repos/ooloth/dotfiles is this checkout." >&2
+  return 1
+}
+
+# Runs a tool's link.bash from its update or install script. From any checkout but the install it
+# skips the link step with a note instead, so the rest of the update still runs from a worktree.
+run_link_step() {
+  local link_script="${1:-}"
+  if ! is_install_checkout; then
+    echo "⏭️ Skipping ${link_script#"${DOTFILES}/"}: links in \$HOME are made only from the" \
+      "install at ${DOTFILES_INSTALL}" >&2
+    return 0
+  fi
+  bash "${link_script}"
+}
+
 symlink() {
+  require_install_checkout || return 1
+
   # Both arguments should be absolute paths
   local source_file="${1:-}"
   local target_dir="${2:-}"
@@ -154,6 +200,8 @@ is_swept_link_dir() {
 
 # Removes broken symlinks in a directory, whatever they point at.
 remove_broken_symlinks() {
+  require_install_checkout || return 1
+
   local directory="${1:-}"
   local max_depth
   max_depth="$(symlink_sweep_depth "${directory}")"
@@ -183,13 +231,11 @@ remove_broken_symlinks() {
 
 # Removes broken symlinks in a directory that point into this repo, leaving other tools' links alone.
 remove_broken_repo_symlinks() {
-  local directory="${1:-}"
+  # Also rules out an empty or relative DOTFILES, which would make every link look like it points
+  # into the repo, since the install is always an absolute path
+  require_install_checkout || return 1
 
-  # An empty or relative DOTFILES would make every link look like it points into the repo
-  if [[ "${DOTFILES:-}" != /* || ! -d "${DOTFILES}" ]]; then
-    echo "🚨 Error: DOTFILES must be an absolute path to the repo, got '${DOTFILES:-}'" >&2
-    return 1
-  fi
+  local directory="${1:-}"
 
   if [[ -z "${directory}" ]]; then
     echo "🚨 Error: Directory path is required" >&2

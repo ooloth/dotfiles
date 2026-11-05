@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 # On the work laptop, uv installs through the work Artifact Registry index in ~/.config/uv/uv.toml,
 # which needs gcloud's application-default credentials. `uv tool install --upgrade` in harlequin,

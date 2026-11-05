@@ -22,6 +22,24 @@ observations about typical practice.
 - With `DOTFILES_CHECK=true`, a `link.bash` reports link status and writes nothing: no link,
   file or directory is created, replaced or removed. `dcheck` and `u`'s final check depend on
   this to be read-only. `scripts/checks/link-scripts.bash` checks every `link.bash` in CI.
+- A bash script directly in a `tools/<tool>/` or `features/<feature>/` folder, `tools/@new/`
+  included, run from any checkout of this repo such as a worktree or a scratch copy, sources, reads
+  and writes that checkout's files. The one exception is `private.env`, which comes from the
+  install (next item). `tools/bash/utils.bash` sets `DOTFILES` from its own location, ignoring any
+  value the caller exported, and each such script sources it by a path relative to itself before
+  reading `DOTFILES`. Outside this rule are the files `utils.bash` itself sources (`tools/bash/`
+  and `tools/macos/utils.bash`), `tools/amp/workspace-resume.bash` (which sets up the install),
+  the setup `.zsh` files and the `wip/` drafts. `tools/bash/tests/test_dotfiles_location.py`
+  checks that each script in scope sources `utils.bash` that way before anything else, assigns no
+  `DOTFILES`, names no install path, and runs no `link.bash` directly from an `update.bash` or
+  `install.bash`.
+- Every link the link step makes in `$HOME` names a file under `~/Repos/ooloth/dotfiles`
+  (`DOTFILES_INSTALL` in `tools/bash/utils.bash`), and `private.env` is read from there. Run from
+  any other checkout, the link step, check mode included, changes nothing in `$HOME` and says why.
+  An `update.bash` or `install.bash` reaches its link step only through `run_link_step`, which
+  from another checkout skips it with a note and lets the rest of the script run. A test or an Amp
+  orb links from another checkout by giving it a `HOME` whose `Repos/ooloth/dotfiles` resolves to
+  that checkout.
 - `.github/workflows/check.yml` and `.agents/setup` install the same tools for the checks, beyond
   what each platform already ships, such as the zsh, luajit and newer jq that `.agents/setup` adds
   for an Amp orb, so `scripts/check.bash` passes in CI and in an Amp orb. A tool a check starts or

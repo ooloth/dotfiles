@@ -117,9 +117,9 @@ before the first `rex` command in a check.
 Find the open tabs once per check, in every Rex session. `rex session list --json` lists the
 sessions at `.sessions[]`, and `rex window ls -s <session_id> --json` lists one session's tabs, each
 with its label at `.windows[].label` and its pane at `.windows[].focused_block_id`. Every session
-counts, because `orchestrate-rex` opens tabs with these names in each ticket's own session. When
-either command fails, the open tabs are unknown: prepare nothing in that check, and say so above the
-table, quoting the error.
+counts, because `orchestrate-rex` opens tabs with these names in each ticket's own session and hub
+opens them in each repository's. When either command fails, the open tabs are unknown: prepare
+nothing in that check, and say so above the table, quoting the error.
 
 A pull request's tab is `PR <number> (<author login>): review-pr-comments-converge`, and a prepared
 session is any open tab, in any session, whose label ends in `: review-pr-comments-converge`. Read

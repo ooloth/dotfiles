@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 export DOTFILES_CHECK=true
-
-source "${DOTFILES}/tools/bash/utils.bash"
 
 failures=0
 
@@ -18,9 +16,14 @@ link_files=$(find "${DOTFILES}/tools" \
   -type d \( -name "@new" -o -name "@archive" \) -prune \
   -o -type f -name "link.bash" -print | sort -t/ -k5)
 
-for file in $link_files; do
-  bash "$file" || failures=$((failures + 1))
-done
+# From any checkout but the install every link.bash would refuse, so refuse once and count it once
+if require_install_checkout; then
+  for file in $link_files; do
+    bash "$file" || failures=$((failures + 1))
+  done
+else
+  failures=$((failures + 1))
+fi
 
 # ─── Tool presence ──────────────────────────────────────────
 

@@ -29,8 +29,8 @@ run_link_script() {
   env -u TERM /bin/bash "$@"
 }
 
-# tools/bash/utils.bash sources its siblings through ${HOME}/Repos/ooloth/dotfiles, so a temporary
-# HOME needs the repo at that path. It is a fixture, not a link any link.bash made, so the snapshot
+# The link step links only from the install, ${HOME}/Repos/ooloth/dotfiles, so a temporary HOME
+# needs the repo at that path. It is a fixture, not a link any link.bash made, so the snapshot
 # and the list of links to remove both leave it out.
 make_fake_home() {
   local dir
@@ -65,8 +65,9 @@ snapshot() {
 failed=()
 checked=0
 
-# The scripts `symlinks` runs, asked of utils.bash so this checks exactly that list. utils.bash needs
-# a HOME holding the repo, and DOTFILES is set back afterwards so the paths are this checkout's.
+# The scripts `symlinks` runs, asked of utils.bash so this checks exactly that list. Sourced through a
+# temporary HOME's install path, utils.bash spells DOTFILES as that path, so it is set back afterwards
+# to list this checkout's paths.
 list_home="$(make_fake_home)"
 if ! link_scripts_list="$(HOME="${list_home}" run_link_script -c \
   "source '${list_home}/Repos/ooloth/dotfiles/tools/bash/utils.bash'; DOTFILES='${DOTFILES}'; link_scripts")"; then

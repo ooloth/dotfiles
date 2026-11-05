@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 if is_work; then
   symlink "${DOTFILES}/tools/kubernetes/config/k9s/aliases.yaml" "${HOME}/.config/k9s"

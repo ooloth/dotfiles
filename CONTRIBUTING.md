@@ -66,8 +66,21 @@ Shellcheck settings live in `.shellcheckrc`, not in disable comments. Run it onl
 
 Then run what you changed. Tests passing is not evidence that it works:
 
-- **A `link.bash`:** run `symlinks`, then `dcheck`, and read the line for each link.
-- **An `update.bash`:** run `u <tool>` and check its exit status with `echo $?`.
+- **A `link.bash`:** from the main checkout, run `bash features/update/symlinks.bash <tool>`, then
+  `bash features/check/dotfiles.bash`, and read the line for each link. From a worktree, a
+  `link.bash` refuses to link, so run it with a temporary `HOME` whose `Repos/ooloth/dotfiles` links
+  to the worktree, then list the links under `$h`:
+
+  ```bash
+  h="$(mktemp -d)" && mkdir -p "$h/Repos/ooloth" && ln -s "$PWD" "$h/Repos/ooloth/dotfiles"
+  HOME="$h" bash tools/<tool>/link.bash
+  ```
+
+- **An `update.bash`:** run `u <tool>` and check its exit status with `echo $?`. `u` runs the main
+  checkout's scripts, starting with the tool's preflight, so from a worktree run
+  `bash features/update/preflight.bash <tool> && bash tools/<tool>/update.bash`. That
+  runs the real update on this machine. If the script has a link step, the link step is skipped
+  with a note and the rest of the update runs.
 - **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
   aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
   interactive zsh, keeping the variables Claude Code needs to find its login:

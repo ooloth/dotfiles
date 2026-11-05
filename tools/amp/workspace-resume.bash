@@ -54,7 +54,7 @@ else
   timeout 6 git clone --quiet https://github.com/ooloth/dotfiles.git "${dotfiles}"
 fi
 
-DOTFILES="${dotfiles}" bash "${dotfiles}/tools/agents/link.bash"
+bash "${dotfiles}/tools/agents/link.bash"
 
 # A link, not a copy: an edit to the checkout's CLAUDE.md applies to the next thread at once.
 # symlink() in tools/bash/utils.bash keeps the source's name, so this uses ln.

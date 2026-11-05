@@ -100,6 +100,15 @@ open stay, so an answer can be matched to them. A history of changes, a record o
 and anything a ticket already holds fail the test, and each makes the file slower to read and
 quicker to go stale. A file saved after every reply makes ending a session cost nothing.
 
+**A session starts a branch in a worktree of its own, not in a checkout another session may be
+using.**
+Switching branches in a shared checkout moves every other session in it onto the new branch: their
+uncommitted changes go with it, and their next commit lands there instead of where they meant it
+to. Nothing warns either session. `git worktree add` gives the branch its own directory, and the
+shared checkout stays on the branch its other sessions expect. A project whose checks need files
+beside the checkout, such as a sibling repo that a tracked relative link points into, says so where
+its worktree setup is documented.
+
 **Evidence an agent reports is written by the tool that observed it, and the report quotes it
 from there.**
 An agent that retypes a command's output can trim it, misremember it, or leave out the run that

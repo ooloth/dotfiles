@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-# In case this file is sourced before shell variables have been symlinked
-export DOTFILES="${HOME}/Repos/ooloth/dotfiles"
-
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 source "${DOTFILES}/features/utils.bash"
-source "${DOTFILES}/tools/bash/utils.bash"
 
 update_and_symlink() {
   local tool_lower="${1}"
@@ -40,7 +37,7 @@ update_and_symlink() {
 
   # Symlink config files
   if [ -f "${symlink_script_path}" ]; then
-    bash -c "VERBOSE=true ${symlink_script_path}"
+    VERBOSE=true run_link_step "${symlink_script_path}"
   fi
 
   debug "🚀 ${tool_upper} is up-to-date"

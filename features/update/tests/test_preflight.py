@@ -6,8 +6,8 @@
 
 Run with: uv run features/update/tests/test_preflight.py
 
-Each test builds a throwaway HOME holding a repo at ~/Repos/ooloth/dotfiles, where utils.bash
-expects it. The repo links in the real features/update scripts and the bash utils, and adds fake
+Each test builds a throwaway HOME holding a repo at ~/Repos/ooloth/dotfiles, the install path
+in utils.bash. The repo links in the real features/update scripts and the bash utils, and adds fake
 tools whose preflight.bash passes, fails or hangs and whose update.bash leaves a marker file. A
 `curl` stub on PATH stands in for the network check. Everything runs under macOS's own bash 3.2.
 """

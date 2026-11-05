@@ -119,7 +119,7 @@ link_agent_config() {
     mkdir -p "$(dirname "${dotfiles}")"
     ln -s "${repo}" "${dotfiles}"
   fi
-  DOTFILES="${dotfiles}" bash tools/agents/link.bash
+  bash "${dotfiles}/tools/agents/link.bash"
 }
 
 step "shellcheck" install_shellcheck
