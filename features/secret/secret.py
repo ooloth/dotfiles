@@ -24,10 +24,13 @@ from dataclasses import dataclass
 from typing import NewType, assert_never
 
 SecretName = NewType("SecretName", str)
+KeychainAccount = NewType("KeychainAccount", str)
 
 # Letters, digits, dots, underscores and hyphens, not starting with a hyphen, so security can't
 # read a name as one of its options
 NAME_PATTERN = re.compile(r"[A-Za-z0-9._][A-Za-z0-9._-]*")
+# The same, plus @ and + so an email address can be an account
+ACCOUNT_PATTERN = re.compile(r"[A-Za-z0-9._@+][A-Za-z0-9._@+-]*")
 
 # `security find-generic-password` exits 44 with this message when no item has the name. Either one
 # counts, since neither has been checked against every macOS version.
@@ -38,6 +41,7 @@ NOT_FOUND_MESSAGE = "could not be found"
 @dataclass(frozen=True)
 class Add:
     name: SecretName
+    account: KeychainAccount
 
 
 @dataclass(frozen=True)
@@ -51,6 +55,7 @@ Request = Add | Get
 @dataclass(frozen=True)
 class Stored:
     name: SecretName
+    account: KeychainAccount
     length: int
 
 
@@ -86,6 +91,15 @@ def secret_name(text: str) -> SecretName:
     return SecretName(text)
 
 
+def keychain_account(text: str) -> KeychainAccount:
+    if not ACCOUNT_PATTERN.fullmatch(text):
+        raise argparse.ArgumentTypeError(
+            f"{text!r} isn't a usable account: use letters, digits and . _ @ + -,"
+            " not starting with a hyphen"
+        )
+    return KeychainAccount(text)
+
+
 def read_request(argv: list[str]) -> Request:
     parser = argparse.ArgumentParser(
         prog="secret", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -93,12 +107,19 @@ def read_request(argv: list[str]) -> Request:
     commands = parser.add_subparsers(dest="command", required=True)
     add = commands.add_parser("add", help="store a secret, asking for its value without showing it")
     add.add_argument("name", type=secret_name, help="the name to store it under, such as codefresh")
+    add.add_argument(
+        "--account",
+        type=keychain_account,
+        default=KeychainAccount(getpass.getuser()),
+        help="the account to store it under (default: your user name). Use the one a tool"
+        " looks up, such as your login email for jira-cli",
+    )
     get = commands.add_parser("get", help="print a stored secret")
     get.add_argument("name", type=secret_name, help="the name it was stored under")
     args = parser.parse_args(argv)
     match args.command:
         case "add":
-            return Add(args.name)
+            return Add(args.name, args.account)
         case "get":
             return Get(args.name)
         case other:
@@ -113,21 +134,20 @@ def read_value(name: SecretName) -> str:
     return sys.stdin.readline().removesuffix("\n").removesuffix("\r")
 
 
-def add(name: SecretName, value: str) -> Result:
+def add(name: SecretName, account: KeychainAccount, value: str) -> Result:
     if not value:
         return EmptyValue(name)
-    # The value is in security's arguments while it runs, and nowhere else: not in shell history,
-    # the clipboard or anything printed. -U replaces a value already stored under this name.
+    # The value passes through security's arguments while it runs, and is never written to shell
+    # history, the clipboard or anything printed. -U replaces a value already stored under this name.
     result = subprocess.run(
-        ["security", "add-generic-password", "-U", "-a", getpass.getuser(), "-s", name]
-        + ["-w", value],
+        ["security", "add-generic-password", "-U", "-a", account, "-s", name] + ["-w", value],
         capture_output=True,
         text=True,
         check=False,
     )
     if result.returncode != 0:
         return KeychainError(last_line(result.stderr) or f"security exited {result.returncode}")
-    return Stored(name, len(value))
+    return Stored(name, account, len(value))
 
 
 def get(name: SecretName) -> Result:
@@ -157,9 +177,10 @@ def report(result: Result) -> int:
         case Found(value=value):
             print(value)
             return 0
-        case Stored(name=name, length=length):
+        case Stored(name=name, account=account, length=length):
             print(
-                f'✅ Stored {length} characters as {name}. Use it as "$(secret get {name})".',
+                f"✅ Stored {length} characters as {name} (account {account})."
+                f' Use it as "$(secret get {name})".',
                 file=sys.stderr,
             )
             return 0
@@ -182,8 +203,8 @@ def report(result: Result) -> int:
 
 def main(argv: list[str]) -> int:
     match read_request(argv):
-        case Add(name=name):
-            return report(add(name, read_value(name)))
+        case Add(name=name, account=account):
+            return report(add(name, account, read_value(name)))
         case Get(name=name):
             return report(get(name))
         case other:

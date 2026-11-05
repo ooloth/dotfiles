@@ -117,6 +117,35 @@ class Add(SecretTest):
         self.assertEqual(run.security and run.security[-1], value)
         self.assertIn("300 characters", run.stderr)
 
+    def test_an_account_stores_the_item_another_tool_looks_up(self) -> None:
+        # jira-cli reads the item named jira-cli whose account is the login email
+        run = self.secret(
+            "add", "jira-cli", "--account", "alice@example.com", stdin="test-value-123\n"
+        )
+
+        self.assertEqual(run.status, 0, run.stderr)
+        self.assertEqual(
+            run.security,
+            [
+                "add-generic-password",
+                "-U",
+                "-a",
+                "alice@example.com",
+                "-s",
+                "jira-cli",
+                "-w",
+                "test-value-123",
+            ],
+        )
+        self.assertIn("alice@example.com", run.stderr)
+
+    def test_an_account_security_could_misread_is_refused_before_security_runs(self) -> None:
+        for account in ("-x", "a b", ""):
+            with self.subTest(account=account):
+                run = self.secret("add", "jira-cli", "--account", account, stdin="v\n")
+                self.assertEqual(run.status, 2, run.stderr)
+                self.assertIsNone(run.security)
+
     def test_the_value_is_never_printed(self) -> None:
         run = self.secret("add", "codefresh", stdin="test-value-123\n")
 
