@@ -26,10 +26,10 @@ source "${DOTFILES}/tools/bash/private-env.bash" && load_private_env
 
 # History variables
 export HISTFILE="${HOME}/.zsh_history"
-# Lines matching this are never written to HISTFILE: git commands, and any line carrying a secret
-# after a flag or header that names one. It catches only those shapes, so a bare pasted token still
-# needs a leading space (HIST_IGNORE_SPACE below).
-export HISTORY_IGNORE="(git*|*--api-key*|*--password*|*--token*|*Bearer *)"
+# Lines matching this are never written to HISTFILE. Lines holding a literal secret are kept out by
+# warn_secret_in_history in hooks.zsh, and a bare pasted token still needs a leading space
+# (HIST_IGNORE_SPACE below).
+export HISTORY_IGNORE="git*"
 export HISTSIZE=100000
 export SAVEHIST=$HISTSIZE
 

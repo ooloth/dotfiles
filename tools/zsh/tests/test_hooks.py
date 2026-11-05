@@ -138,5 +138,141 @@ class PythonSearchPaths(unittest.TestCase):
         self.assertEqual(result.stdout.strip(), "<none> <none>")
 
 
+# Every way a secret was seen or could plausibly be typed after each marker. Flags take a space or
+# `=`, a header takes a space, and an assignment takes `=`, with or without `export`.
+FLAG_MARKERS = ("--api-key", "--password", "--token")
+ASSIGNMENTS = ("JIRA_API_TOKEN", "EGNYTE_CLIENT_SECRET", "AWS_SECRET_ACCESS_KEY", "DB_PASSWORD")
+QUOTES = ("", '"', "'")
+LITERALS = ("abc123", "ATATT3xFf-Zx_9")
+REFERENCES = ("$TOKEN", "${TOKEN}", "$(secret get codefresh)")
+
+
+def secret_lines(values: tuple[str, ...]) -> list[str]:
+    lines = []
+    for quote in QUOTES:
+        for value in values:
+            quoted = f"{quote}{value}{quote}"
+            for marker in FLAG_MARKERS:
+                lines.append(f"tool {marker} {quoted} --verbose")
+                lines.append(f"tool {marker}={quoted}")
+            lines.append(f'curl -H "Authorization: Bearer {value}" https://example.com')
+            for name in ASSIGNMENTS:
+                lines.append(f"{name}={quoted}")
+                lines.append(f"export {name}={quoted}")
+    return lines
+
+
+def history_verdicts(lines: list[str]) -> list[tuple[int, str]]:
+    """Run the registered zshaddhistory hooks on each line, as zsh does, and return each line's
+    status and what the hooks printed to stderr."""
+    script = (
+        f"source '{UTILS}'\nsource '{HOOKS}'\n"
+        'for line in "$@"; do\n'
+        "  err=$({ for hook in $zshaddhistory_functions; do $hook \"$line\"$'\\n'"
+        ' || { print -r -- "<status:$?>"; break; }; done } 2>&1)\n'
+        '  print -r -- "${err:-<status:0>}"\n'
+        "  print -r -- '<end>'\n"
+        "done\n"
+    )
+    result = subprocess.run(
+        ["zsh", "-f", "-c", script, "zsh", *lines],
+        env={"HOME": tempfile.gettempdir(), "PATH": "/usr/bin:/bin", "TERM": "dumb"},
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=30,
+    )
+    verdicts = []
+    for block in result.stdout.split("<end>\n")[:-1]:
+        status = int(block.rsplit("<status:", 1)[1].split(">", 1)[0])
+        verdicts.append((status, block.rsplit("<status:", 1)[0].strip()))
+    return verdicts
+
+
+class SecretsStayOutOfHistory(unittest.TestCase):
+    def test_a_literal_after_any_marker_is_held_back_with_the_safe_way_named(self) -> None:
+        lines = secret_lines(LITERALS)
+        for line, (status, warning) in zip(lines, history_verdicts(lines), strict=True):
+            with self.subTest(line=line):
+                # 2 keeps the line for up-arrow in this shell but out of the history file
+                self.assertEqual(status, 2)
+                self.assertIn("secret add", warning)
+                self.assertIn("secret get", warning)
+
+    def test_a_reference_after_any_marker_is_saved_without_a_warning(self) -> None:
+        lines = secret_lines(REFERENCES)
+        for line, (status, warning) in zip(lines, history_verdicts(lines), strict=True):
+            with self.subTest(line=line):
+                self.assertEqual((status, warning), (0, ""))
+
+    def test_lines_without_a_marker_are_saved_without_a_warning(self) -> None:
+        lines = [
+            "git status",
+            "kubectl get pods -n example -o wide",
+            "tool --password-file=secrets.txt",
+            "echo TOKEN=abc",
+            "ls ~/.ssh",
+        ]
+        self.assertEqual(history_verdicts(lines), [(0, "")] * len(lines))
+
+
+class SecretsStayOutOfTheHistoryFile(unittest.TestCase):
+    """Runs a real interactive zsh on a pseudo-terminal, because zsh records history only for lines
+    it reads interactively, and only that shows the hook's status keeps a line out of the file."""
+
+    def test_the_file_keeps_references_and_drops_literals(self) -> None:
+        import pty
+        import select
+        import time
+
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        root = Path(directory.name)
+        history = root / "history"
+        (root / ".zshrc").write_text(
+            f"source '{UTILS}'\nsource '{HOOKS}'\n"
+            f"HISTFILE='{history}'\nSAVEHIST=100\nHISTSIZE=100\nPS1='> '\n"
+        )
+        lines = [
+            "echo kept",
+            "true --api-key abc123",
+            'true --api-key "$(true)"',
+            "export EXAMPLE_TOKEN=abc123",
+            "exit",
+        ]
+
+        leader, follower = pty.openpty()
+        shell = subprocess.Popen(
+            ["zsh", "-i"],
+            stdin=follower,
+            stdout=follower,
+            stderr=follower,
+            env={"HOME": str(root), "ZDOTDIR": str(root), "PATH": "/usr/bin:/bin", "TERM": "dumb"},
+            cwd=root,
+        )
+        os.close(follower)
+        self.addCleanup(os.close, leader)
+
+        def drain(seconds: float) -> None:
+            deadline = time.monotonic() + seconds
+            while time.monotonic() < deadline:
+                ready, _, _ = select.select([leader], [], [], 0.05)
+                if ready:
+                    try:
+                        os.read(leader, 4096)
+                    except OSError:
+                        return
+
+        drain(1.0)
+        for line in lines:
+            os.write(leader, f"{line}\n".encode())
+            drain(0.3)
+        shell.wait(timeout=10)
+
+        self.assertEqual(
+            history.read_text().splitlines(), ["echo kept", 'true --api-key "$(true)"', "exit"]
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
