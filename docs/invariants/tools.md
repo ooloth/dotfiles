@@ -24,8 +24,9 @@ observations about typical practice.
   this to be read-only. `scripts/checks/link-scripts.bash` checks every `link.bash` in CI.
 - A script run from any checkout of this repo, such as a worktree or a scratch copy, sources,
   reads and writes that checkout's files. `tools/bash/utils.bash` sets `DOTFILES` from its own
-  location, ignoring any value the caller exported, and every script under `tools/` and
-  `features/` sources it by a path relative to itself before reading `DOTFILES`.
+  location, ignoring any value the caller exported, and every bash script directly in a
+  `tools/<tool>/` or `features/<feature>/` folder sources it by a path relative to itself before
+  reading `DOTFILES`.
   `tools/bash/tests/test_dotfiles_location.py` checks every script.
 - Every link the link step makes in `$HOME` names a file under `~/Repos/ooloth/dotfiles`
   (`DOTFILES_INSTALL` in `tools/bash/utils.bash`), and `private.env` is read from there. Run from

@@ -89,6 +89,7 @@ by installer:
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 source "${DOTFILES}/features/install/utils.bash"
 source "${DOTFILES}/tools/{tool}/utils.bash" # source last to avoid env var overrides
 
@@ -136,6 +137,7 @@ Same pattern — update command varies by installer, 8th arg is always the insta
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 source "${DOTFILES}/features/update/utils.bash"
 source "${DOTFILES}/tools/{tool}/utils.bash" # source last to avoid env var overrides
 
@@ -173,7 +175,7 @@ cleanup steps brew can't handle — no wrapper needed:
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${DOTFILES}/tools/bash/utils.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 
 info "🔧 Uninstalling {tool}"
 {uninstall command}
@@ -219,8 +221,8 @@ completion zsh)"` or `source <(tool completions zsh)`.
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
 source "${DOTFILES}/tools/{tool}/utils.bash"
-source "${DOTFILES}/tools/bash/utils.bash"
 
 symlink "${DOTFILES}/tools/{tool}/config/settings.json" "${TOOL_CONFIG_DIR}"
 ```
@@ -239,7 +241,7 @@ shellcheck tools/{tool}/*.bash
 For a non-brew tool, run the install script to confirm it works end-to-end:
 
 ```bash
-DOTFILES="$HOME/Repos/ooloth/dotfiles" bash tools/{tool}/install.bash
+bash tools/{tool}/install.bash
 ```
 
 For a brew tool, install just its Brewfile and confirm the formula is there:
