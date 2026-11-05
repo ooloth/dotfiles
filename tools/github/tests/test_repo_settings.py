@@ -20,7 +20,7 @@ import json
 import os
 import subprocess
 import sys
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING
@@ -175,11 +175,8 @@ args = sys.argv[1:]
 with open(os.environ["STUB_LOG"], "a") as log:
     log.write(json.dumps(args) + "\\n")
 responses = json.load(open(os.environ["STUB_RESPONSES"]))
-if args[:2] == ["repo", "list"]:
-    key = "repo list"
-else:
-    method = args[args.index("-X") + 1]
-    key = method + " " + args[args.index("-X") + 2]
+method = args[args.index("-X") + 1]
+key = method + " " + args[args.index("-X") + 2]
 answer = responses.get(key, {"status": 404, "body": ""})
 if 200 <= answer["status"] < 300:
     sys.stdout.write(answer["body"])
@@ -240,7 +237,7 @@ def repo_answers(repo: str, visibility: str, *, alerts_on: bool) -> dict[str, ob
 
 
 def run(
-    stubs: Path, tmp_path: Path, mode: str, responses: Mapping[str, object]
+    stubs: Path, tmp_path: Path, args: Sequence[str], responses: Mapping[str, object]
 ) -> tuple[int, str, list[list[str]]]:
     answers = tmp_path / "responses.json"
     answers.write_text(json.dumps(responses))
@@ -253,23 +250,20 @@ def run(
         "STUB_LOG": str(log),
     }
     done = subprocess.run(
-        [sys.executable, str(SCRIPT), mode], env=env, capture_output=True, text=True, check=False
+        [sys.executable, str(SCRIPT), *args], env=env, capture_output=True, text=True, check=False
     )
     calls = [json.loads(line) for line in log.read_text().splitlines()]
     return done.returncode, done.stdout + done.stderr, calls
 
 
-def listing(*repos: str) -> dict[str, object]:
-    return {"repo list": ok([{"nameWithOwner": r} for r in repos])}
-
-
 def test_check_sends_only_reads_and_exits_1_on_drift(stubs: Path, tmp_path: Path) -> None:
     responses = {
-        **listing("example/public", "example/private"),
         **repo_answers("example/public", "public", alerts_on=False),
         **repo_answers("example/private", "private", alerts_on=True),
     }
-    status, output, calls = run(stubs, tmp_path, "--check", responses)
+    status, output, calls = run(
+        stubs, tmp_path, ["--check", "example/public", "example/private"], responses
+    )
     api_methods = {call[call.index("-X") + 1] for call in calls if call[0] == "api"}
     assert api_methods == {"GET"}
     assert status == 1
@@ -282,10 +276,9 @@ def test_check_never_reads_public_only_settings_of_a_private_repo(
     stubs: Path, tmp_path: Path
 ) -> None:
     responses = {
-        **listing("example/private"),
         **repo_answers("example/private", "private", alerts_on=True),
     }
-    status, output, calls = run(stubs, tmp_path, "--check", responses)
+    status, output, calls = run(stubs, tmp_path, ["--check", "example/private"], responses)
     assert status == 0, output
     assert not any("private-vulnerability-reporting" in " ".join(call) for call in calls)
 
@@ -294,12 +287,13 @@ def test_a_refused_write_names_the_repo_and_setting_and_the_rest_are_reported(
     stubs: Path, tmp_path: Path
 ) -> None:
     responses = {
-        **listing("example/refuses", "example/fine"),
         **repo_answers("example/refuses", "public", alerts_on=False),
         "PUT repos/example/refuses/vulnerability-alerts": {"status": 403, "body": ""},
         **repo_answers("example/fine", "public", alerts_on=True),
     }
-    status, output, _ = run(stubs, tmp_path, "--apply", responses)
+    status, output, _ = run(
+        stubs, tmp_path, ["--apply", "example/refuses", "example/fine"], responses
+    )
     assert status == 1
     assert "example/refuses: GitHub refused to turn Dependabot alerts on" in output
     assert "PUT repos/example/refuses/vulnerability-alerts" in output
@@ -310,19 +304,36 @@ def test_an_unreadable_repo_is_reported_and_the_others_still_run(
     stubs: Path, tmp_path: Path
 ) -> None:
     responses = {
-        **listing("example/gone", "example/fine"),
         **repo_answers("example/fine", "public", alerts_on=True),
     }
-    status, output, _ = run(stubs, tmp_path, "--check", responses)
+    status, output, _ = run(stubs, tmp_path, ["--check", "example/gone", "example/fine"], responses)
     assert status == 1
     assert "❌ example/gone: could not read its settings" in output
     assert "✅ example/fine: matches the baseline" in output
 
 
-def test_no_tagged_repos_says_how_to_add_one(stubs: Path, tmp_path: Path) -> None:
-    status, output, _ = run(stubs, tmp_path, "--check", listing())
-    assert status == 1
-    assert "gh repo edit ooloth/<name> --add-topic security-baseline" in output
+def test_no_repo_names_is_refused_before_any_gh_call(stubs: Path, tmp_path: Path) -> None:
+    status, output, calls = run(stubs, tmp_path, ["--check"], {})
+    assert status == 2
+    assert "repo" in output
+    assert calls == []
+
+
+def test_a_bare_name_means_a_repo_of_mine(stubs: Path, tmp_path: Path) -> None:
+    responses = repo_answers("ooloth/example", "public", alerts_on=True)
+    status, output, _ = run(stubs, tmp_path, ["--check", "example"], responses)
+    assert status == 0, output
+    assert "✅ ooloth/example: matches the baseline" in output
+
+
+@pytest.mark.parametrize("name", ["a/b/c", "/example", "example/", "", "ex ample"])
+def test_a_malformed_name_is_refused_before_any_gh_call(
+    stubs: Path, tmp_path: Path, name: str
+) -> None:
+    status, output, calls = run(stubs, tmp_path, ["--check", name], {})
+    assert status == 2
+    assert "owner/name" in output
+    assert calls == []
 
 
 if __name__ == "__main__":

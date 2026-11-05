@@ -6,12 +6,10 @@
 """Report how each of my repos' security settings differ from one baseline, or apply it.
 
 Run:
-  uv run tools/github/repo_settings.py --check     report each repo's drift, change nothing
-  uv run tools/github/repo_settings.py --apply     write each drifted setting, then read it back
+  uv run tools/github/repo_settings.py --check <repo>...   report each repo's drift, change nothing
+  uv run tools/github/repo_settings.py --apply <repo>...   write each drifted setting, then read it
 
-The repos are the ones carrying the `security-baseline` topic, found with `gh repo list` when the
-script runs, so no file in this public repo names a private one. Add a repo with
-`gh repo edit ooloth/<name> --add-topic security-baseline`.
+Each repo is `owner/name`, or a bare `name` for one of mine, so `hub` means `ooloth/hub`.
 
 The baseline turns on Dependabot alerts and security updates, makes the default workflow token
 read-only, stops Actions approving pull requests, and deletes head branches on merge. On a public
@@ -41,7 +39,6 @@ from typing import Generic, Literal, NewType, TypeVar, assert_never
 from pydantic import BaseModel, ValidationError
 
 OWNER = "ooloth"
-TOPIC = "security-baseline"
 
 RepoName = NewType("RepoName", str)
 """A repo as `owner/name`."""
@@ -234,10 +231,6 @@ class _ContentEntry(BaseModel):
     type: str
 
 
-class _ListedRepo(BaseModel):
-    nameWithOwner: str
-
-
 # --- Calling gh -------------------------------------------------------------------------------
 
 _HTTP_STATUS = re.compile(r"\(HTTP (\d{3})\)")
@@ -263,11 +256,6 @@ class Gh:
         if body is not None:
             args += ["--input", "-"]
         return self._run(GhCall(method, path), args, json.dumps(body) if body is not None else None)
-
-    def repo_list(self) -> Ok[str] | Err[GhFailure]:
-        args = ["gh", "repo", "list", OWNER, "--topic", TOPIC, "--no-archived"]
-        args += ["--json", "nameWithOwner", "--limit", "1000"]
-        return self._run(GhCall("GET", f"repo list {OWNER} --topic {TOPIC}"), args, None)
 
     def _run(self, call: GhCall, args: list[str], stdin: str | None) -> Ok[str] | Err[GhFailure]:
         try:
@@ -627,25 +615,29 @@ def succeeded(report: RepoReport) -> bool:
             assert_never(report)
 
 
-def list_repos(gh: Gh) -> Ok[tuple[RepoName, ...]] | Err[str]:
-    match gh.repo_list():
-        case Ok(value=text):
-            pass
-        case Err(error=failure):
-            return Err(f"Could not list the repos with the {TOPIC} topic: {failure.message}")
-    try:
-        listed = [_ListedRepo.model_validate(item) for item in json.loads(text)]
-    except (ValueError, ValidationError) as error:
-        return Err(f"`gh repo list` returned something unexpected: {error}")
-    if not listed:
-        return Err(
-            f"No repos carry the {TOPIC} topic. Add one with "
-            f"`gh repo edit {OWNER}/<name> --add-topic {TOPIC}`."
-        )
-    return Ok(tuple(sorted(RepoName(item.nameWithOwner) for item in listed)))
+_REPO_PART = r"[A-Za-z0-9_.-]+"
+_REPO_ARG = re.compile(rf"(?:({_REPO_PART})/)?({_REPO_PART})")
 
 
-def parse_args(argv: Sequence[str]) -> Mode:
+def repo_name(arg: str) -> RepoName:
+    """Reads `owner/name`, or a bare `name` as one of mine. argparse reports the ValueError."""
+    match = _REPO_ARG.fullmatch(arg)
+    if match is None:
+        raise ValueError(arg)
+    owner, name = match.groups()
+    return RepoName(f"{owner or OWNER}/{name}")
+
+
+repo_name.__name__ = "owner/name"  # argparse names the type this way in its error
+
+
+@dataclass(frozen=True)
+class Args:
+    mode: Mode
+    repos: tuple[RepoName, ...]
+
+
+def parse_args(argv: Sequence[str]) -> Args:
     parser = argparse.ArgumentParser(
         description=(__doc__ or "").split("\n\n")[0],
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -653,20 +645,23 @@ def parse_args(argv: Sequence[str]) -> Mode:
     modes = parser.add_mutually_exclusive_group(required=True)
     modes.add_argument("--check", action="store_true", help="report drift and change nothing")
     modes.add_argument("--apply", action="store_true", help="write each drifted setting")
+    parser.add_argument(
+        "repos",
+        nargs="+",
+        type=repo_name,
+        metavar="repo",
+        help=f"a repo as owner/name, or a bare name for one of {OWNER}'s",
+    )
     args = parser.parse_args(argv)
-    return Mode.APPLY if args.apply else Mode.CHECK
+    return Args(Mode.APPLY if args.apply else Mode.CHECK, tuple(args.repos))
 
 
 def main(argv: Sequence[str]) -> int:
-    mode = parse_args(argv)
+    args = parse_args(argv)
+    mode = args.mode
     gh = Gh(mode)
-    match list_repos(gh):
-        case Ok(value=repos):
-            pass
-        case Err(error=message):
-            raise SystemExit(message)
     reports: list[RepoReport] = []
-    for repo in repos:
+    for repo in args.repos:
         match mode:
             case Mode.CHECK:
                 report = check_repo(gh, repo)
