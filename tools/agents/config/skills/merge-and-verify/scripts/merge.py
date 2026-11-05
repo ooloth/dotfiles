@@ -12,7 +12,9 @@ The script reads the PR from GitHub and refuses unless all of these hold:
 - the head is still the commit the caller checked
 - the PR is open and not a draft
 - someone approved it, on any commit, and no reviewer's latest review requests changes or was
-  dismissed: a push to an approved PR never undoes its approval
+  dismissed: a push to an approved PR never undoes its approval. The repo owner's own PR, merged
+  by the owner, needs no approval, because GitHub never lets an author approve their own PR and
+  on a personal repo nobody else can
 - every check on the head passed
 - GitHub says it can merge
 
@@ -47,10 +49,11 @@ from typing import Any, Literal, NewType, assert_never
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 RepoSlug = NewType("RepoSlug", str)
+GitHubLogin = NewType("GitHubLogin", str)
 CommitSha = NewType("CommitSha", str)
 MergeMethod = Literal["squash", "merge", "rebase"]
 
-PR_FIELDS = "state,isDraft,headRefOid,mergeStateStatus,reviews,statusCheckRollup"
+PR_FIELDS = "state,isDraft,author,headRefOid,mergeStateStatus,reviews,statusCheckRollup"
 REPO_FIELDS = "squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed"
 PASSING_CONCLUSIONS = {"SUCCESS", "NEUTRAL", "SKIPPED"}
 RUNNING_CONTEXT_STATES = {"PENDING", "EXPECTED"}
@@ -93,6 +96,7 @@ class _Check(_Answer):
 class _PullRequest(_Answer):
     state: str
     isDraft: bool
+    author: _Author
     headRefOid: str
     mergeStateStatus: str
     reviews: list[_Review]
@@ -124,12 +128,18 @@ class PullRequestState:
     open: bool
     shown_state: str
     draft: bool
+    author: GitHubLogin
+    repo: RepoSlug
     head: CommitSha
     approved_by: tuple[str, ...]
     changes_requested_by: tuple[str, ...]
     checks: tuple[Check, ...]
     merge_state: str
     allowed_methods: tuple[MergeMethod, ...]
+
+    def is_owners_own_pr_merged_by(self, viewer: GitHubLogin) -> bool:
+        owner = self.repo.split("/")[0].lower()
+        return self.author.lower() == owner and viewer.lower() == owner
 
 
 @dataclass(frozen=True)
@@ -238,7 +248,9 @@ class ReadFailed:
 # Parsing
 
 
-def parse_pull_request(raw: dict[str, Any], repo: dict[str, Any]) -> PullRequestState:
+def parse_pull_request(
+    raw: dict[str, Any], repo: dict[str, Any], slug: RepoSlug
+) -> PullRequestState:
     pr = _PullRequest.model_validate(raw)
     allowed = _Repo.model_validate(repo)
     latest: dict[str, _Review] = {}
@@ -259,6 +271,8 @@ def parse_pull_request(raw: dict[str, Any], repo: dict[str, Any]) -> PullRequest
         open=pr.state == "OPEN",
         shown_state=pr.state,
         draft=pr.isDraft,
+        author=GitHubLogin(pr.author.login),
+        repo=slug,
         head=CommitSha(pr.headRefOid),
         approved_by=approved,
         changes_requested_by=changes,
@@ -282,7 +296,7 @@ def _check(raw: _Check) -> Check:
 # Judging
 
 
-def judge(state: PullRequestState, checked_head: CommitSha) -> Verdict:
+def judge(state: PullRequestState, checked_head: CommitSha, viewer: GitHubLogin) -> Verdict:
     refusals: list[Refusal] = []
     if state.head != checked_head:
         refusals.append(HeadMoved(checked_head, state.head))
@@ -290,7 +304,7 @@ def judge(state: PullRequestState, checked_head: CommitSha) -> Verdict:
         refusals.append(Closed(state.shown_state))
     if state.draft:
         refusals.append(Draft())
-    if not state.approved_by:
+    if not state.approved_by and not state.is_owners_own_pr_merged_by(viewer):
         refusals.append(NoApproval())
     refusals.extend(ChangesRequested(by) for by in state.changes_requested_by)
     if not state.checks:
@@ -363,17 +377,28 @@ def gh(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(["gh", *args], capture_output=True, text=True, check=False)
 
 
-def read(pr: str, repo: RepoSlug) -> PullRequestState | ReadFailed:
+@dataclass(frozen=True)
+class Reading:
+    state: PullRequestState
+    viewer: GitHubLogin
+
+
+def read(pr: str, repo: RepoSlug) -> Reading | ReadFailed:
     pr_call = gh("pr", "view", pr, "-R", repo, "--json", PR_FIELDS)
     if pr_call.returncode != 0:
         return ReadFailed("gh pr view", pr_call.stderr.strip())
     repo_call = gh("repo", "view", repo, "--json", REPO_FIELDS)
     if repo_call.returncode != 0:
         return ReadFailed("gh repo view", repo_call.stderr.strip())
+    user_call = gh("api", "user", "--jq", ".login")
+    viewer = user_call.stdout.strip()
+    if user_call.returncode != 0 or not viewer:
+        return ReadFailed("gh api user", user_call.stderr.strip() or "no login returned")
     try:
-        return parse_pull_request(json.loads(pr_call.stdout), json.loads(repo_call.stdout))
+        state = parse_pull_request(json.loads(pr_call.stdout), json.loads(repo_call.stdout), repo)
     except (json.JSONDecodeError, ValidationError) as error:
         return ReadFailed("parsing GitHub's answer", str(error).splitlines()[0])
+    return Reading(state, GitHubLogin(viewer))
 
 
 def merge(pr: str, repo: RepoSlug, method: MergeMethod, head: CommitSha) -> Merged | MergeRefused:
@@ -411,11 +436,14 @@ def main(argv: list[str]) -> int:
         return 2
     repo, head = RepoSlug(args.repo), CommitSha(args.head)
 
-    state = read(args.pr, repo)
-    if isinstance(state, ReadFailed):
-        print(f"merge.py: {state.call} failed: {state.message}", file=sys.stderr)
+    reading = read(args.pr, repo)
+    if isinstance(reading, ReadFailed):
+        print(f"merge.py: {reading.call} failed: {reading.message}", file=sys.stderr)
         return 2
-    verdict = judge(state, head)
+    state, viewer = reading.state, reading.viewer
+    verdict = judge(state, head, viewer)
+    if not state.approved_by and state.is_owners_own_pr_merged_by(viewer):
+        print(f"No approval needed: {viewer} owns {repo} and opened #{args.pr}")
     match verdict:
         case NotReady(refusals):
             print(f"Not merged. {len(refusals)} condition(s) failed:")

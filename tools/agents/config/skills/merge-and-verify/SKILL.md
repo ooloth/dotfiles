@@ -126,11 +126,12 @@ uv run <skill-base-dir>/scripts/merge.py <pr> --repo <owner>/<repo> --head <sha>
 ```
 
 It refuses unless the head is unchanged, the PR is open and not a draft, someone approved the PR (on
-any commit) with no outstanding change request, every check on the head passed and GitHub says it
-can merge. It prints every failed condition at once. Exit 3 means the only conditions left are
-waits, such as checks still running: schedule the next check rather than stopping. Never merge any
-other way: not `gh pr merge`, not the button in a browser. `--check-only` reports readiness without
-merging, for showing the user before you ask.
+any commit) or it is the repo owner's own PR and the owner is merging it, there is no outstanding
+change request, every check on the head passed and GitHub says it can merge. It prints every
+failed condition at once. Exit 3 means the only conditions left are waits, such as checks still
+running: schedule the next check rather than stopping. Never merge any other way: not
+`gh pr merge`, not the button in a browser. `--check-only` reports readiness without merging, for
+showing the user before you ask.
 
 ## Watching the rollout
 

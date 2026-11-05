@@ -28,6 +28,9 @@ PR = "305"
 HEAD = "a332bdad17df579716f3d0aaf32a935d86d3acd7"
 OLD = "0123456789abcdef0123456789abcdef01234567"
 MERGED = "1e0d2d079ed3b07aef234cf0f5a4615c1a0d7181"
+# The account the fake `gh api user` answers as unless a test says otherwise. It owns neither REPO
+# nor the default PR, so the default PR still needs an approval.
+VIEWER = "merge-agent"
 
 
 def _load_script() -> ModuleType:
@@ -65,6 +68,7 @@ def pull_request(**overrides: Any) -> dict[str, Any]:
     return {
         "state": "OPEN",
         "isDraft": False,
+        "author": {"login": "ooloth"},
         "headRefOid": HEAD,
         "mergeStateStatus": "CLEAN",
         "reviews": [review()],
@@ -86,6 +90,7 @@ case "$*" in
   "pr view"*"--json mergeCommit"*) cat "$GH_MERGED" ;;
   "pr view"*) if [ -n "$GH_READ_FAIL" ]; then echo "HTTP 502" >&2; exit 1; fi; cat "$GH_PR" ;;
   "repo view"*) cat "$GH_REPO" ;;
+  "api user"*) if [ -n "$GH_USER_FAIL" ]; then echo "HTTP 401" >&2; exit 1; fi; echo "$GH_VIEWER" ;;
   *) echo "unexpected gh call: $*" >&2; exit 9 ;;
 esac
 """
@@ -111,6 +116,7 @@ class Harness:
             "GH_PR": str(self.pr),
             "GH_REPO": str(self.repo),
             "GH_MERGED": str(merged),
+            "GH_VIEWER": VIEWER,
         }
 
     def run(
@@ -120,11 +126,12 @@ class Harness:
         repo: dict[str, Any] = SQUASH_ONLY,
         head: str = HEAD,
         env: dict[str, str] | None = None,
+        repo_slug: str = REPO,
     ) -> subprocess.CompletedProcess[str]:
         self.pr.write_text(json.dumps(pr))
         self.repo.write_text(json.dumps(repo))
         return subprocess.run(
-            [sys.executable, str(SCRIPT), PR, "--repo", REPO, "--head", head, *extra],
+            [sys.executable, str(SCRIPT), PR, "--repo", repo_slug, "--head", head, *extra],
             check=False,
             capture_output=True,
             text=True,
@@ -169,6 +176,43 @@ def test_a_pr_nobody_has_approved_is_refused(h: Harness, reviews: list[dict[str,
     assert result.returncode == 1
     assert h.merge_calls() == []
     assert "nobody has approved" in result.stdout
+
+
+@pytest.mark.parametrize("owner", ["ooloth", "Ooloth"], ids=["same-case", "other-case"])
+def test_the_owners_own_pr_merged_by_the_owner_needs_no_approval(h: Harness, owner: str) -> None:
+    result = h.run(pull_request(reviews=[]), repo_slug=f"{owner}/hub", env={"GH_VIEWER": "ooloth"})
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert h.merge_calls() == [f"pr merge {PR} -R {owner}/hub --squash --match-head-commit {HEAD}"]
+    assert f"No approval needed: ooloth owns {owner}/hub and opened #{PR}" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("author", "repo_slug", "viewer"),
+    [
+        ("someone-else", "ooloth/hub", "ooloth"),
+        ("ooloth", "an-org/hub", "ooloth"),
+        ("ooloth", "ooloth/hub", "another-account"),
+    ],
+    ids=["someone-elses-pr", "owners-pr-on-an-org-repo", "merged-by-another-account"],
+)
+def test_any_other_unapproved_pr_is_still_refused(
+    h: Harness, author: str, repo_slug: str, viewer: str
+) -> None:
+    pr = pull_request(reviews=[], author={"login": author})
+
+    result = h.run(pr, repo_slug=repo_slug, env={"GH_VIEWER": viewer})
+
+    assert result.returncode == 1
+    assert h.merge_calls() == []
+    assert "nobody has approved" in result.stdout
+
+
+def test_a_failed_read_of_who_is_merging_exits_2_and_merges_nothing(h: Harness) -> None:
+    result = h.run(pull_request(), env={"GH_USER_FAIL": "1"})
+
+    assert result.returncode == 2
+    assert h.merge_calls() == []
 
 
 def test_a_head_that_moved_since_the_check_is_refused_naming_both_commits(h: Harness) -> None:
@@ -310,17 +354,35 @@ def broken_pull_request(broken: set[str], running: bool = False) -> dict[str, An
 def test_no_combination_of_failing_conditions_is_judged_ready_or_a_wait(
     broken: set[str], moved: bool, running: bool
 ) -> None:
-    state = mg.parse_pull_request(broken_pull_request(broken, running), SQUASH_ONLY)
+    state = mg.parse_pull_request(broken_pull_request(broken, running), SQUASH_ONLY, REPO)
 
-    verdict = mg.judge(state, mg.CommitSha(OLD if moved else HEAD))
+    verdict = mg.judge(state, mg.CommitSha(OLD if moved else HEAD), mg.GitHubLogin(VIEWER))
 
     assert isinstance(verdict, mg.NotReady)
     assert len(verdict.refusals) >= len(broken) + (1 if moved else 0)
 
 
-def test_every_condition_met_is_judged_ready_with_squash() -> None:
-    state = mg.parse_pull_request(pull_request(), SQUASH_ONLY)
+@given(
+    broken=st.sets(st.sampled_from([c for c in CONDITIONS if c != "unapproved"]), min_size=1),
+    moved=st.booleans(),
+    running=st.booleans(),
+)
+def test_the_owners_own_pr_is_still_refused_for_every_other_failing_condition(
+    broken: set[str], moved: bool, running: bool
+) -> None:
+    pr = broken_pull_request(broken | {"unapproved"}, running)
+    state = mg.parse_pull_request(pr, SQUASH_ONLY, mg.RepoSlug("ooloth/hub"))
 
-    verdict = mg.judge(state, mg.CommitSha(HEAD))
+    verdict = mg.judge(state, mg.CommitSha(OLD if moved else HEAD), mg.GitHubLogin("ooloth"))
+
+    assert isinstance(verdict, mg.NotReady)
+    assert not any(isinstance(r, mg.NoApproval) for r in verdict.refusals)
+    assert len(verdict.refusals) >= len(broken) + (1 if moved else 0)
+
+
+def test_every_condition_met_is_judged_ready_with_squash() -> None:
+    state = mg.parse_pull_request(pull_request(), SQUASH_ONLY, REPO)
+
+    verdict = mg.judge(state, mg.CommitSha(HEAD), mg.GitHubLogin(VIEWER))
 
     assert verdict == mg.Ready(method="squash")
