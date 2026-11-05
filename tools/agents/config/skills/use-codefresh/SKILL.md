@@ -106,5 +106,10 @@ a signed URL that returns the whole log as JSON, with one entry per step in `ste
 
 **Not authorized:** Run `codefresh auth current-context` to check the active context. If missing or
 wrong, the user needs to re-authenticate. The wrapper mounts `~/.cfconfig` read-only, so the user
-runs `docker run --rm -it -v ~/.cfconfig:/root/.cfconfig codefresh/cli auth create-context` (no
-`:ro`) or edits `~/.cfconfig` directly.
+stores the API key once with `secret add codefresh`, then runs the image directly (no `:ro`), or
+edits `~/.cfconfig` directly:
+
+```sh
+docker run --rm -it -v ~/.cfconfig:/root/.cfconfig codefresh/cli \
+  auth create-context --api-key "$(secret get codefresh)"
+```

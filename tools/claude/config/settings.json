@@ -90,6 +90,8 @@
       "Bash(op read *)",
       "Bash(op item get *)",
       "Bash(security find-generic-password *)",
+      "Bash(*secret get*)",
+      "Bash(*secret.py get*)",
       "Bash(acli jira workitem comment create *--jql*)",
       "Bash(acli jira workitem comment create *--filter*)",
       "Bash(security find-internet-password *)",
