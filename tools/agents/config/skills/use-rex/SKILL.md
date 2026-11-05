@@ -48,3 +48,7 @@ Tab names start with a word, never an emoji: `PR 123 (alice): review-code`, not
   close` fails and the new tab never opens. List the tabs first, or run the two separately.
 - **Read IDs with `jq -e`.** `jq -r` turns a missing ID into an empty string, and
   `rex capture -b ""` captures your own pane instead of failing.
+- **Build every commit hash in a tab's prompt from git output.** A hash typed from memory can name
+  a commit that doesn't exist, and the new session spends its start looking for it. Put
+  `$(git rev-parse --short <ref>)` in the prompt, or check each hash with `git cat-file -t <hash>`
+  before opening the tab.
