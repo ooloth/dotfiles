@@ -24,7 +24,7 @@ install_and_symlink() {
   bash -c "${install_command}"
 
   if [ -f "${symlink_script_path}" ]; then
-    bash -c "VERBOSE=true ${symlink_script_path}"
+    VERBOSE=true run_link_step "${symlink_script_path}"
   fi
 
   # Confirm installation

@@ -37,7 +37,7 @@ update_and_symlink() {
 
   # Symlink config files
   if [ -f "${symlink_script_path}" ]; then
-    bash -c "VERBOSE=true ${symlink_script_path}"
+    VERBOSE=true run_link_step "${symlink_script_path}"
   fi
 
   debug "🚀 ${tool_upper} is up-to-date"

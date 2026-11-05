@@ -1,5 +1,5 @@
 ---
-updated: 2026-11-02
+updated: 2026-11-04
 update_when: a command is tried on #206's link steps, or #204's design resumes
 decays: slow
 status: open
@@ -217,10 +217,15 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
   runs this way until the project exists (decision 001's addendum of 2026-10-30).
 - *Sourced:* every call from a runner to a step is a process start. `features/update/tools.bash`
   runs each `update.bash` with `bash "$file"`, `features/update/symlinks.bash` runs each
-  `link.bash` the same way, and `update_and_symlink` runs a tool's link step with `bash -c`.
-- *Sourced:* `symlink()` in `tools/bash/utils.bash` is the only sourced helper that an invariant
-  governs (`DOTFILES_CHECK`). The 28 `link.bash` files outside `@new` and `@archive` and
-  `tools/pi/update.bash` are its only callers. The helpers most other scripts source (`info`,
+  `link.bash` the same way, and `update_and_symlink` runs a tool's link step through
+  `run_link_step`, which runs it with `bash`.
+- *Sourced:* the sourced helpers that an invariant governs are all in `tools/bash/utils.bash`:
+  `symlink()` (`DOTFILES_CHECK`), the way it sets `DOTFILES` from its own location and
+  `DOTFILES_INSTALL` as the install, `require_install_checkout`, which `symlink()` and both
+  broken-link sweeps call first, and `run_link_step`, which update and install scripts reach their
+  link step through (`docs/invariants/tools.md`). Of the 28 `link.bash` files outside `@new` and
+  `@archive`, 27 call `symlink()` (`tools/gemini/link.bash` links nothing), and nothing else calls
+  it. The helpers most other scripts source (`info`,
   `debug`, `error`, `warn`, `have`) only print output or check that a command exists.
 - *Sourced:* Amp orbs have uv preinstalled (`.agents/setup`), and CI installs it with
   `astral-sh/setup-uv`.
@@ -228,8 +233,8 @@ Nothing here is settled until it graduates into a decision record. Every *Measur
   `carbon-copy-cloner`, `google-chrome`, `terminal-notifier`, `vimium-c`) hold no scripts.
 - *Sourced:* of the 27 `update.bash` files under `tools/`, counting the `@new` template, 4 call
   `update_and_symlink` (neovim, node, uv and `@new`).
-- *Measured (2026-10-19):* bash tests of `update_and_symlink` need a fake `HOME`, because
-  `update_and_symlink` links, and the link step links only from the install at
-  `~/Repos/ooloth/dotfiles`.
+- *Sourced:* run from a copy, `update_and_symlink` skips its link step (`run_link_step` in
+  `tools/bash/utils.bash`), so a bash test of it needs a fake `HOME` only when it checks the
+  links.
 
 [boot]: how-does-a-fresh-mac-get-uv-and-python-before-the-first-script-needs-them.md

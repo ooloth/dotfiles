@@ -4,11 +4,17 @@
 # whatever the environment says, so nothing a caller exports can move it.
 DOTFILES_INSTALL="${HOME}/Repos/ooloth/dotfiles"
 
+# Succeeds when DOTFILES is the install, however either path is spelled. -ef compares the files
+# themselves, so a symlink, a firmlink or a path typed in another case on macOS still matches.
+is_install_checkout() {
+  [[ -n "${DOTFILES:-}" && "${DOTFILES}" -ef "${DOTFILES_INSTALL}" ]]
+}
+
 # The checkout this file is in, which every script that sources it acts on, whatever DOTFILES the
 # caller exported. When that checkout is the install, it is spelled as the install path, so link
 # text stays the same however the script was reached, such as through an Amp orb's symlink.
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-if [[ "$(cd -P "${DOTFILES}" && pwd)" == "$(cd -P "${DOTFILES_INSTALL}" 2>/dev/null && pwd)" ]]; then
+if is_install_checkout; then
   DOTFILES="${DOTFILES_INSTALL}"
 fi
 if [[ ! -f "${DOTFILES}/tools/bash/utils.bash" ]]; then
@@ -66,13 +72,25 @@ return_or_exit() {
 # Succeeds only when this script runs from the install. Every function that changes or reports on
 # links in $HOME calls it first, so a worktree or scratch copy can never point $HOME at itself.
 require_install_checkout() {
-  if [[ "${DOTFILES:-}" == "${DOTFILES_INSTALL}" ]]; then
+  if is_install_checkout; then
     return 0
   fi
-  echo "🚨 Not linking from ${DOTFILES:-an unset DOTFILES}: links in \$HOME lead only to the" \
-    "install at ${DOTFILES_INSTALL}. To link from this checkout, run with a HOME whose" \
-    "Repos/ooloth/dotfiles is this checkout." >&2
+  echo "🚨 Links in \$HOME are made and checked only from the install at ${DOTFILES_INSTALL}," \
+    "and this is ${DOTFILES:-an unset DOTFILES}. To use this checkout's links, run with a HOME" \
+    "whose Repos/ooloth/dotfiles is this checkout." >&2
   return 1
+}
+
+# Runs a tool's link.bash from its update or install script. From any checkout but the install it
+# skips the link step with a note instead, so the rest of the update still runs from a worktree.
+run_link_step() {
+  local link_script="${1:-}"
+  if ! is_install_checkout; then
+    echo "⏭️ Skipping ${link_script#"${DOTFILES}/"}: links in \$HOME are made only from the" \
+      "install at ${DOTFILES_INSTALL}" >&2
+    return 0
+  fi
+  bash "${link_script}"
 }
 
 symlink() {

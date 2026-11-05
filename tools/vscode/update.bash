@@ -9,6 +9,6 @@ info "${TOOL_EMOJI} Updating VS Code and its extensions"
 brew bundle --file="${DOTFILES}/tools/${TOOL_LOWER}/Brewfile"
 
 debug "📦 Symlinking VS Code configuration"
-bash "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
+run_link_step "${DOTFILES}/tools/${TOOL_LOWER}/link.bash"
 
 debug "🚀 ${TOOL_UPPER} is up-to-date"

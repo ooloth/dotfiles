@@ -244,6 +244,9 @@ For a non-brew tool, run the install script to confirm it works end-to-end:
 bash tools/{tool}/install.bash
 ```
 
+From a worktree, the install skips its link step with a note. Run it from `~/Repos/ooloth/dotfiles`
+to make the links.
+
 For a brew tool, install just its Brewfile and confirm the formula is there:
 
 ```bash

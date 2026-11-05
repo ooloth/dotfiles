@@ -7,4 +7,4 @@ info "📁 Updating zsh"
 brew bundle --file="${DOTFILES}/tools/zsh/Brewfile"
 
 debug "🔗 Symlinking zsh configuration"
-bash "${DOTFILES}/tools/zsh/link.bash"
+run_link_step "${DOTFILES}/tools/zsh/link.bash"
