@@ -46,6 +46,15 @@ inside the process reaches none of the copies outside it. The exception is a
 provider that accepts the secret nowhere else, and that exception is recorded
 where the call is made.
 
+**A command gets a secret from a store when it runs, never as a literal or an exported variable.**
+A secret typed into a command is kept by shell history, terminal scrollback and anything that
+records the session, and from there it reaches backups and whoever searches them. An exported
+variable reaches every process the shell starts, including ones that print their environment in
+an error report. Reading the secret from a secret store inside the command, as in
+`--token "$(<store> read <name>)"`, hands it to that one process. The exception is a tool that
+reads a secret only from its environment: the variable is set for that one command, as in
+`TOKEN="$(<store> read <name>)" tool`, and is not exported.
+
 **File access is constrained.**
 File reads and writes are restricted to expected paths. Path traversal
 sequences are rejected or fully resolved before use.
