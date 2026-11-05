@@ -14,13 +14,15 @@ Each repo is `owner/name`, or a bare `name` for one of mine, so `hub` means `ool
 The baseline turns on Dependabot alerts and security updates, makes the default workflow token
 read-only, stops Actions approving pull requests, and deletes head branches on merge. On a public
 repo it also turns on secret scanning, push protection, private vulnerability reporting and
-auto-merge, which a private repo on the free plan cannot have, so a private repo is never asked
-for them. It requires actions pinned to a full commit SHA only once every workflow already pins
-them, because requiring it earlier fails every run of an unpinned workflow.
+auto-merge, which GitHub offers a private repo only on a paid plan or not at all, so a private
+repo is never asked for them. It requires actions pinned to a full commit SHA only once every
+workflow in `.github/workflows` on the default branch already pins them, because requiring it
+earlier fails every run of an unpinned workflow.
 
 `--check` sends only GET requests. `--apply` sends one write per drifted setting, reads the
-settings again, and reports any that did not take. Either mode exits 1 when any repo drifted,
-could not be read or refused a write, and reports every repo before it exits. It needs `gh`,
+settings again, and reports any that did not take. `--check` exits 1 when any repo drifted.
+Either mode exits 1 when a repo could not be read, and `--apply` also when a write was refused or
+did not take. Both report every repo before they exit. It needs `gh`,
 signed in as the owner of the repos.
 """
 

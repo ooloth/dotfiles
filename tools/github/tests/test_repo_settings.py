@@ -76,7 +76,7 @@ def simulate(settings: RepoSettings, requests: tuple[WriteRequest, ...]) -> Repo
     )
 
 
-# --- Convergence and visibility (P2, P3, P4) ----------------------------------------------------
+# --- Convergence and visibility -----------------------------------------------------------------
 
 
 @given(repo_settings())
@@ -120,7 +120,7 @@ def test_alerts_are_written_before_security_updates() -> None:
     assert order.index(rs.Setting.VULNERABILITY_ALERTS) < order.index(rs.Setting.SECURITY_FIXES)
 
 
-# --- Which actions count as pinned (P4) ---------------------------------------------------------
+# --- Which actions count as pinned --------------------------------------------------------------
 
 SHA = "11d5960a326750d5838078e36cf38b85af677262"
 
@@ -167,7 +167,7 @@ jobs:
     assert [a.uses for a in found] == ["dtolnay/rust-toolchain@stable", "Swatinem/rust-cache@v2"]
 
 
-# --- Running against a stub gh (P1, P3, P5) -----------------------------------------------------
+# --- Running against a stub gh ------------------------------------------------------------------
 
 STUB = """#!/usr/bin/env python3
 import json, os, sys
