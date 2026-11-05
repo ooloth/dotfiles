@@ -7,6 +7,10 @@
 # --config-file, which would resolve the archive exclude against the working directory. ty exits 0
 # when it finds no Python files, so this fails first if there are none.
 #
+# The repo root is an extra search path, so a test that loads a script by its file path can still
+# import the script's types for its annotations, as `tools.github.repo_settings`. It is a flag
+# because ty 0.0.85, run as below, did not apply the same path set as `extra-paths` in ty.toml.
+#
 # ty runs from a real virtualenv under .cache/ rather than through `uv run --with`, because uv
 # links --with packages into its environment from elsewhere and ty does not follow that link: it
 # reports pytest and yaml as unresolved imports.
@@ -25,4 +29,5 @@ env_dir="${DOTFILES}/.cache/check-types-env"
 uv venv --quiet --allow-existing "${env_dir}"
 uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis pydantic \
   beartype
-"${env_dir}/bin/ty" check --python "${env_dir}" --project "${DOTFILES}" "${DOTFILES}"
+"${env_dir}/bin/ty" check --python "${env_dir}" --project "${DOTFILES}" \
+  --extra-search-path "${DOTFILES}" "${DOTFILES}"
