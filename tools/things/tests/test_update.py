@@ -16,7 +16,6 @@ the network or the real things-cli.
 
 from __future__ import annotations
 
-import os
 import subprocess
 import tempfile
 import unittest
@@ -91,7 +90,6 @@ class Machine:
             "HOME": str(self.home),
             "PATH": f"{self.stubs}:/usr/bin:/bin",
             "COMPUTER": computer,
-            "DOTFILES": str(self.home / "Repos" / "ooloth" / "dotfiles"),
             "GO_LOG": str(self.go_log),
             "FAKE_GOPATH": str(self.gopath),
         }
@@ -187,5 +185,4 @@ class UninstallTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    os.environ.pop("DOTFILES", None)
     unittest.main()
