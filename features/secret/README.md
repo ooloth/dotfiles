@@ -43,10 +43,10 @@ It does not stop a process running as you that sets out to read a secret. Items 
 `security` trust `security`, so malware, a compromised dependency, or an agent that decides to can
 run `secret get <name>` and get the value with no prompt. Claude Code sessions are the exception:
 `tools/claude/config/settings.json` denies `secret get` and `secret.py get`, so a Claude agent's
-Bash call is refused, as is any command that merely contains the text `secret get`. That was already
-true of a secret in shell history. For a step that needs your approval on every read, use 1Password,
-which asks for Touch ID, at the cost of that prompt each time. The value also passes through
-`security add-generic-password`'s arguments while `secret add` runs.
+Bash call is refused, as is any command that merely contains the text `secret get`. For a step that
+needs your approval on every read, use 1Password, which asks for Touch ID, at the cost of that
+prompt each time. The value also passes through `security add-generic-password`'s arguments while
+`secret add` runs.
 
 `warn_secret_in_history` in `tools/zsh/config/hooks.zsh` keeps a line with a literal secret out of
 `~/.zsh_history` and points here. A line that passes `"$(secret get <name>)"` is saved as normal.
