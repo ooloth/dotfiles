@@ -244,8 +244,9 @@ For a non-brew tool, run the install script to confirm it works end-to-end:
 bash tools/{tool}/install.bash
 ```
 
-From a worktree, the install skips its link step with a note. Run it from `~/Repos/ooloth/dotfiles`
-to make the links.
+From a worktree, the install skips its link step with a note. Once the tool is in the main
+checkout, make its links with `bash ~/Repos/ooloth/dotfiles/features/update/symlinks.bash {tool}`.
+Rerunning `install.bash` makes none, because it stops early when the tool is already installed.
 
 For a brew tool, install just its Brewfile and confirm the formula is there:
 

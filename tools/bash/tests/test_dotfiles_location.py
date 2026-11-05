@@ -33,6 +33,10 @@ SHARED_FILE = "probe-target"
 def copy_checkout(to: Path, *parts: str) -> Path:
     """Copy the helpers every script sources, plus each named folder, into a new checkout."""
     for part in (*HELPERS, *parts):
+        if (REPO / part).is_file():
+            (to / part).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(REPO / part, to / part)
+            continue
         shutil.copytree(
             REPO / part, to / part, ignore=shutil.ignore_patterns("tests", "__pycache__")
         )
@@ -73,7 +77,14 @@ class ScriptInACopy(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         root = Path(tmp.name)
         self.home = root / "home"
-        self.copy = copy_checkout(root / "copy", "tools/claude", "tools/git", "features/check")
+        self.copy = copy_checkout(
+            root / "copy",
+            "tools/claude",
+            "tools/git",
+            "features/check",
+            "features/update",
+            "features/utils.bash",
+        )
         self.exported = copy_checkout(root / "exported")
         self.install = copy_checkout(self.home / "Repos/ooloth/dotfiles", "tools/claude")
         self.decoys = (self.exported, self.install)
@@ -130,6 +141,22 @@ class ScriptInACopy(unittest.TestCase):
         self.assertIn("after the link step", run.stdout)
         self.assertIn("tools/claude/link.bash", run.stderr)
         self.assertIn(str(self.install), run.stderr)
+        self.assert_home_untouched()
+        self.assert_decoys_untouched()
+
+    def test_its_update_and_symlink_skips_the_link_step_and_carries_on(self) -> None:
+        # The shared helper most update.bash files call, given a tool that is already installed
+        update = write_script(
+            self.copy / "tools/probe/update.bash",
+            'source "${DOTFILES}/features/update/utils.bash"',
+            'update_and_symlink probe Probe bash "🧪" true "echo 1" "" /nonexistent/install.bash'
+            ' "${DOTFILES}/tools/claude/link.bash"',
+            'echo "after the link step"',
+        )
+        run = self.run_in_copy(update)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        self.assertIn("after the link step", run.stdout)
+        self.assertIn("tools/claude/link.bash", run.stderr)
         self.assert_home_untouched()
         self.assert_decoys_untouched()
 

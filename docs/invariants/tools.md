@@ -31,7 +31,8 @@ observations about typical practice.
   and `tools/macos/utils.bash`), `tools/amp/workspace-resume.bash` (which sets up the install),
   the setup `.zsh` files and the `wip/` drafts. `tools/bash/tests/test_dotfiles_location.py`
   checks that each script in scope sources `utils.bash` that way before anything else, assigns no
-  `DOTFILES`, and names no install path.
+  `DOTFILES`, names no install path, and runs no `link.bash` directly from an `update.bash` or
+  `install.bash`.
 - Every link the link step makes in `$HOME` names a file under `~/Repos/ooloth/dotfiles`
   (`DOTFILES_INSTALL` in `tools/bash/utils.bash`), and `private.env` is read from there. Run from
   any other checkout, the link step, check mode included, changes nothing in `$HOME` and says why.
