@@ -10,9 +10,10 @@ fi
 
 export PATH="${HOME}/google-cloud-sdk/bin:$PATH"
 
-# see: https://stackoverflow.com/a/47867652/8802485
+# GOOGLE_APPLICATION_CREDENTIALS stays unset. Google's libraries and tools find
+# ~/.config/gcloud/application_default_credentials.json without it, and while it is set every
+# `gcloud auth login --update-adc` stops at a Y/n prompt warning about it.
 # see: https://cloud.google.com/docs/authentication/application-default-credentials
-export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.config/gcloud/application_default_credentials.json"
 
 # The project and BigQuery IDs come from private.env (see private.env.example). Each is exported
 # only when set, rather than as an empty value.
