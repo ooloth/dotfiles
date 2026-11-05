@@ -43,6 +43,10 @@ ARGOCD_SERVER_KEY = "PRIVATE_ARGOCD_SERVER"
 # Long enough for a slow token refresh, short enough that a hung check doesn't hold up the others
 CHECK_TIMEOUT_SECONDS = 30
 
+# What argocd printed on this laptop when its refresh token had been revoked (invalid_grant) and when
+# the server rejected the session (Unauthenticated)
+ARGOCD_EXPIRED_MARKERS = ("invalid_grant", "code = Unauthenticated")
+
 
 class Mode(Enum):
     CHECK = "check"
@@ -159,8 +163,12 @@ def read_exit_code(result: CheckResult) -> Status:
 
 
 def read_argocd_user_info(result: CheckResult) -> Status:
-    """argocd exits 0 whether or not the session is valid, so the JSON says which."""
+    """An expired session usually exits 0 with JSON whose loggedIn field says so. A refresh token
+    the server has revoked, or a session it rejects, exits non-zero naming that, and counts as
+    expired. Any other failure, such as an unreachable server, can't tell."""
     if result.exit_code != 0:
+        if any(marker in result.stderr for marker in ARGOCD_EXPIRED_MARKERS):
+            return Expired()
         return Unchecked(last_line(result.stderr) or f"argocd exited {result.exit_code}")
     try:
         info = json.loads(result.stdout)

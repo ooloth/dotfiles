@@ -169,6 +169,36 @@ class ArgoCdStatus(unittest.TestCase):
             ),
         )
 
+    def test_a_failure_naming_the_session_or_token_is_expired(self) -> None:
+        # What argocd printed on this laptop for a revoked refresh token and an expired session
+        for stderr in (
+            '{"level":"fatal","msg":"oauth2: \\"invalid_grant\\" \\"Refresh token is invalid or'
+            ' has already been claimed by another client.\\""}\n',
+            '{"level":"fatal","msg":"rpc error: code = Unauthenticated desc = invalid session:'
+            ' failed to verify the token"}\n',
+        ):
+            with self.subTest(stderr=stderr):
+                status = auth.read_argocd_user_info(auth.CheckResult(1, "", stderr))
+                self.assertEqual(status, auth.Expired())
+
+    def test_a_revoked_token_gets_its_login_run(self) -> None:
+        items = configured_logins()
+        shell = FakeShell(
+            items,
+            dict.fromkeys(names(items), "valid"),
+            dict.fromkeys(names(items), True),
+        )
+        ARGOCD_ANSWERS["revoked"] = auth.CheckResult(
+            1, "", '{"level":"fatal","msg":"oauth2: \\"invalid_grant\\""}\n'
+        )
+        self.addCleanup(ARGOCD_ANSWERS.pop, "revoked")
+        shell.states["Argo CD"] = "revoked"  # ty: ignore[invalid-assignment]
+
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell)
+
+        self.assertEqual(shell.attached, [items[3].login])
+        self.assertEqual(outcomes[3].after, auth.Valid())
+
     def test_output_that_is_not_json_is_unchecked(self) -> None:
         status = auth.read_argocd_user_info(auth.CheckResult(0, "Logged In: false\n", ""))
         self.assertIsInstance(status, auth.Unchecked)
