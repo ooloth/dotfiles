@@ -55,5 +55,13 @@ Python before `u` first runs, or the ported scripts turn out to share no code.
 - [x] what is still open is split into the two questions named above
 - [ ] `CONTRIBUTING.md` describes the project's commands once it exists
 
+## Addendum (2026-11-05) — Python written before the root project exists
+
+The root project is not built yet ([#204](https://github.com/ooloth/dotfiles/issues/204)). Until
+it is, a new Python script is a single-file uv script with its dependencies in an inline header,
+as `tools/github/repo_settings.py` and the test files are, and it moves into the project with the
+rest of the repo's scripts when #204 lands. The rejection of single-file uv scripts above
+describes the layout the repo is moving to, not a rule that scripts written before then break.
+
 [boot]: ../questions/how-does-a-fresh-mac-get-uv-and-python-before-the-first-script-needs-them.md
 [transition]: ../questions/what-command-starts-the-repos-python.md
