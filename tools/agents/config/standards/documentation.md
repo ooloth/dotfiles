@@ -23,9 +23,12 @@ not explained — well-named identifiers do that.
 
 **Recorded facts name their source.**
 A figure, limit, quota, or quoted behavior carries where it came from — vendor
-documentation, a specification, a measurement. Numbers whose origin is an
-untraceable conversation or a model's recollection are marked unverified or
-left out. Once an unsourced figure sits in a document of facts it is
+documentation, a specification, source code, a measurement. That includes a comment in code or
+config that states what a third-party tool does with a setting ("security updates still open",
+"this tag gets no PRs"): the comment cites the doc page or source file that says so, and the
+claim was checked there, not recalled. Where the docs are silent, the tool's source decides.
+Numbers and behaviors whose origin is an untraceable conversation or a model's recollection are
+marked unverified or left out. Once an unsourced figure sits in a document of facts it is
 indistinguishable from a measured one, and decisions get built on it.
 
 **A recorded absence rests on two sources that agree.**
