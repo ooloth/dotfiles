@@ -169,10 +169,15 @@ curl -s https://raw.githubusercontent.com/ooloth/dotfiles/main/features/setup/se
 
 This will:
 
-1. Clone this repository to `~/Repos/ooloth/dotfiles`
-2. Run all installation scripts in sequence
-3. Set up symlinks for all configurations
+1. Clone this repository to `~/Repos/ooloth/dotfiles`, or pull it if it is already there
+2. Run the zsh scripts in `features/install/zsh/`, which create SSH keys, install Homebrew, switch
+   to Homebrew's zsh, and install rust, uv, Node, global npm packages and the tmux and neovim
+   dependencies
+3. Link the configs with `features/install/zsh/deprecated/symlinks.zsh`
 4. Configure macOS system preferences
+
+It does not install the packages the tools' Brewfiles list. Run `u` afterwards: it installs them
+and links the configs with each tool's `link.bash`.
 
 Keep the repo at `~/Repos/ooloth/dotfiles`, including in a fork. Every link in `$HOME` leads there,
 and the link step refuses to run from a checkout anywhere else.

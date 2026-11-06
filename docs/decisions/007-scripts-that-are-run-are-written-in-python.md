@@ -25,6 +25,9 @@ process cannot do the job: the `shell.zsh` files, which change the interactive s
 and working directory, and the first step of setup, which runs before any other language is
 installed. Existing bash moves to Python over time and does not have to move at once.
 
+The 2026-11-05 addendum keeps one more kind in bash for now: the scripts `u` and setup find by
+file name (`install.bash`, `update.bash`, `link.bash`, `preflight.bash`).
+
 The work-laptop check (whether uv can download Python before gcloud is logged in) does not bear on
 this decision. It decides how early in setup Python becomes available, which is part of the
 bootstrap question that stays open. Scripts that `u` runs start after setup has finished.

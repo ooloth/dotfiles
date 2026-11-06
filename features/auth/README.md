@@ -49,4 +49,6 @@ when every login ends up valid, so `auth && <command>` runs the command only onc
   `uv run --offline`. Then uv never reaches the work package index, which needs the very Google
   credentials `auth` may be about to refresh.
 
-Tests: `uv run features/auth/tests/test_auth.py`.
+Tests: `uv run features/auth/tests/test_auth.py`. Unlike the script, the tests need `hypothesis`,
+which on the work laptop uv fetches through the work package index, so they need a valid Google
+login (see `CONTRIBUTING.md`).
