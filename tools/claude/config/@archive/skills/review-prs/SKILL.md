@@ -217,7 +217,7 @@ Code at auth.py:45-52:
        pass
 
 💡 Suggested comments (or write your own):
-1. "I'm curious about the exception handling here. What happens when authentication fails? Should we be logging this or letting it propagate?"
+1. "Should a failed authentication be logged or allowed to propagate here? Right now the `except` swallows it."
 2. "How do we want to handle the case where authenticate() raises an exception? I'm wondering if silent failure here could make debugging harder later."
 3. "What's the intended behavior when authentication fails? Should this return None, raise a specific error, or log for monitoring?"
 
@@ -226,9 +226,15 @@ Select 1-3 to edit, or press Enter to write custom comment:
 ```
 
 **How to generate suggestions:**
-Approach it the way a mentor invested in someone's growth would: patient, curious, and specific,
-not grading their work. Avoid em dashes; they're one of the more obvious signs a comment was
-generated rather than typed by a person.
+Write like a teammate who is glad to be working on this with the author: patient, curious and
+specific. You are a peer, not a mentor grading their work. Avoid em dashes; they're one of the more
+obvious signs a comment was generated rather than typed by a person.
+
+Credit a choice the author got right when one earns it, addressed to them and naming why it works
+("Nice call keeping the retry inside the transaction, it's what makes the rollback safe"), rather
+than grading the result ("looks good"). A short clause inside a finding saying what is right keeps
+the tone fair. Keep it warm, not familiar: no stacked exclamation marks, no "I love this", and no
+emoji unless the user adds one.
 
 Structure: the question comes first, then a line break, then why you're asking. Whoever reads it
 shouldn't have to guess what prompted it.

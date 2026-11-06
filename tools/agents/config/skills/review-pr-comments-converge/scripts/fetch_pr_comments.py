@@ -14,21 +14,24 @@ Each review shows the commit it was submitted against and when. Each inline comm
   - outdated    : whether the code it was left on has changed since
 
 PR conversation comments (the timeline, where some bots post their reviews) follow, oldest first,
-each with when it was posted and when it was last edited, or `no`. A bot such as rex-rx posts a
-placeholder and later edits its whole review into it, so an unchanged created time does not mean
+each with when it was posted and when it was last edited, or `no`. A bot such as rex-rx-agent posts
+a placeholder and later edits its whole review into it, so an unchanged created time does not mean
 nothing new was said. Reply to these with `gh pr comment`.
 
 Each review and conversation comment also shows `thank`, the line a reply to it opens with. A person
 is tagged by login. A bot is thanked by its name in BOT_NAMES and never tagged, because mentioning a
-review bot asks it to review again. A bot missing from BOT_NAMES, or an author of a kind this script
-does not know, shows `UNKNOWN` so the caller asks rather than guesses.
+review bot asks it to review again. Beside it, `refer_as` is how prose such as a review body names
+that author, on the same rule: `@login` for a person, the BOT_NAMES name for a bot, and
+`a deleted account` for a deleted one. A bot missing from BOT_NAMES, or an author of a kind this
+script does not know, shows `UNKNOWN` in both so the caller asks rather than guesses.
 
 Every page of every list is fetched, so nothing is left out. The script exits 1 instead of printing
 a partial picture when a thread has more replies than one request returns, when a list runs past
 MAX_PAGES, or when gh fails.
 
 Callers: the review-pr-comments-converge skill (replies and resolves threads) and the review-code
-skill (reconciles earlier reviews). A change to the output format reaches both.
+skill (reconciles earlier reviews). A change to the output format reaches both. The monitor-prs
+skill also reads BOT_NAMES as its list of review bots.
 
 Usage: fetch_pr_comments.py <pr-number> [--repo OWNER/NAME]
 
@@ -169,18 +172,32 @@ def login_of(reviewer: Reviewer) -> str:
             return login
 
 
-def thank_line(reviewer: Reviewer) -> str:
+def refer_as(reviewer: Reviewer) -> str:
+    """How prose names this reviewer: a person is tagged so they are notified, a bot is not."""
     match reviewer:
         case Person(login):
-            return f"@{login} Thanks for the feedback:"
+            return f"@{login}"
         case Bot(login) if login in BOT_NAMES:
-            return f"Thanks for the feedback, {BOT_NAMES[login]}:"
+            return BOT_NAMES[login]
         case Bot(login):
             return f"UNKNOWN (bot {login})"
         case Ghost():
-            return "Thanks for the feedback:"
+            return "a deleted account"
         case UnrecognisedActor(kind, login):
             return f"UNKNOWN ({kind} {login})"
+
+
+def thank_line(reviewer: Reviewer) -> str:
+    name = refer_as(reviewer)
+    match reviewer:
+        case Person():
+            return f"{name} Thanks for the feedback:"
+        case Bot(login) if login in BOT_NAMES:
+            return f"Thanks for the feedback, {name}:"
+        case Ghost():
+            return "Thanks for the feedback:"
+        case Bot() | UnrecognisedActor():
+            return name
 
 
 HEAVY = "#" * 80
@@ -339,6 +356,7 @@ def print_discussion(target: str, discussion: Discussion) -> None:
         print(f"# commit {commit}  submitted {review.get('submittedAt') or 'unknown'}")
         print(HEAVY)
         print(f"  thank      : {thank_line(reviewer)}")
+        print(f"  refer_as   : {refer_as(reviewer)}")
 
         if body:
             print()
@@ -430,6 +448,7 @@ def print_discussion(target: str, discussion: Discussion) -> None:
             reviewer = parse_reviewer(comment.get("author"))
             print(f"CONVERSATION COMMENT  {login_of(reviewer)}")
             print(f"  thank      : {thank_line(reviewer)}")
+            print(f"  refer_as   : {refer_as(reviewer)}")
             print(f"  comment_id : {comment['databaseId']}")
             print(f"  url        : {comment['url']}")
             print(f"  created    : {comment['createdAt']}")

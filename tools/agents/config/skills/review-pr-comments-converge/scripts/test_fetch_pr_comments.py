@@ -10,6 +10,7 @@ Run:
     tools/agents/config/skills/review-pr-comments-converge/scripts/test_fetch_pr_comments.py
 """
 
+import ast
 import json
 import os
 import subprocess
@@ -154,8 +155,8 @@ FULL = {
     "comments": [[conversation(9001, "Bot review body.")]],
 }
 
-# Captured from fetch_pr_comments.py before commit info and paging were added. Every line here is
-# something the review-pr-comments-converge skill may read, so each must survive, in order.
+# Lines the review-pr-comments-converge skill may read. Each must appear in the output in this
+# order, with other lines allowed between them.
 OUTPUT_BEFORE_PAGING = """\
 # Source: octo/widgets#5
 
@@ -503,6 +504,95 @@ def test_inline_comments_carry_no_greeting(harness: Harness) -> None:
     assert result.returncode == 0, result.stderr
     # FULL has one review and one conversation comment, and three inline threads.
     assert len(thank_lines(result.stdout)) == 2
+    assert len(refer_as_lines(result.stdout)) == 2
     for block in result.stdout.split("─" * 80)[1:]:
         if block.lstrip("\n").startswith("COMMENT ["):
             assert "thank      :" not in block
+            assert "refer_as   :" not in block
+
+
+def refer_as_lines(stdout: str) -> list[str]:
+    return [line for line in stdout.splitlines() if line.startswith("  refer_as   :")]
+
+
+def bot_names() -> dict[str, str]:
+    """BOT_NAMES as the script defines it, read from its source so the script is never imported."""
+    tree = ast.parse(SCRIPT.read_text())
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and any(
+            isinstance(target, ast.Name) and target.id == "BOT_NAMES" for target in node.targets
+        ):
+            return ast.literal_eval(node.value)
+    raise AssertionError("fetch_pr_comments.py defines no BOT_NAMES")
+
+
+def test_a_person_who_reviewed_is_referred_to_by_tag(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[review(1, "Looks good.", by=author("first-reviewer"))]],
+        "comments": [[]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert refer_as_lines(result.stdout) == ["  refer_as   : @first-reviewer"]
+
+
+@pytest.mark.parametrize(("login", "name"), sorted(bot_names().items()))
+def test_every_named_bot_is_referred_to_by_name_and_never_tagged(
+    harness: Harness, login: str, name: str
+) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[review(1, "Review body.", by=author(login, "Bot"))]],
+        "comments": [[conversation(9001, "Review body.", by=author(login, "Bot"))]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert refer_as_lines(result.stdout) == [f"  refer_as   : {name}"] * 2
+    assert "@" not in name
+
+
+def test_rex_is_referred_to_as_rex(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[]],
+        "comments": [[conversation(9001, "Review body.", by=author("rex-rx-agent", "Bot"))]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert refer_as_lines(result.stdout) == ["  refer_as   : Rex"]
+
+
+def test_an_author_with_no_known_name_is_referred_to_as_unknown(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[review(1, "Imported.", by=author("old-user", "Mannequin"))]],
+        "comments": [[conversation(9001, "Review body.", by=author("copilot", "Bot"))]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert refer_as_lines(result.stdout) == [
+        "  refer_as   : UNKNOWN (Mannequin old-user)",
+        "  refer_as   : UNKNOWN (bot copilot)",
+    ]
+
+
+def test_a_deleted_account_is_referred_to_without_a_tag(harness: Harness) -> None:
+    fixture = {
+        "threads": [[]],
+        "reviews": [[review(1, "Gone now.", by=None)]],
+        "comments": [[conversation(9001, "Also gone.", by=None)]],
+    }
+
+    result = harness.run(fixture)
+
+    assert result.returncode == 0, result.stderr
+    assert refer_as_lines(result.stdout) == ["  refer_as   : a deleted account"] * 2

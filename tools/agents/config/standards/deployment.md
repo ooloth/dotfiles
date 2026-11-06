@@ -51,6 +51,17 @@ laptop, or the reverse. With one list, a check added to it runs in CI with no pi
 Where CI needs a setting a laptop doesn't, such as a cap on test workers, it passes that setting
 to the same command instead of keeping its own copy of the list.
 
+**A pre-commit hook that checks or fixes the repo's files runs a check the task runner's check
+command also runs.**
+It uses the same installed tool version and the same include and exclude rules as that command. At
+commit time it runs on the staged files among those the command covers, and where the command runs
+the hooks themselves, as `prek run --all-files` does, they run over every file. A hook that checks
+something the command doesn't runs only for developers who installed hooks, so CI never sees it. A
+hook that formats with its own pinned version, or over a different set of files, writes changes
+the command then rejects, or skips files the command fails on. A hook that checks the commit
+itself rather than its files, such as a commit-message linter or a guard against committing to the
+main branch, has no counterpart in the check command and falls outside this rule.
+
 **Each deployed version works alongside the version before it.**
 During a rollout, and after a rollback, old and new code run against the same
 data, config and callers. New code reads what old code wrote, and old code
@@ -165,8 +176,9 @@ for resources created any other way.
 - Migration files
 - Deployment scripts, Dockerfiles, and infrastructure-as-code manifests
 - How a change is divided into PRs, in any repo that ships through them
+- Pre-commit hook config and the task runner's check command
 
 ## Out of scope
 
 - Code that never runs outside a developer's machine, apart from how its changes are divided
-  into PRs
+  into PRs and the pre-commit hooks that check it

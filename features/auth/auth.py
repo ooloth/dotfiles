@@ -32,12 +32,13 @@ from typing import NewType, Protocol, assert_never
 
 LoginName = NewType("LoginName", str)
 ArgoServer = NewType("ArgoServer", str)
+SpaceliftAccount = NewType("SpaceliftAccount", str)
 Command = tuple[str, ...]
 
-# The work emails and the Spacelift account are already public, so they are not private values
+# The work emails are already public, so they are not private values
 INTERNAL_ACCOUNT = "michael.uloth@recursion.com"
 EXTERNAL_ACCOUNT = "michael.uloth@rxrx.tech"
-SPACELIFT_ACCOUNT = "recursion"
+SPACELIFT_ACCOUNT_KEY = "PRIVATE_SPACELIFT_ACCOUNT"
 ARGOCD_SERVER_KEY = "PRIVATE_ARGOCD_SERVER"
 
 # Long enough for a slow token refresh, short enough that a hung check doesn't hold up the others
@@ -72,6 +73,7 @@ class Mode(Enum):
 @dataclass(frozen=True)
 class Settings:
     argocd_server: ArgoServer | None
+    spacelift_account: SpaceliftAccount | None
 
 
 @dataclass(frozen=True)
@@ -83,7 +85,7 @@ class CheckResult:
 
 @dataclass(frozen=True)
 class TimedOut:
-    command: Command
+    pass
 
 
 @dataclass(frozen=True)
@@ -160,7 +162,7 @@ class SubprocessShell:
                 timeout=CHECK_TIMEOUT_SECONDS,
             )
         except subprocess.TimeoutExpired:
-            return TimedOut(command)
+            return TimedOut()
         return CheckResult(result.returncode, result.stdout, result.stderr)
 
     def attach(self, command: Command) -> int:
@@ -175,7 +177,11 @@ class SubprocessShell:
 
 def read_settings(environ: Mapping[str, str]) -> Settings:
     server = environ.get(ARGOCD_SERVER_KEY, "").strip()
-    return Settings(argocd_server=ArgoServer(server) if server else None)
+    account = environ.get(SPACELIFT_ACCOUNT_KEY, "").strip()
+    return Settings(
+        argocd_server=ArgoServer(server) if server else None,
+        spacelift_account=SpaceliftAccount(account) if account else None,
+    )
 
 
 def read_gcloud_token(result: CheckResult) -> Status:
@@ -232,6 +238,30 @@ def last_line(text: str) -> str:
 
 
 def logins(settings: Settings) -> tuple[Login | Unconfigured, ...]:
+    spacelift_name = LoginName("Spacelift")
+    spacelift: Login | Unconfigured
+    match settings.spacelift_account:
+        case None:
+            spacelift = Unconfigured(spacelift_name, SPACELIFT_ACCOUNT_KEY)
+        case account:
+            spacelift = Login(
+                name=spacelift_name,
+                check=("spacectl", "whoami"),
+                read_status=read_spacectl_whoami,
+                # --method skips the menu that asks which kind of login to use, and --endpoint skips
+                # the prompt for the account's URL, which spacectl asks for even when the profile
+                # has one
+                login=(
+                    "spacectl",
+                    "profile",
+                    "login",
+                    "--method",
+                    "browser",
+                    "--endpoint",
+                    f"https://{account}.app.spacelift.io/",
+                    account,
+                ),
+            )
     argocd_name = LoginName("Argo CD")
     argocd: Login | Unconfigured
     match settings.argocd_server:
@@ -258,13 +288,7 @@ def logins(settings: Settings) -> tuple[Login | Unconfigured, ...]:
             read_status=read_gcloud_token,
             login=("gcloud", "auth", "login", "--no-activate", EXTERNAL_ACCOUNT),
         ),
-        Login(
-            name=LoginName("Spacelift"),
-            check=("spacectl", "whoami"),
-            read_status=read_spacectl_whoami,
-            # --method skips the menu that asks which kind of login to use
-            login=("spacectl", "profile", "login", "--method", "browser", SPACELIFT_ACCOUNT),
-        ),
+        spacelift,
         argocd,
     )
 

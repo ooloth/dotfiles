@@ -38,6 +38,7 @@ sys.modules["auth"] = auth
 _spec.loader.exec_module(auth)
 
 SERVER = auth.ArgoServer("cd.example.com")
+ACCOUNT = auth.SpaceliftAccount("example")
 State = Literal["valid", "expired", "unreachable", "revoked"]
 
 # What each tool prints in each state, shortened. The gcloud and spacectl unreachable answers, and
@@ -101,7 +102,7 @@ class FakeShell:
     def capture(self, command: tuple[str, ...]):
         (login,) = [item for item in self._logins() if item.check == command]
         if login.name in self.timed_out:
-            return auth.TimedOut(command)
+            return auth.TimedOut()
         return ANSWERS[command[0]][self.states[login.name]]
 
     def attach(self, command: tuple[str, ...]) -> int:
@@ -114,7 +115,7 @@ class FakeShell:
 
 
 def configured_logins() -> tuple:
-    return auth.logins(auth.Settings(argocd_server=SERVER))
+    return auth.logins(auth.Settings(argocd_server=SERVER, spacelift_account=ACCOUNT))
 
 
 def names(items: tuple) -> list[str]:
@@ -291,7 +292,7 @@ class SubprocessShellLimits(unittest.TestCase):
         with mock.patch.object(auth, "CHECK_TIMEOUT_SECONDS", 0.2):
             result = auth.SubprocessShell().capture(("sleep", "5"))
 
-        self.assertEqual(result, auth.TimedOut(("sleep", "5")))
+        self.assertEqual(result, auth.TimedOut())
 
 
 class TimedOutCheck(unittest.TestCase):
@@ -311,18 +312,28 @@ class TimedOutCheck(unittest.TestCase):
         self.assertEqual(shell.attached, [])
 
 
-class ArgoCdServerSetting(unittest.TestCase):
-    def test_unset_or_blank_server_is_not_configured(self) -> None:
-        for environ in ({}, {"PRIVATE_ARGOCD_SERVER": ""}, {"PRIVATE_ARGOCD_SERVER": "  "}):
+class PrivateSettings(unittest.TestCase):
+    def test_unset_or_blank_values_are_not_configured(self) -> None:
+        for value in (None, "", "  "):
+            environ = (
+                {}
+                if value is None
+                else {"PRIVATE_ARGOCD_SERVER": value, "PRIVATE_SPACELIFT_ACCOUNT": value}
+            )
             with self.subTest(environ=environ):
-                self.assertEqual(auth.read_settings(environ), auth.Settings(argocd_server=None))
+                self.assertEqual(
+                    auth.read_settings(environ),
+                    auth.Settings(argocd_server=None, spacelift_account=None),
+                )
 
-    def test_set_server_is_read(self) -> None:
-        settings = auth.read_settings({"PRIVATE_ARGOCD_SERVER": " cd.example.com "})
-        self.assertEqual(settings, auth.Settings(argocd_server=SERVER))
+    def test_set_values_are_read(self) -> None:
+        settings = auth.read_settings(
+            {"PRIVATE_ARGOCD_SERVER": " cd.example.com ", "PRIVATE_SPACELIFT_ACCOUNT": " example "}
+        )
+        self.assertEqual(settings, auth.Settings(argocd_server=SERVER, spacelift_account=ACCOUNT))
 
     def test_without_a_server_argocd_names_the_key_and_the_other_logins_still_run(self) -> None:
-        items = auth.logins(auth.Settings(argocd_server=None))
+        items = auth.logins(auth.Settings(argocd_server=None, spacelift_account=ACCOUNT))
         shell = FakeShell(
             items,
             dict.fromkeys(names(items), "expired"),
@@ -333,6 +344,22 @@ class ArgoCdServerSetting(unittest.TestCase):
 
         self.assertEqual(outcomes[3].before, auth.NotConfigured("PRIVATE_ARGOCD_SERVER"))
         self.assertIn("PRIVATE_ARGOCD_SERVER", auth.describe(outcomes[3]))
+        self.assertEqual(len(shell.attached), 3)
+
+    def test_without_an_account_spacelift_names_the_key_and_the_other_logins_still_run(
+        self,
+    ) -> None:
+        items = auth.logins(auth.Settings(argocd_server=SERVER, spacelift_account=None))
+        shell = FakeShell(
+            items,
+            dict.fromkeys(names(items), "expired"),
+            dict.fromkeys(names(items), True),
+        )
+
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell)
+
+        self.assertEqual(outcomes[2].before, auth.NotConfigured("PRIVATE_SPACELIFT_ACCOUNT"))
+        self.assertIn("PRIVATE_SPACELIFT_ACCOUNT", auth.describe(outcomes[2]))
         self.assertEqual(len(shell.attached), 3)
 
 
@@ -385,6 +412,7 @@ class EndToEnd(unittest.TestCase):
                 "PATH": str(path or self.stubs),
                 "STUB_LOG": str(log),
                 "PRIVATE_ARGOCD_SERVER": SERVER,
+                "PRIVATE_SPACELIFT_ACCOUNT": ACCOUNT,
                 **(extra_env or {}),
             }
             result = subprocess.run(
@@ -407,7 +435,8 @@ class EndToEnd(unittest.TestCase):
             [
                 "gcloud auth login --update-adc michael.uloth@recursion.com",
                 "gcloud auth login --no-activate michael.uloth@rxrx.tech",
-                "spacectl profile login --method browser recursion",
+                "spacectl profile login --method browser"
+                " --endpoint https://example.app.spacelift.io/ example",
                 "argocd login --sso --grpc-web cd.example.com",
             ],
             result.stderr,

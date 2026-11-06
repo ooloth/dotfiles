@@ -1,10 +1,10 @@
 # machine detection — wrap entries in a conditional block to restrict by machine:
-#   if computer_name == "Air" ... end
-#   if computer_name == "Mini" ... end
-#   if ["7385-Y3FH97X-MAC", "MULO-JQ97NW-MBP"].include?(computer_name) ... end
-computer_name = `networksetup -getcomputername`.chomp
+#   if air? ... end
+#   if mini? ... end
+#   if work? ... end
+require_relative "../macos/computer"
 
-if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
+if work?
   brew "jira-cli"
   tap "atlassian/acli"
   brew "atlassian/acli/acli"

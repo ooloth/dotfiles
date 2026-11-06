@@ -41,13 +41,13 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **For PR scope — fetch PR context before Step 2:**
 
 ```bash
-gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefOid,baseRefOid
+gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefName,headRefOid,baseRefOid
 ```
 
-Store the title and body for use in Step 2. Store the PR number, `headRefOid` (the reviewed head)
-and `baseRefOid` for Step 5. The review describes the PR at that commit, so Step 5 checks that
-the PR has not moved since, compares the PR's own changes against that base if it has, and pins its
-comments to the saved head.
+Store the title, body and branch name (`headRefName`) for use in Step 2. Store the PR number,
+`headRefOid` (the reviewed head) and `baseRefOid` for Step 5. The review describes the PR at that
+commit, so Step 5 checks that the PR has not moved since, compares the PR's own changes against that
+base if it has, and pins its comments to the saved head.
 
 **For PR scope, also fetch what earlier reviewers said:**
 
@@ -148,8 +148,8 @@ because install scripts run wherever the package is installed.
        && mkdir "$dir/src" && tar -xzf "$dir/src.tar.gz" -C "$dir/src" --strip-components=1
      ```
 
-     Install and test inside `$dir/src` with the project's own commands. Never fetch, check out or
-     add a worktree in the reviewed repository: a review only reads.
+     Install and test inside `$dir/src` with the project's own commands. Never install or run tests
+     in a checkout of the reviewed repository, because other steps are reading its files.
 
 4. **Report in Step 4's format.** A flag that survives step 3 is a finding. Anchor it on the
    lockfile line of that entry's `version`, which is in the diff. A clean run is the evidence for
@@ -171,7 +171,9 @@ Build a context block that every agent receives. Gather from these sources in pr
    (`DECISIONS.md` entries, ADRs, `docs/decisions/`), read at the PR's head commit, including any
    record the diff amends. Carry its decision, rejected options and revisit triggers into Recorded
    decisions.
-4. **Commit messages** — `git log <base>...HEAD --format="%s%n%b"`
+4. **Commit messages** — for PR scope, from `gh pr view <n> -R <owner>/<repo> --json commits`
+   (each commit's `messageHeadline` and `messageBody`), since nothing checks out the PR; otherwise
+   `git log <base>...HEAD --format="%s%n%b"`
 5. **The diff itself** — read for intent when other sources are thin
 6. **The change's dry-run output**: when CI posted what the change will do to running systems,
    such as a Terraform or OpenTofu plan, a Spacelift or Atlantis comment, a migration dry run or a
@@ -238,13 +240,16 @@ Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
-- Nothing from the earlier reviews fetched in Step 1, not even that they exist
+- Nothing from the earlier reviews fetched in Step 1, not even that they exist, except the CI dry
+  run the intent block carries
 - Its specific instructions below
 - This line, verbatim: "Read the files yourself. Do not spawn subagents."
 - This line, verbatim, because the other agents are reading the same checkout at the same time:
   "Never change the checkout under review: no checkout, switch, stash, reset or edit. To run
   something against another commit, add a scratch worktree with
   `git worktree add --detach "$(mktemp -d)/wt" <commit>` and remove it when done."
+- This line, verbatim, because Homebrew updates itself before any `brew` command by default: "Run
+  every `brew` command with `HOMEBREW_NO_AUTO_UPDATE=1`, so a read never updates Homebrew."
 - This provenance requirement, verbatim:
 
   > For every finding, state whether the change under review **introduced** it or whether it is
@@ -746,7 +751,8 @@ agents' and Step 1a's. Read each earlier finding and open question, and give it 
 
 An earlier finding is a claim to verify, not a finding of yours. One you have not checked does not
 enter Findings, however confident it sounds. Note where a review describes an older commit than the
-one you reviewed, and whether a thread is already resolved. Skip praise, summaries and boilerplate.
+one you reviewed, and whether a thread is already resolved. Skip their praise, summaries and
+boilerplate when reconciling.
 
 ```
 ## Code Review
@@ -801,8 +807,10 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
   checked]. [Your evidence in one sentence.]
 
 ### Looks Good
-[One sentence: what the change gets right, or which concern areas came back clean. An area whose
-agent errored or never ran did not come back clean.]
+[One sentence, or on Step 1a's path the short list it describes: the specific choice the author
+made that works best, which the posted body credits, or that nothing specific earns credit, and
+which concern areas came back clean. An area whose agent errored or never ran did not
+come back clean.]
 
 ### Dropped
 [Omit this section entirely if nothing was dropped.]
@@ -827,8 +835,7 @@ agent errored or never ran did not come back clean.]
   what makes it matter). A pre-existing gap also says whether the author can fix it in this PR. It
   meets the same severity bar as any other finding: one that would not be reported inside the diff
   is not reported outside it.
-- Omit "What's Working Well" and "All Clear" sections — consolidate into the single "Looks Good"
-  line.
+- Omit "What's Working Well" and "All Clear" sections — consolidate into "Looks Good".
 - If there are no recommended changes, say so in one sentence under the verdict and skip the
   Findings section.
 - If any agent errored or never ran, the sentence under the verdict names it, so the reader knows
@@ -844,9 +851,9 @@ agent errored or never ran did not come back clean.]
 
 ## Step 5: Post review (PR scope only)
 
-After presenting findings, if this is a PR and the author is the user (ooloth), ask the user to
-indicate which changes to make locally or discuss further first and then stop and wait for a reply
-(skip the rest of this skill's instructions).
+After presenting findings, if this is a PR and its author is the account `gh api user -q .login`
+returns, ask the user to indicate which changes to make locally or discuss further first and then
+stop and wait for a reply (skip the rest of this skill's instructions).
 
 Otherwise, if this is a PR and the author is NOT the user, ask:
 
@@ -896,30 +903,51 @@ On any answer other than "skip":
       - re-pin every comment to the new head, and check that each line still holds the code its
         comment is about.
 
-    Either way, the summary says which findings were re-checked against the new head, and the new
+    Either way, tell the user which findings were re-checked against the new head, and the new
     head and base become the saved state.
   - **Only new reviews, comments or replies:** the code is unchanged, so the findings stand. Add
     the new ones to Prior reviews, rewrite the summary to account for them, and show the user the
     new draft before posting. This read becomes the saved state.
   - **Nothing changed:** say so in one line and continue.
 
-  A review handles at most two head moves after its first run, whichever exit each one takes.
+  A review handles at most two head moves after its first run, whichever exit each one takes. A
+  restart from Step 1 on exit 2 continues the same count.
   When the head moves a third time, post nothing,
   and tell the user the PR keeps moving, naming the new commits, so they decide when to review it.
   Run the same check again immediately before posting, since approving the drafts can take
   another turn.
 - Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE;
   request-changes → REQUEST_CHANGES; comment → COMMENT
-- Write a 2–3 sentence overall summary for the review body (see audience guidance below). Where an
-  earlier review raised a point, refer to it by reviewer instead of restating it, and say so when
-  your work answered a question it left open or disputes something it claimed.
+- Write the review body in this shape, each part only when it has something to say (see the
+  audience and tone guidance below):
+  - **Verdict and credit:** the verdict, then one sentence crediting a specific choice the author
+    made and why it works, drawn from Looks Good.
+  - **Triage:** when the review approves or comments and still carries findings, end the first
+    paragraph with this sentence, word for word: "Feel free to decide yourself which findings to
+    fix here vs file as a ticket vs ignore for now." Under Request Changes there is no triage
+    sentence. The body asks for the `must` findings directly, and says in a clause that the
+    others are optional.
+  - **A must-fix inside an Approve:** the user approves so the author, often in another time zone,
+    can address the findings and merge without waiting a day for a re-review. When one finding
+    really must be fixed before merging, name it and say why in a sentence, so it isn't missed
+    among the optional ones. Leave this out when nothing must be fixed first, and never pick a set
+    number of callouts.
+  - **Other code affected by these changes:** one bold `**Other code affected by these changes**`
+    line, then one bullet per finding outside the diff: a bold lead naming the problem, then where
+    it is, what to do and where you saw it, in one or two sentences. The bullets carry no labels;
+    whether the gap was already there is not the author's concern. A finding earns a bullet only
+    when it meets the severity bar in Step 4, fits the PR and is worth the author's time.
+  - **Prior reviews:** one full sentence with a subject ("I agree with Rex on…"), never a fragment
+    that starts with a verb ("Agree with…"), naming each earlier reviewer by the `refer_as` value
+    the fetch helper printed for it, saying which of its points you agree with, dispute or
+    answered, each named in a few words. Never restate their points, and leave out the ones you
+    did not check. When a `refer_as` value reads `UNKNOWN`, ask the user what to call that
+    reviewer before drafting.
+
+  Evidence for a finding in the diff goes in its inline comment, not the body. Which findings were
+  re-checked after a head move goes in the report to the user, not the body.
 - Collect every finding whose line is in the PR's diff as an inline comment. GitHub accepts inline
-  comments only on lines the diff shows.
-- List every finding outside the diff in the review body instead, one bullet each: a bold lead
-  naming the problem, then where it is and what to do. Keep each one's label in the wording, so the
-  author can tell a coupled change the PR missed from a gap that was already there. When any are
-  pre-existing gaps, the body invites the author to decide for each one whether to fix it in the
-  PR, ticket it, or leave it. The reviewer files no ticket for a gap the author can fix.
+  comments only on lines the diff shows. The reviewer files no ticket for a gap the author can fix.
 - Pin the review to the saved head: the one from Step 1, or the new head once a head move has
   updated the saved state. The comments then stay on the code you reviewed, and the check above
   makes sure it is still the PR's head.
@@ -963,12 +991,40 @@ uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo 
   `write-ticket-description`, and post nothing until the user approves the wording.
 
 **Summary audience:** The review body is read by GitHub users who only know what's in the PR diff —
-they have no context from this review session. Write for that audience:
+they have no context from this review session. Write for that audience.
 
-**Tone for inline comment bodies:** Write like a person talking to a teammate, not a report
-generator. Approach it the way a mentor invested in someone's growth would: patient, curious, and
-specific, not grading their work. Avoid em dashes; they're one of the more obvious signs a
-comment was generated rather than typed by a person.
+**Tone for the review body and inline comments:** Write like a teammate who is glad to be working
+on this with the author and wants the PR to land well: patient, curious and specific. You are a
+peer, not a mentor grading their work. Someone reading their first review from the user should come
+away expecting to be worked with. Avoid em dashes; they're one of the more obvious signs a comment
+was generated rather than typed by a person.
+
+**Write like the user talks.** Where the user has given their own wording for part of a review, use
+it as written rather than improvising a variant. Elsewhere, aim for the way they phrase things in
+conversation: plain, direct, and in full sentences. Speak to the author as "you", and leave out
+their name and handle. The body and the comments are obviously replies to the PR's author, so a
+name reads as formal. Use a handle only when a notification or telling people apart is wanted,
+such as for another reviewer.
+
+**Credit what's good.** Naming a choice the author got right is part of the review, not padding: it
+tells them what to keep doing, and it shows the findings come from someone who read the work
+closely. Credit the choice as something they did, addressed to them ("Nice call having both
+transports share one MIME builder. It's why the recipient gate is easy to trust."), rather than
+grading the result ("The shape is right.", "This was the right call."). The example shows the
+register, not an opener to reuse: "Nice call" in every review is as much a tell as "Want to..." in
+every comment. Credit the work, never the person's traits. The default is the one sentence in the
+review body. An inline comment that only credits a line is fine at most once per review, when that
+line is itself the thing worth crediting.
+
+Before posting a batch, also look for the one or two findings where the author got part of it
+right, such as a guard that is the right idea but untested, or a fix aimed at the right place but
+missing a case, and open those with a short clause saying so ("The guard is the right idea; this
+case just passes without it."). The point still comes first in the sentence, and the rest of the
+batch stays as it is. When nothing specific earns credit, leave it out rather than invent it.
+
+**Warm, not familiar.** No stacked exclamation marks, no "I love this", and no emoji; the user adds
+one when an occasion calls for it. Thank the author for effort only when the effort is visibly
+large.
 
 Structure: make the point of the comment stand out. Its first paragraph is the one thing you want
 the author to take away: the question you're asking, or what you found. Then a blank line, then
@@ -1024,7 +1080,10 @@ it out loud to the person sitting next to you. The goal is a batch that reads li
 person moved down the file making distinct, differently-voiced observations, not like a template
 applied four times or a fixed phrasebook applied on rotation.
 
-Use a quick example when it makes the impact click, and say something nice when it's earned. When
+The credit sentence is worded fresh each time, so an author on their tenth review doesn't read the
+same sentence ten times. The triage sentence is not: use the user's wording above.
+
+Use a quick example when it makes the impact click. When
 a code snippet or a suggested fix would make the ask concrete, include it directly in the
 comment: quote the line in question, or show the small change you have in mind, rather than
 describing it in prose alone.

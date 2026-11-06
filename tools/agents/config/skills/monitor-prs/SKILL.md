@@ -82,8 +82,8 @@ My pull request **has feedback** when any of these holds:
   is newer than my newest review or top-level comment. A review bot can post a placeholder and edit
   its review into it later, so the edit is when its feedback arrived. A review bot is one whose
   login is a key of `BOT_NAMES` in `../review-pr-comments-converge/scripts/fetch_pr_comments.py`,
-  relative to this skill's base directory. Such a bot posts its whole review as one comment,
-  outside GitHub's reviews.
+  relative to this skill's base directory. Some of these bots, such as rex-rx-agent, post their
+  whole review as one top-level comment outside GitHub's reviews, and this item catches that.
 
 For my own pull request, the first of these that holds is the reason:
 
@@ -204,17 +204,16 @@ The table has these columns:
 - **Author**: the author's login, on every row, mine included.
 - **Title**, in full. The table wraps a long cell, so a title is never cut short.
 - **Note**: when it has feedback, who left the newest of it and how many unresolved threads do not
-  end with my comment, such as "Copilot, 4 unresolved threads" or "alice requested changes", or
-  "rex-rx-agent commented" when the feedback is a review bot's top-level comment. When
-  its prepared session's tab is open, the Note ends with the tab's name and where the session
-  stands, read from that check's capture of its screen: "working", "report waiting" or "waiting
-  at a question". A session waiting at a question also gets a line above the table quoting the
-  question, on every check until it is answered. Name
-  authors and count things only; never quote or summarise what a comment says. For review
-  requested, the date the pull request was opened, such as "opened Jun 24". For not my move, who
-  holds it: each requested person or bot by login, and each requested team as "a team" or "two
-  teams" and so on, since a team's name is not read, such as "alice, bob, a team"; or the
-  person whose reply a thread waits on. Otherwise empty.
+  end with my comment, such as "copilot-pull-request-reviewer, 4 unresolved threads" or "alice
+  requested changes", or "rex-rx-agent commented" when the feedback is a review bot's top-level
+  comment. When its prepared session's tab is open, the Note ends with the tab's name and where the
+  session stands, read from that check's capture of its screen: "working", "report waiting" or
+  "waiting at a question". A session waiting at a question also gets a line above the table quoting
+  the question, on every check until it is answered. Name authors and count things only; never quote
+  or summarise what a comment says. For review requested, the date the pull request was opened, such
+  as "opened Jun 24". For not my move, who holds it: each requested person or bot by login, and each
+  requested team as "a team" or "two teams" and so on, since a team's name is not read, such as
+  "alice, bob, a team"; or the person whose reply a thread waits on. Otherwise empty.
 - **Link**: the pull request's `url` field, copied from the response rather than built from the
   repository name, and bare rather than a markdown link, because the terminal prints a markdown
   link's url beside its text.

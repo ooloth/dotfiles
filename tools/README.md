@@ -22,8 +22,9 @@ The @new template directory groups all the related files for a particular tool/u
 ## Key Principles
 
 1. **Feature Cohesion**: Everything related to a tool lives in one folder
-2. **Self-Contained**: Each feature can be understood in isolation + deleted without affecting other
-   tools
+2. **Self-Contained**: Each tool can be understood in isolation and deleted without affecting other
+   tools. The exceptions are `tools/bash/` and `tools/macos/`, whose helpers other tools' scripts
+   and Brewfiles load.
 3. **Discoverable**: The root level of `/tools` shows all available tools
 4. **Automatic integration**: Tools are automatically integrated with install and update features
 5. **Shared formulae are fine**: The same formula may appear in multiple Brewfiles when it is both a

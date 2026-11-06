@@ -8,8 +8,8 @@
 Run with: uv run tools/macos/tests/test_shell.py
 
 Each test sources the real file in a bare zsh and prints the COMPUTER_NAME and COMPUTER it settles
-on. `networksetup` is called by absolute path, so the name it detects is whatever this Mac is
-called, and the tests compare against that.
+on. `scutil` is called by absolute path, so the name it detects is whatever this Mac is called, and
+the tests compare against that name as `networksetup` reports it.
 """
 
 from __future__ import annotations

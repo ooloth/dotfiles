@@ -1,5 +1,5 @@
-computer_name = `networksetup -getcomputername`.chomp
+require_relative "../macos/computer"
 
-if computer_name == "Air"
+if air?
   mas "Reeder 5.", id: 1529448980
 end

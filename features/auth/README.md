@@ -20,7 +20,7 @@ It checks these all at once, then logs in to the expired ones one at a time:
 - **Google (rxrx.tech):** checks with `gcloud auth print-access-token --account=<account>` and logs
   in with `gcloud auth login --no-activate <account>`.
 - **Spacelift:** checks with `spacectl whoami` and logs in with
-  `spacectl profile login --method browser recursion`.
+  `spacectl profile login --method browser --endpoint https://<account>.app.spacelift.io/ <account>`.
 - **Argo CD:** checks with
   `argocd account get-user-info --grpc-web --output json --server <server>` and logs in with
   `argocd login --sso --grpc-web <server>`.
@@ -28,9 +28,9 @@ It checks these all at once, then logs in to the expired ones one at a time:
 After each login it checks again, and the summary reports what that check found. It exits 0 only
 when every login ends up valid, so `auth && <command>` runs the command only once you're logged in.
 
-- **The Argo CD server** comes from `PRIVATE_ARGOCD_SERVER` in `private.env` (see
-  `private.env.example`). Without it, the Argo CD line says so and the other logins still run, and
-  `auth` exits 1.
+- **The Spacelift account and the Argo CD server** come from `PRIVATE_SPACELIFT_ACCOUNT` and
+  `PRIVATE_ARGOCD_SERVER` in `private.env` (see `private.env.example`). Without one, its line says
+  so and the other logins still run, and `auth` exits 1.
 - **`argocd account get-user-info` usually exits 0 even when the session has expired**, so the
   script reads its `loggedIn` field. A failure that names a revoked token (`invalid_grant`) or a
   rejected session (`code = Unauthenticated`) also counts as expired. Any other failure, such as
@@ -39,7 +39,9 @@ when every login ends up valid, so `auth && <command>` runs the command only onc
   service is down**, so the script reads what they print. Only a message naming the credentials,
   such as `Reauthentication required`, `invalid_grant` or `please login first`, counts as expired.
   Any other failure is reported as not checked, so a dropped VPN opens no browser logins.
-- **`--method browser`** skips Spacelift's menu asking which kind of login to use.
+- **`--method browser`** skips Spacelift's menu asking which kind of login to use, and
+  **`--endpoint`** skips its prompt for the account's URL, which it asks for even when the profile
+  already has one.
 - **Ctrl-C during a login** stops only that login. `auth` checks it again and goes on to the next
   one, then prints the summary.
 - **Pomerium** is left out: `griphook` has no command that reports whether a session is still valid.
@@ -47,4 +49,6 @@ when every login ends up valid, so `auth && <command>` runs the command only onc
   `uv run --offline`. Then uv never reaches the work package index, which needs the very Google
   credentials `auth` may be about to refresh.
 
-Tests: `uv run features/auth/tests/test_auth.py`.
+Tests: `uv run features/auth/tests/test_auth.py`. Unlike the script, the tests need `hypothesis`,
+which on the work laptop uv fetches through the work package index, so they need a valid Google
+login (see `CONTRIBUTING.md`).

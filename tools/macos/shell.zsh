@@ -2,8 +2,7 @@
 # ENVIRONMENT VARIABLES #
 ########################
 
-# TODO: zsh/variables.zsh should find all shell/variables.zsh files and source them
-
+# For bash scripts, see tools/macos/utils.bash. For Brewfiles, see tools/macos/computer.rb.
 # A name inherited from the parent shell came from this same Mac, so it is kept rather than asked for
 # again. That saves a subprocess on every shell start, and this file is sourced twice per shell.
 # scutil reads the same ComputerName that `networksetup -getcomputername` prints, in 4 ms, not 12.
@@ -19,9 +18,9 @@ case "$COMPUTER_NAME" in
       export COMPUTER="work" ;;
 esac
 
-###########
-# ALIASES #
-###########
+#############
+# FUNCTIONS #
+#############
 
 is_air() { [[ "$COMPUTER" == "air" ]]; }
 is_mini() { [[ "$COMPUTER" == "mini" ]]; }

@@ -1,5 +1,5 @@
-computer_name = `networksetup -getcomputername`.chomp
+require_relative "../macos/computer"
 
-if ["7385-Y3FH97X-MAC", "MULO-JQ97NW-MBP"].include?(computer_name)
+if work?
   cask "meetingbar" # for auto-joining zoom calls
 end

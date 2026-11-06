@@ -1,14 +1,13 @@
 # see: https://handy.computer/
 # see: https://github.com/workos/aie-ai-native-workshop/blob/main/curriculum/01-voice-coding.md
 
-computer_name = `networksetup -getcomputername`.chomp
+require_relative "../macos/computer"
 
 # local speech-to-text dictation
-case computer_name
-when "Mini"
-  # not used
-when "Air"
+if air?
   cask "handy"
+elsif mini?
+  # not used
 else
   # The work account is not an admin, so it cannot write to /Applications
   cask "handy", args: { appdir: "~/Applications" }
