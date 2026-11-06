@@ -101,7 +101,7 @@ class FakeShell:
     def capture(self, command: tuple[str, ...]):
         (login,) = [item for item in self._logins() if item.check == command]
         if login.name in self.timed_out:
-            return auth.TimedOut(command)
+            return auth.TimedOut()
         return ANSWERS[command[0]][self.states[login.name]]
 
     def attach(self, command: tuple[str, ...]) -> int:
@@ -291,7 +291,7 @@ class SubprocessShellLimits(unittest.TestCase):
         with mock.patch.object(auth, "CHECK_TIMEOUT_SECONDS", 0.2):
             result = auth.SubprocessShell().capture(("sleep", "5"))
 
-        self.assertEqual(result, auth.TimedOut(("sleep", "5")))
+        self.assertEqual(result, auth.TimedOut())
 
 
 class TimedOutCheck(unittest.TestCase):

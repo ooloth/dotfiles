@@ -84,7 +84,7 @@ class CheckResult:
 
 @dataclass(frozen=True)
 class TimedOut:
-    command: Command
+    pass
 
 
 @dataclass(frozen=True)
@@ -161,7 +161,7 @@ class SubprocessShell:
                 timeout=CHECK_TIMEOUT_SECONDS,
             )
         except subprocess.TimeoutExpired:
-            return TimedOut(command)
+            return TimedOut()
         return CheckResult(result.returncode, result.stdout, result.stderr)
 
     def attach(self, command: Command) -> int:
