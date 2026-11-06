@@ -20,7 +20,7 @@ It checks these all at once, then logs in to the expired ones one at a time:
 - **Google (rxrx.tech):** checks with `gcloud auth print-access-token --account=<account>` and logs
   in with `gcloud auth login --no-activate <account>`.
 - **Spacelift:** checks with `spacectl whoami` and logs in with
-  `spacectl profile login --method browser --endpoint https://recursion.app.spacelift.io/ recursion`.
+  `spacectl profile login --method browser --endpoint https://<account>.app.spacelift.io/ <account>`.
 - **Argo CD:** checks with
   `argocd account get-user-info --grpc-web --output json --server <server>` and logs in with
   `argocd login --sso --grpc-web <server>`.
@@ -28,9 +28,9 @@ It checks these all at once, then logs in to the expired ones one at a time:
 After each login it checks again, and the summary reports what that check found. It exits 0 only
 when every login ends up valid, so `auth && <command>` runs the command only once you're logged in.
 
-- **The Argo CD server** comes from `PRIVATE_ARGOCD_SERVER` in `private.env` (see
-  `private.env.example`). Without it, the Argo CD line says so and the other logins still run, and
-  `auth` exits 1.
+- **The Spacelift account and the Argo CD server** come from `PRIVATE_SPACELIFT_ACCOUNT` and
+  `PRIVATE_ARGOCD_SERVER` in `private.env` (see `private.env.example`). Without one, its line says
+  so and the other logins still run, and `auth` exits 1.
 - **`argocd account get-user-info` usually exits 0 even when the session has expired**, so the
   script reads its `loggedIn` field. A failure that names a revoked token (`invalid_grant`) or a
   rejected session (`code = Unauthenticated`) also counts as expired. Any other failure, such as
