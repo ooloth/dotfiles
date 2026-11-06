@@ -89,7 +89,7 @@ a false positive costs one read; a false negative means missed guidance.
   base images, automatic update config, platform and runtime versions
 - **`deployment.md`** — any change to code that runs in a deployed environment; CI/CD config,
   Dockerfiles, infrastructure manifests, migration files, spend limits; how a change is
-  divided into PRs, in any repo; pre-commit hook config and the task-runner check command
+  divided into PRs, in any repo; pre-commit hook config and the task runner's check command
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions,
   the operator document (SYSTEM.md)
 - **`documentation.md`** — any file change that affects documented behaviour or has accompanying

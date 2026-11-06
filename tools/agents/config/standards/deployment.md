@@ -53,14 +53,14 @@ to the same command instead of keeping its own copy of the list.
 
 **A pre-commit hook that checks or fixes the repo's files runs a check the task runner's check
 command also runs.**
-It uses the same installed tool version and the same include and exclude rules as that command.
-At commit time it runs on the staged files among those the command covers, and the command runs
-the same hooks over every file. A hook that checks something the command doesn't runs only for
-developers who installed hooks, so CI never sees it. A hook that formats with its own pinned
-version, or over a different set of files, writes changes the command then rejects, or skips files
-the command fails on. A hook that checks the commit itself rather than its files, such as a
-commit-message linter or a guard against committing to the main branch, has no counterpart in the
-check command and falls outside this rule.
+It uses the same installed tool version and the same include and exclude rules as that command. At
+commit time it runs on the staged files among those the command covers, and where the command runs
+the hooks themselves, as `prek run --all-files` does, they run over every file. A hook that checks
+something the command doesn't runs only for developers who installed hooks, so CI never sees it. A
+hook that formats with its own pinned version, or over a different set of files, writes changes
+the command then rejects, or skips files the command fails on. A hook that checks the commit
+itself rather than its files, such as a commit-message linter or a guard against committing to the
+main branch, has no counterpart in the check command and falls outside this rule.
 
 **Each deployed version works alongside the version before it.**
 During a rollout, and after a rollback, old and new code run against the same
