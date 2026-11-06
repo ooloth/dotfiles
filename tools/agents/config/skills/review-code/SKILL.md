@@ -985,9 +985,11 @@ was generated rather than typed by a person.
 tells them what to keep doing, and it shows the findings come from someone who read the work
 closely. Credit the choice as something they did, addressed to them ("Nice call having both
 transports share one MIME builder. It's why the recipient gate is easy to trust."), rather than
-grading the result ("The shape is right.", "This was the right call."). Credit the work, never the
-person's traits. The default is the one sentence in the review body. An inline comment that only
-credits a line is fine at most once per review, when that line is itself the thing worth crediting.
+grading the result ("The shape is right.", "This was the right call."). The example shows the
+register, not an opener to reuse: "Nice call" in every review is as much a tell as "Want to..." in
+every comment. Credit the work, never the person's traits. The default is the one sentence in the
+review body. An inline comment that only credits a line is fine at most once per review, when that
+line is itself the thing worth crediting.
 
 Before posting a batch, also look for the one or two findings where the author got part of it
 right, such as a guard that is the right idea but untested, or a fix aimed at the right place but
