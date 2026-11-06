@@ -746,7 +746,8 @@ agents' and Step 1a's. Read each earlier finding and open question, and give it 
 
 An earlier finding is a claim to verify, not a finding of yours. One you have not checked does not
 enter Findings, however confident it sounds. Note where a review describes an older commit than the
-one you reviewed, and whether a thread is already resolved. Skip praise, summaries and boilerplate.
+one you reviewed, and whether a thread is already resolved. Skip their praise, summaries and
+boilerplate when reconciling.
 
 ```
 ## Code Review
@@ -801,8 +802,9 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
   checked]. [Your evidence in one sentence.]
 
 ### Looks Good
-[One sentence: what the change gets right, or which concern areas came back clean. An area whose
-agent errored or never ran did not come back clean.]
+[One sentence: the specific choice the author made that works best, which the posted body
+credits, and which concern areas came back clean. An area whose agent errored or never ran did not
+come back clean.]
 
 ### Dropped
 [Omit this section entirely if nothing was dropped.]
@@ -910,16 +912,24 @@ On any answer other than "skip":
   another turn.
 - Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE;
   request-changes → REQUEST_CHANGES; comment → COMMENT
-- Write a 2–3 sentence overall summary for the review body (see audience guidance below). Where an
-  earlier review raised a point, refer to it by reviewer instead of restating it, and say so when
-  your work answered a question it left open or disputes something it claimed.
+- Write the review body in this shape, each part only when it has something to say (see the
+  audience and tone guidance below):
+  - **Verdict and credit:** the verdict, then one sentence crediting a specific choice the author
+    made and why it works, drawn from Looks Good.
+  - **Triage:** a clause, not a paragraph, saying every finding is the author's call to fix here,
+    ticket or leave.
+  - **Where to look first:** the one or two findings that matter most, by name.
+  - **Outside the diff:** one bold `**Outside the diff**` line, then one bullet per finding outside
+    the diff: a bold lead naming the problem, then where it is and what to do, in one or two
+    sentences. The bullets carry no labels; whether the gap was already there is not the author's
+    concern. A finding earns a bullet only when it fits the PR and is worth the author's time.
+  - **Earlier reviews:** one line naming each earlier reviewer by the `refer_as` value the fetch
+    helper printed for it, saying which of its points you agree with, dispute or answered. Never
+    restate their points.
+
+  Evidence for a finding goes in its inline comment, not the body.
 - Collect every finding whose line is in the PR's diff as an inline comment. GitHub accepts inline
-  comments only on lines the diff shows.
-- List every finding outside the diff in the review body instead, one bullet each: a bold lead
-  naming the problem, then where it is and what to do. Keep each one's label in the wording, so the
-  author can tell a coupled change the PR missed from a gap that was already there. When any are
-  pre-existing gaps, the body invites the author to decide for each one whether to fix it in the
-  PR, ticket it, or leave it. The reviewer files no ticket for a gap the author can fix.
+  comments only on lines the diff shows. The reviewer files no ticket for a gap the author can fix.
 - Pin the review to the saved head: the one from Step 1, or the new head once a head move has
   updated the saved state. The comments then stay on the code you reviewed, and the check above
   makes sure it is still the PR's head.
@@ -965,10 +975,29 @@ uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo 
 **Summary audience:** The review body is read by GitHub users who only know what's in the PR diff —
 they have no context from this review session. Write for that audience:
 
-**Tone for inline comment bodies:** Write like a person talking to a teammate, not a report
-generator. Approach it the way a mentor invested in someone's growth would: patient, curious, and
-specific, not grading their work. Avoid em dashes; they're one of the more obvious signs a
-comment was generated rather than typed by a person.
+**Tone for the review body and inline comments:** Write like a teammate who is glad to be working
+on this with the author and wants the PR to land well: patient, curious and specific. You are a
+peer, not a mentor grading their work. Someone reading their first review from the user should come
+away expecting to be worked with. Avoid em dashes; they're one of the more obvious signs a comment
+was generated rather than typed by a person.
+
+**Credit what's good.** Naming a choice the author got right is part of the review, not padding: it
+tells them what to keep doing, and it shows the findings come from someone who read the work
+closely. Credit the choice as something they did, addressed to them ("Nice call having both
+transports share one MIME builder. It's why the recipient gate is easy to trust."), rather than
+grading the result ("The shape is right.", "This was the right call."). Credit the work, never the
+person's traits. The default is the one sentence in the review body. An inline comment that only
+credits a line is fine at most once per review, when that line is itself the thing worth crediting.
+
+Before posting a batch, also look for the one or two findings where the author got part of it
+right, such as a guard that is the right idea but untested, or a fix aimed at the right place but
+missing a case, and open those with a short clause saying so ("The guard is the right idea; this
+case just passes without it."). The point still comes first in the sentence, and the rest of the
+batch stays as it is. When nothing specific earns credit, leave it out rather than invent it.
+
+**Warm, not familiar.** No stacked exclamation marks, no "I love this", and no emoji; the user adds
+one when an occasion calls for it. Thank the author for effort only when the effort is visibly
+large.
 
 Structure: make the point of the comment stand out. Its first paragraph is the one thing you want
 the author to take away: the question you're asking, or what you found. Then a blank line, then
@@ -1024,7 +1053,10 @@ it out loud to the person sitting next to you. The goal is a batch that reads li
 person moved down the file making distinct, differently-voiced observations, not like a template
 applied four times or a fixed phrasebook applied on rotation.
 
-Use a quick example when it makes the impact click, and say something nice when it's earned. When
+The review body follows the same rule: the triage clause and the credit sentence are worded fresh
+each time, so an author on their tenth review doesn't read the same sentence ten times.
+
+Use a quick example when it makes the impact click. When
 a code snippet or a suggested fix would make the ask concrete, include it directly in the
 comment: quote the line in question, or show the small change you have in mind, rather than
 describing it in prose alone.

@@ -334,6 +334,12 @@ These replies go out as the PR author to their teammates. Write as a colleague w
 - **No bot-speak**: avoid "I have addressed your comment", "As per your request", "LGTM"
 - **For ❌, give the reason without arguing**: "already handled at file:line", or "I think this is
   intentional because X"
+- **Say so when a catch was good**: when a ✅ answers a finding that took real digging to spot, a
+  few words of acknowledgement may follow the verdict ("✅ Good catch, ..."). Word it differently
+  each time and keep it to the findings that earned it, so it never reads as a formula
+- **Agree before you add**: when a fix comes with a nuance the reviewer missed, say what they got
+  right first and then the nuance ("Right, and it also ..."), rather than opening with "One
+  correction:"
 
 ### Report template
 
