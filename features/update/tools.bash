@@ -41,8 +41,9 @@ main() {
     bash "$file" || failed_scripts+=("$file")
   done
 
-  # Find all update.bash files at the root level of each tool directory (except @new and @archive) and sort by parent directory name
-  update_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "${file_name}" -print | sort -t/ -k5)
+  # Find all update.bash files at the root level of each tool directory (except @new and @archive),
+  # sorted by tool name: every path is the same up to tools/<tool>/, so a plain sort sorts by tool
+  update_files=$(find "${DOTFILES}/tools" -maxdepth 2 -type d \( -name "@new" -o -name "@archive" \) -prune -o -type f -name "${file_name}" -print | sort)
 
   # Filter out priority files from the list
   for file in "${priority_files[@]}"; do
