@@ -40,9 +40,10 @@ alias bqq='bq query --use_legacy_sql=false --project_id="${PRIVATE_BQ_PROJECT:?i
 alias gca="gcloud auth login --update-adc michael.uloth@recursion.com"
 # alias gca="gcloud auth login --update-adc && gcloud auth application-default"
 
-# The external org account is used only through the `external` gcloud configuration. ADC and the
-# default configuration stay on the internal account, because uv's package index authenticates with
-# ADC and only the internal account can read it.
+# The external org account is used only through an `external` gcloud configuration, which is set
+# up by hand (`gcloud config configurations create external`); nothing in this repo creates it.
+# ADC and the default configuration stay on the internal account, because uv's package index
+# authenticates with ADC and only the internal account can read it.
 alias gcat="gcloud auth login --no-activate michael.uloth@rxrx.tech"
 
 ###############
