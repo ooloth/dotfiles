@@ -13,7 +13,12 @@ For npm, it looks up the old and new release of each bumped package with `npm vi
 publisher, install scripts, dependencies, engines, provenance and publish age, and checks the
 lockfile hash against the registry. `npm ls` on the head says whether every parent's range is
 still satisfied, and `npm audit` on both sides says which advisories the bump fixed, introduced or
-left in place.
+left in place. `npm ci --dry-run --ignore-scripts` on the head says whether the lockfile installs
+under the npm the repo declares for CI: the version in package.json's `packageManager`, else the npm bundled
+with the Node version in the nearest `.nvmrc` or `.node-version`, looked up in nodejs.org's release
+index. When none of them names a version the check can resolve, the report flags that and checks
+with the local npm instead. A package.json with `workspaces` is flagged for a check by hand, because
+npm ci needs every member's package.json.
 
 For uv, it reads each bumped release from PyPI with `curl` and checks every locked file's hash,
 the registry source, the publisher its attestations name, new requirements, `requires_python`,
@@ -22,7 +27,8 @@ bumped one must still allow the new version, and `uv audit` on both sides lists 
 Only pypi.org and OSV are contacted, never the project's own index: a package locked from another
 index is flagged for a person to check.
 
-It only reads. Nothing is written to GitHub or any registry.
+It only reads from GitHub and the registries, and writes nothing to them. The install check
+downloads the pinned npm into npm's own cache and runs it on the local Node.
 
 Usage:
   review_dependency_bump.py <pr-number> --repo OWNER/NAME [--min-age-days N]
@@ -30,9 +36,11 @@ Usage:
 Exit codes:
   0  every check ran and nothing is flagged
   1  every check ran and something is flagged for a person to read
-  2  the checks could not run (nothing to check, or a lookup failed); no report is printed
+  2  the checks could not run (nothing to check, a lookup failed, or npm ci failed for a reason
+     other than the lockfile); no report is printed
 
-Requires `gh` (authenticated) on PATH, plus `npm` for npm lockfiles and `curl` and `uv` for uv.lock.
+Requires `gh` (authenticated) on PATH, plus `npm` and `curl` for npm lockfiles and `curl` and `uv`
+for uv.lock.
 Other lockfiles are not checked; a PR that changes one is flagged so the reviewer checks it by hand.
 """
 
@@ -47,6 +55,7 @@ from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from functools import cache
 from pathlib import Path, PurePosixPath
 from typing import Any, Literal, NoReturn, TypeVar
 from urllib.parse import urlparse
@@ -98,6 +107,7 @@ Check = Literal[
     "yanked",
     "wheels",
     "parents",
+    "install",
 ]
 
 
@@ -125,7 +135,7 @@ def cannot_check(message: str) -> NoReturn:
     sys.exit(2)
 
 
-# --- Running gh and npm --------------------------------------------------------------------------
+# --- Running gh, npm and curl -------------------------------------------------------------------
 
 
 def run(cmd: Sequence[str], cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -152,6 +162,23 @@ def parse_json(text: str, source: str) -> Any:
         return json.loads(text)
     except json.JSONDecodeError as e:
         cannot_check(f"{source} did not return JSON: {e}.")
+
+
+def curl(url: str, *headers: str) -> str | None:
+    """The body at a URL, or None for a 404.
+
+    curl rather than Python's HTTP client: it uses the system's certificates, so it works behind a
+    proxy that re-signs TLS, where Python's own certificate store fails.
+    """
+    cmd = ["curl", "-sS", "--fail", "--max-time", "30"]
+    for h in headers:
+        cmd += ["-H", h]
+    cmd.append(url)
+    result = run(cmd)
+    # curl --fail exits 22 for an HTTP error status and names the status on stderr.
+    if result.returncode == 22 and "404" in result.stderr:
+        return None
+    return require_success(cmd, result).stdout
 
 
 # --- The PR --------------------------------------------------------------------------------------
@@ -631,6 +658,229 @@ def compare_advisories(
     return findings
 
 
+# --- Whether the lockfile installs under CI's npm ------------------------------------------------
+
+NODE_INDEX_URL = "https://nodejs.org/dist/index.json"
+NODE_VERSION_FILES = (".nvmrc", ".node-version")
+# --dry-run resolves and validates the tree without writing node_modules or running any script, and
+# still refuses a lockfile that is out of sync with package.json, which is what this checks.
+CI_ARGS = ("ci", "--dry-run", "--ignore-scripts", "--no-audit", "--no-fund")
+EXACT_NPM = re.compile(r"npm@(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)(?:\+.*)?")
+NODE_SPEC = re.compile(r"v?(\d+(?:\.\d+){0,2})")
+
+
+@dataclass(frozen=True)
+class NodeSpec:
+    """A Node version a version file names: exact (three parts) or a major[.minor] prefix."""
+
+    parts: tuple[int, ...]
+
+    def matches(self, version: str) -> bool:
+        """Whether a nodejs.org release version, such as v25.1.0, is one this spec names.
+
+        An exact spec names one release. A prefix names only full releases, never a prerelease.
+        """
+        if len(self.parts) == 3:
+            return version == f"v{self}"
+        if "-" in version:
+            return False
+        return version.removeprefix("v").split(".")[: len(self.parts)] == [
+            str(p) for p in self.parts
+        ]
+
+    def __str__(self) -> str:
+        return ".".join(map(str, self.parts))
+
+
+@dataclass(frozen=True)
+class PackageManagerField:
+    npm: str
+
+
+@dataclass(frozen=True)
+class NodeVersionFile:
+    path: str
+    spec: NodeSpec
+
+
+@dataclass(frozen=True)
+class UnusableVersion:
+    """A declared version this check cannot turn into an npm version, and why."""
+
+    reason: str
+
+
+@dataclass(frozen=True)
+class Undeclared:
+    pass
+
+
+NpmSource = PackageManagerField | NodeVersionFile | UnusableVersion | Undeclared
+
+
+@dataclass(frozen=True)
+class PinnedNpm:
+    npm: str
+    origin: str
+
+
+@dataclass(frozen=True)
+class LocalNpm:
+    """CI's npm could not be determined, so the check runs with whatever npm is on PATH."""
+
+    reason: str
+
+
+NpmChoice = PinnedNpm | LocalNpm
+
+
+@dataclass(frozen=True)
+class NodeRelease:
+    version: str
+    npm: str | None
+
+
+@dataclass(frozen=True)
+class Accepted:
+    described: str
+
+
+@dataclass(frozen=True)
+class Rejected:
+    described: str
+    npm_errors: tuple[str, ...]
+
+
+InstallVerdict = Accepted | Rejected
+
+
+def version_file_paths(lock_path: str) -> list[str]:
+    """Where a Node version file can sit: the lockfile's directory, then each one above it."""
+    lock_dir = PurePosixPath(lock_path).parent
+    dirs = [lock_dir, *lock_dir.parents]
+    return [
+        name if d == PurePosixPath(".") else str(d / name)
+        for d in dirs
+        for name in NODE_VERSION_FILES
+    ]
+
+
+def find_npm_source(snapshot: PrSnapshot, lock_path: str, manifest: dict[str, Any]) -> NpmSource:
+    declared = manifest.get("packageManager")
+    if isinstance(declared, str):
+        match = EXACT_NPM.fullmatch(declared.strip())
+        if match is None:
+            return UnusableVersion(
+                f"package.json's packageManager is {declared}, not an npm version"
+            )
+        return PackageManagerField(match.group(1))
+    for path in version_file_paths(lock_path):
+        text = fetch_file(snapshot.repo, path, snapshot.head)
+        if text is None:
+            continue
+        content = text.strip()
+        match = NODE_SPEC.fullmatch(content)
+        if match is None:
+            return UnusableVersion(f"{path} says {content}, which this check does not resolve")
+        return NodeVersionFile(path, NodeSpec(tuple(int(n) for n in match.group(1).split("."))))
+    return Undeclared()
+
+
+@cache
+def fetch_node_index() -> tuple[NodeRelease, ...]:
+    text = curl(NODE_INDEX_URL)
+    if text is None:
+        cannot_check(f"{NODE_INDEX_URL} returned 404.")
+    raw = parse_json(text, NODE_INDEX_URL)
+    if not isinstance(raw, list) or not all(
+        isinstance(r, dict)
+        and isinstance(r.get("version"), str)
+        and isinstance(r.get("npm"), str | None)
+        for r in raw
+    ):
+        cannot_check(f"{NODE_INDEX_URL} is not a list of releases, so update the script.")
+    return tuple(NodeRelease(r["version"], r.get("npm")) for r in raw)
+
+
+def resolve_npm(source: NpmSource) -> NpmChoice:
+    match source:
+        case PackageManagerField(npm):
+            return PinnedNpm(npm, "from package.json's packageManager")
+        case NodeVersionFile(path, spec):
+            # nodejs.org lists releases newest first, so the first match is the newest.
+            release = next((r for r in fetch_node_index() if spec.matches(r.version)), None)
+            if release is None:
+                return LocalNpm(f"{path} names Node v{spec}, which nodejs.org has no release for")
+            if release.npm is None:
+                return LocalNpm(f"{path} names Node {release.version}, which bundles no npm")
+            return PinnedNpm(release.npm, f"bundled with Node {release.version} from {path}")
+        case UnusableVersion(reason):
+            return LocalNpm(reason)
+        case Undeclared():
+            return LocalNpm("the repo declares no packageManager, .nvmrc or .node-version")
+
+
+def install_command(choice: NpmChoice) -> list[str]:
+    match choice:
+        case PinnedNpm(npm, _):
+            cmd = ["npm", "exec", "--yes", f"--package=npm@{npm}", "--", "npm", *CI_ARGS]
+        case LocalNpm(_):
+            cmd = ["npm", *CI_ARGS]
+    assert "--dry-run" in cmd, cmd
+    assert "--ignore-scripts" in cmd, cmd
+    return cmd
+
+
+def check_install(head_dir: Path, choice: NpmChoice) -> InstallVerdict:
+    match choice:
+        case PinnedNpm(npm, origin):
+            described = f"npm {npm}, {origin}"
+        case LocalNpm(_):
+            local = run_ok(["npm", "--version"], head_dir).strip()
+            described = f"local npm {local}"
+    cmd = install_command(choice)
+    result = run(cmd, head_dir)
+    if result.returncode == 0:
+        return Accepted(described)
+    # npm ci reports a lockfile that does not match package.json as a usage error. Anything else,
+    # such as failing to download the pinned npm, means the check did not run.
+    if "code EUSAGE" not in result.stderr:
+        cannot_check(f"`{' '.join(cmd)}` failed:\n{result.stderr.strip()}")
+    lines = [line.removeprefix("npm error").strip() for line in result.stderr.splitlines()]
+    reasons = tuple(line for line in lines if line.startswith(("Missing:", "Invalid:")))
+    return Rejected(described, reasons or tuple(line for line in lines if line)[:3])
+
+
+def install_findings(
+    snapshot: PrSnapshot, lock_path: str, head_dir: Path, manifest: dict[str, Any]
+) -> list[Finding]:
+    if "workspaces" in manifest:
+        return [
+            Flag(
+                "install",
+                "npm workspaces need every member's package.json, which this check does not "
+                "fetch; run npm ci --dry-run on the PR head by hand",
+            )
+        ]
+    choice = resolve_npm(find_npm_source(snapshot, lock_path, manifest))
+    findings: list[Finding] = []
+    if isinstance(choice, LocalNpm):
+        findings.append(Flag("install", f"cannot tell which npm CI uses, because {choice.reason}"))
+    match check_install(head_dir, choice):
+        case Accepted(described):
+            findings.append(
+                Fact("install", f"npm ci --dry-run accepts the lockfile under {described}")
+            )
+        case Rejected(described, reasons):
+            findings.append(
+                Flag(
+                    "install",
+                    f"npm ci --dry-run rejects the lockfile under {described}: {'; '.join(reasons)}",
+                )
+            )
+    return findings
+
+
 # --- uv.lock -------------------------------------------------------------------------------------
 
 
@@ -952,23 +1202,6 @@ class Attestation:
 
     filename: str
     publisher: str | None
-
-
-def curl(url: str, *headers: str) -> str | None:
-    """The body at a PyPI URL, or None for a 404.
-
-    curl rather than Python's HTTP client: it uses the system's certificates, so it works behind a
-    proxy that re-signs TLS, where Python's own certificate store fails.
-    """
-    cmd = ["curl", "-sS", "--fail", "--max-time", "30"]
-    for h in headers:
-        cmd += ["-H", h]
-    cmd.append(url)
-    result = run(cmd)
-    # curl --fail exits 22 for an HTTP error status and names the status on stderr.
-    if result.returncode == 22 and "404" in result.stderr:
-        return None
-    return require_success(cmd, result).stdout
 
 
 def parse_time(raw: Any) -> datetime | None:
@@ -1485,13 +1718,18 @@ def check_lockfile(
         for name, side in (("base", base), ("head", head)):
             if side is None:
                 continue
-            # npm ls and npm audit read the lockfile and manifest from the working directory.
+            # npm ls, npm audit and npm ci read the lockfile and manifest from the working directory.
             d = Path(tmp) / name
             d.mkdir()
             (d / "package-lock.json").write_text(side.lock_text)
             (d / "package.json").write_text(side.manifest_text)
             dirs[name] = d
         sections.append(Section("Tree", tuple(check_tree(dirs["head"]))))
+        manifest = parse_json(head.manifest_text, "package.json at the head")
+        if not isinstance(manifest, dict):
+            cannot_check("package.json at the head is not a JSON object.")
+        install = install_findings(snapshot, lock_path, dirs["head"], manifest)
+        sections.append(Section("Install", tuple(install)))
         base_advisories = audit(dirs["base"], "base") if "base" in dirs else {}
         head_advisories = audit(dirs["head"], "head")
     bumped = frozenset(b.new.name for b in changes.bumps)

@@ -2,7 +2,7 @@
 
 The script runs as a subprocess, never imported, so it stays a single file. Fake `gh`, `npm`, `curl`
 and `uv` commands on PATH answer from tables of canned responses and record every call, so no test
-reaches GitHub, the npm registry, PyPI or OSV.
+reaches GitHub, the npm registry, nodejs.org, PyPI or OSV.
 
 Run:
   uv run --with pytest pytest tools/agents/config/skills/review-code/scripts/test_review_dependency_bump.py
@@ -38,10 +38,21 @@ UV_AUDIT = (
     "--output-format json"
 )
 TOOLS = ("gh", "npm", "curl", "uv")
+NODE_INDEX = "https://nodejs.org/dist/index.json"
+CI = "ci --dry-run --ignore-scripts --no-audit --no-fund"
+# Every place the script looks for a Node version, nearest the lockfile first.
+VERSION_FILES = ("frontend/.nvmrc", "frontend/.node-version", ".nvmrc", ".node-version")
+REJECTED = {
+    "stderr": "npm error code EUSAGE\nnpm error\nnpm error `npm ci` can only install packages "
+    "when your package.json and package-lock.json are in sync.\n"
+    "npm error Missing: agent-base@9.0.0 from lock file\n"
+    "npm error Missing: http-proxy-agent@9.1.0 from lock file\n",
+    "code": 1,
+}
 NOT_FOUND = {"stderr": "curl: (22) The requested URL returned error: 404\n", "code": 22}
 
-# Answers each call from a table keyed by its arguments. ls and audit run in a `base` or `head`
-# directory, so their keys are prefixed with that directory's name.
+# Answers each call from a table keyed by its arguments. ls, audit, ci and --version run in a `base`
+# or `head` directory, so their keys are prefixed with that directory's name.
 FAKE_TOOL = """#!/usr/bin/env python3
 import json, os, sys
 tool = os.path.basename(sys.argv[0])
@@ -298,6 +309,16 @@ class Scenario:
         self.base_audit = audit(("pkg", 101, "<1.0.1"))
         self.head_audit = audit()
         self.ls: dict[str, Any] = ok({"name": "frontend"})
+        self.head_manifest: dict[str, Any] = {"name": "frontend"}
+        # Version files at the head, by path; every other place in VERSION_FILES is missing.
+        self.version_files: dict[str, str] = {".nvmrc": "v25.1.0\n"}
+        # nodejs.org lists releases newest first, prereleases included.
+        self.node_index: Any = [
+            {"version": "v27.0.0-alpha.0.0.0", "npm": "12.1.0"},
+            {"version": "v25.9.0", "npm": "11.12.1"},
+            {"version": "v25.1.0", "npm": "11.6.2"},
+            {"version": "v0.6.2"},
+        ]
         self.gh_overrides: dict[str, Any] = {}
         self.npm_overrides: dict[str, Any] = {}
 
@@ -319,7 +340,7 @@ class Scenario:
                 f"{MERGE_BASE}\n"
             ),
             contents(LOCK, HEAD): ok(self.head_lock),
-            contents(MANIFEST, HEAD): ok({"name": "frontend"}),
+            contents(MANIFEST, HEAD): ok(self.head_manifest),
             contents(LOCK, MERGE_BASE): ok(self.base_lock) if self.base_lock else missing,
             contents(MANIFEST, MERGE_BASE): ok({"name": "frontend"}) if self.base_lock else missing,
             contents(UV_LOCK, HEAD): ok(uv_lock(self.uv_head)),
@@ -329,6 +350,9 @@ class Scenario:
             if self.uv_base
             else missing,
         }
+        for path in VERSION_FILES:
+            text = self.version_files.get(path)
+            table[contents(path, HEAD)] = ok(text) if text is not None else missing
         return {**table, **self.gh_overrides}
 
     def curl_table(self) -> dict[str, Any]:
@@ -342,6 +366,7 @@ class Scenario:
             if publisher:
                 table[f"{CURL} {url}"] = ok(provenance(publisher))
         table[f"{CURL} {SIMPLE_JSON} {PYPI}/simple/lib/"] = ok({"files": files})
+        table[f"{CURL} {NODE_INDEX}"] = ok(self.node_index)
         return {**table, **self.curl_overrides}
 
     def uv_table(self) -> dict[str, Any]:
@@ -357,7 +382,13 @@ class Scenario:
             "head: ls --all --package-lock-only --json": self.ls,
             "base: audit --package-lock-only --json": ok(self.base_audit),
             "head: audit --package-lock-only --json": ok(self.head_audit),
+            "head: --version": ok("12.2.1\n"),
+            f"head: {CI}": ok("added 1 package in 1s\n"),
         }
+        for npm in ("11.6.2", "11.12.1", "10.9.0"):
+            table[f"head: exec --yes --package=npm@{npm} -- npm {CI}"] = ok(
+                "added 1 package in 1s\n"
+            )
         for (name, version), doc in self.releases.items():
             # npm view wraps a single match in a list on some versions; the script accepts both.
             table[f"view {name}@{version} --json"] = ok([doc])
@@ -450,6 +481,9 @@ Compared head headsha0000 with merge base mergebase00. Releases looked up in htt
 
 ### Tree
 - tree: npm ls reports no problems
+
+### Install
+- install: npm ci --dry-run accepts the lockfile under npm 11.6.2, bundled with Node v25.1.0 from .nvmrc
 
 ### Advisories
 - advisories: fixed Advisory GHSA-101 (high) in pkg <1.0.1, https://github.com/advisories/GHSA-101
@@ -1085,3 +1119,149 @@ def test_a_failing_pypi_request_exits_2(u: Scenario) -> None:
     result = u.run()
     assert result.returncode == 2
     assert "Could not resolve host" in result.stderr
+
+
+# --- Install check -------------------------------------------------------------------------------
+
+
+def install_lines(result: subprocess.CompletedProcess[str]) -> list[str]:
+    return [
+        line
+        for line in result.stdout.splitlines()
+        if line.startswith(("- install:", "- FLAG install:"))
+    ]
+
+
+def ci_calls(s: Scenario) -> list[list[str]]:
+    return [c for c in s.calls() if c[0] == "npm" and "ci" in c]
+
+
+def test_a_lockfile_npm_ci_rejects_is_flagged_with_npms_reasons(s: Scenario) -> None:
+    s.npm_overrides[f"head: exec --yes --package=npm@11.6.2 -- npm {CI}"] = REJECTED
+    result = s.run()
+    assert_flagged(result, "install")
+    [line] = install_lines(result)
+    assert "npm 11.6.2" in line and ".nvmrc" in line
+    assert "Missing: agent-base@9.0.0 from lock file" in line
+    assert "Missing: http-proxy-agent@9.1.0 from lock file" in line
+
+
+def test_package_manager_wins_over_nvmrc_and_its_hash_is_dropped(s: Scenario) -> None:
+    s.head_manifest = {"name": "frontend", "packageManager": "npm@10.9.0+sha512.abc123"}
+    result = s.run()
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert install_lines(result) == [
+        "- install: npm ci --dry-run accepts the lockfile under npm 10.9.0, from package.json's packageManager"
+    ]
+    assert [c[3] for c in ci_calls(s)] == ["--package=npm@10.9.0"]
+
+
+def test_an_nvmrc_beside_the_lockfile_wins_over_one_at_the_root(s: Scenario) -> None:
+    s.version_files = {"frontend/.nvmrc": "25.9.0", ".nvmrc": "v25.1.0"}
+    result = s.run()
+    assert "npm 11.12.1, bundled with Node v25.9.0 from frontend/.nvmrc" in install_lines(result)[0]
+
+
+def test_node_version_is_read_when_there_is_no_nvmrc(s: Scenario) -> None:
+    s.version_files = {".node-version": "25.1.0\n"}
+    result = s.run()
+    assert "npm 11.6.2, bundled with Node v25.1.0 from .node-version" in install_lines(result)[0]
+
+
+def test_a_major_version_picks_its_newest_release_and_skips_prereleases(s: Scenario) -> None:
+    s.version_files = {".nvmrc": "25"}
+    result = s.run()
+    assert "npm 11.12.1, bundled with Node v25.9.0 from .nvmrc" in install_lines(result)[0]
+    s.version_files = {".nvmrc": "27"}
+    result = s.run()
+    assert_flagged(result, "install")
+    assert "27" in install_lines(result)[0]
+
+
+@pytest.mark.parametrize(
+    ("files", "reason"),
+    [
+        ({}, "no packageManager, .nvmrc or .node-version"),
+        ({".nvmrc": "lts/*"}, ".nvmrc says lts/*"),
+        ({".nvmrc": "v19.0.0"}, "v19.0.0"),
+        ({".nvmrc": "v0.6.2"}, "v0.6.2"),
+    ],
+)
+def test_an_unknown_ci_npm_is_flagged_and_the_lockfile_is_still_checked_with_local_npm(
+    s: Scenario, files: dict[str, str], reason: str
+) -> None:
+    s.version_files = files
+    result = s.run()
+    assert_flagged(result, "install")
+    lines = install_lines(result)
+    assert any(line.startswith("- FLAG install:") and reason in line for line in lines), lines
+    assert "- install: npm ci --dry-run accepts the lockfile under local npm 12.2.1" in lines
+    assert [c[1:] for c in ci_calls(s)] == [CI.split()]
+
+
+def test_a_local_npm_rejection_is_still_flagged(s: Scenario) -> None:
+    s.version_files = {}
+    s.npm_overrides[f"head: {CI}"] = REJECTED
+    result = s.run()
+    assert any(
+        line.startswith(
+            "- FLAG install: npm ci --dry-run rejects the lockfile under local npm 12.2.1"
+        )
+        and "Missing: agent-base@9.0.0" in line
+        for line in install_lines(result)
+    ), result.stdout
+
+
+def test_a_package_manager_other_than_npm_is_flagged(s: Scenario) -> None:
+    s.head_manifest = {"name": "frontend", "packageManager": "pnpm@9.0.0"}
+    result = s.run()
+    assert_flagged(result, "install")
+    assert any("pnpm@9.0.0" in line for line in install_lines(result))
+
+
+def test_workspaces_are_flagged_and_npm_ci_is_not_run(s: Scenario) -> None:
+    s.head_manifest = {"name": "frontend", "workspaces": ["packages/*"]}
+    result = s.run()
+    assert_flagged(result, "install")
+    assert any("workspaces" in line for line in install_lines(result))
+    assert ci_calls(s) == []
+
+
+def test_every_npm_ci_call_is_a_dry_run_with_scripts_off_in_the_head_copy(s: Scenario) -> None:
+    # The fake answers ci only under a `head:` key, so a call from any other directory exits 97 and
+    # the script exits 2.
+    assert s.run().returncode == 0
+    s.version_files = {}
+    assert s.run().returncode == 1
+    calls = ci_calls(s)
+    assert len(calls) == 2
+    for call in calls:
+        assert "--dry-run" in call and "--ignore-scripts" in call, call
+
+
+def test_npm_failing_to_fetch_the_pinned_npm_exits_2(s: Scenario) -> None:
+    s.npm_overrides[f"head: exec --yes --package=npm@11.6.2 -- npm {CI}"] = {
+        "stderr": "npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/npm\n",
+        "code": 1,
+    }
+    result = s.run()
+    assert result.returncode == 2
+    assert "E404" in result.stderr and "npm@11.6.2" in result.stderr
+    assert result.stdout == ""
+
+
+def test_an_unreachable_node_index_exits_2(s: Scenario) -> None:
+    s.curl_overrides[f"{CURL} {NODE_INDEX}"] = {
+        "stderr": "curl: (6) Could not resolve host\n",
+        "code": 6,
+    }
+    result = s.run()
+    assert result.returncode == 2
+    assert "nodejs.org" in result.stderr and "Could not resolve host" in result.stderr
+
+
+def test_a_node_index_in_an_unexpected_shape_exits_2(s: Scenario) -> None:
+    s.node_index = {"releases": []}
+    result = s.run()
+    assert result.returncode == 2
+    assert "index.json" in result.stderr
