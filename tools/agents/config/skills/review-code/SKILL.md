@@ -906,8 +906,8 @@ On any answer other than "skip":
     Either way, tell the user which findings were re-checked against the new head, and the new
     head and base become the saved state.
   - **Only new reviews, comments or replies:** the code is unchanged, so the findings stand. Add
-    the new ones to Prior reviews, rewrite the summary to account for them, and show the user the
-    new draft before posting. This read becomes the saved state.
+    the new ones to Prior reviews, rewrite the review body to account for them, and show the user
+    the new draft before posting. This read becomes the saved state.
   - **Nothing changed:** say so in one line and continue.
 
   A review handles at most two head moves after its first run, whichever exit each one takes. A
@@ -959,7 +959,7 @@ On any answer other than "skip":
 ```json
 {
   "event": "APPROVE",
-  "body": "<summary>",
+  "body": "<review body>",
   "commit_id": "<saved head SHA>",
   "comments": [
     { "path": "<file>", "line": 42, "side": "RIGHT", "body": "<comment>" }
@@ -990,7 +990,7 @@ uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo 
   an open ticket already owns the area, offer a comment on it instead of a new ticket. Draft with
   `write-ticket-description`, and post nothing until the user approves the wording.
 
-**Summary audience:** The review body is read by GitHub users who only know what's in the PR diff —
+**Audience:** The review body is read by GitHub users who only know what's in the PR diff —
 they have no context from this review session. Write for that audience.
 
 **Tone for the review body and inline comments:** Write like a teammate who is glad to be working
