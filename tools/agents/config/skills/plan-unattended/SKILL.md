@@ -99,7 +99,8 @@ Do not share one run's output with another.
 
 1. If one option meets every binding property and is at least as good as every other on all three
    maximums, choose it, and record in one line why each other option loses.
-2. Otherwise, run one challenge round. Spawn two subagents in one message: one argues the strongest
+2. Otherwise, run one challenge round. Spawn two subagents on Opus in one message, because a case
+   either one misses goes unnoticed: one argues the strongest
    case for the runner-up, and the other tries to show the leader fails a binding property. Each
    must back every claim with a command it ran, a concrete failing scenario or a property shown to
    break, or report "no evidence found". Drop claims without evidence, then choose.
