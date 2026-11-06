@@ -259,6 +259,15 @@ def test_a_failed_read_of_merged_prs_exits_2_and_merges_nothing(h: Harness) -> N
     assert h.merge_calls() == []
 
 
+def test_a_head_with_no_checks_reads_only_the_five_most_recent_merged_prs(h: Harness) -> None:
+    # Five, so a repo that drops its CI can merge through the gate again after five merges by
+    # hand, while one whose CI ran on any of those five is still taken to run CI.
+    h.run(pull_request(statusCheckRollup=[]), history=RUNS_NO_CI)
+
+    assert len(h.history_calls()) == 1
+    assert "--state merged --limit 5 " in h.history_calls()[0]
+
+
 def test_a_head_with_checks_never_reads_merged_prs(h: Harness) -> None:
     result = h.run(pull_request(), history=RUNS_NO_CI)
 

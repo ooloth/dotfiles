@@ -54,8 +54,9 @@ MergeMethod = Literal["squash", "merge", "rebase"]
 PR_FIELDS = "state,isDraft,headRefOid,mergeStateStatus,reviews,statusCheckRollup"
 REPO_FIELDS = "squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed"
 # How many recent merged PRs show whether a repo runs CI at all. One that ran a check is enough to
-# say it does, so a head with no checks there is a head CI skipped, not a repo without CI.
-CI_HISTORY_SAMPLE = 20
+# say it does, so a head with no checks there is a head CI skipped, not a repo without CI. Five keeps
+# a repo that drops its CI to five merges by hand before the gate lets its PRs through again.
+CI_HISTORY_SAMPLE = 5
 PASSING_CONCLUSIONS = {"SUCCESS", "NEUTRAL", "SKIPPED"}
 RUNNING_CONTEXT_STATES = {"PENDING", "EXPECTED"}
 MERGEABLE_STATES = {"CLEAN", "HAS_HOOKS"}
