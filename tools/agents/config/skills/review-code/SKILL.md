@@ -922,20 +922,27 @@ On any answer other than "skip":
   audience and tone guidance below):
   - **Verdict and credit:** the verdict, then one sentence crediting a specific choice the author
     made and why it works, drawn from Looks Good.
-  - **Triage:** a clause, not a paragraph, saying every finding is the author's call to fix here,
-    ticket or leave. Under Request Changes, the clause covers every finding except the `must`
-    ones, which the body asks for directly.
-  - **Where to look first:** the one or two findings that matter most, by name.
-  - **Outside the diff:** one bold `**Outside the diff**` line, then one bullet per finding outside
-    the diff: a bold lead naming the problem, then where it is, what to do and where you saw it, in
-    one or two sentences. The bullets carry no labels; whether the gap was already there is not the
-    author's concern. A finding earns a bullet only when it meets the severity bar in Step 4, fits
-    the PR and is worth the author's time.
-  - **Prior reviews:** one line naming each earlier reviewer by the `refer_as` value the fetch
-    helper printed for it, saying which of its points you agree with, dispute or answered, each
-    named in a few words. Never restate their points, and leave out the ones you did not check.
-    When a `refer_as` value reads `UNKNOWN`, ask the user what to call that reviewer before
-    drafting.
+  - **Triage:** when the review approves or comments and still carries findings, end the first
+    paragraph with this sentence, word for word: "Feel free to decide yourself which findings to
+    fix here vs file as a ticket vs ignore for now." Under Request Changes there is no triage
+    sentence. The body asks for the `must` findings directly, and says in a clause that the
+    others are optional.
+  - **A must-fix inside an Approve:** the user approves so the author, often in another time zone,
+    can address the findings and merge without waiting a day for a re-review. When one finding
+    really must be fixed before merging, name it and say why in a sentence, so it isn't missed
+    among the optional ones. Leave this out when nothing must be fixed first, and never pick a set
+    number of callouts.
+  - **Other code affected by these changes:** one bold `**Other code affected by these changes**`
+    line, then one bullet per finding outside the diff: a bold lead naming the problem, then where
+    it is, what to do and where you saw it, in one or two sentences. The bullets carry no labels;
+    whether the gap was already there is not the author's concern. A finding earns a bullet only
+    when it meets the severity bar in Step 4, fits the PR and is worth the author's time.
+  - **Prior reviews:** one full sentence with a subject ("I agree with Rex on…"), never a fragment
+    that starts with a verb ("Agree with…"), naming each earlier reviewer by the `refer_as` value
+    the fetch helper printed for it, saying which of its points you agree with, dispute or
+    answered, each named in a few words. Never restate their points, and leave out the ones you
+    did not check. When a `refer_as` value reads `UNKNOWN`, ask the user what to call that
+    reviewer before drafting.
 
   Evidence for a finding in the diff goes in its inline comment, not the body. Which findings were
   re-checked after a head move goes in the report to the user, not the body.
@@ -991,6 +998,13 @@ on this with the author and wants the PR to land well: patient, curious and spec
 peer, not a mentor grading their work. Someone reading their first review from the user should come
 away expecting to be worked with. Avoid em dashes; they're one of the more obvious signs a comment
 was generated rather than typed by a person.
+
+**Write like the user talks.** Where the user has given their own wording for part of a review, use
+it as written rather than improvising a variant. Elsewhere, aim for the way they phrase things in
+conversation: plain, direct, and in full sentences. Speak to the author as "you", and leave out
+their name and handle. The body and the comments are obviously replies to the PR's author, so a
+name reads as formal. Use a handle only when a notification or telling people apart is wanted,
+such as for another reviewer.
 
 **Credit what's good.** Naming a choice the author got right is part of the review, not padding: it
 tells them what to keep doing, and it shows the findings come from someone who read the work
@@ -1066,8 +1080,8 @@ it out loud to the person sitting next to you. The goal is a batch that reads li
 person moved down the file making distinct, differently-voiced observations, not like a template
 applied four times or a fixed phrasebook applied on rotation.
 
-The review body follows the same rule: the triage clause and the credit sentence are worded fresh
-each time, so an author on their tenth review doesn't read the same sentence ten times.
+The credit sentence is worded fresh each time, so an author on their tenth review doesn't read the
+same sentence ten times. The triage sentence is not: use the user's wording above.
 
 Use a quick example when it makes the impact click. When
 a code snippet or a suggested fix would make the ask concrete, include it directly in the
