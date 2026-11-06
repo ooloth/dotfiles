@@ -28,6 +28,6 @@ echo "== ty check"
 env_dir="${DOTFILES}/.cache/check-types-env"
 uv venv --quiet --allow-existing "${env_dir}"
 uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis pydantic \
-  beartype
+  beartype 'markdown-it-py>=4,<5'
 "${env_dir}/bin/ty" check --python "${env_dir}" --project "${DOTFILES}" \
   --extra-search-path "${DOTFILES}" "${DOTFILES}"

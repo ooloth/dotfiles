@@ -1,6 +1,6 @@
 ---
 name: use-jira
-description: Jira gotchas for the Atlassian MCP tools and the acli and jira CLIs. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
+description: Jira gotchas for the Atlassian MCP tools and the acli and jira CLIs. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every body before posting it. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
 ---
 
 ## Cloud ID
@@ -46,7 +46,19 @@ first bytes of the file before parsing it.
 ## Markdown that Jira's conversion breaks
 
 Posting with `contentFormat: "markdown"` converts the body to Jira's own format, and some markdown
-does not survive:
+does not survive. Most of it posts without error and renders wrong, so check every markdown body
+before posting it, a comment or a description, a fix to a posted comment included:
+
+1. Write the body to a file with the Write tool.
+2. Run `uv run <skill-base-dir>/scripts/check_jira_markdown.py <file>`.
+3. On exit 0, post the file's text unchanged. On exit 2 the check did not run, which is never a
+   pass: fix what stderr names and run it again.
+4. On exit 1, fix each line it prints and run it again. A fix that keeps every word of approved
+   text, such as moving backticks out of a bold phrase or writing a URL as `[url](url)`, is posted
+   without asking again; say what changed. A fix that adds, drops or changes a word, such as a
+   label for a link, is a new draft that waits for approval.
+
+The check covers these:
 
 - **Inline code inside bold.** Jira ends the bold where the code starts:
   `**New client in `x` (chosen)**` renders with only "New client in" in bold. This happens in table
@@ -55,6 +67,13 @@ does not survive:
 - **Inline code as link text.** Jira keeps the code and drops the link:
   ``[`DECISIONS.md`](https://…)`` came back as plain `DECISIONS.md` in an issue description, with
   no URL anywhere. Write the link text without backticks: `[DECISIONS.md](https://…)`.
+- **A bare URL.** Jira stores it as text, not a link: `Draft PR: https://github.com/…/pull/619`
+  could not be clicked, and `[org/repo#619](https://github.com/…/pull/619)` became a link. How it
+  converts `<https://…>` is untested, so the check asks for the bracket form there too. A URL in
+  inline code or a code block is left alone.
+
+The tool refuses one more case outright, so the check leaves it out:
+
 - **A table, heading, horizontal rule or nested blockquote inside a list item.** Jira's format
   cannot hold one there, so the tool refuses the whole post with "Markdown contains structure ADF
   cannot represent". Nothing is posted. End the list before the table and continue it after, and

@@ -36,7 +36,9 @@ this skill asks nothing there and puts what it would have asked in its final rep
      `gh pr edit <n> --title "$(cat <dir>/title.txt)" --body-file <dir>/pr-body.md`, and skip step
      7, because the ticket was linked when the PR opened.
    - If `<dir>/missing.txt` exists, keep its lines for the final report.
-7. If the ticket is a Jira, Linear or Monday ticket, post one comment on it: `Draft PR: <PR URL>`.
+7. If the ticket is a Jira, Linear or Monday ticket, post one comment on it. On Jira it is
+   `Draft PR: [<owner>/<repo>#<n>](<PR URL>)`, because Jira posts a bare URL as text that cannot be
+   clicked. On Linear and Monday it is `Draft PR: <PR URL>`.
    Skip GitHub issues, because the PR's `Fixes #N` or `#N` already shows on the issue's timeline.
    Read `use-jira` or `use-linear` before posting. Post without asking: running this skill approves
    this comment, as the global CLAUDE.md says. If no tool can post to the tracker, or the post
