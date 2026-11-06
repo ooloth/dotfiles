@@ -51,6 +51,12 @@ laptop, or the reverse. With one list, a check added to it runs in CI with no pi
 Where CI needs a setting a laptop doesn't, such as a cap on test workers, it passes that setting
 to the same command instead of keeping its own copy of the list.
 
+Pre-commit hooks are checks too. Each hook either runs a check the task runner's check command
+also runs, or fixes what that command checks, using the same installed tool version on the same
+files. A hook that checks something the command doesn't runs only for developers who installed
+hooks, so CI never sees it. A hook that formats with its own pinned version, or over a different
+set of files, writes changes the command then rejects, or skips files the command fails on.
+
 **Each deployed version works alongside the version before it.**
 During a rollout, and after a rollback, old and new code run against the same
 data, config and callers. New code reads what old code wrote, and old code
