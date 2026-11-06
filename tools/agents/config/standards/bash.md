@@ -57,6 +57,10 @@ A fixed path such as `/tmp/out.txt` is shared by every copy of the script runnin
 run can read or overwrite another's file. A new directory from `mktemp -d` each run, removed when
 the script is done, keeps runs apart.
 
+**Pass `rg` an explicit path.**
+Without one, `rg` reads stdin whenever stdin isn't a terminal, and in an agent's shell it waits
+forever. A path such as `.` makes it search files instead.
+
 ## Consider
 
 **A script that grows data structures or real logic is written in another language.**
