@@ -8,9 +8,10 @@ for warn_secret_in_history, which keeps lines holding a literal secret out of th
 
 Run with: uv run tools/zsh/tests/test_hooks.py
 
-Each test builds folders in a temporary directory, with fake activate scripts that set VIRTUAL_ENV,
-then starts a bare zsh in one of them, sources the real file, and prints VIRTUAL_ENV. A few tests
-cd somewhere else afterwards, which runs the chpwd hook.
+The venv tests build folders in a temporary directory, with fake activate scripts that set
+VIRTUAL_ENV, then start a bare zsh in one of them, source the real file, and print VIRTUAL_ENV. A
+few cd somewhere else afterwards, which runs the chpwd hook. The secret tests run the registered
+zshaddhistory hooks on given lines, and one drives a real interactive zsh on a pseudo-terminal.
 """
 
 from __future__ import annotations
@@ -139,31 +140,41 @@ class PythonSearchPaths(unittest.TestCase):
         self.assertEqual(result.stdout.strip(), "<none> <none>")
 
 
-# Every way a secret was seen or could plausibly be typed after each marker. Flags take a space or
-# `=`, a header takes a space, and an assignment takes `=`, with or without `export`.
-FLAG_MARKERS = ("--api-key", "--password", "--token")
+# Every way a secret was seen or could plausibly be typed after each marker. Flags take `=` or a run
+# of spaces or tabs, a header takes a space, and an assignment takes `=`, with or without `export`.
+FLAG_MARKERS = (
+    "--api-key",
+    "--password",
+    "--token",
+    "--access-token",
+    "--client-secret",
+    "--db-password",
+)
+FLAG_SEPARATORS = (" ", "  ", "\t", "=")
 ASSIGNMENTS = ("JIRA_API_TOKEN", "EGNYTE_CLIENT_SECRET", "AWS_SECRET_ACCESS_KEY", "DB_PASSWORD")
-QUOTES = ("", '"', "'")
+QUOTES = (("", ""), ('"', '"'), ("'", "'"))
+LITERAL_QUOTES = (*QUOTES, ("$'", "'"))
 LITERALS = ("abc123", "ATATT3xFf-Zx_9")
 REFERENCES = ("$TOKEN", "${TOKEN}", "$(secret get codefresh)")
 
 
-def secret_lines(values: tuple[str, ...]) -> list[str]:
+def secret_lines(values: tuple[str, ...], quotes: tuple[tuple[str, str], ...]) -> list[str]:
     lines = []
-    for quote in QUOTES:
+    for opening, closing in quotes:
         for value in values:
-            quoted = f"{quote}{value}{quote}"
+            quoted = f"{opening}{value}{closing}"
             for marker in FLAG_MARKERS:
-                lines.append(f"tool {marker} {quoted} --verbose")
-                lines.append(f"tool {marker}={quoted}")
-            lines.append(f'curl -H "Authorization: Bearer {value}" https://example.com')
+                for separator in FLAG_SEPARATORS:
+                    lines.append(f"tool {marker}{separator}{quoted} --verbose")
+            for bearer in ("Bearer", "bearer"):
+                lines.append(f'curl -H "Authorization: {bearer} {value}" https://example.com')
             for name in ASSIGNMENTS:
                 lines.append(f"{name}={quoted}")
                 lines.append(f"export {name}={quoted}")
     return lines
 
 
-def history_verdicts(lines: list[str]) -> list[tuple[int, str]]:
+def history_verdicts(lines: list[str], timeout: float = 30) -> list[tuple[int, str]]:
     """Run the registered zshaddhistory hooks on each line, as zsh does, and return each line's
     status and what the hooks printed to stderr."""
     script = (
@@ -181,7 +192,7 @@ def history_verdicts(lines: list[str]) -> list[tuple[int, str]]:
         capture_output=True,
         text=True,
         check=True,
-        timeout=30,
+        timeout=timeout,
     )
     verdicts = []
     for block in result.stdout.split("<end>\n")[:-1]:
@@ -192,7 +203,7 @@ def history_verdicts(lines: list[str]) -> list[tuple[int, str]]:
 
 class SecretsStayOutOfHistory(unittest.TestCase):
     def test_a_literal_after_any_marker_is_held_back_with_the_safe_way_named(self) -> None:
-        lines = secret_lines(LITERALS)
+        lines = secret_lines(LITERALS, LITERAL_QUOTES)
         for line, (status, warning) in zip(lines, history_verdicts(lines), strict=True):
             with self.subTest(line=line):
                 # 2 keeps the line for up-arrow in this shell but out of the history file
@@ -201,7 +212,7 @@ class SecretsStayOutOfHistory(unittest.TestCase):
                 self.assertIn("secret get", warning)
 
     def test_a_reference_after_any_marker_is_saved_without_a_warning(self) -> None:
-        lines = secret_lines(REFERENCES)
+        lines = secret_lines(REFERENCES, QUOTES)
         for line, (status, warning) in zip(lines, history_verdicts(lines), strict=True):
             with self.subTest(line=line):
                 self.assertEqual((status, warning), (0, ""))
@@ -211,10 +222,39 @@ class SecretsStayOutOfHistory(unittest.TestCase):
             "git status",
             "kubectl get pods -n example -o wide",
             "tool --password-file=secrets.txt",
+            "tool --api-key-file ~/keys/example",
             "echo TOKEN=abc",
             "ls ~/.ssh",
+            "tool --monkey abc",
         ]
         self.assertEqual(history_verdicts(lines), [(0, "")] * len(lines))
+
+    def test_a_path_after_a_marker_is_saved_without_a_warning(self) -> None:
+        lines = [
+            "SSH_KEY=~/.ssh/id_ed25519",
+            "export GOOGLE_KEY=/etc/example/key.json",
+            "tool --ssh-key ~/.ssh/id_ed25519",
+            "tool --client-key=./certs/client.key",
+        ]
+        self.assertEqual(history_verdicts(lines), [(0, "")] * len(lines))
+
+    def test_a_long_pasted_line_is_checked_without_holding_up_the_prompt(self) -> None:
+        # Runs of capitals and underscores are what a name the hook looks for is made of, so they
+        # are among the slowest lines to rule out: a pattern that tried every start position took
+        # 27 s on half this length.
+        # Lowercase letters and hyphens are what a flag is made of, and letters what Bearer is.
+        lines: list[str] = [
+            "A_" * 20_000,
+            "A_" * 20_000 + "_TOKEN=abc123",
+            "-" * 40_000,
+            "--a" * 13_000,
+            "a" * 40_000,
+            "--a" * 13_000 + "-token abc123",
+        ]
+
+        verdicts = history_verdicts(lines, timeout=5)
+
+        self.assertEqual([status for status, _ in verdicts], [0, 2, 0, 0, 0, 2])
 
 
 class SecretsStayOutOfTheHistoryFile(unittest.TestCase):

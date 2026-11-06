@@ -20,7 +20,7 @@ import getpass
 import re
 import subprocess
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import NewType, assert_never
 
 SecretName = NewType("SecretName", str)
@@ -36,6 +36,8 @@ ACCOUNT_PATTERN = re.compile(r"[A-Za-z0-9._@+][A-Za-z0-9._@+-]*")
 # counts, since neither has been checked against every macOS version.
 NOT_FOUND_EXIT_CODE = 44
 NOT_FOUND_MESSAGE = "could not be found"
+# How `security find-generic-password` prints an item's account when run without -w
+ACCOUNT_ATTRIBUTE = re.compile(r'^\s*"acct"<blob>="(.*)"$', re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -61,12 +63,32 @@ class Stored:
 
 @dataclass(frozen=True)
 class Found:
-    value: str
+    # Kept out of repr, so a traceback or a test failure that shows a Found never shows the secret
+    value: str = field(repr=False)
+
+
+@dataclass(frozen=True)
+class Cancelled:
+    name: SecretName
 
 
 @dataclass(frozen=True)
 class EmptyValue:
     name: SecretName
+
+
+@dataclass(frozen=True)
+class ExistingItem:
+    account: KeychainAccount | None  # None when security printed no account we could read
+
+
+@dataclass(frozen=True)
+class StoredUnderAnotherAccount:
+    """-U replaces only an item with the same name and account, and `get` looks only at the name,
+    so storing under a second account would leave two values and `get` would return either."""
+
+    name: SecretName
+    other: KeychainAccount | None  # None when security printed no account we could read
 
 
 @dataclass(frozen=True)
@@ -79,7 +101,9 @@ class KeychainError:
     message: str
 
 
-Result = Stored | Found | EmptyValue | NotFound | KeychainError
+Result = (
+    Stored | Found | EmptyValue | Cancelled | StoredUnderAnotherAccount | NotFound | KeychainError
+)
 
 
 def secret_name(text: str) -> SecretName:
@@ -126,19 +150,43 @@ def read_request(argv: list[str]) -> Request:
             raise AssertionError(f"argparse accepted an unknown command: {other}")
 
 
-def read_value(name: SecretName) -> str:
+def read_value(name: SecretName) -> str | Cancelled:
     """Asks for the value without echoing it. Unlike security's own prompt, which keeps only the
-    first 128 characters, this takes a whole pasted token. Piped input is read as one line."""
+    first 128 characters, this takes a whole pasted token. Piped input is read as one line. Ctrl-C
+    or Ctrl-D at the prompt cancels."""
     if sys.stdin.isatty():
-        return getpass.getpass(f"Value for {name} (hidden): ")
+        try:
+            return getpass.getpass(f"Value for {name} (hidden): ")
+        except (KeyboardInterrupt, EOFError):
+            print(file=sys.stderr)
+            return Cancelled(name)
     return sys.stdin.readline().removesuffix("\n").removesuffix("\r")
 
 
-def add(name: SecretName, account: KeychainAccount, value: str) -> Result:
-    if not value:
-        return EmptyValue(name)
+def add(name: SecretName, account: KeychainAccount, value: str | Cancelled) -> Result:
+    match value:
+        case Cancelled():
+            return value
+        case "":
+            return EmptyValue(name)
+        case str():
+            pass
+        case _:
+            assert_never(value)
+    match stored_item(name):
+        case KeychainError() as error:
+            return error
+        case None:
+            pass
+        case ExistingItem(account=existing) if existing == account:
+            pass
+        case ExistingItem(account=existing):
+            return StoredUnderAnotherAccount(name, existing)
+        case unexpected:
+            assert_never(unexpected)
     # The value passes through security's arguments while it runs, and is never written to shell
-    # history, the clipboard or anything printed. -U replaces a value already stored under this name.
+    # history, the clipboard or anything printed. -U replaces a value already stored under this name
+    # and account.
     result = subprocess.run(
         ["security", "add-generic-password", "-U", "-a", account, "-s", name] + ["-w", value],
         capture_output=True,
@@ -148,6 +196,23 @@ def add(name: SecretName, account: KeychainAccount, value: str) -> Result:
     if result.returncode != 0:
         return KeychainError(last_line(result.stderr) or f"security exited {result.returncode}")
     return Stored(name, account, len(value))
+
+
+def stored_item(name: SecretName) -> ExistingItem | None | KeychainError:
+    """The item already stored under this name, or None when there is none. Without -w, security
+    prints only the item's attributes, never its value."""
+    result = subprocess.run(
+        ["security", "find-generic-password", "-s", name],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode == NOT_FOUND_EXIT_CODE or NOT_FOUND_MESSAGE in result.stderr:
+        return None
+    if result.returncode != 0:
+        return KeychainError(last_line(result.stderr) or f"security exited {result.returncode}")
+    found = ACCOUNT_ATTRIBUTE.search(result.stdout)
+    return ExistingItem(KeychainAccount(found.group(1)) if found else None)
 
 
 def get(name: SecretName) -> Result:
@@ -184,8 +249,25 @@ def report(result: Result) -> int:
                 file=sys.stderr,
             )
             return 0
+        case Cancelled(name=name):
+            print(f"Nothing stored for {name}: cancelled.", file=sys.stderr)
+            return 1
         case EmptyValue(name=name):
             print(f"❌ Nothing stored: the value for {name} was empty.", file=sys.stderr)
+            return 1
+        case StoredUnderAnotherAccount(name=name, other=None):
+            print(
+                f"❌ Nothing stored: {name} is already in the Keychain under an account security"
+                " didn't print. Pass that account with --account to replace it.",
+                file=sys.stderr,
+            )
+            return 1
+        case StoredUnderAnotherAccount(name=name, other=other):
+            print(
+                f"❌ Nothing stored: {name} is already stored under account {other}. To replace it,"
+                f" run: secret add {name} --account {other}",
+                file=sys.stderr,
+            )
             return 1
         case NotFound(name=name):
             print(

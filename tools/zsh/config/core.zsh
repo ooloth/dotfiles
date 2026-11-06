@@ -26,9 +26,9 @@ source "${DOTFILES}/tools/bash/private-env.bash" && load_private_env
 
 # History variables
 export HISTFILE="${HOME}/.zsh_history"
-# Lines matching this are never written to HISTFILE. Lines holding a literal secret are kept out by
-# warn_secret_in_history in hooks.zsh, and a bare pasted token still needs a leading space
-# (HIST_IGNORE_SPACE below).
+# Lines matching this are never written to HISTFILE. warn_secret_in_history in hooks.zsh keeps out
+# a literal secret in the shapes features/secret/README.md lists, and any other line holding one,
+# such as a bare pasted token, still needs a leading space (HIST_IGNORE_SPACE below).
 export HISTORY_IGNORE="git*"
 export HISTSIZE=100000
 export SAVEHIST=$HISTSIZE
