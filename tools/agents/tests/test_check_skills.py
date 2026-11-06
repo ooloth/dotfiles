@@ -333,9 +333,8 @@ class CutValues(unittest.TestCase):
 
 def pinned(lines: str) -> dict[str, str | bytes]:
     """A skill whose frontmatter adds `lines`, such as `model: haiku`."""
-    return {
-        "example/SKILL.md": f"---\nname: example\ndescription: An example skill.\n{lines}\n---\n\nBody.\n"
-    }
+    frontmatter = f"name: example\ndescription: An example skill.\n{lines}"
+    return {"example/SKILL.md": f"---\n{frontmatter}\n---\n\nBody.\n"}
 
 
 class SessionPins(unittest.TestCase):
@@ -350,6 +349,15 @@ class SessionPins(unittest.TestCase):
         run = run_checker(pinned("effort: low"))
         self.assertEqual(run.status, 1, run.stdout)
         self.assertIn("example/SKILL.md: effort: low", run.stdout)
+
+    def test_an_effort_failure_does_not_advise_a_cheaper_model(self) -> None:
+        run = run_checker(pinned("effort: low"))
+        self.assertNotIn("cheaper model", run.stdout)
+
+    def test_a_full_opus_id_fails_asking_for_the_alias(self) -> None:
+        run = run_checker(pinned("model: claude-opus-5-5"))
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("alias", run.stdout)
 
     def test_any_pin_with_fork_passes(self) -> None:
         run = run_checker(pinned("model: haiku\neffort: low\ncontext: fork"))
