@@ -331,5 +331,38 @@ class CutValues(unittest.TestCase):
         self.assertEqual(run.status, 0, run.stdout)
 
 
+def pinned(lines: str) -> dict[str, str | bytes]:
+    """A skill whose frontmatter adds `lines`, such as `model: haiku`."""
+    return {
+        "example/SKILL.md": f"---\nname: example\ndescription: An example skill.\n{lines}\n---\n\nBody.\n"
+    }
+
+
+class SessionPins(unittest.TestCase):
+    """Without context: fork, a skill's model and effort apply to the session that loaded it."""
+
+    def test_a_model_below_opus_without_fork_fails_naming_file_and_key(self) -> None:
+        run = run_checker(pinned("model: haiku"))
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("example/SKILL.md: model: haiku", run.stdout)
+
+    def test_an_effort_below_high_without_fork_fails_naming_file_and_key(self) -> None:
+        run = run_checker(pinned("effort: low"))
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("example/SKILL.md: effort: low", run.stdout)
+
+    def test_any_pin_with_fork_passes(self) -> None:
+        run = run_checker(pinned("model: haiku\neffort: low\ncontext: fork"))
+        self.assertEqual(run.status, 0, run.stdout)
+
+    def test_opus_at_high_effort_without_fork_passes(self) -> None:
+        run = run_checker(pinned("model: opus\neffort: high"))
+        self.assertEqual(run.status, 0, run.stdout)
+
+    def test_inherit_without_fork_passes(self) -> None:
+        run = run_checker(pinned("model: inherit"))
+        self.assertEqual(run.status, 0, run.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

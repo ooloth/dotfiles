@@ -13,3 +13,6 @@ this folder holds what they all read. Amp reads it too, in an orb, where
 
 `config/skills/` is linked to both `~/.claude/skills` and
 `~/.agents/skills`, so any harness can load it.
+
+`check-skills.py` checks every skill against `docs/invariants/skills.md`, from
+`scripts/checks/linting.bash`. Its tests are in `tests/`.

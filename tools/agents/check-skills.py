@@ -3,8 +3,9 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml"]
 # ///
-"""Validate every shared skill: its YAML frontmatter, that it names no fixed temp path, that its
-scripts open Claude tabs only with --unattended, and that only create-pr opens a PR.
+"""Validate every shared skill: its YAML frontmatter, that it pins no model or effort that lowers the
+session loading it, that it names no fixed temp path, that its scripts open Claude tabs only with
+--unattended, and that only create-pr opens a PR.
 
 A skill whose frontmatter is not valid YAML is silently dropped by strict
 loaders while lenient ones still load it, so the skill works in one harness
@@ -12,6 +13,11 @@ and is absent from another. A valid one can still lose text: in an unquoted
 value, a space before # starts a YAML comment, so a description such as
 "merge #305 when asked" reaches the skill listing as "merge". Each top-level
 value that parses shorter than it is written fails too.
+
+Without context: fork, a skill's model and effort apply to the session that
+loaded it for the rest of the turn, so a skill pinning a cheaper model or a lower
+effort makes that session do the rest of its work on them. Without context: fork,
+model may only be opus or inherit and effort only high, xhigh or max.
 
 A skill that names a fixed path such as /tmp/changes.patch lets two agent
 sessions on one machine read and write the same file, so one session can
@@ -144,6 +150,29 @@ def frontmatter_problem(path: Path) -> str | None:
             "Remove the space or quote the value."
         )
 
+    return session_pin_problem(parsed)
+
+
+# Without `context: fork`, a skill's model and effort apply to the session that loaded it for the
+# rest of the turn (https://code.claude.com/docs/en/skills, frontmatter reference), so only values
+# that keep that session on Opus at high effort or above are allowed.
+SESSION_PINS_ALLOWED = {
+    "model": ("opus", "inherit"),
+    "effort": ("high", "xhigh", "max"),
+}
+
+
+def session_pin_problem(parsed: dict[object, object]) -> str | None:
+    """Return why this skill's model or effort would lower the session that loads it, or None."""
+    if parsed.get("context") == "fork":
+        return None
+    for key, allowed in SESSION_PINS_ALLOWED.items():
+        if key in parsed and parsed[key] not in allowed:
+            return (
+                f"{key}: {parsed[key]} applies to the session that loads this skill for the rest "
+                f"of the turn; allowed without `context: fork`: {', '.join(allowed)}. "
+                "Name a cheaper model for the subagent the skill launches instead."
+            )
     return None
 
 
@@ -300,10 +329,12 @@ def main() -> int:
 
     if failures:
         print(
-            f"\n{len(failures)} skill(s) have frontmatter a strict loader will reject or cut short."
+            f"\n{len(failures)} skill(s) have frontmatter a strict loader will reject or cut short, "
+            "or that lowers the model or effort of the session loading it. "
+            "See docs/invariants/skills.md."
         )
     else:
-        print("✅ All skill frontmatter parses")
+        print("✅ All skill frontmatter parses and keeps the session's model and effort")
 
     found: list[FixedTmpPath] = []
     unreadable: list[UnreadableFile] = []
