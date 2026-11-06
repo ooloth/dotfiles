@@ -82,8 +82,8 @@ My pull request **has feedback** when any of these holds:
   is newer than my newest review or top-level comment. A review bot can post a placeholder and edit
   its review into it later, so the edit is when its feedback arrived. A review bot is one whose
   login is a key of `BOT_NAMES` in `../review-pr-comments-converge/scripts/fetch_pr_comments.py`,
-  relative to this skill's base directory. Such a bot posts its whole review as one comment,
-  outside GitHub's reviews.
+  relative to this skill's base directory. Some of these bots, such as rex-rx-agent, post their
+  whole review as one top-level comment outside GitHub's reviews, and this item catches that.
 
 For my own pull request, the first of these that holds is the reason:
 

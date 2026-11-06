@@ -1,8 +1,9 @@
 # Invariants
 
 Facts that are true only because of a choice specific to _this_ system's
-domain — not portable engineering advice, which lives in `docs/standards/`
-instead.
+domain. Standards for this repo, graded Must/Should/Consider, live in
+`docs/standards/`, and portable engineering advice lives in
+`tools/agents/config/standards/`.
 
 ## What belongs here
 

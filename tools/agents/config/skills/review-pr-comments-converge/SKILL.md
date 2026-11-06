@@ -50,13 +50,13 @@ check that line before trusting the output or the write.
 ### `scripts/resolve_pr_checkout.py <pr-number> [--repo OWNER/NAME]`
 
 Prints the directory to work in, a checkout of the PR's head branch, or exits 1 with the reason it
-is unsafe to proceed. It uses a worktree whose branch is named after the head branch or tracks it,
-or switches the current checkout to it when nothing would be lost. When the current checkout holds
-the branch and is only behind the remote, it fast-forwards it. It refuses when the PR is closed or
-on a fork, when the branch has diverged from the remote, when another worktree's copy is behind,
-when two other worktrees both hold it, when uncommitted tracked changes are in the way, or when a
-move would replace an untracked or gitignored file. After a switch or a fast-forward it prints the
-command that undoes it. The script's docstring has the full rules.
+is unsafe to proceed, or 2 on a usage error. It uses a worktree whose branch is named after the head
+branch or tracks it, or switches the current checkout to it when nothing would be lost. When the
+current checkout holds the branch and is only behind the remote, it fast-forwards it. It refuses
+when the PR is closed or on a fork, when the branch has diverged from the remote, when another
+worktree's copy is behind, when two other worktrees both hold it, when uncommitted tracked changes
+are in the way, or when a move would replace an untracked or gitignored file. After a switch or a
+fast-forward it prints the command that undoes it. The script's docstring has the full rules.
 
 ### `scripts/fetch_pr_comments.py <pr-number> [--repo OWNER/NAME]`
 
@@ -122,9 +122,9 @@ it to every subagent as the absolute path to read and edit in, and tell the user
 and whether the helper switched or fast-forwarded a branch, with the undo command it printed. Do
 not ask first: the helper only acts when nothing can be lost.
 
-On exit 1, stop before Phase 2. Relay the helper's reason to the user and ask how to proceed. Do
-not work around the refusal by switching branches yourself. When the reason is that this is a
-checkout of a different repo, ask the user which checkout of the PR's repo to use rather than
+On any exit other than 0, stop before Phase 2. Relay the helper's reason to the user and ask how to
+proceed. Do not work around the refusal by switching branches yourself. When the reason is that this
+is a checkout of a different repo, ask the user which checkout of the PR's repo to use rather than
 picking one, since another checkout may hold another task's work.
 
 **Fetch all PR comments** by running the fetch helper from the working root, naming the repo the
@@ -303,6 +303,11 @@ where the hash goes. The hash is the only part filled in later.
 the working tree changes and explicitly approve posting replies (e.g. "post the replies", "reply
 and resolve"). The report is the deliverable for this phase.
 
+**When the user answers escalations** (e.g. "1b, 2a"), apply each chosen option as an auto-fix
+finding through Step E and the quality gate. Then redraft that comment's reply as ✅ or ❌, set it
+to resolve, and show the updated Proposed replies. The redrafted replies are a new draft and wait
+for approval like the first ones. An escalation the user has not answered keeps its 💬 reply.
+
 ### Reply shape
 
 A reviewer should be able to read the whole reply in 10 seconds. Each finding gets one line, and
@@ -437,8 +442,8 @@ replies"), post replies and resolve threads:
 
 - For each auto-fixed, dismissed or acknowledged comment with an inline `comment_id`: run
   `reply_to_comment.py` with `--resolve`
-- For each escalated inline comment: post a reply summarising the options; do not resolve the
-  thread
+- For each escalated inline comment the user has not decided: post a reply summarising the
+  options; do not resolve the thread
 - For each review body (no `comment_id`) or conversation comment: post one PR conversation comment
   answering it, with one bullet per finding as the reply shape describes. Write the approved reply
   to a file in a `mktemp -d` directory, outside the working root, with each bullet on one line,

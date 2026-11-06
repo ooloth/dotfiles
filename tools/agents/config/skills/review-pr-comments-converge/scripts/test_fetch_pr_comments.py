@@ -155,8 +155,8 @@ FULL = {
     "comments": [[conversation(9001, "Bot review body.")]],
 }
 
-# Captured from fetch_pr_comments.py before commit info and paging were added. Every line here is
-# something the review-pr-comments-converge skill may read, so each must survive, in order.
+# Lines the review-pr-comments-converge skill may read. Each must appear in the output in this
+# order, with other lines allowed between them.
 OUTPUT_BEFORE_PAGING = """\
 # Source: octo/widgets#5
 

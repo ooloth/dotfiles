@@ -41,13 +41,13 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **For PR scope — fetch PR context before Step 2:**
 
 ```bash
-gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefOid,baseRefOid
+gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefName,headRefOid,baseRefOid
 ```
 
-Store the title and body for use in Step 2. Store the PR number, `headRefOid` (the reviewed head)
-and `baseRefOid` for Step 5. The review describes the PR at that commit, so Step 5 checks that
-the PR has not moved since, compares the PR's own changes against that base if it has, and pins its
-comments to the saved head.
+Store the title, body and branch name (`headRefName`) for use in Step 2. Store the PR number,
+`headRefOid` (the reviewed head) and `baseRefOid` for Step 5. The review describes the PR at that
+commit, so Step 5 checks that the PR has not moved since, compares the PR's own changes against that
+base if it has, and pins its comments to the saved head.
 
 **For PR scope, also fetch what earlier reviewers said:**
 
@@ -171,7 +171,9 @@ Build a context block that every agent receives. Gather from these sources in pr
    (`DECISIONS.md` entries, ADRs, `docs/decisions/`), read at the PR's head commit, including any
    record the diff amends. Carry its decision, rejected options and revisit triggers into Recorded
    decisions.
-4. **Commit messages** — `git log <base>...HEAD --format="%s%n%b"`
+4. **Commit messages** — for PR scope, from `gh pr view <n> -R <owner>/<repo> --json commits`
+   (each commit's `messageHeadline` and `messageBody`), since nothing checks out the PR; otherwise
+   `git log <base>...HEAD --format="%s%n%b"`
 5. **The diff itself** — read for intent when other sources are thin
 6. **The change's dry-run output**: when CI posted what the change will do to running systems,
    such as a Terraform or OpenTofu plan, a Spacelift or Atlantis comment, a migration dry run or a
@@ -238,7 +240,8 @@ Pass each agent:
 
 - The synthesized intent block from Step 2
 - The list of changed/reviewable files
-- Nothing from the earlier reviews fetched in Step 1, not even that they exist
+- Nothing from the earlier reviews fetched in Step 1, not even that they exist, except the CI dry
+  run the intent block carries
 - Its specific instructions below
 - This line, verbatim: "Read the files yourself. Do not spawn subagents."
 - This line, verbatim, because the other agents are reading the same checkout at the same time:
@@ -802,8 +805,9 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
   checked]. [Your evidence in one sentence.]
 
 ### Looks Good
-[One sentence: the specific choice the author made that works best, which the posted body
-credits, or that nothing specific earns credit, and which concern areas came back clean. An area whose agent errored or never ran did not
+[One sentence, or on Step 1a's path the short list it describes: the specific choice the author
+made that works best, which the posted body credits, or that nothing specific earns credit, and
+which concern areas came back clean. An area whose agent errored or never ran did not
 come back clean.]
 
 ### Dropped
@@ -829,8 +833,7 @@ come back clean.]
   what makes it matter). A pre-existing gap also says whether the author can fix it in this PR. It
   meets the same severity bar as any other finding: one that would not be reported inside the diff
   is not reported outside it.
-- Omit "What's Working Well" and "All Clear" sections — consolidate into the single "Looks Good"
-  line.
+- Omit "What's Working Well" and "All Clear" sections — consolidate into "Looks Good".
 - If there are no recommended changes, say so in one sentence under the verdict and skip the
   Findings section.
 - If any agent errored or never ran, the sentence under the verdict names it, so the reader knows
@@ -846,9 +849,9 @@ come back clean.]
 
 ## Step 5: Post review (PR scope only)
 
-After presenting findings, if this is a PR and the author is the user (ooloth), ask the user to
-indicate which changes to make locally or discuss further first and then stop and wait for a reply
-(skip the rest of this skill's instructions).
+After presenting findings, if this is a PR and its author is the account `gh api user -q .login`
+returns, ask the user to indicate which changes to make locally or discuss further first and then
+stop and wait for a reply (skip the rest of this skill's instructions).
 
 Otherwise, if this is a PR and the author is NOT the user, ask:
 
@@ -905,7 +908,8 @@ On any answer other than "skip":
     new draft before posting. This read becomes the saved state.
   - **Nothing changed:** say so in one line and continue.
 
-  A review handles at most two head moves after its first run, whichever exit each one takes.
+  A review handles at most two head moves after its first run, whichever exit each one takes. A
+  restart from Step 1 on exit 2 continues the same count.
   When the head moves a third time, post nothing,
   and tell the user the PR keeps moving, naming the new commits, so they decide when to review it.
   Run the same check again immediately before posting, since approving the drafts can take
