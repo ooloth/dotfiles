@@ -1,6 +1,6 @@
 ---
 name: use-jira
-description: Jira gotchas for the Atlassian MCP tools and the acli and jira CLIs. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every body before posting it. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
+description: Jira gotchas for the Atlassian MCP tools and the acli and jira CLIs. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every markdown body before posting it through the MCP tool. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
 ---
 
 ## Cloud ID
@@ -56,7 +56,9 @@ before posting it, a comment or a description, a fix to a posted comment include
 4. On exit 1, fix each line it prints and run it again. A fix that keeps every word of approved
    text, such as moving backticks out of a bold phrase or writing a URL as `[url](url)`, is posted
    without asking again; say what changed. A fix that adds, drops or changes a word, such as a
-   label for a link, is a new draft that waits for approval.
+   label for a link, is a new draft that waits for approval. Exit 1 is a list only when its last
+   line ends `post nothing until then`. Exit 1 without that line means the check did not run, for
+   example because `uv` could not install `markdown-it-py`: read the error.
 
 The check covers these:
 
@@ -130,7 +132,8 @@ is in `tools/jira/README.md`.
   goes through the shell, and a positional body silently wins over `--template`.
 - **A posted comment cannot be fixed from the CLI.** jira-cli has `comment add` and nothing else, so
   a mistake stays until someone edits it in the web UI. Validate the body before posting, harder
-  than for the MCP tool.
+  than for the MCP tool. `check_jira_markdown.py` models the MCP tool's conversion, not jira-cli's,
+  so a pass says nothing about a jira-cli post.
 - **Markdown survives only in its simplest shapes.** jira-cli converts the body to Jira wiki markup
   (blackfriday-confluence, posted to API v2). Tested on a work ticket: paragraphs, inline code,
   bold, links (including code as link text) and a flat bullet list survive. A heading runs into the
