@@ -3,9 +3,9 @@
 # requires-python = ">=3.11"
 # dependencies = ["pyyaml"]
 # ///
-"""Validate every shared skill: its YAML frontmatter, that it pins no model or effort that lowers the
-session loading it, that it names no fixed temp path, that its scripts open Claude tabs only with
---unattended, and that only create-pr opens a PR.
+"""Validate every shared skill: its YAML frontmatter, that it keeps the session loading it on Opus
+at high effort or above, that it names no fixed temp path, that its scripts open Claude tabs only
+with --unattended, and that only create-pr opens a PR.
 
 A skill whose frontmatter is not valid YAML is silently dropped by strict
 loaders while lenient ones still load it, so the skill works in one harness
@@ -17,7 +17,8 @@ value that parses shorter than it is written fails too.
 Without context: fork, a skill's model and effort apply to the session that
 loaded it for the rest of the turn, so a skill pinning a cheaper model or a lower
 effort makes that session do the rest of its work on them. Without context: fork,
-model may only be opus or inherit and effort only high, xhigh or max.
+model may only be opus or inherit and effort only high, xhigh or max. A pin of
+high still lowers a session running at xhigh or max for that turn.
 
 A skill that names a fixed path such as /tmp/changes.patch lets two agent
 sessions on one machine read and write the same file, so one session can
@@ -155,10 +156,18 @@ def frontmatter_problem(path: Path) -> str | None:
 
 # Without `context: fork`, a skill's model and effort apply to the session that loaded it for the
 # rest of the turn (https://code.claude.com/docs/en/skills, frontmatter reference), so only values
-# that keep that session on Opus at high effort or above are allowed.
+# that keep that session on Opus at high effort or above are allowed. The model must be the alias,
+# not a full ID, so ANTHROPIC_DEFAULT_OPUS_MODEL stays the one place that picks the Opus version.
 SESSION_PINS_ALLOWED = {
     "model": ("opus", "inherit"),
     "effort": ("high", "xhigh", "max"),
+}
+SESSION_PIN_ADVICE = {
+    "model": (
+        "Write the alias `opus`, not a full model ID, or name a cheaper model for the subagent "
+        "the skill launches instead."
+    ),
+    "effort": "Remove the pin, or raise it.",
 }
 
 
@@ -171,7 +180,7 @@ def session_pin_problem(parsed: dict[object, object]) -> str | None:
             return (
                 f"{key}: {parsed[key]} applies to the session that loads this skill for the rest "
                 f"of the turn; allowed without `context: fork`: {', '.join(allowed)}. "
-                "Name a cheaper model for the subagent the skill launches instead."
+                f"{SESSION_PIN_ADVICE[key]}"
             )
     return None
 
@@ -329,12 +338,12 @@ def main() -> int:
 
     if failures:
         print(
-            f"\n{len(failures)} skill(s) have frontmatter a strict loader will reject or cut short, "
-            "or that lowers the model or effort of the session loading it. "
+            f"\n{len(failures)} skill(s) have frontmatter a strict loader will reject or cut "
+            "short, or that moves the session loading it off Opus or below high effort. "
             "See docs/invariants/skills.md."
         )
     else:
-        print("✅ All skill frontmatter parses and keeps the session's model and effort")
+        print("✅ All skill frontmatter parses and keeps the session on Opus at high effort")
 
     found: list[FixedTmpPath] = []
     unreadable: list[UnreadableFile] = []

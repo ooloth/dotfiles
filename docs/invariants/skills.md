@@ -24,11 +24,13 @@ Facts about the shared skills in `tools/agents/config/skills/`, which `~/.claude
   `use-gh/SKILL.md` may, because it only lists the commands that take `--body-file`.
   `tools/agents/check-skills.py` checks every file git does not ignore in both places, from
   `scripts/checks/linting.bash`.
-- A skill whose frontmatter has no `context: fork` sets `model:` only to `opus` or `inherit`, and
-  `effort:` only to `high`, `xhigh` or `max`. Without `context: fork`, both apply to the session
-  that loaded the skill for the rest of the turn
-  ([skills frontmatter reference](https://code.claude.com/docs/en/skills), read 2026-11-06), so a
-  lower value makes that session do the rest of the turn's work on a cheaper model or with less
-  reasoning. A skill that wants a cheaper model for mechanical work names it for the subagent it
-  launches. `tools/agents/check-skills.py` checks every `SKILL.md` frontmatter block, from
-  `scripts/checks/linting.bash`.
+- A skill whose frontmatter has no `context: fork` keeps the session that loads it on Opus at
+  `high` effort or above: it sets `model:` only to the alias `opus` or to `inherit`, and `effort:`
+  only to `high`, `xhigh` or `max`. Without `context: fork`, both apply to that session for the
+  rest of the turn ([skills frontmatter reference](https://code.claude.com/docs/en/skills), read
+  2026-11-06), so a cheaper model or a lower effort would do the rest of the turn's work. A pin of
+  `high` still lowers a session running at `xhigh` or `max` for that turn; the floor is `high`, not
+  the session's own level. A skill that wants a cheaper model for mechanical work names it for the
+  subagent it launches. `tools/agents/check-skills.py` checks the frontmatter of every
+  `skills/<name>/SKILL.md` that git does not ignore, from `scripts/checks/linting.bash`. It does
+  not check the gitignored skills in `skills/synced/` or the project skills in `.claude/skills/`.

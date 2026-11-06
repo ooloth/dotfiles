@@ -190,6 +190,11 @@ uninstall {pkg}` / `cargo uninstall {pkg}`
 Only create this file if the tool requires explicit shell setup: environment variables, aliases, or
 completions not auto-installed by the package manager.
 
+Only an interactive zsh reads `shell.zsh`, through `.zshrc`. A program started any other way, such
+as a command Rex runs through its non-interactive login shell, never sees its exports. A variable
+such a program needs goes in the tool's own config file when the tool reads one, as Claude Code's
+settings go in the `env` block of `tools/claude/config/settings.json`.
+
 Brew auto-installs completions to `/opt/homebrew/share/zsh/site-functions` — no `shell.zsh` needed
 for those. Only add completion setup if the tool's docs require something like `eval "$(tool
 completion zsh)"` or `source <(tool completions zsh)`.

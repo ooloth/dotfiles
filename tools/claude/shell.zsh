@@ -3,37 +3,30 @@
 # ENVIRONMENT VARIABLES #
 ########################
 
-# See: https://docs.anthropic.com/en/docs/about-claude/models/overview#model-names
-# See: https://code.claude.com/docs/en/model-config#model-aliases
-# See: https://code.claude.com/docs/en/env-vars
+# Claude Code settings that are the same on every machine live in the `env` block and the `model`
+# key of tools/claude/config/settings.json, not here. A session the Rex launcher
+# (tools/rex/claude-tab.bash) opens starts through the login shell Rex uses for commands, which is
+# not interactive and so never reads .zshrc or this file, while Claude Code reads settings.json
+# however it was launched. A value in that `env` block also replaces the same variable exported
+# here.
+#
+# Why some of the settings.json `env` values are set, since JSON holds no comments:
+# - CLAUDE_CODE_SUBAGENT_MODEL=sonnet: an Agent call that names no model runs on Sonnet rather than
+#   the session's Opus. A model the call or the agent's definition names still wins (Claude Code
+#   2.1.251 or later), and Explore and Plan keep their own.
+#   See: https://code.claude.com/docs/en/sub-agents#choose-a-model
+# - CLAUDE_CODE_ENABLE_TASKS=0: agents complained about frequent TaskCreate reminders.
+#   See: https://github.com/anthropics/claude-code/issues/43311#issuecomment-4185513335
+# - CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1: a session started with --add-dir loads that
+#   folder's CLAUDE.md only when this is set.
+# - CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=999: the default of 200 runs out in research-heavy
+#   sessions.
 # See: https://code.claude.com/docs/en/model-config#environment-variables
-export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5-5
-export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5
-export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-5-5
-export ANTHROPIC_MODEL=opus
-
-# An Agent call that names no model runs on this rather than the session's Opus. A model the call
-# or the agent's definition names still wins (Claude Code 2.1.251 or later), and Explore and Plan
-# keep their own.
-# See: https://code.claude.com/docs/en/sub-agents#choose-a-model
-export CLAUDE_CODE_SUBAGENT_MODEL=sonnet
-
-export CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1
-
-# Agents have been complaining about frequent TaskCreate reminders
-# See: https://github.com/anthropics/claude-code/issues/43311#issuecomment-4185513335
-export CLAUDE_CODE_ENABLE_TASKS=0
-
-export CLAUDE_CODE_ENABLE_TELEMETRY=0
-
-# A session started with --add-dir loads that folder's CLAUDE.md only when this is set
-export CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1
-
-# Default is 200, which I've hit in research-heavy sessions
-export CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=999
-
-export DISABLE_ERROR_REPORTING=1
-export DISABLE_TELEMETRY=1
+# See: https://code.claude.com/docs/en/env-vars
+#
+# Only what differs by machine belongs here. An ANTHROPIC_MODEL exported here beats settings.json's
+# `model` (https://code.claude.com/docs/en/model-config#setting-your-model), but only for sessions
+# started from zsh, such as `cc`.
 
 # if is_work; then
   # export ANTHROPIC_MODEL=sonnet
