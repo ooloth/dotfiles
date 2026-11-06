@@ -129,7 +129,8 @@ class PythonSearchPaths(unittest.TestCase):
                 "HOME": str(home),
                 "PATH": "/usr/bin:/bin",
                 "TERM": "dumb",
-                "COMPUTER": "Air",
+                # tools/macos/shell.zsh reads the machine from this, and from scutil when unset
+                "COMPUTER_NAME": "Air",
                 "DOTFILES": str(REPO),
             },
             capture_output=True,
