@@ -72,7 +72,7 @@ No prompt contains the author's rationale, test results, or any claim that the c
 Re-run every failing test yourself, and check that each fails on the assertion its reviewer
 described, not on setup. Check any claim about the world outside the repo against its source
 yourself. Mark each finding as reproduced, confirmed by reading, unconfirmed or disputed. Where you
-think a finding is wrong, a fresh verifier agent decides, not you.
+think a finding is wrong, a fresh verifier agent on Opus decides, not you.
 
 ## 7. Report unfiltered
 

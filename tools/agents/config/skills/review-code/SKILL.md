@@ -220,7 +220,11 @@ Give an added agent the same shape as the standing agents: the intent block, the
 provenance requirement, and one question to answer. Record the question and why the standing
 agents did not cover it — Step 4 reports it.
 
-Choose each agent's model by what its task needs, and keep the reason, because Step 4 reports both.
+Run Agents 1, 2, 5, 6, 7, 11 and 12 on Opus: their questions take reasoning to answer, and Agent
+12's "nothing else references this" is a miss nobody checks. Run Agents 3, 4, 8, 9, 10, 13 and 14
+on Sonnet, whose questions are narrower. This split is a guess until ooloth/dotfiles#256 measures
+it. Choose an added agent's model by the same test, and keep each reason, because Step 4 reports
+both.
 
 Pass each agent:
 

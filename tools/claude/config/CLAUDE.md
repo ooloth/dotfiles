@@ -168,7 +168,12 @@ are the first Must in `decision-making.md` in the standards.
 
 - Delegate exploration that would mean reading many files to subagents, so only conclusions enter
   your context. Do a lookup of one or two known files yourself.
-- Choose each subagent's model by what its task needs, including subagents a skill launches.
+- Choose each subagent's model by what its task needs, including subagents a skill launches. Use
+  Haiku for mechanical work whose output you check anyway, such as calling an API or CLI, finding
+  where something lives when you will open what it finds, or pulling fields out of logs or JSON.
+  Use Opus where a miss would be silent, such as a review, a search whose answer is that nothing
+  uses something, a triage that decides what to keep, or a claim about the world outside the repo.
+  A model a skill names for its subagent stands.
 - When the harness refuses Agent calls because too many subagents are running, resend one refused
   call with the same prompt and model each time one of yours finishes, even if the refusal says
   "Do not retry". Stop when a call is refused for another reason or with none of yours running, and

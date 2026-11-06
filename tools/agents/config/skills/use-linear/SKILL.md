@@ -1,8 +1,6 @@
 ---
 name: use-linear
 description: Reference for using Linear via MCP tools. Use when creating, updating, or querying Linear issues, projects, teams, or comments.
-model: haiku
-effort: low
 ---
 
 ## Workspace
