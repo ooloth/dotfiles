@@ -2,7 +2,7 @@
 number: 004
 status: accepted
 date: 2026-10-20
-amended: 2026-10-20
+amended: 2026-11-05
 ---
 
 # 004 — `u` checks only what would make an update fail, and prints no warnings
@@ -57,3 +57,13 @@ The maintainer chose not to add a gcloud credentials check to the `cc` alias. No
 those credentials before a Claude session starts, so a session that needs them finds out when a
 `gcloud` command fails. `ccy-vertex` in `tools/claude/shell.zsh` still checks them before starting
 a Vertex AI session.
+
+## Addendum (2026-11-05) — `cc` checks the Google login again
+
+The maintainer chose to have `cc`, `ccc` and `ccy-vertex` on the work laptop check the work
+logins before a session starts, which reverses the addendum above. Each runs `auth`
+(`features/auth/`), which checks the Google, Spacelift and Argo CD logins at once and opens a
+browser login only for each one whose check says it has expired. A check that can't reach its
+service opens nothing, and the session starts whatever the checks find. With every login valid,
+the checks add about a second to each start. Skipping them for a few minutes after a run that
+found every login valid was considered and not taken, since a second is acceptable.

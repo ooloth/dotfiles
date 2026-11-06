@@ -42,8 +42,28 @@ export DISABLE_TELEMETRY=1
 # cc.bash picks the permission mode for this machine and adds the repo's related folders
 # TODO: consider auto at home after testing it at work for awhile (it uses more tokens)
 # TODO: at work, consider a granular allowList if risky actions sneak through or redundant model-checking token use is too wasteful or slow
-alias cc="bash ${DOTFILES}/tools/claude/cc.bash"
-alias ccc="bash ${DOTFILES}/tools/claude/cc.bash --continue"
+if is_work; then
+  # Sessions at work use the work tools, and Vertex AI needs the Google credentials, so each start
+  # runs auth, which opens a browser login only for each one whose check says it has expired. A
+  # check that can't reach its service opens nothing, and the session starts either way. This adds
+  # about a second to each start. See decision 004's addenda. An alias left by an earlier version
+  # of this file would win over the functions.
+  unalias cc ccc 2>/dev/null
+  function claude_work_logins {
+    uv run --offline "${DOTFILES}/features/auth/auth.py"
+  }
+  function cc {
+    claude_work_logins
+    bash "${DOTFILES}/tools/claude/cc.bash" "$@"
+  }
+  function ccc {
+    claude_work_logins
+    bash "${DOTFILES}/tools/claude/cc.bash" --continue "$@"
+  }
+else
+  alias cc="bash ${DOTFILES}/tools/claude/cc.bash"
+  alias ccc="bash ${DOTFILES}/tools/claude/cc.bash --continue"
+fi
 
 if is_work; then
   # Fallback to Vertex AI for current session only if I hit my subscription quota (Max 20x limit, I think)
@@ -53,13 +73,7 @@ if is_work; then
       return 1
     fi
 
-    # Vertex AI requires gcloud credentials to be valid, so check that first
-    if timeout 5 gcloud auth application-default print-access-token &>/dev/null; then
-      debug "✅ gcloud credentials are valid"
-    else
-      warn "⚠️ gcloud reauthentication needed — opening browser to reauthenticate..."
-      gcloud auth login --update-adc michael.uloth@recursion.com
-    fi
+    claude_work_logins
 
     # Point to Vertex AI for this session only
     claude --settings '{"env":{"CLAUDE_CODE_USE_VERTEX":"1","CLOUD_ML_REGION":"global","ANTHROPIC_VERTEX_PROJECT_ID":"'"${PRIVATE_VERTEX_PROJECT}"'"}}' --dangerously-skip-permissions "$@"
