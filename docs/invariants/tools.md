@@ -63,3 +63,9 @@ observations about typical practice.
   `is_work`, `is_air` or `is_mini` chooses the machine by setting `COMPUTER`, because
   `networksetup` is called by absolute path and no stub on `PATH` reaches it.
   `tools/macos/tests/test_utils.py` checks both halves.
+- A Brewfile learns which Mac it runs on only from `tools/macos/computer.rb`, loaded with
+  `require_relative "../macos/computer"`, and asks `air?`, `mini?` or `work?`. Homebrew clears
+  `COMPUTER` before it evaluates a Brewfile, so the helper asks `networksetup` itself, by the same
+  rule as `utils.bash`: `Air` and `Mini` are personal Macs and every other name is a work Mac.
+  `tools/macos/tests/test_computer.py` checks that the two agree and that no Brewfile asks
+  `networksetup` on its own.
