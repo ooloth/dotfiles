@@ -89,7 +89,8 @@ because install scripts run wherever the package is installed.
 
 1. **Run the check for npm and uv lockfiles.** Skip this when no `package-lock.json` or `uv.lock`
    changed; the script would only exit 2 to say there is nothing for it to check. It reads
-   everything through `gh`, the registries and OSV, so it runs from any directory.
+   everything through `gh`, the registries, nodejs.org and OSV, and downloads the npm version it
+   checks with through `npm exec`, so it runs from any directory.
 
    ```bash
    uv run <skill-base-dir>/scripts/review_dependency_bump.py <pr-number> --repo <owner>/<repo>
@@ -98,8 +99,10 @@ because install scripts run wherever the package is installed.
    It compares each changed lockfile at the merge base and the PR head, and lists every entry
    that changed. For each bumped npm package it checks the hash against the registry, the resolved
    host, the publisher, install scripts, new dependencies, `engines`, provenance and publish age;
-   `npm ls` checks every parent's range. For each bumped PyPI package it checks every locked file's
-   hash, the registry source, the publisher its attestations name, new requirements,
+   `npm ls` checks every parent's range. `npm ci --dry-run --ignore-scripts` checks that the head's
+   lockfile installs under the npm the repo declares for CI: `packageManager`, or the npm bundled
+   with the Node in `.nvmrc` or `.node-version`. For each bumped PyPI package it checks every
+   locked file's hash, the registry source, the publisher its attestations name, new requirements,
    `requires_python`, yanked files, whether a wheel is still locked and upload age, and that every
    package depending on it still allows the new version. A package locked from an index other than
    PyPI is flagged `unchecked`, because the script never contacts a project's own index. `npm audit`
@@ -119,7 +122,10 @@ because install scripts run wherever the package is installed.
      import and reaches the network, the environment, credentials or files outside the package.
      Facts the script reports without a flag are not findings. Provenance absent on both releases,
      for one, is common and changes nothing; only a release that drops provenance its predecessor
-     had is flagged.
+     had is flagged. An `install` flag is about the lockfile, not a release. A rejection means
+     CI's `npm ci` will fail, which rules out Approve. A flag saying CI's npm could not be
+     determined, or that the repo uses workspaces, means running `npm ci --dry-run` with CI's npm
+     by hand before an Approve.
    - **A new direct dependency.** Judge it against the Must in
      `~/.agents/standards/dependencies.md`: what it covers, whether the standard library or an
      existing dependency already covers it, and the transitive tree it brings in, which the
