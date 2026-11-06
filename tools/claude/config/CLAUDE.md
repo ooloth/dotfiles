@@ -169,20 +169,22 @@ are the first Must in `decision-making.md` in the standards.
 - Delegate exploration that would mean reading many files to subagents, so only conclusions enter
   your context. Do a lookup of one or two known files yourself.
 - Choose each subagent's model by what its task needs, including subagents a skill launches, and
-  name it on every Agent call, because a call that names none runs on a default chosen for no
-  task in particular.
-  - **Haiku** for mechanical reads whose output you check anyway, such as reading from an API or
-    CLI, finding where something lives when you will open what it finds, or pulling fields out of
-    logs or JSON. A Haiku search that finds nothing has not shown that nothing is there: check it
-    yourself or run it again on Opus before anything relies on it.
+  name it on every Agent call but the kind the paragraph below exempts, because a call that names
+  none runs on a default chosen for no task in particular. Opus wins whenever a task fits it,
+  whatever else the task also fits.
+  - **Haiku** for mechanical reads whose output you check anyway, such as fetching a known record
+    from an API or CLI, finding where something lives when you will open what it finds, or pulling
+    fields out of logs or JSON. A Haiku search that finds nothing has not shown that nothing is
+    there: check it yourself or run it again on Opus before anything relies on it.
   - **Opus** where a miss would be silent, such as a review, a search whose answer is that nothing
     uses something, a triage that decides what to keep, or a claim about the world outside the
-    repo. Opus wins when a task fits both this and Haiku.
+    repo that you will not check against its source.
   - **Sonnet** for everything else, including a subagent that writes outside the repo, such as
     posting a comment or updating a page, because that is not the checked-anyway work Haiku is
     for.
 
-  A model that a skill or an agent definition names for a subagent stands. Without
+  A model that a skill names for a subagent stands. A call to an agent whose definition names a
+  model names none, because a model on the call would override the definition's. Without
   `context: fork`, a skill's own `model:` frontmatter sets the session's model for the rest of the
   turn, not a subagent's.
 - When the harness refuses Agent calls because too many subagents are running, resend one refused

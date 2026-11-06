@@ -226,10 +226,13 @@ Give an added agent the same shape as the standing agents: the intent block, the
 provenance requirement, and one question to answer. Record the question and why the standing
 agents did not cover it — Step 4 reports it.
 
-Each standing agent's heading below names its model and why. Run an added agent on Opus when a
-miss in its answer would be silent, such as an answer that nothing outside the diff is affected,
-or when answering takes reasoning. Run it on Sonnet when it checks the diff against standards
-files it loads. Keep each reason, because Step 4 reports both.
+Each standing agent's heading below names its model and why. These choices are a guess until
+ooloth/dotfiles#256 measures them. Agents 3, 4, 8, 9 and 10 run on Sonnet as a deliberate
+exception to the global rule that a review runs on Opus: their misses are silent too, and #256
+decides whether Sonnet finds as much as Opus there. Run an added agent on Opus when a miss in its
+answer would be silent, such as an answer that nothing outside the diff is affected, or when
+answering takes reasoning. Run it on Sonnet only when it checks the diff against standards files it
+loads and neither Opus test applies. Keep each reason, because Step 4 reports both.
 
 Pass each agent:
 

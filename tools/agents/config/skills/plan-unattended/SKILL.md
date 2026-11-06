@@ -103,7 +103,8 @@ Do not share one run's output with another.
    case for the runner-up, and the other tries to show the leader fails a binding property. Each
    must back every claim with a command it ran, a concrete failing scenario or a property shown to
    break, or report "no evidence found". Drop claims without evidence, then choose.
-3. Whichever way the choice was made, spawn one subagent to attack it: find a scenario where the
+3. Whichever way the choice was made, spawn one subagent on Opus to attack it, because a scenario
+   it misses goes unnoticed: find a scenario where the
    chosen approach breaks a binding property, or a risk no property covers, under the same evidence
    rule. A real finding goes back into step 4 of the reconciliation; "no evidence found" stands.
 4. Write the **Assumptions**: the approach-level assumptions the choice rests on that, if wrong,
