@@ -148,8 +148,8 @@ because install scripts run wherever the package is installed.
        && mkdir "$dir/src" && tar -xzf "$dir/src.tar.gz" -C "$dir/src" --strip-components=1
      ```
 
-     Install and test inside `$dir/src` with the project's own commands. Never fetch, check out or
-     add a worktree in the reviewed repository: a review only reads.
+     Install and test inside `$dir/src` with the project's own commands. Never install or run tests
+     in a checkout of the reviewed repository, because other steps are reading its files.
 
 4. **Report in Step 4's format.** A flag that survives step 3 is a finding. Anchor it on the
    lockfile line of that entry's `version`, which is in the diff. A clean run is the evidence for
