@@ -803,7 +803,7 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
 
 ### Looks Good
 [One sentence: the specific choice the author made that works best, which the posted body
-credits, and which concern areas came back clean. An area whose agent errored or never ran did not
+credits, or that nothing specific earns credit, and which concern areas came back clean. An area whose agent errored or never ran did not
 come back clean.]
 
 ### Dropped
@@ -898,7 +898,7 @@ On any answer other than "skip":
       - re-pin every comment to the new head, and check that each line still holds the code its
         comment is about.
 
-    Either way, the summary says which findings were re-checked against the new head, and the new
+    Either way, tell the user which findings were re-checked against the new head, and the new
     head and base become the saved state.
   - **Only new reviews, comments or replies:** the code is unchanged, so the findings stand. Add
     the new ones to Prior reviews, rewrite the summary to account for them, and show the user the
@@ -917,17 +917,22 @@ On any answer other than "skip":
   - **Verdict and credit:** the verdict, then one sentence crediting a specific choice the author
     made and why it works, drawn from Looks Good.
   - **Triage:** a clause, not a paragraph, saying every finding is the author's call to fix here,
-    ticket or leave.
+    ticket or leave. Under Request Changes, the clause covers every finding except the `must`
+    ones, which the body asks for directly.
   - **Where to look first:** the one or two findings that matter most, by name.
   - **Outside the diff:** one bold `**Outside the diff**` line, then one bullet per finding outside
-    the diff: a bold lead naming the problem, then where it is and what to do, in one or two
-    sentences. The bullets carry no labels; whether the gap was already there is not the author's
-    concern. A finding earns a bullet only when it fits the PR and is worth the author's time.
-  - **Earlier reviews:** one line naming each earlier reviewer by the `refer_as` value the fetch
-    helper printed for it, saying which of its points you agree with, dispute or answered. Never
-    restate their points.
+    the diff: a bold lead naming the problem, then where it is, what to do and where you saw it, in
+    one or two sentences. The bullets carry no labels; whether the gap was already there is not the
+    author's concern. A finding earns a bullet only when it meets the severity bar in Step 4, fits
+    the PR and is worth the author's time.
+  - **Prior reviews:** one line naming each earlier reviewer by the `refer_as` value the fetch
+    helper printed for it, saying which of its points you agree with, dispute or answered, each
+    named in a few words. Never restate their points, and leave out the ones you did not check.
+    When a `refer_as` value reads `UNKNOWN`, ask the user what to call that reviewer before
+    drafting.
 
-  Evidence for a finding goes in its inline comment, not the body.
+  Evidence for a finding in the diff goes in its inline comment, not the body. Which findings were
+  re-checked after a head move goes in the report to the user, not the body.
 - Collect every finding whose line is in the PR's diff as an inline comment. GitHub accepts inline
   comments only on lines the diff shows. The reviewer files no ticket for a gap the author can fix.
 - Pin the review to the saved head: the one from Step 1, or the new head once a head move has
@@ -973,7 +978,7 @@ uv run <skill-base-dir>/scripts/post_review.py <pr-number> <review.json> --repo 
   `write-ticket-description`, and post nothing until the user approves the wording.
 
 **Summary audience:** The review body is read by GitHub users who only know what's in the PR diff —
-they have no context from this review session. Write for that audience:
+they have no context from this review session. Write for that audience.
 
 **Tone for the review body and inline comments:** Write like a teammate who is glad to be working
 on this with the author and wants the PR to land well: patient, curious and specific. You are a

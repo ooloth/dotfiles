@@ -74,7 +74,9 @@ shows the commit it was submitted against and when. Each inline comment in the o
 Each review and conversation comment also shows **`thank`**, the line a reply to it opens with. A
 person is tagged by login. A bot is thanked by its name in the script's `BOT_NAMES` and never
 tagged, because mentioning a review bot asks it to review again. A bot missing from `BOT_NAMES`, or
-an author of a kind the script does not know, shows `UNKNOWN`.
+an author of a kind the script does not know, shows `UNKNOWN`. Beside it, **`refer_as`** is how
+prose such as a review body names that author, on the same rule: `@login` for a person, the
+`BOT_NAMES` name for a bot, and `a deleted account` for a deleted one.
 
 It fetches every page of every list. When it cannot (a thread with more replies than one request
 returns, or `gh` failing), it exits 1 with the reason instead of printing a partial picture. The
@@ -87,7 +89,7 @@ The thread ID is looked up automatically from the comment ID — you only need t
 `comment_id` shown in `fetch_pr_comments.py` output.
 
 ```bash
-uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 "Fixed — changed to 'fill empty snapshots'." --resolve
+uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 "✅ Changed to 'fill empty snapshots' (2611d9d)" --resolve
 ```
 
 It prints `Target: OWNER/NAME#PR, comment ID` before writing. Read that line — it is the only
