@@ -76,7 +76,8 @@ person is tagged by login. A bot is thanked by its name in the script's `BOT_NAM
 tagged, because mentioning a review bot asks it to review again. A bot missing from `BOT_NAMES`, or
 an author of a kind the script does not know, shows `UNKNOWN`. Beside it, **`refer_as`** is how
 prose such as a review body names that author, on the same rule: `@login` for a person, the
-`BOT_NAMES` name for a bot, and `a deleted account` for a deleted one.
+`BOT_NAMES` name for a bot, `a deleted account` for a deleted one, and `UNKNOWN` wherever `thank`
+shows it.
 
 It fetches every page of every list. When it cannot (a thread with more replies than one request
 returns, or `gh` failing), it exits 1 with the reason instead of printing a partial picture. The
@@ -342,11 +343,12 @@ These replies go out as the PR author to their teammates. Write as a colleague w
 - **For ❌, give the reason without arguing**: "already handled at file:line", or "I think this is
   intentional because X"
 - **Say so when a catch was good**: when a ✅ answers a finding that took real digging to spot, a
-  few words of acknowledgement may follow the verdict ("✅ Good catch, ..."). Word it differently
-  each time and keep it to the findings that earned it, so it never reads as a formula
-- **Agree before you add**: when a fix comes with a nuance the reviewer missed, say what they got
-  right first and then the nuance ("Right, and it also ..."), rather than opening with "One
-  correction:"
+  few words of acknowledgement may open the reply, after the verdict and any bold label
+  ("✅ Good catch, ..." inline, or "- ✅ **Negative TTL**: good catch, ..." in a bullet). Word it
+  differently each time and keep it to the findings that earned it, so it never reads as a formula
+- **Agree before you add**: when a fix comes with a nuance the reviewer missed, agree in a word and
+  then give the nuance ("Right, and it also ..."), rather than opening with "One correction:". The
+  word of agreement is not their point repeated back
 
 ### Report template
 

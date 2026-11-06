@@ -174,9 +174,8 @@ confusing report, comes before the next work item. Resolve it with the user befo
 - **Reviewing a PR for the user:** every review, a Dependabot bump included, runs in a worker tab
   with review-code, never by hand in your session. Give the worker a detached worktree at the PR's
   head and a tab named `PR <n> (<author>): review-code`, as `use-rex` describes, and put in its
-  brief any bar the user has set for that kind of PR. Every review posted under the user's name
-  carries a body saying what was checked, written under review-code's Step 5, because to a
-  teammate an approval with no body looks the same as a thoughtless one.
+  brief any bar the user has set for that kind of PR. What a review posted under the user's name
+  says is up to review-code's Step 5.
 - **Commits:** the worker that made a change runs `/commit` in its own session, where the skill's
   `git status` reads the right repo. On a feature branch in a repo that ships through PRs it needs
   no signal. For any other commit, relay the user's commit signal word for word. For a change you
