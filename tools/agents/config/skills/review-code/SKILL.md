@@ -248,6 +248,8 @@ Pass each agent:
   "Never change the checkout under review: no checkout, switch, stash, reset or edit. To run
   something against another commit, add a scratch worktree with
   `git worktree add --detach "$(mktemp -d)/wt" <commit>` and remove it when done."
+- This line, verbatim, because Homebrew updates itself before any `brew` command by default: "Run
+  every `brew` command with `HOMEBREW_NO_AUTO_UPDATE=1`, so a read never updates Homebrew."
 - This provenance requirement, verbatim:
 
   > For every finding, state whether the change under review **introduced** it or whether it is
