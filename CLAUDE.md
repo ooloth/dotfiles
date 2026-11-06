@@ -33,8 +33,9 @@ See README.md for the overview. Key points for Claude:
   `shell.zsh` and a `tests/` folder.
   `tools/@new` is the template, `tools/README.md` explains the approach, and `tools/eza/` or
   `tools/logcli/` show a brew formula with no config.
-- Workflows that span tools live in `features/{feature}/`, as scripts (Python, per decision 007)
-  with a `shell.zsh` that defines their aliases.
+- Workflows that span tools live in `features/{feature}/`, as scripts with a `shell.zsh` that
+  defines their aliases. A new script that is run is written in Python, per decision 007, except
+  the ones `CONTRIBUTING.md` names; most existing ones are still bash until #127 and #203 port them.
 - `u` runs `features/update/tools.bash`. It first runs `features/update/preflight.bash`, which
   checks every tool's `preflight.bash` and stops `u` if one fails. Then it updates the symlinks
   (`features/update/symlinks.bash`) and runs each tool's `update.bash`. The `symlinks` alias

@@ -2,7 +2,14 @@
 
 A new script that is run, rather than sourced, is written in Python
 ([decision 007](docs/decisions/007-scripts-that-are-run-are-written-in-python.md)): for now a
-single-file uv script, as decision 008's addendum allows until the root project exists.
+single-file uv script, as decision 008's addendum allows until the root project exists. Two kinds
+stay in shell:
+
+- **Scripts `u` finds by file name:** a tool's `update.bash` and `preflight.bash`.
+  `features/update/tools.bash` and `features/update/preflight.bash` run only files with those
+  names, so an `update.py` would never run.
+- **The first step of setup on a new Mac**, which runs before Python is installed, as decision 007
+  says.
 
 ## Check a change
 
@@ -51,7 +58,7 @@ On a work laptop, uv installs packages through the work Artifact Registry index 
 `check`, log in:
 
 ```sh
-gcloud auth login --quiet --update-adc <you>@recursion.com
+gcloud auth login --update-adc <you>@recursion.com
 ```
 
 On the work laptop, `auth` runs this login along with the other work logins, and only for the ones
