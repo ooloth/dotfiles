@@ -35,6 +35,9 @@ codefresh logs <build-id> | grep -E -B 10 -A 20 -i "error|fail|found.*error"
 ends, so a pipe to `grep` or `tail` waits until the build finishes or the command times out. Check
 the status with `codefresh get builds <build-id> -o json` first, and read logs once it has finished.
 
+A build at `pending-approval` prints no log until it ends. Read its effects instead: image tags in
+Artifact Registry and the CD commit in bc-eng-clinical.
+
 ## Log Structure
 
 Codefresh logs are long (often 1000–3000+ lines) and front-loaded with noisy setup
