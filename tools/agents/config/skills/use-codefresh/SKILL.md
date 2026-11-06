@@ -38,6 +38,15 @@ the status with `codefresh get builds <build-id> -o json` first, and read logs o
 A build at `pending-approval` prints no log until it ends. Read its effects instead: image tags in
 Artifact Registry and the CD commit in bc-eng-clinical.
 
+```bash
+# Each image digest with its tags and when it was last pushed
+gcloud artifacts docker images list <registry>/<project>/<repository>/<image> --include-tags \
+  --format='value(version,tags,updateTime)'
+# Commits on bc-eng-clinical's trunk since the build started (UTC)
+gh api "repos/recursionpharma/bc-eng-clinical/commits?sha=trunk&since=<build start>" \
+  -q '.[] | .sha[0:8] + " " + .commit.committer.date + " " + (.commit.message | split("\n")[0])'
+```
+
 ## Log Structure
 
 Codefresh logs are long (often 1000–3000+ lines) and front-loaded with noisy setup
