@@ -1,6 +1,7 @@
 ---
 name: notion-agent
 description: Use this agent for ALL Notion API operations (create, search, fetch, update). Never use Notion MCP tools directly. Triggers include notion, writing database, create page, search workspace, fetch page, update page, query database.
+model: sonnet
 mcpServers:
   - notion:
       type: http

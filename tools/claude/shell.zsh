@@ -11,6 +11,13 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL=claude-opus-5-5
 export ANTHROPIC_DEFAULT_SONNET_MODEL=claude-sonnet-5-5
 export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-5-5
 export ANTHROPIC_MODEL=opus
+
+# An Agent call that names no model runs on this rather than the session's Opus. A model the call
+# or the agent's definition names still wins (Claude Code 2.1.251 or later), and Explore and Plan
+# keep their own.
+# See: https://code.claude.com/docs/en/sub-agents#choose-a-model
+export CLAUDE_CODE_SUBAGENT_MODEL=sonnet
+
 export CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1
 
 # Agents have been complaining about frequent TaskCreate reminders

@@ -226,11 +226,10 @@ Give an added agent the same shape as the standing agents: the intent block, the
 provenance requirement, and one question to answer. Record the question and why the standing
 agents did not cover it — Step 4 reports it.
 
-Run Agents 1, 2, 5, 6, 7, 11 and 12 on Opus: their questions take reasoning to answer, and Agent
-12's "nothing else references this" is a miss nobody checks. Run Agents 3, 4, 8, 9, 10, 13 and 14
-on Sonnet, whose questions are narrower. This split is a guess until ooloth/dotfiles#256 measures
-it. Choose an added agent's model by the same test, and keep each reason, because Step 4 reports
-both.
+Each standing agent's heading below names its model and why. Run an added agent on Opus when a
+miss in its answer would be silent, such as an answer that nothing outside the diff is affected,
+or when answering takes reasoning. Run it on Sonnet when it checks the diff against standards
+files it loads. Keep each reason, because Step 4 reports both.
 
 Pass each agent:
 
@@ -263,6 +262,9 @@ is running or waiting to be resent.
 ---
 
 ### Agent 1: Intent Alignment
+
+**Model:** Opus, because judging whether the code does what the intent says takes reasoning, and a
+gap it misses no later step catches.
 
 ```
 Question: Does the implementation actually achieve the stated intent of this change?
@@ -297,6 +299,8 @@ If implementation matches intent: report "Implementation aligns with stated inte
 ---
 
 ### Agent 2: Approach
+
+**Model:** Opus, because weighing one approach against others takes reasoning.
 
 ```
 Question: Is this the simplest correct solution to the stated problem, is it the best available approach, and would delivering it as several smaller changes have paid for itself?
@@ -335,6 +339,9 @@ For slicing: report the cut points, or "Splitting would not have paid for itself
 
 ### Agent 3: Structure
 
+**Model:** Sonnet, because it checks the diff against the structure and readability standards it
+loads.
+
 ```
 Question: Is the internal organisation of this code sound?
 
@@ -359,6 +366,9 @@ If structure is sound, report "Structure and internal organisation look solid."
 ---
 
 ### Agent 4: Public Surface
+
+**Model:** Sonnet, because it checks the diff against the interface and documentation standards it
+loads.
 
 ```
 Question: From the caller's perspective, is this code well-designed and discoverable?
@@ -385,6 +395,8 @@ If the public surface is well-designed and documented, report "Public surface is
 
 ### Agent 5: Correctness
 
+**Model:** Opus, because a correctness bug it misses ships silently.
+
 ```
 Question: Does this code behave correctly across all inputs, states, and callers?
 
@@ -409,6 +421,8 @@ Skip theoretical what-ifs — report actual problems in the code.
 ---
 
 ### Agent 6: Data Safety
+
+**Model:** Opus, because a security, privacy or data-loss bug it misses ships silently.
 
 ```
 Question: Is data protected from external threats, personal data mishandling, and write-time corruption?
@@ -435,6 +449,9 @@ If no concerns found, report "No data safety concerns identified."
 ---
 
 ### Agent 7: Runtime Behaviour
+
+**Model:** Opus, because a failure under load or concurrency that it misses shows up only in
+production.
 
 ```
 Question: How does this code behave under real-world conditions — load, failure, and concurrency?
@@ -464,6 +481,9 @@ If no concerns found, report "No runtime behaviour concerns identified."
 ---
 
 ### Agent 8: Testing
+
+**Model:** Sonnet, because it checks the tests against the testing standard and runs the breaks it
+proposes, so its strongest claims are tested rather than argued.
 
 ```
 Question: Is the test suite trustworthy and sufficient to catch regressions in this change?
@@ -500,6 +520,9 @@ If tests are well-designed, report "Test design is solid and coverage is appropr
 
 ### Agent 9: Release Readiness
 
+**Model:** Sonnet, because it checks the diff against the dependency, deployment and config
+standards it loads.
+
 ```
 Question: Is this change ready to ship responsibly — dependencies justified, deployment safe, config correct?
 
@@ -524,6 +547,8 @@ If no concerns found, report "No release readiness concerns identified."
 ---
 
 ### Agent 10: Language
+
+**Model:** Sonnet, because it checks the diff against the language standards it loads.
 
 ```
 Question: Does this code use the language correctly, following the project's established idioms?
@@ -552,6 +577,9 @@ If no language-specific issues found, report "No language-specific concerns iden
 
 ### Agent 11: Failure Paths
 
+**Model:** Opus, because tracing whether a failure path is reachable takes reasoning, and an
+unreachable path it misses still looks correct.
+
 ```
 Question: For each failure path this change adds or moves — a throw, a non-zero exit, an error return, a new branch that gives up — is it reachable from the program's real entry point, and when it fires, what does the process observably do?
 
@@ -578,6 +606,9 @@ For each issue: file:line | the path | reachable from where, or not at all | wha
 
 ### Agent 12: Out-of-Diff References
 
+**Model:** Opus, because its answer is often that nothing else references what the change removes, a
+miss nobody checks.
+
 ```
 Question: For each thing this change withdraws, restricts or renames — a route, page, command, flag, field, column, config key, file path, URL, message or permission that is removed, gated, renamed or narrowed — which references to it live OUTSIDE the diff, and does each one still work, or is it now broken, dead or misleading?
 
@@ -603,6 +634,9 @@ For each issue: file:line | the reference | the thing it points to | why it is b
 ---
 
 ### Agent 13: Coupled Changes
+
+**Model:** Opus, because its answer is often that nothing outside the diff has to change, a miss
+nobody checks.
 
 Agent 12 follows what a change takes away. This agent follows what it adds: a new consumer of an
 existing setting makes that setting's validators and other readers answer for the new use, and a
@@ -633,6 +667,8 @@ For each issue: file:line (outside the diff) | the thing the change added | what
 ---
 
 ### Agent 14: Rule Consistency
+
+**Model:** Opus, because its answer is often that no two rules conflict, a miss nobody checks.
 
 Runs only when the diff touches an agent instruction file, which is any file the list under
 "These stop the loop" in the global `CLAUDE.md` names.

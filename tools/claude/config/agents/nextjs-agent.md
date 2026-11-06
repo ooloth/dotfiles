@@ -1,6 +1,7 @@
 ---
 name: nextjs-agent
 description: Next.js development specialist using Next.js DevTools MCP. Always use this agent to query the Next.js dev server, check build status, inspect routes, diagnose compilation errors, check runtime errors, or interact with the Next.js MCP endpoint. Returns focused diagnostics and recommendations.
+model: sonnet
 mcpServers:
   - 'next-devtools':
       type: stdio

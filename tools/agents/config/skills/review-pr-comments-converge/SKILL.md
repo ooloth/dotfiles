@@ -241,8 +241,8 @@ Round N/3: [X] auto-fix, [Y] escalate, [Z] dismissed (stale/mistaken), [V] ackno
 ### Step E — Fix (one subagent per round)
 
 Verify file paths exist before spawning. **Spawn one fix subagent for the whole round**, carrying
-every auto-fix finding from this round. Run it on Opus: the next round reviews its fixes, but a
-fix that is subtly wrong can pass that review.
+every auto-fix finding from this round. Run it on Opus, because only the quality gate checks its
+fixes: later rounds validate PR comments, not the diff.
 
 One agent, not one per file. Fixes within a round depend on each other — a test has to be written
 against the source fix it guards — so splitting by file produces a serial chain of handoffs that
