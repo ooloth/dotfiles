@@ -3,8 +3,9 @@
 # Mac. A Brewfile loads this with `require_relative "../macos/computer"`, which also resolves from
 # tools/homebrew/Brewfile.generated, one folder down from tools/ like every tool's own Brewfile.
 #
-# Homebrew clears COMPUTER from the environment before it evaluates a Brewfile, so this asks
-# networksetup itself. networksetup exists only on macOS; elsewhere the name is empty, so "work".
+# Homebrew's bin/brew re-runs itself under `env -i`, keeping only a short list of variables and
+# every HOMEBREW_* one, so COMPUTER never reaches a Brewfile and this asks networksetup itself.
+# networksetup exists only on macOS; elsewhere the name is empty, so "work".
 
 def computer_for(name)
   case name
@@ -15,11 +16,8 @@ def computer_for(name)
 end
 
 NETWORKSETUP = "/usr/sbin/networksetup"
-COMPUTER = computer_for(File.executable?(NETWORKSETUP) ? `#{NETWORKSETUP} -getcomputername`.chomp : "")
-
-def computer
-  COMPUTER
-end
+name = File.executable?(NETWORKSETUP) ? `#{NETWORKSETUP} -getcomputername`.chomp : ""
+COMPUTER = computer_for(name)
 
 def air?
   COMPUTER == "air"

@@ -4,11 +4,10 @@
 require_relative "../macos/computer"
 
 # local speech-to-text dictation
-case computer
-when "mini"
-  # not used
-when "air"
+if air?
   cask "handy"
+elsif mini?
+  # not used
 else
   # The work account is not an admin, so it cannot write to /Applications
   cask "handy", args: { appdir: "~/Applications" }

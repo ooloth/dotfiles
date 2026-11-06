@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Machine detection for bash scripts.
-# For zsh sessions, see tools/macos/shell.zsh instead.
+# For zsh sessions, see tools/macos/shell.zsh instead. For Brewfiles, see tools/macos/computer.rb.
 # A COMPUTER the caller already set is kept, so a test can choose the machine.
 
 if [[ -z "${COMPUTER:-}" ]]; then

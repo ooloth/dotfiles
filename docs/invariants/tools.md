@@ -64,8 +64,11 @@ observations about typical practice.
   `networksetup` is called by absolute path and no stub on `PATH` reaches it.
   `tools/macos/tests/test_utils.py` checks both halves.
 - A Brewfile learns which Mac it runs on only from `tools/macos/computer.rb`, loaded with
-  `require_relative "../macos/computer"`, and asks `air?`, `mini?` or `work?`. Homebrew clears
-  `COMPUTER` before it evaluates a Brewfile, so the helper asks `networksetup` itself, by the same
-  rule as `utils.bash`: `Air` and `Mini` are personal Macs and every other name is a work Mac.
-  `tools/macos/tests/test_computer.py` checks that the two agree and that no Brewfile asks
-  `networksetup` on its own.
+  `require_relative "../macos/computer"`, and asks `air?`, `mini?` or `work?`. Homebrew's
+  `bin/brew` re-runs itself under `env -i`, keeping only a short list of variables and every
+  `HOMEBREW_*` one, so `COMPUTER` never reaches a Brewfile. The helper therefore asks
+  `networksetup` itself, by the same rule as `utils.bash`: `Air` and `Mini` are personal Macs and
+  every other name is a work Mac. `tools/macos/tests/test_computer.py` checks three things. The
+  helper and `shell.zsh` map the same names to the same machines, and the helper agrees with
+  `utils.bash` on the Mac the tests run on. Every Brewfile evaluates on each machine, on its own
+  and combined. No Brewfile reads `networksetup`, `scutil`, `hostname` or `ENV`.
