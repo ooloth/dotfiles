@@ -14,9 +14,10 @@ agent failed in a specific way and the fix had to be something that runs, not so
 The same rules keep surfacing in different places: prove-it-works, the global instructions and
 write-pr-description each refuse to count a passing test suite as evidence that a change works.
 
-It all lives in [`tools/agents/config/`](./tools/agents/config), symlinked into both `~/.claude/`
-and `~/.agents/` so it belongs to no single harness and any agent that reads the shared location
-gets the same files.
+The skills and standards live in [`tools/agents/config/`](./tools/agents/config), symlinked into
+both `~/.claude/` and `~/.agents/` so they belong to no single harness and any agent that reads the
+shared location gets the same files. Claude Code's own global instructions, settings and subagent
+definitions live in [`tools/claude/config/`](./tools/claude/config), symlinked into `~/.claude/`.
 
 ### Standards
 

@@ -93,12 +93,12 @@
       "Bash(gh pr merge *)"
     ],
     "deny": [
-      "Bash(git push --force origin main:*)",
-      "Bash(git push --force origin master:*)",
-      "Bash(git push -f origin main:*)",
-      "Bash(git push -f origin master:*)",
-      "Bash(git reset --hard origin/main:*)",
-      "Bash(git reset --hard origin/master:*)",
+      "Bash(git push --force origin main *)",
+      "Bash(git push --force origin master *)",
+      "Bash(git push -f origin main *)",
+      "Bash(git push -f origin master *)",
+      "Bash(git reset --hard origin/main *)",
+      "Bash(git reset --hard origin/master *)",
       "Bash(op read *)",
       "Bash(op item get *)",
       "Bash(security find-generic-password *)",

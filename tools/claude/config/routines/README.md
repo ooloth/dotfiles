@@ -11,6 +11,13 @@ Workflow prompts invoked by [Claude Code Routines](https://code.claude.com/docs/
   repos and opens a PR ready for review for each. Scheduled daily.
 - `implement-issue.md` — single-issue implementation workflow. Called as a subprompt by
   `implement-ready-issues.md`; not run directly by any Routine.
+- `scan-ax-opportunities.md` — scans pre-cloned repos for gaps that make it hard for an AI agent
+  to contribute, filing GitHub issues for the top findings.
+- `scan-dx-opportunities.md` — scans pre-cloned repos for gaps that make it hard for a human
+  developer to understand the system and contribute to it, filing GitHub issues for the top
+  findings.
+- `scan-ux-opportunities.md` — scans pre-cloned repos for gaps in what users can accomplish with
+  the system, filing GitHub issues for the top findings.
 
 ## How a Routine invokes one
 
