@@ -44,6 +44,13 @@ and a failing check blocks the merge. A check that runs only on a developer's
 machine runs when that developer remembers to, so the main branch stays
 deployable only as long as everyone remembers.
 
+CI runs those checks by calling the same task-runner command a developer runs, such as
+`just check`, rather than naming each tool in the pipeline config. Two lists of checks drift
+apart: a check added to one is missing from the other, so a change can pass CI and fail on a
+laptop, or the reverse. With one list, a check added to it runs in CI with no pipeline change.
+Where CI needs a setting a laptop doesn't, such as a cap on test workers, it passes that setting
+to the same command instead of keeping its own copy of the list.
+
 **Each deployed version works alongside the version before it.**
 During a rollout, and after a rollback, old and new code run against the same
 data, config and callers. New code reads what old code wrote, and old code
