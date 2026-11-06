@@ -42,10 +42,26 @@ ARGOCD_SERVER_KEY = "PRIVATE_ARGOCD_SERVER"
 
 # Long enough for a slow token refresh, short enough that a hung check doesn't hold up the others
 CHECK_TIMEOUT_SECONDS = 30
+# What a shell reports for a command stopped by Ctrl-C (128 + SIGINT)
+INTERRUPTED_EXIT_CODE = 130
 
 # What argocd printed on this laptop when its refresh token had been revoked (invalid_grant) and when
 # the server rejected the session (Unauthenticated)
 ARGOCD_EXPIRED_MARKERS = ("invalid_grant", "code = Unauthenticated")
+# What gcloud prints when a login would fix the check, from the messages in the SDK's
+# googlecloudsdk/core/credentials and google/auth: a revoked or expired refresh token, a reauth it
+# can't prompt for, an account with no credentials, and no ADC file. An unreachable network prints
+# none of these.
+GCLOUD_EXPIRED_MARKERS = (
+    "invalid_grant",
+    "Reauthentication",
+    "reauthenticating",
+    "does not have any valid credentials",
+    "default credentials were not found",
+)
+# What spacectl 1.29 printed on this laptop with no profile, and what its binary prints when the
+# server rejects the token
+SPACECTL_EXPIRED_MARKERS = ("please login first", "failed to query user information: unauthorized")
 
 
 class Mode(Enum):
@@ -148,8 +164,13 @@ class SubprocessShell:
         return CheckResult(result.returncode, result.stdout, result.stderr)
 
     def attach(self, command: Command) -> int:
-        # The login shares this terminal, so its browser prompt and any questions reach the user
-        return subprocess.run(command, check=False).returncode
+        # The login shares this terminal, so its browser prompt and any questions reach the user.
+        # Ctrl-C stops only this login: the login gets the interrupt too, and the run goes on to
+        # check it again and to the next login.
+        try:
+            return subprocess.run(command, check=False).returncode
+        except KeyboardInterrupt:
+            return INTERRUPTED_EXIT_CODE
 
 
 def read_settings(environ: Mapping[str, str]) -> Settings:
@@ -157,9 +178,24 @@ def read_settings(environ: Mapping[str, str]) -> Settings:
     return Settings(argocd_server=ArgoServer(server) if server else None)
 
 
-def read_exit_code(result: CheckResult) -> Status:
-    """gcloud and spacectl exit non-zero once their credentials have expired."""
-    return Valid() if result.exit_code == 0 else Expired()
+def read_gcloud_token(result: CheckResult) -> Status:
+    """gcloud exits non-zero both when its credentials have expired and when it can't reach Google,
+    so only a failure naming the credentials counts as expired. Its first line holds the error."""
+    return read_failure(result, GCLOUD_EXPIRED_MARKERS, first_line(result.stderr))
+
+
+def read_spacectl_whoami(result: CheckResult) -> Status:
+    """spacectl exits non-zero both when it isn't logged in and when it can't reach Spacelift, so
+    only a failure naming the login counts as expired. Its last line holds the error."""
+    return read_failure(result, SPACECTL_EXPIRED_MARKERS, last_line(result.stderr))
+
+
+def read_failure(result: CheckResult, expired_markers: tuple[str, ...], error: str) -> Status:
+    if result.exit_code == 0:
+        return Valid()
+    if any(marker in result.stderr for marker in expired_markers):
+        return Expired()
+    return Unchecked(error or f"the check exited {result.exit_code}")
 
 
 def read_argocd_user_info(result: CheckResult) -> Status:
@@ -185,6 +221,11 @@ def read_argocd_user_info(result: CheckResult) -> Status:
             )
 
 
+def first_line(text: str) -> str:
+    lines = text.strip().splitlines()
+    return lines[0] if lines else ""
+
+
 def last_line(text: str) -> str:
     lines = text.strip().splitlines()
     return lines[-1] if lines else ""
@@ -204,24 +245,23 @@ def logins(settings: Settings) -> tuple[Login | Unconfigured, ...]:
                 read_status=read_argocd_user_info,
                 login=("argocd", "login", "--sso", "--grpc-web", server),
             )
-    # --quiet takes the default answer to the prompt gcloud shows after the browser step
     return (
         Login(
             name=LoginName("Google (recursion.com)"),
             check=("gcloud", "auth", "application-default", "print-access-token"),
-            read_status=read_exit_code,
-            login=("gcloud", "auth", "login", "--quiet", "--update-adc", INTERNAL_ACCOUNT),
+            read_status=read_gcloud_token,
+            login=("gcloud", "auth", "login", "--update-adc", INTERNAL_ACCOUNT),
         ),
         Login(
             name=LoginName("Google (rxrx.tech)"),
             check=("gcloud", "auth", "print-access-token", f"--account={EXTERNAL_ACCOUNT}"),
-            read_status=read_exit_code,
-            login=("gcloud", "auth", "login", "--quiet", "--no-activate", EXTERNAL_ACCOUNT),
+            read_status=read_gcloud_token,
+            login=("gcloud", "auth", "login", "--no-activate", EXTERNAL_ACCOUNT),
         ),
         Login(
             name=LoginName("Spacelift"),
             check=("spacectl", "whoami"),
-            read_status=read_exit_code,
+            read_status=read_spacectl_whoami,
             # --method skips the menu that asks which kind of login to use
             login=("spacectl", "profile", "login", "--method", "browser", SPACELIFT_ACCOUNT),
         ),
@@ -318,7 +358,12 @@ def read_mode(argv: list[str]) -> Mode:
 
 def main(argv: list[str]) -> int:
     mode = read_mode(argv)
-    outcomes = run(mode, logins(read_settings(os.environ)), SubprocessShell())
+    try:
+        outcomes = run(mode, logins(read_settings(os.environ)), SubprocessShell())
+    except KeyboardInterrupt:
+        # Reached only from a check, since each login catches its own Ctrl-C
+        print("\nStopped. Run `auth --check` to see where each login stands.", file=sys.stderr)
+        return INTERRUPTED_EXIT_CODE
     if any(outcome.after is not None for outcome in outcomes):
         print(file=sys.stderr)
     for outcome in outcomes:

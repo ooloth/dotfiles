@@ -58,7 +58,7 @@ if is_work; then
       debug "✅ gcloud credentials are valid"
     else
       warn "⚠️ gcloud reauthentication needed — opening browser to reauthenticate..."
-      gcloud auth login --quiet --update-adc michael.uloth@recursion.com
+      gcloud auth login --update-adc michael.uloth@recursion.com
     fi
 
     # Point to Vertex AI for this session only

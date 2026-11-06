@@ -12,9 +12,9 @@ It checks these all at once, then logs in to the expired ones one at a time:
 
 - **Google (recursion.com), with ADC:** checks with
   `gcloud auth application-default print-access-token` and logs in with
-  `gcloud auth login --quiet --update-adc <account>`.
+  `gcloud auth login --update-adc <account>`.
 - **Google (rxrx.tech):** checks with `gcloud auth print-access-token --account=<account>` and logs
-  in with `gcloud auth login --quiet --no-activate <account>`.
+  in with `gcloud auth login --no-activate <account>`.
 - **Spacelift:** checks with `spacectl whoami` and logs in with
   `spacectl profile login --method browser recursion`.
 - **Argo CD:** checks with
@@ -31,8 +31,13 @@ when every login ends up valid, so `auth && <command>` runs the command only onc
   script reads its `loggedIn` field. A failure that names a revoked token (`invalid_grant`) or a
   rejected session (`code = Unauthenticated`) also counts as expired. Any other failure, such as
   an unreachable server, is reported as not checked and its login is not run.
-- **`--quiet`** answers the Y/n prompt gcloud shows after the browser step with its default, and
-  **`--method browser`** skips Spacelift's menu asking which kind of login to use.
+- **gcloud and spacectl exit non-zero both when a login has expired and when the network or the
+  service is down**, so the script reads what they print. Only a message naming the credentials,
+  such as `Reauthentication required`, `invalid_grant` or `please login first`, counts as expired.
+  Any other failure is reported as not checked, so a dropped VPN opens no browser logins.
+- **`--method browser`** skips Spacelift's menu asking which kind of login to use.
+- **Ctrl-C during a login** stops only that login. `auth` checks it again and goes on to the next
+  one, then prints the summary.
 - **Pomerium** is left out: `griphook` has no command that reports whether a session is still valid.
 - **No packages:** the script uses only the standard library and the alias runs it with
   `uv run --offline`. Then uv never reaches the work package index, which needs the very Google
