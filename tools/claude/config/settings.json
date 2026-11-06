@@ -11,8 +11,20 @@
     "lua-lsp@claude-plugins-official": false
   },
   "env": {
-    "CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE": "1"
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5-5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-5-5",
+    "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD": "1",
+    "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "1",
+    "CLAUDE_CODE_ENABLE_TASKS": "0",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
+    "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION": "999",
+    "CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE": "1",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_TELEMETRY": "1"
   },
+  "model": "opus",
   "feedbackSurveyState": {
     "lastShownTime": 1754054339526
   },

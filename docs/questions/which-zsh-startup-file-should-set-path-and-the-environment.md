@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-25
+updated: 2026-11-06
 update_when: a zsh startup file changes what it sets, or another program is found that starts zsh without reading .zshrc
 decays: fast
 status: open
@@ -57,6 +57,13 @@ first live run showed `zsh:1: command not found: lazygit` in the new pane.
 ## Findings
 
 Nothing here is settled until it graduates into a decision record.
+
+- *Measured (2026-11-06, this Mac):* a Claude Code session the Rex launcher
+  (`tools/rex/claude-tab.bash`) opened had none of the variables `tools/claude/shell.zsh` exported,
+  such as `ANTHROPIC_MODEL`, because that file is sourced from `.zshrc`. The Claude Code settings
+  that are the same on every machine moved to the `env` block and `model` key of
+  `tools/claude/config/settings.json`, which Claude Code reads however it starts. That covers Claude
+  Code without any of the options above; only what differs by machine still depends on `.zshrc`.
 
 - *Measured (2026-10-25, this Mac):* a lazygit block that Rex started with no `shell` option
   showed `zsh:1: command not found: lazygit`. The same block, started with `shell = "none"` and
