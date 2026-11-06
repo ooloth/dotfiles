@@ -15,7 +15,8 @@ The script reads the PR from GitHub and refuses unless all of these hold:
   dismissed: a push to an approved PR never undoes its approval. The repo owner's own PR, merged
   by the owner, needs no approval, because GitHub never lets an author approve their own PR and
   on a personal repo nobody else can
-- every check on the head passed
+- every check on the head passed, and a head with no checks at all comes from a repo whose recent
+  merged PRs ran none either: CI is respected where it exists, and a repo without CI can still merge
 - GitHub says it can merge
 
 A check still running is a wait, not a refusal: when the running checks are all that stands
@@ -55,6 +56,10 @@ MergeMethod = Literal["squash", "merge", "rebase"]
 
 PR_FIELDS = "state,isDraft,author,headRefOid,mergeStateStatus,reviews,statusCheckRollup"
 REPO_FIELDS = "squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed"
+# How many recent merged PRs show whether a repo runs CI at all. One that ran a check is enough to
+# say it does, so a head with no checks there is a head CI skipped, not a repo without CI. Five keeps
+# a repo that drops its CI to five merges by hand before the gate lets its PRs through again.
+CI_HISTORY_SAMPLE = 5
 PASSING_CONCLUSIONS = {"SUCCESS", "NEUTRAL", "SKIPPED"}
 RUNNING_CONTEXT_STATES = {"PENDING", "EXPECTED"}
 MERGEABLE_STATES = {"CLEAN", "HAS_HOOKS"}
@@ -103,6 +108,11 @@ class _PullRequest(_Answer):
     statusCheckRollup: list[_Check] | None = None
 
 
+class _MergedPullRequest(_Answer):
+    number: int
+    statusCheckRollup: list[_Check] | None = None
+
+
 class _Repo(_Answer):
     squashMergeAllowed: bool
     mergeCommitAllowed: bool
@@ -140,6 +150,21 @@ class PullRequestState:
     def is_owners_own_pr_merged_by(self, viewer: GitHubLogin) -> bool:
         owner = self.repo.split("/")[0].lower()
         return self.author.lower() == owner and viewer.lower() == owner
+
+
+@dataclass(frozen=True)
+class CiHistory:
+    """How many of the repo's most recent merged PRs ran any check."""
+
+    sampled: int
+    with_checks: int
+
+    def __post_init__(self) -> None:
+        assert 0 <= self.with_checks <= self.sampled, f"impossible CI history {self}"
+
+    @property
+    def runs_no_ci(self) -> bool:
+        return self.sampled > 0 and self.with_checks == 0
 
 
 @dataclass(frozen=True)
@@ -182,7 +207,7 @@ class CheckRunning:
 
 @dataclass(frozen=True)
 class NoChecks:
-    pass
+    history: CiHistory
 
 
 @dataclass(frozen=True)
@@ -212,6 +237,8 @@ Refusal = (
 @dataclass(frozen=True)
 class Ready:
     method: MergeMethod
+    # Set when the head ran no checks, so the caller can say why that was allowed.
+    without_ci: CiHistory | None = None
 
 
 @dataclass(frozen=True)
@@ -282,6 +309,11 @@ def parse_pull_request(
     )
 
 
+def parse_ci_history(raw: list[dict[str, Any]]) -> CiHistory:
+    prs = [_MergedPullRequest.model_validate(item) for item in raw]
+    return CiHistory(len(prs), sum(1 for pr in prs if pr.statusCheckRollup))
+
+
 def _check(raw: _Check) -> Check:
     name = raw.name or raw.context or "(unnamed check)"
     if raw.context is not None and raw.name is None:
@@ -296,7 +328,13 @@ def _check(raw: _Check) -> Check:
 # Judging
 
 
-def judge(state: PullRequestState, checked_head: CommitSha, viewer: GitHubLogin) -> Verdict:
+def judge(
+    state: PullRequestState,
+    checked_head: CommitSha,
+    viewer: GitHubLogin,
+    history: CiHistory | None = None,
+) -> Verdict:
+    """Judge the PR. `history` is read only for a head with no checks; None means it wasn't."""
     refusals: list[Refusal] = []
     if state.head != checked_head:
         refusals.append(HeadMoved(checked_head, state.head))
@@ -307,8 +345,13 @@ def judge(state: PullRequestState, checked_head: CommitSha, viewer: GitHubLogin)
     if not state.approved_by and not state.is_owners_own_pr_merged_by(viewer):
         refusals.append(NoApproval())
     refusals.extend(ChangesRequested(by) for by in state.changes_requested_by)
+    without_ci: CiHistory | None = None
     if not state.checks:
-        refusals.append(NoChecks())
+        assert history is not None, "a head with no checks judged without the repo's CI history"
+        if history.runs_no_ci:
+            without_ci = history
+        else:
+            refusals.append(NoChecks(history))
     running = [CheckRunning(c.name, c.shown_state) for c in state.checks if c.running]
     refusals.extend(running)
     refusals.extend(
@@ -319,7 +362,7 @@ def judge(state: PullRequestState, checked_head: CommitSha, viewer: GitHubLogin)
     if not state.allowed_methods:
         refusals.append(NoAllowedMethod())
     if not refusals:
-        return Ready(state.allowed_methods[0])
+        return Ready(state.allowed_methods[0], without_ci)
     waits = [
         r
         for r in refusals
@@ -360,8 +403,13 @@ def describe(refusal: Refusal) -> str:
             return f"check {name!r} has not passed ({state})"
         case CheckRunning(name, state):
             return f"check {name!r} is still running ({state})"
-        case NoChecks():
-            return "no checks ran on the head"
+        case NoChecks(CiHistory(sampled=0)):
+            return "no checks ran on the head, and the repo has no merged PR to show it runs no CI"
+        case NoChecks(CiHistory(sampled, with_checks)):
+            return (
+                f"no checks ran on the head, though {with_checks} of the repo's last {sampled}"
+                " merged PRs ran checks"
+            )
         case NotMergeable(merge_state):
             return f"GitHub says it can't merge yet ({merge_state})"
         case NoAllowedMethod():
@@ -381,6 +429,19 @@ def gh(*args: str) -> subprocess.CompletedProcess[str]:
 class Reading:
     state: PullRequestState
     viewer: GitHubLogin
+
+
+def read_ci_history(repo: RepoSlug) -> CiHistory | ReadFailed:
+    call = gh(
+        "pr", "list", "-R", repo, "--state", "merged", "--limit", str(CI_HISTORY_SAMPLE),
+        "--json", "number,statusCheckRollup",
+    )  # fmt: skip
+    if call.returncode != 0:
+        return ReadFailed("gh pr list", call.stderr.strip())
+    try:
+        return parse_ci_history(json.loads(call.stdout))
+    except (json.JSONDecodeError, ValidationError) as error:
+        return ReadFailed("parsing GitHub's merged PRs", str(error).splitlines()[0])
 
 
 def read(pr: str, repo: RepoSlug) -> Reading | ReadFailed:
@@ -441,7 +502,14 @@ def main(argv: list[str]) -> int:
         print(f"merge.py: {reading.call} failed: {reading.message}", file=sys.stderr)
         return 2
     state, viewer = reading.state, reading.viewer
-    verdict = judge(state, head, viewer)
+    history: CiHistory | None = None
+    if not state.checks:
+        read_history = read_ci_history(repo)
+        if isinstance(read_history, ReadFailed):
+            print(f"merge.py: {read_history.call} failed: {read_history.message}", file=sys.stderr)
+            return 2
+        history = read_history
+    verdict = judge(state, head, viewer, history)
     if not state.approved_by and state.is_owners_own_pr_merged_by(viewer):
         print(f"No approval needed: {viewer} owns {repo} and opened #{args.pr}")
     match verdict:
@@ -455,11 +523,12 @@ def main(argv: list[str]) -> int:
             for wait in waits:
                 print(f"- {describe(wait)}")
             return 3
-        case Ready(method) if args.check_only:
+        case Ready(method, without_ci) if args.check_only:
             print(f"Ready to merge #{args.pr} at {head} with {method}. Nothing was merged.")
+            _say_without_ci(without_ci)
             return 0
-        case Ready(method):
-            pass
+        case Ready(method, without_ci):
+            _say_without_ci(without_ci)
         case _:
             assert_never(verdict)
     outcome = merge(args.pr, repo, method, head)
@@ -472,6 +541,14 @@ def main(argv: list[str]) -> int:
             return 1
         case _:
             assert_never(outcome)
+
+
+def _say_without_ci(history: CiHistory | None) -> None:
+    if history is not None:
+        print(
+            f"No checks ran on the head, and none of the repo's last {history.sampled} merged PRs"
+            " ran a check, so the repo runs no CI."
+        )
 
 
 if __name__ == "__main__":

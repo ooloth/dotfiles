@@ -13,7 +13,8 @@ status: open
 are run to Python over time, and the approach on #203 keeps every crossing between bash and Python
 a process start: a ported step is started from wherever its bash version was. So every caller
 needs a way to start one of the repo's Python entry points. The callers are bash runners such as
-`u`, zsh aliases such as `symlinks`, `check` and `cc`, the hook in
+`u`, zsh aliases such as `symlinks`, `check` and `cc` (which still run bash) and `auth` and
+`secret` (which start their scripts with `uv run --offline <path>`), the hook in
 `tools/claude/config/settings.json`, the CI workflow,
 Amp orbs running `scripts/check.bash` on Debian, and the instruction in
 `tools/claude/config/CLAUDE.md` that starts `cc.bash`. Without one stated command, each sub-issue

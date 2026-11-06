@@ -128,7 +128,8 @@ number. Each question appears once, in that list, at the end of the response. Ev
 raised anywhere in the response, including ones asked in passing in an explanation, is repeated in
 that list, so answering the list answers everything still open. Phrase each so a bare "yes" has one
 meaning: a yes/no question, or a choice between lettered options with your recommended letter
-named, which "yes" accepts.
+named, which "yes" accepts. A response that asks numbered questions contains no other numbered
+list, because the terminal continues an earlier list's numbering into the questions.
 
 If your thinking later leads you to modify the approved plan (e.g. want to make new design
 decisions), triage the change as the next paragraph describes. One that holds a test stops for

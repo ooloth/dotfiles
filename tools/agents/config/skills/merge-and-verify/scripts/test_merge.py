@@ -82,6 +82,20 @@ def pull_request(**overrides: Any) -> dict[str, Any]:
 
 SQUASH_ONLY = {"squashMergeAllowed": True, "mergeCommitAllowed": False, "rebaseMergeAllowed": False}
 
+
+def merged_history(*check_counts: int) -> list[dict[str, Any]]:
+    """Recent merged PRs shaped like `gh pr list --state merged --json number,statusCheckRollup`."""
+    return [
+        {"number": 300 - i, "statusCheckRollup": [check_run(f"ci-{j}") for j in range(n)]}
+        for i, n in enumerate(check_counts)
+    ]
+
+
+# A repo whose merged PRs ran CI, so a head with no checks is a head CI skipped.
+RUNS_CI = merged_history(2, 2, 0, 2)
+# A repo none of whose recent merged PRs ran any check: a repo with no CI at all.
+RUNS_NO_CI = merged_history(0, 0, 0, 0, 0)
+
 FAKE_GH = """#!/bin/sh
 printf '%s\\n' "$*" >> "$GH_CALLS"
 case "$*" in
@@ -91,6 +105,7 @@ case "$*" in
   "pr view"*) if [ -n "$GH_READ_FAIL" ]; then echo "HTTP 502" >&2; exit 1; fi; cat "$GH_PR" ;;
   "repo view"*) cat "$GH_REPO" ;;
   "api user"*) if [ -n "$GH_USER_FAIL" ]; then echo "HTTP 401" >&2; exit 1; fi; echo "$GH_VIEWER" ;;
+  "pr list"*) if [ -n "$GH_HISTORY_FAIL" ]; then echo "HTTP 502" >&2; exit 1; fi; cat "$GH_HISTORY" ;;
   *) echo "unexpected gh call: $*" >&2; exit 9 ;;
 esac
 """
@@ -107,6 +122,7 @@ class Harness:
         self.calls = tmp_path / "gh_calls"
         self.pr = tmp_path / "pr.json"
         self.repo = tmp_path / "repo.json"
+        self.history = tmp_path / "history.json"
         merged = tmp_path / "merged.json"
         merged.write_text(json.dumps({"mergeCommit": {"oid": MERGED}}))
         self.env = {
@@ -115,6 +131,7 @@ class Harness:
             "GH_CALLS": str(self.calls),
             "GH_PR": str(self.pr),
             "GH_REPO": str(self.repo),
+            "GH_HISTORY": str(self.history),
             "GH_MERGED": str(merged),
             "GH_VIEWER": VIEWER,
         }
@@ -124,12 +141,14 @@ class Harness:
         pr: dict[str, Any],
         *extra: str,
         repo: dict[str, Any] = SQUASH_ONLY,
+        history: list[dict[str, Any]] = RUNS_CI,
         head: str = HEAD,
         env: dict[str, str] | None = None,
         repo_slug: str = REPO,
     ) -> subprocess.CompletedProcess[str]:
         self.pr.write_text(json.dumps(pr))
         self.repo.write_text(json.dumps(repo))
+        self.history.write_text(json.dumps(history))
         return subprocess.run(
             [sys.executable, str(SCRIPT), PR, "--repo", repo_slug, "--head", head, *extra],
             check=False,
@@ -137,6 +156,11 @@ class Harness:
             text=True,
             env={**self.env, **(env or {})},
         )
+
+    def history_calls(self) -> list[str]:
+        if not self.calls.exists():
+            return []
+        return [c for c in self.calls.read_text().splitlines() if c.startswith("pr list")]
 
     def merge_calls(self) -> list[str]:
         if not self.calls.exists():
@@ -240,6 +264,69 @@ def test_a_failed_or_missing_check_is_refused(
     assert result.returncode == 1
     assert h.merge_calls() == []
     assert named in result.stdout
+
+
+def test_a_head_with_no_checks_merges_when_the_repos_recent_merged_prs_ran_none(
+    h: Harness,
+) -> None:
+    result = h.run(pull_request(statusCheckRollup=[]), history=RUNS_NO_CI)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert h.merge_calls() == [f"pr merge {PR} -R {REPO} --squash --match-head-commit {HEAD}"]
+    assert "none of the repo's last 5 merged PRs ran a check" in result.stdout
+
+
+def test_a_head_with_no_checks_is_refused_when_recent_merged_prs_ran_checks(h: Harness) -> None:
+    result = h.run(pull_request(statusCheckRollup=[]), history=RUNS_CI)
+
+    assert result.returncode == 1
+    assert h.merge_calls() == []
+    assert "3 of the repo's last 4 merged PRs ran checks" in result.stdout
+
+
+def test_a_head_with_no_checks_is_refused_when_the_repo_has_no_merged_pr_to_compare(
+    h: Harness,
+) -> None:
+    result = h.run(pull_request(statusCheckRollup=[]), history=[])
+
+    assert result.returncode == 1
+    assert h.merge_calls() == []
+    assert "no merged PR" in result.stdout
+
+
+def test_a_failed_read_of_merged_prs_exits_2_and_merges_nothing(h: Harness) -> None:
+    result = h.run(
+        pull_request(statusCheckRollup=[]), history=RUNS_NO_CI, env={"GH_HISTORY_FAIL": "1"}
+    )
+
+    assert result.returncode == 2
+    assert h.merge_calls() == []
+
+
+def test_a_head_with_no_checks_reads_only_the_five_most_recent_merged_prs(h: Harness) -> None:
+    # Five, so a repo that drops its CI can merge through the gate again after five merges by
+    # hand, while one whose CI ran on any of those five is still taken to run CI.
+    h.run(pull_request(statusCheckRollup=[]), history=RUNS_NO_CI)
+
+    assert len(h.history_calls()) == 1
+    assert "--state merged --limit 5 " in h.history_calls()[0]
+
+
+def test_a_head_with_checks_never_reads_merged_prs(h: Harness) -> None:
+    result = h.run(pull_request(), history=RUNS_NO_CI)
+
+    assert result.returncode == 0, result.stderr
+    assert h.history_calls() == []
+
+
+def test_a_failing_check_is_refused_even_when_recent_merged_prs_ran_none(h: Harness) -> None:
+    result = h.run(
+        pull_request(statusCheckRollup=[check_run("tests", conclusion="FAILURE")]),
+        history=RUNS_NO_CI,
+    )
+
+    assert result.returncode == 1
+    assert h.merge_calls() == []
 
 
 @pytest.mark.parametrize(

@@ -87,14 +87,14 @@ https://github.com/ankitpokhrel/jira-cli/wiki/Installation#homebrew
      ([Get all boards](https://developer.atlassian.com/cloud/jira/software/rest/api-group-board/)).
      A scope cannot be added to a token later. The token expires within a year, so note the date.
 
-3. Copy the token, store it in the login keychain from the clipboard, then clear the clipboard.
-   The interactive prompt (`-w` with nothing after it) keeps only the first 128 characters, which
-   cuts the token off. `$(pbpaste)` keeps the token out of shell history:
+3. Store the token in the login keychain as the item jira-cli looks up, and paste it at the hidden
+   prompt (see `features/secret/README.md`):
 
    ```sh
-   security add-generic-password -a <your-work-email> -s jira-cli -w "$(pbpaste)"
-   pbcopy < /dev/null
+   secret add jira-cli --account <your-work-email>
    ```
+
+   The command prints how many characters it stored, so check that against the token's length.
 
 4. Point jira-cli at Atlassian's API gateway rather than the site:
 
@@ -104,8 +104,8 @@ https://github.com/ankitpokhrel/jira-cli/wiki/Installation#homebrew
 
 5. Run `jira me`, choose "Always Allow" at the keychain prompt, and expect your email back.
 
-To replace an expired token, create a new one and run step 3 with `-U` added, which updates the
-existing item.
+To replace an expired token, create a new one and run step 3 again, which replaces the stored
+value.
 
 ### Why it is set up this way
 

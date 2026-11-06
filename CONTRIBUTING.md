@@ -1,5 +1,14 @@
 # Contributing
 
+A new script that is run, rather than sourced, is written in Python
+([decision 007](docs/decisions/007-scripts-that-are-run-are-written-in-python.md)): for now a
+single-file uv script, as decision 008's addendum allows until the root project exists. Two kinds
+stay in shell, as decision 007 and its addendum say:
+
+- **Scripts `u` and setup find by file name:** a tool's `install.bash`, `update.bash`, `link.bash`
+  and `preflight.bash`. The runners look only for those names, so an `update.py` would never run.
+- **The first step of setup on a new Mac**, which runs before Python is installed.
+
 ## Check a change
 
 ```sh
@@ -47,8 +56,11 @@ On a work laptop, uv installs packages through the work Artifact Registry index 
 `check`, log in:
 
 ```sh
-gcloud auth login <you>@recursion.com --update-adc
+gcloud auth login --update-adc <you>@recursion.com
 ```
+
+On the work laptop, `auth` runs this login along with the other work logins, and only for the ones
+that have expired (see `features/auth/README.md`).
 
 Without it, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. The managed
 config names that index as the only default, so uv resolves packages only through it unless a
