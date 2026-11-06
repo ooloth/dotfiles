@@ -68,6 +68,31 @@ failing one says what broke. Without this, a system nobody is assigned to falls
 further behind every month, and the eventual upgrade is one large change made
 under pressure, usually because a vulnerability forced it.
 
+**Proposed updates are batched, held back for a few days, and separated by how risky they are.**
+An update tool left at its defaults opens one change per package as soon as each release appears.
+That is more changes than anyone reviews, and each release is adopted before there has been time to
+find out it was compromised. So version updates arrive at most monthly, and only for releases at
+least 7 days old. Minor and patch updates arrive as one grouped change per ecosystem. Each major
+opens as its own change, so one breaking upgrade cannot hold back the rest, and the limit on open
+changes leaves room for them beside the group. Packages that only work at matching versions, such as
+a framework and its lint config, get a group of their own that takes majors too, so they never
+arrive half-upgraded. Dependabot's security updates ignore the version-update groups and would open
+one change per package, so they get groups of their own, limited to minor and patch for the same
+reason. Code that is kept but not run, so that it can be turned back on, gets security updates only,
+with version updates turned off.
+
+*Sourced: Dependabot's options reference for `cooldown`, `groups`, `applies-to` and
+`open-pull-requests-limit`. Security-update groups have not yet been seen working in a repo with
+this config, because none of these repos has had a security-update job run since its config
+merged.*
+
+**CI actions are pinned to a full commit SHA, and the repository requires it.**
+A tag such as `v4` can be moved to point at different code, and the workflow then runs that code
+with the workflow's token. Pinning each action to a commit SHA fixes the code that runs, and the
+update tool proposes each new pin as an ordinary update. Once every workflow is pinned, the
+repository setting that requires pinning is turned on, so an unpinned action added later fails its
+run instead of slipping through.
+
 **The platforms the system runs on are within their support period, and their end dates are
 known.**
 The language runtime, the OS or base image, the cluster version and each
