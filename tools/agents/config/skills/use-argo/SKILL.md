@@ -15,8 +15,12 @@ Always ask which environment (dev or prod) before running commands if not specif
 **Tokens expire daily.** On any auth error, re-authenticate automatically without asking the user:
 
 ```bash
-argocd login <dev-server> --sso
+argocd login <server> --sso --grpc-web
 ```
+
+On the work laptop, `auth` runs this same login for the server in `PRIVATE_ARGOCD_SERVER`, along
+with the other work logins, and only for the ones that have expired. Run `auth` when that is the
+server you need.
 
 ## Common Commands
 

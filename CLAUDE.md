@@ -37,9 +37,11 @@ See README.md for the overview. Key points for Claude:
   defines their aliases. A new script that is run is written in Python, per decision 007, except
   the ones `CONTRIBUTING.md` names; most existing ones are still bash until #127 and #203 port them.
 - `u` runs `features/update/tools.bash`. It first runs `features/update/preflight.bash`, which
-  checks every tool's `preflight.bash` and stops `u` if one fails. Then it updates the symlinks
-  (`features/update/symlinks.bash`) and runs each tool's `update.bash`. The `symlinks` alias
-  runs only the symlink step.
+  checks every tool's `preflight.bash` and stops `u` if one fails. Then it sets executable
+  permissions (`features/update/mode.bash`), updates the symlinks
+  (`features/update/symlinks.bash`), runs the `update.bash` of uv, node, claude and homebrew in
+  that order, and then every other tool's `update.bash`. The `symlinks` alias runs only the
+  symlink step.
 - First-time setup on a new Mac is `features/setup/setup.zsh`, which sources the zsh scripts in
   `features/install/zsh/`, several of them under `deprecated/`. #127 replaces it, in Python except
   where decision 007 keeps shell. How a fresh Mac gets uv and Python before that first script is
