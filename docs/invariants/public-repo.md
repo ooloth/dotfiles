@@ -7,7 +7,8 @@ Facts about what this repository may contain, because it is public on GitHub.
   colleague or their GitHub handle. A file's path counts as much as its contents, and so do
   examples, test fixtures, comments and archived files. Names that are already public, such as the
   employer, its GitHub org, the tools it uses and the work email, are not private values. Neither
-  are the names of my own repos under `ooloth`, private ones included.
+  are the names of my own repos under `ooloth`, private ones included. A SaaS account name or
+  tenant subdomain is a private value, even when it matches the employer's name.
 - A value a tracked file needs lives in the ignored `private.env` at the repo root, as a
   `PRIVATE_*` key, and the tracked file reads it from the environment. `private.env.example` lists
   each key with a made-up value and a `# read by:` line naming what reads it. The one older ignored

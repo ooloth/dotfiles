@@ -68,7 +68,8 @@ observations about typical practice.
   `bin/brew` re-runs itself under `env -i`, keeping only a short list of variables and every
   `HOMEBREW_*` one, so `COMPUTER` never reaches a Brewfile. The helper therefore asks
   `networksetup` itself, by the same rule as `utils.bash`: `Air` and `Mini` are personal Macs and
-  every other name is a work Mac. `tools/macos/tests/test_computer.py` checks three things. The
+  every other name is a work Mac. `tools/macos/tests/test_computer.py` checks four things. The
   helper and `shell.zsh` map the same names to the same machines, and the helper agrees with
   `utils.bash` on the Mac the tests run on. Every Brewfile evaluates on each machine, on its own
-  and combined. No Brewfile reads `networksetup`, `scutil`, `hostname` or `ENV`.
+  and combined. Every Brewfile that asks `air?`, `mini?` or `work?` loads the helper. No Brewfile
+  reads `networksetup`, `scutil`, `hostname` or `ENV`.
