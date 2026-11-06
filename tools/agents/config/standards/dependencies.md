@@ -77,14 +77,17 @@ opens as its own change, so one breaking upgrade cannot hold back the rest, and 
 changes leaves room for them beside the group. Packages that only work at matching versions, such as
 a framework and its lint config, get a group of their own that takes majors too, so they never
 arrive half-upgraded. Dependabot's security updates ignore the version-update groups and would open
-one change per package, so they get groups of their own, limited to minor and patch for the same
-reason. Code that is kept but not run, so that it can be turned back on, gets security updates only,
-with version updates turned off.
+one change per package, so they get groups of their own. Those take every update type, because
+Dependabot decides whether an update fits a group from the package's newest release rather than
+from its fix, so a group limited to minor and patch splits off any fix for a package with a newer
+major. The cost is that a breaking fix can hold up the others in that change. Code that is kept but
+not run, so that it can be turned back on, gets security updates only, with version updates turned
+off.
 
 *Sourced: Dependabot's options reference for `cooldown`, `groups`, `applies-to` and
-`open-pull-requests-limit`. Security-update groups have not yet been seen working in a repo with
-this config, because none of these repos has had a security-update job run since its config
-merged.*
+`open-pull-requests-limit`, and `SemverGroupingRules` in dependabot-core for how a security
+update's type is judged. Security-update groups have not yet been seen working in a repo with this
+config, because none of these repos has had a security-update job run since its config merged.*
 
 **CI actions are pinned to a full commit SHA, and the repository requires it.**
 A tag such as `v4` can be moved to point at different code, and the workflow then runs that code
@@ -92,6 +95,10 @@ with the workflow's token. Pinning each action to a commit SHA fixes the code th
 update tool proposes each new pin as an ordinary update. Once every workflow is pinned, the
 repository setting that requires pinning is turned on, so an unpinned action added later fails its
 run instead of slipping through.
+Dependabot creates no security alerts for actions pinned to a SHA, so their fixes arrive as version
+updates, and a security-update group for actions never opens a change.
+
+*Sourced: GitHub's "Secure use" reference for Actions.*
 
 **The platforms the system runs on are within their support period, and their end dates are
 known.**

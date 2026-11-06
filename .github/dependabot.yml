@@ -3,9 +3,8 @@
 # Version updates arrive at most monthly, and only for releases at least 7 days old, so a
 # compromised release has time to be found and pulled. Minor and patch updates are grouped into
 # one PR. Majors open as their own PRs, so one breaking upgrade cannot block the rest, and the PR
-# limit leaves room for them beside the group. Security updates ignore the version-update groups
-# and would open one PR per action, so they get their own group, which also leaves majors to their
-# own PRs.
+# limit leaves room for them beside the group. GitHub raises no security alerts for actions pinned
+# to a SHA, so there is no security-update group, and fixes to actions arrive as version updates.
 #
 # Dependabot covers only the actions. It does not read the ruff and ty versions pinned in
 # scripts/checks/versions.bash or the dependencies in each uv script's inline header, so those are
@@ -23,9 +22,5 @@ updates:
     groups:
       actions:
         applies-to: version-updates
-        patterns: ['*']
-        update-types: [minor, patch]
-      actions-security:
-        applies-to: security-updates
         patterns: ['*']
         update-types: [minor, patch]
