@@ -1,8 +1,7 @@
 # NOTE: ruby works in this file, so feel free to use it for conditional logic, etc
 # see: https://github.com/Homebrew/homebrew-bundle
 
-# Execute the `networksetup` command in a subshell and remove the trailing '\n'
-computer_name = `networksetup -getcomputername`.chomp
+require_relative "../macos/computer"
 
 cask "visual-studio-code"
 
@@ -86,13 +85,13 @@ vscode "vspacecode.whichkey"
 vscode "wayou.vscode-todo-highlight"
 vscode "xadillax.viml"
 
-if computer_name == "Air"
+if air?
   vscode "denoland.vscode-deno" # for deno
   vscode "golang.go"
   vscode "vadimcn.vscode-lldb" # for debugging rust, go and other compiled languages
 end
 
-if computer_name == "7385-Y3FH97X-MAC" || computer_name == "MULO-JQ97NW-MBP"
+if work?
   vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
   vscode "ms-python.black-formatter"
   vscode "ms-python.flake8"

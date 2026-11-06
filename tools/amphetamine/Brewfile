@@ -1,6 +1,6 @@
-computer_name = `networksetup -getcomputername`.chomp
+require_relative "../macos/computer"
 
 # The work sudo policy blocks mas installs and upgrades
-unless ["7385-Y3FH97X-MAC", "MULO-JQ97NW-MBP"].include?(computer_name)
+unless work?
   mas "Amphetamine", id: 937984704
 end
