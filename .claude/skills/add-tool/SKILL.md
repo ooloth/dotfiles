@@ -36,8 +36,8 @@ that `tools/homebrew/update.bash` generates and bundles, so it needs no `utils.b
 `install.bash` only for setup brew can't do, as `tools/neovim/install.bash` clones its config repo.
 
 **Non-brew tool** (npm/bun/uv/cargo or a custom script): needs `utils.bash`, `install.bash` and
-`update.bash`, as in steps 3-5. Decision 007 makes new scripts that are run Python, and these bash
-templates predate it, so ask the user before writing a new bash script from them.
+`update.bash`, as in steps 3-5. These stay in bash, because `u` and setup find them by file name
+(decision 007's addendum), so write them from the templates.
 
 **Either kind with config** (has config files to symlink): also needs `link.bash` and a `config/`
 directory. Examples: `claude`, `neovim`, `git`

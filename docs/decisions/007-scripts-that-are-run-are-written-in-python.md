@@ -2,6 +2,7 @@
 number: 007
 status: accepted
 date: 2026-10-25
+amended: 2026-11-05
 ---
 
 # 007 — Scripts that are run, not sourced, are written in Python
@@ -66,5 +67,14 @@ first runs.
 - [x] the language question is narrowed to how the Python is set up and bootstrapped
 - [x] `../questions/which-bash-version-must-this-repos-scripts-support.md` refers to this record
 - [x] `CLAUDE.md` and `CONTRIBUTING.md` say new scripts that are run are written in Python
+
+## Addendum (2026-11-05) — scripts the runners find by file name stay in bash for now
+
+`u` and setup find a tool's scripts by exact file name: `features/install/tools.bash` runs each
+`install.bash`, `features/update/tools.bash` each `update.bash`, `features/update/symlinks.bash`
+each `link.bash`, and `features/update/preflight.bash` each `preflight.bash`. A Python script in
+one of those roles would never run. So a new script in one of them is written in bash, from the
+`tools/@new` template, until the runner that finds it also finds a Python script. Teaching a runner
+that is part of moving the existing bash to Python.
 
 [boot]: ../questions/how-does-a-fresh-mac-get-uv-and-python-before-the-first-script-needs-them.md
