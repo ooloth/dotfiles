@@ -20,7 +20,7 @@ It checks these all at once, then logs in to the expired ones one at a time:
 - **Google (rxrx.tech):** checks with `gcloud auth print-access-token --account=<account>` and logs
   in with `gcloud auth login --no-activate <account>`.
 - **Spacelift:** checks with `spacectl whoami` and logs in with
-  `spacectl profile login --method browser recursion`.
+  `spacectl profile login --method browser --endpoint https://recursion.app.spacelift.io/ recursion`.
 - **Argo CD:** checks with
   `argocd account get-user-info --grpc-web --output json --server <server>` and logs in with
   `argocd login --sso --grpc-web <server>`.
@@ -39,7 +39,9 @@ when every login ends up valid, so `auth && <command>` runs the command only onc
   service is down**, so the script reads what they print. Only a message naming the credentials,
   such as `Reauthentication required`, `invalid_grant` or `please login first`, counts as expired.
   Any other failure is reported as not checked, so a dropped VPN opens no browser logins.
-- **`--method browser`** skips Spacelift's menu asking which kind of login to use.
+- **`--method browser`** skips Spacelift's menu asking which kind of login to use, and
+  **`--endpoint`** skips its prompt for the account's URL, which it asks for even when the profile
+  already has one.
 - **Ctrl-C during a login** stops only that login. `auth` checks it again and goes on to the next
   one, then prints the summary.
 - **Pomerium** is left out: `griphook` has no command that reports whether a session is still valid.

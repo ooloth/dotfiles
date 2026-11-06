@@ -407,7 +407,8 @@ class EndToEnd(unittest.TestCase):
             [
                 "gcloud auth login --update-adc michael.uloth@recursion.com",
                 "gcloud auth login --no-activate michael.uloth@rxrx.tech",
-                "spacectl profile login --method browser recursion",
+                "spacectl profile login --method browser"
+                " --endpoint https://recursion.app.spacelift.io/ recursion",
                 "argocd login --sso --grpc-web cd.example.com",
             ],
             result.stderr,

@@ -38,6 +38,7 @@ Command = tuple[str, ...]
 INTERNAL_ACCOUNT = "michael.uloth@recursion.com"
 EXTERNAL_ACCOUNT = "michael.uloth@rxrx.tech"
 SPACELIFT_ACCOUNT = "recursion"
+SPACELIFT_ENDPOINT = f"https://{SPACELIFT_ACCOUNT}.app.spacelift.io/"
 ARGOCD_SERVER_KEY = "PRIVATE_ARGOCD_SERVER"
 
 # Long enough for a slow token refresh, short enough that a hung check doesn't hold up the others
@@ -262,8 +263,18 @@ def logins(settings: Settings) -> tuple[Login | Unconfigured, ...]:
             name=LoginName("Spacelift"),
             check=("spacectl", "whoami"),
             read_status=read_spacectl_whoami,
-            # --method skips the menu that asks which kind of login to use
-            login=("spacectl", "profile", "login", "--method", "browser", SPACELIFT_ACCOUNT),
+            # --method skips the menu that asks which kind of login to use, and --endpoint skips the
+            # prompt for the account's URL, which spacectl asks for even when the profile has one
+            login=(
+                "spacectl",
+                "profile",
+                "login",
+                "--method",
+                "browser",
+                "--endpoint",
+                SPACELIFT_ENDPOINT,
+                SPACELIFT_ACCOUNT,
+            ),
         ),
         argocd,
     )
