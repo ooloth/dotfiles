@@ -138,9 +138,9 @@ confusing report, comes before the next work item. Resolve it with the user befo
   shape, such as body or inline comments, line breaks or length, because the skill owns that; when
   the user's words seem to call for a shape the skill doesn't, ask the user before briefing. When a
   worker produced one under its skill, post it as written. The only edits you make are the ones the
-  destination forces, such as ending the bold before inline code for Jira, and you show the user
-  each one. Never condense, reorder or restyle it. When you draft one yourself, invoke its skill
-  first and follow it, as a worker would.
+  destination forces, such as splitting the bold around inline code as use-jira's check says for
+  Jira, and you show the user each one. Never condense, reorder or restyle it. When you draft one
+  yourself, invoke its skill first and follow it, as a worker would.
 - **Review before a PR is marked ready:** after a worker pushes a draft PR, and before it is marked
   ready or anyone is asked to review it, review it with review-code. The worker's global
   instructions also tell it to start this review itself, so first read the worker's pane and its

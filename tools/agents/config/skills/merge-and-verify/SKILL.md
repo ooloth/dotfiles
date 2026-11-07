@@ -62,7 +62,8 @@ re-review is settling their request, not renewing anyone's approval.
 - a post to a public destination holds something that looks private, as "Posting the report"
   describes
 - `use-jira`'s check cannot run, or a post needs a fix that adds, drops, changes or reorders a word,
-  such as a label for a URL. Post nothing: show the draft and the check's output, and wait
+  such as a label for a URL, or a fix the check did not print. Post nothing: show the draft and the
+  check's output, and wait
 
 **Never roll back, revert or change anything in a deployed environment yourself,** in the rollout
 watch or the production watch. Say what you would do and wait for the user.

@@ -20,8 +20,9 @@ brevity is a consequence of knowing what you mean, never the goal itself.
 **Format for a reader who skims.** Put identifiers, file paths, commands, values and config keys in
 inline code, bold the short label that leads a list item or paragraph, and link what you cite. These
 marks let a reader find the term they care about without reading every word. Use them wherever the
-destination renders them, ticket comments included. Where a tool's converter breaks some markdown,
-drop the structure it breaks, such as headings or tables, and keep the inline formatting it keeps.
+destination renders them, ticket comments included. A bold label holds no inline code, because some
+converters, Jira's among them, end the bold where the code starts. Where a tool's converter breaks
+some markdown, drop only what it breaks, where its skill says it breaks it, and keep the rest.
 
 **The test is that the reader gets through it once, forward, without going back.** A reader who
 reaches the third paragraph and has to return to the first to remember why they are reading has been
@@ -593,8 +594,8 @@ after I approve it. Announcing the change in the same turn that makes it is subs
 silently with a note attached.
 
 A formatting fix that a posting skill's check requires and that keeps every word in the same order,
-such as moving backticks out of bold or writing a URL as `[url](url)`, is not a rewording: post it
-and say what changed.
+such as ending the bold before the code or writing a URL as `[url](url)`, is not a rewording: post
+it and say what changed.
 
 ## When IT Blocks a Message
 

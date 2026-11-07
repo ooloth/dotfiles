@@ -55,11 +55,13 @@ before posting it, a comment or a description, a fix to a posted comment include
    typing the body again. On exit 2 the check did not run, which is never a pass: fix what stderr
    names and run it again.
 4. On exit 1, fix each line it prints and run it again. A fix that keeps every word of approved
-   text in the same order, such as moving backticks out of a bold phrase or writing a URL as
+   text in the same order, such as ending the bold before the code or writing a URL as
    `[url](url)`, is posted without asking again; say what changed. Only a fix the check printed
    is posted this way, because the check prints one only when the fixed text still reads as
    written: a fix of your own that keeps every word, such as taking the backticks off `__init__`
-   when the check did not offer it, is a new draft. A fix that adds, drops, changes or reorders a
+   when the check did not offer it, is a new draft. Putting a bare URL in inline code is a new
+   draft too, unless the URL is a command to copy rather than a link to open, because it posts a
+   link nobody can click. A fix that adds, drops, changes or reorders a
    word, such as a label for a link, is a new draft that waits for approval. Exit 1 is a list only
    when its last line ends `post nothing until then`. Exit 1 without that line means the check did
    not run, for example because `uv` could not install `markdown-it-py`: read the error.
@@ -82,12 +84,15 @@ The check covers these:
 - **Inline code inside bold.** Jira ends the bold where the code starts:
   `**New client in `x` (chosen)**` renders with only "New client in" in bold. This happens in table
   cells and list items alike. Split the bold around the code as the check's report says: end it
-  before the code, start it after the code, or both, so no empty `****` is left. Or leave
-  the backticks out of the bold phrase when the code holds no markdown characters such as `_` or
-  `*`: unquoted, `__init__` renders as a bold "init".
+  before the code, start it after the code, both, or take the bold off code that is the whole
+  phrase, so no empty `****` is left. Or leave the backticks out of the bold phrase when the check
+  offers that, which it does only when the code reads the same unquoted: `__init__` without its
+  backticks renders as a bold "init".
 - **Inline code as link text.** Jira keeps the code and drops the link:
   ``[`DECISIONS.md`](https://…)`` came back as plain `DECISIONS.md` in an issue description, with
-  no URL anywhere. Write the link text without backticks: `[DECISIONS.md](https://…)`.
+  no URL anywhere. Write the link text without backticks: `[DECISIONS.md](https://…)`, unless the
+  check offers only a fix that changes words, as it does for code such as `__init__` that would
+  render differently unquoted.
 - **A bare URL.** Jira stores it as text, not a link: `Draft PR: https://github.com/…/pull/619`
   could not be clicked, and `[org/repo#619](https://github.com/…/pull/619)` became a link. The
   check suggests `[url](url)` because it keeps every word, but that form has not been seen in Jira
