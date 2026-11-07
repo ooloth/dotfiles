@@ -647,8 +647,8 @@ Skip and say nothing if execution went smoothly.
 
 - `gh` - NEVER run a `gh` command without first invoking the `use-gh` skill
 - `rex` - NEVER run a `rex` command without first invoking the `use-rex` skill
-- Jira (the Atlassian MCP tools) - NEVER call a Jira tool, reads included, without first invoking
-  the `use-jira` skill
+- Jira (the Atlassian MCP tools and `acli`) - NEVER call a Jira tool, reads included, without first
+  invoking the `use-jira` skill
 - `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
   programs (TUIs, REPLs). This is often the only way to visually verify an interactive program
   without asking the user to do it:

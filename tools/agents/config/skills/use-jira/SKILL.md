@@ -67,11 +67,12 @@ before posting it, a comment or a description, a fix to a posted comment include
    to run it, then run the check again. When the check still cannot run, give the user the body and
    the error, or put both in the final report of a run nobody is watching.
 
-In Claude Code a `PreToolUse` hook in the dotfiles `settings.json` runs the same check on every
-markdown body sent to `addCommentToJiraIssue`, `createJiraIssue` or `editJiraIssue`, and refuses
-the post with the check's report as the reason. It refuses the post too when the check cannot run.
-The steps above still apply, because they catch the problem before the user approves the text, and
-because other agents have no hook.
+In Claude Code a `PreToolUse` hook in the dotfiles `settings.json` runs the same check on the
+markdown body of every post: `commentBody` on `addCommentToJiraIssue`, `description` on
+`createJiraIssue` and `fields.description` on `editJiraIssue`. It checks no other field. It
+refuses the post with the check's report as the reason, and it refuses the post too when the check
+cannot run. The steps above still apply, because they catch the problem before the user approves
+the text, and because other agents have no hook.
 
 The check covers these:
 
