@@ -41,8 +41,8 @@ those three folders, which nothing runs.
 
 ## Revisit when
 
-`features/` gains tests, so the same convention can cover them, or a tool needs a test file deeper
-than `tests/`.
+A tool or feature needs a test file deeper than `tests/`. (`features/` gaining tests was the first
+trigger, and the first 2026-10-20 addendum below acted on it.)
 
 ## Also update
 
@@ -61,7 +61,8 @@ of folder.
 
 The runner moved to `scripts/checks/tests.bash` when decision 005 grouped every check by category.
 It now also searches `scripts/*/tests/`, and it runs the `link.bash` check and the skills' pytest
-suite as well, so every test runs from one script. `test_symlinks.py` moved to
+suite as well, so every test runs from one script. (The 2026-10-30 addendum below folds the skills'
+separate run into one pytest run.) `test_symlinks.py` moved to
 `features/update/tests/`, beside the feature it tests, and the docs checker's tests moved to
 `scripts/checks/tests/test_docs.py`.
 

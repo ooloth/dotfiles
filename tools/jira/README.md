@@ -66,8 +66,7 @@ the event. No setting or environment variable turns this off in acli 1.3.39.
 
 ### Install
 
-Install via Homebrew:
-https://github.com/ankitpokhrel/jira-cli/wiki/Installation#homebrew
+`tools/jira/Brewfile` installs it on a work machine, and `u` upgrades it with every other formula.
 
 ### Set up the token
 

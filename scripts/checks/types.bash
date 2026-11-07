@@ -5,7 +5,8 @@
 #
 # Python: ty, with settings from ty.toml at the root. ty runs with --project rather than
 # --config-file, which would resolve the archive exclude against the working directory. ty exits 0
-# when it finds no Python files, so this fails first if there are none.
+# when it finds no Python files, so this fails first if git lists none. git lists the files ty
+# reads, tracked or untracked but not ignored, so .cache/ and other ignored folders don't count.
 #
 # The repo root is an extra search path, so a test that loads a script by its file path can still
 # import the script's types for its annotations, as `tools.github.repo_settings`. It is a flag
@@ -19,7 +20,7 @@ set -euo pipefail
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 source "${DOTFILES}/scripts/checks/versions.bash"
 
-if [[ -z "$(find "${DOTFILES}" -name '*.py' -not -path '*/__pycache__/*' -print -quit)" ]]; then
+if [[ -z "$(git -C "${DOTFILES}" ls-files --cached --others --exclude-standard -- '*.py' | head -n 1)" ]]; then
   echo "No Python files found, so nothing would be checked." >&2
   exit 1
 fi
