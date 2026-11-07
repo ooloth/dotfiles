@@ -27,7 +27,12 @@ Review file:
 
 --dry-run validates the file and prints the exact payload that would be sent, without posting.
 It also notes on stderr any body that runs several sentences together in one paragraph, so its
-point can be split off before posting. The note never blocks.
+point can be split off before posting, and an approval of a dependency update whose body lists no
+checks. The notes never block.
+
+Both modes read the PR once with `gh pr view` first. On a PR a bot opened, such as Dependabot's,
+they refuse a change request and inline comments, because a bot can neither read a review nor
+push a fix: findings there are fixed on the PR's branch instead.
 """
 
 import argparse
@@ -157,6 +162,95 @@ def unbroken_bodies(review: Review) -> tuple[str, ...]:
     return tuple(found)
 
 
+@dataclass(frozen=True)
+class PullRequest:
+    opened_by_bot: bool
+    files: tuple[str, ...]
+
+
+def read_pull_request(repo: str, pr: int) -> PullRequest:
+    result = subprocess.run(
+        [
+            "gh",
+            "pr",
+            "view",
+            str(pr),
+            "-R",
+            repo,
+            "--json",
+            "author,files",
+            "--jq",
+            "{bot: .author.is_bot, files: [.files[].path]}",
+        ],
+        stdin=subprocess.DEVNULL,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise SystemExit(f"Could not read PR {pr} in {repo}; nothing was posted.\n{result.stderr}")
+    raw = json.loads(result.stdout)
+    return PullRequest(opened_by_bot=raw["bot"] is True, files=tuple(raw["files"]))
+
+
+def refusal_for_bot(review: Review, pull_request: PullRequest) -> str | None:
+    """Why this review cannot go on a bot's PR, or None when it can."""
+    if not pull_request.opened_by_bot:
+        return None
+    if review.event == "REQUEST_CHANGES":
+        reason = "a change request"
+    elif review.comments:
+        reason = "inline comments"
+    else:
+        return None
+    return (
+        f"A bot opened this PR, so nobody can act on {reason}: fix the findings on the PR's "
+        "branch instead, then approve with what the approval rests on. Nothing was posted."
+    )
+
+
+# Manifests and lockfiles whose change means the PR adopts releases no diff shows.
+DEPENDENCY_FILES = frozenset(
+    {
+        "Cargo.toml",
+        "Cargo.lock",
+        "package.json",
+        "package-lock.json",
+        "npm-shrinkwrap.json",
+        "yarn.lock",
+        "pnpm-lock.yaml",
+        "bun.lockb",
+        "pyproject.toml",
+        "uv.lock",
+        "poetry.lock",
+        "Pipfile",
+        "Pipfile.lock",
+        "go.mod",
+        "go.sum",
+        "Gemfile",
+        "Gemfile.lock",
+        "composer.json",
+        "composer.lock",
+    }
+)
+REQUIREMENTS_FILE = re.compile(r"requirements.*\.txt")
+LIST_ITEM = re.compile(r"^\s*(?:[-*+]|\d+\.)\s+\S", re.MULTILINE)
+
+
+def changes_dependencies(pull_request: PullRequest) -> bool:
+    names = (Path(f).name for f in pull_request.files)
+    return any(n in DEPENDENCY_FILES or REQUIREMENTS_FILE.fullmatch(n) for n in names)
+
+
+def lacks_check_list(review: Review, pull_request: PullRequest) -> bool:
+    """An approval of a dependency update whose body shows no list of the checks behind it."""
+    return (
+        review.event == "APPROVE"
+        and changes_dependencies(pull_request)
+        and LIST_ITEM.search(review.body) is None
+    )
+
+
 def post(repo: str, pr: int, payload: dict[str, Any]) -> str:
     result = subprocess.run(
         [
@@ -199,6 +293,10 @@ def main() -> None:
 
     review = parse_review(read_review_file(args.review_file))
     payload = to_api_payload(review)
+    pull_request = read_pull_request(args.repo, args.pr)
+    refusal = refusal_for_bot(review, pull_request)
+    if refusal is not None:
+        raise SystemExit(refusal)
 
     if args.dry_run:
         print(json.dumps(payload, indent=2, ensure_ascii=False))
@@ -206,6 +304,12 @@ def main() -> None:
             print(
                 f"note: {where} runs several sentences together in one paragraph. "
                 "Reread it, and split off its point unless it reads better whole.",
+                file=sys.stderr,
+            )
+        if lacks_check_list(review, pull_request):
+            print(
+                "note: this approves a dependency update, but the body lists no checks. "
+                "Add what the approval rests on, one bullet per check with its result.",
                 file=sys.stderr,
             )
         return

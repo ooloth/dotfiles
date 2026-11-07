@@ -41,13 +41,15 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **For PR scope — fetch PR context before Step 2:**
 
 ```bash
-gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefName,headRefOid,baseRefOid
+gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefName,headRefOid,baseRefOid,author
+gh repo view <owner>/<repo> --json viewerPermission
 ```
 
 Store the title, body and branch name (`headRefName`) for use in Step 2. Store the PR number,
 `headRefOid` (the reviewed head) and `baseRefOid` for Step 5. The review describes the PR at that
 commit, so Step 5 checks that the PR has not moved since, compares the PR's own changes against that
-base if it has, and pins its comments to the saved head.
+base if it has, and pins its comments to the saved head. Store `author.is_bot` and
+`viewerPermission` for Step 5 too: together they say whether the findings are the user's to fix.
 
 **For PR scope, also fetch what earlier reviewers said:**
 
@@ -855,6 +857,14 @@ After presenting findings, if this is a PR and its author is the account `gh api
 returns, ask the user to indicate which changes to make locally or discuss further first and then
 stop and wait for a reply (skip the rest of this skill's instructions).
 
+Otherwise, if a bot opened the PR (`author.is_bot`, such as Dependabot or Renovate) and the user
+can push to the repo (`viewerPermission` is `ADMIN`, `MAINTAIN` or `WRITE`), nobody else will act
+on the findings: a bot cannot read a review or push a fix. When there are findings, ask which to
+fix on the PR's branch, and fix them as the paragraph after the authorization gate says. A bot's
+PR never gets Request Changes or inline comments, and `post_review.py` refuses both. When there
+are none, or once they are fixed, ask the posting question below, whose usual answer is approve.
+When the user leaves a `must` unfixed, the review is a Comment that names it in the body.
+
 Otherwise, if this is a PR and the author is NOT the user, ask:
 
 > "Post this as a GitHub review? (yes / approve / request-changes / comment / skip)"
@@ -865,7 +875,9 @@ individual findings (e.g., "(1) do it" answers finding #1, not this question). W
 separate, unambiguous reply to the posting question before posting anything to GitHub.
 
 When the user asks to fix the findings instead of posting, make the fixes through the usual commit
-flow, then return here: treat the fix commits as a head move, and draft the review of the new head.
+flow, then return here: treat the fix commits as a head move, handled as "Check what changed since
+the saved state" below says, and draft the review of the new head before asking the posting
+question.
 For a dependency update that is usually an Approve whose list names each fix commit and what it
 resolves.
 
@@ -926,7 +938,16 @@ On any answer other than "skip":
 - Write the review body in this shape, each part only when it has something to say (see the
   audience and tone guidance below):
   - **Verdict and credit:** the verdict, then one sentence crediting a specific choice the author
-    made and why it works, drawn from Looks Good.
+    made and why it works, drawn from Looks Good. A bot made no choice to credit, so its PR gets
+    the verdict alone.
+  - **What the approval rests on:** when the review approves a dependency update, Step 1a's Looks
+    Good list, one bullet per check with its result at the head the review is pinned to: the
+    project's build and tests, the releases adopted, what is compiled and what is only in the
+    lockfile, the advisories fixed and introduced, breaking changes that reach this code, CI, and
+    any live run. A check run before a fix commit is run again on the new head first. Before the
+    list, one sentence names each fix commit pushed to the PR and what it resolves. A reader
+    deciding whether to trust the approval needs these, and `post_review.py --dry-run` notes an
+    approval of a dependency update that lists none.
   - **Triage:** when the review approves or comments and still carries findings, end the first
     paragraph with this sentence, word for word: "Feel free to decide yourself which findings to
     fix here vs file as a ticket vs ignore for now." Under Request Changes there is no triage
