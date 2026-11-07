@@ -16,7 +16,9 @@
 # pytest ignores each file's inline script header, so uv installs each tests/test_*.py file's header
 # with --with-requirements (decision 001's addendum), and a file with no header fails the run. The
 # skill tests have no headers; hypothesis and pydantic are installed for them, since they load their
-# scripts in-process or run them as a subprocess, and generate inputs for them.
+# scripts in-process or run them as a subprocess, and generate inputs for them. markdown-it-py is
+# installed because use-jira's check imports it and its tests run it under this Python; its range
+# matches the script's own header, which a test compares.
 set -uo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -45,7 +47,7 @@ if [[ ${#tests[@]} -eq 0 ]]; then
   exit 1
 fi
 
-with=(--with pytest --with pytest-xdist --with hypothesis --with pydantic)
+with=(--with pytest --with pytest-xdist --with hypothesis --with pydantic --with 'markdown-it-py>=4,<5')
 for test in "${tests[@]}"; do
   with+=(--with-requirements "${test}")
 done

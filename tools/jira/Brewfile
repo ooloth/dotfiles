@@ -5,7 +5,6 @@
 require_relative "../macos/computer"
 
 if work?
-  brew "jira-cli"
   tap "atlassian/acli"
   brew "atlassian/acli/acli"
 end

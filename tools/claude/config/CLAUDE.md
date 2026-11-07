@@ -20,8 +20,9 @@ brevity is a consequence of knowing what you mean, never the goal itself.
 **Format for a reader who skims.** Put identifiers, file paths, commands, values and config keys in
 inline code, bold the short label that leads a list item or paragraph, and link what you cite. These
 marks let a reader find the term they care about without reading every word. Use them wherever the
-destination renders them, ticket comments included. Where a tool's converter breaks some markdown,
-drop the structure it breaks, such as headings or tables, and keep the inline formatting it keeps.
+destination renders them, ticket comments included. A bold label holds no inline code, because some
+converters, Jira's among them, end the bold where the code starts. Where a tool's converter breaks
+some markdown, drop only what it breaks, where its skill says it breaks it, and keep the rest.
 
 **The test is that the reader gets through it once, forward, without going back.** A reader who
 reaches the third paragraph and has to return to the first to remember why they are reading has been
@@ -592,6 +593,10 @@ waiting: the new draft goes in a message that changes nothing, and the new wordi
 after I approve it. Announcing the change in the same turn that makes it is substituting it
 silently with a note attached.
 
+A formatting fix that a posting skill's check requires and that keeps every word in the same order,
+such as ending the bold before the code or writing a URL as `[url](url)`, is not a rewording: post
+it and say what changed.
+
 ## When IT Blocks a Message
 
 Something on the user's side sometimes blocks a message without saying why, and neither of us can
@@ -643,8 +648,8 @@ Skip and say nothing if execution went smoothly.
 
 - `gh` - NEVER run a `gh` command without first invoking the `use-gh` skill
 - `rex` - NEVER run a `rex` command without first invoking the `use-rex` skill
-- Jira (the Atlassian MCP tools) - NEVER call a Jira tool, reads included, without first invoking
-  the `use-jira` skill
+- Jira (the Atlassian MCP tools and `acli`) - NEVER call a Jira tool, reads included, without first
+  invoking the `use-jira` skill
 - `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
   programs (TUIs, REPLs). This is often the only way to visually verify an interactive program
   without asking the user to do it:

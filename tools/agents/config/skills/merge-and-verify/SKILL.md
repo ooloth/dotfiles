@@ -61,6 +61,9 @@ re-review is settling their request, not renewing anyone's approval.
   verdict and wait. A yes to that draft posts it as shown and closes nothing.
 - a post to a public destination holds something that looks private, as "Posting the report"
   describes
+- `use-jira`'s check cannot run, or a post needs a fix that adds, drops, changes or reorders a word,
+  such as a label for a URL, or a fix the check did not print. Post nothing: show the draft and the
+  check's output, and wait
 
 **Never roll back, revert or change anything in a deployed environment yourself,** in the rollout
 watch or the production watch. Say what you would do and wait for the user.
@@ -248,7 +251,8 @@ looks private, such as an internal hostname or URL, or a person's name or handle
 does not already show, post nothing and show the user the draft.
 
 - **Jira:** post the comment with the Atlassian MCP tool, following `use-jira` for how markdown
-  converts.
+  converts. When the MCP server will not connect, post it with acli as an ADF body, as `use-jira`
+  describes.
 - **A GitHub issue or PR:** post with `gh issue comment` or `gh pr comment` from a file, following
   `use-gh`.
 - **The PR link:** once the ticket comment exists, post one line on the PR linking to it.
