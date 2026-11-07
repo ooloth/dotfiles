@@ -864,6 +864,11 @@ request-changes, comment, or skip. Do NOT infer authorization from numbered resp
 individual findings (e.g., "(1) do it" answers finding #1, not this question). Wait for a
 separate, unambiguous reply to the posting question before posting anything to GitHub.
 
+When the user asks to fix the findings instead of posting, make the fixes through the usual commit
+flow, then return here: treat the fix commits as a head move, and draft the review of the new head.
+For a dependency update that is usually an Approve whose list names each fix commit and what it
+resolves.
+
 On any answer other than "skip":
 
 - **Check what changed since the saved state.** Read the head and reviews again with
