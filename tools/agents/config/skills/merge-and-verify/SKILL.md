@@ -248,7 +248,8 @@ looks private, such as an internal hostname or URL, or a person's name or handle
 does not already show, post nothing and show the user the draft.
 
 - **Jira:** post the comment with the Atlassian MCP tool, following `use-jira` for how markdown
-  converts.
+  converts. When the MCP server will not connect, post it with acli as an ADF body, as `use-jira`
+  describes.
 - **A GitHub issue or PR:** post with `gh issue comment` or `gh pr comment` from a file, following
   `use-gh`.
 - **The PR link:** once the ticket comment exists, post one line on the PR linking to it.

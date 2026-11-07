@@ -1,11 +1,9 @@
-# Jira CLI
+# Jira
 
 [acli](https://developer.atlassian.com/cloud/acli/guides/introduction/), Atlassian's own Jira CLI,
 set up on the work laptop only, for when the Atlassian MCP server will not connect.
 
-## acli
-
-### Install
+## Install
 
 `tools/jira/Brewfile` installs it from Atlassian's tap, `atlassian/acli`. Homebrew refuses to load
 a formula from a tap it does not trust, and `tools/homebrew/update.bash` trusts every tap that is
@@ -16,7 +14,7 @@ Atlassian supports each acli version for 6 months after its release
 ([install guide](https://developer.atlassian.com/cloud/acli/guides/install-macos/)), and `u`
 upgrades it with every other formula.
 
-### Log in
+## Log in
 
 ```sh
 acli jira auth login --web
@@ -26,7 +24,7 @@ Choose the site in `$PRIVATE_JIRA_SITE` (see `private.env.example`) at the site 
 accept the grant in the browser. Then `acli jira auth status` reports `Authenticated` with
 `Authentication Type: oauth`.
 
-### Why it is set up this way
+## Why it is set up this way
 
 acli logs in with OAuth because it rejects a scoped API token for writes. Tested with acli
 1.3.39 on 2026-10-22: a scoped API token logged in, but posting a comment returned
