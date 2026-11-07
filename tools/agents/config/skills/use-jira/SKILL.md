@@ -3,6 +3,13 @@ name: use-jira
 description: Jira gotchas for the Atlassian MCP tools and the acli CLI. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every markdown body before posting it through the MCP tool. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
 ---
 
+## Which server
+
+Call the Jira tools on the `atlassian-rovo` server (`mcp__atlassian-rovo__*`). A
+`claude_ai_Atlassian_MCP` server can appear too, but it offers only its sign-in tools until someone
+authenticates it, and the dotfiles `settings.json` allows only `atlassian-rovo`'s comment tool
+without a prompt. When `atlassian-rovo` will not connect, use acli, as the last section describes.
+
 ## Cloud ID
 
 Pass the value of `$PRIVATE_JIRA_CLOUD_ID` as `cloudId`: run `echo "$PRIVATE_JIRA_CLOUD_ID"` to
@@ -131,7 +138,8 @@ Setup is in `tools/jira/README.md`. Tested with acli 1.3.39 on a work ticket:
   `link`, so inline code inside bold is rejected: end the bold before the code.
 - **Post from a file, never an argument.** `acli jira workitem comment create --key KEY
   --body-file <file>` reads ADF from the file. Pass one key and never `--jql` or `--filter`, which
-  comment on every ticket the query matches; the permission rules refuse those flags.
+  comment on every ticket the query matches. The permission rules refuse those flags on
+  `comment create` and ask before any other acli command that uses them.
 - **Read every comment with its ID.** `acli jira workitem view KEY --fields comment --json`
   returns all of them. Pipe it through `jq '.fields.comment.comments[] | {id, created, body}'` and
   leave out `body` when only the IDs are needed.
