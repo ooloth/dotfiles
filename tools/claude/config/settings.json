@@ -40,6 +40,19 @@
         ]
       }
     ],
+    "PreToolUse": [
+      {
+        "matcher": "^mcp__.*__(addCommentToJiraIssue|createJiraIssue|editJiraIssue)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --quiet --script ~/Repos/ooloth/dotfiles/tools/agents/config/skills/use-jira/scripts/check_jira_markdown.py --hook",
+            "timeout": 60,
+            "onFailure": "block"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [

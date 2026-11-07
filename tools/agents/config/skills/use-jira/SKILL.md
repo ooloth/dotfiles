@@ -49,30 +49,46 @@ Posting with `contentFormat: "markdown"` converts the body to Jira's own format,
 does not survive. Most of it posts without error and renders wrong, so check every markdown body
 before posting it, a comment or a description, a fix to a posted comment included:
 
-1. Write the body to a file with the Write tool.
+1. Write the body with the Write tool to a file in a new directory from `mktemp -d`.
 2. Run `uv run <skill-base-dir>/scripts/check_jira_markdown.py <file>`.
-3. On exit 0, post the file's text unchanged. On exit 2 the check did not run, which is never a
-   pass: fix what stderr names and run it again.
+3. On exit 0, post the file's text exactly as it is: Read the file and pass that text, rather than
+   typing the body again. On exit 2 the check did not run, which is never a pass: fix what stderr
+   names and run it again.
 4. On exit 1, fix each line it prints and run it again. A fix that keeps every word of approved
-   text, such as moving backticks out of a bold phrase or writing a URL as `[url](url)`, is posted
-   without asking again; say what changed. A fix that adds, drops or changes a word, such as a
-   label for a link, is a new draft that waits for approval. Exit 1 is a list only when its last
-   line ends `post nothing until then`. Exit 1 without that line means the check did not run, for
-   example because `uv` could not install `markdown-it-py`: read the error.
+   text in the same order, such as moving backticks out of a bold phrase or writing a URL as
+   `[url](url)`, is posted without asking again; say what changed. The check offers one of these
+   only when the fixed text still reads as written. A fix that adds, drops, changes or reorders a
+   word, such as a label for a link, is a new draft that waits for approval. Exit 1 is a list only
+   when its last line ends `post nothing until then`. Exit 1 without that line means the check did
+   not run, for example because `uv` could not install `markdown-it-py`: read the error.
+5. If the check still cannot run, post nothing. On the work laptop `uv` fetches `markdown-it-py`
+   only after `gcloud auth login --update-adc`, as `CONTRIBUTING.md` in the dotfiles repo
+   describes, whatever command uv's own error suggests. That login opens a browser, so ask the user
+   to run it, then run the check again. When the check still cannot run, give the user the body and
+   the error, or put both in the final report of a run nobody is watching.
+
+In Claude Code a `PreToolUse` hook in the dotfiles `settings.json` runs the same check on every
+markdown body sent to `addCommentToJiraIssue`, `createJiraIssue` or `editJiraIssue`, and refuses
+the post with the check's report as the reason. It refuses the post too when the check cannot run.
+The steps above still apply, because they catch the problem before the user approves the text, and
+because other agents have no hook.
 
 The check covers these:
 
 - **Inline code inside bold.** Jira ends the bold where the code starts:
   `**New client in `x` (chosen)**` renders with only "New client in" in bold. This happens in table
-  cells and list items alike. Leave the backticks out of a bold phrase, or put the code after the
-  bold ends.
+  cells and list items alike. End the bold before the code and start it again after it, or leave
+  the backticks out of the bold phrase when the code holds no markdown characters such as `_` or
+  `*`: unquoted, `__init__` renders as a bold "init".
 - **Inline code as link text.** Jira keeps the code and drops the link:
   ``[`DECISIONS.md`](https://…)`` came back as plain `DECISIONS.md` in an issue description, with
   no URL anywhere. Write the link text without backticks: `[DECISIONS.md](https://…)`.
 - **A bare URL.** Jira stores it as text, not a link: `Draft PR: https://github.com/…/pull/619`
-  could not be clicked, and `[org/repo#619](https://github.com/…/pull/619)` became a link. How it
-  converts `<https://…>` is untested, so the check asks for the bracket form there too. A URL in
-  inline code or a code block is left alone.
+  could not be clicked, and `[org/repo#619](https://github.com/…/pull/619)` became a link. The
+  check suggests `[url](url)` because it keeps every word, but that form has not been seen in Jira
+  yet, so read the returned `body` after posting one. How Jira converts `<https://…>` is untested,
+  so the check asks for the bracket form there too. A URL in inline code or a code block is left
+  alone.
 
 The tool refuses one more case outright, so the check leaves it out:
 
@@ -88,7 +104,9 @@ there without opening Jira.
 
 `addCommentToJiraIssue` with `commentId` replaces that comment's body in place. Use it to correct a
 comment rather than posting a second one, which notifies watchers again and leaves both in the
-history. The replacement is a new draft: approved wording changes only with fresh approval.
+history. The replacement is a new draft: approved wording changes only with fresh approval. A
+replacement that only makes the fixes the check requires, keeping every word in the same order, is
+the exception, as step 4 above says.
 
 ## The acli CLI
 

@@ -592,9 +592,9 @@ waiting: the new draft goes in a message that changes nothing, and the new wordi
 after I approve it. Announcing the change in the same turn that makes it is substituting it
 silently with a note attached.
 
-A formatting fix that a posting skill's check requires and that keeps every word, such as moving
-backticks out of bold or writing a URL as `[url](url)`, is not a rewording: post it and say what
-changed.
+A formatting fix that a posting skill's check requires and that keeps every word in the same order,
+such as moving backticks out of bold or writing a URL as `[url](url)`, is not a rewording: post it
+and say what changed.
 
 ## When IT Blocks a Message
 
