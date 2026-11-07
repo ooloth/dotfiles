@@ -56,8 +56,10 @@ before posting it, a comment or a description, a fix to a posted comment include
    names and run it again.
 4. On exit 1, fix each line it prints and run it again. A fix that keeps every word of approved
    text in the same order, such as moving backticks out of a bold phrase or writing a URL as
-   `[url](url)`, is posted without asking again; say what changed. The check offers one of these
-   only when the fixed text still reads as written. A fix that adds, drops, changes or reorders a
+   `[url](url)`, is posted without asking again; say what changed. Only a fix the check printed
+   is posted this way, because the check prints one only when the fixed text still reads as
+   written: a fix of your own that keeps every word, such as taking the backticks off `__init__`
+   when the check did not offer it, is a new draft. A fix that adds, drops, changes or reorders a
    word, such as a label for a link, is a new draft that waits for approval. Exit 1 is a list only
    when its last line ends `post nothing until then`. Exit 1 without that line means the check did
    not run, for example because `uv` could not install `markdown-it-py`: read the error.
@@ -68,8 +70,9 @@ before posting it, a comment or a description, a fix to a posted comment include
    the error, or put both in the final report of a run nobody is watching.
 
 In Claude Code a `PreToolUse` hook in the dotfiles `settings.json` runs the same check on the
-markdown body of every post: `commentBody` on `addCommentToJiraIssue`, `description` on
-`createJiraIssue` and `fields.description` on `editJiraIssue`. It checks no other field. It
+markdown body of every post: `commentBody` on `addCommentToJiraIssue` and
+`addWorklogToJiraIssue`, `description` on `createJiraIssue`, `fields.description` on
+`editJiraIssue` and `comment` on `createIssueLink`. It checks no other field. It
 refuses the post with the check's report as the reason, and it refuses the post too when the check
 cannot run. The steps above still apply, because they catch the problem before the user approves
 the text, and because other agents have no hook.
@@ -78,7 +81,8 @@ The check covers these:
 
 - **Inline code inside bold.** Jira ends the bold where the code starts:
   `**New client in `x` (chosen)**` renders with only "New client in" in bold. This happens in table
-  cells and list items alike. End the bold before the code and start it again after it, or leave
+  cells and list items alike. Split the bold around the code as the check's report says: end it
+  before the code, start it after the code, or both, so no empty `****` is left. Or leave
   the backticks out of the bold phrase when the code holds no markdown characters such as `_` or
   `*`: unquoted, `__init__` renders as a bold "init".
 - **Inline code as link text.** Jira keeps the code and drops the link:

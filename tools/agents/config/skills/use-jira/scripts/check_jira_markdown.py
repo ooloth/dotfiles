@@ -8,16 +8,19 @@
 The use-jira skill runs this on every body it posts through the Atlassian MCP tool with
 `contentFormat: "markdown"`, and in Claude Code a PreToolUse hook runs it with `--hook` on every such
 post, refusing the post when it finds something. That conversion succeeds on each construct
-reported here and renders it wrong, so nothing at post time says anything went wrong:
+reported here, and on all but the untested autolink it renders it wrong, so nothing at post time
+says anything went wrong:
 
   code inside bold    Jira ends the bold where the code starts.
   code as link text   Jira keeps the code and drops the link.
   bare URL            Jira posts it as text, not a link.
-  autolink            <https://...> is untested in Jira, so the form Jira is known to link is used.
+  autolink            <https://...> is untested in Jira, so the bracket form is asked for instead.
 
-Code spans and code blocks are never reported: a URL there is a command to copy, not a link.
+A URL in a code span or code block is never reported: there it is a command to copy, not a link.
 A fix that keeps every word is offered only when the fixed text still parses to the same
-characters, so code such as `__init__` is never offered as bare text inside bold.
+characters, so code such as `__init__` is never offered as bare text inside bold. A bare URL's
+`[url](url)` fix is also withheld when the URL stops at `<`, `>` or `|`, because the URL may go on
+past it and the link would point at only part of it.
 Structure Jira cannot hold at all, such as a table inside a list item, is not checked here, because
 the tool refuses the whole post and posts nothing.
 
@@ -46,6 +49,7 @@ import re
 import sys
 import traceback
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import NewType, assert_never
 
@@ -61,16 +65,26 @@ LineNumber = NewType("LineNumber", int)  # 1-based, as an editor shows it
 
 # A URL in prose or a table cell runs to whitespace, `<`, `>` or `|`. Punctuation after it ends a
 # sentence rather than belonging to it, and so does a `)` the URL never opened.
-URL_RUN = re.compile(r"https?://[^\s<>|]+")
 TRAILING_PUNCTUATION = ".,;:!?'\"]"
+# A `;` that closes an HTML entity such as `&gt;` belongs to it, so trimming it would change what
+# the URL shows.
+ENDS_IN_ENTITY = re.compile(r"&(?:#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*);$")
+# The characters other than whitespace that end a URL run. A URL stopped by one of them may go on
+# past it, so a fix that links only the part before it could link the wrong place.
+URL_STOPS = "<>|"
+URL_RUN = re.compile(r"https?://[^\s" + re.escape(URL_STOPS) + "]+")
 SENTINEL = "post nothing until then"
 
 PARSER = MarkdownIt("commonmark").enable("table")
 
 
 def trimmed(run: str) -> str:
-    while run and (
-        run[-1] in TRAILING_PUNCTUATION or (run[-1] == ")" and run.count(")") > run.count("("))
+    while (
+        run
+        and not ENDS_IN_ENTITY.search(run)
+        and (
+            run[-1] in TRAILING_PUNCTUATION or (run[-1] == ")" and run.count(")") > run.count("("))
+        )
     ):
         run = run[:-1]
     return run
@@ -128,13 +142,24 @@ class Unreadable:
 
 
 # Each breakage below records whether its fix that keeps every word, when it has one, leaves the
-# body reading the same. When it would not, only a fix that changes the text is offered.
+# body reading the same and, for a URL, links all of it. When it would not, only a fix that changes
+# the text is offered.
+
+
+class BoldSplit(Enum):
+    """Where the code sits in its bold phrase, which decides how the bold is split around it."""
+
+    CODE_IS_BOLD = "take the bold off the code"
+    CODE_STARTS_BOLD = "start the bold after the code"
+    CODE_ENDS_BOLD = "end the bold before the code"
+    CODE_INSIDE_BOLD = "end the bold before the code and start it again after"
 
 
 @dataclass(frozen=True)
 class CodeInBold:
     line: LineNumber
     code: str
+    split: BoldSplit
     renders_as_written: bool
 
 
@@ -204,52 +229,116 @@ def read_body(path: Path) -> Body | Unreadable:
         return Unreadable(path, str(error))
 
 
-def inline_breakages(inline: Token, line_count: int) -> list[Breakage]:
-    """The breakages in one paragraph, heading or table cell.
+class SourceCursor:
+    """Where the walk over one paragraph's tokens has reached in that paragraph's source.
 
-    Each one's line is found by searching the paragraph's source forward from the last match,
-    because a code span hides the line breaks inside it from the tokens. Where the source search
-    finds nothing, the line breaks the tokens show are counted instead.
+    Each construct's line is found by searching the source forward from the last match, because a
+    code span hides the line breaks inside it from the tokens. Where the source search finds
+    nothing, the line breaks the tokens show are counted instead.
     """
+
+    def __init__(self, source: str, first_line: int, line_count: int) -> None:
+        self.source = source
+        self.first_line = first_line
+        self.line_count = line_count
+        self.position = 0
+        self.breaks_seen = 0
+        # Where the last URL read whole from the source ends. Emphasis inside it puts later pieces
+        # of it in tokens of their own, and those pieces are not URLs to report again.
+        self.url_end = 0
+
+    def locate(self, pattern: re.Pattern[str]) -> tuple[LineNumber, re.Match[str] | None]:
+        match = pattern.search(self.source, self.position)
+        if match is None:
+            n = self.first_line + self.breaks_seen
+        else:
+            n = self.first_line + self.source.count("\n", 0, match.start())
+            self.position = match.end()
+        assert 1 <= n <= self.line_count, f"line {n} is outside the body's {self.line_count} lines"
+        return LineNumber(n), match
+
+    def keeps_reading(self, match: re.Match[str] | None, replacement: str, written: str) -> bool:
+        # A construct whose place in the source was not found gets no fix that keeps every word.
+        return match is not None and reads_as_written(
+            self.source, match.start(), match.end(), replacement, written
+        )
+
+    def skip_destination(self, target: str) -> None:
+        # A link or image's target follows its text in the source, and no token holds it, so a
+        # bare URL further on must not be matched there.
+        match = re.compile(r"\(\s*<?" + re.escape(target)).search(self.source, self.position)
+        if match is not None:
+            self.position = match.end()
+
+
+def bare_urls(cursor: SourceCursor, text: str) -> list[BareUrl]:
+    """The bare URLs in one text token, each read whole from the source."""
+    found: list[BareUrl] = []
+    start = cursor.source.find(text, cursor.position) if text else -1
+    if start >= 0:
+        cursor.position = start
+    for url in urls_in(text):
+        line, match = cursor.locate(re.compile(re.escape(url)))
+        cleanly_ended = True
+        if match is not None:
+            if match.start() < cursor.url_end:
+                continue
+            # Emphasis inside a URL splits it across tokens, so the URL as written is read from
+            # the source, where it runs on past this token.
+            whole = URL_RUN.match(cursor.source, match.start())
+            assert whole is not None, "a URL found in the source is matched there"
+            stopped_by = cursor.source[whole.end() : whole.end() + 1]
+            cleanly_ended = stopped_by == "" or stopped_by not in URL_STOPS
+            url = trimmed(whole.group())
+            cursor.url_end = match.start() + len(url)
+            match = re.compile(re.escape(url)).match(cursor.source, match.start())
+        readable = cleanly_ended and cursor.keeps_reading(match, f"[{url}]({url})", url)
+        found.append(BareUrl(line, url, readable))
+    if start >= 0:
+        cursor.position = max(cursor.position, start + len(text))
+    return found
+
+
+def has_text_beside(children: list[Token], index: int, step: int, edge: str) -> bool:
+    """Whether a reader sees text between children[index] and the bold's edge in one direction."""
+    i = index + step
+    while 0 <= i < len(children) and children[i].type != edge:
+        if children[i].type in ("text", "code_inline") and children[i].content.strip():
+            return True
+        i += step
+    return False
+
+
+def bold_split(children: list[Token], index: int) -> BoldSplit:
+    match (
+        has_text_beside(children, index, -1, "strong_open"),
+        has_text_beside(children, index, 1, "strong_close"),
+    ):
+        case (False, False):
+            return BoldSplit.CODE_IS_BOLD
+        case (False, True):
+            return BoldSplit.CODE_STARTS_BOLD
+        case (True, False):
+            return BoldSplit.CODE_ENDS_BOLD
+        case (True, True):
+            return BoldSplit.CODE_INSIDE_BOLD
+        case _ as unreachable:
+            raise AssertionError(unreachable)
+
+
+def inline_breakages(inline: Token, line_count: int) -> list[Breakage]:
+    """The breakages in one paragraph, heading or table cell."""
     assert inline.map is not None, "markdown-it-py gave an inline token no line map"
-    first_line = inline.map[0] + 1
-    source = inline.content
-    cursor = 0
-    breaks_seen = 0
+    cursor = SourceCursor(inline.content, inline.map[0] + 1, line_count)
     bold_depth = 0
     link: Token | None = None
     found: list[Breakage] = []
     children = inline.children or []
 
-    def locate(pattern: re.Pattern[str]) -> tuple[LineNumber, re.Match[str] | None]:
-        nonlocal cursor
-        match = pattern.search(source, cursor)
-        if match is None:
-            n = first_line + breaks_seen
-        else:
-            n = first_line + source.count("\n", 0, match.start())
-            cursor = match.end()
-        assert 1 <= n <= line_count, f"line {n} is outside the body's {line_count} lines"
-        return LineNumber(n), match
-
-    def keeps_reading(match: re.Match[str] | None, replacement: str, written: str) -> bool:
-        # A construct whose place in the source was not found gets no fix that keeps every word.
-        return match is not None and reads_as_written(
-            source, match.start(), match.end(), replacement, written
-        )
-
-    def skip_destination(target: str) -> None:
-        # A link or image's target follows its text in the source, and no token holds it, so a
-        # bare URL further on must not be matched there.
-        nonlocal cursor
-        match = re.compile(r"\(\s*<?" + re.escape(target)).search(source, cursor)
-        if match is not None:
-            cursor = match.end()
-
     for index, child in enumerate(children):
         match child.type:
             case "softbreak" | "hardbreak":
-                breaks_seen += 1
+                cursor.breaks_seen += 1
             case "strong_open":
                 bold_depth += 1
             case "strong_close":
@@ -260,55 +349,38 @@ def inline_breakages(inline: Token, line_count: int) -> list[Breakage]:
                     following = children[index + 1] if index + 1 < len(children) else None
                     text = following.content if following is not None else ""
                     href = str(child.attrGet("href"))
-                    line, match = locate(re.compile(re.escape("<" + text + ">")))
-                    readable = keeps_reading(match, f"[{text}]({href})", text)
+                    line, match = cursor.locate(re.compile(re.escape("<" + text + ">")))
+                    readable = cursor.keeps_reading(match, f"[{text}]({href})", text)
                     found.append(Autolink(line, text, href, readable))
             case "link_close":
                 if link is not None and link.markup != "autolink":
-                    skip_destination(str(link.attrGet("href")))
+                    cursor.skip_destination(str(link.attrGet("href")))
                 link = None
             case "image":
-                skip_destination(str(child.attrGet("src")))
+                cursor.skip_destination(str(child.attrGet("src")))
             case "code_inline":
                 pattern = code_span_source(child.markup, child.content)
-                if link is not None and link.markup != "autolink":
+                line, match = cursor.locate(pattern)
+                in_link = link is not None and link.markup != "autolink"
+                if not in_link and bold_depth == 0:
+                    continue
+                readable = cursor.keeps_reading(match, child.content, child.content)
+                if link is not None and in_link:
                     href = str(link.attrGet("href"))
-                    line, match = locate(pattern)
-                    readable = keeps_reading(match, child.content, child.content)
                     found.append(CodeAsLinkText(line, child.content, href, readable))
-                elif bold_depth > 0:
-                    line, match = locate(pattern)
-                    found.append(
-                        CodeInBold(
-                            line, child.content, keeps_reading(match, child.content, child.content)
-                        )
-                    )
                 else:
-                    locate(pattern)
+                    split = bold_split(children, index)
+                    found.append(CodeInBold(line, child.content, split, readable))
             case "text" if link is None:
-                start = source.find(child.content, cursor) if child.content else -1
-                if start >= 0:
-                    cursor = start
-                for url in urls_in(child.content):
-                    line, match = locate(re.compile(re.escape(url)))
-                    if match is not None:
-                        # Emphasis inside a URL splits it across tokens, so the URL as written is
-                        # read from the source, where it runs on past this token.
-                        whole = URL_RUN.match(source, match.start())
-                        assert whole is not None, "a URL found in the source is matched there"
-                        url = trimmed(whole.group())
-                        cursor = match.start() + len(url)
-                        match = re.compile(re.escape(url)).match(source, match.start())
-                    readable = keeps_reading(match, f"[{url}]({url})", url)
-                    found.append(BareUrl(line, url, readable))
-                if start >= 0:
-                    cursor = max(cursor, start + len(child.content))
+                found.extend(bare_urls(cursor, child.content))
             case _:
                 pass
     return found
 
 
 def find_breakages(text: str) -> tuple[Breakage, ...]:
+    # markdown-it reads a lone `\r` as a line break too, so every line ending is counted as one.
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
     line_count = text.count("\n") + 1
     found: list[Breakage] = []
     for token in PARSER.parse(text):
@@ -322,13 +394,13 @@ LABEL_FIX = "give it a label of its own, which adds words to approve"
 
 def report(breakage: Breakage) -> str:
     match breakage:
-        case CodeInBold(line, code, renders_as_written):
+        case CodeInBold(line, code, split, renders_as_written):
             alternative = (
                 ", or leave the backticks out of the bold phrase" if renders_as_written else ""
             )
             return (
-                f"{line}: code inside bold: Jira ends the bold where `{code}` starts. Fix: end the"
-                f" bold before the code and start it again after{alternative}"
+                f"{line}: code inside bold: Jira ends the bold where `{code}` starts."
+                f" Fix: {split.value}{alternative}"
             )
         case CodeAsLinkText(line, code, href, renders_as_written):
             fix = (
@@ -354,7 +426,13 @@ def report(breakage: Breakage) -> str:
 
 
 # The Jira MCP tools that post a body. parse_hook_input reads each one's body field.
-POST_TOOLS = ("addCommentToJiraIssue", "createJiraIssue", "editJiraIssue")
+POST_TOOLS = (
+    "addCommentToJiraIssue",
+    "createJiraIssue",
+    "editJiraIssue",
+    "addWorklogToJiraIssue",
+    "createIssueLink",
+)
 
 
 @dataclass(frozen=True)
@@ -401,41 +479,50 @@ def parse_hook_input(raw: str) -> JiraPost | NothingToCheck | MalformedHookInput
             return (
                 JiraPost("fields.description", body) if isinstance(body, str) else NothingToCheck()
             )
+        case "addWorklogToJiraIssue":
+            body = tool_input.get("commentBody")
+            return JiraPost("commentBody", body) if isinstance(body, str) else NothingToCheck()
+        case "createIssueLink":
+            body = tool_input.get("comment")
+            return JiraPost("comment", body) if isinstance(body, str) else NothingToCheck()
         case other:
             return MalformedHookInput(f"{other} is not one of the Jira post tools {POST_TOOLS}")
 
 
-def check_file(path: Path) -> None:
+ExitCode = NewType("ExitCode", int)  # the codes the module docstring lists
+
+
+def check_file(path: Path) -> ExitCode:
     match read_body(path):
         case Unreadable(path, reason):
             print(f"Could not read {path}: {reason}", file=sys.stderr)
-            sys.exit(2)
+            return ExitCode(2)
         case Body(path, text):
             breakages = find_breakages(text)
             if not breakages:
-                sys.exit(0)
+                return ExitCode(0)
             for breakage in breakages:
                 print(f"{path}:{report(breakage)}")
             print(f"{len(breakages)} to fix before posting; {SENTINEL}")
-            sys.exit(1)
+            return ExitCode(1)
         case _ as unreachable:
             assert_never(unreachable)
 
 
-def check_hook_input(raw: str) -> None:
+def check_hook_input(raw: str) -> ExitCode:
     match parse_hook_input(raw):
         case NothingToCheck():
-            sys.exit(0)
+            return ExitCode(0)
         case MalformedHookInput(reason):
             print(
                 f"The Jira markdown check could not read this post, so it is refused: {reason}",
                 file=sys.stderr,
             )
-            sys.exit(2)
+            return ExitCode(2)
         case JiraPost(field, text):
             breakages = find_breakages(text)
             if not breakages:
-                sys.exit(0)
+                return ExitCode(0)
             for breakage in breakages:
                 print(f"{field}:{report(breakage)}", file=sys.stderr)
             print(
@@ -443,26 +530,27 @@ def check_hook_input(raw: str) -> None:
                 " use-jira skill describes and post again.",
                 file=sys.stderr,
             )
-            sys.exit(2)
+            return ExitCode(2)
         case _ as unreachable:
             assert_never(unreachable)
 
 
-def main() -> None:
+def main() -> ExitCode:
     match parse_args(sys.argv[1:]):
         case CheckFile(path):
-            check_file(path)
+            return check_file(path)
         case CheckHookInput():
-            check_hook_input(sys.stdin.read())
+            return check_hook_input(sys.stdin.read())
         case _ as unreachable:
             assert_never(unreachable)
 
 
 if __name__ == "__main__":
     try:
-        main()
+        code = main()
     except Exception:
         # Exit 1 means a list of problems to fix, so a crash must not end with it.
         traceback.print_exc()
         print("The check crashed, so the body was not checked.", file=sys.stderr)
         sys.exit(2)
+    sys.exit(code)

@@ -1,7 +1,8 @@
 """Black-box tests for check_jira_markdown.py.
 
-Each test runs the script as a subprocess, on a body written to a temporary file or on hook input
-sent to stdin, so the script stays a single file.
+Each test of the check runs the script as a subprocess, on a body written to a temporary file or on
+hook input sent to stdin, so the script stays a single file. The tests of the hook's entry read
+settings.json, and one test compares the dependency range with the check scripts.
 
 Run with `bash scripts/checks/tests.bash` from the repo root, which installs what these tests need.
 """
@@ -21,6 +22,9 @@ SCRIPT = Path(__file__).with_name("check_jira_markdown.py")
 REPO = Path(__file__).resolve().parents[6]
 URL = "https://github.com/example/repo/pull/7"
 SENTINEL = "post nothing until then"
+CODE_IN_BOLD = re.compile(
+    r"code inside bold: Jira ends the bold where `([^`]+)` starts\. Fix: (.*)"
+)
 
 
 def run(*args: str, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
@@ -283,6 +287,52 @@ def test_bare_url_after_a_link_to_it_is_reported_on_its_own_line(tmp_path: Path,
     assert reported_lines(check(tmp_path, body), "bare URL") == [2]
 
 
+@pytest.mark.parametrize(
+    "body",
+    ["See https://a.com/a|b here.\n", "See https://x.com/a&gt; here.\n"],
+    ids=["pipe", "entity"],
+)
+def test_url_that_cannot_be_split_off_cleanly_gets_no_word_keeping_fix(
+    tmp_path: Path, body: str
+) -> None:
+    result = check(tmp_path, body)
+    assert reported_lines(result, "bare URL") == [1]
+    assert "write it as [" not in result.stdout, result.stdout
+
+
+@pytest.mark.parametrize(
+    ("body", "fix"),
+    [
+        ("**Uses `x`** here.\n", "end the bold before the code"),
+        ("**`x` is used** here.\n", "start the bold after the code"),
+        ("**`x`** here.\n", "take the bold off the code"),
+        ("**Uses `x` here.**\n", "end the bold before the code and start it again after"),
+    ],
+    ids=["code ends the bold", "code starts the bold", "code is the bold", "code in the middle"],
+)
+def test_code_inside_bold_fix_fits_where_the_code_sits(tmp_path: Path, body: str, fix: str) -> None:
+    result = check(tmp_path, body)
+    found = CODE_IN_BOLD.search(result.stdout)
+    assert found is not None, result.stdout
+    assert found.group(2) == fix or found.group(2).startswith(f"{fix}, or"), found.group(2)
+
+
+def test_code_inside_bold_after_a_url_with_emphasis_is_reported_on_its_own_line(
+    tmp_path: Path,
+) -> None:
+    body = "See https://e.com/__x__ and **the `x` docs**\nlater **the `x` docs**\n"
+    assert reported_lines(check(tmp_path, body), "code inside bold") == [1, 2]
+
+
+@pytest.mark.parametrize("newline", ["\r", "\r\n"], ids=["bare CR", "CRLF"])
+def test_hook_checks_a_body_with_any_line_ending(newline: str) -> None:
+    body = newline.join(["Hi.", "", "**Uses `x`** and https://x.com/y"])
+    result = hook("addCommentToJiraIssue", {"commentBody": body})
+    assert result.returncode == 2
+    assert "crashed" not in result.stderr, result.stderr
+    assert "commentBody:3: code inside bold" in result.stderr, result.stderr
+
+
 def test_dependency_range_matches_the_test_and_type_check_installs() -> None:
     header = re.search(r'# dependencies = \["([^"]+)"\]', SCRIPT.read_text())
     assert header is not None
@@ -297,9 +347,34 @@ PARSER = MarkdownIt("commonmark").enable("table")
 WORD_KEEPING_URL_FIX = re.compile(
     r"bare URL: Jira posts (\S+) as text, not a link\. Fix: write it as \["
 )
-WORD_KEEPING_CODE_FIX = re.compile(
-    r"code inside bold: Jira ends the bold where `([^`]+)` starts\..*leave the backticks out"
-)
+BACKTICKS_OUT = "leave the backticks out"
+
+
+def split_bold(body: str, code: str, fix: str) -> str:
+    """Apply the fix the check printed for code inside bold, as an agent would.
+
+    Whitespace beside a bold marker moves outside it, since `**see **` does not close the bold.
+    """
+    pattern = re.compile(r"\*\*([^*`]*?)`" + re.escape(code) + r"`([^*`]*?)\*\*")
+    found = pattern.search(body)
+    assert found is not None, (body, code)
+    before, after = found.group(1).strip(), found.group(2).strip()
+    span = f"`{code}`"
+    if fix.startswith("take the bold off the code"):
+        assert not before and not after, fix
+        replacement = span
+    elif fix.startswith("start the bold after the code"):
+        assert not before and after, fix
+        replacement = f"{span} **{after}**"
+    elif fix.startswith("end the bold before the code and start it again after"):
+        assert before and after, fix
+        replacement = f"**{before}** {span} **{after}**"
+    elif fix.startswith("end the bold before the code"):
+        assert before and not after, fix
+        replacement = f"**{before}** {span}"
+    else:
+        raise AssertionError(f"no fix to apply in: {fix}")
+    return body[: found.start()] + replacement + body[found.end() :]
 
 
 def rendered_text(body: str) -> str:
@@ -318,13 +393,24 @@ def fragment(index: int) -> st.SearchStrategy[str]:
     word = st.sampled_from(["see", "the", "run"])
     code = st.sampled_from([f"x{index}", f"__init{index}__", f"*args{index}", f"a_b{index}"])
     url = st.sampled_from(
-        [f"https://e.com/p{index}", f"https://e.com/a_b{index}", f"https://e.com/__i{index}__.py"]
+        [
+            f"https://e.com/p{index}",
+            f"https://e.com/a_b{index}",
+            f"https://e.com/__i{index}__.py",
+            f"https://e.com/a*b{index}*c",
+            f"https://e.com/p{index}|b",
+            f"https://e.com/a{index}&gt;",
+            f"https://e.com/q{index}?a=1&amp;b=2",
+        ]
     )
+    beside_code = st.one_of(st.just(""), word)
     return st.one_of(
         word,
         url,
         code.map(lambda c: f"`{c}`"),
-        st.tuples(word, code, word).map(lambda t: f"**{t[0]} `{t[1]}` {t[2]}**"),
+        st.tuples(beside_code, code, beside_code).map(
+            lambda t: "**" + " ".join(part for part in (t[0], f"`{t[1]}`", t[2]) if part) + "**"
+        ),
     )
 
 
@@ -340,19 +426,28 @@ def reports_in(result: subprocess.CompletedProcess[str]) -> list[str]:
     ]
 
 
-@settings(max_examples=40, deadline=None)
-@given(body=bodies)
-def test_word_keeping_fixes_leave_the_body_reading_the_same(tmp_path_factory, body: str) -> None:
+@settings(max_examples=60, deadline=None)
+@given(body=bodies, take_backticks_out=st.booleans())
+def test_word_keeping_fixes_leave_the_body_reading_the_same(
+    tmp_path_factory: pytest.TempPathFactory, body: str, take_backticks_out: bool
+) -> None:
     tmp_path = tmp_path_factory.mktemp("body")
     before = check(tmp_path, body)
+    urls_as_written = {part for part in body.split() if part.startswith("https://")}
     fixed = body
     applied = 0
     for line in before.stdout.splitlines():
         if url := WORD_KEEPING_URL_FIX.search(line):
+            # The link must point at the whole URL the body holds, not a piece of it.
+            assert url.group(1) in urls_as_written, (line, body)
             fixed = fixed.replace(url.group(1), f"[{url.group(1)}]({url.group(1)})", 1)
             applied += 1
-        elif code := WORD_KEEPING_CODE_FIX.search(line):
-            fixed = fixed.replace(f"`{code.group(1)}`", code.group(1), 1)
+        elif bold := CODE_IN_BOLD.search(line):
+            code, fix = bold.group(1), bold.group(2)
+            if take_backticks_out and BACKTICKS_OUT in fix:
+                fixed = fixed.replace(f"`{code}`", code, 1)
+            else:
+                fixed = split_bold(fixed, code, fix)
             applied += 1
     after = check(tmp_path, fixed)
     assert len(reports_in(after)) == len(reports_in(before)) - applied, (fixed, after.stdout)
@@ -408,12 +503,62 @@ def test_hook_refuses_a_description_with_a_bare_url(
 
 
 @pytest.mark.parametrize(
+    ("tool", "tool_input", "field"),
+    [
+        ("addWorklogToJiraIssue", {"timeSpent": "1h", "commentBody": f"See {URL}"}, "commentBody"),
+        ("createIssueLink", {"type": "Relates", "comment": f"See {URL}"}, "comment"),
+    ],
+    ids=["worklog", "issue link"],
+)
+def test_hook_refuses_a_worklog_or_link_comment_with_a_bare_url(
+    tool: str, tool_input: dict[str, object], field: str
+) -> None:
+    result = hook(tool, tool_input)
+    assert result.returncode == 2
+    assert f"{field}:1: bare URL" in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("tool", "tool_input"),
+    [
+        ("addWorklogToJiraIssue", {"timeSpent": "1h"}),
+        ("createIssueLink", {"type": "Relates"}),
+    ],
+    ids=["worklog without a comment", "issue link without a comment"],
+)
+def test_hook_lets_a_worklog_or_link_without_a_comment_through(
+    tool: str, tool_input: dict[str, object]
+) -> None:
+    result = hook(tool, tool_input)
+    assert result.returncode == 0, result.stderr
+
+
+def post(tool: str, tool_input: object) -> str:
+    return json.dumps({"tool_name": f"mcp__atlassian-rovo__{tool}", "tool_input": tool_input})
+
+
+@pytest.mark.parametrize(
     "stdin",
     [
         "not json",
-        json.dumps({"tool_name": "mcp__atlassian-rovo__addCommentToJiraIssue", "tool_input": {}}),
+        "",
+        "[]",
+        "null",
+        json.dumps({"tool_name": "mcp__atlassian-rovo__addCommentToJiraIssue"}),
+        post("addCommentToJiraIssue", {}),
+        post("addCommentToJiraIssue", {"commentBody": 5}),
+        post("getJiraIssue", {}),
     ],
-    ids=["not json", "comment without a body"],
+    ids=[
+        "not json",
+        "empty",
+        "array",
+        "null",
+        "no tool_input",
+        "comment without a body",
+        "comment body not a string",
+        "not a post tool",
+    ],
 )
 def test_hook_refuses_a_post_it_cannot_read(stdin: str) -> None:
     result = run("--hook", stdin=stdin)
@@ -421,20 +566,85 @@ def test_hook_refuses_a_post_it_cannot_read(stdin: str) -> None:
     assert result.stderr
 
 
-def hook_matcher() -> re.Pattern[str]:
+def test_a_body_file_and_hook_together_are_refused(tmp_path: Path) -> None:
+    path = tmp_path / "body.md"
+    path.write_text("Fine.\n")
+    assert run(str(path), "--hook").returncode == 2
+
+
+# A crash must exit 2, because the hook lets any other non-zero exit through unless onFailure blocks
+# it, and the skill reads exit 1 as a list of fixes.
+CRASH = """
+import runpy, sys
+import markdown_it
+def broken(*args, **kwargs):
+    raise RuntimeError("parse failed")
+markdown_it.MarkdownIt.parse = broken
+sys.argv = [sys.argv[1], *sys.argv[2:]]
+runpy.run_path(sys.argv[0], run_name="__main__")
+"""
+
+
+@pytest.mark.parametrize("mode", ["file", "hook"])
+def test_a_crash_exits_2(tmp_path: Path, mode: str) -> None:
+    path = tmp_path / "body.md"
+    path.write_text("Fine.\n")
+    args = ["--hook"] if mode == "hook" else [str(path)]
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", CRASH, str(SCRIPT), *args],
+        capture_output=True,
+        text=True,
+        input=post("addCommentToJiraIssue", {"commentBody": "Fine."}),
+    )
+    assert result.returncode == 2, result.stderr
+    assert "The check crashed" in result.stderr
+
+
+def hook_entry() -> dict[str, object]:
     settings_json = json.loads((REPO / "tools/claude/config/settings.json").read_text())
-    groups = settings_json["hooks"]["PreToolUse"]
-    matchers = [
-        g["matcher"]
-        for g in groups
-        if any("check_jira_markdown.py" in h["command"] for h in g["hooks"])
+    entries = [
+        (group["matcher"], hook)
+        for group in settings_json["hooks"]["PreToolUse"]
+        for hook in group["hooks"]
+        if "check_jira_markdown.py" in hook["command"]
     ]
-    assert len(matchers) == 1, matchers
-    return re.compile(matchers[0])
+    assert len(entries) == 1, entries
+    matcher, entry = entries[0]
+    return {"matcher": matcher, **entry}
+
+
+def hook_matcher() -> re.Pattern[str]:
+    return re.compile(str(hook_entry()["matcher"]))
+
+
+def test_hook_refuses_the_post_when_the_check_cannot_run() -> None:
+    # A uv failure exits 1, a missing uv 127, and a timeout has no exit code: Claude Code lets each
+    # of these through unless the hook sets onFailure to block.
+    entry = hook_entry()
+    assert entry["onFailure"] == "block"
+    assert isinstance(entry["timeout"], int)
+
+
+def test_hook_runs_this_script_in_hook_mode() -> None:
+    words = str(hook_entry()["command"]).split()
+    assert words[:3] == ["uv", "run", "--quiet"] and "--script" in words, words
+    assert words[-1] == "--hook", words
+    script = words[-2]
+    assert script.startswith("~/Repos/ooloth/dotfiles/"), script
+    assert REPO / script.removeprefix("~/Repos/ooloth/dotfiles/") == SCRIPT, script
 
 
 @pytest.mark.parametrize("server", ["atlassian-rovo", "claude_ai_Atlassian_MCP"])
-@pytest.mark.parametrize("tool", ["addCommentToJiraIssue", "createJiraIssue", "editJiraIssue"])
+@pytest.mark.parametrize(
+    "tool",
+    [
+        "addCommentToJiraIssue",
+        "createJiraIssue",
+        "editJiraIssue",
+        "addWorklogToJiraIssue",
+        "createIssueLink",
+    ],
+)
 def test_hook_runs_on_every_jira_post_tool(server: str, tool: str) -> None:
     assert hook_matcher().search(f"mcp__{server}__{tool}")
 

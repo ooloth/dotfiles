@@ -45,8 +45,8 @@ this skill asks nothing there and puts what it would have asked in its final rep
    Read `use-jira` or `use-linear` before posting. Post without asking: running this skill approves
    this comment, as the global CLAUDE.md says. If no tool can post to the tracker, the post fails,
    or `use-jira`'s check of a post through the MCP tool cannot run, give the user the line to paste
-   when they ran this skill. When nobody is watching the run, put the line and the ticket in the
-   final report.
+   when they ran this skill. When the user did not run this skill, put the line and the ticket in
+   the final report.
 8. Open the PR in the browser with `gh pr view <PR URL> --web`. Where that fails, such as in a
    sandbox with no browser, say so in one line and carry on: the PR exists either way.
 

@@ -42,7 +42,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "^mcp__.*__(addCommentToJiraIssue|createJiraIssue|editJiraIssue)$",
+        "matcher": "^mcp__.*__(addCommentToJiraIssue|createJiraIssue|editJiraIssue|addWorklogToJiraIssue|createIssueLink)$",
         "hooks": [
           {
             "type": "command",
