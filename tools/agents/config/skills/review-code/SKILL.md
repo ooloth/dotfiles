@@ -865,6 +865,13 @@ PR never gets Request Changes or inline comments, and `post_review.py` refuses b
 are none, or once they are fixed, ask the posting question below, whose usual answer is approve.
 When the user leaves a `must` unfixed, the review is a Comment that names it in the body.
 
+The user's answer naming the fixes also approves committing them and pushing them to the PR's
+branch, merging trunk in first when the branch conflicts, never rebasing. The head move those
+fix commits make is then checked by running Step 1a and the project's checks and tests again at
+the new head, not by rerunning the review agents: the commits answer this review's findings, and
+a change gets one review round. Any other new commit on the head is still checked as "Check what
+changed since the saved state" says.
+
 Otherwise, if this is a PR and the author is NOT the user, ask:
 
 > "Post this as a GitHub review? (yes / approve / request-changes / comment / skip)"
