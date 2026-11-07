@@ -136,7 +136,7 @@ def read_request(argv: list[str]) -> Request:
         type=keychain_account,
         default=KeychainAccount(getpass.getuser()),
         help="the account to store it under (default: your user name). Use the one a tool"
-        " looks up, such as your login email for jira-cli",
+        " looks up, such as your login email",
     )
     get = commands.add_parser("get", help="print a stored secret")
     get.add_argument("name", type=secret_name, help="the name it was stored under")

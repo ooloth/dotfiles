@@ -131,9 +131,9 @@ class Add(SecretTest):
         self.assertIn("300 characters", run.stderr)
 
     def test_an_account_stores_the_item_another_tool_looks_up(self) -> None:
-        # jira-cli reads the item named jira-cli whose account is the login email
+        # a tool that reads the item named some-tool whose account is the login email
         run = self.secret(
-            "add", "jira-cli", "--account", "alice@example.com", stdin="test-value-123\n"
+            "add", "some-tool", "--account", "alice@example.com", stdin="test-value-123\n"
         )
 
         self.assertEqual(run.status, 0, run.stderr)
@@ -145,7 +145,7 @@ class Add(SecretTest):
                 "-a",
                 "alice@example.com",
                 "-s",
-                "jira-cli",
+                "some-tool",
                 "-w",
                 "test-value-123",
             ],
@@ -155,7 +155,7 @@ class Add(SecretTest):
     def test_an_account_security_could_misread_is_refused_before_security_runs(self) -> None:
         for account in ("-x", "a b", ""):
             with self.subTest(account=account):
-                run = self.secret("add", "jira-cli", "--account", account, stdin="v\n")
+                run = self.secret("add", "some-tool", "--account", account, stdin="v\n")
                 self.assertEqual(run.status, 2, run.stderr)
                 self.assertIsNone(run.security)
 
@@ -174,12 +174,12 @@ class Add(SecretTest):
     def test_a_name_stored_under_another_account_is_refused_and_names_that_account(self) -> None:
         # Storing it anyway would leave two values under one name, and get would return either
         run = self.secret(
-            "add", "jira-cli", stdin="test-value-123\n", STUB_ACCOUNT="alice@example.com"
+            "add", "some-tool", stdin="test-value-123\n", STUB_ACCOUNT="alice@example.com"
         )
 
         self.assertEqual(run.status, 1)
-        self.assertEqual(run.security, ["find-generic-password", "-s", "jira-cli"])
-        self.assertIn("secret add jira-cli --account alice@example.com", run.stderr)
+        self.assertEqual(run.security, ["find-generic-password", "-s", "some-tool"])
+        self.assertIn("secret add some-tool --account alice@example.com", run.stderr)
 
     def test_a_name_stored_under_the_same_account_is_replaced(self) -> None:
         run = self.secret(

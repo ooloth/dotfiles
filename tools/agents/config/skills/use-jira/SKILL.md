@@ -1,6 +1,6 @@
 ---
 name: use-jira
-description: Jira gotchas for the Atlassian MCP tools and the acli and jira CLIs. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every markdown body before posting it through the MCP tool. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
+description: Jira gotchas for the Atlassian MCP tools and the acli CLI. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every markdown body before posting it through the MCP tool. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
 ---
 
 ## Cloud ID
@@ -117,29 +117,3 @@ Setup is in `tools/jira/README.md`. Tested with acli 1.3.39 on a work ticket:
   `ACLI_LOG_ENABLED=true ACLI_LOG_FILE=<file>` to log the request and response. The log redacts the
   `Authorization` header; a 401 with `X-Failure-Category: FAILURE_CLIENT_SCOPE_CHECK` means the
   login is an API token rather than OAuth.
-
-## The jira CLI
-
-`jira` (jira-cli) is the second fallback until it is removed
-([#196](https://github.com/ooloth/dotfiles/issues/196)). Use it only when acli fails. Its token is
-in the login keychain and jira-cli reads it there; never read it out, print it or export it. Setup
-is in `tools/jira/README.md`.
-
-- **Reads show one comment.** `jira issue view KEY --plain` prints the latest comment only. Pass
-  `--comments 50` (or more than the ticket has) when the plan is what you came for.
-- **Post from a file, never an argument.** `jira issue comment add KEY --template <file>
-  --no-input` reads the body from the file and skips the editor prompt. A body passed as an argument
-  goes through the shell, and a positional body silently wins over `--template`.
-- **A posted comment cannot be fixed from the CLI.** jira-cli has `comment add` and nothing else, so
-  a mistake stays until someone edits it in the web UI. Validate the body before posting, harder
-  than for the MCP tool. `check_jira_markdown.py` models the MCP tool's conversion, not jira-cli's,
-  so a pass says nothing about a jira-cli post.
-- **Markdown survives only in its simplest shapes.** jira-cli converts the body to Jira wiki markup
-  (blackfriday-confluence, posted to API v2). Tested on a work ticket: paragraphs, inline code,
-  bold, links (including code as link text) and a flat bullet list survive. A heading runs into the
-  paragraph above as literal `h2.` text, a nested bullet and a numbered list after a bullet list
-  become literal `**` and `#` lines, a table keeps its `|-|` separator as a row of dashes with no
-  header row, and a code block lands inside a stray bullet tagged as Java. Post only paragraphs and
-  flat lists through the CLI, and keep the inline code, bold and links inside them: they survive,
-  and they make a long comment far faster to skim. Read the comment back with
-  `jira issue view KEY --comments 1 --raw`, since `--plain` re-renders it and hides some breakage.

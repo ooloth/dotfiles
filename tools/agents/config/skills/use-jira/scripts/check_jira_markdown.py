@@ -19,7 +19,7 @@ Structure Jira cannot hold at all, such as a table inside a list item, is not ch
 the tool refuses the whole post and posts nothing.
 
 The body is parsed as CommonMark with tables, the closest model of Jira's converter available.
-acli posts ADF and jira-cli uses its own converter, so neither is checked by this.
+acli posts ADF, so it is not checked by this.
 
 Usage:
   check_jira_markdown.py <body.md>

@@ -1,11 +1,7 @@
 # Jira CLI
 
-Two Jira CLIs, set up on the work laptop only, for when the Atlassian MCP server will not connect:
-
-- [acli](https://developer.atlassian.com/cloud/acli/guides/introduction/), Atlassian's own CLI,
-  is the one to use.
-- [jira-cli](https://github.com/ankitpokhrel/jira-cli) stays until acli has worked at least as
-  well for a week, and is then removed ([#196](https://github.com/ooloth/dotfiles/issues/196)).
+[acli](https://developer.atlassian.com/cloud/acli/guides/introduction/), Atlassian's own Jira CLI,
+set up on the work laptop only, for when the Atlassian MCP server will not connect.
 
 ## acli
 
@@ -61,65 +57,3 @@ Nothing in this repo links or tracks them.
 acli sends usage analytics to `as.atlassian.com` on every command: a hashed user ID, an anonymous
 ID, the cloud ID, the command name, its flag names and its duration. The comment body is not in
 the event. No setting or environment variable turns this off in acli 1.3.39.
-
-## jira-cli
-
-### Install
-
-`tools/jira/Brewfile` installs it on a work machine, and `u` upgrades it with every other formula.
-
-### Set up the token
-
-1. Find the site's cloud ID: open `https://$PRIVATE_JIRA_SITE/_edge/tenant_info` and copy
-   the `cloudId` value. `$PRIVATE_JIRA_CLOUD_ID` already holds it on a machine whose `private.env`
-   sets it.
-2. Create an API token:
-
-   - Go to https://id.atlassian.com/manage-profile/security/api-tokens
-   - Click "Create API token with scopes"
-   - Select "Jira" and click "Next"
-   - Select the scopes `read:jira-work`, `write:jira-work`, `read:jira-user`, `read:me`,
-     `read:account`, `read:project:jira`, `read:board-scope:jira-software` and
-     `write:board-scope:jira-software`. `jira init` lists the project's boards through Jira
-     Software's agile API, which needs both `read:project:jira` and
-     `read:board-scope:jira-software`
-     ([Get all boards](https://developer.atlassian.com/cloud/jira/software/rest/api-group-board/)).
-     A scope cannot be added to a token later. The token expires within a year, so note the date.
-
-3. Store the token in the login keychain as the item jira-cli looks up, and paste it at the hidden
-   prompt (see `features/secret/README.md`):
-
-   ```sh
-   secret add jira-cli --account <your-work-email>
-   ```
-
-   The command prints how many characters it stored, so check that against the token's length.
-
-4. Point jira-cli at Atlassian's API gateway rather than the site:
-
-   ```sh
-   jira init --installation cloud --server https://api.atlassian.com/ex/jira/<cloudId> --login <your-work-email> --force
-   ```
-
-5. Run `jira me`, choose "Always Allow" at the keychain prompt, and expect your email back.
-
-To replace an expired token, create a new one and run step 3 again, which replaces the stored
-value.
-
-### Why it is set up this way
-
-jira-cli looks for the token in `JIRA_API_TOKEN` first, then `.netrc`, then a keychain item named
-`jira-cli` whose account is your login
-([discussion #356](https://github.com/ankitpokhrel/jira-cli/discussions/356)). The keychain keeps
-the token out of every shell's environment, where any command or agent could print it, and out of
-plain-text files. The login keychain does not sync off this laptop. So `JIRA_API_TOKEN` is never
-exported.
-
-A scoped token limits what a lost token can do to Jira work items, where an unscoped one can do
-anything the account can across Jira and Confluence. Atlassian accepts a scoped token only through
-`api.atlassian.com/ex/jira/<cloudId>`, not the site URL. jira-cli 1.7.0 has no scoped-token
-support of its own ([PR #928](https://github.com/ankitpokhrel/jira-cli/pull/928) is unmerged),
-and setting `--server` to the gateway is the workaround reported in
-[issue #850](https://github.com/ankitpokhrel/jira-cli/issues/850). If `jira me` returns 401
-through the gateway, create an unscoped token instead and run step 4 with
-`--server "https://$PRIVATE_JIRA_SITE"`.

@@ -68,7 +68,6 @@
       "mcp__atlassian-rovo__addCommentToJiraIssue",
       "Bash(gh pr comment *)",
       "Bash(gh api repos/recursionpharma/*/pulls/*/comments*)",
-      "Bash(jira issue comment add *)",
       "Bash(acli jira workitem view *)",
       "Bash(acli jira workitem comment create *)",
       "Bash(acli jira workitem comment update *)",

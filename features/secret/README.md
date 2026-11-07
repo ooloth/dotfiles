@@ -18,13 +18,13 @@ directly, as above.
   longer than 128 characters, which `security`'s own prompt cuts short. It prints how many
   characters it stored, so a cut-off paste shows up at once. Piped input is read as one line.
   Ctrl-C or Ctrl-D at the prompt stores nothing. `--account <account>` stores it under the account
-  a tool looks up, such as `secret add jira-cli --account <your-work-email>`; the default is your
+  a tool looks up, such as `secret add some-tool --account <your-work-email>`; the default is your
   user name. When the name is already stored under a different account, it stores nothing and
   says to pass that account with `--account`, naming it when `security` shows it. A second item
   under the same name would leave `secret get` returning either value.
 - **`secret get <name>`** prints the value and nothing else on stdout. When nothing is stored
   under the name, it prints nothing there, exits 1 and says to run `secret add <name>` first.
-  It finds items stored by other tools too, such as `jira-cli`, because it looks only at the name.
+  It finds items stored by other tools too, because it looks only at the name.
 
 ## What it protects against
 
