@@ -413,6 +413,13 @@ class Settings(unittest.TestCase):
         assert "allowUnsandboxedCommands" in str(raised.exception)
 
 
+class SessionEnv(unittest.TestCase):
+    def test_npm_keeps_its_cache_in_the_replays_scratch_folder(self) -> None:
+        work = Path("/private/tmp/rp-test")
+        env = replay.session_env(work / "bin", work / "scratch", work / "t")
+        assert env["npm_config_cache"] == str(work / "scratch" / "npm-cache")
+
+
 # ── What the session left behind ───────────────────────────────────────────────────────────────
 
 

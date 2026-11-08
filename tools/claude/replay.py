@@ -14,8 +14,8 @@ Run:
 when planning began:
 
 - a clone fetched only up to the last commit before the ticket's approach comment
-- a `gh` stand-in that serves the ticket body as it stood then, with no comments and no parent, and
-  saves the comments the skill tries to post
+- a `gh` stand-in that serves the ticket body as it stood then, with no parent and no comments but
+  the ones the replay posts, which it saves instead of posting
 - Claude Code's sandbox with no network except package registries, Bash reads of the home and temp
   folders confined to an allow-list, the Read tool confined to the working directories, and web
   tools and MCP servers off
@@ -69,6 +69,7 @@ REGISTRIES = (
     "crates.io",
     "index.crates.io",
     "static.crates.io",
+    "registry.npmjs.org",
 )
 # Home-relative folders the session's Bash may read: where this Mac's toolchains and git config
 # live. A folder missing here shows up in the audit as refused file access.
@@ -83,6 +84,9 @@ TOOLCHAINS = (
     ".rustup",
     ".local/share/fnm",
     ".local/state/fnm_multishells",
+    # fnm's own folder: each shell's link above goes through its `aliases` links into `node-versions`,
+    # and a link the sandbox can't read fails a PATH lookup that passes through it with EPERM.
+    "Library/Application Support/fnm",
     ".config/git",
 )
 # The session's label in Claude Code's transcripts and usage accounting. "factory" is the epic this
@@ -1250,6 +1254,8 @@ def session_env(bin_dir: Path, scratch: Path, claude_tmp: Path) -> dict[str, str
     # rather than under /tmp/claude-<uid>, which the sandbox can't read. The path is kept short,
     # since the sandbox falls back to /tmp when it is long.
     env["CLAUDE_CODE_TMPDIR"] = str(claude_tmp)
+    # npm's own cache, in the home folder, is outside what the sandbox lets Bash write.
+    env["npm_config_cache"] = str(scratch / "npm-cache")
     return env
 
 

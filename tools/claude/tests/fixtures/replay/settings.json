@@ -10,7 +10,8 @@
         "files.pythonhosted.org",
         "crates.io",
         "index.crates.io",
-        "static.crates.io"
+        "static.crates.io",
+        "registry.npmjs.org"
       ]
     },
     "filesystem": {
