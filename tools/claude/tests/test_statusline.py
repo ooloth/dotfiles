@@ -40,10 +40,8 @@ REPO = CONFIG.parent.parent.parent
 PAYLOAD = Path(__file__).resolve().parent / "fixtures" / "statusline-payload.json"
 SETTINGS = CONFIG / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
-# Nerd Font speedometers whose needle shows how full the context is: below 125K, from 125K, and from
-# 250K, the same bands as its colour
-SLOW, MEDIUM, FAST = "\U000f0f86", "\U000f0f85", "\U000f04c5"
-RIGHT = f"Opus 5.5 (1M) · {SLOW}  10K"
+RIGHT = "Opus 5.5 (1M) · 10K"
+DIM = "\033[2m"
 BRANCH_ICON = "\ue725 "  # nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
 FOLDER_ICON = "\uf07b  "  # nf-fa-folder, then two spaces because Rex draws it wider than a cell
 
@@ -338,52 +336,37 @@ YELLOW = "\033[33m"
 RED = "\033[31m"
 
 
-def context_band(used_k: int, window_k: int) -> tuple[str | None, str]:
-    """The colour and the speedometer the context count is shown with."""
+def context_colour(used_k: int, window_k: int) -> str | None:
     with tempfile.TemporaryDirectory() as parent:
         line = status_line(
             Path(parent), "120", used_percentage=used_k / window_k * 100, window=window_k * 1000
         )
-    match = re.search(rf"(\033\[3[13]m)?([{SLOW}{MEDIUM}{FAST}])  {used_k}K", line)
+    match = re.search(rf" · (\033\[3[13]m)?{used_k}K", line)
     assert match, line
-    return match[1], match[2]
+    return match[1]
 
 
-class ContextBand(unittest.TestCase):
-    def test_a_1m_window_turns_yellow_and_medium_at_125k(self) -> None:
-        self.assertEqual(context_band(124, 1000), (None, SLOW))
-        self.assertEqual(context_band(125, 1000), (YELLOW, MEDIUM))
+class ContextColour(unittest.TestCase):
+    def test_a_1m_window_turns_yellow_at_125k(self) -> None:
+        self.assertIsNone(context_colour(124, 1000))
+        self.assertEqual(context_colour(125, 1000), YELLOW)
 
-    def test_a_1m_window_turns_red_and_fast_at_250k(self) -> None:
-        self.assertEqual(context_band(249, 1000), (YELLOW, MEDIUM))
-        self.assertEqual(context_band(250, 1000), (RED, FAST))
+    def test_a_1m_window_turns_red_at_250k(self) -> None:
+        self.assertEqual(context_colour(249, 1000), YELLOW)
+        self.assertEqual(context_colour(250, 1000), RED)
 
-    def test_a_200k_window_turns_yellow_and_medium_at_half_full(self) -> None:
-        self.assertEqual(context_band(99, 200), (None, SLOW))
-        self.assertEqual(context_band(100, 200), (YELLOW, MEDIUM))
+    def test_a_200k_window_turns_yellow_at_half_full(self) -> None:
+        self.assertIsNone(context_colour(99, 200))
+        self.assertEqual(context_colour(100, 200), YELLOW)
 
-    def test_a_200k_window_turns_red_and_fast_at_three_quarters_full(self) -> None:
-        self.assertEqual(context_band(149, 200), (YELLOW, MEDIUM))
-        self.assertEqual(context_band(150, 200), (RED, FAST))
+    def test_a_200k_window_turns_red_at_three_quarters_full(self) -> None:
+        self.assertEqual(context_colour(149, 200), YELLOW)
+        self.assertEqual(context_colour(150, 200), RED)
 
-    @settings(max_examples=300, deadline=None)
-    @given(
-        used_k=st.integers(min_value=0, max_value=2000),
-        more_k=st.integers(min_value=0, max_value=2000),
-        window_k=st.sampled_from([100, 200, 400, 1000, 2000]),
-    )
-    def test_the_needle_and_the_colour_are_in_the_same_band_and_only_rise(
-        self, used_k: int, more_k: int, window_k: int
-    ) -> None:
-        needle_for_colour = {None: SLOW, YELLOW: MEDIUM, RED: FAST}
-        order = list(STATUSLINE.ContextBand)
-        low, high = sorted((used_k, more_k))
-        bands = [
-            STATUSLINE._context_band(STATUSLINE.ContextUsage(k, window_k)) for k in (low, high)
-        ]
-        for band in bands:
-            self.assertEqual(band.icon, needle_for_colour[band.colour], band)
-        self.assertLessEqual(order.index(bands[0]), order.index(bands[1]))
+    def test_the_model_and_its_window_are_dim(self) -> None:
+        with tempfile.TemporaryDirectory() as parent:
+            line = status_line(Path(parent), "120")
+        self.assertIn(f"{DIM}Opus 5.5 (1M)\033[0m · ", line)
 
 
 class Payload(unittest.TestCase):
@@ -399,7 +382,7 @@ class Payload(unittest.TestCase):
         result = self.run_payload(json.loads(PAYLOAD.read_text()))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stderr, "")
-        self.assertIn(f" Opus 5.5 (1M) · {SLOW}  110K", visible(result.stdout))
+        self.assertIn(" Opus 5.5 (1M) · 110K", visible(result.stdout))
 
     def test_a_null_used_percentage_shows_no_context_used(self) -> None:
         payload: dict[str, object] = {
@@ -409,7 +392,7 @@ class Payload(unittest.TestCase):
         result = self.run_payload(payload)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(
-            result.stdout.endswith(f" claude-opus-5-5 (1M) · {SLOW}  0K\n"), result.stdout
+            visible(result.stdout).endswith(" claude-opus-5-5 (1M) · 0K\n"), result.stdout
         )
 
     def test_the_model_shows_by_its_display_name_then_its_id(self) -> None:
@@ -469,8 +452,8 @@ def window(used: float, elapsed: float | None, length: int) -> dict[str, object]
     return reported
 
 
-def usage(rate_limits: dict[str, object] | None, now: float = NOW) -> list[Any]:
-    """The usage segments of the right side, for a session with these rate limits."""
+def usage(rate_limits: dict[str, object] | None, now: float = NOW) -> list[list[Any]]:
+    """The segments of each usage window on the right side, for a session with these limits."""
     payload: dict[str, object] = {"model": {"id": "claude-opus-5-5"}}
     if rate_limits is not None:
         payload["rate_limits"] = rate_limits
@@ -479,8 +462,14 @@ def usage(rate_limits: dict[str, object] | None, now: float = NOW) -> list[Any]:
         location="repo", branch=None, behind=0, ahead=0, insertions=0, deletions=0
     )
     right = STATUSLINE.compose_line(session, checkout, now, ZONE).right
-    assert visible(STATUSLINE._render(right[:3])) == f"claude-opus-5-5 (200K) · {SLOW}  0K"
-    return [segment for segment in right[3:] if segment.text != STATUSLINE.GROUP_SEPARATOR]
+    assert visible(STATUSLINE._render(right[:3])) == "claude-opus-5-5 (200K) · 0K"
+    windows: list[list[Any]] = []
+    for segment in right[3:]:
+        if segment.text == STATUSLINE.GROUP_SEPARATOR:
+            windows.append([])
+        else:
+            windows[-1].append(segment)
+    return windows
 
 
 def right_side_text(rate_limits: dict[str, object] | None, now: float = NOW) -> str:
@@ -493,17 +482,17 @@ def right_side_text(rate_limits: dict[str, object] | None, now: float = NOW) -> 
 
 
 def shown(rate_limits: dict[str, object] | None, now: float = NOW) -> list[str]:
-    return [segment.text for segment in usage(rate_limits, now)]
+    return ["".join(segment.text for segment in window) for window in usage(rate_limits, now)]
 
 
 def five_hour_colour(used: float, elapsed: float | None) -> str | None:
-    [segment] = usage({"five_hour": window(used, elapsed, FIVE_HOURS)})
-    return segment.colour
+    [segments] = usage({"five_hour": window(used, elapsed, FIVE_HOURS)})
+    return segments[0].colour
 
 
 def seven_day_colour(used: float, elapsed: float) -> str | None:
-    [segment] = usage({"seven_day": window(used, elapsed, SEVEN_DAYS)})
-    return segment.colour
+    [segments] = usage({"seven_day": window(used, elapsed, SEVEN_DAYS)})
+    return segments[0].colour
 
 
 def reset_time(kind: str, resets_at: float) -> str:
@@ -530,7 +519,7 @@ class RateLimits(unittest.TestCase):
         line = right_side_text(rate_limits)
         self.assertEqual(
             line,
-            f"claude-opus-5-5 (200K) · {SLOW}  0K · {NINETY} 88% (10:50am) · {FORTY} 37% (Mon 8am)",
+            f"claude-opus-5-5 (200K) · 0K · {NINETY} 88% (10:50am) · {FORTY} 37% (Mon 8am)",
         )
 
     def test_no_rate_limits_shows_no_usage(self) -> None:
@@ -593,6 +582,12 @@ class RateLimits(unittest.TestCase):
     def test_a_seven_day_reset_today_still_shows_its_weekday(self) -> None:
         self.assertEqual(reset_time("SEVEN_DAY", at(15, 18)), "Fri 6pm")
 
+    def test_a_reset_time_is_dim_while_its_window_is_coloured(self) -> None:
+        [segments] = usage({"five_hour": {"used_percentage": 20, "resets_at": at(15, 12)}})
+        self.assertEqual(
+            [(s.text, s.colour) for s in segments], [(f"{EIGHTY} 80%", RED), (" (12pm)", DIM)]
+        )
+
     def test_a_window_with_no_reset_time_is_coloured_by_use_so_far(self) -> None:
         self.assertIsNone(five_hour_colour(79, None))
         self.assertEqual(five_hour_colour(80, None), YELLOW)
@@ -654,8 +649,8 @@ class RateLimits(unittest.TestCase):
                 text=True,
             )
         line = result.stdout.rstrip("\n")
-        self.assertIn(f"{RED}{SEVENTY} 73% ", line)
-        self.assertIn(f"{YELLOW}{SIXTY} 55% ", line)
+        self.assertIn(f"{RED}{SEVENTY} 73%\033[0m{DIM} (", line)
+        self.assertIn(f"{YELLOW}{SIXTY} 55%\033[0m{DIM} (", line)
         self.assertEqual(len(visible(line)), 120 - edge_margin(), line)
         self.assertRegex(
             visible(line),

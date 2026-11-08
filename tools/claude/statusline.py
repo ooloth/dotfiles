@@ -32,6 +32,8 @@ class Colour(StrEnum):
     CYAN = "\033[36m"
     YELLOW = "\033[33m"
     RED = "\033[31m"
+    # For what is read now and then, such as the model and when a limit resets
+    DIM = "\033[2m"
 
 
 RESET = "\033[0m"
@@ -45,25 +47,12 @@ EDGE_MARGIN = 4
 # "80% (2:50am)" hold spaces of their own, so a space alone would not show where one ends.
 GROUP_SEPARATOR = " · "
 
-# The context's band, which sets its colour and its speedometer's needle, follows the tokens used:
-# yellow from 125k and red from 250k, where measured long-context quality stops being near its best
+# The context count's colour follows the tokens used: yellow from 125k and red from 250k, where measured long-context quality stops being near its best
 # and then clearly drops. Quality follows the token count, not
 # the share of the window, so the thresholds only shrink to half and three quarters of a window too
 # small to reach them, which still warns before the window fills.
 CONTEXT_YELLOW_K = 125
 CONTEXT_RED_K = 250
-
-
-class ContextBand(Enum):
-    """How full the context is, which sets both its colour and its speedometer's needle."""
-
-    ROOMY = (None, "\U000f0f86")  # md-speedometer_slow
-    FILLING = (Colour.YELLOW, "\U000f0f85")  # md-speedometer_medium
-    OVER = (Colour.RED, "\U000f04c5")  # md-speedometer
-
-    def __init__(self, colour: Colour | None, icon: str) -> None:
-        self.colour = colour
-        self.icon = icon
 
 
 # A rate limit window is coloured by the use it is on pace to reach by its reset: yellow from 80%,
@@ -288,14 +277,14 @@ def _tokens(thousands: int) -> str:
     return f"{millions:g}M"
 
 
-def _context_band(context: ContextUsage) -> ContextBand:
+def _context_colour(context: ContextUsage) -> Colour | None:
     yellow_k = min(context.window_k // 2, CONTEXT_YELLOW_K)
     red_k = min(context.window_k * 3 // 4, CONTEXT_RED_K)
     if context.used_k >= red_k:
-        return ContextBand.OVER
+        return Colour.RED
     if context.used_k >= yellow_k:
-        return ContextBand.FILLING
-    return ContextBand.ROOMY
+        return Colour.YELLOW
+    return None
 
 
 def _usage_colour(window: UsageWindow, now: float) -> Colour | None:
@@ -332,11 +321,16 @@ def _reset_time(window: UsageWindow, zone: tzinfo | None) -> str:
     return f"{WEEKDAYS[resets.weekday()]} {clock}" if window.kind.shows_weekday else clock
 
 
-def _usage_text(window: UsageWindow, zone: tzinfo | None) -> str:
+def _usage_window_segments(window: UsageWindow, now: float, zone: tzinfo | None) -> list[Segment]:
+    """The battery and share left in the window's colour, then its reset time, dim even when the
+    window is coloured, so a warning colour falls only on the number."""
     # Usage beyond the limit shows as nothing left
     remaining = min(max(_round(100 - window.used_percent), 0), 100)
+    segments = [Segment(f"{_battery(remaining)} {remaining}%", _usage_colour(window, now))]
     reset_time = _reset_time(window, zone)
-    return f"{_battery(remaining)} {remaining}%" + (f" ({reset_time})" if reset_time else "")
+    if reset_time:
+        segments.append(Segment(f" ({reset_time})", Colour.DIM))
+    return segments
 
 
 def _usage_segments(
@@ -347,10 +341,7 @@ def _usage_segments(
         # Claude Code drops a window once it resets, and so does this between its refreshes
         if window.resets_at is not None and window.resets_at <= now:
             continue
-        segments += [
-            Segment(GROUP_SEPARATOR),
-            Segment(_usage_text(window, zone), _usage_colour(window, now)),
-        ]
+        segments += [Segment(GROUP_SEPARATOR), *_usage_window_segments(window, now, zone)]
     return segments
 
 
@@ -364,12 +355,10 @@ def compose_line(
         left += [Segment(GROUP_SEPARATOR), *git_segments]
 
     context = session.context
-    band = _context_band(context)
     right = [
-        Segment(f"{session.model_name} ({_tokens(context.window_k)})"),
+        Segment(f"{session.model_name} ({_tokens(context.window_k)})", Colour.DIM),
         Segment(GROUP_SEPARATOR),
-        # Two spaces, because Rex draws the speedometer wider than one cell, as it does the folder
-        Segment(f"{band.icon}  {_tokens(context.used_k)}", band.colour),
+        Segment(_tokens(context.used_k), _context_colour(context)),
         *_usage_segments(session.usage, now, zone),
     ]
     return StatusLine(left=left, right=right)
