@@ -1,0 +1,58 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "autoAllowBashIfSandboxed": true,
+    "network": {
+      "allowedDomains": [
+        "pypi.org",
+        "files.pythonhosted.org",
+        "crates.io",
+        "index.crates.io",
+        "static.crates.io"
+      ]
+    },
+    "filesystem": {
+      "denyRead": [
+        "/home/me",
+        "/tmp-root",
+        "/private/tmp"
+      ],
+      "allowRead": [
+        "/private/tmp/rp-test",
+        "/repos/dotfiles/tools/agents/config",
+        "/home/me/.local/bin"
+      ],
+      "allowWrite": [
+        "/private/tmp/rp-test/clone",
+        "/private/tmp/rp-test/capture",
+        "/private/tmp/rp-test/scratch",
+        "/private/tmp/rp-test/t"
+      ]
+    }
+  },
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "allow": [
+      "Bash",
+      "Read",
+      "Grep",
+      "Glob",
+      "Agent",
+      "Skill",
+      "TodoWrite",
+      "Edit(//private/tmp/rp-test/clone/**)",
+      "Write(//private/tmp/rp-test/clone/**)",
+      "Edit(//private/tmp/rp-test/scratch/**)",
+      "Write(//private/tmp/rp-test/scratch/**)",
+      "Edit(//private/tmp/rp-test/t/**)",
+      "Write(//private/tmp/rp-test/t/**)"
+    ],
+    "deny": [
+      "WebFetch",
+      "WebSearch"
+    ],
+    "blockReadsOutsideWorkingDirectories": true
+  }
+}

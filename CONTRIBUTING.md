@@ -101,6 +101,12 @@ Then run what you changed. Tests passing is not evidence that it works:
 
   A session's own status line runs the main checkout's copy, because `settings.json` names it by
   that path, so a change in a worktree shows there only once it reaches the main checkout.
+- **The planning replay (`tools/claude/replay.py`):** `uv run tools/claude/replay.py grades` reads
+  only the replay folders, and `uv run tools/claude/tests/test_replay.py` runs `replay plan` end to
+  end with fake `gh` and `claude` commands. A real `replay plan <owner/repo#n> --run <k>` starts a
+  headless Opus session that runs for minutes and draws on the subscription's usage limits, so run
+  it to prove a change to the sandbox or the session, and read the folder it prints, `audit.md`
+  first.
 - **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
   aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
   interactive zsh, keeping the variables Claude Code needs to find its login:

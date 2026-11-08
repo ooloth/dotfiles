@@ -1,0 +1,3 @@
+{"type": "assistant", "isSidechain": true, "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_01PQDRgQvv2iTr11mRY42C5n", "name": "Bash", "input": {"command": "curl -sS https://api.github.com", "description": "Fetch the GitHub API root"}, "caller": {"type": "direct"}}]}}
+{"type": "user", "isSidechain": true, "message": {"role": "user", "content": [{"type": "tool_result", "content": "Exit code 56\ncurl: (56) CONNECT tunnel failed, response 403\n\n<sandbox_violations>\ndeny network-outbound api.github.com:443 (user denied)\n</sandbox_violations>", "is_error": true, "tool_use_id": "toolu_01PQDRgQvv2iTr11mRY42C5n"}]}}
+{"type": "assistant", "message": {"content": [

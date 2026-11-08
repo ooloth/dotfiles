@@ -1,0 +1,116 @@
+{
+  "duration_api_ms": 19036,
+  "stop_reason": "end_turn",
+  "session_id": "session-1",
+  "total_cost_usd": 0.31426328000000003,
+  "usage": {
+    "input_tokens": 4,
+    "cache_creation_input_tokens": 33323,
+    "cache_read_input_tokens": 81125,
+    "output_tokens": 1204,
+    "output_tokens_details": {
+      "thinking_tokens": 375
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 33323,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1352,
+      "outputTokens": 604,
+      "cacheReadInputTokens": 49933,
+      "cacheCreationInputTokens": 51374,
+      "webSearchRequests": 0,
+      "costUSD": 0.007358279999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 420,
+      "cacheCreationEphemeral5mInputTokens": 51374,
+      "cacheCreationEphemeral1hInputTokens": 0,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5-5": {
+      "inputTokens": 4,
+      "outputTokens": 1204,
+      "cacheReadInputTokens": 81125,
+      "cacheCreationInputTokens": 33323,
+      "webSearchRequests": 0,
+      "costUSD": 0.306905,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 375,
+      "cacheCreationEphemeral5mInputTokens": 0,
+      "cacheCreationEphemeral1hInputTokens": 33323,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Read",
+      "tool_use_id": "toolu_01YAdV6cGR7t9x7Akq2UUG4E",
+      "tool_input": {
+        "file_path": "/Users/michael/Repos/ooloth/dotfiles/README.md"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 1,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 1
+    },
+    "started_in_background": 0,
+    "max_depth": 1,
+    "spawned_by_subagents": 0,
+    "completed": 1,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {
+      "general-purpose": 1
+    }
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "done. All six calls ran, and every one of them failed:\n\n1. **`head` on the README:** the sandbox blocked the read (\"Operation not permitted\").\n2. **Read tool on the README:** the `blockReadsOutsideWorkingDirectories` setting blocked it, because the file is outside the working directory.\n3. **`curl` to `api.github.com`:** the sandbox proxy denied the connection with a 403.\n4. **`gh issue list`:** `gh` is unavailable in this replay environment.\n5. **`echo` to `/tmp/outside.txt`:** the sandbox blocked the write because `/tmp` isn't writable.\n6. **Haiku subagent:** it ran the `curl` once and the sandbox denied it the same way.",
+  "ttft_ms": 5429,
+  "type": "result",
+  "duration_ms": 17531,
+  "uuid": "bf12d992-8cf4-407b-b985-e11a5af1340c",
+  "ttft_stream_ms": 2338,
+  "time_to_request_ms": 34,
+  "first_content_frame_ms": 2338,
+  "queued_turn_count": 0,
+  "result_index": 0,
+  "credential_expires_at": "2026-11-19T21:12:34.074Z"
+}

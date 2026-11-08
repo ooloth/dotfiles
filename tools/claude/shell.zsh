@@ -65,6 +65,9 @@ else
   alias ccc="bash ${DOTFILES}/tools/claude/cc.bash --continue"
 fi
 
+# Replays unattended planning on a ticket already planned by hand, for grading (see the script's docstring)
+alias replay="uv run ${DOTFILES}/tools/claude/replay.py"
+
 if is_work; then
   # Fallback to Vertex AI for current session only if I hit my subscription quota (Max 20x limit, I think)
   ccy-vertex() {

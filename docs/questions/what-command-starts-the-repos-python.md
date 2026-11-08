@@ -14,7 +14,8 @@ are run to Python over time, and the approach on #203 keeps every crossing betwe
 a process start: a ported step is started from wherever its bash version was. So every caller
 needs a way to start one of the repo's Python entry points. The callers are bash runners such as
 `u`, zsh aliases such as `symlinks`, `check` and `cc` (which still run bash) and `auth` and
-`secret` (which start their scripts with `uv run --offline <path>`), the `Notification`
+`secret` (which start their scripts with `uv run --offline <path>`), `replay` (which starts
+`tools/claude/replay.py` with `uv run <path>`), the `Notification`
 hook in `tools/claude/config/settings.json`, its `PreToolUse` hook, which starts use-jira's markdown
 check with `uv run --quiet --script <path>` and needs the network on a cache miss, its
 `statusLine` command, which runs `tools/claude/statusline.py` every few seconds through
