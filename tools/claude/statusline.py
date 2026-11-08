@@ -97,7 +97,7 @@ class UsageWindow:
 
 @dataclass(frozen=True)
 class Session:
-    model_id: str
+    model_name: str
     directory: str
     context: ContextUsage
     usage: tuple[UsageWindow, ...]  # only the windows Claude Code reported, in WindowKind order
@@ -171,7 +171,9 @@ def parse_session(raw: str) -> Session:
             resets_at = _number_or_none(_field(data, "rate_limits", kind.key, "resets_at"))
             usage.append(UsageWindow(kind, used, resets_at))
     return Session(
-        model_id=_text(_field(data, "model", "id"), "claude"),
+        model_name=_text(
+            _field(data, "model", "display_name"), _text(_field(data, "model", "id"), "claude")
+        ),
         directory=_text(directory, "."),
         context=ContextUsage(
             used_k=_round(used_percentage * window / 100_000), window_k=_round(window / 1000)
@@ -261,6 +263,14 @@ def _git_segments(checkout: Checkout) -> list[Segment]:
     return segments
 
 
+def _tokens(thousands: int) -> str:
+    """A token count given in thousands, as 270K, or as 1M or 1.5M from a million up."""
+    if thousands < 1000:
+        return f"{thousands}K"
+    millions = _round(thousands / 100) / 10
+    return f"{millions:g}M"
+
+
 def _context_colour(context: ContextUsage) -> Colour | None:
     yellow_k = min(context.window_k // 2, CONTEXT_YELLOW_K)
     red_k = min(context.window_k * 3 // 4, CONTEXT_RED_K)
@@ -338,8 +348,8 @@ def compose_line(
 
     context = session.context
     right = [
-        Segment(f"{session.model_id} · "),
-        Segment(f"{context.used_k}k/{context.window_k}k", _context_colour(context)),
+        Segment(f"{session.model_name} ({_tokens(context.window_k)}) · "),
+        Segment(_tokens(context.used_k), _context_colour(context)),
         *_usage_segments(session.usage, now, zone),
     ]
     return StatusLine(left=left, right=right)

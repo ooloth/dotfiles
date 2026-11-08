@@ -40,7 +40,7 @@ REPO = CONFIG.parent.parent.parent
 PAYLOAD = Path(__file__).resolve().parent / "fixtures" / "statusline-payload.json"
 SETTINGS = CONFIG / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
-RIGHT = "claude-opus-5-5 · 10k/1000k"
+RIGHT = "Opus 5.5 (1M) · 10K"
 BRANCH_ICON = "\ue725 "  # nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
 FOLDER_ICON = "\uf07b  "  # nf-fa-folder, then two spaces because Rex draws it wider than a cell
 
@@ -75,7 +75,7 @@ def status_line(
     agent: str | None = None,
 ) -> str:
     session: dict[str, object] = {
-        "model": {"id": "claude-opus-5-5"},
+        "model": {"id": "claude-opus-5-5", "display_name": "Opus 5.5"},
         "workspace": {"current_dir": str(directory)},
         "context_window": {"used_percentage": used_percentage, "context_window_size": window},
     }
@@ -340,11 +340,9 @@ def context_colour(used_k: int, window_k: int) -> str | None:
         line = status_line(
             Path(parent), "120", used_percentage=used_k / window_k * 100, window=window_k * 1000
         )
-    assert line.endswith(f"{used_k}k/{window_k}k") or line.endswith(
-        f"{used_k}k/{window_k}k\033[0m"
-    ), line
+    assert visible(line).endswith(f" · {used_k}K"), line
     for colour in (YELLOW, RED):
-        if f"{colour}{used_k}k/" in line:
+        if f"{colour}{used_k}K" in line:
             return colour
     return None
 
@@ -380,7 +378,7 @@ class Payload(unittest.TestCase):
         result = self.run_payload(json.loads(PAYLOAD.read_text()))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stderr, "")
-        self.assertIn(" claude-opus-5-5 · 110k/1000k", visible(result.stdout))
+        self.assertIn(" Opus 5.5 (1M) · 110K", visible(result.stdout))
 
     def test_a_null_used_percentage_shows_no_context_used(self) -> None:
         payload: dict[str, object] = {
@@ -389,7 +387,28 @@ class Payload(unittest.TestCase):
         }
         result = self.run_payload(payload)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue(result.stdout.endswith(" claude-opus-5-5 · 0k/1000k\n"), result.stdout)
+        self.assertTrue(result.stdout.endswith(" claude-opus-5-5 (1M) · 0K\n"), result.stdout)
+
+    def test_the_model_shows_by_its_display_name_then_its_id(self) -> None:
+        for model, name in (
+            ({"id": "claude-opus-5-5", "display_name": "Opus 5.5"}, "Opus 5.5"),
+            ({"id": "claude-opus-5-5"}, "claude-opus-5-5"),
+            ({}, "claude"),
+        ):
+            with self.subTest(name=name):
+                session = STATUSLINE.parse_session(json.dumps({"model": model}))
+                self.assertEqual(session.model_name, name)
+
+    def test_token_counts_read_in_thousands_then_millions(self) -> None:
+        for thousands, text in (
+            (0, "0K"),
+            (999, "999K"),
+            (1000, "1M"),
+            (1500, "1.5M"),
+            (200, "200K"),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(STATUSLINE._tokens(thousands), text)
 
 
 def load_script() -> ModuleType:
@@ -437,7 +456,7 @@ def usage(rate_limits: dict[str, object] | None, now: float = NOW) -> list[Any]:
         location="repo", branch=None, behind=0, ahead=0, insertions=0, deletions=0
     )
     right = STATUSLINE.compose_line(session, checkout, now, ZONE).right
-    assert visible(STATUSLINE._render(right[:2])) == "claude-opus-5-5 · 0k/200k"
+    assert visible(STATUSLINE._render(right[:2])) == "claude-opus-5-5 (200K) · 0K"
     return [segment for segment in right[2:] if segment.text != " · "]
 
 
@@ -487,7 +506,7 @@ class RateLimits(unittest.TestCase):
         }
         line = right_side_text(rate_limits)
         self.assertEqual(
-            line, f"claude-opus-5-5 · 0k/200k · {NINETY} 88% 10:50am · {FORTY} 37% Mon 8am"
+            line, f"claude-opus-5-5 (200K) · 0K · {NINETY} 88% 10:50am · {FORTY} 37% Mon 8am"
         )
 
     def test_no_rate_limits_shows_no_usage(self) -> None:
@@ -592,7 +611,7 @@ class RateLimits(unittest.TestCase):
     def test_coloured_usage_still_ends_at_the_right_edge(self) -> None:
         now = time.time()
         payload = {
-            "model": {"id": "claude-opus-5-5"},
+            "model": {"id": "claude-opus-5-5", "display_name": "Opus 5.5"},
             "context_window": {"used_percentage": 1, "context_window_size": 1_000_000},
             # projected to 135% and 90%, far enough from 100% and 80% that the seconds before the
             # script reads the clock cannot change either colour
@@ -616,7 +635,7 @@ class RateLimits(unittest.TestCase):
         self.assertEqual(len(visible(line)), 120 - edge_margin(), line)
         self.assertRegex(
             visible(line),
-            rf" {RIGHT} · {SEVENTY} 73% \d{{1,2}}(:\d\d)?[ap]m · {SIXTY} 55% [A-Z][a-z]{{2}} "
+            rf" {re.escape(RIGHT)} · {SEVENTY} 73% \d{{1,2}}(:\d\d)?[ap]m · {SIXTY} 55% [A-Z][a-z]{{2}} "
             r"\d{1,2}(:\d\d)?[ap]m$",
         )
 
