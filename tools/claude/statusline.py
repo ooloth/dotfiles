@@ -4,7 +4,8 @@
 # dependencies = []
 # ///
 """Print the Claude Code status line: location and git state on the left, and on the right the model,
-the context used and how much of the subscription's 5-hour and 7-day limits is used.
+the context used, and how much of the subscription's 5-hour and 7-day limits is left and when each
+resets.
 
 Run by Claude Code, which pipes the session's JSON to stdin and sets COLUMNS. To try it by hand:
   echo '{"workspace": {"current_dir": "."}}' | COLUMNS=100 tools/claude/statusline.py
@@ -22,7 +23,8 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from enum import StrEnum
+from datetime import datetime, tzinfo
+from enum import Enum, StrEnum
 
 
 class Colour(StrEnum):
@@ -55,8 +57,27 @@ CONTEXT_RED_K = 250
 USAGE_YELLOW_PERCENT = 80
 USAGE_RED_PERCENT = 100
 MIN_ELAPSED_TO_PROJECT = 0.1
-# The windows Claude Code reports for a claude.ai subscription, in the order they are shown
-USAGE_WINDOWS = (("five_hour", "5h", 5 * 3600), ("seven_day", "7d", 7 * 24 * 3600))
+
+# Nerd Font batteries by tenths of the limit left, from md-battery_outline when nothing is left
+# through md-battery_10 to md-battery_90, then md-battery when the whole limit is left. They are
+# narrow, so one space follows, unlike the wider folder icon.
+BATTERY_ICONS = ("\U000f008e", *(chr(0xF0079 + tenths) for tenths in range(1, 10)), "\U000f0079")
+# Spelled out rather than taken from strftime, which follows the system locale
+WEEKDAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+
+class WindowKind(Enum):
+    """The rate limit windows Claude Code reports for a claude.ai subscription, in display order."""
+
+    FIVE_HOUR = ("five_hour", 5 * 3600, False)
+    SEVEN_DAY = ("seven_day", 7 * 24 * 3600, True)
+
+    def __init__(self, key: str, length_s: int, shows_weekday: bool) -> None:
+        self.key = key
+        self.length_s = length_s
+        # The weekly reset always names its day, even today, and the 5-hour one never does, so the
+        # two can be told apart without labels
+        self.shows_weekday = shows_weekday
 
 
 @dataclass(frozen=True)
@@ -69,8 +90,7 @@ class ContextUsage:
 class UsageWindow:
     """How much of one of the subscription's rate limits is used, and when it resets."""
 
-    label: str
-    length_s: int
+    kind: WindowKind
     used_percent: float
     resets_at: float | None  # Unix seconds
 
@@ -80,7 +100,7 @@ class Session:
     model_id: str
     directory: str
     context: ContextUsage
-    usage: tuple[UsageWindow, ...]  # only the windows Claude Code reported, in USAGE_WINDOWS order
+    usage: tuple[UsageWindow, ...]  # only the windows Claude Code reported, in WindowKind order
 
 
 @dataclass(frozen=True)
@@ -145,11 +165,11 @@ def parse_session(raw: str) -> Session:
     # rate_limits comes only for claude.ai subscribers, after the session's first response, and
     # each window can be absent on its own
     usage = []
-    for key, label, length_s in USAGE_WINDOWS:
-        used = _number_or_none(_field(data, "rate_limits", key, "used_percentage"))
+    for kind in WindowKind:
+        used = _number_or_none(_field(data, "rate_limits", kind.key, "used_percentage"))
         if used is not None:
-            resets_at = _number_or_none(_field(data, "rate_limits", key, "resets_at"))
-            usage.append(UsageWindow(label, length_s, used, resets_at))
+            resets_at = _number_or_none(_field(data, "rate_limits", kind.key, "resets_at"))
+            usage.append(UsageWindow(kind, used, resets_at))
     return Session(
         model_id=_text(_field(data, "model", "id"), "claude"),
         directory=_text(directory, "."),
@@ -255,8 +275,9 @@ def _usage_colour(window: UsageWindow, now: float) -> Colour | None:
     used = window.used_percent
     projected = used
     if window.resets_at is not None:
-        started_at = window.resets_at - window.length_s
-        elapsed = min(max((now - started_at) / window.length_s, MIN_ELAPSED_TO_PROJECT), 1.0)
+        length_s = window.kind.length_s
+        started_at = window.resets_at - length_s
+        elapsed = min(max((now - started_at) / length_s, MIN_ELAPSED_TO_PROJECT), 1.0)
         projected = used / elapsed
     assert projected >= used, f"projected {projected}% is below the {used}% already used"
     if projected >= USAGE_RED_PERCENT:
@@ -266,7 +287,34 @@ def _usage_colour(window: UsageWindow, now: float) -> Colour | None:
     return None
 
 
-def _usage_segments(usage: tuple[UsageWindow, ...], now: float) -> list[Segment]:
+def _battery(remaining_percent: int) -> str:
+    """The battery icon nearest to the share of the limit left."""
+    tenths = _round(remaining_percent / 10)
+    assert 0 <= tenths < len(BATTERY_ICONS), f"no battery for {remaining_percent}% left"
+    return BATTERY_ICONS[tenths]
+
+
+def _reset_time(window: UsageWindow, zone: tzinfo | None) -> str:
+    """When the window resets on a 12-hour clock, such as 2:50am or Mon 8am, or "" if unknown."""
+    if window.resets_at is None:
+        return ""
+    resets = datetime.fromtimestamp(window.resets_at, zone)
+    hour = resets.hour % 12 or 12
+    minutes = f":{resets.minute:02d}" if resets.minute else ""
+    clock = f"{hour}{minutes}{'am' if resets.hour < 12 else 'pm'}"
+    return f"{WEEKDAYS[resets.weekday()]} {clock}" if window.kind.shows_weekday else clock
+
+
+def _usage_text(window: UsageWindow, zone: tzinfo | None) -> str:
+    # Usage beyond the limit shows as nothing left
+    remaining = min(max(_round(100 - window.used_percent), 0), 100)
+    reset_time = _reset_time(window, zone)
+    return f"{_battery(remaining)} {remaining}%" + (f" {reset_time}" if reset_time else "")
+
+
+def _usage_segments(
+    usage: tuple[UsageWindow, ...], now: float, zone: tzinfo | None
+) -> list[Segment]:
     segments = []
     for window in usage:
         # Claude Code drops a window once it resets, and so does this between its refreshes
@@ -274,12 +322,15 @@ def _usage_segments(usage: tuple[UsageWindow, ...], now: float) -> list[Segment]
             continue
         segments += [
             Segment(" · "),
-            Segment(f"{window.label} {_round(window.used_percent)}%", _usage_colour(window, now)),
+            Segment(_usage_text(window, zone), _usage_colour(window, now)),
         ]
     return segments
 
 
-def compose_line(session: Session, checkout: Checkout, now: float) -> StatusLine:
+def compose_line(
+    session: Session, checkout: Checkout, now: float, zone: tzinfo | None
+) -> StatusLine:
+    """The line's segments. `zone` sets the time zone reset times are shown in: None is local."""
     left = [Segment(f"{FOLDER_ICON}  {checkout.location}")]
     git_segments = _git_segments(checkout)
     if git_segments:
@@ -289,7 +340,7 @@ def compose_line(session: Session, checkout: Checkout, now: float) -> StatusLine
     right = [
         Segment(f"{session.model_id} · "),
         Segment(f"{context.used_k}k/{context.window_k}k", _context_colour(context)),
-        *_usage_segments(session.usage, now),
+        *_usage_segments(session.usage, now, zone),
     ]
     return StatusLine(left=left, right=right)
 
@@ -324,7 +375,7 @@ def parse_columns(value: str | None) -> int | None:
 
 def main() -> None:
     session = parse_session(sys.stdin.read())
-    line = compose_line(session, read_checkout(session.directory), time.time())
+    line = compose_line(session, read_checkout(session.directory), time.time(), None)
     print(render(line, parse_columns(os.environ.get("COLUMNS"))))
 
 

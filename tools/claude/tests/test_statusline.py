@@ -26,8 +26,10 @@ import sys
 import tempfile
 import time
 import unittest
+from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -400,10 +402,21 @@ def load_script() -> ModuleType:
 
 
 STATUSLINE = load_script()
-NOW = 1_800_000_000
+NOW = 1_800_000_000  # Friday 15 January 2027, 08:00 in UTC
+ZONE = UTC
 HOUR = 3600
 FIVE_HOURS = 5 * HOUR
 SEVEN_DAYS = 7 * 24 * HOUR
+# Nerd Font battery icons by tenths of the battery left: md-battery_outline when empty, md-battery_10
+# to md-battery_90, then md-battery when full
+BATTERY = {0: "\U000f008e", **{n: chr(0xF0079 + n) for n in range(1, 10)}, 10: "\U000f0079"}
+FULL, NINETY, EIGHTY, SEVENTY, SIXTY = BATTERY[10], BATTERY[9], BATTERY[8], BATTERY[7], BATTERY[6]
+FORTY, TEN, EMPTY = BATTERY[4], BATTERY[1], BATTERY[0]
+
+
+def at(day: int, hour: int, minute: int = 0) -> float:
+    """Unix seconds for a time in January 2027 in ZONE."""
+    return datetime(2027, 1, day, hour, minute, tzinfo=ZONE).timestamp()
 
 
 def window(used: float, elapsed: float | None, length: int) -> dict[str, object]:
@@ -414,8 +427,8 @@ def window(used: float, elapsed: float | None, length: int) -> dict[str, object]
     return reported
 
 
-def right_side(rate_limits: dict[str, object] | None, now: float = NOW) -> str:
-    """The right side of the line, with colour codes, for a session with these rate limits."""
+def usage(rate_limits: dict[str, object] | None, now: float = NOW) -> list[Any]:
+    """The usage segments of the right side, for a session with these rate limits."""
     payload: dict[str, object] = {"model": {"id": "claude-opus-5-5"}}
     if rate_limits is not None:
         payload["rate_limits"] = rate_limits
@@ -423,26 +436,37 @@ def right_side(rate_limits: dict[str, object] | None, now: float = NOW) -> str:
     checkout = STATUSLINE.Checkout(
         location="repo", branch=None, behind=0, ahead=0, insertions=0, deletions=0
     )
-    line = STATUSLINE.compose_line(session, checkout, now)
-    return STATUSLINE._render(line.right)
+    right = STATUSLINE.compose_line(session, checkout, now, ZONE).right
+    assert visible(STATUSLINE._render(right[:2])) == "claude-opus-5-5 · 0k/200k"
+    return [segment for segment in right[2:] if segment.text != " · "]
+
+
+def right_side_text(rate_limits: dict[str, object] | None, now: float = NOW) -> str:
+    payload: dict[str, object] = {"model": {"id": "claude-opus-5-5"}, "rate_limits": rate_limits}
+    session = STATUSLINE.parse_session(json.dumps(payload))
+    checkout = STATUSLINE.Checkout(
+        location="repo", branch=None, behind=0, ahead=0, insertions=0, deletions=0
+    )
+    return visible(STATUSLINE._render(STATUSLINE.compose_line(session, checkout, now, ZONE).right))
+
+
+def shown(rate_limits: dict[str, object] | None, now: float = NOW) -> list[str]:
+    return [segment.text for segment in usage(rate_limits, now)]
 
 
 def five_hour_colour(used: float, elapsed: float | None) -> str | None:
-    line = right_side({"five_hour": window(used, elapsed, FIVE_HOURS)})
-    shown = f"5h {STATUSLINE._round(used)}%"
-    assert shown in visible(line), line
-    for colour in (YELLOW, RED):
-        if f"{colour}{shown}" in line:
-            return colour
-    return None
+    [segment] = usage({"five_hour": window(used, elapsed, FIVE_HOURS)})
+    return segment.colour
 
 
 def seven_day_colour(used: float, elapsed: float) -> str | None:
-    line = right_side({"seven_day": window(used, elapsed, SEVEN_DAYS)})
-    for colour in (YELLOW, RED):
-        if f"{colour}7d " in line:
-            return colour
-    return None
+    [segment] = usage({"seven_day": window(used, elapsed, SEVEN_DAYS)})
+    return segment.colour
+
+
+def reset_time(kind: str, resets_at: float) -> str:
+    window = STATUSLINE.UsageWindow(STATUSLINE.WindowKind[kind], 50, resets_at)
+    return STATUSLINE._reset_time(window, ZONE)
 
 
 SEVERITY = {None: 0, YELLOW: 1, RED: 2}
@@ -452,29 +476,79 @@ class RateLimits(unittest.TestCase):
     def test_the_payload_claude_code_sent_gives_both_windows_in_order(self) -> None:
         session = STATUSLINE.parse_session(PAYLOAD.read_text())
         self.assertEqual(
-            [(w.label, w.used_percent, w.resets_at) for w in session.usage],
-            [("5h", 2, 1794124200), ("7d", 62, 1794229200)],
+            [(w.kind.name, w.used_percent, w.resets_at) for w in session.usage],
+            [("FIVE_HOUR", 2, 1794124200), ("SEVEN_DAY", 62, 1794229200)],
         )
 
-    def test_both_windows_follow_the_context(self) -> None:
-        line = right_side(
-            {
-                "five_hour": window(23, HOUR, FIVE_HOURS),
-                "seven_day": window(41, 3 * 24 * HOUR, SEVEN_DAYS),
-            }
+    def test_each_window_shows_battery_remaining_and_reset_time(self) -> None:
+        rate_limits: dict[str, object] = {
+            "five_hour": {"used_percentage": 12, "resets_at": at(15, 10, 50)},
+            "seven_day": {"used_percentage": 63, "resets_at": at(18, 8)},
+        }
+        line = right_side_text(rate_limits)
+        self.assertEqual(
+            line, f"claude-opus-5-5 · 0k/200k · {NINETY} 88% 10:50am · {FORTY} 37% Mon 8am"
         )
-        self.assertEqual(visible(line), "claude-opus-5-5 · 0k/200k · 5h 23% · 7d 41%")
 
     def test_no_rate_limits_shows_no_usage(self) -> None:
-        self.assertEqual(visible(right_side(None)), "claude-opus-5-5 · 0k/200k")
+        self.assertEqual(shown(None), [])
 
     def test_only_the_reported_window_is_shown(self) -> None:
-        line = visible(right_side({"seven_day": window(62, 3 * 24 * HOUR, SEVEN_DAYS)}))
-        self.assertEqual(line, "claude-opus-5-5 · 0k/200k · 7d 62%")
+        self.assertEqual(
+            shown({"seven_day": {"used_percentage": 62, "resets_at": at(18, 8)}}),
+            [f"{FORTY} 38% Mon 8am"],
+        )
 
     def test_a_window_whose_reset_has_passed_is_left_out(self) -> None:
-        line = right_side({"five_hour": window(40, FIVE_HOURS + 1, FIVE_HOURS)})
-        self.assertEqual(visible(line), "claude-opus-5-5 · 0k/200k")
+        self.assertEqual(shown({"five_hour": window(40, FIVE_HOURS + 1, FIVE_HOURS)}), [])
+
+    def test_a_window_with_no_reset_time_shows_no_time(self) -> None:
+        self.assertEqual(shown({"five_hour": {"used_percentage": 12}}), [f"{NINETY} 88%"])
+
+    def test_the_battery_shows_the_remaining_share_to_the_nearest_tenth(self) -> None:
+        for remaining, icon in (
+            (100, FULL),
+            (95, FULL),
+            (94, NINETY),
+            (5, TEN),
+            (4, EMPTY),
+            (0, EMPTY),
+        ):
+            with self.subTest(remaining=remaining):
+                self.assertEqual(STATUSLINE._battery(remaining), icon)
+
+    @settings(max_examples=200, deadline=None)
+    @given(used=st.floats(min_value=0, max_value=100))
+    def test_the_battery_never_differs_from_the_percentage_by_more_than_half_a_tenth(
+        self, used: float
+    ) -> None:
+        [text] = shown({"five_hour": {"used_percentage": used}})
+        icon, percent = text.split()
+        tenths = STATUSLINE.BATTERY_ICONS.index(icon)
+        self.assertLessEqual(abs(tenths * 10 - int(percent.rstrip("%"))), 5, text)
+
+    def test_more_than_the_whole_limit_used_shows_an_empty_battery(self) -> None:
+        self.assertEqual(shown({"five_hour": {"used_percentage": 120}}), [f"{EMPTY} 0%"])
+
+    def test_remaining_is_rounded_half_away_from_zero(self) -> None:
+        self.assertEqual(shown({"five_hour": {"used_percentage": 23.5}}), [f"{EIGHTY} 77%"])
+
+    def test_five_hour_resets_read_as_a_twelve_hour_clock(self) -> None:
+        for hour, minute, text in (
+            (2, 50, "2:50am"),
+            (8, 0, "8am"),
+            (0, 0, "12am"),
+            (12, 0, "12pm"),
+            (23, 59, "11:59pm"),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(reset_time("FIVE_HOUR", at(15, hour, minute)), text)
+
+    def test_a_five_hour_reset_tomorrow_shows_no_weekday(self) -> None:
+        self.assertEqual(reset_time("FIVE_HOUR", at(16, 1)), "1am")
+
+    def test_a_seven_day_reset_today_still_shows_its_weekday(self) -> None:
+        self.assertEqual(reset_time("SEVEN_DAY", at(15, 18)), "Fri 6pm")
 
     def test_a_window_with_no_reset_time_is_coloured_by_use_so_far(self) -> None:
         self.assertIsNone(five_hour_colour(79, None))
@@ -495,10 +569,6 @@ class RateLimits(unittest.TestCase):
         self.assertIsNone(seven_day_colour(7.9, 10 * HOUR))
         self.assertEqual(seven_day_colour(8, 10 * HOUR), YELLOW)
         self.assertEqual(seven_day_colour(10, 10 * HOUR), RED)
-
-    def test_usage_is_rounded_half_away_from_zero(self) -> None:
-        line = visible(right_side({"five_hour": window(23.5, 4 * HOUR, FIVE_HOURS)}))
-        self.assertTrue(line.endswith("5h 24%"), line)
 
     @settings(max_examples=300, deadline=None)
     @given(
@@ -541,10 +611,14 @@ class RateLimits(unittest.TestCase):
                 text=True,
             )
         line = result.stdout.rstrip("\n")
-        self.assertIn(f"{RED}5h 27%", line)
-        self.assertIn(f"{YELLOW}7d 45%", line)
+        self.assertIn(f"{RED}{SEVENTY} 73% ", line)
+        self.assertIn(f"{YELLOW}{SIXTY} 55% ", line)
         self.assertEqual(len(visible(line)), 120 - edge_margin(), line)
-        self.assertTrue(visible(line).endswith(f" {RIGHT} · 5h 27% · 7d 45%"), line)
+        self.assertRegex(
+            visible(line),
+            rf" {RIGHT} · {SEVENTY} 73% \d{{1,2}}(:\d\d)?[ap]m · {SIXTY} 55% [A-Z][a-z]{{2}} "
+            r"\d{1,2}(:\d\d)?[ap]m$",
+        )
 
 
 class Settings(unittest.TestCase):
