@@ -268,6 +268,14 @@ class StandIn(unittest.TestCase):
             "parent": None,
         }
 
+    def test_issue_view_serves_no_relationships_in_the_shape_gh_gives_them(self) -> None:
+        result = self.run_gh(
+            "issue", "view", "7", "-R", "octo/widgets", "--json", "blockedBy,blocking,subIssues"
+        )
+        assert result.returncode == 0, result.stderr
+        none = {"nodes": [], "totalCount": 0}
+        assert json.loads(result.stdout) == {"blockedBy": none, "blocking": none, "subIssues": none}
+
     def test_issue_view_of_another_ticket_is_refused(self) -> None:
         result = self.run_gh("issue", "view", "8", "-R", "octo/widgets", "--json", "body")
         assert result.returncode != 0
