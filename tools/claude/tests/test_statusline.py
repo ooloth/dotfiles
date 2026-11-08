@@ -40,7 +40,7 @@ REPO = CONFIG.parent.parent.parent
 PAYLOAD = Path(__file__).resolve().parent / "fixtures" / "statusline-payload.json"
 SETTINGS = CONFIG / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
-RIGHT = "Opus 5.5 (1M) · 10K"
+RIGHT = "Opus 5.5 1M · 10K"
 DIM = "\033[2m"
 BRANCH_ICON = "\ue725 "  # nf-dev-git_branch, as in tools/tmux/config/gitmux.conf
 FOLDER_ICON = "\uf07b  "  # nf-fa-folder, then two spaces because Rex draws it wider than a cell
@@ -363,10 +363,10 @@ class ContextColour(unittest.TestCase):
         self.assertEqual(context_colour(149, 200), YELLOW)
         self.assertEqual(context_colour(150, 200), RED)
 
-    def test_the_model_and_its_window_are_dim(self) -> None:
+    def test_the_window_size_is_dim_and_the_model_is_not(self) -> None:
         with tempfile.TemporaryDirectory() as parent:
             line = status_line(Path(parent), "120")
-        self.assertIn(f"{DIM}Opus 5.5 (1M)\033[0m · ", line)
+        self.assertIn(f"Opus 5.5{DIM} 1M\033[0m · ", line)
 
 
 class Payload(unittest.TestCase):
@@ -382,7 +382,7 @@ class Payload(unittest.TestCase):
         result = self.run_payload(json.loads(PAYLOAD.read_text()))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stderr, "")
-        self.assertIn(" Opus 5.5 (1M) · 110K", visible(result.stdout))
+        self.assertIn(" Opus 5.5 1M · 110K", visible(result.stdout))
 
     def test_a_null_used_percentage_shows_no_context_used(self) -> None:
         payload: dict[str, object] = {
@@ -392,7 +392,7 @@ class Payload(unittest.TestCase):
         result = self.run_payload(payload)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(
-            visible(result.stdout).endswith(" claude-opus-5-5 (1M) · 0K\n"), result.stdout
+            visible(result.stdout).endswith(" claude-opus-5-5 1M · 0K\n"), result.stdout
         )
 
     def test_the_model_shows_by_its_display_name_then_its_id(self) -> None:
@@ -462,9 +462,9 @@ def usage(rate_limits: dict[str, object] | None, now: float = NOW) -> list[list[
         location="repo", branch=None, behind=0, ahead=0, insertions=0, deletions=0
     )
     right = STATUSLINE.compose_line(session, checkout, now, ZONE).right
-    assert visible(STATUSLINE._render(right[:3])) == "claude-opus-5-5 (200K) · 0K"
+    assert visible(STATUSLINE._render(right[:4])) == "claude-opus-5-5 200K · 0K"
     windows: list[list[Any]] = []
-    for segment in right[3:]:
+    for segment in right[4:]:
         if segment.text == STATUSLINE.GROUP_SEPARATOR:
             windows.append([])
         else:
@@ -519,7 +519,7 @@ class RateLimits(unittest.TestCase):
         line = right_side_text(rate_limits)
         self.assertEqual(
             line,
-            f"claude-opus-5-5 (200K) · 0K · {NINETY} 88% (10:50am) · {FORTY} 37% (Mon 8am)",
+            f"claude-opus-5-5 200K · 0K · {NINETY} 88% 10:50am · {FORTY} 37% Mon 8am",
         )
 
     def test_no_rate_limits_shows_no_usage(self) -> None:
@@ -528,7 +528,7 @@ class RateLimits(unittest.TestCase):
     def test_only_the_reported_window_is_shown(self) -> None:
         self.assertEqual(
             shown({"seven_day": {"used_percentage": 62, "resets_at": at(18, 8)}}),
-            [f"{FORTY} 38% (Mon 8am)"],
+            [f"{FORTY} 38% Mon 8am"],
         )
 
     def test_a_window_whose_reset_has_passed_is_left_out(self) -> None:
@@ -585,7 +585,7 @@ class RateLimits(unittest.TestCase):
     def test_a_reset_time_is_dim_while_its_window_is_coloured(self) -> None:
         [segments] = usage({"five_hour": {"used_percentage": 20, "resets_at": at(15, 12)}})
         self.assertEqual(
-            [(s.text, s.colour) for s in segments], [(f"{EIGHTY} 80%", RED), (" (12pm)", DIM)]
+            [(s.text, s.colour) for s in segments], [(f"{EIGHTY} 80%", RED), (" 12pm", DIM)]
         )
 
     def test_a_window_with_no_reset_time_is_coloured_by_use_so_far(self) -> None:
@@ -649,13 +649,13 @@ class RateLimits(unittest.TestCase):
                 text=True,
             )
         line = result.stdout.rstrip("\n")
-        self.assertIn(f"{RED}{SEVENTY} 73%\033[0m{DIM} (", line)
-        self.assertIn(f"{YELLOW}{SIXTY} 55%\033[0m{DIM} (", line)
+        self.assertIn(f"{RED}{SEVENTY} 73%\033[0m{DIM} ", line)
+        self.assertIn(f"{YELLOW}{SIXTY} 55%\033[0m{DIM} ", line)
         self.assertEqual(len(visible(line)), 120 - edge_margin(), line)
         self.assertRegex(
             visible(line),
-            rf" {re.escape(RIGHT)} · {SEVENTY} 73% \(\d{{1,2}}(:\d\d)?[ap]m\) · {SIXTY} 55% "
-            r"\([A-Z][a-z]{2} \d{1,2}(:\d\d)?[ap]m\)$",
+            rf" {re.escape(RIGHT)} · {SEVENTY} 73% \d{{1,2}}(:\d\d)?[ap]m · {SIXTY} 55% "
+            r"[A-Z][a-z]{2} \d{1,2}(:\d\d)?[ap]m$",
         )
 
 

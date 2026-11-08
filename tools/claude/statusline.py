@@ -32,7 +32,7 @@ class Colour(StrEnum):
     CYAN = "\033[36m"
     YELLOW = "\033[33m"
     RED = "\033[31m"
-    # For what is read now and then, such as the model and when a limit resets
+    # For what is read now and then, such as the window size and when a limit resets
     DIM = "\033[2m"
 
 
@@ -44,7 +44,7 @@ FOLDER_ICON = "\uf07b"  # nf-fa-folder
 # Claude Code indents the status line by 2 columns and cuts it off with "…" past COLUMNS - 4
 EDGE_MARGIN = 4
 # Between groups such as the location and the branch, or two usage windows. Groups such as
-# "80% (2:50am)" hold spaces of their own, so a space alone would not show where one ends.
+# "80% 2:50am" hold spaces of their own, so a space alone would not show where one ends.
 GROUP_SEPARATOR = " · "
 
 # The context count's colour follows the tokens used: yellow from 125k and red from 250k, where measured long-context quality stops being near its best
@@ -329,7 +329,7 @@ def _usage_window_segments(window: UsageWindow, now: float, zone: tzinfo | None)
     segments = [Segment(f"{_battery(remaining)} {remaining}%", _usage_colour(window, now))]
     reset_time = _reset_time(window, zone)
     if reset_time:
-        segments.append(Segment(f" ({reset_time})", Colour.DIM))
+        segments.append(Segment(f" {reset_time}", Colour.DIM))
     return segments
 
 
@@ -356,7 +356,8 @@ def compose_line(
 
     context = session.context
     right = [
-        Segment(f"{session.model_name} ({_tokens(context.window_k)})", Colour.DIM),
+        Segment(session.model_name),
+        Segment(f" {_tokens(context.window_k)}", Colour.DIM),
         Segment(GROUP_SEPARATOR),
         Segment(_tokens(context.used_k), _context_colour(context)),
         *_usage_segments(session.usage, now, zone),
