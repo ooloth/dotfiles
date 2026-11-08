@@ -7,7 +7,7 @@
 the context used and how much of the subscription's 5-hour and 7-day limits is used.
 
 Run by Claude Code, which pipes the session's JSON to stdin and sets COLUMNS. To try it by hand:
-  echo '{"workspace": {"current_dir": "."}}' | COLUMNS=100 tools/claude/config/statusline.py
+  echo '{"workspace": {"current_dir": "."}}' | COLUMNS=100 tools/claude/statusline.py
 
 The JSON's fields are described at https://code.claude.com/docs/en/statusline#full-json-schema.
 """

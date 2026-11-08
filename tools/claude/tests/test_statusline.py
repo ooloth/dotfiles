@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["hypothesis"]
 # ///
-"""Tests for tools/claude/config/statusline.py, which prints the Claude Code status line.
+"""Tests for tools/claude/statusline.py, which prints the Claude Code status line.
 
 Run with: uv run tools/claude/tests/test_statusline.py
 
@@ -33,7 +33,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 CONFIG = Path(__file__).resolve().parent.parent / "config"
-SCRIPT = CONFIG / "statusline.py"
+SCRIPT = CONFIG.parent / "statusline.py"
 REPO = CONFIG.parent.parent.parent
 PAYLOAD = Path(__file__).resolve().parent / "fixtures" / "statusline-payload.json"
 SETTINGS = CONFIG / "settings.json"
@@ -554,7 +554,7 @@ class Settings(unittest.TestCase):
 
     def test_status_line_runs_the_script_from_the_repo_without_a_link(self) -> None:
         command = json.loads(SETTINGS.read_text())["statusLine"]["command"]
-        self.assertEqual(command, "~/Repos/ooloth/dotfiles/tools/claude/config/statusline.py")
+        self.assertEqual(command, "~/Repos/ooloth/dotfiles/tools/claude/statusline.py")
         self.assertTrue(os.access(SCRIPT, os.X_OK), f"{SCRIPT} is not executable")
 
     def test_no_link_script_links_the_status_line(self) -> None:

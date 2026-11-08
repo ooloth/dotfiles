@@ -17,7 +17,7 @@ needs a way to start one of the repo's Python entry points. The callers are bash
 `secret` (which start their scripts with `uv run --offline <path>`), the `Notification`
 hook in `tools/claude/config/settings.json`, its `PreToolUse` hook, which starts use-jira's markdown
 check with `uv run --quiet --script <path>` and needs the network on a cache miss, its
-`statusLine` command, which runs `tools/claude/config/statusline.py` every few seconds through
+`statusLine` command, which runs `tools/claude/statusline.py` every few seconds through
 that script's `uv run --offline --script` shebang, the CI workflow,
 Amp orbs running `scripts/check.bash` on Debian, and the instruction in
 `tools/claude/config/CLAUDE.md` that starts `cc.bash`. Without one stated command, each sub-issue

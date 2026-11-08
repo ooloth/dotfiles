@@ -96,7 +96,7 @@ Then run what you changed. Tests passing is not evidence that it works:
 
   ```bash
   jq --arg d "$PWD" '.workspace.current_dir = $d' tools/claude/tests/fixtures/statusline-payload.json |
-    COLUMNS=120 tools/claude/config/statusline.py
+    COLUMNS=120 tools/claude/statusline.py
   ```
 
   A session's own status line runs the main checkout's copy, because `settings.json` names it by
