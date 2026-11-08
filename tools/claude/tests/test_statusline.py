@@ -7,22 +7,27 @@
 
 Run with: uv run tools/claude/tests/test_statusline.py
 
-Each test pipes the JSON Claude Code sends into the script, with COLUMNS set the way Claude Code sets
-it, and a session directory in a throwaway git repo or linked worktree, on a branch or a detached
-HEAD, or in no repo at all. Widths are measured with the colour codes removed, because those take no
+Most tests pipe the JSON Claude Code sends into the script, with COLUMNS set the way Claude Code
+sets it, and a session directory in a throwaway git repo or linked worktree, on a branch or a
+detached HEAD, or in no repo at all. The rate limit tests import the script and call it with a
+fixed time, so their colour thresholds are exact. Widths are measured with the colour codes removed, because those take no
 screen space.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
+from types import ModuleType
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -281,7 +286,7 @@ class Padding(unittest.TestCase):
         self.tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, self.tmp)
 
-    def test_model_and_usage_end_at_the_right_edge_of_a_wide_terminal(self) -> None:
+    def test_model_and_context_end_at_the_right_edge_of_a_wide_terminal(self) -> None:
         repo = repo_on_branch(self.tmp, "feature/x")
         line = visible(status_line(repo, "120"))
         self.assertEqual(len(line), 120 - edge_margin())
@@ -328,7 +333,7 @@ YELLOW = "\033[33m"
 RED = "\033[31m"
 
 
-def usage_colour(used_k: int, window_k: int) -> str | None:
+def context_colour(used_k: int, window_k: int) -> str | None:
     with tempfile.TemporaryDirectory() as parent:
         line = status_line(
             Path(parent), "120", used_percentage=used_k / window_k * 100, window=window_k * 1000
@@ -344,20 +349,20 @@ def usage_colour(used_k: int, window_k: int) -> str | None:
 
 class ContextColour(unittest.TestCase):
     def test_a_1m_window_turns_yellow_at_125k(self) -> None:
-        self.assertIsNone(usage_colour(124, 1000))
-        self.assertEqual(usage_colour(125, 1000), YELLOW)
+        self.assertIsNone(context_colour(124, 1000))
+        self.assertEqual(context_colour(125, 1000), YELLOW)
 
     def test_a_1m_window_turns_red_at_250k(self) -> None:
-        self.assertEqual(usage_colour(249, 1000), YELLOW)
-        self.assertEqual(usage_colour(250, 1000), RED)
+        self.assertEqual(context_colour(249, 1000), YELLOW)
+        self.assertEqual(context_colour(250, 1000), RED)
 
     def test_a_200k_window_turns_yellow_at_half_full(self) -> None:
-        self.assertIsNone(usage_colour(99, 200))
-        self.assertEqual(usage_colour(100, 200), YELLOW)
+        self.assertIsNone(context_colour(99, 200))
+        self.assertEqual(context_colour(100, 200), YELLOW)
 
     def test_a_200k_window_turns_red_at_three_quarters_full(self) -> None:
-        self.assertEqual(usage_colour(149, 200), YELLOW)
-        self.assertEqual(usage_colour(150, 200), RED)
+        self.assertEqual(context_colour(149, 200), YELLOW)
+        self.assertEqual(context_colour(150, 200), RED)
 
 
 class Payload(unittest.TestCase):
@@ -373,7 +378,7 @@ class Payload(unittest.TestCase):
         result = self.run_payload(json.loads(PAYLOAD.read_text()))
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stderr, "")
-        self.assertTrue(result.stdout.endswith(" claude-opus-5-5 · 110k/1000k\n"), result.stdout)
+        self.assertIn(" claude-opus-5-5 · 110k/1000k", visible(result.stdout))
 
     def test_a_null_used_percentage_shows_no_context_used(self) -> None:
         payload: dict[str, object] = {
@@ -383,6 +388,163 @@ class Payload(unittest.TestCase):
         result = self.run_payload(payload)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(result.stdout.endswith(" claude-opus-5-5 · 0k/1000k\n"), result.stdout)
+
+
+def load_script() -> ModuleType:
+    spec = importlib.util.spec_from_file_location("statusline", SCRIPT)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["statusline"] = module  # dataclasses look their module up here
+    spec.loader.exec_module(module)
+    return module
+
+
+STATUSLINE = load_script()
+NOW = 1_800_000_000
+HOUR = 3600
+FIVE_HOURS = 5 * HOUR
+SEVEN_DAYS = 7 * 24 * HOUR
+
+
+def window(used: float, elapsed: float | None, length: int) -> dict[str, object]:
+    """A rate limit window as Claude Code sends it, `elapsed` seconds after it started."""
+    reported: dict[str, object] = {"used_percentage": used}
+    if elapsed is not None:
+        reported["resets_at"] = NOW - elapsed + length
+    return reported
+
+
+def right_side(rate_limits: dict[str, object] | None, now: float = NOW) -> str:
+    """The right side of the line, with colour codes, for a session with these rate limits."""
+    payload: dict[str, object] = {"model": {"id": "claude-opus-5-5"}}
+    if rate_limits is not None:
+        payload["rate_limits"] = rate_limits
+    session = STATUSLINE.parse_session(json.dumps(payload))
+    checkout = STATUSLINE.Checkout(
+        location="repo", branch=None, behind=0, ahead=0, insertions=0, deletions=0
+    )
+    line = STATUSLINE.compose_line(session, checkout, now)
+    return STATUSLINE._render(line.right)
+
+
+def five_hour_colour(used: float, elapsed: float | None) -> str | None:
+    line = right_side({"five_hour": window(used, elapsed, FIVE_HOURS)})
+    shown = f"5h {STATUSLINE._round(used)}%"
+    assert shown in visible(line), line
+    for colour in (YELLOW, RED):
+        if f"{colour}{shown}" in line:
+            return colour
+    return None
+
+
+def seven_day_colour(used: float, elapsed: float) -> str | None:
+    line = right_side({"seven_day": window(used, elapsed, SEVEN_DAYS)})
+    for colour in (YELLOW, RED):
+        if f"{colour}7d " in line:
+            return colour
+    return None
+
+
+SEVERITY = {None: 0, YELLOW: 1, RED: 2}
+
+
+class RateLimits(unittest.TestCase):
+    def test_the_payload_claude_code_sent_gives_both_windows_in_order(self) -> None:
+        session = STATUSLINE.parse_session(PAYLOAD.read_text())
+        self.assertEqual(
+            [(w.label, w.used_percent, w.resets_at) for w in session.usage],
+            [("5h", 2, 1794124200), ("7d", 62, 1794229200)],
+        )
+
+    def test_both_windows_follow_the_context(self) -> None:
+        line = right_side(
+            {
+                "five_hour": window(23, HOUR, FIVE_HOURS),
+                "seven_day": window(41, 3 * 24 * HOUR, SEVEN_DAYS),
+            }
+        )
+        self.assertEqual(visible(line), "claude-opus-5-5 · 0k/200k · 5h 23% · 7d 41%")
+
+    def test_no_rate_limits_shows_no_usage(self) -> None:
+        self.assertEqual(visible(right_side(None)), "claude-opus-5-5 · 0k/200k")
+
+    def test_only_the_reported_window_is_shown(self) -> None:
+        line = visible(right_side({"seven_day": window(62, 3 * 24 * HOUR, SEVEN_DAYS)}))
+        self.assertEqual(line, "claude-opus-5-5 · 0k/200k · 7d 62%")
+
+    def test_a_window_whose_reset_has_passed_is_left_out(self) -> None:
+        line = right_side({"five_hour": window(40, FIVE_HOURS + 1, FIVE_HOURS)})
+        self.assertEqual(visible(line), "claude-opus-5-5 · 0k/200k")
+
+    def test_a_window_with_no_reset_time_is_coloured_by_use_so_far(self) -> None:
+        self.assertIsNone(five_hour_colour(79, None))
+        self.assertEqual(five_hour_colour(80, None), YELLOW)
+        self.assertEqual(five_hour_colour(100, None), RED)
+
+    def test_a_window_on_pace_to_reach_80_percent_turns_yellow(self) -> None:
+        # one hour into five, so use projects to five times what it is
+        self.assertIsNone(five_hour_colour(15, HOUR))
+        self.assertEqual(five_hour_colour(16, HOUR), YELLOW)
+
+    def test_a_window_on_pace_to_run_out_turns_red(self) -> None:
+        self.assertEqual(five_hour_colour(19, HOUR), YELLOW)
+        self.assertEqual(five_hour_colour(20, HOUR), RED)
+
+    def test_early_in_a_window_use_projects_as_if_a_tenth_had_passed(self) -> None:
+        # ten hours is under a tenth of a week, so use projects to ten times what it is
+        self.assertIsNone(seven_day_colour(7.9, 10 * HOUR))
+        self.assertEqual(seven_day_colour(8, 10 * HOUR), YELLOW)
+        self.assertEqual(seven_day_colour(10, 10 * HOUR), RED)
+
+    def test_usage_is_rounded_half_away_from_zero(self) -> None:
+        line = visible(right_side({"five_hour": window(23.5, 4 * HOUR, FIVE_HOURS)}))
+        self.assertTrue(line.endswith("5h 24%"), line)
+
+    @settings(max_examples=300, deadline=None)
+    @given(
+        used=st.floats(min_value=0, max_value=100),
+        more_used=st.floats(min_value=0, max_value=100),
+        elapsed=st.integers(min_value=0, max_value=FIVE_HOURS - 1),
+        later=st.integers(min_value=0, max_value=FIVE_HOURS - 1),
+    )
+    def test_more_use_never_lowers_the_colour_and_more_time_never_raises_it(
+        self, used: float, more_used: float, elapsed: int, later: int
+    ) -> None:
+        low, high = sorted((used, more_used))
+        early, late = sorted((elapsed, later))
+        self.assertLessEqual(
+            SEVERITY[five_hour_colour(low, early)], SEVERITY[five_hour_colour(high, early)]
+        )
+        self.assertGreaterEqual(
+            SEVERITY[five_hour_colour(low, early)], SEVERITY[five_hour_colour(low, late)]
+        )
+
+    def test_coloured_usage_still_ends_at_the_right_edge(self) -> None:
+        now = time.time()
+        payload = {
+            "model": {"id": "claude-opus-5-5"},
+            "context_window": {"used_percentage": 1, "context_window_size": 1_000_000},
+            # projected to 135% and 90%, far enough from 100% and 80% that the seconds before the
+            # script reads the clock cannot change either colour
+            "rate_limits": {
+                "five_hour": {"used_percentage": 27, "resets_at": now + 4 * HOUR},
+                "seven_day": {"used_percentage": 45, "resets_at": now + SEVEN_DAYS / 2},
+            },
+        }
+        with tempfile.TemporaryDirectory() as parent:
+            payload["workspace"] = {"current_dir": parent}
+            result = subprocess.run(
+                [str(SCRIPT)],
+                input=json.dumps(payload),
+                env={**os.environ, "COLUMNS": "120"},
+                capture_output=True,
+                text=True,
+            )
+        line = result.stdout.rstrip("\n")
+        self.assertIn(f"{RED}5h 27%", line)
+        self.assertIn(f"{YELLOW}7d 45%", line)
+        self.assertEqual(len(visible(line)), 120 - edge_margin(), line)
+        self.assertTrue(visible(line).endswith(f" {RIGHT} · 5h 27% · 7d 45%"), line)
 
 
 class Settings(unittest.TestCase):

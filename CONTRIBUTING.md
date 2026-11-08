@@ -91,6 +91,16 @@ Then run what you changed. Tests passing is not evidence that it works:
   `bash features/update/preflight.bash <tool> && bash tools/<tool>/update.bash`. That
   runs the real update on this machine. If the script has a link step, the link step is skipped
   with a note and the rest of the update runs.
+- **The Claude Code status line:** from the checkout you changed, pipe it a payload Claude Code
+  sent:
+
+  ```bash
+  jq --arg d "$PWD" '.workspace.current_dir = $d' tools/claude/tests/fixtures/statusline-payload.json |
+    COLUMNS=120 tools/claude/config/statusline.py
+  ```
+
+  A session's own status line runs the main checkout's copy, because `settings.json` names it by
+  that path, so a change in a worktree shows there only once it reaches the main checkout.
 - **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
   aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
   interactive zsh, keeping the variables Claude Code needs to find its login:

@@ -3,7 +3,8 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Print the Claude Code status line: location and git state on the left, model and context right.
+"""Print the Claude Code status line: location and git state on the left, and on the right the model,
+the context used and how much of the subscription's 5-hour and 7-day limits is used.
 
 Run by Claude Code, which pipes the session's JSON to stdin and sets COLUMNS. To try it by hand:
   echo '{"workspace": {"current_dir": "."}}' | COLUMNS=100 tools/claude/config/statusline.py
@@ -19,6 +20,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -45,6 +47,17 @@ EDGE_MARGIN = 4
 CONTEXT_YELLOW_K = 125
 CONTEXT_RED_K = 250
 
+# A rate limit window is coloured by the use it is on pace to reach by its reset: yellow from 80%,
+# red from 100%. Before a tenth of the window has passed, a projection from so little time swings
+# too much to trust, so it projects as if a tenth had passed. That never warns falsely, since a pace
+# that reaches 80% from a tenth of the window is at least as fast, and the colour never jumps up as
+# time passes with no new use. A window with no reset time is coloured by its use so far.
+USAGE_YELLOW_PERCENT = 80
+USAGE_RED_PERCENT = 100
+MIN_ELAPSED_TO_PROJECT = 0.1
+# The windows Claude Code reports for a claude.ai subscription, in the order they are shown
+USAGE_WINDOWS = (("five_hour", "5h", 5 * 3600), ("seven_day", "7d", 7 * 24 * 3600))
+
 
 @dataclass(frozen=True)
 class ContextUsage:
@@ -53,10 +66,21 @@ class ContextUsage:
 
 
 @dataclass(frozen=True)
+class UsageWindow:
+    """How much of one of the subscription's rate limits is used, and when it resets."""
+
+    label: str
+    length_s: int
+    used_percent: float
+    resets_at: float | None  # Unix seconds
+
+
+@dataclass(frozen=True)
 class Session:
     model_id: str
     directory: str
     context: ContextUsage
+    usage: tuple[UsageWindow, ...]  # only the windows Claude Code reported, in USAGE_WINDOWS order
 
 
 @dataclass(frozen=True)
@@ -84,7 +108,7 @@ class StatusLine:
 
 
 def _field(data: object, *keys: str) -> object:
-    """The value at a path of keys, or None where the path is missing, like jq's `.a.b`."""
+    """The value at a path of keys, or None where any key along it is missing."""
     for key in keys:
         if not isinstance(data, dict):
             return None
@@ -93,34 +117,46 @@ def _field(data: object, *keys: str) -> object:
 
 
 def _text(value: object, default: str) -> str:
-    # jq's `//` falls back on null and false, and so does this
     return value if isinstance(value, str) else default
 
 
-def _number(value: object, default: float) -> float:
+def _number_or_none(value: object) -> float | None:
     if isinstance(value, bool) or not isinstance(value, int | float):
-        return default
+        return None
     return value
 
 
+def _number(value: object, default: float) -> float:
+    number = _number_or_none(value)
+    return default if number is None else number
+
+
 def _round(value: float) -> int:
-    """Round half away from zero, as jq's `round` does, rather than Python's half to even."""
+    """Round half away from zero, so 0.5 rounds up, rather than Python's half to even."""
     return int(math.copysign(math.floor(abs(value) + 0.5), value))
 
 
 def parse_session(raw: str) -> Session:
     data = json.loads(raw)
     window = _number(_field(data, "context_window", "context_window_size"), 200_000)
-    # used_percentage is authoritative (server-side); raw token sums overcount because of the cache
-    # fields
+    # Claude Code computes used_percentage itself, so the token counts are not added up here
     used_percentage = _number(_field(data, "context_window", "used_percentage"), 0)
     directory = _field(data, "workspace", "current_dir") or _field(data, "cwd")
+    # rate_limits comes only for claude.ai subscribers, after the session's first response, and
+    # each window can be absent on its own
+    usage = []
+    for key, label, length_s in USAGE_WINDOWS:
+        used = _number_or_none(_field(data, "rate_limits", key, "used_percentage"))
+        if used is not None:
+            resets_at = _number_or_none(_field(data, "rate_limits", key, "resets_at"))
+            usage.append(UsageWindow(label, length_s, used, resets_at))
     return Session(
         model_id=_text(_field(data, "model", "id"), "claude"),
         directory=_text(directory, "."),
         context=ContextUsage(
             used_k=_round(used_percentage * window / 100_000), window_k=_round(window / 1000)
         ),
+        usage=tuple(usage),
     )
 
 
@@ -215,7 +251,35 @@ def _context_colour(context: ContextUsage) -> Colour | None:
     return None
 
 
-def compose_line(session: Session, checkout: Checkout) -> StatusLine:
+def _usage_colour(window: UsageWindow, now: float) -> Colour | None:
+    used = window.used_percent
+    projected = used
+    if window.resets_at is not None:
+        started_at = window.resets_at - window.length_s
+        elapsed = min(max((now - started_at) / window.length_s, MIN_ELAPSED_TO_PROJECT), 1.0)
+        projected = used / elapsed
+    assert projected >= used, f"projected {projected}% is below the {used}% already used"
+    if projected >= USAGE_RED_PERCENT:
+        return Colour.RED
+    if projected >= USAGE_YELLOW_PERCENT:
+        return Colour.YELLOW
+    return None
+
+
+def _usage_segments(usage: tuple[UsageWindow, ...], now: float) -> list[Segment]:
+    segments = []
+    for window in usage:
+        # Claude Code drops a window once it resets, and so does this between its refreshes
+        if window.resets_at is not None and window.resets_at <= now:
+            continue
+        segments += [
+            Segment(" · "),
+            Segment(f"{window.label} {_round(window.used_percent)}%", _usage_colour(window, now)),
+        ]
+    return segments
+
+
+def compose_line(session: Session, checkout: Checkout, now: float) -> StatusLine:
     left = [Segment(f"{FOLDER_ICON}  {checkout.location}")]
     git_segments = _git_segments(checkout)
     if git_segments:
@@ -225,6 +289,7 @@ def compose_line(session: Session, checkout: Checkout) -> StatusLine:
     right = [
         Segment(f"{session.model_id} · "),
         Segment(f"{context.used_k}k/{context.window_k}k", _context_colour(context)),
+        *_usage_segments(session.usage, now),
     ]
     return StatusLine(left=left, right=right)
 
@@ -239,9 +304,7 @@ def gap(line: StatusLine, columns: int | None) -> int:
     if columns is None:
         return 1
     free = columns - EDGE_MARGIN - width(line.left) - width(line.right)
-    spaces = free if free > 1 else 1
-    assert spaces >= 1, f"gap of {spaces} would overlap the two sides"
-    return spaces
+    return max(free, 1)
 
 
 def _render(segments: list[Segment]) -> str:
@@ -261,7 +324,7 @@ def parse_columns(value: str | None) -> int | None:
 
 def main() -> None:
     session = parse_session(sys.stdin.read())
-    line = compose_line(session, read_checkout(session.directory))
+    line = compose_line(session, read_checkout(session.directory), time.time())
     print(render(line, parse_columns(os.environ.get("COLUMNS"))))
 
 

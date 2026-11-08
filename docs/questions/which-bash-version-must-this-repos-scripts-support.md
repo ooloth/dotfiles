@@ -47,7 +47,7 @@ of each script.
 Raised on 2026-10-22 while adding a Nerd Font icon to `tools/claude/config/statusline.sh`. The
 first version wrote the glyph as `$'\ue725'`, which worked under Homebrew's bash and printed the
 escape as text under `/bin/bash`. It was caught by running the script under both by hand, not by
-the local `check`. The script now writes the glyph's UTF-8 bytes, `$'\xee\x9c\xa5'`, which both
+the local `check`. The fix was to write the glyph's UTF-8 bytes, `$'\xee\x9c\xa5'`, which both
 versions handle.
 
 ## Options
