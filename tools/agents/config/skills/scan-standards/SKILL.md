@@ -1,7 +1,7 @@
 ---
 name: scan-standards
 description: Check whether a codebase upholds its standards — a specific theme or all themes in parallel. Use when asked to review conventions, check standards, or audit codebase health.
-argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | instrumentation | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | agent-harness | decision-making | developer-experience | user-experience | bash | css | python | rust | terraform | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
+argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | instrumentation | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | agent-harness | decision-making | developer-experience | user-experience | bash | css | git | python | rust | terraform | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
 ---
@@ -92,6 +92,7 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    `~/.agents/standards/typescript.md` → Types & Correctness (if TypeScript);
    `~/.agents/standards/css.md` → Structure (if the project has stylesheets);
    `~/.agents/standards/terraform.md` → Documentation & Release (if the project has `.tf` files);
+   `~/.agents/standards/git.md` → Operations (if the code runs git commands);
    `~/.agents/standards/cli-design.md` → Structure (if the project has a CLI binary).
 
 2. Wait for all subagents to return their results

@@ -39,6 +39,12 @@ Independent work communicates through message passing or immutable data
 rather than shared mutable state. The less state that is shared, the fewer
 races are possible.
 
+**A process that only reads state other processes write takes none of their locks.**
+A reader that polls alongside writers, such as a status line or shell prompt reading a
+repository, uses read paths that neither write nor lock what it reads. Otherwise its polling
+makes the writers fail at random, and the failure shows up in their work, not in the reader's.
+`git.md` names the git commands that meet this.
+
 **When explicit locks are used, they are held briefly and acquired in order.**
 Work done while holding a lock is limited to what requires the lock.
 When multiple locks must be held simultaneously, they are always acquired
@@ -70,6 +76,8 @@ of partial success — which results to keep, which to retry, how to report
 
 - Source files containing async functions, thread or task spawning, locks, channels, or shared
   mutable state
+- Scripts that poll state another process writes, such as a status line or prompt reading a
+  repository
 
 ## Out of scope
 

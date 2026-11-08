@@ -95,6 +95,7 @@ a false positive costs one read; a false negative means missed guidance.
 - **`documentation.md`** — any file change that affects documented behaviour or has accompanying
   docs; diagrams and tables in ticket comments and PR descriptions
 - **`error-handling.md`** — fallible operations, error propagation paths, user-facing error output
+- **`git.md`** — any code that runs git commands; load alongside language-agnostic files
 - **`instrumentation.md`** — logging, metric and trace call sites; log format, levels and field
   content
 - **`observability.md`** — what a failure has to reveal, what must be recorded for it to, invariants
