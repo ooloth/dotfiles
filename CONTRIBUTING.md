@@ -92,11 +92,14 @@ Then run what you changed. Tests passing is not evidence that it works:
   runs the real update on this machine. If the script has a link step, the link step is skipped
   with a note and the rest of the update runs.
 - **The Claude Code status line:** from the checkout you changed, pipe it a payload Claude Code
-  sent:
+  sent, with its reset times moved after now, because the line leaves out a window whose reset has
+  passed:
 
   ```bash
-  jq --arg d "$PWD" '.workspace.current_dir = $d' tools/claude/tests/fixtures/statusline-payload.json |
-    COLUMNS=120 tools/claude/statusline.py
+  jq --arg d "$PWD" '.workspace.current_dir = $d
+    | .rate_limits.five_hour.resets_at = (now + 3 * 3600)
+    | .rate_limits.seven_day.resets_at = (now + 4 * 86400)' \
+    tools/claude/tests/fixtures/statusline-payload.json | COLUMNS=120 tools/claude/statusline.py
   ```
 
   A session's own status line runs the main checkout's copy, because `settings.json` names it by

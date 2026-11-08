@@ -9,14 +9,16 @@ Run with: uv run tools/claude/tests/test_statusline.py
 
 Most tests pipe the JSON Claude Code sends into the script, with COLUMNS set the way Claude Code
 sets it, and a session directory in a throwaway git repo or linked worktree, on a branch or a
-detached HEAD, or in no repo at all. The rate limit tests import the script and call it with a
-fixed time, so their colour thresholds are exact. Widths are measured with the colour codes removed, because those take no
-screen space.
+detached HEAD, or in no repo at all. Most rate limit tests import the script and call it with a
+fixed time, so their colour thresholds are exact. Widths are measured with the colour codes removed,
+because those take no screen space.
 """
 
 from __future__ import annotations
 
+import contextlib
 import importlib.util
+import io
 import json
 import os
 import re
@@ -30,15 +32,17 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
 from typing import Any
+from unittest import mock
+from zoneinfo import ZoneInfo
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-CONFIG = Path(__file__).resolve().parent.parent / "config"
-SCRIPT = CONFIG.parent / "statusline.py"
-REPO = CONFIG.parent.parent.parent
+TOOL = Path(__file__).resolve().parent.parent
+SCRIPT = TOOL / "statusline.py"
+REPO = TOOL.parent.parent
 PAYLOAD = Path(__file__).resolve().parent / "fixtures" / "statusline-payload.json"
-SETTINGS = CONFIG / "settings.json"
+SETTINGS = TOOL / "config" / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
 RIGHT = "Opus 5.5 1M · 10K"
 DIM = "\033[2m"
@@ -46,10 +50,16 @@ BRANCH_ICON = "\ue725 "  # nf-dev-git_branch, as in tools/tmux/config/gitmux.con
 FOLDER_ICON = "\uf07b  "  # nf-fa-folder, then two spaces because Rex draws it wider than a cell
 
 
-def edge_margin() -> int:
-    match = re.search(r"^EDGE_MARGIN = (\d+)$", SCRIPT.read_text(), re.MULTILINE)
-    assert match, f"{SCRIPT.name} sets no EDGE_MARGIN"
-    return int(match[1])
+def load_script() -> ModuleType:
+    spec = importlib.util.spec_from_file_location("statusline", SCRIPT)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["statusline"] = module  # dataclasses look their module up here
+    spec.loader.exec_module(module)
+    return module
+
+
+STATUSLINE = load_script()
 
 
 def git(directory: Path, *args: str) -> None:
@@ -262,6 +272,17 @@ class GitStats(unittest.TestCase):
             result.stdout,
         )
 
+    def test_reading_the_counts_never_rewrites_the_index(self) -> None:
+        # A file whose timestamp no longer matches the index is what makes `git diff` refresh and
+        # rewrite the index, taking .git/index.lock from any commit running at the same moment
+        later = time.time() + 60
+        os.utime(self.file, (later, later))
+        index = self.repo / ".git" / "index"
+        before = index.stat()
+        status_line(self.repo, "120")
+        after = index.stat()
+        self.assertEqual((after.st_ino, after.st_mtime_ns), (before.st_ino, before.st_mtime_ns))
+
     @settings(max_examples=25, deadline=None)
     @given(
         insertions=st.integers(min_value=0, max_value=3000),
@@ -272,8 +293,38 @@ class GitStats(unittest.TestCase):
     ) -> None:
         self.file.write_text("a\nb\nc\n"[: 6 - 2 * deletions] + "x\n" * insertions)
         line = status_line(self.repo, "100")
-        self.assertEqual(len(visible(line)), 100 - edge_margin(), line)
+        self.assertEqual(len(visible(line)), 100 - STATUSLINE.EDGE_MARGIN, line)
         self.assertTrue(visible(line).endswith(" " + RIGHT), line)
+
+
+class GitTimeout(unittest.TestCase):
+    def test_a_git_call_past_the_limit_gives_no_counts_and_says_so_on_stderr(self) -> None:
+        with tempfile.TemporaryDirectory() as parent:
+            slow_git = Path(parent) / "git"
+            slow_git.write_text("#!/bin/sh\nexec /bin/sleep 5\n")
+            slow_git.chmod(0o755)
+            stderr = io.StringIO()
+            with (
+                mock.patch.dict(os.environ, {"PATH": parent}),
+                mock.patch.object(STATUSLINE, "GIT_TIMEOUT_S", 0.1),
+                contextlib.redirect_stderr(stderr),
+            ):
+                checkout = STATUSLINE.read_checkout(parent)
+        self.assertEqual(
+            checkout,
+            STATUSLINE.Checkout(
+                location=Path(parent).name,
+                branch=None,
+                behind=0,
+                ahead=0,
+                insertions=0,
+                deletions=0,
+            ),
+        )
+        lines = stderr.getvalue().splitlines()
+        self.assertEqual(len(lines), 4, lines)
+        for line in lines:
+            self.assertRegex(line, r"^statusline: git .+ timed out after 0\.1s$")
 
 
 class RightSide(unittest.TestCase):
@@ -292,7 +343,7 @@ class Padding(unittest.TestCase):
     def test_model_and_context_end_at_the_right_edge_of_a_wide_terminal(self) -> None:
         repo = repo_on_branch(self.tmp, "feature/x")
         line = visible(status_line(repo, "120"))
-        self.assertEqual(len(line), 120 - edge_margin())
+        self.assertEqual(len(line), 120 - STATUSLINE.EDGE_MARGIN)
         self.assertTrue(line.startswith(f"{FOLDER_ICON}repo · {BRANCH_ICON}feature/x "), line)
         self.assertTrue(line.endswith(" " + RIGHT), line)
 
@@ -309,8 +360,8 @@ class Padding(unittest.TestCase):
         left = (
             FOLDER_ICON + "repo" + (f"/{subpath}" if subpath else "") + f" · {BRANCH_ICON}{branch}"
         )
-        if len(left) + 1 + len(RIGHT) <= columns - edge_margin():
-            self.assertEqual(len(line), columns - edge_margin(), line)
+        if len(left) + 1 + len(RIGHT) <= columns - STATUSLINE.EDGE_MARGIN:
+            self.assertEqual(len(line), columns - STATUSLINE.EDGE_MARGIN, line)
             self.assertTrue(line.startswith(left + " "), line)
             self.assertTrue(line.endswith(" " + RIGHT), line)
         else:
@@ -321,7 +372,7 @@ class Padding(unittest.TestCase):
         for used_percentage in (13, 26):  # 130k is yellow, 260k is red
             line = status_line(repo, "100", used_percentage=used_percentage)
             self.assertIn("\033[", line)
-            self.assertEqual(len(visible(line)), 100 - edge_margin())
+            self.assertEqual(len(visible(line)), 100 - STATUSLINE.EDGE_MARGIN)
 
     def test_missing_or_non_numeric_columns_gives_one_space_before_the_right_side(self) -> None:
         repo = repo_on_branch(self.tmp, "main")
@@ -417,16 +468,6 @@ class Payload(unittest.TestCase):
                 self.assertEqual(STATUSLINE._tokens(thousands), text)
 
 
-def load_script() -> ModuleType:
-    spec = importlib.util.spec_from_file_location("statusline", SCRIPT)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["statusline"] = module  # dataclasses look their module up here
-    spec.loader.exec_module(module)
-    return module
-
-
-STATUSLINE = load_script()
 NOW = 1_800_000_000  # Friday 15 January 2027, 08:00 in UTC
 ZONE = UTC
 HOUR = 3600
@@ -533,6 +574,28 @@ class RateLimits(unittest.TestCase):
 
     def test_a_window_whose_reset_has_passed_is_left_out(self) -> None:
         self.assertEqual(shown({"five_hour": window(40, FIVE_HOURS + 1, FIVE_HOURS)}), [])
+
+    def test_a_window_that_resets_this_second_is_left_out(self) -> None:
+        self.assertEqual(shown({"five_hour": {"used_percentage": 40, "resets_at": NOW}}), [])
+
+    def test_a_true_or_false_share_used_leaves_the_window_out(self) -> None:
+        for used in (True, False):
+            with self.subTest(used=used):
+                self.assertEqual(
+                    shown({"five_hour": {"used_percentage": used, "resets_at": at(15, 12)}}), []
+                )
+
+    def test_a_negative_share_used_shows_the_whole_limit_left(self) -> None:
+        self.assertEqual(
+            shown({"five_hour": {"used_percentage": -5, "resets_at": at(15, 12)}}),
+            [f"{FULL} 100% 12pm"],
+        )
+
+    def test_a_reset_time_in_milliseconds_shows_the_window_without_a_time(self) -> None:
+        self.assertEqual(
+            shown({"five_hour": {"used_percentage": 12, "resets_at": at(15, 12) * 1000}}),
+            [f"{NINETY} 88%"],
+        )
 
     def test_a_window_with_no_reset_time_shows_no_time(self) -> None:
         self.assertEqual(shown({"five_hour": {"used_percentage": 12}}), [f"{NINETY} 88%"])
@@ -651,12 +714,80 @@ class RateLimits(unittest.TestCase):
         line = result.stdout.rstrip("\n")
         self.assertIn(f"{RED}{SEVENTY} 73%\033[0m{DIM} ", line)
         self.assertIn(f"{YELLOW}{SIXTY} 55%\033[0m{DIM} ", line)
-        self.assertEqual(len(visible(line)), 120 - edge_margin(), line)
+        self.assertEqual(len(visible(line)), 120 - STATUSLINE.EDGE_MARGIN, line)
         self.assertRegex(
             visible(line),
             rf" {re.escape(RIGHT)} · {SEVENTY} 73% \d{{1,2}}(:\d\d)?[ap]m · {SIXTY} 55% "
             r"[A-Z][a-z]{2} \d{1,2}(:\d\d)?[ap]m$",
         )
+
+    def test_reset_times_are_shown_in_the_local_time_zone(self) -> None:
+        resets_at = (int(time.time()) // 60 + 120) * 60
+        tokyo = datetime.fromtimestamp(resets_at, ZoneInfo("Asia/Tokyo"))
+        minutes = f":{tokyo.minute:02d}" if tokyo.minute else ""
+        clock = f"{tokyo.hour % 12 or 12}{minutes}{'am' if tokyo.hour < 12 else 'pm'}"
+        payload = {
+            "model": {"id": "claude-opus-5-5"},
+            "rate_limits": {"five_hour": {"used_percentage": 1, "resets_at": resets_at}},
+        }
+        with tempfile.TemporaryDirectory() as parent:
+            payload["workspace"] = {"current_dir": parent}
+            result = subprocess.run(
+                [str(SCRIPT)],
+                input=json.dumps(payload),
+                env={**os.environ, "TZ": "Asia/Tokyo"},
+                capture_output=True,
+                text=True,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(visible(result.stdout).endswith(f" 99% {clock}\n"), result.stdout)
+
+
+# What a number field in the payload might hold: everything JSON can carry, plus the NaN and
+# Infinity that json.dumps writes and json.loads reads back
+ODD_NUMBERS = st.one_of(
+    st.none(),
+    st.booleans(),
+    st.integers(min_value=-(10**20), max_value=10**20),
+    st.floats(allow_nan=True, allow_infinity=True),
+    st.text(max_size=3),
+    st.lists(st.integers(), max_size=1),
+)
+
+
+class OddPayloadNumbers(unittest.TestCase):
+    @settings(max_examples=500, deadline=None)
+    @given(
+        five_hour_used=ODD_NUMBERS,
+        five_hour_resets_at=ODD_NUMBERS,
+        seven_day_used=ODD_NUMBERS,
+        seven_day_resets_at=ODD_NUMBERS,
+        context_used=ODD_NUMBERS,
+        window_size=ODD_NUMBERS,
+    )
+    def test_any_value_in_a_number_field_still_renders_the_line(
+        self,
+        five_hour_used: object,
+        five_hour_resets_at: object,
+        seven_day_used: object,
+        seven_day_resets_at: object,
+        context_used: object,
+        window_size: object,
+    ) -> None:
+        payload = {
+            "model": {"id": "claude-opus-5-5"},
+            "context_window": {"used_percentage": context_used, "context_window_size": window_size},
+            "rate_limits": {
+                "five_hour": {"used_percentage": five_hour_used, "resets_at": five_hour_resets_at},
+                "seven_day": {"used_percentage": seven_day_used, "resets_at": seven_day_resets_at},
+            },
+        }
+        session = STATUSLINE.parse_session(json.dumps(payload))
+        checkout = STATUSLINE.Checkout(
+            location="repo", branch=None, behind=0, ahead=0, insertions=0, deletions=0
+        )
+        line = STATUSLINE.render(STATUSLINE.compose_line(session, checkout, NOW, ZONE), 120)
+        self.assertIn("claude-opus-5-5", visible(line))
 
 
 class Settings(unittest.TestCase):

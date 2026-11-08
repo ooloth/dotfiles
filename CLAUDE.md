@@ -57,7 +57,8 @@ See README.md for the overview. Key points for Claude:
 `settings.json` and `agents` come from `tools/claude/config/`, and `skills` and `standards` come
 from `tools/agents/config/`. To change global Claude settings, edit and commit the repo copy, such
 as `tools/claude/config/CLAUDE.md`. The status line script, `tools/claude/statusline.py`, sits
-outside `config/` because nothing links it: `settings.json` runs it by its path in this repo.
+beside `config/`, where `docs/invariants/tools.md` puts every script another program runs by its
+repo path.
 
 The symlink creation logic is in `features/update/symlinks.bash`, run by
 `features/update/tools.bash` and by the `symlinks` alias. `features/setup/setup.zsh` sources the

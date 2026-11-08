@@ -17,8 +17,9 @@ it to `repo_symlink_dirs`, or `scripts/checks/link-scripts.bash` fails and
 names the directory.
 
 **A change to a linked config file is safe from the moment it is saved.**
-Files under `tools/*/config/` are symlinked into `$HOME`, so saving one
-changes the running machine before any commit, `u` or migration. On another
+Files that a `link.bash` links from `tools/*/config/` are symlinked into `$HOME`, and scripts
+such as `tools/claude/statusline.py` run from the repo by their path, so saving either changes the
+running machine before any commit, `u` or migration. On another
 machine, the change goes live at `git pull`, before `u` runs there. A change
 that is only safe once something else has run waits until that has run, or
 ships with that step in the same `u`. Removing `allow-scripts` from

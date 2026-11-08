@@ -3,12 +3,13 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Print the Claude Code status line: location and git state on the left, and on the right the model,
-the context used, and how much of the subscription's 5-hour and 7-day limits is left and when each
-resets.
+"""Print the Claude Code status line: location and git state on the left, and on the right the
+model and its window size, the context used, and how much of the subscription's 5-hour and 7-day
+limits is left and when each resets.
 
-Run by Claude Code, which pipes the session's JSON to stdin and sets COLUMNS. To try it by hand:
-  echo '{"workspace": {"current_dir": "."}}' | COLUMNS=100 tools/claude/statusline.py
+Run by Claude Code, which pipes the session's JSON to stdin and sets COLUMNS. To try it by hand
+with a payload Claude Code sent, use the command under "The Claude Code status line" in
+CONTRIBUTING.md.
 
 The JSON's fields are described at https://code.claude.com/docs/en/statusline#full-json-schema.
 """
@@ -23,7 +24,7 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime, tzinfo
+from datetime import UTC, datetime, tzinfo
 from enum import Enum, StrEnum
 
 
@@ -46,11 +47,14 @@ EDGE_MARGIN = 4
 # Between groups such as the location and the branch, or two usage windows. Groups such as
 # "80% 2:50am" hold spaces of their own, so a space alone would not show where one ends.
 GROUP_SEPARATOR = " · "
+# Each git call normally takes about 20 ms. Four calls at this limit still finish inside the
+# 5-second refresh, after which Claude Code cancels the run and starts another.
+GIT_TIMEOUT_S = 1
 
-# The context count's colour follows the tokens used: yellow from 125k and red from 250k, where measured long-context quality stops being near its best
-# and then clearly drops. Quality follows the token count, not
-# the share of the window, so the thresholds only shrink to half and three quarters of a window too
-# small to reach them, which still warns before the window fills.
+# The context count's colour follows the tokens used: yellow from 125k and red from 250k, where
+# measured long-context quality stops being near its best and then clearly drops. Quality follows
+# the token count, not the share of the window, so the thresholds only shrink to half and three
+# quarters of a window too small to reach them, which still warns before the window fills.
 CONTEXT_YELLOW_K = 125
 CONTEXT_RED_K = 250
 
@@ -147,9 +151,29 @@ def _text(value: object, default: str) -> str:
 
 
 def _number_or_none(value: object) -> float | None:
+    """A finite number, or None for anything else, including the NaN and Infinity json.loads reads."""
     if isinstance(value, bool) or not isinstance(value, int | float):
         return None
-    return value
+    return value if math.isfinite(value) else None
+
+
+def _share(value: object) -> float | None:
+    """A percentage used, which can pass 100 but is never below 0."""
+    number = _number_or_none(value)
+    return None if number is None else max(number, 0)
+
+
+def _time_or_none(value: object) -> float | None:
+    """Unix seconds that any time zone can show as a date, or None, as for a time in milliseconds."""
+    seconds = _number_or_none(value)
+    if seconds is None:
+        return None
+    try:
+        year = datetime.fromtimestamp(seconds, UTC).year
+    except (OverflowError, OSError, ValueError):
+        return None
+    # A year away from both ends of datetime's range, so no zone's offset pushes it past either
+    return seconds if datetime.min.year < year < datetime.max.year else None
 
 
 def _number(value: object, default: float) -> float:
@@ -165,16 +189,19 @@ def _round(value: float) -> int:
 def parse_session(raw: str) -> Session:
     data = json.loads(raw)
     window = _number(_field(data, "context_window", "context_window_size"), 200_000)
-    # Claude Code computes used_percentage itself, so the token counts are not added up here
-    used_percentage = _number(_field(data, "context_window", "used_percentage"), 0)
+    # The count comes from used_percentage on purpose, not from adding up current_usage (4d9bc91b).
+    # During a Claude Code autocompact bug the sum ran past the window, while used_percentage is
+    # capped at 100. A whole-number percentage makes the count move in steps of a hundredth of the
+    # window, so a 1M window shows 110K for 109,324 tokens.
+    used_percentage = min(_share(_field(data, "context_window", "used_percentage")) or 0, 100)
     directory = _field(data, "workspace", "current_dir") or _field(data, "cwd")
     # rate_limits comes only for claude.ai subscribers, after the session's first response, and
     # each window can be absent on its own
     usage = []
     for kind in WindowKind:
-        used = _number_or_none(_field(data, "rate_limits", kind.key, "used_percentage"))
+        used = _share(_field(data, "rate_limits", kind.key, "used_percentage"))
         if used is not None:
-            resets_at = _number_or_none(_field(data, "rate_limits", kind.key, "resets_at"))
+            resets_at = _time_or_none(_field(data, "rate_limits", kind.key, "resets_at"))
             usage.append(UsageWindow(kind, used, resets_at))
     return Session(
         model_name=_text(
@@ -182,14 +209,14 @@ def parse_session(raw: str) -> Session:
         ),
         directory=_text(directory, "."),
         context=ContextUsage(
-            used_k=_round(used_percentage * window / 100_000), window_k=_round(window / 1000)
+            used_k=_round(window / 100_000 * used_percentage), window_k=_round(window / 1000)
         ),
         usage=tuple(usage),
     )
 
 
 def _git(directory: str, *args: str) -> str | None:
-    """git's stdout, or None when git fails or is missing."""
+    """git's stdout, or None when git fails, is missing or takes longer than GIT_TIMEOUT_S."""
     try:
         result = subprocess.run(
             ["git", "-C", directory, *args],
@@ -198,8 +225,16 @@ def _git(directory: str, *args: str) -> str | None:
             encoding="utf-8",
             errors="replace",
             check=False,
+            timeout=GIT_TIMEOUT_S,
         )
     except OSError:
+        return None
+    except subprocess.TimeoutExpired:
+        # Claude Code logs a status line's stderr under `claude --debug`. Without this line a slow
+        # git would look the same as a branch with no upstream.
+        print(
+            f"statusline: git {' '.join(args)} timed out after {GIT_TIMEOUT_S:g}s", file=sys.stderr
+        )
         return None
     return result.stdout if result.returncode == 0 else None
 
@@ -232,11 +267,12 @@ def read_checkout(directory: str) -> Checkout:
 
     # Commits behind and ahead of the upstream as of the last fetch, then the lines inserted and
     # deleted by staged and unstaged changes against HEAD. git gives nothing here without an
-    # upstream or a first commit.
+    # upstream or a first commit. diff-index, unlike `git diff HEAD`, never refreshes the index, so
+    # it never takes .git/index.lock from a commit running at the same moment.
     divergence = (
         _git(directory, "rev-list", "--left-right", "--count", "@{upstream}...HEAD") or ""
     ).split()
-    shortstat = _git(directory, "diff", "HEAD", "--shortstat") or ""
+    shortstat = _git(directory, "diff-index", "--shortstat", "HEAD") or ""
     behind, ahead = (int(divergence[0]), int(divergence[1])) if len(divergence) == 2 else (0, 0)
 
     return Checkout(
@@ -366,7 +402,8 @@ def compose_line(
 
 
 def width(segments: list[Segment]) -> int:
-    """Screen columns taken, which colour codes do not add to."""
+    """Characters taken, which colour codes do not add to. Each glyph counts as one, and the folder
+    icon, which Rex draws wider, covers one of the two spaces after it."""
     return sum(len(segment.text) for segment in segments)
 
 

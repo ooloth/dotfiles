@@ -1,7 +1,7 @@
 # claude
 
-Claude Code, installed by `Brewfile` and configured from `config/`, which `link.bash` links into
-`~/.claude/`: the global `CLAUDE.md`, `settings.json` and the subagent definitions. The skills and
+Claude Code, installed by `Brewfile` and configured from `config/`, where `link.bash` links the
+global `CLAUDE.md`, `settings.json` and the subagent definitions into `~/.claude/`. The skills and
 standards every session loads come from `tools/agents/config/` instead.
 
 ## Starting a session

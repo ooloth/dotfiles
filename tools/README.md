@@ -16,6 +16,7 @@ The @new template directory groups all the related files for a particular tool/u
 ├── uninstall.bash         # Non-brew cleanup only (optional)
 ├── update.bash            # Update logic (optional)
 ├── utils.bash             # Shared utilities (optional)
+├── {script}.py            # A script another program runs by its repo path (optional)
 └── README.md              # Tool documentation (optional)
 ```
 
