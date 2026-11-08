@@ -15,6 +15,9 @@ observations about typical practice.
   neither is a real tool.
 - A tool's config files live in `tools/{name}/config/`. The install/update
   automation and every `link.bash` depend on this path.
+- A file under `tools/{name}/config/` is linked into place. A script another program runs by its
+  path in the repo, such as `tools/claude/statusline.py` and `tools/claude/notify.bash` that
+  `settings.json` runs, sits beside `config/`, not in it.
 - Config files meant to live at a canonical filesystem location are
   symlinked — never copied — into place. Editing the repo copy must be
   enough to change the live config; a copy would silently stop reflecting
