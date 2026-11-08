@@ -30,7 +30,8 @@ See README.md for the overview. Key points for Claude:
 
 - Each tool lives in `tools/{tool}/`, with its config in `config/` and, where it needs them, a
   `Brewfile`, `install.bash`, `update.bash`, `preflight.bash`, `link.bash`, `uninstall.bash`,
-  `shell.zsh` and a `tests/` folder.
+  `shell.zsh` and a `tests/` folder, and any scripts the tool runs, such as `cc.bash`,
+  `statusline.py` and `replay.py`.
   `tools/@new` is the template, `tools/README.md` explains the approach, and `tools/eza/` or
   `tools/logcli/` show a brew formula with no config.
 - Workflows that span tools live in `features/{feature}/`, as scripts with a `shell.zsh` that
