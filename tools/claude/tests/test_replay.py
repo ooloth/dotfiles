@@ -20,6 +20,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -200,6 +201,116 @@ class CheckHarness(unittest.TestCase):
         files = {"a1": ("features/x.py",), "b2": None}
         result = replay.check_harness(DOTFILES_REF, ("a1", "b2"), files)
         assert result == replay.CommitMissing("b2")
+
+
+HUB_REF = replay.TicketRef("ooloth", "hub", 394)
+
+
+def names(ref, number: int) -> list[str]:
+    """Each way a commit message names ticket `number` in `ref`'s repo."""
+    forms = [
+        f"{ref.owner}/{ref.repo}#{number}",
+        f"Fixes {ref.owner}/{ref.repo}#{number}.",
+        f"(see https://github.com/{ref.owner}/{ref.repo}/issues/{number})",
+    ]
+    if (ref.owner, ref.repo) == replay.HARNESS_REPO:
+        forms += [f"#{number}", f"Fixes #{number}, partly"]
+    return forms
+
+
+def matches(pattern: str, message: str) -> bool:
+    return re.search(pattern, message, re.IGNORECASE | re.MULTILINE) is not None
+
+
+class TicketPattern(unittest.TestCase):
+    @given(st.integers(1, 99_999), st.integers(1, 99_999), st.sampled_from([HUB_REF, DOTFILES_REF]))
+    def test_a_ticket_is_named_by_its_whole_number_and_never_by_a_near_one(
+        self, n: int, m: int, base
+    ) -> None:
+        ref = replay.TicketRef(base.owner, base.repo, n)
+        pattern = replay.ticket_pattern(ref)
+        for message in names(ref, n):
+            assert matches(pattern, message), message
+        near = {m, int(f"{n}0"), int(f"{n}7"), int(f"1{n}")} | ({n // 10} if n >= 10 else set())
+        for other in near - {n}:
+            for message in names(ref, other):
+                assert not matches(pattern, message), message
+
+    def test_the_same_number_in_another_repo_does_not_name_the_ticket(self) -> None:
+        assert not matches(replay.ticket_pattern(HUB_REF), "ooloth/other#394")
+        assert not matches(replay.ticket_pattern(HUB_REF), "Fixes #394")
+        dotfiles = replay.ticket_pattern(replay.TicketRef("ooloth", "dotfiles", 269))
+        assert not matches(dotfiles, "ooloth/hub#269")
+
+
+def make_harness_history(root: Path, planning: datetime) -> tuple[Path, dict[str, str]]:
+    """A dotfiles-like repo with one commit per case, returning it and each case's hash."""
+    repo = root / "dotfiles"
+    repo.mkdir()
+    git(repo, "init", "-q", "-b", "main")
+    git(repo, "config", "user.email", "test@example.com")
+    git(repo, "config", "user.name", "Test")
+    cases = {
+        "named before planning": ("tools/agents/config/skills/a/SKILL.md", "ooloth/hub#394", -60),
+        "named after": ("tools/agents/config/skills/b/SKILL.md", "ooloth/hub#394", 30),
+        "named after, outside the harness": ("tools/claude/replay.py", "ooloth/hub#394", 40),
+        "near number after": ("tools/claude/config/CLAUDE.md", "ooloth/hub#3940", 50),
+        "named by URL after": (
+            "tools/claude/config/settings.json",
+            "https://github.com/ooloth/hub/issues/394",
+            60,
+        ),
+    }
+    shas = {}
+    for case, (path, name, minutes) in cases.items():
+        file = repo / path
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(case)
+        git(repo, "add", ".")
+        git(
+            repo,
+            "commit",
+            "-q",
+            "-m",
+            f"change for {case}\n\n{name}",
+            date=planning + timedelta(minutes=minutes),
+        )
+        shas[case] = git(repo, "rev-parse", "HEAD")
+    return repo, shas
+
+
+class LaterHarnessCommits(unittest.TestCase):
+    def test_only_later_harness_commits_that_name_the_ticket_are_found(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, shas = make_harness_history(Path(tmp), T0)
+            found = replay.later_harness_commits(repo, replay.ticket_pattern(HUB_REF), T0)
+            assert isinstance(found, tuple), found
+            assert set(found) == {shas["named after"], shas["named by URL after"]}
+            refused = replay.check_later_harness(found, replay.files_changed(repo, found))
+            assert refused == replay.NamedByLaterHarnessCommits(
+                tuple(found),
+                ("tools/agents/config/skills/b/SKILL.md", "tools/claude/config/settings.json"),
+            )
+
+    def test_a_ticket_no_later_harness_commit_names_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, _ = make_harness_history(Path(tmp), T0)
+            found = replay.later_harness_commits(repo, replay.ticket_pattern(OTHER_REF), T0)
+            assert found == ()
+            assert replay.check_later_harness(found, {}) is None
+
+    def test_an_unreadable_history_refuses_the_replay_with_gits_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            found = replay.later_harness_commits(Path(tmp), replay.ticket_pattern(HUB_REF), T0)
+            assert isinstance(found, replay.HarnessHistoryUnreadable)
+            assert "not a git repository" in found.stderr
+
+    def test_the_refusal_names_each_commit_and_harness_file(self) -> None:
+        text = replay.explain(
+            replay.NamedByLaterHarnessCommits(("abc1234", "def5678"), ("tools/agents/config/x.md",))
+        )
+        for name in ("abc1234", "def5678", "tools/agents/config/x.md"):
+            assert name in text
 
 
 # ── The truncated clone ────────────────────────────────────────────────────────────────────────

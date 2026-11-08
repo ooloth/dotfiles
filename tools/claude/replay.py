@@ -21,7 +21,8 @@ when planning began:
   tools and MCP servers off
 
 Two things are as they are today, not as they were: the agent harness (global instructions, skills,
-standards), which is why a dotfiles ticket that changed it is refused, and the hooks in the user's
+standards), which is why a dotfiles ticket that changed it is refused, and so is any ticket a later
+harness commit names, and the hooks in the user's
 Claude Code settings, which run outside the sandbox and post nothing.
 
 It writes one folder per replay under `${XDG_STATE_HOME:-~/.local/state}/replays/`, holding the
@@ -198,6 +199,17 @@ class TouchesHarness:
 
 
 @dataclass(frozen=True)
+class NamedByLaterHarnessCommits:
+    commits: tuple[Sha, ...]
+    files: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class HarnessHistoryUnreadable:
+    stderr: str
+
+
+@dataclass(frozen=True)
 class CommitMissing:
     sha: Sha
 
@@ -217,6 +229,8 @@ NotReplayable = (
     | NoDesignComment
     | BodyUnknown
     | TouchesHarness
+    | NamedByLaterHarnessCommits
+    | HarnessHistoryUnreadable
     | CommitMissing
     | BaseNotFound
     | GitHubUnreadable
@@ -488,6 +502,42 @@ def check_harness(
     return TouchesHarness(tuple(sorted(touched))) if touched else None
 
 
+# A POSIX extended regular expression, which `git log -E --grep` reads.
+TicketPattern = NewType("TicketPattern", str)
+
+
+def _ere_literal(text: str) -> str:
+    return "".join(f"\\{c}" if c in r".^$*+?()[]{}|\\" else c for c in text)
+
+
+def ticket_pattern(ref: TicketRef) -> TicketPattern:
+    """What names `ref` in a commit message: `owner/repo#n` or its issue URL, and a bare `#n` too
+    for a dotfiles ticket, with the whole number, so `#39` and `#3940` don't name `#394`."""
+    owner, repo = _ere_literal(ref.owner), _ere_literal(ref.repo)
+    forms = [
+        f"(^|[^A-Za-z0-9_.-]){owner}/{repo}#{ref.number}",
+        f"github\\.com/{owner}/{repo}/issues/{ref.number}",
+    ]
+    if (ref.owner, ref.repo) == HARNESS_REPO:
+        forms.append(f"(^|[^A-Za-z0-9_./-])#{ref.number}")
+    return TicketPattern(f"({'|'.join(forms)})([^0-9]|$)")
+
+
+def check_later_harness(
+    commits: Sequence[Sha], files_of: Mapping[Sha, tuple[str, ...] | None]
+) -> NamedByLaterHarnessCommits | None:
+    """Refuse a ticket that a harness commit made after its planning began names: every session
+    loads today's harness, which may say how the ticket was solved."""
+    if not commits:
+        return None
+    touched: set[str] = set()
+    for sha in commits:
+        files = files_of.get(sha)
+        assert files is not None, f"{sha} came from the same checkout, so its files are readable"
+        touched.update(f for f in files if f.startswith(HARNESS_PATHS))
+    return NamedByLaterHarnessCommits(tuple(commits), tuple(sorted(touched)))
+
+
 def explain(reason: NotReplayable) -> str:
     match reason:
         case NoApproachComment():
@@ -501,6 +551,19 @@ def explain(reason: NotReplayable) -> str:
             return (
                 "The ticket's commits changed the agent harness, which every session loads as it "
                 f"is today, so a replay would see the answer:\n{listed}"
+            )
+        case NamedByLaterHarnessCommits(commits, files):
+            listed = "\n".join(f"  {c}" for c in commits)
+            changed = "\n".join(f"  {f}" for f in files)
+            return (
+                "Harness commits made after the ticket's planning began name it, and every session "
+                "loads today's harness, so a replay could read how it was solved:\n"
+                f"{listed}\nThey changed:\n{changed}"
+            )
+        case HarnessHistoryUnreadable(stderr):
+            return (
+                "git couldn't read the dotfiles history, so whether a later harness commit names "
+                f"the ticket is unknown:\n  {stderr}"
             )
         case CommitMissing(sha):
             return f"Commit {sha}, which the ticket links, is not in the local checkout. Pull it and try again."
@@ -535,6 +598,30 @@ def files_changed(source: Path, shas: Sequence[Sha]) -> dict[Sha, tuple[str, ...
         )
         found[sha] = tuple(shown.stdout.split()) if shown.returncode == 0 else None
     return found
+
+
+def later_harness_commits(
+    dotfiles: Path, pattern: TicketPattern, since: datetime
+) -> tuple[Sha, ...] | HarnessHistoryUnreadable:
+    """The commits in the dotfiles checkout, committed after `since`, that change the harness and
+    whose message matches `pattern`, newest first."""
+    assert since.tzinfo is not None, (
+        "planning_began has no time zone, so --since would read it as local"
+    )
+    listed = git(
+        dotfiles,
+        "log",
+        "-E",
+        "--regexp-ignore-case",
+        f"--grep={pattern}",
+        f"--since={since.isoformat()}",
+        "--format=%H",
+        "--",
+        *HARNESS_PATHS,
+    )
+    if listed.returncode != 0:
+        return HarnessHistoryUnreadable(listed.stderr.strip())
+    return tuple(Sha(line) for line in listed.stdout.split())
 
 
 def resolve_base(source: Path, branch: str, before: datetime) -> Sha | BaseNotFound:
@@ -1329,6 +1416,12 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
     )
     if refused is not None:
         raise SystemExit(f"replay: {explain(refused)}")
+    later = later_harness_commits(DOTFILES, ticket_pattern(ref), snapshot.planning_began)
+    if isinstance(later, HarnessHistoryUnreadable):
+        raise SystemExit(f"replay: {explain(later)}")
+    named = check_later_harness(later, files_changed(DOTFILES, later))
+    if named is not None:
+        raise SystemExit(f"replay: {explain(named)}")
     base = resolve_base(source, branch, snapshot.planning_began)
     if isinstance(base, BaseNotFound):
         raise SystemExit(f"replay: {explain(base)}")
