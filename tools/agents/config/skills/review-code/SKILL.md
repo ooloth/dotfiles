@@ -32,8 +32,8 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **Skip non-reviewable files:**
 
 - package-lock.json, \*.lock, yarn.lock, Gemfile.lock
-- Generated code (_.generated._, \*\_pb2.py, etc.)
-- Test snapshots (**snapshots**/\*)
+- Generated code (`*.generated.*`, `*_pb2.py`, etc.)
+- Test snapshots (`__snapshots__/*`)
 - Vendored dependencies (vendor/, node_modules/ if committed)
 - Binary files
 - Formatting-only changes (whitespace/style only)
@@ -112,7 +112,9 @@ because install scripts run wherever the package is installed.
    means nothing is flagged, 1 means something is, and 2 means the check could not run. On 2,
    stderr says why: fix that, or do the checks by hand. Never read exit 2 as clean.
 
-2. **Check other lockfiles by hand.** The script flags each one it cannot read as `unchecked`. Do
+2. **Check other lockfiles by hand.** When the script runs, it flags each other changed lockfile
+   as `unchecked`. When it does not run, because no npm or uv lockfile changed, every changed
+   lockfile is checked this way. Do
    the same checks against that ecosystem's registry: each locked hash, the publisher, new
    dependencies, install-time code, and publish age.
 
@@ -133,7 +135,7 @@ because install scripts run wherever the package is installed.
      existing dependency already covers it, and the transitive tree it brings in, which the
      script's `added-entry` lines list.
    - **A major bump, or any bump of a runtime dependency.** A runtime dependency is one the
-     running app loads, which the script marks with a heading without `(dev)`. Read the
+     running app loads, which the script marks `(runtime)` in its heading. Read the
      release notes in the PR body first, then the changelog between the two versions, and find
      where the repo imports the package, to judge whether a breaking change reaches this code. A
      package the repo never imports reaches it through the packages that depend on it, so look at
@@ -857,22 +859,24 @@ After presenting findings, if this is a PR and its author is the account `gh api
 returns, ask the user to indicate which changes to make locally or discuss further first and then
 stop and wait for a reply (skip the rest of this skill's instructions).
 
-Otherwise, if a bot opened the PR (`author.is_bot`, such as Dependabot or Renovate) and the user
-can push to the repo (`viewerPermission` is `ADMIN`, `MAINTAIN` or `WRITE`), nobody else will act
-on the findings: a bot cannot read a review or push a fix. When there are findings, ask which to
-fix on the PR's branch, and fix them as the paragraph after the authorization gate says. A bot's
-PR never gets Request Changes or inline comments, and `post_review.py` refuses both. When there
-are none, or once they are fixed, ask the posting question below, whose usual answer is approve.
-When the user leaves a `must` unfixed, the review is a Comment that names it in the body.
+Otherwise, if a bot opened the PR (`author.is_bot`, such as Dependabot or Renovate), nobody will
+act on posted findings: a bot cannot read a review or push a fix. A bot's PR never gets Request
+Changes or inline comments, and `post_review.py` refuses both. Its body gives the verdict without
+a credit sentence, carries each finding's evidence itself, and leaves out the triage and must-fix
+sentences, which address an author.
 
-The user's answer naming the fixes also approves committing them and pushing them to the PR's
-branch, merging trunk in first when the branch conflicts, never rebasing. The head move those
-fix commits make is then checked by running Step 1a and the project's checks and tests again at
-the new head, not by rerunning the review agents: the commits answer this review's findings, and
-a change gets one review round. Any other new commit on the head is still checked as "Check what
-changed since the saved state" says.
+- **When the user can push to the repo** (`viewerPermission` is `ADMIN`, `MAINTAIN` or `WRITE`)
+  and there are findings, ask which to fix on the PR's branch. The answer naming the fixes also
+  approves committing them and pushing them to the PR's branch, merging trunk in first when the
+  branch conflicts, never rebasing. Recheck the fix commits by running Step 1a and the project's
+  checks and tests again at the new head, even when the fixes edit source files, and do not rerun
+  the review agents: the commits answer this review's findings, and a change gets one review
+  round. Then ask the posting question below. Its "yes" means Approve, or Comment when the user
+  leaves a `must` unfixed, and that Comment names the `must` in its body.
+- **When the user cannot push,** ask the posting question below. Its "yes" means Comment, with
+  the findings in the body.
 
-Otherwise, if this is a PR and the author is NOT the user, ask:
+When the author is NOT the user, a bot included, ask:
 
 > "Post this as a GitHub review? (yes / approve / request-changes / comment / skip)"
 
@@ -882,11 +886,11 @@ individual findings (e.g., "(1) do it" answers finding #1, not this question). W
 separate, unambiguous reply to the posting question before posting anything to GitHub.
 
 When the user asks to fix the findings instead of posting, make the fixes through the usual commit
-flow, then return here: treat the fix commits as a head move, handled as "Check what changed since
-the saved state" below says, and draft the review of the new head before asking the posting
-question.
-For a dependency update that is usually an Approve whose list names each fix commit and what it
-resolves.
+flow, then return here. Recheck the fix commits by running Step 1a, when it applies, and the
+project's checks and tests again at the new head, not by rerunning the review agents. Any other
+new commit on the head is checked as "Check what changed since the saved state" below says. Draft
+the review of the new head before asking the posting question. For a dependency update that is
+usually an Approve whose sentence before its list names each fix commit and what it resolves.
 
 On any answer other than "skip":
 
@@ -935,23 +939,27 @@ On any answer other than "skip":
   - **Nothing changed:** say so in one line and continue.
 
   A review handles at most two head moves after its first run, whichever exit each one takes. A
-  restart from Step 1 on exit 2 continues the same count.
+  restart from Step 1 on exit 2 continues the same count. Fix commits the user asked for are not
+  head moves for this count.
   When the head moves a third time, post nothing,
   and tell the user the PR keeps moving, naming the new commits, so they decide when to review it.
   Run the same check again immediately before posting, since approving the drafts can take
   another turn.
-- Map to GitHub event: yes → use verdict from Step 4; approve → APPROVE;
-  request-changes → REQUEST_CHANGES; comment → COMMENT
+- Map to GitHub event: yes → use verdict from Step 4, except on a bot's PR, where it means what
+  the bot paragraph above says; approve → APPROVE; request-changes → REQUEST_CHANGES;
+  comment → COMMENT
 - Write the review body in this shape, each part only when it has something to say (see the
   audience and tone guidance below):
   - **Verdict and credit:** the verdict, then one sentence crediting a specific choice the author
     made and why it works, drawn from Looks Good. A bot made no choice to credit, so its PR gets
     the verdict alone.
-  - **What the approval rests on:** when the review approves a dependency update, Step 1a's Looks
-    Good list, one bullet per check with its result at the head the review is pinned to: the
-    project's build and tests, the releases adopted, what is compiled and what is only in the
-    lockfile, the advisories fixed and introduced, breaking changes that reach this code, CI, and
-    any live run. A check run before a fix commit is run again on the new head first. Before the
+  - **What the approval rests on:** when the review approves a dependency update, one bullet per
+    check that ran, with its result at the head the review is pinned to. These are Step 1a's
+    checks, such as the releases adopted, the advisories fixed and introduced, breaking changes
+    that reach this code and CI, plus any other check that ran, such as the project's build and
+    tests, what is compiled and what is only in the lockfile, or a live run, and every check the
+    repo's own instructions require before such an update merges. A check run before a fix commit
+    is run again on the new head first. Before the
     list, one sentence names each fix commit pushed to the PR and what it resolves. A reader
     deciding whether to trust the approval needs these, and `post_review.py --dry-run` notes an
     approval of a dependency update that lists none.
@@ -977,9 +985,11 @@ On any answer other than "skip":
     did not check. When a `refer_as` value reads `UNKNOWN`, ask the user what to call that
     reviewer before drafting.
 
-  Evidence for a finding in the diff goes in its inline comment, not the body. Which findings were
-  re-checked after a head move goes in the report to the user, not the body.
-- Collect every finding whose line is in the PR's diff as an inline comment. GitHub accepts inline
+  Evidence for a finding in the diff goes in its inline comment, not the body, except on a bot's
+  PR. Which findings were re-checked after a head move goes in the report to the user, not the
+  body.
+- Collect every finding whose line is in the PR's diff as an inline comment, except on a bot's PR,
+  where it goes in the body. GitHub accepts inline
   comments only on lines the diff shows. The reviewer files no ticket for a gap the author can fix.
 - Pin the review to the saved head: the one from Step 1, or the new head once a head move has
   updated the saved state. The comments then stay on the code you reviewed, and the check above

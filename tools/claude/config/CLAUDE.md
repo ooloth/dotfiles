@@ -102,7 +102,7 @@ External/public side effects (posting a comment visible to others) need this sam
 more so, since they cannot be locally reverted. Approval for one kind of side effect does not
 transfer to another: being approved to edit files does not mean you're also approved to post a
 ticket comment about it, even in the same already-approved task — check separately. There are
-three exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and
+four exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and
 design also approves the commits, the push and the draft PR that section describes, the one-line
 comment linking that PR on its ticket, each entry in a repo's own `docs/invariants/` (or
 `docs/guarantees/`) or `docs/standards/` whose exact wording the approved design shows, and
@@ -113,7 +113,9 @@ approval of that PR's merge in an orchestrator's session. Its description lists 
 it. Invoking it
 approves the steps its "What invoking this skill approves" section lists, and nothing beyond them.
 The third is `create-pr`: invoking it approves the one-line comment it posts linking the new PR on
-its ticket, and nothing beyond that.
+its ticket, and nothing beyond that. The fourth is `review-code` on a PR a bot opened: my answer
+naming which findings to fix approves committing those fixes, with no separate commit signal, and
+pushing them to the PR's branch, and nothing beyond that.
 
 **A response that asks a question must contain no side-effecting tool calls.** If you write
 "Agree?", "Which would you prefer?", or any other question seeking user input, that response

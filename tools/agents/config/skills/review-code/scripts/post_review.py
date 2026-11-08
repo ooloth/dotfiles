@@ -32,7 +32,8 @@ checks. The notes never block.
 
 Both modes read the PR once with `gh pr view` first. On a PR a bot opened, such as Dependabot's,
 they refuse a change request and inline comments, because a bot can neither read a review nor
-push a fix: findings there are fixed on the PR's branch instead.
+push a fix. The refusal reads your access with `gh repo view`: findings are fixed on the PR's
+branch when you can push to it, and go in a Comment's body when you cannot.
 """
 
 import argparse
@@ -193,20 +194,43 @@ def read_pull_request(repo: str, pr: int) -> PullRequest:
     return PullRequest(opened_by_bot=raw["bot"] is True, files=tuple(raw["files"]))
 
 
-def refusal_for_bot(review: Review, pull_request: PullRequest) -> str | None:
-    """Why this review cannot go on a bot's PR, or None when it can."""
+PUSH_PERMISSIONS = frozenset({"ADMIN", "MAINTAIN", "WRITE"})
+
+
+def can_push(repo: str) -> bool:
+    result = subprocess.run(
+        ["gh", "repo", "view", repo, "--json", "viewerPermission", "--jq", ".viewerPermission"],
+        stdin=subprocess.DEVNULL,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise SystemExit(
+            f"Could not read your access to {repo}; nothing was posted.\n{result.stderr}"
+        )
+    return result.stdout.strip() in PUSH_PERMISSIONS
+
+
+def bot_refusal_reason(review: Review, pull_request: PullRequest) -> str | None:
+    """What a bot's PR cannot take from this review, or None when it can take all of it."""
     if not pull_request.opened_by_bot:
         return None
     if review.event == "REQUEST_CHANGES":
-        reason = "a change request"
-    elif review.comments:
-        reason = "inline comments"
-    else:
-        return None
-    return (
-        f"A bot opened this PR, so nobody can act on {reason}: fix the findings on the PR's "
-        "branch instead, then approve with what the approval rests on. Nothing was posted."
+        return "a change request"
+    if review.comments:
+        return "inline comments"
+    return None
+
+
+def bot_refusal(reason: str, pushable: bool) -> str:
+    advice = (
+        "fix the findings on the PR's branch instead, or name any you leave unfixed in the "
+        "review's body."
+        if pushable
+        else "you cannot push to this repo, so post a Comment with the findings in its body."
     )
+    return f"A bot opened this PR, so nobody can act on {reason}: {advice} Nothing was posted."
 
 
 # Manifests and lockfiles whose change means the PR adopts releases no diff shows.
@@ -294,9 +318,9 @@ def main() -> None:
     review = parse_review(read_review_file(args.review_file))
     payload = to_api_payload(review)
     pull_request = read_pull_request(args.repo, args.pr)
-    refusal = refusal_for_bot(review, pull_request)
-    if refusal is not None:
-        raise SystemExit(refusal)
+    reason = bot_refusal_reason(review, pull_request)
+    if reason is not None:
+        raise SystemExit(bot_refusal(reason, can_push(args.repo)))
 
     if args.dry_run:
         print(json.dumps(payload, indent=2, ensure_ascii=False))

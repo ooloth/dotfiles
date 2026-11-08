@@ -33,6 +33,7 @@ if [ "$1" = pr ] && [ "$2" = view ]; then
   if [ -n "$GH_VIEW_FAIL" ]; then echo "HTTP 404: Not Found" >&2; exit 1; fi
   printf '%s\\n' "$GH_PR_VIEW"; exit 0
 fi
+if [ "$1" = repo ] && [ "$2" = view ]; then printf '%s\\n' "$GH_PERMISSION"; exit 0; fi
 cat > "$GH_STDIN"
 if [ -n "$GH_FAIL" ]; then echo "HTTP 422: Unprocessable Entity" >&2; exit 1; fi
 echo '{"html_url": "https://github.com/octo/widgets/pull/7#pullrequestreview-1"}'
@@ -60,6 +61,7 @@ class Harness:
             "GH_CALLS": str(self.calls),
             "GH_STDIN": str(self.stdin),
             "GH_PR_VIEW": json.dumps(HUMAN_PR),
+            "GH_PERMISSION": "ADMIN",
         }
 
     def pr_is(self, pr: dict[str, Any]) -> None:
@@ -337,3 +339,36 @@ def test_dry_run_says_nothing_when_no_check_list_is_owed(
     result = h.run("7", str(h.write_review(rev)), "--repo", REPO, "--dry-run")
     assert result.returncode == 0, result.stderr
     assert "dependency" not in result.stderr
+
+
+def test_a_bot_authored_pr_accepts_a_comment_without_inline_comments(h: Harness) -> None:
+    h.pr_is(BOT_BUMP)
+    rev = {"event": "COMMENT", "body": "The unused import still fails CI.", "comments": []}
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO)
+    assert result.returncode == 0, result.stderr
+    assert h.review_was_posted()
+
+
+def test_a_refusal_on_a_bot_pr_allows_for_a_finding_left_unfixed(h: Harness) -> None:
+    h.pr_is(BOT_BUMP)
+    rev = review(event="REQUEST_CHANGES", comments=[])
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO, "--dry-run")
+    assert result.returncode != 0
+    assert "branch" in result.stderr
+    assert "body" in result.stderr
+    assert "then approve" not in result.stderr
+
+
+@pytest.mark.parametrize("permission", ["READ", "TRIAGE", ""])
+def test_a_refusal_on_a_bot_pr_the_user_cannot_push_to_says_to_comment(
+    h: Harness, permission: str
+) -> None:
+    h.pr_is(BOT_BUMP)
+    h.env["GH_PERMISSION"] = permission
+    rev = review(event="REQUEST_CHANGES", comments=[])
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO, "--dry-run")
+    assert result.returncode != 0
+    assert "cannot push" in result.stderr
+    assert "body" in result.stderr
+    assert "PR's branch" not in result.stderr
+    assert not h.review_was_posted()
