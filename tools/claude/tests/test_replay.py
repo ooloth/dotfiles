@@ -296,6 +296,43 @@ class StandIn(unittest.TestCase):
             "from stdin",
         ]
 
+    def test_a_comment_the_replay_posted_is_served_back_like_gh_does(self) -> None:
+        self.run_gh("issue", "comment", "7", "-R", "octo/widgets", "--body", "# Approach\n\nA")
+        view = self.run_gh("issue", "view", "7", "-R", "octo/widgets", "--json", "comments")
+        assert view.returncode == 0, view.stderr
+        [comment] = json.loads(view.stdout)["comments"]
+        assert comment["body"] == "# Approach\n\nA"
+        assert comment["author"] == {"login": "octo"}
+        assert datetime.fromisoformat(comment["createdAt"].replace("Z", "+00:00")) > at(0)
+
+    def test_a_jq_filter_is_applied_as_gh_applies_it(self) -> None:
+        result = self.run_gh(
+            "issue", "view", "7", "-R", "octo/widgets", "--json", "title,body", "-q", ".title"
+        )
+        assert result.returncode == 0, result.stderr
+        assert result.stdout == "A title\n"
+
+    def test_the_api_lists_the_comments_the_replay_posted(self) -> None:
+        self.run_gh("issue", "comment", "7", "-R", "octo/widgets", "--body", "posted")
+        listed = self.run_gh(
+            "api", "--paginate", "repos/octo/widgets/issues/7/comments", "--jq", ".[].body"
+        )
+        assert listed.returncode == 0, listed.stderr
+        assert listed.stdout == "posted\n"
+        issue = self.run_gh("api", "repos/octo/widgets/issues/7", "--jq", ".comments")
+        assert issue.stdout == "1\n"
+
+    def test_an_api_call_that_writes_or_names_another_endpoint_is_refused(self) -> None:
+        for args in (
+            ["api", "-X", "POST", "repos/octo/widgets/issues/7/comments", "-f", "body=x"],
+            ["api", "repos/octo/widgets/issues/7/comments", "-f", "body=x"],
+            ["api", "repos/octo/widgets/issues/8/comments"],
+            ["api", "graphql", "-f", "query={viewer{login}}"],
+        ):
+            result = self.run_gh(*args)
+            assert result.returncode != 0, args
+            assert "unavailable in replay" in result.stderr
+
     def test_every_other_command_is_refused_and_logged(self) -> None:
         result = self.run_gh("pr", "list", "-R", "octo/widgets")
         assert result.returncode != 0

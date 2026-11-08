@@ -566,16 +566,23 @@ def check_clone(clone: Path, began: datetime) -> None:
 # ── The gh stand-in ────────────────────────────────────────────────────────────────────────────
 
 # Runs inside the sandbox, under whichever python3 is on PATH, so it uses only the standard
-# library and Python 3.9 syntax.
+# library and Python 3.9 syntax, and `jq` from PATH for --jq. It serves the ticket as it stood when
+# planning began plus the comments this replay posted, since a skill reads back what it posts.
 STAND_IN = r'''#!/usr/bin/env python3
-"""gh for a replay: serves one ticket as it stood when planning began, and saves comments."""
+"""gh for a replay: serves one ticket as it stood when planning began, plus the comments this
+replay posts, and saves those comments instead of posting them."""
+import datetime
+import glob
 import json
+import os
+import subprocess
 import sys
 
 CONFIG = __CONFIG__
 cfg = json.load(open(CONFIG))
 args = sys.argv[1:]
 capture = cfg["capture"]
+url = "https://github.com/" + cfg["repo"] + "/issues/" + str(cfg["number"])
 
 
 def log(served):
@@ -599,10 +606,34 @@ def option(names):
     return None
 
 
-def is_this_ticket():
-    if len(args) < 3:
-        return False
-    target = args[2]
+def emit(data):
+    """Print as gh does: JSON, or the result of --jq, which gh prints the way `jq -r` does."""
+    log(True)
+    query = option(["-q", "--jq"])
+    if query is None:
+        print(json.dumps(data))
+        return
+    done = subprocess.run(["jq", "-r", query], input=json.dumps(data), text=True)
+    sys.exit(done.returncode)
+
+
+def posted():
+    """The comments this replay has posted, oldest first, each with the time it was saved."""
+    found = []
+    for path in sorted(glob.glob(capture + "/comment-*.md")):
+        at = datetime.datetime.fromtimestamp(os.path.getmtime(path), datetime.timezone.utc)
+        n = int(path.rsplit("-", 1)[1].split(".")[0])
+        found.append(
+            {
+                "body": open(path).read(),
+                "createdAt": at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "url": url + "#issuecomment-replay-%d" % n,
+            }
+        )
+    return found
+
+
+def is_this_ticket(target):
     prefix = "https://github.com/"
     if target.startswith(prefix):
         parts = target[len(prefix):].split("/")
@@ -613,28 +644,28 @@ def is_this_ticket():
 
 
 def view():
-    if option(["-q", "--jq", "-t", "--template"]) is not None:
+    if option(["-t", "--template"]) is not None:
         refuse()
     fields = option(["--json"])
     if fields is None:
         log(True)
         print(cfg["title"] + "\n\n" + cfg["body"])
         return
+    owner = {"login": cfg["repo"].split("/")[0]}
     ticket = {
         "number": cfg["number"],
         "title": cfg["title"],
         "body": cfg["body"],
-        "comments": [],
+        "comments": [dict(c, author=owner) for c in posted()],
         "parent": None,
         "state": "OPEN",
         "labels": [],
-        "url": "https://github.com/" + cfg["repo"] + "/issues/" + str(cfg["number"]),
+        "url": url,
     }
     wanted = fields.split(",")
     if any(f not in ticket for f in wanted):
         refuse()
-    log(True)
-    print(json.dumps({f: ticket[f] for f in wanted}))
+    emit({f: ticket[f] for f in wanted})
 
 
 def comment():
@@ -647,19 +678,57 @@ def comment():
         body = option(["--body", "-b"])
     if body is None:
         refuse()
-    import glob
-
     n = len(glob.glob(capture + "/comment-*.md")) + 1
     with open(capture + "/comment-%03d.md" % n, "w") as f:
         f.write(body)
     log(True)
-    print("https://github.com/%s/issues/%s#issuecomment-replay-%d" % (cfg["repo"], cfg["number"], n))
+    print(url + "#issuecomment-replay-%d" % n)
 
 
-if args[:2] == ["issue", "view"] and is_this_ticket():
+def api():
+    """The two read-only endpoints a skill uses to check its own comments, for this ticket only."""
+    writes = ("-X", "--method", "-f", "-F", "--field", "--raw-field", "--input")
+    if any(a in writes or a.startswith(tuple(w + "=" for w in writes)) for a in args[1:]):
+        refuse()
+    takes_value = ("-q", "--jq", "-H", "--header", "-t", "--template", "--cache")
+    endpoints = []
+    skip = False
+    for a in args[1:]:
+        if skip:
+            skip = False
+        elif a in takes_value:
+            skip = True
+        elif not a.startswith("-"):
+            endpoints.append(a.lstrip("/"))
+    base = "repos/" + cfg["repo"] + "/issues/" + str(cfg["number"])
+    owner = {"login": cfg["repo"].split("/")[0]}
+    comments = [
+        {"body": c["body"], "created_at": c["createdAt"], "user": owner, "html_url": c["url"]}
+        for c in posted()
+    ]
+    if endpoints == [base + "/comments"]:
+        emit(comments)
+    elif endpoints == [base]:
+        emit(
+            {
+                "number": cfg["number"],
+                "title": cfg["title"],
+                "body": cfg["body"],
+                "state": "open",
+                "comments": len(comments),
+                "html_url": url,
+            }
+        )
+    else:
+        refuse()
+
+
+if args[:2] == ["issue", "view"] and len(args) > 2 and is_this_ticket(args[2]):
     view()
-elif args[:2] == ["issue", "comment"] and is_this_ticket():
+elif args[:2] == ["issue", "comment"] and len(args) > 2 and is_this_ticket(args[2]):
     comment()
+elif args[:1] == ["api"]:
+    api()
 else:
     refuse()
 '''
