@@ -577,6 +577,25 @@ class Grades(unittest.TestCase):
         assert "c/run-1" in summary
         assert "'maybe' is not a verdict" in summary
 
+    def test_a_grade_with_a_reason_to_exclude_it_is_excluded_whatever_its_verdicts(self) -> None:
+        text = replay.grade_template(OTHER_REF, 1).replace("escalation:", "escalation: reject", 1)
+        text = text.replace("excluded:", "excluded: it read the shipped answer", 1)
+        assert replay.parse_grade(text) == replay.Excluded("it read the shipped answer")
+
+    def test_an_empty_excluded_line_leaves_the_grade_as_it_is(self) -> None:
+        text = replay.grade_template(OTHER_REF, 1).replace("escalation:", "escalation: reject", 1)
+        assert replay.parse_grade(text) == replay.Graded(None, None, replay.Verdict.REJECT)
+
+    def test_an_excluded_replay_is_named_with_its_reason_and_left_out_of_the_counts(self) -> None:
+        grades = [
+            (Path("a/run-1"), replay.Graded(None, None, replay.Verdict.REJECT)),
+            (Path("a/run-2"), replay.Excluded("it read the shipped answer")),
+        ]
+        summary = replay.summarize(grades)
+        assert "2 replays: 1 graded, 1 excluded, 0 ungraded, 0 unreadable" in summary
+        assert "escalation: 0 approve-as-is, 0 approve-with-edits, 1 reject" in summary
+        assert "a/run-2: it read the shipped answer" in summary
+
 
 # ── End to end, with fake gh and claude ────────────────────────────────────────────────────────
 

@@ -356,7 +356,14 @@ class GradeUnreadable:
     reason: str
 
 
-Grade = Graded | Ungraded | GradeUnreadable
+@dataclass(frozen=True)
+class Excluded:
+    """A replay left out of the tally, such as one that read the shipped answer."""
+
+    reason: str
+
+
+Grade = Graded | Ungraded | GradeUnreadable | Excluded
 
 
 # ── Parsing GitHub's view of the ticket ────────────────────────────────────────────────────────
@@ -1078,19 +1085,23 @@ def grade_template(ref: TicketRef, run: int) -> str:
         f"# Grade for {ref}, run {run}\n\n"
         "approach:\n"
         "design:\n"
-        "escalation:\n\n"
+        "escalation:\n"
+        "excluded:\n\n"
         f"Write a verdict after each colon that applies: {verdicts}. A replay that planned gets "
         "`approach` and `design`: compare `approach.md` and `design.md` with `mine/approach.md` "
         "and `mine/design.md`. One that escalated gets `escalation`, for whether escalating was "
         "right and whether its options and recommendation are good, and `approach` too if it posted "
         "one first: the escalation is in `extra/`. Read `audit.md` for anything the replay was "
-        "refused.\n\n"
+        "refused. To leave the replay out of the tally, write why after `excluded:`.\n\n"
         "## Missed\n\nWhat the replay missed.\n\n"
         "## Found\n\nAnything it found that I didn't.\n"
     )
 
 
 def parse_grade(text: str) -> Grade:
+    for line in text.splitlines():
+        if line.startswith("excluded:") and line.removeprefix("excluded:").strip():
+            return Excluded(line.removeprefix("excluded:").strip())
     values: dict[str, str] = {}
     for line in text.splitlines():
         for stage in STAGES:
@@ -1123,8 +1134,9 @@ def parse_grade(text: str) -> Grade:
 
 def summarize(grades: Sequence[tuple[Path, Grade]]) -> str:
     graded = [g for _, g in grades if isinstance(g, Graded)]
+    excluded = [(p, g) for p, g in grades if isinstance(g, Excluded)]
     lines = [
-        f"{len(grades)} replays: {len(graded)} graded, "
+        f"{len(grades)} replays: {len(graded)} graded, {len(excluded)} excluded, "
         f"{sum(isinstance(g, Ungraded) for _, g in grades)} ungraded, "
         f"{sum(isinstance(g, GradeUnreadable) for _, g in grades)} unreadable"
     ]
@@ -1132,6 +1144,8 @@ def summarize(grades: Sequence[tuple[Path, Grade]]) -> str:
         counts = [sum(getattr(g, stage) is v for g in graded) for v in Verdict]
         parts = ", ".join(f"{n} {v.value}" for n, v in zip(counts, Verdict, strict=True))
         lines.append(f"{stage}: {parts}")
+    if excluded:
+        lines += ["Excluded:", *(f"  {p}: {g.reason}" for p, g in excluded)]
     ungraded = [str(p) for p, g in grades if isinstance(g, Ungraded)]
     if ungraded:
         lines += ["Ungraded:", *(f"  {p}" for p in ungraded)]
