@@ -53,9 +53,10 @@ See README.md for the overview. Key points for Claude:
 ### Symlink Management
 
 **Important for Git commits**: `~/.claude/` holds symlinks into this repo. `CLAUDE.md`,
-`settings.json`, `agents` and `statusline.sh` come from `tools/claude/config/`, and `skills` and
-`standards` come from `tools/agents/config/`. To change global Claude settings, edit and commit the
-repo copy, such as `tools/claude/config/CLAUDE.md`.
+`settings.json` and `agents` come from `tools/claude/config/`, and `skills` and `standards` come
+from `tools/agents/config/`. To change global Claude settings, edit and commit the repo copy, such
+as `tools/claude/config/CLAUDE.md`. The status line script, `tools/claude/config/statusline.py`, has
+no link: `settings.json` runs it by its path in this repo.
 
 The symlink creation logic is in `features/update/symlinks.bash`, run by
 `features/update/tools.bash` and by the `symlinks` alias. `features/setup/setup.zsh` sources the

@@ -162,7 +162,7 @@
   "skipDangerousModePermissionPrompt": true,
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh",
+    "command": "~/Repos/ooloth/dotfiles/tools/claude/config/statusline.py",
     "refreshInterval": 5
   },
   "theme": "dark-daltonized",

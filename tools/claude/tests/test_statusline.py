@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["hypothesis"]
 # ///
-"""Tests for tools/claude/config/statusline.sh, which prints the Claude Code status line.
+"""Tests for tools/claude/config/statusline.py, which prints the Claude Code status line.
 
 Run with: uv run tools/claude/tests/test_statusline.py
 
@@ -28,7 +28,9 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 CONFIG = Path(__file__).resolve().parent.parent / "config"
-SCRIPT = CONFIG / "statusline.sh"
+SCRIPT = CONFIG / "statusline.py"
+REPO = CONFIG.parent.parent.parent
+PAYLOAD = Path(__file__).resolve().parent / "fixtures" / "statusline-payload.json"
 SETTINGS = CONFIG / "settings.json"
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
 RIGHT = "claude-opus-5-5 · 10k/1000k"
@@ -37,8 +39,8 @@ FOLDER_ICON = "\uf07b  "  # nf-fa-folder, then two spaces because Rex draws it w
 
 
 def edge_margin() -> int:
-    match = re.search(r"^edge_margin=(\d+)$", SCRIPT.read_text(), re.MULTILINE)
-    assert match, f"{SCRIPT.name} sets no edge_margin"
+    match = re.search(r"^EDGE_MARGIN = (\d+)$", SCRIPT.read_text(), re.MULTILINE)
+    assert match, f"{SCRIPT.name} sets no EDGE_MARGIN"
     return int(match[1])
 
 
@@ -358,10 +360,43 @@ class ContextColour(unittest.TestCase):
         self.assertEqual(usage_colour(150, 200), RED)
 
 
+class Payload(unittest.TestCase):
+    def run_payload(self, payload: dict[str, object]) -> subprocess.CompletedProcess[str]:
+        with tempfile.TemporaryDirectory() as parent:
+            payload["workspace"] = {"current_dir": parent}
+            env = {**os.environ, "COLUMNS": "80"}
+            return subprocess.run(
+                [str(SCRIPT)], input=json.dumps(payload), env=env, capture_output=True, text=True
+            )
+
+    def test_a_payload_claude_code_sent_shows_its_model_and_context(self) -> None:
+        result = self.run_payload(json.loads(PAYLOAD.read_text()))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, "")
+        self.assertTrue(result.stdout.endswith(" claude-opus-5-5 · 110k/1000k\n"), result.stdout)
+
+    def test_a_null_used_percentage_shows_no_context_used(self) -> None:
+        payload: dict[str, object] = {
+            "model": {"id": "claude-opus-5-5"},
+            "context_window": {"used_percentage": None, "context_window_size": 1_000_000},
+        }
+        result = self.run_payload(payload)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.endswith(" claude-opus-5-5 · 0k/1000k\n"), result.stdout)
+
+
 class Settings(unittest.TestCase):
     def test_status_line_refreshes_every_five_seconds(self) -> None:
         status_line_settings = json.loads(SETTINGS.read_text())["statusLine"]
         self.assertEqual(status_line_settings["refreshInterval"], 5)
+
+    def test_status_line_runs_the_script_from_the_repo_without_a_link(self) -> None:
+        command = json.loads(SETTINGS.read_text())["statusLine"]["command"]
+        self.assertEqual(command, "~/Repos/ooloth/dotfiles/tools/claude/config/statusline.py")
+        self.assertTrue(os.access(SCRIPT, os.X_OK), f"{SCRIPT} is not executable")
+
+    def test_no_link_script_links_the_status_line(self) -> None:
+        self.assertNotIn("statusline", (REPO / "tools" / "claude" / "link.bash").read_text())
 
 
 if __name__ == "__main__":

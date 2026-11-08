@@ -1,0 +1,80 @@
+{
+  "session_id": "00000000-0000-4000-8000-000000000001",
+  "transcript_path": "/Users/alice/.claude/projects/-Users-alice-Repos-example-repo/00000000-0000-4000-8000-000000000001.jsonl",
+  "cwd": "/Users/alice/Repos/example-repo",
+  "scratchpad_dir": "/private/tmp/claude-501/-Users-alice-Repos-example-repo/00000000-0000-4000-8000-000000000001/scratchpad",
+  "prompt_id": "00000000-0000-4000-8000-000000000002",
+  "effort": {
+    "level": "medium"
+  },
+  "session_name": "Example session",
+  "model": {
+    "id": "claude-opus-5-5",
+    "display_name": "Opus 5.5"
+  },
+  "workspace": {
+    "current_dir": "/Users/alice/Repos/example-repo",
+    "project_dir": "/Users/alice/Repos/example-repo",
+    "added_dirs": [],
+    "repo": {
+      "host": "github.com",
+      "owner": "alice",
+      "name": "example-repo"
+    }
+  },
+  "version": "2.1.319",
+  "output_style": {
+    "name": "default"
+  },
+  "cost": {
+    "total_cost_usd": 1.3185807999999997,
+    "total_duration_ms": 1049760,
+    "total_api_duration_ms": 173849,
+    "total_lines_added": 0,
+    "total_lines_removed": 0
+  },
+  "context_window": {
+    "total_input_tokens": 109324,
+    "total_output_tokens": 192,
+    "context_window_size": 1000000,
+    "current_usage": {
+      "input_tokens": 2,
+      "output_tokens": 192,
+      "cache_creation_input_tokens": 574,
+      "cache_read_input_tokens": 108748
+    },
+    "used_percentage": 11,
+    "remaining_percentage": 89
+  },
+  "exceeds_200k_tokens": false,
+  "prompt_cache": {
+    "warm": true,
+    "caching_observed": true,
+    "ttl": "1h",
+    "expires_at": 1794110466,
+    "requests": 21,
+    "misses": 0,
+    "expected_rebuilds": 0,
+    "hit_ratio": 0.9527697074793189,
+    "cache_write_tokens": 83017,
+    "miss_recache_tokens": 0,
+    "last_miss_at": null,
+    "last_miss_cause": null,
+    "miss_causes": {},
+    "recache_tokens_if_cold": 109324
+  },
+  "fast_mode": false,
+  "thinking": {
+    "enabled": true
+  },
+  "rate_limits": {
+    "five_hour": {
+      "used_percentage": 2,
+      "resets_at": 1794124200
+    },
+    "seven_day": {
+      "used_percentage": 62,
+      "resets_at": 1794229200
+    }
+  }
+}
