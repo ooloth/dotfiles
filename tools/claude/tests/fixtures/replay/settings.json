@@ -44,21 +44,16 @@
       "Skill",
       "TodoWrite",
       "Edit(//private/tmp/rp-test/clone/**)",
-      "Write(//private/tmp/rp-test/clone/**)",
       "Edit(//private/tmp/rp-test/scratch/**)",
-      "Write(//private/tmp/rp-test/scratch/**)",
-      "Edit(//private/tmp/rp-test/t/**)",
-      "Write(//private/tmp/rp-test/t/**)"
+      "Edit(//private/tmp/rp-test/t/**)"
     ],
     "deny": [
       "WebFetch",
       "WebSearch",
-      "Edit(//home/me/**)",
-      "Write(//home/me/**)",
-      "Edit(//tmp-root/**)",
-      "Write(//tmp-root/**)"
+      "Edit(//home/me/**)"
     ],
-    "blockReadsOutsideWorkingDirectories": true
+    "blockReadsOutsideWorkingDirectories": true,
+    "blockWritesOutsideWorkingDirectories": true
   },
   "disableAllHooks": true,
   "hooks": {

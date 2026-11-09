@@ -76,16 +76,17 @@ observations about typical practice.
   `utils.bash` on the Mac the tests run on. Every Brewfile evaluates on each machine, on its own
   and combined. Every Brewfile that asks `air?`, `mini?` or `work?` loads the helper. No Brewfile
   reads `networksetup`, `scutil`, `hostname` or `ENV`.
-- A planning replay (`tools/claude/replay.py`) sees its ticket only as it stood when planning
-  began. Its clone holds only commits made before then, its `gh` stand-in serves the title and
-  body as they stood then plus the comments the replay itself posts, and its sandbox reads no
-  other checkout of the ticket's repo and no session transcripts. What it sees as it is today is
-  the agent harness and the dotfiles folders the Bash allow-list opens through links, such as
-  `tools/git/config/`, so a ticket is refused when a dotfiles commit made after its planning began
-  names it and changes one of those paths. A change there that names no ticket still reaches the
-  replay. The session loads the clone's own project instructions and skills, with every hook turned
-  off, and a ticket whose clone's committed project settings hold a key other than `attribution`,
-  `hooks` or `enableAllProjectMcpServers` is refused. Before each replay, a canary session shows the
-  sandbox refuses a forbidden read, two forbidden writes and a forbidden connection, that no hook
-  runs, and that the clone's `CLAUDE.md` loads. `tools/claude/tests/test_replay.py` checks each
-  part.
+- A planning replay (`tools/claude/replay.py`) sees its ticket only as it stood when planning began.
+  Its clone holds only commits made before then, its `gh` stand-in serves the title and body as they
+  stood then plus the comments the replay itself posts, and its sandbox reads no other checkout of
+  the ticket's repo and no session transcripts. What it sees as it is today is the agent harness and
+  the dotfiles folders the Bash allow-list opens through links, such as `tools/git/config/`, so a
+  ticket is refused when a dotfiles commit made after its planning began names it and changes one of
+  those paths. A change there that names no ticket still reaches the replay. The session loads the
+  clone's own project instructions and skills, with every hook turned off, and a ticket whose
+  clone's committed project settings hold a key other than `attribution`, `hooks` or
+  `enableAllProjectMcpServers` is refused. Before each replay, a canary session shows that two
+  forbidden reads, three forbidden writes and a forbidden connection are each refused with that
+  fence's own message, that a write in scratch and a `gh` call work, that no hook runs, and that the
+  clone's `CLAUDE.md` loads. The Edit and Write tools reach only the working folders, and never the
+  home folder. `tools/claude/tests/test_replay.py` checks each part.

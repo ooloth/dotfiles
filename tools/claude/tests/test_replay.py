@@ -731,7 +731,12 @@ class Settings(unittest.TestCase):
                 "permissions", "blockReadsOutsideWorkingDirectories", value=False
             ),
             "Edit(//home/me/**)": drop_deny("Edit(//home/me/**)"),
-            "Write(//home/me/**)": drop_deny("Write(//home/me/**)"),
+            "blockWritesOutsideWorkingDirectories": set_key(
+                "permissions", "blockWritesOutsideWorkingDirectories", value=False
+            ),
+            "/private/tmp/rp-test/clone sits under": lambda s: s["permissions"]["deny"].append(
+                "Edit(//private/tmp/**)"
+            ),
             "disableAllHooks": set_key("disableAllHooks", value=False),
             "marker hook": lambda s: s.pop("hooks"),
         }
@@ -814,9 +819,12 @@ def fake_canary() -> Any:
     return replay.Canary(
         secret="s3cr3t-token",
         secret_file=Path("/home/me/.local/state/replays/.canary-n1"),
-        write_tool_target=Path("/home/me/.replay-canary-n1-write"),
+        home_write_target=Path("/home/me/.replay-canary-n1-write"),
+        outside_write_target=Path("/private/tmp/rp-test-canary-n1-write"),
         bash_target=Path("/home/me/.replay-canary-n1-bash"),
         net_target=Path("/private/tmp/rp-test/scratch/canary-n1-net"),
+        allowed_write_target=Path("/private/tmp/rp-test/scratch/canary-n1-allowed"),
+        gh_command="gh issue view 7 -R octo/widgets --json title",
         instructions=(CLONE_CLAUDE_MD,),
         hook_marker=Path("/private/tmp/rp-test/hook-ran"),
     )
@@ -825,45 +833,79 @@ def fake_canary() -> Any:
 CLONE_CLAUDE_MD = Path("/private/tmp/rp-test/clone/CLAUDE.md")
 LOADED = frozenset({CLONE_CLAUDE_MD})
 
+# The refusal each action got in a real canary or probe session, by the check it stands for.
+REFUSALS = {
+    "read": "cat: /home/me/.local/state/replays/.canary-n1: Operation not permitted",
+    "read-tool": "/home/me/.local/state/replays/.canary-n1 is outside /private/tmp/rp-test/clone; "
+    "the permissions.blockReadsOutsideWorkingDirectories setting blocks reads outside the "
+    "working directories.",
+    "write-home": "<tool_use_error>File is in a directory that is denied by your permission "
+    "settings.</tool_use_error>",
+    "write-outside": "/private/tmp/rp-test-canary-n1-write is outside /private/tmp/rp-test/clone; "
+    "the permissions.blockWritesOutsideWorkingDirectories setting blocks writes outside the "
+    "working directories.",
+    "bash-write": "touch: /home/me/.replay-canary-n1-bash: Operation not permitted",
+    "network": "curl: (56) CONNECT tunnel failed, response 403\n<sandbox_violations>\n"
+    "deny network-outbound example.com:443 (user denied)\n</sandbox_violations>",
+}
 
-def attempted_uses(canary: Any) -> list[Any]:
-    refused = "Operation not permitted"
+
+def attempted_uses(canary: Any, results: Mapping[str, str] = REFUSALS) -> list[Any]:
+    """The eight actions as a session runs them, each refused action with the given result."""
     return [
-        replay.ToolUse("Bash", {"command": f"cat {canary.secret_file}"}, refused),
-        replay.ToolUse("Write", {"file_path": str(canary.write_tool_target)}, "denied"),
-        replay.ToolUse("Bash", {"command": f"touch {canary.bash_target}"}, refused),
+        replay.ToolUse("Bash", {"command": f"cat {canary.secret_file}"}, results["read"]),
+        replay.ToolUse("Read", {"file_path": str(canary.secret_file)}, results["read-tool"]),
+        replay.ToolUse(
+            "Write", {"file_path": str(canary.home_write_target)}, results["write-home"]
+        ),
+        replay.ToolUse(
+            "Write", {"file_path": str(canary.outside_write_target)}, results["write-outside"]
+        ),
+        replay.ToolUse("Bash", {"command": f"touch {canary.bash_target}"}, results["bash-write"]),
         replay.ToolUse(
             "Bash",
             {"command": f"curl -sS -m 10 -o {canary.net_target} {replay.CANARY_URL}"},
-            "deny network-outbound example.com",
+            results["network"],
         ),
+        replay.ToolUse(
+            "Write", {"file_path": str(canary.allowed_write_target)}, "File created successfully"
+        ),
+        replay.ToolUse("Bash", {"command": canary.gh_command}, '{"title":"Widgets"}'),
     ]
 
 
-NO_EFFECTS = replay.CanaryEffects(
-    write_tool_file=False, bash_file=False, net_bytes=0, hook_ran=False
+# No forbidden action took effect, and both allowed ones worked.
+CLEAN = replay.CanaryEffects(
+    home_write_file=False,
+    outside_write_file=False,
+    bash_file=False,
+    net_bytes=0,
+    hook_ran=False,
+    allowed_write_file=True,
+    gh_served=True,
 )
 
 
 class JudgeCanary(unittest.TestCase):
-    def test_a_canary_whose_four_actions_all_had_no_effect_shows_the_sandbox_holds(self) -> None:
+    def test_eight_actions_refused_and_allowed_as_expected_show_the_sandbox_holds(self) -> None:
         canary = fake_canary()
-        verdict = replay.judge_canary(canary, attempted_uses(canary), "DONE", NO_EFFECTS, LOADED)
+        verdict = replay.judge_canary(canary, attempted_uses(canary), "DONE", CLEAN, LOADED)
         assert verdict == replay.SandboxHolds()
 
     def test_each_action_that_took_effect_is_named_in_the_breach(self) -> None:
         canary = fake_canary()
         uses = attempted_uses(canary)
         leaked = [
-            replay.ToolUse(u.tool, u.input, canary.secret) if i == 0 else u
+            replay.ToolUse(u.tool, u.input, canary.secret) if i == 1 else u
             for i, u in enumerate(uses)
         ]
         cases = {
-            "read": (leaked, NO_EFFECTS),
-            "write-tool": (uses, replay.CanaryEffects(True, False, 0, False)),
-            "bash-write": (uses, replay.CanaryEffects(False, True, 0, False)),
-            "network": (uses, replay.CanaryEffects(False, False, 1256, False)),
-            "hooks": (uses, replay.CanaryEffects(False, False, 0, True)),
+            "read": (leaked, CLEAN),
+            "write-home": (uses, replace(CLEAN, home_write_file=True)),
+            "write-outside": (uses, replace(CLEAN, outside_write_file=True)),
+            "bash-write": (uses, replace(CLEAN, bash_file=True)),
+            "network": (uses, replace(CLEAN, net_bytes=1256)),
+            "hooks": (uses, replace(CLEAN, hook_ran=True)),
         }
         for check, (case_uses, effects) in cases.items():
             verdict = replay.judge_canary(canary, case_uses, "DONE", effects, LOADED)
@@ -873,31 +915,51 @@ class JudgeCanary(unittest.TestCase):
     def test_a_secret_in_the_final_reply_is_a_breach_of_the_read(self) -> None:
         canary = fake_canary()
         verdict = replay.judge_canary(
-            canary, attempted_uses(canary), f"it said {canary.secret}", NO_EFFECTS, LOADED
+            canary, attempted_uses(canary), f"it said {canary.secret}", CLEAN, LOADED
         )
         assert isinstance(verdict, replay.SandboxBreached)
         assert [c for c, _ in verdict.checks] == ["read"]
 
-    def test_a_canary_that_skipped_an_action_is_inconclusive(self) -> None:
+    def test_an_action_tried_without_its_refusal_message_is_inconclusive_naming_it(self) -> None:
         canary = fake_canary()
-        uses = attempted_uses(canary)[:3]
-        verdict = replay.judge_canary(canary, uses, "DONE", NO_EFFECTS, LOADED)
-        assert isinstance(verdict, replay.CanaryInconclusive)
-        assert "network" in verdict.reason
+        for check in REFUSALS:
+            results = {**REFUSALS, check: "Exit code 1"}
+            verdict = replay.judge_canary(
+                canary, attempted_uses(canary, results), "DONE", CLEAN, LOADED
+            )
+            assert isinstance(verdict, replay.CanaryInconclusive), (check, verdict)
+            assert check in verdict.reason, (check, verdict.reason)
+
+    def test_an_action_the_canary_skipped_is_inconclusive_naming_it(self) -> None:
+        canary = fake_canary()
+        names = [*REFUSALS, "allowed-write", "gh"]
+        for i, check in enumerate(names):
+            uses = [u for j, u in enumerate(attempted_uses(canary)) if j != i]
+            verdict = replay.judge_canary(canary, uses, "DONE", CLEAN, LOADED)
+            assert isinstance(verdict, replay.CanaryInconclusive), (check, verdict)
+            assert check in verdict.reason, (check, verdict.reason)
+
+    def test_an_allowed_action_that_didnt_work_is_named(self) -> None:
+        canary = fake_canary()
+        cases = {
+            "allowed-write": replace(CLEAN, allowed_write_file=False),
+            "gh": replace(CLEAN, gh_served=False),
+        }
+        for check, effects in cases.items():
+            verdict = replay.judge_canary(canary, attempted_uses(canary), "DONE", effects, LOADED)
+            assert isinstance(verdict, replay.AllowedActionFailed), (check, verdict)
+            assert [c for c, _ in verdict.checks] == [check], (check, verdict)
+            assert check in replay.explain_canary(verdict)
 
     def test_a_canary_whose_transcript_lacks_the_clones_claude_md_shows_it_missing(self) -> None:
         canary = fake_canary()
-        verdict = replay.judge_canary(
-            canary, attempted_uses(canary), "DONE", NO_EFFECTS, frozenset()
-        )
+        verdict = replay.judge_canary(canary, attempted_uses(canary), "DONE", CLEAN, frozenset())
         assert verdict == replay.ProjectNotLoaded((CLONE_CLAUDE_MD,))
         assert str(CLONE_CLAUDE_MD) in replay.explain_canary(verdict)
 
     def test_a_clone_with_no_claude_md_requires_none_loaded(self) -> None:
         canary = replace(fake_canary(), instructions=())
-        verdict = replay.judge_canary(
-            canary, attempted_uses(canary), "DONE", NO_EFFECTS, frozenset()
-        )
+        verdict = replay.judge_canary(canary, attempted_uses(canary), "DONE", CLEAN, frozenset())
         assert verdict == replay.SandboxHolds()
 
 
@@ -1211,35 +1273,60 @@ os.makedirs(projects, exist_ok=True)
 result = json.load(open(os.environ["FAKE_RESULT"]))
 result["permission_denials"] = []
 if "sandbox check" in prompt:
-    # Plays the canary: attempts each action, as a session would, and is refused each time unless
-    # FAKE_CANARY names one to let through.
+    # Plays the canary: attempts each action, as a session would. Each forbidden one is refused
+    # with its real message, and both allowed ones work, unless FAKE_CANARY names a fault.
+    fault = os.environ.get("FAKE_CANARY", "")
+    json.dump(sys.argv[1:], open(os.path.join(projects, "canary-argv.json"), "w"))
     secret = re.search(r"cat (\\S+)", prompt)[1]
-    write = re.search(r"create (\\S+)", prompt)[1]
+    home_write, outside_write, allowed_write = re.findall(r"create (\\S+)", prompt)
     touch = re.search(r"touch (\\S+)", prompt)[1]
     net = re.search(r"-o (\\S+)", prompt)[1]
-    json.dump(sys.argv[1:], open(os.path.join(projects, "canary-argv.json"), "w"))
-    if os.environ.get("FAKE_CANARY") == "bash-write":
+    gh = re.search(r"8\\. With Bash, run: (.+)", prompt)[1]
+    if fault == "bash-write":
         open(touch, "w").write("")
-    if os.environ.get("FAKE_CANARY") == "hook-ran":
+    if fault == "write-outside":
+        open(outside_write, "w").write("canary")
+    if fault != "allowed-write-fails":
+        open(allowed_write, "w").write("canary")
+    if fault == "hook-ran":
         # Stands for Claude Code running hooks despite disableAllHooks.
         settings = json.load(open(sys.argv[sys.argv.index("--settings") + 1]))
         for entry in settings["hooks"]["SessionStart"]:
             for hook in entry["hooks"]:
                 subprocess.run(hook["command"], shell=True, check=True)
-    uses = [("Bash", {"command": "cat " + secret}), ("Write", {"file_path": write}),
-            ("Bash", {"command": "touch " + touch}),
-            ("Bash", {"command": "curl -sS -m 10 -o " + net + " https://example.com"})]
+    served = subprocess.run(gh, shell=True, capture_output=True, text=True).stdout
+    refused = {
+        "read": "cat: " + secret + ": Operation not permitted",
+        "read-tool": secret + " is outside; the permissions.blockReadsOutsideWorkingDirectories "
+        "setting blocks reads outside the working directories.",
+        "write-home": "File is in a directory that is denied by your permission settings.",
+        "write-outside": outside_write + " is outside; the permissions."
+        "blockWritesOutsideWorkingDirectories setting blocks writes outside the working "
+        "directories.",
+        "bash-write": "touch: " + touch + ": Operation not permitted",
+        "network": "deny network-outbound example.com:443",
+    }
+    if fault == "no-message":
+        refused = {k: "Exit code 1" for k in refused}
+    uses = [("Bash", {"command": "cat " + secret}, refused["read"]),
+            ("Read", {"file_path": secret}, refused["read-tool"]),
+            ("Write", {"file_path": home_write}, refused["write-home"]),
+            ("Write", {"file_path": outside_write}, refused["write-outside"]),
+            ("Bash", {"command": "touch " + touch}, refused["bash-write"]),
+            ("Bash", {"command": "curl -sS -m 10 -o " + net + " https://example.com"},
+             refused["network"]),
+            ("Write", {"file_path": allowed_write}, "File created successfully"),
+            ("Bash", {"command": gh}, served)]
     with open(os.path.join(projects, "fake-canary.jsonl"), "w") as f:
         claude_md = os.path.join(os.getcwd(), "CLAUDE.md")
-        if os.path.exists(claude_md) and os.environ.get("FAKE_CANARY") != "no-instructions":
+        if os.path.exists(claude_md) and fault != "no-instructions":
             f.write(json.dumps({"type": "attachment", "attachment": {"type": "instructions",
                     "files": [{"path": claude_md, "type": "Project", "content": ""}]}}) + "\\n")
-        for i, (tool, args) in enumerate(uses):
+        for i, (tool, args, text) in enumerate(uses):
             f.write(json.dumps({"type": "assistant", "message": {"content": [
                 {"type": "tool_use", "id": "u%d" % i, "name": tool, "input": args}]}}) + "\\n")
             f.write(json.dumps({"type": "user", "message": {"content": [
-                {"type": "tool_result", "tool_use_id": "u%d" % i, "is_error": True,
-                 "content": "Operation not permitted"}]}}) + "\\n")
+                {"type": "tool_result", "tool_use_id": "u%d" % i, "content": text}]}}) + "\\n")
     result["session_id"] = "fake-canary"
     result["result"] = "DONE"
     print(json.dumps(result))
@@ -1395,6 +1482,26 @@ class EndToEnd(unittest.TestCase):
         assert result.returncode != 0
         assert "hooks" in result.stderr, result.stderr
         assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists()
+
+    def test_each_canary_that_doesnt_show_the_sandbox_holds_refuses_the_replay(self) -> None:
+        faults = {
+            "write-outside": "write-outside",
+            "no-message": "showed nothing",
+            "allowed-write-fails": "allowed-write",
+        }
+        for fault, named in faults.items():
+            self.env["FAKE_CANARY"] = fault
+            result = self.plan()
+            assert result.returncode != 0, fault
+            assert named in result.stderr, (fault, result.stderr)
+            assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists(), fault
+
+    def test_the_sessions_gh_log_holds_none_of_the_canarys_calls(self) -> None:
+        assert self.plan().returncode == 0
+        log = self.state / "replays" / "octo-widgets-7" / "run-1" / "gh-calls.log"
+        calls = [json.loads(line)["args"] for line in log.read_text().splitlines()]
+        assert ["issue", "view", "7", "-R", "octo/widgets", "--json", "title"] not in calls
+        assert ["issue", "view", "7", "-R", "octo/widgets", "--json", "title,body"] in calls
 
     def test_a_canary_that_didnt_load_the_clones_claude_md_refuses_the_replay(self) -> None:
         self.env["FAKE_CANARY"] = "no-instructions"

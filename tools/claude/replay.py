@@ -17,16 +17,18 @@ when planning began:
 - a `gh` stand-in that serves the ticket's title and body as they stood then, with no parent and
   no comments but the ones the replay posts, which it saves instead of posting
 - Claude Code's sandbox with no network except package registries, Bash reads of the home and temp
-  folders confined to an allow-list, the Read tool confined to the working directories, the Edit
-  and Write tools denied in the home and temp folders, and web tools and MCP servers off
+  folders confined to an allow-list, the Read, Edit and Write tools confined to the working
+  directories and the file tools denied in the home folder, and web tools and MCP servers off
 - the user's Claude Code settings, the clone's own project instructions, skills and settings, and
   the replay's own settings, which turn every hook off, since hooks run outside the sandbox; a
   clone whose committed project settings hold a key that could widen the sandbox is refused
 
 Before the session starts, a short canary session with the same settings tries to read a secret
-beside the replay folders, write in the home folder with the Write tool and with Bash, and fetch a
-host off the registry list. The replay runs only if all four were tried and none took effect, a
-hook the settings plant never fired, and the clone's `CLAUDE.md`, when it has one, loaded.
+beside the replay folders with Bash and with the Read tool, write with the Write tool in the home
+folder and outside every working folder, write in the home folder with Bash, and fetch a host off
+the registry list. The replay runs only if each was refused with its fence's own message and took
+no effect, a Write-tool write in scratch and a `gh` call to the stand-in both worked, a hook the
+settings plant never fired, and the clone's `CLAUDE.md`, when it has one, loaded.
 
 One thing is as it is today, not as it was: the agent harness (global instructions, skills,
 standards), along with any folder of the dotfiles checkout that the Bash allow-list opens. That is
@@ -384,28 +386,40 @@ SessionOutcome = Planned | Escalated | SessionFailed | Interrupted
 
 @dataclass(frozen=True)
 class Canary:
-    """Four things the sandbox must refuse, tried by a short session before the replay's own: read
-    a secret beside the replay folders, write a file in the home folder with the Write tool and
-    with Bash, and fetch a host off the registry list."""
+    """Eight actions a short session tries before the replay's own. Six must be refused, each with
+    its fence's own message: read a secret beside the replay folders with Bash and with the Read
+    tool, write with the Write tool in the home folder and outside every working folder, write in
+    the home folder with Bash, and fetch a host off the registry list. Two must work, as planning
+    needs them: a Write-tool write in scratch, and a `gh` call to the stand-in."""
 
     secret: str
     secret_file: Path
-    write_tool_target: Path
+    home_write_target: Path
+    outside_write_target: Path
     bash_target: Path
     net_target: Path
+    allowed_write_target: Path
+    gh_command: str
     # The clone's project instructions the session must load, and the file a hook would touch.
     instructions: tuple[Path, ...]
     hook_marker: Path
 
     def prompt(self) -> str:
         return (
-            "This is a sandbox check for a replay: each action below should be refused, and the "
-            "check passes when they are. Run all four, one tool call each, in this order, and "
-            "carry on after a refusal. Don't try another way round a refusal. Then reply DONE.\n"
+            "This is a sandbox check for a replay: actions 1 to 6 should be refused and 7 and 8 "
+            "should work, and the check passes when they do. Run all eight, one tool call each, "
+            "in this order, and carry on after a refusal. Don't try another way round a refusal. "
+            "Then reply DONE.\n"
             f"1. With Bash, run: cat {self.secret_file}\n"
-            f"2. With the Write tool, create {self.write_tool_target} containing the word canary\n"
-            f"3. With Bash, run: touch {self.bash_target}\n"
-            f"4. With Bash, run: curl -sS -m 10 -o {self.net_target} {CANARY_URL}\n"
+            f"2. With the Read tool, read {self.secret_file}\n"
+            f"3. With the Write tool, create {self.home_write_target} containing the word canary\n"
+            f"4. With the Write tool, create {self.outside_write_target} containing the word "
+            "canary\n"
+            f"5. With Bash, run: touch {self.bash_target}\n"
+            f"6. With Bash, run: curl -sS -m 10 -o {self.net_target} {CANARY_URL}\n"
+            f"7. With the Write tool, create {self.allowed_write_target} containing the word "
+            "canary\n"
+            f"8. With Bash, run: {self.gh_command}\n"
         )
 
 
@@ -418,12 +432,15 @@ class ToolUse:
 
 @dataclass(frozen=True)
 class CanaryEffects:
-    """What the canary's actions left on disk."""
+    """What the canary's actions left on disk, and whether the stand-in served its `gh` call."""
 
-    write_tool_file: bool
+    home_write_file: bool
+    outside_write_file: bool
     bash_file: bool
     net_bytes: int
     hook_ran: bool
+    allowed_write_file: bool
+    gh_served: bool
 
 
 @dataclass(frozen=True)
@@ -446,11 +463,20 @@ class ProjectNotLoaded:
 
 
 @dataclass(frozen=True)
+class AllowedActionFailed:
+    """Each action planning needs that the canary tried and that didn't work, with what showed it."""
+
+    checks: tuple[tuple[str, str], ...]
+
+
+@dataclass(frozen=True)
 class CanaryInconclusive:
     reason: str
 
 
-CanaryVerdict = SandboxHolds | SandboxBreached | ProjectNotLoaded | CanaryInconclusive
+CanaryVerdict = (
+    SandboxHolds | SandboxBreached | ProjectNotLoaded | AllowedActionFailed | CanaryInconclusive
+)
 
 
 @dataclass(frozen=True)
@@ -919,7 +945,6 @@ def write_mktemp(bin_dir: Path) -> Path:
 
 def build_settings(paths: SandboxPaths) -> dict[str, Any]:
     editable = (paths.clone, paths.scratch, paths.claude_tmp)
-    denied = (paths.home, paths.tmp_root)
     return {
         "sandbox": {
             "enabled": True,
@@ -946,17 +971,15 @@ def build_settings(paths: SandboxPaths) -> dict[str, Any]:
                 "Agent",
                 "Skill",
                 "TodoWrite",
-                *(f"{tool}(/{folder}/**)" for folder in editable for tool in ("Edit", "Write")),
+                # Edit rules cover every file tool; Claude Code matches no Write(path) rule.
+                *(f"Edit(/{folder}/**)" for folder in editable),
             ],
-            # The user settings allow Edit and Write everywhere, and allow lists from every
-            # settings file combine. A deny wins over any allow, and the replay's own folders all
-            # sit outside these two.
-            "deny": [
-                "WebFetch",
-                "WebSearch",
-                *(f"{tool}(/{folder}/**)" for folder in denied for tool in ("Edit", "Write")),
-            ],
+            # The user settings allow Edit and Write everywhere. The fence below keeps the file
+            # tools in the working folders, and the harness folders passed with --add-dir are
+            # working folders under home, so home is denied too. A deny wins over any allow.
+            "deny": ["WebFetch", "WebSearch", f"Edit(/{paths.home}/**)"],
             "blockReadsOutsideWorkingDirectories": True,
+            "blockWritesOutsideWorkingDirectories": True,
         },
         # Hooks run outside the sandbox, and the project source loads the clone's own, so every
         # hook is off. The canary shows it by this one never firing.
@@ -990,10 +1013,21 @@ def check_settings(settings: Mapping[str, Any], paths: SandboxPaths) -> None:
     assert settings["permissions"]["blockReadsOutsideWorkingDirectories"] is True, (
         "permissions.blockReadsOutsideWorkingDirectories is not true"
     )
-    for folder in (paths.home, paths.tmp_root):
-        for tool in ("Edit", "Write"):
-            rule = f"{tool}(/{folder}/**)"
-            assert rule in settings["permissions"]["deny"], f"permissions.deny lacks {rule}"
+    assert settings["permissions"]["blockWritesOutsideWorkingDirectories"] is True, (
+        "permissions.blockWritesOutsideWorkingDirectories is not true"
+    )
+    home_rule = f"Edit(/{paths.home}/**)"
+    assert home_rule in settings["permissions"]["deny"], f"permissions.deny lacks {home_rule}"
+    denied = [
+        Path(rule.removeprefix("Edit(/").removesuffix("/**)"))
+        for rule in settings["permissions"]["deny"]
+        if rule.startswith("Edit(/") and rule.endswith("/**)")
+    ]
+    for folder in (paths.clone, paths.scratch, paths.claude_tmp):
+        for root in denied:
+            assert not folder.is_relative_to(root), (
+                f"the editable folder {folder} sits under the denied {root}"
+            )
     assert settings.get("disableAllHooks") is True, "disableAllHooks is not true"
     session_start = settings.get("hooks", {}).get("SessionStart", [])
     assert any(marker_hook(paths.hook_marker) in e.get("hooks", []) for e in session_start), (
@@ -1243,6 +1277,18 @@ def loaded_instructions(path: Path) -> frozenset[Path]:
     return frozenset(loaded)
 
 
+# The message each forbidden action's fence gives, by the check it stands for. A result without it
+# shows the action failed for some other reason, which proves nothing about the fence.
+REFUSAL_MESSAGES = {
+    "read": "Operation not permitted",
+    "read-tool": "blockReadsOutsideWorkingDirectories",
+    "write-home": "denied by your permission settings",
+    "write-outside": "blockWritesOutsideWorkingDirectories",
+    "bash-write": "Operation not permitted",
+    "network": "deny network-outbound",
+}
+
+
 def judge_canary(
     canary: Canary,
     uses: Sequence[ToolUse],
@@ -1250,53 +1296,103 @@ def judge_canary(
     effects: CanaryEffects,
     loaded: frozenset[Path],
 ) -> CanaryVerdict:
-    """The sandbox holds only when the canary tried all four actions, none took effect, no hook
-    ran, and the clone's own instructions loaded. A canary that skipped an action shows nothing
-    about it, so the replay is refused then too."""
+    """The sandbox holds only when each forbidden action was tried, was refused with its fence's
+    message and took no effect, both allowed actions worked, no hook ran, and the clone's own
+    instructions loaded. A canary that skipped an action, or whose refusal names no fence, shows
+    nothing about it, so the replay is refused then too."""
 
-    def bash_naming(path: Path) -> list[ToolUse]:
-        return [u for u in uses if u.tool == "Bash" and str(path) in str(u.input.get("command"))]
+    def tool_on(tool: str, path: Path) -> list[ToolUse]:
+        return [u for u in uses if u.tool == tool and u.input.get("file_path") == str(path)]
 
-    attempted = {
-        "read": bool(bash_naming(canary.secret_file)),
-        "write-tool": any(
-            u.tool == "Write" and u.input.get("file_path") == str(canary.write_tool_target)
+    def bash_with(*parts: str) -> list[ToolUse]:
+        return [
+            u
             for u in uses
-        ),
-        "bash-write": bool(bash_naming(canary.bash_target)),
-        "network": any(
-            CANARY_URL in str(u.input.get("command")) for u in bash_naming(canary.net_target)
-        ),
+            if u.tool == "Bash" and all(p in str(u.input.get("command")) for p in parts)
+        ]
+
+    forbidden = {
+        "read": bash_with(f"cat {canary.secret_file}"),
+        "read-tool": tool_on("Read", canary.secret_file),
+        "write-home": tool_on("Write", canary.home_write_target),
+        "write-outside": tool_on("Write", canary.outside_write_target),
+        "bash-write": bash_with(f"touch {canary.bash_target}"),
+        "network": bash_with(str(canary.net_target), CANARY_URL),
     }
+    allowed = {
+        "allowed-write": tool_on("Write", canary.allowed_write_target),
+        "gh": bash_with(canary.gh_command),
+    }
+
     breaches: list[tuple[str, str]] = []
     if canary.secret in reply or any(canary.secret in u.result for u in uses):
         breaches.append(("read", f"the secret in {canary.secret_file} reached the session"))
-    if effects.write_tool_file:
-        breaches.append(("write-tool", f"the Write tool created {canary.write_tool_target}"))
-    if effects.bash_file:
-        breaches.append(("bash-write", f"Bash created {canary.bash_target}"))
-    if effects.net_bytes > 0:
-        breaches.append(("network", f"{CANARY_URL} returned {effects.net_bytes} bytes"))
-    if effects.hook_ran:
-        breaches.append(
-            ("hooks", f"a hook ran outside the sandbox and touched {canary.hook_marker}")
-        )
+    for check, took_effect, evidence in (
+        (
+            "write-home",
+            effects.home_write_file,
+            f"the Write tool created {canary.home_write_target}",
+        ),
+        (
+            "write-outside",
+            effects.outside_write_file,
+            f"the Write tool created {canary.outside_write_target}",
+        ),
+        ("bash-write", effects.bash_file, f"Bash created {canary.bash_target}"),
+        ("network", effects.net_bytes > 0, f"{CANARY_URL} returned {effects.net_bytes} bytes"),
+        (
+            "hooks",
+            effects.hook_ran,
+            f"a hook ran outside the sandbox and touched {canary.hook_marker}",
+        ),
+    ):
+        if took_effect:
+            breaches.append((check, evidence))
     if breaches:
         return SandboxBreached(tuple(breaches))
+
     missing = tuple(p for p in canary.instructions if p not in loaded)
     if missing:
         return ProjectNotLoaded(missing)
-    skipped = [name for name, tried in attempted.items() if not tried]
-    if skipped:
-        return CanaryInconclusive(f"the canary did not attempt: {', '.join(skipped)}")
+
+    unshown = [
+        f"{check}: not attempted" for check, tried in {**forbidden, **allowed}.items() if not tried
+    ]
+    unshown += [
+        f"{check}: tried, but no result shows the refusal ({REFUSAL_MESSAGES[check]})"
+        for check, tried in forbidden.items()
+        if tried and not any(REFUSAL_MESSAGES[check] in u.result for u in tried)
+    ]
+    failed = [
+        (check, f"tried, and {target} was not created")
+        for check, target, worked in (
+            ("allowed-write", canary.allowed_write_target, effects.allowed_write_file),
+        )
+        if allowed[check] and not worked
+    ]
+    if allowed["gh"] and not effects.gh_served:
+        result = allowed["gh"][-1].result.strip() or "no output"
+        failed.append(("gh", f"the stand-in served no call ({tail(result)})"))
+    if failed:
+        return AllowedActionFailed(tuple(failed))
+    if unshown:
+        return CanaryInconclusive("; ".join(unshown))
     return SandboxHolds()
 
 
-def explain_canary(verdict: SandboxBreached | ProjectNotLoaded | CanaryInconclusive) -> str:
+def explain_canary(
+    verdict: SandboxBreached | ProjectNotLoaded | AllowedActionFailed | CanaryInconclusive,
+) -> str:
     match verdict:
         case SandboxBreached(checks):
             found = "; ".join(f"{check}: {evidence}" for check, evidence in checks)
             return f"the sandbox canary was not refused ({found}), so the sandbox is not in force."
+        case AllowedActionFailed(checks):
+            found = "; ".join(f"{check}: {evidence}" for check, evidence in checks)
+            return (
+                f"the sandbox canary couldn't do what planning needs ({found}), so the replay "
+                "would run handicapped and is not run."
+            )
         case ProjectNotLoaded(missing):
             listed = ", ".join(str(p) for p in missing)
             return (
@@ -1608,10 +1704,16 @@ def run_session(
 
 
 def run_canary(
-    canary: Canary, settings: Path, readable: Sequence[Path], clone: Path, env: Mapping[str, str]
+    canary: Canary,
+    settings: Path,
+    readable: Sequence[Path],
+    clone: Path,
+    env: Mapping[str, str],
+    gh_log: Path,
 ) -> CanaryVerdict:
     """Run the canary as a short session with the replay's own settings and flags, and judge it by
-    what it left behind. Its secret and targets are removed afterwards, whatever the verdict."""
+    what it left behind. Its secret, its targets and the stand-in's log of its `gh` call are
+    removed afterwards, whatever the verdict, so the session's own log holds only its calls."""
     canary.secret_file.parent.mkdir(parents=True, exist_ok=True)
     canary.secret_file.write_text(canary.secret)
     command = session_command(settings, readable, canary.prompt(), model="haiku")
@@ -1638,10 +1740,13 @@ def run_canary(
             return CanaryInconclusive(f"no transcript was found for session {result.session_id}")
         net = canary.net_target
         effects = CanaryEffects(
-            write_tool_file=canary.write_tool_target.exists(),
+            home_write_file=canary.home_write_target.exists(),
+            outside_write_file=canary.outside_write_target.exists(),
             bash_file=canary.bash_target.exists(),
             net_bytes=net.stat().st_size if net.exists() else 0,
             hook_ran=canary.hook_marker.exists(),
+            allowed_write_file=canary.allowed_write_target.exists(),
+            gh_served=gh_view_served(gh_log),
         )
         transcript = transcripts[0]
         return judge_canary(
@@ -1652,9 +1757,31 @@ def run_canary(
             loaded_instructions(transcript),
         )
     finally:
-        targets = (canary.write_tool_target, canary.bash_target, canary.net_target)
-        for path in (canary.secret_file, *targets):
+        targets = (
+            canary.home_write_target,
+            canary.outside_write_target,
+            canary.bash_target,
+            canary.net_target,
+            canary.allowed_write_target,
+        )
+        for path in (canary.secret_file, *targets, gh_log):
             path.unlink(missing_ok=True)
+
+
+def gh_view_served(gh_log: Path) -> bool:
+    """Whether the stand-in logged a served `issue view`, which shows it ran inside the sandbox."""
+    if not gh_log.exists():
+        return False
+    for line in gh_log.read_text().splitlines():
+        try:
+            call = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(call, dict) and call.get("served") is True:
+            args = call.get("args")
+            if isinstance(args, list) and args[:2] == ["issue", "view"]:
+                return True
+    return False
 
 
 def write(path: Path, text: str) -> None:
@@ -1733,13 +1860,18 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
         canary = Canary(
             secret=secrets.token_hex(16),
             secret_file=state_root() / f".canary-{nonce}",
-            write_tool_target=home / f".replay-canary-{nonce}-write",
+            home_write_target=home / f".replay-canary-{nonce}-write",
+            # Beside the work folder, so outside every folder the session works in.
+            outside_write_target=work.parent / f"{work.name}-canary-{nonce}-write",
             bash_target=home / f".replay-canary-{nonce}-bash",
             net_target=paths.scratch / f"canary-{nonce}-net",
+            allowed_write_target=paths.scratch / f"canary-{nonce}-allowed",
+            gh_command=f"gh issue view {ref.number} -R {ref.owner}/{ref.repo} --json title",
             instructions=project_instructions(paths.clone),
             hook_marker=paths.hook_marker,
         )
-        verdict = run_canary(canary, settings_file, readable, paths.clone, env)
+        gh_log = paths.capture / "gh-calls.log"
+        verdict = run_canary(canary, settings_file, readable, paths.clone, env, gh_log)
         if not isinstance(verdict, SandboxHolds):
             raise SystemExit(f"replay: {explain_canary(verdict)}")
         command = session_command(settings_file, readable, f"/plan-unattended {ref} plan-only")
