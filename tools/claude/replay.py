@@ -62,6 +62,8 @@ from pydantic import BaseModel, ValidationError
 Sha = NewType("Sha", str)
 
 DOTFILES = Path(__file__).resolve().parents[2]
+# The `gh` the session finds on its PATH. `write_stand_in` copies it beside the ticket it serves.
+STAND_IN = Path(__file__).resolve().with_name("replay_gh.py")
 HARNESS_REPO = ("ooloth", "dotfiles")
 HARNESS_PATHS = ("tools/claude/config/", "tools/agents/config/")
 REGISTRIES = (
@@ -663,178 +665,10 @@ def check_clone(clone: Path, began: datetime) -> None:
 
 # ── The gh stand-in ────────────────────────────────────────────────────────────────────────────
 
-# Runs inside the sandbox, under whichever python3 is on PATH, so it uses only the standard
-# library and Python 3.9 syntax, and `jq` from PATH for --jq. It serves the ticket as it stood when
-# planning began plus the comments this replay posted, since a skill reads back what it posts.
-STAND_IN = r'''#!/usr/bin/env python3
-"""gh for a replay: serves one ticket as it stood when planning began, plus the comments this
-replay posts, and saves those comments instead of posting them."""
-import datetime
-import glob
-import json
-import os
-import subprocess
-import sys
 
-CONFIG = __CONFIG__
-cfg = json.load(open(CONFIG))
-args = sys.argv[1:]
-capture = cfg["capture"]
-url = "https://github.com/" + cfg["repo"] + "/issues/" + str(cfg["number"])
-
-
-def log(served):
-    with open(capture + "/gh-calls.log", "a") as f:
-        f.write(json.dumps({"args": args, "served": served}) + "\n")
-
-
-def refuse():
-    log(False)
-    sys.stderr.write("gh: unavailable in replay: " + " ".join(args) + "\n")
-    sys.exit(1)
-
-
-def option(names):
-    for i, a in enumerate(args):
-        for n in names:
-            if a == n and i + 1 < len(args):
-                return args[i + 1]
-            if a.startswith(n + "="):
-                return a[len(n) + 1:]
-    return None
-
-
-def emit(data):
-    """Print as gh does: JSON, or the result of --jq, which gh prints the way `jq -r` does."""
-    log(True)
-    query = option(["-q", "--jq"])
-    if query is None:
-        print(json.dumps(data))
-        return
-    done = subprocess.run(["jq", "-r", query], input=json.dumps(data), text=True)
-    sys.exit(done.returncode)
-
-
-def posted():
-    """The comments this replay has posted, oldest first, each with the time it was saved."""
-    found = []
-    for path in sorted(glob.glob(capture + "/comment-*.md")):
-        at = datetime.datetime.fromtimestamp(os.path.getmtime(path), datetime.timezone.utc)
-        n = int(path.rsplit("-", 1)[1].split(".")[0])
-        found.append(
-            {
-                "body": open(path).read(),
-                "createdAt": at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "url": url + "#issuecomment-replay-%d" % n,
-            }
-        )
-    return found
-
-
-def is_this_ticket(target):
-    prefix = "https://github.com/"
-    if target.startswith(prefix):
-        parts = target[len(prefix):].split("/")
-        if len(parts) != 4 or parts[2] != "issues":
-            return False
-        return parts[0] + "/" + parts[1] == cfg["repo"] and parts[3] == str(cfg["number"])
-    return target.lstrip("#") == str(cfg["number"]) and option(["-R", "--repo"]) == cfg["repo"]
-
-
-def view():
-    if option(["-t", "--template"]) is not None:
-        refuse()
-    fields = option(["--json"])
-    if fields is None:
-        log(True)
-        print(cfg["title"] + "\n\n" + cfg["body"])
-        return
-    owner = {"login": cfg["repo"].split("/")[0]}
-    ticket = {
-        "number": cfg["number"],
-        "title": cfg["title"],
-        "body": cfg["body"],
-        "comments": [dict(c, author=owner) for c in posted()],
-        "parent": None,
-        "blockedBy": {"nodes": [], "totalCount": 0},
-        "blocking": {"nodes": [], "totalCount": 0},
-        "subIssues": {"nodes": [], "totalCount": 0},
-        "state": "OPEN",
-        "labels": [],
-        "url": url,
-    }
-    wanted = fields.split(",")
-    if any(f not in ticket for f in wanted):
-        refuse()
-    emit({f: ticket[f] for f in wanted})
-
-
-def comment():
-    path = option(["--body-file", "-F"])
-    if path == "-":
-        body = sys.stdin.read()
-    elif path is not None:
-        body = open(path).read()
-    else:
-        body = option(["--body", "-b"])
-    if body is None:
-        refuse()
-    n = len(glob.glob(capture + "/comment-*.md")) + 1
-    with open(capture + "/comment-%03d.md" % n, "w") as f:
-        f.write(body)
-    log(True)
-    print(url + "#issuecomment-replay-%d" % n)
-
-
-def api():
-    """The two read-only endpoints a skill uses to check its own comments, for this ticket only."""
-    writes = ("-X", "--method", "-f", "-F", "--field", "--raw-field", "--input")
-    if any(a in writes or a.startswith(tuple(w + "=" for w in writes)) for a in args[1:]):
-        refuse()
-    takes_value = ("-q", "--jq", "-H", "--header", "-t", "--template", "--cache")
-    endpoints = []
-    skip = False
-    for a in args[1:]:
-        if skip:
-            skip = False
-        elif a in takes_value:
-            skip = True
-        elif not a.startswith("-"):
-            endpoints.append(a.lstrip("/"))
-    base = "repos/" + cfg["repo"] + "/issues/" + str(cfg["number"])
-    owner = {"login": cfg["repo"].split("/")[0]}
-    comments = [
-        {"body": c["body"], "created_at": c["createdAt"], "user": owner, "html_url": c["url"]}
-        for c in posted()
-    ]
-    if endpoints == [base + "/comments"]:
-        emit(comments)
-    elif endpoints == [base]:
-        emit(
-            {
-                "number": cfg["number"],
-                "title": cfg["title"],
-                "body": cfg["body"],
-                "state": "open",
-                "comments": len(comments),
-                "html_url": url,
-            }
-        )
-    else:
-        refuse()
-
-
-if args[:2] == ["issue", "view"] and len(args) > 2 and is_this_ticket(args[2]):
-    view()
-elif args[:2] == ["issue", "comment"] and len(args) > 2 and is_this_ticket(args[2]):
-    comment()
-elif args[:1] == ["api"]:
-    api()
-else:
-    refuse()
-'''
-
-
+# `replay_gh.py` runs inside the sandbox and uses only the standard library, and `jq` from PATH for
+# --jq. It serves the ticket as it stood when planning began plus the comments this replay posted,
+# since a skill reads back what it posts.
 def write_stand_in(bin_dir: Path, snapshot: PlanningSnapshot, capture: Path) -> Path:
     bin_dir.mkdir(parents=True, exist_ok=True)
     config = bin_dir / "gh-snapshot.json"
@@ -849,8 +683,11 @@ def write_stand_in(bin_dir: Path, snapshot: PlanningSnapshot, capture: Path) -> 
             }
         )
     )
+    # The stand-in runs on the interpreter running this script, which the sandbox can read under
+    # uv's folder, rather than whatever `python3` the session's PATH finds first.
+    interpreter = Path(sys.executable).resolve()
     gh = bin_dir / "gh"
-    gh.write_text(STAND_IN.replace("__CONFIG__", repr(str(config))))
+    gh.write_text(f"#!{interpreter}\n" + STAND_IN.read_text())
     gh.chmod(0o755)
     return gh
 

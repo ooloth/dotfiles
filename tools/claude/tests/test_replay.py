@@ -452,6 +452,51 @@ class StandIn(unittest.TestCase):
             assert result.returncode != 0, args
             assert "unavailable in replay" in result.stderr
 
+    def test_edit_last_replaces_the_newest_comment_so_the_grade_reads_the_correction(self) -> None:
+        self.run_gh("issue", "comment", "7", "-R", "octo/widgets", "--body", "# Approach\n\nv1")
+        result = self.run_gh(
+            "issue",
+            "comment",
+            "7",
+            "-R",
+            "octo/widgets",
+            "--edit-last",
+            "--body",
+            "# Approach\n\nv2",
+        )
+        assert result.returncode == 0, result.stderr
+        assert [p.read_text() for p in sorted(self.capture.glob("comment-*.md"))] == [
+            "# Approach\n\nv2"
+        ]
+        assert replay.sort_comments(self.capture).approach == "# Approach\n\nv2"
+
+    def test_edit_last_with_nothing_posted_is_refused(self) -> None:
+        result = self.run_gh(
+            "issue", "comment", "7", "-R", "octo/widgets", "--edit-last", "--body", "x"
+        )
+        assert result.returncode != 0
+        assert "unavailable in replay" in result.stderr
+        assert not list(self.capture.glob("comment-*.md"))
+
+    def test_issue_view_with_comments_prints_the_comments_the_replay_posted(self) -> None:
+        self.run_gh("issue", "comment", "7", "-R", "octo/widgets", "--body", "# Approach\n\nA")
+        result = self.run_gh("issue", "view", "7", "-R", "octo/widgets", "--comments")
+        assert result.returncode == 0, result.stderr
+        assert "The body as planned." in result.stdout
+        assert "# Approach\n\nA" in result.stdout
+
+    def test_calls_the_stand_in_does_not_model_are_refused_and_logged(self) -> None:
+        for args in (
+            ["issue", "view", "7", "-R", "octo/widgets", "--web"],
+            ["api", "repos/octo/widgets/issues/7", "--template", "{{.title}}"],
+            ["api", "-XPOST", "repos/octo/widgets/issues/7/comments", "-fbody=x"],
+            ["api", "repos/octo/widgets/issues/7/comments", "-Fbody=@x.md"],
+        ):
+            result = self.run_gh(*args)
+            assert result.returncode != 0, args
+            assert "unavailable in replay" in result.stderr, args
+        assert [call["served"] for call in self.logged()] == [False] * 4
+
     def test_every_other_command_is_refused_and_logged(self) -> None:
         result = self.run_gh("pr", "list", "-R", "octo/widgets")
         assert result.returncode != 0
