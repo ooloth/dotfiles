@@ -48,8 +48,9 @@ the default label for `claude -p` was measured using more of the 5-hour window
 (https://github.com/anthropics/claude-code/issues/97074#issuecomment-6426128541).
 
 Exit codes: 0 when the session planned or escalated, 1 when the ticket can't be replayed or the
-session failed, and 128 plus the signal's number when a signal interrupted the session. An
-interrupted or failed run keeps what the session posted, and `grades` lists it as unfinished.
+session failed, and 128 plus the signal's number when Ctrl-C, a `kill` or the terminal closing
+stopped it, at any step. An interrupted or failed run keeps what the session posted, and `grades`
+lists it as unfinished.
 """
 
 from __future__ import annotations
@@ -65,7 +66,8 @@ import signal
 import subprocess
 import sys
 import tempfile
-from collections.abc import Mapping, Sequence
+from collections.abc import Generator, Mapping, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import Enum
@@ -1679,6 +1681,27 @@ def raise_signalled(signum: int, _frame: object) -> None:
     raise Signalled(signum)
 
 
+# The signals that stop a replay: Ctrl-C, a `kill`, and the terminal closing.
+STOP_SIGNALS = {signal.SIGINT, signal.SIGTERM, signal.SIGHUP}
+
+
+@contextmanager
+def signals_deferred() -> Generator[None]:
+    """Hold the stop signals until the block ends, so a step that must finish once begun, such as
+    saving what a session captured before its work folder goes, can't be cut off halfway. Each
+    signal is recorded rather than blocked, since blocking covers only the calling thread, and the
+    first is raised again, to its own handler, once the block ends."""
+    held: list[int] = []
+    previous = {stop: signal.signal(stop, lambda n, _f: held.append(n)) for stop in STOP_SIGNALS}
+    try:
+        yield
+    finally:
+        for stop, handler in previous.items():
+            signal.signal(stop, handler)
+        if held:
+            signal.raise_signal(held[0])
+
+
 def run_session(
     command: Sequence[str], clone: Path, env: Mapping[str, str]
 ) -> tuple[SessionResult | SessionFailed | Interrupted, str, str]:
@@ -1904,44 +1927,47 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
         write(folder / "meta.json", json.dumps(meta, indent=2))
 
         result, stdout, stderr = run_session(command, paths.clone, env)
-        write(folder / "result.json", stdout)
-        write(folder / "stderr.log", stderr)
-        gh_log_path = paths.capture / "gh-calls.log"
-        gh_log = gh_log_path.read_text() if gh_log_path.exists() else ""
-        write(folder / "gh-calls.log", gh_log)
+        # From here until the outcome is saved, a stop signal waits, so the captured comments are
+        # copied out before the work folder goes; it is delivered once the folder is complete.
+        with signals_deferred():
+            write(folder / "result.json", stdout)
+            write(folder / "stderr.log", stderr)
+            gh_log_path = paths.capture / "gh-calls.log"
+            gh_log = gh_log_path.read_text() if gh_log_path.exists() else ""
+            write(folder / "gh-calls.log", gh_log)
 
-        captured = sort_comments(paths.capture)
-        if captured.approach is not None:
-            write(folder / "approach.md", captured.approach)
-        if captured.design is not None:
-            write(folder / "design.md", captured.design)
-        for i, body in enumerate(captured.extra, start=1):
-            write(folder / "extra" / f"comment-{i}.md", body)
+            captured = sort_comments(paths.capture)
+            if captured.approach is not None:
+                write(folder / "approach.md", captured.approach)
+            if captured.design is not None:
+                write(folder / "design.md", captured.design)
+            for i, body in enumerate(captured.extra, start=1):
+                write(folder / "extra" / f"comment-{i}.md", body)
 
-        match result:
-            case SessionResult():
-                outcome = outcome_of(result)
-                audit = read_audit(
-                    result.session_id,
-                    projects_root(),
-                    result.permission_denials,
-                    gh_log.splitlines(),
-                )
-                meta["session_id"] = result.session_id
-                meta["duration_ms"] = result.duration_ms
-                meta["tokens_by_model"] = [t.__dict__ for t in result.tokens_by_model]
-            case SessionFailed():
-                outcome = result
-                audit = AuditIncomplete("the session left no result to find its transcript by")
-            case Interrupted(name):
-                outcome = result
-                audit = AuditIncomplete(f"the session was interrupted by {name}")
-            case _:
-                assert_never(result)
-        write(folder / "audit.md", render_audit(audit))
-        meta["finished_at"] = datetime.now(UTC).isoformat()
-        meta["outcome"] = type(outcome).__name__
-        write(folder / "meta.json", json.dumps(meta, indent=2))
+            match result:
+                case SessionResult():
+                    outcome = outcome_of(result)
+                    audit = read_audit(
+                        result.session_id,
+                        projects_root(),
+                        result.permission_denials,
+                        gh_log.splitlines(),
+                    )
+                    meta["session_id"] = result.session_id
+                    meta["duration_ms"] = result.duration_ms
+                    meta["tokens_by_model"] = [t.__dict__ for t in result.tokens_by_model]
+                case SessionFailed():
+                    outcome = result
+                    audit = AuditIncomplete("the session left no result to find its transcript by")
+                case Interrupted(name):
+                    outcome = result
+                    audit = AuditIncomplete(f"the session was interrupted by {name}")
+                case _:
+                    assert_never(result)
+            write(folder / "audit.md", render_audit(audit))
+            meta["finished_at"] = datetime.now(UTC).isoformat()
+            meta["outcome"] = type(outcome).__name__
+            write(folder / "meta.json", json.dumps(meta, indent=2))
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -2003,7 +2029,15 @@ def main(argv: Sequence[str]) -> int:
         raise SystemExit("replay: " + "; ".join(problems))
     source = args.source or Path.home() / "Repos" / ref.owner / ref.repo
     branch: str = args.branch
-    return plan(ref, args.run, source, branch)
+    try:
+        return plan(ref, args.run, source, branch)
+    except Signalled as stopped:
+        # A signal outside the session itself, which records its own: plan's cleanup has run.
+        print(f"replay: stopped by {stopped.name}.", file=sys.stderr)
+        return 128 + signal.Signals[stopped.name].value
+    except KeyboardInterrupt:
+        print("replay: stopped by SIGINT.", file=sys.stderr)
+        return 128 + signal.SIGINT.value
 
 
 if __name__ == "__main__":

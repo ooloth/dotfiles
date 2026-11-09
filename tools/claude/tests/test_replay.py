@@ -961,6 +961,20 @@ class JudgeCanary(unittest.TestCase):
         assert verdict == replay.SandboxHolds()
 
 
+class SignalsDeferred(unittest.TestCase):
+    def test_a_signal_inside_is_held_until_the_block_ends(self) -> None:
+        previous = signal.signal(signal.SIGTERM, replay.raise_signalled)
+        try:
+            reached_end = False
+            with self.assertRaises(replay.Signalled), replay.signals_deferred():
+                os.kill(os.getpid(), signal.SIGTERM)
+                time.sleep(0.05)
+                reached_end = True
+            assert reached_end
+        finally:
+            signal.signal(signal.SIGTERM, previous)
+
+
 class SessionEnv(unittest.TestCase):
     def test_npm_keeps_its_cache_in_the_replays_scratch_folder(self) -> None:
         work = Path("/private/tmp/rp-test")
@@ -1274,6 +1288,11 @@ if "sandbox check" in prompt:
     # Plays the canary: attempts each action, as a session would. Each forbidden one is refused
     # with its real message, and both allowed ones work, unless FAKE_CANARY names a fault.
     fault = os.environ.get("FAKE_CANARY", "")
+    if os.environ.get("FAKE_SLOW_CANARY"):
+        # Stands for a long canary: says it has started, then waits to be stopped.
+        open(os.environ["FAKE_SLOW_CANARY"], "w").write("started")
+        import time
+        time.sleep(60)
     json.dump(sys.argv[1:], open(os.path.join(projects, "canary-argv.json"), "w"))
     secret = re.search(r"cat (\\S+)", prompt)[1]
     home_write, outside_write, allowed_write = re.findall(r"create (\\S+)", prompt)
@@ -1598,11 +1617,8 @@ class EndToEnd(unittest.TestCase):
         result = self.plan()
         assert result.returncode == 0, result.stderr
 
-    def test_an_interrupted_session_keeps_its_comments_and_is_recorded_as_interrupted(
-        self,
-    ) -> None:
-        ready = self.root / "posted"
-        self.env["FAKE_SLOW"] = str(ready)
+    def start_and_signal_once(self, ready: Path, signum: int) -> subprocess.Popen[str]:
+        """Start `plan`, wait until the fake says it reached the step under test, then signal."""
         script = self.scripts / "tools" / "claude" / "replay.py"
         started = subprocess.Popen(
             [sys.executable, str(script), "plan", "octo/widgets#7", "--run", "1"]
@@ -1617,13 +1633,41 @@ class EndToEnd(unittest.TestCase):
                 break
             time.sleep(0.05)
         assert ready.exists(), started.communicate(timeout=10)
-        started.send_signal(signal.SIGTERM)
-        _, stderr = started.communicate(timeout=30)
-        assert started.returncode != 0
-        assert "interrupted" in stderr.lower(), stderr
-        folder = self.state / "replays" / "octo-widgets-7" / "run-1"
-        assert (folder / "approach.md").read_text() == "# Approach\n\nreplayed"
-        assert json.loads((folder / "meta.json").read_text())["outcome"] == "Interrupted"
+        started.send_signal(signum)
+        return started
+
+    def test_a_signal_during_the_session_keeps_its_comments_and_records_it_interrupted(
+        self,
+    ) -> None:
+        for signum in (signal.SIGTERM, signal.SIGHUP):
+            with self.subTest(signal=signum.name):
+                self.tearDown()
+                self.setUp()
+                ready = self.root / "posted"
+                self.env["FAKE_SLOW"] = str(ready)
+                started = self.start_and_signal_once(ready, signum)
+                _, stderr = started.communicate(timeout=30)
+                assert started.returncode == 128 + signum, (started.returncode, stderr)
+                assert "interrupted" in stderr.lower(), stderr
+                folder = self.state / "replays" / "octo-widgets-7" / "run-1"
+                assert (folder / "approach.md").read_text() == "# Approach\n\nreplayed"
+                assert json.loads((folder / "meta.json").read_text())["outcome"] == "Interrupted"
+
+    def test_a_signal_during_the_canary_exits_with_its_code_and_leaves_nothing(self) -> None:
+        for signum in (signal.SIGTERM, signal.SIGHUP):
+            with self.subTest(signal=signum.name):
+                self.tearDown()
+                self.setUp()
+                ready = self.root / "canary-started"
+                self.env["FAKE_SLOW_CANARY"] = str(ready)
+                started = self.start_and_signal_once(ready, signum)
+                _, stderr = started.communicate(timeout=30)
+                assert started.returncode == 128 + signum, (started.returncode, stderr)
+                assert "Traceback" not in stderr, stderr
+                assert stderr.strip().count("\n") == 0 and signum.name in stderr, stderr
+                assert not (self.state / "replays" / "octo-widgets-7").exists()
+                assert not list(self.state.glob("replays/.canary-*"))
+                assert not list((self.root / "home").glob(".replay-canary-*"))
 
     def test_a_run_whose_folder_exists_is_refused_and_changes_nothing(self) -> None:
         assert self.plan().returncode == 0
