@@ -632,11 +632,14 @@ class StandIn(unittest.TestCase):
             ["api", "repos/octo/widgets/issues/7", "--template", "{{.title}}"],
             ["api", "-XPOST", "repos/octo/widgets/issues/7/comments", "-fbody=x"],
             ["api", "repos/octo/widgets/issues/7/comments", "-Fbody=@x.md"],
+            ["api", "repos/octo/widgets/issues/7", "-H", "Accept: application/vnd.github.raw"],
+            ["api", "repos/octo/widgets/issues/7", "--header=Accept: text/html"],
+            ["api", "repos/octo/widgets/issues/7", "--cache", "1h"],
         ):
             result = self.run_gh(*args)
             assert result.returncode != 0, args
             assert "unavailable in replay" in result.stderr, args
-        assert [call["served"] for call in self.logged()] == [False] * 4
+        assert [call["served"] for call in self.logged()] == [False] * 7
 
     def test_every_other_command_is_refused_and_logged(self) -> None:
         result = self.run_gh("pr", "list", "-R", "octo/widgets")
@@ -1039,6 +1042,15 @@ class ClassifyResults(unittest.TestCase):
         )
         found = self.refused([("Read", {"file_path": "/x"}, text, True)])
         assert found == [replay.ReadRefused("/x")], found
+
+    def test_each_write_tool_refusal_marked_as_an_error_is_a_write_refusal(self) -> None:
+        for text in (
+            "/x is outside /c; the permissions.blockWritesOutsideWorkingDirectories setting blocks",
+            "<tool_use_error>File is in a directory that is denied by your permission settings.",
+        ):
+            found = self.refused([("Write", {"file_path": "/x"}, text, True)])
+            assert found == [replay.WriteRefused("/x")], (text, found)
+            assert replay.describe(found[0]) == "write refused: `/x`"
 
     def test_a_bash_refusal_in_a_command_that_exited_0_still_counts(self) -> None:
         found = self.refused(
@@ -1589,7 +1601,7 @@ class EndToEnd(unittest.TestCase):
         assert seen["cwd_seen"] != str(self.source)
         meta = json.loads((folder / "meta.json").read_text())
         assert meta["claude_version"] == "9.9.9 (Claude Code)"
-        assert meta["canary"] == {"verdict": "SandboxHolds"}
+        assert meta["canary"] == {"verdict": "SandboxHolds", "session_id": "fake-canary"}
         assert meta["session_command"][1:] == seen["argv_seen"]
 
     def test_the_session_is_launched_sandboxed_with_the_project_source_and_no_github_token(
@@ -1720,6 +1732,21 @@ class EndToEnd(unittest.TestCase):
         meta = self.state / "replays" / "octo-widgets-7" / "run-1" / "meta.json"
         recorded = json.loads(meta.read_text())["dotfiles_commit"]
         assert recorded == git(self.dotfiles, "rev-parse", "HEAD"), recorded
+
+    def test_the_replay_code_that_ran_is_recorded_apart_from_the_harness(self) -> None:
+        (self.scripts / "tools" / "claude" / "replay_gh.py").write_text(
+            (self.scripts / "tools" / "claude" / "replay_gh.py").read_text() + "\n"
+        )
+        assert self.plan().returncode == 0
+        meta = self.state / "replays" / "octo-widgets-7" / "run-1" / "meta.json"
+        script = json.loads(meta.read_text())["replay_script"]
+        assert script == {"commit": git(self.scripts, "rev-parse", "HEAD"), "dirty": True}, script
+
+    def test_a_canary_that_passed_records_its_session(self) -> None:
+        assert self.plan().returncode == 0
+        meta = self.state / "replays" / "octo-widgets-7" / "run-1" / "meta.json"
+        canary = json.loads(meta.read_text())["canary"]
+        assert canary == {"verdict": "SandboxHolds", "session_id": "fake-canary"}, canary
 
     def test_a_later_harness_commit_naming_another_ticket_refuses_nothing(self) -> None:
         skill = self.dotfiles / "tools" / "agents" / "config" / "skills" / "x" / "SKILL.md"

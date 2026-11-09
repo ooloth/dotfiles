@@ -167,7 +167,8 @@ def is_write(a: str) -> bool:
 
 def api(rest: list[str]) -> NoReturn:
     """The two read-only endpoints a skill uses to check its own comments, for this ticket only."""
-    takes_value = {"-q", "--jq", "-H", "--header", "--cache"}
+    # A header can change what gh returns, and --cache what it fetches, so neither is modelled.
+    takes_value = {"-q", "--jq"}
     endpoints: list[str] = []
     query: str | None = None
     i = 0

@@ -301,6 +301,11 @@ class ReadRefused:
 
 
 @dataclass(frozen=True)
+class WriteRefused:
+    path: str
+
+
+@dataclass(frozen=True)
 class FileRefused:
     command: str
     detail: str
@@ -322,7 +327,7 @@ class ToolDenied:
     detail: str
 
 
-Refusal = ReadRefused | FileRefused | NetworkRefused | GhRefused | ToolDenied
+Refusal = ReadRefused | WriteRefused | FileRefused | NetworkRefused | GhRefused | ToolDenied
 
 
 @dataclass(frozen=True)
@@ -1198,6 +1203,12 @@ def classify(text: str, tool_input: Mapping[str, Any]) -> list[Refusal]:
         found.append(
             ReadRefused(str(tool_input.get("file_path") or tool_input.get("path") or text))
         )
+    # The write fence, and a deny rule such as the one for the home folder.
+    if (
+        "blockWritesOutsideWorkingDirectories" in text
+        or "denied by your permission settings" in text
+    ):
+        found.append(WriteRefused(str(tool_input.get("file_path") or text)))
     gh = re.search(r"gh: unavailable in replay: (.*)", text)
     if gh is not None:
         found.append(GhRefused(gh[1].strip()))
@@ -1460,6 +1471,8 @@ def describe(refusal: Refusal) -> str:
     match refusal:
         case ReadRefused(path):
             return f"read refused: `{path}`"
+        case WriteRefused(path):
+            return f"write refused: `{path}`"
         case FileRefused(command, detail):
             return f"file access refused: `{command}`: {detail}"
         case NetworkRefused(host):
@@ -1665,6 +1678,17 @@ def harness_dirs(home: Path) -> tuple[Path, ...]:
     links = (".claude/skills", ".claude/standards", ".agents")
     dirs += [home / link for link in links if (home / link).exists()]
     return tuple(dirs)
+
+
+def script_version() -> dict[str, object]:
+    """The commit of the checkout this script runs from, and whether the replay's own code there
+    has uncommitted edits. A proof run from a worktree runs its code against the install's harness,
+    so this is what says which replay code produced a folder."""
+    checkout = Path(__file__).resolve().parents[2]
+    commit = git(checkout, "rev-parse", "HEAD").stdout.strip()
+    own = ("tools/claude/replay.py", "tools/claude/replay_gh.py")
+    dirty = git(checkout, "status", "--porcelain", "--", *own).stdout.strip()
+    return {"commit": commit, "dirty": bool(dirty)}
 
 
 def harness_version(install: Path, watched: Sequence[str]) -> dict[str, object]:
@@ -1980,7 +2004,8 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             "planning_began": snapshot.planning_began.isoformat(),
             "entrypoint": ENTRYPOINT,
             "started_at": datetime.now(UTC).isoformat(),
-            "canary": {"verdict": type(verdict).__name__},
+            "canary": {"verdict": type(verdict).__name__, "session_id": canary_run.session_id},
+            "replay_script": script_version(),
             "session_command": command,
             **harness_version(install, watched),
         }
