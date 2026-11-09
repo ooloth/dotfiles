@@ -14,8 +14,8 @@ Run:
 when planning began:
 
 - a clone fetched only up to the last commit before the ticket's approach comment
-- a `gh` stand-in that serves the ticket body as it stood then, with no parent and no comments but
-  the ones the replay posts, which it saves instead of posting
+- a `gh` stand-in that serves the ticket's title and body as they stood then, with no parent and
+  no comments but the ones the replay posts, which it saves instead of posting
 - Claude Code's sandbox with no network except package registries, Bash reads of the home and temp
   folders confined to an allow-list, the Read tool confined to the working directories, the Edit
   and Write tools denied in the home and temp folders, and web tools and MCP servers off
@@ -130,6 +130,10 @@ query($o: String!, $r: String!, $n: Int!) {
       body
       comments(first: 100) { pageInfo { hasNextPage } nodes { createdAt body } }
       userContentEdits(first: 100) { pageInfo { hasNextPage } nodes { editedAt diff } }
+      timelineItems(itemTypes: [RENAMED_TITLE_EVENT], first: 100) {
+        pageInfo { hasNextPage }
+        nodes { ... on RenamedTitleEvent { createdAt previousTitle } }
+      }
     }
   }
 }
@@ -172,9 +176,18 @@ class BodyEdit:
 
 
 @dataclass(frozen=True)
+class TitleRename:
+    """A change of the ticket's title, keeping the title it replaced."""
+
+    renamed_at: datetime
+    previous_title: str
+
+
+@dataclass(frozen=True)
 class TicketHistory:
     ref: TicketRef
     title: str
+    title_renames: tuple[TitleRename, ...]
     body: str
     body_edits: tuple[BodyEdit, ...]
     approach: Comment
@@ -468,11 +481,22 @@ class _Edits(BaseModel):
     nodes: list[_EditNode]
 
 
+class _RenameNode(BaseModel):
+    createdAt: datetime
+    previousTitle: str
+
+
+class _Renames(BaseModel):
+    pageInfo: _PageInfo
+    nodes: list[_RenameNode]
+
+
 class _Issue(BaseModel):
     title: str
     body: str
     comments: _Comments
     userContentEdits: _Edits
+    timelineItems: _Renames
 
 
 class _Repository(BaseModel):
@@ -505,6 +529,8 @@ def parse_history(ref: TicketRef, payload: object) -> TicketHistory | NotReplaya
         problems.append("the ticket has more than 100 comments, and only the first page was read")
     if issue.userContentEdits.pageInfo.hasNextPage:
         problems.append("the body has more than 100 edits, and only the first page was read")
+    if issue.timelineItems.pageInfo.hasNextPage:
+        problems.append("the title has more than 100 renames, and only the first page was read")
     edits = []
     for node in issue.userContentEdits.nodes:
         if node.editedAt is None or node.diff is None:
@@ -522,6 +548,9 @@ def parse_history(ref: TicketRef, payload: object) -> TicketHistory | NotReplaya
     return TicketHistory(
         ref=ref,
         title=issue.title,
+        title_renames=tuple(
+            TitleRename(n.createdAt, n.previousTitle) for n in issue.timelineItems.nodes
+        ),
         body=issue.body,
         body_edits=tuple(edits),
         approach=Comment(approach.createdAt, approach.body),
@@ -530,7 +559,7 @@ def parse_history(ref: TicketRef, payload: object) -> TicketHistory | NotReplaya
 
 
 def cut_at_planning(history: TicketHistory) -> PlanningSnapshot | BodyUnknown:
-    """Keep only what existed when planning began: the title and the body as it stood then."""
+    """Keep only what existed when planning began: the title and the body as they stood then."""
     began = history.approach.created_at
     if history.body_edits:
         earlier = [e for e in history.body_edits if e.edited_at <= began]
@@ -541,7 +570,15 @@ def cut_at_planning(history: TicketHistory) -> PlanningSnapshot | BodyUnknown:
         body = served.content
     else:
         body = history.body
-    return PlanningSnapshot(history.ref, history.title, body, began)
+    # The title in force at planning is the one the first later rename replaced, or today's.
+    later = [r for r in history.title_renames if r.renamed_at > began]
+    if later:
+        first = min(later, key=lambda r: r.renamed_at)
+        assert first.renamed_at > began, "the served title was set after planning began"
+        title = first.previous_title
+    else:
+        title = history.title
+    return PlanningSnapshot(history.ref, title, body, began)
 
 
 # A POSIX extended regular expression, which `git log -E --grep` reads.
@@ -671,8 +708,13 @@ def later_harness_commits(
 
 
 def resolve_base(source: Path, branch: str, before: datetime) -> Sha | BaseNotFound:
-    """The newest commit on `branch` committed at or before `before`."""
-    listed = git(source, "rev-list", "-n1", f"--before={before.isoformat()}", branch)
+    """The newest commit on `branch` itself, its first-parent chain, committed at or before
+    `before`."""
+    # --first-parent keeps to commits that were on `branch` itself, so a branch merged after
+    # planning began can't supply the base through a commit dated before it.
+    listed = git(
+        source, "rev-list", "-n1", "--first-parent", f"--before={before.isoformat()}", branch
+    )
     sha = listed.stdout.strip()
     if listed.returncode != 0 or not sha:
         return BaseNotFound(before)
@@ -682,6 +724,8 @@ def resolve_base(source: Path, branch: str, before: datetime) -> Sha | BaseNotFo
     assert committed <= before, f"base {sha} was committed after planning began"
     ancestor = git(source, "merge-base", "--is-ancestor", sha, branch)
     assert ancestor.returncode == 0, f"base {sha} is not on {branch}"
+    chain = git(source, "rev-list", "--first-parent", branch).stdout.split()
+    assert sha in chain, f"base {sha} is not on {branch}'s first-parent chain"
     return Sha(sha)
 
 

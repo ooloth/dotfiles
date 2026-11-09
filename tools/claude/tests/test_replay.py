@@ -57,10 +57,13 @@ def history(
     edits: tuple = (),
     approach_at: datetime = T0,
     ref=OTHER_REF,
+    title: str = "A title",
+    renames: tuple = (),
 ):
     return replay.TicketHistory(
         ref=ref,
-        title="A title",
+        title=title,
+        title_renames=renames,
         body=body,
         body_edits=edits,
         approach=replay.Comment(approach_at, "# Approach\n\nmine"),
@@ -126,6 +129,25 @@ class CutAtPlanning(unittest.TestCase):
         assert isinstance(result, replay.PlanningSnapshot)
         assert result.body == "at planning"
 
+    @given(st.lists(st.integers(-500, 500), unique=True, max_size=5), st.integers(-500, 500))
+    def test_serves_the_title_in_force_when_planning_began(
+        self, minutes: list[int], began: int
+    ) -> None:
+        # Title i is in force from the i-th rename on; title 0 from before any.
+        times = sorted(minutes)
+        renames = tuple(replay.TitleRename(at(m), f"title {i}") for i, m in enumerate(times))
+        result = replay.cut_at_planning(
+            history(title=f"title {len(times)}", renames=renames, approach_at=at(began))
+        )
+        assert isinstance(result, replay.PlanningSnapshot)
+        assert result.title == f"title {sum(m <= began for m in times)}"
+
+    def test_a_rename_stamped_exactly_when_planning_began_is_in_force(self) -> None:
+        renames = (replay.TitleRename(at(0), "before"),)
+        result = replay.cut_at_planning(history(title="after", renames=renames, approach_at=at(0)))
+        assert isinstance(result, replay.PlanningSnapshot)
+        assert result.title == "after"
+
     def test_planning_began_is_the_approach_comments_time(self) -> None:
         result = replay.cut_at_planning(history(approach_at=at(42)))
         assert isinstance(result, replay.PlanningSnapshot)
@@ -171,6 +193,22 @@ class ParseHistory(unittest.TestCase):
         self.issue["comments"]["pageInfo"]["hasNextPage"] = True
         result = replay.parse_history(DOTFILES_REF, self.payload)
         assert isinstance(result, replay.GitHubUnreadable)
+
+    def test_a_real_rename_is_read_with_its_time_and_previous_title(self) -> None:
+        self.issue["timelineItems"]["nodes"] = [
+            {"createdAt": "2026-10-26T00:02:51Z", "previousTitle": "The title before"}
+        ]
+        result = replay.parse_history(DOTFILES_REF, self.payload)
+        assert isinstance(result, replay.TicketHistory)
+        assert result.title_renames == (
+            replay.TitleRename(datetime(2026, 10, 26, 0, 2, 51, tzinfo=UTC), "The title before"),
+        )
+
+    def test_a_response_with_more_renames_than_one_page_is_refused(self) -> None:
+        self.issue["timelineItems"]["pageInfo"]["hasNextPage"] = True
+        result = replay.parse_history(DOTFILES_REF, self.payload)
+        assert isinstance(result, replay.GitHubUnreadable)
+        assert "rename" in " ".join(result.problems)
 
     def test_an_edit_without_a_timestamp_is_refused(self) -> None:
         self.issue["userContentEdits"]["nodes"][0]["editedAt"] = None
@@ -387,6 +425,17 @@ class Clone(unittest.TestCase):
             )
             assert urls.stdout == ""
             assert replay.check_clone(clone, at(0)) is None
+
+    def test_a_branch_merged_after_planning_began_does_not_supply_the_base(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            source, shas = make_source(Path(tmp), [at(-60)])
+            git(source, "switch", "-q", "-c", "feature")
+            (source / "feature.txt").write_text("branch work\n")
+            git(source, "add", ".")
+            git(source, "commit", "-q", "-m", "branch work", date=at(-10))
+            git(source, "switch", "-q", "main")
+            git(source, "merge", "-q", "--no-ff", "-m", "merge", "feature", date=at(60))
+            assert replay.resolve_base(source, "main", at(0)) == shas[0]
 
     def test_no_commit_before_planning_began_is_refused(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
