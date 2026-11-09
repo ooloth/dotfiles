@@ -13,12 +13,12 @@ Run:
 (`claude -p`) in a sandbox that can't post or push, and that sees the ticket's repo only as it stood
 when planning began:
 
-- a clone fetched only up to the last commit before the ticket's approach comment
+- a clone fetched only up to the last commit at or before the ticket's approach comment
 - a `gh` stand-in that serves the ticket's title and body as they stood then, with no parent and
   no comments but the ones the replay posts, which it saves instead of posting
 - Claude Code's sandbox with no network except package registries, Bash reads of the home and temp
   folders confined to an allow-list, the Read, Edit and Write tools confined to the working
-  directories and the file tools denied in the home folder, and web tools and MCP servers off
+  directories, Edit and Write also denied in the home folder, and web tools and MCP servers off
 - the user's Claude Code settings, the clone's own project instructions, skills and settings, and
   the replay's own settings, which turn every hook off, since hooks run outside the sandbox; a
   clone whose committed project settings hold a key that could widen the sandbox is refused
@@ -30,11 +30,12 @@ the registry list. The replay runs only if each was refused with its fence's own
 no effect, a Write-tool write in scratch and a `gh` call to the stand-in both worked, a hook the
 settings plant never fired, and the clone's `CLAUDE.md`, when it has one, loaded.
 
-One thing is as it is today, not as it was: the agent harness (global instructions, skills,
-standards), along with any folder of the dotfiles checkout that the Bash allow-list opens, all read
-from the install at `~/Repos/ooloth/dotfiles` whichever checkout runs this script. That is
-why a ticket is refused when a commit to one of those paths, made after its planning began, names
-it, whether as `owner/repo#n`, `repo#n`, its issue URL, or a bare `#n` for a dotfiles ticket.
+Of what a session reads that could hold a ticket's answer, one thing is as it is today, not as it
+was: the agent harness (global instructions, skills, standards), along with any folder of the
+dotfiles checkout that the Bash allow-list opens, all read from the install at
+`~/Repos/ooloth/dotfiles` whichever checkout runs this script. That is why a ticket is refused when
+a commit to one of those paths, made after its planning began, names it, whether as `owner/repo#n`,
+`repo#n`, its issue URL, or a bare `#n` for a dotfiles ticket.
 
 It writes one folder per replay under `${XDG_STATE_HOME:-~/.local/state}/replays/`, holding the
 replay's approach and design, my own from the ticket, the session's duration and tokens per model,
@@ -47,10 +48,11 @@ the clone is fetched from. The session is labelled `CLAUDE_CODE_ENTRYPOINT=facto
 the default label for `claude -p` was measured using more of the 5-hour window
 (https://github.com/anthropics/claude-code/issues/97074#issuecomment-6426128541).
 
-Exit codes: 0 when the session planned or escalated, 1 when the ticket can't be replayed or the
-session failed, and 128 plus the signal's number when Ctrl-C, a `kill` or the terminal closing
-stopped it, at any step. An interrupted or failed run keeps what the session posted, and `grades`
-lists it as unfinished.
+Exit codes: 0 when the session planned or escalated; 1 when the arguments, the ticket or its source
+can't be used, the canary didn't show the sandbox holds, or the session failed; 2 when argparse
+rejects the command line; and 128 plus the signal's number when Ctrl-C, a `kill` or the terminal
+closing stopped it, at any step. An interrupted or failed run keeps what the session posted, and
+`grades` lists it as unfinished.
 """
 
 from __future__ import annotations
@@ -63,6 +65,7 @@ import secrets
 import shlex
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import tempfile
@@ -482,10 +485,27 @@ CanaryVerdict = (
 
 
 @dataclass(frozen=True)
+class CanaryRun:
+    """A canary's verdict and the session that produced it, so a refusal names what to read."""
+
+    verdict: CanaryVerdict
+    session_id: str | None
+
+
+@dataclass(frozen=True)
 class CapturedComments:
     approach: str | None
     design: str | None
     extra: tuple[str, ...]
+    skipped: tuple[CaptureSkipped, ...] = ()
+
+
+@dataclass(frozen=True)
+class CaptureSkipped:
+    """A file in the capture folder the runner would not read, and why."""
+
+    name: str
+    reason: str
 
 
 class Verdict(Enum):
@@ -973,7 +993,7 @@ def build_settings(paths: SandboxPaths) -> dict[str, Any]:
                 "Agent",
                 "Skill",
                 "TodoWrite",
-                # Edit rules cover every file tool; Claude Code matches no Write(path) rule.
+                # Edit rules cover every tool that edits files; Claude Code matches no Write(path) rule.
                 *(f"Edit(/{folder}/**)" for folder in editable),
             ],
             # The user settings allow Edit and Write everywhere. The fence below keeps the file
@@ -1121,18 +1141,41 @@ def outcome_of(result: SessionResult) -> SessionOutcome:
     )
 
 
+def read_capture_file(path: Path) -> str | CaptureSkipped:
+    """Read a file the session wrote, as untrusted: the runner reads it outside the sandbox, so a
+    link is skipped rather than followed, and a FIFO or a device is opened without waiting and
+    then skipped. The check is made on the open file, so the session can't swap the file between
+    the check and the read."""
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError as error:
+        reason = "a link" if path.is_symlink() else f"unreadable: {error.strerror}"
+        return CaptureSkipped(path.name, reason)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            return CaptureSkipped(path.name, "not a regular file")
+        with os.fdopen(fd, "rb", closefd=False) as file:
+            return file.read().decode("utf-8", errors="replace")
+    finally:
+        os.close(fd)
+
+
 def sort_comments(capture: Path) -> CapturedComments:
     approach = design = None
     extra: list[str] = []
+    skipped: list[CaptureSkipped] = []
     for path in sorted(capture.glob("comment-*.md")):
-        body = path.read_text()
+        body = read_capture_file(path)
+        if isinstance(body, CaptureSkipped):
+            skipped.append(body)
+            continue
         if approach is None and body.startswith("# Approach"):
             approach = body
         elif design is None and body.startswith("# Design"):
             design = body
         else:
             extra.append(body)
-    return CapturedComments(approach, design, tuple(extra))
+    return CapturedComments(approach, design, tuple(extra), tuple(skipped))
 
 
 # ── The audit ──────────────────────────────────────────────────────────────────────────────────
@@ -1190,11 +1233,13 @@ def read_transcript(path: Path) -> tuple[list[tuple[str, list[Refusal]]], int]:
             if block.get("type") == "tool_use":
                 uses[str(block.get("id"))] = (str(block.get("name")), block.get("input") or {})
             elif block.get("type") == "tool_result":
-                # Every result, not only errors: a refusal inside a pipeline or a `;` chain exits
-                # 0. A subagent's report is skipped, since its own transcript holds the refusal.
+                # Every Bash result, not only errors: a refusal inside a pipeline or a `;` chain
+                # exits 0. Another tool's result counts only when it is an error, since every
+                # refusal a file tool gets is one, and a file it shows may quote a refusal's words.
+                # A subagent's report is skipped, since its own transcript holds the refusal.
                 use_id = str(block.get("tool_use_id"))
                 tool, tool_input = uses.get(use_id, ("", {}))
-                if tool in SUBAGENT_TOOLS:
+                if tool in SUBAGENT_TOOLS or (tool != "Bash" and not block.get("is_error")):
                     continue
                 found = classify(result_text(block.get("content")), tool_input)
                 if found:
@@ -1230,11 +1275,15 @@ def read_audit(
         except json.JSONDecodeError:
             unreadable += 1
             continue
-        if not isinstance(call, dict):
+        args, served = (call.get("args"), call.get("served")) if isinstance(call, dict) else (0, 0)
+        if not isinstance(args, list) or not all(isinstance(a, str) for a in args):
             unreadable += 1
             continue
-        if not call.get("served"):
-            refused_gh = GhRefused(" ".join(call.get("args", [])))
+        if not isinstance(served, bool):
+            unreadable += 1
+            continue
+        if not served:
+            refused_gh = GhRefused(" ".join(args))
             if refused_gh not in refusals:
                 refusals.append(refused_gh)
     return Audit(tuple(refusals), len(files), unreadable)
@@ -1388,7 +1437,7 @@ def explain_canary(
     match verdict:
         case SandboxBreached(checks):
             found = "; ".join(f"{check}: {evidence}" for check, evidence in checks)
-            return f"the sandbox canary was not refused ({found}), so the sandbox is not in force."
+            return f"the canary showed the sandbox is not in force ({found})."
         case AllowedActionFailed(checks):
             found = "; ".join(f"{check}: {evidence}" for check, evidence in checks)
             return (
@@ -1740,7 +1789,7 @@ def run_canary(
     clone: Path,
     env: Mapping[str, str],
     gh_log: Path,
-) -> CanaryVerdict:
+) -> CanaryRun:
     """Run the canary as a short session with the replay's own settings and flags, and judge it by
     what it left behind. Its secret, its targets and the stand-in's log of its `gh` call are
     removed afterwards, whatever the verdict, so the session's own log holds only its calls."""
@@ -1761,13 +1810,18 @@ def run_canary(
                 timeout=CANARY_TIMEOUT_SECONDS,
             )
         except subprocess.TimeoutExpired:
-            return CanaryInconclusive(f"it ran longer than {CANARY_TIMEOUT_SECONDS} seconds")
+            return CanaryRun(
+                CanaryInconclusive(f"it ran longer than {CANARY_TIMEOUT_SECONDS} seconds"), None
+            )
         result = parse_session_result(done.returncode, done.stdout, done.stderr)
         if isinstance(result, SessionFailed):
-            return CanaryInconclusive(f"{result.reason}: {result.stderr_tail}")
+            return CanaryRun(CanaryInconclusive(f"{result.reason}: {result.stderr_tail}"), None)
         transcripts = sorted(projects_root().glob(f"*/{result.session_id}.jsonl"))
         if not transcripts:
-            return CanaryInconclusive(f"no transcript was found for session {result.session_id}")
+            return CanaryRun(
+                CanaryInconclusive(f"no transcript was found for session {result.session_id}"),
+                result.session_id,
+            )
         net = canary.net_target
         effects = CanaryEffects(
             home_write_file=canary.home_write_target.exists(),
@@ -1779,13 +1833,14 @@ def run_canary(
             gh_served=gh_view_served(gh_log),
         )
         transcript = transcripts[0]
-        return judge_canary(
+        verdict = judge_canary(
             canary,
             transcript_uses(transcript),
             result.final_text,
             effects,
             loaded_instructions(transcript),
         )
+        return CanaryRun(verdict, result.session_id)
     finally:
         targets = (
             canary.home_write_target,
@@ -1802,7 +1857,10 @@ def gh_view_served(gh_log: Path) -> bool:
     """Whether the stand-in logged a served `issue view`, which shows it ran inside the sandbox."""
     if not gh_log.exists():
         return False
-    for line in gh_log.read_text().splitlines():
+    text = read_capture_file(gh_log)
+    if isinstance(text, CaptureSkipped):
+        return False
+    for line in text.splitlines():
         try:
             call = json.loads(line)
         except json.JSONDecodeError:
@@ -1901,10 +1959,12 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             instructions=project_instructions(paths.clone),
             hook_marker=paths.hook_marker,
         )
-        gh_log = paths.capture / "gh-calls.log"
-        verdict = run_canary(canary, settings_file, readable, paths.clone, env, gh_log)
+        gh_log_file = paths.capture / "gh-calls.log"
+        canary_run = run_canary(canary, settings_file, readable, paths.clone, env, gh_log_file)
+        verdict = canary_run.verdict
         if not isinstance(verdict, SandboxHolds):
-            raise SystemExit(f"replay: {explain_canary(verdict)}")
+            session = canary_run.session_id or "none, since the canary left no result"
+            raise SystemExit(f"replay: {explain_canary(verdict)} The canary's session: {session}.")
         command = session_command(settings_file, readable, f"/plan-unattended {ref} plan-only")
         check_command(command)
         folder.mkdir(parents=True)
@@ -1932,11 +1992,13 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
         with signals_deferred():
             write(folder / "result.json", stdout)
             write(folder / "stderr.log", stderr)
-            gh_log_path = paths.capture / "gh-calls.log"
-            gh_log = gh_log_path.read_text() if gh_log_path.exists() else ""
+            gh_read = read_capture_file(gh_log_file) if gh_log_file.exists() else ""
+            gh_log = gh_read if isinstance(gh_read, str) else ""
             write(folder / "gh-calls.log", gh_log)
 
             captured = sort_comments(paths.capture)
+            gh_skipped = [gh_read] if isinstance(gh_read, CaptureSkipped) else []
+            meta["capture_skipped"] = [s.__dict__ for s in (*captured.skipped, *gh_skipped)]
             if captured.approach is not None:
                 write(folder / "approach.md", captured.approach)
             if captured.design is not None:

@@ -11,10 +11,9 @@ Most tests load the script in-process and call its pure steps directly. The GitH
 read from a real GraphQL response for ooloth/dotfiles#198, and the transcript and session-result
 boundaries from a real sandboxed Claude Code session, trimmed to the lines the audit reads.
 `session-2.jsonl` is written by hand, with made-up paths, after real lines whose refusal sits in a
-command that exited 0. The
-`gh` stand-in and the clone are separate processes and real git, so their tests run them. The
-end-to-end test runs `replay plan` as a subprocess with fake `gh` and `claude` commands on PATH, so
-no test reaches GitHub or a real Claude Code session.
+command that exited 0. The `gh` stand-in and the clone are separate processes and real git, so their
+tests run them. The end-to-end test runs `replay plan` as a subprocess with fake `gh` and `claude`
+commands on PATH, so no test reaches GitHub or a real Claude Code session.
 """
 
 from __future__ import annotations
@@ -27,6 +26,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
 from collections.abc import Callable, Mapping
@@ -985,6 +985,110 @@ class SessionEnv(unittest.TestCase):
 # ── What the session left behind ───────────────────────────────────────────────────────────────
 
 
+def write_transcript(path: Path, uses: list[tuple[str, dict, str, bool]]) -> Path:
+    with path.open("w") as f:
+        for i, (tool, args, text, is_error) in enumerate(uses):
+            f.write(
+                json.dumps(
+                    {
+                        "type": "assistant",
+                        "message": {
+                            "content": [
+                                {"type": "tool_use", "id": f"u{i}", "name": tool, "input": args}
+                            ]
+                        },
+                    }
+                )
+                + "\n"
+            )
+            f.write(
+                json.dumps(
+                    {
+                        "type": "user",
+                        "message": {
+                            "content": [
+                                {
+                                    "type": "tool_result",
+                                    "tool_use_id": f"u{i}",
+                                    "content": text,
+                                    "is_error": is_error,
+                                }
+                            ]
+                        },
+                    }
+                )
+                + "\n"
+            )
+    return path
+
+
+class ClassifyResults(unittest.TestCase):
+    def refused(self, uses: list[tuple[str, dict, str, bool]]) -> list[object]:
+        with tempfile.TemporaryDirectory() as tmp:
+            found, _ = replay.read_transcript(write_transcript(Path(tmp) / "t.jsonl", uses))
+        return [r for _, rs in found for r in rs]
+
+    def test_a_file_tool_result_quoting_a_refusal_but_not_an_error_adds_nothing(self) -> None:
+        quoted = 'if "operation not permitted" in line: deny network-outbound x'
+        for tool in ("Read", "Grep"):
+            assert self.refused([(tool, {"file_path": "/c/replay.py"}, quoted, False)]) == [], tool
+
+    def test_a_file_tool_refusal_marked_as_an_error_is_a_refusal(self) -> None:
+        text = (
+            "/x is outside /c; the permissions.blockReadsOutsideWorkingDirectories setting blocks"
+        )
+        found = self.refused([("Read", {"file_path": "/x"}, text, True)])
+        assert found == [replay.ReadRefused("/x")], found
+
+    def test_a_bash_refusal_in_a_command_that_exited_0_still_counts(self) -> None:
+        found = self.refused(
+            [("Bash", {"command": "cat /x | head"}, "cat: /x: Operation not permitted", False)]
+        )
+        assert len(found) == 1 and isinstance(found[0], replay.FileRefused), found
+
+
+class CaptureFiles(unittest.TestCase):
+    def test_links_and_fifos_are_skipped_and_regular_files_read(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            capture = Path(tmp)
+            secret = capture.parent / f"{capture.name}-mine.md"
+            secret.write_text("# Approach\n\nthe grader's own")
+            try:
+                (capture / "comment-001.md").symlink_to(secret)
+                os.mkfifo(capture / "comment-002.md")
+                (capture / "comment-003.md").write_bytes(b"# Design\n\nbad \xff byte")
+                done: list[Any] = []
+                worker = threading.Thread(
+                    target=lambda: done.append(replay.sort_comments(capture)), daemon=True
+                )
+                worker.start()
+                worker.join(timeout=10)
+                assert done, "sort_comments hung on a FIFO"
+                captured = done[0]
+                assert captured.approach is None, captured
+                assert captured.design == "# Design\n\nbad \ufffd byte", captured
+                assert sorted(s.name for s in captured.skipped) == [
+                    "comment-001.md",
+                    "comment-002.md",
+                ]
+            finally:
+                secret.unlink()
+
+    def test_malformed_gh_log_lines_count_as_unreadable_and_the_audit_completes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            projects = Path(tmp)
+            (projects / "x").mkdir()
+            (projects / "x" / "s1.jsonl").write_text("")
+            lines = [
+                '{"args": 5}',
+                '{"args": [1], "served": false}',
+                '{"args": ["a"], "served": "no"}',
+            ]
+            audit = replay.read_audit("s1", projects, (), lines)
+        assert isinstance(audit, replay.Audit), audit
+        assert audit.unreadable_lines == 3, audit
+
+
 class Audit(unittest.TestCase):
     def setUp(self) -> None:
         self.result = replay.parse_session_result(0, (FIXTURES / "result.json").read_text(), "")
@@ -1348,6 +1452,12 @@ if "sandbox check" in prompt:
     result["result"] = "DONE"
     print(json.dumps(result))
     sys.exit(0)
+if os.environ.get("FAKE_LINK_COMMENT"):
+    # Stands for a session that links a capture file to the grader's own approach.
+    work = os.path.dirname(sys.argv[sys.argv.index("--settings") + 1])
+    mine = os.path.join(os.environ["XDG_STATE_HOME"], "replays", "octo-widgets-7", "run-1",
+                        "mine", "approach.md")
+    os.symlink(mine, os.path.join(work, "capture", "comment-001.md"))
 view = subprocess.run(["gh", "issue", "view", "7", "-R", "octo/widgets", "--json", "title,body"],
                       capture_output=True, text=True)
 assert view.returncode == 0, view.stderr
@@ -1502,8 +1612,18 @@ class EndToEnd(unittest.TestCase):
         result = self.plan()
         assert result.returncode != 0
         assert "bash-write" in result.stderr, result.stderr
+        assert "fake-canary" in result.stderr, result.stderr
         assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists()
         assert not list((self.root / "home").glob(".replay-canary-*"))
+
+    def test_a_capture_file_linked_elsewhere_is_skipped_and_named(self) -> None:
+        self.env["FAKE_LINK_COMMENT"] = "1"
+        result = self.plan()
+        assert result.returncode == 0, result.stderr
+        folder = self.state / "replays" / "octo-widgets-7" / "run-1"
+        assert (folder / "approach.md").read_text() == "# Approach\n\nreplayed"
+        skipped = json.loads((folder / "meta.json").read_text())["capture_skipped"]
+        assert [s["name"] for s in skipped] == ["comment-001.md"], skipped
 
     def test_a_canary_whose_hook_ran_refuses_the_replay_naming_hooks(self) -> None:
         self.env["FAKE_CANARY"] = "hook-ran"
