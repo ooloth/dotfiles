@@ -215,6 +215,12 @@ file list rather than by task category; three agents over a third of the files e
 roughly a third of the wall clock of one agent over all of them. Bundling several questions into one
 agent is fine and often better, since they share the reading.
 
+**Give every subagent its own scratch folder.** Parallel subagents share the session's scratchpad,
+so two of them that pick the same file name overwrite each other's work, and neither can tell. Tell
+each one to write scratch files only in a folder it creates with `mktemp -d`, or name a separate
+folder for each in its prompt. Seen 2026-11-08: two backlog reviewers wrote to the same
+`issues.txt`, and one read the other's tickets before it noticed.
+
 ## Validate What Subagents Tell You, Immediately
 
 **A subagent's report is evidence, not a finding.** Check it the moment it arrives, before you relay
