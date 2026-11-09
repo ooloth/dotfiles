@@ -77,10 +77,12 @@ observations about typical practice.
   and combined. Every Brewfile that asks `air?`, `mini?` or `work?` loads the helper. No Brewfile
   reads `networksetup`, `scutil`, `hostname` or `ENV`.
 - A planning replay (`tools/claude/replay.py`) sees its ticket only as it stood when planning
-  began. Its clone holds only commits made before then, its `gh` stand-in serves the body as it
-  stood then plus the comments the replay itself posts, and its sandbox reads none of the user's
-  other checkouts or session transcripts. The one thing it sees as it is today is the agent
-  harness, so a ticket is refused when its own commits, or a dotfiles commit made after its
-  planning began that names it, changed `tools/claude/config/` or `tools/agents/config/`. A
-  harness change that names no ticket still reaches the replay. `tools/claude/tests/test_replay.py`
-  checks each part.
+  began. Its clone holds only commits made before then, its `gh` stand-in serves the title and
+  body as they stood then plus the comments the replay itself posts, and its sandbox reads no
+  other checkout of the ticket's repo and no session transcripts. What it sees as it is today is
+  the agent harness and the dotfiles folders the Bash allow-list opens through links, such as
+  `tools/git/config/`, so a ticket is refused when a dotfiles commit made after its planning began
+  names it and changes one of those paths. A change there that names no ticket still reaches the
+  replay. Before each replay, a canary session shows the sandbox refuses a forbidden read, two
+  forbidden writes and a forbidden connection. `tools/claude/tests/test_replay.py` checks each
+  part.
