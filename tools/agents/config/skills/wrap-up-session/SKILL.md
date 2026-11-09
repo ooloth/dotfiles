@@ -32,9 +32,24 @@ as options. Messages are the records whose top-level `type` is `user` or `assist
 record is something the user typed only when its `message.content` is a string and it has no
 `isMeta: true`. Subagent transcripts are under `<session-id>/subagents/`.
 
+## Weigh the session against its goal
+
+Every step in a session can be worth doing while the session as a whole drifts from what the user
+wants. The usual form is a session spent on a means, such as tooling, a test setup, or fixing
+whatever measures progress, while the outcome itself stays where it was: a sprint spent perfecting
+the deploy pipeline before any user has the feature, or a week improving a benchmark instead of the
+model it measures. Each step looks justified on its own, so only the total shows the drift.
+
+When the session's work serves a larger goal, such as the parent epic of its ticket or an outcome
+the user stated, read that goal and answer two questions. What is different now in the outcome the
+goal describes? What is the smallest next step that would change it? A step that only builds,
+fixes or runs a way of getting there, or of measuring it, doesn't count as changing it.
+
 ## Report
 
-List only the Open items, one line each, saying what is left to do. Leave out everything Done,
-Deferred or Dropped. If nothing is Open, say "This session can be closed now." Otherwise end with
-"This session can be closed once these are dealt with", and ask each item that needs the user's
-decision as a numbered question. Change nothing.
+When the session served a larger goal, open with those two answers in two or three sentences. When
+little of the session changed the outcome, say so plainly, and say which unfinished means that next
+step needs and which can stop at good enough. Then list only the Open items, one line each, saying
+what is left to do. Leave out everything Done, Deferred or Dropped. If nothing is Open, say "This
+session can be closed now." Otherwise end with "This session can be closed once these are dealt
+with", and ask each item that needs the user's decision as a numbered question. Change nothing.
