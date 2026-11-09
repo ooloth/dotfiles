@@ -31,7 +31,8 @@ no effect, a Write-tool write in scratch and a `gh` call to the stand-in both wo
 settings plant never fired, and the clone's `CLAUDE.md`, when it has one, loaded.
 
 One thing is as it is today, not as it was: the agent harness (global instructions, skills,
-standards), along with any folder of the dotfiles checkout that the Bash allow-list opens. That is
+standards), along with any folder of the dotfiles checkout that the Bash allow-list opens, all read
+from the install at `~/Repos/ooloth/dotfiles` whichever checkout runs this script. That is
 why a ticket is refused when a commit to one of those paths, made after its planning began, names
 it, whether as `owner/repo#n`, `repo#n`, its issue URL, or a bare `#n` for a dotfiles ticket.
 
@@ -75,7 +76,6 @@ from pydantic import BaseModel, ValidationError
 
 Sha = NewType("Sha", str)
 
-DOTFILES = Path(__file__).resolve().parents[2]
 # The source of the `gh` stand-in. `write_stand_in` copies it into the session's `bin/gh`, beside
 # the ticket it serves.
 STAND_IN = Path(__file__).resolve().with_name("replay_gh.py")
@@ -1599,8 +1599,15 @@ def readable_dirs(home: Path) -> tuple[Path, ...]:
     return tuple(found)
 
 
+def harness_checkout(home: Path) -> Path:
+    """The dotfiles checkout a session reads as it is today. Every link the link step makes in the
+    home folder names the install, so it is that, whichever checkout runs this script."""
+    return (home / "Repos" / "ooloth" / "dotfiles").resolve()
+
+
 def harness_dirs(home: Path) -> tuple[Path, ...]:
-    dirs = [DOTFILES / "tools" / "agents" / "config", DOTFILES / "tools" / "claude" / "config"]
+    install = harness_checkout(home)
+    dirs = [install / "tools" / "agents" / "config", install / "tools" / "claude" / "config"]
     # `~/.agents` holds only the skills and standards links, so Bash may read through it. Bash can't
     # read through the links in `~/.claude`, since allowing that folder would expose every
     # transcript in `~/.claude/projects`; the Read tool reaches them as working directories instead.
@@ -1609,10 +1616,10 @@ def harness_dirs(home: Path) -> tuple[Path, ...]:
     return tuple(dirs)
 
 
-def harness_version(watched: Sequence[str]) -> dict[str, object]:
-    commit = git(DOTFILES, "rev-parse", "HEAD").stdout.strip()
+def harness_version(install: Path, watched: Sequence[str]) -> dict[str, object]:
+    commit = git(install, "rev-parse", "HEAD").stdout.strip()
     # Dirty means uncommitted edits in any path the session reads as it is today.
-    dirty = git(DOTFILES, "status", "--porcelain", "--", *watched).stdout.strip()
+    dirty = git(install, "status", "--porcelain", "--", *watched).stdout.strip()
     try:
         version = subprocess.run(
             ["claude", "--version"], capture_output=True, text=True, check=False, timeout=60
@@ -1814,11 +1821,12 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
         raise SystemExit(f"replay: {explain(snapshot)}")
     home = Path.home()
     toolchains = readable_dirs(home)
-    watched = watched_paths(DOTFILES, toolchains)
-    later = later_harness_commits(DOTFILES, ticket_pattern(ref), snapshot.planning_began, watched)
+    install = harness_checkout(home)
+    watched = watched_paths(install, toolchains)
+    later = later_harness_commits(install, ticket_pattern(ref), snapshot.planning_began, watched)
     if isinstance(later, HarnessHistoryUnreadable):
         raise SystemExit(f"replay: {explain(later)}")
-    named = check_later_harness(later, files_changed(DOTFILES, later), watched)
+    named = check_later_harness(later, files_changed(install, later), watched)
     if named is not None:
         raise SystemExit(f"replay: {explain(named)}")
     base = resolve_base(source, branch, snapshot.planning_began)
@@ -1891,7 +1899,7 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             "started_at": datetime.now(UTC).isoformat(),
             "canary": {"verdict": type(verdict).__name__},
             "session_command": command,
-            **harness_version(watched),
+            **harness_version(install, watched),
         }
         write(folder / "meta.json", json.dumps(meta, indent=2))
 

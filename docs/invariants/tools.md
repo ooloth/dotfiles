@@ -80,11 +80,12 @@ observations about typical practice.
   Its clone holds only commits made before then, its `gh` stand-in serves the title and body as they
   stood then plus the comments the replay itself posts, and its sandbox reads no other checkout of
   the ticket's repo and no session transcripts. What it sees as it is today is the agent harness and
-  the dotfiles folders the Bash allow-list opens through links, such as `tools/git/config/`, so a
-  ticket is refused when a dotfiles commit made after its planning began names it and changes one of
-  those paths. A change there that names no ticket still reaches the replay. The session loads the
-  clone's own project instructions and skills, with every hook turned off, and a ticket whose
-  clone's committed project settings hold a key other than `attribution`, `hooks` or
+  the dotfiles folders the Bash allow-list opens through links, such as `tools/git/config/`, all in
+  the install at `~/Repos/ooloth/dotfiles` whichever checkout runs `replay.py`, so a ticket is
+  refused when a dotfiles commit made after its planning began names it and changes one of those
+  paths. A change there that names no ticket still reaches the replay. The session loads the clone's
+  own project instructions and skills, with every hook turned off, and a ticket whose clone's
+  committed project settings hold a key other than `attribution`, `hooks` or
   `enableAllProjectMcpServers` is refused. Before each replay, a canary session shows that two
   forbidden reads, three forbidden writes and a forbidden connection are each refused with that
   fence's own message, that a write in scratch and a `gh` call work, that no hook runs, and that the

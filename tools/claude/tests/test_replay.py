@@ -34,7 +34,6 @@ from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
-from unittest import mock
 
 from hypothesis import given
 from hypothesis import strategies as st
@@ -418,11 +417,10 @@ class LaterHarnessCommits(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             repo, _ = make_harness_history(Path(tmp), T0)
             watched = (*replay.HARNESS_PATHS, "tools/git/config/")
-            with mock.patch.object(replay, "DOTFILES", repo):
-                assert replay.harness_version(watched)["harness_dirty"] is False
-                (repo / "tools" / "git" / "config").mkdir(parents=True)
-                (repo / "tools" / "git" / "config" / "config").write_text("[core]\n")
-                assert replay.harness_version(watched)["harness_dirty"] is True
+            assert replay.harness_version(repo, watched)["harness_dirty"] is False
+            (repo / "tools" / "git" / "config").mkdir(parents=True)
+            (repo / "tools" / "git" / "config" / "config").write_text("[core]\n")
+            assert replay.harness_version(repo, watched)["harness_dirty"] is True
 
     def test_live_checkout_folders_the_session_reads_are_watched(self) -> None:
         dotfiles = Path("/repos/dotfiles")
@@ -1384,8 +1382,8 @@ class EndToEnd(unittest.TestCase):
             [began - timedelta(days=1), began + timedelta(1)],
             {"CLAUDE.md": "# Widgets\n"},
         )
-        # A copy of the scripts in a dotfiles-like repo of their own, so the later-harness search
-        # reads a history this test controls rather than the live checkout's.
+        # A dotfiles-like install the test's HOME links to, as every link in a real HOME names the
+        # install, so the later-harness search reads a history this test controls.
         self.dotfiles = self.root / "dotfiles"
         (self.dotfiles / "tools" / "claude").mkdir(parents=True)
         for script in (SCRIPT, SCRIPT.with_name("replay_gh.py")):
@@ -1395,6 +1393,17 @@ class EndToEnd(unittest.TestCase):
         git(self.dotfiles, "config", "user.name", "Test")
         git(self.dotfiles, "add", ".")
         git(self.dotfiles, "commit", "-q", "-m", "scripts", date=began - timedelta(days=30))
+        # The scripts run from another checkout, as a proof run from a worktree does, so a check
+        # that reads the running checkout instead of the install shows up.
+        self.scripts = self.root / "worktree"
+        (self.scripts / "tools" / "claude").mkdir(parents=True)
+        for script in (SCRIPT, SCRIPT.with_name("replay_gh.py")):
+            (self.scripts / "tools" / "claude" / script.name).write_text(script.read_text())
+        git(self.scripts, "init", "-q", "-b", "main")
+        git(self.scripts, "config", "user.email", "test@example.com")
+        git(self.scripts, "config", "user.name", "Test")
+        git(self.scripts, "add", ".")
+        git(self.scripts, "commit", "-q", "-m", "worktree", date=began - timedelta(days=1))
         (self.root / "issue.json").write_text(json.dumps(issue))
         self.state = self.root / "state"
         self.env = {
@@ -1407,14 +1416,15 @@ class EndToEnd(unittest.TestCase):
             "HOME": str(self.root / "home"),
             "GH_TOKEN": "test-token-not-real",
         }
-        (self.root / "home").mkdir()
+        (self.root / "home" / "Repos" / "ooloth").mkdir(parents=True)
+        (self.root / "home" / "Repos" / "ooloth" / "dotfiles").symlink_to(self.dotfiles)
 
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
     def plan(self) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            [sys.executable, str(self.dotfiles / "tools" / "claude" / "replay.py")]
+            [sys.executable, str(self.scripts / "tools" / "claude" / "replay.py")]
             + ["plan", "octo/widgets#7", "--run", "1"]
             + ["--source", str(self.source)],
             capture_output=True,
@@ -1544,6 +1554,34 @@ class EndToEnd(unittest.TestCase):
         assert "tools/agents/config/skills/x/SKILL.md" in result.stderr
         assert not (self.state / "replays" / "octo-widgets-7").exists()
 
+    def test_a_later_commit_to_a_folder_a_home_link_opens_is_refused_from_any_checkout(
+        self,
+    ) -> None:
+        config = self.dotfiles / "tools" / "git" / "config" / "config"
+        config.parent.mkdir(parents=True)
+        config.write_text("[user]\n")
+        (self.root / "home" / ".config" / "git").mkdir(parents=True)
+        (self.root / "home" / ".config" / "git" / "config").symlink_to(config)
+        git(self.dotfiles, "add", ".")
+        git(
+            self.dotfiles,
+            "commit",
+            "-q",
+            "-m",
+            "git: as octo/widgets#7 needed",
+            date=self.began + timedelta(hours=5),
+        )
+        result = self.plan()
+        assert result.returncode == 1, result.stderr
+        assert "tools/git/config/config" in result.stderr, result.stderr
+        assert not (self.state / "replays" / "octo-widgets-7").exists()
+
+    def test_the_recorded_harness_commit_is_the_installs(self) -> None:
+        assert self.plan().returncode == 0
+        meta = self.state / "replays" / "octo-widgets-7" / "run-1" / "meta.json"
+        recorded = json.loads(meta.read_text())["dotfiles_commit"]
+        assert recorded == git(self.dotfiles, "rev-parse", "HEAD"), recorded
+
     def test_a_later_harness_commit_naming_another_ticket_refuses_nothing(self) -> None:
         skill = self.dotfiles / "tools" / "agents" / "config" / "skills" / "x" / "SKILL.md"
         skill.parent.mkdir(parents=True)
@@ -1565,7 +1603,7 @@ class EndToEnd(unittest.TestCase):
     ) -> None:
         ready = self.root / "posted"
         self.env["FAKE_SLOW"] = str(ready)
-        script = self.dotfiles / "tools" / "claude" / "replay.py"
+        script = self.scripts / "tools" / "claude" / "replay.py"
         started = subprocess.Popen(
             [sys.executable, str(script), "plan", "octo/widgets#7", "--run", "1"]
             + ["--source", str(self.source)],
