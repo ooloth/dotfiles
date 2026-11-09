@@ -57,7 +57,6 @@ def history(
     edits: tuple = (),
     approach_at: datetime = T0,
     ref=OTHER_REF,
-    linked: tuple = (),
 ):
     return replay.TicketHistory(
         ref=ref,
@@ -66,14 +65,17 @@ def history(
         body_edits=edits,
         approach=replay.Comment(approach_at, "# Approach\n\nmine"),
         design=replay.Comment(approach_at + timedelta(hours=1), "# Design\n\nmine"),
-        linked_commits=linked,
     )
 
 
-def git(cwd: Path, *args: str, date: datetime | None = None) -> str:
+def git(
+    cwd: Path, *args: str, date: datetime | None = None, author_date: datetime | None = None
+) -> str:
     env = dict(os.environ)
     if date is not None:
         env["GIT_COMMITTER_DATE"] = env["GIT_AUTHOR_DATE"] = date.isoformat()
+    if author_date is not None:
+        env["GIT_AUTHOR_DATE"] = author_date.isoformat()
     result = subprocess.run(
         ["git", "-C", str(cwd), *args], check=True, capture_output=True, text=True, env=env
     )
@@ -139,15 +141,14 @@ class ParseHistory(unittest.TestCase):
         self.issue = self.payload["data"]["repository"]["issue"]
 
     def test_a_real_response_yields_its_approach_design_and_edits(self) -> None:
-        result = replay.parse_history(DOTFILES_REF, self.payload, ["abc123"])
+        result = replay.parse_history(DOTFILES_REF, self.payload)
         assert isinstance(result, replay.TicketHistory)
         assert result.approach.body.startswith("# Approach")
         assert result.design.body.startswith("# Design\n")
         assert len(result.body_edits) == 2
-        assert result.linked_commits == ("abc123",)
 
     def test_no_comment_reaches_the_snapshot(self) -> None:
-        result = replay.parse_history(DOTFILES_REF, self.payload, [])
+        result = replay.parse_history(DOTFILES_REF, self.payload)
         assert isinstance(result, replay.TicketHistory)
         snapshot = replay.cut_at_planning(result)
         assert isinstance(snapshot, replay.PlanningSnapshot)
@@ -158,51 +159,26 @@ class ParseHistory(unittest.TestCase):
         self.issue["comments"]["nodes"] = [
             c for c in self.issue["comments"]["nodes"] if not c["body"].startswith("# Approach")
         ]
-        assert replay.parse_history(DOTFILES_REF, self.payload, []) == replay.NoApproachComment()
+        assert replay.parse_history(DOTFILES_REF, self.payload) == replay.NoApproachComment()
 
     def test_a_ticket_without_a_design_comment_is_refused(self) -> None:
         self.issue["comments"]["nodes"] = [
             c for c in self.issue["comments"]["nodes"] if not c["body"].startswith("# Design")
         ]
-        assert replay.parse_history(DOTFILES_REF, self.payload, []) == replay.NoDesignComment()
+        assert replay.parse_history(DOTFILES_REF, self.payload) == replay.NoDesignComment()
 
     def test_a_response_with_more_comments_than_one_page_is_refused(self) -> None:
         self.issue["comments"]["pageInfo"]["hasNextPage"] = True
-        result = replay.parse_history(DOTFILES_REF, self.payload, [])
+        result = replay.parse_history(DOTFILES_REF, self.payload)
         assert isinstance(result, replay.GitHubUnreadable)
 
     def test_an_edit_without_a_timestamp_is_refused(self) -> None:
         self.issue["userContentEdits"]["nodes"][0]["editedAt"] = None
-        result = replay.parse_history(DOTFILES_REF, self.payload, [])
+        result = replay.parse_history(DOTFILES_REF, self.payload)
         assert isinstance(result, replay.GitHubUnreadable)
 
 
 # ── Tickets that can't be replayed fairly ──────────────────────────────────────────────────────
-
-
-class CheckHarness(unittest.TestCase):
-    def test_a_dotfiles_ticket_that_touched_the_harness_is_refused_naming_the_files(self) -> None:
-        files = {
-            "a1": ("features/x.py", "tools/claude/config/settings.json"),
-            "b2": ("tools/agents/config/skills/x/SKILL.md",),
-        }
-        result = replay.check_harness(DOTFILES_REF, ("a1", "b2"), files)
-        assert result == replay.TouchesHarness(
-            ("tools/agents/config/skills/x/SKILL.md", "tools/claude/config/settings.json")
-        )
-
-    def test_a_dotfiles_ticket_that_left_the_harness_alone_passes(self) -> None:
-        files = {"a1": ("tools/bash/utils.bash", "tools/claude/cc.bash")}
-        assert replay.check_harness(DOTFILES_REF, ("a1",), files) is None
-
-    def test_a_ticket_from_another_repo_is_not_checked_against_the_harness_paths(self) -> None:
-        files = {"a1": ("tools/claude/config/settings.json",)}
-        assert replay.check_harness(OTHER_REF, ("a1",), files) is None
-
-    def test_a_linked_commit_missing_locally_refuses_the_ticket(self) -> None:
-        files = {"a1": ("features/x.py",), "b2": None}
-        result = replay.check_harness(DOTFILES_REF, ("a1", "b2"), files)
-        assert result == replay.CommitMissing("b2")
 
 
 HUB_REF = replay.TicketRef("ooloth", "hub", 394)
@@ -214,6 +190,8 @@ def names(ref, number: int) -> list[str]:
         f"{ref.owner}/{ref.repo}#{number}",
         f"Fixes {ref.owner}/{ref.repo}#{number}.",
         f"(see https://github.com/{ref.owner}/{ref.repo}/issues/{number})",
+        f"{ref.repo}#{number}",
+        f"Replays on {ref.repo}#{number}, a milestone",
     ]
     if (ref.owner, ref.repo) == replay.HARNESS_REPO:
         forms += [f"#{number}", f"Fixes #{number}, partly"]
@@ -243,6 +221,12 @@ class TicketPattern(unittest.TestCase):
         assert not matches(replay.ticket_pattern(HUB_REF), "Fixes #394")
         dotfiles = replay.ticket_pattern(replay.TicketRef("ooloth", "dotfiles", 269))
         assert not matches(dotfiles, "ooloth/hub#269")
+
+    def test_the_short_form_counts_only_as_a_whole_repo_name(self) -> None:
+        pattern = replay.ticket_pattern(HUB_REF)
+        assert matches(pattern, "Fresh-agent replays on hub#394, a dotfiles milestone")
+        assert not matches(pattern, "xhub#394")
+        assert not matches(pattern, "other/hub#394")
 
 
 def make_harness_history(root: Path, planning: datetime) -> tuple[Path, dict[str, str]]:
@@ -285,10 +269,14 @@ class LaterHarnessCommits(unittest.TestCase):
     def test_only_later_harness_commits_that_name_the_ticket_are_found(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo, shas = make_harness_history(Path(tmp), T0)
-            found = replay.later_harness_commits(repo, replay.ticket_pattern(HUB_REF), T0)
+            found = replay.later_harness_commits(
+                repo, replay.ticket_pattern(HUB_REF), T0, replay.HARNESS_PATHS
+            )
             assert isinstance(found, tuple), found
             assert set(found) == {shas["named after"], shas["named by URL after"]}
-            refused = replay.check_later_harness(found, replay.files_changed(repo, found))
+            refused = replay.check_later_harness(
+                found, replay.files_changed(repo, found), replay.HARNESS_PATHS
+            )
             assert refused == replay.NamedByLaterHarnessCommits(
                 tuple(found),
                 ("tools/agents/config/skills/b/SKILL.md", "tools/claude/config/settings.json"),
@@ -297,15 +285,76 @@ class LaterHarnessCommits(unittest.TestCase):
     def test_a_ticket_no_later_harness_commit_names_passes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo, _ = make_harness_history(Path(tmp), T0)
-            found = replay.later_harness_commits(repo, replay.ticket_pattern(OTHER_REF), T0)
+            found = replay.later_harness_commits(
+                repo, replay.ticket_pattern(OTHER_REF), T0, replay.HARNESS_PATHS
+            )
             assert found == ()
-            assert replay.check_later_harness(found, {}) is None
+            assert replay.check_later_harness(found, {}, replay.HARNESS_PATHS) is None
 
     def test_an_unreadable_history_refuses_the_replay_with_gits_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            found = replay.later_harness_commits(Path(tmp), replay.ticket_pattern(HUB_REF), T0)
+            found = replay.later_harness_commits(
+                Path(tmp), replay.ticket_pattern(HUB_REF), T0, replay.HARNESS_PATHS
+            )
             assert isinstance(found, replay.HarnessHistoryUnreadable)
             assert "not a git repository" in found.stderr
+
+    def test_a_later_commit_to_a_live_checkout_folder_the_session_reads_is_found(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, _ = make_harness_history(Path(tmp), T0)
+            (repo / "tools" / "git" / "config").mkdir(parents=True)
+            (repo / "tools" / "git" / "config" / "config").write_text("[core]\n")
+            git(repo, "add", ".")
+            git(repo, "commit", "-q", "-m", "git: for hub#394", date=at(90))
+            sha = git(repo, "rev-parse", "HEAD")
+            watched = (*replay.HARNESS_PATHS, "tools/git/config/")
+            found = replay.later_harness_commits(repo, replay.ticket_pattern(HUB_REF), T0, watched)
+            assert isinstance(found, tuple), found
+            assert sha in found
+            refused = replay.check_later_harness(found, replay.files_changed(repo, found), watched)
+            assert refused is not None
+            assert "tools/git/config/config" in refused.files
+
+    def test_later_is_judged_by_committer_date_to_the_minute(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, _ = make_harness_history(Path(tmp), T0)
+            shas = {}
+            for name, committed, authored in (
+                ("just before", at(-1), at(5)),
+                ("just after", at(1), at(-120)),
+            ):
+                path = repo / "tools" / "agents" / "config" / f"{name}.md"
+                path.write_text(name)
+                git(repo, "add", ".")
+                git(
+                    repo,
+                    "commit",
+                    "-q",
+                    "-m",
+                    f"{name}: ooloth/hub#394",
+                    date=committed,
+                    author_date=authored,
+                )
+                shas[name] = git(repo, "rev-parse", "HEAD")
+            found = replay.later_harness_commits(
+                repo, replay.ticket_pattern(HUB_REF), T0, replay.HARNESS_PATHS
+            )
+            assert isinstance(found, tuple), found
+            assert shas["just after"] in found
+            assert shas["just before"] not in found
+
+    def test_live_checkout_folders_the_session_reads_are_watched(self) -> None:
+        dotfiles = Path("/repos/dotfiles")
+        readable = (
+            Path("/home/me/.local/bin"),
+            dotfiles / "tools" / "git" / "config",
+            dotfiles / "tools" / "codefresh" / "bin",
+        )
+        assert replay.watched_paths(dotfiles, readable) == (
+            *replay.HARNESS_PATHS,
+            "tools/git/config/",
+            "tools/codefresh/bin/",
+        )
 
     def test_the_refusal_names_each_commit_and_harness_file(self) -> None:
         text = replay.explain(
@@ -900,8 +949,6 @@ import json, os, sys
 args = sys.argv[1:]
 if args[:2] == ["api", "graphql"]:
     print(open(os.environ["FAKE_ISSUE"]).read())
-elif args[:1] == ["api"] and "timeline" in args[1]:
-    print("")
 else:
     print("fake gh: unexpected " + " ".join(args), file=sys.stderr)
     sys.exit(1)
@@ -982,7 +1029,19 @@ class EndToEnd(unittest.TestCase):
             if c["body"].startswith("# Approach")
         )
         began = datetime.fromisoformat(approach["createdAt"])
+        self.began = began
         self.source, _ = make_source(self.root, [began - timedelta(days=1), began + timedelta(1)])
+        # A copy of the scripts in a dotfiles-like repo of their own, so the later-harness search
+        # reads a history this test controls rather than the live checkout's.
+        self.dotfiles = self.root / "dotfiles"
+        (self.dotfiles / "tools" / "claude").mkdir(parents=True)
+        for script in (SCRIPT, SCRIPT.with_name("replay_gh.py")):
+            (self.dotfiles / "tools" / "claude" / script.name).write_text(script.read_text())
+        git(self.dotfiles, "init", "-q", "-b", "main")
+        git(self.dotfiles, "config", "user.email", "test@example.com")
+        git(self.dotfiles, "config", "user.name", "Test")
+        git(self.dotfiles, "add", ".")
+        git(self.dotfiles, "commit", "-q", "-m", "scripts", date=began - timedelta(days=30))
         (self.root / "issue.json").write_text(json.dumps(issue))
         self.state = self.root / "state"
         self.env = {
@@ -1002,7 +1061,8 @@ class EndToEnd(unittest.TestCase):
 
     def plan(self) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            [sys.executable, str(SCRIPT), "plan", "octo/widgets#7", "--run", "1"]
+            [sys.executable, str(self.dotfiles / "tools" / "claude" / "replay.py")]
+            + ["plan", "octo/widgets#7", "--run", "1"]
             + ["--source", str(self.source)],
             capture_output=True,
             text=True,
@@ -1060,6 +1120,42 @@ class EndToEnd(unittest.TestCase):
         assert "bash-write" in result.stderr, result.stderr
         assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists()
         assert not list((self.root / "home").glob(".replay-canary-*"))
+
+    def test_a_ticket_a_later_harness_commit_names_is_refused_before_any_folder(self) -> None:
+        skill = self.dotfiles / "tools" / "agents" / "config" / "skills" / "x" / "SKILL.md"
+        skill.parent.mkdir(parents=True)
+        skill.write_text("How widgets#7 shipped.")
+        git(self.dotfiles, "add", ".")
+        git(
+            self.dotfiles,
+            "commit",
+            "-q",
+            "-m",
+            "skills/x: as octo/widgets#7 shipped",
+            date=self.began + timedelta(hours=5),
+        )
+        sha = git(self.dotfiles, "rev-parse", "--short", "HEAD")
+        result = self.plan()
+        assert result.returncode == 1, result.stderr
+        assert sha in result.stderr, result.stderr
+        assert "tools/agents/config/skills/x/SKILL.md" in result.stderr
+        assert not (self.state / "replays" / "octo-widgets-7").exists()
+
+    def test_a_later_harness_commit_naming_another_ticket_refuses_nothing(self) -> None:
+        skill = self.dotfiles / "tools" / "agents" / "config" / "skills" / "x" / "SKILL.md"
+        skill.parent.mkdir(parents=True)
+        skill.write_text("Unrelated.")
+        git(self.dotfiles, "add", ".")
+        git(
+            self.dotfiles,
+            "commit",
+            "-q",
+            "-m",
+            "skills/x: for octo/widgets#70",
+            date=self.began + timedelta(hours=5),
+        )
+        result = self.plan()
+        assert result.returncode == 0, result.stderr
 
     def test_a_run_whose_folder_exists_is_refused_and_changes_nothing(self) -> None:
         assert self.plan().returncode == 0

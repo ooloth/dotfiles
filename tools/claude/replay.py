@@ -27,9 +27,11 @@ beside the replay folders, write in the home folder with the Write tool and with
 host off the registry list. The replay runs only if all four were tried and none took effect.
 
 Two things are as they are today, not as they were. One is the agent harness (global instructions,
-skills, standards). That is why a dotfiles ticket that changed it is refused, and so is any ticket
-a later harness commit names. The other is the hooks in the user's Claude Code settings, which run
-outside the sandbox and post nothing.
+skills, standards), along with any folder of the dotfiles checkout that the Bash allow-list opens.
+That is why a ticket is refused when a commit to one of those paths, made after its planning began,
+names it, whether as `owner/repo#n`, `repo#n`, its issue URL, or a bare `#n` for a dotfiles ticket.
+The other is the hooks in the user's Claude Code settings, which run outside the sandbox and post
+nothing.
 
 It writes one folder per replay under `${XDG_STATE_HOME:-~/.local/state}/replays/`, holding the
 replay's approach and design, my own from the ticket, the session's duration and tokens per model,
@@ -177,7 +179,6 @@ class TicketHistory:
     body_edits: tuple[BodyEdit, ...]
     approach: Comment
     design: Comment
-    linked_commits: tuple[Sha, ...]
 
 
 @dataclass(frozen=True)
@@ -206,11 +207,6 @@ class BodyUnknown:
 
 
 @dataclass(frozen=True)
-class TouchesHarness:
-    files: tuple[str, ...]
-
-
-@dataclass(frozen=True)
 class NamedByLaterHarnessCommits:
     commits: tuple[Sha, ...]
     files: tuple[str, ...]
@@ -219,11 +215,6 @@ class NamedByLaterHarnessCommits:
 @dataclass(frozen=True)
 class HarnessHistoryUnreadable:
     stderr: str
-
-
-@dataclass(frozen=True)
-class CommitMissing:
-    sha: Sha
 
 
 @dataclass(frozen=True)
@@ -240,10 +231,8 @@ NotReplayable = (
     NoApproachComment
     | NoDesignComment
     | BodyUnknown
-    | TouchesHarness
     | NamedByLaterHarnessCommits
     | HarnessHistoryUnreadable
-    | CommitMissing
     | BaseNotFound
     | GitHubUnreadable
 )
@@ -505,9 +494,7 @@ def parse_ticket_ref(text: str) -> TicketRef | None:
     return TicketRef(match[1], match[2], int(match[3]))
 
 
-def parse_history(
-    ref: TicketRef, payload: object, commit_ids: Sequence[str]
-) -> TicketHistory | NotReplayable:
+def parse_history(ref: TicketRef, payload: object) -> TicketHistory | NotReplayable:
     """Read GitHub's GraphQL response for the ticket, refusing one that can't be read in full."""
     try:
         issue = _IssueResponse.model_validate(payload).data.repository.issue
@@ -539,7 +526,6 @@ def parse_history(
         body_edits=tuple(edits),
         approach=Comment(approach.createdAt, approach.body),
         design=Comment(design.createdAt, design.body),
-        linked_commits=tuple(Sha(c) for c in commit_ids),
     )
 
 
@@ -558,22 +544,6 @@ def cut_at_planning(history: TicketHistory) -> PlanningSnapshot | BodyUnknown:
     return PlanningSnapshot(history.ref, history.title, body, began)
 
 
-def check_harness(
-    ref: TicketRef, linked: Sequence[Sha], files_of: Mapping[Sha, tuple[str, ...] | None]
-) -> TouchesHarness | CommitMissing | None:
-    """Refuse a dotfiles ticket whose commits changed the harness: every session loads today's
-    harness, which already holds those changes. Only commits the ticket's timeline links are checked."""
-    if (ref.owner, ref.repo) != HARNESS_REPO:
-        return None
-    touched: set[str] = set()
-    for sha in linked:
-        files = files_of.get(sha)
-        if files is None:
-            return CommitMissing(sha)
-        touched.update(f for f in files if f.startswith(HARNESS_PATHS))
-    return TouchesHarness(tuple(sorted(touched))) if touched else None
-
-
 # A POSIX extended regular expression, which `git log -E --grep` reads.
 TicketPattern = NewType("TicketPattern", str)
 
@@ -583,30 +553,41 @@ def _ere_literal(text: str) -> str:
 
 
 def ticket_pattern(ref: TicketRef) -> TicketPattern:
-    """What names `ref` in a commit message: `owner/repo#n` or its issue URL, and a bare `#n` too
-    for a dotfiles ticket, with the whole number, so `#39` and `#3940` don't name `#394`."""
+    """What names `ref` in a commit message: `owner/repo#n`, `repo#n` or its issue URL, and a bare
+    `#n` too for a dotfiles ticket, with the whole number, so `#39` and `#3940` don't name `#394`."""
     owner, repo = _ere_literal(ref.owner), _ere_literal(ref.repo)
     forms = [
         f"(^|[^A-Za-z0-9_.-]){owner}/{repo}#{ref.number}",
         f"github\\.com/{owner}/{repo}/issues/{ref.number}",
+        # The short form, as in "replays on hub#327", when no owner or longer name comes before it.
+        f"(^|[^A-Za-z0-9_./-]){repo}#{ref.number}",
     ]
     if (ref.owner, ref.repo) == HARNESS_REPO:
         forms.append(f"(^|[^A-Za-z0-9_./-])#{ref.number}")
     return TicketPattern(f"({'|'.join(forms)})([^0-9]|$)")
 
 
+def watched_paths(dotfiles: Path, readable: Sequence[Path]) -> tuple[str, ...]:
+    """The dotfiles paths a replay session reads as they are today: the harness, and each folder of
+    the live checkout that the Bash allow-list opens, such as the git config a link points into."""
+    live = [
+        f"{folder.relative_to(dotfiles)}/" for folder in readable if folder.is_relative_to(dotfiles)
+    ]
+    return (*HARNESS_PATHS, *live)
+
+
 def check_later_harness(
-    commits: Sequence[Sha], files_of: Mapping[Sha, tuple[str, ...] | None]
+    commits: Sequence[Sha], files_of: Mapping[Sha, tuple[str, ...] | None], watched: Sequence[str]
 ) -> NamedByLaterHarnessCommits | None:
-    """Refuse a ticket that a harness commit made after its planning began names: every session
-    loads today's harness, which may say how the ticket was solved."""
+    """Refuse a ticket that a commit to a watched path, made after its planning began, names: every
+    session reads those paths as they are today, which may say how the ticket was solved."""
     if not commits:
         return None
     touched: set[str] = set()
     for sha in commits:
         files = files_of.get(sha)
         assert files is not None, f"{sha} came from the same checkout, so its files are readable"
-        touched.update(f for f in files if f.startswith(HARNESS_PATHS))
+        touched.update(f for f in files if f.startswith(tuple(watched)))
     return NamedByLaterHarnessCommits(tuple(commits), tuple(sorted(touched)))
 
 
@@ -618,18 +599,13 @@ def explain(reason: NotReplayable) -> str:
             return "The ticket has no comment starting with `# Design`, so there is nothing to grade against."
         case BodyUnknown(began):
             return f"No version of the ticket body is dated at or before planning began ({began.isoformat()})."
-        case TouchesHarness(files):
-            listed = "\n".join(f"  {f}" for f in files)
-            return (
-                "The ticket's commits changed the agent harness, which every session loads as it "
-                f"is today, so a replay would see the answer:\n{listed}"
-            )
         case NamedByLaterHarnessCommits(commits, files):
             listed = "\n".join(f"  {c}" for c in commits)
             changed = "\n".join(f"  {f}" for f in files)
             return (
-                "Harness commits made after the ticket's planning began name it, and every session "
-                "loads today's harness, so a replay could read how it was solved:\n"
+                "Commits made after the ticket's planning began name it and change the harness or "
+                "another folder every session reads as it is today, so a replay could read how it "
+                "was solved:\n"
                 f"{listed}\nThey changed:\n{changed}"
             )
         case HarnessHistoryUnreadable(stderr):
@@ -637,8 +613,6 @@ def explain(reason: NotReplayable) -> str:
                 "git couldn't read the dotfiles history, so whether a later harness commit names "
                 f"the ticket is unknown:\n  {stderr}"
             )
-        case CommitMissing(sha):
-            return f"Commit {sha}, which the ticket links, is not in the local checkout. Pull it and try again."
         case BaseNotFound(before):
             return f"The default branch has no commit at or before {before.isoformat()}."
         case GitHubUnreadable(problems):
@@ -673,10 +647,10 @@ def files_changed(source: Path, shas: Sequence[Sha]) -> dict[Sha, tuple[str, ...
 
 
 def later_harness_commits(
-    dotfiles: Path, pattern: TicketPattern, since: datetime
+    dotfiles: Path, pattern: TicketPattern, since: datetime, watched: Sequence[str]
 ) -> tuple[Sha, ...] | HarnessHistoryUnreadable:
-    """The commits in the dotfiles checkout, committed after `since`, that change the harness and
-    whose message matches `pattern`, newest first."""
+    """The commits in the dotfiles checkout, committed after `since`, that change a watched path
+    and whose message matches `pattern`, newest first."""
     assert since.tzinfo is not None, (
         "planning_began has no time zone, so --since would read it as local"
     )
@@ -689,7 +663,7 @@ def later_harness_commits(
         f"--since={since.isoformat()}",
         "--format=%H",
         "--",
-        *HARNESS_PATHS,
+        *watched,
     )
     if listed.returncode != 0:
         return HarnessHistoryUnreadable(listed.stderr.strip())
@@ -1270,7 +1244,7 @@ def run_gh(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def fetch_ticket(ref: TicketRef) -> tuple[object, list[str]] | GitHubUnreadable:
+def fetch_ticket(ref: TicketRef) -> object | GitHubUnreadable:
     issue = run_gh(
         "api",
         "graphql",
@@ -1285,20 +1259,10 @@ def fetch_ticket(ref: TicketRef) -> tuple[object, list[str]] | GitHubUnreadable:
     )
     if issue.returncode != 0:
         return GitHubUnreadable((f"the issue query failed: {issue.stderr.strip()}",))
-    timeline = run_gh(
-        "api",
-        f"repos/{ref.name_with_owner}/issues/{ref.number}/timeline",
-        "--paginate",
-        "--jq",
-        ".[] | select(.commit_id != null) | .commit_id",
-    )
-    if timeline.returncode != 0:
-        return GitHubUnreadable((f"the timeline query failed: {timeline.stderr.strip()}",))
     try:
-        payload = json.loads(issue.stdout)
+        return json.loads(issue.stdout)
     except json.JSONDecodeError as error:
         return GitHubUnreadable((f"the issue query returned no JSON: {error}",))
-    return payload, list(dict.fromkeys(timeline.stdout.split()))
 
 
 def readable_dirs(home: Path) -> tuple[Path, ...]:
@@ -1460,29 +1424,25 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
     fetched = fetch_ticket(ref)
     if isinstance(fetched, GitHubUnreadable):
         raise SystemExit(f"replay: {explain(fetched)}")
-    payload, commit_ids = fetched
-    history = parse_history(ref, payload, commit_ids)
+    history = parse_history(ref, fetched)
     if not isinstance(history, TicketHistory):
         raise SystemExit(f"replay: {explain(history)}")
     snapshot = cut_at_planning(history)
     if isinstance(snapshot, BodyUnknown):
         raise SystemExit(f"replay: {explain(snapshot)}")
-    refused = check_harness(
-        ref, history.linked_commits, files_changed(source, history.linked_commits)
-    )
-    if refused is not None:
-        raise SystemExit(f"replay: {explain(refused)}")
-    later = later_harness_commits(DOTFILES, ticket_pattern(ref), snapshot.planning_began)
+    home = Path.home()
+    toolchains = readable_dirs(home)
+    watched = watched_paths(DOTFILES, toolchains)
+    later = later_harness_commits(DOTFILES, ticket_pattern(ref), snapshot.planning_began, watched)
     if isinstance(later, HarnessHistoryUnreadable):
         raise SystemExit(f"replay: {explain(later)}")
-    named = check_later_harness(later, files_changed(DOTFILES, later))
+    named = check_later_harness(later, files_changed(DOTFILES, later), watched)
     if named is not None:
         raise SystemExit(f"replay: {explain(named)}")
     base = resolve_base(source, branch, snapshot.planning_began)
     if isinstance(base, BaseNotFound):
         raise SystemExit(f"replay: {explain(base)}")
 
-    home = Path.home()
     short_tmp = Path("/private/tmp") if Path("/private/tmp").is_dir() else Path("/tmp")
     work = Path(tempfile.mkdtemp(prefix="rp-", dir=short_tmp)).resolve()
     paths = SandboxPaths(
@@ -1494,7 +1454,7 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
         scratch=work / "scratch",
         claude_tmp=work / "t",
         harness=harness_dirs(home),
-        toolchains=readable_dirs(home),
+        toolchains=toolchains,
     )
     try:
         paths.capture.mkdir()
