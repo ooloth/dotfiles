@@ -83,6 +83,9 @@ observations about typical practice.
   the agent harness and the dotfiles folders the Bash allow-list opens through links, such as
   `tools/git/config/`, so a ticket is refused when a dotfiles commit made after its planning began
   names it and changes one of those paths. A change there that names no ticket still reaches the
-  replay. Before each replay, a canary session shows the sandbox refuses a forbidden read, two
-  forbidden writes and a forbidden connection. `tools/claude/tests/test_replay.py` checks each
+  replay. The session loads the clone's own project instructions and skills, with every hook turned
+  off, and a ticket whose clone's committed project settings hold a key other than `attribution`,
+  `hooks` or `enableAllProjectMcpServers` is refused. Before each replay, a canary session shows the
+  sandbox refuses a forbidden read, two forbidden writes and a forbidden connection, that no hook
+  runs, and that the clone's `CLAUDE.md` loads. `tools/claude/tests/test_replay.py` checks each
   part.
