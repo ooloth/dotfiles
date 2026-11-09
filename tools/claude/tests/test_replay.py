@@ -736,6 +736,28 @@ class Audit(unittest.TestCase):
         assert isinstance(audit, replay.AuditIncomplete)
         assert "no-such-session" in audit.reason
 
+    def test_a_refusal_inside_a_command_that_exited_0_appears(self) -> None:
+        audit = replay.read_audit("session-2", FIXTURES / "transcripts", (), [])
+        assert isinstance(audit, replay.Audit)
+        command = "sed -n 1,5p docs/notes.md; ls /home/me/Repos/example/private 2>&1 | head -3"
+        assert audit.refusals == (
+            replay.FileRefused(
+                command, "ls: /home/me/Repos/example/private: Operation not permitted"
+            ),
+            replay.NetworkRefused("docs.example.com"),
+        )
+
+    def test_a_subagents_report_quoting_a_refusal_is_not_counted_again(self) -> None:
+        # The subagent's own transcript holds the refusal, so its report repeating it adds none.
+        audit = replay.read_audit("session-2", FIXTURES / "transcripts", (), [])
+        assert isinstance(audit, replay.Audit)
+        assert not [r for r in audit.refusals if "Subagent" in str(r)]
+
+    def test_a_gh_log_line_that_is_not_an_object_is_counted_as_unreadable(self) -> None:
+        audit = replay.read_audit("session-2", FIXTURES / "transcripts", (), ["1", "[]"])
+        assert isinstance(audit, replay.Audit)
+        assert audit.unreadable_lines == 2
+
     def test_a_gh_call_the_stand_in_refused_is_listed_once(self) -> None:
         assert isinstance(self.result, replay.SessionResult)
         log = ['{"args": ["issue", "list", "-R", "ooloth/dotfiles"], "served": false}']

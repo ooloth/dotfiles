@@ -989,6 +989,10 @@ def classify(text: str, tool: str, tool_input: Mapping[str, Any]) -> list[Refusa
     return found
 
 
+# The tools whose result is a subagent's report rather than what a command printed.
+SUBAGENT_TOOLS = ("Agent", "Task")
+
+
 def read_transcript(path: Path) -> tuple[list[tuple[str, list[Refusal]]], int]:
     """Each refused tool call in one transcript, by its tool-use ID, and how many lines didn't parse."""
     uses: dict[str, tuple[str, Mapping[str, Any]]] = {}
@@ -1010,9 +1014,13 @@ def read_transcript(path: Path) -> tuple[list[tuple[str, list[Refusal]]], int]:
                 continue
             if block.get("type") == "tool_use":
                 uses[str(block.get("id"))] = (str(block.get("name")), block.get("input") or {})
-            elif block.get("type") == "tool_result" and block.get("is_error"):
+            elif block.get("type") == "tool_result":
+                # Every result, not only errors: a refusal inside a pipeline or a `;` chain exits
+                # 0. A subagent's report is skipped, since its own transcript holds the refusal.
                 use_id = str(block.get("tool_use_id"))
                 tool, tool_input = uses.get(use_id, ("", {}))
+                if tool in SUBAGENT_TOOLS:
+                    continue
                 found = classify(result_text(block.get("content")), tool, tool_input)
                 if found:
                     refused.append((use_id, found))
@@ -1045,6 +1053,9 @@ def read_audit(
         try:
             call = json.loads(line)
         except json.JSONDecodeError:
+            unreadable += 1
+            continue
+        if not isinstance(call, dict):
             unreadable += 1
             continue
         if not call.get("served"):
