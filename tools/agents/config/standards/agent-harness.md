@@ -89,6 +89,17 @@ shows the chain gets as far as doing its work. When that run is impossible, the
 change is reported as unproven on the real system, with what to run and what to
 look for.
 
+**The sandbox and permission rules around an unattended session are shown to hold by what the
+running session is refused, not by the settings written for it.**
+A check of the settings file a script wrote shows only what that file says. The session runs with
+every settings source merged: the user's broader allow rules combine with the file's narrow ones,
+a project's committed hooks run outside the sandbox, and a file that fails validation can be
+dropped without an error. Each of these leaves the written file looking correct while the rule it
+states is not in force. So before the session starts, a short probe with the same settings, folder
+and flags tries one action of each kind the rules forbid, such as a read, a write and a
+connection, and the session runs only when the probe's own transcript shows each one attempted and
+refused. A probe that skipped an action shows nothing about it, so it stops the session too.
+
 **A file a later session resumes from holds what that session would otherwise get wrong or redo,
 and nothing else.**
 A session that resumes from a file trusts what it finds there and skips what it does not, so each
