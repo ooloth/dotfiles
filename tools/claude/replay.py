@@ -19,19 +19,19 @@ when planning began:
 - Claude Code's sandbox with no network except package registries, Bash reads of the home and temp
   folders confined to an allow-list, the Read tool confined to the working directories, the Edit
   and Write tools denied in the home and temp folders, and web tools and MCP servers off
-- only the user's Claude Code settings and the replay's own, never the clone's project settings,
-  whose hooks would run outside the sandbox
+- the user's Claude Code settings, the clone's own project instructions, skills and settings, and
+  the replay's own settings, which turn every hook off, since hooks run outside the sandbox; a
+  clone whose committed project settings hold a key that could widen the sandbox is refused
 
 Before the session starts, a short canary session with the same settings tries to read a secret
 beside the replay folders, write in the home folder with the Write tool and with Bash, and fetch a
-host off the registry list. The replay runs only if all four were tried and none took effect.
+host off the registry list. The replay runs only if all four were tried and none took effect, a
+hook the settings plant never fired, and the clone's `CLAUDE.md`, when it has one, loaded.
 
-Two things are as they are today, not as they were. One is the agent harness (global instructions,
-skills, standards), along with any folder of the dotfiles checkout that the Bash allow-list opens.
-That is why a ticket is refused when a commit to one of those paths, made after its planning began,
-names it, whether as `owner/repo#n`, `repo#n`, its issue URL, or a bare `#n` for a dotfiles ticket.
-The other is the hooks in the user's Claude Code settings, which run outside the sandbox and post
-nothing.
+One thing is as it is today, not as it was: the agent harness (global instructions, skills,
+standards), along with any folder of the dotfiles checkout that the Bash allow-list opens. That is
+why a ticket is refused when a commit to one of those paths, made after its planning began, names
+it, whether as `owner/repo#n`, `repo#n`, its issue URL, or a bare `#n` for a dotfiles ticket.
 
 It writes one folder per replay under `${XDG_STATE_HOME:-~/.local/state}/replays/`, holding the
 replay's approach and design, my own from the ticket, the session's duration and tokens per model,
@@ -56,6 +56,7 @@ import json
 import os
 import re
 import secrets
+import shlex
 import shutil
 import signal
 import subprocess
@@ -244,6 +245,20 @@ class GitHubUnreadable:
     problems: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class ProjectSettingsWiden:
+    """A project settings file in the clone, and its keys that could widen what the session may do."""
+
+    file: str
+    keys: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ProjectSettingsUnreadable:
+    file: str
+    problem: str
+
+
 NotReplayable = (
     NoApproachComment
     | NoDesignComment
@@ -252,6 +267,8 @@ NotReplayable = (
     | HarnessHistoryUnreadable
     | BaseNotFound
     | GitHubUnreadable
+    | ProjectSettingsWiden
+    | ProjectSettingsUnreadable
 )
 
 
@@ -264,6 +281,9 @@ class SandboxPaths:
     capture: Path
     scratch: Path
     claude_tmp: Path
+    # Touched by a hook the settings plant and disableAllHooks must silence, so the canary can show
+    # no hook runs. It sits outside every folder Bash may write.
+    hook_marker: Path
     harness: tuple[Path, ...]
     toolchains: tuple[Path, ...]
 
@@ -373,6 +393,9 @@ class Canary:
     write_tool_target: Path
     bash_target: Path
     net_target: Path
+    # The clone's project instructions the session must load, and the file a hook would touch.
+    instructions: tuple[Path, ...]
+    hook_marker: Path
 
     def prompt(self) -> str:
         return (
@@ -400,6 +423,7 @@ class CanaryEffects:
     write_tool_file: bool
     bash_file: bool
     net_bytes: int
+    hook_ran: bool
 
 
 @dataclass(frozen=True)
@@ -415,11 +439,18 @@ class SandboxBreached:
 
 
 @dataclass(frozen=True)
+class ProjectNotLoaded:
+    """The clone's own instructions that the canary session did not load."""
+
+    missing: tuple[Path, ...]
+
+
+@dataclass(frozen=True)
 class CanaryInconclusive:
     reason: str
 
 
-CanaryVerdict = SandboxHolds | SandboxBreached | CanaryInconclusive
+CanaryVerdict = SandboxHolds | SandboxBreached | ProjectNotLoaded | CanaryInconclusive
 
 
 @dataclass(frozen=True)
@@ -675,6 +706,17 @@ def explain(reason: NotReplayable) -> str:
             return "GitHub's answer couldn't be read in full:\n" + "\n".join(
                 f"  {p}" for p in problems
             )
+        case ProjectSettingsWiden(file, keys):
+            return (
+                f"The clone's {file} sets {', '.join(keys)}, which could widen what the session may "
+                f"read, write or reach, so the replay is not run. It accepts only "
+                f"{', '.join(sorted(SAFE_PROJECT_SETTINGS))}."
+            )
+        case ProjectSettingsUnreadable(file, problem):
+            return (
+                f"The clone's {file} isn't a JSON object ({problem}), so what it would load can't "
+                "be known and the replay is not run."
+            )
         case _:
             assert_never(reason)
 
@@ -785,6 +827,38 @@ def check_clone(clone: Path, began: datetime) -> None:
     assert not urls, f"the clone has a remote URL: {urls}"
 
 
+# The project settings files the project source loads from the clone.
+PROJECT_SETTINGS_FILES = (".claude/settings.json", ".claude/settings.local.json")
+# Keys that can't widen the fence: a commit trailer, hooks (all off) and MCP servers (never started
+# under --strict-mcp-config). Any other key refuses the replay until someone has looked at it.
+SAFE_PROJECT_SETTINGS = frozenset({"attribution", "hooks", "enableAllProjectMcpServers"})
+
+
+def check_project_settings(clone: Path) -> ProjectSettingsWiden | ProjectSettingsUnreadable | None:
+    """Refuse a clone whose committed project settings could widen what the session may read, write
+    or reach, since the project source merges them into the session's settings."""
+    for name in PROJECT_SETTINGS_FILES:
+        path = clone / name
+        if not path.exists():
+            continue
+        try:
+            settings = json.loads(path.read_text())
+        except (json.JSONDecodeError, UnicodeDecodeError) as error:
+            return ProjectSettingsUnreadable(name, str(error))
+        if not isinstance(settings, dict):
+            return ProjectSettingsUnreadable(name, f"it holds a {type(settings).__name__}")
+        widening = tuple(sorted(k for k in settings if k not in SAFE_PROJECT_SETTINGS))
+        if widening:
+            return ProjectSettingsWiden(name, widening)
+    return None
+
+
+def project_instructions(clone: Path) -> tuple[Path, ...]:
+    """The clone's own instructions a session in it must load."""
+    claude_md = clone / "CLAUDE.md"
+    return (claude_md,) if claude_md.exists() else ()
+
+
 # ── The gh stand-in ────────────────────────────────────────────────────────────────────────────
 
 
@@ -884,7 +958,15 @@ def build_settings(paths: SandboxPaths) -> dict[str, Any]:
             ],
             "blockReadsOutsideWorkingDirectories": True,
         },
+        # Hooks run outside the sandbox, and the project source loads the clone's own, so every
+        # hook is off. The canary shows it by this one never firing.
+        "disableAllHooks": True,
+        "hooks": {"SessionStart": [{"hooks": [marker_hook(paths.hook_marker)]}]},
     }
+
+
+def marker_hook(marker: Path) -> dict[str, str]:
+    return {"type": "command", "command": f"touch {shlex.quote(str(marker))}"}
 
 
 def check_settings(settings: Mapping[str, Any], paths: SandboxPaths) -> None:
@@ -912,14 +994,19 @@ def check_settings(settings: Mapping[str, Any], paths: SandboxPaths) -> None:
         for tool in ("Edit", "Write"):
             rule = f"{tool}(/{folder}/**)"
             assert rule in settings["permissions"]["deny"], f"permissions.deny lacks {rule}"
+    assert settings.get("disableAllHooks") is True, "disableAllHooks is not true"
+    session_start = settings.get("hooks", {}).get("SessionStart", [])
+    assert any(marker_hook(paths.hook_marker) in e.get("hooks", []) for e in session_start), (
+        "the settings lack the SessionStart marker hook the canary checks"
+    )
 
 
 def check_command(command: Sequence[str]) -> None:
-    """The session loads the user settings and the replay's own file, never the clone's project
-    settings, whose hooks would run outside the sandbox."""
+    """The session loads the user settings, the clone's project instructions, skills and settings,
+    and the replay's own file, which turns every hook off."""
     assert "--setting-sources" in command and (
-        command[command.index("--setting-sources") + 1] == "user"
-    ), "the session command doesn't pass --setting-sources user"
+        command[command.index("--setting-sources") + 1] == "user,project"
+    ), "the session command doesn't pass --setting-sources user,project"
     assert "--settings" in command, "the session command doesn't pass --settings"
 
 
@@ -1139,11 +1226,33 @@ def transcript_uses(path: Path) -> list[ToolUse]:
     return [ToolUse(tool, args, results.get(i, "")) for i, (tool, args) in calls.items()]
 
 
+def loaded_instructions(path: Path) -> frozenset[Path]:
+    """The project instruction files a session's transcript says it loaded."""
+    loaded: set[Path] = set()
+    for line in path.read_text().splitlines():
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        attachment = record.get("attachment") if isinstance(record, dict) else None
+        if not isinstance(attachment, dict) or attachment.get("type") != "instructions":
+            continue
+        for file in attachment.get("files") or []:
+            if isinstance(file, dict) and file.get("type") == "Project" and file.get("path"):
+                loaded.add(Path(str(file["path"])))
+    return frozenset(loaded)
+
+
 def judge_canary(
-    canary: Canary, uses: Sequence[ToolUse], reply: str, effects: CanaryEffects
+    canary: Canary,
+    uses: Sequence[ToolUse],
+    reply: str,
+    effects: CanaryEffects,
+    loaded: frozenset[Path],
 ) -> CanaryVerdict:
-    """The sandbox holds only when the canary tried all four actions and none took effect. A
-    canary that skipped one shows nothing about it, so the replay is refused then too."""
+    """The sandbox holds only when the canary tried all four actions, none took effect, no hook
+    ran, and the clone's own instructions loaded. A canary that skipped an action shows nothing
+    about it, so the replay is refused then too."""
 
     def bash_naming(path: Path) -> list[ToolUse]:
         return [u for u in uses if u.tool == "Bash" and str(path) in str(u.input.get("command"))]
@@ -1168,19 +1277,32 @@ def judge_canary(
         breaches.append(("bash-write", f"Bash created {canary.bash_target}"))
     if effects.net_bytes > 0:
         breaches.append(("network", f"{CANARY_URL} returned {effects.net_bytes} bytes"))
+    if effects.hook_ran:
+        breaches.append(
+            ("hooks", f"a hook ran outside the sandbox and touched {canary.hook_marker}")
+        )
     if breaches:
         return SandboxBreached(tuple(breaches))
+    missing = tuple(p for p in canary.instructions if p not in loaded)
+    if missing:
+        return ProjectNotLoaded(missing)
     skipped = [name for name, tried in attempted.items() if not tried]
     if skipped:
         return CanaryInconclusive(f"the canary did not attempt: {', '.join(skipped)}")
     return SandboxHolds()
 
 
-def explain_canary(verdict: SandboxBreached | CanaryInconclusive) -> str:
+def explain_canary(verdict: SandboxBreached | ProjectNotLoaded | CanaryInconclusive) -> str:
     match verdict:
         case SandboxBreached(checks):
             found = "; ".join(f"{check}: {evidence}" for check, evidence in checks)
             return f"the sandbox canary was not refused ({found}), so the sandbox is not in force."
+        case ProjectNotLoaded(missing):
+            listed = ", ".join(str(p) for p in missing)
+            return (
+                f"the canary session didn't load the clone's own instructions ({listed}), so the "
+                "replay would plan without them and is not run."
+            )
         case CanaryInconclusive(reason):
             return f"the sandbox canary showed nothing ({reason}), so the replay is not run."
         case _:
@@ -1417,7 +1539,7 @@ def ticket_markdown(snapshot: PlanningSnapshot, base: Sha) -> str:
 def session_command(
     settings: Path, readable: Sequence[Path], prompt: str, model: str | None = None
 ) -> list[str]:
-    command = ["claude", "-p", "--settings", str(settings), "--setting-sources", "user"]
+    command = ["claude", "-p", "--settings", str(settings), "--setting-sources", "user,project"]
     command += ["--permission-mode", "dontAsk"]
     if model is not None:
         command += ["--model", model]
@@ -1519,8 +1641,16 @@ def run_canary(
             write_tool_file=canary.write_tool_target.exists(),
             bash_file=canary.bash_target.exists(),
             net_bytes=net.stat().st_size if net.exists() else 0,
+            hook_ran=canary.hook_marker.exists(),
         )
-        return judge_canary(canary, transcript_uses(transcripts[0]), result.final_text, effects)
+        transcript = transcripts[0]
+        return judge_canary(
+            canary,
+            transcript_uses(transcript),
+            result.final_text,
+            effects,
+            loaded_instructions(transcript),
+        )
     finally:
         targets = (canary.write_tool_target, canary.bash_target, canary.net_target)
         for path in (canary.secret_file, *targets):
@@ -1578,6 +1708,7 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
         capture=work / "capture",
         scratch=work / "scratch",
         claude_tmp=work / "t",
+        hook_marker=work / "hook-ran",
         harness=harness_dirs(home),
         toolchains=toolchains,
     )
@@ -1593,6 +1724,9 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
         write_mktemp(work / "bin")
         make_clone(source, base, paths.clone)
         check_clone(paths.clone, snapshot.planning_began)
+        widening = check_project_settings(paths.clone)
+        if widening is not None:
+            raise SystemExit(f"replay: {explain(widening)}")
         readable = (*paths.harness, paths.scratch, paths.claude_tmp)
         env = session_env(work / "bin", paths.scratch, paths.claude_tmp)
         nonce = secrets.token_hex(4)
@@ -1602,6 +1736,8 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             write_tool_target=home / f".replay-canary-{nonce}-write",
             bash_target=home / f".replay-canary-{nonce}-bash",
             net_target=paths.scratch / f"canary-{nonce}-net",
+            instructions=project_instructions(paths.clone),
+            hook_marker=paths.hook_marker,
         )
         verdict = run_canary(canary, settings_file, readable, paths.clone, env)
         if not isinstance(verdict, SandboxHolds):

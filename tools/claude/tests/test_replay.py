@@ -29,7 +29,8 @@ import sys
 import tempfile
 import time
 import unittest
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -90,13 +91,19 @@ def git(
     return result.stdout.strip()
 
 
-def make_source(root: Path, dates: list[datetime]) -> tuple[Path, list[str]]:
-    """A repo on `main` with one commit per date, returning it and the commit hashes."""
+def make_source(
+    root: Path, dates: list[datetime], first_files: Mapping[str, str] | None = None
+) -> tuple[Path, list[str]]:
+    """A repo on `main` with one commit per date, returning it and the commit hashes. The first
+    commit also holds `first_files`, by path."""
     source = root / "source"
-    source.mkdir()
+    source.mkdir(parents=True)
     git(source, "init", "-q", "-b", "main")
     git(source, "config", "user.email", "test@example.com")
     git(source, "config", "user.name", "Test")
+    for name, text in (first_files or {}).items():
+        (source / name).parent.mkdir(parents=True, exist_ok=True)
+        (source / name).write_text(text)
     shas = []
     for i, date in enumerate(dates):
         (source / f"file{i}.txt").write_text(f"{i}\n")
@@ -683,6 +690,7 @@ def fake_paths() -> object:
         capture=Path("/private/tmp/rp-test/capture"),
         scratch=Path("/private/tmp/rp-test/scratch"),
         claude_tmp=Path("/private/tmp/rp-test/t"),
+        hook_marker=Path("/private/tmp/rp-test/hook-ran"),
         harness=(Path("/repos/dotfiles/tools/agents/config"),),
         toolchains=(Path("/home/me/.local/bin"),),
     )
@@ -724,6 +732,8 @@ class Settings(unittest.TestCase):
             ),
             "Edit(//home/me/**)": drop_deny("Edit(//home/me/**)"),
             "Write(//home/me/**)": drop_deny("Write(//home/me/**)"),
+            "disableAllHooks": set_key("disableAllHooks", value=False),
+            "marker hook": lambda s: s.pop("hooks"),
         }
         for name, corrupt in breaks.items():
             settings = replay.build_settings(fake_paths())
@@ -734,21 +744,67 @@ class Settings(unittest.TestCase):
 
 
 class SessionCommand(unittest.TestCase):
-    def test_the_session_loads_only_the_user_settings_and_the_replays_own(self) -> None:
+    def test_the_session_loads_the_user_and_project_sources_and_the_replays_own(self) -> None:
         command = replay.session_command(Path("/w/settings.json"), (), "/plan-unattended x")
         assert command[command.index("--settings") + 1] == "/w/settings.json"
-        assert command[command.index("--setting-sources") + 1] == "user"
+        assert command[command.index("--setting-sources") + 1] == "user,project"
         assert "--strict-mcp-config" in command
         assert command[command.index("--disallowedTools") + 1 :][:2] == ["WebFetch", "WebSearch"]
         assert command[-1] == "/plan-unattended x"
         replay.check_command(command)
 
-    def test_a_command_that_loads_project_settings_fails_the_check(self) -> None:
+    def test_a_command_without_the_project_source_fails_the_check(self) -> None:
         command = replay.session_command(Path("/w/settings.json"), (), "x")
-        command[command.index("--setting-sources") + 1] = "user,project"
+        command[command.index("--setting-sources") + 1] = "user"
         with self.assertRaises(AssertionError) as raised:
             replay.check_command(command)
         assert "--setting-sources" in str(raised.exception)
+
+
+class ProjectSettings(unittest.TestCase):
+    def check(self, files: Mapping[str, str]) -> object:
+        with tempfile.TemporaryDirectory() as tmp:
+            clone = Path(tmp)
+            for name, text in files.items():
+                (clone / name).parent.mkdir(parents=True, exist_ok=True)
+                (clone / name).write_text(text)
+            return replay.check_project_settings(clone)
+
+    def test_a_clone_with_no_project_settings_passes(self) -> None:
+        assert self.check({}) is None
+
+    def test_project_settings_holding_only_safe_keys_pass(self) -> None:
+        files = {
+            ".claude/settings.json": json.dumps({"attribution": {"commit": ""}, "hooks": {}}),
+            ".claude/settings.local.json": json.dumps({"enableAllProjectMcpServers": True}),
+        }
+        assert self.check(files) is None
+
+    def test_a_key_that_could_widen_the_fence_refuses_naming_the_file_and_key(self) -> None:
+        for name in (".claude/settings.json", ".claude/settings.local.json"):
+            for key in ("permissions", "sandbox"):
+                found = self.check({name: json.dumps({"attribution": {}, key: {}})})
+                assert found == replay.ProjectSettingsWiden(name, (key,)), (name, key, found)
+                assert name in replay.explain(found) and key in replay.explain(found)
+
+    def test_a_settings_file_that_isnt_a_json_object_refuses_naming_the_file(self) -> None:
+        for text in ("{not json", "[1, 2]"):
+            found = self.check({".claude/settings.json": text})
+            assert isinstance(found, replay.ProjectSettingsUnreadable), (text, found)
+            assert ".claude/settings.json" in replay.explain(found)
+
+
+class LoadedInstructions(unittest.TestCase):
+    def test_the_project_instructions_a_real_transcript_loaded_are_read(self) -> None:
+        loaded = replay.loaded_instructions(FIXTURES / "instructions.jsonl")
+        assert loaded == frozenset({Path("/private/tmp/rp-test/clone/CLAUDE.md")})
+
+    def test_a_clone_requires_its_claude_md_only_when_it_has_one(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            clone = Path(tmp)
+            assert replay.project_instructions(clone) == ()
+            (clone / "CLAUDE.md").write_text("# Project\n")
+            assert replay.project_instructions(clone) == (clone / "CLAUDE.md",)
 
 
 # ── The sandbox canary ─────────────────────────────────────────────────────────────────────────
@@ -761,7 +817,13 @@ def fake_canary() -> Any:
         write_tool_target=Path("/home/me/.replay-canary-n1-write"),
         bash_target=Path("/home/me/.replay-canary-n1-bash"),
         net_target=Path("/private/tmp/rp-test/scratch/canary-n1-net"),
+        instructions=(CLONE_CLAUDE_MD,),
+        hook_marker=Path("/private/tmp/rp-test/hook-ran"),
     )
+
+
+CLONE_CLAUDE_MD = Path("/private/tmp/rp-test/clone/CLAUDE.md")
+LOADED = frozenset({CLONE_CLAUDE_MD})
 
 
 def attempted_uses(canary: Any) -> list[Any]:
@@ -778,13 +840,15 @@ def attempted_uses(canary: Any) -> list[Any]:
     ]
 
 
-NO_EFFECTS = replay.CanaryEffects(write_tool_file=False, bash_file=False, net_bytes=0)
+NO_EFFECTS = replay.CanaryEffects(
+    write_tool_file=False, bash_file=False, net_bytes=0, hook_ran=False
+)
 
 
 class JudgeCanary(unittest.TestCase):
     def test_a_canary_whose_four_actions_all_had_no_effect_shows_the_sandbox_holds(self) -> None:
         canary = fake_canary()
-        verdict = replay.judge_canary(canary, attempted_uses(canary), "DONE", NO_EFFECTS)
+        verdict = replay.judge_canary(canary, attempted_uses(canary), "DONE", NO_EFFECTS, LOADED)
         assert verdict == replay.SandboxHolds()
 
     def test_each_action_that_took_effect_is_named_in_the_breach(self) -> None:
@@ -796,19 +860,20 @@ class JudgeCanary(unittest.TestCase):
         ]
         cases = {
             "read": (leaked, NO_EFFECTS),
-            "write-tool": (uses, replay.CanaryEffects(True, False, 0)),
-            "bash-write": (uses, replay.CanaryEffects(False, True, 0)),
-            "network": (uses, replay.CanaryEffects(False, False, 1256)),
+            "write-tool": (uses, replay.CanaryEffects(True, False, 0, False)),
+            "bash-write": (uses, replay.CanaryEffects(False, True, 0, False)),
+            "network": (uses, replay.CanaryEffects(False, False, 1256, False)),
+            "hooks": (uses, replay.CanaryEffects(False, False, 0, True)),
         }
         for check, (case_uses, effects) in cases.items():
-            verdict = replay.judge_canary(canary, case_uses, "DONE", effects)
+            verdict = replay.judge_canary(canary, case_uses, "DONE", effects, LOADED)
             assert isinstance(verdict, replay.SandboxBreached), check
             assert [c for c, _ in verdict.checks] == [check], (check, verdict)
 
     def test_a_secret_in_the_final_reply_is_a_breach_of_the_read(self) -> None:
         canary = fake_canary()
         verdict = replay.judge_canary(
-            canary, attempted_uses(canary), f"it said {canary.secret}", NO_EFFECTS
+            canary, attempted_uses(canary), f"it said {canary.secret}", NO_EFFECTS, LOADED
         )
         assert isinstance(verdict, replay.SandboxBreached)
         assert [c for c, _ in verdict.checks] == ["read"]
@@ -816,9 +881,24 @@ class JudgeCanary(unittest.TestCase):
     def test_a_canary_that_skipped_an_action_is_inconclusive(self) -> None:
         canary = fake_canary()
         uses = attempted_uses(canary)[:3]
-        verdict = replay.judge_canary(canary, uses, "DONE", NO_EFFECTS)
+        verdict = replay.judge_canary(canary, uses, "DONE", NO_EFFECTS, LOADED)
         assert isinstance(verdict, replay.CanaryInconclusive)
         assert "network" in verdict.reason
+
+    def test_a_canary_whose_transcript_lacks_the_clones_claude_md_shows_it_missing(self) -> None:
+        canary = fake_canary()
+        verdict = replay.judge_canary(
+            canary, attempted_uses(canary), "DONE", NO_EFFECTS, frozenset()
+        )
+        assert verdict == replay.ProjectNotLoaded((CLONE_CLAUDE_MD,))
+        assert str(CLONE_CLAUDE_MD) in replay.explain_canary(verdict)
+
+    def test_a_clone_with_no_claude_md_requires_none_loaded(self) -> None:
+        canary = replace(fake_canary(), instructions=())
+        verdict = replay.judge_canary(
+            canary, attempted_uses(canary), "DONE", NO_EFFECTS, frozenset()
+        )
+        assert verdict == replay.SandboxHolds()
 
 
 class SessionEnv(unittest.TestCase):
@@ -1137,12 +1217,23 @@ if "sandbox check" in prompt:
     write = re.search(r"create (\\S+)", prompt)[1]
     touch = re.search(r"touch (\\S+)", prompt)[1]
     net = re.search(r"-o (\\S+)", prompt)[1]
+    json.dump(sys.argv[1:], open(os.path.join(projects, "canary-argv.json"), "w"))
     if os.environ.get("FAKE_CANARY") == "bash-write":
         open(touch, "w").write("")
+    if os.environ.get("FAKE_CANARY") == "hook-ran":
+        # Stands for Claude Code running hooks despite disableAllHooks.
+        settings = json.load(open(sys.argv[sys.argv.index("--settings") + 1]))
+        for entry in settings["hooks"]["SessionStart"]:
+            for hook in entry["hooks"]:
+                subprocess.run(hook["command"], shell=True, check=True)
     uses = [("Bash", {"command": "cat " + secret}), ("Write", {"file_path": write}),
             ("Bash", {"command": "touch " + touch}),
             ("Bash", {"command": "curl -sS -m 10 -o " + net + " https://example.com"})]
     with open(os.path.join(projects, "fake-canary.jsonl"), "w") as f:
+        claude_md = os.path.join(os.getcwd(), "CLAUDE.md")
+        if os.path.exists(claude_md) and os.environ.get("FAKE_CANARY") != "no-instructions":
+            f.write(json.dumps({"type": "attachment", "attachment": {"type": "instructions",
+                    "files": [{"path": claude_md, "type": "Project", "content": ""}]}}) + "\\n")
         for i, (tool, args) in enumerate(uses):
             f.write(json.dumps({"type": "assistant", "message": {"content": [
                 {"type": "tool_use", "id": "u%d" % i, "name": tool, "input": args}]}}) + "\\n")
@@ -1201,7 +1292,11 @@ class EndToEnd(unittest.TestCase):
         )
         began = datetime.fromisoformat(approach["createdAt"])
         self.began = began
-        self.source, _ = make_source(self.root, [began - timedelta(days=1), began + timedelta(1)])
+        self.source, _ = make_source(
+            self.root,
+            [began - timedelta(days=1), began + timedelta(1)],
+            {"CLAUDE.md": "# Widgets\n"},
+        )
         # A copy of the scripts in a dotfiles-like repo of their own, so the later-harness search
         # reads a history this test controls rather than the live checkout's.
         self.dotfiles = self.root / "dotfiles"
@@ -1271,14 +1366,16 @@ class EndToEnd(unittest.TestCase):
         assert meta["canary"] == {"verdict": "SandboxHolds"}
         assert meta["session_command"][1:] == seen["argv_seen"]
 
-    def test_the_session_is_launched_sandboxed_without_project_settings_or_a_github_token(
+    def test_the_session_is_launched_sandboxed_with_the_project_source_and_no_github_token(
         self,
     ) -> None:
         assert self.plan().returncode == 0
         folder = self.state / "replays" / "octo-widgets-7" / "run-1"
         argv = json.loads((folder / "result.json").read_text())["argv_seen"]
+        canary_argv = json.loads((self.root / "claude/projects/x/canary-argv.json").read_text())
         settings = Path(argv[argv.index("--settings") + 1])
-        assert argv[argv.index("--setting-sources") + 1] == "user"
+        for launched in (argv, canary_argv):
+            assert launched[launched.index("--setting-sources") + 1] == "user,project"
         assert "--strict-mcp-config" in argv
         assert argv[argv.index("--disallowedTools") + 1 :][:2] == ["WebFetch", "WebSearch"]
         assert settings.name == "settings.json"
@@ -1291,6 +1388,34 @@ class EndToEnd(unittest.TestCase):
         assert "bash-write" in result.stderr, result.stderr
         assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists()
         assert not list((self.root / "home").glob(".replay-canary-*"))
+
+    def test_a_canary_whose_hook_ran_refuses_the_replay_naming_hooks(self) -> None:
+        self.env["FAKE_CANARY"] = "hook-ran"
+        result = self.plan()
+        assert result.returncode != 0
+        assert "hooks" in result.stderr, result.stderr
+        assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists()
+
+    def test_a_canary_that_didnt_load_the_clones_claude_md_refuses_the_replay(self) -> None:
+        self.env["FAKE_CANARY"] = "no-instructions"
+        result = self.plan()
+        assert result.returncode != 0
+        assert "CLAUDE.md" in result.stderr, result.stderr
+        assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists()
+
+    def test_a_clone_whose_project_settings_could_widen_the_fence_is_refused(self) -> None:
+        self.source, _ = make_source(
+            self.root / "widening",
+            [self.began - timedelta(days=1)],
+            {".claude/settings.json": json.dumps({"sandbox": {}})},
+        )
+        result = self.plan()
+        assert result.returncode != 0
+        assert ".claude/settings.json" in result.stderr and "sandbox" in result.stderr, (
+            result.stderr
+        )
+        assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists()
+        assert not (self.root / "claude/projects/x/canary-argv.json").exists()
 
     def test_a_ticket_a_later_harness_commit_names_is_refused_before_any_folder(self) -> None:
         skill = self.dotfiles / "tools" / "agents" / "config" / "skills" / "x" / "SKILL.md"

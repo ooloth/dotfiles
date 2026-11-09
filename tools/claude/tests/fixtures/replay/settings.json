@@ -59,5 +59,18 @@
       "Write(//tmp-root/**)"
     ],
     "blockReadsOutsideWorkingDirectories": true
+  },
+  "disableAllHooks": true,
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "touch /private/tmp/rp-test/hook-ran"
+          }
+        ]
+      }
+    ]
   }
 }
