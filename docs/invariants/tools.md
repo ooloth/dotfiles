@@ -76,3 +76,11 @@ observations about typical practice.
   `utils.bash` on the Mac the tests run on. Every Brewfile evaluates on each machine, on its own
   and combined. Every Brewfile that asks `air?`, `mini?` or `work?` loads the helper. No Brewfile
   reads `networksetup`, `scutil`, `hostname` or `ENV`.
+- A planning replay (`tools/claude/replay.py`) sees its ticket only as it stood when planning
+  began. Its clone holds only commits made before then, its `gh` stand-in serves the body as it
+  stood then plus the comments the replay itself posts, and its sandbox reads none of the user's
+  other checkouts or session transcripts. The one thing it sees as it is today is the agent
+  harness, so a ticket is refused when its own commits, or a dotfiles commit made after its
+  planning began that names it, changed `tools/claude/config/` or `tools/agents/config/`. A
+  harness change that names no ticket still reaches the replay. `tools/claude/tests/test_replay.py`
+  checks each part.
