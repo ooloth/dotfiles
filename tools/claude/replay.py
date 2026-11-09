@@ -73,7 +73,8 @@ from pydantic import BaseModel, ValidationError
 Sha = NewType("Sha", str)
 
 DOTFILES = Path(__file__).resolve().parents[2]
-# The `gh` the session finds on its PATH. `write_stand_in` copies it beside the ticket it serves.
+# The source of the `gh` stand-in. `write_stand_in` copies it into the session's `bin/gh`, beside
+# the ticket it serves.
 STAND_IN = Path(__file__).resolve().with_name("replay_gh.py")
 HARNESS_REPO = ("ooloth", "dotfiles")
 HARNESS_PATHS = ("tools/claude/config/", "tools/agents/config/")
@@ -198,7 +199,8 @@ class TicketHistory:
 
 @dataclass(frozen=True)
 class PlanningSnapshot:
-    """What the replay may see: the ticket as it stood when planning began, with no comments."""
+    """The ticket as it stood when planning began, with no comments. The stand-in serves this
+    plus the comments the replay itself posts."""
 
     ref: TicketRef
     title: str
@@ -664,7 +666,7 @@ def explain(reason: NotReplayable) -> str:
             )
         case HarnessHistoryUnreadable(stderr):
             return (
-                "git couldn't read the dotfiles history, so whether a later harness commit names "
+                "git couldn't read the dotfiles history, so whether a later commit to a watched path names "
                 f"the ticket is unknown:\n  {stderr}"
             )
         case BaseNotFound(before):
@@ -681,22 +683,37 @@ def explain(reason: NotReplayable) -> str:
 
 
 def git(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    # Reads here run alongside other sessions' git work in the dotfiles checkout, so they never
+    # refresh the index and take `index.lock`, which would fail a commit made at that moment.
     return subprocess.run(
         ["git", "-C", str(repo), *args],
         capture_output=True,
         text=True,
         check=False,
         timeout=CALL_TIMEOUT_SECONDS,
+        env={**os.environ, "GIT_OPTIONAL_LOCKS": "0"},
     )
 
 
 def files_changed(source: Path, shas: Sequence[Sha]) -> dict[Sha, tuple[str, ...] | None]:
     found: dict[Sha, tuple[str, ...] | None] = {}
     for sha in shas:
+        # -z prints each path as it is: without it git quotes non-ASCII paths, which then don't
+        # match the watched paths, and splitting on whitespace breaks a path with a space.
         shown = git(
-            source, "diff-tree", "-r", "-m", "--first-parent", "--no-commit-id", "--name-only", sha
+            source,
+            "diff-tree",
+            "-r",
+            "-m",
+            "--first-parent",
+            "--no-commit-id",
+            "--name-only",
+            "-z",
+            sha,
         )
-        found[sha] = tuple(shown.stdout.split()) if shown.returncode == 0 else None
+        found[sha] = (
+            tuple(f for f in shown.stdout.split("\0") if f) if shown.returncode == 0 else None
+        )
     return found
 
 
@@ -1006,7 +1023,7 @@ def result_text(content: object) -> str:
     return ""
 
 
-def classify(text: str, tool: str, tool_input: Mapping[str, Any]) -> list[Refusal]:
+def classify(text: str, tool_input: Mapping[str, Any]) -> list[Refusal]:
     command = str(tool_input.get("command", json.dumps(dict(tool_input))))
     found: list[Refusal] = []
     for host in dict.fromkeys(re.findall(r"deny network-outbound ([^\s:]+)", text)):
@@ -1056,7 +1073,7 @@ def read_transcript(path: Path) -> tuple[list[tuple[str, list[Refusal]]], int]:
                 tool, tool_input = uses.get(use_id, ("", {}))
                 if tool in SUBAGENT_TOOLS:
                     continue
-                found = classify(result_text(block.get("content")), tool, tool_input)
+                found = classify(result_text(block.get("content")), tool_input)
                 if found:
                     refused.append((use_id, found))
     return refused, unreadable
@@ -1374,9 +1391,10 @@ def harness_dirs(home: Path) -> tuple[Path, ...]:
     return tuple(dirs)
 
 
-def harness_version() -> dict[str, object]:
+def harness_version(watched: Sequence[str]) -> dict[str, object]:
     commit = git(DOTFILES, "rev-parse", "HEAD").stdout.strip()
-    dirty = git(DOTFILES, "status", "--porcelain", "--", *HARNESS_PATHS).stdout.strip()
+    # Dirty means uncommitted edits in any path the session reads as it is today.
+    dirty = git(DOTFILES, "status", "--porcelain", "--", *watched).stdout.strip()
     try:
         version = subprocess.run(
             ["claude", "--version"], capture_output=True, text=True, check=False, timeout=60
@@ -1389,8 +1407,9 @@ def harness_version() -> dict[str, object]:
 def ticket_markdown(snapshot: PlanningSnapshot, base: Sha) -> str:
     return (
         f"# {snapshot.title}\n\n"
-        f"What the replay was served for {snapshot.ref}: the body as it stood when planning began "
-        f"({snapshot.planning_began.isoformat()}), with no comments, on a clone at `{base}`.\n\n"
+        f"What the replay was served for {snapshot.ref}: the title and body as they stood when "
+        f"planning began ({snapshot.planning_began.isoformat()}), with no comments but the ones "
+        f"the replay posted, on a clone at `{base}`.\n\n"
         f"---\n\n{snapshot.body}\n"
     )
 
@@ -1604,7 +1623,7 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             "started_at": datetime.now(UTC).isoformat(),
             "canary": {"verdict": type(verdict).__name__},
             "session_command": command,
-            **harness_version(),
+            **harness_version(watched),
         }
         write(folder / "meta.json", json.dumps(meta, indent=2))
 

@@ -3,13 +3,15 @@
 # requires-python = ">=3.11"
 # dependencies = ["hypothesis", "pydantic>=2,<3"]
 # ///
-"""Tests for tools/claude/replay.py, which replays unattended planning on a finished ticket.
+"""Tests for tools/claude/replay.py, which replays unattended planning on an already-planned ticket.
 
 Run with: uv run tools/claude/tests/test_replay.py
 
 Most tests load the script in-process and call its pure steps directly. The GitHub boundary is
 read from a real GraphQL response for ooloth/dotfiles#198, and the transcript and session-result
-boundaries from a real sandboxed Claude Code session, trimmed to the lines the audit reads. The
+boundaries from a real sandboxed Claude Code session, trimmed to the lines the audit reads.
+`session-2.jsonl` is written by hand, with made-up paths, after real lines whose refusal sits in a
+command that exited 0. The
 `gh` stand-in and the clone are separate processes and real git, so their tests run them. The
 end-to-end test runs `replay plan` as a subprocess with fake `gh` and `claude` commands on PATH, so
 no test reaches GitHub or a real Claude Code session.
@@ -31,6 +33,7 @@ from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from unittest import mock
 
 from hypothesis import given
 from hypothesis import strategies as st
@@ -382,6 +385,37 @@ class LaterHarnessCommits(unittest.TestCase):
             assert isinstance(found, tuple), found
             assert shas["just after"] in found
             assert shas["just before"] not in found
+
+    def test_a_harness_file_with_a_non_ascii_name_is_named_in_the_refusal(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, _ = make_harness_history(Path(tmp), T0)
+            path = repo / "tools" / "agents" / "config" / "skills" / "café" / "SKILL.md"
+            path.parent.mkdir(parents=True)
+            path.write_text("x")
+            git(repo, "add", ".")
+            git(repo, "commit", "-q", "-m", "café: ooloth/hub#394", date=at(90))
+            sha = git(repo, "rev-parse", "HEAD")
+            refused = replay.check_later_harness(
+                (sha,), replay.files_changed(repo, (sha,)), replay.HARNESS_PATHS
+            )
+            assert refused is not None
+            assert refused.files == ("tools/agents/config/skills/café/SKILL.md",)
+
+    def test_git_reads_never_take_the_index_lock(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, _ = make_harness_history(Path(tmp), T0)
+            shown = replay.git(repo, "-c", "alias.showenv=!env", "showenv")
+            assert "GIT_OPTIONAL_LOCKS=0" in shown.stdout.splitlines()
+
+    def test_an_uncommitted_edit_in_any_watched_path_marks_the_harness_dirty(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, _ = make_harness_history(Path(tmp), T0)
+            watched = (*replay.HARNESS_PATHS, "tools/git/config/")
+            with mock.patch.object(replay, "DOTFILES", repo):
+                assert replay.harness_version(watched)["harness_dirty"] is False
+                (repo / "tools" / "git" / "config").mkdir(parents=True)
+                (repo / "tools" / "git" / "config" / "config").write_text("[core]\n")
+                assert replay.harness_version(watched)["harness_dirty"] is True
 
     def test_live_checkout_folders_the_session_reads_are_watched(self) -> None:
         dotfiles = Path("/repos/dotfiles")
@@ -997,12 +1031,12 @@ class Grades(unittest.TestCase):
     ) -> None:
         grades = [
             (Path("a/run-1"), replay.Graded(None, None, replay.Verdict.REJECT)),
-            (Path("a/run-2"), replay.Unfinished("the session was Interrupted")),
+            (Path("a/run-2"), replay.Unfinished("the session ended as Interrupted")),
         ]
         summary = replay.summarize(grades)
         assert "2 replays: 1 graded, 0 excluded, 1 unfinished, 0 ungraded, 0 unreadable" in summary
         assert "escalation: 0 approve-as-is, 0 approve-with-edits, 1 reject" in summary
-        assert "Unfinished:\n  a/run-2: the session was Interrupted" in summary
+        assert "Unfinished:\n  a/run-2: the session ended as Interrupted" in summary
 
 
 FILLED = "approach: approve-with-edits\ndesign: reject\nescalation:\nexcluded:\n"
