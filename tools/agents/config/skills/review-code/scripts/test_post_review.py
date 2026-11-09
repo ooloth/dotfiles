@@ -247,6 +247,64 @@ def test_dry_run_says_nothing_about_bodies_that_already_read_well(h: Harness, bo
     assert result.stderr == ""
 
 
+APPROVAL_NOTE = "an approval leaves every finding to the author"
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        # What PR 341's approval said before it was softened.
+        "Two need fixing before you merge: the re-check and the flaky test.",
+        "The flaky test must be fixed.",
+        "This one is required.",
+        "The re-check is a blocker.",
+        "I'd strongly consider fixing the re-check.",
+        "I recommend locking the row.",
+        "Worth doing before merging.",
+    ],
+    ids=["need-fixing", "must", "required", "blocker", "preference", "recommend", "timing"],
+)
+def test_dry_run_notes_an_approval_body_that_asks_for_something(h: Harness, body: str) -> None:
+    rev = review(event="APPROVE", body=body, comments=[])
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO, "--dry-run")
+    assert result.returncode == 0, result.stderr
+    assert "note: body " in result.stderr
+    assert APPROVAL_NOTE in result.stderr
+    assert json.loads(result.stdout)["body"] == body
+
+
+def test_dry_run_notes_an_approval_comment_that_says_must(h: Harness) -> None:
+    rev = review(event="APPROVE", body="", comments=[comment(body="This must be locked.", line=81)])
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO, "--dry-run")
+    assert result.returncode == 0, result.stderr
+    assert f"comments[0] {PATH_}:81" in result.stderr
+    assert APPROVAL_NOTE in result.stderr
+
+
+@pytest.mark.parametrize(
+    "rev",
+    [
+        # An inline comment may say what the reviewer would pick.
+        review(event="APPROVE", body="", comments=[comment(body="I'd go with the lock here.")]),
+        # The consequences callout, and "non-blocking", ask for nothing.
+        review(
+            event="APPROVE",
+            body="Two have bigger consequences than the others: one non-blocking race.",
+            comments=[],
+        ),
+        # Outside an approval, asking for a fix is the point.
+        review(event="REQUEST_CHANGES", body="The flaky test must be fixed.", comments=[]),
+    ],
+    ids=["preference-in-comment", "consequences-callout", "request-changes"],
+)
+def test_dry_run_says_nothing_about_reviews_that_ask_only_where_they_may(
+    h: Harness, rev: dict[str, Any]
+) -> None:
+    result = h.run("7", str(h.write_review(rev)), "--repo", REPO, "--dry-run")
+    assert result.returncode == 0, result.stderr
+    assert result.stderr == ""
+
+
 def test_posting_prints_no_note(h: Harness) -> None:
     rev = review(body=UNBROKEN, comments=[comment(body=UNBROKEN)])
     result = h.run("7", str(h.write_review(rev)), "--repo", REPO)

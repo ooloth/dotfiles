@@ -853,6 +853,10 @@ come back clean.]
 - **Request Changes** — one or more `must` items
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
 
+When the user chooses Approve while findings are labelled `must`, the posted review calls
+none of them required. Each one either meets the bar for the consequences callout in Step 5
+or appears as an ordinary finding.
+
 ## Step 5: Post review (PR scope only)
 
 After presenting findings, if this is a PR and its author is the account `gh api user -q .login`
@@ -862,8 +866,8 @@ stop and wait for a reply (skip the rest of this skill's instructions).
 Otherwise, if a bot opened the PR (`author.is_bot`, such as Dependabot or Renovate), nobody will
 act on posted findings: a bot cannot read a review or push a fix. A bot's PR never gets Request
 Changes or inline comments, and `post_review.py` refuses both. Its body gives the verdict without
-a credit sentence, carries each finding's evidence itself, and leaves out the triage and must-fix
-sentences, which address an author.
+a credit sentence, carries each finding's evidence itself, and leaves out the triage and
+consequences sentences, which address an author.
 
 - **When the user can push to the repo** (`viewerPermission` is `ADMIN`, `MAINTAIN` or `WRITE`)
   and there are findings, ask which to fix on the PR's branch. The answer naming the fixes also
@@ -968,11 +972,17 @@ On any answer other than "skip":
     fix here vs file as a ticket vs ignore for now." Under Request Changes there is no triage
     sentence. The body asks for the `must` findings directly, and says in a clause that the
     others are optional.
-  - **A must-fix inside an Approve:** the user approves so the author, often in another time zone,
-    can address the findings and merge without waiting a day for a re-review. When one finding
-    really must be fixed before merging, name it and say why in a sentence, so it isn't missed
-    among the optional ones. Leave this out when nothing must be fixed first, and never pick a set
-    number of callouts.
+  - **Consequences to know about, inside an Approve:** an approval leaves every finding to
+    the author, so this part asks for nothing. It points out the findings whose harm would
+    be easy to miss: data that ends up wrong without anyone noticing, a security exposure,
+    or a test that fails intermittently. Include it only when at least one finding is like
+    that, and only when other findings could bury it. A review whose findings are all
+    ordinary has no callout, however many findings it has, and the most severe of them is
+    not promoted into one. Open with "Two have bigger consequences than the others:" (or
+    "One has…"), then give each finding as its consequence in plain terms. It carries no
+    preference ("I'd", "strongly consider", "recommend") and no timing ("before you
+    merge"), because either one tells the author what to do after the triage sentence has
+    just said they decide.
   - **Other code affected by these changes:** one bold `**Other code affected by these changes**`
     line, then one bullet per finding outside the diff: a bold lead naming the problem, then where
     it is, what to do and where you saw it, in one or two sentences. The bullets carry no labels;
