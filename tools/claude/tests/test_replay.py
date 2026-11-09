@@ -21,9 +21,11 @@ import importlib.util
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
@@ -986,9 +988,90 @@ class Grades(unittest.TestCase):
             (Path("a/run-2"), replay.Excluded("it read the shipped answer")),
         ]
         summary = replay.summarize(grades)
-        assert "2 replays: 1 graded, 1 excluded, 0 ungraded, 0 unreadable" in summary
+        assert "2 replays: 1 graded, 1 excluded, 0 unfinished, 0 ungraded, 0 unreadable" in summary
         assert "escalation: 0 approve-as-is, 0 approve-with-edits, 1 reject" in summary
         assert "a/run-2: it read the shipped answer" in summary
+
+    def test_an_unfinished_replay_is_named_with_its_reason_and_left_out_of_the_counts(
+        self,
+    ) -> None:
+        grades = [
+            (Path("a/run-1"), replay.Graded(None, None, replay.Verdict.REJECT)),
+            (Path("a/run-2"), replay.Unfinished("the session was Interrupted")),
+        ]
+        summary = replay.summarize(grades)
+        assert "2 replays: 1 graded, 0 excluded, 1 unfinished, 0 ungraded, 0 unreadable" in summary
+        assert "escalation: 0 approve-as-is, 0 approve-with-edits, 1 reject" in summary
+        assert "Unfinished:\n  a/run-2: the session was Interrupted" in summary
+
+
+FILLED = "approach: approve-with-edits\ndesign: reject\nescalation:\nexcluded:\n"
+
+
+def meta(**fields: object) -> str:
+    return json.dumps({"ticket": "octo/widgets#7", "run": 1, **fields})
+
+
+class GradeOfRun(unittest.TestCase):
+    def test_a_finished_run_is_graded_from_its_grade_file(self) -> None:
+        text = meta(finished_at="2026-11-08T00:00:00+00:00", outcome="Planned")
+        grade = replay.grade_of_run(text, FILLED)
+        assert isinstance(grade, replay.Graded)
+
+    def test_a_run_with_no_finish_time_is_unfinished_whatever_its_grade(self) -> None:
+        assert replay.grade_of_run(meta(), FILLED) == replay.Unfinished("the run never finished")
+
+    def test_a_failed_or_interrupted_session_is_unfinished_naming_the_outcome(self) -> None:
+        for outcome in ("SessionFailed", "Interrupted"):
+            text = meta(finished_at="2026-11-08T00:00:00+00:00", outcome=outcome)
+            grade = replay.grade_of_run(text, FILLED)
+            assert isinstance(grade, replay.Unfinished), outcome
+            assert outcome in grade.reason
+
+    def test_a_missing_or_unreadable_meta_file_is_unfinished(self) -> None:
+        for text in (None, "not json", "[]"):
+            grade = replay.grade_of_run(text, FILLED)
+            assert isinstance(grade, replay.Unfinished), text
+            assert "meta.json" in grade.reason
+
+    def test_a_finished_run_without_a_grade_file_is_unreadable(self) -> None:
+        text = meta(finished_at="2026-11-08T00:00:00+00:00", outcome="Escalated")
+        assert replay.grade_of_run(text, None) == replay.GradeUnreadable("grade.md is missing")
+
+
+class GradesCommand(unittest.TestCase):
+    def test_each_kind_of_run_is_listed_in_its_own_place(self) -> None:
+        finished = meta(finished_at="2026-11-08T00:00:00+00:00", outcome="Planned")
+        runs = {
+            "graded": (finished, FILLED),
+            "ungraded": (finished, replay.grade_template(OTHER_REF, 1)),
+            "excluded": (finished, FILLED.replace("excluded:", "excluded: read the answer")),
+            "unfinished": (meta(), replay.grade_template(OTHER_REF, 1)),
+            "no-grade": (finished, None),
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, (meta_text, grade_text) in runs.items():
+                run = Path(tmp) / "replays" / name / "run-1"
+                run.mkdir(parents=True)
+                (run / "meta.json").write_text(meta_text)
+                if grade_text is not None:
+                    (run / "grade.md").write_text(grade_text)
+            done = subprocess.run(
+                [sys.executable, str(SCRIPT), "grades"],
+                capture_output=True,
+                text=True,
+                env={**os.environ, "XDG_STATE_HOME": tmp},
+                check=False,
+            )
+        assert done.returncode == 0, done.stderr
+        out = done.stdout
+        assert out.startswith(
+            "5 replays: 1 graded, 1 excluded, 1 unfinished, 1 ungraded, 1 unreadable"
+        )
+        assert "Excluded:\n  excluded/run-1: read the answer" in out
+        assert "Unfinished:\n  unfinished/run-1: the run never finished" in out
+        assert "Ungraded:\n  ungraded/run-1" in out
+        assert "Unreadable:\n  no-grade/run-1: grade.md is missing" in out
 
 
 # ── End to end, with fake gh and claude ────────────────────────────────────────────────────────
@@ -1042,6 +1125,11 @@ assert view.returncode == 0, view.stderr
 for body in ["# Approach\\n\\nreplayed", "# Design\\n\\nreplayed"]:
     subprocess.run(["gh", "issue", "comment", "7", "-R", "octo/widgets", "--body", body],
                    check=True, capture_output=True)
+    if os.environ.get("FAKE_SLOW"):
+        # Stands for a long session: says it has posted its approach, then waits to be stopped.
+        open(os.environ["FAKE_SLOW"], "w").write("posted")
+        import time
+        time.sleep(60)
 open(os.path.join(projects, "fake-session.jsonl"), "w").write("")
 result["session_id"] = "fake-session"
 result["result"] = "PLANNED: https://github.com/octo/widgets/issues/7#x; implementation not started"
@@ -1205,6 +1293,33 @@ class EndToEnd(unittest.TestCase):
         )
         result = self.plan()
         assert result.returncode == 0, result.stderr
+
+    def test_an_interrupted_session_keeps_its_comments_and_is_recorded_as_interrupted(
+        self,
+    ) -> None:
+        ready = self.root / "posted"
+        self.env["FAKE_SLOW"] = str(ready)
+        script = self.dotfiles / "tools" / "claude" / "replay.py"
+        started = subprocess.Popen(
+            [sys.executable, str(script), "plan", "octo/widgets#7", "--run", "1"]
+            + ["--source", str(self.source)],
+            env=self.env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        for _ in range(300):
+            if ready.exists():
+                break
+            time.sleep(0.05)
+        assert ready.exists(), started.communicate(timeout=10)
+        started.send_signal(signal.SIGTERM)
+        _, stderr = started.communicate(timeout=30)
+        assert started.returncode != 0
+        assert "interrupted" in stderr.lower(), stderr
+        folder = self.state / "replays" / "octo-widgets-7" / "run-1"
+        assert (folder / "approach.md").read_text() == "# Approach\n\nreplayed"
+        assert json.loads((folder / "meta.json").read_text())["outcome"] == "Interrupted"
 
     def test_a_run_whose_folder_exists_is_refused_and_changes_nothing(self) -> None:
         assert self.plan().returncode == 0

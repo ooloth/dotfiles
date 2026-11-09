@@ -45,7 +45,8 @@ the default label for `claude -p` was measured using more of the 5-hour window
 (https://github.com/anthropics/claude-code/issues/97074#issuecomment-6426128541).
 
 Exit codes: 0 when the session planned or escalated, 1 when the ticket can't be replayed or the
-session failed.
+session failed, and 128 plus the signal's number when a signal interrupted the session. An
+interrupted or failed run keeps what the session posted, and `grades` lists it as unfinished.
 """
 
 from __future__ import annotations
@@ -56,6 +57,7 @@ import os
 import re
 import secrets
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -348,7 +350,14 @@ class Escalated:
     line: str
 
 
-SessionOutcome = Planned | Escalated | SessionFailed
+@dataclass(frozen=True)
+class Interrupted:
+    """The session was stopped by a signal, such as Ctrl-C or a closed terminal."""
+
+    signal: str
+
+
+SessionOutcome = Planned | Escalated | SessionFailed | Interrupted
 
 
 @dataclass(frozen=True)
@@ -451,7 +460,15 @@ class Excluded:
     reason: str
 
 
-Grade = Graded | Ungraded | GradeUnreadable | Excluded
+@dataclass(frozen=True)
+class Unfinished:
+    """A replay whose session never finished: it failed, was interrupted, or never ended. There is
+    nothing to grade, so it is listed apart and left out of the counts."""
+
+    reason: str
+
+
+Grade = Graded | Ungraded | GradeUnreadable | Excluded | Unfinished
 
 
 # ── Parsing GitHub's view of the ticket ────────────────────────────────────────────────────────
@@ -1246,11 +1263,32 @@ def parse_grade(text: str) -> Grade:
     )
 
 
+def grade_of_run(meta_text: str | None, grade_text: str | None) -> Grade:
+    """A run's grade, read from its `meta.json` first: a run whose session didn't finish has
+    nothing to grade, whatever its `grade.md` says."""
+    try:
+        meta = json.loads(meta_text) if meta_text is not None else None
+    except json.JSONDecodeError:
+        meta = None
+    if not isinstance(meta, dict):
+        return Unfinished("meta.json is missing or unreadable")
+    if "finished_at" not in meta:
+        return Unfinished("the run never finished")
+    outcome = meta.get("outcome")
+    if outcome not in ("Planned", "Escalated"):
+        return Unfinished(f"the session ended as {outcome}")
+    if grade_text is None:
+        return GradeUnreadable("grade.md is missing")
+    return parse_grade(grade_text)
+
+
 def summarize(grades: Sequence[tuple[Path, Grade]]) -> str:
     graded = [g for _, g in grades if isinstance(g, Graded)]
     excluded = [(p, g) for p, g in grades if isinstance(g, Excluded)]
+    unfinished = [(p, g) for p, g in grades if isinstance(g, Unfinished)]
     lines = [
         f"{len(grades)} replays: {len(graded)} graded, {len(excluded)} excluded, "
+        f"{len(unfinished)} unfinished, "
         f"{sum(isinstance(g, Ungraded) for _, g in grades)} ungraded, "
         f"{sum(isinstance(g, GradeUnreadable) for _, g in grades)} unreadable"
     ]
@@ -1260,6 +1298,8 @@ def summarize(grades: Sequence[tuple[Path, Grade]]) -> str:
         lines.append(f"{stage}: {parts}")
     if excluded:
         lines += ["Excluded:", *(f"  {p}: {g.reason}" for p, g in excluded)]
+    if unfinished:
+        lines += ["Unfinished:", *(f"  {p}: {g.reason}" for p, g in unfinished)]
     ungraded = [str(p) for p, g in grades if isinstance(g, Ungraded)]
     if ungraded:
         lines += ["Ungraded:", *(f"  {p}" for p in ungraded)]
@@ -1382,9 +1422,24 @@ def session_env(bin_dir: Path, scratch: Path, claude_tmp: Path) -> dict[str, str
     return env
 
 
+class Signalled(Exception):
+    """SIGTERM or SIGHUP arrived. Raised from the handler so the run can record it and clean up,
+    as Ctrl-C's KeyboardInterrupt already does."""
+
+    def __init__(self, signum: int) -> None:
+        super().__init__(signal.Signals(signum).name)
+        self.name = signal.Signals(signum).name
+
+
+def raise_signalled(signum: int, _frame: object) -> None:
+    raise Signalled(signum)
+
+
 def run_session(
     command: Sequence[str], clone: Path, env: Mapping[str, str]
-) -> tuple[SessionResult | SessionFailed, str, str]:
+) -> tuple[SessionResult | SessionFailed | Interrupted, str, str]:
+    """Run the session. A signal stops it (subprocess.run kills `claude` on the way out) and is
+    returned as Interrupted, so what the session captured is still collected."""
     try:
         done = subprocess.run(
             list(command),
@@ -1404,6 +1459,10 @@ def run_session(
             "",
             stderr,
         )
+    except KeyboardInterrupt:
+        return Interrupted("SIGINT"), "", ""
+    except Signalled as stopped:
+        return Interrupted(stopped.name), "", ""
     return parse_session_result(done.returncode, done.stdout, done.stderr), done.stdout, done.stderr
 
 
@@ -1455,6 +1514,9 @@ def write(path: Path, text: str) -> None:
 
 
 def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
+    # Closing the terminal or a `kill` would otherwise end the process without the cleanup below.
+    for stop in (signal.SIGTERM, signal.SIGHUP):
+        signal.signal(stop, raise_signalled)
     folder = state_root() / ref.slug / f"run-{run}"
     if folder.exists():
         raise SystemExit(
@@ -1576,6 +1638,9 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             case SessionFailed():
                 outcome = result
                 audit = AuditIncomplete("the session left no result to find its transcript by")
+            case Interrupted(name):
+                outcome = result
+                audit = AuditIncomplete(f"the session was interrupted by {name}")
             case _:
                 assert_never(result)
         write(folder / "audit.md", render_audit(audit))
@@ -1596,6 +1661,10 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             )
             print(f"Replay folder: {folder}", file=sys.stderr)
             return 1
+        case Interrupted(name):
+            print(f"replay: the session was interrupted by {name}.", file=sys.stderr)
+            print(f"Replay folder: {folder}", file=sys.stderr)
+            return 128 + signal.Signals[name].value
         case _:
             assert_never(outcome)
 
@@ -1604,11 +1673,10 @@ def grades() -> int:
     found: list[tuple[Path, Grade]] = []
     root = state_root()
     for run_dir in sorted(root.glob("*/run-*")):
-        grade_file = run_dir / "grade.md"
-        grade: Grade = (
-            parse_grade(grade_file.read_text())
-            if grade_file.exists()
-            else GradeUnreadable("grade.md is missing")
+        meta_file, grade_file = run_dir / "meta.json", run_dir / "grade.md"
+        grade = grade_of_run(
+            meta_file.read_text() if meta_file.exists() else None,
+            grade_file.read_text() if grade_file.exists() else None,
         )
         found.append((run_dir.relative_to(root), grade))
     print(summarize(found))
