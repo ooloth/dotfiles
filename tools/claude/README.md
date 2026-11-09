@@ -21,9 +21,9 @@ right. `CONTRIBUTING.md` says how to try a change to it by hand.
 
 `replay plan <owner/repo#n> --run <k>` runs the unattended planning skill on a ticket I already
 planned by hand, as a headless session in a sandbox that can't post or push and sees the repo only
-as it stood when planning began. It writes a folder under `~/.local/state/replays/` holding the
-replay's plan or escalation, my own approach and design, the session's usage, an audit of what the
-sandbox refused, and a `grade.md` to fill in. `replay grades` summarizes the grades so far.
-`replay.py`'s docstring says what the sandbox allows, and
-[ooloth/dotfiles#269](https://github.com/ooloth/dotfiles/issues/269) records why it works this
-way.
+as it stood when planning began. A short canary session first checks that the sandbox refuses a
+forbidden read, write and connection, and the replay runs only if it does. It writes a folder under
+`~/.local/state/replays/` holding the replay's plan or escalation, my own approach and design, the
+session's usage, an audit of what the sandbox refused, and a `grade.md` to fill in. `replay grades`
+summarizes the grades so far. `replay.py`'s docstring says what the sandbox allows, and
+[ooloth/dotfiles#269](https://github.com/ooloth/dotfiles/issues/269) records why it works this way.

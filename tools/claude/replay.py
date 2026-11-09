@@ -17,13 +17,19 @@ when planning began:
 - a `gh` stand-in that serves the ticket body as it stood then, with no parent and no comments but
   the ones the replay posts, which it saves instead of posting
 - Claude Code's sandbox with no network except package registries, Bash reads of the home and temp
-  folders confined to an allow-list, the Read tool confined to the working directories, and web
-  tools and MCP servers off
+  folders confined to an allow-list, the Read tool confined to the working directories, the Edit
+  and Write tools denied in the home and temp folders, and web tools and MCP servers off
+- only the user's Claude Code settings and the replay's own, never the clone's project settings,
+  whose hooks would run outside the sandbox
 
-Two things are as they are today, not as they were: the agent harness (global instructions, skills,
-standards), which is why a dotfiles ticket that changed it is refused, and so is any ticket a later
-harness commit names, and the hooks in the user's
-Claude Code settings, which run outside the sandbox and post nothing.
+Before the session starts, a short canary session with the same settings tries to read a secret
+beside the replay folders, write in the home folder with the Write tool and with Bash, and fetch a
+host off the registry list. The replay runs only if all four were tried and none took effect.
+
+Two things are as they are today, not as they were. One is the agent harness (global instructions,
+skills, standards). That is why a dotfiles ticket that changed it is refused, and so is any ticket
+a later harness commit names. The other is the hooks in the user's Claude Code settings, which run
+outside the sandbox and post nothing.
 
 It writes one folder per replay under `${XDG_STATE_HOME:-~/.local/state}/replays/`, holding the
 replay's approach and design, my own from the ticket, the session's duration and tokens per model,
@@ -46,6 +52,7 @@ import argparse
 import json
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import sys
@@ -107,6 +114,9 @@ UNSET_FOR_SESSION = (
     "CLAUDE_CODE_USE_BEDROCK",
 )
 SESSION_TIMEOUT_SECONDS = 3 * 60 * 60
+CANARY_TIMEOUT_SECONDS = 10 * 60
+# The host the canary tries to reach. Any host off the registry list would do.
+CANARY_URL = "https://example.com"
 CALL_TIMEOUT_SECONDS = 120
 TAIL_CHARS = 2000
 
@@ -337,6 +347,66 @@ class Escalated:
 
 
 SessionOutcome = Planned | Escalated | SessionFailed
+
+
+@dataclass(frozen=True)
+class Canary:
+    """Four things the sandbox must refuse, tried by a short session before the replay's own: read
+    a secret beside the replay folders, write a file in the home folder with the Write tool and
+    with Bash, and fetch a host off the registry list."""
+
+    secret: str
+    secret_file: Path
+    write_tool_target: Path
+    bash_target: Path
+    net_target: Path
+
+    def prompt(self) -> str:
+        return (
+            "This is a sandbox check for a replay: each action below should be refused, and the "
+            "check passes when they are. Run all four, one tool call each, in this order, and "
+            "carry on after a refusal. Don't try another way round a refusal. Then reply DONE.\n"
+            f"1. With Bash, run: cat {self.secret_file}\n"
+            f"2. With the Write tool, create {self.write_tool_target} containing the word canary\n"
+            f"3. With Bash, run: touch {self.bash_target}\n"
+            f"4. With Bash, run: curl -sS -m 10 -o {self.net_target} {CANARY_URL}\n"
+        )
+
+
+@dataclass(frozen=True)
+class ToolUse:
+    tool: str
+    input: Mapping[str, Any]
+    result: str
+
+
+@dataclass(frozen=True)
+class CanaryEffects:
+    """What the canary's actions left on disk."""
+
+    write_tool_file: bool
+    bash_file: bool
+    net_bytes: int
+
+
+@dataclass(frozen=True)
+class SandboxHolds:
+    pass
+
+
+@dataclass(frozen=True)
+class SandboxBreached:
+    """Each action that took effect, with what showed it."""
+
+    checks: tuple[tuple[str, str], ...]
+
+
+@dataclass(frozen=True)
+class CanaryInconclusive:
+    reason: str
+
+
+CanaryVerdict = SandboxHolds | SandboxBreached | CanaryInconclusive
 
 
 @dataclass(frozen=True)
@@ -723,6 +793,7 @@ def write_mktemp(bin_dir: Path) -> Path:
 
 def build_settings(paths: SandboxPaths) -> dict[str, Any]:
     editable = (paths.clone, paths.scratch, paths.claude_tmp)
+    denied = (paths.home, paths.tmp_root)
     return {
         "sandbox": {
             "enabled": True,
@@ -751,7 +822,14 @@ def build_settings(paths: SandboxPaths) -> dict[str, Any]:
                 "TodoWrite",
                 *(f"{tool}(/{folder}/**)" for folder in editable for tool in ("Edit", "Write")),
             ],
-            "deny": ["WebFetch", "WebSearch"],
+            # The user settings allow Edit and Write everywhere, and allow lists from every
+            # settings file combine. A deny wins over any allow, and the replay's own folders all
+            # sit outside these two.
+            "deny": [
+                "WebFetch",
+                "WebSearch",
+                *(f"{tool}(/{folder}/**)" for folder in denied for tool in ("Edit", "Write")),
+            ],
             "blockReadsOutsideWorkingDirectories": True,
         },
     }
@@ -778,6 +856,19 @@ def check_settings(settings: Mapping[str, Any], paths: SandboxPaths) -> None:
     assert settings["permissions"]["blockReadsOutsideWorkingDirectories"] is True, (
         "permissions.blockReadsOutsideWorkingDirectories is not true"
     )
+    for folder in (paths.home, paths.tmp_root):
+        for tool in ("Edit", "Write"):
+            rule = f"{tool}(/{folder}/**)"
+            assert rule in settings["permissions"]["deny"], f"permissions.deny lacks {rule}"
+
+
+def check_command(command: Sequence[str]) -> None:
+    """The session loads the user settings and the replay's own file, never the clone's project
+    settings, whose hooks would run outside the sandbox."""
+    assert "--setting-sources" in command and (
+        command[command.index("--setting-sources") + 1] == "user"
+    ), "the session command doesn't pass --setting-sources user"
+    assert "--settings" in command, "the session command doesn't pass --settings"
 
 
 # ── The session's result ───────────────────────────────────────────────────────────────────────
@@ -961,6 +1052,76 @@ def read_audit(
             if refused_gh not in refusals:
                 refusals.append(refused_gh)
     return Audit(tuple(refusals), len(files), unreadable)
+
+
+def transcript_uses(path: Path) -> list[ToolUse]:
+    """Each tool call in one transcript, in order, with the text of its result."""
+    calls: dict[str, tuple[str, Mapping[str, Any]]] = {}
+    results: dict[str, str] = {}
+    for line in path.read_text().splitlines():
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        content = (record.get("message") or {}).get("content") if isinstance(record, dict) else None
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if not isinstance(block, dict):
+                continue
+            if block.get("type") == "tool_use":
+                calls[str(block.get("id"))] = (str(block.get("name")), block.get("input") or {})
+            elif block.get("type") == "tool_result":
+                results[str(block.get("tool_use_id"))] = result_text(block.get("content"))
+    return [ToolUse(tool, args, results.get(i, "")) for i, (tool, args) in calls.items()]
+
+
+def judge_canary(
+    canary: Canary, uses: Sequence[ToolUse], reply: str, effects: CanaryEffects
+) -> CanaryVerdict:
+    """The sandbox holds only when the canary tried all four actions and none took effect. A
+    canary that skipped one shows nothing about it, so the replay is refused then too."""
+
+    def bash_naming(path: Path) -> list[ToolUse]:
+        return [u for u in uses if u.tool == "Bash" and str(path) in str(u.input.get("command"))]
+
+    attempted = {
+        "read": bool(bash_naming(canary.secret_file)),
+        "write-tool": any(
+            u.tool == "Write" and u.input.get("file_path") == str(canary.write_tool_target)
+            for u in uses
+        ),
+        "bash-write": bool(bash_naming(canary.bash_target)),
+        "network": any(
+            CANARY_URL in str(u.input.get("command")) for u in bash_naming(canary.net_target)
+        ),
+    }
+    breaches: list[tuple[str, str]] = []
+    if canary.secret in reply or any(canary.secret in u.result for u in uses):
+        breaches.append(("read", f"the secret in {canary.secret_file} reached the session"))
+    if effects.write_tool_file:
+        breaches.append(("write-tool", f"the Write tool created {canary.write_tool_target}"))
+    if effects.bash_file:
+        breaches.append(("bash-write", f"Bash created {canary.bash_target}"))
+    if effects.net_bytes > 0:
+        breaches.append(("network", f"{CANARY_URL} returned {effects.net_bytes} bytes"))
+    if breaches:
+        return SandboxBreached(tuple(breaches))
+    skipped = [name for name, tried in attempted.items() if not tried]
+    if skipped:
+        return CanaryInconclusive(f"the canary did not attempt: {', '.join(skipped)}")
+    return SandboxHolds()
+
+
+def explain_canary(verdict: SandboxBreached | CanaryInconclusive) -> str:
+    match verdict:
+        case SandboxBreached(checks):
+            found = "; ".join(f"{check}: {evidence}" for check, evidence in checks)
+            return f"the sandbox canary was not refused ({found}), so the sandbox is not in force."
+        case CanaryInconclusive(reason):
+            return f"the sandbox canary showed nothing ({reason}), so the replay is not run."
+        case _:
+            assert_never(verdict)
 
 
 def describe(refusal: Refusal) -> str:
@@ -1175,12 +1336,17 @@ def ticket_markdown(snapshot: PlanningSnapshot, base: Sha) -> str:
     )
 
 
-def session_command(settings: Path, readable: Sequence[Path], ref: TicketRef) -> list[str]:
-    command = ["claude", "-p", "--settings", str(settings), "--permission-mode", "dontAsk"]
+def session_command(
+    settings: Path, readable: Sequence[Path], prompt: str, model: str | None = None
+) -> list[str]:
+    command = ["claude", "-p", "--settings", str(settings), "--setting-sources", "user"]
+    command += ["--permission-mode", "dontAsk"]
+    if model is not None:
+        command += ["--model", model]
     for folder in readable:
         command += ["--add-dir", str(folder)]
     command += ["--strict-mcp-config", "--disallowedTools", "WebFetch", "WebSearch"]
-    return [*command, "--output-format", "json", f"/plan-unattended {ref} plan-only"]
+    return [*command, "--output-format", "json", prompt]
 
 
 def session_env(bin_dir: Path, scratch: Path, claude_tmp: Path) -> dict[str, str]:
@@ -1220,6 +1386,48 @@ def run_session(
             stderr,
         )
     return parse_session_result(done.returncode, done.stdout, done.stderr), done.stdout, done.stderr
+
+
+def run_canary(
+    canary: Canary, settings: Path, readable: Sequence[Path], clone: Path, env: Mapping[str, str]
+) -> CanaryVerdict:
+    """Run the canary as a short session with the replay's own settings and flags, and judge it by
+    what it left behind. Its secret and targets are removed afterwards, whatever the verdict."""
+    canary.secret_file.parent.mkdir(parents=True, exist_ok=True)
+    canary.secret_file.write_text(canary.secret)
+    command = session_command(settings, readable, canary.prompt(), model="haiku")
+    check_command(command)
+    try:
+        try:
+            done = subprocess.run(
+                command,
+                cwd=clone,
+                env=dict(env),
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=CANARY_TIMEOUT_SECONDS,
+            )
+        except subprocess.TimeoutExpired:
+            return CanaryInconclusive(f"it ran longer than {CANARY_TIMEOUT_SECONDS} seconds")
+        result = parse_session_result(done.returncode, done.stdout, done.stderr)
+        if isinstance(result, SessionFailed):
+            return CanaryInconclusive(f"{result.reason}: {result.stderr_tail}")
+        transcripts = sorted(projects_root().glob(f"*/{result.session_id}.jsonl"))
+        if not transcripts:
+            return CanaryInconclusive(f"no transcript was found for session {result.session_id}")
+        net = canary.net_target
+        effects = CanaryEffects(
+            write_tool_file=canary.write_tool_target.exists(),
+            bash_file=canary.bash_target.exists(),
+            net_bytes=net.stat().st_size if net.exists() else 0,
+        )
+        return judge_canary(canary, transcript_uses(transcripts[0]), result.final_text, effects)
+    finally:
+        targets = (canary.write_tool_target, canary.bash_target, canary.net_target)
+        for path in (canary.secret_file, *targets):
+            path.unlink(missing_ok=True)
 
 
 def write(path: Path, text: str) -> None:
@@ -1289,6 +1497,21 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
         write_mktemp(work / "bin")
         make_clone(source, base, paths.clone)
         check_clone(paths.clone, snapshot.planning_began)
+        readable = (*paths.harness, paths.scratch, paths.claude_tmp)
+        env = session_env(work / "bin", paths.scratch, paths.claude_tmp)
+        nonce = secrets.token_hex(4)
+        canary = Canary(
+            secret=secrets.token_hex(16),
+            secret_file=state_root() / f".canary-{nonce}",
+            write_tool_target=home / f".replay-canary-{nonce}-write",
+            bash_target=home / f".replay-canary-{nonce}-bash",
+            net_target=paths.scratch / f"canary-{nonce}-net",
+        )
+        verdict = run_canary(canary, settings_file, readable, paths.clone, env)
+        if not isinstance(verdict, SandboxHolds):
+            raise SystemExit(f"replay: {explain_canary(verdict)}")
+        command = session_command(settings_file, readable, f"/plan-unattended {ref} plan-only")
+        check_command(command)
         folder.mkdir(parents=True)
 
         write(folder / "ticket.md", ticket_markdown(snapshot, base))
@@ -1302,15 +1525,13 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             "planning_began": snapshot.planning_began.isoformat(),
             "entrypoint": ENTRYPOINT,
             "started_at": datetime.now(UTC).isoformat(),
+            "canary": {"verdict": type(verdict).__name__},
+            "session_command": command,
             **harness_version(),
         }
         write(folder / "meta.json", json.dumps(meta, indent=2))
 
-        result, stdout, stderr = run_session(
-            session_command(settings_file, (*paths.harness, paths.scratch, paths.claude_tmp), ref),
-            paths.clone,
-            session_env(work / "bin", paths.scratch, paths.claude_tmp),
-        )
+        result, stdout, stderr = run_session(command, paths.clone, env)
         write(folder / "result.json", stdout)
         write(folder / "stderr.log", stderr)
         gh_log_path = paths.capture / "gh-calls.log"

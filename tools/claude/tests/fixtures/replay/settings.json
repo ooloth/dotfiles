@@ -52,7 +52,11 @@
     ],
     "deny": [
       "WebFetch",
-      "WebSearch"
+      "WebSearch",
+      "Edit(//home/me/**)",
+      "Write(//home/me/**)",
+      "Edit(//tmp-root/**)",
+      "Write(//tmp-root/**)"
     ],
     "blockReadsOutsideWorkingDirectories": true
   }

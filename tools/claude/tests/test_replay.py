@@ -25,8 +25,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from hypothesis import given
 from hypothesis import strategies as st
@@ -561,12 +563,128 @@ class Settings(unittest.TestCase):
     def test_the_built_settings_pass_their_own_checks(self) -> None:
         replay.check_settings(replay.build_settings(fake_paths()), fake_paths())
 
-    def test_settings_that_allow_unsandboxed_commands_fail_the_check(self) -> None:
-        settings = replay.build_settings(fake_paths())
-        settings["sandbox"]["allowUnsandboxedCommands"] = True
+    def test_each_condition_broken_on_its_own_fails_the_check_naming_it(self) -> None:
+        def set_key(*keys: str, value: object) -> Callable[[dict], None]:
+            def apply(settings: dict) -> None:
+                target = settings
+                for key in keys[:-1]:
+                    target = target[key]
+                target[keys[-1]] = value
+
+            return apply
+
+        def drop_deny(rule: str) -> Callable[[dict], None]:
+            return lambda s: s["permissions"]["deny"].remove(rule)
+
+        breaks = {
+            "sandbox.enabled": set_key("sandbox", "enabled", value=False),
+            "failIfUnavailable": set_key("sandbox", "failIfUnavailable", value=False),
+            "allowUnsandboxedCommands": set_key("sandbox", "allowUnsandboxedCommands", value=True),
+            "allowedDomains": lambda s: s["sandbox"]["network"]["allowedDomains"].append(
+                "github.com"
+            ),
+            "denyRead": lambda s: s["sandbox"]["filesystem"]["denyRead"].remove("/home/me"),
+            "allowWrite": lambda s: s["sandbox"]["filesystem"]["allowWrite"].append("/home/me"),
+            "blockReadsOutsideWorkingDirectories": set_key(
+                "permissions", "blockReadsOutsideWorkingDirectories", value=False
+            ),
+            "Edit(//home/me/**)": drop_deny("Edit(//home/me/**)"),
+            "Write(//home/me/**)": drop_deny("Write(//home/me/**)"),
+        }
+        for name, corrupt in breaks.items():
+            settings = replay.build_settings(fake_paths())
+            corrupt(settings)
+            with self.assertRaises(AssertionError, msg=name) as raised:
+                replay.check_settings(settings, fake_paths())
+            assert name in str(raised.exception), (name, str(raised.exception))
+
+
+class SessionCommand(unittest.TestCase):
+    def test_the_session_loads_only_the_user_settings_and_the_replays_own(self) -> None:
+        command = replay.session_command(Path("/w/settings.json"), (), "/plan-unattended x")
+        assert command[command.index("--settings") + 1] == "/w/settings.json"
+        assert command[command.index("--setting-sources") + 1] == "user"
+        assert "--strict-mcp-config" in command
+        assert command[command.index("--disallowedTools") + 1 :][:2] == ["WebFetch", "WebSearch"]
+        assert command[-1] == "/plan-unattended x"
+        replay.check_command(command)
+
+    def test_a_command_that_loads_project_settings_fails_the_check(self) -> None:
+        command = replay.session_command(Path("/w/settings.json"), (), "x")
+        command[command.index("--setting-sources") + 1] = "user,project"
         with self.assertRaises(AssertionError) as raised:
-            replay.check_settings(settings, fake_paths())
-        assert "allowUnsandboxedCommands" in str(raised.exception)
+            replay.check_command(command)
+        assert "--setting-sources" in str(raised.exception)
+
+
+# ── The sandbox canary ─────────────────────────────────────────────────────────────────────────
+
+
+def fake_canary() -> Any:
+    return replay.Canary(
+        secret="s3cr3t-token",
+        secret_file=Path("/home/me/.local/state/replays/.canary-n1"),
+        write_tool_target=Path("/home/me/.replay-canary-n1-write"),
+        bash_target=Path("/home/me/.replay-canary-n1-bash"),
+        net_target=Path("/private/tmp/rp-test/scratch/canary-n1-net"),
+    )
+
+
+def attempted_uses(canary: Any) -> list[Any]:
+    refused = "Operation not permitted"
+    return [
+        replay.ToolUse("Bash", {"command": f"cat {canary.secret_file}"}, refused),
+        replay.ToolUse("Write", {"file_path": str(canary.write_tool_target)}, "denied"),
+        replay.ToolUse("Bash", {"command": f"touch {canary.bash_target}"}, refused),
+        replay.ToolUse(
+            "Bash",
+            {"command": f"curl -sS -m 10 -o {canary.net_target} {replay.CANARY_URL}"},
+            "deny network-outbound example.com",
+        ),
+    ]
+
+
+NO_EFFECTS = replay.CanaryEffects(write_tool_file=False, bash_file=False, net_bytes=0)
+
+
+class JudgeCanary(unittest.TestCase):
+    def test_a_canary_whose_four_actions_all_had_no_effect_shows_the_sandbox_holds(self) -> None:
+        canary = fake_canary()
+        verdict = replay.judge_canary(canary, attempted_uses(canary), "DONE", NO_EFFECTS)
+        assert verdict == replay.SandboxHolds()
+
+    def test_each_action_that_took_effect_is_named_in_the_breach(self) -> None:
+        canary = fake_canary()
+        uses = attempted_uses(canary)
+        leaked = [
+            replay.ToolUse(u.tool, u.input, canary.secret) if i == 0 else u
+            for i, u in enumerate(uses)
+        ]
+        cases = {
+            "read": (leaked, NO_EFFECTS),
+            "write-tool": (uses, replay.CanaryEffects(True, False, 0)),
+            "bash-write": (uses, replay.CanaryEffects(False, True, 0)),
+            "network": (uses, replay.CanaryEffects(False, False, 1256)),
+        }
+        for check, (case_uses, effects) in cases.items():
+            verdict = replay.judge_canary(canary, case_uses, "DONE", effects)
+            assert isinstance(verdict, replay.SandboxBreached), check
+            assert [c for c, _ in verdict.checks] == [check], (check, verdict)
+
+    def test_a_secret_in_the_final_reply_is_a_breach_of_the_read(self) -> None:
+        canary = fake_canary()
+        verdict = replay.judge_canary(
+            canary, attempted_uses(canary), f"it said {canary.secret}", NO_EFFECTS
+        )
+        assert isinstance(verdict, replay.SandboxBreached)
+        assert [c for c, _ in verdict.checks] == ["read"]
+
+    def test_a_canary_that_skipped_an_action_is_inconclusive(self) -> None:
+        canary = fake_canary()
+        uses = attempted_uses(canary)[:3]
+        verdict = replay.judge_canary(canary, uses, "DONE", NO_EFFECTS)
+        assert isinstance(verdict, replay.CanaryInconclusive)
+        assert "network" in verdict.reason
 
 
 class SessionEnv(unittest.TestCase):
@@ -768,25 +886,49 @@ else:
 """
 
 FAKE_CLAUDE = """#!/usr/bin/env python3
-import json, os, subprocess, sys
+import json, os, re, subprocess, sys
 if sys.argv[1:] == ["--version"]:
     print("9.9.9 (Claude Code)")
     sys.exit(0)
 prompt = sys.argv[-1]
+projects = os.path.join(os.environ["CLAUDE_CONFIG_DIR"], "projects", "x")
+os.makedirs(projects, exist_ok=True)
+result = json.load(open(os.environ["FAKE_RESULT"]))
+result["permission_denials"] = []
+if "sandbox check" in prompt:
+    # Plays the canary: attempts each action, as a session would, and is refused each time unless
+    # FAKE_CANARY names one to let through.
+    secret = re.search(r"cat (\\S+)", prompt)[1]
+    write = re.search(r"create (\\S+)", prompt)[1]
+    touch = re.search(r"touch (\\S+)", prompt)[1]
+    net = re.search(r"-o (\\S+)", prompt)[1]
+    if os.environ.get("FAKE_CANARY") == "bash-write":
+        open(touch, "w").write("")
+    uses = [("Bash", {"command": "cat " + secret}), ("Write", {"file_path": write}),
+            ("Bash", {"command": "touch " + touch}),
+            ("Bash", {"command": "curl -sS -m 10 -o " + net + " https://example.com"})]
+    with open(os.path.join(projects, "fake-canary.jsonl"), "w") as f:
+        for i, (tool, args) in enumerate(uses):
+            f.write(json.dumps({"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "id": "u%d" % i, "name": tool, "input": args}]}}) + "\\n")
+            f.write(json.dumps({"type": "user", "message": {"content": [
+                {"type": "tool_result", "tool_use_id": "u%d" % i, "is_error": True,
+                 "content": "Operation not permitted"}]}}) + "\\n")
+    result["session_id"] = "fake-canary"
+    result["result"] = "DONE"
+    print(json.dumps(result))
+    sys.exit(0)
 view = subprocess.run(["gh", "issue", "view", "7", "-R", "octo/widgets", "--json", "title,body"],
                       capture_output=True, text=True)
 assert view.returncode == 0, view.stderr
 for body in ["# Approach\\n\\nreplayed", "# Design\\n\\nreplayed"]:
     subprocess.run(["gh", "issue", "comment", "7", "-R", "octo/widgets", "--body", body],
                    check=True, capture_output=True)
-projects = os.path.join(os.environ["CLAUDE_CONFIG_DIR"], "projects", "x")
-os.makedirs(projects, exist_ok=True)
 open(os.path.join(projects, "fake-session.jsonl"), "w").write("")
-result = json.load(open(os.environ["FAKE_RESULT"]))
 result["session_id"] = "fake-session"
-result["permission_denials"] = []
 result["result"] = "PLANNED: https://github.com/octo/widgets/issues/7#x; implementation not started"
 print(json.dumps({**result, "prompt_seen": prompt, "cwd_seen": os.getcwd(),
+                  "argv_seen": sys.argv[1:], "gh_token_seen": os.environ.get("GH_TOKEN"),
                   "entrypoint_seen": os.environ.get("CLAUDE_CODE_ENTRYPOINT")}))
 """
 
@@ -828,7 +970,10 @@ class EndToEnd(unittest.TestCase):
             "FAKE_RESULT": str(FIXTURES / "result.json"),
             "CLAUDE_CONFIG_DIR": str(self.root / "claude"),
             "XDG_STATE_HOME": str(self.state),
+            "HOME": str(self.root / "home"),
+            "GH_TOKEN": "test-token-not-real",
         }
+        (self.root / "home").mkdir()
 
     def tearDown(self) -> None:
         self._tmp.cleanup()
@@ -870,6 +1015,29 @@ class EndToEnd(unittest.TestCase):
         assert seen["cwd_seen"] != str(self.source)
         meta = json.loads((folder / "meta.json").read_text())
         assert meta["claude_version"] == "9.9.9 (Claude Code)"
+        assert meta["canary"] == {"verdict": "SandboxHolds"}
+        assert meta["session_command"][1:] == seen["argv_seen"]
+
+    def test_the_session_is_launched_sandboxed_without_project_settings_or_a_github_token(
+        self,
+    ) -> None:
+        assert self.plan().returncode == 0
+        folder = self.state / "replays" / "octo-widgets-7" / "run-1"
+        argv = json.loads((folder / "result.json").read_text())["argv_seen"]
+        settings = Path(argv[argv.index("--settings") + 1])
+        assert argv[argv.index("--setting-sources") + 1] == "user"
+        assert "--strict-mcp-config" in argv
+        assert argv[argv.index("--disallowedTools") + 1 :][:2] == ["WebFetch", "WebSearch"]
+        assert settings.name == "settings.json"
+        assert json.loads((folder / "result.json").read_text())["gh_token_seen"] is None
+
+    def test_a_canary_whose_bash_write_took_effect_refuses_the_replay_naming_it(self) -> None:
+        self.env["FAKE_CANARY"] = "bash-write"
+        result = self.plan()
+        assert result.returncode != 0
+        assert "bash-write" in result.stderr, result.stderr
+        assert not (self.state / "replays" / "octo-widgets-7" / "run-1").exists()
+        assert not list((self.root / "home").glob(".replay-canary-*"))
 
     def test_a_run_whose_folder_exists_is_refused_and_changes_nothing(self) -> None:
         assert self.plan().returncode == 0
