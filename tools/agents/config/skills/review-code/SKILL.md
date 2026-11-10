@@ -68,6 +68,18 @@ block: an agent handed an earlier verdict tends to return it confirmed, and the 
 review is a read that isn't anchored on anyone else's. The one exception is a dry run that CI
 posted, which Step 2 carries to the agents.
 
+**For PR scope, also list the other open PRs that change the same files:**
+
+```bash
+uv run <skill-base-dir>/scripts/overlapping_prs.py <n> --repo <owner>/<repo>
+```
+
+Another open PR may already fix what this one leaves open, or conflict with it on a shared file,
+and nothing else in this skill looks at other PRs. The script lists every other open PR, drafts and
+PRs against other bases included, that changes a file this PR changes, counting a rename's old
+path, with the files each one shares. Exit 0 means none, 1 means some, and 2 means it could not
+tell, which is never read as none.
+
 Output the reviewable file list and diff command before proceeding. When the skip rules leave
 nothing because every changed file is a lockfile or package manifest, say so and name those files
 as going to Step 1a.
@@ -186,6 +198,8 @@ Build a context block that every agent receives. Gather from these sources in pr
    so when that is older than the PR's head. Save the whole dry run to a file in a new
    `mktemp -d` directory, because the attribute values it shows answer questions that the action
    lines alone leave open.
+7. **Open PRs that change the same files**: from Step 1's list. Like the dry run, they report what
+   other changes do, not anyone's opinion of this one, so they go to every agent.
 
 Consider everything in the ticket for inclusion in the block below, and carry what binds the
 review: numbered properties (`P1`, `P2`, …), the options the ticket rejected and why, choices
@@ -203,6 +217,9 @@ Recorded decisions: [the ticket's numbered properties, rejected options, deliber
 Dry-run output: [each planned action and the summary line, verbatim, then the path of a file
   holding the full dry run, attribute lines included, for agents to read; "none posted" when CI
   posted none]
+Overlapping open PRs: [each PR from Step 1's list with its number, title, base and the files it
+  shares with this one; "none" when the check found none; "not checked" and the reason when it
+  exited 2. An agent may run `gh pr diff <n> -R <owner>/<repo>` on any PR listed here]
 Diff command: [exact command agents should run to read the diff]
 ```
 
@@ -757,6 +774,13 @@ An earlier finding is a claim to verify, not a finding of yours. One you have no
 enter Findings, however confident it sounds. Note where a review describes an older commit than the
 one you reviewed, and whether a thread is already resolved. Skip their praise, summaries and
 boilerplate when reconciling.
+
+**Then check each finding against the overlapping open PRs from Step 1.** A finding one of them
+already resolves stays in Findings, with "covered by #N" in its table row and its detail, once you
+have read that PR's diff and confirmed it does resolve it. The author then neither fixes it twice
+nor loses it if that PR stalls. Where this PR and another change a shared file in ways that cannot
+both land as written, that is a finding of its own, naming the other PR. When the check exited 2,
+the sentence under the verdict says overlapping PRs were not checked.
 
 ```
 ## Code Review
