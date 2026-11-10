@@ -124,6 +124,14 @@ system's response, where success and failure are told apart. Where neither
 exists, the check says what it can't see, and the code that drops the response
 is the gap to fix.
 
+**A check that expects a refusal also shows that the step before it succeeded.**
+A check that an old credential, route or permission no longer works passes in
+two cases: the change removed it, or the change never ran, for example because
+the step that set it up failed. Both end in the same refusal. So the check is
+paired with proof that the earlier step succeeded, such as the credential
+working before the change, or that step gating everything after it. A runbook
+whose only check is the refusal reports success when nothing ran.
+
 ## Consider
 
 **Assertions multiply the value of fuzzing.**
