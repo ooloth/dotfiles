@@ -59,4 +59,4 @@ need.
 
 - [x] `tools/agents/config/skills/plan-unattended/SKILL.md` — "Decisions nobody made" and "How the
   comments read" state this rule
-- [ ] #271 — its Decisions section links this record in place of the open question it settles
+- [x] #271 — its Decisions section links this record in place of the open question it settles
