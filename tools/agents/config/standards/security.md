@@ -54,6 +54,10 @@ an error report. Reading the secret from a secret store inside the command, as i
 `--token "$(<store> read <name>)"`, hands it to that one process. The exception is a tool that
 reads a secret only from its environment: the variable is set for that one command, as in
 `TOKEN="$(<store> read <name>)" tool`, and is not exported.
+Some tools also write their own arguments to a log file, so a secret passed as a flag reaches
+that file even when it never appears in the shell. `gcloud` records every command's arguments
+under `~/.config/gcloud/logs/` unless `CLOUDSDK_CORE_DISABLE_FILE_LOGGING=true` is set for the
+command, so a secret passed as a flag to such a tool is passed with that tool's file logging off.
 
 **File access is constrained.**
 File reads and writes are restricted to expected paths. Path traversal

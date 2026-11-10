@@ -27,8 +27,9 @@ Review file:
 
 --dry-run validates the file and prints the exact payload that would be sent, without posting.
 It also notes on stderr any body that runs several sentences together in one paragraph, so its
-point can be split off before posting, and an approval of a dependency update whose body lists no
-checks. The notes never block.
+point can be split off before posting, an approval of a dependency update whose body lists no
+checks, and an approval that asks for a fix ("must", "required", and in the body also "I'd" or
+"before you merge"). The notes never block.
 
 Both modes read the PR once with `gh pr view` first. On a PR a bot opened, such as Dependabot's,
 they refuse a change request and inline comments, because a bot can neither read a review nor
@@ -159,6 +160,31 @@ def unbroken_bodies(review: Review) -> tuple[str, ...]:
         f"comments[{i}] {c.path}:{c.line}"
         for i, c in enumerate(review.comments)
         if is_unbroken(c.body)
+    ]
+    return tuple(found)
+
+
+# Words that turn an approval back into a request. An inline comment may still say what the
+# reviewer would pick, so only obligation is noted there; the body also notes preference and
+# timing, which the triage sentence has just left to the author.
+_OBLIGATION = (
+    r"\bmust\b|\bneeds? (?:fixing|to be fixed)\b|\brequired\b|(?<!non-)\bblock(?:ers?|ing)\b"
+)
+_PREFERENCE = r"\bI[’']d\b|\bstrongly consider\b|\brecommend(?:ed)?\b"
+_TIMING = r"\bbefore (?:you |this )?merg(?:e|es|ing)\b"
+COMMENT_ASKS = re.compile(_OBLIGATION, re.IGNORECASE)
+BODY_ASKS = re.compile(f"{_OBLIGATION}|{_PREFERENCE}|{_TIMING}", re.IGNORECASE)
+
+
+def approval_asks(review: Review) -> tuple[tuple[str, str], ...]:
+    """Where an approval asks the author for something, with the words that do it. Advice only."""
+    if review.event != "APPROVE":
+        return ()
+    found = [("body", m.group(0)) for m in [BODY_ASKS.search(review.body)] if m]
+    found += [
+        (f"comments[{i}] {c.path}:{c.line}", m.group(0))
+        for i, c in enumerate(review.comments)
+        if (m := COMMENT_ASKS.search(c.body))
     ]
     return tuple(found)
 
@@ -328,6 +354,12 @@ def main() -> None:
             print(
                 f"note: {where} runs several sentences together in one paragraph. "
                 "Reread it, and split off its point unless it reads better whole.",
+                file=sys.stderr,
+            )
+        for where, words in approval_asks(review):
+            print(
+                f'note: {where} says "{words}", but an approval leaves every finding to the '
+                "author. Reread it, and describe consequences rather than asking for a fix.",
                 file=sys.stderr,
             )
         if lacks_check_list(review, pull_request):

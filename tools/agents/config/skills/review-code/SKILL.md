@@ -68,6 +68,18 @@ block: an agent handed an earlier verdict tends to return it confirmed, and the 
 review is a read that isn't anchored on anyone else's. The one exception is a dry run that CI
 posted, which Step 2 carries to the agents.
 
+**For PR scope, also list the other open PRs that change the same files:**
+
+```bash
+uv run <skill-base-dir>/scripts/overlapping_prs.py <n> --repo <owner>/<repo>
+```
+
+Another open PR may already fix what this one leaves open, or conflict with it on a shared file,
+and nothing else in this skill looks at other PRs. The script lists every other open PR, drafts and
+PRs against other bases included, that changes a file this PR changes, counting a rename's old
+path, with the files each one shares. Exit 0 means none, 1 means some, and 2 means it could not
+tell, which is never read as none.
+
 Output the reviewable file list and diff command before proceeding. When the skip rules leave
 nothing because every changed file is a lockfile or package manifest, say so and name those files
 as going to Step 1a.
@@ -186,6 +198,8 @@ Build a context block that every agent receives. Gather from these sources in pr
    so when that is older than the PR's head. Save the whole dry run to a file in a new
    `mktemp -d` directory, because the attribute values it shows answer questions that the action
    lines alone leave open.
+7. **Open PRs that change the same files**: from Step 1's list. Like the dry run, they report what
+   other changes do, not anyone's opinion of this one, so they go to every agent.
 
 Consider everything in the ticket for inclusion in the block below, and carry what binds the
 review: numbered properties (`P1`, `P2`, …), the options the ticket rejected and why, choices
@@ -203,6 +217,9 @@ Recorded decisions: [the ticket's numbered properties, rejected options, deliber
 Dry-run output: [each planned action and the summary line, verbatim, then the path of a file
   holding the full dry run, attribute lines included, for agents to read; "none posted" when CI
   posted none]
+Overlapping open PRs: [each PR from Step 1's list with its number, title, base and the files it
+  shares with this one; "none" when the check found none; "not checked" and the reason when it
+  exited 2; "not applicable: not a PR review" outside PR scope. An agent may run `gh pr diff <n> -R <owner>/<repo>` on any PR listed here]
 Diff command: [exact command agents should run to read the diff]
 ```
 
@@ -758,6 +775,13 @@ enter Findings, however confident it sounds. Note where a review describes an ol
 one you reviewed, and whether a thread is already resolved. Skip their praise, summaries and
 boilerplate when reconciling.
 
+**Then check each finding against the overlapping open PRs from Step 1.** A finding one of them
+already resolves stays in Findings, with "covered by #N" in its table row and its detail, once you
+have read that PR's diff and confirmed it does resolve it. The author then neither fixes it twice
+nor loses it if that PR stalls. Where this PR and another change a shared file in ways that cannot
+both land as written, that is a finding of its own, naming the other PR. When the check exited 2,
+the sentence under the verdict says overlapping PRs were not checked.
+
 ```
 ## Code Review
 
@@ -853,6 +877,10 @@ come back clean.]
 - **Request Changes** — one or more `must` items
 - **Comment** — open questions or suggestions worth discussing, nothing blocking
 
+When the user chooses Approve while findings are labelled `must`, the posted review calls
+none of them required. Each one either meets the bar for the consequences callout in Step 5
+or appears as an ordinary finding.
+
 ## Step 5: Post review (PR scope only)
 
 After presenting findings, if this is a PR and its author is the account `gh api user -q .login`
@@ -862,8 +890,8 @@ stop and wait for a reply (skip the rest of this skill's instructions).
 Otherwise, if a bot opened the PR (`author.is_bot`, such as Dependabot or Renovate), nobody will
 act on posted findings: a bot cannot read a review or push a fix. A bot's PR never gets Request
 Changes or inline comments, and `post_review.py` refuses both. Its body gives the verdict without
-a credit sentence, carries each finding's evidence itself, and leaves out the triage and must-fix
-sentences, which address an author.
+a credit sentence, carries each finding's evidence itself, and leaves out the triage and
+consequences sentences, which address an author.
 
 - **When the user can push to the repo** (`viewerPermission` is `ADMIN`, `MAINTAIN` or `WRITE`)
   and there are findings, ask which to fix on the PR's branch. The answer naming the fixes also
@@ -896,7 +924,11 @@ On any answer other than "skip":
 
 - **Check what changed since the saved state.** Read the head and reviews again with
   `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid,reviews`, and run the fetch helper
-  from Step 1 again. A review can wait hours for its posting answer while the PR moves on.
+  from Step 1 again. A review can wait hours for its posting answer while the PR moves on. Run
+  `overlapping_prs.py` from Step 1 again too, whatever the head did. Re-check each "covered by #N"
+  finding against its new list, and take "covered by" off any whose PR is no longer open. Check each
+  PR the list newly names as Step 4 does. When it exits 2, the overlaps were not re-checked, and the
+  report to the user says so.
   - **A read fails:** post nothing, and say which one failed, quoting the error. What changed is
     unknown, not empty.
   - **The head moved:** post nothing yet. A review of an older head can be wrong about the code
@@ -968,11 +1000,17 @@ On any answer other than "skip":
     fix here vs file as a ticket vs ignore for now." Under Request Changes there is no triage
     sentence. The body asks for the `must` findings directly, and says in a clause that the
     others are optional.
-  - **A must-fix inside an Approve:** the user approves so the author, often in another time zone,
-    can address the findings and merge without waiting a day for a re-review. When one finding
-    really must be fixed before merging, name it and say why in a sentence, so it isn't missed
-    among the optional ones. Leave this out when nothing must be fixed first, and never pick a set
-    number of callouts.
+  - **Consequences to know about, inside an Approve:** an approval leaves every finding to
+    the author, so this part asks for nothing. It points out the findings whose harm would
+    be easy to miss: data that ends up wrong without anyone noticing, a security exposure,
+    or a test that fails intermittently. Include it only when at least one finding is like
+    that, and only when other findings could bury it. A review whose findings are all
+    ordinary has no callout, however many findings it has, and the most severe of them is
+    not promoted into one. Open with "Two have bigger consequences than the others:" (or
+    "One has…"), then give each finding as its consequence in plain terms. It carries no
+    preference ("I'd", "strongly consider", "recommend") and no timing ("before you
+    merge"), because either one tells the author what to do after the triage sentence has
+    just said they decide.
   - **Other code affected by these changes:** one bold `**Other code affected by these changes**`
     line, then one bullet per finding outside the diff: a bold lead naming the problem, then where
     it is, what to do and where you saw it, in one or two sentences. The bullets carry no labels;
