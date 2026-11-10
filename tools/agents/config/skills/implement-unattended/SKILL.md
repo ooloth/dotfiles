@@ -1,6 +1,6 @@
 ---
 name: implement-unattended
-description: Take a ticket whose approach and design are already approved through implementation, review and evidence to a draft PR, with nobody watching. Escalates decisions on the ticket and stops rather than choosing.
+description: Take a ticket whose approach and design are already posted through implementation, review and evidence to a draft PR, with nobody watching. Decides what the design left open and records it, and escalates on the ticket only what its rule reserves for the user.
 argument-hint: '<owner/repo#issue>'
 disable-model-invocation: true
 ---
@@ -113,9 +113,10 @@ as a `fail`.
 ## 2. Red
 
 Spawn a **test-writer** subagent. Give it the repo path, the design comment, and the parts of the
-approach comment that say what must be true and why: **What this must make true**, **What does not
-bind here**, **Constraints** and **Done when**. Do not give it the **Approach** or **Alternatives
-that lost**, so its tests describe behaviour rather than the planned mechanism.
+approach comment that say what must be true and why: **What a good fix must achieve**,
+**Assumptions** and **Constraints**. Do not give it the opening paragraph, **Options**, **Decided
+by**, **How it fits** or **Decided without you**, so its tests describe behaviour rather than the
+planned mechanism.
 
 It writes a test for every row of the design comment's **Tests** table, using the technique the row
 names. The design leaves setup to it, so it works out how to set each test up and what each should
@@ -175,7 +176,12 @@ caught. Commit any strengthened tests, and confirm the implementation still pass
 
 ## 5. Commit and check again
 
-Commit the work. This skill runs no review before the PR: step 8's independent review loop is the
+Commit the work. If the approach or design comment has a `Decided without you` section, commit a
+decision record for each entry in the same step, in the folder where the repo keeps its decision
+records and in that folder's format, built from the entry's decision, options, reason and what
+would reopen it. A later session finds the decision there, and the user reviews it in the PR's
+diff. In a repo with no such folder, copy the entries into the PR body's **What** section in
+step 7 instead. This skill runs no review before the PR: step 8's independent review loop is the
 only review, while we measure whether a review before the PR catches anything step 8 would not.
 
 Spawn a fresh checks subagent to run the same commands again on the committed work. If any fail,
@@ -194,7 +200,8 @@ again.
 
 Open the draft PR with the `create-pr` skill. Its checks already passed in step 5, and its
 description omits any field that would need to ask the user. Keep the body short: the ticket
-comments hold the detail, and the PR links to them. Add one line to each section:
+comments hold the detail, and the PR links to them. Add one line to each section, plus the
+`Decided without you` entries under **What** when step 5 found no record folder:
 
 - **What:** `Approach: <link to the approach comment>`, with `Design: <link to the design comment>`
   on the line below it

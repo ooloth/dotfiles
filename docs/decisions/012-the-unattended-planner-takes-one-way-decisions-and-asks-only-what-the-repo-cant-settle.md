@@ -2,6 +2,7 @@
 number: 012
 status: accepted
 date: 2026-11-10
+amended: 2026-11-10
 ---
 
 # 012 — The unattended planner takes one-way decisions and asks only what the repo can't settle
@@ -23,8 +24,8 @@ decision or depends on one that takes interpretation, needs work outside the tic
 through my preference or a fact it cannot measure, or when the ticket does not say what the work
 must make true. Each one-way decision it takes is listed under "Decided without you" in its
 approach or design comment, and I overrule it at the draft PR. Attended sessions still leave
-one-way decisions to me, and `implement-unattended` keeps its category list until implementation
-replays give evidence.
+one-way decisions to me, and `implement-unattended` keeps its category list until graded
+implementation runs give evidence.
 
 ## Rejected
 
@@ -52,11 +53,34 @@ aligned.
 ## Revisit when
 
 A replay round's per-decision grades, in each run's `grade.md` under `~/.local/state/replays/`,
-show a decision the planner took alone that my plan would reject, or a question my plan didn't
-need.
+show a decision the planner took alone that my plan would reject, or at least as many questions my
+plan didn't need as round 1 asked (three).
 
 ## Also update
 
 - [x] `tools/agents/config/skills/plan-unattended/SKILL.md` — "Decisions nobody made" and "How the
   comments read" state this rule
 - [x] #271 — its Decisions section links this record in place of the open question it settles
+- [x] `tools/claude/replay.py` — the grade template's Decisions section records the per-decision
+  grades that "Revisit when" reads
+
+## Addendum (2026-11-10) — a new dependency or service waits for review
+
+A review of this rule found that `implement-unattended` escalates only decisions the design did not
+make. A dependency the planner chose would be installed, and its install scripts run, on my Mac
+before I had seen the choice. So when a decision listed under "Decided without you" adds a new
+dependency or external service, the planner posts its plan and does not start the implementation.
+Other one-way decisions still start it. "Revisit when" also changed the same day, before any round
+ran: it fired on a single question my plan didn't need, while the rejected options reverse only on
+more such questions than the old rule asked.
+
+## Addendum (2026-11-10) — narrower triggers, and records for decisions taken
+
+The same review found two triggers that let one case go either way, so both were narrowed. Work
+outside the ticket escalates only when a binding property needs it; a cause-level fix nothing
+needs goes under Deferred. A fact the planner cannot measure escalates only when meeting a binding
+property rests on it; a fact that only changes the ranking goes under Assumptions. A one-way
+decision taken alone no longer lives only in a comment: [decision 013][013] has the implementation
+commit a record for it, so it shows in the draft PR's diff, which narrows the Risk above.
+
+[013]: 013-the-unattended-implementation-records-each-one-way-decision-the-planner-took.md

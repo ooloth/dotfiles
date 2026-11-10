@@ -1,6 +1,6 @@
 ---
 name: plan-unattended
-description: Plan a ticket with nobody watching. Three independent discuss runs are reconciled into one approach and three design runs into one design, both are posted on the ticket, and implement-unattended is started in a new tmux window. Takes one-way decisions itself and lists them, and escalates on the ticket only what the repo cannot settle.
+description: Plan a ticket with nobody watching. Three independent discuss runs are reconciled into one approach and three design runs into one design, both are posted on the ticket, and implement-unattended is started in a new tmux window unless the run is plan-only or a decision it took adds a dependency or external service. Takes one-way decisions itself and lists them, and escalates on the ticket only what the repo cannot settle.
 argument-hint: '<owner/repo#issue> [plan-only]'
 disable-model-invocation: true
 ---
@@ -33,7 +33,8 @@ yourself by running a command.
 
 Discuss and design end by asking the user to decide things. Here you decide them, one-way decisions
 included: a new dependency or external service, a persistent data shape or store, a public
-interface, a new process or runtime, or a user-facing pattern people will learn. That covers the
+interface (an API, an event, a CLI contract, a file format), a new process or runtime, or a
+user-facing pattern people will learn. That covers the
 open decisions the ticket lists, whatever category it names beside them. The user reviews the draft
 PR before anything merges, so a decision you take can still be reversed there, as long as your
 comment shows it.
@@ -43,13 +44,16 @@ escalate only when that option:
 
 - contradicts, amends or supersedes a recorded decision, or depends on one whose bearing on this
   work takes interpretation, even when the ticket expects the change;
-- needs work outside this ticket, such as a new ticket or a change to another ticket's scope;
-- beats the other options that meet every binding property, or meets a binding property at all,
-  only through something the repo and ticket cannot settle: what the user prefers or puts first, or
-  a fact that can be measured only where you cannot measure it;
+- needs work outside this ticket to meet a binding property, such as a new ticket or a change to
+  another ticket's scope. A cause-level fix that no binding property needs goes under **Deferred**,
+  does not escalate, and leaves the ranking to the options inside this ticket;
+- wins over the other options that meet every binding property, or meets a binding property at
+  all, only because of what the user prefers or puts first;
+- meets a binding property only through a fact you cannot measure here. A fact that only changes
+  which option ranks first goes under **Assumptions** and does not escalate;
 
-or when the ticket does not say enough to tell what the work must make true. Never choose a
-lower-ranked option to avoid escalating.
+or escalate when the ticket does not say enough to tell what the work must make true. Never choose
+a lower-ranked option to avoid escalating.
 
 A decision that changed which option won shows in the options table and the "Decided by" paragraph.
 Each one-way decision you take also goes under "Decided without you" in the comment where you took
@@ -166,21 +170,27 @@ property numbering.
 
 Write the approach comment as the `discuss` skill's Phase 4 describes its ticket comment, and the
 design comment as the `design` skill's Phase 7 describes its ticket comment, adding only the
-`Decided without you` section below. Name no
-skill, command or agent in either: say what happened instead. Evidence and reasoning stay in this
-session; the comments carry only the decision.
+`Decided without you` section below. Name no skill, command or agent in either: say what happened
+instead. Evidence and reasoning stay in this session; the comments carry only the decision.
 
 When you took a one-way decision, the comment that records it has a `## Decided without you 🧷`
 section: in the approach comment right after "Decided by", in the design comment as its last
 section. One entry per decision: what was decided, in one line; the options weighed; the reason it
 won; and what would reopen it. It is where the user checks what was decided for them before the
-draft PR merges.
+draft PR merges. Planning commits nothing, so a decision taken here has no record yet: its entry
+stands in for the record link the `design` skill asks for, and the implementation writes the
+record from it.
 
 ## 5. Start the implementation
 
 If the arguments include `plan-only`, skip this step and print `PLANNED: <link to the design
 comment>; implementation not started (plan-only)` as the final line.
 
+If a `Decided without you` entry adds a new dependency or external service, skip this step too,
+because the implementation would install or call it before the user has seen the choice. Print
+`PLANNED: <link to the design comment>; implementation not started: <the dependency or service>
+waits for review. Start /implement-unattended <owner/repo#issue> once you approve it` as the final
+line.
 
 Find the main checkout with `git rev-parse --path-format=absolute --git-common-dir`; its parent
 directory is the repo root. Pick a worktree name `afk-<issue>`, adding `-2`, `-3` and so on if
