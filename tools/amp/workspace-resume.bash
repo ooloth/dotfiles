@@ -12,8 +12,7 @@
 set -euo pipefail
 
 dotfiles="${HOME}/Repos/ooloth/dotfiles"
-# A project that lists dotfiles as an additional repository gets this checkout before setup runs.
-# Edits to it show in the thread's Changes pane, so it is the copy every link points at.
+# Edits to this checkout show in the thread's Changes pane, so it is the copy every link points at.
 checkout="${HOME}/workspace/repos/dotfiles"
 
 # Pull only a clean copy, and only fast-forward, so local edits are never overwritten
@@ -24,8 +23,19 @@ pull_if_clean() {
   fi
 }
 
-if [[ -d "${checkout}" ]]; then
-  pull_if_clean "${checkout}"
+if [[ -L "${dotfiles}" && ! -d "${checkout}" ]]; then
+  # A dotfiles-project orb: its .agents/setup pointed this at the working checkout. Leave it alone.
+  :
+else
+  if [[ -d "${checkout}" ]]; then
+    pull_if_clean "${checkout}"
+  else
+    # Cloned here rather than listed in each project's additional repositories, so it never enters
+    # a project snapshot and a dotfiles push leaves every snapshot valid. The Changes pane shows
+    # any repository under ~/workspace/repos/. A full clone took about 1 s.
+    mkdir -p "$(dirname "${checkout}")"
+    timeout 6 git clone --quiet https://github.com/ooloth/dotfiles.git "${checkout}"
+  fi
   # An orb that ran an earlier version of this script has its own clone here. Move it aside rather
   # than delete it, so an edit or commit nobody pushed is still there to recover.
   if [[ -d "${dotfiles}" && ! -L "${dotfiles}" ]]; then
@@ -37,21 +47,6 @@ if [[ -d "${checkout}" ]]; then
   mkdir -p "$(dirname "${dotfiles}")"
   ln -sfn "${checkout}" "${dotfiles}"
   echo "linked ${dotfiles} to ${checkout}"
-elif [[ -L "${dotfiles}" ]]; then
-  # A dotfiles-project orb: its .agents/setup pointed this at the working checkout. Leave it alone.
-  :
-elif [[ -d "${dotfiles}/.git" ]]; then
-  # A clone made by an earlier version of this script was shallow; give it full history once
-  if [[ -z "$(git -C "${dotfiles}" status --porcelain)" && -f "${dotfiles}/.git/shallow" ]]; then
-    timeout 6 git -C "${dotfiles}" fetch --quiet --unshallow ||
-      echo "dotfiles: unshallow failed, keeping the shallow copy" >&2
-  fi
-  pull_if_clean "${dotfiles}"
-else
-  # No project, or a project without dotfiles as an additional repository. Full history, so agents
-  # editing skills here can read git log and blame. It took 1 s here.
-  mkdir -p "$(dirname "${dotfiles}")"
-  timeout 6 git clone --quiet https://github.com/ooloth/dotfiles.git "${dotfiles}"
 fi
 
 bash "${dotfiles}/tools/agents/link.bash"

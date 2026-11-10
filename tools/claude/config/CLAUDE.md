@@ -710,20 +710,20 @@ raise mid-work choices as this file describes, and merge rather than rebase.
   (`amp orb service start`), not in tmux windows or with `&`. They survive Amp restarts and orb
   pauses, and tmux does not. Short-lived tmux sessions for testing interactive programs are fine.
 - **Browser:** use `agent-browser`. `browser-automation-agent` does not exist in an orb.
-- **Skills and standards:** my Amp projects list the dotfiles repo as an additional repository, so
-  Amp clones it to `/home/user/workspace/repos/dotfiles`. The Resume Script in my Amp workspace
+- **Skills and standards:** the Resume Script in my Amp workspace
   (`tools/amp/workspace-resume.bash` in the dotfiles repo) runs on every orb start and wake. It
-  fast-forwards that checkout when it has no uncommitted changes and links `~/Repos/ooloth/dotfiles`
-  to it. In an orb without that checkout, such as one with no project, it clones the repo to
-  `~/Repos/ooloth/dotfiles` instead. Either way it links `~/.agents/skills` and
+  clones the dotfiles repo to `/home/user/workspace/repos/dotfiles`, or fast-forwards that checkout
+  when it has no uncommitted changes, and links `~/Repos/ooloth/dotfiles` to it. It clones there
+  instead of listing dotfiles in each project's additional repositories, so that a dotfiles push
+  does not make every project's snapshot stale. The Changes pane still shows the checkout, but Amp
+  does not list it among the thread's additional repositories. It links `~/.agents/skills` and
   `~/.agents/standards` into the repo and links this file as `~/.config/AGENTS.md`. If one you need
   is missing, say which and carry on.
 - **Your own config:** when I ask to improve a skill, a standard or this file during other work,
   that request is my approval to edit it in place in `/home/user/workspace/repos/dotfiles`, where
-  the edit shows in this thread's Changes pane. In an orb without that checkout, edit
-  `~/Repos/ooloth/dotfiles`, and unless it links to this thread's own repository, show me the diff
-  in chat, because the Changes pane does not show that clone. Uncommitted edits stop the workspace
-  resume script from updating the checkout they are in.
+  the edit shows in this thread's Changes pane. In an orb of the dotfiles project itself, edit the
+  thread's own repository instead. Uncommitted edits stop the workspace resume script from updating
+  the checkout they are in.
 - **Committing dotfiles:** commit and push changes in the dotfiles checkout only when I ask for that
   specifically, following "What a Commit Signal Covers", from that checkout on `main`, merging
   rather than rebasing if the push is rejected. Shipping another project never includes them: a
