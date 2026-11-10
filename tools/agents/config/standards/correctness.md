@@ -111,6 +111,19 @@ reach is wider. The reach is taken from the provider's documentation, quoted
 beside the call or in the decision that relies on it, and the code keeps its own
 records in step with everything the call ends.
 
+**A check that an action took effect in an outside system reads that system's answer, not a record
+the code writes either way.**
+Code that calls an outside system often records the attempt locally whether or
+not the call succeeded, such as a `sent_at` timestamp or a
+`status = 'refunded'`, so that a failed call doesn't block the user. A runbook
+gate, a health check or a reconciliation job that reads that record reports
+success for a call that timed out or was refused. So the check reads the
+outside system's own state, such as the payment provider's record of the refund
+or the mail server's delivery status, or a local record written only from that
+system's response, where success and failure are told apart. Where neither
+exists, the check says what it can't see, and the code that drops the response
+is the gap to fix.
+
 ## Consider
 
 **Assertions multiply the value of fuzzing.**
