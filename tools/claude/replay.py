@@ -1523,6 +1523,11 @@ def grade_template(ref: TicketRef, run: int) -> str:
         "right and whether its options and recommendation are good, and `approach` too if it posted "
         "one first: the escalation is in `extra/`. Read `audit.md` for anything the replay was "
         "refused. To leave the replay out of the tally, write why after `excluded:`.\n\n"
+        "## Decisions\n\n"
+        "One line per decision the replay took alone or escalated, starting with `took-right`, "
+        "`took-wrong`, `asked-needed` or `asked-unneeded` and a colon, then the decision in a few "
+        "words. A decision taken alone is right when my plan would accept it; an escalation is "
+        "needed when my plan needed me for it.\n\n"
         "## Missed\n\nWhat the replay missed.\n\n"
         "## Found\n\nAnything it found that I didn't.\n"
     )

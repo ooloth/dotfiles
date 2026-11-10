@@ -1232,6 +1232,19 @@ class Grades(unittest.TestCase):
         assert grade.approach == replay.Verdict.APPROVE_WITH_EDITS
         assert grade.design == replay.Verdict.REJECT
 
+    def test_decision_lines_leave_the_stage_verdicts_as_they_are(self) -> None:
+        template = replay.grade_template(OTHER_REF, 1)
+        assert "## Decisions" in template
+        text = template.replace("approach:", "approach: approve-with-edits", 1)
+        text = text.replace("design:", "design: reject", 1)
+        decisions = "".join(
+            f"{label}: a decision\n"
+            for label in ("took-right", "took-wrong", "asked-needed", "asked-unneeded")
+        )
+        filled = text.replace("## Decisions\n\n", f"## Decisions\n\n{decisions}", 1)
+        assert decisions in filled
+        assert replay.parse_grade(filled) == replay.parse_grade(text)
+
     def test_an_empty_template_is_ungraded(self) -> None:
         assert replay.parse_grade(replay.grade_template(OTHER_REF, 1)) == replay.Ungraded()
 
