@@ -41,7 +41,8 @@ It writes one folder per replay under `${XDG_STATE_HOME:-~/.local/state}/replays
 replay's approach and design, my own from the ticket, the session's duration and tokens per model,
 an audit of the refusals it recognizes in the session's transcripts, and a `grade.md` to fill in.
 The folder is created only once the replay is ready to start, and a folder that already exists is
-never written to. `grades` summarizes every `grade.md` written so far.
+never written to. `grades` summarizes the stage verdicts in every `grade.md` written so far; the
+per-decision lines under `## Decisions` are read by hand.
 
 `--source` is a local checkout of the ticket's repo, `~/Repos/<owner>/<repo>` by default, which
 the clone is fetched from. The session is labelled `CLAUDE_CODE_ENTRYPOINT=factory-replay`, since

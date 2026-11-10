@@ -1220,6 +1220,8 @@ class CapturedComments(unittest.TestCase):
 
 # ── Grades ─────────────────────────────────────────────────────────────────────────────────────
 
+DECISION_LABELS = ("took-right", "took-wrong", "asked-needed", "asked-unneeded")
+
 
 class Grades(unittest.TestCase):
     def test_a_filled_in_template_is_graded(self) -> None:
@@ -1232,18 +1234,28 @@ class Grades(unittest.TestCase):
         assert grade.approach == replay.Verdict.APPROVE_WITH_EDITS
         assert grade.design == replay.Verdict.REJECT
 
-    def test_decision_lines_leave_the_stage_verdicts_as_they_are(self) -> None:
+    def test_the_template_asks_for_every_decision_label(self) -> None:
         template = replay.grade_template(OTHER_REF, 1)
-        assert "## Decisions" in template
-        text = template.replace("approach:", "approach: approve-with-edits", 1)
+        section = template.split("## Decisions\n\n", 1)[1].split("## ", 1)[0]
+        for label in DECISION_LABELS:
+            assert f"`{label}`" in section, label
+
+    def test_decision_lines_leave_the_stage_verdicts_as_they_are(self) -> None:
+        text = replay.grade_template(OTHER_REF, 1).replace(
+            "approach:", "approach: approve-with-edits", 1
+        )
         text = text.replace("design:", "design: reject", 1)
         decisions = "".join(
-            f"{label}: a decision\n"
-            for label in ("took-right", "took-wrong", "asked-needed", "asked-unneeded")
+            f"{label}: {stage}: reject\n"
+            for label, stage in zip(
+                DECISION_LABELS, ("excluded", "approach", "design", "escalation"), strict=True
+            )
         )
         filled = text.replace("## Decisions\n\n", f"## Decisions\n\n{decisions}", 1)
         assert decisions in filled
-        assert replay.parse_grade(filled) == replay.parse_grade(text)
+        assert replay.parse_grade(filled) == replay.Graded(
+            replay.Verdict.APPROVE_WITH_EDITS, replay.Verdict.REJECT, None
+        )
 
     def test_an_empty_template_is_ungraded(self) -> None:
         assert replay.parse_grade(replay.grade_template(OTHER_REF, 1)) == replay.Ungraded()

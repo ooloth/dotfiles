@@ -27,6 +27,7 @@ message, that a write in scratch and a `gh` call work, that no hook runs, and th
 `CLAUDE.md` loads, and the replay runs only if all of that holds. It writes a folder under
 `${XDG_STATE_HOME:-~/.local/state}/replays/` holding the replay's plan or escalation, my own
 approach and design, the session's usage, an audit of the refusals it recognizes, and a `grade.md`
-to fill in. `replay grades` summarizes the grades so far. `replay.py`'s docstring says what the
+to fill in. `replay grades` summarizes the stage verdicts so far; the per-decision lines under
+`## Decisions` are read by hand. `replay.py`'s docstring says what the
 sandbox allows, and [ooloth/dotfiles#269](https://github.com/ooloth/dotfiles/issues/269) records why
 it works this way.
