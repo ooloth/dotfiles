@@ -80,7 +80,8 @@ still runs the full suite unless the script says otherwise.
    `git add -- <path>...`, which stages only those paths. Write the message file into a new
    `mktemp -d` directory, so a session committing at the same time can't overwrite it. To commit
    part of a file, see "Workflows > Committing part of a file". Never run `git commit` without
-   paths, `git commit -a`, or `git add -A`.
+   paths, `git commit -a`, or `git add -A`, except to conclude a merge, as "Workflows >
+   Concluding a merge" describes.
 5. After each commit, run `git show --stat --format=%h HEAD` and confirm it lists only the paths you
    meant to commit. Note the hash. If it lists another path, or a later check shows `HEAD` is not
    the commit you made, stop and tell the user rather than fixing it, because another session may
@@ -188,3 +189,20 @@ Steps:
 4.  `git reset -q -- <file>`, so the shared index's entry for that file matches the new commit. It
     names the file, so it changes nothing else in the index. The remaining hunks stay in the working
     tree for the next commit
+
+### Concluding a merge
+
+Git refuses a path-limited commit while a merge is in progress
+(`fatal: cannot do a partial commit during a merge.`), so a merge left open by a conflict or by
+`git merge --no-commit` is concluded with `git commit -F <message file>` and no paths. That commits
+the whole index, including anything another session staged, so first list each staged path the
+merged branch did not change:
+
+```sh
+comm -23 <(git diff --cached --name-only | sort) <(git diff --name-only HEAD...MERGE_HEAD | sort)
+```
+
+Empty output means the index holds only the merge: commit. Each path it prints is either one you
+edited by hand to make the merge work, which you name in the commit message and the report, or
+another session's staged work. For the second, stop and tell the user rather than unstaging it,
+because unstaging changes that session's index.
