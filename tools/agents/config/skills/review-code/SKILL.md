@@ -219,7 +219,7 @@ Dry-run output: [each planned action and the summary line, verbatim, then the pa
   posted none]
 Overlapping open PRs: [each PR from Step 1's list with its number, title, base and the files it
   shares with this one; "none" when the check found none; "not checked" and the reason when it
-  exited 2. An agent may run `gh pr diff <n> -R <owner>/<repo>` on any PR listed here]
+  exited 2; "not applicable: not a PR review" outside PR scope. An agent may run `gh pr diff <n> -R <owner>/<repo>` on any PR listed here]
 Diff command: [exact command agents should run to read the diff]
 ```
 
@@ -924,7 +924,11 @@ On any answer other than "skip":
 
 - **Check what changed since the saved state.** Read the head and reviews again with
   `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid,reviews`, and run the fetch helper
-  from Step 1 again. A review can wait hours for its posting answer while the PR moves on.
+  from Step 1 again. A review can wait hours for its posting answer while the PR moves on. Run
+  `overlapping_prs.py` from Step 1 again too, whatever the head did. Re-check each "covered by #N"
+  finding against its new list, and take "covered by" off any whose PR is no longer open. Check each
+  PR the list newly names as Step 4 does. When it exits 2, the overlaps were not re-checked, and the
+  report to the user says so.
   - **A read fails:** post nothing, and say which one failed, quoting the error. What changed is
     unknown, not empty.
   - **The head moved:** post nothing yet. A review of an older head can be wrong about the code
