@@ -96,6 +96,13 @@ the PR carries its result. Where there is none, or the reviewer lacks the
 permission it needs, the PR says so and names the check that confirms it after
 the apply.
 
+**A resource that a `create_before_destroy` replacement used to read is deleted in a later apply than the replacement.**
+Deleting its block in the same change makes OpenTofu and Terraform refuse the
+plan with `Error: Cycle`, naming the replacement, its deposed object, the
+deleted resource's destroy and the replacement's dependents (seen with OpenTofu
+1.11.14). The block stays in configuration, read by nothing, until the
+replacement has applied, and the next change deletes it.
+
 ## Consider
 
 **A repeated shape becomes a module.**
