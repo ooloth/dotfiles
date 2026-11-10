@@ -21,11 +21,15 @@ the trunk merge's commit (made by `git merge`) and a mechanical fix's commit (ma
 - **Merge trunk into the PR's branch** (merge, never rebase) when "Trunk since the review" calls for
   it, run the project's checks and full test suite on the result, and push it.
 - **Bring a stacked PR up to date once its base merges.** When the PR was based on another PR's
-  branch and that PR squash-merged, GitHub retargets this one to trunk, and it usually conflicts,
-  because its branch still carries the base PR's commits. Merge trunk into it. Where a conflict is
-  the base PR's earlier text against its own squashed version, take trunk's side. Before pushing,
-  confirm the PR's diff against trunk is only its own change; anything else in it is a conflict
-  that needs a judgement about intent.
+  branch and that PR squash-merged, GitHub retargets this one to trunk. Trunk's history then holds
+  none of the base PR's commits, so a plain merge silently keeps the branch's older copies of the
+  base PR's lines wherever trunk's final version doesn't overlap them, with no conflict to warn.
+  So merge trunk with `uv run <skill-base-dir>/scripts/rebuild_stacked.py --base-pr-head <sha>`,
+  giving the base PR's final head as GitHub lists it. It rebuilds every file the merge touched as
+  trunk plus the branch's own diff, and fails unless the staged tree is exactly that. Resolve any
+  conflict it lists, keeping trunk's version of the base PR's text and the branch's own additions,
+  then rerun it with `--check-only` until it passes. A file it still flags is a conflict that
+  needs a judgement about intent.
 - **Fix a check failure the trunk merge caused** when the fix is mechanical, such as formatting,
   import order or a lockfile resync, and push it.
 - **Wait for checks that are still running.** While the gate reports only waiting conditions
