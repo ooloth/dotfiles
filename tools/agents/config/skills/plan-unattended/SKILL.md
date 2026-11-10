@@ -1,6 +1,6 @@
 ---
 name: plan-unattended
-description: Plan a ticket with nobody watching. Three independent discuss runs are reconciled into one approach and three design runs into one design, both are posted on the ticket, and implement-unattended is started in a new tmux window. Escalates on the ticket rather than taking a one-way decision.
+description: Plan a ticket with nobody watching. Three independent discuss runs are reconciled into one approach and three design runs into one design, both are posted on the ticket, and implement-unattended is started in a new tmux window. Takes one-way decisions itself and lists them, and escalates on the ticket only what the repo cannot settle.
 argument-hint: '<owner/repo#issue> [plan-only]'
 disable-model-invocation: true
 ---
@@ -31,19 +31,29 @@ yourself by running a command.
 
 ## Decisions nobody made
 
-Discuss and design end by asking the user to decide things. Here you decide them, unless the
-decision is one of these, which you escalate:
+Discuss and design end by asking the user to decide things. Here you decide them, one-way decisions
+included: a new dependency or external service, a persistent data shape or store, a public
+interface, a new process or runtime, or a user-facing pattern people will learn. That covers the
+open decisions the ticket lists, whatever category it names beside them. The user reviews the draft
+PR before anything merges, so a decision you take can still be reversed there, as long as your
+comment shows it.
 
-- it would add a new external service or dependency, a persistent data shape or store, a public
-  interface (an API, an event, a CLI contract, a file format), a new process or runtime, or a
-  user-facing pattern people will learn;
-- it contradicts or supersedes a recorded decision, or whether a recorded decision applies takes
-  interpretation;
-- the ticket does not say enough to tell what the work must make true.
+First choose the option the target properties rank highest, as if you could not escalate. Then
+escalate only when that option:
 
-Decide everything else by the target properties. A decision that changed which option won shows in
-the options table and the "Decided by" paragraph. Leave minor choices, such as names, out of the
-comments.
+- contradicts, amends or supersedes a recorded decision, or depends on one whose bearing on this
+  work takes interpretation, even when the ticket expects the change;
+- needs work outside this ticket, such as a new ticket or a change to another ticket's scope;
+- beats the other options that meet every binding property, or meets a binding property at all,
+  only through something the repo and ticket cannot settle: what the user prefers or puts first, or
+  a fact that can be measured only where you cannot measure it;
+
+or when the ticket does not say enough to tell what the work must make true. Never choose a
+lower-ranked option to avoid escalating.
+
+A decision that changed which option won shows in the options table and the "Decided by" paragraph.
+Each one-way decision you take also goes under "Decided without you" in the comment where you took
+it. Leave minor choices, such as names, out of the comments.
 
 ## Escalate
 
@@ -154,10 +164,17 @@ property numbering.
 
 ## How the comments read
 
-Write the approach comment exactly as the `discuss` skill's Phase 4 describes its ticket comment,
-and the design comment exactly as the `design` skill's Phase 7 describes its ticket comment. Name no
+Write the approach comment as the `discuss` skill's Phase 4 describes its ticket comment, and the
+design comment as the `design` skill's Phase 7 describes its ticket comment, adding only the
+`Decided without you` section below. Name no
 skill, command or agent in either: say what happened instead. Evidence and reasoning stay in this
 session; the comments carry only the decision.
+
+When you took a one-way decision, the comment that records it has a `## Decided without you 🧷`
+section: in the approach comment right after "Decided by", in the design comment as its last
+section. One entry per decision: what was decided, in one line; the options weighed; the reason it
+won; and what would reopen it. It is where the user checks what was decided for them before the
+draft PR merges.
 
 ## 5. Start the implementation
 
