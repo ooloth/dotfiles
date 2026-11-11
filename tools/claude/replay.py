@@ -7,6 +7,7 @@
 
 Run:
   uv run tools/claude/replay.py plan <owner/repo#n> --run <k> [--source PATH] [--branch main]
+      [--cleared SHA ...]
   uv run tools/claude/replay.py grades
 
 `plan` runs the installed `plan-unattended` skill, unchanged, as a headless Claude Code session
@@ -35,7 +36,10 @@ was: the agent harness (global instructions, skills, standards), along with any 
 dotfiles checkout that the Bash allow-list opens, all read from the install at
 `~/Repos/ooloth/dotfiles` whichever checkout runs this script. That is why a ticket is refused when
 a commit to one of those paths, made after its planning began, names it, whether as `owner/repo#n`,
-`repo#n`, its issue URL, or a bare `#n` for a dotfiles ticket.
+`repo#n`, its issue URL, or a bare `#n` for a dotfiles ticket. `--cleared SHA` lets one such commit
+through once I have read what it changed and judged that it gives nothing away, and the replay
+records each cleared commit in `meta.json` as `cleared_commits`. A cleared commit that doesn't name
+the ticket refuses the replay, since the clearance is then mistyped or meant for another ticket.
 
 It writes one folder per replay under `${XDG_STATE_HOME:-~/.local/state}/replays/`, holding the
 replay's approach and design, my own from the ticket, the session's duration and tokens per model,
@@ -239,6 +243,11 @@ class NamedByLaterHarnessCommits:
 
 
 @dataclass(frozen=True)
+class ClearedCommitNotNamed:
+    cleared: tuple[Sha, ...]
+
+
+@dataclass(frozen=True)
 class HarnessHistoryUnreadable:
     stderr: str
 
@@ -272,6 +281,7 @@ NotReplayable = (
     | NoDesignComment
     | BodyUnknown
     | NamedByLaterHarnessCommits
+    | ClearedCommitNotNamed
     | HarnessHistoryUnreadable
     | BaseNotFound
     | GitHubUnreadable
@@ -718,10 +728,20 @@ def watched_paths(dotfiles: Path, readable: Sequence[Path]) -> tuple[str, ...]:
 
 
 def check_later_harness(
-    commits: Sequence[Sha], files_of: Mapping[Sha, tuple[str, ...] | None], watched: Sequence[str]
-) -> NamedByLaterHarnessCommits | None:
+    commits: Sequence[Sha],
+    files_of: Mapping[Sha, tuple[str, ...] | None],
+    watched: Sequence[str],
+    cleared: frozenset[Sha] = frozenset(),
+) -> NamedByLaterHarnessCommits | ClearedCommitNotNamed | None:
     """Refuse a ticket that a commit to a watched path, made after its planning began, names: every
-    session reads those paths as they are today, which may say how the ticket was solved."""
+    session reads those paths as they are today, which may say how the ticket was solved. A commit
+    in `cleared` is one I read and judged to give nothing away, so it doesn't refuse; a cleared
+    commit that isn't among them refuses, since the clearance is a typo or meant for another
+    ticket."""
+    stray = tuple(sorted(cleared - set(commits)))
+    if stray:
+        return ClearedCommitNotNamed(stray)
+    commits = [sha for sha in commits if sha not in cleared]
     if not commits:
         return None
     touched: set[str] = set()
@@ -748,6 +768,12 @@ def explain(reason: NotReplayable) -> str:
                 "another folder every session reads as it is today, so a replay could read how it "
                 "was solved:\n"
                 f"{listed}\nThey changed:\n{changed}"
+            )
+        case ClearedCommitNotNamed(stray):
+            listed = "\n".join(f"  {c}" for c in stray)
+            return (
+                "--cleared names commits that aren't later harness commits naming this ticket, so "
+                f"the clearance is mistyped or meant for another ticket:\n{listed}"
             )
         case HarnessHistoryUnreadable(stderr):
             return (
@@ -1924,7 +1950,9 @@ def write(path: Path, text: str) -> None:
     path.write_text(text)
 
 
-def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
+def plan(
+    ref: TicketRef, run: int, source: Path, branch: str, cleared: frozenset[Sha] = frozenset()
+) -> int:
     # Closing the terminal or a `kill` would otherwise end the process without the cleanup below.
     for stop in (signal.SIGTERM, signal.SIGHUP):
         signal.signal(stop, raise_signalled)
@@ -1954,7 +1982,7 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
     later = later_harness_commits(install, ticket_pattern(ref), snapshot.planning_began, watched)
     if isinstance(later, HarnessHistoryUnreadable):
         raise SystemExit(f"replay: {explain(later)}")
-    named = check_later_harness(later, files_changed(install, later), watched)
+    named = check_later_harness(later, files_changed(install, later), watched, cleared)
     if named is not None:
         raise SystemExit(f"replay: {explain(named)}")
     base = resolve_base(source, branch, snapshot.planning_began)
@@ -2029,6 +2057,7 @@ def plan(ref: TicketRef, run: int, source: Path, branch: str) -> int:
             "started_at": datetime.now(UTC).isoformat(),
             "canary": {"verdict": type(verdict).__name__, "session_id": canary_run.session_id},
             "replay_script": script_version(),
+            "cleared_commits": sorted(cleared),
             "session_command": command,
             **harness_version(install, watched),
         }
@@ -2114,6 +2143,13 @@ def grades() -> int:
     return 0
 
 
+def full_sha(text: str) -> Sha:
+    """A commit hash given in full, so a clearance can't come to match a different commit."""
+    if not re.fullmatch(r"[0-9a-f]{40}", text):
+        raise argparse.ArgumentTypeError(f"'{text}' is not a full 40-character commit hash")
+    return Sha(text)
+
+
 def main(argv: Sequence[str]) -> int:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -2124,6 +2160,15 @@ def main(argv: Sequence[str]) -> int:
     plan_parser.add_argument("--run", type=int, required=True, help="run number, 1 or more")
     plan_parser.add_argument("--source", type=Path, help="local checkout of the ticket's repo")
     plan_parser.add_argument("--branch", default="main", help="the default branch (main)")
+    plan_parser.add_argument(
+        "--cleared",
+        type=full_sha,
+        action="append",
+        default=[],
+        metavar="SHA",
+        help="a later harness commit naming the ticket that I read and judged to give nothing "
+        "away; repeat for several",
+    )
     commands.add_parser("grades", help="summarize every grade so far")
     args = parser.parse_args(argv)
 
@@ -2140,7 +2185,7 @@ def main(argv: Sequence[str]) -> int:
     source = args.source or Path.home() / "Repos" / ref.owner / ref.repo
     branch: str = args.branch
     try:
-        return plan(ref, args.run, source, branch)
+        return plan(ref, args.run, source, branch, frozenset(args.cleared))
     except Signalled as stopped:
         # A signal outside the session itself, which records its own: plan's cleanup has run.
         print(f"replay: stopped by {stopped.name}.", file=sys.stderr)

@@ -18,6 +18,7 @@ commands on PATH, so no test reaches GitHub or a real Claude Code session.
 
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import json
 import os
@@ -339,6 +340,57 @@ class LaterHarnessCommits(unittest.TestCase):
             )
             assert found == ()
             assert replay.check_later_harness(found, {}, replay.HARNESS_PATHS) is None
+
+    def test_clearing_one_named_commit_still_refuses_on_the_other(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, shas = make_harness_history(Path(tmp), T0)
+            found = replay.later_harness_commits(
+                repo, replay.ticket_pattern(HUB_REF), T0, replay.HARNESS_PATHS
+            )
+            assert isinstance(found, tuple), found
+            cleared = frozenset({replay.Sha(shas["named after"])})
+            refused = replay.check_later_harness(
+                found, replay.files_changed(repo, found), replay.HARNESS_PATHS, cleared
+            )
+            assert refused == replay.NamedByLaterHarnessCommits(
+                (replay.Sha(shas["named by URL after"]),), ("tools/claude/config/settings.json",)
+            )
+
+    def test_clearing_every_named_commit_lets_the_replay_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, _ = make_harness_history(Path(tmp), T0)
+            found = replay.later_harness_commits(
+                repo, replay.ticket_pattern(HUB_REF), T0, replay.HARNESS_PATHS
+            )
+            assert isinstance(found, tuple), found
+            refused = replay.check_later_harness(
+                found, replay.files_changed(repo, found), replay.HARNESS_PATHS, frozenset(found)
+            )
+            assert refused is None
+
+    def test_a_cleared_commit_that_does_not_name_the_ticket_refuses_the_replay(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo, shas = make_harness_history(Path(tmp), T0)
+            found = replay.later_harness_commits(
+                repo, replay.ticket_pattern(HUB_REF), T0, replay.HARNESS_PATHS
+            )
+            assert isinstance(found, tuple), found
+            stray = replay.Sha(shas["near number after"])
+            refused = replay.check_later_harness(
+                found,
+                replay.files_changed(repo, found),
+                replay.HARNESS_PATHS,
+                frozenset({*found, stray}),
+            )
+            assert refused == replay.ClearedCommitNotNamed((stray,))
+            assert stray in replay.explain(refused)
+
+    def test_only_a_full_hash_can_be_cleared(self) -> None:
+        full = "9db773a60d68ceee7a4b21d665e279129bc297bc"
+        assert replay.full_sha(full) == full
+        for bad in ("9db773a6", "z" * 40, full + "a", full.upper()):
+            with self.subTest(bad=bad), self.assertRaises(argparse.ArgumentTypeError):
+                replay.full_sha(bad)
 
     def test_an_unreadable_history_refuses_the_replay_with_gits_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
