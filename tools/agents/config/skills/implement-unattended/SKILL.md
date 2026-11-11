@@ -138,11 +138,11 @@ test-writer's agent ID for step 4.
 ## 3. Green
 
 Spawn an **implementer** subagent. Give it the approach and design comments, the test files from
-step 2, and the list of check commands. It implements the approach in the smallest change that
-makes those tests pass, following `uphold-standards`, adds each assertion from **Assertions** and
-each signal from **Telemetry**, and runs the full checks until green. It does not edit the test
-files from step 2. Choices the design did not make follow the rule under "Decisions the design did
-not make".
+step 2, and the list of check commands. It implements the design, including what it removes, in the
+smallest change that makes those tests pass, following `uphold-standards`, adds each assertion from
+**Assertions** and each signal from **Telemetry**, and runs the full checks until green. It does not
+edit the test files from step 2. Choices the design did not make follow the rule under "Decisions
+the design did not make".
 
 When it returns, confirm with `git diff <tests commit> -- <test files>` that the test files are
 unchanged. If they changed, the implementation is not trusted: escalate with the diff.

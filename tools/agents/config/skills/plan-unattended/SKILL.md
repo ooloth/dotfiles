@@ -66,6 +66,46 @@ it. Leave minor choices, such as names, out of the comments.
 2. Stop without starting implementation, and without posting anything further. Print
    `ESCALATED: <one sentence>` as the final line.
 
+## Simplest-system review
+
+`discuss` and `design` say what a property is and that the option to recommend is the one that
+leaves the simplest system. The lens runs follow those skills but each pushes toward its own lens,
+and each merged list is built by the agent that has read every run's options. This review applies
+the two skills' rules again, by an agent that has seen no option, so the merged lists are judged
+with no leader in mind. Each stage runs it once, after its lists are merged and before anything is
+scored.
+
+Spawn one subagent on Fable, a different model from the lens and design runs, which run on Opus.
+Give it the ticket reference, the repo path, the paths of both skills
+(`~/.claude/skills/discuss/SKILL.md` and `~/.claude/skills/design/SKILL.md`) and the merged list:
+in the approach stage, the target properties with the risks and facts behind them; in the design
+stage, the approach comment and the constraints, failure variants and tests from reconciliation.
+Give it no option or progression any run proposed. Tell it to:
+
+- in the approach stage, check each property against the rules in `discuss` Phase 3, step 1: what
+  it rests on, or "no source"; whether it states a need every option must meet or a mechanism only
+  some options bring, and the need behind a mechanism; and whether existing behaviour already meets
+  it, with the command that shows it;
+- in the design stage, leave the approach comment's properties as they are, and for each
+  constraint, failure variant and test say which approach property or real risk it observes, or
+  "no source", and whether a check that already runs covers it;
+- build the option (in design, the progression) that leaves the simplest system, as `discuss`
+  Phase 3, step 2 and `design` Phase 2 define it: list what a maintainer must know afterwards in
+  the area the work touches, with what it removes as well as what it adds, and show how it meets
+  each item that survives.
+
+Every finding needs a command it ran, a concrete scenario or a quoted source. Then act on the
+review yourself, dropping any finding without that evidence:
+
+- Strike an item the review marked "no source", once you have looked for a source yourself and
+  found none.
+- Restate a mechanism as the need behind it, and count the mechanism in the `Leaves behind` of the
+  options that bring it.
+- Keep an item that existing behaviour meets, and say in "Decided by" that it is met by changing
+  nothing.
+- Score the review's option with the others. It wins or loses on the same properties as every other
+  option, so it cannot win by meeting fewer of them.
+
 ## 1. Check the inputs
 
 Read the ticket with all its comments (`gh issue view <n> -R <repo> --json
@@ -76,9 +116,10 @@ If it already has an approach or design comment, escalate: this skill plans tick
 
 ### Three runs, one lens each
 
-Spawn three subagents in one message. Give each the ticket reference, the repo path, the path of
-the `discuss` skill (`~/.claude/skills/discuss/SKILL.md`) and one lens: **safety**, **performance**
-or **experience**, as `~/.agents/standards/decision-making.md` defines their maximums. Tell each to:
+Spawn three subagents on Opus in one message. Give each the ticket reference, the repo path, the
+path of the `discuss` skill (`~/.claude/skills/discuss/SKILL.md`) and one lens: **safety**,
+**performance** or **experience**, as `~/.agents/standards/decision-making.md` defines their
+maximums. Tell each to:
 
 - follow the skill's Phases 1 to 3, stating its recommended answer wherever the skill says to ask;
 - consider only options that meet every binding property, and among those find the ones that come
@@ -104,9 +145,11 @@ Do not share one run's output with another.
    its output.
 3. Build one target-properties list from the reconciled risks and facts, and apply `discuss` Phase
    4's review of claims to it.
-4. Merge options that share a mechanism, then score every distinct option against every binding
-   property and against the safety, performance and experience maximums, in one table.
-5. Before choosing, look for a combination of parts of different options that comes closer to all
+4. Run the simplest-system review on that list.
+5. Merge options that share a mechanism, then score every distinct option, the review's included,
+   against every binding property, against the safety, performance and experience maximums, and on
+   `Leaves behind`, in one table.
+6. Before choosing, look for a combination of parts of different options that comes closer to all
    three maximums than any single option. A tradeoff left standing names the fact that forces it.
 
 ### Choose, with evidence
@@ -121,7 +164,9 @@ Do not share one run's output with another.
 3. Whichever way the choice was made, spawn one subagent on Opus to attack it, because a scenario
    it misses goes unnoticed: find a scenario where the
    chosen approach breaks a binding property, or a risk no property covers, under the same evidence
-   rule. A real finding goes back into step 4 of the reconciliation; "no evidence found" stands.
+   rule. A real finding goes back into step 3 of the reconciliation, where a property it adds meets
+   the rules in `discuss` Phase 3, step 1, and the table is scored again; "no evidence found"
+   stands.
 4. Write the **Assumptions**: the approach-level assumptions the choice rests on that, if wrong,
    would put a different option first, such as what the system is for, who calls it or what may
    change. Leave out code-style and refactoring preferences: they are not what an approach rests
@@ -137,15 +182,15 @@ able to tell what is being designed without opening the ticket.
 
 ## 3. Design: three lenses, reconciled
 
-Spawn three new subagents in one message. Give each the ticket reference, the repo path, the path
-of the `design` skill (`~/.claude/skills/design/SKILL.md`) and one lens (safety, performance or
+Spawn three new subagents on Opus in one message. Give each the ticket reference, the repo path, the
+path of the `design` skill (`~/.claude/skills/design/SKILL.md`) and one lens (safety, performance or
 experience, with smallest change as the fallback, as in step 2). Tell each to read the agreed
 approach from the approach comment on the ticket, not from you, so design works from the same text
 implementation will read. Tell each to follow the skill's Phases 1 to 6, including Phase 2's
-comparison of two or three type progressions scored against the properties, to state its
-recommended answer wherever the skill says to ask, to run `git log` and `git blame` on the lines
-its design touches, and to return its design, with every claim about how code or a test setup
-behaves beside the command that showed it.
+comparison of two or three type progressions scored against the properties, to state its recommended
+answer wherever the skill says to ask, to run `git log` and `git blame` on the lines its design
+touches, and to return its design, with every claim about how code or a test setup behaves beside
+the command that showed it.
 
 Then reconcile their outputs yourself:
 
@@ -153,9 +198,10 @@ Then reconcile their outputs yourself:
    Keep each one that observes a target property or a real risk, however many runs missed it.
 2. List every claim the runs disagree on, such as whether a setup takes effect or what a function
    returns, and settle each by running a command. Keep the command and its output.
-3. Score every progression any run proposed in one table, so the chosen one is compared with the
-   others rather than taken as given.
-4. Build one design from the reconciled result, not from any one run's design, and settle its open
+3. Run the simplest-system review on the list from step 1.
+4. Score every progression any run proposed, and the review's, in one table, so the chosen one is
+   compared with the others rather than taken as given.
+5. Build one design from the reconciled result, not from any one run's design, and settle its open
    decisions under "Decisions nobody made".
 
 If design needs an escalation, the approach comment stays on the ticket and the escalation comment

@@ -83,15 +83,19 @@ exception or in `docs/standards/` when it has one, so whoever writes the code th
 reads the rule before the check fails. Where the project has neither folder, creating one is an
 open decision.
 
-Before any alternative, name the smallest change that delivers every carried property, and score
-it first. Each alternative is that change plus something, and the addition has to deliver a carried
-property the smallest change fails. A property this phase adds to the carried list does not count
-for that until the user accepts it: list it under Open decisions with the option it would favour,
-and score the options without it. A property whose content is that this change is guarded against
-being undone later, such as "a test fails if someone removes the flag", is never added, because
-every change could claim one and the checks that already run are what notice a later edit.
+Before any alternative, name the change that leaves the simplest system and delivers every carried
+property, and score it first. The simplest system is the one that asks a maintainer to know least
+afterwards in the area the slice touches, counting what a change removes as well as what it adds,
+so it is not always the smallest change. Every alternative is scored against the same properties
+and `Leaves behind`, and anything it adds that this change does not need has to deliver a carried
+property this change fails. A property this phase adds to the
+carried list does not count for that until the user accepts it: list it under Open decisions with
+the option it would favour, and score the options without it. A property whose content is that
+this change is guarded against being undone later, such as "a test fails if someone removes the
+flag", is never added, because every change could claim one and the checks that already run are
+what notice a later edit.
 
-The type story is required when that smallest change adds or changes a type or a function
+The type story is required when that change adds or changes a type or a function
 signature. Where it does neither, such as a change to configuration or data, there is no
 progression to design: the alternatives below compare the concrete changes instead, Phase 3 is
 skipped, and the Types section says in one line that the slice adds no types and why, the same way
@@ -102,8 +106,8 @@ Then sketch 2–3 meaningfully different type progressions for the same feature,
 where the slice adds no types. For each, state:
 - The shape of the progression (a one-line summary of the type structure), or the change itself
 - How it scores against each target property, and which properties it fails to deliver
-- What it leaves behind: the new functions, types, files, concepts or rules a maintainer keeps in
-  mind
+- What it leaves behind: the functions, types, files, concepts or rules a maintainer keeps in mind,
+  counting what it removes as well as what it adds
 - Its main tradeoff
 
 Then recommend one, naming the property that decides it. The effort to build an option is a
@@ -332,8 +336,10 @@ sees how the change fits together to solve the problem:
    - **Progressions considered:** the two or three from Phase 2 as an options table: `Option`, then
      one column per property they were scored on, then `Leaves behind`. The chosen one is the first
      row, in bold, starting with 🏆 and ending in "(chosen)". Every cell is ✅ or ❌. A
-     `Leaves behind` cell is ✅ when the option adds nothing a maintainer keeps in mind that a
-     property does not need, and otherwise ❌ followed by what it adds.
+     `Leaves behind` cell judges the system the option leaves: ✅ when, after what it adds and what
+     it removes, that system asks a maintainer to keep in mind nothing a property does not need, and
+     otherwise ❌. Either mark is followed by what the option adds and what it removes, when it
+     does either.
    - **Decided by …:** why the chosen progression beat each of the others.
    - **Progression:** the chosen type story as a code block, with a domain-named type at each stage
      and the transformation between them. Then a list of what each step rules out, each ending with
