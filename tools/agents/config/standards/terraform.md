@@ -96,6 +96,15 @@ the PR carries its result. Where there is none, or the reviewer lacks the
 permission it needs, the PR says so and names the check that confirms it after
 the apply.
 
+**A plan-time guard reads configuration, not a resource the same plan creates.**
+Whether an attribute of a resource being created is known at plan depends on the provider and the
+tool version. google 8.1.0 on Terraform 1.17.1 plans a Cloud Run service's literal env values as
+known, but nothing guarantees it, and a precondition whose condition becomes unknown is deferred to
+apply without warning. A guard meant to stop a bad value before anything is created then passes
+every plan and fires only after the resource exists. The guard reads what a plan always knows:
+locals, variables, or the configuration file itself through `file()`. A `terraform test` that plans
+the guard with mocked providers and one deliberately bad value shows whether it fails at plan.
+
 **A resource that a `create_before_destroy` replacement used to read is deleted in a later apply
 than the replacement.**
 Deleting its block in the same change makes OpenTofu and Terraform refuse the
@@ -103,6 +112,13 @@ plan with `Error: Cycle`, naming the replacement, its deposed object, the
 deleted resource's destroy and the replacement's dependents (seen with OpenTofu
 1.11.14). The block stays in configuration, read by nothing, until the
 replacement has applied, and the next change deletes it.
+
+**A resource is deleted in a later apply than the change that stops its dependents reading it.**
+OpenTofu and Terraform destroy a removed resource before the in-place update of whatever referenced
+it. When the provider refuses to delete an object still in use, such as a GCP backend service a URL
+map uses, the destroy fails, the update is skipped, and every later run fails the same way
+(reproduced on Terraform 1.17.1). Adding `create_before_destroy` to the dependent in the same change
+doesn't help. The block stays, read by nothing, until the dependent's update has applied.
 
 ## Consider
 
