@@ -84,11 +84,12 @@ property rests on it; a fact that only changes the ranking goes under Assumption
 decision taken alone no longer lives only in a comment: [decision 013][013] has the implementation
 commit a record for it, so it shows in the draft PR's diff, which narrows the Risk above.
 
-## Addendum (2026-11-11) — what the per-decision grades count
+## Addendum (2026-11-10) — what the per-decision grades count
 
 The grade template's Decisions section counts escalations, one-way decisions taken alone, listed or
 not, and decisions taken alone that the rule says to escalate. A design choice that is none of
 these goes under Missed or Found, because the stage verdicts already grade plan quality. "Revisit
-when" names the same scope.
+when" names the same scope. Before this, it read 'a decision the planner took alone that my plan
+would reject'.
 
 [013]: 013-the-unattended-implementation-records-each-one-way-decision-the-planner-took.md
