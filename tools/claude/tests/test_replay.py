@@ -1240,6 +1240,14 @@ class Grades(unittest.TestCase):
         for label in DECISION_LABELS:
             assert f"`{label}`" in section, label
 
+    def test_the_skill_the_template_points_to_has_the_sections_it_names(self) -> None:
+        template = replay.grade_template(OTHER_REF, 1)
+        path = "tools/agents/config/skills/plan-unattended/SKILL.md"
+        assert f"<dotfiles_commit>:{path}" in template
+        skill = (Path(__file__).resolve().parents[3] / path).read_text()
+        assert "\n## Decisions nobody made\n" in skill
+        assert "Decided without you" in skill
+
     def test_decision_lines_leave_the_stage_verdicts_as_they_are(self) -> None:
         text = replay.grade_template(OTHER_REF, 1).replace(
             "approach:", "approach: approve-with-edits", 1

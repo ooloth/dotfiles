@@ -1525,15 +1525,26 @@ def grade_template(ref: TicketRef, run: int) -> str:
         "one first: the escalation is in `extra/`. Read `audit.md` for anything the replay was "
         "refused. To leave the replay out of the tally, write why after `excluded:`.\n\n"
         "## Decisions\n\n"
-        'One line per decision the replay escalated, per decision listed under "Decided without '
-        'you" in its comments, and per one-way decision it took alone without listing it (the '
-        'categories are in "Decisions nobody made" in the `plan-unattended` skill as it stood at '
-        'the `dotfiles_commit` in `meta.json`; add "not listed" to that line). Each line starts '
-        "with `took-right`, `took-wrong`, `asked-needed` or `asked-unneeded` and a colon, then the "
-        "decision in a few words. A decision taken alone is right when my plan would accept it; "
-        "an escalation is needed when my plan needed me for it. Every other way the replay "
-        "differs from my plan goes under Missed or Found. Write `None` when no decision gets a "
-        "line or the replay is excluded.\n\n"
+        "One line for each of these, and nothing else:\n\n"
+        "- each decision the replay escalated;\n"
+        "- each one-way decision it took alone, whether or not it listed it under "
+        '"Decided without you" in `approach.md` or `design.md`. Add "not listed" to the line '
+        "when it didn't list it;\n"
+        "- each decision it took alone that the skill's rule says to escalate. Add "
+        '"should have asked" to the line.\n\n'
+        "A decision that fits more than one of these gets one line with every note that applies. "
+        'The one-way categories and the escalation rule are in "Decisions nobody made" in the '
+        "`plan-unattended` skill as it stood when the replay ran: `git show "
+        "<dotfiles_commit>:tools/agents/config/skills/plan-unattended/SKILL.md`, with the commit "
+        "from `meta.json`. If `meta.json` says `harness_dirty: true`, the replay read edits that "
+        "commit doesn't hold, so write that after `excluded:`.\n\n"
+        "Each line starts with `took-right`, `took-wrong`, `asked-needed` or `asked-unneeded` and "
+        "a colon, then the decision in a few words. A decision taken alone is right when my plan "
+        "would accept it; an escalation is needed when my plan needed me for it.\n\n"
+        'A decision listed under "Decided without you" that isn\'t one-way gets no line here: '
+        'note it under Found as "listed, not one-way". Every other way the replay differs from '
+        "my plan goes under Missed or Found. Write `None` when no decision gets a line or the "
+        "replay is excluded.\n\n"
         "## Missed\n\nWhat the replay missed.\n\n"
         "## Found\n\nAnything it found that I didn't.\n"
     )

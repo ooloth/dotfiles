@@ -53,8 +53,9 @@ aligned.
 ## Revisit when
 
 A replay round's per-decision grades, in each run's `grade.md` under `~/.local/state/replays/`,
-show a decision the planner took alone that my plan would reject, or at least as many questions my
-plan didn't need as round 1 asked (three).
+show a one-way decision the planner took alone, or one it took alone that the rule says to ask
+about, that my plan would reject, or at least as many questions my plan didn't need as round 1
+asked (three).
 
 ## Also update
 
@@ -82,5 +83,12 @@ needs goes under Deferred. A fact the planner cannot measure escalates only when
 property rests on it; a fact that only changes the ranking goes under Assumptions. A one-way
 decision taken alone no longer lives only in a comment: [decision 013][013] has the implementation
 commit a record for it, so it shows in the draft PR's diff, which narrows the Risk above.
+
+## Addendum (2026-11-11) — what the per-decision grades count
+
+The grade template's Decisions section counts escalations, one-way decisions taken alone, listed or
+not, and decisions taken alone that the rule says to escalate. A design choice that is none of
+these goes under Missed or Found, because the stage verdicts already grade plan quality. "Revisit
+when" names the same scope.
 
 [013]: 013-the-unattended-implementation-records-each-one-way-decision-the-planner-took.md
