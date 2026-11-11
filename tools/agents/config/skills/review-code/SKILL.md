@@ -51,6 +51,16 @@ commit, so Step 5 checks that the PR has not moved since, compares the PR's own 
 base if it has, and pins its comments to the saved head. Store `author.is_bot` and
 `viewerPermission` for Step 5 too: together they say whether the findings are the user's to fix.
 
+**For PR scope, also find the merge base,** the commit the PR's branch forked from:
+
+```bash
+gh api repos/<owner>/<repo>/compare/<baseRefOid>...<headRefOid> -q .merge_base_commit.sha
+```
+
+`baseRefOid` is the base branch's tip, which moves whenever another PR merges, so a line that
+another PR changed after the fork reads one way at `baseRefOid` and another way before this
+change. The merge base is what the change is measured against, so it is the Base ref in Step 2.
+
 **For PR scope, also fetch what earlier reviewers said:**
 
 ```bash
@@ -80,9 +90,14 @@ PRs against other bases included, that changes a file this PR changes, counting 
 path, with the files each one shares. Exit 0 means none, 1 means some, and 2 means it could not
 tell, which is never read as none.
 
-Output the reviewable file list and diff command before proceeding. When the skip rules leave
-nothing because every changed file is a lockfile or package manifest, say so and name those files
-as going to Step 1a.
+The base ref for every other scope: `git merge-base <branch> HEAD` for a branch or for no
+argument on a feature branch (with the base branch as `<branch>`), `<oldest>^` for consecutive
+commits, each commit's own parent for commits that are not consecutive, and `HEAD` for file paths
+or staged changes.
+
+Output the reviewable file list, diff command and base ref before proceeding. When the skip rules
+leave nothing because every changed file is a lockfile or package manifest, say so and name those
+files as going to Step 1a.
 
 **A dependency update takes Step 1a.** When the changed files include a lockfile or a package
 manifest (`package.json`, `pyproject.toml`, `Cargo.toml` and the like), run Step 1a. If those are
@@ -221,6 +236,7 @@ Overlapping open PRs: [each PR from Step 1's list with its number, title, base a
   shares with this one; "none" when the check found none; "not checked" and the reason when it
   exited 2; "not applicable: not a PR review" outside PR scope. An agent may run `gh pr diff <n> -R <owner>/<repo>` on any PR listed here]
 Diff command: [exact command agents should run to read the diff]
+Base ref: [the commit SHA from Step 1 that the change is measured against]
 ```
 
 Enhance if needed: if raw sources are vague, read the diff and fill in the gaps. Never leave this
@@ -274,11 +290,12 @@ Pass each agent:
 - This provenance requirement, verbatim:
 
   > For every finding, state whether the change under review **introduced** it or whether it is
-  > **pre-existing** — already true on the base ref before this change. Decide it mechanically,
-  > not by impression: run `git show <base-ref>:<path>` (or `git log -S '<the exact line>'`) and
-  > say which you ran. A line that appears in the diff as unchanged context is pre-existing even
-  > when it sits inside a function the change rewrote. Label each finding `[introduced]` or
-  > `[pre-existing]`. If you cannot determine it, say `[provenance unknown]` rather than guessing.
+  > **pre-existing** — already true at the Base ref in Context, before this change. Decide it
+  > mechanically, not by impression: run `git show <Base ref>:<path>` (or
+  > `git log -S '<the exact line>'`) and say which you ran. A line that appears in the diff as
+  > unchanged context is pre-existing even when it sits inside a function the change rewrote.
+  > Label each finding `[introduced]` or `[pre-existing]`. If you cannot determine it, say
+  > `[provenance unknown]` rather than guessing.
 
 Send a single message containing all Agent tool calls simultaneously. Run one fan-out for the whole
 scope. Never split a scope into one review per commit or per file. If calls are refused at the
