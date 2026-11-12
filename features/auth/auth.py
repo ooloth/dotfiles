@@ -25,7 +25,7 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Callable, Mapping
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from enum import Enum
 from typing import NewType, Protocol, assert_never
@@ -41,8 +41,10 @@ EXTERNAL_ACCOUNT = "michael.uloth@rxrx.tech"
 SPACELIFT_ACCOUNT_KEY = "PRIVATE_SPACELIFT_ACCOUNT"
 ARGOCD_SERVER_KEY = "PRIVATE_ARGOCD_SERVER"
 
-# Long enough for a slow token refresh, short enough that a hung check doesn't hold up the others
-CHECK_TIMEOUT_SECONDS = 30
+# A healthy check takes about a second, so this leaves room for a slow token refresh while keeping a
+# server that hangs from holding up every `cc`, `ccc` and `ccy-vertex` start for long. Argo CD's
+# token endpoint has hung for 30 s before answering 504.
+CHECK_TIMEOUT_SECONDS = 10
 # What a shell reports for a command stopped by Ctrl-C (128 + SIGINT)
 INTERRUPTED_EXIT_CODE = 130
 
@@ -320,18 +322,53 @@ def log_in(login: Login, before: Status, mode: Mode, shell: Shell) -> Status:
     return check_status(login, shell)
 
 
-def run(mode: Mode, items: tuple[Login | Unconfigured, ...], shell: Shell) -> tuple[Outcome, ...]:
-    """Check every login at once, then log in to the expired ones one at a time."""
+def run(
+    mode: Mode,
+    items: tuple[Login | Unconfigured, ...],
+    shell: Shell,
+    report: Callable[[Outcome], None],
+) -> tuple[Outcome, ...]:
+    """Check every login at once, then log in to the expired ones one at a time.
+
+    Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
+    login, once the login and its second check are done. So the order of the reports follows the
+    order the checks finish in, and the returned outcomes keep the order of `items`."""
+    befores: dict[int, Status] = {}
+    reported: list[LoginName] = []
+
+    def report_and_record(outcome: Outcome) -> None:
+        reported.append(outcome.name)
+        report(outcome)
+
     with ThreadPoolExecutor(max_workers=len(items)) as pool:
-        befores = list(pool.map(lambda item: check_status(item, shell), items))
+        checks = {pool.submit(check_status, item, shell): index for index, item in enumerate(items)}
+        for check in as_completed(checks):
+            index = checks[check]
+            befores[index] = check.result()
+            if login_to_run(mode, items[index], befores[index]) is None:
+                report_and_record(Outcome(items[index].name, befores[index], None))
     outcomes: list[Outcome] = []
-    for item, before in zip(items, befores, strict=True):
-        match (mode, item, before):
-            case (Mode.REFRESH, Login() as login, Expired()):
-                outcomes.append(Outcome(item.name, before, log_in(login, before, mode, shell)))
-            case _:
+    for index, item in enumerate(items):
+        before = befores[index]
+        match login_to_run(mode, item, before):
+            case None:
                 outcomes.append(Outcome(item.name, before, None))
+            case login:
+                outcome = Outcome(item.name, before, log_in(login, before, mode, shell))
+                report_and_record(outcome)
+                outcomes.append(outcome)
+    assert len(reported) == len(set(reported)), f"a login was reported twice: {reported}"
+    assert set(reported) == {item.name for item in items}, f"a login went unreported: {reported}"
     return tuple(outcomes)
+
+
+def login_to_run(mode: Mode, item: Login | Unconfigured, before: Status) -> Login | None:
+    """The login to run for an item whose check found it expired, in refresh mode only."""
+    match (mode, item, before):
+        case (Mode.REFRESH, Login() as login, Expired()):
+            return login
+        case _:
+            return None
 
 
 def final_status(outcome: Outcome) -> Status:
@@ -382,16 +419,18 @@ def read_mode(argv: list[str]) -> Mode:
 
 def main(argv: list[str]) -> int:
     mode = read_mode(argv)
+    print("Checking logins...", file=sys.stderr, flush=True)
     try:
-        outcomes = run(mode, logins(read_settings(os.environ)), SubprocessShell())
+        outcomes = run(
+            mode,
+            logins(read_settings(os.environ)),
+            SubprocessShell(),
+            lambda outcome: print(describe(outcome), flush=True),
+        )
     except KeyboardInterrupt:
         # Reached only from a check, since each login catches its own Ctrl-C
         print("\nStopped. Run `auth --check` to see where each login stands.", file=sys.stderr)
         return INTERRUPTED_EXIT_CODE
-    if any(outcome.after is not None for outcome in outcomes):
-        print(file=sys.stderr)
-    for outcome in outcomes:
-        print(describe(outcome))
     if mode is Mode.CHECK and any(outcome.before == Expired() for outcome in outcomes):
         print("\nRun `auth` to log in to the expired ones.", file=sys.stderr)
     return 0 if all_valid(outcomes) else 1

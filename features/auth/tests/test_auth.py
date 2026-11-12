@@ -20,6 +20,7 @@ import importlib.util
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -126,7 +127,60 @@ def tool(item) -> str:
     return item.check[0]
 
 
+def ignore(_outcome) -> None:
+    return None
+
+
 login_state = st.sampled_from(["valid", "expired", "unreachable"])
+
+
+@dataclass
+class BlockingShell(FakeShell):
+    """A FakeShell whose check for `blocked` waits until every other login has been reported."""
+
+    blocked: str = ""
+    others_reported: threading.Event = field(default_factory=threading.Event)
+
+    def capture(self, command: tuple[str, ...]):
+        (login,) = [item for item in self._logins() if item.check == command]
+        if login.name == self.blocked and not self.others_reported.wait(timeout=5):
+            return auth.TimedOut()
+        return super().capture(command)
+
+
+class ResultsAppearAsChecksFinish(unittest.TestCase):
+    def test_a_slow_check_does_not_hold_back_the_results_of_the_others(self) -> None:
+        items = configured_logins()
+        argocd = items[3]
+        shell = BlockingShell(
+            items, dict.fromkeys(names(items), "valid"), dict.fromkeys(names(items), True)
+        )
+        shell.blocked = argocd.name
+        reported: list = []
+
+        def report(outcome) -> None:
+            reported.append(outcome)
+            if len(reported) == len(items) - 1:
+                shell.others_reported.set()
+
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, report)
+
+        self.assertEqual(outcomes[3].before, auth.Valid(), "argocd's check gave up waiting")
+        self.assertEqual(reported[-1].name, argocd.name)
+
+    def test_an_expired_login_is_reported_after_its_login_runs(self) -> None:
+        items = configured_logins()
+        spacelift = items[2]
+        states: dict[str, State] = dict.fromkeys(names(items), "valid")
+        states[spacelift.name] = "expired"
+        shell = FakeShell(items, states, dict.fromkeys(names(items), True))
+        reported: list = []
+
+        auth.run(auth.Mode.REFRESH, items, shell, reported.append)
+
+        (spacelift_outcome,) = [o for o in reported if o.name == spacelift.name]
+        self.assertEqual(spacelift_outcome.before, auth.Expired())
+        self.assertEqual(spacelift_outcome.after, auth.Valid())
 
 
 class OnlyExpiredLoginsRun(unittest.TestCase):
@@ -153,9 +207,11 @@ class OnlyExpiredLoginsRun(unittest.TestCase):
         )
         login_works = dict(zip(names(items), works, strict=True))
         shell = FakeShell(items, dict(states), login_works, missing)
+        reported: list = []
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, reported.append)
 
+        self.assertCountEqual(reported, outcomes)
         installed = [item for item in items if tool(item) not in missing]
         expired = [item for item in installed if states[item.name] in ("expired", "revoked")]
         self.assertEqual(shell.attached, [item.login for item in expired])
@@ -176,7 +232,7 @@ class CheckMode(unittest.TestCase):
             dict.fromkeys(names(items), True),
         )
 
-        outcomes = auth.run(auth.Mode.CHECK, items, shell)
+        outcomes = auth.run(auth.Mode.CHECK, items, shell, ignore)
 
         self.assertEqual(shell.attached, [])
         self.assertEqual([outcome.before for outcome in outcomes], [auth.Expired()] * 4)
@@ -219,7 +275,7 @@ class ArgoCdStatus(unittest.TestCase):
         )
         shell.states["Argo CD"] = "revoked"
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
 
         self.assertEqual(shell.attached, [items[3].login])
         self.assertEqual(outcomes[3].after, auth.Valid())
@@ -280,7 +336,7 @@ class GcloudAndSpacectlStatus(unittest.TestCase):
             dict.fromkeys(names(items), True),
         )
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
 
         self.assertEqual(shell.attached, [])
         for outcome in outcomes:
@@ -306,7 +362,7 @@ class TimedOutCheck(unittest.TestCase):
             timed_out=frozenset({spacelift.name}),
         )
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
 
         self.assertIsInstance(outcomes[2].before, auth.Unchecked)
         self.assertEqual(shell.attached, [])
@@ -340,7 +396,7 @@ class PrivateSettings(unittest.TestCase):
             dict.fromkeys(names(items), True),
         )
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
 
         self.assertEqual(outcomes[3].before, auth.NotConfigured("PRIVATE_ARGOCD_SERVER"))
         self.assertIn("PRIVATE_ARGOCD_SERVER", auth.describe(outcomes[3]))
@@ -356,7 +412,7 @@ class PrivateSettings(unittest.TestCase):
             dict.fromkeys(names(items), True),
         )
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
 
         self.assertEqual(outcomes[2].before, auth.NotConfigured("PRIVATE_SPACELIFT_ACCOUNT"))
         self.assertIn("PRIVATE_SPACELIFT_ACCOUNT", auth.describe(outcomes[2]))
@@ -463,7 +519,7 @@ class EndToEnd(unittest.TestCase):
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertEqual(result.stdout.count("still expired"), 4, result.stdout)
 
-    def test_ctrl_c_during_a_login_moves_on_to_the_next_and_still_prints_the_summary(
+    def test_ctrl_c_during_a_login_moves_on_to_the_next_and_still_reports_every_login(
         self,
     ) -> None:
         result, calls = self.run_auth(extra_env={"STUB_LOGIN_SENDS_CTRL_C": "1"})
