@@ -20,6 +20,16 @@ Before running anything that posts, validate the body in your own context first:
 
 Only post once you'd be fine with that exact content landing in front of the user right now.
 
+**After a post fails, read before you post again.** A 5xx error, a timeout or a dropped connection
+doesn't say whether GitHub created the comment, since the comment can be saved and only the response
+lost. Before retrying, list what was posted since just before your attempt and look for yours:
+`gh api --paginate repos/<owner>/<repo>/issues/<n>/comments -q '.[] | select(.created_at >
+"<UTC time before the post>") | {id, user: .user.login, start: .body[0:60]}'`. For a review, read
+`gh pr view <n> -R <owner>/<repo> --json reviews`, and for an inline reply, the thread itself. Post
+again only when yours isn't there. If the read fails too, wait and read again, and post nothing
+until a read succeeds. In a chain of posts joined by `&&`, the posts before the failed one went out
+and the ones after it never ran.
+
 ## If you do post something wrong: edit or delete, don't pile on
 
 `gh pr comment` and `gh issue comment` both support:
