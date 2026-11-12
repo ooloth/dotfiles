@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change and one that checks where the PR's edits land when the base branch has changed its files, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -41,7 +41,7 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **For PR scope — fetch PR context before Step 2:**
 
 ```bash
-gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefName,headRefOid,baseRefOid,author
+gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefName,headRefOid,baseRefOid,author,mergeable
 gh repo view <owner>/<repo> --json viewerPermission
 ```
 
@@ -50,6 +50,7 @@ Store the title, body and branch name (`headRefName`) for use in Step 2. Store t
 commit, so Step 5 checks that the PR has not moved since, compares the PR's own changes against that
 base if it has, and pins its comments to the saved head. Store `author.is_bot` and
 `viewerPermission` for Step 5 too: together they say whether the findings are the user's to fix.
+Store `mergeable` for the base-moved check below.
 
 **For PR scope, also find the merge base,** the commit the PR's branch forked from:
 
@@ -57,9 +58,25 @@ base if it has, and pins its comments to the saved head. Store `author.is_bot` a
 gh api repos/<owner>/<repo>/compare/<baseRefOid>...<headRefOid> -q .merge_base_commit.sha
 ```
 
-`baseRefOid` is the base branch's tip, which moves whenever another PR merges, so a line that
-another PR changed after the fork reads one way at `baseRefOid` and another way before this
-change. The merge base is what the change is measured against, so it is the Base ref in Step 2.
+`baseRefOid` is the base branch's commit as GitHub recorded it at the PR's last update, not the
+branch's current tip, and a line another PR changed after the fork reads one way there and another
+way before this change. The merge base is what the change is measured against, so it is the Base
+ref in Step 2.
+
+**For PR scope, also list the base-branch commits that touch this PR's files since the merge
+base:**
+
+```bash
+uv run <skill-base-dir>/scripts/base_moved.py <n> --repo <owner>/<repo>
+```
+
+A conflict can mean the content a PR edits moved to another file, and that file then merges
+cleanly without the edit, so the edit is lost with no conflict to show it. The script reads the
+base branch's tip as it is now, counts a rename under both paths on either side, and prints each
+commit with the PR files it touches, and `mergeable`. Exit 0 means none and the PR is mergeable,
+and 1 means at least one commit or a CONFLICTING PR: Agent 15 then runs on its output. Exit 2
+means it could not tell, which is never read as none: the Base moved line in Step 2 says "not
+checked" with the reason from stderr, and Agent 15 runs anyway when `mergeable` is `CONFLICTING`.
 
 **For PR scope, also fetch what earlier reviewers said:**
 
@@ -235,6 +252,9 @@ Dry-run output: [each planned action and the summary line, verbatim, then the pa
 Overlapping open PRs: [each PR from Step 1's list with its number, title, base and the files it
   shares with this one; "none" when the check found none; "not checked" and the reason when it
   exited 2; "not applicable: not a PR review" outside PR scope. An agent may run `gh pr diff <n> -R <owner>/<repo>` on any PR listed here]
+Base moved: [`base_moved.py`'s output from Step 1, verbatim, on exit 0 or 1; "not checked:
+  <reason from stderr>" and `mergeable` on exit 2; "not applicable: not a PR review" outside PR
+  scope]
 Diff command: [exact command agents should run to read the diff]
 Base ref: [the commit SHA from Step 1 that the change is measured against]
 ```
@@ -247,7 +267,9 @@ that decision, naming the record, so the reader weighs the new argument against 
 
 ## Step 3: Launch the agents in parallel
 
-Agents 1 to 13 always run, and Agent 14 runs when the diff touches an agent instruction file.
+Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, and
+Agent 15 runs when Step 1's `base_moved.py` finds base commits touching this PR's files or a
+conflict.
 Together these are the standing agents. You may add more in the same fan-out when this particular
 change raises a question none of these prompts ask.
 
@@ -745,6 +767,36 @@ For each issue: file:line | the rule | file:line of the rule it meets | the situ
 
 ---
 
+### Agent 15: Base Merge
+
+**Model:** Opus, because an edit lost in a clean merge leaves nothing for anyone to notice.
+
+Runs only for PR scope, when `base_moved.py` in Step 1 exits 1, or exits 2 for a PR GitHub
+reports as CONFLICTING.
+
+```
+Question: Once the base branch is merged into this PR, where does each of the PR's edits land, and does any edit disappear, duplicate what the base already did, or point at content the base moved or removed?
+
+**Answer edit by edit first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If Context's Base moved line says "none", say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Run the diff command from Context, and list each of the PR's edits, hunk by hunk, in the files the Base moved line names.
+2. Merge the base tip into the PR head without touching any checkout: `git fetch origin <base tip> <PR head>`, then `git merge-tree --write-tree <base tip> <PR head>`. List each file that conflicts and each that merges cleanly.
+3. For each base commit the Base moved line names, read what it did to the shared files with `git show <commit>`. Where it moved content out of a file, find where that content lives at the base tip with `git grep` on distinctive phrases from the PR's edit.
+4. For each PR edit, decide which holds: it merges in place; it conflicts, and taking the base's side drops it; its content moved, so it belongs in a file you name, where the merged tree still holds the old text; the base already made the same change, so it is redundant; or it points at something the base removed.
+5. A clean merge of the destination file is not evidence the edit survived. Read the merged tree's copy of each destination (`git cat-file -p <tree>:<path>`) and check for the edit's text.
+
+For each issue: PR file:line | the edit | where it lands after the merge (file:line at the base tip) | what is lost or wrong | where to re-apply it
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific
@@ -843,7 +895,8 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
 
 - **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
   errored or never ran, and why.] An Agent 14 not launched because the diff touches no agent
-  instruction file is listed as "not applicable", and does not count as never ran.
+  instruction file is listed as "not applicable", and does not count as never ran. So is an
+  Agent 15 not launched because the Base moved line says "none".
 
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
@@ -942,7 +995,9 @@ On any answer other than "skip":
 - **Check what changed since the saved state.** Read the head and reviews again with
   `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid,reviews`, and run the fetch helper
   from Step 1 again. A review can wait hours for its posting answer while the PR moves on. Run
-  `overlapping_prs.py` from Step 1 again too, whatever the head did. Re-check each "covered by #N"
+  `overlapping_prs.py` and `base_moved.py` from Step 1 again too, whatever the head did. When
+  `base_moved.py` lists a commit the saved Base moved line did not, run Agent 15 on the new output
+  and fold its findings in before posting. Re-check each "covered by #N"
   finding against its new list, and take "covered by" off any whose PR is no longer open. Check each
   PR the list newly names as Step 4 does. When it exits 2, the overlaps were not re-checked, and the
   report to the user says so.
@@ -958,11 +1013,13 @@ On any answer other than "skip":
 
     - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
       the new head, with every standing agent that applies (Agent 14 applies when the full PR
-      diff touches an agent instruction file) and any added ones over the whole PR diff, as Step 3
+      diff touches an agent instruction file, Agent 15 when `base_moved.py` exits 1) and any
+      added ones over the whole PR diff, as Step 3
       always does.
     - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
       standing agent that applies (Agent 14 applies when the full PR diff touches an agent
-      instruction file) and any added ones. Give them the lines the script printed as
+      instruction file, Agent 15 when `base_moved.py` exits 1) and any added ones. Give them the
+      lines the script printed as
       the change to review, and the full PR diff for context. As Step 3 says, they get nothing
       from the drafted findings; in Step 3.5, drop any new finding that repeats a drafted one.
       Then do everything the next item lists as well.
