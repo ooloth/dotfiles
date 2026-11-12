@@ -52,6 +52,12 @@ Sentences containing _used to_, _previously_, _no longer_, _has since_, _so
 far_, _originally_, or whose subject is a past session, author or incident are
 rewritten without them, and the rewrite is what ships.
 
+A document holds no list of steps the team still has to take, and no qualifier
+such as _being removed_, _once X lands_ or _until TICKET ships_. Each step still
+to take is a ticket, and the document says what is true now. A procedure a
+reader repeats, such as rebuilding an environment, is not work in progress and
+stays.
+
 **A rule is stated without the incident that produced it.**
 The war story is the most tempting form of this, because it reads as evidence
 the rule is well founded. It is not: it adds nothing a reader can act on, and
