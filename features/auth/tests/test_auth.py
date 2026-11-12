@@ -38,7 +38,10 @@ auth = importlib.util.module_from_spec(_spec)
 sys.modules["auth"] = auth
 _spec.loader.exec_module(auth)
 
-SERVER = auth.ArgoServer("cd.example.com")
+PROD = auth.ArgoServer("cd-prod.example.com")
+DEV = auth.ArgoServer("cd-dev.example.com")
+# The first is the default context, as in private.env
+SERVERS = (PROD, DEV)
 ACCOUNT = auth.SpaceliftAccount("example")
 State = Literal["valid", "expired", "unreachable", "revoked"]
 
@@ -116,7 +119,7 @@ class FakeShell:
 
 
 def configured_logins() -> tuple:
-    return auth.logins(auth.Settings(argocd_server=SERVER, spacelift_account=ACCOUNT))
+    return auth.logins(auth.Settings(argocd_servers=SERVERS, spacelift_account=ACCOUNT))
 
 
 def names(items: tuple) -> list[str]:
@@ -188,22 +191,28 @@ class OnlyExpiredLoginsRun(unittest.TestCase):
         google_internal=login_state,
         google_external=login_state,
         spacelift=login_state,
-        argocd=st.sampled_from(["valid", "expired", "unreachable", "revoked"]),
+        argocd_prod=st.sampled_from(["valid", "expired", "unreachable", "revoked"]),
+        argocd_dev=st.sampled_from(["valid", "expired", "unreachable", "revoked"]),
         missing=st.frozensets(st.sampled_from(["gcloud", "spacectl", "argocd"])),
-        works=st.lists(st.booleans(), min_size=4, max_size=4),
+        works=st.lists(st.booleans(), min_size=5, max_size=5),
     )
     def test_logins_run_for_exactly_the_expired_ones_and_exit_follows_the_final_statuses(
         self,
         google_internal: State,
         google_external: State,
         spacelift: State,
-        argocd: State,
+        argocd_prod: State,
+        argocd_dev: State,
         missing: frozenset[str],
         works: list[bool],
     ) -> None:
         items = configured_logins()
         states = dict(
-            zip(names(items), [google_internal, google_external, spacelift, argocd], strict=True)
+            zip(
+                names(items),
+                [google_internal, google_external, spacelift, argocd_prod, argocd_dev],
+                strict=True,
+            )
         )
         login_works = dict(zip(names(items), works, strict=True))
         shell = FakeShell(items, dict(states), login_works, missing)
@@ -235,7 +244,7 @@ class CheckMode(unittest.TestCase):
         outcomes = auth.run(auth.Mode.CHECK, items, shell, ignore)
 
         self.assertEqual(shell.attached, [])
-        self.assertEqual([outcome.before for outcome in outcomes], [auth.Expired()] * 4)
+        self.assertEqual([outcome.before for outcome in outcomes], [auth.Expired()] * 5)
         self.assertFalse(auth.all_valid(outcomes))
 
 
@@ -273,12 +282,52 @@ class ArgoCdStatus(unittest.TestCase):
             dict.fromkeys(names(items), "valid"),
             dict.fromkeys(names(items), True),
         )
-        shell.states["Argo CD"] = "revoked"
+        shell.states[items[4].name] = "revoked"
 
         outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
 
-        self.assertEqual(shell.attached, [items[3].login])
-        self.assertEqual(outcomes[3].after, auth.Valid())
+        self.assertEqual(shell.attached, [items[4].login])
+        self.assertEqual(outcomes[4].after, auth.Valid())
+
+    def test_each_server_is_its_own_login_named_after_it(self) -> None:
+        argocd = configured_logins()[3:]
+
+        self.assertEqual(names(argocd), [f"Argo CD ({PROD})", f"Argo CD ({DEV})"])
+        self.assertEqual([item.login[-1] for item in argocd], list(SERVERS))
+        self.assertEqual([item.check[-1] for item in argocd], list(SERVERS))
+
+
+class ArgoCdDefaultContext(unittest.TestCase):
+    def outcome(self, item, after) -> object:
+        return auth.Outcome(item.name, auth.Expired() if after else auth.Valid(), after)
+
+    def test_an_argo_cd_login_makes_the_first_server_the_default_again(self) -> None:
+        items = configured_logins()
+        settings = auth.Settings(argocd_servers=SERVERS, spacelift_account=ACCOUNT)
+        # Only the second server logged in, which made it argocd's current context
+        outcomes = tuple(
+            self.outcome(item, auth.Valid() if item is items[4] else None) for item in items
+        )
+
+        self.assertEqual(
+            auth.default_context_command(settings, outcomes), ("argocd", "context", PROD)
+        )
+
+    def test_no_argo_cd_login_leaves_the_context_alone(self) -> None:
+        items = configured_logins()
+        settings = auth.Settings(argocd_servers=SERVERS, spacelift_account=ACCOUNT)
+        # Spacelift logged in, but no Argo CD login ran
+        outcomes = tuple(
+            self.outcome(item, auth.Valid() if item is items[2] else None) for item in items
+        )
+
+        self.assertIsNone(auth.default_context_command(settings, outcomes))
+
+    def test_without_servers_there_is_no_context_to_set(self) -> None:
+        settings = auth.Settings(argocd_servers=(), spacelift_account=ACCOUNT)
+        outcomes = (auth.Outcome(auth.LoginName("Argo CD"), auth.NotConfigured("x"), None),)
+
+        self.assertIsNone(auth.default_context_command(settings, outcomes))
 
     def test_output_that_is_not_json_is_unchecked(self) -> None:
         status = auth.read_argocd_user_info(auth.CheckResult(0, "Logged In: false\n", ""))
@@ -374,22 +423,26 @@ class PrivateSettings(unittest.TestCase):
             environ = (
                 {}
                 if value is None
-                else {"PRIVATE_ARGOCD_SERVER": value, "PRIVATE_SPACELIFT_ACCOUNT": value}
+                else {"PRIVATE_ARGOCD_SERVERS": value, "PRIVATE_SPACELIFT_ACCOUNT": value}
             )
             with self.subTest(environ=environ):
                 self.assertEqual(
                     auth.read_settings(environ),
-                    auth.Settings(argocd_server=None, spacelift_account=None),
+                    auth.Settings(argocd_servers=(), spacelift_account=None),
                 )
 
     def test_set_values_are_read(self) -> None:
         settings = auth.read_settings(
-            {"PRIVATE_ARGOCD_SERVER": " cd.example.com ", "PRIVATE_SPACELIFT_ACCOUNT": " example "}
+            {"PRIVATE_ARGOCD_SERVERS": f" {PROD}  {DEV} ", "PRIVATE_SPACELIFT_ACCOUNT": " example "}
         )
-        self.assertEqual(settings, auth.Settings(argocd_server=SERVER, spacelift_account=ACCOUNT))
+        self.assertEqual(settings, auth.Settings(argocd_servers=SERVERS, spacelift_account=ACCOUNT))
+
+    def test_a_server_listed_twice_is_checked_once_in_its_first_place(self) -> None:
+        settings = auth.read_settings({"PRIVATE_ARGOCD_SERVERS": f"{PROD} {DEV} {PROD}"})
+        self.assertEqual(settings.argocd_servers, SERVERS)
 
     def test_without_a_server_argocd_names_the_key_and_the_other_logins_still_run(self) -> None:
-        items = auth.logins(auth.Settings(argocd_server=None, spacelift_account=ACCOUNT))
+        items = auth.logins(auth.Settings(argocd_servers=(), spacelift_account=ACCOUNT))
         shell = FakeShell(
             items,
             dict.fromkeys(names(items), "expired"),
@@ -398,14 +451,15 @@ class PrivateSettings(unittest.TestCase):
 
         outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
 
-        self.assertEqual(outcomes[3].before, auth.NotConfigured("PRIVATE_ARGOCD_SERVER"))
-        self.assertIn("PRIVATE_ARGOCD_SERVER", auth.describe(outcomes[3]))
+        self.assertEqual(len(outcomes), 4)
+        self.assertEqual(outcomes[3].before, auth.NotConfigured("PRIVATE_ARGOCD_SERVERS"))
+        self.assertIn("PRIVATE_ARGOCD_SERVERS", auth.describe(outcomes[3]))
         self.assertEqual(len(shell.attached), 3)
 
     def test_without_an_account_spacelift_names_the_key_and_the_other_logins_still_run(
         self,
     ) -> None:
-        items = auth.logins(auth.Settings(argocd_server=SERVER, spacelift_account=None))
+        items = auth.logins(auth.Settings(argocd_servers=SERVERS, spacelift_account=None))
         shell = FakeShell(
             items,
             dict.fromkeys(names(items), "expired"),
@@ -416,7 +470,7 @@ class PrivateSettings(unittest.TestCase):
 
         self.assertEqual(outcomes[2].before, auth.NotConfigured("PRIVATE_SPACELIFT_ACCOUNT"))
         self.assertIn("PRIVATE_SPACELIFT_ACCOUNT", auth.describe(outcomes[2]))
-        self.assertEqual(len(shell.attached), 3)
+        self.assertEqual(len(shell.attached), 4)
 
 
 STUB = """#!/bin/bash
@@ -467,7 +521,7 @@ class EndToEnd(unittest.TestCase):
                 "HOME": home,
                 "PATH": str(path or self.stubs),
                 "STUB_LOG": str(log),
-                "PRIVATE_ARGOCD_SERVER": SERVER,
+                "PRIVATE_ARGOCD_SERVERS": " ".join(SERVERS),
                 "PRIVATE_SPACELIFT_ACCOUNT": ACCOUNT,
                 **(extra_env or {}),
             }
@@ -493,7 +547,8 @@ class EndToEnd(unittest.TestCase):
                 "gcloud auth login --no-activate michael.uloth@rxrx.tech",
                 "spacectl profile login --method browser"
                 " --endpoint https://example.app.spacelift.io/ example",
-                "argocd login --sso --grpc-web cd.example.com",
+                "argocd login --sso --grpc-web cd-prod.example.com",
+                "argocd login --sso --grpc-web cd-dev.example.com",
             ],
             result.stderr,
         )
@@ -504,7 +559,8 @@ class EndToEnd(unittest.TestCase):
         self.assertEqual(
             sorted(calls),
             [
-                "argocd account get-user-info --grpc-web --output json --server cd.example.com",
+                "argocd account get-user-info --grpc-web --output json --server cd-dev.example.com",
+                "argocd account get-user-info --grpc-web --output json --server cd-prod.example.com",
                 "gcloud auth application-default print-access-token",
                 "gcloud auth print-access-token --account=michael.uloth@rxrx.tech",
                 "spacectl whoami",
@@ -517,7 +573,7 @@ class EndToEnd(unittest.TestCase):
         result, _ = self.run_auth()
 
         self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertEqual(result.stdout.count("still expired"), 4, result.stdout)
+        self.assertEqual(result.stdout.count("still expired"), 5, result.stdout)
 
     def test_ctrl_c_during_a_login_moves_on_to_the_next_and_still_reports_every_login(
         self,
@@ -525,15 +581,25 @@ class EndToEnd(unittest.TestCase):
         result, calls = self.run_auth(extra_env={"STUB_LOGIN_SENDS_CTRL_C": "1"})
 
         self.assertNotIn("Traceback", result.stderr)
-        self.assertEqual(len([call for call in calls if "login" in call.split()]), 4)
-        self.assertEqual(result.stdout.count("still expired"), 4, result.stdout + result.stderr)
+        self.assertEqual(len([call for call in calls if "login" in call.split()]), 5)
+        self.assertEqual(result.stdout.count("still expired"), 5, result.stdout + result.stderr)
         self.assertEqual(result.returncode, 1)
+
+    def test_after_the_logins_the_first_server_is_argocds_default_context(self) -> None:
+        result, calls = self.run_auth()
+
+        self.assertEqual(calls[-1], "argocd context cd-prod.example.com", result.stderr)
+
+    def test_check_mode_leaves_argocds_context_alone(self) -> None:
+        _, calls = self.run_auth("--check")
+
+        self.assertEqual([call for call in calls if " context " in call], [])
 
     def test_check_mode_runs_no_login(self) -> None:
         result, calls = self.run_auth("--check")
 
         self.assertEqual([call for call in calls if "login" in call.split()], [])
-        self.assertEqual(result.stdout.count(": expired"), 4, result.stdout + result.stderr)
+        self.assertEqual(result.stdout.count(": expired"), 5, result.stdout + result.stderr)
         self.assertEqual(result.returncode, 1, result.stderr)
 
     def test_missing_tools_are_reported_without_a_traceback(self) -> None:

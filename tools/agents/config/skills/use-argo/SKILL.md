@@ -18,9 +18,9 @@ Always ask which environment (dev or prod) before running commands if not specif
 argocd login <server> --sso --grpc-web
 ```
 
-On the work laptop, `auth` runs this same login for the server in `PRIVATE_ARGOCD_SERVER`, along
-with the other work logins, and only for the ones that have expired. Run `auth` when that is the
-server you need.
+On the work laptop, `auth` runs this same login for each server in `PRIVATE_ARGOCD_SERVERS`, along
+with the other work logins, and only for the ones that have expired. Run `auth` when one of those
+is the server you need.
 
 ## Common Commands
 

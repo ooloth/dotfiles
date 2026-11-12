@@ -22,18 +22,22 @@ It checks these all at once, then logs in to the expired ones one at a time:
   in with `gcloud auth login --no-activate <account>`.
 - **Spacelift:** checks with `spacectl whoami` and logs in with
   `spacectl profile login --method browser --endpoint https://<account>.app.spacelift.io/ <account>`.
-- **Argo CD:** checks with
+- **Argo CD, once per server:** checks with
   `argocd account get-user-info --grpc-web --output json --server <server>` and logs in with
-  `argocd login --sso --grpc-web <server>`.
+  `argocd login --sso --grpc-web <server>`. Each server has its own SSO and its own token, so each
+  gets its own line and its own login. `argocd login` makes the server it logged in to the current
+  context, so after any Argo CD login `auth` runs `argocd context <first server>`, which keeps the
+  first server listed as the default that `argocd` commands without `--server` use.
 
 It prints `Checking logins...` and then one line per login as soon as that login's result is final,
 so the lines come out in the order the checks finish and a slow check doesn't hide the others. An
 expired login's line comes after its login, from the check it runs again then. It exits 0 only
 when every login ends up valid, so `auth && <command>` runs the command only once you're logged in.
 
-- **The Spacelift account and the Argo CD server** come from `PRIVATE_SPACELIFT_ACCOUNT` and
-  `PRIVATE_ARGOCD_SERVER` in `private.env` (see `private.env.example`). Without one, its line says
-  so and the other logins still run, and `auth` exits 1.
+- **The Spacelift account and the Argo CD servers** come from `PRIVATE_SPACELIFT_ACCOUNT` and
+  `PRIVATE_ARGOCD_SERVERS` in `private.env` (see `private.env.example`). The servers are a
+  space-separated list, default first, and a server listed twice is checked once. Without one of
+  the keys, its line says so and the other logins still run, and `auth` exits 1.
 - **`argocd account get-user-info` usually exits 0 even when the session has expired**, so the
   script reads its `loggedIn` field. A failure that names a revoked token (`invalid_grant`) or a
   rejected session (`code = Unauthenticated`) also counts as expired. Any other failure, such as
