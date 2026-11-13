@@ -39,11 +39,11 @@ tests) — that belongs to `/design`, which runs after the user approves the app
 2. If the user asked a question, answer the question before proposing anything.
 3. Use read-only exploration and subagents only as needed to understand the current code, docs,
    constraints, and likely impact.
-4. Find out what the most obvious fix would break by running it, not only by reading it. In a copy
-   of the repo under `mktemp -d`, apply the most obvious fix the ticket suggests, then run every
-   path that fix can reach, with external tools replaced by stubs that succeed and then fail.
-   Compare each result with today's. A path whose result changes in a way the ticket did not ask for
-   is a risk the approach must cover. Never edit the repo itself, and delete the copy when done.
+4. Find out what the simplest fix would break by running it, not only by reading it. In a copy of
+   the repo under `mktemp -d`, apply the most obvious fix the ticket suggests, then run every path
+   that fix can reach, with external tools replaced by stubs that succeed and then fail. Compare
+   each result with today's. A path whose result changes in a way the ticket did not ask for is a
+   risk the approach must cover. Never edit the repo itself, and delete the copy when done.
 5. Run once every call to another program that an option you might recommend depends on: a CLI
    command, an API method, an action in another app. A stub shows what the code does with an
    answer, never whether the real program gives one. Use arguments that change nothing, such as an
@@ -81,15 +81,6 @@ cost.
    considering any option. Not from what the ticket or existing docs say it needs; that is the
    previous author's list and it reads as complete because it was written as a summary. State each
    as an observable property, and say which bind and which do not.
-
-   Each binding property names what it rests on: the code (a `file:line` or a command's output), a
-   ticket bullet, a recorded decision, a standard, or a goal the user stated. A property that rests
-   on none of these is struck. Each states what every
-   option must make true, not how one option does it: a need that only one option's mechanism
-   creates, such as a rule about a flag only that option adds, is a cost of that option, counted in
-   its `Leaves behind`, not a column. A property that existing behaviour already meets, shown by
-   running it, stays on the list and is met by changing nothing; this work adds no test for it,
-   since the code that meets it does not change.
 
    Observable means something observes it. For each property that binds, name what does: a type, a
    test, an assertion, a check against recorded state, or a measurement that already exists. A
@@ -139,12 +130,9 @@ cost.
    has one, so whoever writes the code that could break it reads the rule before the check fails.
    Where the project has neither folder, creating one is an open decision.
 
-2. Recommend the approach that leaves the simplest system and delivers those properties. The
-   simplest system is the one that asks a maintainer to know least afterwards in the area the work
-   touches, counting what an option removes as well as what it adds, so an option that replaces two
-   concepts with one can beat one that adds a single concept. It is not always the smallest change.
-   Simplicity is how a property is reached cheaply, never a reason to drop one. Push back on scope,
-   abstraction, configurability or compatibility work that no stated property requires.
+2. Recommend the simplest approach that delivers those properties. Simplicity is how a property is
+   reached cheaply, never a reason to drop one. Push back on scope, abstraction, configurability or
+   compatibility work that no stated property requires.
 
 3. The effort to build an option is a constraint, never a merit, and the complexity it leaves
    behind is a cost. Effort rules an option out only against a budget the user stated. "X is
@@ -154,9 +142,8 @@ cost.
    delivers.
 
 4. Score every option against every property in one table, options as rows and properties as
-   columns, plus one `Leaves behind` column for the functions, types, files, concepts or rules each
-   option leaves a maintainer to keep in mind, counting what it removes as well as what it adds.
-   That column is scored like any property, so a
+   columns, plus one `Leaves behind` column for the new functions, types, files, concepts or rules
+   each option leaves a maintainer to keep in mind. That column is scored like any property, so a
    mechanism earns its place only through a property it delivers. Before accepting any tradeoff,
    state the theoretical maximums for safety, performance and experience for the thing being
    decided, as `decision-making.md` defines them, and look for a design that comes close to all
@@ -169,8 +156,7 @@ cost.
    fact or the cost.
 
    If more than one option survives and they tie on every column, including `Leaves behind`, the
-   one with fewer moving parts in the system it leaves wins, counting what it adds less what it
-   removes. That is the zoom into `Leaves behind`, taken first because the
+   one with fewer moving parts wins. That is the zoom into `Leaves behind`, taken first because the
    property easiest to add to the list is one the more elaborate option happens to have. Only when
    they tie on that too is the list not finished. Zoom into each property every survivor passes,
    and extend the list to moments and softer properties not yet covered, each citing its source.
@@ -240,11 +226,9 @@ sees what was chosen first and how it was chosen right after:
    when there are some.
 5. `## Options ⚖️`: a table with `Option`, then one column per property (`P1`, `P2`, …), then
    `Leaves behind`, and nothing else. The chosen option is the first row, in bold, starting with 🏆
-   and ending in "(chosen)". Every cell is ✅ or ❌. A `Leaves behind` cell judges the system the
-   option leaves: ✅ when, after what it adds and what it removes, that system asks a maintainer to
-   keep in mind nothing a property does not need, and otherwise ❌. Either mark is followed by what
-   the option adds and what it removes, when it does either. Leave no cell unknown: settle it by
-   running something.
+   and ending in "(chosen)". Every cell is ✅ or ❌. A `Leaves behind` cell is ✅ when the option adds
+   nothing a maintainer keeps in mind that a property does not need, and otherwise ❌ followed by
+   what it adds. Leave no cell unknown: settle it by running something.
 6. `## Decided by 🧭`: one short paragraph reasoning through what separated the options still
    standing, including when they all score ✅.
 7. `## How it fits 🗺️`: a Mermaid diagram of the chosen approach, only when it shows the approach
