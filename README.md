@@ -21,7 +21,7 @@ definitions live in [`tools/claude/config/`](./tools/claude/config), symlinked i
 
 ### Standards
 
-[The standards library](./tools/agents/config/standards/README.md) is 30 files the rest of this
+[The standards library](./tools/agents/config/standards/README.md) is 31 files the rest of this
 reads. Each standard is phrased as a claim about the code rather than an instruction to the agent:
 "Errors are handled at the level with enough context to act," not "Handle errors at the right
 level." That single rule is what lets one file serve three jobs unchanged, since a writing skill
@@ -55,9 +55,11 @@ to the whole backlog and lists what has gone stale.
 ### Reviewing
 
 [review-code](./tools/agents/config/skills/review-code/SKILL.md) runs thirteen specialised reviewers
-in parallel, plus one that checks rule consistency when instruction files change, then assumes
-they're wrong. Every claim about library behaviour, API guarantees or numbers is checked against
-the installed code before it reaches me, and a claim that fails is struck rather than softened.
+in parallel, plus one that checks rule consistency when instruction files change, one that checks
+where the PR's edits land when the base branch has changed its files, and one that checks whether
+merging another open PR that shares its files would undo its edits. Then it assumes they're wrong.
+Every claim about library behaviour, API guarantees or numbers is checked against the installed code
+before it reaches me, and a claim that fails is struck rather than softened.
 Findings are labelled introduced or pre-existing by reading the base ref, not by impression.
 
 [review-converge](./tools/agents/config/skills/review-converge/SKILL.md) reviews and fixes in rounds
@@ -90,10 +92,10 @@ once every PR for it has a proven verdict, and lists the backlog changes what sh
 posting only the ones I approve. When the proof disproves or can't observe part of the claim, it
 posts nothing and shows me the draft.
 
-[monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so
-for the pull requests where it's my move, and says why, using the same rules
-[hub](https://github.com/ooloth/hub)'s daemon does. Each
-check reads one snapshot from GitHub and decides from that alone, so two checks of the same state
+[monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so,
+or every five while one of my pull requests has checks running or is undecided, for the pull
+requests where it's my move, and says why, using the same rules
+[hub](https://github.com/ooloth/hub)'s daemon does. Each check reads one snapshot from GitHub and decides from that alone, so two checks of the same state
 agree. A truncated or failed fetch is reported as such rather than as nothing waiting. It never
 writes to GitHub. In Rex, each of my pull requests with new feedback gets a worktree and a tab
 running review-pr-comments-converge, so its draft replies and fixes are waiting when I look.
