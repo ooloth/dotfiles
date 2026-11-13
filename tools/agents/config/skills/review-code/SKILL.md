@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change and one that checks where the PR's edits land when the base branch has changed its files, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks where the PR's edits land when the base branch has changed its files, and one that checks whether merging another open PR that shares its files would undo its edits, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -102,10 +102,10 @@ uv run <skill-base-dir>/scripts/overlapping_prs.py <n> --repo <owner>/<repo>
 ```
 
 Another open PR may already fix what this one leaves open, or conflict with it on a shared file,
-and nothing else in this skill looks at other PRs. The script lists every other open PR, drafts and
+and only Agent 16 and Step 4 look at other PRs. The script lists every other open PR, drafts and
 PRs against other bases included, that changes a file this PR changes, counting a rename's old
 path, with the files each one shares. Exit 0 means none, 1 means some, and 2 means it could not
-tell, which is never read as none.
+tell, which is never read as none. Exit 1 also starts Agent 16.
 
 The base ref for every other scope: `git merge-base <branch> HEAD` for a branch or for no
 argument on a feature branch (with the base branch as `<branch>`), `<oldest>^` for consecutive
@@ -267,9 +267,9 @@ that decision, naming the record, so the reader weighs the new argument against 
 
 ## Step 3: Launch the agents in parallel
 
-Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, and
-Agent 15 runs when Step 1's `base_moved.py` finds base commits touching this PR's files or a
-conflict.
+Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, Agent 15
+runs when Step 1's `base_moved.py` finds base commits touching this PR's files or a conflict, and
+Agent 16 runs when Step 1's `overlapping_prs.py` exits 1.
 Together these are the standing agents. You may add more in the same fan-out when this particular
 change raises a question none of these prompts ask.
 
@@ -797,6 +797,37 @@ For each issue: PR file:line | the edit | where it lands after the merge (file:l
 
 ---
 
+### Agent 16: Overlapping PR Merge
+
+**Model:** Opus, because a conflict resolved the natural way can drop this PR's edit and leave
+every test passing.
+
+Runs only for PR scope, when `overlapping_prs.py` in Step 1 exits 1.
+
+```
+Question: For each open PR in Context's Overlapping open PRs line, once it and this PR are merged in either order, does any of this PR's edits disappear, conflict in a way whose likely resolution drops it, or stop working because the other PR changed what it relies on?
+
+**Answer PR by PR first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Run the diff command from Context, and list this PR's edits, hunk by hunk, in the files each overlapping PR shares.
+2. For each overlapping PR, read its diff (`gh pr diff <n> -R <owner>/<repo>`) and fetch its head. Merge it with this PR's head without touching any checkout: `git merge-tree --write-tree <this head> <other head>`. List each shared file that conflicts and each that merges cleanly.
+3. For each conflict, resolve it each way, taking this PR's side and the other PR's side, in a scratch worktree (`git worktree add --detach "$(mktemp -d)/wt" <this head>`, then `git merge --no-commit <other head>`), and say which side a resolver would most likely take and why, such as whose comment or wording is newer. For the likely side, read the result and check for each of this PR's edits.
+4. For a clean merge, read the merged tree's copy of each shared file (`git cat-file -p <tree>:<path>`) and check for each edit's text: a clean merge is not evidence the edit survived.
+5. Where a resolution drops an edit, run the tests that cover it in that worktree and say whether they still pass. An edit that disappears with every test green is the most severe finding, and the fix is usually a test in this PR that would fail.
+6. Remove every worktree you added.
+
+For each issue: this PR's file:line | the other PR | the merge or resolution that loses or breaks the edit | whether tests notice | what this PR could add so they would
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific
@@ -896,7 +927,8 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
 - **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
   errored or never ran, and why.] An Agent 14 not launched because the diff touches no agent
   instruction file is listed as "not applicable", and does not count as never ran. So is an
-  Agent 15 not launched because the Base moved line says "none".
+  Agent 15 not launched because the Base moved line says "none", and an Agent 16 not launched
+  because the Overlapping open PRs line says "none".
 
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
@@ -997,10 +1029,11 @@ On any answer other than "skip":
   from Step 1 again. A review can wait hours for its posting answer while the PR moves on. Run
   `overlapping_prs.py` and `base_moved.py` from Step 1 again too, whatever the head did. When
   `base_moved.py` lists a commit the saved Base moved line did not, run Agent 15 on the new output
-  and fold its findings in before posting. Re-check each "covered by #N"
-  finding against its new list, and take "covered by" off any whose PR is no longer open. Check each
-  PR the list newly names as Step 4 does. When it exits 2, the overlaps were not re-checked, and the
-  report to the user says so.
+  and fold its findings in before posting. When `overlapping_prs.py` names a PR the saved
+  Overlapping open PRs line did not, run Agent 16 on that PR and fold its findings in too.
+  Re-check each "covered by #N" finding against its new list, and take "covered by" off any whose
+  PR is no longer open. Check each PR the list newly names as Step 4 does. When it exits 2, the
+  overlaps were not re-checked, and the report to the user says so.
   - **A read fails:** post nothing, and say which one failed, quoting the error. What changed is
     unknown, not empty.
   - **The head moved:** post nothing yet. A review of an older head can be wrong about the code
@@ -1013,12 +1046,14 @@ On any answer other than "skip":
 
     - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
       the new head, with every standing agent that applies (Agent 14 applies when the full PR
-      diff touches an agent instruction file, Agent 15 when `base_moved.py` exits 1) and any
+      diff touches an agent instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16
+      when `overlapping_prs.py` exits 1) and any
       added ones over the whole PR diff, as Step 3
       always does.
     - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
       standing agent that applies (Agent 14 applies when the full PR diff touches an agent
-      instruction file, Agent 15 when `base_moved.py` exits 1) and any added ones. Give them the
+      instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16 when
+      `overlapping_prs.py` exits 1) and any added ones. Give them the
       lines the script printed as
       the change to review, and the full PR diff for context. As Step 3 says, they get nothing
       from the drafted findings; in Step 3.5, drop any new finding that repeats a drafted one.
