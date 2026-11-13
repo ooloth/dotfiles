@@ -83,9 +83,10 @@ and `single_match_else` push the other way, so a project that holds this rule al
 lists `map_or` and `map_or_else` under `disallowed-methods` in `clippy.toml`. It keeps
 `map_unwrap_or` on, because that lint flags `.map(f).unwrap_or(d)`, and the `map_or` it suggests
 is then refused with the reason to write a `match`. `clippy --fix` applies that suggestion, so a
-`map_or` it writes is rewritten as a `match` by hand. `.map(f).unwrap_or_default()` has the same
-shape and no lint flags it, and with `option_if_let_else` allowed nothing flags an `if let … else`
-chain either, so both hold by convention.
+`map_or` it writes is rewritten as a `match` by hand. Since Rust 1.100, `map_unwrap_or` also flags
+`.map(f).unwrap_or_default()` and suggests `map_or_default`, which is written as a `match` too, and
+a `match` compiles on any Rust release, where `map_or_default` needs 1.98 or later. With
+`option_if_let_else` allowed, nothing flags an `if let … else` chain, so that holds by convention.
 
 ## Consider
 
