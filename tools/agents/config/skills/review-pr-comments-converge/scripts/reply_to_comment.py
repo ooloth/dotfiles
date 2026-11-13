@@ -10,11 +10,15 @@ the thread_id is looked up automatically when --resolve is used.
 
 Usage:
   reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]
+  reply_to_comment.py <pr-number> <comment-id> --body-file PATH [--resolve] [--repo OWNER/NAME]
 
 Arguments:
   pr-number   PR number (integer)
   comment-id  The comment_id from fetch_pr_comments.py output
   body        Reply text (quote in shell if it contains spaces)
+  --body-file Read the reply text from this UTF-8 file instead, posted exactly as it holds it.
+              No shell quoting is involved, so backticks and apostrophes in the reply are safe.
+              Give either this or <body>, never both.
   --resolve   Also resolve the review thread after posting the reply
   --repo      Target repository. Without it the repo is inferred from $GH_REPO or the shell's
               working directory — so running this from a different checkout (including this
@@ -26,6 +30,12 @@ Arguments:
 import json
 import subprocess
 import sys
+from pathlib import Path
+
+USAGE = (
+    "Usage: reply_to_comment.py <pr-number> <comment-id> (<body> | --body-file PATH) "
+    "[--resolve] [--repo OWNER/NAME]"
+)
 
 THREAD_LOOKUP_QUERY = """
 query($owner: String!, $name: String!, $number: Int!) {
@@ -77,6 +87,16 @@ def take_option(args: list[str], flag: str) -> tuple[list[str], str | None]:
     return args, None
 
 
+def read_body_file(path: str) -> str:
+    """The reply body exactly as the file holds it, or exit naming the path before any gh call."""
+    try:
+        return Path(path).read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as error:
+        raise SystemExit(
+            f"error: could not read the reply body from {path}: {error}; nothing was posted"
+        ) from error
+
+
 def get_repo(explicit: str | None) -> tuple[str, str, str]:
     """Resolve the target repo. An explicit --repo wins; otherwise gh infers it from $GH_REPO,
     then from the working directory."""
@@ -126,25 +146,25 @@ def main() -> None:
     resolve = "--resolve" in args
     args = [a for a in args if a != "--resolve"]
     args, repo_arg = take_option(args, "--repo")
+    args, body_file = take_option(args, "--body-file")
 
-    # Exactly three: an extra word is most often a mistyped flag, such as --reslove, and posting
-    # anyway would drop what it asked for without a word.
-    if len(args) > 3:
+    # The body comes from exactly one place, so three positionals without --body-file and two
+    # with it. An extra word is most often a mistyped flag, such as --reslove, or a body given
+    # twice, and posting anyway would drop one of them without a word.
+    expected = 2 if body_file is not None else 3
+    if len(args) > expected:
         print(
-            f"error: unexpected argument(s): {' '.join(args[3:])}. "
-            "The flags are --resolve and --repo OWNER/NAME.",
+            f"error: unexpected argument(s): {' '.join(args[expected:])}. "
+            "The flags are --resolve, --repo OWNER/NAME and --body-file PATH.",
             file=sys.stderr,
         )
-    if len(args) != 3:
-        print(
-            "Usage: reply_to_comment.py <pr-number> <comment-id> <body> [--resolve] [--repo OWNER/NAME]",
-            file=sys.stderr,
-        )
+    if len(args) != expected:
+        print(USAGE, file=sys.stderr)
         sys.exit(1)
 
     pr_number = int(args[0])
     comment_id = int(args[1])
-    body = args[2]
+    body = read_body_file(body_file) if body_file is not None else args[2]
 
     nwo, owner, name = get_repo(repo_arg)
 

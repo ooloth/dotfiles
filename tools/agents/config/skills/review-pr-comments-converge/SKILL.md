@@ -87,10 +87,11 @@ review-code skill calls this script too, so a change to its output reaches both.
 
 Posts a reply to an inline comment. Pass `--resolve` to also close the conversation thread.
 The thread ID is looked up automatically from the comment ID — you only need to pass the
-`comment_id` shown in `fetch_pr_comments.py` output.
+`comment_id` shown in `fetch_pr_comments.py` output. `--body-file` posts a UTF-8 file's contents
+exactly, in place of `<body>`, so the reply needs no shell quoting.
 
 ```bash
-uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 "✅ Changed to 'fill empty snapshots' (2611d9d)" --resolve
+uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 --body-file /abs/path/reply.md --resolve --repo OWNER/NAME
 ```
 
 It prints `Target: OWNER/NAME#PR, comment ID` before writing. Read that line — it is the only
@@ -473,9 +474,9 @@ replies"), post replies and resolve threads:
 
 Run each post, `reply_to_comment.py` included, as its own command with literal paths and no
 `cd`, variable, `$(…)` or `&&`. Only that form matches the allow rules that let a post skip the
-auto-mode classifier, and the `use-gh` skill says why the classifier blocks the rest. Pass
-`reply_to_comment.py` its body as a single-quoted literal, not `"$(cat file)"`, writing each
-apostrophe in it as `'\''`; double quotes would run any backticks in the reply as a command.
+auto-mode classifier, and the `use-gh` skill says why the classifier blocks the rest. Write each
+inline reply to a file in a `mktemp -d` directory too, and pass it to `reply_to_comment.py` with
+`--body-file`, not as `"$(cat file)"`, so the approved text is posted without shell quoting.
 
 Do not run any of these commands before receiving explicit approval in Phase 3.
 
