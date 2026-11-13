@@ -20,6 +20,16 @@ Before running anything that posts, validate the body in your own context first:
 
 Only post once you'd be fine with that exact content landing in front of the user right now.
 
+**Run each post as one plain command with literal paths.** Write
+`gh pr comment 664 -R owner/repo --body-file /abs/path/reply.md`, with no `cd`, variable,
+`$(…)`, `&&`, `;` or pipe. The allow rules for posting commands (`gh pr comment`, `gh pr edit`,
+`reply_to_comment.py`) match only a command that is nothing but that call, so anything chained
+to it sends the post to the auto-mode classifier instead. The classifier reads the user's
+messages but not your replies, so an approval such as "2 yes", which answers a question you
+asked, does not tell it what was approved, and it blocks the post. Seen 2026-11-13 on
+recursionpharma/bc-eng-clinical#664: `cd … && P=… && gh pr comment … --body-file $P/rex.md` was
+blocked after the user approved posting by answering a numbered question.
+
 **After a post fails, read before you post again.** A 5xx error, a timeout or a dropped connection
 doesn't say whether GitHub created the comment, since the comment can be saved and only the response
 lost. Before retrying, list what was posted since just before your attempt and look for yours:

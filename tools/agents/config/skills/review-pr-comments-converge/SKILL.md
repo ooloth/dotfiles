@@ -471,6 +471,12 @@ replies"), post replies and resolve threads:
   These have no thread to resolve, so an escalated finding's bullet lists its options and nothing
   more.
 
+Run each post, `reply_to_comment.py` included, as its own command with literal paths and no
+`cd`, variable, `$(…)` or `&&`. Only that form matches the allow rules that let a post skip the
+auto-mode classifier, and the `use-gh` skill says why the classifier blocks the rest. Pass
+`reply_to_comment.py` its body as a single-quoted literal, not `"$(cat file)"`, writing each
+apostrophe in it as `'\''`; double quotes would run any backticks in the reply as a command.
+
 Do not run any of these commands before receiving explicit approval in Phase 3.
 
 **Before the first post, check what changed since the saved fetch.** Once the fix is pushed, run

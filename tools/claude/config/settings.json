@@ -80,6 +80,8 @@
       "WebFetch(domain:code.claude.com)",
       "mcp__atlassian-rovo__addCommentToJiraIssue",
       "Bash(gh pr comment *)",
+      "Bash(gh pr edit *)",
+      "Bash(uv run /Users/michael.uloth/.claude/skills/review-pr-comments-converge/scripts/reply_to_comment.py *)",
       "Bash(gh api repos/recursionpharma/*/pulls/*/comments*)",
       "Bash(acli jira workitem view *)",
       "Bash(acli jira workitem comment create *)",
