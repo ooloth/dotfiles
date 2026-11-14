@@ -550,8 +550,10 @@ default branch to land it, for the reason Shell gives.
 
 In a repo that ships through PRs, I review code at the draft PR, not at each commit. A repo ships
 through PRs unless its own instructions say work is committed straight to the default branch. Start
-the work on a feature branch. Once I approve a task's approach and design, carry it to a draft PR
-without stopping for me in between:
+the work on a feature branch, in a worktree of its own beside the repo: from the repo,
+`git worktree add ../<repo>-<ticket> -b <branch> origin/<default>`. Another session can switch a
+shared checkout's branch at any time, and your next commit then lands on its branch. Once I approve
+a task's approach and design, carry it to a draft PR without stopping for me in between:
 
 1. **Commit each slice** via `/commit` once its checks and proof pass. No signal is needed.
 2. **Verify locally before anything is pushed:** the project's full checks, `prove-it-works` on the
