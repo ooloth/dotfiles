@@ -378,16 +378,13 @@ work project. A choice the task needs that nobody has made goes into the task as
 deferred to the project's decision process. It is not split into a separate record, because a
 separate record stops the task's outcome from being tracked.
 
-A question gets its own record only when it is independent research with no task behind it:
+On a work project an open question always lives in a work task, never in a decide task of its
+own. On a personal project, a question gets its own record only when it is independent research
+with no task behind it: a file in `docs/questions/`, which is rare. Recommend one only in
+`ooloth/puzzles` or when I ask for one.
 
-- **On a work project whose team tracks work in Jira, Linear or similar,** a decide task on that
-  tracker, titled as the decision to record. The team discusses through ticket comments, and the
-  outcome still lands in the repo's decision record.
-- **On a personal project,** a file in `docs/questions/`, which is rare. Recommend one only in
-  `ooloth/puzzles` or when I ask for one.
-
-If later work turns up a finding, option or decision relevant to an existing task, decide task or
-question file, propose updating it then, not only while it's the topic of discussion. Posting to a
+If later work turns up a finding, option or decision relevant to an existing task or question file,
+propose updating it then, not only while it's the topic of discussion. Posting to a
 tracker still needs approval, except what an invoked `merge-and-verify` posts and the PR link
 `create-pr` posts. The ticket comments above are for work already approved.
 
