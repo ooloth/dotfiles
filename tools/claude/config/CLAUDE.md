@@ -153,9 +153,13 @@ local development included:
 3. Does it close an option open to a question that needs a full decision, where reopening that
    option later would cost more than changing this choice back?
 
-If an accepted record rules out the option you would take, the record stands until it is amended.
-Raise the conflict with me: either the record set its requirement at the wrong milestone and gets
-amended, or the choice gets a full decision.
+If an accepted record rules out the option you would take, the record stands until it is amended,
+but it does not set your recommendation. Recommend from the properties and raise the conflict with
+me: read the record's reason first, then either name what it caught that you missed, or name the
+fact it lacked and recommend amending it. "The record chose it" is never a reason you give. The
+full rule is in `decision-making.md`. The harness's "do not re-litigate a decision the user has
+already made" means do not reopen one without new evidence; a new fact, or a property the decision
+did not weigh, is the reason to reopen it.
 
 If none holds, decide it on the spot. Say in the status report, and later the commit message, why
 each test fails, so I can check the verdict before I approve the commit or the PR. A test held "to

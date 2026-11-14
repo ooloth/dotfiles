@@ -25,9 +25,14 @@ finding one needs research, gets the full derivation.
    choice back.
 
 Where an accepted record rules out the option the triage would take, the record stands until it is
-amended, and the conflict is raised with the maintainer. What is raised is whether the record set
-its requirement at the right milestone. If it did not, the record is amended and the triage applies
-to the choice. If it did, the choice gets the full derivation.
+amended: nothing is built against it meanwhile, and the conflict is raised with the maintainer.
+Standing governs what may be done, not what is recommended. The recommendation comes from the
+properties, and a record's existence is never its reason. Before recommending against a record,
+read the reason it gives for the option it chose and the one it rejected. If that reason still
+disqualifies your option, the record caught something you missed: name it and recommend the
+record's choice. If it does not, name what the record lacked when it was made, such as a fact found
+since, a property it did not list, or a milestone that has passed, and recommend amending it. A
+record that gives no reason for a choice gets the full derivation.
 
 A decision that holds none of the three is taken when it is found, by whoever found it, and the
 reason it fails each test is stated where the change is reviewed: in a repository, the commit

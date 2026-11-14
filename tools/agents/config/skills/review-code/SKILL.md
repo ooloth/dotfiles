@@ -274,6 +274,9 @@ block generic ("various improvements") or empty.
 A finding that would reverse a recorded decision is not dropped. It is reported as a challenge to
 that decision, naming the record, so the reader weighs the new argument against the old one.
 
+When the reader must choose, the recommendation comes from the properties. That the approved design
+or a record chose an option is reported beside the recommendation, never given as its reason.
+
 ## Step 3: Launch the agents in parallel
 
 Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, Agent 15
