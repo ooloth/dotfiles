@@ -62,6 +62,16 @@ document, counts only once each row has been checked against a source the code d
 snapshot or golden-file test, which exists to detect change rather than to define correct output,
 is the exception.
 
+**A check that expects an access refusal sends a request that passes validation, so the refusal
+comes from the access check and not from the parser.**
+A web framework validates a request's body and parameters before the handler runs, and an access
+check inside the handler runs only after that. A test that sends a placeholder body, such as `{}`,
+gets the framework's validation error, and a test that accepts any refusal passes without the
+access check ever running. The route could admit the caller with a real body and the test would not
+notice. So each request carries a body that passes the schema, the test accepts only the access
+check's own answers, such as 403 or a 404 for a row the caller may not see, and a new route that
+takes a body fails until it has one.
+
 **Tests span every dimension the behavior varies along.**
 Inputs are one dimension: happy path, empty input, boundary values and error conditions are all
 represented. Others are who is acting (a role or account type), how the system is configured (each
