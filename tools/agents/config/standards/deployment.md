@@ -151,6 +151,18 @@ process directly; a build step may exist in CI and nowhere else. Conflating them
 imports production's constraints into the edit-run loop, where they cost time on
 every iteration and buy nothing.
 
+**A test stage in a multi-stage Dockerfile is one the final stage depends on.**
+BuildKit builds only the stages the target stage depends on ("BuildKit only
+builds the stages that the target stage depends on", Docker's
+[multi-stage builds](https://docs.docker.com/build/building/multi-stage/) page,
+under "Differences between legacy builder and BuildKit"). So a stage that runs
+tests against the built artifact, and that nothing copies from, is skipped
+without a message, and the image builds whether the tests pass or fail. The
+final stage copies a file the test stage writes only after its tests pass, so
+the tests run on every build and a failure stops the image. A cached test layer
+replays an earlier run's success, so proof that needs a fresh run forces the
+stage with `--no-cache-filter <stage>`.
+
 ## Consider
 
 **Risky rollouts have a flag.**
