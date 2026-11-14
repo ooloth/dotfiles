@@ -39,6 +39,18 @@ configured, says it skipped and why instead of failing.
 Authentication, authorization, payment flows, data integrity operations, and
 error handling paths are tested. The absence of tests here is a defect.
 
+**A change that deletes or replaces tests keeps each property they checked, or says why it drops
+it.**
+A replacement that looks broader can still miss a case the old test caught,
+and nothing fails to show it, because the test that would have failed is gone.
+So for each removed test, assertion or expected-value helper, the change names
+the test that now checks the same property for the same inputs, or states in
+the commit or PR why the property no longer needs checking. "The new tests
+replace the old ones" is not a reason; one property at a time is. Seen on
+recursionpharma/react-clinops-siteoutreach#373: a module-ownership check was
+dropped because a new table "covers each route", but the table's module field
+defaulted to none, so a route under a dormant prefix could ship ungated.
+
 ## Should
 
 **Test names describe behavior in domain terms.**

@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks where the PR's edits land when the base branch has changed its files, and one that checks whether merging another open PR that shares its files would undo its edits, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks where the PR's edits land when the base branch has changed its files, one that checks whether merging another open PR that shares its files would undo its edits, and one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -280,8 +280,9 @@ or a record chose an option is reported beside the recommendation, never given a
 ## Step 3: Launch the agents in parallel
 
 Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, Agent 15
-runs when Step 1's `base_moved.py` finds base commits touching this PR's files or a conflict, and
-Agent 16 runs when Step 1's `overlapping_prs.py` exits 1.
+runs when Step 1's `base_moved.py` finds base commits touching this PR's files or a conflict,
+Agent 16 runs when Step 1's `overlapping_prs.py` exits 1, and Agent 17 runs when the diff removes
+a test or an assertion.
 Together these are the standing agents. You may add more in the same fan-out when this particular
 change raises a question none of these prompts ask.
 
@@ -840,6 +841,39 @@ For each issue: this PR's file:line | the other PR | the merge or resolution tha
 
 ---
 
+### Agent 17: Dropped Assertions
+
+**Model:** Opus, because its usual answer is that nothing was lost, and a wrong "nothing" leaves a
+check gone with every test still green.
+
+Runs when the diff removes, from a test file, a whole file, a test function or class, a helper
+tests read for their expected values (a hand-kept list, an expected-value function), or a line
+that asserts (`assert`, `expect(`, `assertEqual` and the like, `pytest.raises`, `toThrow`). Agent 8
+judges the tests the change adds or rewrites; this agent judges what it takes away.
+
+```
+Question: For each assertion the change removes from the tests, is the same property still asserted for the same inputs after the change, or does the change say why that property is dropped?
+
+**Answer property by property first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change removes no test, assertion or expected-value helper, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/testing.md`. Use these as your evaluation criteria.
+2. Run the diff command from Context. List every removed test file, test function or class, expected-value helper, and line that asserts. For each, write the property it checked in one sentence: which inputs, which expected outcome.
+3. For each property, look at the head for a test that still checks it: a rewritten version in the diff, a test elsewhere, or a check that runs at boot or import. Read the candidate and confirm it fails when the property breaks, for the same inputs. A narrower check is not the same property: fewer routes or rows, one caller where there were several, a made-up id where the old test used a real row, a field the new check lets default.
+4. Where a candidate's coverage is in doubt and a break is cheap, break the property in a scratch worktree and run only the candidate. Never edit the reviewed tree, which other agents are reading: `REF=$(git stash create); DIR=$(mktemp -d); git worktree add --detach "$DIR" "${REF:-HEAD}"`, and `git worktree remove --force "$DIR"` when done. At most three breaks.
+5. For each property nothing checks any more, look for the change's stated reason in the PR body, the commit messages, and Context's Recorded decisions. A reason counts only when it covers this property; "the new tests replace the old ones" covers none. A property dropped for a reason whose replacement misses a case the reason claims to cover is a challenge to that reason: name the case.
+
+For each issue: removed test or assertion (file:line at the base) | the property it checked | where it is checked now, or "nowhere" | the stated reason, or "none" | an input that now passes unnoticed | the test that would catch it
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific
@@ -939,8 +973,9 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
 - **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
   errored or never ran, and why.] An Agent 14 not launched because the diff touches no agent
   instruction file is listed as "not applicable", and does not count as never ran. So is an
-  Agent 15 not launched because the Base moved line says "none", and an Agent 16 not launched
-  because the Overlapping open PRs line says "none".
+  Agent 15 not launched because the Base moved line says "none", an Agent 16 not launched
+  because the Overlapping open PRs line says "none", and an Agent 17 not launched because the diff
+  removes no test or assertion.
 
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
@@ -1059,13 +1094,14 @@ On any answer other than "skip":
     - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
       the new head, with every standing agent that applies (Agent 14 applies when the full PR
       diff touches an agent instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16
-      when `overlapping_prs.py` exits 1) and any
-      added ones over the whole PR diff, as Step 3
+      when `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an
+      assertion) and any added ones over the whole PR diff, as Step 3
       always does.
     - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
       standing agent that applies (Agent 14 applies when the full PR diff touches an agent
       instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16 when
-      `overlapping_prs.py` exits 1) and any added ones. Give them the
+      `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an assertion)
+      and any added ones. Give them the
       lines the script printed as
       the change to review, and the full PR diff for context. As Step 3 says, they get nothing
       from the drafted findings; in Step 3.5, drop any new finding that repeats a drafted one.
