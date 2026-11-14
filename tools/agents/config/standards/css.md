@@ -81,6 +81,19 @@ A magic opacity, a specific offset, or a colour chosen a shade off the obvious
 one records what would break if it changed. Comments state the reason, not the
 computation.
 
+**A change that moves or splits style rules without meaning to change any page
+is checked by comparing every element's computed style between the old and new
+builds.**
+Pages are served from both builds against the same data at the same viewport,
+and the computed style of each element is recorded and compared element by
+element, so a difference names the element and the property a reviewer can
+trace to the rule that moved. A pixel diff of screenshots also flags font
+loading and relative times, which hide a moved rule among them, and no unit test
+sees cascade order, because test environments rarely load the stylesheet. The
+comparison covers states a page reaches after input, such as a form with an
+answer typed in, and both captures drive the page into the same state, since a
+state reached in one capture and not the other reads as a change in style.
+
 ## Consider
 
 **`color-scheme` is declared to match the palettes that actually exist.**
