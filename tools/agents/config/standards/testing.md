@@ -51,6 +51,17 @@ tell a reader what broke without reading the test body.
 A test has one reason to fail. Multiple unrelated assertions in a single test
 obscure which behavior broke.
 
+**An expectation is written separately from the code it checks.**
+A test that reads what to expect from the code under test, such as a route's declared roles or the
+constants a function compares against, passes whatever that code does, because the expectation
+moves with it. The expected values are written by hand, from what the behaviour is for, and
+compared with what the code does. Where they are too many to write one by one, they still go in a
+table written that way rather than generated from the code's answers, since a generated table
+copies today's mistakes into the expectation. A table drafted with help, from an agent or a
+document, counts only once each row has been checked against a source the code does not read. A
+snapshot or golden-file test, which exists to detect change rather than to define correct output,
+is the exception.
+
 **Tests span every dimension the behavior varies along.**
 Inputs are one dimension: happy path, empty input, boundary values and error conditions are all
 represented. Others are who is acting (a role or account type), how the system is configured (each
