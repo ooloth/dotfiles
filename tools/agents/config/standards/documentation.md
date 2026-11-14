@@ -178,6 +178,9 @@ earns its place by carrying what the name can't.
 A path survives a document being reorganised. An anchor breaks silently the
 moment someone rewords a heading, and nothing reports it.
 
+**Docs and code comments state what to check, not a shell search to run.**
+A pattern breaks silently when the text it matches changes.
+
 **Prose wraps at 100 columns.**
 Fixed-width wrapping keeps a diff to the lines that actually changed instead of
 reflowing a paragraph because one word was added. Code blocks, URLs, and tables
