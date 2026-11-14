@@ -79,6 +79,7 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:code.claude.com)",
       "mcp__atlassian-rovo__addCommentToJiraIssue",
+      "mcp__atlassian-rovo__transitionJiraIssue",
       "Bash(gh pr comment *)",
       "Bash(gh pr edit *)",
       "Bash(uv run /Users/michael.uloth/.claude/skills/review-pr-comments-converge/scripts/reply_to_comment.py *)",
