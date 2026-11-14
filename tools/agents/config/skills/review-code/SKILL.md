@@ -25,6 +25,15 @@ Everything the argument names is one scope, however many commits, PRs or files i
 against its own parent" says what each commit's base is; it does not ask for a separate review per
 commit. Agents name the commit a finding comes from.
 
+**When GitHub refuses a PR's diff, read it from git.** For a PR that changes more than 300 files,
+`gh pr diff` fails with `HTTP 406` and `PullRequest.diff too_large`, even though the browser still
+shows the diff. In a local clone of the repository, or one made in a `mktemp -d` directory, run
+`git fetch origin <headRefOid>` and use `git diff -M --name-status <merge base> <headRefOid>` as
+the file list and `git diff -M <merge base> <headRefOid>` as the diff command, with the merge base
+found below. Both commands read commits by hash, so they never change the clone's branch. `-M`
+shows a moved file as a rename, so a PR that mostly moves files reads as renames, not as whole files
+deleted and added. The same holds for any other PR this skill reads with `gh pr diff`.
+
 Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with
 `git symbolic-ref --short HEAD`. Every `gh` command in this skill names its repository with `-R` (or
 `--repo`), so it cannot act on a same-numbered PR or issue in whatever repo the shell is in.
