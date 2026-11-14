@@ -600,6 +600,11 @@ waiting: the new draft goes in a message that changes nothing, and the new wordi
 after I approve it. Announcing the change in the same turn that makes it is substituting it
 silently with a note attached.
 
+**Draft into the file you will post from.** Write each draft meant for an outside destination to
+a file in a folder from `mktemp -d` before showing it, then show me that file's text in your reply,
+copied from the file. Once I approve it, post that file unchanged. Never type an approved draft
+again into a new file or a tool call: retyping produces different words without anyone noticing.
+
 A formatting fix that a posting skill's check requires and that keeps every word in the same order,
 such as ending the bold before the code or writing a URL as `[url](url)`, is not a rewording: post
 it and say what changed.
