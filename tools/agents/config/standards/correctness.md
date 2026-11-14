@@ -132,6 +132,17 @@ paired with proof that the earlier step succeeded, such as the credential
 working before the change, or that step gating everything after it. A runbook
 whose only check is the refusal reports success when nothing ran.
 
+**A check over every item of a kind refuses an item it cannot classify.**
+A check that enforces a rule over everything a system has, such as every
+route it serves, every table it holds or every file it ships, finds the items
+by walking them, and the walk handles only the variants its author knew of.
+An item of any other variant, such as a route type the walk skips, then
+escapes the rule with nothing reported, and the check still passes. So the
+walk sorts every item into a variant it checks or a refusal that names the
+item. An item exempt on purpose is named with its reason, and the exemption
+asks the system which items those are, rather than keeping a list that can
+drift.
+
 ## Consider
 
 **Assertions multiply the value of fuzzing.**
