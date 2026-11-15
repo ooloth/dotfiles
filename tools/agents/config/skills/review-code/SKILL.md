@@ -883,9 +883,11 @@ reader to run a step that does the wrong thing with nothing to warn them.
 Runs when the diff adds or changes prose: Markdown, a code comment or docstring, or a message a user
 or operator reads (an error, a log line, help text). That is most changes, because nearly every
 change writes a comment. A change whose prose is a few comments is a short read of those comments
-against the code beside them. When the diff changes prose in more than 15 files, launch several
-Agent 18s in the same fan-out, each with its own list of those files, so each finishes in the time
-a smaller change takes. Agent 4 asks whether docs follow the code; this agent asks whether what the
+against the code beside them. When the diff changes prose in more than 5 files, launch several
+Agent 18s in the same fan-out, each with its own list of at most 5 of those files: on a replay with
+10 runbooks per agent, each run missed false claims the other found. Shares beyond the harness's
+limit on concurrent subagents wait and are resent as Step 3 describes, so a large docs PR takes
+longer rather than checking less. Agent 4 asks whether docs follow the code; this agent asks whether what the
 prose says is true.
 
 ```
