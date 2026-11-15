@@ -887,8 +887,8 @@ against the code beside them. When the diff changes prose in more than 5 files, 
 Agent 18s in the same fan-out, each with its own list of at most 5 of those files: on a replay with
 10 runbooks per agent, each run missed false claims the other found. Shares beyond the harness's
 limit on concurrent subagents wait and are resent as Step 3 describes, so a large docs PR takes
-longer rather than checking less. Agent 4 asks whether docs follow the code; this agent asks whether what the
-prose says is true.
+longer rather than checking less. Agent 4 asks whether docs follow the code; this agent asks
+whether what the prose says is true.
 
 ```
 Question: Is every factual claim the change's prose makes true at the head, against the code, config, deployment files, other repositories and tools it describes, and does every command, query and step it gives work as written?
