@@ -111,6 +111,20 @@ versions that disagree.
 Code samples in documentation execute without modification. Copy-paste
 examples that silently fail are worse than no examples.
 
+**A procedure that changes data gives the statement to run.**
+A step that asks the reader to update or delete rows names the exact
+statement, the count it should report, and a guard count that uses the same
+predicate as the write. A mismatch then stops the reader before it changes a
+row they did not mean to change. A step that leaves the statement to the
+reader has them improvise a write against production.
+
+**Absolute claims hold for every path, mode, environment and input.**
+A sentence that says only, every, never, nothing or always about a system
+holds for the other paths, modes, environments and inputs that could break
+it. An absolute is the kind of claim most often false with nothing in the text
+to show it: "PROD runs an image only once a person approves it" was false for
+a tag edit, and "running it again changes nothing" for a timeout.
+
 **Prose is followed in one pass, forward, without backtracking.**
 A reader who reaches the third paragraph and has to return to the first has been
 failed, however short the piece is. Length is not the measure. Draft it as you
