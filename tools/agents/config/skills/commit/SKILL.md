@@ -72,6 +72,11 @@ still runs the full suite unless the script says otherwise.
    just do your best to separate unrelated changes. Do NOT design commits that would require
    reverting and replaying changes; that's slow and risky and not worth it. A single commit is
    preferable in that case.
+
+   Before committing, run `uv run <skill-base-dir>/scripts/check_branch.py <branch>` from the
+   repository that holds the changes, naming the branch this session created or switched to, as its
+   own earlier command shows rather than as `git branch` shows now. On exit 1 commit nothing:
+   another session has switched the checkout, so say so and wait for the user.
 4. Write each commit following the "Writing Commit Messages" style guide below. Commit only the
    paths this session changed, because another session may share this checkout, and a plain
    `git commit` also commits whatever that session has staged. Commit whole files with

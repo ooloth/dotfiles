@@ -87,10 +87,11 @@ review-code skill calls this script too, so a change to its output reaches both.
 
 Posts a reply to an inline comment. Pass `--resolve` to also close the conversation thread.
 The thread ID is looked up automatically from the comment ID — you only need to pass the
-`comment_id` shown in `fetch_pr_comments.py` output.
+`comment_id` shown in `fetch_pr_comments.py` output. `--body-file` posts a UTF-8 file's contents
+exactly, in place of `<body>`, so the reply needs no shell quoting.
 
 ```bash
-uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 "✅ Changed to 'fill empty snapshots' (2611d9d)" --resolve
+uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 --body-file /abs/path/reply.md --resolve --repo OWNER/NAME
 ```
 
 It prints `Target: OWNER/NAME#PR, comment ID` before writing. Read that line — it is the only
@@ -123,10 +124,22 @@ it to every subagent as the absolute path to read and edit in, and tell the user
 and whether the helper switched or fast-forwarded a branch, with the undo command it printed. Do
 not ask first: the helper only acts when nothing can be lost.
 
-On any exit other than 0, stop before Phase 2. Relay the helper's reason to the user and ask how to
-proceed. Do not work around the refusal by switching branches yourself. When the reason is that this
-is a checkout of a different repo, ask the user which checkout of the PR's repo to use rather than
-picking one, since another checkout may hold another task's work.
+On exit 1, read the helper's `Refused:` line. Stop before Phase 2 and ask the user how to proceed
+when it says the PR is closed or on a fork, that this is not inside a git checkout, that no remote
+points at the PR's repo, or that a `gh` call or fetch failed, and on any other exit without a
+`Refused:` line. When no remote points at the PR's repo, ask which checkout of it to use rather than
+picking one, since another checkout may hold another task's work. Every other refusal is about the
+state of a local checkout. Leave that checkout alone, whatever the refusal suggests, and add a fresh
+worktree from the remote head in the main clone, naming the remote that points at the PR's repo:
+
+```bash
+clone=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
+name=pr-<n>-$(date -u +%Y%m%dT%H%M%SZ)
+git -C "$clone" check-ignore -q .claude/worktrees/x || echo /.claude/worktrees/ >> "$(git -C "$clone" rev-parse --path-format=absolute --git-path info/exclude)"
+git -C "$clone" worktree add --track -b "$name" "$clone/.claude/worktrees/$name" <remote>/<head-branch>
+```
+
+Use it as the working root and tell the user its path.
 
 **Fetch all PR comments** by running the fetch helper from the working root, naming the repo the
 checkout helper resolved:
@@ -458,6 +471,12 @@ replies"), post replies and resolve threads:
 
   These have no thread to resolve, so an escalated finding's bullet lists its options and nothing
   more.
+
+Run each post, `reply_to_comment.py` included, as its own command with literal paths and no
+`cd`, variable, `$(…)` or `&&`. Only that form matches the allow rules that let a post skip the
+auto-mode classifier, and the `use-gh` skill says why the classifier blocks the rest. Write each
+inline reply to a file in a `mktemp -d` directory too, and pass it to `reply_to_comment.py` with
+`--body-file`, not as `"$(cat file)"`, so the approved text is posted without shell quoting.
 
 Do not run any of these commands before receiving explicit approval in Phase 3.
 

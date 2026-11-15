@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks where the PR's edits land when the base branch has changed its files, one that checks whether merging another open PR that shares its files would undo its edits, one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, one that checks every claim the change's prose makes against the system it describes, and one that checks that removed prose took nothing a reader needs, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -25,6 +25,15 @@ Everything the argument names is one scope, however many commits, PRs or files i
 against its own parent" says what each commit's base is; it does not ask for a separate review per
 commit. Agents name the commit a finding comes from.
 
+**When GitHub refuses a PR's diff, read it from git.** For a PR that changes more than 300 files,
+`gh pr diff` fails with `HTTP 406` and `PullRequest.diff too_large`, even though the browser still
+shows the diff. In a local clone of the repository, or one made in a `mktemp -d` directory, run
+`git fetch origin <headRefOid>` and use `git diff -M --name-status <merge base> <headRefOid>` as
+the file list and `git diff -M <merge base> <headRefOid>` as the diff command, with the merge base
+found below. Both commands read commits by hash, so they never change the clone's branch. `-M`
+shows a moved file as a rename, so a PR that mostly moves files reads as renames, not as whole files
+deleted and added. The same holds for any other PR this skill reads with `gh pr diff`.
+
 Substitute the actual base ref (main, master, trunk) where needed. Detect the current branch with
 `git symbolic-ref --short HEAD`. Every `gh` command in this skill names its repository with `-R` (or
 `--repo`), so it cannot act on a same-numbered PR or issue in whatever repo the shell is in.
@@ -41,7 +50,7 @@ Substitute the actual base ref (main, master, trunk) where needed. Detect the cu
 **For PR scope — fetch PR context before Step 2:**
 
 ```bash
-gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefName,headRefOid,baseRefOid,author
+gh pr view <n> -R <owner>/<repo> --json title,body,number,headRefName,headRefOid,baseRefOid,author,mergeable
 gh repo view <owner>/<repo> --json viewerPermission
 ```
 
@@ -50,6 +59,7 @@ Store the title, body and branch name (`headRefName`) for use in Step 2. Store t
 commit, so Step 5 checks that the PR has not moved since, compares the PR's own changes against that
 base if it has, and pins its comments to the saved head. Store `author.is_bot` and
 `viewerPermission` for Step 5 too: together they say whether the findings are the user's to fix.
+Store `mergeable` for the base-moved check below.
 
 **For PR scope, also find the merge base,** the commit the PR's branch forked from:
 
@@ -57,9 +67,25 @@ base if it has, and pins its comments to the saved head. Store `author.is_bot` a
 gh api repos/<owner>/<repo>/compare/<baseRefOid>...<headRefOid> -q .merge_base_commit.sha
 ```
 
-`baseRefOid` is the base branch's tip, which moves whenever another PR merges, so a line that
-another PR changed after the fork reads one way at `baseRefOid` and another way before this
-change. The merge base is what the change is measured against, so it is the Base ref in Step 2.
+`baseRefOid` is the base branch's commit as GitHub recorded it at the PR's last update, not the
+branch's current tip, and a line another PR changed after the fork reads one way there and another
+way before this change. The merge base is what the change is measured against, so it is the Base
+ref in Step 2.
+
+**For PR scope, also list the base-branch commits that touch this PR's files since the merge
+base:**
+
+```bash
+uv run <skill-base-dir>/scripts/base_moved.py <n> --repo <owner>/<repo>
+```
+
+A conflict can mean the content a PR edits moved to another file, and that file then merges
+cleanly without the edit, so the edit is lost with no conflict to show it. The script reads the
+base branch's tip as it is now, counts a rename under both paths on either side, and prints each
+commit with the PR files it touches, and `mergeable`. Exit 0 means none and the PR is mergeable,
+and 1 means at least one commit or a CONFLICTING PR: Agent 15 then runs on its output. Exit 2
+means it could not tell, which is never read as none: the Base moved line in Step 2 says "not
+checked" with the reason from stderr, and Agent 15 runs anyway when `mergeable` is `CONFLICTING`.
 
 **For PR scope, also fetch what earlier reviewers said:**
 
@@ -85,10 +111,10 @@ uv run <skill-base-dir>/scripts/overlapping_prs.py <n> --repo <owner>/<repo>
 ```
 
 Another open PR may already fix what this one leaves open, or conflict with it on a shared file,
-and nothing else in this skill looks at other PRs. The script lists every other open PR, drafts and
+and only Agent 16 and Step 4 look at other PRs. The script lists every other open PR, drafts and
 PRs against other bases included, that changes a file this PR changes, counting a rename's old
 path, with the files each one shares. Exit 0 means none, 1 means some, and 2 means it could not
-tell, which is never read as none.
+tell, which is never read as none. Exit 1 also starts Agent 16.
 
 The base ref for every other scope: `git merge-base <branch> HEAD` for a branch or for no
 argument on a feature branch (with the base branch as `<branch>`), `<oldest>^` for consecutive
@@ -235,6 +261,9 @@ Dry-run output: [each planned action and the summary line, verbatim, then the pa
 Overlapping open PRs: [each PR from Step 1's list with its number, title, base and the files it
   shares with this one; "none" when the check found none; "not checked" and the reason when it
   exited 2; "not applicable: not a PR review" outside PR scope. An agent may run `gh pr diff <n> -R <owner>/<repo>` on any PR listed here]
+Base moved: [`base_moved.py`'s output from Step 1, verbatim, on exit 0 or 1; "not checked:
+  <reason from stderr>" and `mergeable` on exit 2; "not applicable: not a PR review" outside PR
+  scope]
 Diff command: [exact command agents should run to read the diff]
 Base ref: [the commit SHA from Step 1 that the change is measured against]
 ```
@@ -245,9 +274,16 @@ block generic ("various improvements") or empty.
 A finding that would reverse a recorded decision is not dropped. It is reported as a challenge to
 that decision, naming the record, so the reader weighs the new argument against the old one.
 
+When the reader must choose, the recommendation comes from the properties. That the approved design
+or a record chose an option is reported beside the recommendation, never given as its reason.
+
 ## Step 3: Launch the agents in parallel
 
-Agents 1 to 13 always run, and Agent 14 runs when the diff touches an agent instruction file.
+Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, Agent 15
+runs when Step 1's `base_moved.py` finds base commits touching this PR's files or a conflict,
+Agent 16 runs when Step 1's `overlapping_prs.py` exits 1, Agent 17 runs when the diff removes
+a test or an assertion, Agent 18 runs when the diff adds or changes prose, and Agent 19 runs when
+the diff removes prose.
 Together these are the standing agents. You may add more in the same fan-out when this particular
 change raises a question none of these prompts ask.
 
@@ -745,6 +781,185 @@ For each issue: file:line | the rule | file:line of the rule it meets | the situ
 
 ---
 
+### Agent 15: Base Merge
+
+**Model:** Opus, because an edit lost in a clean merge leaves nothing for anyone to notice.
+
+Runs only for PR scope, when `base_moved.py` in Step 1 exits 1, or exits 2 for a PR GitHub
+reports as CONFLICTING.
+
+```
+Question: Once the base branch is merged into this PR, where does each of the PR's edits land, and does any edit disappear, duplicate what the base already did, or point at content the base moved or removed?
+
+**Answer edit by edit first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If Context's Base moved line says "none", say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Run the diff command from Context, and list each of the PR's edits, hunk by hunk, in the files the Base moved line names.
+2. Merge the base tip into the PR head without touching any checkout: `git fetch origin <base tip> <PR head>`, then `git merge-tree --write-tree <base tip> <PR head>`. List each file that conflicts and each that merges cleanly.
+3. For each base commit the Base moved line names, read what it did to the shared files with `git show <commit>`. Where it moved content out of a file, find where that content lives at the base tip with `git grep` on distinctive phrases from the PR's edit.
+4. For each PR edit, decide which holds: it merges in place; it conflicts, and taking the base's side drops it; its content moved, so it belongs in a file you name, where the merged tree still holds the old text; the base already made the same change, so it is redundant; or it points at something the base removed.
+5. A clean merge of the destination file is not evidence the edit survived. Read the merged tree's copy of each destination (`git cat-file -p <tree>:<path>`) and check for the edit's text.
+
+For each issue: PR file:line | the edit | where it lands after the merge (file:line at the base tip) | what is lost or wrong | where to re-apply it
+```
+
+---
+
+### Agent 16: Overlapping PR Merge
+
+**Model:** Opus, because a conflict resolved the natural way can drop this PR's edit and leave
+every test passing.
+
+Runs only for PR scope, when `overlapping_prs.py` in Step 1 exits 1. When the list names more
+than 3 PRs, launch several Agent 16s in the same fan-out, each with its own list of at most 3 of
+those PRs and the line "Your overlapping PRs: #…" naming them, because each PR takes a merge and
+both resolutions of every conflict to check. Shares beyond the harness's limit on concurrent
+subagents wait and are resent as Step 3 describes.
+
+```
+Question: For each open PR in your share (the "Your overlapping PRs" line, or Context's Overlapping open PRs line when there is no share), once it and this PR are merged in either order, does any of this PR's edits disappear, conflict in a way whose likely resolution drops it, or stop working because the other PR changed what it relies on?
+
+**Answer PR by PR first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Run the diff command from Context, and list this PR's edits, hunk by hunk, in the files each overlapping PR shares.
+2. For each overlapping PR, read its diff (`gh pr diff <n> -R <owner>/<repo>`) and fetch its head, taking its SHA from `git ls-remote origin refs/pull/<n>/head` and never from `FETCH_HEAD`, which other agents fetching in the same repository overwrite, then running `git fetch origin refs/pull/<n>/head` so that commit is stored locally. Merge it with this PR's head without touching any checkout: `git merge-tree --write-tree <this head> <other head>`. List each shared file that conflicts and each that merges cleanly.
+3. For each conflict, resolve it each way, taking this PR's side and the other PR's side, in a scratch worktree (`git worktree add --detach "$(mktemp -d)/wt" <this head>`, then `git merge --no-commit <other head>`), and say which side a resolver would most likely take and why, such as whose comment or wording is newer. For the likely side, read the result and check for each of this PR's edits.
+4. For a clean merge, read the merged tree's copy of each shared file (`git cat-file -p <tree>:<path>`) and check for each edit's text: a clean merge is not evidence the edit survived.
+5. Where a resolution drops an edit, run the tests that cover it in that worktree and say whether they still pass. An edit that disappears with every test green is the most severe finding, and the fix is usually a test in this PR that would fail.
+6. Remove every worktree you added.
+
+For each issue: this PR's file:line | the other PR | the merge or resolution that loses or breaks the edit | whether tests notice | what this PR could add so they would
+```
+
+---
+
+### Agent 17: Dropped Assertions
+
+**Model:** Opus, because its usual answer is that nothing was lost, and a wrong "nothing" leaves a
+check gone with every test still green.
+
+Runs when the diff removes, from a test file, a whole file, a test function or class, a helper
+tests read for their expected values (a hand-kept list, an expected-value function), or a line
+that asserts (`assert`, `expect(`, `assertEqual` and the like, `pytest.raises`, `toThrow`). Agent 8
+judges the tests the change adds or rewrites; this agent judges what it takes away.
+
+```
+Question: For each assertion the change removes from the tests, is the same property still asserted for the same inputs after the change, or does the change say why that property is dropped?
+
+**Answer property by property first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change removes no test, assertion or expected-value helper, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/testing.md`. Use these as your evaluation criteria.
+2. Run the diff command from Context. List every removed test file, test function or class, expected-value helper, and line that asserts. For each, write the property it checked in one sentence: which inputs, which expected outcome.
+3. For each property, look at the head for a test that still checks it: a rewritten version in the diff, a test elsewhere, or a check that runs at boot or import. Read the candidate and confirm it fails when the property breaks, for the same inputs. A narrower check is not the same property: fewer routes or rows, one caller where there were several, a made-up id where the old test used a real row, a field the new check lets default.
+4. Where a candidate's coverage is in doubt and a break is cheap, break the property in a scratch worktree and run only the candidate. Never edit the reviewed tree, which other agents are reading: `REF=$(git stash create); DIR=$(mktemp -d); git worktree add --detach "$DIR" "${REF:-HEAD}"`, and `git worktree remove --force "$DIR"` when done. At most three breaks.
+5. For each property nothing checks any more, look for the change's stated reason in the PR body, the commit messages, and Context's Recorded decisions. A reason counts only when it covers this property; "the new tests replace the old ones" covers none. A property dropped for a reason whose replacement misses a case the reason claims to cover is a challenge to that reason: name the case.
+
+For each issue: removed test or assertion (file:line at the base) | the property it checked | where it is checked now, or "nowhere" | the stated reason, or "none" | an input that now passes unnoticed | the test that would catch it
+```
+
+---
+
+### Agent 18: Doc Claims
+
+**Model:** Opus, because its usual answer is that the prose is true, and a wrong "true" sends a
+reader to run a step that does the wrong thing with nothing to warn them.
+
+Runs when the diff adds or changes prose: Markdown, a code comment or docstring, or a message a user
+or operator reads (an error, a log line, help text). That is most changes, because nearly every
+change writes a comment. A change whose prose is a few comments is a short read of those comments
+against the code beside them. When the diff changes prose in more than 5 files, launch several
+Agent 18s in the same fan-out, each with its own list of at most 5 of those files: on a replay with
+10 runbooks per agent, each run missed false claims the other found. Shares beyond the harness's
+limit on concurrent subagents wait and are resent as Step 3 describes, so a large docs PR takes
+longer rather than checking less. Agent 4 asks whether docs follow the code; this agent asks
+whether what the prose says is true.
+
+```
+Question: Is every factual claim the change's prose makes true at the head, against the code, config, deployment files, other repositories and tools it describes, and does every command, query and step it gives work as written?
+
+**Answer claim by claim first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change adds or changes no prose that states a fact, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list, or this agent's share of the files whose prose changed]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/documentation.md`: the Musts "Existing docs reflect current behavior", "A doc or comment holds only what its source of truth cannot say" and "Recorded facts name their source", and the Should "Examples are correct and runnable". Use these as your evaluation criteria. Also read the repository's own `docs/standards/` files, if it has any, for the copied facts it sanctions.
+2. Run the diff command from Context. In your files, list every added or changed sentence that states a fact (what code does, a name, path, route, setting, default, count or limit, which environments differ, what a tool or vendor does, what a command returns) and every command, query and procedure step. Text the change moved counts as written by it. Before checking a claim, ask whether the doc should make it at all: a list of members, a count, a value or an ID range copied from code, configuration or a canonical page, or a description of code elsewhere, goes stale at the next change even when it is true today. Report such a claim as a finding whose fix is to delete it and point at its source (the `file::symbol`, the config file, the page, or the check that enforces it), not to correct it, and report it whether or not it is true now. A value a procedure needs in order to run, such as the log message a reader searches for, a resource name in a command, or a statement to execute, is part of the procedure and not a copied fact, and so is anything the repository's own standards sanction.
+3. For each claim, read the source that decides it: the cited symbol and its callers, the settings class, the model or migration, the deployment files. For a claim about another repository, read it at its default branch if you can (a local clone after `git fetch`, or `gh api`), and if you cannot, say which repository and what you would have read. For a claim about a tool or vendor, read its `--help` or documentation and quote the line. A claim about code is checked against the code, never against another doc.
+4. For each command, check every flag against `--help`. For each SQL statement, check every table, column and predicate against the models, and that a count meant to guard a write uses the same predicate as the write. Where it is cheap and changes nothing, run the command read-only or against a scratch database; never against a deployed environment, and never a write.
+5. For each absolute claim (only, every, never, no, nothing, always, the one), search for the exception: another path, mode, environment or input for which it does not hold. An absolute claim is the kind most often false with nothing to show it.
+6. For each procedure, walk it as its reader would: the state each step assumes, whether a step can act on the wrong row, environment or person, and what the reader is told when a result is not the one expected. Check each step's condition against the rest of the same doc and the docs it links, for a case described there that the condition also matches. A step that asks the reader to change data gives the statement to run.
+7. A claim made false by the change's own code counts here only when the change also wrote the claim; a claim elsewhere that the code change makes false is Agent 12's and 13's question.
+
+For each issue: file:line | the claim as written | the source that decides it (`file::symbol`, command and its output, or quoted documentation) | false, unverified, or copied (true now, but restating its source) and why | the fix. Then the claims found true, one line each with their source, or, when there are more than 20, their count per file.
+```
+
+---
+
+### Agent 19: Removed Knowledge
+
+**Model:** Opus, because its usual answer is that nothing was lost, and what a deletion takes leaves
+no trace at the head for anyone to notice.
+
+Runs when the diff removes prose: Markdown lines, comments or docstrings. Text that reappears at
+the head, moved or reworded, is not removed. Most removed prose should go: history, narration and
+restatements of what the code says are what the documentation standard asks a change to delete. So
+this agent's bar is not whether the removed text was true but whether a reader needs it and can no
+longer find it. Agent 17 asks this of test assertions; this agent asks it of prose. When the diff
+removes more than about 1,500 lines of prose, launch several Agent 19s in the same fan-out, each
+with its own share: a deleted file grouped with the files its content moved to, the removed lines
+of a few edited files, or the removed comments of one code area. Name each share's files and the
+destination files in its prompt. Shares beyond the harness's limit on concurrent subagents wait and
+are resent as Step 3 describes.
+
+```
+Question: For each statement the change removes, is it true at the head, needed by a reader to act correctly, and stated nowhere else at the head, including in the code?
+
+**Answer statement by statement first, then report every issue you would act on, most severe first, one or two lines each. List the removals you judged safe as the instructions say. If the change removes no prose, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/documentation.md`, in particular the Musts "Comments and documents describe the present, never the past", "A rule is stated without the incident that produced it" and "History survives only as a forward-facing instruction". They describe removals that are correct.
+2. Run the diff command from Context with `-M`, so a moved file reads as a rename. List every removed statement: a sentence, list item, table row or comment. Drop each one whose content reappears at the head, found by searching the head for its distinctive terms rather than its exact words. When a file's content moved into another, compare the two row by row and section by section, never file by file: a move that carries most of a file can still drop one row.
+3. Sort each remaining statement into one of two kinds:
+   - **Safe:** history or narration of how the code got here; a restatement of what the code at the head shows through its names, types or tests; a duplicate of text at the head (cite where); a description of a past state; or a claim false at the head (cite the evidence).
+   - **Lost:** true at the head, read in the code; something a reader needs to act correctly, such as a reason, a constraint, a warning, a procedure, a symptom to diagnose by, or a guard someone might otherwise remove; and stated nowhere at the head.
+4. For each lost statement, name where it belongs at the head: a doc, a decision record, a comment beside the code it explains, an invariant, or a ticket when it describes work still to do.
+5. Never report a safe removal as a finding, and never recommend restoring narration or a restatement of the code.
+
+For each issue: removed text (file:line at the base) | why a reader needs it | where it belongs at the head. Then each safe removal in one line with its kind, or, when there are more than 30, a count per kind with three examples each.
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific
@@ -843,7 +1058,11 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
 
 - **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
   errored or never ran, and why.] An Agent 14 not launched because the diff touches no agent
-  instruction file is listed as "not applicable", and does not count as never ran.
+  instruction file is listed as "not applicable", and does not count as never ran. So is an
+  Agent 15 not launched because the Base moved line says "none", an Agent 16 not launched
+  because the Overlapping open PRs line says "none", and an Agent 17 not launched because the diff
+  removes no test or assertion, an Agent 18 not launched because the diff adds or changes no prose,
+  and an Agent 19 not launched because it removes none.
 
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
@@ -942,10 +1161,13 @@ On any answer other than "skip":
 - **Check what changed since the saved state.** Read the head and reviews again with
   `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid,reviews`, and run the fetch helper
   from Step 1 again. A review can wait hours for its posting answer while the PR moves on. Run
-  `overlapping_prs.py` from Step 1 again too, whatever the head did. Re-check each "covered by #N"
-  finding against its new list, and take "covered by" off any whose PR is no longer open. Check each
-  PR the list newly names as Step 4 does. When it exits 2, the overlaps were not re-checked, and the
-  report to the user says so.
+  `overlapping_prs.py` and `base_moved.py` from Step 1 again too, whatever the head did. When
+  `base_moved.py` lists a commit the saved Base moved line did not, run Agent 15 on the new output
+  and fold its findings in before posting. When `overlapping_prs.py` names a PR the saved
+  Overlapping open PRs line did not, run Agent 16 on that PR and fold its findings in too.
+  Re-check each "covered by #N" finding against its new list, and take "covered by" off any whose
+  PR is no longer open. Check each PR the list newly names as Step 4 does. When it exits 2, the
+  overlaps were not re-checked, and the report to the user says so.
   - **A read fails:** post nothing, and say which one failed, quoting the error. What changed is
     unknown, not empty.
   - **The head moved:** post nothing yet. A review of an older head can be wrong about the code
@@ -958,11 +1180,18 @@ On any answer other than "skip":
 
     - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
       the new head, with every standing agent that applies (Agent 14 applies when the full PR
-      diff touches an agent instruction file) and any added ones over the whole PR diff, as Step 3
+      diff touches an agent instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16
+      when `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an
+      assertion, Agent 18 when it adds or changes prose, Agent 19 when it removes prose) and any
+      added ones over the whole PR diff, as Step 3
       always does.
     - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
       standing agent that applies (Agent 14 applies when the full PR diff touches an agent
-      instruction file) and any added ones. Give them the lines the script printed as
+      instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16 when
+      `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an assertion,
+      Agent 18 when it adds or changes prose, Agent 19 when it removes prose)
+      and any added ones. Give them the
+      lines the script printed as
       the change to review, and the full PR diff for context. As Step 3 says, they get nothing
       from the drafted findings; in Step 3.5, drop any new finding that repeats a drafted one.
       Then do everything the next item lists as well.

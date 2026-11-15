@@ -20,6 +20,16 @@ well-defined field names. Free-form prose strings are not the output format
 for production logging. Structured logs can be queried, aggregated, and
 alerted on; unstructured logs cannot.
 
+**An error entry names its failure in a field of its own.**
+Every log entry at error level carries a name for its failure, taken from one
+fixed list the code defines, in a field separate from the message. Alerts and
+queries group errors by that name, so rewording a message breaks nothing, and a
+new failure is one new member of the list. A check over every error call site,
+such as a test that walks the source, fails on a call that names nothing,
+because a rule every call site must follow holds only while something checks
+all of them. An entry no call named, such as a library's, still gets a fixed
+fallback name, so it raises an alert instead of slipping past one.
+
 **Log messages are actionable.**
 Logs include enough context to act on — relevant IDs, states, and values.
 Log levels are appropriate: errors for failures, warnings for degraded states,

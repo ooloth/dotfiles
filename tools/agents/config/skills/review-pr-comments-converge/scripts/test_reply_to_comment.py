@@ -237,3 +237,69 @@ def test_a_failed_resolve_says_the_reply_is_live(setup: Callable[..., dict[str, 
     assert "HTTP 404" in result.stderr
     assert "Traceback" not in result.stderr
     assert len(posts(env)) == 1
+
+
+def test_a_body_file_posts_the_files_contents_exactly(
+    setup: Callable[..., dict[str, str]], tmp_path: Path
+) -> None:
+    env = setup()
+    text = "✅ Renamed `fetchAll` to `fetchPage`, since it's paged $(abc1234)\nsecond line\n"
+    body_file = tmp_path / "reply.md"
+    body_file.write_text(text, encoding="utf-8")
+    result = reply(env, "5", "123", "--body-file", str(body_file), "--repo", "octo/widgets")
+    assert result.returncode == 0, result.stderr
+    [post] = posts(env)
+    assert f"body={text}" in post
+
+
+def test_a_body_file_can_be_given_with_an_equals_sign(
+    setup: Callable[..., dict[str, str]], tmp_path: Path
+) -> None:
+    env = setup()
+    body_file = tmp_path / "reply.md"
+    body_file.write_text("Thanks", encoding="utf-8")
+    result = reply(env, "5", "123", f"--body-file={body_file}", "--repo", "octo/widgets")
+    assert result.returncode == 0, result.stderr
+    [post] = posts(env)
+    assert "body=Thanks" in post
+
+
+def test_a_body_file_and_a_body_together_are_refused_before_anything_is_posted(
+    setup: Callable[..., dict[str, str]], tmp_path: Path
+) -> None:
+    env = setup()
+    body_file = tmp_path / "reply.md"
+    body_file.write_text("From the file", encoding="utf-8")
+    result = reply(
+        env, "5", "123", "Inline too", "--body-file", str(body_file), "--repo", "octo/widgets"
+    )
+    assert result.returncode != 0
+    assert "Usage:" in result.stderr
+    assert "unexpected argument(s): Inline too" in result.stderr
+    assert calls(env) == []
+
+
+def test_a_missing_body_file_is_refused_with_its_path_before_anything_is_posted(
+    setup: Callable[..., dict[str, str]], tmp_path: Path
+) -> None:
+    env = setup()
+    missing = tmp_path / "nope.md"
+    result = reply(env, "5", "123", "--body-file", str(missing), "--repo", "octo/widgets")
+    assert result.returncode == 1
+    assert f"could not read the reply body from {missing}" in result.stderr
+    assert "nothing was posted" in result.stderr
+    assert "Traceback" not in result.stderr
+    assert calls(env) == []
+
+
+def test_a_body_file_that_is_not_utf8_is_refused_before_anything_is_posted(
+    setup: Callable[..., dict[str, str]], tmp_path: Path
+) -> None:
+    env = setup()
+    body_file = tmp_path / "reply.md"
+    body_file.write_bytes(b"\xff\xfe bad")
+    result = reply(env, "5", "123", "--body-file", str(body_file), "--repo", "octo/widgets")
+    assert result.returncode == 1
+    assert f"could not read the reply body from {body_file}" in result.stderr
+    assert "Traceback" not in result.stderr
+    assert calls(env) == []

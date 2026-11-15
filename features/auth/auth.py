@@ -25,7 +25,7 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Callable, Mapping
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from enum import Enum
 from typing import NewType, Protocol, assert_never
@@ -39,10 +39,12 @@ Command = tuple[str, ...]
 INTERNAL_ACCOUNT = "michael.uloth@recursion.com"
 EXTERNAL_ACCOUNT = "michael.uloth@rxrx.tech"
 SPACELIFT_ACCOUNT_KEY = "PRIVATE_SPACELIFT_ACCOUNT"
-ARGOCD_SERVER_KEY = "PRIVATE_ARGOCD_SERVER"
+ARGOCD_SERVERS_KEY = "PRIVATE_ARGOCD_SERVERS"
 
-# Long enough for a slow token refresh, short enough that a hung check doesn't hold up the others
-CHECK_TIMEOUT_SECONDS = 30
+# A healthy check takes about a second, so this leaves room for a slow token refresh while keeping a
+# server that hangs from holding up every `cc`, `ccc` and `ccy-vertex` start for long. Argo CD's
+# token endpoint has hung for 30 s before answering 504.
+CHECK_TIMEOUT_SECONDS = 10
 # What a shell reports for a command stopped by Ctrl-C (128 + SIGINT)
 INTERRUPTED_EXIT_CODE = 130
 
@@ -72,7 +74,8 @@ class Mode(Enum):
 
 @dataclass(frozen=True)
 class Settings:
-    argocd_server: ArgoServer | None
+    # Unique, in the order private.env lists them; the first is argocd's default context
+    argocd_servers: tuple[ArgoServer, ...]
     spacelift_account: SpaceliftAccount | None
 
 
@@ -176,10 +179,13 @@ class SubprocessShell:
 
 
 def read_settings(environ: Mapping[str, str]) -> Settings:
-    server = environ.get(ARGOCD_SERVER_KEY, "").strip()
+    # dict.fromkeys drops a server listed twice and keeps the order of first appearance
+    servers = tuple(
+        dict.fromkeys(ArgoServer(server) for server in environ.get(ARGOCD_SERVERS_KEY, "").split())
+    )
     account = environ.get(SPACELIFT_ACCOUNT_KEY, "").strip()
     return Settings(
-        argocd_server=ArgoServer(server) if server else None,
+        argocd_servers=servers,
         spacelift_account=SpaceliftAccount(account) if account else None,
     )
 
@@ -262,19 +268,17 @@ def logins(settings: Settings) -> tuple[Login | Unconfigured, ...]:
                     account,
                 ),
             )
-    argocd_name = LoginName("Argo CD")
-    argocd: Login | Unconfigured
-    match settings.argocd_server:
-        case None:
-            argocd = Unconfigured(argocd_name, ARGOCD_SERVER_KEY)
-        case server:
-            argocd = Login(
-                name=argocd_name,
-                check=("argocd", "account", "get-user-info", "--grpc-web", "--output", "json")
-                + ("--server", server),
-                read_status=read_argocd_user_info,
-                login=("argocd", "login", "--sso", "--grpc-web", server),
-            )
+    # Each server has its own Dex and its own refresh token, so each gets its own check and login
+    argocd: tuple[Login | Unconfigured, ...] = tuple(
+        Login(
+            name=argocd_login_name(server),
+            check=("argocd", "account", "get-user-info", "--grpc-web", "--output", "json")
+            + ("--server", server),
+            read_status=read_argocd_user_info,
+            login=("argocd", "login", "--sso", "--grpc-web", server),
+        )
+        for server in settings.argocd_servers
+    ) or (Unconfigured(LoginName("Argo CD"), ARGOCD_SERVERS_KEY),)
     return (
         Login(
             name=LoginName("Google (recursion.com)"),
@@ -289,8 +293,23 @@ def logins(settings: Settings) -> tuple[Login | Unconfigured, ...]:
             login=("gcloud", "auth", "login", "--no-activate", EXTERNAL_ACCOUNT),
         ),
         spacelift,
-        argocd,
+        *argocd,
     )
+
+
+def argocd_login_name(server: ArgoServer) -> LoginName:
+    return LoginName(f"Argo CD ({server})")
+
+
+def default_context_command(settings: Settings, outcomes: tuple[Outcome, ...]) -> Command | None:
+    """`argocd login` makes the server it logged in to the current context, so after any Argo CD
+    login this switches back to the first server, the default private.env names."""
+    if not settings.argocd_servers:
+        return None
+    argocd_names = {argocd_login_name(server) for server in settings.argocd_servers}
+    if not any(o.name in argocd_names and o.after is not None for o in outcomes):
+        return None
+    return ("argocd", "context", settings.argocd_servers[0])
 
 
 def check_status(item: Login | Unconfigured, shell: Shell) -> Status:
@@ -320,18 +339,53 @@ def log_in(login: Login, before: Status, mode: Mode, shell: Shell) -> Status:
     return check_status(login, shell)
 
 
-def run(mode: Mode, items: tuple[Login | Unconfigured, ...], shell: Shell) -> tuple[Outcome, ...]:
-    """Check every login at once, then log in to the expired ones one at a time."""
+def run(
+    mode: Mode,
+    items: tuple[Login | Unconfigured, ...],
+    shell: Shell,
+    report: Callable[[Outcome], None],
+) -> tuple[Outcome, ...]:
+    """Check every login at once, then log in to the expired ones one at a time.
+
+    Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
+    login, once the login and its second check are done. So the order of the reports follows the
+    order the checks finish in, and the returned outcomes keep the order of `items`."""
+    befores: dict[int, Status] = {}
+    reported: list[LoginName] = []
+
+    def report_and_record(outcome: Outcome) -> None:
+        reported.append(outcome.name)
+        report(outcome)
+
     with ThreadPoolExecutor(max_workers=len(items)) as pool:
-        befores = list(pool.map(lambda item: check_status(item, shell), items))
+        checks = {pool.submit(check_status, item, shell): index for index, item in enumerate(items)}
+        for check in as_completed(checks):
+            index = checks[check]
+            befores[index] = check.result()
+            if login_to_run(mode, items[index], befores[index]) is None:
+                report_and_record(Outcome(items[index].name, befores[index], None))
     outcomes: list[Outcome] = []
-    for item, before in zip(items, befores, strict=True):
-        match (mode, item, before):
-            case (Mode.REFRESH, Login() as login, Expired()):
-                outcomes.append(Outcome(item.name, before, log_in(login, before, mode, shell)))
-            case _:
+    for index, item in enumerate(items):
+        before = befores[index]
+        match login_to_run(mode, item, before):
+            case None:
                 outcomes.append(Outcome(item.name, before, None))
+            case login:
+                outcome = Outcome(item.name, before, log_in(login, before, mode, shell))
+                report_and_record(outcome)
+                outcomes.append(outcome)
+    assert len(reported) == len(set(reported)), f"a login was reported twice: {reported}"
+    assert set(reported) == {item.name for item in items}, f"a login went unreported: {reported}"
     return tuple(outcomes)
+
+
+def login_to_run(mode: Mode, item: Login | Unconfigured, before: Status) -> Login | None:
+    """The login to run for an item whose check found it expired, in refresh mode only."""
+    match (mode, item, before):
+        case (Mode.REFRESH, Login() as login, Expired()):
+            return login
+        case _:
+            return None
 
 
 def final_status(outcome: Outcome) -> Status:
@@ -370,6 +424,22 @@ def describe(outcome: Outcome) -> str:
     return f"{icon} {outcome.name}: {change}"
 
 
+def restore_default_context(command: Command, shell: Shell) -> None:
+    match shell.capture(command):
+        case CheckResult(exit_code=0):
+            print(f"Argo CD's default context is {command[-1]}.", file=sys.stderr)
+        case CheckResult() as result:
+            error = last_line(result.stderr) or f"argocd exited {result.exit_code}"
+            print(f"⚠️  Couldn't make {command[-1]} the default context: {error}", file=sys.stderr)
+        case TimedOut():
+            print(
+                f"⚠️  `{' '.join(command)}` took longer than {CHECK_TIMEOUT_SECONDS} s",
+                file=sys.stderr,
+            )
+        case unexpected:
+            assert_never(unexpected)
+
+
 def read_mode(argv: list[str]) -> Mode:
     parser = argparse.ArgumentParser(
         prog="auth", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -382,16 +452,25 @@ def read_mode(argv: list[str]) -> Mode:
 
 def main(argv: list[str]) -> int:
     mode = read_mode(argv)
+    settings = read_settings(os.environ)
+    shell = SubprocessShell()
+    print("Checking logins...", file=sys.stderr, flush=True)
     try:
-        outcomes = run(mode, logins(read_settings(os.environ)), SubprocessShell())
+        outcomes = run(
+            mode,
+            logins(settings),
+            shell,
+            lambda outcome: print(describe(outcome), flush=True),
+        )
     except KeyboardInterrupt:
         # Reached only from a check, since each login catches its own Ctrl-C
         print("\nStopped. Run `auth --check` to see where each login stands.", file=sys.stderr)
         return INTERRUPTED_EXIT_CODE
-    if any(outcome.after is not None for outcome in outcomes):
-        print(file=sys.stderr)
-    for outcome in outcomes:
-        print(describe(outcome))
+    match default_context_command(settings, outcomes):
+        case None:
+            pass
+        case command:
+            restore_default_context(command, shell)
     if mode is Mode.CHECK and any(outcome.before == Expired() for outcome in outcomes):
         print("\nRun `auth` to log in to the expired ones.", file=sys.stderr)
     return 0 if all_valid(outcomes) else 1

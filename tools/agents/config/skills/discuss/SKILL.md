@@ -62,9 +62,10 @@ tests) — that belongs to `/design`, which runs after the user approves the app
 
 ### Phase 3: Recommend an Approach
 
-A recorded decision that covers the task is a constraint on every option below. An option that
-contradicts one is not taken quietly: superseding the record is an open decision in its own right,
-presented under **Open decisions** with the record linked. Where applying a record to this task
+A recorded decision that covers the task binds what may be built without asking, not which option
+is recommended. An option that contradicts one is scored like any other. If it wins, recommend it,
+and present superseding the record under **Open decisions** with the record linked and the fact it
+lacked named. Where applying a record to this task
 takes interpretation, whether it applies is also an open decision.
 
 When the work changes what an agent does, such as a skill, an agent definition or an instruction

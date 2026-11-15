@@ -92,6 +92,16 @@ config key, a dropped CLI flag — the deployment sequence ensures consumers
 are updated alongside or before the breaking change. There is no window
 where producer and consumer are incompatible in production.
 
+**Parts that deploy separately work in either order, or ship in a set order.**
+When one change touches two parts that deploy on their own, such as a frontend
+and an API with separate builds, one part runs ahead of the other for the gap
+between their deploys, and a browser tab keeps its old frontend until it
+reloads. Each half works with the other part both before and after the change,
+or the change is split into PRs that ship in sequence: the PR that adds what
+the other part needs (a route, a field, an accepted value) is serving in every
+environment before the PR that uses it, and a removal ships last, once nothing
+uses what it removes.
+
 **Unfinished work ships turned off.**
 Code for a feature that is not ready merges behind a flag that defaults to off,
 so deploying code and releasing behaviour are separate steps. A flag that has
@@ -150,6 +160,18 @@ container may be required by the target platform while day-to-day work runs the
 process directly; a build step may exist in CI and nowhere else. Conflating them
 imports production's constraints into the edit-run loop, where they cost time on
 every iteration and buy nothing.
+
+**A test stage in a multi-stage Dockerfile is one the final stage depends on.**
+BuildKit builds only the stages the target stage depends on ("BuildKit only
+builds the stages that the target stage depends on", Docker's
+[multi-stage builds](https://docs.docker.com/build/building/multi-stage/) page,
+under "Differences between legacy builder and BuildKit"). So a stage that runs
+tests against the built artifact, and that nothing copies from, is skipped
+without a message, and the image builds whether the tests pass or fail. The
+final stage copies a file the test stage writes only after its tests pass, so
+the tests run on every build and a failure stops the image. A cached test layer
+replays an earlier run's success, so proof that needs a fresh run forces the
+stage with `--no-cache-filter <stage>`.
 
 ## Consider
 

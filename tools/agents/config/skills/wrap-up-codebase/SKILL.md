@@ -66,6 +66,12 @@ Your own list and the fresh subagent both look for:
 - Names of files, functions, types or docs that no longer describe what they hold
 - Docs that narrate history (the words `documentation.md` bans, such as "used to", "previously",
   "no longer", "originally") rather than describing the present
+- Docs that track work still to do, which the same `documentation.md` Must rules out: an
+  unchecked list of steps for one rollout or launch, a cutover section, or a qualifier such as
+  "being removed (TICKET)" or "once X lands". Each step becomes a ticket, and the doc is
+  rewritten to say what is true now. A procedure a reader repeats, such as rebuilding an
+  environment, is not one. Seen 2026-11-12 in bc-eng-clinical: PROD's cutover runbook in
+  `siteoutreach-prod/README.md`, and `README.md`'s "being removed (CENG-143)" notes
 - Decision records, question files or standards that the change made stale
 - Learnings that exist only in the conversation and belong in a project doc
 - A false claim kept with a correction further down, instead of replaced. The fix states the true

@@ -21,6 +21,13 @@ Hidden constraints, subtle invariants, workarounds for specific bugs, and
 behavior that would surprise a reader are annotated. What the code does is
 not explained — well-named identifiers do that.
 
+**A doc or comment holds only what its source of truth cannot say.**
+Reasons, rejected options, constraints, traps and procedures belong in prose. A
+fact that code, configuration or a canonical external page already states is
+linked, not copied. Members, counts, values and ID ranges are not listed,
+because a list goes stale at the next addition. A property worth stating as
+absolute is an invariant with a check, or is not stated.
+
 **Recorded facts name their source.**
 A figure, limit, quota, or quoted behavior carries where it came from — vendor
 documentation, a specification, source code, a measurement. That includes a comment in code or
@@ -51,6 +58,12 @@ whatever tracks work holds the schedule.
 Sentences containing _used to_, _previously_, _no longer_, _has since_, _so
 far_, _originally_, or whose subject is a past session, author or incident are
 rewritten without them, and the rewrite is what ships.
+
+A document holds no list of steps the team still has to take, and no qualifier
+such as _being removed_, _once X lands_ or _until TICKET ships_. Each step still
+to take is a ticket, and the document says what is true now. A procedure a
+reader repeats, such as rebuilding an environment, is not work in progress and
+stays.
 
 **A rule is stated without the incident that produced it.**
 The war story is the most tempting form of this, because it reads as evidence
@@ -104,6 +117,20 @@ versions that disagree.
 **Examples are correct and runnable.**
 Code samples in documentation execute without modification. Copy-paste
 examples that silently fail are worse than no examples.
+
+**A procedure that changes data gives the statement to run.**
+A step that asks the reader to update or delete rows names the exact
+statement, the count it should report, and a guard count that uses the same
+predicate as the write. A mismatch then stops the reader before it changes a
+row they did not mean to change. A step that leaves the statement to the
+reader has them improvise a write against production.
+
+**Absolute claims hold for every path, mode, environment and input.**
+A sentence that says only, every, never, nothing or always about a system
+holds for the other paths, modes, environments and inputs that could break
+it. An absolute is the kind of claim most often false with nothing in the text
+to show it: "PROD runs an image only once a person approves it" was false for
+a tag edit, and "running it again changes nothing" for a timeout.
 
 **Prose is followed in one pass, forward, without backtracking.**
 A reader who reaches the third paragraph and has to return to the first has been
@@ -171,6 +198,9 @@ earns its place by carrying what the name can't.
 **References point to files rather than to headings within them.**
 A path survives a document being reorganised. An anchor breaks silently the
 moment someone rewords a heading, and nothing reports it.
+
+**Docs and code comments state what to check, not a shell search to run.**
+A pattern breaks silently when the text it matches changes.
 
 **Prose wraps at 100 columns.**
 Fixed-width wrapping keeps a diff to the lines that actually changed instead of

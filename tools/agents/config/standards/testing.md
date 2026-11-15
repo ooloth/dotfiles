@@ -39,6 +39,18 @@ configured, says it skipped and why instead of failing.
 Authentication, authorization, payment flows, data integrity operations, and
 error handling paths are tested. The absence of tests here is a defect.
 
+**A change that deletes or replaces tests keeps each property they checked, or says why it drops
+it.**
+A replacement that looks broader can still miss a case the old test caught,
+and nothing fails to show it, because the test that would have failed is gone.
+So for each removed test, assertion or expected-value helper, the change names
+the test that now checks the same property for the same inputs, or states in
+the commit or PR why the property no longer needs checking. "The new tests
+replace the old ones" is not a reason; one property at a time is. Seen on
+recursionpharma/react-clinops-siteoutreach#373: a module-ownership check was
+dropped because a new table "covers each route", but the table's module field
+defaulted to none, so a route under a dormant prefix could ship ungated.
+
 ## Should
 
 **Test names describe behavior in domain terms.**
@@ -50,6 +62,27 @@ tell a reader what broke without reading the test body.
 **Each test covers one behavior.**
 A test has one reason to fail. Multiple unrelated assertions in a single test
 obscure which behavior broke.
+
+**An expectation is written separately from the code it checks.**
+A test that reads what to expect from the code under test, such as a route's declared roles or the
+constants a function compares against, passes whatever that code does, because the expectation
+moves with it. The expected values are written by hand, from what the behaviour is for, and
+compared with what the code does. Where they are too many to write one by one, they still go in a
+table written that way rather than generated from the code's answers, since a generated table
+copies today's mistakes into the expectation. A table drafted with help, from an agent or a
+document, counts only once each row has been checked against a source the code does not read. A
+snapshot or golden-file test, which exists to detect change rather than to define correct output,
+is the exception.
+
+**A check that expects an access refusal sends a request that passes validation, so the refusal
+comes from the access check and not from the parser.**
+A web framework validates a request's body and parameters before the handler runs, and an access
+check inside the handler runs only after that. A test that sends a placeholder body, such as `{}`,
+gets the framework's validation error, and a test that accepts any refusal passes without the
+access check ever running. The route could admit the caller with a real body and the test would not
+notice. So each request carries a body that passes the schema, the test accepts only the access
+check's own answers, such as 403 or a 404 for a row the caller may not see, and a new route that
+takes a body fails until it has one.
 
 **Tests span every dimension the behavior varies along.**
 Inputs are one dimension: happy path, empty input, boundary values and error conditions are all

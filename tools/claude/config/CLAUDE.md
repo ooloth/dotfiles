@@ -153,9 +153,13 @@ local development included:
 3. Does it close an option open to a question that needs a full decision, where reopening that
    option later would cost more than changing this choice back?
 
-If an accepted record rules out the option you would take, the record stands until it is amended.
-Raise the conflict with me: either the record set its requirement at the wrong milestone and gets
-amended, or the choice gets a full decision.
+If an accepted record rules out the option you would take, the record stands until it is amended,
+but it does not set your recommendation. Recommend from the properties and raise the conflict with
+me: read the record's reason first, then either name what it caught that you missed, or name the
+fact it lacked and recommend amending it. "The record chose it" is never a reason you give. The
+full rule is in `decision-making.md`. The harness's "do not re-litigate a decision the user has
+already made" means do not reopen one without new evidence; a new fact, or a property the decision
+did not weigh, is the reason to reopen it.
 
 If none holds, decide it on the spot. Say in the status report, and later the commit message, why
 each test fails, so I can check the verdict before I approve the commit or the PR. A test held "to
@@ -378,16 +382,13 @@ work project. A choice the task needs that nobody has made goes into the task as
 deferred to the project's decision process. It is not split into a separate record, because a
 separate record stops the task's outcome from being tracked.
 
-A question gets its own record only when it is independent research with no task behind it:
+On a work project an open question always lives in a work task, never in a decide task of its
+own. On a personal project, a question gets its own record only when it is independent research
+with no task behind it: a file in `docs/questions/`, which is rare. Recommend one only in
+`ooloth/puzzles` or when I ask for one.
 
-- **On a work project whose team tracks work in Jira, Linear or similar,** a decide task on that
-  tracker, titled as the decision to record. The team discusses through ticket comments, and the
-  outcome still lands in the repo's decision record.
-- **On a personal project,** a file in `docs/questions/`, which is rare. Recommend one only in
-  `ooloth/puzzles` or when I ask for one.
-
-If later work turns up a finding, option or decision relevant to an existing task, decide task or
-question file, propose updating it then, not only while it's the topic of discussion. Posting to a
+If later work turns up a finding, option or decision relevant to an existing task or question file,
+propose updating it then, not only while it's the topic of discussion. Posting to a
 tracker still needs approval, except what an invoked `merge-and-verify` posts and the PR link
 `create-pr` posts. The ticket comments above are for work already approved.
 
@@ -454,7 +455,7 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
      set, open a Rex tab with the launcher the `use-rex` skill names. With neither, open nothing:
      give the user the command to run. Never start `claude` with a permission mode of your own
      choosing. Name it after the PR and the review skill it runs (`review-code`,
-     `review-adversarial`, `review-pr-comments-converge`, …): a Rex tab as
+     `review-adversarial`, …): a Rex tab as
      `PR 123 (alice): review-code`, with the PR author's login in the parentheses, and a tmux
      window as `pr-573-review-code`. Give the reviewer the PR and nothing from this session.
    - **Starting the review ends this session's part in the work.** This session does not read,
@@ -550,8 +551,10 @@ default branch to land it, for the reason Shell gives.
 
 In a repo that ships through PRs, I review code at the draft PR, not at each commit. A repo ships
 through PRs unless its own instructions say work is committed straight to the default branch. Start
-the work on a feature branch. Once I approve a task's approach and design, carry it to a draft PR
-without stopping for me in between:
+the work on a feature branch, in a worktree of its own beside the repo: from the repo,
+`git worktree add ../<repo>-<ticket> -b <branch> origin/<default>`. Another session can switch a
+shared checkout's branch at any time, and your next commit then lands on its branch. Once I approve
+a task's approach and design, carry it to a draft PR without stopping for me in between:
 
 1. **Commit each slice** via `/commit` once its checks and proof pass. No signal is needed.
 2. **Verify locally before anything is pushed:** the project's full checks, `prove-it-works` on the
@@ -600,6 +603,11 @@ approval — say so and show it, don't substitute it silently. Saying so is not 
 waiting: the new draft goes in a message that changes nothing, and the new wording lands only
 after I approve it. Announcing the change in the same turn that makes it is substituting it
 silently with a note attached.
+
+**Draft into the file you will post from.** Write each draft meant for an outside destination to
+a file in a folder from `mktemp -d` before showing it, then show me that file's text in your reply,
+copied from the file. Once I approve it, post that file unchanged. Never type an approved draft
+again into a new file or a tool call: retyping produces different words without anyone noticing.
 
 A formatting fix that a posting skill's check requires and that keeps every word in the same order,
 such as ending the bold before the code or writing a URL as `[url](url)`, is not a rewording: post
