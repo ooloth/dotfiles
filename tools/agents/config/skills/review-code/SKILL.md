@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks where the PR's edits land when the base branch has changed its files, one that checks whether merging another open PR that shares its files would undo its edits, and one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks where the PR's edits land when the base branch has changed its files, one that checks whether merging another open PR that shares its files would undo its edits, one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, one that checks every claim the change's prose makes against the system it describes, and one that checks that removed prose took nothing a reader needs, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -281,8 +281,9 @@ or a record chose an option is reported beside the recommendation, never given a
 
 Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, Agent 15
 runs when Step 1's `base_moved.py` finds base commits touching this PR's files or a conflict,
-Agent 16 runs when Step 1's `overlapping_prs.py` exits 1, and Agent 17 runs when the diff removes
-a test or an assertion.
+Agent 16 runs when Step 1's `overlapping_prs.py` exits 1, Agent 17 runs when the diff removes
+a test or an assertion, Agent 18 runs when the diff adds or changes prose, and Agent 19 runs when
+the diff removes prose.
 Together these are the standing agents. You may add more in the same fan-out when this particular
 change raises a question none of these prompts ask.
 
@@ -874,6 +875,80 @@ For each issue: removed test or assertion (file:line at the base) | the property
 
 ---
 
+### Agent 18: Doc Claims
+
+**Model:** Opus, because its usual answer is that the prose is true, and a wrong "true" sends a
+reader to run a step that does the wrong thing with nothing to warn them.
+
+Runs when the diff adds or changes prose: Markdown, a code comment or docstring, or a message a user
+or operator reads (an error, a log line, help text). That is most changes, because nearly every
+change writes a comment. A change whose prose is a few comments is a short read of those comments
+against the code beside them. When the diff changes prose in more than 15 files, launch several
+Agent 18s in the same fan-out, each with its own list of those files, so each finishes in the time
+a smaller change takes. Agent 4 asks whether docs follow the code; this agent asks whether what the
+prose says is true.
+
+```
+Question: Is every factual claim the change's prose makes true at the head, against the code, config, deployment files, other repositories and tools it describes, and does every command, query and step it gives work as written?
+
+**Answer claim by claim first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If the change adds or changes no prose that states a fact, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list, or this agent's share of the files whose prose changed]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/documentation.md`: the Musts "Existing docs reflect current behavior" and "Recorded facts name their source", and the Should "Examples are correct and runnable". Use these as your evaluation criteria.
+2. Run the diff command from Context. In your files, list every added or changed sentence that states a fact (what code does, a name, path, route, setting, default, count or limit, which environments differ, what a tool or vendor does, what a command returns) and every command, query and procedure step. Text the change moved counts as written by it.
+3. For each claim, read the source that decides it: the cited symbol and its callers, the settings class, the model or migration, the deployment files. For a claim about another repository, read it at its default branch if you can (a local clone after `git fetch`, or `gh api`), and if you cannot, say which repository and what you would have read. For a claim about a tool or vendor, read its `--help` or documentation and quote the line. A claim about code is checked against the code, never against another doc.
+4. For each command, check every flag against `--help`. For each SQL statement, check every table, column and predicate against the models, and that a count meant to guard a write uses the same predicate as the write. Where it is cheap and changes nothing, run the command read-only or against a scratch database; never against a deployed environment, and never a write.
+5. For each absolute claim (only, every, never, no, nothing, always, the one), search for the exception: another path, mode, environment or input for which it does not hold. An absolute claim is the kind most often false with nothing to show it.
+6. For each procedure, walk it as its reader would: the state each step assumes, whether a step can act on the wrong row, environment or person, and what the reader is told when a result is not the one expected. Check each step's condition against the rest of the same doc and the docs it links, for a case described there that the condition also matches. A step that asks the reader to change data gives the statement to run.
+7. A claim made false by the change's own code counts here only when the change also wrote the claim; a claim elsewhere that the code change makes false is Agent 12's and 13's question.
+
+For each issue: file:line | the claim as written | the source that decides it (`file::symbol`, command and its output, or quoted documentation) | false, or unverified and why | the fix. Then the claims found true, one line each with their source, or, when there are more than 20, their count per file.
+```
+
+---
+
+### Agent 19: Removed Knowledge
+
+**Model:** Opus, because its usual answer is that nothing was lost, and what a deletion takes leaves
+no trace at the head for anyone to notice.
+
+Runs when the diff removes prose: Markdown lines, comments or docstrings. Text that reappears at
+the head, moved or reworded, is not removed. Most removed prose should go: history, narration and
+restatements of what the code says are what the documentation standard asks a change to delete. So
+this agent's bar is not whether the removed text was true but whether a reader needs it and can no
+longer find it. Agent 17 asks this of test assertions; this agent asks it of prose.
+
+```
+Question: For each statement the change removes, is it true at the head, needed by a reader to act correctly, and stated nowhere else at the head, including in the code?
+
+**Answer statement by statement first, then report every issue you would act on, most severe first, one or two lines each. List the removals you judged safe as the instructions say. If the change removes no prose, say so in one sentence and stop.**
+
+Context:
+[insert synthesized intent block]
+
+Changed files:
+[insert file list]
+
+Instructions:
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/documentation.md`, in particular the Musts "Comments and documents describe the present, never the past", "A rule is stated without the incident that produced it" and "History survives only as a forward-facing instruction". They describe removals that are correct.
+2. Run the diff command from Context with `-M`, so a moved file reads as a rename. List every removed statement: a sentence, list item, table row or comment. Drop each one whose content reappears at the head, found by searching the head for its distinctive terms rather than its exact words. When a file's content moved into another, compare the two row by row and section by section, never file by file: a move that carries most of a file can still drop one row.
+3. Sort each remaining statement into one of two kinds:
+   - **Safe:** history or narration of how the code got here; a restatement of what the code at the head shows through its names, types or tests; a duplicate of text at the head (cite where); a description of a past state; or a claim false at the head (cite the evidence).
+   - **Lost:** true at the head, read in the code; something a reader needs to act correctly, such as a reason, a constraint, a warning, a procedure, a symptom to diagnose by, or a guard someone might otherwise remove; and stated nowhere at the head.
+4. For each lost statement, name where it belongs at the head: a doc, a decision record, a comment beside the code it explains, an invariant, or a ticket when it describes work still to do.
+5. Never report a safe removal as a finding, and never recommend restoring narration or a restatement of the code.
+
+For each issue: removed text (file:line at the base) | why a reader needs it | where it belongs at the head. Then each safe removal in one line with its kind, or, when there are more than 30, a count per kind with three examples each.
+```
+
+---
+
 ## Step 3.5: Verify before presenting
 
 Before writing a single line of output, audit the agent findings for claims that assert specific
@@ -975,7 +1050,8 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
   instruction file is listed as "not applicable", and does not count as never ran. So is an
   Agent 15 not launched because the Base moved line says "none", an Agent 16 not launched
   because the Overlapping open PRs line says "none", and an Agent 17 not launched because the diff
-  removes no test or assertion.
+  removes no test or assertion, an Agent 18 not launched because the diff adds or changes no prose,
+  and an Agent 19 not launched because it removes none.
 
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
@@ -1095,12 +1171,14 @@ On any answer other than "skip":
       the new head, with every standing agent that applies (Agent 14 applies when the full PR
       diff touches an agent instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16
       when `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an
-      assertion) and any added ones over the whole PR diff, as Step 3
+      assertion, Agent 18 when it adds or changes prose, Agent 19 when it removes prose) and any
+      added ones over the whole PR diff, as Step 3
       always does.
     - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
       standing agent that applies (Agent 14 applies when the full PR diff touches an agent
       instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16 when
-      `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an assertion)
+      `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an assertion,
+      Agent 18 when it adds or changes prose, Agent 19 when it removes prose)
       and any added ones. Give them the
       lines the script printed as
       the change to review, and the full PR diff for context. As Step 3 says, they get nothing
