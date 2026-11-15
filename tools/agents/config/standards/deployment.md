@@ -92,6 +92,16 @@ config key, a dropped CLI flag — the deployment sequence ensures consumers
 are updated alongside or before the breaking change. There is no window
 where producer and consumer are incompatible in production.
 
+**Parts that deploy separately work in either order, or ship in a set order.**
+When one change touches two parts that deploy on their own, such as a frontend
+and an API with separate builds, one part runs ahead of the other for the gap
+between their deploys, and a browser tab keeps its old frontend until it
+reloads. Each half works with the other part both before and after the change,
+or the change is split into PRs that ship in sequence: the PR that adds what
+the other part needs (a route, a field, an accepted value) is serving in every
+environment before the PR that uses it, and a removal ships last, once nothing
+uses what it removes.
+
 **Unfinished work ships turned off.**
 Code for a feature that is not ready merges behind a flag that defaults to off,
 so deploying code and releasing behaviour are separate steps. A flag that has
