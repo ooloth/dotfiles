@@ -816,10 +816,14 @@ For each issue: PR file:line | the edit | where it lands after the merge (file:l
 **Model:** Opus, because a conflict resolved the natural way can drop this PR's edit and leave
 every test passing.
 
-Runs only for PR scope, when `overlapping_prs.py` in Step 1 exits 1.
+Runs only for PR scope, when `overlapping_prs.py` in Step 1 exits 1. When the list names more
+than 3 PRs, launch several Agent 16s in the same fan-out, each with its own list of at most 3 of
+those PRs and the line "Your overlapping PRs: #…" naming them, because each PR takes a merge and
+both resolutions of every conflict to check. Shares beyond the harness's limit on concurrent
+subagents wait and are resent as Step 3 describes.
 
 ```
-Question: For each open PR in Context's Overlapping open PRs line, once it and this PR are merged in either order, does any of this PR's edits disappear, conflict in a way whose likely resolution drops it, or stop working because the other PR changed what it relies on?
+Question: For each open PR in your share (the "Your overlapping PRs" line, or Context's Overlapping open PRs line when there is no share), once it and this PR are merged in either order, does any of this PR's edits disappear, conflict in a way whose likely resolution drops it, or stop working because the other PR changed what it relies on?
 
 **Answer PR by PR first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each.**
 
@@ -831,7 +835,7 @@ Changed files:
 
 Instructions:
 1. Run the diff command from Context, and list this PR's edits, hunk by hunk, in the files each overlapping PR shares.
-2. For each overlapping PR, read its diff (`gh pr diff <n> -R <owner>/<repo>`) and fetch its head. Merge it with this PR's head without touching any checkout: `git merge-tree --write-tree <this head> <other head>`. List each shared file that conflicts and each that merges cleanly.
+2. For each overlapping PR, read its diff (`gh pr diff <n> -R <owner>/<repo>`) and fetch its head, taking its SHA from `git ls-remote origin refs/pull/<n>/head` and never from `FETCH_HEAD`, which other agents fetching in the same repository overwrite, then running `git fetch origin refs/pull/<n>/head` so that commit is stored locally. Merge it with this PR's head without touching any checkout: `git merge-tree --write-tree <this head> <other head>`. List each shared file that conflicts and each that merges cleanly.
 3. For each conflict, resolve it each way, taking this PR's side and the other PR's side, in a scratch worktree (`git worktree add --detach "$(mktemp -d)/wt" <this head>`, then `git merge --no-commit <other head>`), and say which side a resolver would most likely take and why, such as whose comment or wording is newer. For the likely side, read the result and check for each of this PR's edits.
 4. For a clean merge, read the merged tree's copy of each shared file (`git cat-file -p <tree>:<path>`) and check for each edit's text: a clean merge is not evidence the edit survived.
 5. Where a resolution drops an edit, run the tests that cover it in that worktree and say whether they still pass. An edit that disappears with every test green is the most severe finding, and the fix is usually a test in this PR that would fail.
@@ -902,15 +906,15 @@ Changed files:
 [insert file list, or this agent's share of the files whose prose changed]
 
 Instructions:
-1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/documentation.md`: the Musts "Existing docs reflect current behavior" and "Recorded facts name their source", and the Should "Examples are correct and runnable". Use these as your evaluation criteria.
-2. Run the diff command from Context. In your files, list every added or changed sentence that states a fact (what code does, a name, path, route, setting, default, count or limit, which environments differ, what a tool or vendor does, what a command returns) and every command, query and procedure step. Text the change moved counts as written by it.
+1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/documentation.md`: the Musts "Existing docs reflect current behavior", "A doc or comment holds only what its source of truth cannot say" and "Recorded facts name their source", and the Should "Examples are correct and runnable". Use these as your evaluation criteria. Also read the repository's own `docs/standards/` files, if it has any, for the copied facts it sanctions.
+2. Run the diff command from Context. In your files, list every added or changed sentence that states a fact (what code does, a name, path, route, setting, default, count or limit, which environments differ, what a tool or vendor does, what a command returns) and every command, query and procedure step. Text the change moved counts as written by it. Before checking a claim, ask whether the doc should make it at all: a list of members, a count, a value or an ID range copied from code, configuration or a canonical page, or a description of code elsewhere, goes stale at the next change even when it is true today. Report such a claim as a finding whose fix is to delete it and point at its source (the `file::symbol`, the config file, the page, or the check that enforces it), not to correct it, and report it whether or not it is true now. A value a procedure needs in order to run, such as the log message a reader searches for, a resource name in a command, or a statement to execute, is part of the procedure and not a copied fact, and so is anything the repository's own standards sanction.
 3. For each claim, read the source that decides it: the cited symbol and its callers, the settings class, the model or migration, the deployment files. For a claim about another repository, read it at its default branch if you can (a local clone after `git fetch`, or `gh api`), and if you cannot, say which repository and what you would have read. For a claim about a tool or vendor, read its `--help` or documentation and quote the line. A claim about code is checked against the code, never against another doc.
 4. For each command, check every flag against `--help`. For each SQL statement, check every table, column and predicate against the models, and that a count meant to guard a write uses the same predicate as the write. Where it is cheap and changes nothing, run the command read-only or against a scratch database; never against a deployed environment, and never a write.
 5. For each absolute claim (only, every, never, no, nothing, always, the one), search for the exception: another path, mode, environment or input for which it does not hold. An absolute claim is the kind most often false with nothing to show it.
 6. For each procedure, walk it as its reader would: the state each step assumes, whether a step can act on the wrong row, environment or person, and what the reader is told when a result is not the one expected. Check each step's condition against the rest of the same doc and the docs it links, for a case described there that the condition also matches. A step that asks the reader to change data gives the statement to run.
 7. A claim made false by the change's own code counts here only when the change also wrote the claim; a claim elsewhere that the code change makes false is Agent 12's and 13's question.
 
-For each issue: file:line | the claim as written | the source that decides it (`file::symbol`, command and its output, or quoted documentation) | false, or unverified and why | the fix. Then the claims found true, one line each with their source, or, when there are more than 20, their count per file.
+For each issue: file:line | the claim as written | the source that decides it (`file::symbol`, command and its output, or quoted documentation) | false, unverified, or copied (true now, but restating its source) and why | the fix. Then the claims found true, one line each with their source, or, when there are more than 20, their count per file.
 ```
 
 ---
@@ -924,7 +928,12 @@ Runs when the diff removes prose: Markdown lines, comments or docstrings. Text t
 the head, moved or reworded, is not removed. Most removed prose should go: history, narration and
 restatements of what the code says are what the documentation standard asks a change to delete. So
 this agent's bar is not whether the removed text was true but whether a reader needs it and can no
-longer find it. Agent 17 asks this of test assertions; this agent asks it of prose.
+longer find it. Agent 17 asks this of test assertions; this agent asks it of prose. When the diff
+removes more than about 1,500 lines of prose, launch several Agent 19s in the same fan-out, each
+with its own share: a deleted file grouped with the files its content moved to, the removed lines
+of a few edited files, or the removed comments of one code area. Name each share's files and the
+destination files in its prompt. Shares beyond the harness's limit on concurrent subagents wait and
+are resent as Step 3 describes.
 
 ```
 Question: For each statement the change removes, is it true at the head, needed by a reader to act correctly, and stated nowhere else at the head, including in the code?

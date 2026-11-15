@@ -21,6 +21,13 @@ Hidden constraints, subtle invariants, workarounds for specific bugs, and
 behavior that would surprise a reader are annotated. What the code does is
 not explained — well-named identifiers do that.
 
+**A doc or comment holds only what its source of truth cannot say.**
+Reasons, rejected options, constraints, traps and procedures belong in prose. A
+fact that code, configuration or a canonical external page already states is
+linked, not copied. Members, counts, values and ID ranges are not listed,
+because a list goes stale at the next addition. A property worth stating as
+absolute is an invariant with a check, or is not stated.
+
 **Recorded facts name their source.**
 A figure, limit, quota, or quoted behavior carries where it came from — vendor
 documentation, a specification, source code, a measurement. That includes a comment in code or
