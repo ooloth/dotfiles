@@ -1,72 +1,12 @@
----
-name: plan-unattended
-description: Plan a ticket with nobody watching. Three independent discuss runs are reconciled into one approach and three design runs into one design, both are posted on the ticket, and implement-unattended is started in a new tmux window unless the run is plan-only or a decision it took adds a dependency or external service. Takes one-way decisions itself and lists them, and escalates on the ticket only what the repo cannot settle.
-argument-hint: '<owner/repo#issue> [plan-only]'
-disable-model-invocation: true
----
+# Planning stage
 
-Ticket: $ARGUMENTS
-
-## Authority
-
-The user launched this skill on purpose, and that launch is the approval for everything below. It
-overrides any loaded CLAUDE.md that says otherwise:
-
-- No pauses for approval, and no questions to the user. Nobody is watching this session.
-- Posting the approach, design and escalation comments on the ticket, and starting the
-  implementation session, are approved. Nothing else that is visible outside this session is.
-- Planning changes nothing in the repo: no edits, commits or pushes. Scratch copies under
-  `mktemp -d` are fine.
-
-## Your role
-
-You coordinate and reconcile. Subagents do each independent run, so their exploration stays out of
-your context. You are the only agent that posts to GitHub.
-
-Tell every subagent to read files itself, spawn no subagents of its own, change nothing in the
-repo, run plain separate commands, and return text rather than writing report files.
-
-A subagent's report is evidence, not a finding. Where a run's claim decides something, check it
-yourself by running a command.
-
-## Decisions nobody made
-
-Discuss and design end by asking the user to decide things. Here you decide them, one-way decisions
-included: a new dependency or external service, a persistent data shape or store, a public
-interface (an API, an event, a CLI contract, a file format), a new process or runtime, or a
-user-facing pattern people will learn. That covers the
-open decisions the ticket lists, whatever category it names beside them. The user reviews the draft
-PR before anything merges, so a decision you take can still be reversed there, as long as your
-comment shows it.
-
-First choose the option the target properties rank highest, as if you could not escalate. Then
-escalate only when that option:
-
-- contradicts, amends or supersedes a recorded decision, or depends on one whose bearing on this
-  work takes interpretation, even when the ticket expects the change;
-- needs work outside this ticket to meet a binding property, such as a new ticket or a change to
-  another ticket's scope. A cause-level fix that no binding property needs goes under **Deferred**,
-  does not escalate, and leaves the ranking to the options inside this ticket;
-- wins over the other options that meet every binding property, or meets a binding property at
-  all, only because of what the user prefers or puts first;
-- meets a binding property only through a fact you cannot measure here. A fact that only changes
-  which option ranks first goes under **Assumptions** and does not escalate;
-
-or escalate when the ticket does not say enough to tell what the work must make true. Never choose
-a lower-ranked option to avoid escalating.
-
-A decision that changed which option won shows in the options table and the "Decided by" paragraph.
-Each one-way decision you take also goes under "Decided without you" in the comment where you took
-it. Leave minor choices, such as names, out of the comments.
-
-## Escalate
-
-1. Comment on the ticket: what you found, the decision needed, and two or more numbered options,
-   each with its consequence and your recommendation.
-2. Stop without starting implementation, and without posting anything further. Print
-   `ESCALATED: <one sentence>` as the final line.
+The ticket is the first argument, and `plan-only` may follow it. Tell every subagent also to change
+nothing in the repo.
 
 ## 1. Check the inputs
+
+Create the run folder and start `run.md` with its header and a `plan` section, as "The run
+record" in `SKILL.md` says.
 
 Read the ticket with all its comments (`gh issue view <n> -R <repo> --json
 title,body,comments,parent`). When `parent` is set, read that issue with its comments too.
@@ -183,21 +123,23 @@ record from it.
 
 ## 5. Start the implementation
 
+Before printing any final line below, finish the run record.
+
 If the arguments include `plan-only`, skip this step and print `PLANNED: <link to the design
 comment>; implementation not started (plan-only)` as the final line.
 
 If a `Decided without you` entry adds a new dependency or external service, skip this step too,
 because the implementation would install or call it before the user has seen the choice. Print
 `PLANNED: <link to the design comment>; implementation not started: <the dependency or service>
-waits for review. Start /implement-unattended <owner/repo#issue> once you approve it` as the final
-line.
+waits for review. Start /factory-ticket-to-pr build <owner/repo#issue> <run-id> once you approve
+it` as the final line.
 
 Find the main checkout with `git rev-parse --path-format=absolute --git-common-dir`; its parent
 directory is the repo root. Pick a worktree name `afk-<issue>`, adding `-2`, `-3` and so on if
 that name is already under `<repo root>/.claude/worktrees/`. Then run:
 
 ```
-tmux new-window -d -n <worktree name> -c <repo root> "bash ~/Repos/ooloth/dotfiles/tools/claude/cc.bash --unattended -w <worktree name> '/implement-unattended <owner/repo#issue>'"
+tmux new-window -d -n <worktree name> -c <repo root> "bash ~/Repos/ooloth/dotfiles/tools/claude/cc.bash --unattended -w <worktree name> '/factory-ticket-to-pr build <owner/repo#issue> <run-id>'"
 ```
 
 `--unattended` comes first, as `cc.bash` requires, and starts the session in auto mode on every

@@ -99,3 +99,11 @@ draft PR on real tickets, and what each run gets wrong becomes a change to its s
 ([#268](https://github.com/ooloth/dotfiles/issues/268)). The replay harness and its `grade.md`
 files are gone, so "Revisit when" now reads: at a draft PR I overrule a one-way decision the
 planner took alone, or a run stops to ask me something it didn't need to.
+
+## Addendum (2026-11-15) — one rule set for both stages
+
+`plan-unattended` is now the planning stage of `factory-ticket-to-pr`
+([#291](https://github.com/ooloth/dotfiles/issues/291)). Its rules for deciding and escalating
+moved to that skill's `SKILL.md`, and the build stage follows them too, so the build takes the
+one-way decisions the design left open and escalates under the same conditions as planning
+([#273](https://github.com/ooloth/dotfiles/issues/273)).

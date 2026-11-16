@@ -2,6 +2,7 @@
 number: 013
 status: accepted
 date: 2026-11-10
+amended: 2026-11-15
 ---
 
 # 013 — The unattended implementation records each one-way decision the planner took
@@ -54,3 +55,10 @@ decision that was not one-way.
   entry stands in for the record link
 
 [012]: 012-the-unattended-planner-takes-one-way-decisions-and-asks-only-what-the-repo-cant-settle.md
+
+## Addendum (2026-11-15) — the build's own one-way decisions
+
+`plan-unattended` and `implement-unattended` are now the planning and build stages of
+`factory-ticket-to-pr` ([#291](https://github.com/ooloth/dotfiles/issues/291)). The build now takes
+one-way decisions itself under the same rules as planning, and commits a record for each of them as
+it does for the planner's entries.

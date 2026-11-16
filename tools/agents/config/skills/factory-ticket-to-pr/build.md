@@ -1,46 +1,11 @@
----
-name: implement-unattended
-description: Take a ticket whose approach and design are already posted through implementation, review and evidence to a draft PR, with nobody watching. Decides what the design left open and records it, and escalates on the ticket only what its rule reserves for the user.
-argument-hint: '<owner/repo#issue>'
-disable-model-invocation: true
----
+# Build stage
 
-Ticket: $ARGUMENTS
+## Rules of this stage
 
-## Authority
-
-The user launched this skill on purpose, and that launch is the approval for everything below. It
-overrides any loaded CLAUDE.md that says otherwise:
-
-- No pauses for approval, and no questions to the user. Nobody is watching this session.
-- Committing, pushing, opening a draft PR, commenting on the ticket, and posting the run-report
-  comment on the PR and editing it are approved. Nothing else that is visible outside this repo is.
-- Skills invoked below that end by asking the user something are run to their report, and the
-  question is skipped.
-
-## Decisions the design did not make
-
-The approach and design will not settle everything. When they don't, decide like a senior engineer
-the user trusts to finish the slice and report back. Stopping to ask is the exception.
-
-**Decide it, record it and continue** when reverting this branch's commits would undo it and it
-contradicts no property, done-when item or recorded decision on the ticket. Choose the option that
-best delivers the ticket's properties. Record it as a departure: what the approach or design said,
-what you did instead, the options you weighed, the property that decided it, and how to reverse it.
-
-**Escalate** only when the decision:
-
-- contradicts a property, a done-when item or a recorded decision on the ticket, or would drop a
-  planned test, assertion or telemetry item;
-- adds a new dependency or external service, a persistent data shape, a public interface (an API,
-  a CLI contract, a file format), a new process or runtime, or a user-facing pattern people will
-  learn;
-- changes the runtime behaviour of code the approach does not name, even to satisfy a property;
-- takes effect outside this branch: other repos, remote state, credentials;
-- risks security or data loss.
-
-Subagents follow the same rule. They decide what they may, report it under `DEPARTURES`, and return
-`escalate` only for the cases above.
+Record each decision you take that the approach or design did not as a departure: what they said,
+what you did instead, the options you weighed, the property that decided it, and how to reverse
+it. Subagents report theirs under `DEPARTURES`, and return `escalate` only where "Decisions nobody
+made" in `SKILL.md` says to.
 
 The steps of this skill are not decisions. Nobody is watching, so an unattended run verifies more
 than an attended one, never less. A step that does not run in full, such as a review with fewer
@@ -55,19 +20,15 @@ holds, changes the plan before the code.
 
 ## Your role
 
-You coordinate. Subagents do the heavy work, so that check output, diffs and review rounds stay
-out of your context and you still have the plan in view at the last step. You keep the ticket's
-approach and design comments, the step 4 table, a one-line outcome per step, and every escalation.
-
-You are the only agent that posts to GitHub. A subagent that needs a decision returns it to you,
-and you escalate it.
+You keep the ticket's approach and design comments, the step 4 table, a one-line outcome per step,
+and every escalation.
 
 Run artifacts go in `unattended/<issue>/` under your session's scratchpad directory. Pass its
 absolute path to every subagent. Subagents write logs there with shell redirection and return
 reports as text, because the harness refuses report files written by subagents.
 
 This session is isolated in its worktree. The isolation refuses compound shell commands that mention
-`git` or values computed at runtime, and writes outside the worktree. Run plain, separate commands,
+`git` or values computed at runtime. Run plain, separate commands,
 and tell every subagent to do the same.
 
 ### What every subagent returns
@@ -80,6 +41,7 @@ ARTIFACTS: <absolute paths of the logs and files it wrote>
 SUMMARY: <150 words or fewer>
 DEPARTURES: <each decision it made that the approach or design did not, recorded as above, or "none">
 ESCALATION: <the decision needed and two or more numbered options, or "none">
+FRICTION: <its Friction list, as SKILL.md describes, or "None">
 ```
 
 Keep every departure the subagents report, and your own, in one list for step 9.
@@ -88,22 +50,18 @@ A subagent's report is evidence, not a finding. Before you act on a `pass`, conf
 artifacts exist and read the exit-code line of at least one log. A `pass` you cannot confirm counts
 as a `fail`.
 
-## Escalate
-
-1. Comment on the ticket: what you found, the decision needed, and two or more numbered options,
-   each with its consequence and your recommendation. List the departures made so far below it.
-2. Commit any work in progress and push the branch, so nothing is lost when the worktree goes.
-3. Stop. Print `ESCALATED: <one sentence>` as the final line.
-
 ## 1. Check the inputs
 
-1. Read the ticket with all its comments (`gh issue view <n> -R <repo> --json title,body,comments`).
-2. Find the approach comment (it starts with `# Approach`) and the design comment (it starts with
+1. The ticket is the second argument and the run ID the third. Add a `build` section to `run.md` in
+   the run folder. If the folder does not exist, because the build was started by hand, create it
+   with `run.md`'s header.
+2. Read the ticket with all its comments (`gh issue view <n> -R <repo> --json title,body,comments`).
+3. Find the approach comment (it starts with `# Approach`) and the design comment (it starts with
    `# Design`). The approach's property table (`P1`, `P2`, …) is the done-when: the work is done
    when every property in it holds. If either comment is missing, escalate: this skill does not
    plan.
-3. Confirm the worktree is clean and on its own branch, not the default branch.
-4. Spawn a **checks** subagent. It finds the repo's check and test commands (CLAUDE.md, AGENTS.md,
+4. Confirm the worktree is clean and on its own branch, not the default branch.
+5. Spawn a **checks** subagent. It finds the repo's check and test commands (CLAUDE.md, AGENTS.md,
    CONTRIBUTING.md, justfile, package.json, CI config), runs every one, and writes each command's
    full output to the artifacts directory. Its summary lists each command with its exit code and
    the first failing lines. Keep the list of commands it found, since every later checks subagent
@@ -143,8 +101,7 @@ Spawn an **implementer** subagent. Give it the approach and design comments, the
 step 2, and the list of check commands. It implements the approach in the smallest change that
 makes those tests pass, following `uphold-standards`, adds each assertion from **Assertions** and
 each signal from **Telemetry**, and runs the full checks until green. It does not edit the test
-files from step 2. Choices the design did not make follow the rule under "Decisions the design did
-not make".
+files from step 2. Choices the design did not make follow "Decisions nobody made" in `SKILL.md`.
 
 When it returns, confirm with `git diff <tests commit> -- <test files>` that the test files are
 unchanged. If they changed, the implementation is not trusted: escalate with the diff.
@@ -179,7 +136,8 @@ caught. Commit any strengthened tests, and confirm the implementation still pass
 ## 5. Commit and check again
 
 Commit the work. If the approach or design comment has a `Decided without you` section, commit a
-decision record for each entry in the same step, in the folder where the repo keeps its decision
+decision record for each entry, and for each one-way decision this stage took itself, in the same
+step, in the folder where the repo keeps its decision
 records and in that folder's format, built from the entry's decision, options, reason and what
 would reopen it. A later session finds the decision there, and the user reviews it in the PR's
 diff. In a repo with no such folder, copy the entries into the PR body's **What** section in
@@ -213,7 +171,7 @@ Then post the run report on the PR as one comment, laid out as step 9 describes,
 **Self-review** section reading "Round 1 running". Keep the comment's ID: steps 8 and 9 edit this
 comment instead of posting new ones, because an edit notifies nobody. Add one line under
 **Validation** in the PR body: `Run evidence, mutants and self-review: <link to the run-report
-comment>`.
+comment>`. Record the PR's URL in `run.md`.
 
 ## 8. Independent review of the PR
 
@@ -224,7 +182,7 @@ every reviewer, posts nothing, and returns the verdict and every finding with it
 Send each "must" and "should" finding to the step 3 implementer, run the checks again, push, and
 spawn another fresh reviewer. Repeat until a review returns no "must" or "should" findings, for up
 to 5 rounds. If findings remain after the fifth, escalate them. "Consider" findings are listed, not
-fixed.
+fixed. Record the number of rounds in `run.md`.
 
 Ask the implementer to return one line for each finding it was sent: what it changed, and the
 commit that holds the change. After each round, edit the run-report comment with
@@ -239,7 +197,7 @@ holds, post a comment on the ticket saying what changes and which step of the ch
 rewrite the affected tests as in step 2, send the change to the step 3 implementer, and run steps 4
 to 8 again; the change counts as a review round. The PR body's **What** says why this approach
 replaced the planned one, with a link to that comment. A finding whose option takes a one-way
-decision follows "Decisions nobody made" in `plan-unattended`, and one whose answer is to change
+decision follows "Decisions nobody made" in `SKILL.md`, and one whose answer is to change
 nothing or close the ticket is escalated with its evidence, because no PR can carry it.
 
 ## 9. Finish the run report
@@ -261,4 +219,4 @@ Edit the run-report comment on the PR one last time, so it holds these sections:
    Write "No departures" when there were none.
 5. **Not verified:** anything the run could not observe, and why.
 
-Print `PR: <url>` as the final line.
+Finish the run record, then print `PR: <url>` as the final line.
