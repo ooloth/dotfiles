@@ -208,7 +208,8 @@ Edit the run-report comment on the PR one last time, so it holds these sections:
 1. **Properties:** a table with one row per property from the approach comment: what observes it,
    its result before the change, its result after, and the mutant it caught.
 2. **Evidence:** the findings from the `prove-it-works` report, with their before and after
-   observations, and the path of its evidence folder.
+   observations quoted, so a reader can judge them without the files. Copy its evidence folder into
+   the run folder as `evidence/`. Its path never goes in the PR.
 3. **Self-review:** headed "Automated self-review", so no reader takes it for a teammate's
    review. A table with one row per step 8 round: its number of "must", "should" and "consider"
    findings, and how they were resolved, linking the commits that resolved them. Below the table,
