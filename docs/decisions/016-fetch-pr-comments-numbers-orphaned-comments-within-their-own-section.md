@@ -32,16 +32,17 @@ matches every review's labels. It assumes each review numbers its own comments.
   differs from every other label. It reverses if the reviews' labels also drop their totals, so that
   `[i]` would match every other label.
 - **Continue the global count against a grand total of every printed thread, `[4 of 5]`.** Every
-  label then sits within a printed total. It is rejected because every new review shifts every
-  orphan label: the new review adds threads before the orphan section and raises the grand total,
-  which fails P2 from #237 (a new review leaves the labels printed for earlier reviews unchanged).
-  It reverses if something needs a whole-output count, for example to detect truncated output.
+  label then sits within a printed total. It is rejected because every new review with inline
+  comments raises the grand total and so changes every orphan label. Comparing a fresh fetch with a
+  saved one then shows unchanged orphaned comments as changed, which is what P2 in #237 exists to
+  prevent (a fresh fetch compared with the saved one shows only what is new). It reverses if orphan
+  labels must count across the whole output, such as a reader matching an orphan by its position in
+  the full listing.
 
 ## Risk
 
 A label such as `[1 of 1]` now repeats across reviews and the orphan section, so a label alone does
-not identify a comment. None of the skills that read the output refers to a comment by its label;
-they use `comment_id`, `thread_id`, and file and line.
+not identify a comment. None of the skills that read the output refers to a comment by its label.
 
 A new orphaned comment changes every orphan label's total, so `[1 of 1]` becomes `[1 of 2]`. A
 comparison of fresh output against saved output shows changed orphan labels when an orphan is added.
