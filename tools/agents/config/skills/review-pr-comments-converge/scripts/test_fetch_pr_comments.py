@@ -13,6 +13,7 @@ Run:
 import ast
 import json
 import os
+import re
 import subprocess
 import sys
 from collections.abc import Iterator
@@ -208,7 +209,7 @@ COMMENT [2 of 2]  src/app.py:40
 ################################################################################
 
 ────────────────────────────────────────────────────────────────────────────────
-COMMENT [3]  reviewer @ src/other.py:7
+COMMENT [1 of 1]  reviewer @ src/other.py:7
   comment_id : 301
   thread_id  : PRRT_301  (resolved: no)
 
@@ -400,6 +401,107 @@ def test_every_line_printed_before_paging_is_still_printed_in_order(harness: Har
     remaining = iter(result.stdout.splitlines())
     missing = [line for line in OUTPUT_BEFORE_PAGING.splitlines() if line not in remaining]
     assert missing == []
+
+
+# Three reviews and an orphan section: every boundary where a counter shared across groups would
+# carry over, including a review that prints a body and no labels.
+SEVERAL_REVIEWS = {
+    "threads": [
+        [
+            thread(101, "first-review-only-thread", review_id=1),
+            thread(301, "third-review-first-thread", review_id=3),
+            thread(311, "third-review-second-thread", review_id=3),
+            thread(401, "first-orphan", path="src/other.py", line=7),
+            thread(411, "second-orphan", path="src/other.py", line=9),
+        ]
+    ],
+    "reviews": [
+        [
+            review(1, "First review."),
+            review(2, "Second review, body only."),
+            review(3, "Third review."),
+        ]
+    ],
+    "comments": [[]],
+}
+
+
+def labels(stdout: str) -> list[str]:
+    """Every `COMMENT [...]` label in the output, whatever its form, in printed order."""
+    return re.findall(r"COMMENT \[([^\]]*)\]", stdout)
+
+
+def labelled_comments(stdout: str) -> dict[str, str]:
+    """Each labelled comment's comment_id mapped to its label line, minus the trailing location."""
+    lines = stdout.splitlines()
+    found = {}
+    for i, line in enumerate(lines):
+        if line.startswith("COMMENT ["):
+            comment_id = lines[i + 1].removeprefix("  comment_id : ")
+            found[comment_id] = line
+    return found
+
+
+def test_each_review_and_the_orphan_section_number_their_own_comments(harness: Harness) -> None:
+    result = harness.run(SEVERAL_REVIEWS)
+
+    assert result.returncode == 0, result.stderr
+    assert labels(result.stdout) == ["1 of 1", "1 of 2", "2 of 2", "1 of 2", "2 of 2"]
+    assert [
+        (cid, line.split("]")[0] + "]") for cid, line in labelled_comments(result.stdout).items()
+    ] == [
+        ("101", "COMMENT [1 of 1]"),
+        ("301", "COMMENT [1 of 2]"),
+        ("311", "COMMENT [2 of 2]"),
+        ("401", "COMMENT [1 of 2]"),
+        ("411", "COMMENT [2 of 2]"),
+    ]
+
+
+def test_no_label_counts_past_its_own_total(harness: Harness) -> None:
+    result = harness.run(SEVERAL_REVIEWS)
+
+    assert result.returncode == 0, result.stderr
+    printed = labels(result.stdout)
+    assert len(printed) == 5
+    for label in printed:
+        match = re.fullmatch(r"([1-9][0-9]*) of ([1-9][0-9]*)", label)
+        assert match, f"label {label!r} is not in the form 'i of n'"
+        position, total = int(match[1]), int(match[2])
+        assert position <= total, f"label {label!r} counts past its total"
+
+
+def test_a_new_review_leaves_earlier_labels_unchanged(harness: Harness) -> None:
+    saved = {
+        "threads": [
+            [
+                thread(101, "first-review-thread", review_id=1),
+                thread(401, "orphan", path="src/other.py", line=7),
+            ]
+        ],
+        "reviews": [[review(1, "First review.")]],
+        "comments": [[]],
+    }
+    later = {
+        "threads": [
+            [
+                thread(101, "first-review-thread", review_id=1),
+                thread(201, "second-review-thread", review_id=2),
+                thread(211, "another-second-review-thread", review_id=2),
+                thread(401, "orphan", path="src/other.py", line=7),
+            ]
+        ],
+        "reviews": [[review(1, "First review."), review(2, "Second review.")]],
+        "comments": [[]],
+    }
+
+    before = harness.run(saved)
+    after = harness.run(later)
+
+    assert before.returncode == 0, before.stderr
+    assert after.returncode == 0, after.stderr
+    old, new = labelled_comments(before.stdout), labelled_comments(after.stdout)
+    assert {cid: new[cid] for cid in old} == old
 
 
 def test_a_gh_failure_exits_with_a_sentence(harness: Harness) -> None:
