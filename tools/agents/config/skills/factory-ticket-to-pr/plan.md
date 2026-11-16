@@ -151,7 +151,7 @@ and confirm with `tmux list-windows` that the window exists. Otherwise, when `RE
 run:
 
 ```
-bash ~/Repos/ooloth/dotfiles/tools/rex/claude-tab.bash 'Issue <n> (<author>): factory-ticket-to-pr' <repo root> --unattended --session-id <build session ID> -w <worktree name> '/factory-ticket-to-pr build <owner/repo#issue> <run-id>'
+bash ~/Repos/ooloth/dotfiles/tools/rex/claude-tab.bash 'Issue <n> (<author>): factory-ticket-to-pr build' <repo root> --unattended --session-id <build session ID> -w <worktree name> '/factory-ticket-to-pr build <owner/repo#issue> <run-id>'
 ```
 
 and confirm that the JSON it prints names a pane. `<author>` is the ticket author's login. With
