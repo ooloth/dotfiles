@@ -338,7 +338,6 @@ def print_discussion(target: str, discussion: Discussion) -> None:
         else:
             orphan_threads.append((thread, comments))
 
-    comment_idx = 1
     for review in [
         r for r in reviews if r.get("body", "").strip() or threads_by_review.get(r["databaseId"])
     ]:
@@ -364,14 +363,14 @@ def print_discussion(target: str, discussion: Discussion) -> None:
             print(indent(body))
 
         if review_threads:
-            for thread, comments in review_threads:
+            for position, (thread, comments) in enumerate(review_threads, start=1):
                 print()
                 print(MEDIUM)
                 first = comments[0]
                 line = first.get("line") or first.get("originalLine") or "?"
                 comment_body, suggestion = split_suggestion(first["body"])
 
-                print(f"COMMENT [{comment_idx} of {n}]  {first['path']}:{line}")
+                print(f"COMMENT [{position} of {n}]  {first['path']}:{line}")
                 print(f"  comment_id : {first['databaseId']}")
                 print(
                     f"  thread_id  : {thread['id']}  (resolved: {'yes' if thread['isResolved'] else 'no'})"
@@ -392,7 +391,6 @@ def print_discussion(target: str, discussion: Discussion) -> None:
                     print("  REPLIES:")
                     for reply in comments[1:]:
                         print(f"    {reply['author']['login']}: {reply['body'].strip()}")
-                comment_idx += 1
 
         print()
         print(HEAVY)
@@ -403,14 +401,17 @@ def print_discussion(target: str, discussion: Discussion) -> None:
         print(HEAVY)
         print("# ORPHANED COMMENTS (no parent review)")
         print(HEAVY)
-        for thread, comments in orphan_threads:
+        for position, (thread, comments) in enumerate(orphan_threads, start=1):
             print()
             print(MEDIUM)
             first = comments[0]
             line = first.get("line") or first.get("originalLine") or "?"
             comment_body, suggestion = split_suggestion(first["body"])
 
-            print(f"COMMENT [{comment_idx}]  {first['author']['login']} @ {first['path']}:{line}")
+            print(
+                f"COMMENT [{position} of {len(orphan_threads)}]  "
+                f"{first['author']['login']} @ {first['path']}:{line}"
+            )
             print(f"  comment_id : {first['databaseId']}")
             print(
                 f"  thread_id  : {thread['id']}  (resolved: {'yes' if thread['isResolved'] else 'no'})"
@@ -431,7 +432,6 @@ def print_discussion(target: str, discussion: Discussion) -> None:
                 print("  REPLIES:")
                 for reply in comments[1:]:
                     print(f"    {reply['author']['login']}: {reply['body'].strip()}")
-            comment_idx += 1
 
         print()
         print(HEAVY)
