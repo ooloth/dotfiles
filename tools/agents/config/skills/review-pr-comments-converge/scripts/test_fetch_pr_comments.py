@@ -405,9 +405,11 @@ def test_every_line_printed_before_paging_is_still_printed_in_order(harness: Har
 
 
 # Three reviews and an orphan section: every boundary where a counter shared across groups would
-# carry over, including a review that prints a body and no labels. Each group of two mixes a
-# thread that is resolved with one that is not, outdated with current, and replied to with not,
-# so a total that counts only some kind of thread differs from the number of labels printed.
+# carry over, including a review that prints a body and no labels. Each group of two or more mixes
+# a thread that is resolved with one that is not, outdated with current, and replied to with not,
+# so a total that counts only some kind of thread differs from the number of labels printed. The
+# orphan section holds three threads, a count no review has, so an orphan total that reuses a
+# review's count prints a label that differs from the expected one.
 SEVERAL_REVIEWS = {
     "threads": [
         [
@@ -425,6 +427,7 @@ SEVERAL_REVIEWS = {
                 resolved=True,
                 replies=["Agreed."],
             ),
+            thread(421, "third-orphan", path="src/other.py", line=11),
         ]
     ],
     "reviews": [
@@ -458,15 +461,16 @@ def test_each_review_and_the_orphan_section_number_their_own_comments(harness: H
     result = harness.run(SEVERAL_REVIEWS)
 
     assert result.returncode == 0, result.stderr
-    assert labels(result.stdout) == ["1 of 1", "1 of 2", "2 of 2", "1 of 2", "2 of 2"]
+    assert labels(result.stdout) == ["1 of 1", "1 of 2", "2 of 2", "1 of 3", "2 of 3", "3 of 3"]
     assert [
         (cid, line.split("]")[0] + "]") for cid, line in labelled_comments(result.stdout).items()
     ] == [
         ("101", "COMMENT [1 of 1]"),
         ("301", "COMMENT [1 of 2]"),
         ("311", "COMMENT [2 of 2]"),
-        ("401", "COMMENT [1 of 2]"),
-        ("411", "COMMENT [2 of 2]"),
+        ("401", "COMMENT [1 of 3]"),
+        ("411", "COMMENT [2 of 3]"),
+        ("421", "COMMENT [3 of 3]"),
     ]
 
 
@@ -475,7 +479,7 @@ def test_no_label_counts_past_its_own_total(harness: Harness) -> None:
 
     assert result.returncode == 0, result.stderr
     printed = labels(result.stdout)
-    assert len(printed) == 5
+    assert len(printed) == 6
     for label in printed:
         match = re.fullmatch(r"([1-9][0-9]*) of ([1-9][0-9]*)", label)
         assert match, f"label {label!r} is not in the form 'i of n'"
@@ -511,7 +515,7 @@ def test_every_group_numbers_its_labels_from_one_to_its_own_count(harness: Harne
     for group in groups:
         count = len(group)
         assert group == [f"{i} of {count}" for i in range(1, count + 1)]
-    assert [len(group) for group in groups] == [1, 0, 2, 2]
+    assert [len(group) for group in groups] == [1, 0, 2, 3]
 
 
 def test_a_new_review_leaves_earlier_labels_unchanged(harness: Harness) -> None:
@@ -545,6 +549,8 @@ def test_a_new_review_leaves_earlier_labels_unchanged(harness: Harness) -> None:
     assert after.returncode == 0, after.stderr
     old, new = labelled_comments(before.stdout), labelled_comments(after.stdout)
     assert {cid: new[cid] for cid in old} == old
+    assert new["201"] == "COMMENT [1 of 2]  src/app.py:12"
+    assert new["211"] == "COMMENT [2 of 2]  src/app.py:12"
 
 
 def test_a_gh_failure_exits_with_a_sentence(harness: Harness) -> None:
