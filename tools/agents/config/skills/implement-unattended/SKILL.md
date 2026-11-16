@@ -49,7 +49,9 @@ cannot run in full, escalate. A small diff is never a reason to run less.
 
 A "must" or "should" finding from any review is resolved only by a change that makes it no longer
 true: a fix to the code or the tests, or a correction to a claim that says more than is true.
-Recording the gap as known, in a doc or a comment, does not resolve it. Fix it or escalate it.
+Recording the gap as known, in a doc or a comment, does not resolve it. Fix it or escalate it. A
+finding that the approach or the design should change is the exception: step 8 checks it and, if it
+holds, changes the plan before the code.
 
 ## Your role
 
@@ -219,6 +221,17 @@ Send each "must" and "should" finding to the step 3 implementer, run the checks 
 spawn another fresh reviewer. Repeat until a review returns no "must" or "should" findings, for up
 to 5 rounds. If findings remain after the fifth, escalate them. "Consider" findings are listed, not
 fixed.
+
+A finding that the approach or the design should change, rather than the code, is checked before it
+is acted on, because the reviewer can be wrong. Spawn one subagent on Opus to attack it as the
+planner's final attack does: it shows, with a command it ran or a concrete scenario, whether the
+finding's option delivers every Ideal state bullet and wins on a named property. If the finding
+holds, post a comment on the ticket saying what changes and which step of the chain it changes,
+rewrite the affected tests as in step 2, send the change to the step 3 implementer, and run steps 4
+to 8 again; the change counts as a review round. The PR body's **What** says why this approach
+replaced the planned one, with a link to that comment. A finding whose option takes a one-way
+decision follows "Decisions nobody made" in `plan-unattended`, and one whose answer is to change
+nothing or close the ticket is escalated with its evidence, because no PR can carry it.
 
 ## 9. Report the run
 
