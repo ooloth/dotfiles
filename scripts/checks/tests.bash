@@ -18,7 +18,8 @@
 # skill tests have no headers; hypothesis and pydantic are installed for them, since they load their
 # scripts in-process or run them as a subprocess, and generate inputs for them. markdown-it-py is
 # installed because use-jira's check imports it and its tests run it under this Python; its range
-# matches the script's own header, which a test compares.
+# matches the script's own header, which a test compares. youtube-transcript-api is installed for
+# use-youtube's transcript.py on the same terms.
 set -uo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -47,7 +48,8 @@ if [[ ${#tests[@]} -eq 0 ]]; then
   exit 1
 fi
 
-with=(--with pytest --with pytest-xdist --with hypothesis --with pydantic --with 'markdown-it-py>=4,<5')
+with=(--with pytest --with pytest-xdist --with hypothesis --with pydantic --with 'markdown-it-py>=4,<5'
+  --with 'youtube-transcript-api>=1,<2')
 for test in "${tests[@]}"; do
   with+=(--with-requirements "${test}")
 done
