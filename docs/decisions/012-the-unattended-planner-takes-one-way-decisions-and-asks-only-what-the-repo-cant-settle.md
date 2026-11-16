@@ -2,7 +2,7 @@
 number: 012
 status: accepted
 date: 2026-11-10
-amended: 2026-11-10
+amended: 2026-11-15
 ---
 
 # 012 — The unattended planner takes one-way decisions and asks only what the repo can't settle
@@ -52,10 +52,8 @@ aligned.
 
 ## Revisit when
 
-A replay round's per-decision grades, in each run's `grade.md` under `~/.local/state/replays/`,
-show a one-way decision the planner took alone, or one it took alone that the rule says to ask
-about, that my plan would reject, or at least as many questions my plan didn't need as round 1
-asked (three).
+At a draft PR I overrule a one-way decision the planner took alone, or a run stops to ask me
+something it didn't need to.
 
 ## Also update
 
@@ -93,3 +91,11 @@ when" names the same scope. Before this, it read 'a decision the planner took al
 would reject'.
 
 [013]: 013-the-unattended-implementation-records-each-one-way-decision-the-planner-took.md
+
+## Addendum (2026-11-15) — revisited from real runs, not replay grades
+
+Planning is no longer replayed and graded against my own plans: the factory runs from ticket to
+draft PR on real tickets, and what each run gets wrong becomes a change to its skills
+([#268](https://github.com/ooloth/dotfiles/issues/268)). The replay harness and its `grade.md`
+files are gone, so "Revisit when" now reads: at a draft PR I overrule a one-way decision the
+planner took alone, or a run stops to ask me something it didn't need to.
