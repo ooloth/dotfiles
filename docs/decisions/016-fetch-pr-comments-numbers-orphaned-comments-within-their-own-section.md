@@ -23,21 +23,23 @@ matches every review's labels. It assumes each review numbers its own comments.
 
 ## Rejected
 
-- **Keep `[k]`, continuing the counter shared with the reviews.** It leaves the orphan
-  labels as they were. It is rejected because the label has no total, so a reader cannot check a
-  position against one. It reverses if something starts reading orphan labels by their old position
-  across the output.
-- **Restart at 1 with no total, `[i]`.** It stops the count carrying over from the reviews. It is
-  rejected for the same reason: there is no total to check the position against, and the form
-  differs from every other label. It reverses if the reviews' labels also drop their totals, so that
-  `[i]` would match every other label.
+- **Keep `[k]`, continuing the counter shared with the reviews.** It changes nothing in the code.
+  It is rejected for two reasons. The label has no total, so a reader cannot check a position
+  against one. And a new review with inline comments shifts every orphan's `k`, so a fresh fetch
+  compared with a saved one shows unchanged orphaned comments as changed. It reverses if a reader
+  needs orphan labels to keep the old `[k]` form.
+- **Restart at 1 with no total, `[i]`.** It stops the count carrying over from the reviews, so a new
+  review does not change any orphan label. It is rejected because there is no total to check the
+  position against, and the form differs from every other label, which all have totals. It reverses
+  if the reviews' labels also drop their totals, so that `[i]` would match every other label.
 - **Continue the global count against a grand total of every printed thread, `[4 of 5]`.** Every
   label then sits within a printed total. It is rejected because every new review with inline
-  comments raises the grand total and so changes every orphan label. Comparing a fresh fetch with a
-  saved one then shows unchanged orphaned comments as changed, which is what P2 in #237 exists to
-  prevent (a fresh fetch compared with the saved one shows only what is new). It reverses if orphan
-  labels must count across the whole output, such as a reader matching an orphan by its position in
-  the full listing.
+  comments raises the grand total and so changes every orphan label, so a fresh fetch compared with
+  a saved one shows unchanged orphaned comments as changed. The chosen option avoids that: a new
+  review changes no orphan label. It does not avoid every change, since a new orphaned comment
+  still changes the orphan totals (see Risk). The grand-total option reverses if orphan labels must
+  count across the whole output, such as a reader matching an orphan by its position in the full
+  listing.
 
 ## Risk
 
@@ -49,8 +51,8 @@ comparison of fresh output against saved output shows changed orphan labels when
 
 ## Revisit when
 
-Something starts referring to a comment by its label, reads orphan labels by their old position
-across the whole output, or the reviews stop numbering their own comments.
+Something starts referring to a comment by its label, needs an orphan's position in the whole
+output, or the reviews stop numbering their own comments.
 
 ## Also update
 
