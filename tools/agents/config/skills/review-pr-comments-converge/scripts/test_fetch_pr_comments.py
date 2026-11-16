@@ -444,7 +444,7 @@ def labels(stdout: str) -> list[str]:
 
 
 def labelled_comments(stdout: str) -> dict[str, str]:
-    """Each labelled comment's comment_id mapped to its label line, minus the trailing location."""
+    """Each labelled comment's comment_id mapped to its whole label line, location included."""
     lines = stdout.splitlines()
     found = {}
     for i, line in enumerate(lines):
@@ -484,7 +484,12 @@ def test_no_label_counts_past_its_own_total(harness: Harness) -> None:
 
 
 def labels_by_group(stdout: str) -> list[list[str]]:
-    """The labels under each review or orphan header, one list per header in printed order."""
+    """The labels under each header, one list per header in printed order.
+
+    A group starts at each review header, the orphan header and the PR conversation header, so a
+    label printed among conversation comments lands in a group of its own rather than the last
+    orphan or review group.
+    """
     groups: list[list[str]] = []
     for line in stdout.splitlines():
         if line.startswith(("# REVIEW by ", "# ORPHANED COMMENTS", "# PR CONVERSATION")):
