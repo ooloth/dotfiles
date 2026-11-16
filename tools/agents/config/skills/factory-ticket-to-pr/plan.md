@@ -136,16 +136,30 @@ it` as the final line.
 
 Find the main checkout with `git rev-parse --path-format=absolute --git-common-dir`; its parent
 directory is the repo root. Pick a worktree name `afk-<issue>`, adding `-2`, `-3` and so on if
-that name is already under `<repo root>/.claude/worktrees/`. Then run:
+that name is already under `<repo root>/.claude/worktrees/`.
+
+Choose the build session's ID with `uuidgen | tr 'A-Z' 'a-z'`, and write it into `run.md` as the
+`build` section's **Session** before starting it, so the build can be followed from its first
+second. Open the build session in whichever terminal encloses this one, so the user sees it beside
+this session. When `TMUX` is set, run:
 
 ```
-tmux new-window -d -n <worktree name> -c <repo root> "bash ~/Repos/ooloth/dotfiles/tools/claude/cc.bash --unattended -w <worktree name> '/factory-ticket-to-pr build <owner/repo#issue> <run-id>'"
+tmux new-window -d -n <worktree name> -c <repo root> "bash ~/Repos/ooloth/dotfiles/tools/claude/cc.bash --unattended --session-id <build session ID> -w <worktree name> '/factory-ticket-to-pr build <owner/repo#issue> <run-id>'"
 ```
+
+and confirm with `tmux list-windows` that the window exists. Otherwise, when `REX_SESSION` is set,
+run:
+
+```
+bash ~/Repos/ooloth/dotfiles/tools/rex/claude-tab.bash 'Issue <n> (<author>): factory-ticket-to-pr' <repo root> --unattended --session-id <build session ID> -w <worktree name> '/factory-ticket-to-pr build <owner/repo#issue> <run-id>'
+```
+
+and confirm that the JSON it prints names a pane. `<author>` is the ticket author's login. With
+neither set, escalate: nothing would show the build to anyone.
 
 `--unattended` comes first, as `cc.bash` requires, and starts the session in auto mode on every
 machine, never in bypass mode, because nobody watches it and it reads ticket text other people
 wrote.
 
-Confirm with `tmux list-windows` that the window exists. Print
-`PLANNED: <link to the design comment>; implementation started in tmux window <worktree name>` as
-the final line.
+Print `PLANNED: <link to the design comment>; implementation started in <the tmux window or Rex
+tab>` as the final line.

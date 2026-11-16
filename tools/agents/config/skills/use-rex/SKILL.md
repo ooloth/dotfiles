@@ -54,3 +54,7 @@ Tab names start with a word, never an emoji: `PR 123 (alice): review-code`, not
   a commit that doesn't exist, and the new session spends its start looking for it. Put
   `$(git rev-parse --short <ref>)` in the prompt, or check each hash with `git cat-file -t <hash>`
   before opening the tab.
+- **A Claude Code tab can't be read through its screen.** Claude Code runs full-screen, which keeps
+  no scrollback, so `rex capture` on its pane returns only what is visible. Read its transcript
+  instead: `find ~/.claude/projects -name '<session ID>.jsonl'`. Start the session with
+  `--session-id <uuid>` when you will want to follow it.
