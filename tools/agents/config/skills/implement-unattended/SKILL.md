@@ -117,8 +117,8 @@ as a `fail`.
 Spawn a **test-writer** subagent. Give it the repo path, the design comment, and the parts of the
 approach comment that say what must be true and why: **What a good fix must achieve**,
 **Assumptions** and **Constraints**. Do not give it the opening paragraph, **Options**, **Decided
-by**, **How it fits** or **Decided without you**, so its tests describe behaviour rather than the
-planned mechanism.
+by**, **How it fits**, **Deferred** or **Decided without you**, so its tests describe behaviour
+rather than the planned mechanism.
 
 It writes a test for every row of the design comment's **Tests** table, using the technique the row
 names. The design leaves setup to it, so it works out how to set each test up and what each should
