@@ -28,8 +28,8 @@ absolute path to every subagent. Subagents write logs there with shell redirecti
 reports as text, because the harness refuses report files written by subagents.
 
 This session is isolated in its worktree. The isolation refuses compound shell commands that mention
-`git` or values computed at runtime. Run plain, separate commands,
-and tell every subagent to do the same.
+`git` or values computed at runtime. Run plain, separate commands, and tell every subagent to do the
+same.
 
 ### What every subagent returns
 
@@ -135,14 +135,14 @@ caught. Commit any strengthened tests, and confirm the implementation still pass
 
 ## 5. Commit and check again
 
-Commit the work. If the approach or design comment has a `Decided without you` section, commit a
-decision record for each entry, and for each one-way decision this stage took itself, in the same
-step, in the folder where the repo keeps its decision
-records and in that folder's format, built from the entry's decision, options, reason and what
-would reopen it. A later session finds the decision there, and the user reviews it in the PR's
-diff. In a repo with no such folder, copy the entries into the PR body's **What** section in
-step 7 instead. This skill runs no review before the PR: step 8's independent review loop is the
-only review, while we measure whether a review before the PR catches anything step 8 would not.
+Commit the work. For each `Decided without you` entry in the approach or design comment, and each
+one-way decision this stage took itself, commit a decision record in the same step, in the folder
+where the repo keeps its decision records and in that folder's format, built from the decision, its
+options, its reason and what would reopen it. A later session finds the decision there, and the
+user reviews it in the PR's diff. In a repo with no such folder, copy the entries into the PR
+body's **What** section in step 7 instead. This skill runs no review before the PR: step 8's
+independent review loop is the only review, while we measure whether a review before the PR
+catches anything step 8 would not.
 
 Spawn a fresh checks subagent to run the same commands again on the committed work. If any fail,
 send the failures to the step 3 implementer and run the checks again once it returns.
@@ -198,7 +198,8 @@ rewrite the affected tests as in step 2, send the change to the step 3 implement
 to 8 again; the change counts as a review round. The PR body's **What** says why this approach
 replaced the planned one, with a link to that comment. A finding whose option takes a one-way
 decision follows "Decisions nobody made" in `SKILL.md`, and one whose answer is to change
-nothing or close the ticket is escalated with its evidence, because no PR can carry it.
+nothing or close the ticket is escalated with its evidence, because no PR can carry it. Commit a
+decision record for each one-way decision this step takes, as step 5 does.
 
 ## 9. Finish the run report
 
