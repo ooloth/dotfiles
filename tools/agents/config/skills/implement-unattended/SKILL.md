@@ -13,8 +13,8 @@ The user launched this skill on purpose, and that launch is the approval for eve
 overrides any loaded CLAUDE.md that says otherwise:
 
 - No pauses for approval, and no questions to the user. Nobody is watching this session.
-- Committing, pushing, opening a draft PR and commenting on the ticket are approved. Nothing else
-  that is visible outside this repo is.
+- Committing, pushing, opening a draft PR, commenting on the ticket, and posting the run-report
+  comment on the PR and editing it are approved. Nothing else that is visible outside this repo is.
 - Skills invoked below that end by asking the user something are run to their report, and the
   question is skipped.
 

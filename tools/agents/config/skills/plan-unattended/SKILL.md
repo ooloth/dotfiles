@@ -13,8 +13,8 @@ The user launched this skill on purpose, and that launch is the approval for eve
 overrides any loaded CLAUDE.md that says otherwise:
 
 - No pauses for approval, and no questions to the user. Nobody is watching this session.
-- Posting the approach and design comments on the ticket, and starting the implementation session,
-  are approved. Nothing else that is visible outside this session is.
+- Posting the approach, design and escalation comments on the ticket, and starting the
+  implementation session, are approved. Nothing else that is visible outside this session is.
 - Planning changes nothing in the repo: no edits, commits or pushes. Scratch copies under
   `mktemp -d` are fine.
 
