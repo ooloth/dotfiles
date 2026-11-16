@@ -291,11 +291,11 @@ The bar is a named question, not a topic. "Add a concurrency agent" is a topic. 
 retry path double-submit when the first attempt times out after the server committed?" is a
 question, and it earns an agent. If you cannot write the question down, do not add the agent.
 
-Add rather than enrich. Each agent answers its own question, so a concern appended to an existing
-agent's prompt competes with that question for its attention. A new agent gives the concern a
-question of its own. Agent 2's slicing check is the one standing exception: whether a change should
-have been several is a question about its approach, and replays on a large PR and a small one
-showed one agent answering both without dropping either.
+Extend rather than add. A concern that a standing agent's question covers goes into that agent's
+prompt, the way Agent 2's slicing check is part of judging the approach. Add an agent only for a
+question no standing agent asks, or when a replay shows the agent whose question covers the concern
+missing it when asked. Every agent rereads the diff and its context, so each one added costs every
+later review.
 
 Give an added agent the same shape as the standing agents: the intent block, the file list, the
 provenance requirement, and one question to answer. Record the question and why the standing
