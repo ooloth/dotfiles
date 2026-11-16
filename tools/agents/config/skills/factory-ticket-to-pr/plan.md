@@ -135,8 +135,21 @@ waits for review. Start /factory-ticket-to-pr build <owner/repo#issue> <run-id> 
 it` as the final line.
 
 Find the main checkout with `git rev-parse --path-format=absolute --git-common-dir`; its parent
-directory is the repo root. Pick a worktree name `afk-<issue>`, adding `-2`, `-3` and so on if
-that name is already under `<repo root>/.claude/worktrees/`.
+directory is the repo root.
+
+Name the branch for the user's colleagues, who will read it: the ticket's key, then a few words from
+its title, lowercase and joined by hyphens, such as `237-number-inline-comments-per-review` or
+`ENG-45-retry-failed-exports`. Where the repo's docs name another branch convention, follow it. Add
+`-2`, `-3` and so on if that branch already exists locally or on `origin`. The worktree name is the
+branch name with each `/` replaced by `-`. Create the worktree from the default branch on `origin`:
+
+```
+git -C <repo root> fetch origin
+git -C <repo root> worktree add <repo root>/.claude/worktrees/<worktree name> -b <branch> origin/<default branch>
+```
+
+Starting the build with `-w <worktree name>` then opens this worktree on this branch, instead of
+creating a `worktree-<name>` branch of its own.
 
 Choose the build session's ID with `uuidgen | tr 'A-Z' 'a-z'`, and write it into `run.md` as the
 `build` section's **Session** before starting it, so the build can be followed from its first
