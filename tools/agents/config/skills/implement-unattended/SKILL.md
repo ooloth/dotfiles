@@ -209,18 +209,27 @@ comments hold the detail, and the PR links to them. Add one line to each section
   on the line below it
 - **Related:** `Closes #<n>`
 
-Step 9 adds the link to the run report under **Validation** once that comment exists.
+Then post the run report on the PR as one comment, laid out as step 9 describes, with its
+**Self-review** section reading "Round 1 running". Keep the comment's ID: steps 8 and 9 edit this
+comment instead of posting new ones, because an edit notifies nobody. Add one line under
+**Validation** in the PR body: `Run evidence, mutants and self-review: <link to the run-report
+comment>`.
 
 ## 8. Independent review of the PR
 
 Spawn a fresh subagent and give it only the PR number and repo, not the ticket, the plan or anything
-from this run, so its review is independent of them. It runs `review-code` on the PR with every
-reviewer, posts nothing, and returns the verdict and every finding with its severity.
+from this run, so its agents' review is independent of them. It runs `review-code` on the PR with
+every reviewer, posts nothing, and returns the verdict and every finding with its severity.
 
 Send each "must" and "should" finding to the step 3 implementer, run the checks again, push, and
 spawn another fresh reviewer. Repeat until a review returns no "must" or "should" findings, for up
 to 5 rounds. If findings remain after the fifth, escalate them. "Consider" findings are listed, not
 fixed.
+
+Ask the implementer to return one line for each finding it was sent: what it changed, and the
+commit that holds the change. After each round, edit the run-report comment with
+`gh api -X PATCH repos/<owner>/<repo>/issues/comments/<id> -F body=@<file>`, so its **Self-review**
+section shows every round so far.
 
 A finding that the approach or the design should change, rather than the code, is checked before it
 is acted on, because the reviewer can be wrong. Spawn one subagent on Opus to attack it as the
@@ -233,21 +242,23 @@ replaced the planned one, with a link to that comment. A finding whose option ta
 decision follows "Decisions nobody made" in `plan-unattended`, and one whose answer is to change
 nothing or close the ticket is escalated with its evidence, because no PR can carry it.
 
-## 9. Report the run
+## 9. Finish the run report
 
-Post one run-report comment on the ticket, with these sections:
+Edit the run-report comment on the PR one last time, so it holds these sections:
 
 1. **Properties:** a table with one row per property from the approach comment: what observes it,
    its result before the change, its result after, and the mutant it caught.
 2. **Evidence:** the findings from the `prove-it-works` report, with their before and after
    observations, and the path of its evidence folder.
-3. **Reviews:** one line per step 8 review round, with its number of "must", "should" and
-   "consider" findings, how they were resolved, and the "consider" findings left open.
+3. **Self-review:** headed "Automated self-review", so no reader takes it for a teammate's
+   review. A table with one row per step 8 round: its number of "must", "should" and "consider"
+   findings, and how they were resolved, linking the commits that resolved them. Below the table,
+   one collapsed `<details>` block per round, its summary naming the round, with each finding in
+   one line beside its response: the commit that fixed it, the ticket comment that changed the
+   plan, or "left open" for a "consider" finding.
 4. **Departures:** a numbered list of every departure from the approach and design, each with what
    was planned, what was done, the options weighed, the deciding property and how to reverse it.
    Write "No departures" when there were none.
 5. **Not verified:** anything the run could not observe, and why.
 
-Then edit the PR body with `gh pr edit` to add one line under **Validation**:
-`Run evidence, mutants and review rounds: <link to the run-report comment>`. Print `PR: <url>` as
-the final line.
+Print `PR: <url>` as the final line.
