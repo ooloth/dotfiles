@@ -91,6 +91,7 @@ def thread(
     review_id: int | None = None,
     *,
     outdated: bool = False,
+    resolved: bool = False,
     replies: list[str] | None = None,
     more_replies: bool = False,
     path: str = "src/app.py",
@@ -113,7 +114,7 @@ def thread(
     ]
     return {
         "id": f"PRRT_{comment_id}",
-        "isResolved": False,
+        "isResolved": resolved,
         "isOutdated": outdated,
         "comments": {
             "pageInfo": {"hasNextPage": more_replies},
@@ -404,15 +405,26 @@ def test_every_line_printed_before_paging_is_still_printed_in_order(harness: Har
 
 
 # Three reviews and an orphan section: every boundary where a counter shared across groups would
-# carry over, including a review that prints a body and no labels.
+# carry over, including a review that prints a body and no labels. Each group of two mixes a
+# thread that is resolved with one that is not, outdated with current, and replied to with not,
+# so a total that counts only some kind of thread differs from the number of labels printed.
 SEVERAL_REVIEWS = {
     "threads": [
         [
-            thread(101, "first-review-only-thread", review_id=1),
-            thread(301, "third-review-first-thread", review_id=3),
-            thread(311, "third-review-second-thread", review_id=3),
-            thread(401, "first-orphan", path="src/other.py", line=7),
-            thread(411, "second-orphan", path="src/other.py", line=9),
+            thread(101, "first-review-only-thread", review_id=1, resolved=True),
+            thread(
+                301, "third-review-first-thread", review_id=3, outdated=True, replies=["Fixed."]
+            ),
+            thread(311, "third-review-second-thread", review_id=3, resolved=True),
+            thread(401, "first-orphan", path="src/other.py", line=7, outdated=True),
+            thread(
+                411,
+                "second-orphan",
+                path="src/other.py",
+                line=9,
+                resolved=True,
+                replies=["Agreed."],
+            ),
         ]
     ],
     "reviews": [
@@ -469,6 +481,32 @@ def test_no_label_counts_past_its_own_total(harness: Harness) -> None:
         assert match, f"label {label!r} is not in the form 'i of n'"
         position, total = int(match[1]), int(match[2])
         assert position <= total, f"label {label!r} counts past its total"
+
+
+def labels_by_group(stdout: str) -> list[list[str]]:
+    """The labels under each review or orphan header, one list per header in printed order."""
+    groups: list[list[str]] = []
+    for line in stdout.splitlines():
+        if line.startswith(("# REVIEW by ", "# ORPHANED COMMENTS", "# PR CONVERSATION")):
+            groups.append([])
+        found = labels(line)
+        if found:
+            assert groups, f"label printed before any review or orphan header: {line!r}"
+            groups[-1].extend(found)
+    return groups
+
+
+def test_every_group_numbers_its_labels_from_one_to_its_own_count(harness: Harness) -> None:
+    result = harness.run(SEVERAL_REVIEWS)
+
+    assert result.returncode == 0, result.stderr
+    groups = labels_by_group(result.stdout)
+    # Three reviews and the orphan section; there is no conversation section.
+    assert len(groups) == 4
+    for group in groups:
+        count = len(group)
+        assert group == [f"{i} of {count}" for i in range(1, count + 1)]
+    assert [len(group) for group in groups] == [1, 0, 2, 2]
 
 
 def test_a_new_review_leaves_earlier_labels_unchanged(harness: Harness) -> None:
