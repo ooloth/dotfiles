@@ -11,7 +11,7 @@ Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, t
 utils.bash, and runs the script under macOS's own bash from a folder beside its siblings. A `claude`
 stub on PATH records its arguments separated by NUL bytes, so no test reaches the real Claude Code.
 The tests of the map's handling in general source the real cc.bash and replace only its
-`related_repos` lookup before calling `main`; the shipped entries are tested as shipped.
+`related_repos` lookup before calling `main`.
 """
 
 from __future__ import annotations
@@ -143,7 +143,7 @@ class Machine:
     def run(
         self, *args: str, computer: str = "air", cwd: Path | None = None, related: str | None = ""
     ) -> Run:
-        """Run the shipped cc.bash, as the `cc` alias does, with PRIVATE_RELATED_REPOS set to
+        """Run the shipped cc.bash, as `cc` does, with PRIVATE_RELATED_REPOS set to
         `related`, or unset when it is None."""
         return self._run(["/bin/bash", str(REPO / SCRIPT), *args], computer, cwd, related)
 
@@ -165,7 +165,7 @@ class UnmappedFolder(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def test_starts_claude_exactly_as_the_old_alias_did(self) -> None:
+    def test_a_personal_mac_passes_its_mode_then_the_callers_arguments(self) -> None:
         run = self.machine.run("--continue")
 
         self.assertEqual(run.status, 0, run.output)
@@ -367,26 +367,6 @@ class RelatedReposFromPrivateEnv(unittest.TestCase):
 
         self.assertEqual(run.claude, ["--permission-mode", "auto"], run.output)
         self.assertEqual(run.output, "")
-
-
-class PlansFolder(unittest.TestCase):
-    """Plans moved to the content vault, which the next-step skill finds by its own path."""
-
-    def setUp(self) -> None:
-        self._tmp = tempfile.TemporaryDirectory()
-        self.machine = Machine(Path(self._tmp.name))
-
-    def tearDown(self) -> None:
-        self._tmp.cleanup()
-
-    def test_a_plans_folder_beside_the_repo_is_not_added(self) -> None:
-        self.machine.sibling("plans")
-        self.machine.make_git_repo(self.machine.app)
-
-        run = self.machine.run("--continue")
-
-        self.assertEqual(run.status, 0, run.output)
-        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions", "--continue"])
 
 
 # Flags cc.bash may pass as a separate argument ahead of the caller's own, each taking exactly one

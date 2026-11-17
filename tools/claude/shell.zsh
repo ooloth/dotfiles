@@ -38,15 +38,12 @@
 ###########
 
 # cc.bash picks the permission mode for this machine and adds the repo's related folders
-# TODO: consider auto at home after testing it at work for awhile (it uses more tokens)
-# TODO: at work, consider a granular allowList if risky actions sneak through or redundant model-checking token use is too wasteful or slow
 if is_work; then
   # Sessions at work use the work tools, so each start runs auth, which opens a browser login only
   # for each one whose check says it has expired. A check that can't reach its service opens
   # nothing, and the session starts either way. This adds about a second to each start, or up to 10
   # seconds when a service's check hangs. See decision 004's addenda. A `cc` or `ccc` alias already
-  # defined in the shell, such as one from a shell started before this file defined functions, would
-  # win over the functions.
+  # defined in the shell would win over the functions.
   unalias cc ccc 2>/dev/null
   function claude_work_logins {
     uv run --offline "${DOTFILES}/features/auth/auth.py"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Opens a Rex tab running Claude Code through cc.bash, so the tab's session gets this machine's
 # permission mode and the repo's related folders exactly as `cc` would give them. The launcher
-# never names a permission mode itself: cc.bash is the one place that decides it.
+# never names a permission mode itself, so cc.bash decides it.
 #
 # Run with: claude-tab.bash [-s <session>] <tab name> <directory> [claude arguments]
 # Unless -s names a session, the tab opens in the first session labelled exactly

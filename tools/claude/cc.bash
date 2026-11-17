@@ -8,8 +8,7 @@
 # files as current, while a hint lets the session check before relying on it.
 #
 # Run with: cc [claude arguments], or ccc to continue the last session. A first argument of
-# --unattended, which monitor-prs and orchestrate-rex pass through the Rex launcher for the tabs they
-# open, starts in auto mode on every machine.
+# --unattended starts in auto mode on every machine, for a session nobody watches as it starts.
 set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
@@ -76,10 +75,11 @@ main() {
   local claude_args=() org hints="" name
   # A session nobody watches as it starts, such as one monitor-prs opens to draft replies, reads
   # text other people wrote. It runs in auto mode on every machine, so a classifier checks each
-  # action and blocks one that looks driven by that text. Its posts and pushes wait on the skill's
-  # own approval step. Ask rules were tried and dropped: their prompts showed long gh commands cut
-  # short, which could not be reviewed. Auto mode approves a push to the session's own repo by
-  # itself, so against a session steered by what it read, the classifier is the only guard.
+  # action and blocks one that looks driven by that text. The skill's instructions hold its posts
+  # and pushes for approval, but auto mode itself approves a push to the session's own repo, so
+  # against a session steered by what it read, the classifier is the only guard that runs. Ask
+  # rules were tried and dropped: their prompts showed long gh commands cut short, which could not
+  # be reviewed.
   if [[ "${1:-}" == "--unattended" ]]; then
     shift
     mode="auto"

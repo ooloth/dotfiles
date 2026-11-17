@@ -17,5 +17,4 @@ Facts about what this repository may contain, because it is public on GitHub.
 - Commit messages, issue text and pull request text follow the first point too. History written
   before #230 was not rewritten.
 - Nothing checks these points. A check that held them needed more edge-case rules in bash than a
-  leak has cost so far, so the rule is kept by whoever writes a file. A check could come with the
-  move of the repo's scripts to Python (#203).
+  leak has cost so far, so the rule is kept by whoever writes a file.

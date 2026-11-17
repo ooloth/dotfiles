@@ -36,7 +36,7 @@ See README.md for the overview. Key points for Claude:
   `tools/logcli/` show a brew formula with no config.
 - Workflows that span tools live in `features/{feature}/`, as scripts with a `shell.zsh` that
   defines their aliases. A new script that is run is written in Python, per decision 007, except
-  the ones `CONTRIBUTING.md` names; most existing ones are still bash until #127 and #203 port them.
+  the ones `CONTRIBUTING.md` names; most existing ones are still bash.
 - `u` runs `features/update/tools.bash`. It first runs `features/update/preflight.bash`, which
   checks every tool's `preflight.bash` and stops `u` if one fails. Then it sets executable
   permissions (`features/update/mode.bash`), updates the symlinks

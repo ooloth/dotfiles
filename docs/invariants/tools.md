@@ -76,3 +76,6 @@ observations about typical practice.
   `utils.bash` on the Mac the tests run on. Every Brewfile evaluates on each machine, on its own
   and combined. Every Brewfile that asks `air?`, `mini?` or `work?` loads the helper. No Brewfile
   reads `networksetup`, `scutil`, `hostname` or `ENV`.
+- The committed `tools/claude/config/settings.json` holds `"CLAUDE_CODE_USE_VERTEX": ""`. On the
+  work laptop the working copy holds `"1"` while sessions use Vertex AI, and
+  `tools/claude/tests/test_settings.py` fails when the last commit holds it.

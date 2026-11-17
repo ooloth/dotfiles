@@ -38,8 +38,8 @@ therefore moves to `tools/uv/preflight.bash`, guarded by `is_work`, and
 ## Risk
 
 A concern that used to be caught by running `u` is now caught only where it is used. The
-credentials Vertex AI needs stop being checked by `u` the day uv no longer needs them, so the
-`cc` alias has to check them itself.
+credentials Vertex AI needs stop being checked by `u` the day uv no longer needs them, so `cc`
+has to check them itself.
 
 ## Revisit when
 
@@ -56,13 +56,13 @@ A failure that `u` used to catch starts surfacing late somewhere else.
 
 The maintainer chose not to add a gcloud credentials check to the `cc` alias. Nothing checks
 those credentials before a Claude session starts, so a session that needs them finds out when a
-`gcloud` command fails. `ccy-vertex` in `tools/claude/shell.zsh` still checks them before starting
+`gcloud` command fails. `cc-vertex` in `tools/claude/shell.zsh` still checks them before starting
 a Vertex AI session.
-The 2026-11-05 addendum below reverses this: `cc`, `ccc` and `ccy-vertex` all run `auth`.
+The 2026-11-05 addendum below reverses this: `cc`, `ccc` and `cc-vertex` all run `auth`.
 
 ## Addendum (2026-11-05) — `cc` checks the Google login again
 
-The maintainer chose to have `cc`, `ccc` and `ccy-vertex` on the work laptop check the work
+The maintainer chose to have `cc`, `ccc` and `cc-vertex` on the work laptop check the work
 logins before a session starts, which reverses the addendum above. Each runs `auth`
 (`features/auth/`), which checks the Google, Spacelift and Argo CD logins at once and opens a
 browser login only for each one whose check says it has expired. A check that can't reach its
