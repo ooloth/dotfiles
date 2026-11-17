@@ -354,6 +354,9 @@ sees how the change fits together to solve the problem:
 7. `## Recorded rules 📜`, only when Phase 2 found a cross-cutting property: for each one, the file
    in `docs/invariants/` or `docs/standards/` its entry goes in, and the entry's exact wording.
    Approving the design approves that wording, so the implementer writes it without stopping.
+8. `## Deferred ⏳`, only when the design found something worth doing that this work does not do,
+   such as a bug found on the way: what it is, the evidence for it, and why it falls outside this
+   work.
 
 Write for someone who wants to see how the change fits together to solve the problem, so they can
 read the diff with that picture in mind. The story is the change itself: how input becomes outcome,
