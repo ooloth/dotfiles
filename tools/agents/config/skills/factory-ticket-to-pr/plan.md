@@ -85,6 +85,14 @@ Then reconcile their outputs yourself:
    others rather than taken as given.
 4. Build one design from the reconciled result, not from any one run's design, and settle its open
    decisions under "Decisions nobody made".
+5. Spawn one subagent on Opus to attack the design's correctness plan, because a gap it misses shows
+   up only as surviving mutants once the code exists. Give it the approach comment's properties and
+   the reconciled design, and nothing from the runs that produced them. For each property, it names
+   concrete ways the property could break, and for each says what in the plan would stop it: a type
+   that makes it impossible, an assertion that halts on it, a recorded signal that shows it, or a
+   test that fails on it. A break nothing in the plan stops is a finding, under the same evidence
+   rule as the approach's attack. A real finding goes back into step 4 as whichever of a type, an
+   assertion, a signal or a test fits it best; "no evidence found" stands.
 
 If design needs an escalation, the approach comment stays on the ticket and the escalation comment
 follows it.

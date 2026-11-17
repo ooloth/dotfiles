@@ -87,6 +87,11 @@ one, and reports each in its summary. It never weakens or drops a planned test. 
 set up the way the design describes, it finds a setup that observes the same property and reports
 that under `PLAN CHANGES`.
 
+When the builder returns at red, open its saved output yourself. Confirm that each test of a
+behaviour the change adds fails with a message about that behaviour, and that each test of a
+behaviour the change must keep passes. A failure from an import error, a typo or a broken setup goes
+back to the builder before anything goes on to green.
+
 Don't commit the tests yet: every commit holds passing work, and some repos refuse any other. Copy
 the test files into `red/` in the artifacts directory, so step 3 can be checked against them. Keep
 the builder's agent ID: every later step that changes the tests or the implementation goes back to
@@ -107,14 +112,17 @@ this check.
 
 ## 4. Audit the plan against the work
 
-Make a table of every test, assertion and telemetry item in the design comment, each with the file
-and line that implements it and the artifacts showing it fail and then pass. Confirm each location
-with `grep` or `git` yourself rather than taking it from a summary. A row you cannot fill is
-unfinished work: a missing test, assertion or signal goes back to the builder. A planned item that
+Make a table with one row per item of the design comment's correctness plan: each step of the type
+progression, each assertion, each telemetry entry and each test. Each row gives the file and line
+that implements it and shows it does what the design says: for a type step, the code that makes
+impossible what the design says that step rules out; for an assertion, its condition and site; for a
+telemetry entry, what it records and where; for a test, the artifacts showing it fail and then pass.
+Confirm each row yourself with `grep`, `git` or by reading the code, rather than taking it from a
+summary. A row you cannot fill is unfinished work and goes back to the builder. A planned item that
 was deliberately left out is an escalation.
 
-Then prove each property's tests can fail, with mutants chosen by someone other than the person who
-wrote the tests. Spawn a **mutant** subagent. Give it the repo path, the check commands and the
+Then prove each property's protection can fail, with mutants chosen by someone other than the person
+who wrote the tests. Spawn a **mutant** subagent. Give it the repo path, the check commands and the
 approach comment's **What a good fix must achieve**, **Assumptions** and **Constraints**. Tell it
 not to open the test files, so its mutants aim at where the property could break rather than at what
 the tests already cover.
@@ -122,16 +130,17 @@ the tests already cover.
 For each property, it breaks the implementation in every kind of place that property depends on:
 each instance of a cross-cutting property (every command, every branch, every machine), not one
 representative. After each break it runs the tests that load the changed file, found with
-`grep -rl <file name>` over the test files without opening them, and records whether they went
-red. A mutant those tests miss is run once more against the full suite before it counts as a
-survivor, because a test elsewhere may catch it. Then it restores the file with
-`git checkout -- <file>` and confirms `git status` is clean. It reports each mutant and whether it
-was caught.
+`grep -rl <file name>` over the test files without opening them, and records whether they went red.
+A mutant also counts as caught when the type checker rejects it or an assertion fires, since the
+design may protect a property by a type or an assertion instead of a test. A mutant those tests miss
+is run once more against the full suite before it counts as a survivor, because a test elsewhere may
+catch it. Then it restores the file with `git checkout -- <file>` and confirms `git status` is
+clean. It reports each mutant and whether it was caught.
 
-A mutant the suite misses means a test is too weak. Send the survivors to the builder with
-SendMessage. It strengthens the tests, and the survivors are run again until all are
-caught. Commit any strengthened tests, refresh their copies in `red/`, and confirm the
-implementation still passes them.
+A mutant nothing catches means the protection is too weak. Send the survivors to the builder with
+SendMessage. It strengthens the tests, and the survivors are run again until all are caught. Commit
+any strengthened tests, refresh their copies in `red/`, and confirm the implementation still passes
+them.
 
 ## 5. Commit and check again
 
