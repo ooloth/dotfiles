@@ -81,16 +81,19 @@ still runs the full suite unless the script says otherwise.
    paths this session changed, because another session may share this checkout, and a plain
    `git commit` also commits whatever that session has staged. Commit whole files with
    `git commit -F <message file> -- <path>...`, which commits those paths and leaves everything
-   else in the index alone. It refuses an untracked file, so add each new file by name first with
-   `git add -- <path>...`, which stages only those paths. Write the message file into a new
-   `mktemp -d` directory, so a session committing at the same time can't overwrite it. To commit
-   part of a file, see "Workflows > Committing part of a file". Never run `git commit` without
-   paths, `git commit -a`, or `git add -A`, except to conclude a merge, as "Workflows >
-   Concluding a merge" describes.
+   else in the index alone. List those paths with `--no-renames`, such as
+   `git diff --cached --name-only --no-renames HEAD`, because a rename-detecting list names only a
+   rename's target and the commit then leaves the source's deletion staged. A path-limited commit
+   refuses an untracked file, so add each new file by name first with `git add -- <path>...`, which
+   stages only those paths. Write the message file into a new `mktemp -d` directory, so a session
+   committing at the same time can't overwrite it. To commit part of a file, see "Workflows >
+   Committing part of a file". Never run `git commit` without paths, `git commit -a`, or
+   `git add -A`, except to conclude a merge, as "Workflows > Concluding a merge" describes.
 5. After each commit, run `git show --stat --format=%h HEAD` and confirm it lists only the paths you
-   meant to commit. Note the hash. If it lists another path, or a later check shows `HEAD` is not
-   the commit you made, stop and tell the user rather than fixing it, because another session may
-   already have committed on top.
+   meant to commit. When the checks ran on a staged tree, compare `git rev-parse HEAD^{tree}` with
+   that tree; a different tree means the commit is not what was checked. Note the hash. If it lists
+   another path, or a later check shows `HEAD` is not the commit you made, stop and tell the user
+   rather than fixing it, because another session may already have committed on top.
 6. Never reset or amend relative to `HEAD` (`HEAD~1`, `--amend`). Between two commands another
    session can commit, and the command then rewrites its commit instead of yours. If the user
    approves undoing your commit, first check that `git rev-parse HEAD` is the hash you noted, then
