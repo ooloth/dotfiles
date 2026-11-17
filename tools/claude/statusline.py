@@ -26,6 +26,10 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime, tzinfo
 from enum import Enum, StrEnum
+from pathlib import Path
+
+# Beside this file, which Python puts first on the import path when it runs a script
+import provider_switch
 
 
 class Colour(StrEnum):
@@ -381,10 +385,32 @@ def _usage_segments(
     return segments
 
 
+def _provider_segments(
+    vertex_until: float | None, switch_failed: bool, now: float, zone: tzinfo | None
+) -> list[Segment]:
+    """Whether sessions are on Vertex AI rather than the subscription, and until when. Nothing while
+    they use the subscription."""
+    if switch_failed:
+        return [Segment("switch failed", Colour.RED), Segment(GROUP_SEPARATOR)]
+    if vertex_until is None:
+        return []
+    return [
+        Segment("Vertex AI", Colour.YELLOW),
+        Segment(f" until {provider_switch.clock(vertex_until, now, zone)}", Colour.DIM),
+        Segment(GROUP_SEPARATOR),
+    ]
+
+
 def compose_line(
-    session: Session, checkout: Checkout, now: float, zone: tzinfo | None
+    session: Session,
+    checkout: Checkout,
+    now: float,
+    zone: tzinfo | None,
+    vertex_until: float | None = None,
+    switch_failed: bool = False,
 ) -> StatusLine:
-    """The line's segments. `zone` sets the time zone reset times are shown in: None is local."""
+    """The line's segments. `zone` sets the time zone reset times are shown in: None is local.
+    `vertex_until` is when sessions move back from Vertex AI, or None while on the subscription."""
     left = [Segment(f"{FOLDER_ICON}  {checkout.location}")]
     git_segments = _git_segments(checkout)
     if git_segments:
@@ -392,6 +418,7 @@ def compose_line(
 
     context = session.context
     right = [
+        *_provider_segments(vertex_until, switch_failed, now, zone),
         Segment(session.model_name),
         Segment(f" {_tokens(context.window_k)}", Colour.DIM),
         Segment(GROUP_SEPARATOR),
@@ -430,9 +457,28 @@ def parse_columns(value: str | None) -> int | None:
     return int(value) if value is not None and re.fullmatch(r"[0-9]+", value) else None
 
 
+def tick_provider(session: Session, now: float) -> tuple[float | None, bool]:
+    """Move sessions between the subscription and Vertex AI as the switch's state says. Returns when
+    sessions move back from Vertex AI, or None while on the subscription, and whether the switch
+    failed. A failure shows on the line, which has nowhere else to report it, and the line still
+    renders."""
+    resets = {w.kind.key: w.resets_at for w in session.usage if w.resets_at is not None}
+    try:
+        switch = provider_switch.tick(
+            now, resets, provider_switch.Paths.under(Path.home()), os.environ
+        )
+    except Exception:  # any failure, so the line renders whatever went wrong
+        return None, True
+    return (switch.until if isinstance(switch, provider_switch.OnVertex) else None), False
+
+
 def main() -> None:
     session = parse_session(sys.stdin.read())
-    line = compose_line(session, read_checkout(session.directory), time.time(), None)
+    now = time.time()
+    vertex_until, switch_failed = tick_provider(session, now)
+    line = compose_line(
+        session, read_checkout(session.directory), now, None, vertex_until, switch_failed
+    )
     print(render(line, parse_columns(os.environ.get("COLUMNS"))))
 
 

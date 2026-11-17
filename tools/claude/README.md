@@ -16,3 +16,22 @@ whose credentials have expired.
 `settings.json` runs `statusline.py` by its path in this repo. It shows the location and git state
 on the left, and the model, the context used and the subscription's 5-hour and 7-day limits on the
 right. `CONTRIBUTING.md` says how to try a change to it by hand.
+
+## Moving sessions to Vertex AI
+
+On the work laptop, every session `cc.bash` starts (`cc`, `ccc`, `cc-vertex` and Rex tabs) can use
+Vertex AI instead of the subscription, so work can go on when the subscription's usage limit is
+reached. A session started another way has no Vertex AI project and fails while sessions are on
+Vertex AI. `CLAUDE_CODE_USE_VERTEX` in the `env` block of
+`settings.json` is the switch: `"1"` means Vertex AI and `""` the subscription. Claude Code reloads
+the file in every running session, so they all move together, from their next prompt.
+
+`provider_switch.py` keeps which one sessions should use in `~/.local/state/claude/provider.json`,
+with the time they move back from Vertex AI. The status line applies that state to `settings.json`
+on every refresh, moves sessions back once the time passes, and shows `Vertex AI until <time>`
+meanwhile. Run `! cc-switch` in a session to see which one they use, `! cc-switch vertex` to move
+them until the 5-hour limit resets, or `! cc-switch subscription` to move them back.
+
+`cc-vertex` starts a single session that stays on Vertex AI whatever the switch says. A commit
+must never hold the switch at `"1"`, since personal Macs have no Vertex AI project:
+`tests/test_settings.py` checks the last commit.

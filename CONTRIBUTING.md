@@ -105,6 +105,8 @@ Then run what you changed. Tests passing is not evidence that it works:
 
   A session's own status line runs the main checkout's copy, because `settings.json` names it by
   that path, so a change in a worktree shows there only once it reaches the main checkout.
+  On the work laptop, each run also applies the Vertex AI switch's saved state to `settings.json`,
+  as every session's status line does on each refresh (see `tools/claude/README.md`).
 - **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
   aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
   interactive zsh, keeping the variables Claude Code needs to find its login:

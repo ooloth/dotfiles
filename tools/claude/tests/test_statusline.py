@@ -51,6 +51,8 @@ FOLDER_ICON = "\uf07b  "  # nf-fa-folder, then two spaces because Rex draws it w
 
 
 def load_script() -> ModuleType:
+    # Running as a script puts its folder on the import path, where it finds provider_switch.py
+    sys.path.insert(0, str(TOOL))
     spec = importlib.util.spec_from_file_location("statusline", SCRIPT)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -788,6 +790,52 @@ class OddPayloadNumbers(unittest.TestCase):
         )
         line = STATUSLINE.render(STATUSLINE.compose_line(session, checkout, NOW, ZONE), 120)
         self.assertIn("claude-opus-5-5", visible(line))
+
+
+class ProviderSwitch(unittest.TestCase):
+    """The status line moves sessions between the subscription and Vertex AI, and shows which."""
+
+    def line_for(self, vertex_until: float | None, switch_failed: bool = False) -> str:
+        session = STATUSLINE.parse_session(json.dumps({"model": {"id": "claude-opus-5-5"}}))
+        checkout = STATUSLINE.Checkout(
+            location="repo", branch=None, behind=0, ahead=0, insertions=0, deletions=0
+        )
+        line = STATUSLINE.compose_line(session, checkout, NOW, ZONE, vertex_until, switch_failed)
+        return visible(STATUSLINE._render(line.right))
+
+    def test_on_vertex_the_line_says_so_and_until_when(self) -> None:
+        self.assertEqual(
+            self.line_for(at(15, 13)), "Vertex AI until 1pm · claude-opus-5-5 200K · 0K"
+        )
+
+    def test_on_the_subscription_the_line_says_nothing_about_it(self) -> None:
+        self.assertEqual(self.line_for(None), "claude-opus-5-5 200K · 0K")
+
+    def test_a_failed_switch_shows_on_the_line(self) -> None:
+        self.assertEqual(
+            self.line_for(None, switch_failed=True), "switch failed · claude-opus-5-5 200K · 0K"
+        )
+
+    def tick(self, home: Path) -> tuple[float | None, bool]:
+        session = STATUSLINE.parse_session(json.dumps({"model": {"id": "claude-opus-5-5"}}))
+        env = {"HOME": str(home), "ANTHROPIC_VERTEX_PROJECT_ID": "example-vertex-1234"}
+        with mock.patch.dict(os.environ, env):
+            return STATUSLINE.tick_provider(session, NOW)
+
+    def test_a_corrupt_state_file_reads_as_the_subscription(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            state = Path(folder) / ".local" / "state" / "claude" / "provider.json"
+            state.parent.mkdir(parents=True)
+            state.write_text("{not json")
+
+            self.assertEqual(self.tick(Path(folder)), (None, False))
+
+    def test_a_switch_that_cannot_write_its_state_reports_a_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            # A file where the state folder should be, so the lock cannot be created
+            (Path(folder) / ".local").write_text("")
+
+            self.assertEqual(self.tick(Path(folder)), (None, True))
 
 
 class Settings(unittest.TestCase):

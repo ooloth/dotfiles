@@ -32,12 +32,6 @@
 # `model` (https://code.claude.com/docs/en/model-config#setting-your-model), but only for sessions
 # started from zsh, such as `cc`.
 
-# Every work session can use Vertex AI, so CLAUDE_CODE_USE_VERTEX in settings.json can move it
-# there when the subscription's usage limit is reached. cc.bash exports the same for sessions it
-# starts, which Rex tabs reach without reading this file.
-if is_work && [[ -n "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
-  export ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT}" CLOUD_ML_REGION=global
-fi
 
 ###########
 # ALIASES #
@@ -71,6 +65,15 @@ else
 fi
 
 if is_work; then
+  # Moves every session to Vertex AI or back, or with no argument says which one they use. The
+  # status line does this on its own when the subscription's usage limit is reached; this is for
+  # when it doesn't, or to move early. Run it in a session as `! cc-switch`.
+  cc-switch() {
+    # A session's own shell inherits the project from cc.bash; a terminal outside one does not
+    ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT:-}" \
+      uv run --offline --script "${DOTFILES}/tools/claude/provider_switch.py" "$@"
+  }
+
   # Starts a session that stays on Vertex AI whatever the switch in settings.json says. It starts
   # through cc.bash, so it gets the permission mode, related repos and Vertex AI project `cc` gets.
   # Vertex AI is chosen with --settings, which outranks the user settings file.
