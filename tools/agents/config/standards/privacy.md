@@ -16,6 +16,10 @@ If the purpose disappears, the data is deleted.
 
 ## Should
 
+**Log redaction runs in the log formatter, the one place every entry passes, rather than at call
+sites or in per-library filters, and it never asserts at run time, because a failure inside logging
+prints the raw record.**
+
 **Data collection is minimal.**
 The system collects the least personal data needed to deliver its value.
 Fields that are not actively used are not stored.
