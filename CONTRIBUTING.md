@@ -30,6 +30,10 @@ uv run scripts/checks/docs.py                 # Markdown prose wraps at 100 colu
 /bin/bash scripts/checks/tests.bash <file>... # only these test files, with the same dependencies
 ```
 
+On a Mac the tests also need Homebrew's bash, which `tools/bash/Brewfile` installs, or
+`brew install bash`. The tests of how `tools/bash/utils.bash` stops run it as well as `/bin/bash`,
+and they fail without it.
+
 The tests run across every core with pytest-xdist and print the ten slowest, and `check` prints
 how long each category took. pytest ignores a test file's inline script header, so `tests.bash`
 installs each header with `uv run --with-requirements`, and a test file in a `tests/` folder with

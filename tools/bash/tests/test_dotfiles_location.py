@@ -7,9 +7,10 @@
 Run with: uv run tools/bash/tests/test_dotfiles_location.py
 
 tools/bash/utils.bash sets DOTFILES from its own location, spelled as the install path
-(~/Repos/ooloth/dotfiles under HOME) when the checkout is the install. Each test runs under macOS's
-own bash 3.2 with a temporary HOME, and sets COMPUTER so tools/macos/utils.bash does not ask
-networksetup which Mac this is. The tests of how utils.bash stops also run under Homebrew's bash.
+(~/Repos/ooloth/dotfiles under HOME) when the checkout is the install. The tests that run bash use
+/bin/bash, which is 3.2 on macOS, with a temporary HOME, and set COMPUTER so tools/macos/utils.bash
+does not ask networksetup which Mac this is. The tests of how utils.bash stops also run a bash 4 or
+newer.
 """
 
 from __future__ import annotations
@@ -227,8 +228,9 @@ class HowDotfilesIsSpelled(unittest.TestCase):
         self.assertEqual(self.dotfiles_after_sourcing(REPO / "tools/bash/utils.bash"), str(REPO))
 
 
-# Homebrew's bash, which runs every `#!/usr/bin/env bash` script on a Mac with it installed, at the
-# opt path Homebrew keeps whether or not `brew link` put it on PATH (Apple silicon, then Intel)
+# Homebrew's bash, which runs every `#!/usr/bin/env bash` script when it comes first on PATH, as
+# `brew install bash` puts it on this Mac. It is found at the opt path Homebrew keeps whether or not
+# `brew link` put it on PATH (Apple silicon, then Intel).
 HOMEBREW_BASHES = ("/opt/homebrew/opt/bash/bin/bash", "/usr/local/opt/bash/bin/bash")
 
 
@@ -251,15 +253,17 @@ def newer_bash() -> str | None:
 
 class UtilsOutsideACheckout(unittest.TestCase):
     """utils.bash in a folder whose ../.. holds no tools/bash/utils.bash, so its DOTFILES check
-    fails and it must stop there, whether it was run or sourced, under each bash a script meets:
-    /bin/bash, which is 3.2 on macOS, and a bash 4 or newer."""
+    fails and it must stop there, whether it was run or sourced, under each bash a script meets.
+    On macOS that is /bin/bash 3.2 and Homebrew's bash. On Linux /bin/bash is already 4 or newer,
+    so it is the only bash run."""
 
     def setUp(self) -> None:
         newer = newer_bash()
         if newer is None:
             self.fail(f"No bash 4 or newer at {' or '.join(HOMEBREW_BASHES)}: brew install bash")
         self.assertGreaterEqual(bash_major_version(newer), 4, newer)
-        self.bashes = ("/bin/bash", newer)
+        # On Linux both are /bin/bash, which then runs once
+        self.bashes = tuple(dict.fromkeys(("/bin/bash", newer)))
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
