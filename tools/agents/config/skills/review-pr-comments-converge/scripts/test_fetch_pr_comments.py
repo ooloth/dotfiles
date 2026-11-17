@@ -4,7 +4,9 @@ The script runs as a subprocess, never imported, so it stays a single file. A fa
 serves canned GraphQL pages from a fixture, keyed by the cursor variables the script sends, so no
 test can reach GitHub. Each cursor is `<list>:<page index>`, which lets a test see exactly which
 page each request asked for. Every page also carries the viewer (the gh login) and the PR's
-author, which default to `me`, so a fixture names them only when a test is about them.
+author, which default to `me`, so a fixture names them only when a test is about them. Like
+GitHub, the fake returns only the fields the script's query names, so a field the script reads
+without requesting it is missing here too.
 
 Field names in the fixtures are GitHub's own (`state`, `createdAt`, `lastEditedAt`, `submittedAt`,
 `resolvedBy`), so the script reads them as it would read a real response.
@@ -74,7 +76,47 @@ pull_request["author"] = fixture.get("pr_author", {"login": "me", "__typename": 
 data = {"repository": {"pullRequest": pull_request}}
 if not fixture.get("omit_viewer"):
     data["viewer"] = fixture.get("viewer", {"login": "me"})
-print(json.dumps({"data": data}))
+
+
+def selection(query):
+    # The fields the query names, as nested dicts: arguments, variable definitions and directives
+    # are dropped, leaving names and braces.
+    kept, depth = [], 0
+    for ch in query:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        elif depth == 0:
+            kept.append(ch)
+    tokens = "".join(kept).replace("{", " { ").replace("}", " } ").split()
+    tokens = [token for token in tokens if not token.startswith("@")]
+
+    def fields(i):
+        found = {}
+        while tokens[i] != "}":
+            name = tokens[i]
+            if tokens[i + 1] == "{":
+                found[name], i = fields(i + 2)
+            else:
+                found[name], i = None, i + 1
+        return found, i + 1
+
+    return fields(tokens.index("{") + 1)[0]
+
+
+def prune(value, fields):
+    if fields is None or value is None:
+        return value
+    if isinstance(value, list):
+        return [prune(item, fields) for item in value]
+    return {key: prune(value[key], sub) for key, sub in fields.items() if key in value}
+
+
+# Like GitHub, answer only with what the query asks for, so a field the script reads but never
+# requests reaches it as missing, here as it would in a real run.
+query = next(arg[len("query="):] for arg in args if arg.startswith("query="))
+print(json.dumps({"data": prune(data, selection(query))}))
 """
 
 
@@ -1293,6 +1335,28 @@ def unjudgeable_review() -> dict:
         pytest.param(pr(omit_viewer=True), ["viewer"], id="no-viewer"),
         pytest.param(pr(viewer=None), ["viewer"], id="null-viewer"),
         pytest.param(pr(viewer={}), ["viewer"], id="viewer-without-a-login"),
+        pytest.param(pr(viewer={"login": ""}), ["viewer"], id="viewer-with-an-empty-login"),
+        pytest.param(
+            pr(comments=[{**conversation(9001, "Hi."), "lastEditedAt": 123}]),
+            ["9001", "edited"],
+            id="edit-time-that-is-not-a-string",
+        ),
+        pytest.param(
+            pr(comments=[{**conversation(9001, "Hi."), "createdAt": None}]),
+            ["9001", "created"],
+            id="conversation-comment-with-no-created-time",
+        ),
+        pytest.param(
+            pr(
+                [
+                    thread_of(
+                        [thread_comment(101, at=ts(0)), {**thread_comment(102), "createdAt": None}]
+                    )
+                ]
+            ),
+            ["102", "created"],
+            id="posted-thread-comment-with-no-created-time",
+        ),
         pytest.param(
             pr([thread_of([thread_comment(101, at=ts(0)), thread_comment(102, at="yesterday")])]),
             ["102", "created"],
@@ -1329,6 +1393,166 @@ def test_a_fetch_that_cannot_judge_an_item_prints_nothing_and_exits_with_a_sente
     for name in names:
         options = name if isinstance(name, tuple) else (name,)
         assert any(o in result.stderr.lower() for o in options), (name, result.stderr)
+
+
+# Edges the examples above left open
+
+
+def test_editing_the_reply_does_not_move_it_after_a_later_follow_up(harness: Harness) -> None:
+    # The reply counts from when it was posted. Its later edit does not answer a follow-up that
+    # came between the two.
+    comments = [
+        thread_comment(101, review_id=1, at=ts(0)),
+        thread_comment(102, "Done.", by=ME, at=ts(1), edited=ts(3)),
+        thread_comment(103, "Not quite.", at=ts(2)),
+    ]
+    stdout = run_ok(harness, pr([thread_of(comments)], [review(1, "")]))
+
+    assert verdict_of(stdout, "thread", 101) == "no"
+
+
+@pytest.mark.parametrize(
+    "edited", [pytest.param(ts(2), id="in-the-same-second"), pytest.param(ts(4), id="later")]
+)
+def test_an_earlier_answerer_reply_edited_at_or_after_the_latest_reopens_the_thread(
+    harness: Harness, edited: str
+) -> None:
+    # The rule compares the latest reply with every other comment, answerers' own included.
+    comments = [
+        thread_comment(101, review_id=1, at=ts(0)),
+        thread_comment(102, "Partly done.", by=ALICE, at=ts(1), edited=edited),
+        thread_comment(103, "Done.", by=ME, at=ts(2)),
+    ]
+    stdout = run_ok(harness, pr([thread_of(comments)], [review(1, "")], pr_author=ALICE))
+
+    assert verdict_of(stdout, "thread", 101) == "no"
+
+
+@pytest.mark.parametrize(
+    ("by", "expected"),
+    [
+        pytest.param(REVIEWER, "no", id="from-a-reviewer"),
+        pytest.param(ME, "n/a (yours)", id="from-the-author"),
+    ],
+)
+def test_a_review_with_a_body_and_no_submit_time_is_judged_by_its_author(
+    harness: Harness, by: dict, expected: str
+) -> None:
+    unsubmitted = {**review(1, "Please fix.", by=by, at=ts(0)), "submittedAt": None}
+    fixture = pr(reviews=[unsubmitted], comments=[conversation(9002, "Fixed.", by=ME, at=ts(5))])
+
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "review", 1) == expected
+
+
+def test_a_bot_with_the_viewers_login_is_not_the_viewer(harness: Harness) -> None:
+    # The viewer is a person; a bot account that happens to share the login is someone else.
+    namesake = author("me", "Bot")
+    thread_comments = [
+        thread_comment(101, review_id=1, at=ts(0)),
+        thread_comment(102, "Done.", by=namesake, at=ts(5)),
+    ]
+    fixture = pr(
+        [thread_of(thread_comments)],
+        [review(1, "")],
+        [conversation(9001, "Bot note.", by=namesake, at=ts(1))],
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "thread", 101) == "no"
+    assert verdict_of(stdout, "conversation", 9001) == "no"
+
+
+def test_a_review_answers_from_when_it_was_submitted_not_when_it_was_started(
+    harness: Harness,
+) -> None:
+    # Started before the feedback and submitted after it, so it answers it.
+    answer = {**review(2, "Fixed.", by=ME, at=ts(2)), "createdAt": ts(0)}
+    fixture = pr(
+        reviews=[answer], comments=[conversation(9001, "Please fix.", by=REVIEWER, at=ts(1))]
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert (
+        verdict_of(stdout, "conversation", 9001) == "yes (review 2 by me at 2026-10-01T12:00:02Z)"
+    )
+
+
+def test_a_pending_review_with_a_submit_time_does_not_answer(harness: Harness) -> None:
+    pending = {**review(2, "Draft answer.", by=ME, state="PENDING", at=ts(5)), "submittedAt": ts(5)}
+    fixture = pr(
+        reviews=[pending], comments=[conversation(9001, "Please fix.", by=REVIEWER, at=ts(0))]
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "conversation", 9001) == "no"
+    assert verdict_of(stdout, "review", 2) == "n/a (yours)"
+
+
+def test_the_earliest_answer_is_chosen_by_when_it_was_posted_not_last_edited(
+    harness: Harness,
+) -> None:
+    fixture = pr(
+        comments=[
+            conversation(9001, "Please fix.", by=REVIEWER, at=ts(0)),
+            conversation(9002, "Fixed.", by=ME, at=ts(1), edited=ts(3)),
+            conversation(9003, "Also this.", by=ME, at=ts(2)),
+        ]
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "conversation", 9001) == (
+        "yes (conversation comment 9002 by me at 2026-10-01T12:00:01Z)"
+    )
+
+
+def test_the_evidence_gives_when_the_answer_was_posted_not_last_edited(harness: Harness) -> None:
+    thread_comments = [
+        thread_comment(101, review_id=1, at=ts(0)),
+        thread_comment(102, "Done.", by=ME, at=ts(5), edited=ts(9)),
+    ]
+    fixture = pr(
+        [thread_of(thread_comments)],
+        [review(1, "Please fix.", at=ts(0))],
+        [conversation(9002, "Fixed.", by=ME, at=ts(5), edited=ts(9))],
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "thread", 101) == "yes (reply 102 by me at 2026-10-01T12:00:05Z)"
+    assert verdict_of(stdout, "review", 1) == (
+        "yes (conversation comment 9002 by me at 2026-10-01T12:00:05Z)"
+    )
+
+
+def test_a_thread_counts_as_resolved_only_when_github_says_it_is(harness: Harness) -> None:
+    # resolvedBy can outlive an unresolve, and is null when the resolver's account was deleted.
+    unresolved = {**thread_of([thread_comment(101, review_id=1, at=ts(0))]), "resolvedBy": ME}
+    by_deleted = {
+        **thread_of([thread_comment(201, review_id=1, at=ts(0))]),
+        "isResolved": True,
+        "resolvedBy": None,
+    }
+    stdout = run_ok(harness, pr([unresolved, by_deleted], [review(1, "")]))
+
+    assert verdict_of(stdout, "thread", 101) == "no"
+    assert verdict_of(stdout, "thread", 201) == "yes (resolved by ghost)"
+
+
+def test_a_finished_list_is_not_requested_again(harness: Harness) -> None:
+    fixture = {
+        "threads": [[thread(101, "first", review_id=1)], [thread(201, "second", review_id=1)]],
+        "reviews": [[review(1, "Body.")]],
+        "comments": [[conversation(9001, "Hi.")]],
+    }
+
+    run_ok(harness, fixture)
+
+    calls = harness.calls()
+    assert len(calls) == 2
+    second = calls[1]
+    for flag in ("withThreads=true", "withReviews=false", "withComments=false"):
+        assert flag in second, (flag, second)
 
 
 # Generated timelines
