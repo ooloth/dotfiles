@@ -310,3 +310,12 @@ List each candidate with why it qualifies, and each one you left out with why. R
 user confirms, with `git worktree remove` and then `git branch -D`, never by deleting folders.
 `-D` is needed because a squash merge leaves the branch's commits out of trunk, so `-d` always
 refuses; the check above, that the tip is one of the PR's own commits, is what makes it safe.
+
+Once the last report of the run is posted, offer to delete the merge's evidence folder,
+`~/Repos/agents/prove-it-works/<owner>-<repo>/<merge commit>/`, and the PR head commit's folder
+there if the before state was saved in it. The last report is the production watch's summary when
+the user accepts a watch, and the proof's once they decline one or none is offered, so while a watch
+offer waits for its answer, this offer waits too. The posted reports are the record people read, and
+nothing reads the raw files afterwards. Offer it with the same "serving" and proven condition as
+the branches, because a failed or unproven change is debugged from those files. Delete the folders
+only when the user confirms, and never while a watch still writes to them.
