@@ -27,9 +27,12 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
    for `create-pr` to report. In an unattended run, ask nothing and leave out what you can't find
    without mentioning it. Otherwise, ask the user for what you can't find (Jira URL, Slack thread),
    and for a screen recording of a UI change.
-4. Draft using voice rules below, and a title: one line, in plain words, saying what the PR
+4. For each screenshot or recording the proof cites, open it and check it shows what its claim
+   says and nothing secret, then upload it as `use-gh` describes and use the returned URL. List a
+   file in `missing.txt` only when its upload is refused, with the error.
+5. Draft using voice rules below, and a title: one line, in plain words, saying what the PR
    changes.
-5. Write the title, the body and any `missing.txt` to files in a new directory, and hand the
+6. Write the title, the body and any `missing.txt` to files in a new directory, and hand the
    directory's path back to the caller:
    1. Run `mktemp -d` and note the directory it prints. It is new on every run, so another
       session writing a PR body at the same time can't overwrite it.
@@ -38,7 +41,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
       When step 3 left something out, write each missing item to `missing.txt`, one per line. Read
       them back before handing the path back.
    3. This skill does not open the PR. `create-pr` opens it with these files. To update an
-      existing PR, run `gh pr edit <n> --body-file <dir>/pr-body.md`.
+      existing PR, run `gh pr edit <n> -R <owner>/<repo> --body-file <dir>/pr-body.md`.
 
 **Self-check before handing the path back:**
 

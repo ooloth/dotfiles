@@ -25,16 +25,28 @@ this skill asks nothing there and puts what it would have asked in its final rep
    branch name, the commits, or the ticket the session's task is on. A key that only appears as a
    related link is not the ticket. If more than one ticket fits, or none does, ask when the user
    ran this skill. Otherwise treat it as no ticket and name the candidates in the final report.
-5. Check whether the branch already has a PR with `gh pr list --head <branch> --json number,url`.
+5. Check whether the branch already has a PR with
+   `gh pr list -R <owner>/<repo> --head <branch> --json number,url`.
 6. Use the `write-pr-description` skill, passing it the ticket from step 4, to write the title and
-   body to files following my voice guide. Then:
-   - With no PR yet, create it as a draft:
-     `gh pr create --draft --title "$(cat <dir>/title.txt)" --body-file <dir>/pr-body.md`, using
-     the full path of the directory the skill names. Reading the title through `$(cat ...)` keeps
-     backticks in it literal. Note the PR number and URL it prints.
-   - With a PR already open, update it with
-     `gh pr edit <n> --title "$(cat <dir>/title.txt)" --body-file <dir>/pr-body.md`, and skip step
-     7, because the ticket was linked when the PR opened.
+   body to files following my voice guide. Then put both in one request file, using the full path
+   of the directory the skill names:
+
+   ```sh
+   jq -n --rawfile title <dir>/title.txt --rawfile body <dir>/pr-body.md \
+     --arg head <branch> --arg base <base> \
+     '{title: ($title | rtrimstr("\n")), body: $body, head: $head, base: $base, draft: true}' \
+     > <dir>/pr.json
+   ```
+
+   The title then reaches GitHub from the file, not retyped into a command, and each command below
+   is one plain call with literal paths, as `use-gh` asks of anything that posts.
+   - With no PR yet, create it as a draft with `gh api repos/<owner>/<repo>/pulls --input
+     <dir>/pr.json --jq '.number, .html_url'`, and note the number and URL it prints.
+   - With a PR already open, update its title and body with
+     `gh api -X PATCH repos/<owner>/<repo>/pulls/<n> --input <dir>/pr.json --jq .html_url`, and skip
+     step 7, because the ticket was linked when the PR opened. The update endpoint takes neither
+     `head` nor `draft` and ignores both (seen 2026-11-17 on a draft PR), so only the title and
+     body change.
    - If `<dir>/missing.txt` exists, keep its lines for the final report.
 7. If the ticket is a Jira, Linear or Monday ticket, post one comment on it. On Jira through the
    MCP tool it is `Draft PR: [<owner>/<repo>#<n>](<PR URL>)`, because Jira posts a bare URL as text

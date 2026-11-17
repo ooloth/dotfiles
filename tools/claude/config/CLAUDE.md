@@ -103,11 +103,12 @@ more so, since they cannot be locally reverted. Approval for one kind of side ef
 transfer to another: being approved to edit files does not mean you're also approved to post a
 ticket comment about it, even in the same already-approved task — check separately. There are
 four exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and
-design also approves the commits, the push and the draft PR that section describes, the one-line
-comment linking that PR on its ticket, each entry in a repo's own `docs/invariants/` (or
-`docs/guarantees/`) or `docs/standards/` whose exact wording the approved design shows, and
-applying the fixes `wrap-up-codebase` returns, on any branch, in the same turn as its questions. It
-approves nothing beyond them. Another is `merge-and-verify`, which starts only on my own words: a
+design also approves the commits, the push and the draft PR that section describes, the evidence
+uploaded into its description, the one-line comment linking that PR on its ticket, each entry in a
+repo's own `docs/invariants/` (or `docs/guarantees/`) or `docs/standards/` whose exact wording the
+approved design shows, and applying the fixes `wrap-up-codebase` returns, on any branch, in the same
+turn as its questions. It approves nothing beyond them. Another is `merge-and-verify`, which starts
+only on my own words: a
 typed `/merge-and-verify`, a message of mine asking to merge one PR or saying I merged one, or my
 approval of that PR's merge in an orchestrator's session. Its description lists what does not start
 it. Invoking it
