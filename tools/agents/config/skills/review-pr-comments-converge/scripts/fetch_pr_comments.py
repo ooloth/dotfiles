@@ -37,8 +37,8 @@ account never is one.
     where GitHub would render it as a mention for a person, the BOT_NAMES name standing on its own
     for a bot, not as part of a word, path or file name, either in any case), as a post opening with
     the item's `thank` line does. One such post answers every earlier review body and conversation
-    comment from that author, not only the one it replies to. A deleted or UNKNOWN author cannot be addressed, so no top-level post answers
-    their items. A same-second tie counts as new feedback.
+    comment from that author, not only the one it replies to. A deleted or UNKNOWN author cannot be
+    addressed, so no top-level post answers their items. A same-second tie counts as new feedback.
   - `no` means nothing answered it yet.
   - `n/a (yours)` marks an item only answerers wrote.
 Pending (unsubmitted) posts never answer anything, and neither does the empty review GitHub creates
