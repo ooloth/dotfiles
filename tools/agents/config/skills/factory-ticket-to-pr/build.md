@@ -125,9 +125,12 @@ mutants aim at where the property could break rather than at what the tests alre
 
 For each property, it breaks the implementation in every kind of place that property depends on:
 each instance of a cross-cutting property (every command, every branch, every machine), not one
-representative. After each break it runs the full suite, records whether it went red, restores the
-file with `git checkout -- <file>` and confirms `git status` is clean. It reports each mutant and
-whether it was caught.
+representative. After each break it runs the tests that load the changed file, found with
+`grep -rl <file name>` over the test files without opening them, and records whether they went
+red. A mutant those tests miss is run once more against the full suite before it counts as a
+survivor, because a test elsewhere may catch it. Then it restores the file with
+`git checkout -- <file>` and confirms `git status` is clean. It reports each mutant and whether it
+was caught.
 
 A mutant the suite misses means a test is too weak. Send the survivors to the test-writer with
 SendMessage. It strengthens the tests, as departures, and the survivors are run again until all are
