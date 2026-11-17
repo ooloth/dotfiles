@@ -25,11 +25,6 @@ or **experience**, as `~/.agents/standards/decision-making.md` defines their max
   closest to its lens's maximum. If its lens does not bind on this ticket, say so in one line and
   use the lens **smallest change** instead: the fewest behaviours changed, files touched and lines
   that still meet every binding property;
-- look past the ticket's wording for the cause of the problem it describes, since a ticket often
-  names a symptom. Prefer an option that fixes the cause when it is within reach. A cause-level fix
-  outside this ticket's scope goes under **Deferred** rather than being dropped;
-- run `git log` and `git blame` on the lines it would change, to tell a slip from a choice someone
-  made on purpose;
 - return each option in the same form: the mechanism in one line, how it delivers each binding
   property, its effect on safety, performance and experience, and the command that showed each
   claim.
@@ -42,12 +37,8 @@ Do not share one run's output with another.
    it where you can. Keep every risk that is real, however many runs missed it.
 2. List every fact the runs disagree on, and settle each by running a command. Keep the command and
    its output.
-3. Build one target-properties list from the reconciled risks and facts, and apply `discuss` Phase
-   4's review of claims to it.
-4. Merge options that share a mechanism, then score every distinct option against every binding
-   property and against the safety, performance and experience maximums, in one table.
-5. Before choosing, look for a combination of parts of different options that comes closer to all
-   three maximums than any single option. A tradeoff left standing names the fact that forces it.
+3. Merge options that share a mechanism, and score every distinct option as `discuss` Phase 3
+   does, against one target-properties list built from the reconciled risks and facts.
 
 ### Choose, with evidence
 
@@ -61,11 +52,9 @@ Do not share one run's output with another.
 3. Whichever way the choice was made, spawn one subagent on Opus to attack it, because a scenario
    it misses goes unnoticed: find a scenario where the
    chosen approach breaks a binding property, or a risk no property covers, under the same evidence
-   rule. A real finding goes back into step 4 of the reconciliation; "no evidence found" stands.
-4. Write the **Assumptions**: the approach-level assumptions the choice rests on that, if wrong,
-   would put a different option first, such as what the system is for, who calls it or what may
-   change. Leave out code-style and refactoring preferences: they are not what an approach rests
-   on. The strongest argument that lost tells you where to look for them.
+   rule. A real finding goes back into step 3 of the reconciliation; "no evidence found" stands.
+4. Write the **Assumptions** as `discuss` Phase 4 asks. The strongest argument that lost tells you
+   where to look for them.
 5. Settle the remaining open decisions under "Decisions nobody made".
 
 Post the approach comment now, before any design work, so the plan is visible and durable while
@@ -83,9 +72,8 @@ experience, with smallest change as the fallback, as in step 2). Tell each to re
 approach from the approach comment on the ticket, not from you, so design works from the same text
 implementation will read. Tell each to follow the skill's Phases 1 to 6, including Phase 2's
 comparison of two or three type progressions scored against the properties, to state its
-recommended answer wherever the skill says to ask, to run `git log` and `git blame` on the lines
-its design touches, and to return its design, with every claim about how code or a test setup
-behaves beside the command that showed it.
+recommended answer wherever the skill says to ask, and to return its design, with every claim
+about how code or a test setup behaves beside the command that showed it.
 
 Then reconcile their outputs yourself:
 
@@ -110,16 +98,16 @@ property numbering.
 
 Write the approach comment as the `discuss` skill's Phase 4 describes its ticket comment, and the
 design comment as the `design` skill's Phase 7 describes its ticket comment, adding only the
-`Decided without you` section below. Name no skill, command or agent in either: say what happened
-instead. Evidence and reasoning stay in this session; the comments carry only the decision.
+`Decided without you` section below. Evidence and reasoning stay in this session; the comments
+carry only the decision.
 
-When you took a one-way decision, the comment that records it has a `## Decided without you 🧷`
-section: in the approach comment right after "Decided by", in the design comment as its last
-section. One entry per decision: what was decided, in one line; the options weighed; the reason it
-won; and what would reopen it. It is where the user checks what was decided for them before the
-draft PR merges. Planning commits nothing, so a decision taken here has no record yet: its entry
-stands in for the record link the `design` skill asks for, and the implementation writes the
-record from it.
+When you took a decision a triage test held for, the comment that records it has a `## Decided
+without you 🧷` section: in the approach comment right after "Decided by", in the design comment as
+its last section. One entry per decision: what was decided, in one line; the options weighed; the
+reason it won; the test that held; and what would reopen it. It is where the user checks what was
+decided for them before the draft PR merges. Planning commits nothing, so a decision taken here has
+no record yet: its entry stands in for the record link the `design` skill asks for, and the
+implementation writes the record from it.
 
 ## 5. Start the implementation
 

@@ -27,6 +27,7 @@ uv run scripts/checks/docs.py                 # Markdown prose wraps at 100 colu
 /bin/bash scripts/checks/types.bash           # ty
 /bin/bash scripts/checks/linting.bash         # ruff check, shellcheck, zsh utils, skills
 /bin/bash scripts/checks/tests.bash           # link.bash check mode alongside one pytest run of every test
+/bin/bash scripts/checks/tests.bash <file>... # only these test files, with the same dependencies
 ```
 
 The tests run across every core with pytest-xdist and print the ten slowest, and `check` prints

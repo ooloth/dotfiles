@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Runs every test, and fails after running them all if any failed.
 #
-# Run with: bash scripts/checks/tests.bash
+# Run with: bash scripts/checks/tests.bash [path...]
+#
+# Given paths, such as one test file, it runs only those with pytest, with the same dependencies
+# installed, and skips the link.bash check.
 #
 # - link.bash scripts: scripts/checks/link-scripts.bash, alongside the pytest run below, with its
 #   output printed after.
@@ -56,19 +59,29 @@ done
 
 failed=()
 
-logs="$(mktemp -d)"
-bash "${repo}/scripts/checks/link-scripts.bash" >"${logs}/link-scripts" 2>&1 &
-link_pid=$!
-trap 'kill "${link_pid}" 2>/dev/null; rm -rf "${logs}"' EXIT
+if [[ $# -gt 0 ]]; then
+  targets=()
+  for path in "$@"; do
+    targets+=("$(cd "$(dirname "${path}")" && pwd)/$(basename "${path}")")
+  done
+else
+  targets=(tools features scripts)
+  logs="$(mktemp -d)"
+  bash "${repo}/scripts/checks/link-scripts.bash" >"${logs}/link-scripts" 2>&1 &
+  link_pid=$!
+  trap 'kill "${link_pid}" 2>/dev/null; rm -rf "${logs}"' EXIT
+fi
 
 printf '\n== pytest\n'
 (cd "${repo}" && uv run --quiet "${with[@]}" pytest --import-mode=importlib -q -n auto \
   --dist worksteal --durations=10 -o 'norecursedirs=@archive @new .* __pycache__ node_modules' \
-  tools features scripts) || failed+=("pytest")
+  "${targets[@]}") || failed+=("pytest")
 
-wait "${link_pid}" || failed+=("scripts/checks/link-scripts.bash")
-printf '\n== scripts/checks/link-scripts.bash\n'
-cat "${logs}/link-scripts"
+if [[ $# -eq 0 ]]; then
+  wait "${link_pid}" || failed+=("scripts/checks/link-scripts.bash")
+  printf '\n== scripts/checks/link-scripts.bash\n'
+  cat "${logs}/link-scripts"
+fi
 
 if [[ ${#failed[@]} -gt 0 ]]; then
   printf '\n❌ Failed:\n' >&2

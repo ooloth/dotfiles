@@ -113,3 +113,10 @@ anything is missing.
   than 30. Pass a `--limit` above the largest count you expect.
 - **Wrong-repo actions in multi-repo sessions.** Pass `-R owner/repo` explicitly rather than
   relying on the cwd's git remote.
+- **Attaching an image or video.** No documented API does it, but the endpoint the web UI uses
+  accepts the `gh` token:
+  `curl -s -X POST -H "Authorization: Bearer $(gh auth token)" -H "Accept: application/json" --data-binary @<file> "https://uploads.github.com/user-attachments/assets?name=<file name>&content_type=<mime type>&repository_id=<id>"`,
+  with the id from `gh api repos/<owner>/<repo> --jq .id`, returns `{"url": …}`. Put the URL in the
+  body as `![<what it shows>](<url>)` for an image, or alone on its own line for a video. It worked
+  on 2026-11-16 with a PNG and an MP4. The endpoint is undocumented, so a refusal may mean it
+  changed.

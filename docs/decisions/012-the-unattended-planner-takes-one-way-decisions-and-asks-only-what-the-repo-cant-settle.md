@@ -107,3 +107,11 @@ planner took alone, or a run stops to ask me something it didn't need to.
 moved to that skill's `SKILL.md`, and the build stage follows them too, so the build takes the
 one-way decisions the design left open and escalates under the same conditions as planning
 ([#273](https://github.com/ooloth/dotfiles/issues/273)).
+
+## Addendum (2026-11-16) — one-way means a triage test holds
+
+"Revisit when" fired at the first draft PR, [#293](https://github.com/ooloth/dotfiles/pull/293): I
+overruled a decision the planner classed as one-way because "a file format" covered a label only
+agents read. `factory-ticket-to-pr` no longer keeps its own list of one-way categories. It triages
+each open choice with the three tests in the global `CLAUDE.md`'s "A choice found mid-work", decides
+it either way, and lists only those a test held for under "Decided without you".
