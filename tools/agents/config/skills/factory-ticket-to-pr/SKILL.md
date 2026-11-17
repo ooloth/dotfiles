@@ -90,7 +90,7 @@ anything, the list is "None".
 
 Friction is about the factory, not the ticket, so it goes only in the run record, never in a
 comment, a commit or the PR. Before the stage ends, append to `friction.md` one section per
-subagent, headed with the stage and the subagent's role (`## build: test-writer`), holding its
+subagent, headed with the stage and the subagent's role (`## build: builder`), holding its
 list, and one section for your own.
 
 ## The run record

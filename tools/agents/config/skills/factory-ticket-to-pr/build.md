@@ -68,11 +68,10 @@ line of at least one log. A `pass` you cannot confirm counts as a `fail`.
 
 ## 2. Red
 
-Spawn a **test-writer** subagent. Give it the repo path, the design comment, and the parts of the
-approach comment that say what must be true and why: **What a good fix must achieve**,
-**Assumptions** and **Constraints**. Do not give it the opening paragraph, **Options**, **Decided
-by**, **How it fits**, **Deferred** or **Decided without you**, so its tests describe behaviour
-rather than the planned mechanism.
+Spawn a **builder** subagent. Give it the repo path, the approach and design comments, and the
+list of check commands. It works in the red-green steps the global `CLAUDE.md` describes, and
+returns once its tests fail, before it writes any implementation, so you can check the tests on
+their own.
 
 It writes a test for every row of the design comment's **Tests** table, using the technique the row
 names. The design leaves setup to it, so it works out how to set each test up and what each should
@@ -90,36 +89,35 @@ that under `PLAN CHANGES`.
 
 Don't commit the tests yet: every commit holds passing work, and some repos refuse any other. Copy
 the test files into `red/` in the artifacts directory, so step 3 can be checked against them. Keep
-the test-writer's agent ID for step 4.
+the builder's agent ID: every later step that changes the tests or the implementation goes back to
+it with SendMessage, so it works from what it already learned about the code rather than a fresh
+agent learning it again.
 
 ## 3. Green
 
-Spawn an **implementer** subagent. Give it the approach and design comments, the test files from
-step 2, and the list of check commands. It implements the approach in the smallest change that
-makes those tests pass, following `uphold-standards`, adds each assertion from **Assertions** and
-each signal from **Telemetry**, and runs the full checks until green. It does not edit the test
-files from step 2. Choices the design did not make follow "Decisions nobody made" in `SKILL.md`.
+Send the builder on to green with SendMessage. It implements the approach in the smallest change
+that makes its tests pass, following `uphold-standards`, adds each assertion from **Assertions** and
+each signal from **Telemetry**, and runs the full checks until green. It does not edit its tests
+from step 2. Choices the design did not make follow "Decisions nobody made" in `SKILL.md`.
 
 When it returns, confirm with `diff` against the copies in `red/` that the test files are
 unchanged. If they changed, the implementation is not trusted: escalate with the diff. Then commit
-the tests and the implementation together.
-
-Keep this implementer's agent ID. Every later fix to the implementation goes back to it with
-SendMessage, so it works from what it already learned about the code rather than a fresh agent
-learning it again. Each time it returns, repeat the test-file check above.
+the tests and the implementation together. Each time the builder returns from a later fix, repeat
+this check.
 
 ## 4. Audit the plan against the work
 
 Make a table of every test, assertion and telemetry item in the design comment, each with the file
 and line that implements it and the artifacts showing it fail and then pass. Confirm each location
 with `grep` or `git` yourself rather than taking it from a summary. A row you cannot fill is
-unfinished work: a missing test goes back to step 2, and a missing assertion or signal goes to the
-step 3 implementer. A planned item that was deliberately left out is an escalation.
+unfinished work: a missing test, assertion or signal goes back to the builder. A planned item that
+was deliberately left out is an escalation.
 
 Then prove each property's tests can fail, with mutants chosen by someone other than the person who
 wrote the tests. Spawn a **mutant** subagent. Give it the repo path, the check commands and the
-parts of the approach comment the test-writer got. Tell it not to open the test files, so its
-mutants aim at where the property could break rather than at what the tests already cover.
+approach comment's **What a good fix must achieve**, **Assumptions** and **Constraints**. Tell it
+not to open the test files, so its mutants aim at where the property could break rather than at what
+the tests already cover.
 
 For each property, it breaks the implementation in every kind of place that property depends on:
 each instance of a cross-cutting property (every command, every branch, every machine), not one
@@ -130,7 +128,7 @@ survivor, because a test elsewhere may catch it. Then it restores the file with
 `git checkout -- <file>` and confirms `git status` is clean. It reports each mutant and whether it
 was caught.
 
-A mutant the suite misses means a test is too weak. Send the survivors to the test-writer with
+A mutant the suite misses means a test is too weak. Send the survivors to the builder with
 SendMessage. It strengthens the tests, and the survivors are run again until all are
 caught. Commit any strengthened tests, refresh their copies in `red/`, and confirm the
 implementation still passes them.
@@ -142,11 +140,11 @@ stage took that a triage test held for, commit a decision record, in the folder 
 its decision records and in that folder's format, built from the decision, its options, its reason
 and what would reopen it. In a repo with no such folder, copy the entries into the PR body's
 **What** section in step 7 instead. Then run `wrap-up-codebase` on the branch, as the global
-`CLAUDE.md` does before a draft PR. Send its fixes to the step 3 implementer, and settle each of its
+`CLAUDE.md` does before a draft PR. Send its fixes to the builder, and settle each of its
 asks under "Decisions nobody made".
 
 Spawn a fresh checks subagent to run the same commands again on the committed work. If any fail,
-send the failures to the step 3 implementer and run the checks again once it returns.
+send the failures to the builder and run the checks again once it returns.
 
 ## 6. Prove it
 
@@ -154,7 +152,7 @@ Spawn a subagent to run `prove-it-works`, giving it the approach comment's prope
 claim to prove. Its report points each quote at the raw output it saved in the evidence folder
 it names, and shows the attempts that failed. "Tests pass" is not evidence for this step. Before
 using its verdicts, open one cited observation file in that folder yourself. If a finding is
-disproven, send its evidence to the step 3 implementer, run the checks again, then run this step
+disproven, send its evidence to the builder, run the checks again, then run this step
 again.
 
 ## 7. Open the PR
@@ -170,10 +168,10 @@ Spawn a fresh subagent and give it only the PR number and repo, not the ticket, 
 from this run, so its review is independent of them. It runs `review-code` on the PR, posts nothing,
 and returns `review-code`'s report word for word.
 
-Send every finding to the step 3 implementer in the reviewer's words. Settle each `?` question
+Send every finding to the builder in the reviewer's words. Settle each `?` question
 under "Decisions nobody made" first. A finding that the approach or design should change is a
 change to the plan: before sending it, post the ticket comment the global `CLAUDE.md` asks for,
-saying what changes and which step of the chain it changes. A finding the implementer shows to be
+saying what changes and which step of the chain it changes. A finding the builder shows to be
 wrong, with a command it ran, is left unchanged, with that evidence beside it. Run the checks and
 step 6's proof again, and push. The review gets one round, as the global `CLAUDE.md` says, so no
 review follows the fixes.
