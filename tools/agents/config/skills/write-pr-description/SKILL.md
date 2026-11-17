@@ -49,6 +49,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - [ ] Got a screen recording of a UI change as step 3 describes
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Validation is manual e2e only — no automated checks
+- [ ] An Evidence section under the checklist shows what following it showed, one collapsed block
+  per piece, each labelled with the claim it shows
 - [ ] No implementation details snuck in
 - [ ] No hard-wrapped prose: each paragraph and list item is one line, because GitHub renders every
   newline as a line break
@@ -106,10 +108,20 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   watch this behavior happen?_ That answer is the checklist.
 - Any commands the reviewer should run must be provided in a complete, copy-pastable form, not
   alluded to; assume the reviewer is unfamiliar and will not figure it out unless you provide it
-- **Show what you saw:** below each checklist, put what following it actually showed, so a reader
-  can judge the change without running anything: for a CLI or script, the before and after output
-  trimmed to the lines that differ, in a fenced block; for anything a screen shows, a screenshot or
-  recording uploaded to GitHub. Never link a local path.
+- **Show what you saw:** below each checklist, a `### 🧾 Evidence` heading holds what following it
+  actually showed, so a reader can judge the change without running anything. One sentence under
+  the heading says where the evidence came from, naming any check that went beyond the steps, such
+  as a browser pass behind a local stand-in.
+  - **One collapsed block per piece of evidence:** each is a `<details>` block whose summary is a
+    numbered, bold claim, such as `<summary><b>1. Every response carries the five headers, and
+    trunk's carry none</b></summary>`. The labels alone then read as a summary of the proof, and a
+    reader opens only the ones they want to check.
+  - **What goes inside:** a sentence saying what to look for, then the evidence itself. For a CLI or
+    script, that is the before and after output trimmed to the lines that differ, in a fenced
+    block. Console and log lines are quoted verbatim in a fenced block. For anything a screen
+    shows, it is a screenshot or recording uploaded as `use-gh` describes, with alt text saying
+    what it shows.
+  - **Never link a local path.**
 
 ### Structure
 
@@ -192,6 +204,28 @@ value to a reviewer
 - [ ] Expect the archived item's chip to be disabled
 - [ ] Expect the disabled item's tooltip to explain why
 - [ ] Expect the archived item to no longer appear in your views
+
+### 🧾 Evidence
+
+What following the steps above showed on a local build with the seeded datasets.
+
+<details>
+<summary><b>1. The toggle appears only for a dataset with archived items</b></summary>
+
+The toolbar with no archived items, then with them. The toggle sits at the right end:
+
+![The toolbar without the toggle, then with "Include archived items" at its right end](https://github.com/user-attachments/assets/…)
+
+</details>
+
+<details>
+<summary><b>2. Turning it off removes the archived item from every view</b></summary>
+
+The item's chip is disabled and its tooltip says why:
+
+![The archived item's disabled chip with its tooltip open](https://github.com/user-attachments/assets/…)
+
+</details>
 
 ## 🔖 Related links
 
