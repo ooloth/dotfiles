@@ -30,6 +30,7 @@ SCRIPT = "tools/claude/cc.bash"
 
 CLAUDE_STUB = """#!/bin/bash
 for arg in "$@"; do printf '%s\\0' "$arg"; done > "${CLAUDE_LOG}"
+printf '%s\\n' "${ANTHROPIC_VERTEX_PROJECT_ID-<unset>}" "${CLOUD_ML_REGION-<unset>}" > "${CLAUDE_LOG}.env"
 """
 
 
@@ -70,6 +71,8 @@ class Machine:
         self.app.mkdir(parents=True)
         self.stubs = stubs or write_stubs(root / "stubs")
         self._claude_log = root / "claude.log"
+        # Further variables every run gets, such as the private values a machine's private.env sets
+        self.extra_env: dict[str, str] = {}
 
     def sibling(self, name: str) -> Path:
         folder = self.repos / name
@@ -109,6 +112,7 @@ class Machine:
             "CLAUDE_LOG": str(self._claude_log),
             "COMPUTER": computer,
             **private,
+            **self.extra_env,
         }
 
     def _run(
@@ -130,6 +134,11 @@ class Machine:
             else None
         )
         return Run(result.returncode, result.stdout + result.stderr, claude)
+
+    def vertex_settings(self) -> tuple[str, str]:
+        """The Vertex AI project and region the last run's `claude` was started with."""
+        project, region = Path(f"{self._claude_log}.env").read_text().splitlines()
+        return project, region
 
     def run(
         self, *args: str, computer: str = "air", cwd: Path | None = None, related: str | None = ""
@@ -174,6 +183,30 @@ class UnmappedFolder(unittest.TestCase):
                 run = self.machine.run(computer=computer)
 
                 self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
+
+
+class VertexProject(unittest.TestCase):
+    """Every work session can use Vertex AI, so a switch in the settings file moves it there."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.machine = Machine(Path(self._tmp.name))
+        self.machine.extra_env["PRIVATE_VERTEX_PROJECT"] = "example-vertex-1234"
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_a_work_session_gets_the_project_and_region(self) -> None:
+        run = self.machine.run(computer="work")
+
+        self.assertEqual(run.status, 0, run.output)
+        self.assertEqual(self.machine.vertex_settings(), ("example-vertex-1234", "global"))
+
+    def test_a_personal_mac_session_gets_neither(self) -> None:
+        run = self.machine.run(computer="air")
+
+        self.assertEqual(run.status, 0, run.output)
+        self.assertEqual(self.machine.vertex_settings(), ("<unset>", "<unset>"))
 
 
 class Unattended(unittest.TestCase):

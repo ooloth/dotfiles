@@ -8,12 +8,12 @@ Run with: uv run tools/claude/tests/test_shell.py
 
 The test sources the file in a bare zsh on the work laptop, with `is_work` and `error` stubbed, and
 calls `cc` and `cc-vertex` in turn. The real cc.bash runs, and stubs on PATH stand in for `uv`,
-which runs the work logins, and `claude`, which records its arguments and whether it was told to use
-Vertex AI.
+which runs the work logins, and `claude`, which records its arguments.
 """
 
 from __future__ import annotations
 
+import json
 import subprocess
 import tempfile
 import unittest
@@ -23,10 +23,7 @@ REPO = Path(__file__).resolve().parent.parent.parent.parent
 SHELL_ZSH = REPO / "tools" / "claude" / "shell.zsh"
 
 CLAUDE_STUB = """#!/bin/bash
-{
-  printf 'CLAUDE_CODE_USE_VERTEX=%s\\n' "${CLAUDE_CODE_USE_VERTEX-<unset>}"
-  for arg in "$@"; do printf 'arg=%s\\n' "$arg"; done
-} > "${CLAUDE_LOG}"
+for arg in "$@"; do printf '%s\\n' "$arg"; done > "${CLAUDE_LOG}"
 """
 
 
@@ -61,7 +58,8 @@ def claude_started_by(command: str, stubs: Path) -> list[str]:
 class CcVertex(unittest.TestCase):
     def test_starts_claude_as_cc_does_but_on_vertex(self) -> None:
         # A session on Vertex AI gets the same permission mode and related repos as `cc`, so
-        # switching to it when the subscription's limit is reached keeps the same safety checks
+        # switching to it when the subscription's limit is reached keeps the same safety checks.
+        # Vertex is chosen with --settings, which outranks the switch in the user settings file.
         with tempfile.TemporaryDirectory() as folder:
             stubs = Path(folder)
             (stubs / "uv").write_text("#!/bin/bash\n")
@@ -70,10 +68,10 @@ class CcVertex(unittest.TestCase):
                 stub.chmod(0o755)
             cc = claude_started_by("cc --resume abc", stubs)
             vertex = claude_started_by("cc-vertex --resume abc", stubs)
-        self.assertEqual(cc[0], "CLAUDE_CODE_USE_VERTEX=<unset>")
-        self.assertEqual(vertex[0], "CLAUDE_CODE_USE_VERTEX=1")
-        self.assertEqual(vertex[1:], cc[1:])
-        self.assertIn("arg=--resume", vertex)
+        at = vertex.index("--settings")
+        self.assertEqual(json.loads(vertex[at + 1]), {"env": {"CLAUDE_CODE_USE_VERTEX": "1"}})
+        self.assertEqual(vertex[:at] + vertex[at + 2 :], cc)
+        self.assertIn("--resume", cc)
 
 
 if __name__ == "__main__":

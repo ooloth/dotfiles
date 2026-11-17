@@ -21,6 +21,10 @@
 #   folder's CLAUDE.md only when this is set.
 # - CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=999: the default of 200 runs out in research-heavy
 #   sessions.
+# - CLAUDE_CODE_USE_VERTEX="": the switch that moves every running session to Vertex AI when it is
+#   "1". The value "" means the subscription, and stays in the file because removing the key would
+#   not move a running session back. tools/claude/tests/test_settings.py checks that no commit
+#   holds "1".
 # See: https://code.claude.com/docs/en/model-config#environment-variables
 # See: https://code.claude.com/docs/en/env-vars
 #
@@ -28,12 +32,12 @@
 # `model` (https://code.claude.com/docs/en/model-config#setting-your-model), but only for sessions
 # started from zsh, such as `cc`.
 
-# if is_work; then
-  # export ANTHROPIC_MODEL=sonnet
-  # Work uses subscription login instead of Vertex AI now (/login -> subscription -> work email address)
-  # export CLAUDE_CODE_USE_VERTEX=0
-  # export CLOUD_ML_REGION=global
-# fi
+# Every work session can use Vertex AI, so CLAUDE_CODE_USE_VERTEX in settings.json can move it
+# there when the subscription's usage limit is reached. cc.bash exports the same for sessions it
+# starts, which Rex tabs reach without reading this file.
+if is_work && [[ -n "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
+  export ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT}" CLOUD_ML_REGION=global
+fi
 
 ###########
 # ALIASES #
@@ -67,10 +71,9 @@ else
 fi
 
 if is_work; then
-  # Starts a session on Vertex AI instead of the subscription, for when the subscription's usage
-  # limit is reached. It starts through cc.bash, so it gets the permission mode and related repos
-  # `cc` gets. The variables prefix the command rather than being exported, so only this session
-  # uses Vertex AI. To carry on a session that hit the limit: /exit, then cc-vertex --resume <id>.
+  # Starts a session that stays on Vertex AI whatever the switch in settings.json says. It starts
+  # through cc.bash, so it gets the permission mode, related repos and Vertex AI project `cc` gets.
+  # Vertex AI is chosen with --settings, which outranks the user settings file.
   cc-vertex() {
     if [[ -z "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
       error "PRIVATE_VERTEX_PROJECT is unset (see private.env.example), so there is no Vertex AI project"
@@ -79,7 +82,6 @@ if is_work; then
 
     claude_work_logins
 
-    CLAUDE_CODE_USE_VERTEX=1 CLOUD_ML_REGION=global ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT}" \
-      bash "${DOTFILES}/tools/claude/cc.bash" "$@"
+    bash "${DOTFILES}/tools/claude/cc.bash" --settings '{"env":{"CLAUDE_CODE_USE_VERTEX":"1"}}' "$@"
   }
 fi
