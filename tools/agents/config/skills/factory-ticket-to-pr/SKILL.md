@@ -1,6 +1,6 @@
 ---
 name: factory-ticket-to-pr
-description: Take a ticket to a draft PR with nobody watching. Planning reconciles three independent approach runs and three design runs, posts both on the ticket, and starts the build in a new tmux window and worktree, which takes the design through tests, mutants, proof and a self-review loop to a draft PR. Takes one-way decisions itself and lists them, escalates on the ticket only what the repo cannot settle, and keeps a private record of the run for factory-learn.
+description: Take a ticket to a draft PR with nobody watching. Planning reconciles three independent approach runs and three design runs, posts both on the ticket, and starts the build in a new tmux window and worktree, which takes the design through tests, mutants, proof and one independent review to a draft PR. Decides what it would otherwise ask, and lists each decision a triage test held for, escalates on the ticket only what the repo cannot settle, and keeps a private record of the run for factory-learn.
 argument-hint: '<owner/repo#issue> [plan-only] | build <owner/repo#issue> <run-id>'
 disable-model-invocation: true
 ---
@@ -22,8 +22,8 @@ overrides any loaded CLAUDE.md that says otherwise:
 - Planning may post the approach, design and escalation comments on the ticket and start the build
   session. It changes nothing in the repo: no edits, commits or pushes. Scratch copies under
   `mktemp -d` are fine.
-- Building may commit, push, open a draft PR, comment on the ticket, and post the run-report comment
-  on the PR and edit it.
+- Building may commit, push, open a draft PR, comment on the ticket, and post the review comment on
+  the PR.
 - Both stages may write the run record under `~/.local/state/factory/runs/`.
 - Nothing else that is visible outside this session is approved.
 - A skill a stage invokes that ends by asking the user something is run to its report, and the
@@ -35,11 +35,8 @@ You coordinate. Subagents do the independent runs and the heavy work, so their e
 output and diffs stay out of your context. You are the only agent that posts to GitHub, and a
 subagent that needs a decision returns it to you.
 
-Tell every subagent to read files itself, spawn no subagents of its own, run plain separate
-commands, return text rather than writing report files, and end its reply with its Friction list.
-
-A subagent's report is evidence, not a finding. Where its claim decides something, check it
-yourself by running a command.
+Tell every subagent to run plain, separate commands, return text rather than writing report files,
+and end its reply with its Friction list.
 
 ## Decisions nobody made
 
@@ -75,10 +72,9 @@ build took it. Leave the others out of both.
 ## Escalate
 
 1. Comment on the ticket: what you found, the decision needed, and two or more numbered options,
-   each with its consequence and your recommendation. When building, list the departures made so
-   far below it.
-2. When building, commit any work in progress and push the branch, so nothing is lost when the
-   worktree goes.
+   each with its consequence and your recommendation.
+2. When building, push the commits the branch holds. Leave any uncommitted work in the worktree,
+   and name the worktree in `run.md`.
 3. Finish the run record with the outcome `escalated`, and stop without starting another stage or
    posting anything further. Print `ESCALATED: <one sentence>` as the final line.
 
@@ -120,7 +116,6 @@ The folder holds:
   - Started: <UTC time>
   - Finished: <UTC time>
   - Outcome: <the final line printed>
-  - Review rounds: <build only: the number of review rounds>
   - Tokens: <one row per model, from the count below>
   ```
 

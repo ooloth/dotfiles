@@ -2,21 +2,20 @@
 
 ## Rules of this stage
 
-Record each decision you take that the approach or design did not as a departure: what they said,
-what you did instead, the options you weighed, the property that decided it, and how to reverse
-it. Subagents report theirs under `DEPARTURES`, and return `escalate` only where "Decisions nobody
-made" in `SKILL.md` says to.
+When the work has to change the approach or the design, post a comment on the ticket saying what
+changes and which step of the chain it changes, as the global `CLAUDE.md` asks, before acting on
+it. Subagents report such changes under `PLAN CHANGES`, and return `escalate` only where
+"Decisions nobody made" in `SKILL.md` says to.
 
 The steps of this skill are not decisions. Nobody is watching, so an unattended run verifies more
 than an attended one, never less. A step that does not run in full, such as a review with fewer
 reviewers than its skill names, a skipped mutant or a missing proof, is run again. If it still
 cannot run in full, escalate. A small diff is never a reason to run less.
 
-A "must" or "should" finding from any review is resolved only by a change that makes it no longer
-true: a fix to the code or the tests, or a correction to a claim that says more than is true.
-Recording the gap as known, in a doc or a comment, does not resolve it. Fix it or escalate it. A
-finding that the approach or the design should change is the exception: step 8 checks it and, if it
-holds, changes the plan before the code.
+A finding from any review is resolved only by a change that makes it no longer true: a fix to the
+code or the tests, or a correction to a claim that says more than is true. Recording the gap as
+known, in a doc or a comment, does not resolve it. Fix it or escalate it. A finding that the
+approach or the design should change is a change to the plan, as above.
 
 ## Your role
 
@@ -39,16 +38,13 @@ Tell each subagent to end its reply with exactly this block, and nothing after i
 STATUS: pass | fail | escalate
 ARTIFACTS: <absolute paths of the logs and files it wrote>
 SUMMARY: <150 words or fewer>
-DEPARTURES: <each decision it made that the approach or design did not, recorded as above, or "none">
+PLAN CHANGES: <each change to the approach or design it made, or "none">
 ESCALATION: <the decision needed and two or more numbered options, or "none">
 FRICTION: <its Friction list, as SKILL.md describes, or "None">
 ```
 
-Keep every departure the subagents report, and your own, in one list for step 9.
-
-A subagent's report is evidence, not a finding. Before you act on a `pass`, confirm that its
-artifacts exist and read the exit-code line of at least one log. A `pass` you cannot confirm counts
-as a `fail`.
+Before you act on a subagent's `pass`, confirm that its artifacts exist and read the exit-code
+line of at least one log. A `pass` you cannot confirm counts as a `fail`.
 
 ## 1. Check the inputs
 
@@ -67,8 +63,8 @@ as a `fail`.
    the first failing lines. Keep the list of commands it found, since every later checks subagent
    runs the same list. If any fail before you change anything, the base branch is already broken.
    Where the fix is mechanical and needs no decision, such as a formatting or line-length problem,
-   send it to a subagent to fix in its own commit on this branch, record it as a departure, and run
-   the checks again. Escalate only a failure whose fix needs a decision.
+   send it to a subagent to fix in its own commit on this branch, and run the checks again. Escalate
+   only a failure whose fix needs a decision.
 
 ## 2. Red
 
@@ -88,12 +84,13 @@ property it observes.
 
 It owns the quality of the suite, not just its transcription. Where a planned test would not catch
 every way its property could break, including in code added later, it strengthens the test or adds
-one, and reports each as a departure. It never weakens or drops a planned test. If a test cannot be
+one, and reports each in its summary. It never weakens or drops a planned test. If a test cannot be
 set up the way the design describes, it finds a setup that observes the same property and reports
-that as a departure too.
+that under `PLAN CHANGES`.
 
-Commit the tests once the status is `pass`, so step 3 can be checked against them. Keep the
-test-writer's agent ID for step 4.
+Don't commit the tests yet: every commit holds passing work, and some repos refuse any other. Copy
+the test files into `red/` in the artifacts directory, so step 3 can be checked against them. Keep
+the test-writer's agent ID for step 4.
 
 ## 3. Green
 
@@ -103,8 +100,9 @@ makes those tests pass, following `uphold-standards`, adds each assertion from *
 each signal from **Telemetry**, and runs the full checks until green. It does not edit the test
 files from step 2. Choices the design did not make follow "Decisions nobody made" in `SKILL.md`.
 
-When it returns, confirm with `git diff <tests commit> -- <test files>` that the test files are
-unchanged. If they changed, the implementation is not trusted: escalate with the diff.
+When it returns, confirm with `diff` against the copies in `red/` that the test files are
+unchanged. If they changed, the implementation is not trusted: escalate with the diff. Then commit
+the tests and the implementation together.
 
 Keep this implementer's agent ID. Every later fix to the implementation goes back to it with
 SendMessage, so it works from what it already learned about the code rather than a fresh agent
@@ -133,19 +131,19 @@ survivor, because a test elsewhere may catch it. Then it restores the file with
 was caught.
 
 A mutant the suite misses means a test is too weak. Send the survivors to the test-writer with
-SendMessage. It strengthens the tests, as departures, and the survivors are run again until all are
-caught. Commit any strengthened tests, and confirm the implementation still passes them.
+SendMessage. It strengthens the tests, and the survivors are run again until all are
+caught. Commit any strengthened tests, refresh their copies in `red/`, and confirm the
+implementation still passes them.
 
 ## 5. Commit and check again
 
-Commit the work. For each `Decided without you` entry in the approach or design comment, and each
-one-way decision this stage took itself, commit a decision record in the same step, in the folder
-where the repo keeps its decision records and in that folder's format, built from the decision, its
-options, its reason and what would reopen it. A later session finds the decision there, and the
-user reviews it in the PR's diff. In a repo with no such folder, copy the entries into the PR
-body's **What** section in step 7 instead. This skill runs no review before the PR: step 8's
-independent review loop is the only review, while we measure whether a review before the PR
-catches anything step 8 would not.
+For each `Decided without you` entry in the approach or design comment, and each decision this
+stage took that a triage test held for, commit a decision record, in the folder where the repo keeps
+its decision records and in that folder's format, built from the decision, its options, its reason
+and what would reopen it. In a repo with no such folder, copy the entries into the PR body's
+**What** section in step 7 instead. Then run `wrap-up-codebase` on the branch, as the global
+`CLAUDE.md` does before a draft PR. Send its fixes to the step 3 implementer, and settle each of its
+asks under "Decisions nobody made".
 
 Spawn a fresh checks subagent to run the same commands again on the committed work. If any fail,
 send the failures to the step 3 implementer and run the checks again once it returns.
@@ -161,67 +159,29 @@ again.
 
 ## 7. Open the PR
 
-Open the draft PR with the `create-pr` skill. Its checks already passed in step 5, and its
-description omits any field that would need to ask the user. Keep the body short: the ticket
-comments hold the detail, and the PR links to them. Add one line to each section, plus the
-`Decided without you` entries under **What** when step 5 found no record folder:
+Open the draft PR with the `create-pr` skill, giving it step 6's evidence folder so the description
+can show what the proof saw. Its checks already passed in step 5, and its description omits any
+field that would need to ask the user. Add the `Decided without you` entries under **What** when
+step 5 found no record folder. Record the PR's URL in `run.md`.
 
-- **What:** `Approach: <link to the approach comment>`, with `Design: <link to the design comment>`
-  on the line below it
-- **Related:** `Closes #<n>`
-
-Then post the run report on the PR as one comment, laid out as step 9 describes, with its
-**Self-review** section reading "Round 1 running". Keep the comment's ID: steps 8 and 9 edit this
-comment instead of posting new ones, because an edit notifies nobody. Add one line under
-**Validation** in the PR body: `Run evidence, mutants and self-review: <link to the run-report
-comment>`. Record the PR's URL in `run.md`.
-
-## 8. Independent review of the PR
+## 8. Review the PR
 
 Spawn a fresh subagent and give it only the PR number and repo, not the ticket, the plan or anything
-from this run, so its agents' review is independent of them. It runs `review-code` on the PR with
-every reviewer, posts nothing, and returns the verdict and every finding with its severity.
+from this run, so its review is independent of them. It runs `review-code` on the PR, posts nothing,
+and returns `review-code`'s report word for word.
 
-Send each "must" and "should" finding to the step 3 implementer, run the checks again, push, and
-spawn another fresh reviewer. Repeat until a review returns no "must" or "should" findings, for up
-to 5 rounds. If findings remain after the fifth, escalate them. "Consider" findings are listed, not
-fixed. Record the number of rounds in `run.md`.
+Send every finding to the step 3 implementer in the reviewer's words. Settle each `?` question
+under "Decisions nobody made" first. A finding that the approach or design should change is a
+change to the plan: before sending it, post the ticket comment the global `CLAUDE.md` asks for,
+saying what changes and which step of the chain it changes. A finding the implementer shows to be
+wrong, with a command it ran, is left unchanged, with that evidence beside it. Run the checks and
+step 6's proof again, and push. The review gets one round, as the global `CLAUDE.md` says, so no
+review follows the fixes.
 
-Ask the implementer to return one line for each finding it was sent: what it changed, and the
-commit that holds the change. After each round, edit the run-report comment with
-`gh api -X PATCH repos/<owner>/<repo>/issues/comments/<id> -F body=@<file>`, so its **Self-review**
-section shows every round so far.
+Then post one comment on the PR headed `Automated review`, holding the report inside a collapsed
+`<details>` block, with the commit that fixed each finding below it.
 
-A finding that the approach or the design should change, rather than the code, is checked before it
-is acted on, because the reviewer can be wrong. Spawn one subagent on Opus to attack it as the
-planner's final attack does: it shows, with a command it ran or a concrete scenario, whether the
-finding's option delivers every Ideal state bullet and wins on a named property. If the finding
-holds, post a comment on the ticket saying what changes and which step of the chain it changes,
-rewrite the affected tests as in step 2, send the change to the step 3 implementer, and run steps 4
-to 8 again; the change counts as a review round. The PR body's **What** says why this approach
-replaced the planned one, with a link to that comment. A finding whose option takes a one-way
-decision follows "Decisions nobody made" in `SKILL.md`, and one whose answer is to change
-nothing or close the ticket is escalated with its evidence, because no PR can carry it. Commit a
-decision record for each one-way decision this step takes, as step 5 does.
+## 9. Finish
 
-## 9. Finish the run report
-
-Edit the run-report comment on the PR one last time, so it holds these sections:
-
-1. **Properties:** a table with one row per property from the approach comment: what observes it,
-   its result before the change, its result after, and the mutant it caught.
-2. **Evidence:** the findings from the `prove-it-works` report, with their before and after
-   observations quoted, so a reader can judge them without the files. Copy its evidence folder into
-   the run folder as `evidence/`. Its path never goes in the PR.
-3. **Self-review:** headed "Automated self-review", so no reader takes it for a teammate's
-   review. A table with one row per step 8 round: its number of "must", "should" and "consider"
-   findings, and how they were resolved, linking the commits that resolved them. Below the table,
-   one collapsed `<details>` block per round, its summary naming the round, with each finding in
-   one line beside its response: the commit that fixed it, the ticket comment that changed the
-   plan, or "left open" for a "consider" finding.
-4. **Departures:** a numbered list of every departure from the approach and design, each with what
-   was planned, what was done, the options weighed, the deciding property and how to reverse it.
-   Write "No departures" when there were none.
-5. **Not verified:** anything the run could not observe, and why.
-
-Finish the run record, then print `PR: <url>` as the final line.
+Copy step 6's evidence folder into the run folder as `evidence/`. Finish the run record, then print
+`PR: <url>` as the final line.

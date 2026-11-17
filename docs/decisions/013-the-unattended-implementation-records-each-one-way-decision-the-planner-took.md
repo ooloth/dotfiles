@@ -62,3 +62,11 @@ decision that was not one-way.
 `factory-ticket-to-pr` ([#291](https://github.com/ooloth/dotfiles/issues/291)). The build now takes
 one-way decisions itself under the same rules as planning, and commits a record for each of them as
 it does for the planner's entries.
+
+## Addendum (2026-11-16) — a record only where a triage test held
+
+"Revisit when" fired on [#237](https://github.com/ooloth/dotfiles/issues/237): the first factory run
+committed a record for how orphaned comments are numbered, a print format only agents read and one
+line reverses, and four of its five review rounds went on that record's wording. The build now
+commits a record for each "Decided without you" entry and for each decision it takes itself that one
+of the three triage tests in the global `CLAUDE.md` held for.
