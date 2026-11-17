@@ -43,12 +43,11 @@ yourself by running a command.
 
 ## Decisions nobody made
 
-The ticket, the approach and the design will leave decisions open. Decide them, one-way decisions
-included: a new dependency or external service, a persistent data shape or store, a public
-interface (an API, an event, a CLI contract, a file format), a new process or runtime, or a
-user-facing pattern people will learn. That covers the open decisions the ticket lists, whatever
-category it names beside them. The user reviews the draft PR before anything merges, so a decision
-you take can still be reversed there, as long as the run shows it.
+The ticket, the approach and the design will leave choices open. Triage each as "A choice found
+mid-work" in the global `CLAUDE.md` does. Where none of its three tests holds, decide it. Where one
+holds, that rule stops to ask the user, and nobody can answer here, so decide it anyway unless one
+of the conditions below applies. The user reviews the draft PR before anything merges, so a
+decision you take can still be reversed there, as long as the run shows it.
 
 First choose the option the target properties rank highest, as if you could not escalate. Then
 escalate only when that option:
@@ -69,9 +68,9 @@ escalate only when that option:
 or escalate when the ticket does not say enough to tell what the work must make true. Never choose
 a lower-ranked option to avoid escalating.
 
-Each one-way decision you take is listed where the user checks it: under "Decided without you" in
-the planning comment that took it, or as a departure in the build's run report. Leave minor
-choices, such as names, out of both.
+Each decision a test held for is listed where the user checks it, with the test that held: under
+"Decided without you" in the planning comment that took it, or in a comment on the ticket when the
+build took it. Leave the others out of both.
 
 ## Escalate
 
