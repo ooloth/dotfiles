@@ -1,6 +1,6 @@
 ---
 name: factory-ticket-to-pr
-description: Take a ticket to a draft PR with nobody watching. Planning reconciles three independent approach runs and three design runs, posts both on the ticket, and starts the build in a new tmux window and worktree, which takes the design through tests, mutants, proof and one independent review to a draft PR. Decides what it would otherwise ask, and lists each decision a triage test held for, escalates on the ticket only what the repo cannot settle, and keeps a private record of the run for factory-learn.
+description: Take a ticket to a draft PR with nobody watching. Planning reconciles three independent approach runs and three design runs, posts both on the ticket, and starts the build in a new tmux window and worktree, which takes the design through tests, mutants, proof and one independent review to a draft PR. Decides what it would otherwise ask, and lists each decision a triage test held for, stops only where a PR review would come too late, and keeps a private record of the run for factory-learn.
 argument-hint: '<owner/repo#issue> [plan-only] | build <owner/repo#issue> <run-id>'
 disable-model-invocation: true
 ---
@@ -19,7 +19,7 @@ The user launched this run on purpose, and that launch is the approval for every
 overrides any loaded CLAUDE.md that says otherwise:
 
 - No pauses for approval, and no questions to the user. Nobody is watching this session.
-- Planning may post the approach, design and escalation comments on the ticket and start the build
+- Planning may post the approach, design and stop comments on the ticket and start the build
   session. It changes nothing in the repo: no edits, commits or pushes. Scratch copies under
   `mktemp -d` are fine.
 - Building may commit, push, open a draft PR, comment on the ticket, and post the review comment on
@@ -41,42 +41,53 @@ and end its reply with its Friction list.
 ## Decisions nobody made
 
 The ticket, the approach and the design will leave choices open. Triage each as "A choice found
-mid-work" in the global `CLAUDE.md` does. Where none of its three tests holds, decide it. Where one
-holds, that rule stops to ask the user, and nobody can answer here, so decide it anyway unless one
-of the conditions below applies. The user reviews the draft PR before anything merges, so a
-decision you take can still be reversed there, as long as the run shows it.
+mid-work" in the global `CLAUDE.md` does. Where that rule would stop to ask the user, nobody can
+answer here, so decide: among the options that meet every binding property, choose the one that
+comes closest to the maximum safety, performance and experience for users and maintainers across the
+whole system, as `decision-making.md` defines them, never a lower-ranked one because it is easier to
+explain. The draft PR is where the user reviews every decision, so the run shows each one there, and
+closing the PR reverses it.
 
-First choose the option the target properties rank highest, as if you could not escalate. Then
-escalate only when that option:
+What an attended session would ask becomes part of the PR instead:
 
-- contradicts, amends or supersedes a recorded decision, or depends on one whose bearing on this
-  work takes interpretation, even when the ticket expects the change;
-- needs work outside this ticket to meet a binding property, such as a new ticket or a change to
-  another ticket's scope. A cause-level fix that no binding property needs goes under **Deferred**,
-  does not escalate, and leaves the ranking to the options inside this ticket;
-- changes the runtime behaviour of code the approach does not name;
-- wins over the other options that meet every binding property, or meets a binding property at
-  all, only because of what the user prefers or puts first;
-- meets a binding property only through a fact you cannot measure here. A fact that only changes
-  which option ranks first goes under **Assumptions** and does not escalate;
-- takes effect outside this run's branch and the posts approved above, such as in another repo,
-  remote state or credentials, or risks security or data loss;
-
-or escalate when the ticket does not say enough to tell what the work must make true. Never choose
-a lower-ranked option to avoid escalating.
+- **An option that contradicts, amends or supersedes a recorded decision:** the build commits the
+  addendum or the new record, with the evidence.
+- **A change to code the approach does not name:** the PR's **What** says what else changes and why.
+- **A choice that turns on what the user prefers:** the PR names the preference that would reverse
+  it.
+- **Work outside the ticket that a binding property needs:** the PR does the part inside the ticket
+  and lists the rest under **Deferred**.
+- **A fact the run cannot measure:** the PR's **Post-merge QA** says how to check it.
+- **A ticket that does not say enough:** the approach states the reading it chose under
+  **Assumptions**.
 
 Each decision a test held for is listed where the user checks it, with the test that held: under
 "Decided without you" in the planning comment that took it, or in a comment on the ticket when the
 build took it. Leave the others out of both.
 
-## Escalate
+## Stop only here
 
-1. Comment on the ticket: what you found, the decision needed, and two or more numbered options,
-   each with its consequence and your recommendation.
-2. When building, push the commits the branch holds. Leave any uncommitted work in the worktree,
-   and name the worktree in `run.md`.
-3. Finish the run record with the outcome `escalated`, and stop without starting another stage or
-   posting anything further. Print `ESCALATED: <one sentence>` as the final line.
+A run stops instead of deciding only where waiting for the PR review would be too late, or where
+there is nothing for a PR to hold:
+
+- **Harm before review:** the next step would take effect outside this run's branch and the posts
+  approved above, such as in another repo, remote state or credentials, or would risk security or
+  data loss.
+- **Code nobody has seen:** the plan adds a dependency whose installation could run its code, so
+  planning does not start the build, as `plan.md` step 5 says.
+- **Nothing to change:** the right answer is to change nothing, or the ticket asks for something
+  that should not be built.
+- **Unverifiable work:** a step that checks the work still cannot run in full when run again.
+- **Missing inputs:** a stage cannot start, as its own first step describes.
+
+To stop:
+
+1. Comment on the ticket: what stopped the run and the evidence. When the answer is to change
+   nothing, make the case for it.
+2. When building, push the commits the branch holds. Leave any uncommitted work in the worktree, and
+   name the worktree in `run.md`.
+3. Finish the run record with the outcome `stopped`, and print `STOPPED: <one sentence>` as the
+   final line.
 
 ## Friction
 
@@ -90,7 +101,7 @@ anything, the list is "None".
 
 Friction is about the factory, not the ticket, so it goes only in the run record, never in a
 comment, a commit or the PR. Before the stage ends, append to `friction.md` one section per
-subagent, headed with the stage and the subagent's role (`## build: test-writer`), holding its
+subagent, headed with the stage and the subagent's role (`## build: builder`), holding its
 list, and one section for your own.
 
 ## The run record

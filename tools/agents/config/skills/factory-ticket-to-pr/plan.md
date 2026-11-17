@@ -8,9 +8,10 @@ nothing in the repo.
 Create the run folder and start `run.md` with its header and a `plan` section, as "The run
 record" in `SKILL.md` says.
 
-Read the ticket with all its comments (`gh issue view <n> -R <repo> --json
-title,body,comments,parent`). When `parent` is set, read that issue with its comments too.
-If it already has an approach or design comment, escalate: this skill plans tickets that have none.
+Read the ticket with all its comments
+(`gh issue view <n> -R <repo> --json title,body,comments,parent`). When `parent` is set, read that
+issue with its comments too. If it already has an approach or design comment, stop, as "Stop only
+here" in `SKILL.md` says: this skill plans tickets that have none.
 
 ## 2. Approach: three lenses, reconciled, then challenged
 
@@ -85,9 +86,16 @@ Then reconcile their outputs yourself:
    others rather than taken as given.
 4. Build one design from the reconciled result, not from any one run's design, and settle its open
    decisions under "Decisions nobody made".
+5. Spawn one subagent on Opus to attack the design's correctness plan, because a gap it misses shows
+   up only as surviving mutants once the code exists. Give it the approach comment's properties and
+   the reconciled design, and nothing from the runs that produced them. For each property, it names
+   concrete ways the property could break, and for each says what in the plan would stop it: a type
+   that makes it impossible, an assertion that halts on it, a recorded signal that shows it, or a
+   test that fails on it. A break nothing in the plan stops is a finding, under the same evidence
+   rule as the approach's attack. A real finding goes back into step 4 as whichever of a type, an
+   assertion, a signal or a test fits it best; "no evidence found" stands.
 
-If design needs an escalation, the approach comment stays on the ticket and the escalation comment
-follows it.
+If design has to stop, the approach comment stays on the ticket and the stop comment follows it.
 
 ## 4. Post the design
 
@@ -156,7 +164,7 @@ bash ~/Repos/ooloth/dotfiles/tools/rex/claude-tab.bash 'Issue <n> (<author>): fa
 ```
 
 and confirm that the JSON it prints names a pane. `<author>` is the ticket author's login. With
-neither set, escalate: nothing would show the build to anyone.
+neither set, stop, as "Stop only here" in `SKILL.md` says: nothing would show the build to anyone.
 
 `--unattended` comes first, as `cc.bash` requires, and starts the session in auto mode on every
 machine, never in bypass mode, because nobody watches it and it reads ticket text other people

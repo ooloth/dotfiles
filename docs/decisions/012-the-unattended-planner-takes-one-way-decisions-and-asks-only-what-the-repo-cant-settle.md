@@ -115,3 +115,11 @@ overruled a decision the planner classed as one-way because "a file format" cove
 agents read. `factory-ticket-to-pr` no longer keeps its own list of one-way categories. It triages
 each open choice with the three tests in the global `CLAUDE.md`'s "A choice found mid-work", decides
 it either way, and lists only those a test held for under "Decided without you".
+
+## Addendum (2026-11-17) — the factory asks nothing
+
+A run no longer escalates a decision. It decides from the target properties and puts what an
+attended session would ask into the draft PR, where closing the PR reverses it. It stops only where
+review would come too late (harm before review, a new dependency's code, work it cannot verify) or
+there is nothing for a PR to hold. The first two runs showed why: #237 escalated over a decision
+record's wording, and #262 escalated over a case its own approach had already resolved.
