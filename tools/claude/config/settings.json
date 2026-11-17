@@ -65,6 +65,7 @@
       }
     ]
   },
+  "idleCompaction": false,
   "includeGitInstructions": false,
   "permissions": {
     "allow": [
