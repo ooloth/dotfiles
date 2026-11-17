@@ -672,6 +672,14 @@ Skip and say nothing if execution went smoothly.
 - Jira (the Atlassian MCP tools and `acli`) - NEVER call a Jira tool, reads included, without first
   invoking the `use-jira` skill
 - YouTube - NEVER read a YouTube video's content without first invoking the `use-youtube` skill
+- **Doing something later in this session:** a one-shot `CronCreate` at the wall-clock time, on a
+  minute other than :00 or :30, with the whole instruction in its prompt. It fires only while this
+  Claude Code process is running and idle, and nothing limits how far ahead it can be set. Report
+  the next run time `CronCreate` or `CronList` prints. A wait of more than about an hour lets idle
+  compaction summarize the conversation first (`idleCompaction` in the settings reference), so when
+  the full context matters, add one-shot checks at most 45 minutes apart that change nothing. Work
+  that must run after the session closes is a cloud scheduled task (`/schedule`). A
+  `ScheduleWakeup` belongs to `/loop` and waits at most an hour.
 - `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
   programs (TUIs, REPLs). This is often the only way to visually verify an interactive program
   without asking the user to do it:
