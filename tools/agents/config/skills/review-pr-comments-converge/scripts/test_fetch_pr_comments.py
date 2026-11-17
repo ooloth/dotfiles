@@ -1033,9 +1033,10 @@ def test_a_deleted_account_never_answers_even_when_the_pr_authors_account_was_de
 
 # Review bodies and conversation comments
 #
-# An answerer's top-level post answers one only when it addresses the item's author: it opens with
-# the item's `thank` line, or names the author as `refer_as` does (`@login` for a person, the
-# BOT_NAMES name as a whole word for a bot).
+# An answerer's top-level post answers one only when it names the item's author: `@login` for a
+# person, where GitHub would render it as a mention (the `@` follows no word character, `.` or
+# `-`), or the BOT_NAMES name as a whole word for a bot. A reply that opens with the item's `thank`
+# line does, because the thank line names them.
 
 # An answer that addresses the default reviewer, `reviewer`.
 TO_REVIEWER = "@reviewer Thanks for the feedback:\n\n- ✅ Fixed."
@@ -1043,7 +1044,7 @@ DANA = author("dana")
 REX = author("rex-rx-agent", "Bot")
 
 
-def test_a_review_body_followed_by_the_authors_conversation_comment_is_answered_by_it(
+def test_a_review_body_is_answered_by_the_authors_later_comment_addressed_to_the_reviewer(
     harness: Harness,
 ) -> None:
     fixture = pr(
@@ -1055,7 +1056,7 @@ def test_a_review_body_followed_by_the_authors_conversation_comment_is_answered_
     assert verdict_of(stdout, "review", 1).startswith("yes (conversation comment 9002 by me at ")
 
 
-def test_a_review_body_followed_by_the_authors_review_with_a_body_is_answered_by_it(
+def test_a_review_body_is_answered_by_the_authors_later_review_addressed_to_the_reviewer(
     harness: Harness,
 ) -> None:
     fixture = pr(
@@ -1066,7 +1067,7 @@ def test_a_review_body_followed_by_the_authors_review_with_a_body_is_answered_by
     assert verdict_of(stdout, "review", 1).startswith("yes (review 2 by me at ")
 
 
-def test_a_conversation_comment_followed_by_the_authors_is_answered_by_it(
+def test_a_conversation_comment_is_answered_by_the_authors_later_comment_addressed_to_the_reviewer(
     harness: Harness,
 ) -> None:
     fixture = pr(
@@ -1593,7 +1594,7 @@ EVIDENCE_9002 = "yes (conversation comment 9002 by me at 2026-10-01T12:00:05Z)"
         ),
     ],
 )
-def test_an_answer_that_opens_with_the_items_thank_line_answers_it(
+def test_a_reply_opening_with_the_thank_line_answers_because_the_thank_line_names_the_author(
     harness: Harness, by: dict, body: str
 ) -> None:
     stdout = run_ok(harness, answered_by_9002(by, body))
@@ -1607,11 +1608,11 @@ def test_an_answer_that_opens_with_the_items_thank_line_answers_it(
         pytest.param("Done, and thanks @dana for spotting it.", id="in-the-middle"),
         pytest.param("Fixed, see @dana's note.", id="before-an-apostrophe"),
         pytest.param("Rebased on main.\n\ncc @dana", id="at-the-end"),
-        # A thank line that does not open the post is not an opening, but it still names dana.
+        # Where the thank line sits does not matter: it answers because it names dana.
         pytest.param("- ✅ Done.\n\n@dana Thanks for the feedback:", id="thank-line-not-first"),
         pytest.param("@DANA thanks, fixed.", id="different-case"),
-        # Anywhere means anywhere, even straight after another word.
-        pytest.param("cc foo@dana: fixed.", id="after-another-word"),
+        pytest.param("(@dana) fixed.", id="after-a-bracket"),
+        pytest.param("cc,@dana fixed.", id="after-a-comma"),
     ],
 )
 def test_an_answer_that_mentions_the_author_anywhere_answers_it(
@@ -1634,6 +1635,24 @@ def test_an_answer_that_addresses_another_reviewer_does_not_answer(harness: Harn
 
     assert verdict_of(stdout, "conversation", 9001) == "no"
     assert verdict_of(stdout, "conversation", 9002).startswith("yes (conversation comment 9003 ")
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        pytest.param("cc foo@dana: fixed.", id="after-another-word"),
+        pytest.param("Mailed x@dana.io about it.", id="in-an-email-address"),
+        pytest.param("See team.@dana for the plan.", id="after-a-dot"),
+        pytest.param("Ask ops-@dana about it.", id="after-a-hyphen"),
+        pytest.param("Ask ops_@dana about it.", id="after-an-underscore"),
+    ],
+)
+def test_an_at_login_github_would_not_render_as_a_mention_does_not_address_them(
+    harness: Harness, body: str
+) -> None:
+    stdout = run_ok(harness, answered_by_9002(DANA, body))
+
+    assert verdict_of(stdout, "conversation", 9001) == "no"
 
 
 @pytest.mark.parametrize(
@@ -1967,6 +1986,8 @@ ADDRESS_WORDS = [
     "@reviewer,",
     "@reviewers",
     "@reviewer-two",
+    "foo@reviewer",
+    "(@reviewer)",
     "@alice",
     "@ghost",
     "@me",
@@ -1997,14 +2018,12 @@ def addresses(body: str, by: dict | None) -> bool:
     if by is None:
         return False
     if by["__typename"] == "User":
-        thank = f"@{by['login']} Thanks for the feedback:"
-        mention = rf"@{re.escape(by['login'])}(?![A-Za-z0-9-])"
+        mention = rf"(?<![\w.-])@{re.escape(by['login'])}(?![A-Za-z0-9-])"
     elif by["__typename"] == "Bot" and by["login"] in NAMED_BOTS:
-        thank = f"Thanks for the feedback, {NAMED_BOTS[by['login']]}:"
         mention = rf"\b{re.escape(NAMED_BOTS[by['login']])}\b"
     else:
         return False
-    return body.lstrip().startswith(thank) or re.search(mention, body, re.IGNORECASE) is not None
+    return re.search(mention, body, re.IGNORECASE) is not None
 
 
 # For each author, words that address them and words that come close without addressing them.
@@ -2019,7 +2038,20 @@ NEAR_MISS_AUTHORS: dict[str, dict | None] = {
 NEAR_MISSES = [
     (
         "reviewer",
-        ["@reviewers", "@reviewer-two", "@reviewer2", "@reviewer", "@REVIEWER", "@reviewer,"],
+        [
+            "@reviewers",
+            "@reviewer-two",
+            "@reviewer2",
+            "foo@reviewer",
+            "x@reviewer.io",
+            "a.@reviewer",
+            "a-@reviewer",
+            "@reviewer",
+            "@REVIEWER",
+            "@reviewer,",
+            "(@reviewer)",
+            ",@reviewer",
+        ],
     ),
     ("rex", ["Rexford", "Trex", "rexes", "Rex", "REX", "rex:"]),
     ("ghost-named-person", ["@ghosts", "Thanks for the feedback:", "@ghost", "@Ghost"]),

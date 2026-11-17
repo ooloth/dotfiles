@@ -71,9 +71,10 @@ parallelism and isn't.
 [review-pr-comments-converge](./tools/agents/config/skills/review-pr-comments-converge/SKILL.md)
 does the same for reviewer feedback, and doesn't take the reviewer's word for it either: each
 comment is checked against the current code and marked valid, stale or mistaken before anything
-acts on it. Feedback the PR author already answered is skipped and listed with the evidence that
-counted as its answer, so a later run doesn't reply twice. What gets fixed automatically and what
-gets escalated turns on one question, does applying this require the author to make a choice.
+acts on it. Feedback already answered by a reply addressed to its reviewer, from the PR author
+or the account running the skill, is skipped and listed with the evidence that counted as its
+answer, so a later run doesn't reply twice. What gets fixed automatically and what gets escalated
+turns on one question, does applying this require the author to make a choice.
 
 [prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) proves or disproves a claim
 about the running system, given one sentence naming the claim or a PR, commit or URL. It sets the

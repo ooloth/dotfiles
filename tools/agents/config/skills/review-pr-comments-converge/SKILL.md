@@ -89,10 +89,12 @@ fetch. A deleted account's post never counts.
   <time>` (an answerer's reply is the thread's newest comment and nothing in it changed at or after
   it), or `conversation comment <id> by <login> at <time>` or `review <id> by <login> at <time>` (an
   answerer posted it after the review body or conversation comment was posted or last edited, and
-  it names that item's author as `refer_as` does, `@login` for a person or the `BOT_NAMES` name as
-  a whole word for a bot, in any case, as a reply opening with the item's `thank` line does). A
-  closing remark that names no one, such as "Rebased on main", answers nothing. A deleted or
-  `UNKNOWN` author cannot be addressed, so no top-level post answers their items.
+  it names that item's author as `refer_as` does, `@login` where GitHub would render it as a
+  mention for a person or the `BOT_NAMES` name as a whole word for a bot, in any case, as a reply
+  opening with the item's `thank` line does). One such post answers every earlier review body and
+  conversation comment from that author, not only the one it replies to. A closing remark that
+  names no one, such as "Rebased on main", answers nothing. A deleted or `UNKNOWN` author cannot
+  be addressed, so no top-level post answers their items.
 - `no` means nothing has answered it yet.
 - `n/a (yours)` marks an item only answerers wrote, which is not feedback.
 
@@ -539,10 +541,12 @@ Do not run any of these commands before receiving explicit approval in Phase 3.
 **Before the first post, check what changed since the saved fetch.** Once the fix is pushed, run
 the fetch helper and read the PR's commits and reviews again. List every review, comment and reply
 that is not in the saved fetch, every conversation comment whose edit time changed, and every
-commit this run did not make. An edit to a thread comment or review body after its answer shows up
-as an `answered` line change. Then compare each item's `answered` line in this fetch with the same
-item's line in the saved fetch, and list every item whose line changed, with both lines. Never carry
-a skip over: only the fresh fetch's `answered` lines say what is answered now.
+commit this run did not make. Then compare each item's `answered` line in this fetch with the
+same item's line in the saved fetch, and list every item whose line changed, with both lines. Never
+carry a skip over: only the fresh fetch's `answered` lines say what is answered now. The fetch
+prints no edit time for thread comments or review bodies, so an edit to one shows up only when it
+changes that item's `answered` line (an item marked `yes` turns `no`). An edit to an item already
+marked `no` is not detected by this check.
 
 - **The fetch or the read fails:** post nothing, and say which one failed, quoting the error. The
   check has not run, so what changed is unknown, not empty.
