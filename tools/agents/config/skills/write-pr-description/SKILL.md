@@ -93,9 +93,9 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   a grab-bag of independent checks
 - Write each item in "Expect to see X" tutorial style
 - Include evidence-providing observability signals to confirm correct behavior. Where a step has no
-  signal a reviewer could watch, tell the user before drafting, so the signal can be added to the
-  code; the PR body does not list gaps. Inside "Working Through to a Draft PR" or an unattended run,
-  name the gap in `missing.txt` instead
+  signal a reviewer could watch, the checklist says what signal would show it and when it could be
+  watched, and the user is told before drafting, so the signal can be added. Inside "Working Through
+  to a Draft PR" or an unattended run, also list it in `missing.txt`
 - Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
 - **Reviewer-frame**: every step must be executable on a laptop, before merging, without deploying
   anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any other
