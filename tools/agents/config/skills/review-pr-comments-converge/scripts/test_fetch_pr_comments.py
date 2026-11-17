@@ -1610,6 +1610,8 @@ def test_an_answer_that_opens_with_the_items_thank_line_answers_it(
         # A thank line that does not open the post is not an opening, but it still names dana.
         pytest.param("- ✅ Done.\n\n@dana Thanks for the feedback:", id="thank-line-not-first"),
         pytest.param("@DANA thanks, fixed.", id="different-case"),
+        # Anywhere means anywhere, even straight after another word.
+        pytest.param("cc foo@dana: fixed.", id="after-another-word"),
     ],
 )
 def test_an_answer_that_mentions_the_author_anywhere_answers_it(
@@ -1632,6 +1634,19 @@ def test_an_answer_that_addresses_another_reviewer_does_not_answer(harness: Harn
 
     assert verdict_of(stdout, "conversation", 9001) == "no"
     assert verdict_of(stdout, "conversation", 9002).startswith("yes (conversation comment 9003 ")
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        pytest.param("Thanks dana, fixed.", id="bare-login"),
+        pytest.param("Fixed the madana import.", id="inside-another-word"),
+    ],
+)
+def test_a_login_without_its_at_sign_does_not_address_them(harness: Harness, body: str) -> None:
+    stdout = run_ok(harness, answered_by_9002(DANA, body))
+
+    assert verdict_of(stdout, "conversation", 9001) == "no"
 
 
 @pytest.mark.parametrize(
