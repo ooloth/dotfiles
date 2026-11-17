@@ -3,24 +3,24 @@
 ## Rules of this stage
 
 When the work has to change the approach or the design, post a comment on the ticket saying what
-changes and which step of the chain it changes, as the global `CLAUDE.md` asks, before acting on
-it. Subagents report such changes under `PLAN CHANGES`, and return `escalate` only where
-"Decisions nobody made" in `SKILL.md` says to.
+changes and which step of the chain it changes, as the global `CLAUDE.md` asks, before acting on it.
+Subagents report such changes under `PLAN CHANGES`, and return `stop` only where "Stop only here" in
+`SKILL.md` says to.
 
 The steps of this skill are not decisions. Nobody is watching, so an unattended run verifies more
 than an attended one, never less. A step that does not run in full, such as a review with fewer
 reviewers than its skill names, a skipped mutant or a missing proof, is run again. If it still
-cannot run in full, escalate. A small diff is never a reason to run less.
+cannot run in full, stop. A small diff is never a reason to run less.
 
 A finding from any review is resolved only by a change that makes it no longer true: a fix to the
 code or the tests, or a correction to a claim that says more than is true. Recording the gap as
-known, in a doc or a comment, does not resolve it. Fix it or escalate it. A finding that the
-approach or the design should change is a change to the plan, as above.
+known, in a doc or a comment, does not resolve it. Fix it, or show it is wrong as step 8 says. A
+finding that the approach or the design should change is a change to the plan, as above.
 
 ## Your role
 
-You keep the ticket's approach and design comments, the step 4 table, a one-line outcome per step,
-and every escalation.
+You keep the ticket's approach and design comments, the step 4 table and a one-line outcome per
+step.
 
 Run artifacts go in `unattended/<issue>/` under your session's scratchpad directory. Pass its
 absolute path to every subagent. Subagents write logs there with shell redirection and return
@@ -35,11 +35,11 @@ same.
 Tell each subagent to end its reply with exactly this block, and nothing after it:
 
 ```
-STATUS: pass | fail | escalate
+STATUS: pass | fail | stop
 ARTIFACTS: <absolute paths of the logs and files it wrote>
 SUMMARY: <150 words or fewer>
 PLAN CHANGES: <each change to the approach or design it made, or "none">
-ESCALATION: <the decision needed and two or more numbered options, or "none">
+STOP: <what stopped it, as "Stop only here" in SKILL.md describes, or "none">
 FRICTION: <its Friction list, as SKILL.md describes, or "None">
 ```
 
@@ -54,17 +54,17 @@ line of at least one log. A `pass` you cannot confirm counts as a `fail`.
 2. Read the ticket with all its comments (`gh issue view <n> -R <repo> --json title,body,comments`).
 3. Find the approach comment (it starts with `# Approach`) and the design comment (it starts with
    `# Design`). The approach's property table (`P1`, `P2`, …) is the done-when: the work is done
-   when every property in it holds. If either comment is missing, escalate: this skill does not
-   plan.
+   when every property in it holds. If either comment is missing, stop: this skill does not plan.
 4. Confirm the worktree is clean and on its own branch, not the default branch.
 5. Spawn a **checks** subagent. It finds the repo's check and test commands (CLAUDE.md, AGENTS.md,
    CONTRIBUTING.md, justfile, package.json, CI config), runs every one, and writes each command's
-   full output to the artifacts directory. Its summary lists each command with its exit code and
-   the first failing lines. Keep the list of commands it found, since every later checks subagent
-   runs the same list. If any fail before you change anything, the base branch is already broken.
-   Where the fix is mechanical and needs no decision, such as a formatting or line-length problem,
-   send it to a subagent to fix in its own commit on this branch, and run the checks again. Escalate
-   only a failure whose fix needs a decision.
+   full output to the artifacts directory. Its summary lists each command with its exit code and the
+   first failing lines. Keep the list of commands it found, since every later checks subagent runs
+   the same list. If any fail before you change anything, the base branch is already broken. Where
+   the fix is mechanical and needs no decision, such as a formatting or line-length problem, send it
+   to a subagent to fix in its own commit on this branch, and run the checks again. A fix that needs
+   a decision is decided under "Decisions nobody made", made in its own commit, and named in the
+   PR's **What**.
 
 ## 2. Red
 
@@ -105,10 +105,10 @@ that makes its tests pass, following `uphold-standards`, adds each assertion fro
 each signal from **Telemetry**, and runs the full checks until green. It does not edit its tests
 from step 2. Choices the design did not make follow "Decisions nobody made" in `SKILL.md`.
 
-When it returns, confirm with `diff` against the copies in `red/` that the test files are
-unchanged. If they changed, the implementation is not trusted: escalate with the diff. Then commit
-the tests and the implementation together. Each time the builder returns from a later fix, repeat
-this check.
+When it returns, confirm with `diff` against the copies in `red/` that the test files are unchanged.
+If they changed, send the builder back to restore them and make the code pass them as written. Then
+commit the tests and the implementation together. Each time the builder returns from a later fix,
+repeat this check.
 
 ## 4. Audit the plan against the work
 
@@ -118,8 +118,8 @@ that implements it and shows it does what the design says: for a type step, the 
 impossible what the design says that step rules out; for an assertion, its condition and site; for a
 telemetry entry, what it records and where; for a test, the artifacts showing it fail and then pass.
 Confirm each row yourself with `grep`, `git` or by reading the code, rather than taking it from a
-summary. A row you cannot fill is unfinished work and goes back to the builder. A planned item that
-was deliberately left out is an escalation.
+summary. A row you cannot fill is unfinished work and goes back to the builder. A planned item
+deliberately left out is a change to the plan, recorded on the ticket as the rules above say.
 
 Then prove each property's protection can fail, with mutants chosen by someone other than the person
 who wrote the tests. Spawn a **mutant** subagent. Give it the repo path, the check commands and the
