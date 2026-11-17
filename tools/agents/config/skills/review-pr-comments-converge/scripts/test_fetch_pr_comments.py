@@ -1701,6 +1701,43 @@ def test_a_bot_is_addressed_only_by_its_name_as_a_whole_word(
     assert verdict_of(stdout, "conversation", 9001) == expected
 
 
+COPILOT = author("copilot-pull-request-reviewer", "Bot")
+EVIDENCE_REVIEW_ANSWER = "yes (conversation comment 9002 by me at 2026-10-01T12:00:05Z)"
+
+
+@pytest.mark.parametrize(
+    ("body", "expected"),
+    [
+        pytest.param("Thanks copilot", EVIDENCE_REVIEW_ANSWER, id="after-a-space"),
+        pytest.param("Thanks, Copilot.", EVIDENCE_REVIEW_ANSWER, id="before-a-final-dot"),
+        pytest.param("Fixed (Copilot).", EVIDENCE_REVIEW_ANSWER, id="in-brackets"),
+        pytest.param("Copilot: fixed.", EVIDENCE_REVIEW_ANSWER, id="before-a-colon"),
+        # Seen at d251d966: a file path holding the name marked Copilot's reviews answered.
+        pytest.param(
+            "Rebased on main and updated .github/copilot-instructions.md.",
+            "no",
+            id="in-a-dotfile-path",
+        ),
+        pytest.param("Renamed copilot-instructions.", "no", id="before-a-hyphen"),
+        pytest.param("See skills/shared/copilot-review.md.", "no", id="after-a-slash"),
+        pytest.param("Moved notes to copilot.md.", "no", id="before-a-file-extension"),
+        pytest.param("Moved it under foo/copilot.", "no", id="ending-a-path"),
+        pytest.param("Renamed my_copilot.", "no", id="after-an-underscore"),
+        pytest.param("Edited copilot/settings.", "no", id="before-a-slash"),
+    ],
+)
+def test_a_bot_is_addressed_only_where_its_name_stands_as_a_name(
+    harness: Harness, body: str, expected: str
+) -> None:
+    fixture = pr(
+        reviews=[review(1, "Copilot reviewed 3 files.", by=COPILOT, at=ts(0))],
+        comments=[conversation(9002, body, by=ME, at=ts(5))],
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "review", 1) == expected
+
+
 def test_an_unrelated_closing_remark_answers_nothing(harness: Harness) -> None:
     # Seen on michaeluloth.com#83: after several reviews the author left one closing remark, and
     # every review body was skipped as answered.
@@ -2020,7 +2057,8 @@ def addresses(body: str, by: dict | None) -> bool:
     if by["__typename"] == "User":
         mention = rf"(?<![\w.-])@{re.escape(by['login'])}(?![A-Za-z0-9-])"
     elif by["__typename"] == "Bot" and by["login"] in NAMED_BOTS:
-        mention = rf"\b{re.escape(NAMED_BOTS[by['login']])}\b"
+        name = re.escape(NAMED_BOTS[by["login"]])
+        mention = rf"(?<![\w./-]){name}(?![\w/-])(?!\.\w)"
     else:
         return False
     return re.search(mention, body, re.IGNORECASE) is not None
@@ -2035,7 +2073,7 @@ NEAR_MISS_AUTHORS: dict[str, dict | None] = {
 }
 # Near misses come first because Hypothesis draws early elements more often, and reviewer and
 # Rex first because they are the authors a near miss can wrongly address.
-NEAR_MISSES = [
+NEAR_MISSES: list[tuple[str, list[str]]] = [
     (
         "reviewer",
         [
@@ -2053,14 +2091,37 @@ NEAR_MISSES = [
             ",@reviewer",
         ],
     ),
-    ("rex", ["Rexford", "Trex", "rexes", "Rex", "REX", "rex:"]),
+    (
+        "rex",
+        [
+            ".github/rex-instructions.md",
+            "rex-instructions",
+            "skills/rex.md",
+            "rex.md",
+            "foo/rex",
+            "rex/notes",
+            "my_rex",
+            "Rexford",
+            "Trex",
+            "rexes",
+            "Rex",
+            "REX",
+            "rex:",
+            "(Rex)",
+            "Rex.",
+            "Thanks, Rex.",
+        ],
+    ),
     ("ghost-named-person", ["@ghosts", "Thanks for the feedback:", "@ghost", "@Ghost"]),
     ("deleted", ["@ghost", "Thanks for the feedback:", "a deleted account"]),
 ]
+NEAR_MISS_PAIRS = [(key, word) for key, words in NEAR_MISSES for word in words]
 
 
 @st.composite
 def top_level_timelines(draw: st.DrawFn) -> tuple[str, list[GenTopLevel]]:
+    # Drawn first, as one (author, word) pair, so every near miss is as likely as any other.
+    feedback_by, word = draw(st.sampled_from(NEAR_MISS_PAIRS))
     setup = draw(setups)
     items: list[GenTopLevel] = []
     for n in range(draw(st.integers(min_value=1, max_value=6))):
@@ -2073,11 +2134,9 @@ def top_level_timelines(draw: st.DrawFn) -> tuple[str, list[GenTopLevel]]:
     # Every timeline also ends with one feedback item, after all the activity above, and then an
     # answerer post holding one word: an address of that item's author or a near miss. Nothing
     # earlier can answer the item, so each example tests that one word.
-    feedback_by, near = draw(st.sampled_from(NEAR_MISSES))
     feedback = GenPost(NEAR_MISS_AUTHORS[feedback_by], 20, None, False, draw(offsets))
     answerers = [a for a in AUTHORS if is_answerer(a, setup)]
     answer = GenPost(draw(st.sampled_from(answerers)), 22 + draw(st.integers(0, 4)), None, False, 0)
-    word = draw(st.sampled_from(near))
     items.append(GenTopLevel("conversation comment", 9101, feedback, "Please fix."))
     items.append(GenTopLevel("conversation comment", 9102, answer, word))
     return setup, items

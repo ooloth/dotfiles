@@ -34,10 +34,10 @@ account never is one.
     newest comment and nothing in it changed at or after that reply, or for a review body or
     conversation comment, an answerer posted a conversation comment, or a review with a body, after
     it was posted or last edited, and that post names its author as `refer_as` does (`@login`
-    where GitHub would render it as a mention for a person, the BOT_NAMES name as a whole word for
-    a bot, either in any case), as a post opening with the item's `thank` line does. One such post
-    answers every earlier review body and conversation comment from that author, not only the one
-    it replies to. A deleted or UNKNOWN author cannot be addressed, so no top-level post answers
+    where GitHub would render it as a mention for a person, the BOT_NAMES name standing on its own
+    for a bot, not as part of a word, path or file name, either in any case), as a post opening with
+    the item's `thank` line does. One such post answers every earlier review body and conversation
+    comment from that author, not only the one it replies to. A deleted or UNKNOWN author cannot be addressed, so no top-level post answers
     their items. A same-second tie counts as new feedback.
   - `no` means nothing answered it yet.
   - `n/a (yours)` marks an item only answerers wrote.
@@ -434,7 +434,8 @@ def thread_verdict(
 
 def addresses(body: str, reviewer: Reviewer) -> bool:
     """Whether a top-level post is written to this reviewer: it names them as `refer_as` does,
-    `@login` where GitHub would render it as a mention for a person, which a post opening with their
+    `@login` where GitHub would render it as a mention for a person, or the BOT_NAMES name standing
+    on its own for a bot, not as part of a word, path or file name, which a post opening with their
     `thank` line also does. Decided from the Reviewer variant, so a deleted account or an author
     with no known name is never addressed, whatever the post says."""
     match reviewer:
@@ -442,7 +443,9 @@ def addresses(body: str, reviewer: Reviewer) -> bool:
             # Only where GitHub renders a mention: not inside a word, address or path.
             mention = rf"(?<![\w.-])@{re.escape(login)}(?![A-Za-z0-9-])"
         case Bot(login) if login in BOT_NAMES:
-            mention = rf"\b{re.escape(BOT_NAMES[login])}\b"
+            # Standing as a name, so a path such as .github/copilot-instructions.md is not one.
+            name = re.escape(BOT_NAMES[login])
+            mention = rf"(?<![\w./-]){name}(?![\w/-])(?!\.\w)"
         case Ghost() | Bot() | UnrecognisedActor():
             return False
         case _:
