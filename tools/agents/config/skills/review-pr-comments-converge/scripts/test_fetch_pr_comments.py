@@ -12,7 +12,7 @@ Field names in the fixtures are GitHub's own (`state`, `createdAt`, `lastEditedA
 `resolvedBy`), so the script reads them as it would read a real response.
 
 Run:
-  uv run --with pytest pytest \
+  uv run --with pytest --with hypothesis pytest \
     tools/agents/config/skills/review-pr-comments-converge/scripts/test_fetch_pr_comments.py
 """
 

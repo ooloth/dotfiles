@@ -26,9 +26,10 @@ that author, on the same rule: `@login` for a person, the BOT_NAMES name for a b
 script does not know, shows `UNKNOWN` in both so the caller asks rather than guesses.
 
 Each review with a body, each inline thread and each conversation comment also shows `answered`,
-whether it has been answered already, judged from the PR as it stands. An answerer is the PR's
-author or the gh login running this script, listed on the `# Answerers:` line under `# Source:`; a
-deleted account never is one.
+whether it has been answered already, judged from the PR as it stands. A resolved thread counts as
+answered whoever resolved it. For replies and top-level answers, an answerer is the PR's author or
+the gh login running this script, listed on the `# Answerers:` line under `# Source:`; a deleted
+account never is one.
   - `yes (...)` names the evidence: the thread was resolved, an answerer's reply is the thread's
     newest comment and nothing in it changed at or after that reply, or for a review body or
     conversation comment, an answerer posted a conversation comment, or a review with a body, after
@@ -439,7 +440,7 @@ def item_verdict(feedback: Post, answers: tuple[Answer, ...], answerers: Answere
 
 
 def not_posted_verdict(author: Reviewer, answerers: Answerers) -> Verdict:
-    """A review with no submit time: the run drafts a reply rather than skip feedback."""
+    """A post that was never submitted: the run drafts a reply rather than skip feedback."""
     return NotFeedback() if answerers.includes(author) else Unanswered()
 
 
@@ -727,12 +728,14 @@ def print_discussion(target: str, discussion: Discussion, verdicts: Verdicts) ->
 
     comment_idx = 1
     for review in [
-        r for r in reviews if r.get("body", "").strip() or threads_by_review.get(r["databaseId"])
+        r
+        for r in reviews
+        if (r.get("body") or "").strip() or threads_by_review.get(r["databaseId"])
     ]:
         rid = review["databaseId"]
         reviewer = parse_reviewer(review.get("author"))
         state = review["state"]
-        body = review.get("body", "").strip()
+        body = (review.get("body") or "").strip()
         review_threads = threads_by_review.get(rid, [])
         n = len(review_threads)
 

@@ -94,7 +94,10 @@ uv run <skill-base-dir>/../review-pr-comments-converge/scripts/fetch_pr_comments
 ```
 
 It prints every review, every inline thread with its replies, and every PR conversation comment,
-which is where some bots post their reviews. A default `gh pr view` shows none of these. Save the
+which is where some bots post their reviews. A default `gh pr view` shows none of these. Its
+`# Answerers:` and `answered` lines are judged from the PR author's side for
+review-pr-comments-converge, and this skill's reconciliation does not use them: its own "answered"
+verdict is separate. Save the
 output to a file in a new `mktemp -d` directory, with the PR's reviews from
 `gh pr view <n> -R <owner>/<repo> --json reviews` beside it, since the fetch helper leaves out a
 review with no body and no comments, such as a bare approval. With the reviewed head, these are the
