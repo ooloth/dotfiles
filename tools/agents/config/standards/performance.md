@@ -21,10 +21,21 @@ property. Nor is a benefit the system already owes by other means. The tell is
 a hop justified by price, by convenience, or by something another requirement
 already delivers.
 
-**Algorithmic complexity is justified.**
+**Algorithmic complexity is justified, and judged at the worst input a caller can send.**
 Operations over large or unbounded inputs use algorithms whose complexity is
-appropriate for the expected scale. O(n²) over large inputs is examined before
-merging, not after a production incident.
+appropriate for the expected scale and no higher than the task requires. Work
+that must read every element is linear at best, and a lookup or a check on a
+bounded part of the input needs less. Where someone else controls an input's
+size or shape, such as a client, a library or another team's data, the cost is
+judged at the worst input they can send, not the typical one. A cost that is
+fine on real traffic but quadratic on a crafted input is a denial of service.
+Two things bound it: a method whose worst case is proven, or a cap on the
+input's size before the work starts. Costs that hide behind a single line are
+examined like a nested loop: a backtracking regular expression, a recursive
+parser, string building that copies on every step. A cost paid on a shared
+path, such as an event loop, a lock or a hook that runs on every request or log
+entry, is paid again by everything waiting on that path. O(n²) over large
+inputs is examined before merging, not after a production incident.
 
 **Optimization is not premature.**
 Code is not made complex in the name of performance without profiling evidence

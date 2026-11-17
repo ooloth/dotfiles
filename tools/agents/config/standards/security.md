@@ -8,7 +8,10 @@ secret, and enforces identity and permission at every protected boundary.
 **Inputs are validated at system boundaries.**
 All data entering the system — API requests, CLI arguments, file uploads,
 environment variables, external API responses — is validated before use.
-Validation happens at the boundary, not deep in business logic.
+Validation happens at the boundary, not deep in business logic. Validation
+includes size: an input whose processing cost grows faster than its length is
+capped before that processing, or handled by a method whose worst case is
+bounded ("Algorithmic complexity is justified" in `performance.md`).
 
 **Injection is not possible.**
 SQL queries use parameterized statements. Shell commands don't interpolate
