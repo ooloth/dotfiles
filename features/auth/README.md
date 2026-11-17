@@ -8,7 +8,7 @@ auth          # check every login, then run the browser login for each expired o
 auth --check  # only report; logs in to nothing
 ```
 
-On the work laptop, `cc`, `ccc` and `ccy-vertex` (`tools/claude/shell.zsh`) run `auth` before
+On the work laptop, `cc`, `ccc` and `cc-vertex` (`tools/claude/shell.zsh`) run `auth` before
 starting a session, then start it whatever the checks found. With every login valid, that adds
 about a second, set by the slowest check, the recursion.com one. A check that hasn't answered
 after 10 seconds is reported as `couldn't check`, so a server that hangs costs at most that.

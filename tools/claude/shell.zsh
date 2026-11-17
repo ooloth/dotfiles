@@ -67,8 +67,11 @@ else
 fi
 
 if is_work; then
-  # Fallback to Vertex AI for current session only if I hit my subscription quota (Max 20x limit, I think)
-  ccy-vertex() {
+  # Starts a session on Vertex AI instead of the subscription, for when the subscription's usage
+  # limit is reached. It starts through cc.bash, so it gets the permission mode and related repos
+  # `cc` gets. The variables prefix the command rather than being exported, so only this session
+  # uses Vertex AI. To carry on a session that hit the limit: /exit, then cc-vertex --resume <id>.
+  cc-vertex() {
     if [[ -z "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
       error "PRIVATE_VERTEX_PROJECT is unset (see private.env.example), so there is no Vertex AI project"
       return 1
@@ -76,7 +79,7 @@ if is_work; then
 
     claude_work_logins
 
-    # Point to Vertex AI for this session only
-    claude --settings '{"env":{"CLAUDE_CODE_USE_VERTEX":"1","CLOUD_ML_REGION":"global","ANTHROPIC_VERTEX_PROJECT_ID":"'"${PRIVATE_VERTEX_PROJECT}"'"}}' --dangerously-skip-permissions "$@"
+    CLAUDE_CODE_USE_VERTEX=1 CLOUD_ML_REGION=global ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT}" \
+      bash "${DOTFILES}/tools/claude/cc.bash" "$@"
   }
 fi
