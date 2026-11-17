@@ -39,7 +39,7 @@ jobs:
       - name: Install bash
         run: >-
           brew install bash && brew unlink bash
-          && "$(brew --prefix)/opt/bash/bin/bash" --version | head -n 1
+          && "$(brew --prefix)/opt/bash/bin/bash" -c 'echo "Homebrew bash $BASH_VERSION"'
 
       # Every script starts with `#!/usr/bin/env bash`, so the bash on PATH is the one the checks
       # run scripts with

@@ -228,9 +228,9 @@ class HowDotfilesIsSpelled(unittest.TestCase):
         self.assertEqual(self.dotfiles_after_sourcing(REPO / "tools/bash/utils.bash"), str(REPO))
 
 
-# Homebrew's bash, which runs every `#!/usr/bin/env bash` script when it comes first on PATH, as
-# `brew install bash` puts it on this Mac. It is found at the opt path Homebrew keeps whether or not
-# `brew link` put it on PATH (Apple silicon, then Intel).
+# Homebrew's bash runs every `#!/usr/bin/env bash` script on a Mac whose PATH puts Homebrew's bin
+# folder first, as `brew shellenv` does in tools/zsh/config/core.zsh. The tests find it at the opt
+# path Homebrew keeps whether or not `brew link` put it on PATH (Apple silicon, then Intel).
 HOMEBREW_BASHES = ("/opt/homebrew/opt/bash/bin/bash", "/usr/local/opt/bash/bin/bash")
 
 
@@ -239,8 +239,10 @@ def bash_major_version(bash: str) -> int:
         [bash, "--norc", "--noprofile", "-c", 'printf "%s" "${BASH_VERSINFO[0]}"'],
         capture_output=True,
         text=True,
-        check=True,
+        check=False,
     )
+    if run.returncode != 0:
+        raise AssertionError(f"{bash} could not report its version: {run.stderr}")
     return int(run.stdout)
 
 
@@ -262,6 +264,9 @@ class UtilsOutsideACheckout(unittest.TestCase):
         if newer is None:
             self.fail(f"No bash 4 or newer at {' or '.join(HOMEBREW_BASHES)}: brew install bash")
         self.assertGreaterEqual(bash_major_version(newer), 4, newer)
+        if sys.platform == "darwin":
+            # Were /bin/bash newer, nothing here would show that the stop line works under 3.2
+            self.assertEqual(bash_major_version("/bin/bash"), 3, "/bin/bash on macOS")
         # On Linux both are /bin/bash, which then runs once
         self.bashes = tuple(dict.fromkeys(("/bin/bash", newer)))
         tmp = tempfile.TemporaryDirectory()
@@ -270,6 +275,8 @@ class UtilsOutsideACheckout(unittest.TestCase):
         self.utils = self.root / "not/a-checkout/utils.bash"
         self.utils.parent.mkdir(parents=True)
         shutil.copy2(REPO / "tools/bash/utils.bash", self.utils)
+        # stderr must hold only this line: a later line of utils.bash, such as sourcing
+        # tools/macos/utils.bash, would add to it
         self.bug_line = f"🚨 Bug: DOTFILES='{self.root}' does not hold tools/bash/utils.bash\n"
 
     def test_run_it_exits_1_after_its_bug_line_and_runs_nothing_more(self) -> None:
@@ -278,8 +285,6 @@ class UtilsOutsideACheckout(unittest.TestCase):
                 run = run_bash(f'"{bash}" "{self.utils}"', home=self.root)
                 self.assertEqual(run.returncode, 1, run.stderr)
                 self.assertEqual(run.stdout, "")
-                # A later line of utils.bash, such as sourcing tools/macos/utils.bash, would add
-                # to stderr
                 self.assertEqual(run.stderr, self.bug_line)
 
     def test_sourced_it_returns_1_to_its_sourcer_which_carries_on(self) -> None:
@@ -299,8 +304,6 @@ class UtilsOutsideACheckout(unittest.TestCase):
                 run = run_bash(f'"{bash}" "{sourcer}"', home=self.root)
                 self.assertEqual(run.returncode, 0, run.stderr)
                 self.assertEqual(run.stdout, "sourced file returned 1\n")
-                # A later line of utils.bash, such as sourcing tools/macos/utils.bash, would add
-                # to stderr
                 self.assertEqual(run.stderr, self.bug_line)
 
 
