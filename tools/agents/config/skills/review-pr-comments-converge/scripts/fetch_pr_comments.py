@@ -26,19 +26,23 @@ that author, on the same rule: `@login` for a person, the BOT_NAMES name for a b
 script does not know, shows `UNKNOWN` in both so the caller asks rather than guesses.
 
 Each review with a body, each inline thread and each conversation comment also shows `answered`,
-whether it has been answered already, judged from the PR as it stands. A resolved thread counts as
-answered whoever resolved it. For replies and top-level answers, an answerer is the PR's author or
-the gh login running this script, listed on the `# Answerers:` line under `# Source:`; a deleted
-account never is one.
-  - `yes (...)` names the evidence: the thread was resolved, an answerer's reply is the thread's
-    newest comment and nothing in it changed at or after that reply, or for a review body or
-    conversation comment, an answerer posted a conversation comment, or a review with a body, after
-    it was posted or last edited, and that post names its author as `refer_as` does (`@login`
-    where GitHub would render it as a mention for a person, the BOT_NAMES name standing on its own
-    for a bot, not as part of a word, path or file name, either in any case), as a post opening with
-    the item's `thank` line does. One such post answers every earlier review body and conversation
-    comment from that author, not only the one it replies to. A deleted or UNKNOWN author cannot be
-    addressed, so no top-level post answers their items. A same-second tie counts as new feedback.
+whether it has been answered already, judged from the PR as it stands. An answerer is the PR's
+author or the gh login running this script, listed on the `# Answerers:` line under `# Source:`; a
+deleted account never is one. A thread comment is timed from when it was published, not drafted.
+  - `yes (...)` names the evidence:
+    - an inline thread was resolved, by anyone, and no other account's comment was posted or
+      edited at or after the latest answerer's reply in it;
+    - or an answerer's reply is the thread's newest comment and nothing in it changed at or after
+      that reply;
+    - or for a review body or conversation comment, an answerer posted a conversation comment, or a
+      review with a body, after it was posted or last edited, and that post names its author as
+      `refer_as` does: `@login` where GitHub would render it as a mention for a person, the
+      BOT_NAMES name standing on its own for a bot, not as part of a word, path or file name,
+      either in any case and outside code spans and code blocks, as a post opening with the item's
+      `thank` line does. One such post answers every earlier review body and conversation comment
+      from that author, not only the one it replies to. A deleted or UNKNOWN author cannot be
+      addressed, so no top-level post answers their items.
+    A same-second tie counts as new feedback.
   - `no` means nothing answered it yet.
   - `n/a (yours)` marks an item only answerers wrote.
 Pending (unsubmitted) posts never answer anything, and neither does the empty review GitHub creates
@@ -47,7 +51,7 @@ for an inline reply.
 Every page of every list is fetched, so nothing is left out. The script exits 1 instead of printing
 a partial picture when a thread has more replies than one request returns, when a list runs past
 MAX_PAGES, when gh fails, or when a time, a comment's state or the gh login cannot be read, since
-then no item could be judged.
+then not every item could be judged.
 
 Callers: the review-pr-comments-converge skill (replies and resolves threads) and the review-code
 skill (reconciles earlier reviews). A change to the output format reaches both. The monitor-prs
@@ -100,6 +104,7 @@ query(
               author { login __typename }
               state
               createdAt
+              publishedAt
               lastEditedAt
               path
               line
@@ -145,8 +150,10 @@ LISTS = (("threads", "reviewThreads"), ("reviews", "reviews"), ("comments", "com
 
 
 # The name each review bot is thanked by. A bot is never @-mentioned: rex-rx starts a new review
-# whenever its handle is mentioned on a PR. monitor-prs also reads these keys as its list of review
-# bots, so a top-level comment from any bot listed here counts there as feedback to prepare.
+# whenever its handle is mentioned on a PR. The name also decides what counts as answered: an
+# answerer's top-level post that names the bot by it answers that bot's earlier feedback. monitor-prs
+# also reads these keys as its list of review bots, so a top-level comment from any bot listed here
+# counts there as feedback to prepare.
 BOT_NAMES = {"rex-rx-agent": "Rex", "copilot-pull-request-reviewer": "Copilot"}
 
 
@@ -347,7 +354,12 @@ class Verdicts:
     conversation: dict[int, Verdict]
 
 
-TIME_FIELDS = {"submittedAt": "submitted", "createdAt": "created", "lastEditedAt": "edited"}
+TIME_FIELDS = {
+    "submittedAt": "submitted",
+    "publishedAt": "published",
+    "createdAt": "created",
+    "lastEditedAt": "edited",
+}
 
 
 def parse_time(value: object, what: str) -> datetime | Unreadable:
@@ -364,11 +376,12 @@ def parse_time(value: object, what: str) -> datetime | Unreadable:
 
 
 def parse_post(label: str, node: dict, posted_key: str) -> Post | Unreadable:
-    """`posted_key` names the field that holds when the post went public."""
+    """`posted_key` names the field that holds when the post went public. `changed_at` is the
+    later of that time and the last edit."""
     times: list[datetime] = []
     posted_at: datetime | None = None
     reasons: list[str] = []
-    for key in dict.fromkeys((posted_key, "createdAt", "lastEditedAt")):
+    for key in (posted_key, "lastEditedAt"):
         raw = node.get(key)
         if key == "lastEditedAt" and raw is None:
             continue
@@ -379,6 +392,8 @@ def parse_post(label: str, node: dict, posted_key: str) -> Post | Unreadable:
                 times.append(moment)
                 if key == posted_key:
                     posted_at = moment
+            case unexpected:
+                assert_never(unexpected)
     if reasons:
         return Unreadable(tuple(reasons))
     assert posted_at is not None, f"{label} parsed with no posted time"
@@ -391,7 +406,9 @@ def parse_thread_comment(node: dict) -> Post | NotPosted | Unreadable:
     label = f"thread comment {node['databaseId']}"
     match node.get("state"):
         case "SUBMITTED":
-            return parse_post(label, node, "createdAt")
+            # Published, not created: a comment drafted in a pending review is seen only once
+            # the review is submitted.
+            return parse_post(label, node, "publishedAt")
         case "PENDING":
             return NotPosted(parse_reviewer(node.get("author")))
         case state:
@@ -415,12 +432,22 @@ def thread_verdict(
     """`posts` are the thread's posted comments; `resolved_by` is None while it is unresolved."""
     if all(answerers.includes(post.author) for post in posts):
         return NotFeedback()
-    if resolved_by is not None:
-        return Answered(Resolved(resolved_by))
     replies = [post for post in posts if answerers.includes(post.author)]
-    if not replies:
+    latest = max(replies, key=lambda post: post.posted_at, default=None)
+    # A resolution stands unless a reviewer posted or edited at or after the latest answerer reply,
+    # so resolving a thread does not hide a follow-up nobody answered.
+    if resolved_by is not None and (
+        latest is None
+        or all(
+            post.changed_at < latest.posted_at
+            for post in posts
+            if not answerers.includes(post.author)
+        )
+    ):
+        return Answered(Resolved(resolved_by))
+    if latest is None:
         return Unanswered()
-    reply = max(replies, key=lambda post: post.posted_at)
+    reply = latest
     others = [post for post in posts if post is not reply]
     # Strictly before, so a post or edit in the same moment as the reply counts as new feedback.
     if any(post.changed_at >= reply.posted_at for post in others):
@@ -441,7 +468,7 @@ def addresses(body: str, reviewer: Reviewer) -> bool:
     match reviewer:
         case Person(login):
             # Only where GitHub renders a mention: not inside a word, address or path.
-            mention = rf"(?<![\w.-])@{re.escape(login)}(?![A-Za-z0-9-])"
+            mention = rf"(?<![\w.-])@{re.escape(login)}(?![\w-])"
         case Bot(login) if login in BOT_NAMES:
             # Standing as a name, so a path such as .github/copilot-instructions.md is not one.
             name = re.escape(BOT_NAMES[login])
@@ -450,7 +477,14 @@ def addresses(body: str, reviewer: Reviewer) -> bool:
             return False
         case _:
             assert_never(reviewer)
-    return re.search(mention, body, re.IGNORECASE) is not None
+    return re.search(mention, outside_code(body), re.IGNORECASE) is not None
+
+
+def outside_code(body: str) -> str:
+    """The body with fenced code blocks and inline code spans blanked out, since GitHub renders no
+    mention inside code, and a name quoted in code is not written to anyone."""
+    body = re.sub(r"```.*?```", " ", body, flags=re.DOTALL)
+    return re.sub(r"`[^`\n]*`", " ", body)
 
 
 def item_verdict(feedback: Post, answers: tuple[Answer, ...], answerers: Answerers) -> Verdict:
@@ -501,6 +535,8 @@ def judge_discussion(discussion: Discussion) -> Verdicts | Unreadable:
                     pass
                 case Post() as post:
                     posts.append(post)
+                case unexpected:
+                    assert_never(unexpected)
         thread_posts[thread["id"]] = tuple(posts)
 
     reviews: dict[int, Post | NotPosted] = {}
@@ -510,6 +546,8 @@ def judge_discussion(discussion: Discussion) -> Verdicts | Unreadable:
                 reasons.extend(found)
             case Post() | NotPosted() as review:
                 reviews[node["databaseId"]] = review
+            case unexpected:
+                assert_never(unexpected)
 
     conversation: dict[int, Post] = {}
     for node in discussion.conversation:
@@ -518,6 +556,8 @@ def judge_discussion(discussion: Discussion) -> Verdicts | Unreadable:
                 reasons.extend(found)
             case Post() as post:
                 conversation[node["databaseId"]] = post
+            case unexpected:
+                assert_never(unexpected)
 
     if reasons:
         return Unreadable(tuple(reasons))
@@ -747,6 +787,8 @@ def main() -> None:
             )
         case Verdicts() as verdicts:
             print_discussion(target, discussion, verdicts)
+        case unexpected:
+            assert_never(unexpected)
 
 
 def print_discussion(target: str, discussion: Discussion, verdicts: Verdicts) -> None:
@@ -829,7 +871,7 @@ def print_discussion(target: str, discussion: Discussion, verdicts: Verdicts) ->
                     print("  REPLIES:")
                     for reply in comments[1:]:
                         replier = login_of(parse_reviewer(reply.get("author")))
-                        print(f"    {replier}: {reply['body'].strip()}")
+                        print(indent(f"{replier}: {reply['body'].strip()}", "    "))
                 comment_idx += 1
 
         print()
@@ -871,7 +913,7 @@ def print_discussion(target: str, discussion: Discussion, verdicts: Verdicts) ->
                 print("  REPLIES:")
                 for reply in comments[1:]:
                     replier = login_of(parse_reviewer(reply.get("author")))
-                    print(f"    {replier}: {reply['body'].strip()}")
+                    print(indent(f"{replier}: {reply['body'].strip()}", "    "))
             comment_idx += 1
 
         print()

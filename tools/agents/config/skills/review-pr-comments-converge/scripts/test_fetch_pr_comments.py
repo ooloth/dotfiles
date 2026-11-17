@@ -8,8 +8,8 @@ author, which default to `me`, so a fixture names them only when a test is about
 GitHub, the fake returns only the fields the script's query names, so a field the script reads
 without requesting it is missing here too.
 
-Field names in the fixtures are GitHub's own (`state`, `createdAt`, `lastEditedAt`, `submittedAt`,
-`resolvedBy`), so the script reads them as it would read a real response.
+Field names in the fixtures are GitHub's own (`state`, `createdAt`, `publishedAt`, `lastEditedAt`,
+`submittedAt`, `resolvedBy`), so the script reads them as it would read a real response.
 
 Run:
   uv run --with pytest --with hypothesis pytest \
@@ -175,6 +175,7 @@ def thread_comment(
     *,
     by: dict | None = REVIEWER,
     at: str = "2026-10-01T12:00:00Z",
+    published: str | None = None,
     edited: str | None = None,
     state: str | None = "SUBMITTED",
     review_id: int | None = None,
@@ -193,6 +194,9 @@ def thread_comment(
         "pullRequestReview": {"databaseId": review_id} if review_id else None,
         "state": state,
         "createdAt": at,
+        # When it went public. A comment written in a pending review is created then and
+        # published when the review is submitted; a pending one has not been published.
+        "publishedAt": None if state == "PENDING" else (published or at),
         "lastEditedAt": edited,
     }
 
@@ -801,7 +805,10 @@ def test_an_orphan_thread_opened_by_a_deleted_account_prints(harness: Harness) -
 
     stdout = run_ok(harness, pr([thread_of(comments)]))
 
-    assert "COMMENT [1]  ghost @ src/other.py:7" in stdout.splitlines()
+    # Only the header's tail is pinned, so a change to the `[1]` label does not break this.
+    headers = [line for line in stdout.splitlines() if line.startswith("COMMENT [")]
+    assert len(headers) == 1
+    assert headers[0].endswith("]  ghost @ src/other.py:7"), headers
 
 
 @pytest.mark.parametrize(
@@ -1362,16 +1369,33 @@ def unjudgeable_review() -> dict:
             pr(
                 [
                     thread_of(
-                        [thread_comment(101, at=ts(0)), {**thread_comment(102), "createdAt": None}]
+                        [
+                            thread_comment(101, at=ts(0)),
+                            {**thread_comment(102), "createdAt": None, "publishedAt": None},
+                        ]
                     )
                 ]
             ),
-            ["102", "created"],
-            id="posted-thread-comment-with-no-created-time",
+            ["102", ("created", "published")],
+            id="posted-thread-comment-with-no-times",
+        ),
+        pytest.param(
+            pr(
+                [
+                    thread_of(
+                        [
+                            thread_comment(101, at=ts(0)),
+                            {**thread_comment(102), "publishedAt": None},
+                        ]
+                    )
+                ]
+            ),
+            ["102", "published"],
+            id="posted-thread-comment-with-no-published-time",
         ),
         pytest.param(
             pr([thread_of([thread_comment(101, at=ts(0)), thread_comment(102, at="yesterday")])]),
-            ["102", "created"],
+            ["102", ("created", "published")],
             id="unreadable-thread-comment-time",
         ),
         pytest.param(
@@ -1538,7 +1562,8 @@ def test_the_evidence_gives_when_the_answer_was_posted_not_last_edited(harness: 
 
 
 def test_a_thread_counts_as_resolved_only_when_github_says_it_is(harness: Harness) -> None:
-    # resolvedBy can outlive an unresolve, and is null when the resolver's account was deleted.
+    # `isResolved` decides: a `resolvedBy` on an unresolved thread does not count, and a resolved
+    # thread whose `resolvedBy` is null still counts, printed as resolved by ghost.
     unresolved = {**thread_of([thread_comment(101, review_id=1, at=ts(0))]), "resolvedBy": ME}
     by_deleted = {
         **thread_of([thread_comment(201, review_id=1, at=ts(0))]),
@@ -1613,8 +1638,6 @@ def test_a_reply_opening_with_the_thank_line_answers_because_the_thank_line_name
         pytest.param("@DANA thanks, fixed.", id="different-case"),
         pytest.param("(@dana) fixed.", id="after-a-bracket"),
         pytest.param("cc,@dana fixed.", id="after-a-comma"),
-        # GitHub logins hold no underscore, so `@dana_` mentions dana.
-        pytest.param("Thanks @dana_, fixed.", id="before-an-underscore"),
     ],
 )
 def test_an_answer_that_mentions_the_author_anywhere_answers_it(
@@ -1647,6 +1670,11 @@ def test_an_answer_that_addresses_another_reviewer_does_not_answer(harness: Harn
         pytest.param("See team.@dana for the plan.", id="after-a-dot"),
         pytest.param("Ask ops-@dana about it.", id="after-a-hyphen"),
         pytest.param("Ask ops_@dana about it.", id="after-an-underscore"),
+        # GitHub does not link `@dana_`, though logins hold no underscore.
+        pytest.param("Thanks @dana_, fixed.", id="before-an-underscore"),
+        pytest.param("Fixed what `@dana` flagged.", id="in-inline-code"),
+        pytest.param("Done.\n\n```\n@dana\n```", id="in-a-fenced-code-block"),
+        pytest.param("Done.\n\n```text\ncc @dana\n```\n", id="in-a-fenced-block-with-a-language"),
     ],
 )
 def test_an_at_login_github_would_not_render_as_a_mention_does_not_address_them(
@@ -1726,6 +1754,13 @@ EVIDENCE_REVIEW_ANSWER = "yes (conversation comment 9002 by me at 2026-10-01T12:
         pytest.param("Moved it under foo/copilot.", "no", id="ending-a-path"),
         pytest.param("Renamed my_copilot.", "no", id="after-an-underscore"),
         pytest.param("Edited copilot/settings.", "no", id="before-a-slash"),
+        pytest.param("Fixed what `copilot` flagged.", "no", id="in-inline-code"),
+        pytest.param("Done.\n\n```\nCopilot\n```", "no", id="in-a-fenced-code-block"),
+        pytest.param(
+            "Fixed what `copilot` flagged, thanks Copilot.",
+            EVIDENCE_REVIEW_ANSWER,
+            id="named-outside-code-too",
+        ),
         pytest.param("See settings.copilot for it.", "no", id="after-a-dot"),
         pytest.param("Set up pre-copilot hooks.", "no", id="after-a-hyphen"),
         pytest.param("Edit copilot_instructions.", "no", id="before-an-underscore"),
@@ -1745,8 +1780,7 @@ def test_a_bot_is_addressed_only_where_its_name_stands_as_a_name(
 
 
 def test_an_unrelated_closing_remark_answers_nothing(harness: Harness) -> None:
-    # Seen on michaeluloth.com#83: after several reviews the author left one closing remark, and
-    # every review body was skipped as answered.
+    # A closing remark that names no reviewer answers none of the reviews before it.
     copilot = author("copilot-pull-request-reviewer", "Bot")
     fixture = pr(
         reviews=[
@@ -1839,6 +1873,181 @@ def test_one_post_to_an_author_answers_all_their_earlier_feedback(harness: Harne
     assert verdict_of(stdout, "review", 2) == EVIDENCE_9002
     assert verdict_of(stdout, "conversation", 9001) == EVIDENCE_9002
     assert verdict_of(stdout, "conversation", 9003) == "no"
+
+
+# Edges found in review
+
+
+def test_a_thread_comment_counts_from_when_it_was_published_not_drafted(harness: Harness) -> None:
+    # The follow-up was written in a pending review at 12:20 and published at 12:40, after the
+    # author's reply at 12:30, so the reply does not answer it.
+    comments = [
+        thread_comment(101, review_id=1, at=ts(0)),
+        thread_comment(102, "Not quite.", at=ts(1200), published=ts(2400)),
+        thread_comment(103, "Done.", by=ME, at=ts(1800)),
+    ]
+    stdout = run_ok(harness, pr([thread_of(comments)], [review(1, "")]))
+
+    assert verdict_of(stdout, "thread", 101) == "no"
+
+
+def test_a_reply_drafted_before_a_comment_but_published_after_it_answers_it(
+    harness: Harness,
+) -> None:
+    comments = [
+        thread_comment(101, review_id=1, at=ts(0)),
+        thread_comment(102, "Done.", by=ME, at=ts(600), published=ts(1800)),
+        thread_comment(103, "Also this.", at=ts(1200)),
+    ]
+    stdout = run_ok(harness, pr([thread_of(comments)], [review(1, "")]))
+
+    assert verdict_of(stdout, "thread", 101) == "yes (reply 102 by me at 2026-10-01T12:30:00Z)"
+
+
+@pytest.mark.parametrize(
+    ("comments", "expected"),
+    [
+        pytest.param(
+            [
+                thread_comment(101, review_id=1, at=ts(0)),
+                thread_comment(102, "Done.", by=ME, at=ts(5)),
+                thread_comment(103, "Not quite.", at=ts(9)),
+            ],
+            "no",
+            id="a-follow-up-after-the-reply",
+        ),
+        pytest.param(
+            [
+                thread_comment(101, review_id=1, at=ts(0), edited=ts(5)),
+                thread_comment(102, "Done.", by=ME, at=ts(5)),
+            ],
+            "no",
+            id="an-edit-in-the-same-second-as-the-reply",
+        ),
+        pytest.param(
+            [thread_comment(101, review_id=1, at=ts(0)), thread_comment(102, "+1", at=ts(3))],
+            "yes (resolved by me)",
+            id="no-reply-from-an-answerer",
+        ),
+        pytest.param(
+            [
+                thread_comment(101, review_id=1, at=ts(0)),
+                thread_comment(102, "Done.", by=ME, at=ts(5)),
+            ],
+            "yes (resolved by me)",
+            id="the-reply-is-the-latest-activity",
+        ),
+    ],
+)
+def test_a_resolved_thread_does_not_hide_feedback_after_the_latest_reply(
+    harness: Harness, comments: list[dict], expected: str
+) -> None:
+    stdout = run_ok(harness, pr([thread_of(comments, resolved_by=ME)], [review(1, "")]))
+
+    assert verdict_of(stdout, "thread", 101) == expected
+
+
+@pytest.mark.parametrize(
+    ("body", "expected"),
+    [
+        pytest.param("`@dana` aside: thanks @dana, fixed.", EVIDENCE_9002, id="after-inline-code"),
+        pytest.param("```\n@dana\n```\nThanks @dana.", EVIDENCE_9002, id="after-a-fenced-block"),
+    ],
+)
+def test_a_mention_outside_code_answers_even_when_the_post_also_holds_code(
+    harness: Harness, body: str, expected: str
+) -> None:
+    stdout = run_ok(harness, answered_by_9002(DANA, body))
+
+    assert verdict_of(stdout, "conversation", 9001) == expected
+
+
+FORGED = "  answered   : yes (resolved by me)"
+
+
+@pytest.mark.parametrize(
+    "review_id", [pytest.param(1, id="under-a-review"), pytest.param(None, id="orphan")]
+)
+def test_a_multi_line_reply_prints_fully_indented(harness: Harness, review_id: int | None) -> None:
+    # A reply whose own text looks like the script's line must not read as the thread's verdict.
+    comments = [
+        thread_comment(101, review_id=review_id, at=ts(0)),
+        thread_comment(102, f"Not done.\n{FORGED}\nStill broken.", at=ts(5)),
+    ]
+    stdout = run_ok(harness, pr([thread_of(comments)], [review(1, "")] if review_id else []))
+
+    lines = stdout.splitlines()
+    assert [line for line in lines if line.startswith("  answered   :")] == ["  answered   : no"]
+    assert verdicts(stdout) == {("thread", "101"): ["no"]}
+    holding = [line for line in lines if FORGED.strip() in line]
+    assert holding, stdout
+    assert all(line.startswith("    ") for line in holding), holding
+
+
+@pytest.mark.parametrize(
+    ("answer_at", "expected"),
+    [
+        pytest.param(ts(5), "no", id="between-started-and-submitted"),
+        pytest.param(
+            ts(15),
+            "yes (conversation comment 9002 by me at 2026-10-01T12:00:15Z)",
+            id="after-submitted",
+        ),
+    ],
+)
+def test_a_review_counts_as_feedback_from_when_it_was_submitted(
+    harness: Harness, answer_at: str, expected: str
+) -> None:
+    feedback = {**review(1, "Please fix.", at=ts(10)), "createdAt": ts(0)}
+    fixture = pr(
+        reviews=[feedback], comments=[conversation(9002, TO_REVIEWER, by=ME, at=answer_at)]
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "review", 1) == expected
+
+
+def test_an_orphan_thread_reply_from_a_deleted_account_prints_as_ghost(harness: Harness) -> None:
+    comments = [
+        thread_comment(301, "Orphan note.", path="src/other.py", line=7, at=ts(0)),
+        thread_comment(302, "Agreed.", by=None, at=ts(5)),
+    ]
+    stdout = run_ok(harness, pr([thread_of(comments)]))
+
+    assert "    ghost: Agreed." in stdout.splitlines()
+    assert verdict_of(stdout, "thread", 301) == "no"
+
+
+def test_a_pr_opened_by_a_bot_treats_that_bot_as_its_author(harness: Harness) -> None:
+    dependabot = author("dependabot", "Bot")
+    fixture = pr(
+        [
+            thread_of(
+                [
+                    thread_comment(101, review_id=2, by=DANA, at=ts(0)),
+                    thread_comment(102, "Done.", by=ME, at=ts(5)),
+                ]
+            )
+        ],
+        [review(1, "Bumps foo from 1.0 to 1.1.", by=dependabot, at=ts(0)), review(2, "", by=DANA)],
+        [
+            conversation(9001, "Rebased.", by=dependabot, at=ts(1)),
+            conversation(9002, "Note.", by=author("renovate", "Bot"), at=ts(2)),
+            conversation(9003, "Please fix.", by=DANA, at=ts(3)),
+            conversation(9004, "@dana Thanks for the feedback: done.", by=ME, at=ts(6)),
+        ],
+        pr_author=dependabot,
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert "# Answerers: dependabot (PR author), me (gh login)" in stdout.splitlines()
+    assert verdict_of(stdout, "review", 1) == "n/a (yours)"
+    assert verdict_of(stdout, "conversation", 9001) == "n/a (yours)"
+    assert verdict_of(stdout, "conversation", 9002) == "no"
+    assert verdict_of(stdout, "conversation", 9003) == (
+        "yes (conversation comment 9004 by me at 2026-10-01T12:00:06Z)"
+    )
+    assert verdict_of(stdout, "thread", 101) == "yes (reply 102 by me at 2026-10-01T12:00:05Z)"
 
 
 # Generated timelines
@@ -2037,6 +2246,8 @@ ADDRESS_WORDS = [
     "Rex",
     "rex:",
     "Rexford",
+    "`Rex`",
+    "@reviewer_",
     "Trex",
     "Thanks for the feedback, Rex:",
     "@reviewer Thanks for the feedback:",
@@ -2061,13 +2272,19 @@ def addresses(body: str, by: dict | None) -> bool:
     if by is None:
         return False
     if by["__typename"] == "User":
-        mention = rf"(?<![\w.-])@{re.escape(by['login'])}(?![A-Za-z0-9-])"
+        mention = rf"(?<![\w.-])@{re.escape(by['login'])}(?![\w-])"
     elif by["__typename"] == "Bot" and by["login"] in NAMED_BOTS:
         name = re.escape(NAMED_BOTS[by["login"]])
         mention = rf"(?<![\w./-]){name}(?![\w/-])(?!\.\w)"
     else:
         return False
-    return re.search(mention, body, re.IGNORECASE) is not None
+    return re.search(mention, outside_code(body), re.IGNORECASE) is not None
+
+
+def outside_code(body: str) -> str:
+    """The body with fenced code blocks and inline code spans blanked out."""
+    body = re.sub(r"```.*?```", " ", body, flags=re.DOTALL)
+    return re.sub(r"`[^`\n]*`", " ", body)
 
 
 # For each author, words that address them and words that come close without addressing them.
@@ -2077,8 +2294,8 @@ NEAR_MISS_AUTHORS: dict[str, dict | None] = {
     "ghost-named-person": author("ghost"),
     "deleted": None,
 }
-# Near misses come first because Hypothesis draws early elements more often, and reviewer and
-# Rex first because they are the authors a near miss can wrongly address.
+# Hypothesis shrinks a failing example toward the first elements of a list, so near misses come
+# first: a failure then shrinks to the near miss that caused it, not to an exact address.
 NEAR_MISSES: list[tuple[str, list[str]]] = [
     (
         "reviewer",
@@ -2086,6 +2303,9 @@ NEAR_MISSES: list[tuple[str, list[str]]] = [
             "@reviewers",
             "@reviewer-two",
             "@reviewer2",
+            "@reviewer_",
+            "`@reviewer`",
+            "```\n@reviewer\n```",
             "foo@reviewer",
             "x@reviewer.io",
             "a.@reviewer",
@@ -2108,6 +2328,7 @@ NEAR_MISSES: list[tuple[str, list[str]]] = [
             "rex/notes",
             "my_rex",
             "Rexford",
+            "`Rex`",
             "Trex",
             "rexes",
             "Rex",
@@ -2126,7 +2347,8 @@ NEAR_MISS_PAIRS = [(key, word) for key, words in NEAR_MISSES for word in words]
 
 @st.composite
 def top_level_timelines(draw: st.DrawFn) -> tuple[str, list[GenTopLevel]]:
-    # Drawn first, as one (author, word) pair, so every near miss is as likely as any other.
+    # Drawn as one (author, word) pair from a flat list, so a near miss for Rex does not first
+    # need Rex drawn as the author.
     feedback_by, word = draw(st.sampled_from(NEAR_MISS_PAIRS))
     setup = draw(setups)
     items: list[GenTopLevel] = []
