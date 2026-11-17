@@ -90,8 +90,119 @@ class WhenSessionsMoveBack(unittest.TestCase):
 
     def test_the_latest_reset_times_are_kept(self) -> None:
         state = PS.State(resets_at={"five_hour": 1.0, "seven_day": 2.0})
-        after = PS.after_tick(state, NOW, {"five_hour": 3.0})
+        after = PS.after_tick(state, NOW, {"five_hour": seen(10, 3.0)})
         self.assertEqual(dict(after.resets_at), {"five_hour": 3.0, "seven_day": 2.0})
+
+
+def seen(used: float, resets_at: float | None):
+    return PS.UsageSeen(used, resets_at)
+
+
+class WhenSessionsMoveToVertex(unittest.TestCase):
+    @given(
+        five=st.floats(min_value=0, max_value=150),
+        seven=st.floats(min_value=0, max_value=150),
+        five_left=st.floats(min_value=1, max_value=5 * 3600),
+        seven_left=st.floats(min_value=1, max_value=7 * 24 * 3600),
+    )
+    def test_to_vertex_exactly_when_a_window_is_used_up_until_the_latest_reset(
+        self, five: float, seven: float, five_left: float, seven_left: float
+    ) -> None:
+        windows = {
+            "five_hour": seen(five, NOW + five_left),
+            "seven_day": seen(seven, NOW + seven_left),
+        }
+        after = PS.after_tick(PS.State(), NOW, windows)
+        used_up = [NOW + five_left] * (five >= 100) + [NOW + seven_left] * (seven >= 100)
+        if used_up:
+            self.assertEqual(after.switch, PS.OnVertex(NOW, max(used_up), PS.Reason.USAGE_LIMIT))
+        else:
+            self.assertEqual(after.switch, PS.OnSubscription())
+
+    def test_a_used_up_window_with_no_reset_time_lasts_its_full_length(self) -> None:
+        after = PS.after_tick(PS.State(), NOW, {"five_hour": seen(100, None)})
+        self.assertEqual(after.switch.until, NOW + 5 * 3600)
+
+    def test_a_window_whose_reset_has_passed_moves_nothing(self) -> None:
+        # The payload can still say 100% for a moment after the reset that moved sessions back
+        after = PS.after_tick(PS.State(), NOW, {"five_hour": seen(100, NOW)})
+        self.assertEqual(after.switch, PS.OnSubscription())
+
+    def test_sessions_already_on_vertex_keep_their_time(self) -> None:
+        on_vertex = PS.OnVertex(NOW - 60, NOW + 60, PS.Reason.MANUAL)
+        after = PS.after_tick(PS.State(on_vertex), NOW, {"five_hour": seen(100, NOW + 3600)})
+        self.assertEqual(after.switch, on_vertex)
+
+
+class LimitErrors(unittest.TestCase):
+    def payload(self, error: str, message: str) -> dict[str, str]:
+        return {
+            "hook_event_name": "StopFailure",
+            "error": error,
+            "error_details": "429 Too Many Requests",
+            "last_assistant_message": message,
+        }
+
+    def test_the_session_limit_message_names_the_five_hour_window(self) -> None:
+        payload = self.payload("rate_limit", "You've hit your session limit · resets 3pm")
+        self.assertEqual(PS.parse_limit_error(payload), "five_hour")
+
+    def test_the_weekly_limit_message_names_the_seven_day_window(self) -> None:
+        payload = self.payload("rate_limit", "You've hit your weekly limit · resets Mon 8am")
+        self.assertEqual(PS.parse_limit_error(payload), "seven_day")
+
+    def test_any_other_failure_is_not_a_usage_limit(self) -> None:
+        for error, message in (
+            ("rate_limit", "Server is temporarily limiting requests"),
+            ("rate_limit", "Request rejected (429)"),
+            ("server_error", "You've hit your session limit"),
+        ):
+            with self.subTest(error=error, message=message):
+                self.assertIsNone(PS.parse_limit_error(self.payload(error, message)))
+
+
+class StopFailureHook(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.home = Home(Path(self._tmp.name))
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def run_hook(self, message: str, env: dict[str, str] = ENV) -> subprocess.CompletedProcess[str]:
+        payload = {"error": "rate_limit", "last_assistant_message": message}
+        return subprocess.run(
+            [sys.executable, str(SCRIPT), "--stop-failure"],
+            input=json.dumps(payload),
+            env={"HOME": str(self.home.home), "PATH": "/usr/bin:/bin", **env},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    def test_a_turn_that_hits_the_limit_moves_sessions_until_the_recorded_reset(self) -> None:
+        resets = 4_000_000_000.0
+        self.home.paths.state.parent.mkdir(parents=True)
+        self.home.paths.state.write_text(PS.dump_state(PS.State(resets_at={"five_hour": resets})))
+
+        result = self.run_hook("You've hit your session limit · resets 3pm")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        switch = self.home.saved_state().switch
+        self.assertEqual((switch.until, switch.reason), (resets, PS.Reason.LIMIT_ERROR))
+        self.assertEqual(self.home.switch(), "1")
+
+    def test_another_failure_moves_nothing(self) -> None:
+        result = self.run_hook("Server is temporarily limiting requests")
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.home.switch(), "")
+
+    def test_without_a_vertex_project_nothing_moves(self) -> None:
+        result = self.run_hook("You've hit your session limit", env={})
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.home.switch(), "")
 
 
 class Command(unittest.TestCase):
@@ -129,6 +240,14 @@ class Command(unittest.TestCase):
         self.assertEqual(self.run_command("subscription"), 0)
         self.assertEqual(self.home.saved_state().switch, PS.OnSubscription())
         self.assertEqual(self.home.switch(), "")
+
+    def test_a_settings_file_that_cannot_take_the_switch_is_reported(self) -> None:
+        # The state would say Vertex AI while sessions stay on the subscription
+        self.home.target.write_text('{"env": ')
+
+        self.assertEqual(self.run_command("vertex"), 1)
+        with self.assertRaises(PS.NotWritten):
+            PS.tick(NOW, {}, self.home.paths, ENV)
 
     def test_without_a_vertex_project_nothing_moves(self) -> None:
         before = self.home.target.read_text()

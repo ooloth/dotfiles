@@ -5,7 +5,12 @@
 # ///
 """Print the Claude Code status line: location and git state on the left, and on the right the
 model and its window size, the context used, and how much of the subscription's 5-hour and 7-day
-limits is left and when each resets.
+limits is left and when each resets. On the work laptop it starts with "Vertex AI until <time>"
+while sessions use Vertex AI.
+
+Each run also runs the Vertex AI switch (provider_switch.py), which can rewrite the state file and
+~/.claude/settings.json when sessions should move. It does nothing without
+ANTHROPIC_VERTEX_PROJECT_ID, which only sessions cc.bash starts on the work laptop have.
 
 Run by Claude Code, which pipes the session's JSON to stdin and sets COLUMNS. To try it by hand
 with a payload Claude Code sent, use the command under "The Claude Code status line" in
@@ -462,10 +467,12 @@ def tick_provider(session: Session, now: float) -> tuple[float | None, bool]:
     sessions move back from Vertex AI, or None while on the subscription, and whether the switch
     failed. A failure shows on the line, which has nowhere else to report it, and the line still
     renders."""
-    resets = {w.kind.key: w.resets_at for w in session.usage if w.resets_at is not None}
+    windows = {
+        w.kind.key: provider_switch.UsageSeen(w.used_percent, w.resets_at) for w in session.usage
+    }
     try:
         switch = provider_switch.tick(
-            now, resets, provider_switch.Paths.under(Path.home()), os.environ
+            now, windows, provider_switch.Paths.under(Path.home()), os.environ
         )
     except Exception:  # any failure, so the line renders whatever went wrong
         return None, True

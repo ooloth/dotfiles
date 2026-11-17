@@ -23,8 +23,8 @@
 #   sessions.
 # - CLAUDE_CODE_USE_VERTEX="": the switch that moves every running session to Vertex AI when it is
 #   "1". The value "" means the subscription, and stays in the file because removing the key would
-#   not move a running session back. tools/claude/tests/test_settings.py checks that no commit
-#   holds "1".
+#   not move a running session back. tools/claude/tests/test_settings.py fails when the last
+#   commit holds "1".
 # See: https://code.claude.com/docs/en/model-config#environment-variables
 # See: https://code.claude.com/docs/en/env-vars
 #
@@ -69,7 +69,7 @@ if is_work; then
   # status line does this on its own when the subscription's usage limit is reached; this is for
   # when it doesn't, or to move early. Run it in a session as `! cc-switch`.
   cc-switch() {
-    # A session's own shell inherits the project from cc.bash; a terminal outside one does not
+    # The project comes from private.env, so this works in a terminal as well as in a session
     ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT:-}" \
       uv run --offline --script "${DOTFILES}/tools/claude/provider_switch.py" "$@"
   }

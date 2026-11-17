@@ -27,11 +27,19 @@ Vertex AI. `CLAUDE_CODE_USE_VERTEX` in the `env` block of
 the file in every running session, so they all move together, from their next prompt.
 
 `provider_switch.py` keeps which one sessions should use in `~/.local/state/claude/provider.json`,
-with the time they move back from Vertex AI. The status line applies that state to `settings.json`
-on every refresh, moves sessions back once the time passes, and shows `Vertex AI until <time>`
-meanwhile. Run `! cc-switch` in a session to see which one they use, `! cc-switch vertex` to move
-them until the 5-hour limit resets, or `! cc-switch subscription` to move them back.
+with the time they move back from Vertex AI. Two things move sessions there on their own, until the
+used-up window resets:
+
+- **The status line,** when the 5-hour or weekly window it reports reaches 100%.
+- **The `StopFailure` hook in `settings.json`,** when a turn fails with "You've hit your session
+  limit" or "You've hit your weekly limit". The next prompt then goes to Vertex AI.
+
+The status line applies the state to `settings.json` on every refresh, moves sessions back once the
+time passes, and shows `Vertex AI until <time>` meanwhile. Run `! cc-switch` in a session to see
+which one they use, `! cc-switch vertex` to move them until the 5-hour limit resets, or
+`! cc-switch subscription` to move them back.
 
 `cc-vertex` starts a single session that stays on Vertex AI whatever the switch says. A commit
-must never hold the switch at `"1"`, since personal Macs have no Vertex AI project:
-`tests/test_settings.py` checks the last commit.
+must never hold the switch at `"1"`, since personal Macs have no Vertex AI project.
+`tests/test_settings.py` fails when the last commit holds it, so it catches one on the next check
+run after the commit, not before.

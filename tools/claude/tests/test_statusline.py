@@ -94,7 +94,11 @@ def status_line(
     }
     if agent is not None:
         session["agent"] = {"name": agent}
-    env = {k: v for k, v in os.environ.items() if k != "COLUMNS"}
+    # Without the Vertex AI project the script leaves the real switch state and settings alone,
+    # as it does on a personal Mac
+    env = {
+        k: v for k, v in os.environ.items() if k not in ("COLUMNS", "ANTHROPIC_VERTEX_PROJECT_ID")
+    }
     if columns is not None:
         env["COLUMNS"] = columns
     result = subprocess.run(
@@ -827,6 +831,10 @@ class ProviderSwitch(unittest.TestCase):
             state = Path(folder) / ".local" / "state" / "claude" / "provider.json"
             state.parent.mkdir(parents=True)
             state.write_text("{not json")
+            (Path(folder) / ".claude").mkdir()
+            (Path(folder) / ".claude" / "settings.json").write_text(
+                '{"env": {"CLAUDE_CODE_USE_VERTEX": ""}}'
+            )
 
             self.assertEqual(self.tick(Path(folder)), (None, False))
 

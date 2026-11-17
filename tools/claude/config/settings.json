@@ -64,6 +64,18 @@
           }
         ]
       }
+    ],
+    "StopFailure": [
+      {
+        "matcher": "rate_limit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --quiet --offline --script ~/Repos/ooloth/dotfiles/tools/claude/provider_switch.py --stop-failure",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "idleCompaction": false,
