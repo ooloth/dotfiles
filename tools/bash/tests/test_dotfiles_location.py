@@ -9,7 +9,7 @@ Run with: uv run tools/bash/tests/test_dotfiles_location.py
 tools/bash/utils.bash sets DOTFILES from its own location, spelled as the install path
 (~/Repos/ooloth/dotfiles under HOME) when the checkout is the install. Each test runs under macOS's
 own bash 3.2 with a temporary HOME, and sets COMPUTER so tools/macos/utils.bash does not ask
-networksetup which Mac this is.
+networksetup which Mac this is. The tests of how utils.bash stops also run under Homebrew's bash.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ from __future__ import annotations
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -226,11 +227,39 @@ class HowDotfilesIsSpelled(unittest.TestCase):
         self.assertEqual(self.dotfiles_after_sourcing(REPO / "tools/bash/utils.bash"), str(REPO))
 
 
+# Homebrew's bash, which runs every `#!/usr/bin/env bash` script on a Mac with it installed, at the
+# opt path Homebrew keeps whether or not `brew link` put it on PATH (Apple silicon, then Intel)
+HOMEBREW_BASHES = ("/opt/homebrew/opt/bash/bin/bash", "/usr/local/opt/bash/bin/bash")
+
+
+def bash_major_version(bash: str) -> int:
+    run = subprocess.run(
+        [bash, "--norc", "--noprofile", "-c", 'printf "%s" "${BASH_VERSINFO[0]}"'],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return int(run.stdout)
+
+
+def newer_bash() -> str | None:
+    """A bash 4 or newer: Homebrew's on a Mac, or /bin/bash on Linux, where it already is one."""
+    if sys.platform == "linux":
+        return "/bin/bash"
+    return next((bash for bash in HOMEBREW_BASHES if Path(bash).is_file()), None)
+
+
 class UtilsOutsideACheckout(unittest.TestCase):
     """utils.bash in a folder whose ../.. holds no tools/bash/utils.bash, so its DOTFILES check
-    fails and it must stop there, whether it was run or sourced."""
+    fails and it must stop there, whether it was run or sourced, under each bash a script meets:
+    /bin/bash, which is 3.2 on macOS, and a bash 4 or newer."""
 
     def setUp(self) -> None:
+        newer = newer_bash()
+        if newer is None:
+            self.fail(f"No bash 4 or newer at {' or '.join(HOMEBREW_BASHES)}: brew install bash")
+        self.assertGreaterEqual(bash_major_version(newer), 4, newer)
+        self.bashes = ("/bin/bash", newer)
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         self.root = Path(tmp.name)
@@ -240,11 +269,14 @@ class UtilsOutsideACheckout(unittest.TestCase):
         self.bug_line = f"🚨 Bug: DOTFILES='{self.root}' does not hold tools/bash/utils.bash\n"
 
     def test_run_it_exits_1_after_its_bug_line_and_runs_nothing_more(self) -> None:
-        run = run_bash(f'bash "{self.utils}"', home=self.root)
-        self.assertEqual(run.returncode, 1, run.stderr)
-        self.assertEqual(run.stdout, "")
-        # A later line of utils.bash, such as sourcing tools/macos/utils.bash, would add to stderr
-        self.assertEqual(run.stderr, self.bug_line)
+        for bash in self.bashes:
+            with self.subTest(bash=bash):
+                run = run_bash(f'"{bash}" "{self.utils}"', home=self.root)
+                self.assertEqual(run.returncode, 1, run.stderr)
+                self.assertEqual(run.stdout, "")
+                # A later line of utils.bash, such as sourcing tools/macos/utils.bash, would add
+                # to stderr
+                self.assertEqual(run.stderr, self.bug_line)
 
     def test_sourced_it_returns_1_to_its_sourcer_which_carries_on(self) -> None:
         # No set -e, so a sourcer that is not stopped by the failure runs its next line
@@ -258,11 +290,14 @@ class UtilsOutsideACheckout(unittest.TestCase):
                 ]
             )
         )
-        run = run_bash(f'bash "{sourcer}"', home=self.root)
-        self.assertEqual(run.returncode, 0, run.stderr)
-        self.assertEqual(run.stdout, "sourced file returned 1\n")
-        # A later line of utils.bash, such as sourcing tools/macos/utils.bash, would add to stderr
-        self.assertEqual(run.stderr, self.bug_line)
+        for bash in self.bashes:
+            with self.subTest(bash=bash):
+                run = run_bash(f'"{bash}" "{sourcer}"', home=self.root)
+                self.assertEqual(run.returncode, 0, run.stderr)
+                self.assertEqual(run.stdout, "sourced file returned 1\n")
+                # A later line of utils.bash, such as sourcing tools/macos/utils.bash, would add
+                # to stderr
+                self.assertEqual(run.stderr, self.bug_line)
 
 
 ASSIGNS_DOTFILES = re.compile(

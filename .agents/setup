@@ -2,7 +2,8 @@
 # Prepares a fresh Amp orb (Debian 12) to run this repo's checks: `bash scripts/check.bash`.
 # The checks need uv (preinstalled in orbs), shellcheck and lua, the same tools
 # .github/workflows/check.yml installs, plus zsh and a newer jq than Debian ships, which the macOS
-# runner already has. Safe to rerun: each step skips work that is already done.
+# runner already has. CI also installs Homebrew's bash 5 for the tests of how utils.bash stops,
+# which Debian's /bin/bash already is. Safe to rerun: each step skips work that is already done.
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

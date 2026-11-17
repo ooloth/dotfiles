@@ -33,6 +33,11 @@ jobs:
       - name: Install luajit
         run: brew install luajit
 
+      # The tests of how tools/bash/utils.bash stops run Homebrew's bash 5 from its opt path. It is
+      # unlinked so `bash` on PATH stays /bin/bash 3.2 for every other check.
+      - name: Install bash
+        run: brew install bash && brew unlink bash
+
       # Every script starts with `#!/usr/bin/env bash`, so this is the bash the checks run them with
       - name: Show bash version
         run: command -v bash && bash --version | head -n 1
