@@ -21,7 +21,11 @@ docstring says it guards. A setup that never produces the condition that code
 handles passes whatever the code does: a test session shared across requests
 shows writes that were never committed, a fixture that raises before writing
 anything cannot show a rollback, and a check run where the environment never
-holds the value it guards against has nothing to catch.
+holds the value it guards against has nothing to catch. A property the types
+make impossible needs no test of its own, and a deliberate break of it is
+confirmed when the type checker rejects it. An assertion does not replace a
+test: a property an assertion guards is tested too, and generated inputs that
+drive the code until the assertion fires are among the strongest of those tests.
 
 **A check whose selection matches nothing fails, unless its input is legitimately empty there.**
 A test runner, linter or type checker aimed at a glob, a directory or a config

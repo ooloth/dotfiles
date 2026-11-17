@@ -131,16 +131,16 @@ For each property, it breaks the implementation in every kind of place that prop
 each instance of a cross-cutting property (every command, every branch, every machine), not one
 representative. After each break it runs the tests that load the changed file, found with
 `grep -rl <file name>` over the test files without opening them, and records whether they went red.
-A mutant also counts as caught when the type checker rejects it or an assertion fires, since the
-design may protect a property by a type or an assertion instead of a test. A mutant those tests miss
-is run once more against the full suite before it counts as a survivor, because a test elsewhere may
-catch it. Then it restores the file with `git checkout -- <file>` and confirms `git status` is
-clean. It reports each mutant and whether it was caught.
+A mutant counts as caught when the testing standard counts the break as confirmed, so it also runs
+the type checker on each. A mutant those tests miss is run once more against the full suite before
+it counts as a survivor, because a test elsewhere may catch it. Then it restores the file with
+`git checkout -- <file>` and confirms `git status` is clean. It reports each mutant and whether it
+was caught.
 
 A mutant nothing catches means the protection is too weak. Send the survivors to the builder with
-SendMessage. It strengthens the tests, and the survivors are run again until all are caught. Commit
-any strengthened tests, refresh their copies in `red/`, and confirm the implementation still passes
-them.
+SendMessage. It strengthens the protection: a test, a type or an assertion, whichever the design
+would have chosen, and the survivors are run again until all are caught. Commit any strengthened
+tests, refresh their copies in `red/`, and confirm the implementation still passes them.
 
 ## 5. Commit and check again
 
