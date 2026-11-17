@@ -319,8 +319,8 @@ Pass each agent:
 - This line, verbatim: "Read the files yourself. Do not spawn subagents."
 - This line, verbatim, because the other agents are reading the same checkout at the same time:
   "Never change the checkout under review: no checkout, switch, stash, reset or edit. To run
-  something against another commit, add a scratch worktree with
-  `git worktree add --detach "$(mktemp -d)/wt" <commit>` and remove it when done."
+  something against another commit, run `mktemp -d`, then `git worktree add --detach <that
+  folder>/wt <commit>` as a separate command, and remove the worktree when done."
 - This line, verbatim, because Homebrew updates itself before any `brew` command by default: "Run
   every `brew` command with `HOMEBREW_NO_AUTO_UPDATE=1`, so a read never updates Homebrew."
 - This provenance requirement, verbatim:
@@ -591,7 +591,7 @@ Coverage:
 
 Sensitivity:
 - For each test the change adds or rewrites whose name or docstring says what it guards (a property, a commit, a rollback, an isolation), name the line of code it guards and a one-line break of that line: delete the commit, drop the savepoint, skip the reset, return a constant.
-- Make the cheapest breaks, at most three, and run only the test that should catch each. Never edit the reviewed tree, which other agents are reading: work in a scratch worktree, `REF=$(git stash create); DIR=$(mktemp -d); git worktree add --detach "$DIR" "${REF:-HEAD}"`, and `git worktree remove --force "$DIR"` when done.
+- Make the cheapest breaks, at most three, and run only the test that should catch each. Never edit the reviewed tree, which other agents are reading. Work in a scratch worktree: run `git stash create` and `mktemp -d` as separate commands, then `git worktree add --detach <folder> <the stash commit, or HEAD when it printed nothing>`, and `git worktree remove --force <folder>` when done.
 - A test that still passes under its break is a finding: name the test, the break, and why its setup cannot produce the failure (a shared session, a fixture that raises before writing, an environment that never holds the guarded value).
 
 For each issue: file:line | what's wrong | specific fix
@@ -836,7 +836,7 @@ Changed files:
 Instructions:
 1. Run the diff command from Context, and list this PR's edits, hunk by hunk, in the files each overlapping PR shares.
 2. For each overlapping PR, read its diff (`gh pr diff <n> -R <owner>/<repo>`) and fetch its head, taking its SHA from `git ls-remote origin refs/pull/<n>/head` and never from `FETCH_HEAD`, which other agents fetching in the same repository overwrite, then running `git fetch origin refs/pull/<n>/head` so that commit is stored locally. Merge it with this PR's head without touching any checkout: `git merge-tree --write-tree <this head> <other head>`. List each shared file that conflicts and each that merges cleanly.
-3. For each conflict, resolve it each way, taking this PR's side and the other PR's side, in a scratch worktree (`git worktree add --detach "$(mktemp -d)/wt" <this head>`, then `git merge --no-commit <other head>`), and say which side a resolver would most likely take and why, such as whose comment or wording is newer. For the likely side, read the result and check for each of this PR's edits.
+3. For each conflict, resolve it each way, taking this PR's side and the other PR's side, in a scratch worktree (run `mktemp -d`, then `git worktree add --detach <that folder>/wt <this head>` as a separate command, then `git merge --no-commit <other head>`), and say which side a resolver would most likely take and why, such as whose comment or wording is newer. For the likely side, read the result and check for each of this PR's edits.
 4. For a clean merge, read the merged tree's copy of each shared file (`git cat-file -p <tree>:<path>`) and check for each edit's text: a clean merge is not evidence the edit survived.
 5. Where a resolution drops an edit, run the tests that cover it in that worktree and say whether they still pass. An edit that disappears with every test green is the most severe finding, and the fix is usually a test in this PR that would fail.
 6. Remove every worktree you added.
@@ -871,7 +871,7 @@ Instructions:
 1. Read `~/.agents/standards/README.md`, then `~/.agents/standards/testing.md`. Use these as your evaluation criteria.
 2. Run the diff command from Context. List every removed test file, test function or class, expected-value helper, and line that asserts. For each, write the property it checked in one sentence: which inputs, which expected outcome.
 3. For each property, look at the head for a test that still checks it: a rewritten version in the diff, a test elsewhere, or a check that runs at boot or import. Read the candidate and confirm it fails when the property breaks, for the same inputs. A narrower check is not the same property: fewer routes or rows, one caller where there were several, a made-up id where the old test used a real row, a field the new check lets default.
-4. Where a candidate's coverage is in doubt and a break is cheap, break the property in a scratch worktree and run only the candidate. Never edit the reviewed tree, which other agents are reading: `REF=$(git stash create); DIR=$(mktemp -d); git worktree add --detach "$DIR" "${REF:-HEAD}"`, and `git worktree remove --force "$DIR"` when done. At most three breaks.
+4. Where a candidate's coverage is in doubt and a break is cheap, break the property in a scratch worktree and run only the candidate. Never edit the reviewed tree, which other agents are reading. Work in a scratch worktree: run `git stash create` and `mktemp -d` as separate commands, then `git worktree add --detach <folder> <the stash commit, or HEAD when it printed nothing>`, and `git worktree remove --force <folder>` when done. At most three breaks.
 5. For each property nothing checks any more, look for the change's stated reason in the PR body, the commit messages, and Context's Recorded decisions. A reason counts only when it covers this property; "the new tests replace the old ones" covers none. A property dropped for a reason whose replacement misses a case the reason claims to cover is a challenge to that reason: name the case.
 
 For each issue: removed test or assertion (file:line at the base) | the property it checked | where it is checked now, or "nowhere" | the stated reason, or "none" | an input that now passes unnoticed | the test that would catch it
@@ -1199,8 +1199,9 @@ On any answer other than "skip":
       head:
       - re-check every finding whose evidence cites a file the script shows as changed, in the
         PR's diff or outside it. Read each such file at the new head in a scratch worktree
-        (`git fetch origin <new-head>`, then `git worktree add --detach "$(mktemp -d)/wt"
-        <new-head>`, removed when done). Keep, correct or strike each finding, and say which;
+        (`git fetch origin <new-head>`, then `mktemp -d`, then `git worktree add --detach <that
+        folder>/wt <new-head>` as a separate command, and remove the worktree when done). Keep,
+        correct or strike each finding, and say which;
       - unless the script lists no files outside the PR's diff, launch one agent shaped like an
         added agent in Step 3, with this question: "Do the changes between the two heads, in the
         files outside the PR's diff that the script lists, break or contradict anything this PR's
