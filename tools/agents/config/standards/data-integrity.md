@@ -49,6 +49,15 @@ Denormalized fields, derived counts, and both sides of a relationship are
 updated together in the same operation. One side is not updated without the
 other. This is the obligation taken on by the trade above.
 
+**An audit record is written in the same transaction as the change it records, by the code that
+makes the change.**
+A record that a caller writes afterwards is lost when the request dies between the change's commit
+and the write, and it is missing from every caller that forgets to write it. A change that commits
+before the request ends, such as before an email is sent, keeps its record only when the record
+is written beside the change. The caller still decides who the record names and which request it
+describes, by handing that in as a value the writer requires. A path that supplies none cannot
+make the change.
+
 **Migrations handle existing data.**
 Schema changes account for rows that already exist. New non-nullable columns
 have a backfill or a default. New constraints are validated against existing
