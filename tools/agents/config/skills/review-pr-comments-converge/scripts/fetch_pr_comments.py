@@ -33,9 +33,9 @@ account never is one.
   - `yes (...)` names the evidence: the thread was resolved, an answerer's reply is the thread's
     newest comment and nothing in it changed at or after that reply, or for a review body or
     conversation comment, an answerer posted a conversation comment, or a review with a body, after
-    it was posted or last edited, and that post addresses its author: it opens with the item's
-    `thank` line, or names the author as `refer_as` does (`@login` for a person, the BOT_NAMES name
-    as a whole word for a bot, either in any case). A deleted or UNKNOWN author cannot be addressed,
+    it was posted or last edited, and that post names its author as `refer_as` does (`@login` for
+    a person, the BOT_NAMES name as a whole word for a bot, either in any case), as a post opening
+    with the item's `thank` line does. A deleted or UNKNOWN author cannot be addressed,
     so no top-level post answers their items. A same-second tie counts as new feedback.
   - `no` means nothing answered it yet.
   - `n/a (yours)` marks an item only answerers wrote.
@@ -430,9 +430,9 @@ def thread_verdict(
 
 
 def addresses(body: str, reviewer: Reviewer) -> bool:
-    """Whether a top-level post is written to this reviewer: it opens with their `thank` line, or
-    names them as `refer_as` does. Decided from the Reviewer variant, so a deleted account or an
-    author with no known name is never addressed, whatever the post says."""
+    """Whether a top-level post is written to this reviewer: it names them as `refer_as` does,
+    which a post opening with their `thank` line also does. Decided from the Reviewer variant, so a
+    deleted account or an author with no known name is never addressed, whatever the post says."""
     match reviewer:
         case Person(login):
             mention = rf"@{re.escape(login)}(?![A-Za-z0-9-])"
@@ -442,8 +442,7 @@ def addresses(body: str, reviewer: Reviewer) -> bool:
             return False
         case _:
             assert_never(reviewer)
-    opens = body.lstrip().startswith(thank_line(reviewer))
-    return opens or re.search(mention, body, re.IGNORECASE) is not None
+    return re.search(mention, body, re.IGNORECASE) is not None
 
 
 def item_verdict(feedback: Post, answers: tuple[Answer, ...], answerers: Answerers) -> Verdict:

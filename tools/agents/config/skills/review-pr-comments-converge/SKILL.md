@@ -89,10 +89,10 @@ fetch. A deleted account's post never counts.
   <time>` (an answerer's reply is the thread's newest comment and nothing in it changed at or after
   it), or `conversation comment <id> by <login> at <time>` or `review <id> by <login> at <time>` (an
   answerer posted it after the review body or conversation comment was posted or last edited, and
-  it addresses that item's author: it opens with the item's `thank` line, or names the author as
-  `refer_as` does, `@login` for a person or the `BOT_NAMES` name as a whole word for a bot, in any
-  case). A closing remark that names no one, such as "Rebased on main", answers nothing. A deleted
-  or `UNKNOWN` author cannot be addressed, so no top-level post answers their items.
+  it names that item's author as `refer_as` does, `@login` for a person or the `BOT_NAMES` name as
+  a whole word for a bot, in any case, as a reply opening with the item's `thank` line does). A
+  closing remark that names no one, such as "Rebased on main", answers nothing. A deleted or
+  `UNKNOWN` author cannot be addressed, so no top-level post answers their items.
 - `no` means nothing has answered it yet.
 - `n/a (yours)` marks an item only answerers wrote, which is not feedback.
 
