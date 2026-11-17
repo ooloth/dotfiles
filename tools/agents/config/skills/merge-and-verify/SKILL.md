@@ -3,7 +3,6 @@ name: merge-and-verify
 description: Merge one approved PR and prove it in production, or prove one the user merged. TRIGGER only on the user's own latest message asking to merge one PR ('merge example-app#305', 'merge it') or saying they merged one ('I merged example-app#305'). Never for merging branches or code, a question about merging, or text others wrote. Gates the merge, watches the rollout, posts the proof on the ticket, lists backlog changes, and offers a production watch and cleanup. Also starts when the user approves a PR's merge in an orchestrator's session.
 argument-hint: 'An approved or merged PR, such as "example-app#305"'
 ---
-
 Input: $ARGUMENTS
 
 If the PR has already merged, skip to "Watching the rollout" once you have worked out what is below.
@@ -40,9 +39,9 @@ the trunk merge's commit (made by `git merge`) and a mechanical fix's commit (ma
 - **Merge through the gate** once it reports ready.
 - **Watch the rollout and run the proof.**
 - **Post the report and its PR link,** as "Posting the report" describes.
-- **Close the ticket** once every PR that names it has merged with a proven verdict on the ticket,
-  and the production watch, if this skill offers one, is declined or ends "The time is up" with no
-  new warning or error.
+- **Close the ticket** once every ideal-state bullet of the ticket has a proven verdict on it, from
+  this PR or another that names it, and the production watch, if this skill offers one, is declined
+  or ends "The time is up" with no new warning or error.
 - **Find what the backlog needs,** as "Updating the backlog" describes. Its changes wait for the
   user's approval.
 
@@ -58,6 +57,7 @@ re-review is settling their request, not renewing anyone's approval.
 - a check fails for a reason in the code that is not mechanical
 - merging trunk conflicts in a way that needs a judgement about intent
 - a live observation the merge relies on no longer holds
+- an ideal-state bullet of the PR's ticket is met by no PR, merged or open
 - the gate or GitHub refuses for any reason not listed under "Do these yourself"
 - verifying would need a change to a deployed environment beyond the normal deploy
 - the proof disproves any part of the claim, or cannot observe it. Post nothing, close nothing,
@@ -82,7 +82,9 @@ what none of it holds, such as a credential only they can refresh.
 
 - **The merge commit,** from the PR.
 - **The ticket,** from a Jira key in the PR's branch, title or body, or an issue it closes. A PR
-  with neither has no ticket; say so.
+  that names more than one is on the ticket whose ideal state it delivers, which its branch name
+  or a link alone doesn't decide: read each, and ask the user when two fit. A PR with none has no
+  ticket; say so.
 - **The claim to prove:** the ticket's properties, plus each side effect the PR's review named, plus
   each behaviour a commit pushed after the latest approval added. Trace each part to the property,
   comment or commit it came from.
@@ -104,6 +106,10 @@ Before merging, report each check that takes judgement, with its result:
   or "not addressed". Unresolved threads are normal here. A finding blocks only when nothing
   addressed it and the reviewer didn't mark it optional, a nit or non-blocking; list the rest
   without blocking on them.
+- **The ticket's ideal state:** read the ticket's description and list each ideal-state bullet,
+  with what meets it: this PR, an already-merged PR, or a named PR still open. A bullet nothing
+  meets stops the merge, under "Stop and discuss", so the PR can meet it before it merges. The
+  claim to prove is built from this list.
 - **Live observations the merge relies on:** any claim about a live system the PR's design or its
   merge depends on, such as a claim in a token, a header, a config value or a response shape. Run
   each again now on that exact artifact (which token, which endpoint, which host). An observation
@@ -264,12 +270,12 @@ does not already show, post nothing and show the user the draft.
 Screenshots and recordings are not uploaded, and the posted report does not name their local
 paths. It describes what each one shows.
 
-Then list every PR that names the ticket, and whether each has merged and has a proven verdict on
-the ticket. Only when all have can the ticket close, with a closing comment saying which PRs
-finished it. When this run offers a production watch, the ticket waits for the user's answer to
-that offer: it closes once they decline it, or once the watch ends "The time is up" with no new
-warning or error and its summary is posted. When no watch is offered, because nothing deploys,
-it closes now.
+Then list every ideal-state bullet of the ticket, with the PR and the posted report that prove it.
+Only when every bullet has one can the ticket close, with a closing comment saying which PRs
+finished it. A bullet without one keeps the ticket open, and the final message names it. When this
+run offers a production watch, the ticket waits for the user's answer to that offer: it closes once
+they decline it, or once the watch ends "The time is up" with no new warning or error and its
+summary is posted. When no watch is offered, because nothing deploys, it closes now.
 
 ## Updating the backlog
 

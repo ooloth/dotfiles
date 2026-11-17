@@ -133,3 +133,94 @@ def test_a_dirty_tree_is_refused_before_anything_merges(stack: Stack) -> None:
 
     assert result.returncode == 2
     assert not (stack.work / ".git" / "MERGE_HEAD").exists()
+
+
+# The case that merged a stacked PR as an empty commit: the branch splits one file into others,
+# and trunk has edited that file since the branch was cut. A patch of the branch's own diff no
+# longer applies to trunk's copy of the file, so the rebuild must not fall back to trunk's tree.
+RULES = "".join(f".rule{n} {{ color: red; }}\n" for n in range(1, 31))
+SITE_RULES = "".join(f".rule{n} {{ color: red; }}\n" for n in range(1, 4))
+INTERNAL_RULES = "".join(f".rule{n} {{ color: red; }}\n" for n in range(4, 31))
+TRUNK_RULE = ".badge { color: orange; }\n"
+
+
+@pytest.fixture
+def split_stack(tmp_path: Path) -> Stack:
+    origin = tmp_path / "origin"
+    origin.mkdir()
+    git(origin, "init", "-q", "-b", "trunk")
+    git(origin, "config", "user.email", "test@example.com")
+    git(origin, "config", "user.name", "test")
+    (origin / "style.css").write_text(RULES)
+    (origin / "app.py").write_text("app = 1\n")
+    git(origin, "add", ".")
+    git(origin, "commit", "-qm", "init")
+
+    git(origin, "checkout", "-qb", "base")
+    (origin / "app.py").write_text("app = 2\n")
+    git(origin, "commit", "-qam", "base: change app")
+    base_pr_head = git(origin, "rev-parse", "HEAD").strip()
+    git(origin, "checkout", "-qb", "stacked")
+    git(origin, "mv", "style.css", "internal.css")
+    (origin / "internal.css").write_text(INTERNAL_RULES)
+    (origin / "site.css").write_text(SITE_RULES)
+    git(origin, "add", "-A")
+    git(origin, "commit", "-qm", "stacked: split style.css")
+
+    # Another PR adds a rule to style.css on trunk, then the base PR squash-merges.
+    git(origin, "checkout", "-q", "trunk")
+    (origin / "style.css").write_text(RULES + TRUNK_RULE)
+    git(origin, "commit", "-qam", "another PR: add a badge rule")
+    git(origin, "merge", "-q", "--squash", "base")
+    git(origin, "commit", "-qm", "squash base")
+
+    work = tmp_path / "work"
+    git(tmp_path, "clone", "-q", str(origin), str(work))
+    git(work, "config", "user.email", "test@example.com")
+    git(work, "config", "user.name", "test")
+    git(work, "checkout", "-q", "stacked")
+    return Stack(work=work, base_pr_head=base_pr_head)
+
+
+def test_a_split_file_trunk_edited_keeps_the_split_and_trunks_edit(split_stack: Stack) -> None:
+    result = run(split_stack)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert not (split_stack.work / "style.css").exists()
+    assert (split_stack.work / "site.css").read_text() == SITE_RULES
+    assert (split_stack.work / "internal.css").read_text() == INTERNAL_RULES + TRUNK_RULE
+    changed = git(
+        split_stack.work, "diff", "--cached", "--name-only", "--no-renames", "origin/trunk"
+    )
+    assert changed.split() == [
+        "internal.css",
+        "site.css",
+        "style.css",
+    ]
+
+
+def test_check_only_refuses_a_staged_tree_that_lost_the_branchs_own_change(
+    split_stack: Stack,
+) -> None:
+    git(split_stack.work, "merge", "-q", "--no-commit", "--no-ff", "origin/trunk")
+    git(split_stack.work, "read-tree", "--reset", "-u", "origin/trunk")
+
+    result = run(split_stack, "--check-only")
+
+    assert result.returncode == 1
+    assert "site.css" in result.stdout
+
+
+def test_a_line_both_sides_changed_is_left_as_a_conflict_to_resolve(stack: Stack) -> None:
+    origin = stack.work.parent / "origin"
+    git(origin, "checkout", "-q", "trunk")
+    edit(origin / "a.py", "line5\n", "line5  # trunk edit\n")
+    git(origin, "commit", "-qam", "another PR: edit line5")
+    git(stack.work, "fetch", "-q")
+
+    result = run(stack)
+
+    assert result.returncode == 1
+    assert "Conflicts still to resolve:\n  a.py" in result.stdout
+    assert git(stack.work, "diff", "--name-only", "--diff-filter=U").split() == ["a.py"]
+    assert "<<<<<<<" in (stack.work / "a.py").read_text()

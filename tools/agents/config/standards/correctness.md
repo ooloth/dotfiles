@@ -124,6 +124,18 @@ system's response, where success and failure are told apart. Where neither
 exists, the check says what it can't see, and the code that drops the response
 is the gap to fix.
 
+**A check computes its expected result by a method independent of the code it checks.**
+A self-check that reaches its expected value the way the checked code reached its result fails
+whenever the code fails, and then agrees with it. A script that rebuilt a merge by applying a
+branch's diff with `git apply`, then checked the result against a tree it built with the same
+`git apply` call, reported success on a merge that had dropped the whole diff: the patch was
+refused both times, so both trees were the unchanged base. The expected value comes from a
+different method, such as Git's own three-way merge for a rebuilt merge or a second source for a
+read value, or from a property of the result the method could not fake, such as every path the
+diff touched still differing from the base. Tests hold the same rule as "An expectation is
+written separately from the code it checks" in `testing.md`; this one holds for checks that run
+in the code itself.
+
 **A check that expects a refusal also shows that the step before it succeeded.**
 A check that an old credential, route or permission no longer works passes in
 two cases: the change removed it, or the change never ran, for example because

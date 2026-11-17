@@ -71,6 +71,7 @@ def pull_request(**overrides: Any) -> dict[str, Any]:
         "author": {"login": "ooloth"},
         "headRefOid": HEAD,
         "mergeStateStatus": "CLEAN",
+        "changedFiles": 3,
         "reviews": [review()],
         "statusCheckRollup": [
             check_run("Analyze (javascript-typescript)"),
@@ -383,6 +384,23 @@ def test_an_outstanding_change_request_is_refused(h: Harness) -> None:
     assert "second-reviewer" in result.stdout
 
 
+def test_a_pr_that_changes_no_files_is_refused_and_merges_nothing(h: Harness) -> None:
+    # A branch whose head tree matches its base would squash-merge as an empty commit, and every
+    # other condition can still hold: approvals, passing checks and GitHub's CLEAN all survive it.
+    result = h.run(pull_request(changedFiles=0))
+
+    assert result.returncode == 1
+    assert "changes no files" in result.stdout
+    assert h.merge_calls() == []
+
+
+def test_the_ready_line_names_how_many_files_the_pr_changes(h: Harness) -> None:
+    result = h.run(pull_request(changedFiles=14), "--check-only")
+
+    assert result.returncode == 0, result.stderr
+    assert "14 files" in result.stdout
+
+
 def test_check_only_reports_readiness_and_never_merges(h: Harness) -> None:
     result = h.run(pull_request(), "--check-only")
 
@@ -413,7 +431,7 @@ def test_a_head_that_is_not_a_full_sha_is_refused_before_any_call(h: Harness) ->
     assert not h.calls.exists()
 
 
-CONDITIONS = ["closed", "draft", "unapproved", "changes", "failing", "unmergeable"]
+CONDITIONS = ["closed", "draft", "unapproved", "changes", "failing", "unmergeable", "empty"]
 
 
 def broken_pull_request(broken: set[str], running: bool = False) -> dict[str, Any]:
@@ -430,6 +448,7 @@ def broken_pull_request(broken: set[str], running: bool = False) -> dict[str, An
         reviews=reviews,
         statusCheckRollup=checks,
         mergeStateStatus="DIRTY" if "unmergeable" in broken else "CLEAN",
+        changedFiles=0 if "empty" in broken else 3,
     )
 
 
