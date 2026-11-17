@@ -42,7 +42,7 @@ SPACELIFT_ACCOUNT_KEY = "PRIVATE_SPACELIFT_ACCOUNT"
 ARGOCD_SERVERS_KEY = "PRIVATE_ARGOCD_SERVERS"
 
 # A healthy check takes about a second, so this leaves room for a slow token refresh while keeping a
-# server that hangs from holding up every `cc`, `ccc` and `cc-vertex` start for long. Argo CD's
+# server that hangs from holding up the start of every work session cc.bash runs for long. Argo CD's
 # token endpoint has hung for 30 s before answering 504.
 CHECK_TIMEOUT_SECONDS = 10
 # What a shell reports for a command stopped by Ctrl-C (128 + SIGINT)

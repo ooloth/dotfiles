@@ -14,6 +14,7 @@ which runs the work logins, and `claude`, which records its arguments.
 from __future__ import annotations
 
 import json
+import shlex
 import subprocess
 import tempfile
 import unittest
@@ -45,7 +46,8 @@ def claude_started_by(command: str, stubs: Path) -> list[str]:
             "is_work() { return 0 }\n"
             'error() { print -u2 -- "error: $*" }\n'
             f"source '{SHELL_ZSH}'\n"
-            f"{command}\n"
+            # eval, because zsh expands an alias only in lines it reads after defining it
+            f"eval {shlex.quote(command)}\n"
         )
         result = subprocess.run(
             ["zsh", "-f", "-c", script], cwd=folder, env=env, capture_output=True, text=True

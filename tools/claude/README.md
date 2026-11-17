@@ -9,7 +9,8 @@ standards every session loads come from `tools/agents/config/` instead.
 `cc` starts Claude Code with this machine's permission mode, told where the repos related to the
 current one are cloned, and `ccc` continues the last session. Both run `cc.bash`, whose header says
 what it passes. On the work laptop each start first runs `auth`, which logs in to any work tool
-whose credentials have expired.
+whose credentials have expired, except a start with `--unattended`, where nobody is there to
+finish a login.
 
 ## The status line
 

@@ -31,6 +31,13 @@ SCRIPT = "tools/claude/cc.bash"
 CLAUDE_STUB = """#!/bin/bash
 for arg in "$@"; do printf '%s\\0' "$arg"; done > "${CLAUDE_LOG}"
 printf '%s\\n' "${ANTHROPIC_VERTEX_PROJECT_ID-<unset>}" "${CLOUD_ML_REGION-<unset>}" > "${CLAUDE_LOG}.env"
+printf 'claude\\n' >> "${CLAUDE_LOG}.order"
+"""
+
+# Stands in for `uv run ... auth.py`, the work logins, recording that it ran and in what order
+UV_STUB = """#!/bin/bash
+printf 'uv %s\\n' "$*" >> "${CLAUDE_LOG}.order"
+exit "${UV_EXIT:-0}"
 """
 
 
@@ -48,6 +55,9 @@ def write_stubs(folder: Path) -> Path:
     claude = folder / "claude"
     claude.write_text(CLAUDE_STUB)
     claude.chmod(0o755)
+    uv = folder / "uv"
+    uv.write_text(UV_STUB)
+    uv.chmod(0o755)
     folder.chmod(0o555)
     return folder
 
@@ -115,10 +125,16 @@ class Machine:
             **self.extra_env,
         }
 
+    def started(self) -> list[str]:
+        """What the last run started, in order: `claude`, and `uv` lines for the work logins."""
+        order = Path(f"{self._claude_log}.order")
+        return order.read_text().splitlines() if order.exists() else []
+
     def _run(
         self, command: list[str], computer: str, cwd: Path | None, related: str | None = ""
     ) -> Run:
         self._claude_log.unlink(missing_ok=True)
+        Path(f"{self._claude_log}.order").unlink(missing_ok=True)
         result = subprocess.run(
             command,
             cwd=cwd or self.app,
@@ -183,6 +199,46 @@ class UnmappedFolder(unittest.TestCase):
                 run = self.machine.run(computer=computer)
 
                 self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
+
+
+class WorkLogins(unittest.TestCase):
+    """A work session someone is watching runs the work logins first, so an expired one opens in
+    the browser before the session needs it. One nobody watches skips them rather than wait."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.machine = Machine(Path(self._tmp.name))
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_a_work_session_runs_the_logins_before_claude(self) -> None:
+        run = self.machine.run(computer="work")
+
+        self.assertEqual(run.status, 0, run.output)
+        [logins, claude] = self.machine.started()
+        self.assertRegex(logins, r"^uv run --offline .*/features/auth/auth\.py$")
+        self.assertEqual(claude, "claude")
+
+    def test_the_session_starts_when_a_login_stays_expired(self) -> None:
+        self.machine.extra_env["UV_EXIT"] = "1"
+
+        run = self.machine.run(computer="work")
+
+        self.assertEqual(run.status, 0, run.output)
+        self.assertEqual(self.machine.started()[-1], "claude")
+
+    def test_an_unattended_work_session_skips_them(self) -> None:
+        run = self.machine.run("--unattended", "/review x", computer="work")
+
+        self.assertEqual(run.status, 0, run.output)
+        self.assertEqual(self.machine.started(), ["claude"])
+
+    def test_a_personal_mac_skips_them(self) -> None:
+        run = self.machine.run(computer="air")
+
+        self.assertEqual(run.status, 0, run.output)
+        self.assertEqual(self.machine.started(), ["claude"])
 
 
 class VertexProject(unittest.TestCase):

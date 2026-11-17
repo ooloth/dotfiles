@@ -80,9 +80,18 @@ main() {
   # against a session steered by what it read, the classifier is the only guard that runs. Ask
   # rules were tried and dropped: their prompts showed long gh commands cut short, which could not
   # be reviewed.
+  local unattended=false
   if [[ "${1:-}" == "--unattended" ]]; then
     shift
     mode="auto"
+    unattended=true
+  fi
+  # A work session someone is watching runs auth first, which opens a browser login for each work
+  # tool whose credentials have expired and waits for it, so the session doesn't meet an expired
+  # login later, such as after a switch to Vertex AI. The session starts whatever auth finds. One
+  # nobody watches skips it, since a login waiting with nobody there would stop it starting.
+  if is_work && [[ "${unattended}" == false ]]; then
+    uv run --offline "${DOTFILES}/features/auth/auth.py" || true
   fi
   org="$(org_folder)"
   while IFS= read -r name; do
