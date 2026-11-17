@@ -1613,6 +1613,8 @@ def test_a_reply_opening_with_the_thank_line_answers_because_the_thank_line_name
         pytest.param("@DANA thanks, fixed.", id="different-case"),
         pytest.param("(@dana) fixed.", id="after-a-bracket"),
         pytest.param("cc,@dana fixed.", id="after-a-comma"),
+        # GitHub logins hold no underscore, so `@dana_` mentions dana.
+        pytest.param("Thanks @dana_, fixed.", id="before-an-underscore"),
     ],
 )
 def test_an_answer_that_mentions_the_author_anywhere_answers_it(
@@ -1724,6 +1726,10 @@ EVIDENCE_REVIEW_ANSWER = "yes (conversation comment 9002 by me at 2026-10-01T12:
         pytest.param("Moved it under foo/copilot.", "no", id="ending-a-path"),
         pytest.param("Renamed my_copilot.", "no", id="after-an-underscore"),
         pytest.param("Edited copilot/settings.", "no", id="before-a-slash"),
+        pytest.param("See settings.copilot for it.", "no", id="after-a-dot"),
+        pytest.param("Set up pre-copilot hooks.", "no", id="after-a-hyphen"),
+        pytest.param("Edit copilot_instructions.", "no", id="before-an-underscore"),
+        pytest.param("Bumped to Copilot.2 today.", "no", id="before-a-dot-and-a-digit"),
     ],
 )
 def test_a_bot_is_addressed_only_where_its_name_stands_as_a_name(
