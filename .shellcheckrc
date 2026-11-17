@@ -15,9 +15,9 @@ disable=SC1091,SC1090,SC2059,SC2119,SC2155
 # across that sourcing boundary even with external-sources=true.
 disable=SC2034
 
-# SC2317: the `return "$code" 2>/dev/null || exit "$code"` pattern in return_or_exit()
-# is intentional — it handles both sourced (return) and direct-run (exit) contexts.
-# Shellcheck incorrectly flags the exit branch as unreachable.
+# SC2317: shellcheck reports the `exit 1` in `return 1 2>/dev/null || exit 1`, the line that stops
+# tools/bash/utils.bash whether it was sourced or run, as unreachable. It runs when the file is
+# run rather than sourced, because return then fails.
 disable=SC2317
 
 # Override the detected shell for files without a shebang

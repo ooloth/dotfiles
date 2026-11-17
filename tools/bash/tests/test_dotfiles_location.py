@@ -226,6 +226,45 @@ class HowDotfilesIsSpelled(unittest.TestCase):
         self.assertEqual(self.dotfiles_after_sourcing(REPO / "tools/bash/utils.bash"), str(REPO))
 
 
+class UtilsOutsideACheckout(unittest.TestCase):
+    """utils.bash in a folder whose ../.. holds no tools/bash/utils.bash, so its DOTFILES check
+    fails and it must stop there, whether it was run or sourced."""
+
+    def setUp(self) -> None:
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+        self.utils = self.root / "not/a-checkout/utils.bash"
+        self.utils.parent.mkdir(parents=True)
+        shutil.copy2(REPO / "tools/bash/utils.bash", self.utils)
+        self.bug_line = f"🚨 Bug: DOTFILES='{self.root}' does not hold tools/bash/utils.bash\n"
+
+    def test_run_it_exits_1_after_its_bug_line_and_runs_nothing_more(self) -> None:
+        run = run_bash(f'bash "{self.utils}"', home=self.root)
+        self.assertEqual(run.returncode, 1, run.stderr)
+        self.assertEqual(run.stdout, "")
+        # A later line of utils.bash, such as sourcing tools/macos/utils.bash, would add to stderr
+        self.assertEqual(run.stderr, self.bug_line)
+
+    def test_sourced_it_returns_1_to_its_sourcer_which_carries_on(self) -> None:
+        # No set -e, so a sourcer that is not stopped by the failure runs its next line
+        sourcer = self.root / "sourcer.bash"
+        sourcer.write_text(
+            "\n".join(
+                [
+                    "#!/usr/bin/env bash",
+                    f'source "{self.utils}"',
+                    "printf 'sourced file returned %s\\n' \"$?\"",
+                ]
+            )
+        )
+        run = run_bash(f'bash "{sourcer}"', home=self.root)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        self.assertEqual(run.stdout, "sourced file returned 1\n")
+        # A later line of utils.bash, such as sourcing tools/macos/utils.bash, would add to stderr
+        self.assertEqual(run.stderr, self.bug_line)
+
+
 ASSIGNS_DOTFILES = re.compile(
     r"(?:^|[;&|(]|\s)(?:(?:export|readonly|local|typeset|declare(?:\s+-\w+)*)\s+)?DOTFILES="
 )
