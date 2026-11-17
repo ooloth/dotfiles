@@ -100,11 +100,16 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - **Reviewer-frame**: every step must be executable on a laptop, before merging, without deploying
   anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any other
   deployed environment. The question being answered is: "what would a skeptic demand I prove
-  without running tests or deploying?" If a step requires a deployment first, cut it.
+  without running tests or deploying?" A step that can only be observed after a deployment goes
+  under **Post-merge QA**, written the same way: what to run, where, and what to expect.
 - **Pre-draft check**: before writing the checklist, ask — _if there were no test suite, how would I
   watch this behavior happen?_ That answer is the checklist.
 - Any commands the reviewer should run must be provided in a complete, copy-pastable form, not
   alluded to; assume the reviewer is unfamiliar and will not figure it out unless you provide it
+- **Show what you saw:** below each checklist, put what following it actually showed, so a reader
+  can judge the change without running anything: for a CLI or script, the before and after output
+  trimmed to the lines that differ, in a fenced block; for anything a screen shows, a screenshot or
+  recording uploaded to GitHub. Never link a local path.
 
 ### Structure
 
@@ -142,8 +147,6 @@ ragged short lines; write each paragraph and list item as one line
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read
 ❌ Validation steps that run or reference automated tests — CI already shows this; zero marginal
 value to a reviewer
-❌ Any step requiring a deployment — to DEV, UAT, staging, or prod — all require merging first and
-cannot be run by a reviewer before approving
 
 ---
 
