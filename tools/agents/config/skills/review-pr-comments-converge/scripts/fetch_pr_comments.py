@@ -25,9 +25,23 @@ that author, on the same rule: `@login` for a person, the BOT_NAMES name for a b
 `a deleted account` for a deleted one. A bot missing from BOT_NAMES, or an author of a kind this
 script does not know, shows `UNKNOWN` in both so the caller asks rather than guesses.
 
+Each review with a body, each inline thread and each conversation comment also shows `answered`,
+whether it has been answered already, judged from the PR as it stands. An answerer is the PR's
+author or the gh login running this script, listed on the `# Answerers:` line under `# Source:`; a
+deleted account never is one.
+  - `yes (...)` names the evidence: the thread was resolved, an answerer's reply is the thread's
+    newest comment and nothing in it changed at or after that reply, or for a review body or
+    conversation comment, an answerer posted a conversation comment, or a review with a body, after
+    it was posted or last edited. A same-second tie counts as new feedback.
+  - `no` means nothing answered it yet.
+  - `n/a (yours)` marks an item only answerers wrote.
+Pending (unsubmitted) posts never answer anything, and neither does the empty review GitHub creates
+for an inline reply.
+
 Every page of every list is fetched, so nothing is left out. The script exits 1 instead of printing
 a partial picture when a thread has more replies than one request returns, when a list runs past
-MAX_PAGES, or when gh fails.
+MAX_PAGES, when gh fails, or when a time, a comment's state or the gh login cannot be read, since
+then no item could be judged.
 
 Callers: the review-pr-comments-converge skill (replies and resolves threads) and the review-code
 skill (reconciles earlier reviews). A change to the output format reaches both. The monitor-prs
@@ -44,6 +58,8 @@ import json
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Literal, NewType, assert_never
 
 # 100 is the most GitHub returns per page, so 50 pages is 5,000 items in one list. A list still
 # reporting another page after that is a GitHub fault, and the run stops rather than loop on it.
@@ -58,20 +74,26 @@ query(
   $withReviews: Boolean!, $reviewsAfter: String,
   $withComments: Boolean!, $commentsAfter: String
 ) {
+  viewer { login }
   repository(owner: $owner, name: $name) {
     pullRequest(number: $number) {
+      author { login __typename }
       reviewThreads(first: 100, after: $threadsAfter) @include(if: $withThreads) {
         pageInfo { hasNextPage endCursor }
         nodes {
           id
           isResolved
+          resolvedBy { login __typename }
           isOutdated
           comments(first: 100) {
             pageInfo { hasNextPage }
             totalCount
             nodes {
               databaseId
-              author { login }
+              author { login __typename }
+              state
+              createdAt
+              lastEditedAt
               path
               line
               originalLine
@@ -90,6 +112,8 @@ query(
           state
           body
           submittedAt
+          createdAt
+          lastEditedAt
           commit { oid }
         }
       }
@@ -111,15 +135,6 @@ query(
 
 # (cursor variable prefix, GraphQL field) for each list the query pages.
 LISTS = (("threads", "reviewThreads"), ("reviews", "reviews"), ("comments", "comments"))
-
-
-@dataclass(frozen=True)
-class Discussion:
-    """Everything said on a PR, every list fetched to its last page."""
-
-    threads: list[dict]
-    reviews: list[dict]
-    conversation: list[dict]
 
 
 # The name each review bot is thanked by. A bot is never @-mentioned: rex-rx starts a new review
@@ -200,6 +215,352 @@ def thank_line(reviewer: Reviewer) -> str:
             return name
 
 
+@dataclass(frozen=True)
+class Answerers:
+    """The accounts whose posts answer feedback: the PR's author and the gh login running this."""
+
+    pr_author: Reviewer
+    viewer: str
+
+    def includes(self, reviewer: Reviewer) -> bool:
+        """Matched on the Reviewer variant, so a deleted account never answers, even when the PR
+        author's account is the one deleted, and a real account named `ghost` is not mistaken for
+        it."""
+        match reviewer:
+            case Ghost():
+                return False
+            case Person(login) if login == self.viewer:
+                return True
+            case Person() | Bot() | UnrecognisedActor():
+                return reviewer == self.pr_author
+            case _:
+                assert_never(reviewer)
+
+    def describe(self) -> str:
+        viewer = f"{self.viewer} (gh login)"
+        match self.pr_author:
+            case Ghost():
+                return f"{viewer}; the PR author's account was deleted"
+            case Person(login) if login == self.viewer:
+                return f"{login} (PR author and gh login)"
+            case Person() | Bot() | UnrecognisedActor():
+                return f"{login_of(self.pr_author)} (PR author), {viewer}"
+            case _:
+                assert_never(self.pr_author)
+
+
+@dataclass(frozen=True)
+class Discussion:
+    """Everything said on a PR, every list fetched to its last page."""
+
+    threads: list[dict]
+    reviews: list[dict]
+    conversation: list[dict]
+    answerers: Answerers
+
+
+PostId = NewType("PostId", int)
+
+
+@dataclass(frozen=True)
+class Post:
+    """A comment or review that went public. `changed_at` is its latest created, submitted or edited
+    time, so it is never before `posted_at`."""
+
+    id: PostId
+    author: Reviewer
+    posted_at: datetime
+    changed_at: datetime
+
+
+@dataclass(frozen=True)
+class NotPosted:
+    """A pending thread comment, or a review not submitted. It can never answer anything."""
+
+    author: Reviewer
+
+
+@dataclass(frozen=True)
+class Unreadable:
+    """Values GitHub returned that this script cannot judge, each named in a sentence."""
+
+    reasons: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class Answer:
+    """An answerer's conversation comment, or an answerer's submitted review with a body."""
+
+    kind: Literal["conversation comment", "review"]
+    post: Post
+
+
+@dataclass(frozen=True)
+class Resolved:
+    by: Reviewer
+
+
+@dataclass(frozen=True)
+class ThreadReply:
+    post: Post
+
+
+@dataclass(frozen=True)
+class TopLevelReply:
+    answer: Answer
+
+
+Evidence = Resolved | ThreadReply | TopLevelReply
+
+
+@dataclass(frozen=True)
+class Answered:
+    evidence: Evidence
+
+
+@dataclass(frozen=True)
+class Unanswered:
+    pass
+
+
+@dataclass(frozen=True)
+class NotFeedback:
+    """Only answerers wrote it."""
+
+
+Verdict = Answered | Unanswered | NotFeedback
+
+
+@dataclass(frozen=True)
+class Verdicts:
+    threads: dict[str, Verdict]
+    reviews: dict[int, Verdict]
+    conversation: dict[int, Verdict]
+
+
+TIME_FIELDS = {"submittedAt": "submitted", "createdAt": "created", "lastEditedAt": "edited"}
+
+
+def parse_time(value: object, what: str) -> datetime | Unreadable:
+    """A timezone-aware time, so that comparisons are between moments and never between strings."""
+    if not isinstance(value, str):
+        return Unreadable((f"{what} is {value!r}, not a timestamp",))
+    try:
+        moment = datetime.fromisoformat(value)
+    except ValueError:
+        return Unreadable((f"{what} {value!r} is not a timestamp",))
+    if moment.tzinfo is None:
+        return Unreadable((f"{what} {value!r} has no timezone",))
+    return moment
+
+
+def parse_post(label: str, node: dict, posted_key: str) -> Post | Unreadable:
+    """`posted_key` names the field that holds when the post went public."""
+    times: list[datetime] = []
+    posted_at: datetime | None = None
+    reasons: list[str] = []
+    for key in dict.fromkeys((posted_key, "createdAt", "lastEditedAt")):
+        raw = node.get(key)
+        if key == "lastEditedAt" and raw is None:
+            continue
+        match parse_time(raw, f"{label}'s {TIME_FIELDS[key]} time"):
+            case Unreadable(found):
+                reasons.extend(found)
+            case datetime() as moment:
+                times.append(moment)
+                if key == posted_key:
+                    posted_at = moment
+    if reasons:
+        return Unreadable(tuple(reasons))
+    assert posted_at is not None, f"{label} parsed with no posted time"
+    return Post(
+        PostId(node["databaseId"]), parse_reviewer(node.get("author")), posted_at, max(times)
+    )
+
+
+def parse_thread_comment(node: dict) -> Post | NotPosted | Unreadable:
+    label = f"thread comment {node['databaseId']}"
+    match node.get("state"):
+        case "SUBMITTED":
+            return parse_post(label, node, "createdAt")
+        case "PENDING":
+            return NotPosted(parse_reviewer(node.get("author")))
+        case state:
+            return Unreadable(
+                (
+                    f"{label}'s state is {state!r}, neither PENDING nor SUBMITTED, so whether it "
+                    "was posted is unknown",
+                )
+            )
+
+
+def parse_review(node: dict) -> Post | NotPosted | Unreadable:
+    if node.get("state") == "PENDING" or node.get("submittedAt") is None:
+        return NotPosted(parse_reviewer(node.get("author")))
+    return parse_post(f"review {node['databaseId']}", node, "submittedAt")
+
+
+def thread_verdict(
+    posts: tuple[Post, ...], resolved_by: Reviewer | None, answerers: Answerers
+) -> Verdict:
+    """`posts` are the thread's posted comments; `resolved_by` is None while it is unresolved."""
+    if all(answerers.includes(post.author) for post in posts):
+        return NotFeedback()
+    if resolved_by is not None:
+        return Answered(Resolved(resolved_by))
+    replies = [post for post in posts if answerers.includes(post.author)]
+    if not replies:
+        return Unanswered()
+    reply = max(replies, key=lambda post: post.posted_at)
+    others = [post for post in posts if post is not reply]
+    # Strictly before, so a post or edit in the same moment as the reply counts as new feedback.
+    if any(post.changed_at >= reply.posted_at for post in others):
+        return Unanswered()
+    assert answerers.includes(reply.author), f"thread reply {reply.id} is not an answerer's"
+    assert all(post.changed_at < reply.posted_at for post in others), (
+        f"thread reply {reply.id} is not after every other comment's last change"
+    )
+    return Answered(ThreadReply(reply))
+
+
+def item_verdict(feedback: Post, answers: tuple[Answer, ...], answerers: Answerers) -> Verdict:
+    """For a review body or conversation comment. `answers` are sorted oldest first."""
+    if answerers.includes(feedback.author):
+        return NotFeedback()
+    # Strictly after, so an answer in the same moment as the feedback's last change ignores it.
+    answer = next((a for a in answers if a.post.posted_at > feedback.changed_at), None)
+    if answer is None:
+        return Unanswered()
+    assert answerers.includes(answer.post.author), f"answer {answer.post.id} is not an answerer's"
+    assert answer.post.posted_at > feedback.changed_at, (
+        f"answer {answer.post.id} is not after feedback {feedback.id} last changed"
+    )
+    return Answered(TopLevelReply(answer))
+
+
+def not_posted_verdict(author: Reviewer, answerers: Answerers) -> Verdict:
+    """A review with no submit time: the run drafts a reply rather than skip feedback."""
+    return NotFeedback() if answerers.includes(author) else Unanswered()
+
+
+def judge_discussion(discussion: Discussion) -> Verdicts | Unreadable:
+    """Give every review, thread and conversation comment one verdict before anything prints, or
+    name every value that could not be read."""
+    answerers = discussion.answerers
+    reasons: list[str] = []
+
+    thread_posts: dict[str, tuple[Post, ...]] = {}
+    for thread in discussion.threads:
+        posts: list[Post] = []
+        for node in thread["comments"]["nodes"]:
+            match parse_thread_comment(node):
+                case Unreadable(found):
+                    reasons.extend(found)
+                case NotPosted():
+                    pass
+                case Post() as post:
+                    posts.append(post)
+        thread_posts[thread["id"]] = tuple(posts)
+
+    reviews: dict[int, Post | NotPosted] = {}
+    for node in discussion.reviews:
+        match parse_review(node):
+            case Unreadable(found):
+                reasons.extend(found)
+            case Post() | NotPosted() as review:
+                reviews[node["databaseId"]] = review
+
+    conversation: dict[int, Post] = {}
+    for node in discussion.conversation:
+        match parse_post(f"conversation comment {node['databaseId']}", node, "createdAt"):
+            case Unreadable(found):
+                reasons.extend(found)
+            case Post() as post:
+                conversation[node["databaseId"]] = post
+
+    if reasons:
+        return Unreadable(tuple(reasons))
+
+    bodies = {node["databaseId"]: (node.get("body") or "").strip() for node in discussion.reviews}
+    candidates = [Answer("conversation comment", post) for post in conversation.values()] + [
+        Answer("review", review)
+        for rid, review in reviews.items()
+        if isinstance(review, Post) and bodies[rid]
+    ]
+    answers = tuple(
+        sorted(
+            (a for a in candidates if answerers.includes(a.post.author)),
+            key=lambda a: a.post.posted_at,
+        )
+    )
+
+    def review_verdict(review: Post | NotPosted) -> Verdict:
+        match review:
+            case Post():
+                return item_verdict(review, answers, answerers)
+            case NotPosted(author):
+                return not_posted_verdict(author, answerers)
+            case _:
+                assert_never(review)
+
+    def resolver(thread: dict) -> Reviewer | None:
+        return parse_reviewer(thread.get("resolvedBy")) if thread["isResolved"] else None
+
+    verdicts = Verdicts(
+        threads={
+            thread["id"]: thread_verdict(thread_posts[thread["id"]], resolver(thread), answerers)
+            for thread in discussion.threads
+        },
+        reviews={rid: review_verdict(review) for rid, review in reviews.items()},
+        conversation={
+            cid: item_verdict(post, answers, answerers) for cid, post in conversation.items()
+        },
+    )
+
+    # Only answerers wrote what is marked as theirs, so no reviewer's post is hidden as `n/a`.
+    for thread_id, verdict in verdicts.threads.items():
+        if isinstance(verdict, NotFeedback):
+            assert all(answerers.includes(p.author) for p in thread_posts[thread_id]), (
+                f"thread {thread_id} is marked n/a but holds a reviewer's comment"
+            )
+    for items, verdict_of in ((reviews, verdicts.reviews), (conversation, verdicts.conversation)):
+        for item_id, item in items.items():
+            if isinstance(verdict_of[item_id], NotFeedback):
+                assert answerers.includes(item.author), f"{item_id} is marked n/a but is feedback"
+
+    return verdicts
+
+
+def iso(moment: datetime) -> str:
+    return moment.astimezone(UTC).isoformat().replace("+00:00", "Z")
+
+
+def describe_evidence(evidence: Evidence) -> str:
+    match evidence:
+        case Resolved(by):
+            return f"resolved by {login_of(by)}"
+        case ThreadReply(post):
+            return f"reply {post.id} by {login_of(post.author)} at {iso(post.posted_at)}"
+        case TopLevelReply(Answer(kind, post)):
+            return f"{kind} {post.id} by {login_of(post.author)} at {iso(post.posted_at)}"
+        case _:
+            assert_never(evidence)
+
+
+def answered_line(verdict: Verdict | None, item: str) -> str:
+    assert verdict is not None, f"{item} is printed with no verdict"
+    match verdict:
+        case Answered(evidence):
+            text = f"yes ({describe_evidence(evidence)})"
+        case Unanswered():
+            text = "no"
+        case NotFeedback():
+            text = "n/a (yours)"
+        case _:
+            assert_never(verdict)
+    return f"  answered   : {text}"
+
+
 HEAVY = "#" * 80
 MEDIUM = "─" * 80
 
@@ -263,15 +624,19 @@ def fetch_page(
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         raise SystemExit(f"error: gh could not fetch {target}: {result.stderr.strip()}")
-    return json.loads(result.stdout)["data"]["repository"]["pullRequest"]
+    return json.loads(result.stdout)["data"]
 
 
 def fetch_discussion(target: str, owner: str, name: str, number: int) -> Discussion:
     """Page every list to its end. Exits rather than return a picture with anything missing."""
     collected: dict[str, list[dict]] = {key: [] for key, _ in LISTS}
     cursors: dict[str, str | None] = {key: None for key, _ in LISTS}
+    answerers: Answerers | None = None
     for _ in range(MAX_PAGES):
-        page = fetch_page(target, owner, name, number, cursors)
+        data = fetch_page(target, owner, name, number, cursors)
+        page = data["repository"]["pullRequest"]
+        if answerers is None:
+            answerers = parse_answerers(target, data)
         for key, field in LISTS:
             if key not in cursors:
                 continue
@@ -301,7 +666,18 @@ def fetch_discussion(target: str, owner: str, name: str, number: int) -> Discuss
                 f"were fetched (thread_id {thread['id']})"
             )
 
-    return Discussion(collected["threads"], collected["reviews"], collected["comments"])
+    assert answerers is not None, "the first page set the answerers"
+    return Discussion(collected["threads"], collected["reviews"], collected["comments"], answerers)
+
+
+def parse_answerers(target: str, data: dict) -> Answerers:
+    viewer = (data.get("viewer") or {}).get("login")
+    if not isinstance(viewer, str) or not viewer:
+        raise SystemExit(
+            f"error: GitHub's response for {target} has no viewer login, so this run cannot tell "
+            "its own replies from a reviewer's"
+        )
+    return Answerers(parse_reviewer(data["repository"]["pullRequest"]["author"]), viewer)
 
 
 def main() -> None:
@@ -314,16 +690,27 @@ def main() -> None:
     pr_number = int(args[0])
     name_with_owner, owner, name = get_repo(repo_arg)
     target = f"{name_with_owner}#{pr_number}"
-    print_discussion(target, fetch_discussion(target, owner, name, pr_number))
+    discussion = fetch_discussion(target, owner, name, pr_number)
+    # Judged before the first print, so a value that cannot be read leaves no half output.
+    match judge_discussion(discussion):
+        case Unreadable(reasons):
+            raise SystemExit(
+                f"error: cannot tell which feedback on {target} is already answered, so nothing "
+                "was printed:\n" + "\n".join(f"  - {reason}" for reason in reasons)
+            )
+        case Verdicts() as verdicts:
+            print_discussion(target, discussion, verdicts)
 
 
-def print_discussion(target: str, discussion: Discussion) -> None:
+def print_discussion(target: str, discussion: Discussion, verdicts: Verdicts) -> None:
     threads = discussion.threads
     reviews = discussion.reviews
     conversation = discussion.conversation
 
     # Printed so the reply step can be checked against the same target these ids came from.
     print(f"# Source: {target}")
+    # Printed so a wrong viewer or PR author, which would change every verdict, can be seen.
+    print(f"# Answerers: {discussion.answerers.describe()}")
     print()
 
     threads_by_review: dict[int, list[tuple[dict, list[dict]]]] = {}
@@ -357,8 +744,8 @@ def print_discussion(target: str, discussion: Discussion) -> None:
         print(HEAVY)
         print(f"  thank      : {thank_line(reviewer)}")
         print(f"  refer_as   : {refer_as(reviewer)}")
-
         if body:
+            print(answered_line(verdicts.reviews.get(rid), f"review {rid}"))
             print()
             print("OVERVIEW:")
             print(indent(body))
@@ -377,6 +764,7 @@ def print_discussion(target: str, discussion: Discussion) -> None:
                     f"  thread_id  : {thread['id']}  (resolved: {'yes' if thread['isResolved'] else 'no'})"
                 )
                 print(f"  outdated   : {'yes' if thread['isOutdated'] else 'no'}")
+                print(answered_line(verdicts.threads.get(thread["id"]), f"thread {thread['id']}"))
                 print()
                 print("  DIFF HUNK:")
                 print(indent(first["diffHunk"], "    "))
@@ -391,7 +779,8 @@ def print_discussion(target: str, discussion: Discussion) -> None:
                     print()
                     print("  REPLIES:")
                     for reply in comments[1:]:
-                        print(f"    {reply['author']['login']}: {reply['body'].strip()}")
+                        replier = login_of(parse_reviewer(reply.get("author")))
+                        print(f"    {replier}: {reply['body'].strip()}")
                 comment_idx += 1
 
         print()
@@ -410,12 +799,14 @@ def print_discussion(target: str, discussion: Discussion) -> None:
             line = first.get("line") or first.get("originalLine") or "?"
             comment_body, suggestion = split_suggestion(first["body"])
 
-            print(f"COMMENT [{comment_idx}]  {first['author']['login']} @ {first['path']}:{line}")
+            opener = login_of(parse_reviewer(first.get("author")))
+            print(f"COMMENT [{comment_idx}]  {opener} @ {first['path']}:{line}")
             print(f"  comment_id : {first['databaseId']}")
             print(
                 f"  thread_id  : {thread['id']}  (resolved: {'yes' if thread['isResolved'] else 'no'})"
             )
             print(f"  outdated   : {'yes' if thread['isOutdated'] else 'no'}")
+            print(answered_line(verdicts.threads.get(thread["id"]), f"thread {thread['id']}"))
             print()
             print("  DIFF HUNK:")
             print(indent(first["diffHunk"], "    "))
@@ -430,7 +821,8 @@ def print_discussion(target: str, discussion: Discussion) -> None:
                 print()
                 print("  REPLIES:")
                 for reply in comments[1:]:
-                    print(f"    {reply['author']['login']}: {reply['body'].strip()}")
+                    replier = login_of(parse_reviewer(reply.get("author")))
+                    print(f"    {replier}: {reply['body'].strip()}")
             comment_idx += 1
 
         print()
@@ -453,6 +845,8 @@ def print_discussion(target: str, discussion: Discussion) -> None:
             print(f"  url        : {comment['url']}")
             print(f"  created    : {comment['createdAt']}")
             print(f"  edited     : {comment.get('lastEditedAt') or 'no'}")
+            cid = comment["databaseId"]
+            print(answered_line(verdicts.conversation.get(cid), f"conversation comment {cid}"))
             print()
             print("  BODY:")
             print(indent(comment["body"].strip(), "    "))
