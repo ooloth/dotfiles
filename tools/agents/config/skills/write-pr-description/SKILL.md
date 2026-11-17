@@ -48,7 +48,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - [ ] Found the Jira/Slack links, or got them as step 3 describes
 - [ ] Got a screen recording of a UI change as step 3 describes
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
-- [ ] Validation is manual e2e only — no automated checks
+- [ ] Verification is manual e2e only — no automated checks
 - [ ] An Evidence section under the checklist shows what following it showed, one collapsed block
   per piece, each labelled with the claim it shows
 - [ ] No implementation details snuck in
@@ -88,7 +88,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   codebase to effectively review the PR because your phrasing made the change and its impact so
   easy to understand.
 
-### Validation
+### Verification
 
 - A single flat `- [ ]` checklist — no nested items, no prose paragraphs
 - Steps must be sequential, each building on the previous so the list reads like a walkthrough, not
@@ -157,7 +157,7 @@ which leaves it out (see step 3)
 ❌ Hard-wrapped prose — GitHub shows each newline as a line break, so a wrapped paragraph renders as
 ragged short lines; write each paragraph and list item as one line
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read
-❌ Validation steps that run or reference automated tests — CI already shows this; zero marginal
+❌ Verification steps that run or reference automated tests — CI already shows this; zero marginal
 value to a reviewer
 
 ---
@@ -183,7 +183,7 @@ value to a reviewer
 - Hides completely (no tooltip either) when the current dataset has no archived items
 - Since this toggle won't appear until datasets with archived items are in prod, it's safe to deploy backend and frontend together
 
-### 🍿 Screen recording of validation steps below
+### 🍿 Screen recording of verification steps below
 
 [video]
 
@@ -192,7 +192,7 @@ value to a reviewer
 - New datasets introduce archived items for the first time and users need the option to hide them while building familiarity
 - Defaulting them visible gives reviewers the full picture until users understand what they mean
 
-## 👩‍🔬 How to validate
+## 👩‍🔬 How to verify
 
 - [ ] `./bin/dev.sh` + `cd frontend` + `npm start`
 - [ ] Expect to **not** see the "Include archived items" toggle
