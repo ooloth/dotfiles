@@ -859,7 +859,8 @@ def print_discussion(target: str, discussion: Discussion, verdicts: Verdicts) ->
             print(answered_line(verdicts.reviews.get(rid), f"review {rid}"))
             print()
             print("OVERVIEW:")
-            print(indent(body))
+            # Deeper than the item's own `  answered   :` line, so a review body cannot fake one.
+            print(indent(body, "    "))
 
         if review_threads:
             for thread, comments in review_threads:

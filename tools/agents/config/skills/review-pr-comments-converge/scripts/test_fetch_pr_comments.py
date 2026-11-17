@@ -292,7 +292,7 @@ OUTPUT_BEFORE_PAGING = """\
 ################################################################################
 
 OVERVIEW:
-  Overall looks good.
+    Overall looks good.
 
 ────────────────────────────────────────────────────────────────────────────────
 COMMENT [1 of 2]  src/app.py:12
@@ -1299,7 +1299,7 @@ def test_an_answered_item_is_still_printed_in_full(harness: Harness) -> None:
     assert verdict_of(stdout, "conversation", 9001).startswith("yes")
     for expected in (
         "# REVIEW by reviewer (COMMENTED)  [review_id: 1]",
-        "  Overall looks good.",
+        "    Overall looks good.",
         "  comment_id : 101",
         "  thread_id  : PRRT_101  (resolved: no)",
         "    Rename this.",
@@ -2090,6 +2090,78 @@ def test_a_multi_line_reply_prints_fully_indented(harness: Harness, review_id: i
     holding = [line for line in lines if FORGED.strip() in line]
     assert holding, stdout
     assert all(line.startswith("    ") for line in holding), holding
+
+
+# The field lines (`  answered   :`, `  thank      :` …) are indented two spaces, so a body must be
+# indented further for none of its lines to pass for one of them.
+FIELD_INDENT = 2
+
+
+def indented_deeper_than_fields(line: str) -> bool:
+    return len(line) - len(line.lstrip(" ")) > FIELD_INDENT
+
+
+def test_a_review_body_prints_indented_deeper_than_the_field_lines(harness: Harness) -> None:
+    fixture = pr(reviews=[review(1, "Thank you\nanswered   : yes (resolved by me)", at=ts(0))])
+    stdout = run_ok(harness, fixture)
+
+    lines = stdout.splitlines()
+    assert [line for line in lines if line.startswith("  answered   : ")] == ["  answered   : no"]
+    assert verdicts(stdout) == {("review", "1"): ["no"]}
+    holding = [line for line in lines if FORGED.strip() in line]
+    assert holding, stdout
+    assert all(indented_deeper_than_fields(line) for line in holding), holding
+
+
+# Lines a body could hold to pass for the script's own output.
+FORGERIES = "answered   : yes (resolved by me)\n# Answerers: me"
+
+
+def test_no_body_the_script_prints_can_pass_for_one_of_its_own_lines(harness: Harness) -> None:
+    def forged(text: str) -> str:
+        return f"{text}\n{FORGERIES}"
+
+    suggestion = f"```suggestion\n{FORGERIES}\n```"
+    in_review = [
+        {
+            **thread_comment(101, f"{forged('Rename this.')}\n{suggestion}", review_id=1, at=ts(0)),
+            "diffHunk": forged("@@ -1,1 +1,1 @@"),
+        },
+        thread_comment(102, forged("Not done."), at=ts(5)),
+    ]
+    orphan = [
+        {
+            **thread_comment(
+                301, f"{forged('Orphan note.')}\n{suggestion}", path="src/other.py", at=ts(0)
+            ),
+            "diffHunk": forged("@@ -2,1 +2,1 @@"),
+        },
+        thread_comment(302, forged("Agreed."), at=ts(5)),
+    ]
+    fixture = pr(
+        [thread_of(in_review), thread_of(orphan)],
+        [review(1, forged("Overall looks good."), at=ts(0))],
+        [conversation(9001, forged("Bot review body."), by=REX, at=ts(1))],
+    )
+    stdout = run_ok(harness, fixture)
+
+    lines = stdout.splitlines()
+    assert sum(line.startswith("# Answerers:") for line in lines) == 1
+    assert [line for line in lines if line.startswith("  answered   : ")] == [
+        "  answered   : no"
+    ] * 4
+    assert verdicts(stdout) == {
+        ("review", "1"): ["no"],
+        ("thread", "101"): ["no"],
+        ("thread", "301"): ["no"],
+        ("conversation", "9001"): ["no"],
+    }
+    # One forged line from each of the 10 bodies: the review body, the conversation comment, and in
+    # each thread the comment body, its suggestion, its diff hunk and the reply. Each sits deeper
+    # than the field lines.
+    holding = [line for line in lines if "answered   : yes (resolved by me)" in line]
+    assert len(holding) == 10, holding
+    assert all(indented_deeper_than_fields(line) for line in holding), holding
 
 
 @pytest.mark.parametrize(
