@@ -1684,6 +1684,19 @@ def test_an_answer_that_addresses_another_reviewer_does_not_answer(harness: Harn
             "Done.\n\n````\n```\n@dana\n```\n````", id="in-a-four-backtick-fence-holding-three"
         ),
         pytest.param("Fixed:\n\n    @dana\n", id="in-an-indented-code-block"),
+        # CommonMark's code rules, each checked against markdown-it-py's parser.
+        pytest.param("```\n\n@dana\n\n```", id="in-a-fence-with-blank-lines"),
+        pytest.param("  ```\n\n@dana\n\n  ```", id="in-an-indented-fence"),
+        pytest.param("```\n~~~\n\n@dana\n\n```", id="in-a-fence-holding-a-tilde-line"),
+        pytest.param("\t@dana", id="in-a-tab-indented-code-block"),
+        pytest.param("    code\n    @dana", id="on-a-code-blocks-second-line"),
+        pytest.param("    code\n\n```\nx\n```\n    @dana", id="in-a-code-block-after-a-fence"),
+        pytest.param("`a``@dana`", id="in-a-span-holding-a-longer-backtick-run"),
+        pytest.param(
+            "text\n```\nx\n```\n    @dana", id="in-a-code-block-after-a-fence-that-ends-a-paragraph"
+        ),
+        pytest.param("# Heading\n    @dana", id="in-a-code-block-after-a-heading"),
+        pytest.param(" \t@dana", id="in-a-code-block-indented-by-a-space-and-a-tab"),
     ],
 )
 def test_an_at_login_github_would_not_render_as_a_mention_does_not_address_them(
@@ -2015,6 +2028,38 @@ def test_a_resolved_thread_does_not_hide_feedback_after_the_latest_reply(
         pytest.param(
             "```\nx\n```\nthanks @dana\n```\ny\n```", EVIDENCE_9002, id="between-two-fences"
         ),
+        # CommonMark's code rules, each checked against markdown-it-py's parser.
+        pytest.param("``\n@dana", EVIDENCE_9002, id="after-an-unclosed-double-backtick"),
+        pytest.param("```x``` @dana", EVIDENCE_9002, id="after-a-triple-backtick-span"),
+        pytest.param(
+            "text\n    ```\n\n@dana",
+            EVIDENCE_9002,
+            id="after-an-indented-backtick-line-inside-a-paragraph",
+        ),
+        pytest.param(
+            "```\nx\n````\n@dana", EVIDENCE_9002, id="after-a-fence-closed-by-a-longer-run"
+        ),
+        pytest.param(
+            "```\nx\n```  \n@dana", EVIDENCE_9002, id="after-a-fence-closed-with-trailing-spaces"
+        ),
+        pytest.param("   @dana", EVIDENCE_9002, id="indented-three-spaces"),
+        pytest.param(
+            "Thanks\n    @dana", EVIDENCE_9002, id="indented-four-spaces-inside-a-paragraph"
+        ),
+        pytest.param(
+            "    code\n\ntext\n    @dana",
+            EVIDENCE_9002,
+            id="indented-inside-a-paragraph-after-a-code-block",
+        ),
+        pytest.param("``@dana`", EVIDENCE_9002, id="after-an-unmatched-backtick-run"),
+        pytest.param("`a\n\n@dana `b`", EVIDENCE_9002, id="after-a-span-cut-by-a-blank-line"),
+        pytest.param("`a\n \n@dana `", EVIDENCE_9002, id="after-a-span-cut-by-a-whitespace-line"),
+        pytest.param("`a` @dana `b`", EVIDENCE_9002, id="between-two-spans"),
+        pytest.param(
+            "```\na`\n````\n@dana`", EVIDENCE_9002, id="after-a-fence-whose-body-holds-a-backtick"
+        ),
+        pytest.param("\\`@dana`", EVIDENCE_9002, id="after-an-escaped-backtick"),
+        pytest.param("- item\n\n    @dana", EVIDENCE_9002, id="in-a-list-items-continuation"),
     ],
 )
 def test_a_mention_outside_code_answers_even_when_the_post_also_holds_code(

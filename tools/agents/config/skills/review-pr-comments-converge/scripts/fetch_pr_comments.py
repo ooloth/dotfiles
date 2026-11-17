@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.11"
-# dependencies = []
+# dependencies = ["markdown-it-py>=4,<5"]
 # ///
 """Fetch all PR review comments and print them in a structured format for agent consumption.
 
@@ -71,6 +71,8 @@ import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Literal, NewType, assert_never
+
+from markdown_it import MarkdownIt
 
 # 100 is the most GitHub returns per page, so 50 pages is 5,000 items in one list. A list still
 # reporting another page after that is a GitHub fault, and the run stops rather than loop on it.
@@ -480,44 +482,29 @@ def addresses(body: str, reviewer: Reviewer) -> bool:
     return re.search(mention, outside_code(body), re.IGNORECASE) is not None
 
 
-FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}(?=[^`]*$)|~{3,})")
-INDENTED = re.compile(r"^(?: {4}|\t)")
-# A run of N backticks, then anything up to the next run of exactly N, within one paragraph.
-CODE_SPAN = re.compile(r"(?<!`)(`+)(?!`)((?:(?!\n[ \t]*\n).)+?)(?<!`)\1(?!`)", re.DOTALL)
+# CommonMark, as GitHub renders comments, so code is recognised the way the reader sees it.
+MARKDOWN = MarkdownIt("commonmark")
 
 
 def outside_code(body: str) -> str:
-    """The body with code blanked out, since GitHub renders no mention inside code, and a name
-    quoted in code is not written to anyone. Follows CommonMark's code forms:
-      - a fenced block opens with 3+ backticks or tildes, with any info string, and closes at a
-        fence of the same character at least as long, or at the end of the body;
-      - an indented block is lines indented 4+ spaces that start the body or follow a blank line;
-      - an inline span opens with a run of N backticks and closes at the next run of exactly N in
-        the same paragraph.
-    Blanked text becomes whitespace, so the text on either side never joins into one word."""
-    kept: list[str] = []
-    fence: str | None = None
-    indented = False
-    previous_blank = True
-    for line in body.split("\n"):
-        blank = not line.strip()
-        if fence is not None:
-            # Closed by the same character, at least as many, and nothing else on the line.
-            closer = rf" {{0,3}}{re.escape(fence)}{re.escape(fence[0])}*[ \t]*"
-            if re.fullmatch(closer, line):
-                fence = None
-            kept.append("")
-        elif opener := FENCE_OPEN.match(line):
-            fence = opener.group(1)
-            kept.append("")
-        elif not blank and INDENTED.match(line) and (indented or previous_blank):
-            indented = True
-            kept.append("")
-        else:
-            indented = indented and blank
-            kept.append(line)
-        previous_blank = blank
-    return CODE_SPAN.sub(" ", "\n".join(kept))
+    """The body's plain text, since GitHub renders no mention inside code, and a name quoted in
+    code is not written to anyone. Fenced and indented code blocks carry no inline tokens, so they
+    drop out; within a paragraph or heading, text is kept, line breaks become newlines, and every
+    other inline token, inline code included, becomes a space. Adjacent text joins directly, so
+    `@dana_` is never split, while text either side of a dropped token never joins into one
+    word."""
+    parts: list[str] = []
+    for block in MARKDOWN.parse(body):
+        for token in block.children or []:
+            match token.type:
+                case "text":
+                    parts.append(token.content)
+                case "softbreak" | "hardbreak":
+                    parts.append("\n")
+                case _:
+                    parts.append(" ")
+        parts.append("\n")
+    return "".join(parts)
 
 
 def item_verdict(feedback: Post, answers: tuple[Answer, ...], answerers: Answerers) -> Verdict:
