@@ -302,6 +302,11 @@ physical fact forces it, or where reaching the maximum would cost more than the 
 and I agree after seeing both. Name the fact or the cost, and argue it from the properties. The
 full rule is in `decision-making.md` in the standards.
 
+**Recommend what's best, and let scope set only the timing.** A recommendation names the option
+best for the system's safety, performance and experience. That an option is smaller, or outside the
+ticket, is never the reason to recommend it. It is a reason to propose the better option as a
+follow-up PR or ticket.
+
 **Decide slowly, from properties, when the triage above says a choice needs it.** Models are
 trained to reach a choice quickly, and the harness reinforces it: its system prompt says "When you
 have enough information to act, act" and asks for "a recommendation, not an exhaustive survey". For
