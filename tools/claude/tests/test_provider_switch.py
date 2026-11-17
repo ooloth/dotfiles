@@ -89,9 +89,11 @@ class WhenSessionsMoveBack(unittest.TestCase):
         self.assertEqual(PS.after_tick(PS.State(), now, {}).switch, PS.OnSubscription())
 
     def test_the_latest_reset_times_are_kept(self) -> None:
-        state = PS.State(resets_at={"five_hour": 1.0, "seven_day": 2.0})
+        state = PS.State(usage={"five_hour": seen(5, 1.0), "seven_day": seen(50, 2.0)})
         after = PS.after_tick(state, NOW, {"five_hour": seen(10, 3.0)})
-        self.assertEqual(dict(after.resets_at), {"five_hour": 3.0, "seven_day": 2.0})
+        self.assertEqual(
+            dict(after.usage), {"five_hour": seen(10, 3.0), "seven_day": seen(50, 2.0)}
+        )
 
 
 def seen(used: float, resets_at: float | None):
@@ -132,6 +134,58 @@ class WhenSessionsMoveToVertex(unittest.TestCase):
         on_vertex = PS.OnVertex(NOW - 60, NOW + 60, PS.Reason.MANUAL)
         after = PS.after_tick(PS.State(on_vertex), NOW, {"five_hour": seen(100, NOW + 3600)})
         self.assertEqual(after.switch, on_vertex)
+
+
+class HoldOnTheSubscription(unittest.TestCase):
+    """Moving sessions back by hand while a window is used up keeps them on the subscription until
+    it resets, for someone who would rather wait than pay for Vertex AI."""
+
+    @given(
+        five=st.floats(min_value=0, max_value=150),
+        five_left=st.floats(min_value=-3600, max_value=5 * 3600),
+        seven=st.floats(min_value=0, max_value=150),
+        seven_left=st.floats(min_value=-3600, max_value=7 * 24 * 3600),
+    )
+    def test_the_hold_lasts_until_the_latest_used_up_window_resets(
+        self, five: float, five_left: float, seven: float, seven_left: float
+    ) -> None:
+        usage = {
+            "five_hour": seen(five, NOW + five_left),
+            "seven_day": seen(seven, NOW + seven_left),
+        }
+        held = PS.choose_subscription(
+            PS.State(PS.OnVertex(NOW - 1, NOW + 1, PS.Reason.MANUAL), usage), NOW
+        )
+        used_up = [
+            NOW + left
+            for used, left in ((five, five_left), (seven, seven_left))
+            if used >= 100 and NOW + left > NOW
+        ]
+        self.assertEqual(held.switch, PS.OnSubscription(max(used_up) if used_up else None))
+
+    @given(at=st.floats(min_value=0, max_value=2 * 3600))
+    def test_no_trigger_moves_sessions_until_the_hold_ends(self, at: float) -> None:
+        held_until = NOW + 3600
+        state = PS.State(PS.OnSubscription(held_until))
+        used_up = {"five_hour": seen(100, NOW + 3 * 3600)}
+
+        by_status_line = PS.after_tick(state, NOW + at, used_up).switch
+        by_limit_error = PS.after_limit_error(state, NOW + at, "five_hour").switch
+
+        if NOW + at < held_until:
+            self.assertEqual(by_status_line, PS.OnSubscription(held_until))
+            self.assertEqual(by_limit_error, PS.OnSubscription(held_until))
+        else:
+            self.assertIsInstance(by_status_line, PS.OnVertex)
+            self.assertIsInstance(by_limit_error, PS.OnVertex)
+
+    def test_moving_to_vertex_by_hand_ends_the_hold(self) -> None:
+        state = PS.State(PS.OnSubscription(NOW + 3600))
+        self.assertIsInstance(PS.choose_vertex(state, NOW).switch, PS.OnVertex)
+
+    def test_a_hold_survives_the_state_file(self) -> None:
+        state = PS.State(PS.OnSubscription(NOW + 3600), {"five_hour": seen(100, NOW + 3600)})
+        self.assertEqual(PS.parse_state(PS.dump_state(state)), state)
 
 
 class LimitErrors(unittest.TestCase):
@@ -183,7 +237,9 @@ class StopFailureHook(unittest.TestCase):
     def test_a_turn_that_hits_the_limit_moves_sessions_until_the_recorded_reset(self) -> None:
         resets = 4_000_000_000.0
         self.home.paths.state.parent.mkdir(parents=True)
-        self.home.paths.state.write_text(PS.dump_state(PS.State(resets_at={"five_hour": resets})))
+        self.home.paths.state.write_text(
+            PS.dump_state(PS.State(usage={"five_hour": seen(40, resets)}))
+        )
 
         result = self.run_hook("You've hit your session limit · resets 3pm")
 
@@ -219,14 +275,16 @@ class Command(unittest.TestCase):
     def test_vertex_lasts_until_the_recorded_five_hour_reset(self) -> None:
         resets = NOW + 3600
         self.home.paths.state.parent.mkdir(parents=True)
-        self.home.paths.state.write_text(PS.dump_state(PS.State(resets_at={"five_hour": resets})))
+        self.home.paths.state.write_text(
+            PS.dump_state(PS.State(usage={"five_hour": seen(40, resets)}))
+        )
 
         self.assertEqual(self.run_command("vertex"), 0)
         self.assertEqual(self.home.saved_state().switch, PS.OnVertex(NOW, resets, PS.Reason.MANUAL))
         self.assertEqual(self.home.switch(), "1")
 
     def test_vertex_lasts_five_hours_when_no_reset_is_ahead(self) -> None:
-        for state in (PS.State(), PS.State(resets_at={"five_hour": NOW - 60})):
+        for state in (PS.State(), PS.State(usage={"five_hour": seen(40, NOW - 60)})):
             with self.subTest(state=state):
                 self.home.paths.state.parent.mkdir(parents=True, exist_ok=True)
                 self.home.paths.state.write_text(PS.dump_state(state))

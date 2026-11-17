@@ -37,7 +37,9 @@ used-up window resets:
 The status line applies the state to `settings.json` on every refresh, moves sessions back once the
 time passes, and shows `Vertex AI until <time>` meanwhile. Run `! cc-switch` in a session to see
 which one they use, `! cc-switch vertex` to move them until the 5-hour limit resets, or
-`! cc-switch subscription` to move them back.
+`! cc-switch subscription` to move them back. Moved back while a limit is still used up, they stay
+on the subscription until it resets, with neither trigger moving them, and the status line shows
+`subscription until <time>`.
 
 `cc-vertex` starts a single session that stays on Vertex AI whatever the switch says. A commit
 must never hold the switch at `"1"`, since personal Macs have no Vertex AI project.

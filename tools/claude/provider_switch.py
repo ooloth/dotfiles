@@ -68,7 +68,8 @@ class UsageSeen:
 
 @dataclass(frozen=True)
 class OnSubscription:
-    pass
+    # Moved back by hand while a window was used up: no trigger moves sessions before this time
+    held_until: float | None = None  # Unix seconds
 
 
 @dataclass(frozen=True)
@@ -87,8 +88,8 @@ Switch = OnSubscription | OnVertex
 @dataclass(frozen=True)
 class State:
     switch: Switch = OnSubscription()
-    # When each of the subscription's usage windows last said it resets, by the status line's key
-    resets_at: Mapping[str, float] = field(default_factory=dict)
+    # Each of the subscription's usage windows as the status line last reported it, by its key
+    usage: Mapping[str, UsageSeen] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -138,17 +139,26 @@ def parse_state(text: str | None) -> State:
     can edit the file and an interrupted write can leave it empty."""
     try:
         data = json.loads(text or "")
-        resets_at = {str(k): float(v) for k, v in data.get("resets_at", {}).items()}
+        usage = {
+            str(key): UsageSeen(
+                float(seen["used_percent"]),
+                None if seen.get("resets_at") is None else float(seen["resets_at"]),
+            )
+            for key, seen in data.get("usage", {}).items()
+        }
         if data.get("provider") != "vertex":
-            return State(OnSubscription(), resets_at)
+            held = data.get("held_until")
+            return State(OnSubscription(None if held is None else float(held)), usage)
         switch = OnVertex(float(data["since"]), float(data["until"]), Reason(data["reason"]))
-        return State(switch, resets_at)
+        return State(switch, usage)
     except (ValueError, TypeError, KeyError, AttributeError, AssertionError):
         return State()
 
 
 def dump_state(state: State) -> str:
     data: dict[str, object] = {"provider": "subscription"}
+    if isinstance(state.switch, OnSubscription) and state.switch.held_until is not None:
+        data["held_until"] = state.switch.held_until
     if isinstance(state.switch, OnVertex):
         data = {
             "provider": "vertex",
@@ -156,7 +166,10 @@ def dump_state(state: State) -> str:
             "until": state.switch.until,
             "reason": state.switch.reason.value,
         }
-    data["resets_at"] = dict(state.resets_at)
+    data["usage"] = {
+        key: {"used_percent": seen.used_percent, "resets_at": seen.resets_at}
+        for key, seen in state.usage.items()
+    }
     return json.dumps(data, indent=2) + "\n"
 
 
@@ -167,6 +180,8 @@ def after_tick(state: State, now: float, windows: Mapping[str, UsageSeen]) -> St
     switch = state.switch
     if isinstance(switch, OnVertex) and now >= switch.until:
         switch = OnSubscription()
+    if isinstance(switch, OnSubscription) and _held(switch, now):
+        return State(switch, {**state.usage, **windows})
     if isinstance(switch, OnSubscription):
         # A window whose reset has passed can still say 100% until Claude Code next reports it
         used_up = [
@@ -176,8 +191,11 @@ def after_tick(state: State, now: float, windows: Mapping[str, UsageSeen]) -> St
         ]
         if used_up:
             switch = OnVertex(now, max(used_up), Reason.USAGE_LIMIT)
-    resets_seen = {k: w.resets_at for k, w in windows.items() if w.resets_at is not None}
-    return State(switch, {**state.resets_at, **resets_seen})
+    return State(switch, {**state.usage, **windows})
+
+
+def _held(switch: OnSubscription, now: float) -> bool:
+    return switch.held_until is not None and now < switch.held_until
 
 
 def parse_limit_error(payload: Mapping[str, object]) -> str | None:
@@ -195,22 +213,31 @@ def parse_limit_error(payload: Mapping[str, object]) -> str | None:
 def after_limit_error(state: State, now: float, window: str) -> State:
     """Vertex AI until the window that ran out resets, or for its full length when no reset time
     is recorded. Sessions already on Vertex AI keep their time."""
-    if isinstance(state.switch, OnVertex):
+    if isinstance(state.switch, OnVertex) or _held(state.switch, now):
         return state
-    resets = state.resets_at.get(window)
+    seen = state.usage.get(window)
+    resets = seen.resets_at if seen is not None else None
     until = resets if resets is not None and resets > now else now + WINDOW_LENGTHS_S[window]
     return replace(state, switch=OnVertex(now, until, Reason.LIMIT_ERROR))
 
 
 def choose_vertex(state: State, now: float) -> State:
     """Vertex AI until the 5-hour window resets, or for 5 hours when no reset time is known."""
-    resets = state.resets_at.get("five_hour")
+    seen = state.usage.get("five_hour")
+    resets = seen.resets_at if seen is not None else None
     until = resets if resets is not None and resets > now else now + FIVE_HOURS_S
     return replace(state, switch=OnVertex(now, until, Reason.MANUAL))
 
 
-def choose_subscription(state: State) -> State:
-    return replace(state, switch=OnSubscription())
+def choose_subscription(state: State, now: float) -> State:
+    """The subscription, held until the latest used-up window resets, so neither trigger moves
+    sessions straight back to Vertex AI. No hold when no window is used up."""
+    used_up = [
+        seen.resets_at
+        for seen in state.usage.values()
+        if seen.used_percent >= 100 and seen.resets_at is not None and seen.resets_at > now
+    ]
+    return replace(state, switch=OnSubscription(max(used_up) if used_up else None))
 
 
 def switch_value(switch: Switch) -> str:
@@ -320,6 +347,12 @@ def describe(switch: Switch, now: float) -> str:
             f"(since {clock(switch.since, now)}, {switch.reason.value}).\n"
             "To move them back to the subscription now: cc-switch subscription"
         )
+    if switch.held_until is not None and now < switch.held_until:
+        return (
+            f"Sessions stay on the subscription until {clock(switch.held_until, now)}, when the "
+            "used-up limit resets, and nothing moves them to Vertex AI before then.\n"
+            "To move them to Vertex AI now: cc-switch vertex"
+        )
     return (
         "Sessions use the subscription.\n"
         "To move them to Vertex AI until the 5-hour limit resets: cc-switch vertex"
@@ -356,7 +389,11 @@ def main(argv: list[str], paths: Paths, env: Mapping[str, str], now: float) -> i
     if choice is None:
         print(describe(_read_state(paths).switch, now))
         return 0
-    change = (lambda s: choose_vertex(s, now)) if choice == "vertex" else choose_subscription
+    change = (
+        (lambda s: choose_vertex(s, now))
+        if choice == "vertex"
+        else (lambda s: choose_subscription(s, now))
+    )
     try:
         state = _update(paths, env, change)
     except Busy:

@@ -391,12 +391,22 @@ def _usage_segments(
 
 
 def _provider_segments(
-    vertex_until: float | None, switch_failed: bool, now: float, zone: tzinfo | None
+    vertex_until: float | None,
+    switch_failed: bool,
+    held_until: float | None,
+    now: float,
+    zone: tzinfo | None,
 ) -> list[Segment]:
     """Whether sessions are on Vertex AI rather than the subscription, and until when. Nothing while
     they use the subscription."""
     if switch_failed:
         return [Segment("switch failed", Colour.RED), Segment(GROUP_SEPARATOR)]
+    if held_until is not None and held_until > now:
+        return [
+            Segment("subscription", Colour.YELLOW),
+            Segment(f" until {provider_switch.clock(held_until, now, zone)}", Colour.DIM),
+            Segment(GROUP_SEPARATOR),
+        ]
     if vertex_until is None:
         return []
     return [
@@ -413,6 +423,7 @@ def compose_line(
     zone: tzinfo | None,
     vertex_until: float | None = None,
     switch_failed: bool = False,
+    held_until: float | None = None,
 ) -> StatusLine:
     """The line's segments. `zone` sets the time zone reset times are shown in: None is local.
     `vertex_until` is when sessions move back from Vertex AI, or None while on the subscription."""
@@ -423,7 +434,7 @@ def compose_line(
 
     context = session.context
     right = [
-        *_provider_segments(vertex_until, switch_failed, now, zone),
+        *_provider_segments(vertex_until, switch_failed, held_until, now, zone),
         Segment(session.model_name),
         Segment(f" {_tokens(context.window_k)}", Colour.DIM),
         Segment(GROUP_SEPARATOR),
@@ -462,11 +473,11 @@ def parse_columns(value: str | None) -> int | None:
     return int(value) if value is not None and re.fullmatch(r"[0-9]+", value) else None
 
 
-def tick_provider(session: Session, now: float) -> tuple[float | None, bool]:
+def tick_provider(session: Session, now: float) -> tuple[float | None, float | None, bool]:
     """Move sessions between the subscription and Vertex AI as the switch's state says. Returns when
-    sessions move back from Vertex AI, or None while on the subscription, and whether the switch
-    failed. A failure shows on the line, which has nowhere else to report it, and the line still
-    renders."""
+    sessions move back from Vertex AI (None while on the subscription), when a hold on the
+    subscription ends (None without one), and whether the switch failed. A failure shows on the
+    line, which has nowhere else to report it, and the line still renders."""
     windows = {
         w.kind.key: provider_switch.UsageSeen(w.used_percent, w.resets_at) for w in session.usage
     }
@@ -475,16 +486,24 @@ def tick_provider(session: Session, now: float) -> tuple[float | None, bool]:
             now, windows, provider_switch.Paths.under(Path.home()), os.environ
         )
     except Exception:  # any failure, so the line renders whatever went wrong
-        return None, True
-    return (switch.until if isinstance(switch, provider_switch.OnVertex) else None), False
+        return None, None, True
+    if isinstance(switch, provider_switch.OnVertex):
+        return switch.until, None, False
+    return None, switch.held_until, False
 
 
 def main() -> None:
     session = parse_session(sys.stdin.read())
     now = time.time()
-    vertex_until, switch_failed = tick_provider(session, now)
+    vertex_until, held_until, switch_failed = tick_provider(session, now)
     line = compose_line(
-        session, read_checkout(session.directory), now, None, vertex_until, switch_failed
+        session,
+        read_checkout(session.directory),
+        now,
+        None,
+        vertex_until,
+        switch_failed,
+        held_until,
     )
     print(render(line, parse_columns(os.environ.get("COLUMNS"))))
 
