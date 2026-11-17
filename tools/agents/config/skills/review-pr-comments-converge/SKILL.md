@@ -88,7 +88,11 @@ fetch. A deleted account's post never counts.
 - `yes (...)` names the evidence that counted: `resolved by <login>`, `reply <id> by <login> at
   <time>` (an answerer's reply is the thread's newest comment and nothing in it changed at or after
   it), or `conversation comment <id> by <login> at <time>` or `review <id> by <login> at <time>` (an
-  answerer posted it after the review body or conversation comment was posted or last edited).
+  answerer posted it after the review body or conversation comment was posted or last edited, and
+  it addresses that item's author: it opens with the item's `thank` line, or names the author as
+  `refer_as` does, `@login` for a person or the `BOT_NAMES` name as a whole word for a bot, in any
+  case). A closing remark that names no one, such as "Rebased on main", answers nothing. A deleted
+  or `UNKNOWN` author cannot be addressed, so no top-level post answers their items.
 - `no` means nothing has answered it yet.
 - `n/a (yours)` marks an item only answerers wrote, which is not feedback.
 
@@ -194,7 +198,8 @@ report.
 line of every review body, inline thread and conversation comment in the saved fetch. Put every
 item whose line is not `answered   : no` on the decided list as **Already answered**: it is not sent
 to validation, it gets no reply, and the report lists it under ⏭️ Already answered with its
-`answered` line's evidence copied exactly. Only items whose line reads `no` and that are not already
+`answered` line's evidence copied exactly. Go by the line alone: an item marked `no` is not skipped
+because a later post seems to answer it. Only items whose line reads `no` and that are not already
 decided go to Step A. The Already answered entries, and only those, are rebuilt from the saved fetch
 at the start of each pass and never carried over from an earlier one, so an item that was answered
 before and has new feedback now is validated. An item an earlier pass auto-fixed, escalated,

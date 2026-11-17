@@ -1032,6 +1032,15 @@ def test_a_deleted_account_never_answers_even_when_the_pr_authors_account_was_de
 
 
 # Review bodies and conversation comments
+#
+# An answerer's top-level post answers one only when it addresses the item's author: it opens with
+# the item's `thank` line, or names the author as `refer_as` does (`@login` for a person, the
+# BOT_NAMES name as a whole word for a bot).
+
+# An answer that addresses the default reviewer, `reviewer`.
+TO_REVIEWER = "@reviewer Thanks for the feedback:\n\n- ✅ Fixed."
+DANA = author("dana")
+REX = author("rex-rx-agent", "Bot")
 
 
 def test_a_review_body_followed_by_the_authors_conversation_comment_is_answered_by_it(
@@ -1039,7 +1048,7 @@ def test_a_review_body_followed_by_the_authors_conversation_comment_is_answered_
 ) -> None:
     fixture = pr(
         reviews=[review(1, "Please fix.", at=ts(0))],
-        comments=[conversation(9002, "Fixed.", by=ME, at=ts(5))],
+        comments=[conversation(9002, TO_REVIEWER, by=ME, at=ts(5))],
     )
     stdout = run_ok(harness, fixture)
 
@@ -1049,7 +1058,9 @@ def test_a_review_body_followed_by_the_authors_conversation_comment_is_answered_
 def test_a_review_body_followed_by_the_authors_review_with_a_body_is_answered_by_it(
     harness: Harness,
 ) -> None:
-    fixture = pr(reviews=[review(1, "Please fix.", at=ts(0)), review(2, "Fixed.", by=ME, at=ts(5))])
+    fixture = pr(
+        reviews=[review(1, "Please fix.", at=ts(0)), review(2, TO_REVIEWER, by=ME, at=ts(5))]
+    )
     stdout = run_ok(harness, fixture)
 
     assert verdict_of(stdout, "review", 1).startswith("yes (review 2 by me at ")
@@ -1061,7 +1072,7 @@ def test_a_conversation_comment_followed_by_the_authors_is_answered_by_it(
     fixture = pr(
         comments=[
             conversation(9001, "Please fix.", by=REVIEWER, at=ts(0)),
-            conversation(9002, "Fixed.", by=ME, at=ts(5)),
+            conversation(9002, TO_REVIEWER, by=ME, at=ts(5)),
         ]
     )
     stdout = run_ok(harness, fixture)
@@ -1076,8 +1087,8 @@ def test_the_earliest_answer_after_the_feedback_is_the_evidence(harness: Harness
         reviews=[review(1, "Please fix.", at=ts(3))],
         comments=[
             conversation(9001, "Before.", by=ME, at=ts(1)),
-            conversation(9002, "First answer.", by=ME, at=ts(5)),
-            conversation(9003, "Second answer.", by=ME, at=ts(8)),
+            conversation(9002, TO_REVIEWER, by=ME, at=ts(5)),
+            conversation(9003, TO_REVIEWER, by=ME, at=ts(8)),
         ],
     )
     stdout = run_ok(harness, fixture)
@@ -1106,7 +1117,7 @@ def test_a_pending_review_from_the_author_does_not_answer(harness: Harness) -> N
     fixture = pr(
         reviews=[
             review(1, "Please fix.", at=ts(0)),
-            review(2, "Draft answer.", by=ME, state="PENDING", at=ts(5)),
+            review(2, TO_REVIEWER, by=ME, state="PENDING", at=ts(5)),
         ]
     )
     stdout = run_ok(harness, fixture)
@@ -1121,8 +1132,8 @@ def test_a_later_comment_from_someone_who_is_not_an_answerer_does_not_answer(
         reviews=[review(1, "Please fix.", at=ts(0))],
         comments=[
             conversation(9001, "Please fix.", by=REVIEWER, at=ts(1)),
-            conversation(9002, "+1", by=ALICE, at=ts(5)),
-            conversation(9003, "Bot note.", by=BOT, at=ts(6)),
+            conversation(9002, TO_REVIEWER, by=ALICE, at=ts(5)),
+            conversation(9003, TO_REVIEWER, by=BOT, at=ts(6)),
         ],
     )
     stdout = run_ok(harness, fixture)
@@ -1148,7 +1159,7 @@ def test_a_review_body_posted_or_edited_at_or_after_the_answer_is_unanswered(
 ) -> None:
     fixture = pr(
         reviews=[review(1, "Please fix.", at=posted, edited=edited)],
-        comments=[conversation(9002, "Fixed.", by=ME, at=ts(5))],
+        comments=[conversation(9002, TO_REVIEWER, by=ME, at=ts(5))],
     )
     stdout = run_ok(harness, fixture)
 
@@ -1160,7 +1171,7 @@ def test_a_conversation_comment_posted_or_edited_at_or_after_the_answer_is_unans
     harness: Harness, posted: str, edited: str | None
 ) -> None:
     feedback = conversation(9001, "Please fix.", by=REVIEWER, at=posted, edited=edited)
-    answer = conversation(9002, "Fixed.", by=ME, at=ts(5))
+    answer = conversation(9002, TO_REVIEWER, by=ME, at=ts(5))
     fixture = pr(comments=[feedback, answer])
 
     stdout = run_ok(harness, fixture)
@@ -1175,7 +1186,7 @@ def test_a_bot_comment_edited_into_a_full_review_after_the_answer_is_unanswered(
     fixture = pr(
         comments=[
             conversation(9001, "Reviewing…", by=rex, at=ts(0), edited=ts(60)),
-            conversation(9002, "Thanks.", by=ME, at=ts(5)),
+            conversation(9002, "Thanks for the feedback, Rex:", by=ME, at=ts(5)),
         ]
     )
     stdout = run_ok(harness, fixture)
@@ -1186,7 +1197,7 @@ def test_a_bot_comment_edited_into_a_full_review_after_the_answer_is_unanswered(
 def test_a_newer_review_after_the_answer_is_unanswered(harness: Harness) -> None:
     fixture = pr(
         reviews=[review(1, "Please fix.", at=ts(0)), review(3, "One more thing.", at=ts(9))],
-        comments=[conversation(9002, "Fixed.", by=ME, at=ts(5))],
+        comments=[conversation(9002, TO_REVIEWER, by=ME, at=ts(5))],
     )
     stdout = run_ok(harness, fixture)
 
@@ -1268,8 +1279,8 @@ def test_an_answered_item_is_still_printed_in_full(harness: Harness) -> None:
         [thread_of(thread_comments)],
         [review(1, "Overall looks good.", at=ts(0))],
         [
-            conversation(9001, "Bot review body.", by=BOT, at=ts(1)),
-            conversation(9002, "Thanks, fixed.", by=ME, at=ts(6)),
+            conversation(9001, "Bot review body.", by=REX, at=ts(1)),
+            conversation(9002, f"{TO_REVIEWER}\n\nThanks, Rex, fixed too.", by=ME, at=ts(6)),
         ],
     )
     stdout = run_ok(harness, fixture)
@@ -1313,7 +1324,7 @@ def test_an_answer_on_a_later_page_is_seen_with_one_request_per_page(harness: Ha
         "reviews": [[review(1, "Please fix.", at=ts(0))]],
         "comments": [
             [conversation(9001, "Please fix.", by=REVIEWER, at=ts(1))],
-            [conversation(9002, "Fixed.", by=ME, at=ts(5))],
+            [conversation(9002, TO_REVIEWER, by=ME, at=ts(5))],
         ],
     }
     stdout = run_ok(harness, fixture)
@@ -1439,7 +1450,7 @@ def test_a_review_with_a_body_and_no_submit_time_is_judged_by_its_author(
     harness: Harness, by: dict, expected: str
 ) -> None:
     unsubmitted = {**review(1, "Please fix.", by=by, at=ts(0)), "submittedAt": None}
-    fixture = pr(reviews=[unsubmitted], comments=[conversation(9002, "Fixed.", by=ME, at=ts(5))])
+    fixture = pr(reviews=[unsubmitted], comments=[conversation(9002, TO_REVIEWER, by=ME, at=ts(5))])
 
     stdout = run_ok(harness, fixture)
 
@@ -1468,7 +1479,7 @@ def test_a_review_answers_from_when_it_was_submitted_not_when_it_was_started(
     harness: Harness,
 ) -> None:
     # Started before the feedback and submitted after it, so it answers it.
-    answer = {**review(2, "Fixed.", by=ME, at=ts(2)), "createdAt": ts(0)}
+    answer = {**review(2, TO_REVIEWER, by=ME, at=ts(2)), "createdAt": ts(0)}
     fixture = pr(
         reviews=[answer], comments=[conversation(9001, "Please fix.", by=REVIEWER, at=ts(1))]
     )
@@ -1480,7 +1491,7 @@ def test_a_review_answers_from_when_it_was_submitted_not_when_it_was_started(
 
 
 def test_a_pending_review_with_a_submit_time_does_not_answer(harness: Harness) -> None:
-    pending = {**review(2, "Draft answer.", by=ME, state="PENDING", at=ts(5)), "submittedAt": ts(5)}
+    pending = {**review(2, TO_REVIEWER, by=ME, state="PENDING", at=ts(5)), "submittedAt": ts(5)}
     fixture = pr(
         reviews=[pending], comments=[conversation(9001, "Please fix.", by=REVIEWER, at=ts(0))]
     )
@@ -1496,8 +1507,8 @@ def test_the_earliest_answer_is_chosen_by_when_it_was_posted_not_last_edited(
     fixture = pr(
         comments=[
             conversation(9001, "Please fix.", by=REVIEWER, at=ts(0)),
-            conversation(9002, "Fixed.", by=ME, at=ts(1), edited=ts(3)),
-            conversation(9003, "Also this.", by=ME, at=ts(2)),
+            conversation(9002, TO_REVIEWER, by=ME, at=ts(1), edited=ts(3)),
+            conversation(9003, TO_REVIEWER, by=ME, at=ts(2)),
         ]
     )
     stdout = run_ok(harness, fixture)
@@ -1515,7 +1526,7 @@ def test_the_evidence_gives_when_the_answer_was_posted_not_last_edited(harness: 
     fixture = pr(
         [thread_of(thread_comments)],
         [review(1, "Please fix.", at=ts(0))],
-        [conversation(9002, "Fixed.", by=ME, at=ts(5), edited=ts(9))],
+        [conversation(9002, TO_REVIEWER, by=ME, at=ts(5), edited=ts(9))],
     )
     stdout = run_ok(harness, fixture)
 
@@ -1553,6 +1564,204 @@ def test_a_finished_list_is_not_requested_again(harness: Harness) -> None:
     second = calls[1]
     for flag in ("withThreads=true", "withReviews=false", "withComments=false"):
         assert flag in second, (flag, second)
+
+
+# Who an answer addresses
+
+
+def answered_by_9002(by: dict | None, body: str) -> dict:
+    """A fixture: conversation comment 9001 by `by`, then the author's only later post,
+    conversation comment 9002 holding `body`."""
+    return pr(
+        comments=[
+            conversation(9001, "Please fix.", by=by, at=ts(0)),
+            conversation(9002, body, by=ME, at=ts(5)),
+        ]
+    )
+
+
+EVIDENCE_9002 = "yes (conversation comment 9002 by me at 2026-10-01T12:00:05Z)"
+
+
+@pytest.mark.parametrize(
+    ("by", "body"),
+    [
+        pytest.param(DANA, "@dana Thanks for the feedback:\n\n- ✅ Done.", id="person"),
+        pytest.param(REX, "Thanks for the feedback, Rex:\n\n- ✅ Done.", id="named-bot"),
+        pytest.param(
+            DANA, "\n  @dana Thanks for the feedback:\n\n- ✅ Done.", id="after-whitespace"
+        ),
+    ],
+)
+def test_an_answer_that_opens_with_the_items_thank_line_answers_it(
+    harness: Harness, by: dict, body: str
+) -> None:
+    stdout = run_ok(harness, answered_by_9002(by, body))
+
+    assert verdict_of(stdout, "conversation", 9001) == EVIDENCE_9002
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        pytest.param("Done, and thanks @dana for spotting it.", id="in-the-middle"),
+        pytest.param("Fixed, see @dana's note.", id="before-an-apostrophe"),
+        pytest.param("Rebased on main.\n\ncc @dana", id="at-the-end"),
+        # A thank line that does not open the post is not an opening, but it still names dana.
+        pytest.param("- ✅ Done.\n\n@dana Thanks for the feedback:", id="thank-line-not-first"),
+        pytest.param("@DANA thanks, fixed.", id="different-case"),
+    ],
+)
+def test_an_answer_that_mentions_the_author_anywhere_answers_it(
+    harness: Harness, body: str
+) -> None:
+    stdout = run_ok(harness, answered_by_9002(DANA, body))
+
+    assert verdict_of(stdout, "conversation", 9001) == EVIDENCE_9002
+
+
+def test_an_answer_that_addresses_another_reviewer_does_not_answer(harness: Harness) -> None:
+    fixture = pr(
+        comments=[
+            conversation(9001, "Please fix.", by=DANA, at=ts(0)),
+            conversation(9002, "Also this.", by=ALICE, at=ts(1)),
+            conversation(9003, "@alice Thanks for the feedback:\n\n- ✅ Done.", by=ME, at=ts(5)),
+        ]
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "conversation", 9001) == "no"
+    assert verdict_of(stdout, "conversation", 9002).startswith("yes (conversation comment 9003 ")
+
+
+@pytest.mark.parametrize(
+    "mention",
+    [
+        pytest.param("@danasmith", id="longer-login"),
+        pytest.param("@dana-smith", id="hyphenated-login"),
+        pytest.param("@dana2", id="login-with-a-digit"),
+    ],
+)
+def test_a_longer_login_that_starts_with_the_authors_does_not_address_them(
+    harness: Harness, mention: str
+) -> None:
+    stdout = run_ok(harness, answered_by_9002(DANA, f"{mention} Thanks for the feedback: done."))
+
+    assert verdict_of(stdout, "conversation", 9001) == "no"
+
+
+@pytest.mark.parametrize(
+    ("body", "expected"),
+    [
+        pytest.param("Done, thanks Rex.", EVIDENCE_9002, id="whole-word"),
+        pytest.param("REX: done.", EVIDENCE_9002, id="different-case"),
+        pytest.param("Thanks, Rexford, done.", "no", id="inside-a-longer-word"),
+        pytest.param("Updated the Trex parser.", "no", id="ending-another-word"),
+    ],
+)
+def test_a_bot_is_addressed_only_by_its_name_as_a_whole_word(
+    harness: Harness, body: str, expected: str
+) -> None:
+    stdout = run_ok(harness, answered_by_9002(REX, body))
+
+    assert verdict_of(stdout, "conversation", 9001) == expected
+
+
+def test_an_unrelated_closing_remark_answers_nothing(harness: Harness) -> None:
+    # Seen on michaeluloth.com#83: after several reviews the author left one closing remark, and
+    # every review body was skipped as answered.
+    copilot = author("copilot-pull-request-reviewer", "Bot")
+    fixture = pr(
+        reviews=[
+            review(1, "Please split this function.", by=DANA, at=ts(0)),
+            review(2, "Two suggestions below.", by=copilot, at=ts(10)),
+            review(3, "Ready for another look.", by=ME, at=ts(70)),
+        ],
+        comments=[
+            conversation(9001, "## Rex review\n\n- One finding.", by=REX, at=ts(20)),
+            conversation(9002, "Rebased on main and resolved the conflicts.", by=ME, at=ts(60)),
+        ],
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "review", 1) == "no"
+    assert verdict_of(stdout, "review", 2) == "no"
+    assert verdict_of(stdout, "conversation", 9001) == "no"
+
+
+def test_the_earliest_answer_that_addresses_the_author_is_the_evidence(harness: Harness) -> None:
+    fixture = pr(
+        reviews=[review(1, "Please fix.", by=DANA, at=ts(0))],
+        comments=[
+            conversation(9002, "Rebased.", by=ME, at=ts(2)),
+            conversation(9003, "@dana Thanks for the feedback:\n\n- ✅ Done.", by=ME, at=ts(4)),
+            conversation(9004, "@dana one more thing is done too.", by=ME, at=ts(6)),
+        ],
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "review", 1) == (
+        "yes (conversation comment 9003 by me at 2026-10-01T12:00:04Z)"
+    )
+
+
+def test_an_answering_review_is_judged_by_the_same_rule(harness: Harness) -> None:
+    fixture = pr(
+        reviews=[
+            review(2, "Rebased.", by=ME, at=ts(2)),
+            review(3, "@dana Thanks for the feedback:\n\n- ✅ Done.", by=ME, at=ts(4)),
+        ],
+        comments=[conversation(9001, "Please fix.", by=DANA, at=ts(0))],
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert (
+        verdict_of(stdout, "conversation", 9001) == "yes (review 3 by me at 2026-10-01T12:00:04Z)"
+    )
+
+
+def test_an_author_who_cannot_be_addressed_is_never_answered_by_a_top_level_post(
+    harness: Harness,
+) -> None:
+    # A deleted account and an unknown bot or actor have no name to address them by.
+    fixture = pr(
+        reviews=[review(1, "Please fix.", by=None, at=ts(0))],
+        comments=[
+            conversation(9001, "Please fix.", by=author("copilot", "Bot"), at=ts(1)),
+            conversation(9002, "Please fix.", by=author("old-user", "Mannequin"), at=ts(2)),
+            conversation(
+                9003,
+                "Thanks for the feedback:\n\n@ghost @copilot @old-user Copilot ghost UNKNOWN",
+                by=ME,
+                at=ts(9),
+            ),
+        ],
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "review", 1) == "no"
+    assert verdict_of(stdout, "conversation", 9001) == "no"
+    assert verdict_of(stdout, "conversation", 9002) == "no"
+
+
+def test_one_post_to_an_author_answers_all_their_earlier_feedback(harness: Harness) -> None:
+    fixture = pr(
+        reviews=[
+            review(1, "First review.", by=DANA, at=ts(0)),
+            review(2, "Second review.", by=DANA, at=ts(2)),
+        ],
+        comments=[
+            conversation(9001, "And this.", by=DANA, at=ts(1)),
+            conversation(9002, "@dana Thanks for the feedback:\n\n- ✅ All done.", by=ME, at=ts(5)),
+            conversation(9003, "One more.", by=DANA, at=ts(8)),
+        ],
+    )
+    stdout = run_ok(harness, fixture)
+
+    assert verdict_of(stdout, "review", 1) == EVIDENCE_9002
+    assert verdict_of(stdout, "review", 2) == EVIDENCE_9002
+    assert verdict_of(stdout, "conversation", 9001) == EVIDENCE_9002
+    assert verdict_of(stdout, "conversation", 9003) == "no"
 
 
 # Generated timelines
@@ -1736,6 +1945,73 @@ class GenTopLevel:
     body: str
 
 
+# Words an answer may hold. Some address an author in the pool; the rest come close and must not.
+ADDRESS_WORDS = [
+    "@reviewer",
+    "@REVIEWER",
+    "@reviewer,",
+    "@reviewers",
+    "@reviewer-two",
+    "@alice",
+    "@ghost",
+    "@me",
+    "Rex",
+    "rex:",
+    "Rexford",
+    "Trex",
+    "Thanks for the feedback, Rex:",
+    "@reviewer Thanks for the feedback:",
+    "Thanks for the feedback:",
+]
+
+
+def gen_body() -> st.SearchStrategy[str]:
+    words = st.lists(st.sampled_from(ADDRESS_WORDS), max_size=3)
+    return st.builds(
+        lambda w, lead: " ".join([lead, *w]).strip() or "Note.",
+        words,
+        st.sampled_from(["", "Note.", "  \n"]),
+    )
+
+
+# Written from the rule, not read from the script.
+NAMED_BOTS = {"rex-rx-agent": "Rex", "copilot-pull-request-reviewer": "Copilot"}
+
+
+def addresses(body: str, by: dict | None) -> bool:
+    if by is None:
+        return False
+    if by["__typename"] == "User":
+        thank = f"@{by['login']} Thanks for the feedback:"
+        mention = rf"@{re.escape(by['login'])}(?![A-Za-z0-9-])"
+    elif by["__typename"] == "Bot" and by["login"] in NAMED_BOTS:
+        thank = f"Thanks for the feedback, {NAMED_BOTS[by['login']]}:"
+        mention = rf"\b{re.escape(NAMED_BOTS[by['login']])}\b"
+    else:
+        return False
+    return body.lstrip().startswith(thank) or re.search(mention, body, re.IGNORECASE) is not None
+
+
+# For each author, words that address them and words that come close without addressing them.
+NEAR_MISS_AUTHORS: dict[str, dict | None] = {
+    "reviewer": REVIEWER,
+    "rex": REX,
+    "ghost-named-person": author("ghost"),
+    "deleted": None,
+}
+# Near misses come first because Hypothesis draws early elements more often, and reviewer and
+# Rex first because they are the authors a near miss can wrongly address.
+NEAR_MISSES = [
+    (
+        "reviewer",
+        ["@reviewers", "@reviewer-two", "@reviewer2", "@reviewer", "@REVIEWER", "@reviewer,"],
+    ),
+    ("rex", ["Rexford", "Trex", "rexes", "Rex", "REX", "rex:"]),
+    ("ghost-named-person", ["@ghosts", "Thanks for the feedback:", "@ghost", "@Ghost"]),
+    ("deleted", ["@ghost", "Thanks for the feedback:", "a deleted account"]),
+]
+
+
 @st.composite
 def top_level_timelines(draw: st.DrawFn) -> tuple[str, list[GenTopLevel]]:
     setup = draw(setups)
@@ -1743,15 +2019,26 @@ def top_level_timelines(draw: st.DrawFn) -> tuple[str, list[GenTopLevel]]:
     for n in range(draw(st.integers(min_value=1, max_value=6))):
         kind = draw(st.sampled_from(["review", "conversation comment"]))
         post = draw(gen_post(AUTHORS, ticks, can_pend=kind == "review", setup=setup))
-        body = draw(st.sampled_from(["Feedback.", "", " \n"])) if kind == "review" else "Note."
+        text = draw(gen_body())
+        body = draw(st.sampled_from([text, "", " \n"])) if kind == "review" else text
         item_id = n + 1 if kind == "review" else 9001 + n
         items.append(GenTopLevel(kind, item_id, post, body))
+    # Every timeline also ends with one feedback item, after all the activity above, and then an
+    # answerer post holding one word: an address of that item's author or a near miss. Nothing
+    # earlier can answer the item, so each example tests that one word.
+    feedback_by, near = draw(st.sampled_from(NEAR_MISSES))
+    feedback = GenPost(NEAR_MISS_AUTHORS[feedback_by], 20, None, False, draw(offsets))
+    answerers = [a for a in AUTHORS if is_answerer(a, setup)]
+    answer = GenPost(draw(st.sampled_from(answerers)), 22 + draw(st.integers(0, 4)), None, False, 0)
+    word = draw(st.sampled_from(near))
+    items.append(GenTopLevel("conversation comment", 9101, feedback, "Please fix."))
+    items.append(GenTopLevel("conversation comment", 9102, answer, word))
     return setup, items
 
 
 @GENERATED
 @given(case=top_level_timelines())
-def test_any_review_body_or_conversation_comment_is_answered_exactly_when_an_answer_follows_its_last_change(
+def test_any_review_body_or_conversation_comment_is_answered_exactly_when_an_answer_to_its_author_follows_its_last_change(
     stubs: Path, case: tuple[str, list[GenTopLevel]]
 ) -> None:
     setup, items = case
@@ -1797,7 +2084,11 @@ def test_any_review_body_or_conversation_comment_is_answered_exactly_when_an_ans
         if is_answerer(item.post.by, setup):
             assert actual == "n/a (yours)", (item, actual)
             continue
-        later = [a for a in answers if a.post.posted > item.post.changed]
+        later = [
+            a
+            for a in answers
+            if a.post.posted > item.post.changed and addresses(a.body, item.post.by)
+        ]
         if not later:
             assert actual == "no", (item, actual)
             continue

@@ -33,7 +33,10 @@ account never is one.
   - `yes (...)` names the evidence: the thread was resolved, an answerer's reply is the thread's
     newest comment and nothing in it changed at or after that reply, or for a review body or
     conversation comment, an answerer posted a conversation comment, or a review with a body, after
-    it was posted or last edited. A same-second tie counts as new feedback.
+    it was posted or last edited, and that post addresses its author: it opens with the item's
+    `thank` line, or names the author as `refer_as` does (`@login` for a person, the BOT_NAMES name
+    as a whole word for a bot, either in any case). A deleted or UNKNOWN author cannot be addressed,
+    so no top-level post answers their items. A same-second tie counts as new feedback.
   - `no` means nothing answered it yet.
   - `n/a (yours)` marks an item only answerers wrote.
 Pending (unsubmitted) posts never answer anything, and neither does the empty review GitHub creates
@@ -56,6 +59,7 @@ different repo's PR rather than failing.
 """
 
 import json
+import re
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -294,6 +298,7 @@ class Answer:
 
     kind: Literal["conversation comment", "review"]
     post: Post
+    body: str
 
 
 @dataclass(frozen=True)
@@ -424,17 +429,45 @@ def thread_verdict(
     return Answered(ThreadReply(reply))
 
 
+def addresses(body: str, reviewer: Reviewer) -> bool:
+    """Whether a top-level post is written to this reviewer: it opens with their `thank` line, or
+    names them as `refer_as` does. Decided from the Reviewer variant, so a deleted account or an
+    author with no known name is never addressed, whatever the post says."""
+    match reviewer:
+        case Person(login):
+            mention = rf"@{re.escape(login)}(?![A-Za-z0-9-])"
+        case Bot(login) if login in BOT_NAMES:
+            mention = rf"\b{re.escape(BOT_NAMES[login])}\b"
+        case Ghost() | Bot() | UnrecognisedActor():
+            return False
+        case _:
+            assert_never(reviewer)
+    opens = body.lstrip().startswith(thank_line(reviewer))
+    return opens or re.search(mention, body, re.IGNORECASE) is not None
+
+
 def item_verdict(feedback: Post, answers: tuple[Answer, ...], answerers: Answerers) -> Verdict:
     """For a review body or conversation comment. `answers` are sorted oldest first."""
     if answerers.includes(feedback.author):
         return NotFeedback()
-    # Strictly after, so an answer in the same moment as the feedback's last change ignores it.
-    answer = next((a for a in answers if a.post.posted_at > feedback.changed_at), None)
+    # Strictly after, so an answer in the same moment as the feedback's last change ignores it, and
+    # addressed to the feedback's author, so an unrelated remark such as "rebased" answers nothing.
+    answer = next(
+        (
+            a
+            for a in answers
+            if a.post.posted_at > feedback.changed_at and addresses(a.body, feedback.author)
+        ),
+        None,
+    )
     if answer is None:
         return Unanswered()
     assert answerers.includes(answer.post.author), f"answer {answer.post.id} is not an answerer's"
     assert answer.post.posted_at > feedback.changed_at, (
         f"answer {answer.post.id} is not after feedback {feedback.id} last changed"
+    )
+    assert addresses(answer.body, feedback.author), (
+        f"answer {answer.post.id} does not address the author of feedback {feedback.id}"
     )
     return Answered(TopLevelReply(answer))
 
@@ -482,11 +515,17 @@ def judge_discussion(discussion: Discussion) -> Verdicts | Unreadable:
     if reasons:
         return Unreadable(tuple(reasons))
 
-    bodies = {node["databaseId"]: (node.get("body") or "").strip() for node in discussion.reviews}
-    candidates = [Answer("conversation comment", post) for post in conversation.values()] + [
-        Answer("review", review)
+    review_bodies = {node["databaseId"]: node.get("body") or "" for node in discussion.reviews}
+    comment_bodies = {
+        node["databaseId"]: node.get("body") or "" for node in discussion.conversation
+    }
+    candidates = [
+        Answer("conversation comment", post, comment_bodies[cid])
+        for cid, post in conversation.items()
+    ] + [
+        Answer("review", review, review_bodies[rid])
         for rid, review in reviews.items()
-        if isinstance(review, Post) and bodies[rid]
+        if isinstance(review, Post) and review_bodies[rid].strip()
     ]
     answers = tuple(
         sorted(
@@ -542,7 +581,7 @@ def describe_evidence(evidence: Evidence) -> str:
             return f"resolved by {login_of(by)}"
         case ThreadReply(post):
             return f"reply {post.id} by {login_of(post.author)} at {iso(post.posted_at)}"
-        case TopLevelReply(Answer(kind, post)):
+        case TopLevelReply(Answer(kind, post, _)):
             return f"{kind} {post.id} by {login_of(post.author)} at {iso(post.posted_at)}"
         case _:
             assert_never(evidence)
