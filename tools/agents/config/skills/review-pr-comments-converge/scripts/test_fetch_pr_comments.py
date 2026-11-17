@@ -1675,6 +1675,15 @@ def test_an_answer_that_addresses_another_reviewer_does_not_answer(harness: Harn
         pytest.param("Fixed what `@dana` flagged.", id="in-inline-code"),
         pytest.param("Done.\n\n```\n@dana\n```", id="in-a-fenced-code-block"),
         pytest.param("Done.\n\n```text\ncc @dana\n```\n", id="in-a-fenced-block-with-a-language"),
+        pytest.param("Fixed what ``@dana`` flagged.", id="in-a-double-backtick-span"),
+        pytest.param("Fixed what ``a ` @dana`` flagged.", id="in-a-span-holding-a-backtick"),
+        pytest.param("Fixed what `a\n@dana` flagged.", id="in-a-span-across-two-lines"),
+        pytest.param("Done.\n\n~~~\n@dana\n~~~", id="in-a-tilde-fence"),
+        pytest.param("Done.\n\n````\n@dana\n````", id="in-a-four-backtick-fence"),
+        pytest.param(
+            "Done.\n\n````\n```\n@dana\n```\n````", id="in-a-four-backtick-fence-holding-three"
+        ),
+        pytest.param("Fixed:\n\n    @dana\n", id="in-an-indented-code-block"),
     ],
 )
 def test_an_at_login_github_would_not_render_as_a_mention_does_not_address_them(
@@ -1904,6 +1913,55 @@ def test_a_reply_drafted_before_a_comment_but_published_after_it_answers_it(
     assert verdict_of(stdout, "thread", 101) == "yes (reply 102 by me at 2026-10-01T12:30:00Z)"
 
 
+def minutes(n: int) -> str:
+    return ts(60 * n)
+
+
+@pytest.mark.parametrize(
+    ("comments", "expected"),
+    [
+        pytest.param(
+            [
+                thread_comment(101, by=DANA, review_id=1, at=minutes(0)),
+                thread_comment(102, "Done.", by=ME, at=minutes(1), edited=minutes(3)),
+                thread_comment(103, "Not quite.", by=DANA, at=minutes(2)),
+            ],
+            "no",
+            # Editing the reply later does not move it after the follow-up.
+            id="follow-up-before-the-replys-edit",
+        ),
+        pytest.param(
+            [
+                thread_comment(101, by=DANA, review_id=1, at=minutes(0)),
+                thread_comment(102, "Partly.", by=ME, at=minutes(1), edited=minutes(4)),
+                thread_comment(103, "Not quite.", by=DANA, at=minutes(2)),
+                thread_comment(104, "Done.", by=ME, at=minutes(3)),
+            ],
+            "yes (resolved by dana)",
+            # Measured from the latest reply, not the earliest.
+            id="follow-up-answered-by-a-later-reply",
+        ),
+        pytest.param(
+            [
+                thread_comment(101, by=DANA, review_id=1, at=minutes(0)),
+                thread_comment(102, "Partly.", by=ME, at=minutes(1), edited=minutes(5)),
+                thread_comment(103, "Not quite.", by=DANA, at=minutes(2)),
+                thread_comment(104, "Done.", by=ME, at=minutes(3)),
+            ],
+            "yes (resolved by dana)",
+            # The latest reply is the one posted last, not the one edited last.
+            id="earlier-reply-edited-after-the-latest",
+        ),
+    ],
+)
+def test_a_resolution_is_measured_from_when_the_latest_reply_was_posted(
+    harness: Harness, comments: list[dict], expected: str
+) -> None:
+    stdout = run_ok(harness, pr([thread_of(comments, resolved_by=DANA)], [review(1, "", by=DANA)]))
+
+    assert verdict_of(stdout, "thread", 101) == expected
+
+
 @pytest.mark.parametrize(
     ("comments", "expected"),
     [
@@ -1952,6 +2010,11 @@ def test_a_resolved_thread_does_not_hide_feedback_after_the_latest_reply(
     [
         pytest.param("`@dana` aside: thanks @dana, fixed.", EVIDENCE_9002, id="after-inline-code"),
         pytest.param("```\n@dana\n```\nThanks @dana.", EVIDENCE_9002, id="after-a-fenced-block"),
+        pytest.param("`x` @dana thanks.", EVIDENCE_9002, id="right-after-a-closed-span"),
+        pytest.param("see`x`@dana", EVIDENCE_9002, id="touching-a-closed-span"),
+        pytest.param(
+            "```\nx\n```\nthanks @dana\n```\ny\n```", EVIDENCE_9002, id="between-two-fences"
+        ),
     ],
 )
 def test_a_mention_outside_code_answers_even_when_the_post_also_holds_code(
@@ -2282,7 +2345,8 @@ def addresses(body: str, by: dict | None) -> bool:
 
 
 def outside_code(body: str) -> str:
-    """The body with fenced code blocks and inline code spans blanked out."""
+    """The body with fenced code blocks and single-backtick spans blanked out: only the code
+    forms the generator produces. The examples pin the rest."""
     body = re.sub(r"```.*?```", " ", body, flags=re.DOTALL)
     return re.sub(r"`[^`\n]*`", " ", body)
 

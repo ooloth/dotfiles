@@ -480,11 +480,44 @@ def addresses(body: str, reviewer: Reviewer) -> bool:
     return re.search(mention, outside_code(body), re.IGNORECASE) is not None
 
 
+FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}(?=[^`]*$)|~{3,})")
+INDENTED = re.compile(r"^(?: {4}|\t)")
+# A run of N backticks, then anything up to the next run of exactly N, within one paragraph.
+CODE_SPAN = re.compile(r"(?<!`)(`+)(?!`)((?:(?!\n[ \t]*\n).)+?)(?<!`)\1(?!`)", re.DOTALL)
+
+
 def outside_code(body: str) -> str:
-    """The body with fenced code blocks and inline code spans blanked out, since GitHub renders no
-    mention inside code, and a name quoted in code is not written to anyone."""
-    body = re.sub(r"```.*?```", " ", body, flags=re.DOTALL)
-    return re.sub(r"`[^`\n]*`", " ", body)
+    """The body with code blanked out, since GitHub renders no mention inside code, and a name
+    quoted in code is not written to anyone. Follows CommonMark's code forms:
+      - a fenced block opens with 3+ backticks or tildes, with any info string, and closes at a
+        fence of the same character at least as long, or at the end of the body;
+      - an indented block is lines indented 4+ spaces that start the body or follow a blank line;
+      - an inline span opens with a run of N backticks and closes at the next run of exactly N in
+        the same paragraph.
+    Blanked text becomes whitespace, so the text on either side never joins into one word."""
+    kept: list[str] = []
+    fence: str | None = None
+    indented = False
+    previous_blank = True
+    for line in body.split("\n"):
+        blank = not line.strip()
+        if fence is not None:
+            # Closed by the same character, at least as many, and nothing else on the line.
+            closer = rf" {{0,3}}{re.escape(fence)}{re.escape(fence[0])}*[ \t]*"
+            if re.fullmatch(closer, line):
+                fence = None
+            kept.append("")
+        elif opener := FENCE_OPEN.match(line):
+            fence = opener.group(1)
+            kept.append("")
+        elif not blank and INDENTED.match(line) and (indented or previous_blank):
+            indented = True
+            kept.append("")
+        else:
+            indented = indented and blank
+            kept.append(line)
+        previous_blank = blank
+    return CODE_SPAN.sub(" ", "\n".join(kept))
 
 
 def item_verdict(feedback: Post, answers: tuple[Answer, ...], answerers: Answerers) -> Verdict:
