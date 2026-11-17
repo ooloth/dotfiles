@@ -191,9 +191,13 @@ escalated, or dismissed) in a prior round. Never re-present a decided item.
 line of every review body, inline thread and conversation comment in the saved fetch. Put every
 item whose line is not `answered   : no` on the decided list as **Already answered**: it is not sent
 to validation, it gets no reply, and the report lists it under ⏭️ Already answered with its
-`answered` line's evidence copied exactly. Only items whose line reads `no` go to Step A. This list
-is rebuilt from the saved fetch at the start of each pass and never carried over from an earlier
-one, so an item that was answered before and has new feedback now is validated.
+`answered` line's evidence copied exactly. Only items whose line reads `no` and that are not already
+decided go to Step A. The Already answered entries, and only those, are rebuilt from the saved fetch
+at the start of each pass and never carried over from an earlier one, so an item that was answered
+before and has new feedback now is validated. An item an earlier pass auto-fixed, escalated,
+dismissed or acknowledged stays decided and is not validated again: its draft goes into the new
+report as a new draft that needs fresh approval, unless its line changed from `no` to `yes` or
+`n/a`, as Phase 4 describes.
 
 The author can overrule a skip by naming the item (for example "validate thread 101"). Take it off
 the Already answered list and validate it in a new round like any other item.
@@ -442,7 +446,8 @@ Comments that ask for no change. A consequence flagged for later work may need a
 
 ## ⏭️ Already answered
 
-Not validated and no reply drafted, because the fetch marked them answered. Name any of them
+Every item whose `answered` line is not `no`: both `yes` (answered) and `n/a (yours)` (your own).
+Not validated and no reply drafted. Name any of them
 (e.g. "validate thread 101") to have it validated anyway.
 
 - ⏭️ [Review body review_id | Thread comment_id | Conversation comment comment_id] — [reviewer] — [evidence, copied from its `answered` line]
