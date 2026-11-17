@@ -27,10 +27,12 @@ How you gather the proof is yours to decide. What you return must meet this bar:
 - **The evidence comes from the running system,** not from tests or from reading code, and covers
   every path the change can take, including its main purpose end to end.
 - **A reader who wasn't there can check every observation.** Save each command's raw output as it
-  runs, in a new folder under `~/Repos/agents/prove-it-works/<owner>-<repo>/<commit>/`, and name the
-  exact artifact it observed (host, revision, image, token, file). Every quote in the report points
-  to the file it came from, and matches it exactly. For a change not committed yet, `<commit>` is
-  the short `HEAD` hash followed by `-uncommitted`.
+  runs, in a new folder from `mktemp -d`, or in the folder the caller names, such as the one
+  `merge-and-verify` keeps for a merge, and name the exact artifact it observed (host, revision,
+  image, token, file). Every quote in the report points to the file it came from, and matches it
+  exactly. A `mktemp -d` folder is temporary and the system deletes it in time, so the report names
+  the folder, and whoever posts the report posts each file it cites along with it: a screenshot or
+  recording uploaded to the PR as `use-gh` describes, and text in the PR or the ticket.
 - **Before and after,** wherever a before state can be observed.
 - **Every attempt is shown,** including the ones that failed or cut against the claim.
 - **What an app shows is observed in the app itself,** never inferred from server or internal
