@@ -125,6 +125,14 @@ predicate as the write. A mismatch then stops the reader before it changes a
 row they did not mean to change. A step that leaves the statement to the
 reader has them improvise a write against production.
 
+**A check a procedure asks the reader to run can be seen to fail.**
+A step that has the reader compare an answer with an expected one is a test run by hand, and the
+bar `testing.md` sets for a passing test applies to it: the condition the step guards against has
+been made to happen, or traced through the code to the answer it would produce, and the step then
+reports a failure. A step whose failure cannot occur reports a pass whatever the system does, and a
+reader who trusts it stops looking where the fault is. The usual cause is a default that answers
+every input the same way, such as a server that returns one page for every path it has no file for.
+
 **Absolute claims hold for every path, mode, environment and input.**
 A sentence that says only, every, never, nothing or always about a system
 holds for the other paths, modes, environments and inputs that could break
