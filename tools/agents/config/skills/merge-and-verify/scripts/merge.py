@@ -11,6 +11,8 @@ The script reads the PR from GitHub and refuses unless all of these hold:
 
 - the head is still the commit the caller checked
 - the PR is open and not a draft
+- the PR changes at least one file: a head whose tree matches its base would merge as an empty
+  commit while every other condition still holds
 - someone approved it, on any commit, and no reviewer's latest review requests changes or was
   dismissed: a push to an approved PR never undoes its approval. The repo owner's own PR, merged
   by the owner, needs no approval, because GitHub never lets an author approve their own PR and
@@ -54,7 +56,9 @@ GitHubLogin = NewType("GitHubLogin", str)
 CommitSha = NewType("CommitSha", str)
 MergeMethod = Literal["squash", "merge", "rebase"]
 
-PR_FIELDS = "state,isDraft,author,headRefOid,mergeStateStatus,reviews,statusCheckRollup"
+PR_FIELDS = (
+    "state,isDraft,author,headRefOid,mergeStateStatus,changedFiles,reviews,statusCheckRollup"
+)
 REPO_FIELDS = "squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed"
 # How many recent merged PRs show whether a repo runs CI at all. One that ran a check is enough to
 # say it does, so a head with no checks there is a head CI skipped, not a repo without CI. Five keeps
@@ -104,6 +108,7 @@ class _PullRequest(_Answer):
     author: _Author
     headRefOid: str
     mergeStateStatus: str
+    changedFiles: int
     reviews: list[_Review]
     statusCheckRollup: list[_Check] | None = None
 
@@ -145,7 +150,11 @@ class PullRequestState:
     changes_requested_by: tuple[str, ...]
     checks: tuple[Check, ...]
     merge_state: str
+    changed_files: int
     allowed_methods: tuple[MergeMethod, ...]
+
+    def __post_init__(self) -> None:
+        assert self.changed_files >= 0, f"GitHub reported {self.changed_files} changed files"
 
     def is_owners_own_pr_merged_by(self, viewer: GitHubLogin) -> bool:
         owner = self.repo.split("/")[0].lower()
@@ -180,6 +189,11 @@ class Closed:
 
 @dataclass(frozen=True)
 class Draft:
+    pass
+
+
+@dataclass(frozen=True)
+class NoChanges:
     pass
 
 
@@ -224,6 +238,7 @@ Refusal = (
     HeadMoved
     | Closed
     | Draft
+    | NoChanges
     | NoApproval
     | ChangesRequested
     | CheckFailed
@@ -305,6 +320,7 @@ def parse_pull_request(
         changes_requested_by=changes,
         checks=tuple(_check(c) for c in pr.statusCheckRollup or []),
         merge_state=pr.mergeStateStatus,
+        changed_files=pr.changedFiles,
         allowed_methods=tuple(methods),
     )
 
@@ -342,6 +358,8 @@ def judge(
         refusals.append(Closed(state.shown_state))
     if state.draft:
         refusals.append(Draft())
+    if state.changed_files == 0:
+        refusals.append(NoChanges())
     if not state.approved_by and not state.is_owners_own_pr_merged_by(viewer):
         refusals.append(NoApproval())
     refusals.extend(ChangesRequested(by) for by in state.changes_requested_by)
@@ -395,6 +413,8 @@ def describe(refusal: Refusal) -> str:
             return f"the PR is {state.lower()}, not open"
         case Draft():
             return "the PR is a draft"
+        case NoChanges():
+            return "the PR changes no files: its head's tree matches its base"
         case NoApproval():
             return "nobody has approved the PR"
         case ChangesRequested(by):
@@ -524,7 +544,10 @@ def main(argv: list[str]) -> int:
                 print(f"- {describe(wait)}")
             return 3
         case Ready(method, without_ci) if args.check_only:
-            print(f"Ready to merge #{args.pr} at {head} with {method}. Nothing was merged.")
+            print(
+                f"Ready to merge #{args.pr} at {head} with {method}, changing"
+                f" {state.changed_files} files. Nothing was merged."
+            )
             _say_without_ci(without_ci)
             return 0
         case Ready(method, without_ci):
@@ -534,7 +557,10 @@ def main(argv: list[str]) -> int:
     outcome = merge(args.pr, repo, method, head)
     match outcome:
         case Merged(commit):
-            print(f"Merged #{args.pr} at {head} with {method}. Merge commit: {commit}")
+            print(
+                f"Merged #{args.pr} at {head} with {method}, changing {state.changed_files} files."
+                f" Merge commit: {commit}"
+            )
             return 0
         case MergeRefused(message):
             print(f"Not merged. GitHub refused the merge: {message}")
