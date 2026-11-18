@@ -11,16 +11,21 @@ Most tests load the script in-process and hand `run` a FakeShell. It answers eac
 real tool answered when its credential was valid or expired, when the server could not be reached,
 or, for argocd, when the server had revoked the refresh token, and it records each login it is
 asked to run. The end-to-end tests run the script as a subprocess with stub gcloud, spacectl and
-argocd commands on PATH that record their arguments.
+argocd commands on PATH that record their arguments. The lock tests run real processes under one
+HOME, with stubs that remember a login, so one run's login is seen by another.
 """
 
 from __future__ import annotations
 
+import contextlib
+import fcntl
 import importlib.util
+import select
 import subprocess
 import sys
 import tempfile
 import threading
+import time
 import unittest
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -118,6 +123,32 @@ class FakeShell:
         return 1
 
 
+class FreeLock:
+    """A login lock no other run holds, for the in-process tests."""
+
+    def __enter__(self):
+        return auth.HeldLoginLock()
+
+    def __exit__(self, *_exc: object) -> None:
+        return None
+
+
+@dataclass
+class LockAnotherRunReleasedAfterLoggingIn:
+    """A login lock that another run held while it logged in to every login, so they are all
+    valid by the time this run holds it."""
+
+    shell: FakeShell
+
+    def __enter__(self):
+        for name in self.shell.states:
+            self.shell.states[name] = "valid"
+        return auth.HeldLoginLock()
+
+    def __exit__(self, *_exc: object) -> None:
+        return None
+
+
 def configured_logins() -> tuple:
     return auth.logins(auth.Settings(argocd_servers=SERVERS, spacelift_account=ACCOUNT))
 
@@ -166,7 +197,7 @@ class ResultsAppearAsChecksFinish(unittest.TestCase):
             if len(reported) == len(items) - 1:
                 shell.others_reported.set()
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell, report)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, report, FreeLock())
 
         self.assertEqual(outcomes[3].before, auth.Valid(), "argocd's check gave up waiting")
         self.assertEqual(reported[-1].name, argocd.name)
@@ -179,7 +210,7 @@ class ResultsAppearAsChecksFinish(unittest.TestCase):
         shell = FakeShell(items, states, dict.fromkeys(names(items), True))
         reported: list = []
 
-        auth.run(auth.Mode.REFRESH, items, shell, reported.append)
+        auth.run(auth.Mode.REFRESH, items, shell, reported.append, FreeLock())
 
         (spacelift_outcome,) = [o for o in reported if o.name == spacelift.name]
         self.assertEqual(spacelift_outcome.before, auth.Expired())
@@ -218,7 +249,7 @@ class OnlyExpiredLoginsRun(unittest.TestCase):
         shell = FakeShell(items, dict(states), login_works, missing)
         reported: list = []
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell, reported.append)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, reported.append, FreeLock())
 
         self.assertCountEqual(reported, outcomes)
         installed = [item for item in items if tool(item) not in missing]
@@ -232,6 +263,38 @@ class OnlyExpiredLoginsRun(unittest.TestCase):
         self.assertEqual(auth.all_valid(outcomes), ends_valid)
 
 
+class SharedLogins(unittest.TestCase):
+    def test_a_login_another_run_completed_while_this_one_waited_is_not_run_again(self) -> None:
+        items = configured_logins()
+        shell = FakeShell(
+            items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
+        )
+
+        outcomes = auth.run(
+            auth.Mode.REFRESH, items, shell, ignore, LockAnotherRunReleasedAfterLoggingIn(shell)
+        )
+
+        self.assertEqual(shell.attached, [])
+        self.assertTrue(auth.all_valid(outcomes))
+        self.assertTrue(all(outcome.before == auth.Expired() for outcome in outcomes))
+        self.assertFalse(any(outcome.login_ran for outcome in outcomes))
+
+    def test_a_run_that_waited_out_another_runs_argo_cd_login_leaves_its_context_alone(
+        self,
+    ) -> None:
+        items = configured_logins()
+        settings = auth.Settings(argocd_servers=SERVERS, spacelift_account=ACCOUNT)
+        shell = FakeShell(
+            items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
+        )
+
+        outcomes = auth.run(
+            auth.Mode.REFRESH, items, shell, ignore, LockAnotherRunReleasedAfterLoggingIn(shell)
+        )
+
+        self.assertIsNone(auth.default_context_command(settings, outcomes))
+
+
 class CheckMode(unittest.TestCase):
     def test_check_runs_no_login_even_when_every_login_has_expired(self) -> None:
         items = configured_logins()
@@ -241,7 +304,7 @@ class CheckMode(unittest.TestCase):
             dict.fromkeys(names(items), True),
         )
 
-        outcomes = auth.run(auth.Mode.CHECK, items, shell, ignore)
+        outcomes = auth.run(auth.Mode.CHECK, items, shell, ignore, FreeLock())
 
         self.assertEqual(shell.attached, [])
         self.assertEqual([outcome.before for outcome in outcomes], [auth.Expired()] * 5)
@@ -284,7 +347,7 @@ class ArgoCdStatus(unittest.TestCase):
         )
         shell.states[items[4].name] = "revoked"
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore, FreeLock())
 
         self.assertEqual(shell.attached, [items[4].login])
         self.assertEqual(outcomes[4].after, auth.Valid())
@@ -299,7 +362,9 @@ class ArgoCdStatus(unittest.TestCase):
 
 class ArgoCdDefaultContext(unittest.TestCase):
     def outcome(self, item, after) -> object:
-        return auth.Outcome(item.name, auth.Expired() if after else auth.Valid(), after)
+        return auth.Outcome(
+            item.name, auth.Expired() if after else auth.Valid(), after, bool(after)
+        )
 
     def test_an_argo_cd_login_makes_the_first_server_the_default_again(self) -> None:
         items = configured_logins()
@@ -325,7 +390,7 @@ class ArgoCdDefaultContext(unittest.TestCase):
 
     def test_without_servers_there_is_no_context_to_set(self) -> None:
         settings = auth.Settings(argocd_servers=(), spacelift_account=ACCOUNT)
-        outcomes = (auth.Outcome(auth.LoginName("Argo CD"), auth.NotConfigured("x"), None),)
+        outcomes = (auth.Outcome(auth.LoginName("Argo CD"), auth.NotConfigured("x"), None, False),)
 
         self.assertIsNone(auth.default_context_command(settings, outcomes))
 
@@ -385,7 +450,7 @@ class GcloudAndSpacectlStatus(unittest.TestCase):
             dict.fromkeys(names(items), True),
         )
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore, FreeLock())
 
         self.assertEqual(shell.attached, [])
         for outcome in outcomes:
@@ -411,7 +476,7 @@ class TimedOutCheck(unittest.TestCase):
             timed_out=frozenset({spacelift.name}),
         )
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore, FreeLock())
 
         self.assertIsInstance(outcomes[2].before, auth.Unchecked)
         self.assertEqual(shell.attached, [])
@@ -449,7 +514,7 @@ class PrivateSettings(unittest.TestCase):
             dict.fromkeys(names(items), True),
         )
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore, FreeLock())
 
         self.assertEqual(len(outcomes), 4)
         self.assertEqual(outcomes[3].before, auth.NotConfigured("PRIVATE_ARGOCD_SERVERS"))
@@ -466,7 +531,7 @@ class PrivateSettings(unittest.TestCase):
             dict.fromkeys(names(items), True),
         )
 
-        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore)
+        outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore, FreeLock())
 
         self.assertEqual(outcomes[2].before, auth.NotConfigured("PRIVATE_SPACELIFT_ACCOUNT"))
         self.assertIn("PRIVATE_SPACELIFT_ACCOUNT", auth.describe(outcomes[2]))
@@ -488,6 +553,170 @@ case "${0##*/}" in
   *) echo 'Reauthentication required.' >&2; exit 1 ;;
 esac
 """
+
+
+# Like STUB, except that a login makes its tool's checks valid, through a file under STUB_STATE, so
+# a login one run completes is seen by another
+STATEFUL_STUB = """#!/bin/bash
+printf '%s\\n' "${0##*/} $*" >> "${STUB_LOG}"
+valid="${STUB_STATE}/${0##*/}-valid"
+for arg in "$@"; do
+  if [[ "${arg}" == login ]]; then
+    # Long enough that a run started at the same moment finishes its checks and meets the lock
+    sleep "${STUB_LOGIN_SECONDS:-0}"
+    : > "${valid}"
+    exit 0
+  fi
+done
+if [[ -e "${valid}" ]]; then
+  case "${0##*/}" in
+    argocd) echo '{"loggedIn": true, "username": "alice"}' ;;
+    spacectl) echo alice ;;
+    *) echo token ;;
+  esac
+  exit 0
+fi
+case "${0##*/}" in
+  argocd) echo '{}'; exit 0 ;;
+  spacectl) echo 'failed to query user information: unauthorized' >&2; exit 1 ;;
+  *) echo 'Reauthentication required.' >&2; exit 1 ;;
+esac
+"""
+TOOLS = ("gcloud", "spacectl", "argocd")
+# The stubs keep one credential per tool, so the first login to each tool makes that tool's other
+# check valid too, and the check under the lock skips its login: one login per tool
+FIRST_LOGIN_TO_EACH_TOOL = [
+    "gcloud auth login --update-adc michael.uloth@recursion.com",
+    "spacectl profile login --method browser --endpoint https://example.app.spacelift.io/ example",
+    "argocd login --sso --grpc-web cd-prod.example.com",
+]
+WAITING = "Another run of auth is logging in"
+
+
+class LoginLockBetweenRuns(unittest.TestCase):
+    """Real auth.py processes sharing the lock under one HOME, with stubs that remember logins."""
+
+    stubs: Path
+    _folder: tempfile.TemporaryDirectory
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls._folder = tempfile.TemporaryDirectory()
+        cls.stubs = Path(cls._folder.name) / "stubs"
+        cls.stubs.mkdir()
+        for name in TOOLS:
+            stub = cls.stubs / name
+            stub.write_text(STATEFUL_STUB)
+            stub.chmod(0o755)
+        cls.stubs.chmod(0o555)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.stubs.chmod(0o755)
+        cls._folder.cleanup()
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.home = Path(self._tmp.name) / "home"
+        self.state = Path(self._tmp.name) / "state"
+        self.home.mkdir()
+        self.state.mkdir()
+        self.log = Path(self._tmp.name) / "stub.log"
+        self.lock_path = self.home / ".local" / "state" / "auth" / "logins.lock"
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def start(self) -> subprocess.Popen:
+        env = {
+            "HOME": str(self.home),
+            # /bin for the stubs' sleep; no real gcloud, spacectl or argocd lives there
+            "PATH": f"{self.stubs}:/bin",
+            "STUB_LOG": str(self.log),
+            "STUB_STATE": str(self.state),
+            "STUB_LOGIN_SECONDS": "1",
+            "PRIVATE_ARGOCD_SERVERS": " ".join(SERVERS),
+            "PRIVATE_SPACELIFT_ACCOUNT": ACCOUNT,
+        }
+        return subprocess.Popen(
+            [sys.executable, str(SCRIPT)],
+            env=env,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+    @contextlib.contextmanager
+    def held_by_another_run(self):
+        self.lock_path.parent.mkdir(parents=True, exist_ok=True)
+        with self.lock_path.open("a") as handle:
+            fcntl.flock(handle, fcntl.LOCK_EX)
+            yield
+            fcntl.flock(handle, fcntl.LOCK_UN)
+
+    def wait_for_waiting_line(self, process: subprocess.Popen) -> None:
+        assert process.stderr is not None
+        deadline = time.monotonic() + 10
+        seen = ""
+        while time.monotonic() < deadline:
+            ready, _, _ = select.select([process.stderr], [], [], 0.1)
+            if ready:
+                line = process.stderr.readline()
+                seen += line
+                if WAITING in line:
+                    return
+        self.fail(f"auth.py never said it was waiting; it printed:\n{seen}")
+
+    def logins_run(self) -> list[str]:
+        calls = self.log.read_text().splitlines() if self.log.exists() else []
+        return [call for call in calls if "login" in call.split()]
+
+    def make_all_valid(self) -> None:
+        for name in TOOLS:
+            (self.state / f"{name}-valid").touch()
+
+    def test_a_run_that_waited_runs_no_login_another_run_completed(self) -> None:
+        with self.held_by_another_run():
+            process = self.start()
+            self.wait_for_waiting_line(process)
+            self.make_all_valid()
+
+        out, err = process.communicate(timeout=30)
+
+        self.assertEqual(process.returncode, 0, out + err)
+        self.assertEqual(self.logins_run(), [])
+
+    def test_a_run_that_waited_logs_in_itself_when_the_login_is_still_expired(self) -> None:
+        with self.held_by_another_run():
+            process = self.start()
+            self.wait_for_waiting_line(process)
+
+        out, err = process.communicate(timeout=30)
+
+        self.assertEqual(process.returncode, 0, out + err)
+        self.assertEqual(self.logins_run(), FIRST_LOGIN_TO_EACH_TOOL)
+
+    def test_with_every_login_valid_a_run_never_waits_for_the_lock(self) -> None:
+        self.make_all_valid()
+        with self.held_by_another_run():
+            process = self.start()
+            out, err = process.communicate(timeout=30)
+
+        self.assertEqual(process.returncode, 0, out + err)
+        self.assertNotIn(WAITING, err)
+
+    def test_two_runs_started_together_log_in_to_each_tool_once(self) -> None:
+        processes = [self.start(), self.start()]
+        results = [process.communicate(timeout=60) for process in processes]
+
+        for process, (out, err) in zip(processes, results, strict=True):
+            self.assertEqual(process.returncode, 0, out + err)
+        # One run waited for the other, so the two really overlapped
+        self.assertEqual([WAITING in err for _, err in results].count(True), 1, results)
+        self.assertEqual(self.logins_run(), FIRST_LOGIN_TO_EACH_TOOL)
+        waited_out = next(out for out, err in results if WAITING in err)
+        self.assertIn("(checked again, no login run)", waited_out)
 
 
 class EndToEnd(unittest.TestCase):

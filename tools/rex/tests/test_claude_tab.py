@@ -67,8 +67,18 @@ echo "${{json}}"
 (cd "${{dir}}" && "$@") > "${{TAB_LOG}}" 2>&1
 """
 
+# The value after --append-system-prompt-file is a path that only lasts while cc.bash's process
+# substitution does, so the stub records the file's text in its place
 CLAUDE_STUB = """#!/bin/bash
-for arg in "$@"; do printf '%s\\0' "$arg"; done > "${CLAUDE_LOG}"
+previous=""
+for arg in "$@"; do
+  if [[ "$previous" == --append-system-prompt-file ]]; then
+    printf '%s\\0' "$(cat "$arg")"
+  else
+    printf '%s\\0' "$arg"
+  fi
+  previous="$arg"
+done > "${CLAUDE_LOG}"
 """
 
 
@@ -204,7 +214,9 @@ class RelatedRepos(MachineTest):
         )
 
         assert run.claude is not None, run.stderr
-        self.assertEqual(run.claude[:3], ["--permission-mode", "auto", "--append-system-prompt"])
+        self.assertEqual(
+            run.claude[:3], ["--permission-mode", "auto", "--append-system-prompt-file"]
+        )
         self.assertIn(f"Related repo: `example-infra` at `{infra}`.", run.claude[3])
         self.assertEqual(run.claude[4:], ["/review"])
 

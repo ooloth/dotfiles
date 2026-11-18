@@ -31,9 +31,20 @@ It checks these all at once, then logs in to the expired ones one at a time:
   context, so after any Argo CD login `auth` runs `argocd context <first server>`, which keeps the
   first server listed as the default that `argocd` commands without `--server` use.
 
+Runs that start together, such as several Claude sessions opened at once, share the logins. A run
+that finds a login expired takes a lock on `~/.local/state/auth/logins.lock` before logging in. If
+another run holds it, such as another session's or an `auth` typed in a terminal, it prints
+`⏳ Another run of auth is logging in; waiting for it...` and waits. Once it holds the lock, it
+checks each expired login again and logs in only to the ones still expired, so a login another run
+just finished isn't opened again. The system releases the lock when a run ends, even when it
+crashes, and Ctrl-C while waiting stops the run as it does during a check. A run whose logins are
+all valid never takes the lock.
+
 It prints `Checking logins...` and then one line per login as soon as that login's result is final,
 so the lines come out in the order the checks finish and a slow check doesn't hide the others. An
-expired login's line comes after its login, from the check it runs again then. It exits 0 only
+expired login's line comes after its login, from the check it runs again then, or after its check
+under the lock, marked `(checked again, no login run)`, when that check no longer found it
+expired, such as after another run's login. It exits 0 only
 when every login ends up valid, so `auth && <command>` runs the command only once you're logged in.
 
 - **The Spacelift account and the Argo CD servers** come from `PRIVATE_SPACELIFT_ACCOUNT` and

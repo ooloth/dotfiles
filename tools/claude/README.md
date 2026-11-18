@@ -10,7 +10,8 @@ standards every session loads come from `tools/agents/config/` instead.
 current one are cloned, and `ccc` continues the last session. Both run `cc.bash`, whose header says
 what it passes. On the work laptop each start first runs `auth`, which logs in to any work tool
 whose credentials have expired, except a start with `--unattended`, where nobody is there to
-finish a login.
+finish a login. A caller that passes its own `--permission-mode` keeps that mode, and its own
+`--append-system-prompt` reaches the session beside the related-repo hints.
 
 ## The status line
 

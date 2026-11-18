@@ -9,13 +9,15 @@ Run with: uv run tools/claude/tests/test_cc.py
 
 Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, the install path in
 utils.bash, and runs the script under macOS's own bash from a folder beside its siblings. A `claude`
-stub on PATH records its arguments separated by NUL bytes, so no test reaches the real Claude Code.
+stub on PATH records its arguments separated by NUL bytes, with the text of an
+--append-system-prompt-file in place of its path, so no test reaches the real Claude Code.
 The tests of the map's handling in general source the real cc.bash and replace only its
 `related_repos` lookup before calling `main`.
 """
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -28,8 +30,18 @@ from hypothesis import strategies as st
 REPO = Path(__file__).resolve().parent.parent.parent.parent
 SCRIPT = "tools/claude/cc.bash"
 
+# The value after --append-system-prompt-file is a path that only lasts while cc.bash's process
+# substitution does, so the stub records the file's text in its place
 CLAUDE_STUB = """#!/bin/bash
-for arg in "$@"; do printf '%s\\0' "$arg"; done > "${CLAUDE_LOG}"
+previous=""
+for arg in "$@"; do
+  if [[ "$previous" == --append-system-prompt-file ]]; then
+    printf '%s\\0' "$(cat "$arg")"
+  else
+    printf '%s\\0' "$arg"
+  fi
+  previous="$arg"
+done > "${CLAUDE_LOG}"
 printf '%s\\n' "${ANTHROPIC_VERTEX_PROJECT_ID-<unset>}" "${CLOUD_ML_REGION-<unset>}" > "${CLAUDE_LOG}.env"
 printf 'claude\\n' >> "${CLAUDE_LOG}.order"
 """
@@ -164,12 +176,18 @@ class Machine:
         return self._run(["/bin/bash", str(REPO / SCRIPT), *args], computer, cwd, related)
 
     def run_with_map(
-        self, related: list[str], *args: str, computer: str = "air", cwd: Path | None = None
+        self,
+        related: list[str],
+        *args: str,
+        computer: str = "air",
+        cwd: Path | None = None,
+        bash: str = "/bin/bash",
     ) -> Run:
-        """Run the shipped cc.bash with its lookup replaced by one that lists `related`."""
+        """Run the shipped cc.bash under `bash` with its lookup replaced by one that lists
+        `related`."""
         lines = "".join(f"printf '%s\\n' {r!r}; " for r in related)
         program = f'source "$1"; related_repos() {{ {lines}:; }}; shift; main "$@"'
-        command = ["/bin/bash", "-c", program, "_", str(REPO / SCRIPT), *args]
+        command = [bash, "-c", program, "_", str(REPO / SCRIPT), *args]
         return self._run(command, computer, cwd)
 
 
@@ -293,6 +311,71 @@ class Unattended(unittest.TestCase):
         self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions", "/review x"])
 
 
+class CallersMode(unittest.TestCase):
+    """A caller such as hub, whose sessions read text other people wrote, chooses the mode."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.machine = Machine(Path(self._tmp.name))
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_reaches_claude_with_no_mode_of_cc_bashs_beside_it(self) -> None:
+        for computer in ("air", "mini", "work"):
+            for mode in (["--permission-mode", "auto"], ["--permission-mode=auto"]):
+                with self.subTest(computer=computer, mode=mode):
+                    run = self.machine.run(*mode, "review this", computer=computer)
+
+                    self.assertEqual(run.status, 0, run.output)
+                    self.assertEqual(run.claude, [*mode, "review this"])
+
+    def test_a_mode_after_a_double_dash_is_the_prompt_not_a_mode(self) -> None:
+        run = self.machine.run("--", "--permission-mode")
+
+        self.assertEqual(
+            run.claude, ["--permission-mode", "bypassPermissions", "--", "--permission-mode"]
+        )
+
+    def test_with_unattended_it_stops_before_starting_anything(self) -> None:
+        run = self.machine.run("--unattended", "--permission-mode", "auto", computer="work")
+
+        self.assertEqual(run.status, 2, run.output)
+        self.assertIn("--unattended", run.output)
+        self.assertIsNone(run.claude)
+        self.assertEqual(self.machine.started(), [])
+
+
+# Every bash on this machine, since `cc` runs cc.bash under the bash on PATH while the other tests
+# use macOS's bash 3.2, and the two keep a process substitution open for different lengths of time
+BASHES = sorted({"/bin/bash", *filter(None, [shutil.which("bash")])})
+
+
+class CallersSystemPrompt(unittest.TestCase):
+    def test_reaches_claude_beside_the_related_repo_hints_under_every_bash(self) -> None:
+        for bash in BASHES:
+            with self.subTest(bash=bash), tempfile.TemporaryDirectory() as tmp:
+                machine = Machine(Path(tmp))
+                infra = machine.sibling("infra")
+
+                run = machine.run_with_map(
+                    ["infra"], "--append-system-prompt", "hub's guidance", bash=bash
+                )
+
+                self.assertEqual(
+                    run.claude,
+                    [
+                        "--permission-mode",
+                        "bypassPermissions",
+                        "--append-system-prompt-file",
+                        hint("infra", infra),
+                        "--append-system-prompt",
+                        "hub's guidance",
+                    ],
+                    run.output,
+                )
+
+
 class MappedFolder(unittest.TestCase):
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
@@ -313,7 +396,7 @@ class MappedFolder(unittest.TestCase):
             [
                 "--permission-mode",
                 "bypassPermissions",
-                "--append-system-prompt",
+                "--append-system-prompt-file",
                 f"{hint('infra', infra)}\n{hint('docs', docs)}",
                 "--continue",
             ],
@@ -331,7 +414,7 @@ class MappedFolder(unittest.TestCase):
             [
                 "--permission-mode",
                 "bypassPermissions",
-                "--append-system-prompt",
+                "--append-system-prompt-file",
                 f"Related repo: `infra` is not cloned at `{infra}`.\n{hint('docs', docs)}",
             ],
         )
@@ -349,7 +432,7 @@ class MappedFolder(unittest.TestCase):
             [
                 "--permission-mode",
                 "bypassPermissions",
-                "--append-system-prompt",
+                "--append-system-prompt-file",
                 hint("infra", infra),
             ],
             run.output,
@@ -398,7 +481,7 @@ class RelatedReposFromPrivateEnv(unittest.TestCase):
 
                 self.assertEqual(
                     run.claude,
-                    ["--permission-mode", "auto", "--append-system-prompt", hint(name, path)],
+                    ["--permission-mode", "auto", "--append-system-prompt-file", hint(name, path)],
                     run.output,
                 )
 
@@ -428,7 +511,7 @@ class RelatedReposFromPrivateEnv(unittest.TestCase):
 # Flags cc.bash may pass as a separate argument ahead of the caller's own, each taking exactly one
 # value. Any other flag is written as --flag=<value>, so a flag that takes several values can't read
 # the caller's arguments as more of its own.
-SINGLE_VALUE_FLAGS = {"--append-system-prompt", "--permission-mode"}
+SINGLE_VALUE_FLAGS = {"--append-system-prompt-file", "--permission-mode"}
 
 
 def arguments_that_could_take_the_callers(added: list[str]) -> list[str]:

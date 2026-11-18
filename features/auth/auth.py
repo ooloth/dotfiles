@@ -9,6 +9,10 @@ Checks the internal and external Google accounts, Spacelift and Argo CD, then ru
 for each one that has expired, one at a time, and checks it again. Exits 0 only when every login
 ends up valid.
 
+Runs that start together, such as Claude sessions opened at once, share the logins: a run that finds
+a login expired waits for any other run's logins to finish, checks again, and logs in only to the
+ones still expired. A run whose logins are all valid never waits.
+
 Run with: auth            (log in to the expired ones)
           auth --check    (only report; logs in to nothing)
 
@@ -19,6 +23,7 @@ the Google credentials that the work package index needs have expired.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import shutil
@@ -26,9 +31,11 @@ import subprocess
 import sys
 from collections.abc import Callable, Mapping
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import AbstractContextManager
 from dataclasses import dataclass
 from enum import Enum
-from typing import NewType, Protocol, assert_never
+from pathlib import Path
+from typing import IO, NewType, Protocol, assert_never
 
 LoginName = NewType("LoginName", str)
 ArgoServer = NewType("ArgoServer", str)
@@ -47,6 +54,8 @@ ARGOCD_SERVERS_KEY = "PRIVATE_ARGOCD_SERVERS"
 CHECK_TIMEOUT_SECONDS = 10
 # What a shell reports for a command stopped by Ctrl-C (128 + SIGINT)
 INTERRUPTED_EXIT_CODE = 130
+# Held while a run logs in, so runs that start together open each login once
+LOCK_PATH = Path.home() / ".local" / "state" / "auth" / "logins.lock"
 
 # What argocd printed on this laptop when its refresh token had been revoked (invalid_grant) and when
 # the server rejected the session (Unauthenticated)
@@ -141,7 +150,15 @@ class Unconfigured:
 class Outcome:
     name: LoginName
     before: Status
-    after: Status | None  # None when no login ran
+    after: (
+        Status | None
+    )  # None when nothing checked it again: it wasn't expired, or this run only checks
+    # Whether this run logged in. A run that waited for another run's logins can find a login
+    # valid on its second check without logging in.
+    login_ran: bool
+
+    def __post_init__(self) -> None:
+        assert not self.login_ran or self.after is not None, f"{self.name} ran with no status after"
 
 
 class Shell(Protocol):
@@ -307,7 +324,7 @@ def default_context_command(settings: Settings, outcomes: tuple[Outcome, ...]) -
     if not settings.argocd_servers:
         return None
     argocd_names = {argocd_login_name(server) for server in settings.argocd_servers}
-    if not any(o.name in argocd_names and o.after is not None for o in outcomes):
+    if not any(o.name in argocd_names and o.login_ran for o in outcomes):
         return None
     return ("argocd", "context", settings.argocd_servers[0])
 
@@ -330,7 +347,45 @@ def check_status(item: Login | Unconfigured, shell: Shell) -> Status:
             assert_never(item)
 
 
-def log_in(login: Login, before: Status, mode: Mode, shell: Shell) -> Status:
+@dataclass(frozen=True)
+class HeldLoginLock:
+    """Proof that this run holds the login lock, which only entering a LoginLock gives."""
+
+
+LoginLock = AbstractContextManager[HeldLoginLock]
+
+
+class FileLoginLock:
+    """An exclusive lock on a file, which the system releases when the process ends, crashes
+    included. Says so before it waits, since a run waiting on another's browser login can take as
+    long as that login does."""
+
+    def __init__(self, path: Path) -> None:
+        self._path = path
+        self._handle: IO[str] | None = None
+
+    def __enter__(self) -> HeldLoginLock:
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._handle = self._path.open("a")
+        try:
+            fcntl.flock(self._handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            print(
+                "⏳ Another run of auth is logging in; waiting for it...",
+                file=sys.stderr,
+                flush=True,
+            )
+            fcntl.flock(self._handle, fcntl.LOCK_EX)
+        return HeldLoginLock()
+
+    def __exit__(self, *_exc: object) -> None:
+        assert self._handle is not None, "the login lock was released without being taken"
+        fcntl.flock(self._handle, fcntl.LOCK_UN)
+        self._handle.close()
+        self._handle = None
+
+
+def log_in(login: Login, before: Status, mode: Mode, shell: Shell, _held: HeldLoginLock) -> Status:
     assert mode is Mode.REFRESH, f"{login.name}: a login must never run in {mode.value} mode"
     assert before == Expired(), f"{login.name} is {before}, so its login must not run"
     print(f"\n🔑 Logging in to {login.name}...", file=sys.stderr, flush=True)
@@ -344,8 +399,11 @@ def run(
     items: tuple[Login | Unconfigured, ...],
     shell: Shell,
     report: Callable[[Outcome], None],
+    lock: LoginLock,
 ) -> tuple[Outcome, ...]:
-    """Check every login at once, then log in to the expired ones one at a time.
+    """Check every login at once, then log in to the expired ones one at a time, holding `lock`.
+    Once it holds the lock, each expired login is checked again, and only the ones still expired
+    are logged in to, so a login another run completed meanwhile is not opened again.
 
     Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
     login, once the login and its second check are done. So the order of the reports follows the
@@ -363,20 +421,40 @@ def run(
             index = checks[check]
             befores[index] = check.result()
             if login_to_run(mode, items[index], befores[index]) is None:
-                report_and_record(Outcome(items[index].name, befores[index], None))
-    outcomes: list[Outcome] = []
-    for index, item in enumerate(items):
-        before = befores[index]
-        match login_to_run(mode, item, before):
-            case None:
-                outcomes.append(Outcome(item.name, before, None))
-            case login:
-                outcome = Outcome(item.name, before, log_in(login, before, mode, shell))
-                report_and_record(outcome)
-                outcomes.append(outcome)
+                report_and_record(Outcome(items[index].name, befores[index], None, False))
+    expired = {
+        index
+        for index, item in enumerate(items)
+        if login_to_run(mode, item, befores[index]) is not None
+    }
+    after_lock: dict[int, Outcome] = {}
+    if expired:
+        with lock as held:
+            for index in sorted(expired):
+                after_lock[index] = log_in_if_still_expired(
+                    items[index], befores[index], mode, shell, held
+                )
+                report_and_record(after_lock[index])
+    outcomes = [
+        after_lock.get(index, Outcome(item.name, befores[index], None, False))
+        for index, item in enumerate(items)
+    ]
     assert len(reported) == len(set(reported)), f"a login was reported twice: {reported}"
     assert set(reported) == {item.name for item in items}, f"a login went unreported: {reported}"
     return tuple(outcomes)
+
+
+def log_in_if_still_expired(
+    item: Login | Unconfigured, before: Status, mode: Mode, shell: Shell, held: HeldLoginLock
+) -> Outcome:
+    """The login's outcome once it is checked again under the lock, logging in only if it is still
+    expired."""
+    login = login_to_run(mode, item, before)
+    assert login is not None, f"{item.name} is {before}, so it must not be checked again"
+    again = check_status(login, shell)
+    if again != Expired():
+        return Outcome(item.name, before, again, False)
+    return Outcome(item.name, before, log_in(login, again, mode, shell, held), True)
 
 
 def login_to_run(mode: Mode, item: Login | Unconfigured, before: Status) -> Login | None:
@@ -419,6 +497,9 @@ def describe(outcome: Outcome) -> str:
             change = describe_status(outcome.before)
         case Expired():
             change = "expired → still expired after logging in"
+        case after if not outcome.login_ran:
+            before, now = describe_status(outcome.before), describe_status(after)
+            change = f"{before} → {now} (checked again, no login run)"
         case after:
             change = f"{describe_status(outcome.before)} → {describe_status(after)}"
     return f"{icon} {outcome.name}: {change}"
@@ -461,9 +542,11 @@ def main(argv: list[str]) -> int:
             logins(settings),
             shell,
             lambda outcome: print(describe(outcome), flush=True),
+            FileLoginLock(LOCK_PATH),
         )
     except KeyboardInterrupt:
-        # Reached only from a check, since each login catches its own Ctrl-C
+        # Reached from a check or from waiting for another run's logins, since each login catches
+        # its own Ctrl-C
         print("\nStopped. Run `auth --check` to see where each login stands.", file=sys.stderr)
         return INTERRUPTED_EXIT_CODE
     match default_context_command(settings, outcomes):
