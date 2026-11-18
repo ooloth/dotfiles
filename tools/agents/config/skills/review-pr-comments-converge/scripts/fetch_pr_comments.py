@@ -690,6 +690,15 @@ def indent(text: str, prefix: str = "  ") -> str:
     return "\n".join(prefix + line for line in text.splitlines())
 
 
+# Only these break a reply's line. `str.splitlines` also breaks at U+2028, U+2029, U+0085, \v and
+# \f, which a reply prints as written.
+LINE_BREAK = re.compile(r"\r\n|\r|\n")
+
+
+def indent_reply(text: str, prefix: str) -> str:
+    return "\n".join(prefix + line for line in LINE_BREAK.split(text))
+
+
 def take_option(args: list[str], flag: str) -> tuple[list[str], str | None]:
     """Pull `--flag value` or `--flag=value` out of args, preserving positional order."""
     for i, arg in enumerate(args):
@@ -892,7 +901,7 @@ def print_discussion(target: str, discussion: Discussion, verdicts: Verdicts) ->
                     print("  REPLIES:")
                     for reply in comments[1:]:
                         replier = login_of(parse_reviewer(reply.get("author")))
-                        print(indent(f"{replier}: {reply['body'].strip()}", "    "))
+                        print(indent_reply(f"{replier}: {reply['body'].strip()}", "    "))
                 comment_idx += 1
 
         print()
@@ -934,7 +943,7 @@ def print_discussion(target: str, discussion: Discussion, verdicts: Verdicts) ->
                 print("  REPLIES:")
                 for reply in comments[1:]:
                     replier = login_of(parse_reviewer(reply.get("author")))
-                    print(indent(f"{replier}: {reply['body'].strip()}", "    "))
+                    print(indent_reply(f"{replier}: {reply['body'].strip()}", "    "))
             comment_idx += 1
 
         print()

@@ -17,6 +17,7 @@ Run:
 """
 
 import ast
+import itertools
 import json
 import os
 import re
@@ -2090,6 +2091,52 @@ def test_a_multi_line_reply_prints_fully_indented(harness: Harness, review_id: i
     holding = [line for line in lines if FORGED.strip() in line]
     assert holding, stdout
     assert all(line.startswith("    ") for line in holding), holding
+
+
+def printed_reply_lines(harness: Harness, body: str) -> list[str]:
+    """The lines printed for a reply with `body`, split only where the script printed "\\n"."""
+    comments = [thread_comment(101, at=ts(0)), thread_comment(102, body, at=ts(5))]
+    lines = run_ok(harness, pr([thread_of(comments)])).split("\n")
+    after = lines[lines.index("  REPLIES:") + 1 :]
+    return list(itertools.takewhile(lambda line: line.startswith("    "), after))
+
+
+@pytest.mark.parametrize(
+    "separator",
+    [
+        pytest.param("\u2028", id="line-separator"),
+        pytest.param("\u2029", id="paragraph-separator"),
+        pytest.param("\x85", id="next-line"),
+        pytest.param("\v", id="vertical-tab"),
+        pytest.param("\f", id="form-feed"),
+    ],
+)
+def test_a_reply_prints_other_line_separators_as_written(harness: Harness, separator: str) -> None:
+    lines = printed_reply_lines(harness, f"Not done.{separator}Still broken.")
+
+    assert lines == [f"    reviewer: Not done.{separator}Still broken."]
+
+
+@pytest.mark.parametrize(
+    "line_break",
+    [
+        pytest.param("\r\n", id="crlf"),
+        pytest.param("\n", id="lf"),
+        pytest.param("\r", id="cr"),
+    ],
+)
+def test_a_reply_splits_at_each_line_break(harness: Harness, line_break: str) -> None:
+    lines = printed_reply_lines(harness, f"Not done.{line_break}Still broken.")
+
+    assert lines == ["    reviewer: Not done.", "    Still broken."]
+
+
+def test_a_reply_written_with_windows_line_endings_prints_no_carriage_return(
+    harness: Harness,
+) -> None:
+    lines = printed_reply_lines(harness, "Not done.\r\nStill broken.\r\nTry again.\r\n")
+
+    assert lines == ["    reviewer: Not done.", "    Still broken.", "    Try again."]
 
 
 # The field lines (`  answered   :`, `  thank      :` …) are indented two spaces, so a body must be
