@@ -312,6 +312,14 @@ reaches the path it means to. Also confirm each test would fail without the chan
 it states, not because the setup broke first. A setup that does not take effect is redesigned here,
 not discovered by whoever writes the tests.
 
+**List the observable behaviour.** After the test plan, list every behaviour of the running system a
+user or operator could notice that this change affects: each one it adds or changes (`New`), and
+each nearby one users rely on that must stay as it is (`Unchanged`). One row each, in plain words,
+saying how it will be proven: a type, an assertion, a test row above, or a run a reviewer can repeat
+from outside. Every binding property appears in at least one row. This table is the PR's
+verification outline: `prove-it-works` runs its outside-in rows as written, and
+`write-pr-description` shows them as they are.
+
 ### Phase 7: Present and Stop
 
 Present the design, written the same way in the terminal and in the ticket comment, so a reader
@@ -351,10 +359,12 @@ sees how the change fits together to solve the problem:
    `Technique`, and after it one line per technique used, saying why it fits the behaviour it tests.
    Setup and how each test is run are left to the implementer. When the test plan is empty, the
    section is one line saying why.
-7. `## Recorded rules 📜`, only when Phase 2 found a cross-cutting property: for each one, the file
+7. `## Observable behaviour 👀`: the Phase 6 table, with columns `Status` (`New` or `Unchanged`),
+   `Behaviour` and `Proven by`, new rows first.
+8. `## Recorded rules 📜`, only when Phase 2 found a cross-cutting property: for each one, the file
    in `docs/invariants/` or `docs/standards/` its entry goes in, and the entry's exact wording.
    Approving the design approves that wording, so the implementer writes it without stopping.
-8. `## Deferred ⏳`, only when the design found something worth doing that this work does not do,
+9. `## Deferred ⏳`, only when the design found something worth doing that this work does not do,
    such as a bug found on the way: what it is, the evidence for it, and why it falls outside this
    work.
 
