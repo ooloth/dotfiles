@@ -1137,7 +1137,9 @@ or appears as an ordinary finding.
 
 After presenting findings, if this is a PR and its author is the account `gh api user -q .login`
 returns, ask the user to indicate which changes to make locally or discuss further first and then
-stop and wait for a reply (skip the rest of this skill's instructions).
+stop and wait for a reply (skip the rest of this skill's instructions). Fixes the user approves
+are pushed only after the local verification in "Working Through to a Draft PR" in the global
+`CLAUDE.md`, `wrap-up-codebase` included.
 
 Otherwise, if a bot opened the PR (`author.is_bot`, such as Dependabot or Renovate), nobody will
 act on posted findings: a bot cannot read a review or push a fix. A bot's PR never gets Request
@@ -1149,9 +1151,11 @@ consequences sentences, which address an author.
   and there are findings, ask which to fix on the PR's branch. The answer naming the fixes also
   approves committing them and pushing them to the PR's branch, merging trunk in first when the
   branch conflicts, never rebasing. Recheck the fix commits by running Step 1a and the project's
-  checks and tests again at the new head, even when the fixes edit source files, and do not rerun
-  the review agents: the commits answer this review's findings, and a change gets one review
-  round. Then ask the posting question below. Its "yes" means Approve, or Comment when the user
+  checks and tests again at the new head, even when the fixes edit source files, and run
+  `wrap-up-codebase` on the fix commits, applying its fixes and putting its asks to the user,
+  before anything is pushed. Do not rerun the review agents: the commits answer this review's
+  findings, and a change gets one review round. Then ask the posting question below. Its "yes"
+  means Approve, or Comment when the user
   leaves a `must` unfixed, and that Comment names the `must` in its body.
 - **When the user cannot push,** ask the posting question below. Its "yes" means Comment, with
   the findings in the body.
@@ -1167,8 +1171,10 @@ separate, unambiguous reply to the posting question before posting anything to G
 
 When the user asks to fix the findings instead of posting, make the fixes through the usual commit
 flow, then return here. Recheck the fix commits by running Step 1a, when it applies, and the
-project's checks and tests again at the new head, not by rerunning the review agents. Any other
-new commit on the head is checked as "Check what changed since the saved state" below says. Draft
+project's checks and tests again at the new head, and run `wrap-up-codebase` on the fix commits,
+applying its fixes and putting its asks to the user, before anything is pushed, not by rerunning
+the review agents. Any other new commit on the head is checked as "Check what changed since the
+saved state" below says. Draft
 the review of the new head before asking the posting question. For a dependency update that is
 usually an Approve whose sentence before its list names each fix commit and what it resolves.
 
