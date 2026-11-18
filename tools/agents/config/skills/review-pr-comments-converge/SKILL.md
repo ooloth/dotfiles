@@ -482,11 +482,7 @@ Do not run any of these commands before receiving explicit approval in Phase 3.
 
 **Before the first post, check what changed since the saved fetch.** Once the fix is pushed, run
 the fetch helper and read the PR's commits and reviews again. List every review, comment and reply
-that is not in the saved fetch, and every commit this run did not make that the user has not seen.
-The user has seen a commit when this session showed it to them and they then approved merging it or
-posting the replies, such as another session's commit the run merged into its branch with the
-user's approval. A seen commit adds no feedback to answer, so it goes on one line of its own, marked
-seen, and stays off the list.
+that is not in the saved fetch, and every commit this run did not make.
 
 - **The fetch or the read fails:** post nothing, and say which one failed, quoting the error. The
   check has not run, so what changed is unknown, not empty.

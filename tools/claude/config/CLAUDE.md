@@ -351,8 +351,10 @@ it three times.
 
 **When the work is on a ticket** (GitHub Issue, Linear, Jira, etc.), **its comments carry the
 reasoning behind the implementation, one step per comment,** so a reviewer can check each step
-without re-deriving it. Each comment is posted before the step it records is acted on, except a
-change made while "Working Through to a Draft PR", which the last item below covers:
+without re-deriving it. Before changing work a ticket or PR covers, read its comments again, newest
+first, because one posted since your last read may change what the work should do. Each comment is
+posted before the step it records is acted on, except a change made while "Working Through to a
+Draft PR", which the last item below covers:
 
 - **After `/discuss`, or agreement on an approach:** the approach, written as the `discuss` skill
   writes it.
