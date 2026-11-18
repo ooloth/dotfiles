@@ -52,7 +52,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - [ ] Got a screen recording of a UI change as step 3 describes
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Verification is manual e2e only — no automated checks
-- [ ] Why ends with Approach and Design bullets when the ticket records them, each linked
+- [ ] Why ends with one brief bullet linking the approach and design when the ticket records them,
+  and no property number (P1…) appears anywhere
 - [ ] The claims, steps and What I saw come from a `prove-it-works` report for the PR's head
 - [ ] How to verify is Pre-merge's numbered list of collapsed rows (Setup, one per claim, Clean up),
   each claim opening to its Verification steps and then What I saw, with each step's code block
@@ -83,10 +84,10 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   are clearly stated, especially changes that affect the system's observable side effects and
   measurable characteristics
 - **How it was decided:** when the work's ticket records an approach or a design, Why ends with
-  an `**Approach:**` bullet naming what was chosen, what it beat and the property that decided it,
-  linked to the approach comment, then a `**Design:**` bullet that does the same for the design,
-  linked to its comment. Each link says where it leads, such as "how it was chosen". Leave a bullet
-  out when no such record exists, rather than writing it vaguely.
+  one bullet: a brief phrase saying why the change is built this way, then links to the approach
+  and design comments, such as `- nginx sets the headers, so the policy ships and is tested with
+  its code ([approach](…), [design](…))`. One phrase, never a summary of the comments. Leave it out
+  when the ticket records neither.
 - **Why**: First bullet is a single-sentence TL;DR of the entire reason. Subsequent bullets add
   detail if needed. Prefer writing at the level of impact and outcome rather than implementation
   where possible — explain why this change needed to exist and try to pre-emptively answer the key
@@ -122,8 +123,10 @@ commit, with its claims, steps and saved output unchanged. When the session has 
 the head has moved since, run `prove-it-works` on the PR first, passing the approach's properties
 when the work has one and any steps the description already lists. Its steps that must run after a
 deploy go under Post-merge. Where it names a binding property no claim shows, one line under How to
-verify says what covers it. Where it names a claim no signal shows, the user hears before drafting;
-inside "Working Through to a Draft PR" or an unattended run, it also goes in `missing.txt`.
+verify says in words what that property is and what covers it. Property numbers such as P1 are the
+approach's shorthand and mean nothing to a reviewer, so a description never shows them. Where it
+names a claim no signal shows, the user hears before drafting; inside "Working Through to a Draft
+PR" or an unattended run, it also goes in `missing.txt`.
 
 **Pre-merge is an ordered list,** so it lines up with the page's other lists and numbers itself.
 Its items, in order:
@@ -132,8 +135,7 @@ Its items, in order:
    that part enables and which claims use it, such as `#### 📦 This branch's image (every claim)`.
    Leave it out when no claim needs setup.
 2. **One item per claim.** Its summary is an emoji for the kind of evidence its What I saw
-   holds, then the property it shows when it has one (`P1:`), then the claim, stated as what is
-   true after the change: 📄 for text output of any kind
+   holds, then the claim, stated as what is true after the change: 📄 for text output of any kind
    (a terminal, a browser console, a log), 📸 for a screenshot and 🎬 for a recording. Inside it:
    - **`#### 🔍 Verification steps`:** a `- [ ]` checklist, each item an action or an "Expect to
      see X" line, each building on the one before.
@@ -229,8 +231,7 @@ value to a reviewer
 
 - New datasets introduce archived items for the first time and users need the option to hide them while building familiarity
 - Defaulting them visible gives reviewers the full picture until users understand what they mean
-- **Approach:** a toggle beside each view, not a separate archive page, because a user keeps the item's context while deciding whether to hide it ([how it was chosen](https://jira.example.com/browse/PROJ-123?focusedCommentId=1001))
-- **Design:** the toggle hides itself when a dataset has no archived items, so nothing new appears for datasets it cannot affect ([the design](https://jira.example.com/browse/PROJ-123?focusedCommentId=1002))
+- A toggle beside each view keeps an item's context while a user decides whether to hide it ([approach](https://jira.example.com/browse/PROJ-123?focusedCommentId=1001), [design](https://jira.example.com/browse/PROJ-123?focusedCommentId=1002))
 
 ## 👩‍🔬 How to verify
 
@@ -253,7 +254,7 @@ value to a reviewer
    </details>
 
 2. <details>
-   <summary><b>📸 P1: The toggle appears only for a dataset with archived items</b></summary>
+   <summary><b>📸 The toggle appears only for a dataset with archived items</b></summary>
 
    #### 🔍 Verification steps
 
@@ -269,7 +270,7 @@ value to a reviewer
    </details>
 
 3. <details>
-   <summary><b>📸 P2: Turning it off removes the archived item from every view</b></summary>
+   <summary><b>📸 Turning it off removes the archived item from every view</b></summary>
 
    #### 🔍 Verification steps
 

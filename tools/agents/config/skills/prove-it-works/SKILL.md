@@ -22,9 +22,10 @@ what none of these hold, and never ask them to restate the claim in a template.
 A reviewer who wasn't there, doubts the change works, and will believe only what they could check
 themselves. Prove each claim for that person, whether or not the target is a PR:
 
-- **The claims:** given an approach with a property table, each binding property is a claim, named
-  by its number (P1, P2…), and so is each scenario a user relies on that the change could break
-  but no property names. Say which binding property no claim shows, and what covers it instead,
+- **The claims:** given an approach with a property table, each binding property is a claim, and
+  so is each scenario a user relies on that the change could break but no property names. The
+  report may cite a property's number, but states each claim in words, since that is what a
+  reviewer reads. Say which binding property no claim shows, and what covers it instead,
   such as a test CI runs.
 - **Steps that person could run:** each claim's proof is a set of steps written the way they would
   copy them: complete commands from a fresh checkout, the setup each one needs, and what to expect.
