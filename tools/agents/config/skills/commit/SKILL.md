@@ -191,9 +191,21 @@ Steps:
     variable doesn't survive to the next command, so copy the printed path into the steps below.
 2.  Edit `<dir>/changes.patch` to keep only the hunk(s) you want — delete unwanted `@@` blocks and
     their lines, keeping the file headers (`--- a/...` / `+++ b/...`)
-3.  `GIT_INDEX_FILE=<dir>/index git read-tree HEAD`, then
-    `GIT_INDEX_FILE=<dir>/index git apply --cached <dir>/changes.patch`, then
-    `GIT_INDEX_FILE=<dir>/index git commit -F <message file>`
+3.  Once the checks have passed, build the index and commit in one command:
+
+    ```sh
+    old=$(git rev-parse HEAD) && GIT_INDEX_FILE=<dir>/index git read-tree "$old" \
+      && GIT_INDEX_FILE=<dir>/index git apply --cached <dir>/changes.patch \
+      && new=$(git commit-tree "$(GIT_INDEX_FILE=<dir>/index git write-tree)" -p "$old" \
+        -F <message file>) && git update-ref HEAD "$new" "$old"
+    ```
+
+    Another session can commit between building the index and committing, and a plain
+    `git commit` would then record the older tree on top of its commit, silently undoing its
+    change. `update-ref` given `$old` refuses when the branch has moved, so nothing is committed:
+    run the command again. If the patch no longer applies, the other session's commit touched the
+    same lines, so stop and tell the user. `commit-tree` runs no commit hooks, so the checks in step
+    1 of "Your task" are what stand in for them.
 4.  `git reset -q -- <file>`, so the shared index's entry for that file matches the new commit. It
     names the file, so it changes nothing else in the index. The remaining hunks stay in the working
     tree for the next commit
