@@ -8,9 +8,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 
 ## Workflow
 
-1. Check for project PR template: `.github/PULL_REQUEST_TEMPLATE.md` or
-   `.github/pull_request_template.md`
-2. Detect base branch and gather changes:
+1. Detect base branch and gather changes:
    ```bash
    # Each fallback runs only when the step before it printed nothing. A `||` after a pipeline
    # would never fire, because the pipeline returns `sed`'s status, which is 0.
@@ -20,44 +18,51 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
    git log $BASE..HEAD --oneline
    git diff $BASE...HEAD --stat
    ```
-3. Take the ticket and any links from the ticket `create-pr` passes in, the branch name, the commits
+2. Take the ticket and any links from the ticket `create-pr` passes in, the branch name, the commits
    and the approved task. Run `gh issue list -R <owner>/<repo> --state open --limit 200` to find any
    GitHub issue the PR fully resolves. Inside "Working Through to a Draft PR", ask nothing: leave
    out what you can't find, say in the description that it is missing, and list it in `missing.txt`
    for `create-pr` to report. In an unattended run, ask nothing and leave out what you can't find
    without mentioning it. Otherwise, ask the user for what you can't find (Jira URL, Slack thread),
    and for a screen recording of a UI change.
-4. For each screenshot or recording the proof cites, open it and check it shows what its claim
+3. For each screenshot or recording the proof cites, open it and check it shows what its claim
    says and nothing secret, then upload it as `use-gh` describes and use the returned URL. List a
    file in `missing.txt` only when its upload is refused, with the error.
-5. Draft using voice rules below, and a title: one line, in plain words, saying what the PR
+4. Draft using voice rules below, and a title: one line, in plain words, saying what the PR
    changes.
-6. Write the title, the body and any `missing.txt` to files in a new directory, and hand the
+5. Write the title, the body and any `missing.txt` to files in a new directory, and hand the
    directory's path back to the caller:
    1. Run `mktemp -d` and note the directory it prints. It is new on every run, so another
       session writing a PR body at the same time can't overwrite it.
    2. With the Write tool, write the title to `title.txt` and the body to `pr-body.md` in that
       directory. Writing them to files keeps the shell from mangling backticks in inline code.
-      When step 3 left something out, write each missing item to `missing.txt`, one per line. Read
+      When step 2 left something out, write each missing item to `missing.txt`, one per line. Read
       them back before handing the path back.
-   3. This skill does not open the PR. `create-pr` opens it with these files. To update an
+   3. Run `uv run <this skill's folder>/scripts/check_pr_body.py <dir>/pr-body.md --repo
+      <owner>/<repo>` and fix every problem it prints, running it again until it exits 0. Exit 1
+      lists what to fix; exit 2 means a check could not run, which is never a pass. Updating an
+      existing PR, save its live body when you read it and add `--live-copy <saved file> --pr <n>`,
+      so a change someone made since then is merged, not overwritten. When `prove-it-works` saved
+      the commands it ran, add `--commands <that file>`, so every step shown is one that ran.
+   4. This skill does not open the PR. `create-pr` opens it with these files. To update an
       existing PR, run `gh pr edit <n> -R <owner>/<repo> --body-file <dir>/pr-body.md`.
 
 **Self-check before handing the path back:**
 
-- [ ] Read project PR template if exists
-- [ ] Reviewed all commits and file changes from step 2's output (run in a later command, `BASE`
+- [ ] Reviewed all commits and file changes from step 1's output (run in a later command, `BASE`
       is no longer set, so `git log $BASE..HEAD` would print nothing)
-- [ ] Found the Jira/Slack links, or got them as step 3 describes
-- [ ] Got a screen recording of a UI change as step 3 describes
+- [ ] Found the Jira/Slack links, or got them as step 2 describes
+- [ ] Got a screen recording of a UI change as step 2 describes
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
-- [ ] Verification is manual e2e only — no automated checks
-- [ ] Why ends with one brief bullet linking the approach and design when the ticket records them,
-  and no property number (P1…) appears anywhere
-- [ ] The claims, steps and What I saw come from a `prove-it-works` report for the PR's head
-- [ ] How to verify is Pre-merge's numbered list of collapsed rows (Setup, one per claim, Clean up),
-  each claim opening to its Verification steps and then What I saw, with each step's code block
-  indented to the step's text, and the body rendered through GitHub's markdown API and checked
+- [ ] What ends with the "See <ticket ID> for detailed explanations…" bullet when the ticket records
+  an approach or a design, and holds no code block
+- [ ] How to verify's rows are the design's Observable behaviour rows, run by `prove-it-works`, with
+  no unplanned row and no property number (P1…)
+- [ ] The outline is Setup, What's new, What stays the same, Clean up and After merge, each part
+  present only when it has something, with every row collapsed and nothing inside a row collapsed
+- [ ] Each row has Proven by, Verification steps and What I saw as headings with lists, and its What
+  I saw holds only output from running its own steps
+- [ ] The body was rendered through GitHub's markdown API and checked
 - [ ] No implementation details snuck in
 - [ ] No hard-wrapped prose: each paragraph and list item is one line, because GitHub renders every
   newline as a line break
@@ -83,11 +88,10 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   notes) without confusing the main point. The key facts reviewers should be aware are in the diff
   are clearly stated, especially changes that affect the system's observable side effects and
   measurable characteristics
-- **How it was decided:** when the work's ticket records an approach or a design, Why ends with
-  one bullet: a brief phrase saying why the change is built this way, then links to the approach
-  and design comments, such as `- nginx sets the headers, so the policy ships and is tested with
-  its code ([approach](…), [design](…))`. One phrase, never a summary of the comments. Leave it out
-  when the ticket records neither.
+- **The last What bullet links the decision records:** when the ticket records an approach or a
+  design, What ends with exactly `- See <ticket ID> for detailed explanations of this solution's
+  overall approach and design`, with "approach" and "design" each linked to its ticket comment.
+  Link only a comment that exists, and leave the bullet out when neither does.
 - **Why**: First bullet is a single-sentence TL;DR of the entire reason. Subsequent bullets add
   detail if needed. Prefer writing at the level of impact and outcome rather than implementation
   where possible — explain why this change needed to exist and try to pre-emptively answer the key
@@ -102,64 +106,100 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 
 ### Verification
 
-`## 👩‍🔬 How to verify` holds a short numbered list of collapsed rows, one per claim, so a reviewer
-opens only the ones they want to check. Opening a row is a click, so rows are collapsed and nothing
-inside a row is. When something can only be checked after a deploy, the list goes under
-`### 🧪 Pre-merge` and those steps under `### 🚀 Post-merge`; with no post-merge steps, the list sits
-directly under How to verify, with no Pre-merge heading. When every claim needs the deployed system,
-there is no list, and Post-merge holds them all.
+`## 👩‍🔬 How to verify` is where a reviewer who doubts the change checks it for themselves. What
+describes the change from the inside, the code and records it adds. How to verify describes it from
+the outside: every behaviour of the running system the PR changes or must keep, each with the proof
+that it holds. Read together, the two let a reviewer approve without having been there.
 
-**What I saw is what running these exact steps showed.** A reviewer trusts each step because its
-output is there, so What I saw holds output pasted from a run of the steps as written, never from
-another run, another script or memory. Run every pre-merge step before the PR opens. A step that
-fails as written is fixed and run again; a claim the run does not bear out is a finding to report,
-never a description to write. A step that cannot run where the author works, such as one needing
-a browser or another machine, says where it must run, and the user hears about it before the PR
-opens.
+**The shape, and why.** A reviewer first sees a short numbered outline. Each behaviour is one
+collapsed row, so the outline alone is a complete, scannable list of what the PR does to the
+running system, and the reviewer opens only the rows they want to check. Opening a row is a click,
+so only the rows are collapsed and nothing inside a row is. The outline, in this order:
 
-**The proof comes from `prove-it-works`.** It decides the claims and the steps, as a reviewer who
-doubts the change needs them, and this skill lays them out. Use its report for the PR's head
-commit, with its claims, steps and saved output unchanged. When the session has no such report, or
-the head has moved since, run `prove-it-works` on the PR first, passing the approach's properties
-when the work has one and any steps the description already lists. Its steps that must run after a
-deploy go under Post-merge. Where it names a binding property no claim shows, one line under How to
-verify says in words what that property is and what covers it. Property numbers such as P1 are the
-approach's shorthand and mean nothing to a reviewer, so a description never shows them. Where it
-names a claim no signal shows, the user hears before drafting; inside "Working Through to a Draft
-PR" or an unattended run, it also goes in `missing.txt`.
+1. **`🛠️ Setup`:** every step the rows share, grouped under `####` headings that each say what that
+   part enables and which rows use it. Left out when no row needs setup.
+2. **`✨ What's new`:** a bold label, not collapsed, followed by one collapsed row per behaviour the
+   PR adds or changes. The behaviour the PR exists for comes first.
+3. **`🟰 What stays the same`:** a bold label followed by one collapsed row per nearby behaviour
+   users rely on that the PR must not change. Left out when there is none.
+4. **`🧹 Clean up`:** the steps that undo the setup. Left out with the setup.
+5. **`🚀 After merge`:** the steps that can only run on a deployed system, with where and when.
+   Left out when there are none. It is the last collapsed row, not a section of its own, and there
+   is no Pre-merge heading.
 
-**Pre-merge is an ordered list,** so it lines up with the page's other lists and numbers itself.
-Its items, in order:
+**Where the rows come from.** The rows are the design's Observable behaviour table, in its words and
+order: its `New` rows under What's new and its `Unchanged` rows under What stays the same. The
+design was approved before the code was written, so the PR shows the plan the reviewer can hold the
+code to, and this skill never invents, drops or rewords a row. `prove-it-works` runs the rows and
+hands back their steps and output: use its report for the PR's head commit, and when the session has
+none, or the head has moved since, run `prove-it-works` on the PR first. When the work has no
+design, `prove-it-works` builds the same table from the ticket and the diff, and the rows come from
+its report. A row covers one behaviour a user or operator would notice; a finer point, such as a
+format detail or a speed bound, goes inside the row whose behaviour it refines. Nothing that isn't
+behaviour of the running system, such as a doc pointer or a code comment, is a row: it belongs in
+What. A property number such as P1 is the approach's shorthand and never appears.
 
-1. **`🛠️ Setup`:** every step the claims share, grouped under `####` headings that each say what
-   that part enables and which claims use it, such as `#### 📦 This branch's image (every claim)`.
-   Leave it out when no claim needs setup.
-2. **One item per claim.** Its summary is an emoji for the kind of evidence its What I saw
-   holds, then the claim, stated as what is true after the change: 📄 for text output of any kind
-   (a terminal, a browser console, a log), 📸 for a screenshot and 🎬 for a recording. Inside it:
-   - **`#### 🔍 Verification steps`:** a `- [ ]` checklist, each item an action or an "Expect to
-     see X" line, each building on the one before.
-   - **`#### 👀 What I saw`:** what following those steps showed when the author ran them, so a
-     reader can judge the claim without running anything. A sentence says what to look for, then
-     comes the evidence: command output trimmed to the lines that differ, before and after, in a
-     fenced block; console and log lines verbatim in a fenced block; a screenshot or recording
-     uploaded as `use-gh` describes, with alt text saying what it shows.
-3. **`🧹 Clean up`:** the steps that undo the setup. Leave it out with the setup.
+**A change nobody planned is never a row.** When a run finds behaviour the design didn't list, it is
+either a bug, which stops the PR until it is fixed and run again, or behaviour the change should
+have, which the design gains through a change comment on the ticket before it becomes an ordinary
+row. The user hears about each one before the PR opens.
 
-**Markup that keeps it scannable:**
+**Inside a row,** in this order, each a `####` heading with a blank line above it:
 
-- Each item is `N. <details>`, with `<summary><b>…</b></summary>` on the next line, a blank line,
-  and everything inside indented three spaces so it stays in the item.
-- A code block that belongs to a step is indented two spaces more than the step's `- [ ]`, so it
-  sits inside the step and lines up with the step's text. GitHub drops that indentation when the
-  code is copied. A code block under What I saw stays at the item's indentation.
-- Post-merge is a `- [ ]` checklist under its heading, not collapsed. With no post-merge steps,
-  there is no Post-merge heading.
-- Before handing the body back, render it with GitHub's markdown API, `gh api markdown --input
-  <file>`, where the file holds `{"text": <body>, "mode": "gfm", "context": "<owner>/<repo>"}`.
-  Confirm each `<details>` sits inside an `<li>`, each step's code block inside its
-  `task-list-item`, and that no ` ``` ` shows as text.
+- **`#### 🧾 Proven by`:** a bullet list of what proves the behaviour: the run below, a named test
+  CI runs, a type, a runtime assertion, a CI check. Every entry is a bullet.
+- **`#### 🔍 Verification steps`:** a `- [ ]` checklist a reviewer can follow from a fresh
+  checkout, each item an action or an "Expect to see X" line, each building on the one before.
+  Left out, with one line saying so under Proven by, when the behaviour can't be seen from outside.
+- **`#### 👀 What I saw`:** what running exactly those steps showed. A reviewer trusts a step
+  because its output is here, so this holds only output pasted from that run, never from another
+  run, another script or memory. Text goes in a list, numbered for a sequence and bulleted
+  otherwise, with each output block under the item it supports. A screenshot or recording is
+  uploaded as `use-gh` describes, with alt text saying what it shows.
+
+**A row's summary** is an emoji for the kind of evidence What I saw holds, then the behaviour in
+plain words, stated as what is true after the change, in plain text with `<code>…</code>` for code
+and values: 📄 for text output of any kind (a terminal, a browser console, a log), 📸 for a
+screenshot, 🎬 for a recording, and 🧪 for a behaviour shown only by tests. Setup, Clean up and
+After merge are the rows whose summaries are bold.
+
+**Where evidence goes.** All of it goes in the What I saw of the row it proves, and nowhere else:
+not in What, not in Why, not in a section of its own. Evidence that proves two rows is two runs, one
+in each. An earlier run that the steps don't reproduce, such as an ad hoc script, is either turned
+into steps of the row it proves and run again, or left out.
+
+**Judgement across PRs.** Every PR gets the same outline, so a reviewer learns it once.
+
+- Earlier evidence stays in a row only when the row's steps and everything the row depends on are
+  unchanged since that run, and the row says which commit it came from. Otherwise the row runs
+  again at the head.
+- A change to the shared Setup runs every row that uses it again.
+- Setup holds what two or more rows share. Setup only one row needs stays in that row's steps.
+- A row that builds the artifact a reviewer would run, such as an image, runs the system, not the
+  test suite, so it is an ordinary row.
+
+- A PR that only fixes docs or comments changes no behaviour: it has What stays the same rows, or
+  none, and How to verify says in one line why.
+- A PR whose behaviour shows only on a live system puts its steps under After merge, and its rows
+  say so under Proven by.
+- A behaviour covered only by tests is still a row, a 🧪 one, so the outline stays complete.
+- A row whose steps need a browser, another machine or credentials says so, and the user hears it
+  before the PR opens.
+
+**Markup that keeps it readable:**
+
+- The outline is an ordered list. `1. <details>` starts a row at the top level, and each grouped row
+  is a nested item, `   1. <details>`, under its label. Everything inside a row is indented to the
+  row's text, with `<summary>…</summary>` on the next line and a blank line after it.
+- A code block that belongs to a step is indented to the step's text, so it sits inside the step,
+  and every line inside it is indented exactly as its fence. A line indented less ends the step and
+  leaves the block empty. GitHub drops the indentation when the code is copied.
+- What holds no code block: one makes GitHub space out every bullet in the list.
 - **Never link a local path.**
+- Nested markup breaks in ways that look fine in the source: a code block that renders empty, a
+  row pushed inside the row above it, a summary turned into a bullet. So the body is never posted
+  until `check_pr_body.py` passes, as step 5 says. It renders the body through GitHub's markdown
+  API and checks every rule above.
 
 ### Structure
 
@@ -170,7 +210,7 @@ Its items, in order:
   observe, add a before and after diagram of that interaction under What, drawn
   to the diagram standards in `~/.agents/standards/documentation.md`. Most PRs
   have nothing to draw and include no diagram
-- Link actual Jira/Slack, found or asked for as step 3 describes
+- Link actual Jira/Slack, found or asked for as step 2 describes
 - Task link text: `[Jira task: PROJ-123](url)`, `[Monday task: 12345678](url)`, or, for a GitHub
   issue the PR does not fully resolve, a bare issue URL (since GitHub auto-renders those with a
   preview). An issue the PR resolves gets `Fixes #N`, as the next item says
@@ -191,23 +231,20 @@ Its items, in order:
 ❌ "Comprehensive" descriptions — less is more  
 ❌ Technical jargon when plain language is available
 ❌ Placeholder links — link real URLs, or say which link is missing, except in an unattended run,
-which leaves it out (see step 3)  
+which leaves it out (see step 2)  
 ❌ Hard-wrapped prose — GitHub shows each newline as a line break, so a wrapped paragraph renders as
 ragged short lines; write each paragraph and list item as one line
 ❌ Escaped inline code like `` `variable` `` — `variable` is nicer to read
-❌ Verification steps that run or reference automated tests — CI already shows this; zero marginal
-value to a reviewer
+❌ Verification steps that run the test suite or CI — CI already shows this; a behaviour covered
+only by tests is a 🧪 row whose Proven by names the test
 
 ---
 
 ## Template Handling
 
-1. **Project template first** — Use `.github/PULL_REQUEST_TEMPLATE.md` or
-   `.github/pull_request_template.md` as base: its headings, their order and its emoji stand
-2. **Extend it with what it lacks** — The verification layout goes inside the template's own
-   verification section, under its heading. Each section this skill adds that the template has no
-   equivalent for, such as How to verify or Related links when the template has only What and Why,
-   goes after the template's sections. A section the template has and this skill doesn't stays
+This skill's template is the only one used: its sections, their order and its emoji, whatever PR
+template the project keeps in `.github/`. A reviewer then meets the same outline on every PR these
+skills open, in any repo.
 
 ---
 
@@ -222,6 +259,7 @@ value to a reviewer
 - Adds an "Include archived items" toggle to all views, with a tooltip explaining what archived items are
 - Hides completely (no tooltip either) when the current dataset has no archived items
 - Since this toggle won't appear until datasets with archived items are in prod, it's safe to deploy backend and frontend together
+- See PROJ-123 for detailed explanations of this solution's overall [approach](https://jira.example.com/browse/PROJ-123?focusedCommentId=1001) and [design](https://jira.example.com/browse/PROJ-123?focusedCommentId=1002)
 
 ### 🍿 Screen recording of verification steps below
 
@@ -231,16 +269,13 @@ value to a reviewer
 
 - New datasets introduce archived items for the first time and users need the option to hide them while building familiarity
 - Defaulting them visible gives reviewers the full picture until users understand what they mean
-- A toggle beside each view keeps an item's context while a user decides whether to hide it ([approach](https://jira.example.com/browse/PROJ-123?focusedCommentId=1001), [design](https://jira.example.com/browse/PROJ-123?focusedCommentId=1002))
 
 ## 👩‍🔬 How to verify
-
-### 🧪 Pre-merge
 
 1. <details>
    <summary><b>🛠️ Setup</b></summary>
 
-   #### 💻 The app, with a dataset that has archived items (every claim)
+   #### 💻 The app, with a dataset that has archived items (every row)
 
    - [ ] Start the API and the frontend:
 
@@ -253,38 +288,69 @@ value to a reviewer
 
    </details>
 
-2. <details>
-   <summary><b>📸 The toggle appears only for a dataset with archived items</b></summary>
+2. **✨ What's new**
 
-   #### 🔍 Verification steps
+   1. <details>
+      <summary>📸 The "Include archived items" toggle appears for a dataset that has archived items</summary>
 
-   - [ ] Pick the "Empty" dataset and expect to **not** see the "Include archived items" toggle
-   - [ ] Pick "Sample orders" again and expect to see the toggle at the right end of the toolbar
+      #### 🧾 Proven by
 
-   #### 👀 What I saw
+      - The run below
+      - In CI, `test_toggle_shows_only_with_archived_items`
 
-   The toolbar with no archived items, then with them:
+      #### 🔍 Verification steps
 
-   ![The toolbar without the toggle, then with "Include archived items" at its right end](https://github.com/user-attachments/assets/…)
+      - [ ] Expect the toggle at the right end of the toolbar
 
-   </details>
+      #### 👀 What I saw
 
-3. <details>
-   <summary><b>📸 Turning it off removes the archived item from every view</b></summary>
+      - The toolbar, with "Include archived items" at its right end:
 
-   #### 🔍 Verification steps
+        ![The toolbar with the "Include archived items" toggle at its right end](https://github.com/user-attachments/assets/…)
 
-   - [ ] Query a few items, including one with the `[archived]` badge, and expect it in the list, detail view and charts
-   - [ ] Toggle archived items off and expect its chip to be disabled, with a tooltip saying why
-   - [ ] Expect the archived item to no longer appear in any view
+      </details>
 
-   #### 👀 What I saw
+   2. <details>
+      <summary>📸 Turning the toggle off removes archived items from every view</summary>
 
-   The item's chip is disabled and its tooltip says why:
+      #### 🧾 Proven by
 
-   ![The archived item's disabled chip with its tooltip open](https://github.com/user-attachments/assets/…)
+      - The run below
 
-   </details>
+      #### 🔍 Verification steps
+
+      - [ ] Query a few items, including one with the `[archived]` badge, and expect it in the list, detail view and charts
+      - [ ] Turn the toggle off and expect its chip to be disabled, with a tooltip saying why
+      - [ ] Expect the archived item to no longer appear in any view
+
+      #### 👀 What I saw
+
+      - The archived item's chip, disabled, with its tooltip open:
+
+        ![The archived item's disabled chip with its tooltip open](https://github.com/user-attachments/assets/…)
+
+      </details>
+
+3. **🟰 What stays the same**
+
+   1. <details>
+      <summary>📸 A dataset with no archived items shows the same toolbar as before</summary>
+
+      #### 🧾 Proven by
+
+      - The run below
+
+      #### 🔍 Verification steps
+
+      - [ ] Pick the "Empty" dataset and expect no "Include archived items" toggle
+
+      #### 👀 What I saw
+
+      - The toolbar, unchanged, with no toggle:
+
+        ![The toolbar for a dataset with no archived items, with no toggle](https://github.com/user-attachments/assets/…)
+
+      </details>
 
 4. <details>
    <summary><b>🧹 Clean up</b></summary>
@@ -293,9 +359,12 @@ value to a reviewer
 
    </details>
 
-### 🚀 Post-merge
+5. <details>
+   <summary><b>🚀 After merge</b></summary>
 
-- [ ] Once it deploys, open a production dataset with archived items and expect the toggle, on by default
+   - [ ] Once it deploys, open a production dataset with archived items and expect the toggle, on by default
+
+   </details>
 
 ## 🔖 Related links
 

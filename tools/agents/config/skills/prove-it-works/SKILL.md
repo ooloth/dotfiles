@@ -29,8 +29,15 @@ themselves. Prove each claim for that person, whether or not the target is a PR:
   such as a test CI runs.
 - **Steps that person could run:** each claim's proof is a set of steps written the way they would
   copy them: complete commands from a fresh checkout, the setup each one needs, and what to expect.
-  Run them in exactly that form, and save each step's output to a file of its own. Any means may
+  Run them in exactly that form, save each step's output to a file of its own, and append each
+  command exactly as run to one `commands.txt` in the evidence folder, so a caller can check that
+  every step it shows is one that ran. Any means may
   find the steps, but the evidence comes from running them as written.
+- **A change nobody planned:** when running base against head shows behaviour that neither the
+  design's Observable behaviour table nor the ticket lists, say which of two it is. A bug stops
+  the work until it is fixed and run again. Behaviour the change should have goes back to the
+  user, so the design can gain it through a change comment on the ticket before it is claimed.
+  Either way the report names it, so it never reaches a PR as an unexplained row.
 - **Steps already written:** when the target already lists verification steps, as a PR description
   or a ticket may, run those as written too, and report each one that does not hold.
 - **The system, not the suite:** "the tests pass" convinces nobody who doubts the tests, so a step

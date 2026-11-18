@@ -98,6 +98,14 @@ anything is missing.
 
 ## Other gotchas worth avoiding
 
+- **A PR description can change under you.** Another session, a reviewer or the author may edit it
+  between your read and your edit, and `gh pr edit --body-file` replaces the whole body, theirs
+  included. Save the body when you read it, read it again just before you post, and when the two
+  differ, merge their change into yours instead of posting over it. `write-pr-description`'s
+  `check_pr_body.py --live-copy <saved file> --pr <n>` makes that comparison and fails on a
+  difference. Seen 2026-11-18 on recursionpharma/react-clinops-siteoutreach#384 and #389, whose
+  rewritten descriptions another session overwrote from older copies.
+
 - **Context bloat from unfiltered reads.**
   `gh pr view N -R <owner>/<repo> --json files -q '.files[].path'`, not the unfiltered
   `--json files` — the latter includes `patch`/`blob_url`/`raw_url` per file, which adds up fast on
