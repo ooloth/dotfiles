@@ -55,9 +55,12 @@ to the whole backlog and lists what has gone stale.
 ### Reviewing
 
 [review-code](./tools/agents/config/skills/review-code/SKILL.md) runs thirteen specialised reviewers
-in parallel, plus one that checks rule consistency when instruction files change, one that checks
-where the PR's edits land when the base branch has changed its files, and one that checks whether
-merging another open PR that shares its files would undo its edits. Then it assumes they're wrong.
+in parallel, plus one that checks rule consistency when instruction files change, one that checks,
+when the base branch has moved since the fork, whether the PR still relies on what changed and
+where its edits land, one that checks whether merging another open PR that shares its files would
+undo its edits, one that checks that every assertion removed from the tests is still made or
+dropped for a stated reason, one that checks every claim the change's prose makes, and one that
+checks that removed prose took nothing a reader needs. Then it assumes they're wrong.
 Every claim about library behaviour, API guarantees or numbers is checked against the installed code
 before it reaches me, and a claim that fails is struck rather than softened.
 Findings are labelled introduced or pre-existing by reading the base ref, not by impression.

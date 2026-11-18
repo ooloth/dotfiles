@@ -5,7 +5,7 @@ answers from a table of canned responses, so no test can reach GitHub. An entry 
 {"sequence": [...]} answers each call with the next item, repeating the last one.
 
 Run:
-  uv run --with pytest pytest tools/agents/config/skills/review-code/scripts/test_base_moved.py
+  /bin/bash scripts/checks/tests.bash tools/agents/config/skills/review-code/scripts/test_base_moved.py
 """
 
 import json
@@ -43,6 +43,17 @@ print(json.dumps(answer))
 """
 
 PR_VIEW = f"api repos/{REPO}/pulls/7"
+PR_AUTHOR = "alice"
+OTHER_AUTHOR = "carol"
+# A stack's own base branch is not where it lands; the branch it lands on has its own merge base.
+LAND_ON, LAND_TIP, LAND_MERGE_BASE = "trunk", "landtip", "landfork"
+
+# A base commit: sha, subject, the files it touches, and optionally its author's GitHub login (or
+# None when GitHub could not map the commit to an account).
+BaseCommit = (
+    tuple[str, str, Sequence[dict[str, Any]]]
+    | tuple[str, str, Sequence[dict[str, Any]], str | None]
+)
 
 
 def pr_files_key(page: int) -> str:
@@ -88,6 +99,7 @@ class Harness:
         def view(state: str) -> dict[str, Any]:
             return {
                 "state": "open",
+                "user": {"login": PR_AUTHOR},
                 "base": {"ref": "main", "sha": STALE_BASE},
                 "head": {"sha": HEAD},
                 "mergeable": {"MERGEABLE": True, "CONFLICTING": False, "UNKNOWN": None}[state],
@@ -104,23 +116,47 @@ class Harness:
 
     def base(
         self,
-        commits: Sequence[tuple[str, str, Sequence[dict[str, Any]]]],
+        commits: Sequence[BaseCommit],
         *,
         aggregate: Sequence[dict[str, Any]] | None = None,
         total_commits: int | None = None,
     ) -> None:
         """Base commits since the merge base, oldest first, each with the files it touches."""
+        self._side(MERGE_BASE, BASE_TIP, commits, aggregate, total_commits)
+
+    def land_on(self, commits: Sequence[BaseCommit]) -> None:
+        """Commits on the branch the stack lands on, since that branch's merge base with the PR."""
+        self.table[f"api repos/{REPO}/branches/{LAND_ON}"] = {"commit": {"sha": LAND_TIP}}
+        self.table[f"api repos/{REPO}/compare/{LAND_TIP}...{HEAD}"] = {
+            "merge_base_commit": {"sha": LAND_MERGE_BASE}
+        }
+        self._side(LAND_MERGE_BASE, LAND_TIP, commits, None, None)
+
+    def _side(
+        self,
+        merge_base: str,
+        tip: str,
+        commits: Sequence[BaseCommit],
+        aggregate: Sequence[dict[str, Any]] | None,
+        total_commits: int | None,
+    ) -> None:
         if aggregate is None:
-            aggregate = [f for _, _, files in commits for f in files]
-        self.table[f"api repos/{REPO}/compare/{MERGE_BASE}...{BASE_TIP}"] = {
+            aggregate = [f for c in commits for f in c[2]]
+
+        def entry(c: BaseCommit) -> dict[str, Any]:
+            login = c[3] if len(c) == 4 else OTHER_AUTHOR
+            return {
+                "sha": c[0],
+                "author": None if login is None else {"login": login},
+                "commit": {"message": f"{c[1]}\n\nbody", "author": {"name": f"{c[0][:4]} Name"}},
+            }
+
+        self.table[f"api repos/{REPO}/compare/{merge_base}...{tip}"] = {
             "total_commits": len(commits) if total_commits is None else total_commits,
-            "commits": [
-                {"sha": sha, "commit": {"message": f"{subject}\n\nbody"}}
-                for sha, subject, _ in commits
-            ],
+            "commits": [entry(c) for c in commits],
             "files": list(aggregate),
         }
-        for sha, subject, files in commits:
+        for sha, subject, files, *_ in commits:
             # GitHub answers a page past the end with an empty file list.
             pages = [list(files[i : i + 100]) for i in range(0, len(files), 100)] + [[]]
             for n, page in enumerate(pages, start=1):
@@ -130,10 +166,10 @@ class Harness:
                     "files": page,
                 }
 
-    def run(self) -> subprocess.CompletedProcess[str]:
+    def run(self, *extra: str) -> subprocess.CompletedProcess[str]:
         self.table_path.write_text(json.dumps(self.table))
         return subprocess.run(
-            [sys.executable, str(SCRIPT), "7", "--repo", REPO],
+            [sys.executable, str(SCRIPT), "7", "--repo", REPO, *extra],
             check=False,
             capture_output=True,
             text=True,
@@ -146,13 +182,94 @@ def h(tmp_path: Path) -> Harness:
     return Harness(tmp_path)
 
 
-def test_no_base_commit_touching_the_prs_files_exits_0_and_says_none(h: Harness) -> None:
+ALL_COMMITS = "Every base commit since the merge base:"
+SHARED = "Base commits that touch this PR's files:"
+LANDING = f"Every commit on {LAND_ON} since its merge base with this PR:"
+
+
+def section(out: str, heading: str) -> str:
+    """The lines under a heading, up to the next blank line."""
+    assert heading in out, out
+    return out.split(heading, 1)[1].split("\n\n", 1)[0]
+
+
+def test_no_base_commits_and_mergeable_exits_0_and_says_none(h: Harness) -> None:
+    h.pr([file_entry("app.py")])
+    h.base([])
+    result = h.run()
+    assert result.returncode == 0, result.stderr
+    assert "none" in section(result.stdout, ALL_COMMITS).lower()
+
+
+def test_a_base_commit_touching_no_pr_file_still_exits_1_and_is_listed(h: Harness) -> None:
     h.pr([file_entry("app.py")])
     h.base([("aaaaaaaa1111", "Touch the docs", [file_entry("docs.md")])])
     result = h.run()
+    assert result.returncode == 1, result.stderr
+    assert "aaaaaaaa Touch the docs" in section(result.stdout, ALL_COMMITS)
+    shared = section(result.stdout, SHARED)
+    assert "none" in shared.lower()
+    assert "aaaaaaaa" not in shared
+
+
+def test_every_base_commit_is_listed_oldest_first_with_its_author(h: Harness) -> None:
+    h.pr([file_entry("app.py")])
+    h.base(
+        [
+            ("11111111aaaa", "First", [file_entry("x.md")]),
+            ("22222222bbbb", "Second", [file_entry("app.py")], "dave"),
+        ]
+    )
+    listed = section(h.run().stdout, ALL_COMMITS)
+    assert f"11111111 First (by {OTHER_AUTHOR})" in listed
+    assert "22222222 Second (by dave)" in listed
+    assert listed.index("11111111") < listed.index("22222222")
+
+
+def test_a_base_commit_by_the_prs_author_is_marked_as_theirs(h: Harness) -> None:
+    h.pr([file_entry("app.py")])
+    h.base([("33333333cccc", 'Revert "TKT-1: add the 422" (#2000)', [], PR_AUTHOR)])
+    listed = section(h.run().stdout, ALL_COMMITS)
+    assert (
+        f'33333333 Revert "TKT-1: add the 422" (#2000) (by {PR_AUTHOR}, the PR\'s author)' in listed
+    )
+
+
+def test_a_commit_github_cannot_map_to_an_account_shows_its_author_name(h: Harness) -> None:
+    h.pr([file_entry("app.py")])
+    h.base([("44444444dddd", "Bot commit", [], None)])
+    assert "44444444 Bot commit (by 4444 Name)" in section(h.run().stdout, ALL_COMMITS)
+
+
+def test_land_on_also_lists_that_branchs_commits_and_exits_1(h: Harness) -> None:
+    h.pr([file_entry("app.py")])
+    h.base([])
+    h.land_on([("55555555eeee", "Revert the handler", [file_entry("handler.py")], PR_AUTHOR)])
+    result = h.run("--land-on", LAND_ON)
+    assert result.returncode == 1, result.stderr
+    assert f"whose tip is {LAND_TIP}" in result.stdout
+    landing = section(result.stdout, LANDING)
+    assert f"55555555 Revert the handler (by {PR_AUTHOR}, the PR's author)" in landing
+    assert "none" in section(result.stdout, ALL_COMMITS).lower()
+
+
+def test_land_on_with_nothing_new_on_that_branch_exits_0(h: Harness) -> None:
+    h.pr([file_entry("app.py")])
+    h.base([])
+    h.land_on([])
+    result = h.run("--land-on", LAND_ON)
     assert result.returncode == 0, result.stderr
-    assert "none" in result.stdout.lower()
-    assert "aaaaaaaa" not in result.stdout
+    assert "none" in section(result.stdout, LANDING).lower()
+
+
+def test_land_on_a_shared_file_lists_it_under_that_branch(h: Harness) -> None:
+    h.pr([file_entry("app.py")])
+    h.base([])
+    h.land_on([("66666666ffff", "Edit app", [file_entry("app.py")])])
+    out = h.run("--land-on", LAND_ON).stdout
+    shared = section(out, f"Commits on {LAND_ON} that touch this PR's files:")
+    assert "66666666 Edit app" in shared
+    assert "    app.py" in shared
 
 
 def test_a_base_commit_editing_a_pr_file_exits_1_with_sha_subject_and_file(h: Harness) -> None:
@@ -194,7 +311,7 @@ def test_commits_are_listed_oldest_first_each_with_only_its_own_files_sorted(h: 
     )
     result = h.run()
     assert result.returncode == 1, result.stderr
-    out = result.stdout
+    out = section(result.stdout, SHARED)
     assert out.index("11111111 First") < out.index("33333333 Second")
     assert "22222222" not in out
     first = out.split("11111111 First")[1].split("33333333")[0]

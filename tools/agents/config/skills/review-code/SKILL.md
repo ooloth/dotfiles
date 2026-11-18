@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks where the PR's edits land when the base branch has changed its files, one that checks whether merging another open PR that shares its files would undo its edits, one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, one that checks every claim the change's prose makes against the system it describes, and one that checks that removed prose took nothing a reader needs, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks, when the base branch has moved since the fork, whether the PR still relies on what it changed and where the PR's edits land, one that checks whether merging another open PR that shares its files would undo its edits, one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, one that checks every claim the change's prose makes against the system it describes, and one that checks that removed prose took nothing a reader needs, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -24,6 +24,13 @@ Identify what to review and the exact diff command to pass agents.
 Everything the argument names is one scope, however many commits, PRs or files it lists. "Each
 against its own parent" says what each commit's base is; it does not ask for a separate review per
 commit. Agents name the commit a finding comes from.
+
+**A stack is reviewed as one change.** When the scope's PRs are stacked, each based on the branch
+of the PR below it, the review asks of the whole stack what it asks of one PR. Each finding's
+consequences are judged for every PR in the stack, not only the one whose lines it sits on, and a
+finding that reaches a PR is reported in that PR's review too. Every PR's base check in Step 1
+passes `--land-on <branch>`, naming the branch the bottom PR targets, because a PR based on
+another PR's branch otherwise never sees what changed where the stack lands.
 
 **When GitHub refuses a PR's diff, read it from git.** For a PR that changes more than 300 files,
 `gh pr diff` fails with `HTTP 406` and `PullRequest.diff too_large`, even though the browser still
@@ -72,18 +79,21 @@ branch's current tip, and a line another PR changed after the fork reads one way
 way before this change. The merge base is what the change is measured against, so it is the Base
 ref in Step 2.
 
-**For PR scope, also list the base-branch commits that touch this PR's files since the merge
-base:**
+**For PR scope, also list the base-branch commits since the merge base:**
 
 ```bash
-uv run <skill-base-dir>/scripts/base_moved.py <n> --repo <owner>/<repo>
+uv run <skill-base-dir>/scripts/base_moved.py <n> --repo <owner>/<repo> [--land-on <branch>]
 ```
 
-A conflict can mean the content a PR edits moved to another file, and that file then merges
-cleanly without the edit, so the edit is lost with no conflict to show it. The script reads the
-base branch's tip as it is now, counts a rename under both paths on either side, and prints each
-commit with the PR files it touches, and `mergeable`. Exit 0 means none and the PR is mergeable,
-and 1 means at least one commit or a CONFLICTING PR: Agent 15 then runs on its output. Exit 2
+A commit that reached the base after the fork is invisible in the PR's diff. It can revert or
+change something the PR relies on without touching any of the PR's files. A conflict can mean the
+content a PR edits moved to another file, and that file then merges cleanly without the edit, so
+the edit is lost with no conflict to show it. The script reads the base branch's tip as it is now
+and prints every commit since the merge base with its author, marked when it is the PR's author.
+It then prints the commits that touch the PR's files, with those files, counting a rename under
+both paths on either side, and `mergeable`. With `--land-on`, for a stacked PR, it prints the same
+for that branch. Exit 0 means no commit and the PR is mergeable, and 1 means at least one commit
+or a CONFLICTING PR: Agent 15 then runs on its output. Exit 2
 means it could not tell, which is never read as none: the Base moved line in Step 2 says "not
 checked" with the reason from stderr, and Agent 15 runs anyway when `mergeable` is `CONFLICTING`.
 
@@ -280,7 +290,7 @@ or a record chose an option is reported beside the recommendation, never given a
 ## Step 3: Launch the agents in parallel
 
 Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, Agent 15
-runs when Step 1's `base_moved.py` finds base commits touching this PR's files or a conflict,
+runs when Step 1's `base_moved.py` lists any commit since the merge base or a conflict,
 Agent 16 runs when Step 1's `overlapping_prs.py` exits 1, Agent 17 runs when the diff removes
 a test or an assertion, Agent 18 runs when the diff adds or changes prose, and Agent 19 runs when
 the diff removes prose.
@@ -781,17 +791,19 @@ For each issue: file:line | the rule | file:line of the rule it meets | the situ
 
 ---
 
-### Agent 15: Base Merge
+### Agent 15: Base Moves
 
-**Model:** Opus, because an edit lost in a clean merge leaves nothing for anyone to notice.
+**Model:** Opus, because an edit lost in a clean merge, or a base commit that removed what the PR
+relies on, leaves nothing for anyone to notice.
 
 Runs only for PR scope, when `base_moved.py` in Step 1 exits 1, or exits 2 for a PR GitHub
-reports as CONFLICTING.
+reports as CONFLICTING. Its effort follows how relevant the base's commits are: it sorts them
+first, and spends one line on each that cannot affect the PR.
 
 ```
-Question: Once the base branch is merged into this PR, where does each of the PR's edits land, and does any edit disappear, duplicate what the base already did, or point at content the base moved or removed?
+Question: For each commit the base gained since the merge base, does this PR's code, description, docs or tests rely on anything it changed or removed? And once the base is merged into this PR, where does each of the PR's edits land, and does any edit disappear, duplicate what the base already did, or point at content the base moved or removed?
 
-**Answer edit by edit first, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If Context's Base moved line says "none", say so in one sentence and stop.**
+**Sort the commits first, then answer commit by commit and edit by edit, then report every issue you would act on, most severe first, one or two lines each. List anything you considered and rejected in one line each. If Context's Base moved line lists no commit and no conflict, say so in one sentence and stop.**
 
 Context:
 [insert synthesized intent block]
@@ -800,13 +812,16 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Run the diff command from Context, and list each of the PR's edits, hunk by hunk, in the files the Base moved line names.
-2. Merge the base tip into the PR head without touching any checkout: `git fetch origin <base tip> <PR head>`, then `git merge-tree --write-tree <base tip> <PR head>`. List each file that conflicts and each that merges cleanly.
-3. For each base commit the Base moved line names, read what it did to the shared files with `git show <commit>`. Where it moved content out of a file, find where that content lives at the base tip with `git grep` on distinctive phrases from the PR's edit.
-4. For each PR edit, decide which holds: it merges in place; it conflicts, and taking the base's side drops it; its content moved, so it belongs in a file you name, where the merged tree still holds the old text; the base already made the same change, so it is redundant; or it points at something the base removed.
-5. A clean merge of the destination file is not evidence the edit survived. Read the merged tree's copy of each destination (`git cat-file -p <tree>:<path>`) and check for the edit's text.
+1. Sort every commit the Base moved line lists, those on a `--land-on` branch included, into two groups, judging from its subject, its author and `git show --stat <commit>`. **Unrelated:** it changes nothing the PR's code, description, docs or tests touch, call or describe. **Relevant:** it shares a file with the PR, or it changes or removes something the PR relies on, such as a revert of an earlier change the PR builds on. A commit by the PR's own author counts like any other: the author knowing about a commit does not mean the PR accounts for it. List each unrelated commit in one line saying why, and spend nothing more on it. When no commit is relevant and nothing conflicts, say so and stop.
+2. For each relevant commit, read it in full with `git show <commit>`. Search the PR's diff, its description and the Context for anything that relies on what the commit changed or removed: a handler, a response, a behaviour, a file path, a claim in a doc. Say whether the PR still holds once it lands on the base tip, and what breaks if it does not.
+3. For the commits that share a file with the PR, run the diff command from Context and list each of the PR's edits, hunk by hunk, in the files the Base moved line names.
+4. Merge the base tip into the PR head without touching any checkout: `git fetch origin <base tip> <PR head>`, then `git merge-tree --write-tree <base tip> <PR head>`. List each file that conflicts and each that merges cleanly.
+5. For each base commit that shares a file, read what it did to the shared files with `git show <commit>`. Where it moved content out of a file, find where that content lives at the base tip with `git grep` on distinctive phrases from the PR's edit.
+6. For each PR edit, decide which holds: it merges in place; it conflicts, and taking the base's side drops it; its content moved, so it belongs in a file you name, where the merged tree still holds the old text; the base already made the same change, so it is redundant; or it points at something the base removed.
+7. A clean merge of the destination file is not evidence the edit survived. Read the merged tree's copy of each destination (`git cat-file -p <tree>:<path>`) and check for the edit's text.
 
-For each issue: PR file:line | the edit | where it lands after the merge (file:line at the base tip) | what is lost or wrong | where to re-apply it
+For a commit the PR relies on: the base commit and its author | what in the PR relies on it (file:line, or the description's sentence) | what breaks once the PR lands on the base tip | what would reconcile them
+For an edit: PR file:line | the edit | where it lands after the merge (file:line at the base tip) | what is lost or wrong | where to re-apply it
 ```
 
 ---
@@ -1250,11 +1265,16 @@ On any answer other than "skip":
   - **Consequences to know about, inside an Approve:** an approval leaves every finding to
     the author, so this part asks for nothing. It points out the findings whose harm would
     be easy to miss: data that ends up wrong without anyone noticing, a security exposure,
-    or a test that fails intermittently. Include it only when at least one finding is like
-    that, and only when other findings could bury it. A review whose findings are all
-    ordinary has no callout, however many findings it has, and the most severe of them is
-    not promoted into one. Open with "Two have bigger consequences than the others:" (or
-    "One has…"), then give each finding as its consequence in plain terms. It carries no
+    a test that fails intermittently, or a failure in production that the change's own
+    description says won't happen, such as errors users or alerts will hit once it merges.
+    A finding's label does not decide it: an open question can be the one with the biggest
+    consequences. Include it whenever at least one finding is like
+    that, even when it is the review's only finding, since an inline comment alone is easy
+    to read as one more nit. A review whose findings are all ordinary has no callout,
+    however many findings it has, and the most severe of them is not promoted into one.
+    Open with "Two have bigger consequences than the others:" (or "One has…", or for a
+    review's only finding "The one finding has bigger consequences than it might look:"),
+    then give each finding as its consequence in plain terms. It carries no
     preference ("I'd", "strongly consider", "recommend") and no timing ("before you
     merge"), because either one tells the author what to do after the triage sentence has
     just said they decide.

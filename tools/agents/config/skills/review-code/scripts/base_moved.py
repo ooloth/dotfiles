@@ -3,20 +3,26 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""List the base-branch commits since a PR's merge base that touch a file the PR changes.
+"""List every base-branch commit since a PR's merge base, and the ones that touch the PR's files.
 
 A PR is reviewed against its merge base, so a commit that reached the base branch after the fork
-is invisible in its diff. When such a commit changed one of the PR's files, merging the base can
-conflict, or it can merge cleanly while the PR's edit no longer lands where the content now
-lives. This lists those commits so a review can check where each edit lands. A rename counts under
-both its old and its new path, on either side.
+is invisible in its diff. Such a commit can change or remove something the PR relies on without
+touching any of its files, such as a revert of an earlier change the PR builds on, so every one is
+listed with its author, marked when the author is the PR's own. When a commit changed one of the
+PR's files, merging the base can conflict, or it can merge cleanly while the PR's edit no longer
+lands where the content now lives, so those are listed again with the PR files they touch. A
+rename counts under both its old and its new path, on either side.
+
+A PR in a stack is based on the branch below it, not the branch the stack lands on. Pass
+`--land-on <branch>` to list that branch's commits since its own merge base with the PR as well.
 
 Usage:
-  base_moved.py <pr-number> --repo OWNER/NAME
+  base_moved.py <pr-number> --repo OWNER/NAME [--land-on BRANCH]
 
 Exit codes:
-  0  no base commit since the merge base touches a PR file, and GitHub reports the PR mergeable
-  1  at least one does, each listed with the PR files it touches, or GitHub reports CONFLICTING
+  0  no commit since the merge base on the base branch, nor on the --land-on branch when one is
+     given, and GitHub reports the PR mergeable
+  1  at least one commit, each listed, or GitHub reports CONFLICTING
   2  the check could not be made, or an answer was cut short; stderr says why. Never read this
      as 0.
 
@@ -71,16 +77,20 @@ class PrState:
     head: Sha
     mergeable: Mergeable
     changed_files: int
+    author: str
 
 
 @dataclass(frozen=True)
 class CommitRef:
     sha: Sha
     subject: str
+    # The GitHub login, or the commit's own author name when GitHub can't map it to an account.
+    author: str
 
 
 @dataclass(frozen=True)
 class BaseSide:
+    tip: Sha
     merge_base: Sha
     commits: list[CommitRef]  # oldest first
     # Every path the base changed since the merge base, or None when GitHub's list hit its cap.
@@ -113,13 +123,13 @@ def read_pr(repo: str, number: int) -> PrState:
         pr = gh_json(["api", f"repos/{repo}/pulls/{number}"])
         if pr.get("mergeable") is not None:
             ref = pr["base"]["ref"]
-            branch = gh_json(["api", f"repos/{repo}/branches/{ref}"])
             return PrState(
                 base_ref=ref,
-                base_tip=Sha(branch["commit"]["sha"]),
+                base_tip=branch_tip(repo, ref),
                 head=Sha(pr["head"]["sha"]),
                 mergeable="MERGEABLE" if pr["mergeable"] else "CONFLICTING",
                 changed_files=pr["changed_files"],
+                author=pr["user"]["login"],
             )
         state = f"UNKNOWN (PR state {pr.get('state')})"
         if attempt < MERGEABLE_TRIES - 1:
@@ -152,49 +162,99 @@ def pr_paths(repo: str, number: int, expected: int) -> frozenset[FilePath]:
     return frozenset(paths)
 
 
-def base_side(repo: str, pr: PrState) -> BaseSide:
-    fork = gh_json(["api", f"repos/{repo}/compare/{pr.base_tip}...{pr.head}"])
+def author_of(commit: Any) -> str:
+    account = commit.get("author")
+    if account and account.get("login"):
+        return str(account["login"])
+    return str(commit["commit"]["author"]["name"])
+
+
+def branch_tip(repo: str, branch: str) -> Sha:
+    return Sha(gh_json(["api", f"repos/{repo}/branches/{branch}"])["commit"]["sha"])
+
+
+def base_side(repo: str, head: Sha, tip: Sha) -> BaseSide:
+    """The commits on a branch, whose tip is given, since its merge base with the PR's head."""
+    fork = gh_json(["api", f"repos/{repo}/compare/{tip}...{head}"])
     merge_base = Sha(fork["merge_base_commit"]["sha"])
-    data = gh_json(["api", f"repos/{repo}/compare/{merge_base}...{pr.base_tip}"])
+    data = gh_json(["api", f"repos/{repo}/compare/{merge_base}...{tip}"])
     commits = [
-        CommitRef(sha=Sha(c["sha"]), subject=c["commit"]["message"].split("\n", 1)[0])
+        CommitRef(
+            sha=Sha(c["sha"]),
+            subject=c["commit"]["message"].split("\n", 1)[0],
+            author=author_of(c),
+        )
         for c in data.get("commits", [])
     ]
     total = data.get("total_commits", len(commits))
     if len(commits) != total:
-        cannot_check(
-            f"compare {merge_base}...{pr.base_tip} lists {len(commits)} of {total} commits."
-        )
+        cannot_check(f"compare {merge_base}...{tip} lists {len(commits)} of {total} commits.")
     files = data.get("files", [])
     touched = None if len(files) >= COMPARE_FILE_LIMIT else frozenset(paths_of(files))
-    return BaseSide(merge_base=merge_base, commits=commits, touched=touched)
+    return BaseSide(tip=tip, merge_base=merge_base, commits=commits, touched=touched)
 
 
-def find_moves(repo: str, prs: frozenset[FilePath], base: BaseSide) -> list[BaseMove]:
-    if base.touched is not None and not (base.touched & prs):
+def find_moves(repo: str, pr_files: frozenset[FilePath], base: BaseSide) -> list[BaseMove]:
+    if base.touched is not None and not (base.touched & pr_files):
         return []
     moves: list[BaseMove] = []
     for commit in base.commits:
         paths, _ = paged_files(f"repos/{repo}/commits/{commit.sha}", f"commit {commit.sha}")
-        shared = frozenset(paths) & prs
+        shared = frozenset(paths) & pr_files
         if shared:
             moves.append(BaseMove(commit=commit, shared=shared))
     return moves
+
+
+def commit_line(commit: CommitRef, pr_author: str) -> str:
+    whose = f"{commit.author}, the PR's author" if commit.author == pr_author else commit.author
+    return f"{commit.sha[:8]} {commit.subject} (by {whose})"
+
+
+def print_side(
+    side: BaseSide, moves: list[BaseMove], pr_author: str, *, every: str, shared: str
+) -> None:
+    print(every)
+    lines = [commit_line(c, pr_author) for c in side.commits]
+    assert len(lines) == len(side.commits), "every commit read must be listed"
+    print("\n".join(lines) if lines else "None.")
+    print()
+    print(shared)
+    if not moves:
+        print("None of them touches a file this PR changes.")
+    for m in moves:
+        print(f"{m.commit.sha[:8]} {m.commit.subject}")
+        for path in sorted(m.shared):
+            print(f"    {path}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("pr", type=int)
     parser.add_argument("--repo", required=True)
+    parser.add_argument(
+        "--land-on",
+        help=(
+            "the branch a stack lands on, when the PR's own base is another PR's branch; "
+            "ignored when it names the PR's own base"
+        ),
+    )
     args = parser.parse_args()
     if "/" not in args.repo:
         cannot_check(f"--repo must be OWNER/NAME, not {args.repo!r}.")
 
     pr = read_pr(args.repo, args.pr)
-    prs = pr_paths(args.repo, args.pr, pr.changed_files)
-    base = base_side(args.repo, pr)
-    moves = find_moves(args.repo, prs, base)
+    pr_files = pr_paths(args.repo, args.pr, pr.changed_files)
+    base = base_side(args.repo, pr.head, pr.base_tip)
+    moves = find_moves(args.repo, pr_files, base)
     assert all(m.shared for m in moves), "a listed commit must share a file with the PR"
+
+    landing: tuple[str, BaseSide, list[BaseMove]] | None = None
+    if args.land_on and args.land_on != pr.base_ref:
+        side = base_side(args.repo, pr.head, branch_tip(args.repo, args.land_on))
+        landing_moves = find_moves(args.repo, pr_files, side)
+        assert all(m.shared for m in landing_moves), "a listed commit must share a file with the PR"
+        landing = (args.land_on, side, landing_moves)
 
     print(
         f"PR #{args.pr}: head {pr.head}, {pr.base_ref} tip {pr.base_tip}, merge base {base.merge_base}, "
@@ -202,16 +262,33 @@ def main() -> None:
         f"{'commit' if len(base.commits) == 1 else 'commits'} since the merge base."
     )
     print()
-    if not moves:
-        print("None of them touches a file this PR changes.")
-    for m in moves:
-        print(f"{m.commit.sha[:8]} {m.commit.subject}")
-        for path in sorted(m.shared):
-            print(f"    {path}")
+    print_side(
+        base,
+        moves,
+        pr.author,
+        every="Every base commit since the merge base:",
+        shared="Base commits that touch this PR's files:",
+    )
+    if landing:
+        branch, side, landing_moves = landing
+        print()
+        print(
+            f"The stack lands on {branch}, whose tip is {side.tip} and whose merge base with this "
+            f"PR is {side.merge_base}."
+        )
+        print()
+        print_side(
+            side,
+            landing_moves,
+            pr.author,
+            every=f"Every commit on {branch} since its merge base with this PR:",
+            shared=f"Commits on {branch} that touch this PR's files:",
+        )
     if pr.mergeable == "CONFLICTING":
         print()
         print("GitHub reports the PR as CONFLICTING.")
-    raise SystemExit(1 if moves or pr.mergeable == "CONFLICTING" else 0)
+    moved = bool(base.commits) or bool(landing and landing[1].commits)
+    raise SystemExit(1 if moved or pr.mergeable == "CONFLICTING" else 0)
 
 
 if __name__ == "__main__":
