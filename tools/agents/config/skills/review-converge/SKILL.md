@@ -134,7 +134,12 @@ in Phase 1 and do not change between rounds. Jump straight to Step 3, supplying:
 
 - The diff command from Phase 1
 - The reviewable file list from Phase 1
-- The problem statement from Phase 1 as the intent block
+- The problem statement from Phase 1 as the intent block, with the Base ref every agent's
+  provenance check reads
+- For PR scope, the Base moved and Overlapping open PRs lines from running `review-code`'s
+  `base_moved.py` and `overlapping_prs.py` again this round, as its Step 1 describes. The base
+  branch and other PRs move between rounds even when this scope does not, and these lines are what
+  start its Agents 15 and 16. Outside PR scope, both lines say "not applicable: not a PR review".
 
 Wait for `review-code` to return its findings in its Step 4 format: a verdict, then a findings
 table whose severities are `must`, `should`, `consider` and `?` (open design question).

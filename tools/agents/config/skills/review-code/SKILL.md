@@ -21,15 +21,15 @@ Identify what to review and the exact diff command to pass agents.
 | None, on main, staged         | `git diff --staged --name-only`                 | `git diff --staged`                      |
 | None, on main, nothing staged | —                                               | ask: "What would you like me to review?" |
 
-Everything the argument names is one scope, however many commits, PRs or files it lists. "Each
-against its own parent" says what each commit's base is; it does not ask for a separate review per
-commit. Agents name the commit a finding comes from.
+Everything the argument names is one scope, however many commits, PRs or files it lists. An
+argument such as "these commits, each against its own parent" says what each commit's base is; it
+does not ask for a separate review per commit. Agents name the commit a finding comes from.
 
 **A stack is reviewed as one change.** When the scope's PRs are stacked, each based on the branch
 of the PR below it, the review asks of the whole stack what it asks of one PR. Each finding's
 consequences are judged for every PR in the stack, not only the one whose lines it sits on, and a
-finding that reaches a PR is reported in that PR's review too. Every PR's base check in Step 1
-passes `--land-on <branch>`, naming the branch the bottom PR targets, because a PR based on
+finding that reaches a PR is reported in that PR's review too. Every PR's `base_moved.py` check in
+Step 1 passes `--land-on <branch>`, naming the branch the bottom PR targets, because a PR based on
 another PR's branch otherwise never sees what changed where the stack lands.
 
 **When GitHub refuses a PR's diff, read it from git.** For a PR that changes more than 300 files,
@@ -93,9 +93,9 @@ and prints every commit since the merge base with its author, marked when it is 
 It then prints the commits that touch the PR's files, with those files, counting a rename under
 both paths on either side, and `mergeable`. With `--land-on`, for a stacked PR, it prints the same
 for that branch. Exit 0 means no commit and the PR is mergeable, and 1 means at least one commit
-or a CONFLICTING PR: Agent 15 then runs on its output. Exit 2
-means it could not tell, which is never read as none: the Base moved line in Step 2 says "not
-checked" with the reason from stderr, and Agent 15 runs anyway when `mergeable` is `CONFLICTING`.
+or a CONFLICTING PR. Exit 2 means it could not tell, which is never read as none: the Base moved
+line in Step 2 says "not checked" with the reason from stderr and the stored `mergeable`. Step 3
+says when Agent 15 runs on this output.
 
 **For PR scope, also fetch what earlier reviewers said:**
 
@@ -290,7 +290,8 @@ or a record chose an option is reported beside the recommendation, never given a
 ## Step 3: Launch the agents in parallel
 
 Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, Agent 15
-runs when Step 1's `base_moved.py` lists any commit since the merge base or a conflict,
+runs for PR scope when Step 1's `base_moved.py` exits 1, or exits 2 for a PR whose stored
+`mergeable` is `CONFLICTING`,
 Agent 16 runs when Step 1's `overlapping_prs.py` exits 1, Agent 17 runs when the diff removes
 a test or an assertion, Agent 18 runs when the diff adds or changes prose, and Agent 19 runs when
 the diff removes prose.
@@ -796,8 +797,7 @@ For each issue: file:line | the rule | file:line of the rule it meets | the situ
 **Model:** Opus, because an edit lost in a clean merge, or a base commit that removed what the PR
 relies on, leaves nothing for anyone to notice.
 
-Runs only for PR scope, when `base_moved.py` in Step 1 exits 1, or exits 2 for a PR GitHub
-reports as CONFLICTING. Its effort follows how relevant the base's commits are: it sorts them
+Runs when Step 3 says. Its effort follows how relevant the base's commits are: it sorts them
 first, and spends one line on each that cannot affect the PR.
 
 ```
@@ -812,10 +812,10 @@ Changed files:
 [insert file list]
 
 Instructions:
-1. Sort every commit the Base moved line lists, those on a `--land-on` branch included, into two groups, judging from its subject, its author and `git show --stat <commit>`. **Unrelated:** it changes nothing the PR's code, description, docs or tests touch, call or describe. **Relevant:** it shares a file with the PR, or it changes or removes something the PR relies on, such as a revert of an earlier change the PR builds on. A commit by the PR's own author counts like any other: the author knowing about a commit does not mean the PR accounts for it. List each unrelated commit in one line saying why, and spend nothing more on it. When no commit is relevant and nothing conflicts, say so and stop.
+1. Fetch what the Base moved line names before reading any of it: `git fetch origin <base tip> <PR head>`, plus the `--land-on` branch's tip when the line lists one. When the line says "not checked", run `git log --format='%h %an %s' <merge base>..<base tip>` to list the commits yourself. Then sort every commit, those on a `--land-on` branch included, into two groups, judging from its subject, its author and `git show --stat <commit>`. **Unrelated:** it changes nothing the PR's code, description, docs or tests touch, call or describe. **Relevant:** it shares a file with the PR, or it changes or removes something the PR relies on, such as a revert of an earlier change the PR builds on. A commit by the PR's own author counts like any other: the author knowing about a commit does not mean the PR accounts for it. List each unrelated commit in one line saying why, and spend nothing more on it. When no commit is relevant and nothing conflicts, say so and stop.
 2. For each relevant commit, read it in full with `git show <commit>`. Search the PR's diff, its description and the Context for anything that relies on what the commit changed or removed: a handler, a response, a behaviour, a file path, a claim in a doc. Say whether the PR still holds once it lands on the base tip, and what breaks if it does not.
 3. For the commits that share a file with the PR, run the diff command from Context and list each of the PR's edits, hunk by hunk, in the files the Base moved line names.
-4. Merge the base tip into the PR head without touching any checkout: `git fetch origin <base tip> <PR head>`, then `git merge-tree --write-tree <base tip> <PR head>`. List each file that conflicts and each that merges cleanly.
+4. Merge each tip into the PR head without touching any checkout: `git merge-tree --write-tree <base tip> <PR head>`, and for a stacked PR `git merge-tree --write-tree <--land-on tip> <PR head>` as well, since that is where the stack lands and GitHub's `mergeable` only answers for the PR's own base. List each file that conflicts and each that merges cleanly, for each tip.
 5. For each base commit that shares a file, read what it did to the shared files with `git show <commit>`. Where it moved content out of a file, find where that content lives at the base tip with `git grep` on distinctive phrases from the PR's edit.
 6. For each PR edit, decide which holds: it merges in place; it conflicts, and taking the base's side drops it; its content moved, so it belongs in a file you name, where the merged tree still holds the old text; the base already made the same change, so it is redundant; or it points at something the base removed.
 7. A clean merge of the destination file is not evidence the edit survived. Read the merged tree's copy of each destination (`git cat-file -p <tree>:<path>`) and check for the edit's text.
@@ -1074,7 +1074,8 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
 - **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
   errored or never ran, and why.] An Agent 14 not launched because the diff touches no agent
   instruction file is listed as "not applicable", and does not count as never ran. So is an
-  Agent 15 not launched because the Base moved line says "none", an Agent 16 not launched
+  Agent 15 not launched because the Base moved line lists no commit and no conflict, an Agent 16
+  not launched
   because the Overlapping open PRs line says "none", and an Agent 17 not launched because the diff
   removes no test or assertion, an Agent 18 not launched because the diff adds or changes no prose,
   and an Agent 19 not launched because it removes none.
@@ -1176,8 +1177,10 @@ On any answer other than "skip":
 - **Check what changed since the saved state.** Read the head and reviews again with
   `gh pr view <pr-number> -R <owner>/<repo> --json headRefOid,reviews`, and run the fetch helper
   from Step 1 again. A review can wait hours for its posting answer while the PR moves on. Run
-  `overlapping_prs.py` and `base_moved.py` from Step 1 again too, whatever the head did. When
-  `base_moved.py` lists a commit the saved Base moved line did not, run Agent 15 on the new output
+  `overlapping_prs.py` and `base_moved.py` from Step 1 again too, whatever the head did, passing
+  `--land-on` to `base_moved.py` for a stacked PR as Step 1 does. When `base_moved.py` lists a
+  commit the saved Base moved line did not, or newly reports a conflict, run Agent 15 on the new
+  output
   and fold its findings in before posting. When `overlapping_prs.py` names a PR the saved
   Overlapping open PRs line did not, run Agent 16 on that PR and fold its findings in too.
   Re-check each "covered by #N" finding against its new list, and take "covered by" off any whose
@@ -1195,14 +1198,14 @@ On any answer other than "skip":
 
     - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
       the new head, with every standing agent that applies (Agent 14 applies when the full PR
-      diff touches an agent instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16
+      diff touches an agent instruction file, Agent 15 when Step 3 says it runs, Agent 16
       when `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an
       assertion, Agent 18 when it adds or changes prose, Agent 19 when it removes prose) and any
       added ones over the whole PR diff, as Step 3
       always does.
     - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
       standing agent that applies (Agent 14 applies when the full PR diff touches an agent
-      instruction file, Agent 15 when `base_moved.py` exits 1, Agent 16 when
+      instruction file, Agent 15 when Step 3 says it runs, Agent 16 when
       `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an assertion,
       Agent 18 when it adds or changes prose, Agent 19 when it removes prose)
       and any added ones. Give them the
