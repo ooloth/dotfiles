@@ -47,6 +47,9 @@ this skill asks nothing there and puts what it would have asked in its final rep
      step 7, because the ticket was linked when the PR opened. The update endpoint takes neither
      `head` nor `draft` and ignores both (seen 2026-11-17 on a draft PR), so only the title and
      body change.
+   - Before either call, run `write-pr-description`'s `check_pr_body.py` on `<dir>/pr-body.md`,
+     as its step 5 says, if the body changed after that skill ran it, and post only once it exits
+     0. Updating an open PR, pass `--live-copy` with the body as you last read it.
    - If `<dir>/missing.txt` exists, keep its lines for the final report.
 7. If the ticket is a Jira, Linear or Monday ticket, post one comment on it. On Jira through the
    MCP tool it is `Draft PR: [<owner>/<repo>#<n>](<PR URL>)`, because Jira posts a bare URL as text
