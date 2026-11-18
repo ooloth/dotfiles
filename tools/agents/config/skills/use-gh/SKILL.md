@@ -106,6 +106,13 @@ anything is missing.
   difference. Seen 2026-11-18 on recursionpharma/react-clinops-siteoutreach#384 and #389, whose
   rewritten descriptions another session overwrote from older copies.
 
+- **An empty `reviewDecision` doesn't mean unapproved.** It came back empty on
+  recursionpharma/bc-eng-clinical#678 while the PR was approved and mergeable, because `trunk`'s
+  ruleset requires zero approving reviews and only a code owner's. Read `mergeStateStatus` (`CLEAN`
+  means it can merge, `BLOCKED` means a rule is unmet) and `latestReviews` for who approved. A
+  repo's rules are at `gh api repos/<owner>/<repo>/rules/branches/<branch>`. Its classic protection
+  endpoint returns 404 when the repo uses rulesets instead.
+
 - **Context bloat from unfiltered reads.**
   `gh pr view N -R <owner>/<repo> --json files -q '.files[].path'`, not the unfiltered
   `--json files` — the latter includes `patch`/`blob_url`/`raw_url` per file, which adds up fast on
