@@ -104,15 +104,17 @@ uv run <skill-base-dir>/../review-pr-comments-converge/scripts/fetch_pr_comments
 ```
 
 It prints every review, every inline thread with its replies, and every PR conversation comment,
-which is where some bots post their reviews. A default `gh pr view` shows none of these. Save the
-output to a file in a new `mktemp -d` directory, with the PR's reviews from
+which is where some bots post their reviews. A default `gh pr view` shows none of these. Its
+`# Answerers:` and `answered` lines name the PR author and the gh login running the fetch as
+answerers, so items only answerers wrote print `n/a (yours)`, but a thread a third party joined does
+not. This skill's reconciliation does not use these lines: its own "answered" verdict is separate.
+Save the output to a file in a new `mktemp -d` directory, with the PR's reviews from
 `gh pr view <n> -R <owner>/<repo> --json reviews` beside it, since the fetch helper leaves out a
 review with no body and no comments, such as a bare approval. With the reviewed head, these are the
-**saved state** that Step 5 compares with the PR before posting.
-Keep the output in this session for Step 4 and out of every agent's prompt and the Step 2 intent
-block: an agent handed an earlier verdict tends to return it confirmed, and the point of this
-review is a read that isn't anchored on anyone else's. The one exception is a dry run that CI
-posted, which Step 2 carries to the agents.
+**saved state** that Step 5 compares with the PR before posting. Keep the output in this session for
+Step 4 and out of every agent's prompt and the Step 2 intent block: an agent handed an earlier
+verdict tends to return it confirmed, and the point of this review is a read that isn't anchored on
+anyone else's. The one exception is a dry run that CI posted, which Step 2 carries to the agents.
 
 **For PR scope, also list the other open PRs that change the same files:**
 
