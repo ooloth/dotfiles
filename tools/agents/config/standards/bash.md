@@ -57,6 +57,17 @@ A fixed path such as `/tmp/out.txt` is shared by every copy of the script runnin
 run can read or overwrite another's file. A new directory from `mktemp -d` each run, removed when
 the script is done, keeps runs apart.
 
+**A pipe handed to a program the script `exec`s is opened on a fixed descriptor, not kept as a
+process substitution.**
+A process substitution such as `<(printf …)` names a descriptor, such as `/dev/fd/63`, that lasts
+only as long as bash keeps it open. Stored in a variable or an array and passed on later, it is
+closed by the time the program starts under bash 5.3, and under macOS's bash 3.2 outside a function,
+while bash 3.2 inside a function keeps it open. A test run under `/bin/bash` can then pass while the
+real launch fails with `EBADF`, as the dotfiles `cc.bash` did on 2026-11-18 when its related-repo
+hints reached Claude Code as `--append-system-prompt-file /dev/fd/63`. Opening the pipe with
+`exec 3< <(…)` and passing `/dev/fd/3` keeps it open across the `exec` under every version, and a
+test of such a script runs it under each bash it can meet.
+
 **Pass `rg` an explicit path.**
 Without one, `rg` reads stdin whenever stdin isn't a terminal, and in an agent's shell it waits
 forever. A path such as `.` makes it search files instead.
