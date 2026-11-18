@@ -690,13 +690,17 @@ def indent(text: str, prefix: str = "  ") -> str:
     return "\n".join(prefix + line for line in text.splitlines())
 
 
-# Only these break a reply's line. `str.splitlines` also breaks at U+2028, U+2029, U+0085, \v and
-# \f, which a reply prints as written.
+# Only these break a reply's line. `str.splitlines` also breaks at the characters below, so a reply
+# prints each as a visible escape: a reader that splits on one cannot find a line the reply started.
 LINE_BREAK = re.compile(r"\r\n|\r|\n")
+OTHER_SEPARATOR_ESCAPES = str.maketrans(
+    {"\u2028": r"\u2028", "\u2029": r"\u2029", "\x85": r"\x85", "\v": r"\x0b", "\f": r"\x0c"}
+)
 
 
 def indent_reply(text: str, prefix: str) -> str:
-    return "\n".join(prefix + line for line in LINE_BREAK.split(text))
+    lines = LINE_BREAK.split(text.translate(OTHER_SEPARATOR_ESCAPES))
+    return "\n".join(prefix + line for line in lines)
 
 
 def take_option(args: list[str], flag: str) -> tuple[list[str], str | None]:

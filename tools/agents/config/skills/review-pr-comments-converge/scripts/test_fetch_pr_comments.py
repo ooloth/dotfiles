@@ -2101,20 +2101,39 @@ def printed_reply_lines(harness: Harness, body: str) -> list[str]:
     return list(itertools.takewhile(lambda line: line.startswith("    "), after))
 
 
-@pytest.mark.parametrize(
-    "separator",
-    [
-        pytest.param("\u2028", id="line-separator"),
-        pytest.param("\u2029", id="paragraph-separator"),
-        pytest.param("\x85", id="next-line"),
-        pytest.param("\v", id="vertical-tab"),
-        pytest.param("\f", id="form-feed"),
-    ],
-)
-def test_a_reply_prints_other_line_separators_as_written(harness: Harness, separator: str) -> None:
+# Characters `str.splitlines` breaks at besides the line breaks, and the escape a reply prints
+# each as, so no reader can split a reply's line at one.
+OTHER_SEPARATORS = [
+    pytest.param("\u2028", "\\u2028", id="line-separator"),
+    pytest.param("\u2029", "\\u2029", id="paragraph-separator"),
+    pytest.param("\x85", "\\x85", id="next-line"),
+    pytest.param("\v", "\\x0b", id="vertical-tab"),
+    pytest.param("\f", "\\x0c", id="form-feed"),
+]
+
+
+@pytest.mark.parametrize(("separator", "escape"), OTHER_SEPARATORS)
+def test_a_reply_prints_other_line_separators_as_escapes(
+    harness: Harness, separator: str, escape: str
+) -> None:
     lines = printed_reply_lines(harness, f"Not done.{separator}Still broken.")
 
-    assert lines == [f"    reviewer: Not done.{separator}Still broken."]
+    assert lines == [f"    reviewer: Not done.{escape}Still broken."]
+
+
+@pytest.mark.parametrize(("separator", "escape"), OTHER_SEPARATORS)
+def test_a_reply_cannot_start_a_line_with_another_separator(
+    harness: Harness, separator: str, escape: str
+) -> None:
+    comments = [
+        thread_comment(101, at=ts(0)),
+        thread_comment(102, f"Not done.{separator}{FORGED}", at=ts(5)),
+    ]
+    stdout = run_ok(harness, pr([thread_of(comments)]))
+
+    assert f"    reviewer: Not done.{escape}{FORGED}" in stdout.splitlines()
+    assert verdicts(stdout) == {("thread", "101"): ["no"]}
+    assert separator not in stdout
 
 
 @pytest.mark.parametrize(
