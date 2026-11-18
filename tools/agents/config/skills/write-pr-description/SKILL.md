@@ -52,8 +52,9 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - [ ] Got a screen recording of a UI change as step 3 describes
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Verification is manual e2e only — no automated checks
-- [ ] An Evidence section under the checklist shows what following it showed, one collapsed block
-  per piece, each labelled with the claim it shows
+- [ ] How to verify is Pre-merge's numbered list of collapsed rows (Setup, one per claim, Clean up),
+  each claim opening to its Verification steps and then What I saw, with each step's code block
+  indented to the step's text, and the body rendered through GitHub's markdown API and checked
 - [ ] No implementation details snuck in
 - [ ] No hard-wrapped prose: each paragraph and list item is one line, because GitHub renders every
   newline as a line break
@@ -93,38 +94,70 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 
 ### Verification
 
-- A single flat `- [ ]` checklist — no nested items, no prose paragraphs
-- Steps must be sequential, each building on the previous so the list reads like a walkthrough, not
-  a grab-bag of independent checks
-- Write each item in "Expect to see X" tutorial style
+`## 👩‍🔬 How to verify` holds a short numbered list of collapsed rows, one per claim, so a reviewer
+opens only the ones they want to check. Opening a row is a click, so rows are collapsed and nothing
+inside a row is. When something can only be checked after a deploy, the list goes under
+`### 🧪 Pre-merge` and those steps under `### 🚀 Post-merge`; with no post-merge steps, the list sits
+directly under How to verify, with no Pre-merge heading. When every claim needs the deployed system,
+there is no list, and Post-merge holds them all.
+
+**What I saw is what running these exact steps showed.** A reviewer trusts each step because its
+output is there, so What I saw holds output pasted from a run of the steps as written, never from
+another run, another script or memory. Run every pre-merge step before the PR opens. A step that
+fails as written is fixed and run again; a claim the run does not bear out is a finding to report,
+never a description to write. A step that cannot run where the author works, such as one needing
+a browser or another machine, says where it must run, and the user hears about it before the PR
+opens.
+
+**What the steps check:**
+
+- Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
+- **Reviewer-frame**: every pre-merge step must be executable on a laptop, before merging, without
+  deploying anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any
+  other deployed environment. The question being answered is: "what would a skeptic demand I prove
+  without running tests or deploying?" A step that can only be observed after a deployment goes
+  under Post-merge, written the same way: what to run, where, and what to expect.
+- **Pre-draft check**: before writing the steps, ask — _if there were no test suite, how would I
+  watch this behavior happen?_ Each answer is a claim, with its steps.
 - Include evidence-providing observability signals to confirm correct behavior. Where a step has no
-  signal a reviewer could watch, the checklist says what signal would show it and when it could be
+  signal a reviewer could watch, the step says what signal would show it and when it could be
   watched, and the user is told before drafting, so the signal can be added. Inside "Working Through
   to a Draft PR" or an unattended run, also list it in `missing.txt`
-- Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
-- **Reviewer-frame**: every step must be executable on a laptop, before merging, without deploying
-  anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any other
-  deployed environment. The question being answered is: "what would a skeptic demand I prove
-  without running tests or deploying?" A step that can only be observed after a deployment goes
-  under **Post-merge QA**, written the same way: what to run, where, and what to expect.
-- **Pre-draft check**: before writing the checklist, ask — _if there were no test suite, how would I
-  watch this behavior happen?_ That answer is the checklist.
 - Any commands the reviewer should run must be provided in a complete, copy-pastable form, not
   alluded to; assume the reviewer is unfamiliar and will not figure it out unless you provide it
-- **Show what you saw:** below each checklist, a `### 🧾 Evidence` heading holds what following it
-  actually showed, so a reader can judge the change without running anything. One sentence under
-  the heading says where the evidence came from, naming any check that went beyond the steps, such
-  as a browser pass behind a local stand-in.
-  - **One collapsed block per piece of evidence:** each is a `<details>` block whose summary is a
-    numbered, bold claim, such as `<summary><b>1. Every response carries the five headers, and
-    trunk's carry none</b></summary>`. The labels alone then read as a summary of the proof, and a
-    reader opens only the ones they want to check.
-  - **What goes inside:** a sentence saying what to look for, then the evidence itself. For a CLI or
-    script, that is the before and after output trimmed to the lines that differ, in a fenced
-    block. Console and log lines are quoted verbatim in a fenced block. For anything a screen
-    shows, it is a screenshot or recording uploaded as `use-gh` describes, with alt text saying
-    what it shows.
-  - **Never link a local path.**
+
+**Pre-merge is an ordered list,** so it lines up with the page's other lists and numbers itself.
+Its items, in order:
+
+1. **`🛠️ Setup`:** every step the claims share, grouped under `####` headings that each say what
+   that part enables and which claims use it, such as `#### 📦 This branch's image (every claim)`.
+   Leave it out when no claim needs setup.
+2. **One item per claim.** Its summary is an emoji for the kind of evidence its What I saw
+   holds, then the claim, stated as what is true after the change: 📄 for text output of any kind
+   (a terminal, a browser console, a log), 📸 for a screenshot and 🎬 for a recording. Inside it:
+   - **`#### 🔍 Verification steps`:** a `- [ ]` checklist, each item an action or an "Expect to
+     see X" line, each building on the one before.
+   - **`#### 👀 What I saw`:** what following those steps showed when the author ran them, so a
+     reader can judge the claim without running anything. A sentence says what to look for, then
+     comes the evidence: command output trimmed to the lines that differ, before and after, in a
+     fenced block; console and log lines verbatim in a fenced block; a screenshot or recording
+     uploaded as `use-gh` describes, with alt text saying what it shows.
+3. **`🧹 Clean up`:** the steps that undo the setup. Leave it out with the setup.
+
+**Markup that keeps it scannable:**
+
+- Each item is `N. <details>`, with `<summary><b>…</b></summary>` on the next line, a blank line,
+  and everything inside indented three spaces so it stays in the item.
+- A code block that belongs to a step is indented two spaces more than the step's `- [ ]`, so it
+  sits inside the step and lines up with the step's text. GitHub drops that indentation when the
+  code is copied. A code block under What I saw stays at the item's indentation.
+- Post-merge is a `- [ ]` checklist under its heading, not collapsed. With no post-merge steps,
+  there is no Post-merge heading.
+- Before handing the body back, render it with GitHub's markdown API, `gh api markdown --input
+  <file>`, where the file holds `{"text": <body>, "mode": "gfm", "context": "<owner>/<repo>"}`.
+  Confirm each `<details>` sits inside an `<li>`, each step's code block inside its
+  `task-list-item`, and that no ` ``` ` shows as text.
+- **Never link a local path.**
 
 ### Structure
 
@@ -168,15 +201,17 @@ value to a reviewer
 ## Template Handling
 
 1. **Project template first** — Use `.github/PULL_REQUEST_TEMPLATE.md` or
-   `.github/pull_request_template.md` as base
-2. **Respect conventions** — Match their emoji style (✅ not 💪)
-3. **Enhance sparingly** — Add sections only if project template is minimal
+   `.github/pull_request_template.md` as base: its headings, their order and its emoji stand
+2. **Extend it with what it lacks** — The verification layout goes inside the template's own
+   verification section, under its heading. Each section this skill adds that the template has no
+   equivalent for, such as How to verify or Related links when the template has only What and Why,
+   goes after the template's sections. A section the template has and this skill doesn't stays
 
 ---
 
 ## Example
 
-```markdown
+````markdown
 > [!NOTE]
 > Builds on #142 to leverage its frontend helpers
 
@@ -197,41 +232,70 @@ value to a reviewer
 
 ## 👩‍🔬 How to verify
 
-- [ ] `./bin/dev.sh` + `cd frontend` + `npm start`
-- [ ] Expect to **not** see the "Include archived items" toggle
-- [ ] Select a dataset with archived items
-- [ ] Expect to see the toggle now
-- [ ] Query a few items, including one that's archived (look for the `[archived]` badge)
-- [ ] Expect to see the archived item in the list, detail view, and charts
-- [ ] Toggle archived items off
-- [ ] Expect the archived item's chip to be disabled
-- [ ] Expect the disabled item's tooltip to explain why
-- [ ] Expect the archived item to no longer appear in your views
+### 🧪 Pre-merge
 
-### 🧾 Evidence
+1. <details>
+   <summary><b>🛠️ Setup</b></summary>
 
-What following the steps above showed on a local build with the seeded datasets.
+   #### 💻 The app, with a dataset that has archived items (every claim)
 
-<details>
-<summary><b>1. The toggle appears only for a dataset with archived items</b></summary>
+   - [ ] Start the API and the frontend:
 
-The toolbar with no archived items, then with them. The toggle sits at the right end:
+     ```sh
+     ./bin/dev.sh
+     cd frontend && npm start
+     ```
 
-![The toolbar without the toggle, then with "Include archived items" at its right end](https://github.com/user-attachments/assets/…)
+   - [ ] Open `http://localhost:3000` and pick the "Sample orders" dataset
 
-</details>
+   </details>
 
-<details>
-<summary><b>2. Turning it off removes the archived item from every view</b></summary>
+2. <details>
+   <summary><b>📸 The toggle appears only for a dataset with archived items</b></summary>
 
-The item's chip is disabled and its tooltip says why:
+   #### 🔍 Verification steps
 
-![The archived item's disabled chip with its tooltip open](https://github.com/user-attachments/assets/…)
+   - [ ] Pick the "Empty" dataset and expect to **not** see the "Include archived items" toggle
+   - [ ] Pick "Sample orders" again and expect to see the toggle at the right end of the toolbar
 
-</details>
+   #### 👀 What I saw
+
+   The toolbar with no archived items, then with them:
+
+   ![The toolbar without the toggle, then with "Include archived items" at its right end](https://github.com/user-attachments/assets/…)
+
+   </details>
+
+3. <details>
+   <summary><b>📸 Turning it off removes the archived item from every view</b></summary>
+
+   #### 🔍 Verification steps
+
+   - [ ] Query a few items, including one with the `[archived]` badge, and expect it in the list, detail view and charts
+   - [ ] Toggle archived items off and expect its chip to be disabled, with a tooltip saying why
+   - [ ] Expect the archived item to no longer appear in any view
+
+   #### 👀 What I saw
+
+   The item's chip is disabled and its tooltip says why:
+
+   ![The archived item's disabled chip with its tooltip open](https://github.com/user-attachments/assets/…)
+
+   </details>
+
+4. <details>
+   <summary><b>🧹 Clean up</b></summary>
+
+   - [ ] Stop the API and the frontend with `Ctrl+C`
+
+   </details>
+
+### 🚀 Post-merge
+
+- [ ] Once it deploys, open a production dataset with archived items and expect the toggle, on by default
 
 ## 🔖 Related links
 
 - [Jira task: PROJ-123](https://jira.example.com/browse/PROJ-123)
 - [Slack thread](https://workspace.slack.com/archives/C12345/p1234567890) discussing UX polish options with Sam
-```
+````

@@ -10,7 +10,7 @@
 
 <!-- A numbered list and/or code block(s) documenting how to invoke any new user-facing behaviour. Omit section if not applicable. -->
 
-## 👩‍🔬 How to validate
+## 👩‍🔬 How to verify
 
 <!-- A numbered list and/or code blocks teaching a new reviewer what steps to follow to manually confirm the changes work as intended -->
 
