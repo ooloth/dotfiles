@@ -52,6 +52,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - [ ] Got a screen recording of a UI change as step 3 describes
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] Verification is manual e2e only — no automated checks
+- [ ] Why ends with Approach and Design bullets when the ticket records them, each linked
+- [ ] The claims, steps and What I saw come from a `prove-it-works` report for the PR's head
 - [ ] How to verify is Pre-merge's numbered list of collapsed rows (Setup, one per claim, Clean up),
   each claim opening to its Verification steps and then What I saw, with each step's code block
   indented to the step's text, and the body rendered through GitHub's markdown API and checked
@@ -80,6 +82,11 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   notes) without confusing the main point. The key facts reviewers should be aware are in the diff
   are clearly stated, especially changes that affect the system's observable side effects and
   measurable characteristics
+- **How it was decided:** when the work's ticket records an approach or a design, Why ends with
+  an `**Approach:**` bullet naming what was chosen, what it beat and the property that decided it,
+  linked to the approach comment, then a `**Design:**` bullet that does the same for the design,
+  linked to its comment. Each link says where it leads, such as "how it was chosen". Leave a bullet
+  out when no such record exists, rather than writing it vaguely.
 - **Why**: First bullet is a single-sentence TL;DR of the entire reason. Subsequent bullets add
   detail if needed. Prefer writing at the level of impact and outcome rather than implementation
   where possible — explain why this change needed to exist and try to pre-emptively answer the key
@@ -109,22 +116,14 @@ never a description to write. A step that cannot run where the author works, suc
 a browser or another machine, says where it must run, and the user hears about it before the PR
 opens.
 
-**What the steps check:**
-
-- Manual e2e only — NEVER reference automated checks ("run the tests", "run CI", "run lint/checks")
-- **Reviewer-frame**: every pre-merge step must be executable on a laptop, before merging, without
-  deploying anywhere. "Local dev environment" means `localhost` — not a DEV, UAT, staging, or any
-  other deployed environment. The question being answered is: "what would a skeptic demand I prove
-  without running tests or deploying?" A step that can only be observed after a deployment goes
-  under Post-merge, written the same way: what to run, where, and what to expect.
-- **Pre-draft check**: before writing the steps, ask — _if there were no test suite, how would I
-  watch this behavior happen?_ Each answer is a claim, with its steps.
-- Include evidence-providing observability signals to confirm correct behavior. Where a step has no
-  signal a reviewer could watch, the step says what signal would show it and when it could be
-  watched, and the user is told before drafting, so the signal can be added. Inside "Working Through
-  to a Draft PR" or an unattended run, also list it in `missing.txt`
-- Any commands the reviewer should run must be provided in a complete, copy-pastable form, not
-  alluded to; assume the reviewer is unfamiliar and will not figure it out unless you provide it
+**The proof comes from `prove-it-works`.** It decides the claims and the steps, as a reviewer who
+doubts the change needs them, and this skill lays them out. Use its report for the PR's head
+commit, with its claims, steps and saved output unchanged. When the session has no such report, or
+the head has moved since, run `prove-it-works` on the PR first, passing the approach's properties
+when the work has one and any steps the description already lists. Its steps that must run after a
+deploy go under Post-merge. Where it names a binding property no claim shows, one line under How to
+verify says what covers it. Where it names a claim no signal shows, the user hears before drafting;
+inside "Working Through to a Draft PR" or an unattended run, it also goes in `missing.txt`.
 
 **Pre-merge is an ordered list,** so it lines up with the page's other lists and numbers itself.
 Its items, in order:
@@ -133,7 +132,8 @@ Its items, in order:
    that part enables and which claims use it, such as `#### 📦 This branch's image (every claim)`.
    Leave it out when no claim needs setup.
 2. **One item per claim.** Its summary is an emoji for the kind of evidence its What I saw
-   holds, then the claim, stated as what is true after the change: 📄 for text output of any kind
+   holds, then the property it shows when it has one (`P1:`), then the claim, stated as what is
+   true after the change: 📄 for text output of any kind
    (a terminal, a browser console, a log), 📸 for a screenshot and 🎬 for a recording. Inside it:
    - **`#### 🔍 Verification steps`:** a `- [ ]` checklist, each item an action or an "Expect to
      see X" line, each building on the one before.
@@ -229,6 +229,8 @@ value to a reviewer
 
 - New datasets introduce archived items for the first time and users need the option to hide them while building familiarity
 - Defaulting them visible gives reviewers the full picture until users understand what they mean
+- **Approach:** a toggle beside each view, not a separate archive page, because a user keeps the item's context while deciding whether to hide it ([how it was chosen](https://jira.example.com/browse/PROJ-123?focusedCommentId=1001))
+- **Design:** the toggle hides itself when a dataset has no archived items, so nothing new appears for datasets it cannot affect ([the design](https://jira.example.com/browse/PROJ-123?focusedCommentId=1002))
 
 ## 👩‍🔬 How to verify
 
@@ -251,7 +253,7 @@ value to a reviewer
    </details>
 
 2. <details>
-   <summary><b>📸 The toggle appears only for a dataset with archived items</b></summary>
+   <summary><b>📸 P1: The toggle appears only for a dataset with archived items</b></summary>
 
    #### 🔍 Verification steps
 
@@ -267,7 +269,7 @@ value to a reviewer
    </details>
 
 3. <details>
-   <summary><b>📸 Turning it off removes the archived item from every view</b></summary>
+   <summary><b>📸 P2: Turning it off removes the archived item from every view</b></summary>
 
    #### 🔍 Verification steps
 

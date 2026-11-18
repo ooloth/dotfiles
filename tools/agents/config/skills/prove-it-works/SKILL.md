@@ -17,6 +17,27 @@ Get everything else from the environment: the PR and its ticket, the diff, the r
 which host each environment serves and how to read what is serving there. Ask the user only for
 what none of these hold, and never ask them to restate the claim in a template.
 
+## Who the proof is for
+
+A reviewer who wasn't there, doubts the change works, and will believe only what they could check
+themselves. Prove each claim for that person, whether or not the target is a PR:
+
+- **The claims:** given an approach with a property table, each binding property is a claim, named
+  by its number (P1, P2…), and so is each scenario a user relies on that the change could break
+  but no property names. Say which binding property no claim shows, and what covers it instead,
+  such as a test CI runs.
+- **Steps that person could run:** each claim's proof is a set of steps written the way they would
+  copy them: complete commands from a fresh checkout, the setup each one needs, and what to expect.
+  Run them in exactly that form, and save each step's output to a file of its own. Any means may
+  find the steps, but the evidence comes from running them as written.
+- **Steps already written:** when the target already lists verification steps, as a PR description
+  or a ticket may, run those as written too, and report each one that does not hold.
+- **The system, not the suite:** "the tests pass" convinces nobody who doubts the tests, so a step
+  runs the system and never points at the test suite or CI.
+- **Where each step runs:** a step a reviewer can run on a laptop before merging says so. One that
+  only a deploy can show says which environment and when. Where no signal would show a claim, say
+  what signal would, so it can be added.
+
 ## The bar
 
 How you gather the proof is yours to decide. What you return must meet this bar:
@@ -55,5 +76,7 @@ How you gather the proof is yours to decide. What you return must meet this bar:
 - **Nothing in a deployed environment changes** unless the user approves that specific action.
 
 Write the report however makes the proof clearest to a reader, as long as it opens with the claim,
-gives each verdict with its evidence, and ends with what could not be observed. Return it as your
+gives each verdict with its evidence, and ends with what could not be observed. Under each verdict,
+give its steps exactly as they ran and the files holding their output, so a caller such as
+`write-pr-description` can hand them to a reviewer unchanged. Return it as your
 final message.
