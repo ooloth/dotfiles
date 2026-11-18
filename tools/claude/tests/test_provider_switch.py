@@ -130,9 +130,48 @@ class WhenSessionsMoveToVertex(unittest.TestCase):
         after = PS.after_tick(PS.State(), NOW, {"five_hour": seen(100, NOW)})
         self.assertEqual(after.switch, PS.OnSubscription())
 
-    def test_sessions_already_on_vertex_keep_their_time(self) -> None:
+
+class WhileOnVertex(unittest.TestCase):
+    """A stay on Vertex AI lasts as long as a used-up window the status line reports, so sessions
+    never move back while it is still used up, whatever set the stay's end."""
+
+    @given(
+        until_left=st.floats(min_value=-3600, max_value=7 * 24 * 3600),
+        used=st.floats(min_value=0, max_value=150),
+        reset_left=st.one_of(st.none(), st.floats(min_value=-3600, max_value=8 * 24 * 3600)),
+        reason=st.one_of(
+            st.sampled_from(list(PS.Reason)),
+            st.builds(PS.UnrecognisedWording, st.text(max_size=20)),
+        ),
+    )
+    def test_a_stay_lasts_until_its_end_or_a_later_reset_of_a_used_up_window(
+        self, until_left: float, used: float, reset_left: float | None, reason
+    ) -> None:
+        since = NOW - 7200
+        on_vertex = PS.OnVertex(since, NOW + until_left, reason)
+        resets_at = None if reset_left is None else NOW + reset_left
+
+        after = PS.after_tick(PS.State(on_vertex), NOW, {"five_hour": seen(used, resets_at)})
+
+        extends = (
+            used >= 100
+            and resets_at is not None
+            and resets_at > NOW
+            and resets_at > on_vertex.until
+        )
+        if extends:
+            self.assertEqual(after.switch, PS.OnVertex(since, resets_at, reason))
+        elif on_vertex.until > NOW:
+            self.assertEqual(after.switch, on_vertex)
+        else:
+            # An ended stay is the subscription, which the usual rule may move straight back
+            from_subscription = PS.after_tick(PS.State(), NOW, {"five_hour": seen(used, resets_at)})
+            self.assertEqual(after.switch, from_subscription.switch)
+
+    def test_a_used_up_window_with_no_reset_time_leaves_the_stay_alone(self) -> None:
+        # Its end would move with every tick, so the stay would never end
         on_vertex = PS.OnVertex(NOW - 60, NOW + 60, PS.Reason.MANUAL)
-        after = PS.after_tick(PS.State(on_vertex), NOW, {"five_hour": seen(100, NOW + 3600)})
+        after = PS.after_tick(PS.State(on_vertex), NOW, {"five_hour": seen(100, None)})
         self.assertEqual(after.switch, on_vertex)
 
 
@@ -170,14 +209,15 @@ class HoldOnTheSubscription(unittest.TestCase):
         used_up = {"five_hour": seen(100, NOW + 3 * 3600)}
 
         by_status_line = PS.after_tick(state, NOW + at, used_up).switch
-        by_limit_error = PS.after_limit_error(state, NOW + at, "five_hour").switch
+        failure = PS.LimitFailure("five_hour", "You've hit your 5-hour limit")
+        by_limit_failure = PS.after_limit_failure(state, NOW + at, failure).switch
 
         if NOW + at < held_until:
             self.assertEqual(by_status_line, PS.OnSubscription(held_until))
-            self.assertEqual(by_limit_error, PS.OnSubscription(held_until))
+            self.assertEqual(by_limit_failure, PS.OnSubscription(held_until))
         else:
             self.assertIsInstance(by_status_line, PS.OnVertex)
-            self.assertIsInstance(by_limit_error, PS.OnVertex)
+            self.assertIsInstance(by_limit_failure, PS.OnVertex)
 
     def test_moving_to_vertex_by_hand_ends_the_hold(self) -> None:
         state = PS.State(PS.OnSubscription(NOW + 3600))
@@ -188,31 +228,147 @@ class HoldOnTheSubscription(unittest.TestCase):
         self.assertEqual(PS.parse_state(PS.dump_state(state)), state)
 
 
-class LimitErrors(unittest.TestCase):
-    def payload(self, error: str, message: str) -> dict[str, str]:
-        return {
-            "hook_event_name": "StopFailure",
-            "error": error,
-            "error_details": "429 Too Many Requests",
-            "last_assistant_message": message,
-        }
+# Every error type Claude Code's hook reference lists for StopFailure besides rate_limit
+# See: https://code.claude.com/docs/en/hooks#stopfailure-input
+OTHER_ERRORS = [
+    "authentication_failed",
+    "oauth_org_not_allowed",
+    "account_on_hold",
+    "billing_error",
+    "invalid_request",
+    "model_not_found",
+    "server_error",
+    "max_output_tokens",
+    "cloud_credential_error",
+    "unknown",
+]
+# How much of a failure's wording the state file keeps
+MESSAGE_CAP = 200
+KNOWN_WORDINGS = ["session limit", "5-hour limit", "weekly limit"]
 
-    def test_the_session_limit_message_names_the_five_hour_window(self) -> None:
-        payload = self.payload("rate_limit", "You've hit your session limit · resets 3pm")
-        self.assertEqual(PS.parse_limit_error(payload), "five_hour")
 
-    def test_the_weekly_limit_message_names_the_seven_day_window(self) -> None:
-        payload = self.payload("rate_limit", "You've hit your weekly limit · resets Mon 8am")
-        self.assertEqual(PS.parse_limit_error(payload), "seven_day")
+def unknown_wording(text: str) -> bool:
+    lowered = text.replace("\u2019", "'").lower()
+    return not any(wording in lowered for wording in KNOWN_WORDINGS)
 
-    def test_any_other_failure_is_not_a_usage_limit(self) -> None:
-        for error, message in (
-            ("rate_limit", "Server is temporarily limiting requests"),
-            ("rate_limit", "Request rejected (429)"),
-            ("server_error", "You've hit your session limit"),
+
+def limit_payload(error: str, message: str) -> dict[str, str]:
+    return {"hook_event_name": "StopFailure", "error": error, "last_assistant_message": message}
+
+
+class LimitFailures(unittest.TestCase):
+    """Any turn that ends on a rate limit is a limit failure. Its wording only names the window."""
+
+    def test_each_known_wording_names_its_window(self) -> None:
+        for message, window in (
+            ("You've hit your session limit · resets 3pm", "five_hour"),
+            ("You've hit your 5-hour limit · resets 11:50am (America/Toronto)", "five_hour"),
+            ("You\u2019ve hit your 5-hour limit · resets 11:50am", "five_hour"),
+            ("You've hit your weekly limit · resets Mon 8am", "seven_day"),
         ):
-            with self.subTest(error=error, message=message):
-                self.assertIsNone(PS.parse_limit_error(self.payload(error, message)))
+            with self.subTest(message=message):
+                failure = PS.parse_limit_failure(limit_payload("rate_limit", message))
+                self.assertEqual(failure, PS.LimitFailure(window, message))
+
+    # Half the cases run past the cap, which plain generated text almost never does
+    @given(
+        message=st.one_of(
+            st.text(max_size=MESSAGE_CAP), st.text(min_size=MESSAGE_CAP - 10, max_size=1000)
+        ).filter(unknown_wording)
+    )
+    def test_a_rate_limit_in_any_other_wording_is_a_limit_failure_with_no_window(
+        self, message: str
+    ) -> None:
+        failure = PS.parse_limit_failure(limit_payload("rate_limit", message))
+        self.assertEqual(failure, PS.LimitFailure(None, message[:MESSAGE_CAP]))
+
+    def test_no_other_error_is_a_limit_failure_whatever_its_wording(self) -> None:
+        for error in OTHER_ERRORS:
+            for message in ("You've hit your 5-hour limit · resets 3pm", "Request rejected (429)"):
+                with self.subTest(error=error, message=message):
+                    self.assertIsNone(PS.parse_limit_failure(limit_payload(error, message)))
+
+
+class WhenALimitFailureMovesSessions(unittest.TestCase):
+    @given(
+        five=st.floats(min_value=0, max_value=150),
+        five_left=st.floats(min_value=-3600, max_value=5 * 3600),
+        seven=st.floats(min_value=0, max_value=150),
+        seven_left=st.floats(min_value=-3600, max_value=7 * 24 * 3600),
+    )
+    def test_unknown_wording_lasts_until_the_latest_used_up_reset_or_thirty_minutes(
+        self, five: float, five_left: float, seven: float, seven_left: float
+    ) -> None:
+        usage = {
+            "five_hour": seen(five, NOW + five_left),
+            "seven_day": seen(seven, NOW + seven_left),
+        }
+        failure = PS.LimitFailure(None, "Request rejected (429)")
+
+        after = PS.after_limit_failure(PS.State(usage=usage), NOW, failure)
+
+        used_up = [
+            NOW + left
+            for used, left in ((five, five_left), (seven, seven_left))
+            if used >= 100 and NOW + left > NOW
+        ]
+        until = max(used_up) if used_up else NOW + 30 * 60
+        cause = PS.UnrecognisedWording("Request rejected (429)")
+        self.assertEqual(after.switch, PS.OnVertex(NOW, until, cause))
+
+    @given(reset_left=st.one_of(st.none(), st.floats(min_value=-3600, max_value=5 * 3600)))
+    def test_a_known_wording_lasts_until_its_window_resets_or_its_full_length(
+        self, reset_left: float | None
+    ) -> None:
+        resets_at = None if reset_left is None else NOW + reset_left
+        state = PS.State(usage={"five_hour": seen(40, resets_at)})
+        failure = PS.LimitFailure("five_hour", "You've hit your 5-hour limit")
+
+        after = PS.after_limit_failure(state, NOW, failure)
+
+        until = resets_at if resets_at is not None and resets_at > NOW else NOW + 5 * 3600
+        self.assertEqual(after.switch, PS.OnVertex(NOW, until, PS.Reason.LIMIT_ERROR))
+
+    def test_sessions_already_on_vertex_keep_their_time(self) -> None:
+        on_vertex = PS.OnVertex(NOW - 60, NOW + 60, PS.Reason.MANUAL)
+        failure = PS.LimitFailure(None, "Request rejected (429)")
+        after = PS.after_limit_failure(PS.State(on_vertex), NOW, failure)
+        self.assertEqual(after.switch, on_vertex)
+
+
+class UnrecognisedWording(unittest.TestCase):
+    """A move caused by wording the switch doesn't know keeps that wording where you can read it."""
+
+    @given(message=st.text(max_size=MESSAGE_CAP))
+    def test_the_wording_survives_the_state_file(self, message: str) -> None:
+        cause = PS.UnrecognisedWording(message)
+        state = PS.State(PS.OnVertex(NOW, NOW + 60, cause))
+        self.assertEqual(PS.parse_state(PS.dump_state(state)), state)
+
+    def test_a_known_cause_in_the_state_file_reads_as_it_always_has(self) -> None:
+        text = json.dumps(
+            {
+                "provider": "vertex",
+                "since": NOW,
+                "until": NOW + 60,
+                "reason": "a turn failed on a usage limit",
+                "usage": {},
+            }
+        )
+        expected = PS.OnVertex(NOW, NOW + 60, PS.Reason.LIMIT_ERROR)
+        self.assertEqual(PS.parse_state(text).switch, expected)
+
+    def test_a_hand_edited_wording_longer_than_the_cap_is_cut_to_it(self) -> None:
+        state = PS.State(PS.OnVertex(NOW, NOW + 60, PS.UnrecognisedWording("x")))
+        data = json.loads(PS.dump_state(state))
+        data["message"] = "x" * 5000
+        cause = PS.parse_state(json.dumps(data)).switch.reason
+        self.assertEqual(cause, PS.UnrecognisedWording("x" * MESSAGE_CAP))
+
+    def test_cc_switch_names_the_wording(self) -> None:
+        cause = PS.UnrecognisedWording("API Error: Request rejected (429)")
+        text = PS.describe(PS.OnVertex(NOW, NOW + 1800, cause), NOW)
+        self.assertIn('"API Error: Request rejected (429)"', text)
 
 
 class StopFailureHook(unittest.TestCase):
@@ -223,39 +379,52 @@ class StopFailureHook(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def run_hook(self, message: str, env: dict[str, str] = ENV) -> subprocess.CompletedProcess[str]:
-        payload = {"error": "rate_limit", "last_assistant_message": message}
+    def run_hook(
+        self, message: str, error: str = "rate_limit", env: dict[str, str] = ENV
+    ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [sys.executable, str(SCRIPT), "--stop-failure"],
-            input=json.dumps(payload),
+            input=json.dumps(limit_payload(error, message)),
             env={"HOME": str(self.home.home), "PATH": "/usr/bin:/bin", **env},
             capture_output=True,
             text=True,
             check=False,
         )
 
-    def test_a_turn_that_hits_the_limit_moves_sessions_until_the_recorded_reset(self) -> None:
+    def test_the_5_hour_wording_moves_sessions_until_the_recorded_reset(self) -> None:
         resets = 4_000_000_000.0
         self.home.paths.state.parent.mkdir(parents=True)
         self.home.paths.state.write_text(
             PS.dump_state(PS.State(usage={"five_hour": seen(40, resets)}))
         )
 
-        result = self.run_hook("You've hit your session limit · resets 3pm")
+        # The text Claude Code showed when the 5-hour limit was hit on 2026-11-18
+        result = self.run_hook("You've hit your 5-hour limit · resets 11:50am (America/Toronto)")
 
         self.assertEqual(result.returncode, 0, result.stderr)
         switch = self.home.saved_state().switch
         self.assertEqual((switch.until, switch.reason), (resets, PS.Reason.LIMIT_ERROR))
         self.assertEqual(self.home.switch(), "1")
 
+    def test_unknown_wording_moves_sessions_for_thirty_minutes_and_keeps_the_wording(self) -> None:
+        message = "API Error: Request rejected (429) · Too Many Requests"
+
+        result = self.run_hook(message)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        switch = self.home.saved_state().switch
+        self.assertEqual(switch.until - switch.since, 30 * 60)
+        self.assertEqual(switch.reason, PS.UnrecognisedWording(message))
+        self.assertEqual(self.home.switch(), "1")
+
     def test_another_failure_moves_nothing(self) -> None:
-        result = self.run_hook("Server is temporarily limiting requests")
+        result = self.run_hook("You've hit your 5-hour limit", error="server_error")
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.home.switch(), "")
 
     def test_without_a_vertex_project_nothing_moves(self) -> None:
-        result = self.run_hook("You've hit your session limit", env={})
+        result = self.run_hook("You've hit your 5-hour limit", env={})
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.home.switch(), "")

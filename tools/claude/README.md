@@ -28,14 +28,22 @@ Vertex AI. `CLAUDE_CODE_USE_VERTEX` in the `env` block of
 the file in every running session, so they all move together, from their next prompt.
 
 `provider_switch.py` keeps which one sessions should use in `~/.local/state/claude/provider.json`,
-with the time they move back from Vertex AI. Two things move sessions there on their own, until the
-used-up window resets:
+with the time they move back from Vertex AI. Two things move sessions there on their own:
 
-- **The status line,** when the 5-hour or weekly window it reports reaches 100%.
-- **The `StopFailure` hook in `settings.json`,** when a turn fails with "You've hit your session
-  limit" or "You've hit your weekly limit". The next prompt then goes to Vertex AI.
+- **The status line,** when the 5-hour or weekly window it reports reaches 100%, until that window
+  resets.
+- **The `StopFailure` hook in `settings.json`,** when a turn fails with error `rate_limit`, whatever
+  Claude Code's wording. The next prompt then goes to Vertex AI. A wording the switch knows ("You've
+  hit your session limit", "You've hit your 5-hour limit" or "You've hit your weekly limit") keeps
+  them there until that window resets, or for the window's full length when no reset time is
+  recorded. Any other wording keeps them there until a window the status line saw at 100% resets,
+  or for 30 minutes when none did, and `cc-switch` shows the wording, so it can be added to
+  `LIMIT_MESSAGES`.
 
-The status line applies the state to `settings.json` on every refresh, moves sessions back once the
+While sessions are on Vertex AI, a used-up window that a status line reports and that resets after
+their stay ends extends the stay to that reset. A session running on Vertex AI from its start
+reports no usage windows, so this needs a session whose status line still shows the window. The
+status line applies the state to `settings.json` on every refresh, moves sessions back once the
 time passes, and shows `Vertex AI until <time>` meanwhile. Run `! cc-switch` in a session to see
 which one they use, `! cc-switch vertex` to move them until the 5-hour limit resets, or
 `! cc-switch subscription` to move them back. Moved back while a limit is still used up, they stay

@@ -8,10 +8,11 @@
 A state file says which one sessions should use, and until when they stay on Vertex AI. The status
 line, which Claude Code runs every few seconds in every session, calls `tick`. It moves sessions to
 Vertex AI when a usage window it reports is used up, moves them back once their time passes, and
-makes CLAUDE_CODE_USE_VERTEX in the user settings file match the state. The StopFailure hook in
-settings.json runs this script with --stop-failure, which moves sessions when a turn failed on a
-usage limit.
-Claude Code reloads that file in every running session, so they all move together. The Vertex AI
+makes CLAUDE_CODE_USE_VERTEX in the user settings file match the state. Claude Code reloads that
+file in every running session, so they all move together. While sessions are on Vertex AI, a
+used-up window a status line reports that resets later than their stay ends extends the stay to that
+reset. The StopFailure hook in settings.json runs this script with --stop-failure, which moves
+sessions when a turn failed on a rate limit, whatever Claude Code's wording. The Vertex AI
 project comes from ANTHROPIC_VERTEX_PROJECT_ID, which cc.bash exports for every session it starts
 on the work laptop, so nothing here writes a private value. Without it nothing moves, which keeps
 personal Macs on the subscription.
@@ -27,12 +28,13 @@ import os
 import sys
 import tempfile
 import time
-from collections.abc import Callable, Generator, Mapping
+from collections.abc import Callable, Generator, Iterable, Mapping
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass, field, replace
 from datetime import datetime, tzinfo
 from enum import StrEnum
 from pathlib import Path
+from typing import assert_never
 
 SWITCH_KEY = "CLAUDE_CODE_USE_VERTEX"
 PROJECT_KEY = "ANTHROPIC_VERTEX_PROJECT_ID"
@@ -40,13 +42,24 @@ FIVE_HOURS_S = 5 * 3600
 # How long each of the subscription's usage windows lasts, by the key the status line reports it
 # under, for a used-up window whose reset time is unknown
 WINDOW_LENGTHS_S = {"five_hour": FIVE_HOURS_S, "seven_day": 7 * 24 * 3600}
-# What Claude Code shows when a turn fails on a usage window, by window. Claude Code retries a
-# brief 429 itself and words it differently, so only these move sessions.
+# What Claude Code shows when a turn fails on a usage window, by window. Every turn that fails with
+# error "rate_limit" moves sessions; the wording only says which window ran out, and so how long they
+# stay. The wording isn't a supported interface: transcripts on the work laptop hold both
+# "You've hit your session limit" and "You've hit your 5-hour limit" for the 5-hour window, and the
+# errors page names only the first.
 # See: https://code.claude.com/docs/en/errors
 LIMIT_MESSAGES = {
-    "five_hour": "you've hit your session limit",
-    "seven_day": "you've hit your weekly limit",
+    "five_hour": ("you've hit your session limit", "you've hit your 5-hour limit"),
+    "seven_day": ("you've hit your weekly limit",),
 }
+# How long sessions stay on Vertex AI after a rate limit in wording the switch doesn't know, when no
+# reported window is used up. Claude Code retries a brief 429 itself, so this is short enough that
+# one that outlasts its retries costs little. A real limit that a status line still reports extends
+# the stay; a session running on Vertex AI from its start reports no usage windows.
+UNRECOGNISED_LIMIT_S = 30 * 60
+# How much of a failure's wording the state file keeps, so a long message can't swell it
+MESSAGE_LENGTH_MAX = 200
+UNRECOGNISED_REASON = "a turn failed on a rate limit in wording the switch doesn't know"
 # The status line refreshes every 5 seconds, so a tick that waits longer for another session's
 # tick would delay the line. A tick that gives up changes nothing, and the next one tries again.
 LOCK_TIMEOUT_S = 0.5
@@ -56,6 +69,35 @@ class Reason(StrEnum):
     MANUAL = "chosen with cc-switch"
     USAGE_LIMIT = "the status line saw a usage limit reached"
     LIMIT_ERROR = "a turn failed on a usage limit"
+
+
+@dataclass(frozen=True)
+class UnrecognisedWording:
+    """A turn failed on a rate limit in wording the switch doesn't know, kept so it can be added."""
+
+    message: str
+
+    def __post_init__(self) -> None:
+        assert len(self.message) <= MESSAGE_LENGTH_MAX, (
+            f"a kept message is {len(self.message)} characters, over {MESSAGE_LENGTH_MAX}"
+        )
+
+
+Cause = Reason | UnrecognisedWording
+
+
+@dataclass(frozen=True)
+class LimitFailure:
+    """A turn that failed on a rate limit, from the StopFailure hook's input."""
+
+    window: str | None  # The usage window its wording names, or None when the wording is unknown
+    message: str
+
+    def __post_init__(self) -> None:
+        assert self.window is None or self.window in WINDOW_LENGTHS_S, f"no window {self.window}"
+        assert len(self.message) <= MESSAGE_LENGTH_MAX, (
+            f"a failure's message is {len(self.message)} characters, over {MESSAGE_LENGTH_MAX}"
+        )
 
 
 @dataclass(frozen=True)
@@ -76,7 +118,7 @@ class OnSubscription:
 class OnVertex:
     since: float  # Unix seconds
     until: float
-    reason: Reason
+    reason: Cause
 
     def __post_init__(self) -> None:
         assert self.until > self.since, f"Vertex AI until {self.until} is not after {self.since}"
@@ -149,10 +191,20 @@ def parse_state(text: str | None) -> State:
         if data.get("provider") != "vertex":
             held = data.get("held_until")
             return State(OnSubscription(None if held is None else float(held)), usage)
-        switch = OnVertex(float(data["since"]), float(data["until"]), Reason(data["reason"]))
+        switch = OnVertex(float(data["since"]), float(data["until"]), _parse_cause(data))
         return State(switch, usage)
     except (ValueError, TypeError, KeyError, AttributeError, AssertionError):
         return State()
+
+
+def _parse_cause(data: Mapping[str, object]) -> Cause:
+    if data["reason"] == UNRECOGNISED_REASON:
+        return UnrecognisedWording(_capped(str(data.get("message") or "")))
+    return Reason(data["reason"])
+
+
+def _capped(message: str) -> str:
+    return message[:MESSAGE_LENGTH_MAX]
 
 
 def dump_state(state: State) -> str:
@@ -164,8 +216,14 @@ def dump_state(state: State) -> str:
             "provider": "vertex",
             "since": state.switch.since,
             "until": state.switch.until,
-            "reason": state.switch.reason.value,
         }
+        match state.switch.reason:
+            case UnrecognisedWording(message):
+                data |= {"reason": UNRECOGNISED_REASON, "message": message}
+            case Reason() as reason:
+                data["reason"] = reason.value
+            case unknown:
+                assert_never(unknown)
     data["usage"] = {
         key: {"used_percent": seen.used_percent, "resets_at": seen.resets_at}
         for key, seen in state.usage.items()
@@ -174,10 +232,22 @@ def dump_state(state: State) -> str:
 
 
 def after_tick(state: State, now: float, windows: Mapping[str, UsageSeen]) -> State:
-    """The state once `now` has come. Back on the subscription when the Vertex AI time is up, and
-    on Vertex AI when a window that has not reset yet is used up, until the latest such reset. It
-    also holds the latest reset time each window reported."""
+    """The state once `now` has come. On Vertex AI for longer when a used-up window resets after the
+    stay ends, back on the subscription when the Vertex AI time is up, and on Vertex AI when a window
+    that has not reset yet is used up, until the latest such reset. It also holds the latest reset
+    time each window reported."""
     switch = state.switch
+    if isinstance(switch, OnVertex):
+        # Only a known reset extends the stay: one guessed from a window's length would move later
+        # on every tick, so the stay would never end
+        later = _latest_used_up_reset(windows.values(), now)
+        extended = (
+            replace(switch, until=later) if later is not None and later > switch.until else switch
+        )
+        assert extended.until >= switch.until, (
+            f"the stay shrank from {switch.until} to {extended.until}"
+        )
+        switch = extended
     if isinstance(switch, OnVertex) and now >= switch.until:
         switch = OnSubscription()
     if isinstance(switch, OnSubscription) and _held(switch, now):
@@ -198,27 +268,51 @@ def _held(switch: OnSubscription, now: float) -> bool:
     return switch.held_until is not None and now < switch.held_until
 
 
-def parse_limit_error(payload: Mapping[str, object]) -> str | None:
-    """The usage window a failed turn ran out of, from the StopFailure hook's input, or None when
-    the turn failed for another reason."""
+def _latest_used_up_reset(windows: Iterable[UsageSeen], now: float) -> float | None:
+    """The latest reset still ahead of a used-up window, or None when no window has one."""
+    resets = [
+        seen.resets_at
+        for seen in windows
+        if seen.used_percent >= 100 and seen.resets_at is not None and seen.resets_at > now
+    ]
+    return max(resets) if resets else None
+
+
+def parse_limit_failure(payload: Mapping[str, object]) -> LimitFailure | None:
+    """The rate limit a turn failed on, from the StopFailure hook's input, or None when the turn
+    failed for another reason. The wording names the window when the switch knows it."""
     if payload.get("error") != "rate_limit":
         return None
-    text = " ".join(
-        str(payload.get(key) or "") for key in ("last_assistant_message", "error_details")
+    parts = [str(payload.get(key) or "") for key in ("last_assistant_message", "error_details")]
+    message = " ".join(part for part in parts if part)
+    text = message.replace("\u2019", "'").lower()
+    window = next(
+        (key for key, wordings in LIMIT_MESSAGES.items() if any(w in text for w in wordings)),
+        None,
     )
-    text = text.replace("\u2019", "'").lower()
-    return next((key for key, message in LIMIT_MESSAGES.items() if message in text), None)
+    return LimitFailure(window, _capped(message))
 
 
-def after_limit_error(state: State, now: float, window: str) -> State:
-    """Vertex AI until the window that ran out resets, or for its full length when no reset time
-    is recorded. Sessions already on Vertex AI keep their time."""
+def after_limit_failure(state: State, now: float, failure: LimitFailure) -> State:
+    """Vertex AI after a turn failed on a rate limit. A known window stays until it resets, or for
+    its full length when no reset time is recorded. Unknown wording stays until the latest reset of
+    a used-up window, or for UNRECOGNISED_LIMIT_S when none is used up. Sessions already on Vertex
+    AI keep their time, and a hold keeps them on the subscription."""
     if isinstance(state.switch, OnVertex) or _held(state.switch, now):
         return state
-    seen = state.usage.get(window)
-    resets = seen.resets_at if seen is not None else None
-    until = resets if resets is not None and resets > now else now + WINDOW_LENGTHS_S[window]
-    return replace(state, switch=OnVertex(now, until, Reason.LIMIT_ERROR))
+    match failure.window:
+        case None:
+            latest = _latest_used_up_reset(state.usage.values(), now)
+            until = latest if latest is not None else now + UNRECOGNISED_LIMIT_S
+            cause: Cause = UnrecognisedWording(failure.message)
+        case window:
+            seen = state.usage.get(window)
+            resets = seen.resets_at if seen is not None else None
+            until = (
+                resets if resets is not None and resets > now else now + WINDOW_LENGTHS_S[window]
+            )
+            cause = Reason.LIMIT_ERROR
+    return replace(state, switch=OnVertex(now, until, cause))
 
 
 def choose_vertex(state: State, now: float) -> State:
@@ -232,12 +326,7 @@ def choose_vertex(state: State, now: float) -> State:
 def choose_subscription(state: State, now: float) -> State:
     """The subscription, held until the latest used-up window resets, so neither trigger moves
     sessions straight back to Vertex AI. No hold when no window is used up."""
-    used_up = [
-        seen.resets_at
-        for seen in state.usage.values()
-        if seen.used_percent >= 100 and seen.resets_at is not None and seen.resets_at > now
-    ]
-    return replace(state, switch=OnSubscription(max(used_up) if used_up else None))
+    return replace(state, switch=OnSubscription(_latest_used_up_reset(state.usage.values(), now)))
 
 
 def switch_value(switch: Switch) -> str:
@@ -340,11 +429,21 @@ def clock(at: float, now: float, zone: tzinfo | None = None) -> str:
     return clock if at - now < 24 * 3600 else f"{weekday} {clock}"
 
 
+def _describe_cause(cause: Cause) -> str:
+    match cause:
+        case UnrecognisedWording(message):
+            return f'{UNRECOGNISED_REASON}: "{message}"'
+        case Reason() as reason:
+            return reason.value
+        case unknown:
+            assert_never(unknown)
+
+
 def describe(switch: Switch, now: float) -> str:
     if isinstance(switch, OnVertex):
         return (
             f"Sessions use Vertex AI until {clock(switch.until, now)} "
-            f"(since {clock(switch.since, now)}, {switch.reason.value}).\n"
+            f"(since {clock(switch.since, now)}, {_describe_cause(switch.reason)}).\n"
             "To move them back to the subscription now: cc-switch subscription"
         )
     if switch.held_until is not None and now < switch.held_until:
@@ -360,17 +459,17 @@ def describe(switch: Switch, now: float) -> str:
 
 
 def stop_failure(payload_text: str, paths: Paths, env: Mapping[str, str], now: float) -> int:
-    """The StopFailure hook: move sessions to Vertex AI when a turn failed on a usage limit. Claude
+    """The StopFailure hook: move sessions to Vertex AI when a turn failed on a rate limit. Claude
     Code ignores the hook's output and exit status, so it always exits 0."""
     try:
         payload = json.loads(payload_text)
     except ValueError:
         return 0
-    window = parse_limit_error(payload) if isinstance(payload, dict) else None
-    if window is None or not env.get(PROJECT_KEY):
+    failure = parse_limit_failure(payload) if isinstance(payload, dict) else None
+    if failure is None or not env.get(PROJECT_KEY):
         return 0
     with suppress(Busy, NotWritten):
-        _update(paths, env, lambda state: after_limit_error(state, now, window))
+        _update(paths, env, lambda state: after_limit_failure(state, now, failure))
     return 0
 
 

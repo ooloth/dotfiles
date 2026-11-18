@@ -64,9 +64,9 @@ main() {
   if is_work; then
     mode="auto"
     # Every work session can then use Vertex AI, so setting CLAUDE_CODE_USE_VERTEX in the settings
-    # file moves it there when the subscription's usage limit is reached. The project and region
-    # do nothing while that switch is "". The project is private, so it comes from private.env
-    # rather than the tracked settings file.
+    # file moves it there when a usage limit is reached or a turn fails on a rate limit. The project
+    # and region do nothing while that switch is "". The project is private, so it comes from
+    # private.env rather than the tracked settings file.
     if [[ -n "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
       export ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT}" CLOUD_ML_REGION=global
     fi
