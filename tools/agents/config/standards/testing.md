@@ -179,6 +179,17 @@ hides the miss. So before its output is relied on, the code is run once on a
 real payload, captured from the receiving side or a log. That payload is kept
 beside the code's tests wherever it holds no secrets or personal data.
 
+**A test of what a log line holds reads the line through the formatter the app writes it with.**
+A test runner's capture of log records, such as pytest's `caplog`, keeps each
+raw record and formats it with the runner's own formatter. Whatever the app's
+formatter does, redacting a value or adding or dropping a field, never reaches
+it. A test that reads the capture can pass while the app writes a value it means
+to keep out, and fail when the app's formatter correctly removes one. So the
+test formats each captured record with the app's formatter, or reads what the
+running process wrote. Seen in recursionpharma/react-clinops-siteoutreach#395:
+once redaction moved into the JSON formatter, two `caplog` tests read the
+unredacted address and token.
+
 ## Consider
 
 **Flakiness risk is minimized.**
