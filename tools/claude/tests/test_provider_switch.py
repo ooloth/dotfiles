@@ -250,17 +250,14 @@ def unknown_wording(text: str) -> bool:
     return not any(wording in lowered for wording in KNOWN_WORDINGS)
 
 
-# What Claude Code puts in error_details for a rate limit, beside the message it showed
+# The error_details value in the StopFailure input example of Claude Code's hooks reference, which
+# calls the field optional. See: https://code.claude.com/docs/en/hooks
 DETAILS = "429 Too Many Requests"
 
 
-def limit_payload(error: str, message: str) -> dict[str, str]:
-    return {
-        "hook_event_name": "StopFailure",
-        "error": error,
-        "last_assistant_message": message,
-        "error_details": DETAILS,
-    }
+def limit_payload(error: str, message: str, details: str | None = DETAILS) -> dict[str, str]:
+    payload = {"hook_event_name": "StopFailure", "error": error, "last_assistant_message": message}
+    return payload if details is None else {**payload, "error_details": details}
 
 
 class LimitFailures(unittest.TestCase):
@@ -287,17 +284,23 @@ class LimitFailures(unittest.TestCase):
                 failure = PS.parse_limit_failure(limit_payload("rate_limit", message))
                 self.assertEqual(failure, PS.KnownLimit(window))
 
+    def test_a_known_wording_in_error_details_alone_names_its_window(self) -> None:
+        payload = limit_payload("rate_limit", "", details="You've hit your weekly limit")
+
+        self.assertEqual(PS.parse_limit_failure(payload), PS.KnownLimit("seven_day"))
+
     # Half the cases run past the cap, which plain generated text almost never does
     @given(
         message=st.one_of(
             st.text(max_size=MESSAGE_CAP), st.text(min_size=MESSAGE_CAP - 10, max_size=1000)
-        ).filter(unknown_wording)
+        ).filter(unknown_wording),
+        details=st.sampled_from([DETAILS, None]),
     )
     def test_a_rate_limit_in_any_other_wording_is_a_limit_failure_with_no_window(
-        self, message: str
+        self, message: str, details: str | None
     ) -> None:
-        failure = PS.parse_limit_failure(limit_payload("rate_limit", message))
-        expected = f"{message} {DETAILS}" if message else DETAILS
+        failure = PS.parse_limit_failure(limit_payload("rate_limit", message, details))
+        expected = " ".join(part for part in (message, details) if part)
         self.assertEqual(failure, PS.UnknownLimit(expected[:MESSAGE_CAP]))
 
     def test_no_other_error_is_a_limit_failure_whatever_its_wording(self) -> None:
@@ -417,8 +420,8 @@ class UnknownWordingKept(unittest.TestCase):
         wording = PS.parse_state(json.dumps(data)).unknown_wording
         self.assertEqual(wording, PS.UnknownWording(NOW, "x" * MESSAGE_CAP))
 
-    def test_a_stay_written_before_the_wording_moved_out_still_reads(self) -> None:
-        # A stay whose wording sits beside its reason, the shape 89dfaee1's hook wrote
+    def test_a_stay_with_its_wording_beside_the_reason_reads_and_keeps_the_wording(self) -> None:
+        # The shape 89dfaee1's hook wrote
         text = json.dumps(
             {
                 "provider": "vertex",
@@ -464,21 +467,29 @@ class UnknownWordingKept(unittest.TestCase):
 
 class StateFile(unittest.TestCase):
     def test_each_reason_reads_back_from_the_text_the_state_file_stores(self) -> None:
-        # Written out by hand, since these are the texts state files on disk already hold
-        stored = {
-            "chosen with cc-switch": PS.Reason.MANUAL,
-            "the status line saw a usage limit reached": PS.Reason.USAGE_LIMIT,
-            "a turn failed on a usage limit": PS.Reason.LIMIT_ERROR,
-            "a turn failed on a rate limit in wording the switch doesn't know": (
-                PS.Reason.UNRECOGNISED_WORDING
+        # The stored text, written out, so rewording a Reason fails here rather than silently
+        # turning saved stays into the subscription
+        for stored, reason in (
+            ("chosen with cc-switch", PS.Reason.MANUAL),
+            ("the status line saw a usage limit reached", PS.Reason.USAGE_LIMIT),
+            ("a turn failed on a usage limit", PS.Reason.LIMIT_ERROR),
+            (
+                "a turn failed on a rate limit in wording the switch doesn't know",
+                PS.Reason.UNRECOGNISED_WORDING,
             ),
-        }
-        self.assertEqual(set(stored.values()), set(PS.Reason))
-        for text, reason in stored.items():
-            with self.subTest(reason=reason):
-                data = {"provider": "vertex", "since": NOW, "until": NOW + 60, "reason": text}
+        ):
+            with self.subTest(reason=reason.name):
+                text = json.dumps(
+                    {
+                        "provider": "vertex",
+                        "since": NOW,
+                        "until": NOW + 60,
+                        "reason": stored,
+                        "usage": {},
+                    }
+                )
                 expected = PS.OnVertex(NOW, NOW + 60, reason)
-                self.assertEqual(PS.parse_state(json.dumps(data)).switch, expected)
+                self.assertEqual(PS.parse_state(text).switch, expected)
 
 
 class StopFailureHook(unittest.TestCase):
@@ -490,11 +501,15 @@ class StopFailureHook(unittest.TestCase):
         self._tmp.cleanup()
 
     def run_hook(
-        self, message: str, error: str = "rate_limit", env: dict[str, str] = ENV
+        self,
+        message: str,
+        error: str = "rate_limit",
+        env: dict[str, str] = ENV,
+        details: str | None = DETAILS,
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [sys.executable, str(SCRIPT), "--stop-failure"],
-            input=json.dumps(limit_payload(error, message)),
+            input=json.dumps(limit_payload(error, message, details)),
             env={"HOME": str(self.home.home), "PATH": "/usr/bin:/bin", **env},
             capture_output=True,
             text=True,
@@ -527,6 +542,17 @@ class StopFailureHook(unittest.TestCase):
         self.assertEqual(saved.switch.reason, PS.Reason.UNRECOGNISED_WORDING)
         assert saved.unknown_wording is not None
         self.assertEqual(saved.unknown_wording.message, f"{message} {DETAILS}")
+        self.assertEqual(self.home.switch(), "1")
+
+    def test_a_failure_with_no_error_details_keeps_the_message_alone(self) -> None:
+        message = "API Error: Request rejected (429) · Too Many Requests"
+
+        result = self.run_hook(message, details=None)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        saved = self.home.saved_state()
+        assert saved.unknown_wording is not None
+        self.assertEqual(saved.unknown_wording.message, message)
         self.assertEqual(self.home.switch(), "1")
 
     def test_a_session_already_on_vertex_moves_nothing_and_records_nothing(self) -> None:
@@ -657,7 +683,7 @@ class SettingsSync(unittest.TestCase):
         self.assertEqual(self.home.target.read_text(), '{"env": ')
 
     def test_sessions_switching_at_once_leave_the_files_agreeing(self) -> None:
-        # Many status lines and a cc-switch can write at the same moment
+        # Many cc-switch runs can write at the same moment
         program = (
             "import sys, time; sys.path.insert(0, sys.argv[1]); import provider_switch as p; "
             "from pathlib import Path; "

@@ -56,8 +56,8 @@ A failure that `u` used to catch starts surfacing late somewhere else.
 
 The maintainer chose not to add a gcloud credentials check to the `cc` alias. Nothing checks
 those credentials before a Claude session starts, so a session that needs them finds out when a
-`gcloud` command fails. `cc-vertex` in `tools/claude/shell.zsh` then still checked them before
-starting a Vertex AI session.
+`gcloud` command fails. `ccy-vertex` (now `cc-vertex`) in `tools/claude/shell.zsh` then still
+checked them before starting a Vertex AI session.
 The 2026-11-05 addendum below reverses this: `cc`, `ccc` and `cc-vertex` all run `auth`.
 
 ## Addendum (2026-11-05) — `cc` checks the Google login again
@@ -82,3 +82,11 @@ login says nothing. A run that waited for another run's logins opens nothing in 
 it couldn't check, since the run before it has just tried that login, and opening it again in every
 waiting run would ask for the same login once per session. A check that can't reach its service
 still opens nothing when it is the run's first check, as the addendum above says.
+
+## Addendum (2026-11-18): a run that can't set up the lock logs in without sharing
+
+When the lock can't be set up, because its folder or file can't be created or the file system
+refuses the lock, `auth` says why and logs in without sharing the logins with other runs. The
+lock only stops two runs opening the same login, and a session that starts with an expired login
+says nothing, while a second browser login shows on screen. Runs that log in this way can also
+reset Argo CD's default context while another run's `argocd login` writes the same config file.
