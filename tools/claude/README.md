@@ -42,8 +42,9 @@ with the time they move back from Vertex AI. Two things move sessions there on t
   Vertex AI, such as one `cc-vertex` started, moves nothing, because its 429 comes from Vertex AI
   itself.
 
-Wording the switch doesn't know is kept, with when it was seen, until newer unknown wording replaces
-it. `cc-switch` shows it until `LIMIT_MESSAGES` gains it, so it can be added there.
+Wording the switch doesn't know, from a subscription session's rate limit, is kept with when it was
+seen, until newer unknown wording replaces it. `cc-switch` shows it until `LIMIT_MESSAGES` gains it,
+so it can be added there.
 
 While sessions are on Vertex AI, a used-up window that a status line reports and that resets after
 their stay ends extends the stay to that reset. A session running on Vertex AI from its start
