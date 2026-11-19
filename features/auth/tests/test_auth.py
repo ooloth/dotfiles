@@ -138,7 +138,7 @@ class FreeLock:
     """A login lock no other run holds, for the in-process tests."""
 
     def __enter__(self):
-        return login_lock.HeldLoginLock()
+        return login_lock.HeldLoginLock(waited=False)
 
     def __exit__(self, *_exc: object) -> None:
         return None
@@ -154,7 +154,7 @@ class LockAnotherRunReleasedAfterLoggingIn:
     def __enter__(self):
         for name in self.shell.states:
             self.shell.states[name] = "valid"
-        return login_lock.HeldLoginLock()
+        return login_lock.HeldLoginLock(waited=True)
 
     def __exit__(self, *_exc: object) -> None:
         return None
@@ -168,7 +168,7 @@ class RecordingLock:
 
     def __enter__(self):
         self.held = True
-        return login_lock.HeldLoginLock()
+        return login_lock.HeldLoginLock(waited=False)
 
     def __exit__(self, *_exc: object) -> None:
         self.held = False
@@ -176,11 +176,12 @@ class RecordingLock:
 
 @dataclass
 class LockWhoseCheckAgainSays:
-    """A login lock that, once held, makes every check say `again`: one of ANSWERS' states,
-    "missing" for a tool gone from PATH, or "timed out"."""
+    """A login lock that hands out `permit` and, once held, makes each check say `again` until a
+    login changes it: one of ANSWERS' states, "missing" for a tool gone from PATH, or "timed out"."""
 
     shell: FakeShell
     again: State | Literal["missing", "timed out"]
+    permit: login_lock.LoginPermit
 
     def __enter__(self):
         names = frozenset(self.shell.states)
@@ -192,7 +193,7 @@ class LockWhoseCheckAgainSays:
             case state:
                 for name in names:
                     self.shell.states[name] = state
-        return login_lock.HeldLoginLock()
+        return self.permit
 
     def __exit__(self, *_exc: object) -> None:
         return None
@@ -429,28 +430,101 @@ class SharedLogins(unittest.TestCase):
 
         self.assertEqual(calls, [])
 
-    def test_only_a_valid_or_missing_tool_under_the_lock_skips_a_login(self) -> None:
-        # A check that can't tell runs the login: a second browser login shows, while a session
-        # that starts with an expired login says nothing
-        for again, logs_in in (
-            ("valid", False),
-            ("missing", False),
-            ("expired", True),
-            ("unreachable", True),
-            ("timed out", True),
+    def test_a_check_under_the_lock_logs_in_by_what_it_says_and_whether_the_run_waited(
+        self,
+    ) -> None:
+        # A check that can't tell runs the login, since a second browser login shows while a
+        # session started with an expired login says nothing. A run that waited skips it, since
+        # the run before it has just tried that login.
+        didnt_wait = login_lock.HeldLoginLock(waited=False)
+        waited = login_lock.HeldLoginLock(waited=True)
+        unshared = login_lock.UnsharedLogins()
+        for again, permit, logs_in in (
+            ("valid", didnt_wait, False),
+            ("valid", waited, False),
+            ("missing", didnt_wait, False),
+            ("missing", waited, False),
+            ("expired", didnt_wait, True),
+            ("expired", waited, True),
+            ("expired", unshared, True),
+            ("unreachable", didnt_wait, True),
+            ("unreachable", waited, False),
+            ("unreachable", unshared, True),
+            ("timed out", didnt_wait, True),
+            ("timed out", waited, False),
+            ("timed out", unshared, True),
         ):
-            with self.subTest(again=again):
+            with self.subTest(again=again, permit=permit):
                 items = configured_logins()
                 shell = FakeShell(
                     items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
                 )
+                lock = LockWhoseCheckAgainSays(shell, again, permit)
 
-                outcomes = auth.run(
-                    auth.Mode.REFRESH, items, shell, ignore, LockWhoseCheckAgainSays(shell, again)
+                outcomes = auth.run(auth.Mode.REFRESH, items, shell, ignore, lock)
+
+                expected = [login.login for login in items] if logs_in else []
+                self.assertEqual(shell.attached, expected)
+                self.assertEqual(
+                    [outcome.login_ran for outcome in outcomes], [logs_in] * len(items)
                 )
 
-                self.assertEqual(bool(shell.attached), logs_in)
-                self.assertEqual(all(outcome.login_ran for outcome in outcomes), logs_in)
+    def test_a_run_that_waited_says_it_couldnt_check_a_login_it_left_alone(self) -> None:
+        items = configured_logins()
+        shell = FakeShell(
+            items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
+        )
+        lock = LockWhoseCheckAgainSays(shell, "timed out", login_lock.HeldLoginLock(waited=True))
+        lines: list[str] = []
+
+        outcomes = auth.run(
+            auth.Mode.REFRESH, items, shell, lambda o: lines.append(auth.describe(o)), lock
+        )
+
+        self.assertFalse(auth.all_valid(outcomes))
+        self.assertEqual(len(lines), len(items))
+        for line in lines:
+            self.assertIn("expired → couldn't check", line)
+            self.assertIn("(checked again, no login run)", line)
+
+
+class FileLoginLock(unittest.TestCase):
+    """The real lock, held through a second open of the same file, as another run holds it."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.path = Path(self._tmp.name) / "logins.lock"
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_a_free_lock_says_this_run_didnt_wait(self) -> None:
+        with (
+            mock.patch("sys.stderr", new=io.StringIO()),
+            login_lock.file_login_lock(self.path) as permit,
+        ):
+            self.assertEqual(permit, login_lock.HeldLoginLock(waited=False))
+
+    def test_a_lock_another_run_held_says_this_run_waited(self) -> None:
+        permits: list[login_lock.LoginPermit] = []
+        printed = io.StringIO()
+
+        def enter() -> None:
+            with login_lock.file_login_lock(self.path) as permit:
+                permits.append(permit)
+
+        with mock.patch("sys.stderr", new=printed):
+            with self.path.open("a") as other_run:
+                fcntl.flock(other_run, fcntl.LOCK_EX)
+                waiter = threading.Thread(target=enter)
+                waiter.start()
+                deadline = time.monotonic() + 10
+                while WAITING not in printed.getvalue() and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                fcntl.flock(other_run, fcntl.LOCK_UN)
+            waiter.join(10)
+
+        self.assertEqual(permits, [login_lock.HeldLoginLock(waited=True)])
 
 
 class CheckMode(unittest.TestCase):

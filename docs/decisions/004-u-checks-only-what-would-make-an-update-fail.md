@@ -62,22 +62,26 @@ The 2026-11-05 addendum below reverses this: `cc`, `ccc` and `cc-vertex` all run
 
 ## Addendum (2026-11-05) — `cc` checks the Google login again
 
-The maintainer chose to have `cc`, `ccc` and `cc-vertex` on the work laptop check the work
-logins before a session starts, which reverses the addendum above. Each runs `auth`
-(`features/auth/`), which checks the Google, Spacelift and Argo CD logins at once and opens a
-browser login only for each one whose check says it has expired. A check that can't reach its
-service opens nothing, and the session starts whatever the checks find. With every login valid,
-the checks add about a second to each start. Skipping them for a few minutes after a run that
-found every login valid was considered and not taken, since a second is acceptable.
+The maintainer chose to have `cc`, `ccc` and `cc-vertex` on the work laptop check the work logins
+before a session starts, which reverses the addendum above. Each runs `auth` (`features/auth/`),
+which checks the Google, Spacelift and Argo CD logins at once and opens a browser login only for
+each one whose check says it has expired. A check that can't reach its service opens nothing (the
+2026-11-18 addendum below narrows this to a run's first check), and the session starts whatever the
+checks find. With every login valid, the checks add about a second to each start. Skipping them for
+a few minutes after a run that found every login valid was considered and not taken, since a second
+is acceptable.
 
 ## Addendum (2026-11-18) — a login found expired opens even when the next check can't tell
 
-Runs that start together share the logins through a lock, and a run checks each expired login
-again once it holds the lock. When that check can't reach its service, `auth` still opens the
-browser login, because the run's first check already found it expired. A second browser login
-shows on screen and can be closed, while a session that starts with an expired login says
-nothing. A check that can't reach its service still opens nothing when it is the run's first
-check, as the addendum above says.
+Runs that start together share the logins through a lock, and a run checks each expired login again
+once it holds the lock. When that check can't tell whether the login is still expired, because it
+can't reach the service or takes longer than 10 seconds, `auth` still opens the browser login if the
+run got the lock without waiting, because its first check already found the login expired. A browser
+login nobody needed shows on screen and Ctrl-C stops it, while a session that starts with an expired
+login says nothing. A run that waited for another run's logins opens nothing in that case and says
+it couldn't check, since the run before it has just tried that login, and opening it again in every
+waiting run would ask for the same login once per session. A check that can't reach its service
+still opens nothing when it is the run's first check, as the addendum above says.
 
 ## Addendum (2026-11-18): a run that can't set up the lock logs in without sharing
 

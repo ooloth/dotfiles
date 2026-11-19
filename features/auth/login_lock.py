@@ -19,6 +19,9 @@ class HeldLoginLock:
     """The permit for a run that holds the login lock. Only entering a LoginLock makes one outside
     the tests."""
 
+    # Whether another run held the lock first, so this run waited for its logins
+    waited: bool
+
 
 @dataclass(frozen=True)
 class UnsharedLogins:
@@ -36,6 +39,7 @@ LoginLock = AbstractContextManager[LoginPermit]
 @dataclass(frozen=True)
 class LockedFile:
     handle: IO[str]
+    waited: bool
 
 
 @dataclass(frozen=True)
@@ -51,10 +55,12 @@ def open_and_lock(path: Path) -> LockedFile | CantShare:
         handle = path.open("a")
     except OSError as error:
         return CantShare(error)
+    waited = False
     try:
         try:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
+            waited = True
             print(
                 "⏳ Another run of auth is logging in; waiting for it...",
                 file=sys.stderr,
@@ -67,7 +73,7 @@ def open_and_lock(path: Path) -> LockedFile | CantShare:
     except BaseException:
         handle.close()
         raise
-    return LockedFile(handle)
+    return LockedFile(handle, waited)
 
 
 @contextmanager
@@ -84,10 +90,10 @@ def file_login_lock(path: Path) -> Generator[LoginPermit]:
                 flush=True,
             )
             yield UnsharedLogins()
-        case LockedFile(handle):
+        case LockedFile(handle, waited):
             with handle:
                 try:
-                    yield HeldLoginLock()
+                    yield HeldLoginLock(waited)
                 finally:
                     fcntl.flock(handle, fcntl.LOCK_UN)
         case unexpected:

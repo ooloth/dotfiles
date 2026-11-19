@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import UTC
 from pathlib import Path
 from types import ModuleType
 
@@ -262,6 +263,16 @@ def limit_payload(error: str, message: str, details: str | None = DETAILS) -> di
 class LimitFailures(unittest.TestCase):
     """Any turn that ends on a rate limit is a limit failure. Its wording only names the window."""
 
+    def test_every_limit_message_can_match_and_names_a_known_window(self) -> None:
+        # A key outside WINDOW_LENGTHS_S fails an assertion inside the hook, where nothing shows
+        # it, and an entry with a capital or a curly apostrophe never matches the lowered wording
+        for window, wordings in PS.LIMIT_MESSAGES.items():
+            self.assertIn(window, PS.WINDOW_LENGTHS_S)
+            for wording in wordings:
+                with self.subTest(wording=wording):
+                    self.assertEqual(wording, wording.lower())
+                    self.assertNotIn("\u2019", wording)
+
     def test_each_known_wording_names_its_window(self) -> None:
         for message, window in (
             ("You've hit your session limit · resets 3pm", "five_hour"),
@@ -409,8 +420,8 @@ class UnknownWordingKept(unittest.TestCase):
         wording = PS.parse_state(json.dumps(data)).unknown_wording
         self.assertEqual(wording, PS.UnknownWording(NOW, "x" * MESSAGE_CAP))
 
-    def test_a_stay_with_its_wording_beside_the_reason_reads_and_drops_the_wording(self) -> None:
-        # As some state files on disk hold it. parse_state ignores the extra key
+    def test_a_stay_with_its_wording_beside_the_reason_reads_and_keeps_the_wording(self) -> None:
+        # The shape 89dfaee1's hook wrote
         text = json.dumps(
             {
                 "provider": "vertex",
@@ -423,12 +434,15 @@ class UnknownWordingKept(unittest.TestCase):
         )
         expected = PS.OnVertex(NOW, NOW + 60, PS.Reason.UNRECOGNISED_WORDING)
         self.assertEqual(PS.parse_state(text).switch, expected)
+        wording = PS.UnknownWording(NOW, "Request rejected (429)")
+        self.assertEqual(PS.parse_state(text).unknown_wording, wording)
 
-    def test_cc_switch_still_names_it_after_the_stay_ends(self) -> None:
+    def test_cc_switch_names_it_during_the_stay_and_after_it_ends(self) -> None:
         message = "API Error: Request rejected (429)"
         stay = PS.after_limit_failure(PS.State(), NOW, PS.UnknownLimit(message))
         ended = PS.after_tick(stay, NOW + 3600, {})
 
+        self.assertIn(f'"{message}"', PS.describe(stay, NOW))
         self.assertEqual(ended.switch, PS.OnSubscription())
         self.assertIn(f'"{message}"', PS.describe(ended, NOW + 3600))
 
@@ -436,8 +450,19 @@ class UnknownWordingKept(unittest.TestCase):
         wording = PS.UnknownWording(NOW, "You've hit your 5-hour limit · resets 3pm")
         self.assertNotIn("resets 3pm", PS.describe(PS.State(unknown_wording=wording), NOW))
 
-    def test_a_wording_seen_days_ago_names_its_day(self) -> None:
-        self.assertRegex(PS.clock(NOW - 3 * 24 * 3600, NOW), r"^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) ")
+    def test_a_time_names_its_day_when_it_isnt_today_and_its_date_when_a_week_away(self) -> None:
+        # NOW is Fri Jan 15 2027, 8am UTC
+        hour = 3600
+        for at, expected in (
+            (NOW - 8 * hour, "12am"),
+            (NOW - 22 * hour, "Thu 10am"),
+            (NOW + 20 * hour, "Sat 4am"),
+            (NOW - 72 * hour, "Tue 8am"),
+            (NOW - 144 * hour, "Jan 9 8am"),
+            (NOW + 167 * hour, "Jan 22 7am"),
+        ):
+            with self.subTest(hours_from_now=(at - NOW) / hour):
+                self.assertEqual(PS.clock(at, NOW, UTC), expected)
 
 
 class StateFile(unittest.TestCase):
@@ -539,6 +564,15 @@ class StopFailureHook(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.home.switch(), "")
         self.assertFalse(self.home.paths.state.exists())
+
+    def test_a_subscription_session_moves_sessions_with_the_switch_key_left_empty(self) -> None:
+        # settings.json gives every session the key with an empty value
+        result = self.run_hook(
+            "API Error: Request rejected (429)", env={**ENV, "CLAUDE_CODE_USE_VERTEX": ""}
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.home.switch(), "1")
 
     def test_another_failure_moves_nothing(self) -> None:
         result = self.run_hook("You've hit your 5-hour limit", error="server_error")

@@ -46,7 +46,9 @@ WINDOW_LENGTHS_S = {"five_hour": FIVE_HOURS_S, "seven_day": 7 * 24 * 3600}
 # turn that fails with error "rate_limit" moves sessions; the wording only says which window ran
 # out, and so how long they stay. The wording isn't a supported interface: transcripts on the work
 # laptop hold both "You've hit your session limit" and "You've hit your 5-hour limit" for the 5-hour
-# window, and the errors page names only the first.
+# window, and the errors page names only the first. Each entry is a lowercase piece of the wording,
+# with a straight apostrophe, under a key in WINDOW_LENGTHS_S; a test checks both, since a wrong key
+# fails an assertion inside the hook, where nothing shows it.
 # See: https://code.claude.com/docs/en/errors
 LIMIT_MESSAGES = {
     "five_hour": ("you've hit your session limit", "you've hit your 5-hour limit"),
@@ -200,7 +202,8 @@ def parse_state(text: str | None) -> State:
             )
             for key, seen in data.get("usage", {}).items()
         }
-        wording = _parse_unknown_wording(data.get("unknown_wording"))
+        kept = _parse_unknown_wording(data.get("unknown_wording"))
+        wording = kept or _wording_beside_reason(data)
         if data.get("provider") != "vertex":
             held = data.get("held_until")
             return State(OnSubscription(None if held is None else float(held)), usage, wording)
@@ -218,6 +221,18 @@ def _parse_unknown_wording(data: object) -> UnknownWording | None:
         return UnknownWording(float(data["at"]), _capped(str(data["message"])))
     except (ValueError, TypeError, KeyError, AssertionError):
         return None
+
+
+def _wording_beside_reason(data: Mapping[str, object]) -> UnknownWording | None:
+    """The wording a state file written by 89dfaee1's hook keeps as `message` beside a stay's
+    reason, seen when the stay began, or None when the file holds no such stay. dump_state never
+    writes this shape, so the first write after reading it moves the wording to unknown_wording."""
+    message, since = data.get("message"), data.get("since")
+    if data.get("reason") != Reason.UNRECOGNISED_WORDING or not isinstance(message, str):
+        return None
+    if not isinstance(since, int | float):
+        return None
+    return UnknownWording(float(since), _capped(message))
 
 
 def _capped(message: str) -> str:
@@ -445,15 +460,21 @@ def tick(
 
 
 def clock(at: float, now: float, zone: tzinfo | None = None) -> str:
-    """`at` on a 12-hour clock, such as 3pm or 2:50am, with its weekday when a day or more away,
-    before or after `now`.
+    """`at` on a 12-hour clock, such as 3pm or 2:50am, with its weekday when it falls on another day
+    than `now`, and its date instead when six days or more away, before or after, since a weekday
+    then reads as this week's.
     `zone` sets the time zone: None is local."""
     when = datetime.fromtimestamp(at, zone)
     hour = when.hour % 12 or 12
     minutes = f":{when.minute:02d}" if when.minute else ""
     clock = f"{hour}{minutes}{'am' if when.hour < 12 else 'pm'}"
+    if abs(at - now) >= 6 * 24 * 3600:
+        month = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+        return f"{month[when.month - 1]} {when.day} {clock}"
+    if when.date() == datetime.fromtimestamp(now, zone).date():
+        return clock
     weekday = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")[when.weekday()]
-    return clock if abs(at - now) < 24 * 3600 else f"{weekday} {clock}"
+    return f"{weekday} {clock}"
 
 
 def describe(state: State, now: float) -> str:
@@ -465,7 +486,8 @@ def describe(state: State, now: float) -> str:
     return (
         f"{_describe_switch(state.switch, now)}\n"
         f'Rate-limit wording the switch doesn\'t know, seen {seen}: "{wording.message}"\n'
-        "If it is a usage limit, add it to LIMIT_MESSAGES in tools/claude/provider_switch.py."
+        "If it is a usage limit, add it to LIMIT_MESSAGES in tools/claude/provider_switch.py, as the "
+        "comment above it says."
     )
 
 
