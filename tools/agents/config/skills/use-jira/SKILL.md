@@ -7,8 +7,9 @@ description: Jira gotchas for the Atlassian MCP tools and the acli CLI. Covers t
 
 Call the Jira tools on the `atlassian-rovo` server (`mcp__atlassian-rovo__*`). A
 `claude_ai_Atlassian_MCP` server can appear too, but it offers only its sign-in tools until someone
-authenticates it, and the dotfiles `settings.json` allows only `atlassian-rovo`'s comment tool
-without a prompt. When `atlassian-rovo` will not connect, use acli, as the last section describes.
+authenticates it, and the dotfiles `settings.json` allows `atlassian-rovo`'s comment, edit and
+transition tools without a prompt. When `atlassian-rovo` will not connect, use acli, as the last
+section describes.
 
 ## Cloud ID
 
@@ -106,6 +107,9 @@ The check covers these:
   yet, so read the returned `body` after posting one. How Jira converts `<https://…>` is untested,
   so the check asks for the bracket form there too. A URL in inline code or a code block is left
   alone.
+- **A number at the start of a table cell.** Jira reads `| 2. Load the data |` as a list number and
+  drops it, so the row loses its number. Put a word before it, such as `Step 2:`, which adds words
+  and so is a new draft that waits for approval.
 
 The tool refuses one more case outright, so the check leaves it out:
 

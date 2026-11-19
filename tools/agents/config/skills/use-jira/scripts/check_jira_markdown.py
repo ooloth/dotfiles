@@ -15,6 +15,7 @@ says anything went wrong:
   code as link text   Jira keeps the code and drops the link.
   bare URL            Jira posts it as text, not a link.
   autolink            <https://...> is untested in Jira, so the bracket form is asked for instead.
+  numbered table cell Jira reads `2. ` at the start of a table cell as a list number and drops it.
 
 A URL in a code span or code block is never reported: there it is a command to copy, not a link.
 A fix that keeps every word is offered only when the fixed text still parses to the same
@@ -25,6 +26,9 @@ Structure Jira cannot hold at all, such as a table inside a list item, is not ch
 the tool refuses the whole post and posts nothing.
 
 The body is parsed as CommonMark with tables, the closest model of Jira's converter available.
+It differs from Jira in one known place: it reads a table cell as text, where Jira reads a cell
+that starts `2. ` as a list item, so that case is matched on the cell's text instead. It was seen
+in body cells; header cells are assumed to behave the same, and a cell starting `2)` is untested.
 acli posts ADF, so it is not checked by this.
 
 Usage:
@@ -72,6 +76,9 @@ ENDS_IN_ENTITY = re.compile(r"&(?:#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*
 # The characters other than whitespace that end a URL run. A URL stopped by one of them may go on
 # past it, so a fix that links only the part before it could link the wrong place.
 URL_STOPS = "<>|"
+# A table cell that starts like this loses its number in Jira, which reads it as a list item.
+# markdown-it reads a cell as text, so this is matched on the cell's source.
+NUMBERED_CELL_START = re.compile(r"^(\d{1,9}\.) ")
 URL_RUN = re.compile(r"https?://[^\s" + re.escape(URL_STOPS) + "]+")
 SENTINEL = "post nothing until then"
 
@@ -186,7 +193,13 @@ class Autolink:
     renders_as_written: bool
 
 
-Breakage = CodeInBold | CodeAsLinkText | BareUrl | Autolink
+@dataclass(frozen=True)
+class NumberedCellStart:
+    line: LineNumber
+    number: str
+
+
+Breakage = CodeInBold | CodeAsLinkText | BareUrl | Autolink | NumberedCellStart
 
 
 @dataclass(frozen=True)
@@ -383,10 +396,23 @@ def find_breakages(text: str) -> tuple[Breakage, ...]:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     line_count = text.count("\n") + 1
     found: list[Breakage] = []
+    previous: Token | None = None
     for token in PARSER.parse(text):
         if token.type == "inline":
+            if previous is not None and previous.type in ("td_open", "th_open"):
+                found.extend(numbered_cell_start(token))
             found.extend(inline_breakages(token, line_count))
+        previous = token
     return tuple(found)
+
+
+def numbered_cell_start(cell: Token) -> list[NumberedCellStart]:
+    """A table cell whose text starts with a list number, which Jira drops."""
+    assert cell.map is not None, "markdown-it-py gave a table cell no line map"
+    match = NUMBERED_CELL_START.match(cell.content)
+    if match is None:
+        return []
+    return [NumberedCellStart(LineNumber(cell.map[0] + 1), match.group(1))]
 
 
 LABEL_FIX = "give it a label of its own, which adds words to approve"
@@ -421,6 +447,12 @@ def report(breakage: Breakage) -> str:
         case Autolink(line, text, href, renders_as_written):
             fix = f"write it as [{text}]({href})" if renders_as_written else LABEL_FIX
             return f"{line}: autolink: how Jira converts <{text}> is untested. Fix: {fix}"
+        case NumberedCellStart(line, number):
+            return (
+                f'{line}: numbered table cell: Jira reads "{number}" as a list number and drops'
+                f' it. Fix: put a word before the number, such as "Step {number.rstrip(".")}:",'
+                " which adds words to approve"
+            )
         case _:
             assert_never(breakage)
 

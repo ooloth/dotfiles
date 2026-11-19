@@ -660,3 +660,62 @@ def test_hook_runs_on_every_jira_post_tool(server: str, tool: str) -> None:
 )
 def test_hook_does_not_run_on_any_other_tool(tool: str) -> None:
     assert not hook_matcher().search(tool)
+
+
+# A number at the start of a table cell. Jira reads `2. ` there as a list number and drops it, while
+# markdown-it reads a cell as text. Seen on a plan comment's table on 2026-11-19.
+
+NUMBERED_CELL = "numbered table cell"
+
+
+def test_number_at_the_start_of_a_body_cell_is_reported_on_its_line(tmp_path: Path) -> None:
+    body = "| Step | Repo |\n|---|---|\n| 2. Load the data | `example-repo` |\n"
+    result = check(tmp_path, body)
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert reported_lines(result, NUMBERED_CELL) == [3]
+    assert '"2."' in result.stdout
+    assert '"Step 2:"' in result.stdout
+
+
+def test_number_at_the_start_of_a_header_cell_is_reported(tmp_path: Path) -> None:
+    result = check(tmp_path, "| 1. Step | Note |\n|---|---|\n| a | b |\n")
+    assert reported_lines(result, NUMBERED_CELL) == [1]
+
+
+@pytest.mark.parametrize(
+    "cell",
+    ["2.5 GB", "Step 2: Load the data", "2.", "Step 2. Load"],
+    ids=["decimal", "word before the number", "number alone", "number after a word"],
+)
+def test_cell_that_does_not_start_with_a_list_number_is_clean(tmp_path: Path, cell: str) -> None:
+    result = check(tmp_path, f"| a | b |\n|---|---|\n| {cell} | x |\n")
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize(
+    "body",
+    ["2. Load the data\n", "- 2. Load the data\n"],
+    ids=["paragraph", "list item"],
+)
+def test_numbered_line_outside_a_table_is_clean(tmp_path: Path, body: str) -> None:
+    result = check(tmp_path, body)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_hook_refuses_a_comment_with_a_numbered_table_cell() -> None:
+    body = "Plan.\n\n| Step | Repo |\n|---|---|\n| 3. Export the data | `example-repo` |\n"
+    result = hook("addCommentToJiraIssue", {"commentBody": body})
+    assert result.returncode == 2
+    assert f"commentBody:5: {NUMBERED_CELL}" in result.stderr
+
+
+def test_plan_table_with_numbered_rows_reports_each_row(tmp_path: Path) -> None:
+    body = (
+        "| Step | Repo | What it does | Merges after |\n"
+        "|---|---|---|---|\n"
+        "| 2. Load the data | `example-repo` | Loads it | Nothing |\n"
+        "| 3. Export the data | `example-repo` | Writes a snapshot | example-repo#123 |\n"
+        "| 4. Switch prod | `example-deploy` | Points prod at it | Step 3 |\n"
+        "| 5. Switch staging | `example-deploy` | Points staging at it | Step 2 |\n"
+    )
+    assert reported_lines(check(tmp_path, body), NUMBERED_CELL) == [3, 4, 5, 6]
