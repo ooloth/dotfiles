@@ -19,6 +19,9 @@ if is_install_checkout; then
 fi
 if [[ ! -f "${DOTFILES}/tools/bash/utils.bash" ]]; then
   echo "🚨 Bug: DOTFILES='${DOTFILES}' does not hold tools/bash/utils.bash" >&2
+  # Ends this file whether it was sourced or run: return ends a sourced file, and in a run file it
+  # fails, so exit runs. Inside a function this would not work, because return there leaves only
+  # the function and the file carries on.
   return 1 2>/dev/null || exit 1
 fi
 export DOTFILES
@@ -48,20 +51,6 @@ have() {
     return 0 # true
   else
     return 1 # false
-  fi
-}
-
-is_sourced() {
-  # Returns 0 if sourced, 1 if executed
-  [[ "${BASH_SOURCE[0]}" != "$0" ]]
-}
-
-return_or_exit() {
-  local code="${1:-0}"
-  if is_sourced; then
-    return "$code"
-  else
-    exit "$code"
   fi
 }
 

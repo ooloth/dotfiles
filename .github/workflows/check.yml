@@ -1,7 +1,8 @@
 name: Check
 
-# Every push and pull request runs every check, so CI matches `bash scripts/check.bash`. The steps
-# run in the same order, fastest first, and a failed step skips the slower ones after it.
+# Every push to main and every pull request into it runs every check, so CI matches
+# `bash scripts/check.bash`. The steps run in the same order, fastest first, and a failed step skips
+# the slower ones after it.
 on:
   push:
     branches: [main]
@@ -33,7 +34,15 @@ jobs:
       - name: Install luajit
         run: brew install luajit
 
-      # Every script starts with `#!/usr/bin/env bash`, so this is the bash the checks run them with
+      # The tests of how tools/bash/utils.bash stops run Homebrew's bash 5 from its opt path. It is
+      # unlinked so `bash` on PATH stays /bin/bash 3.2 for every other check.
+      - name: Install bash
+        run: >-
+          brew install bash && brew unlink bash
+          && "$(brew --prefix)/opt/bash/bin/bash" -c 'echo "Homebrew bash $BASH_VERSION"'
+
+      # Every script starts with `#!/usr/bin/env bash`, so the bash on PATH is the one the checks
+      # run scripts with
       - name: Show bash version
         run: command -v bash && bash --version | head -n 1
 

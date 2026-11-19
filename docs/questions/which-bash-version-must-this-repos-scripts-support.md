@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-22
+updated: 2026-11-17
 update_when: a script breaks under one version, or the language question is answered
 decays: slow
 status: open
@@ -17,10 +17,12 @@ started with a minimal `PATH`, such as a launchd job.
 Bash 3.2 lacks features bash 5 has, and some of the gaps fail silently. `$'\ue725'` prints the
 six characters `\ue725` in 3.2 instead of the glyph, and nothing reports an error. A script
 written and checked under bash 5 can then print wrong output for a user whose `PATH` differs.
-`scripts/check.bash` runs every check under macOS's bash 3.2, and `features/update/preflight.bash`
-says it was written for 3.2, but no rule says which version scripts must support. Each other script
-picks one by accident: `tools/homebrew/update.bash` and `tools/homebrew/generate-brewfile.bash` use
-`mapfile`, which 3.2 lacks. Fixing them gets more expensive with every script added.
+`scripts/check.bash` runs each bash check category under `/bin/bash`, which is macOS's 3.2, and the
+tests of how `tools/bash/utils.bash` stops also run Homebrew's bash.
+`features/update/preflight.bash` says it was written for 3.2, but no rule says which version scripts
+must support. Each other script picks one by accident: `tools/homebrew/update.bash` and
+`tools/homebrew/generate-brewfile.bash` use `mapfile`, which 3.2 lacks. Fixing them gets more
+expensive with every script added.
 
 ## What would settle it
 
@@ -44,7 +46,8 @@ of each script.
 
 ## Source
 
-Raised on 2026-10-22 while adding a Nerd Font icon to `tools/claude/config/statusline.sh`. The
+Raised on 2026-10-22 while adding a Nerd Font icon to the status line script, then
+`tools/claude/config/statusline.sh` and now `tools/claude/statusline.py`. The
 first version wrote the glyph as `$'\ue725'`, which worked under Homebrew's bash and printed the
 escape as text under `/bin/bash`. It was caught by running the script under both by hand, not by
 the local `check`. The fix was to write the glyph's UTF-8 bytes, `$'\xee\x9c\xa5'`, which both
@@ -75,3 +78,7 @@ Nothing here is settled until it moves into a decision record.
 - *Reasoned:* those two work under `u` because Homebrew's bash comes first on this Mac's `PATH`.
   CI runs 3.2 and passes, so no CI test runs those lines.
 - *Measured:* `/bin/bash -c "printf %s \$'\\ue725'"` printed `\ue725` on this Mac on 2026-10-22.
+- *Sourced:* `.github/workflows/check.yml` installs Homebrew's bash and unlinks it, so `bash` on
+  `PATH` stays `/bin/bash` 3.2. Only the tests of how `tools/bash/utils.bash` stops run Homebrew's
+  bash, by its opt path, and they run under both versions. That fits either option and settles
+  neither. Read on 2026-11-17.
