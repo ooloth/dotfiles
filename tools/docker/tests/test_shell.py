@@ -51,7 +51,46 @@ class PruneTest(unittest.TestCase):
         for shortcut in ("dp", "dpa"):
             for call in docker_calls(shortcut):
                 with self.subTest(shortcut=shortcut, call=call):
-                    self.assertNotRegex(call, r"(^| )(-f|--force|--volumes)( |$)")
+                    # Also catches -f combined with other short flags, such as -af
+                    self.assertNotRegex(call, r"(^| )(-[a-zA-Z]*f[a-zA-Z]*|--force|--volumes)( |$)")
+
+
+class ComposeTest(unittest.TestCase):
+    def test_dcu_recreates_and_starts_services(self) -> None:
+        self.assertEqual(
+            docker_calls("dcu api"), ["compose up --build --detach --remove-orphans api"]
+        )
+
+    def test_dcd_stops_and_removes_services(self) -> None:
+        self.assertEqual(docker_calls("dcd api"), ["compose down api"])
+
+    def test_dcc_runs_any_compose_command(self) -> None:
+        self.assertEqual(docker_calls("dcc ps --all"), ["compose ps --all"])
+
+    def test_dl_follows_the_last_hundred_log_lines(self) -> None:
+        self.assertEqual(docker_calls("dl"), ["compose logs --follow --tail=100"])
+
+    def test_dl_follows_only_the_services_it_is_given(self) -> None:
+        self.assertEqual(docker_calls("dl api"), ["compose logs --follow --tail=100 api"])
+
+
+class StandardNamesTest(unittest.TestCase):
+    def test_no_shortcut_hides_a_builtin_or_a_command(self) -> None:
+        # A shortcut named like a command, such as `du`, hides that command in an interactive shell
+        script = (
+            "have() { return 0 }\n"
+            "is_work() { return 1 }\n"
+            "typeset -a before=(${(k)functions} ${(k)aliases})\n"
+            f"source '{SHELL_ZSH}'\n"
+            "for name in ${(k)functions} ${(k)aliases}; do\n"
+            "  (( ${before[(Ie)$name]} )) && continue\n"
+            "  (( $+builtins[$name] || $+commands[$name] )) && print -r -- $name\n"
+            "done\n"
+        )
+        result = subprocess.run(
+            ["zsh", "-f", "-c", script], capture_output=True, text=True, check=True
+        )
+        self.assertEqual(result.stdout.split(), [])
 
 
 if __name__ == "__main__":

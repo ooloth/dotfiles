@@ -26,11 +26,11 @@ else
   alias db="docker build ."
 fi
 
-# Docker Compose
-dc() { docker compose "$@"; }
-dd() { dc down "$@" }   # stop and remove one or more containers, networks, images, and volumes (or all if no args provided)
-dl() { dc logs --follow --tail=100; }                          # see last 100 log lines of one or more services (or all services if no args provided)
-du() { dc up --build --detach --remove-orphans "$@"; }              # recreate and start one or more services (or all services if no args provided)
+# Docker Compose. No shortcut is named du, dd or dc, so those stay the system's disk usage, copy and calculator
+dcc() { docker compose "$@"; }
+dcd() { dcc down "$@"; }                                  # stop and remove one or more services' containers and networks (or all if no args provided); volumes stay
+dl() { dcc logs --follow --tail=100 "$@"; }               # see last 100 log lines of one or more services (or all services if no args provided)
+dcu() { dcc up --build --detach --remove-orphans "$@"; }  # recreate and start one or more services (or all services if no args provided)
 
 ###############
 # COMPLETIONS #
