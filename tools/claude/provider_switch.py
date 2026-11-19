@@ -34,6 +34,7 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime, tzinfo
 from enum import StrEnum
 from pathlib import Path
+from typing import assert_never
 
 SWITCH_KEY = "CLAUDE_CODE_USE_VERTEX"
 PROJECT_KEY = "ANTHROPIC_VERTEX_PROJECT_ID"
@@ -86,17 +87,28 @@ class UnknownWording:
 
 
 @dataclass(frozen=True)
-class LimitFailure:
-    """A turn that failed on a rate limit, from the StopFailure hook's input."""
+class KnownLimit:
+    """A turn that failed on a rate limit in wording LIMIT_MESSAGES knows, naming its window."""
 
-    window: str | None  # The usage window its wording names, or None when the wording is unknown
+    window: str
+
+    def __post_init__(self) -> None:
+        assert self.window in WINDOW_LENGTHS_S, f"no window {self.window}"
+
+
+@dataclass(frozen=True)
+class UnknownLimit:
+    """A turn that failed on a rate limit in wording the switch doesn't know, kept to be added."""
+
     message: str
 
     def __post_init__(self) -> None:
-        assert self.window is None or self.window in WINDOW_LENGTHS_S, f"no window {self.window}"
         assert len(self.message) <= MESSAGE_LENGTH_MAX, (
             f"a failure's message is {len(self.message)} characters, over {MESSAGE_LENGTH_MAX}"
         )
+
+
+LimitFailure = KnownLimit | UnknownLimit
 
 
 @dataclass(frozen=True)
@@ -289,7 +301,8 @@ def parse_limit_failure(payload: Mapping[str, object]) -> LimitFailure | None:
         return None
     parts = [str(payload.get(key) or "") for key in ("last_assistant_message", "error_details")]
     message = " ".join(part for part in parts if part)
-    return LimitFailure(_window_named(message), _capped(message))
+    window = _window_named(message)
+    return UnknownLimit(_capped(message)) if window is None else KnownLimit(window)
 
 
 def _window_named(message: str) -> str | None:
@@ -307,22 +320,24 @@ def after_limit_failure(state: State, now: float, failure: LimitFailure) -> Stat
     a used-up window, or for UNRECOGNISED_LIMIT_S when none is used up. Sessions already on Vertex
     AI keep their time, and a hold keeps them on the subscription. Unknown wording is kept whether
     or not sessions move."""
-    if failure.window is None:
+    if isinstance(failure, UnknownLimit):
         state = replace(state, unknown_wording=UnknownWording(now, failure.message))
     if isinstance(state.switch, OnVertex) or _held(state.switch, now):
         return state
-    match failure.window:
-        case None:
+    match failure:
+        case UnknownLimit():
             latest = _latest_used_up_reset(state.usage.values(), now)
             until = latest if latest is not None else now + UNRECOGNISED_LIMIT_S
             cause = Reason.UNRECOGNISED_WORDING
-        case window:
+        case KnownLimit(window):
             seen = state.usage.get(window)
             resets = seen.resets_at if seen is not None else None
             until = (
                 resets if resets is not None and resets > now else now + WINDOW_LENGTHS_S[window]
             )
             cause = Reason.LIMIT_ERROR
+        case unexpected:
+            assert_never(unexpected)
     return replace(state, switch=OnVertex(now, until, cause))
 
 

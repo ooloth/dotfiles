@@ -30,19 +30,23 @@ import time
 import unittest
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import IO, Literal
 from unittest import mock
 
 from hypothesis import given
 from hypothesis import strategies as st
 
 SCRIPT = Path(__file__).resolve().parent.parent / "auth.py"
+# Running as a script puts its folder on the import path, where it finds login_lock.py
+sys.path.insert(0, str(SCRIPT.parent))
 
 _spec = importlib.util.spec_from_file_location("auth", SCRIPT)
 assert _spec is not None and _spec.loader is not None, f"cannot load {SCRIPT}"
 auth = importlib.util.module_from_spec(_spec)
 sys.modules["auth"] = auth
 _spec.loader.exec_module(auth)
+
+import login_lock  # noqa: E402  (from the folder the loader put on the path)
 
 PROD = auth.ArgoServer("cd-prod.example.com")
 DEV = auth.ArgoServer("cd-dev.example.com")
@@ -128,7 +132,7 @@ class FreeLock:
     """A login lock no other run holds, for the in-process tests."""
 
     def __enter__(self):
-        return auth.HeldLoginLock()
+        return login_lock.HeldLoginLock()
 
     def __exit__(self, *_exc: object) -> None:
         return None
@@ -144,10 +148,37 @@ class LockAnotherRunReleasedAfterLoggingIn:
     def __enter__(self):
         for name in self.shell.states:
             self.shell.states[name] = "valid"
-        return auth.HeldLoginLock()
+        return login_lock.HeldLoginLock()
 
     def __exit__(self, *_exc: object) -> None:
         return None
+
+
+@dataclass
+class SharedCredentialShell(FakeShell):
+    """A login that also makes every other login to its tool valid, as one SSO session can."""
+
+    def attach(self, command: tuple[str, ...]) -> int:
+        exit_code = super().attach(command)
+        (login,) = [item for item in self._logins() if item.login == command]
+        for other in self._logins():
+            if other.check[0] == login.check[0]:
+                self.states[other.name] = self.states[login.name]
+        return exit_code
+
+
+@dataclass
+class RecordingLock:
+    """A login lock that says whether it is held."""
+
+    held: bool = False
+
+    def __enter__(self):
+        self.held = True
+        return login_lock.HeldLoginLock()
+
+    def __exit__(self, *_exc: object) -> None:
+        self.held = False
 
 
 @dataclass
@@ -156,7 +187,7 @@ class LockWhoseCheckAgainSays:
     "missing" for a tool gone from PATH, or "timed out"."""
 
     shell: FakeShell
-    again: str
+    again: State | Literal["missing", "timed out"]
 
     def __enter__(self):
         names = frozenset(self.shell.states)
@@ -168,7 +199,7 @@ class LockWhoseCheckAgainSays:
             case state:
                 for name in names:
                     self.shell.states[name] = state
-        return auth.HeldLoginLock()
+        return login_lock.HeldLoginLock()
 
     def __exit__(self, *_exc: object) -> None:
         return None
@@ -318,6 +349,46 @@ class SharedLogins(unittest.TestCase):
         )
 
         self.assertIsNone(auth.default_context_command(settings, outcomes))
+
+    def test_a_login_this_run_made_valid_is_not_opened(self) -> None:
+        items = configured_logins()
+        shell = SharedCredentialShell(
+            items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
+        )
+
+        auth.run(auth.Mode.REFRESH, items, shell, ignore, FreeLock())
+
+        self.assertEqual([command[0] for command in shell.attached], list(TOOLS))
+
+    def test_the_context_reset_runs_inside_the_lock_once_the_logins_are_done(self) -> None:
+        items = configured_logins()
+        shell = FakeShell(
+            items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
+        )
+        lock = RecordingLock()
+        calls: list[tuple[bool, tuple]] = []
+
+        outcomes = auth.run(
+            auth.Mode.REFRESH,
+            items,
+            shell,
+            ignore,
+            lock,
+            after_logins=lambda done: calls.append((lock.held, done)),
+        )
+
+        self.assertEqual(calls, [(True, outcomes)])
+
+    def test_with_nothing_expired_the_context_reset_never_runs(self) -> None:
+        items = configured_logins()
+        shell = FakeShell(
+            items, dict.fromkeys(names(items), "valid"), dict.fromkeys(names(items), True)
+        )
+        calls: list[tuple] = []
+
+        auth.run(auth.Mode.REFRESH, items, shell, ignore, FreeLock(), after_logins=calls.append)
+
+        self.assertEqual(calls, [])
 
     def test_only_a_valid_or_missing_tool_under_the_lock_skips_a_login(self) -> None:
         # A check that can't tell runs the login: a second browser login shows, while a session
@@ -612,10 +683,18 @@ for arg in "$@"; do
   if [[ "${arg}" == login ]]; then
     # Long enough that a run started at the same moment finishes its checks and meets the lock
     sleep "${STUB_LOGIN_SECONDS:-0}"
+    # Or held until the test has seen the other run wait, however slow the machine
+    while [[ -n "${STUB_GATE:-}" && ! -e "${STUB_GATE}" ]]; do sleep 0.05; done
     : > "${valid}"
     exit 0
   fi
 done
+# Each check's start and end, so a test can see which checks ran at the same time
+if [[ -n "${STUB_CHECKS:-}" ]]; then
+  echo start >> "${STUB_CHECKS}"
+  sleep "${STUB_CHECK_SECONDS:-0}"
+  echo end >> "${STUB_CHECKS}"
+fi
 if [[ -e "${valid}" ]]; then
   case "${0##*/}" in
     argocd) echo '{"loggedIn": true, "username": "alice"}' ;;
@@ -675,7 +754,7 @@ class LoginLockBetweenRuns(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmp.cleanup()
 
-    def start(self) -> subprocess.Popen:
+    def start(self, **extra_env: str) -> subprocess.Popen:
         env = {
             "HOME": str(self.home),
             # /bin for the stubs' sleep; no real gcloud, spacectl or argocd lives there
@@ -685,6 +764,7 @@ class LoginLockBetweenRuns(unittest.TestCase):
             "STUB_LOGIN_SECONDS": "1",
             "PRIVATE_ARGOCD_SERVERS": " ".join(SERVERS),
             "PRIVATE_SPACELIFT_ACCOUNT": ACCOUNT,
+            **extra_env,
         }
         return subprocess.Popen(
             [sys.executable, str(SCRIPT)],
@@ -715,6 +795,20 @@ class LoginLockBetweenRuns(unittest.TestCase):
                 if WAITING in line:
                     return
         self.fail(f"auth.py never said it was waiting; it printed:\n{seen}")
+
+    def wait_for_either_to_wait(self, processes: list[subprocess.Popen]) -> subprocess.Popen:
+        """The run that says it is waiting, once one does. What it read stays read."""
+        streams: dict[IO[str], subprocess.Popen] = {}
+        for process in processes:
+            assert process.stderr is not None
+            streams[process.stderr] = process
+        deadline = time.monotonic() + 20
+        while time.monotonic() < deadline:
+            ready, _, _ = select.select(list(streams), [], [], 0.1)
+            for stream in ready:
+                if WAITING in stream.readline():
+                    return streams[stream]
+        self.fail("neither run said it was waiting")
 
     def logins_run(self) -> list[str]:
         calls = self.log.read_text().splitlines() if self.log.exists() else []
@@ -765,17 +859,44 @@ class LoginLockBetweenRuns(unittest.TestCase):
         self.assertEqual(process.returncode, 0, out + err)
         self.assertNotIn(WAITING, err)
 
-    def test_two_runs_started_together_log_in_to_each_tool_once(self) -> None:
-        processes = [self.start(), self.start()]
-        results = [process.communicate(timeout=60) for process in processes]
+    def test_a_run_that_waited_checks_again_all_at_once(self) -> None:
+        checks = Path(self._tmp.name) / "checks"
+        with self.held_by_another_run():
+            process = self.start(STUB_CHECKS=str(checks), STUB_CHECK_SECONDS="0.5")
+            self.wait_for_waiting_line(process)
+            self.make_all_valid()
+            first_pass = len(checks.read_text().splitlines())
 
-        for process, (out, err) in zip(processes, results, strict=True):
+        out, err = process.communicate(timeout=30)
+
+        self.assertEqual(process.returncode, 0, out + err)
+        under_the_lock = checks.read_text().splitlines()[first_pass:]
+        # Every check under the lock started before any of them ended
+        self.assertEqual(under_the_lock, ["start"] * 5 + ["end"] * 5)
+
+    def test_a_lock_that_cant_be_set_up_still_runs_every_login(self) -> None:
+        # A file where the lock's folder goes, so the lock can't be created
+        self.lock_path.parent.parent.mkdir(parents=True)
+        self.lock_path.parent.write_text("")
+
+        out, err = self.start().communicate(timeout=30)
+
+        self.assertIn("won't share logins", err)
+        self.assertEqual(self.logins_run(), FIRST_LOGIN_TO_EACH_TOOL, out + err)
+
+    def test_two_runs_started_together_log_in_to_each_tool_once(self) -> None:
+        gate = Path(self._tmp.name) / "gate"
+        processes = [self.start(STUB_GATE=str(gate)), self.start(STUB_GATE=str(gate))]
+        waited = self.wait_for_either_to_wait(processes)
+        gate.touch()
+        results = {process: process.communicate(timeout=60) for process in processes}
+
+        for process, (out, err) in results.items():
             self.assertEqual(process.returncode, 0, out + err)
-        # One run waited for the other, so the two really overlapped
-        self.assertEqual([WAITING in err for _, err in results].count(True), 1, results)
+            # Only the run that already said so waited
+            self.assertNotIn(WAITING, err)
         self.assertEqual(self.logins_run(), FIRST_LOGIN_TO_EACH_TOOL)
-        waited_out = next(out for out, err in results if WAITING in err)
-        self.assertIn("(checked again, no login run)", waited_out)
+        self.assertIn("(checked again, no login run)", results[waited][0])
 
 
 class EndToEnd(unittest.TestCase):

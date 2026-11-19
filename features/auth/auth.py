@@ -23,7 +23,6 @@ the Google credentials that the work package index needs have expired.
 from __future__ import annotations
 
 import argparse
-import fcntl
 import json
 import os
 import shutil
@@ -31,11 +30,12 @@ import subprocess
 import sys
 from collections.abc import Callable, Mapping
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from contextlib import AbstractContextManager
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
-from typing import IO, NewType, Protocol, assert_never
+from typing import NewType, Protocol, assert_never
+
+# Beside this file, which Python puts first on the import path when it runs a script
+from login_lock import LOCK_PATH, LoginLock, LoginPermit, file_login_lock
 
 LoginName = NewType("LoginName", str)
 ArgoServer = NewType("ArgoServer", str)
@@ -54,8 +54,6 @@ ARGOCD_SERVERS_KEY = "PRIVATE_ARGOCD_SERVERS"
 CHECK_TIMEOUT_SECONDS = 10
 # What a shell reports for a command stopped by Ctrl-C (128 + SIGINT)
 INTERRUPTED_EXIT_CODE = 130
-# Held while a run logs in, so a login one run completes isn't opened again by another
-LOCK_PATH = Path.home() / ".local" / "state" / "auth" / "logins.lock"
 
 # What argocd printed on this laptop when its refresh token had been revoked (invalid_grant) and when
 # the server rejected the session (Unauthenticated)
@@ -348,46 +346,7 @@ def check_status(item: Login | Unconfigured, shell: Shell) -> Status:
             assert_never(item)
 
 
-@dataclass(frozen=True)
-class HeldLoginLock:
-    """Marks that this run holds the login lock. Only entering a LoginLock makes one outside the
-    tests, and log_in takes it so a call outside the lock reads as wrong."""
-
-
-LoginLock = AbstractContextManager[HeldLoginLock]
-
-
-class FileLoginLock:
-    """An exclusive lock on a file, which the system releases when the process ends, crashes
-    included. Says so before it waits, since a run waiting on another's browser login can take as
-    long as that login does."""
-
-    def __init__(self, path: Path) -> None:
-        self._path = path
-        self._handle: IO[str] | None = None
-
-    def __enter__(self) -> HeldLoginLock:
-        self._path.parent.mkdir(parents=True, exist_ok=True)
-        self._handle = self._path.open("a")
-        try:
-            fcntl.flock(self._handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            print(
-                "⏳ Another run of auth is logging in; waiting for it...",
-                file=sys.stderr,
-                flush=True,
-            )
-            fcntl.flock(self._handle, fcntl.LOCK_EX)
-        return HeldLoginLock()
-
-    def __exit__(self, *_exc: object) -> None:
-        assert self._handle is not None, "the login lock was released without being taken"
-        fcntl.flock(self._handle, fcntl.LOCK_UN)
-        self._handle.close()
-        self._handle = None
-
-
-def log_in(login: Login, before: Status, mode: Mode, shell: Shell, _held: HeldLoginLock) -> Status:
+def log_in(login: Login, before: Status, mode: Mode, shell: Shell, _permit: LoginPermit) -> Status:
     assert mode is Mode.REFRESH, f"{login.name}: a login must never run in {mode.value} mode"
     assert before == Expired(), f"{login.name} is {before}, so its login must not run"
     print(f"\n🔑 Logging in to {login.name}...", file=sys.stderr, flush=True)
@@ -402,11 +361,14 @@ def run(
     shell: Shell,
     report: Callable[[Outcome], None],
     lock: LoginLock,
+    after_logins: Callable[[tuple[Outcome, ...]], None] = lambda _outcomes: None,
 ) -> tuple[Outcome, ...]:
     """Check every login at once, then log in to the expired ones one at a time, holding `lock`.
-    Once it holds the lock, each expired login is checked again, and logged in to unless that check
-    finds it valid or its tool missing, so a login another run completed meanwhile is not opened
-    again.
+    Once it holds the lock, every expired login is checked again at once, and each is logged in to
+    unless that check finds it valid or its tool missing, so a login another run completed
+    meanwhile is not opened again. After this run has logged in to one, the next is checked once
+    more just before, since a login can make another valid. `after_logins` then runs with the
+    outcomes, still holding the lock.
 
     Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
     login, once its check under the lock and any login and check after it are done. So the order of
@@ -432,34 +394,50 @@ def run(
         if login_to_run(mode, item, befores[index]) is not None
     }
     after_lock: dict[int, Outcome] = {}
+
+    def outcomes_so_far() -> tuple[Outcome, ...]:
+        return tuple(
+            after_lock.get(index, Outcome(item.name, befores[index], None, False))
+            for index, item in enumerate(items)
+        )
+
     if expired:
-        with lock as held:
+        with lock as permit:
+            with ThreadPoolExecutor(max_workers=len(expired)) as pool:
+                rechecks = {
+                    index: pool.submit(check_status, items[index], shell) for index in expired
+                }
+            logged_in = False
             for index in sorted(expired):
-                after_lock[index] = check_again_and_log_in(
-                    items[index], befores[index], mode, shell, held
+                again = check_status(items[index], shell) if logged_in else rechecks[index].result()
+                after_lock[index] = log_in_unless_settled(
+                    items[index], befores[index], again, mode, shell, permit
                 )
+                logged_in = logged_in or after_lock[index].login_ran
                 report_and_record(after_lock[index])
-    outcomes = [
-        after_lock.get(index, Outcome(item.name, befores[index], None, False))
-        for index, item in enumerate(items)
-    ]
+            after_logins(outcomes_so_far())
+    outcomes = outcomes_so_far()
     assert len(reported) == len(set(reported)), f"a login was reported twice: {reported}"
     assert set(reported) == {item.name for item in items}, f"a login went unreported: {reported}"
-    return tuple(outcomes)
+    return outcomes
 
 
-def check_again_and_log_in(
-    item: Login | Unconfigured, before: Status, mode: Mode, shell: Shell, held: HeldLoginLock
+def log_in_unless_settled(
+    item: Login | Unconfigured,
+    before: Status,
+    again: Status,
+    mode: Mode,
+    shell: Shell,
+    permit: LoginPermit,
 ) -> Outcome:
-    """The login's outcome once it is checked again under the lock, logging in unless that check
-    finds it valid or its tool gone. A check that can't tell logs in, since the first one found it
+    """The login's outcome given its check under the lock, `again`: logged in to unless that check
+    found it valid or its tool gone. A check that can't tell logs in, since the first one found it
     expired: a second browser login shows, while a session started with an expired login doesn't."""
     login = login_to_run(mode, item, before)
     assert login is not None, f"{item.name} is {before}, so it must not be checked again"
-    again = check_status(login, shell)
     if not isinstance(again, Expired | Unchecked):
         return Outcome(item.name, before, again, False)
-    return Outcome(item.name, before, log_in(login, before, mode, shell, held), True)
+    return Outcome(item.name, before, log_in(login, before, mode, shell, permit), True)
 
 
 def login_to_run(mode: Mode, item: Login | Unconfigured, before: Status) -> Login | None:
@@ -526,6 +504,17 @@ def restore_default_context(command: Command, shell: Shell) -> None:
             assert_never(unexpected)
 
 
+def restore_default_context_after(
+    settings: Settings, outcomes: tuple[Outcome, ...], shell: Shell
+) -> None:
+    """Make the first Argo CD server the default context again, when this run's logins changed it."""
+    match default_context_command(settings, outcomes):
+        case None:
+            pass
+        case command:
+            restore_default_context(command, shell)
+
+
 def read_mode(argv: list[str]) -> Mode:
     parser = argparse.ArgumentParser(
         prog="auth", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -547,18 +536,15 @@ def main(argv: list[str]) -> int:
             logins(settings),
             shell,
             lambda outcome: print(describe(outcome), flush=True),
-            FileLoginLock(LOCK_PATH),
+            file_login_lock(LOCK_PATH),
+            # Inside the lock, so no other run is logging in to Argo CD while its config is written
+            after_logins=lambda outcomes: restore_default_context_after(settings, outcomes, shell),
         )
     except KeyboardInterrupt:
         # Reached from a check or from waiting for another run's logins, since each login catches
         # its own Ctrl-C
         print("\nStopped. Run `auth --check` to see where each login stands.", file=sys.stderr)
         return INTERRUPTED_EXIT_CODE
-    match default_context_command(settings, outcomes):
-        case None:
-            pass
-        case command:
-            restore_default_context(command, shell)
     if mode is Mode.CHECK and any(outcome.before == Expired() for outcome in outcomes):
         print("\nRun `auth` to log in to the expired ones.", file=sys.stderr)
     return 0 if all_valid(outcomes) else 1

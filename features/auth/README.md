@@ -35,10 +35,13 @@ Runs that start together, such as several Claude sessions opened at once, share 
 that finds a login expired takes a lock on `~/.local/state/auth/logins.lock` before logging in. If
 another run holds it, such as another session's or an `auth` typed in a terminal, it prints
 `⏳ Another run of auth is logging in; waiting for it...` and waits. Once it holds the lock, it
-checks each expired login again and logs in unless that check finds it valid or its tool missing,
-so a login another run just finished isn't opened again. A check that can't tell still logs in. The
-system releases the lock when a run ends, even when it crashes, and Ctrl-C while waiting stops the
-run as it does during a check. A run whose logins are all valid never takes the lock.
+checks every expired login again at once and logs in to each unless that check finds it valid or
+its tool missing, so a login another run just finished isn't opened again. A check that can't tell
+still logs in, and after one login the next is checked once more, since a login can make another
+valid. The system releases the lock when a run ends, even when it crashes, and Ctrl-C while waiting
+stops the run as it does during a check. A run whose logins are all valid never takes the lock.
+When the lock file can't be created, the run says so and logs in without sharing. The lock is in
+`login_lock.py`.
 
 It prints `Checking logins...` and then one line per login as soon as that login's result is final,
 so the lines come out in the order the checks finish and a slow check doesn't hide the others. An

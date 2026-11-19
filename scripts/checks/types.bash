@@ -11,8 +11,9 @@
 # The repo root is an extra search path, so a test that loads a script by its file path can still
 # import the script's types for its annotations, as `tools.github.repo_settings`. It is a flag
 # because ty 0.0.85, run as below, did not apply the same path set as `extra-paths` in ty.toml.
-# tools/claude is one too, because statusline.py imports provider_switch.py beside it by its bare
-# name, which Python finds there when it runs the script.
+# tools/claude and features/auth are too, because statusline.py imports provider_switch.py and
+# auth.py imports login_lock.py beside them by their bare names, which Python finds there when it
+# runs the script.
 #
 # ty runs from a real virtualenv under .cache/ rather than through `uv run --with`, because uv
 # links --with packages into its environment from elsewhere and ty does not follow that link: it
@@ -33,4 +34,5 @@ uv venv --quiet --allow-existing "${env_dir}"
 uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis pydantic \
   beartype 'markdown-it-py>=4,<5' 'youtube-transcript-api>=1,<2'
 "${env_dir}/bin/ty" check --python "${env_dir}" --project "${DOTFILES}" \
-  --extra-search-path "${DOTFILES}" --extra-search-path "${DOTFILES}/tools/claude" "${DOTFILES}"
+  --extra-search-path "${DOTFILES}" --extra-search-path "${DOTFILES}/tools/claude" \
+  --extra-search-path "${DOTFILES}/features/auth" "${DOTFILES}"

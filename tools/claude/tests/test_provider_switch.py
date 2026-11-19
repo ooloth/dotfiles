@@ -206,7 +206,7 @@ class HoldOnTheSubscription(unittest.TestCase):
         used_up = {"five_hour": seen(100, NOW + 3 * 3600)}
 
         by_status_line = PS.after_tick(state, NOW + at, used_up).switch
-        failure = PS.LimitFailure("five_hour", "You've hit your 5-hour limit")
+        failure = PS.KnownLimit("five_hour")
         by_limit_failure = PS.after_limit_failure(state, NOW + at, failure).switch
 
         if NOW + at < held_until:
@@ -249,8 +249,17 @@ def unknown_wording(text: str) -> bool:
     return not any(wording in lowered for wording in KNOWN_WORDINGS)
 
 
+# What Claude Code puts in error_details for a rate limit, beside the message it showed
+DETAILS = "429 Too Many Requests"
+
+
 def limit_payload(error: str, message: str) -> dict[str, str]:
-    return {"hook_event_name": "StopFailure", "error": error, "last_assistant_message": message}
+    return {
+        "hook_event_name": "StopFailure",
+        "error": error,
+        "last_assistant_message": message,
+        "error_details": DETAILS,
+    }
 
 
 class LimitFailures(unittest.TestCase):
@@ -265,7 +274,7 @@ class LimitFailures(unittest.TestCase):
         ):
             with self.subTest(message=message):
                 failure = PS.parse_limit_failure(limit_payload("rate_limit", message))
-                self.assertEqual(failure, PS.LimitFailure(window, message))
+                self.assertEqual(failure, PS.KnownLimit(window))
 
     # Half the cases run past the cap, which plain generated text almost never does
     @given(
@@ -277,7 +286,8 @@ class LimitFailures(unittest.TestCase):
         self, message: str
     ) -> None:
         failure = PS.parse_limit_failure(limit_payload("rate_limit", message))
-        self.assertEqual(failure, PS.LimitFailure(None, message[:MESSAGE_CAP]))
+        expected = f"{message} {DETAILS}" if message else DETAILS
+        self.assertEqual(failure, PS.UnknownLimit(expected[:MESSAGE_CAP]))
 
     def test_no_other_error_is_a_limit_failure_whatever_its_wording(self) -> None:
         for error in OTHER_ERRORS:
@@ -300,7 +310,7 @@ class WhenALimitFailureMovesSessions(unittest.TestCase):
             "five_hour": seen(five, NOW + five_left),
             "seven_day": seen(seven, NOW + seven_left),
         }
-        failure = PS.LimitFailure(None, "Request rejected (429)")
+        failure = PS.UnknownLimit("Request rejected (429)")
 
         after = PS.after_limit_failure(PS.State(usage=usage), NOW, failure)
 
@@ -319,7 +329,7 @@ class WhenALimitFailureMovesSessions(unittest.TestCase):
     ) -> None:
         resets_at = None if reset_left is None else NOW + reset_left
         state = PS.State(usage={"five_hour": seen(40, resets_at)})
-        failure = PS.LimitFailure("five_hour", "You've hit your 5-hour limit")
+        failure = PS.KnownLimit("five_hour")
 
         after = PS.after_limit_failure(state, NOW, failure)
 
@@ -328,20 +338,20 @@ class WhenALimitFailureMovesSessions(unittest.TestCase):
 
     def test_a_known_wording_leaves_the_unknown_wording_seen_before(self) -> None:
         earlier = PS.UnknownWording(NOW - 3600, "Request rejected (429)")
-        failure = PS.LimitFailure("five_hour", "You've hit your 5-hour limit")
+        failure = PS.KnownLimit("five_hour")
         after = PS.after_limit_failure(PS.State(unknown_wording=earlier), NOW, failure)
         self.assertEqual(after.unknown_wording, earlier)
 
     def test_sessions_already_on_vertex_keep_their_time_and_the_wording_is_kept(self) -> None:
         on_vertex = PS.OnVertex(NOW - 60, NOW + 60, PS.Reason.MANUAL)
-        failure = PS.LimitFailure(None, "Request rejected (429)")
+        failure = PS.UnknownLimit("Request rejected (429)")
         after = PS.after_limit_failure(PS.State(on_vertex), NOW, failure)
         self.assertEqual(after.switch, on_vertex)
         self.assertEqual(after.unknown_wording, PS.UnknownWording(NOW, "Request rejected (429)"))
 
     def test_held_sessions_stay_held_and_the_wording_is_kept(self) -> None:
         held = PS.OnSubscription(NOW + 3600)
-        failure = PS.LimitFailure(None, "Request rejected (429)")
+        failure = PS.UnknownLimit("Request rejected (429)")
         after = PS.after_limit_failure(PS.State(held), NOW, failure)
         self.assertEqual(after.switch, held)
         self.assertEqual(after.unknown_wording, PS.UnknownWording(NOW, "Request rejected (429)"))
@@ -413,7 +423,7 @@ class UnknownWordingKept(unittest.TestCase):
 
     def test_cc_switch_still_names_it_after_the_stay_ends(self) -> None:
         message = "API Error: Request rejected (429)"
-        stay = PS.after_limit_failure(PS.State(), NOW, PS.LimitFailure(None, message))
+        stay = PS.after_limit_failure(PS.State(), NOW, PS.UnknownLimit(message))
         ended = PS.after_tick(stay, NOW + 3600, {})
 
         self.assertEqual(ended.switch, PS.OnSubscription())
@@ -487,7 +497,7 @@ class StopFailureHook(unittest.TestCase):
         self.assertEqual(saved.switch.until - saved.switch.since, 30 * 60)
         self.assertEqual(saved.switch.reason, PS.Reason.UNRECOGNISED_WORDING)
         assert saved.unknown_wording is not None
-        self.assertEqual(saved.unknown_wording.message, message)
+        self.assertEqual(saved.unknown_wording.message, f"{message} {DETAILS}")
         self.assertEqual(self.home.switch(), "1")
 
     def test_a_session_already_on_vertex_moves_nothing_and_records_nothing(self) -> None:
