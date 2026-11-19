@@ -22,8 +22,10 @@ what none of these hold, and never ask them to restate the claim in a template.
 A reviewer who wasn't there, doubts the change works, and will believe only what they could check
 themselves. Prove each claim for that person, whether or not the target is a PR:
 
-- **The claims:** given an approach with a property table, each binding property is a claim, and
-  so is each scenario a user relies on that the change could break but no property names. The
+- **The claims:** given a design with an Observable behaviour table, its rows are the claims, in
+  its words and order. Given only an approach with a property table, each binding property is a
+  claim, and so is each scenario a user relies on that the change could break but no property
+  names. The
   report may cite a property's number, but states each claim in words, since that is what a
   reviewer reads. Say which binding property no claim shows, and what covers it instead,
   such as a test CI runs.

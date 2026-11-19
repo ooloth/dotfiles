@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks, when the base branch has moved since the fork, whether the PR still relies on what it changed and where the PR's edits land, one that checks whether merging another open PR that shares its files would undo its edits, one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, one that checks every claim the change's prose makes against the system it describes, one that checks that removed prose took nothing a reader needs, and one that runs a PR's own verification steps and tries to show its claims false, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks, when the base branch has moved since the fork, whether the PR still relies on what it changed and where the PR's edits land, one that checks whether merging another open PR that shares its files would undo its edits, one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, one that checks every claim the change's prose makes against the system it describes, one that checks that removed prose took nothing a reader needs, and one that runs a PR's own verification steps and the checks the PR's author would run, base against head, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -294,7 +294,7 @@ runs for PR scope when Step 1's `base_moved.py` exits 1, or exits 2 for a PR who
 `mergeable` is `CONFLICTING`,
 Agent 16 runs when Step 1's `overlapping_prs.py` exits 1, Agent 17 runs when the diff removes
 a test or an assertion, Agent 18 runs when the diff adds or changes prose, Agent 19 runs when
-the diff removes prose, and Agent 20 runs for every PR scope.
+the diff removes prose, and Agent 20 runs for every PR scope that reaches this step.
 Together these are the standing agents. You may add more in the same fan-out when this particular
 change raises a question none of these prompts ask.
 
@@ -982,11 +982,12 @@ For each issue: removed text (file:line at the base) | why a reader needs it | w
 **Model:** Opus, because its usual answer is that the PR does what it says, and a wrong "it does"
 approves a change whose stated proof was never run, or never could be.
 
-Runs for every PR scope, whatever the description holds, in any layout, from any author's template
-or none; a PR whose description gives no steps needs it most. Reading the code shows what the change
-should do; only running it shows what it does, and a description's steps and pasted output can come
-from another script, another run or another version of the UI. Agent 1 asks whether the code matches
-the stated intent, and Agent 18 checks prose the diff changes. This agent runs the PR.
+Runs for every PR scope that reaches Step 3, whatever the description holds, in any layout, from
+any author's template or none; a PR whose description gives no steps needs it most. Reading the
+code shows what the change should do; only running it shows what it does, and a description's steps
+and pasted output can come from another script, another run or another version of the UI. Agent 1
+asks whether the code matches the stated intent, and Agent 18 checks prose the diff changes. This
+agent runs the PR.
 
 ```
 Question: Run the PR's own verification steps as written, then run what `prove-it-works` would if you had written the PR, base against head included. Which steps fail or show something other than the description says, which pasted output could not have come from the steps beside it, which claims does a run contradict or leave unshown, and what behaviour changes that no claim mentions?
@@ -1002,9 +1003,9 @@ Changed files:
 Instructions:
 1. Read `~/.agents/skills/prove-it-works/SKILL.md` and take its "Who the proof is for" as your stance: you are the reviewer who doubts the change.
 2. Only for a PR whose author belongs to the repository's owner, the user or the user's organization, run anything from it. For any other PR, run nothing, and report which steps you would have run and why you did not.
-3. Check out the PR's head in a detached worktree as Context's worktree line says, and install what its docs say. Run locally only: never reach a deployed environment, send real email or messages, or write to anything shared.
+3. Check out the PR's head and its base in detached worktrees of your own: run `mktemp -d`, then `git worktree add --detach <that folder>/head <the PR's headRefOid>` and `git worktree add --detach <that folder>/base <Base ref from Context>` as separate commands, and remove both when done. Install what the repo's docs say. Run locally only: never reach a deployed environment, send real email or messages, or write to anything shared.
 4. Run each verification step the description gives, exactly as written and in order, saving each one's output in your folder. Compare each result with what the step expects and with any output pasted under it. Output whose format the step could not print (other labels, other variable names, other addresses) came from somewhere else: report it.
-5. Then do what `prove-it-works` would do if you were the PR's author: build its table of the behaviour the change adds and keeps, from the ticket's Ideal state and approach, the design's Observable behaviour table where there is one, and the diff, and find what else changes by running the PR's base and head side by side. Run each row you can as a reviewer could. This finds what the PR's own steps cannot: a behaviour no claim mentions, and a claim with no step. Where a step needs a browser, another machine or a deployed system, say which and what it would show.
+5. Then do what `prove-it-works` would do if you were the PR's author. Its claims are the rows of the design's Observable behaviour table, from the ticket, where there is one. Without one, list the behaviour the change adds and keeps from the ticket's Ideal state and approach and from the diff. Then run the PR's base and head side by side to find what else changes. Run each row you can as a reviewer could. This finds what the PR's own steps cannot: a behaviour no claim mentions, and a claim with no step. Where a step needs a browser, another machine or a deployed system, say which and what it would show.
 6. A step that fails because its text is wrong is a finding with the corrected step. A claim the run does not bear out is a finding with the output. A behaviour the run shows that no claim and no design row mentions is a finding: a bug to fix, or a design change for the author to record.
 
 For each issue: the step or claim as written | what you ran | what it printed, quoted from your saved output | why it does not hold | the fix. Then the steps that held, one line each with the file holding their output.
@@ -1116,7 +1117,7 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
   because the Overlapping open PRs line says "none", and an Agent 17 not launched because the diff
   removes no test or assertion, an Agent 18 not launched because the diff adds or changes no prose,
   an Agent 19 not launched because it removes none, and an Agent 20 not launched because the scope
-  is not a PR.
+  is not a PR, or because Step 1a replaced Steps 2 to 3.5.
 
 ### Prior reviews
 [Omit this section entirely if nobody else has reviewed or commented.]
