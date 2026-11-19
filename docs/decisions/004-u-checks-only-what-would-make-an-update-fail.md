@@ -56,8 +56,8 @@ A failure that `u` used to catch starts surfacing late somewhere else.
 
 The maintainer chose not to add a gcloud credentials check to the `cc` alias. Nothing checks
 those credentials before a Claude session starts, so a session that needs them finds out when a
-`gcloud` command fails. `cc-vertex` in `tools/claude/shell.zsh` still checks them before starting
-a Vertex AI session.
+`gcloud` command fails. `cc-vertex` in `tools/claude/shell.zsh` then still checked them before
+starting a Vertex AI session.
 The 2026-11-05 addendum below reverses this: `cc`, `ccc` and `cc-vertex` all run `auth`.
 
 ## Addendum (2026-11-05) — `cc` checks the Google login again
