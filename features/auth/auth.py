@@ -11,7 +11,8 @@ ends up valid.
 
 Runs that start together, such as Claude sessions opened at once, share the logins: a run that finds
 a login expired waits for any other run's logins to finish, checks again, and logs in unless that
-check finds it valid or its tool missing. A run whose logins are all valid never waits.
+check finds it valid or its tool missing, or can't tell after waiting. A run whose logins are all
+valid never waits.
 
 Run with: auth            (log in to the expired ones)
           auth --check    (only report; logs in to nothing)
@@ -35,7 +36,7 @@ from enum import Enum
 from typing import NewType, Protocol, assert_never
 
 # Beside this file, which Python puts first on the import path when it runs a script
-from login_lock import LOCK_PATH, LoginLock, LoginPermit, file_login_lock
+from login_lock import LOCK_PATH, HeldLoginLock, LoginLock, LoginPermit, file_login_lock
 
 LoginName = NewType("LoginName", str)
 ArgoServer = NewType("ArgoServer", str)
@@ -111,7 +112,7 @@ class Expired:
 @dataclass(frozen=True)
 class Unchecked:
     """The check could not tell whether the credential is valid, so its login is not run, unless an
-    earlier check in the same run found it expired."""
+    earlier check in the same run found it expired and the run didn't wait for the login lock."""
 
     reason: str
 
@@ -346,9 +347,8 @@ def check_status(item: Login | Unconfigured, shell: Shell) -> Status:
             assert_never(item)
 
 
-def log_in(login: Login, before: Status, mode: Mode, shell: Shell, _permit: LoginPermit) -> Status:
+def log_in(login: Login, mode: Mode, shell: Shell, _permit: LoginPermit) -> Status:
     assert mode is Mode.REFRESH, f"{login.name}: a login must never run in {mode.value} mode"
-    assert before == Expired(), f"{login.name} is {before}, so its login must not run"
     print(f"\n🔑 Logging in to {login.name}...", file=sys.stderr, flush=True)
     # The fresh check decides the outcome, because a login can exit 0 without fixing anything
     shell.attach(login.login)
@@ -366,9 +366,10 @@ def run(
     """Check every login at once, then log in to the expired ones one at a time, holding `lock`.
     Once it holds the lock, every expired login is checked again at once, and each is logged in to
     unless that check finds it valid or its tool missing, so a login another run completed
-    meanwhile is not opened again. After this run has logged in to one, the next is checked once
-    more just before, since a login can make another valid. `after_logins` then runs with the
-    outcomes, still holding the lock.
+    meanwhile is not opened again. A check that can't tell logs in only when this run didn't wait
+    for the lock, since a run that waited follows one that has just tried that login. After this
+    run has logged in to one, the next is checked once more just before, since a login can make
+    another valid. `after_logins` then runs with the outcomes, still holding the lock.
 
     Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
     login, once its check under the lock and any login and check after it are done. So the order of
@@ -432,12 +433,20 @@ def log_in_unless_settled(
 ) -> Outcome:
     """The login's outcome given its check under the lock, `again`: logged in to unless that check
     found it valid or its tool gone. A check that can't tell logs in, since the first one found it
-    expired: a second browser login shows, while a session started with an expired login doesn't."""
+    expired: a second browser login shows, while a session started with an expired login doesn't.
+    A run that waited for the lock leaves it alone instead, since the run before it has just tried
+    that login, and every waiting run opening it again would ask for it once per session."""
     login = login_to_run(mode, item, before)
     assert login is not None, f"{item.name} is {before}, so it must not be checked again"
-    if not isinstance(again, Expired | Unchecked):
-        return Outcome(item.name, before, again, False)
-    return Outcome(item.name, before, log_in(login, before, mode, shell, permit), True)
+    match (again, permit):
+        case (Valid() | NotInstalled(), _) | (Unchecked(), HeldLoginLock(waited=True)):
+            return Outcome(item.name, before, again, False)
+        case (Expired() | Unchecked(), _):
+            return Outcome(item.name, before, log_in(login, mode, shell, permit), True)
+        case (NotConfigured(), _):
+            raise AssertionError(f"{item.name} is configured, so its check can't say otherwise")
+        case unexpected:
+            assert_never(unexpected)
 
 
 def login_to_run(mode: Mode, item: Login | Unconfigured, before: Status) -> Login | None:

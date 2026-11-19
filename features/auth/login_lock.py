@@ -16,7 +16,11 @@ LOCK_PATH = Path.home() / ".local" / "state" / "auth" / "logins.lock"
 @dataclass(frozen=True)
 class HeldLoginLock:
     """Marks that this run holds the login lock. Only entering a LoginLock makes one outside the
-    tests, and log_in takes it so a call outside the lock reads as wrong."""
+    tests, and log_in takes a LoginPermit, so a call outside the lock, or without saying the lock
+    was unusable, reads as wrong."""
+
+    # Whether another run held the lock first, so this run waited for its logins
+    waited: bool
 
 
 @dataclass(frozen=True)
@@ -49,9 +53,11 @@ def file_login_lock(path: Path) -> Generator[LoginPermit]:
         yield UnsharedLogins(str(error))
         return
     with handle:
+        waited = False
         try:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
+            waited = True
             print(
                 "⏳ Another run of auth is logging in; waiting for it...",
                 file=sys.stderr,
@@ -59,6 +65,6 @@ def file_login_lock(path: Path) -> Generator[LoginPermit]:
             )
             fcntl.flock(handle, fcntl.LOCK_EX)
         try:
-            yield HeldLoginLock()
+            yield HeldLoginLock(waited)
         finally:
             fcntl.flock(handle, fcntl.LOCK_UN)
