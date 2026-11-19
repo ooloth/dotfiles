@@ -38,8 +38,11 @@ with the time they move back from Vertex AI. Two things move sessions there on t
   hit your session limit", "You've hit your 5-hour limit" or "You've hit your weekly limit") keeps
   them there until that window resets, or for the window's full length when no reset time is
   recorded. Any other wording keeps them there until a window the status line saw at 100% resets,
-  or for 30 minutes when none did, and `cc-switch` shows the wording, so it can be added to
-  `LIMIT_MESSAGES`.
+  or for 30 minutes when none did. A session already on Vertex AI, such as one `cc-vertex`
+  started, moves nothing, because its 429 comes from Vertex AI itself.
+
+Wording the switch doesn't know is kept, with when it was seen, until newer unknown wording replaces
+it. `cc-switch` shows it until `LIMIT_MESSAGES` gains it, so it can be added there.
 
 While sessions are on Vertex AI, a used-up window that a status line reports and that resets after
 their stay ends extends the stay to that reset. A session running on Vertex AI from its start

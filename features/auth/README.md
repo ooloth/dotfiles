@@ -35,17 +35,17 @@ Runs that start together, such as several Claude sessions opened at once, share 
 that finds a login expired takes a lock on `~/.local/state/auth/logins.lock` before logging in. If
 another run holds it, such as another session's or an `auth` typed in a terminal, it prints
 `⏳ Another run of auth is logging in; waiting for it...` and waits. Once it holds the lock, it
-checks each expired login again and logs in only to the ones still expired, so a login another run
-just finished isn't opened again. The system releases the lock when a run ends, even when it
-crashes, and Ctrl-C while waiting stops the run as it does during a check. A run whose logins are
-all valid never takes the lock.
+checks each expired login again and logs in unless that check finds it valid or its tool missing,
+so a login another run just finished isn't opened again. A check that can't tell still logs in. The
+system releases the lock when a run ends, even when it crashes, and Ctrl-C while waiting stops the
+run as it does during a check. A run whose logins are all valid never takes the lock.
 
 It prints `Checking logins...` and then one line per login as soon as that login's result is final,
 so the lines come out in the order the checks finish and a slow check doesn't hide the others. An
 expired login's line comes after its login, from the check it runs again then, or after its check
-under the lock, marked `(checked again, no login run)`, when that check no longer found it
-expired, such as after another run's login. It exits 0 only
-when every login ends up valid, so `auth && <command>` runs the command only once you're logged in.
+under the lock, marked `(checked again, no login run)`, when that check found it valid or its tool
+missing, such as after another run's login. It exits 0 only when every login ends up valid, so
+`auth && <command>` runs the command only once you're logged in.
 
 - **The Spacelift account and the Argo CD servers** come from `PRIVATE_SPACELIFT_ACCOUNT` and
   `PRIVATE_ARGOCD_SERVERS` in `private.env` (see `private.env.example`). The servers are a
@@ -54,11 +54,13 @@ when every login ends up valid, so `auth && <command>` runs the command only onc
 - **`argocd account get-user-info` usually exits 0 even when the session has expired**, so the
   script reads its `loggedIn` field. A failure that names a revoked token (`invalid_grant`) or a
   rejected session (`code = Unauthenticated`) also counts as expired. Any other failure, such as
-  an unreachable server, is reported as not checked and its login is not run.
+  an unreachable server, is reported as not checked and its login is not run, unless the run's
+  first check already found it expired.
 - **gcloud and spacectl exit non-zero both when a login has expired and when the network or the
   service is down**, so the script reads what they print. Only a message naming the credentials,
   such as `Reauthentication required`, `invalid_grant` or `please login first`, counts as expired.
-  Any other failure is reported as not checked, so a dropped VPN opens no browser logins.
+  Any other failure is reported as not checked, so a dropped VPN opens no browser logins, except
+  for one the run's first check already found expired.
 - **`--method browser`** skips Spacelift's menu asking which kind of login to use, and
   **`--endpoint`** skips its prompt for the account's URL, which it asks for even when the profile
   already has one.

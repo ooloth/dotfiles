@@ -330,6 +330,18 @@ class CallersMode(unittest.TestCase):
                     self.assertEqual(run.status, 0, run.output)
                     self.assertEqual(run.claude, [*mode, "review this"])
 
+    def test_on_the_work_laptop_the_logins_still_run_before_claude(self) -> None:
+        # hub's own launch: its mode, and someone may be watching the tab
+        for mode in (["--permission-mode", "auto"], ["--permission-mode=auto"]):
+            with self.subTest(mode=mode):
+                self.machine = Machine(Path(tempfile.mkdtemp(dir=self._tmp.name)))
+                run = self.machine.run(*mode, "review this", computer="work")
+
+                self.assertEqual(run.status, 0, run.output)
+                [logins, claude] = self.machine.started()
+                self.assertRegex(logins, r"^uv run --offline .*/features/auth/auth\.py$")
+                self.assertEqual(claude, "claude")
+
     def test_a_mode_after_a_double_dash_is_the_prompt_not_a_mode(self) -> None:
         run = self.machine.run("--", "--permission-mode")
 

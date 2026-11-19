@@ -21,6 +21,7 @@ import contextlib
 import fcntl
 import importlib.util
 import select
+import signal
 import subprocess
 import sys
 import tempfile
@@ -143,6 +144,30 @@ class LockAnotherRunReleasedAfterLoggingIn:
     def __enter__(self):
         for name in self.shell.states:
             self.shell.states[name] = "valid"
+        return auth.HeldLoginLock()
+
+    def __exit__(self, *_exc: object) -> None:
+        return None
+
+
+@dataclass
+class LockWhoseCheckAgainSays:
+    """A login lock that, once held, makes every check say `again`: one of ANSWERS' states,
+    "missing" for a tool gone from PATH, or "timed out"."""
+
+    shell: FakeShell
+    again: str
+
+    def __enter__(self):
+        names = frozenset(self.shell.states)
+        match self.again:
+            case "missing":
+                self.shell.missing = frozenset(TOOLS)
+            case "timed out":
+                self.shell.timed_out = names
+            case state:
+                for name in names:
+                    self.shell.states[name] = state
         return auth.HeldLoginLock()
 
     def __exit__(self, *_exc: object) -> None:
@@ -293,6 +318,29 @@ class SharedLogins(unittest.TestCase):
         )
 
         self.assertIsNone(auth.default_context_command(settings, outcomes))
+
+    def test_only_a_valid_or_missing_tool_under_the_lock_skips_a_login(self) -> None:
+        # A check that can't tell runs the login: a second browser login shows, while a session
+        # that starts with an expired login says nothing
+        for again, logs_in in (
+            ("valid", False),
+            ("missing", False),
+            ("expired", True),
+            ("unreachable", True),
+            ("timed out", True),
+        ):
+            with self.subTest(again=again):
+                items = configured_logins()
+                shell = FakeShell(
+                    items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
+                )
+
+                outcomes = auth.run(
+                    auth.Mode.REFRESH, items, shell, ignore, LockWhoseCheckAgainSays(shell, again)
+                )
+
+                self.assertEqual(bool(shell.attached), logs_in)
+                self.assertEqual(all(outcome.login_ran for outcome in outcomes), logs_in)
 
 
 class CheckMode(unittest.TestCase):
@@ -696,6 +744,17 @@ class LoginLockBetweenRuns(unittest.TestCase):
 
         self.assertEqual(process.returncode, 0, out + err)
         self.assertEqual(self.logins_run(), FIRST_LOGIN_TO_EACH_TOOL)
+
+    def test_ctrl_c_while_waiting_stops_the_run_without_a_login(self) -> None:
+        with self.held_by_another_run():
+            process = self.start()
+            self.wait_for_waiting_line(process)
+            process.send_signal(signal.SIGINT)
+            out, err = process.communicate(timeout=30)
+
+        self.assertEqual(process.returncode, 130, out + err)
+        self.assertIn("Stopped.", err)
+        self.assertEqual(self.logins_run(), [])
 
     def test_with_every_login_valid_a_run_never_waits_for_the_lock(self) -> None:
         self.make_all_valid()

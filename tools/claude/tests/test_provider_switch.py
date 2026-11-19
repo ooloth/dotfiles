@@ -139,10 +139,7 @@ class WhileOnVertex(unittest.TestCase):
         until_left=st.floats(min_value=-3600, max_value=7 * 24 * 3600),
         used=st.floats(min_value=0, max_value=150),
         reset_left=st.one_of(st.none(), st.floats(min_value=-3600, max_value=8 * 24 * 3600)),
-        reason=st.one_of(
-            st.sampled_from(list(PS.Reason)),
-            st.builds(PS.UnrecognisedWording, st.text(max_size=20)),
-        ),
+        reason=st.sampled_from(list(PS.Reason)),
     )
     def test_a_stay_lasts_until_its_end_or_a_later_reset_of_a_used_up_window(
         self, until_left: float, used: float, reset_left: float | None, reason
@@ -313,8 +310,8 @@ class WhenALimitFailureMovesSessions(unittest.TestCase):
             if used >= 100 and NOW + left > NOW
         ]
         until = max(used_up) if used_up else NOW + 30 * 60
-        cause = PS.UnrecognisedWording("Request rejected (429)")
-        self.assertEqual(after.switch, PS.OnVertex(NOW, until, cause))
+        self.assertEqual(after.switch, PS.OnVertex(NOW, until, PS.Reason.UNRECOGNISED_WORDING))
+        self.assertEqual(after.unknown_wording, PS.UnknownWording(NOW, "Request rejected (429)"))
 
     @given(reset_left=st.one_of(st.none(), st.floats(min_value=-3600, max_value=5 * 3600)))
     def test_a_known_wording_lasts_until_its_window_resets_or_its_full_length(
@@ -329,23 +326,109 @@ class WhenALimitFailureMovesSessions(unittest.TestCase):
         until = resets_at if resets_at is not None and resets_at > NOW else NOW + 5 * 3600
         self.assertEqual(after.switch, PS.OnVertex(NOW, until, PS.Reason.LIMIT_ERROR))
 
-    def test_sessions_already_on_vertex_keep_their_time(self) -> None:
+    def test_a_known_wording_leaves_the_unknown_wording_seen_before(self) -> None:
+        earlier = PS.UnknownWording(NOW - 3600, "Request rejected (429)")
+        failure = PS.LimitFailure("five_hour", "You've hit your 5-hour limit")
+        after = PS.after_limit_failure(PS.State(unknown_wording=earlier), NOW, failure)
+        self.assertEqual(after.unknown_wording, earlier)
+
+    def test_sessions_already_on_vertex_keep_their_time_and_the_wording_is_kept(self) -> None:
         on_vertex = PS.OnVertex(NOW - 60, NOW + 60, PS.Reason.MANUAL)
         failure = PS.LimitFailure(None, "Request rejected (429)")
         after = PS.after_limit_failure(PS.State(on_vertex), NOW, failure)
         self.assertEqual(after.switch, on_vertex)
+        self.assertEqual(after.unknown_wording, PS.UnknownWording(NOW, "Request rejected (429)"))
+
+    def test_held_sessions_stay_held_and_the_wording_is_kept(self) -> None:
+        held = PS.OnSubscription(NOW + 3600)
+        failure = PS.LimitFailure(None, "Request rejected (429)")
+        after = PS.after_limit_failure(PS.State(held), NOW, failure)
+        self.assertEqual(after.switch, held)
+        self.assertEqual(after.unknown_wording, PS.UnknownWording(NOW, "Request rejected (429)"))
 
 
-class UnrecognisedWording(unittest.TestCase):
-    """A move caused by wording the switch doesn't know keeps that wording where you can read it."""
+switches = st.one_of(
+    st.builds(PS.OnSubscription, st.one_of(st.none(), times)),
+    st.builds(
+        lambda since, length, reason: PS.OnVertex(since, since + length, reason),
+        times,
+        st.floats(min_value=1, max_value=8 * 24 * 3600),
+        st.sampled_from(list(PS.Reason)),
+    ),
+)
+unknown_wordings = st.one_of(
+    st.none(), st.builds(PS.UnknownWording, times, st.text(max_size=MESSAGE_CAP))
+)
 
-    @given(message=st.text(max_size=MESSAGE_CAP))
-    def test_the_wording_survives_the_state_file(self, message: str) -> None:
-        cause = PS.UnrecognisedWording(message)
-        state = PS.State(PS.OnVertex(NOW, NOW + 60, cause))
+
+class UnknownWordingKept(unittest.TestCase):
+    """Rate-limit wording the switch doesn't know stays readable in cc-switch after the stay it
+    caused, until newer unknown wording replaces it or LIMIT_MESSAGES gains it."""
+
+    @given(switch=switches, wording=unknown_wordings, now=times)
+    def test_no_tick_or_choice_drops_it(self, switch, wording, now: float) -> None:
+        state = PS.State(switch, unknown_wording=wording)
+        for after in (
+            PS.after_tick(state, now, {"five_hour": seen(100, now + 60)}),
+            PS.after_tick(state, now, {}),
+            PS.choose_vertex(state, now),
+            PS.choose_subscription(state, now),
+        ):
+            self.assertEqual(after.unknown_wording, wording)
+
+    @given(switch=switches, wording=unknown_wordings)
+    def test_it_survives_the_state_file(self, switch, wording) -> None:
+        state = PS.State(switch, unknown_wording=wording)
         self.assertEqual(PS.parse_state(PS.dump_state(state)), state)
 
-    def test_a_known_cause_in_the_state_file_reads_as_it_always_has(self) -> None:
+    def test_a_malformed_one_reads_as_none_and_keeps_the_rest(self) -> None:
+        state = PS.State(PS.OnVertex(NOW, NOW + 60, PS.Reason.MANUAL))
+        for bad in ("text", {"at": "soon"}, {"message": "x"}, [1, 2]):
+            with self.subTest(bad=bad):
+                data = json.loads(PS.dump_state(state))
+                data["unknown_wording"] = bad
+                self.assertEqual(PS.parse_state(json.dumps(data)), state)
+
+    def test_a_hand_edited_wording_longer_than_the_cap_is_cut_to_it(self) -> None:
+        state = PS.State(unknown_wording=PS.UnknownWording(NOW, "x"))
+        data = json.loads(PS.dump_state(state))
+        data["unknown_wording"]["message"] = "x" * 5000
+        wording = PS.parse_state(json.dumps(data)).unknown_wording
+        self.assertEqual(wording, PS.UnknownWording(NOW, "x" * MESSAGE_CAP))
+
+    def test_a_stay_written_before_the_wording_moved_out_still_reads(self) -> None:
+        # A stay whose wording sits beside its reason, as some state files on disk hold it
+        text = json.dumps(
+            {
+                "provider": "vertex",
+                "since": NOW,
+                "until": NOW + 60,
+                "reason": "a turn failed on a rate limit in wording the switch doesn't know",
+                "message": "Request rejected (429)",
+                "usage": {},
+            }
+        )
+        expected = PS.OnVertex(NOW, NOW + 60, PS.Reason.UNRECOGNISED_WORDING)
+        self.assertEqual(PS.parse_state(text).switch, expected)
+
+    def test_cc_switch_still_names_it_after_the_stay_ends(self) -> None:
+        message = "API Error: Request rejected (429)"
+        stay = PS.after_limit_failure(PS.State(), NOW, PS.LimitFailure(None, message))
+        ended = PS.after_tick(stay, NOW + 3600, {})
+
+        self.assertEqual(ended.switch, PS.OnSubscription())
+        self.assertIn(f'"{message}"', PS.describe(ended, NOW + 3600))
+
+    def test_cc_switch_stops_naming_it_once_limit_messages_knows_it(self) -> None:
+        wording = PS.UnknownWording(NOW, "You've hit your 5-hour limit · resets 3pm")
+        self.assertNotIn("resets 3pm", PS.describe(PS.State(unknown_wording=wording), NOW))
+
+    def test_a_wording_seen_days_ago_names_its_day(self) -> None:
+        self.assertRegex(PS.clock(NOW - 3 * 24 * 3600, NOW), r"^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) ")
+
+
+class StateFile(unittest.TestCase):
+    def test_each_reason_reads_back_from_the_text_the_state_file_stores(self) -> None:
         text = json.dumps(
             {
                 "provider": "vertex",
@@ -357,18 +440,6 @@ class UnrecognisedWording(unittest.TestCase):
         )
         expected = PS.OnVertex(NOW, NOW + 60, PS.Reason.LIMIT_ERROR)
         self.assertEqual(PS.parse_state(text).switch, expected)
-
-    def test_a_hand_edited_wording_longer_than_the_cap_is_cut_to_it(self) -> None:
-        state = PS.State(PS.OnVertex(NOW, NOW + 60, PS.UnrecognisedWording("x")))
-        data = json.loads(PS.dump_state(state))
-        data["message"] = "x" * 5000
-        cause = PS.parse_state(json.dumps(data)).switch.reason
-        self.assertEqual(cause, PS.UnrecognisedWording("x" * MESSAGE_CAP))
-
-    def test_cc_switch_names_the_wording(self) -> None:
-        cause = PS.UnrecognisedWording("API Error: Request rejected (429)")
-        text = PS.describe(PS.OnVertex(NOW, NOW + 1800, cause), NOW)
-        self.assertIn('"API Error: Request rejected (429)"', text)
 
 
 class StopFailureHook(unittest.TestCase):
@@ -412,10 +483,22 @@ class StopFailureHook(unittest.TestCase):
         result = self.run_hook(message)
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        switch = self.home.saved_state().switch
-        self.assertEqual(switch.until - switch.since, 30 * 60)
-        self.assertEqual(switch.reason, PS.UnrecognisedWording(message))
+        saved = self.home.saved_state()
+        self.assertEqual(saved.switch.until - saved.switch.since, 30 * 60)
+        self.assertEqual(saved.switch.reason, PS.Reason.UNRECOGNISED_WORDING)
+        assert saved.unknown_wording is not None
+        self.assertEqual(saved.unknown_wording.message, message)
         self.assertEqual(self.home.switch(), "1")
+
+    def test_a_session_already_on_vertex_moves_nothing_and_records_nothing(self) -> None:
+        # A cc-vertex session's own 429 would otherwise put every session on the throttled project
+        result = self.run_hook(
+            "API Error: Request rejected (429)", env={**ENV, "CLAUDE_CODE_USE_VERTEX": "1"}
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.home.switch(), "")
+        self.assertFalse(self.home.paths.state.exists())
 
     def test_another_failure_moves_nothing(self) -> None:
         result = self.run_hook("You've hit your 5-hour limit", error="server_error")

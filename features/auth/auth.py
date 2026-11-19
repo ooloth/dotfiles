@@ -10,8 +10,8 @@ for each one that has expired, one at a time, and checks it again. Exits 0 only 
 ends up valid.
 
 Runs that start together, such as Claude sessions opened at once, share the logins: a run that finds
-a login expired waits for any other run's logins to finish, checks again, and logs in only to the
-ones still expired. A run whose logins are all valid never waits.
+a login expired waits for any other run's logins to finish, checks again, and logs in unless that
+check finds it valid or its tool missing. A run whose logins are all valid never waits.
 
 Run with: auth            (log in to the expired ones)
           auth --check    (only report; logs in to nothing)
@@ -112,7 +112,8 @@ class Expired:
 
 @dataclass(frozen=True)
 class Unchecked:
-    """The check could not tell whether the credential is valid, so its login is not run."""
+    """The check could not tell whether the credential is valid, so its login is not run, unless an
+    earlier check in the same run found it expired."""
 
     reason: str
 
@@ -154,7 +155,7 @@ class Outcome:
         Status | None
     )  # None when nothing checked it again: it wasn't expired, or this run only checks
     # Whether this run logged in. A run that waited for another run's logins can find a login
-    # valid on its second check without logging in.
+    # valid, or its tool gone, on its second check without logging in.
     login_ran: bool
 
     def __post_init__(self) -> None:
@@ -402,8 +403,9 @@ def run(
     lock: LoginLock,
 ) -> tuple[Outcome, ...]:
     """Check every login at once, then log in to the expired ones one at a time, holding `lock`.
-    Once it holds the lock, each expired login is checked again, and only the ones still expired
-    are logged in to, so a login another run completed meanwhile is not opened again.
+    Once it holds the lock, each expired login is checked again, and logged in to unless that check
+    finds it valid or its tool missing, so a login another run completed meanwhile is not opened
+    again.
 
     Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
     login, once the login and its second check are done. So the order of the reports follows the
@@ -431,7 +433,7 @@ def run(
     if expired:
         with lock as held:
             for index in sorted(expired):
-                after_lock[index] = log_in_if_still_expired(
+                after_lock[index] = check_again_and_log_in(
                     items[index], befores[index], mode, shell, held
                 )
                 report_and_record(after_lock[index])
@@ -444,17 +446,18 @@ def run(
     return tuple(outcomes)
 
 
-def log_in_if_still_expired(
+def check_again_and_log_in(
     item: Login | Unconfigured, before: Status, mode: Mode, shell: Shell, held: HeldLoginLock
 ) -> Outcome:
-    """The login's outcome once it is checked again under the lock, logging in only if it is still
-    expired."""
+    """The login's outcome once it is checked again under the lock, logging in unless that check
+    finds it valid or its tool gone. A check that can't tell logs in, since the first one found it
+    expired: a second browser login shows, while a session started with an expired login doesn't."""
     login = login_to_run(mode, item, before)
     assert login is not None, f"{item.name} is {before}, so it must not be checked again"
     again = check_status(login, shell)
-    if again != Expired():
+    if not isinstance(again, Expired | Unchecked):
         return Outcome(item.name, before, again, False)
-    return Outcome(item.name, before, log_in(login, again, mode, shell, held), True)
+    return Outcome(item.name, before, log_in(login, before, mode, shell, held), True)
 
 
 def login_to_run(mode: Mode, item: Login | Unconfigured, before: Status) -> Login | None:
