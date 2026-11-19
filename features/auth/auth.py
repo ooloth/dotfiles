@@ -11,7 +11,8 @@ ends up valid.
 
 Runs that start together, such as Claude sessions opened at once, share the logins: a run that finds
 a login expired waits for any other run's logins to finish, checks again, and logs in unless that
-check finds it valid or its tool missing. A run whose logins are all valid never waits.
+check finds it valid or its tool missing. A run whose logins are all valid never waits. When the
+lock can't be set up, the run says why and logs in without sharing.
 
 Run with: auth            (log in to the expired ones)
           auth --check    (only report; logs in to nothing)
@@ -363,12 +364,13 @@ def run(
     lock: LoginLock,
     after_logins: Callable[[tuple[Outcome, ...]], None] = lambda _outcomes: None,
 ) -> tuple[Outcome, ...]:
-    """Check every login at once, then log in to the expired ones one at a time, holding `lock`.
+    """Check every login at once, then log in to the expired ones one at a time inside `lock`, which
+    holds the login lock unless it couldn't be set up.
     Once it holds the lock, every expired login is checked again at once, and each is logged in to
     unless that check finds it valid or its tool missing, so a login another run completed
     meanwhile is not opened again. After this run has logged in to one, the next is checked once
     more just before, since a login can make another valid. `after_logins` then runs with the
-    outcomes, still holding the lock.
+    outcomes, still inside `lock`.
 
     Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
     login, once its check under the lock and any login and check after it are done. So the order of
@@ -537,7 +539,8 @@ def main(argv: list[str]) -> int:
             shell,
             lambda outcome: print(describe(outcome), flush=True),
             file_login_lock(LOCK_PATH),
-            # Inside the lock, so no other run is logging in to Argo CD while its config is written
+            # Inside the lock, so while it holds one, no other run is logging in to Argo CD as the
+            # config is written
             after_logins=lambda outcomes: restore_default_context_after(settings, outcomes, shell),
         )
     except KeyboardInterrupt:

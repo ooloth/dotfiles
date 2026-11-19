@@ -18,8 +18,10 @@ HOME, with stubs that remember a login, so one run's login is seen by another.
 from __future__ import annotations
 
 import contextlib
+import errno
 import fcntl
 import importlib.util
+import io
 import select
 import signal
 import subprocess
@@ -317,6 +319,48 @@ class OnlyExpiredLoginsRun(unittest.TestCase):
             for item in installed
         )
         self.assertEqual(auth.all_valid(outcomes), ends_valid)
+
+
+class LockThatCantBeSetUp(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.lock_path = Path(self._tmp.name) / "auth" / "logins.lock"
+
+    def test_a_file_system_that_refuses_the_lock_still_runs_every_login(self) -> None:
+        items = configured_logins()
+        shell = FakeShell(
+            items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
+        )
+        refused = OSError(errno.ENOLCK, "No locks available")
+        stderr = io.StringIO()
+
+        with (
+            mock.patch.object(login_lock.fcntl, "flock", side_effect=refused),
+            contextlib.redirect_stderr(stderr),
+        ):
+            outcomes = auth.run(
+                auth.Mode.REFRESH, items, shell, ignore, login_lock.file_login_lock(self.lock_path)
+            )
+
+        self.assertIn("won't share logins", stderr.getvalue())
+        self.assertIn("No locks available", stderr.getvalue())
+        self.assertTrue(all(outcome.login_ran for outcome in outcomes))
+        self.assertTrue(auth.all_valid(outcomes))
+
+    def test_an_error_in_an_unshared_run_carries_no_lock_error(self) -> None:
+        # A file where the lock's folder goes, so the lock can't be created
+        self.lock_path.parent.write_text("")
+
+        with (
+            contextlib.redirect_stderr(io.StringIO()),
+            self.assertRaises(ValueError) as raised,
+            login_lock.file_login_lock(self.lock_path) as permit,
+        ):
+            self.assertEqual(permit, login_lock.UnsharedLogins())
+            raise ValueError("a bug in a login")
+
+        self.assertIsNone(raised.exception.__context__)
 
 
 class SharedLogins(unittest.TestCase):
