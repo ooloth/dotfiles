@@ -95,6 +95,7 @@
       "mcp__atlassian-rovo__addCommentToJiraIssue",
       "mcp__atlassian-rovo__transitionJiraIssue",
       "mcp__atlassian-rovo__editJiraIssue",
+      "Bash(gh issue comment * --body-file *)",
       "Bash(gh pr comment *)",
       "Bash(gh pr edit *)",
       "Bash(uv run /Users/michael.uloth/.claude/skills/review-pr-comments-converge/scripts/reply_to_comment.py *)",
