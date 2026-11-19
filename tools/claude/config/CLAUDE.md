@@ -696,13 +696,16 @@ Skip and say nothing if execution went smoothly.
 - `tmux` - use for background jobs instead of `run_in_background` or `&`, and to test interactive
   programs (TUIs, REPLs). This is often the only way to visually verify an interactive program
   without asking the user to do it:
-  - start: `tmux new-session -d -s <name> -n <window> "<command>"`
-  - add a window: `tmux new-window -t <name> -n <window> "<command>"`
+  - start: `tmux new-session -d -s <name> -n <window> "cd <absolute dir> && <command>"`
+  - add a window: `tmux new-window -t <name> -n <window> "cd <absolute dir> && <command>"`
   - type: `tmux send-keys -t <name>:<window> "<keys>" Enter`
   - read the screen: `tmux capture-pane -t <name>:<window> -p`
   - finish: `tmux kill-session -t <name>`
 
-  The user watches with `tmux attach -t <name>`.
+  Every path in `<command>` is absolute. A window started from Claude Code does not start in the
+  caller's directory: on 2026-11-19 its working directory was unusable (`pwd` failed with "No such
+  file or directory") with or without `-c <dir>`, so a relative `cd backend` failed silently. The
+  user watches with `tmux attach -t <name>`.
 
 ## Shell
 
