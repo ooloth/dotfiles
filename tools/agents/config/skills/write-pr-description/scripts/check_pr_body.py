@@ -10,6 +10,8 @@ layout without complaint, so these are found only by checking:
 
   Rendered through GitHub's markdown API (`gh api markdown`), the HTML has
     every <details> directly inside an <li>, starting with its <summary>
+    every <summary> directly inside a <details>; a row whose content fell out of its list item
+      leaves its summary outside, and GitHub gives the emptied <details> a <summary>Details</summary>
     no empty code block, which is what a block whose lines sit left of its fence becomes
     no ``` shown as text outside a code block
     no code block left outside the task-list step it belongs to
@@ -287,6 +289,21 @@ def check_html(html: str) -> list[Problem]:
                     f"a code block {place(element)} renders empty, which is what happens when its"
                     " lines are indented less than its fence: they end the step and show below it",
                     "indent every line inside the block exactly as far as its fence",
+                )
+            )
+        elif element.tag == "summary" and (
+            element.parent is None or element.parent.tag != "details"
+        ):
+            # GitHub gives every <details> without a summary a <summary>Details</summary> of its
+            # own, so a row that lost its content shows no missing summary. Its real summary,
+            # left outside, is the trace.
+            found.append(
+                rendered(
+                    "summary outside its row",
+                    f'the summary "{squeeze(element.text())}" is outside every <details>, so its row'
+                    ' shows as an empty "Details" and its content shows below the list',
+                    "indent everything in the row to where its `<details>` starts, which is one"
+                    " column further under a two-digit number such as `10.` than under `9.`",
                 )
             )
     found.extend(stray_fence_problems(root))

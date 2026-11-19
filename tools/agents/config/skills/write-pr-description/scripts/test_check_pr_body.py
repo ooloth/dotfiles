@@ -140,6 +140,37 @@ class TestRenderedHtml:
         )
         assert kinds(check_pr_body.check_html(html)) == ["code outside its step"]
 
+    def test_summary_that_left_its_row_is_reported_by_its_text(self) -> None:
+        problems = check_pr_body.check_html(SUMMARY_OUTSIDE_ITS_ROW_HTML)
+        assert kinds(problems) == ["summary outside its row"]
+        assert '"📄 Row ten\'s behaviour"' in problems[0].what
+
+
+# Rows 9 and 10 of a real description as GitHub's markdown API rendered them, trimmed and with
+# their summaries renamed. Row 10 sat under `10. <details>` with its content indented three spaces,
+# as for `9. `, so it fell out of the list item: GitHub gave the emptied <details> its own
+# `<summary>Details</summary>`, and the row's summary landed after the list.
+SUMMARY_OUTSIDE_ITS_ROW_HTML = """<ol dir="auto">
+<li>
+<details>
+<summary>📄 Row nine's behaviour</summary>
+<h4 dir="auto">🧾 Proven by</h4>
+<ul dir="auto">
+<li>The run below</li>
+</ul>
+</details>
+</li>
+<li>
+<details><summary>Details</summary>
+</details></li>
+</ol>
+   <summary>📄 Row ten's behaviour</summary>
+<h4 dir="auto">🧾 Proven by</h4>
+<ul dir="auto">
+<li>The run below</li>
+</ul>
+"""
+
 
 GOOD_BODY = """## ✅ What
 
