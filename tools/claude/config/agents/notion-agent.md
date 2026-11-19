@@ -19,6 +19,20 @@ You are a specialized Notion workspace agent.
 - Return filtered, relevant data to the main agent
 - Avoid dumping large raw Notion content
 
+## Setup Check
+
+This agent starts its own Notion MCP server, so its tools should be in your tool list. If they
+are not, Claude Code dropped the server without telling you, so find out why before you stop:
+
+- Run `ps -ww -o command= -p "$PPID"`, which prints the command that started this session.
+- If it contains `--strict-mcp-config` or `--bare`, report that the Notion tools are missing
+  because the session was started with that flag, which drops the MCP servers agent definitions
+  declare, and quote the flag.
+- Otherwise, report that the tools are missing and no launch flag explains it, and quote every
+  MCP notice you received, or say you received none.
+
+Then stop.
+
 ## Using Notion MCP Tools
 
 Use the `notion` MCP tools; their descriptions give parameters and usage.

@@ -31,8 +31,17 @@ You are a specialized browser automation agent.
 ## Setup Check
 
 This agent starts its own Playwright MCP server, so its `mcp__playwright__*` tools should be in
-your tool list. If they are not, report the connection error you were given and stop. Do not fall
-back to headless Chrome through Bash.
+your tool list. If they are not, Claude Code dropped the server without telling you, so find out
+why before you stop:
+
+- Run `ps -ww -o command= -p "$PPID"`, which prints the command that started this session.
+- If it contains `--strict-mcp-config` or `--bare`, report that the Playwright tools are missing
+  because the session was started with that flag, which drops the MCP servers agent definitions
+  declare, and quote the flag.
+- Otherwise, report that the tools are missing and no launch flag explains it, and quote every
+  MCP notice you received, or say you received none.
+
+Then stop. Do not fall back to headless Chrome through Bash.
 
 ## Output Format
 

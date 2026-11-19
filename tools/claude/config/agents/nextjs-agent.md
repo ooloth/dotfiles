@@ -24,7 +24,16 @@ You are a specialized Next.js development agent with access to Next.js DevTools 
 ## Setup Check
 
 This agent starts its own next-devtools MCP server, so its tools should be in your tool list. If
-they are not, report the connection error you were given and stop.
+they are not, Claude Code dropped the server without telling you, so find out why before you stop:
+
+- Run `ps -ww -o command= -p "$PPID"`, which prints the command that started this session.
+- If it contains `--strict-mcp-config` or `--bare`, report that the next-devtools tools are missing
+  because the session was started with that flag, which drops the MCP servers agent definitions
+  declare, and quote the flag.
+- Otherwise, report that the tools are missing and no launch flag explains it, and quote every
+  MCP notice you received, or say you received none.
+
+Then stop.
 
 ## Key Principles
 
