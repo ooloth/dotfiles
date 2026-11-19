@@ -22,6 +22,7 @@ import errno
 import fcntl
 import importlib.util
 import io
+import os
 import select
 import signal
 import subprocess
@@ -32,7 +33,7 @@ import time
 import unittest
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import IO, Literal
+from typing import Literal
 from unittest import mock
 
 from hypothesis import given
@@ -48,7 +49,7 @@ auth = importlib.util.module_from_spec(_spec)
 sys.modules["auth"] = auth
 _spec.loader.exec_module(auth)
 
-import login_lock  # noqa: E402  (from the folder the loader put on the path)
+import login_lock  # noqa: E402  (from the folder inserted on the path above)
 
 PROD = auth.ArgoServer("cd-prod.example.com")
 DEV = auth.ArgoServer("cd-dev.example.com")
@@ -740,10 +741,24 @@ for arg in "$@"; do
     exit 0
   fi
 done
-# Each check's start and end, so a test can see which checks ran at the same time
+# Each check's start and end, so a test can see which checks ran at the same time. A check waits,
+# for up to 2 s, until STUB_CHECKS_TOGETHER checks of its round have started, so checks that run
+# at the same time overlap however slow the machine, and checks run one after another don't
 if [[ -n "${STUB_CHECKS:-}" ]]; then
   echo start >> "${STUB_CHECKS}"
-  sleep "${STUB_CHECK_SECONDS:-0}"
+  # Bash alone, since PATH holds only the stubs and /bin
+  starts() {
+    local count=0 line
+    while read -r line; do [[ "${line}" == start ]] && count=$((count + 1)); done < "${STUB_CHECKS}"
+    echo "${count}"
+  }
+  together="${STUB_CHECKS_TOGETHER:-1}"
+  started="$(starts)"
+  round_full=$(( (started + together - 1) / together * together ))
+  for (( tries = 0; tries < 40; tries++ )); do
+    (( $(starts) >= round_full )) && break
+    sleep 0.05
+  done
   echo end >> "${STUB_CHECKS}"
 fi
 if [[ -e "${valid}" ]]; then
@@ -836,32 +851,29 @@ class LoginLockBetweenRuns(unittest.TestCase):
             yield
             fcntl.flock(handle, fcntl.LOCK_UN)
 
-    def wait_for_waiting_line(self, process: subprocess.Popen) -> None:
-        assert process.stderr is not None
-        deadline = time.monotonic() + 10
-        seen = ""
-        while time.monotonic() < deadline:
-            ready, _, _ = select.select([process.stderr], [], [], 0.1)
-            if ready:
-                line = process.stderr.readline()
-                seen += line
-                if WAITING in line:
-                    return
-        self.fail(f"auth.py never said it was waiting; it printed:\n{seen}")
-
-    def wait_for_either_to_wait(self, processes: list[subprocess.Popen]) -> subprocess.Popen:
-        """The run that says it is waiting, once one does. What it read stays read."""
-        streams: dict[IO[str], subprocess.Popen] = {}
+    def read_until_waiting(
+        self, processes: list[subprocess.Popen], seconds: float
+    ) -> tuple[subprocess.Popen, dict[subprocess.Popen, str]]:
+        """The run that says it is waiting, once one does, and what each run's stderr held so far.
+        Reads the pipes themselves rather than through Python's text buffer, which can hold a line
+        select can't see, and leaves the rest for communicate."""
+        read: dict[subprocess.Popen, bytes] = dict.fromkeys(processes, b"")
+        pipes: dict[int, subprocess.Popen] = {}
         for process in processes:
             assert process.stderr is not None
-            streams[process.stderr] = process
-        deadline = time.monotonic() + 20
+            pipes[process.stderr.fileno()] = process
+        deadline = time.monotonic() + seconds
         while time.monotonic() < deadline:
-            ready, _, _ = select.select(list(streams), [], [], 0.1)
-            for stream in ready:
-                if WAITING in stream.readline():
-                    return streams[stream]
-        self.fail("neither run said it was waiting")
+            ready, _, _ = select.select(list(pipes), [], [], 0.1)
+            for pipe in ready:
+                process = pipes[pipe]
+                read[process] += os.read(pipe, 65536)
+                if WAITING.encode() in read[process]:
+                    return process, {p: text.decode(errors="replace") for p, text in read.items()}
+        self.fail(f"no run said it was waiting; their stderr held: {read}")
+
+    def wait_for_waiting_line(self, process: subprocess.Popen) -> None:
+        self.read_until_waiting([process], 10)
 
     def logins_run(self) -> list[str]:
         calls = self.log.read_text().splitlines() if self.log.exists() else []
@@ -915,7 +927,7 @@ class LoginLockBetweenRuns(unittest.TestCase):
     def test_a_run_that_waited_checks_again_all_at_once(self) -> None:
         checks = Path(self._tmp.name) / "checks"
         with self.held_by_another_run():
-            process = self.start(STUB_CHECKS=str(checks), STUB_CHECK_SECONDS="0.5")
+            process = self.start(STUB_CHECKS=str(checks), STUB_CHECKS_TOGETHER="5")
             self.wait_for_waiting_line(process)
             self.make_all_valid()
             first_pass = len(checks.read_text().splitlines())
@@ -937,17 +949,17 @@ class LoginLockBetweenRuns(unittest.TestCase):
         self.assertIn("won't share logins", err)
         self.assertEqual(self.logins_run(), EVERY_LOGIN, out + err)
 
-    def test_two_runs_started_together_log_in_to_each_tool_once(self) -> None:
+    def test_two_runs_started_together_open_each_login_once(self) -> None:
         gate = Path(self._tmp.name) / "gate"
         processes = [self.start(STUB_GATE=str(gate)), self.start(STUB_GATE=str(gate))]
-        waited = self.wait_for_either_to_wait(processes)
+        waited, read = self.read_until_waiting(processes, 20)
         gate.touch()
         results = {process: process.communicate(timeout=60) for process in processes}
 
-        for process, (out, err) in results.items():
-            self.assertEqual(process.returncode, 0, out + err)
-            # Only the run that already said so waited
-            self.assertNotIn(WAITING, err)
+        stderr = {process: read[process] + err for process, (_, err) in results.items()}
+        for process, (out, _) in results.items():
+            self.assertEqual(process.returncode, 0, out + stderr[process])
+        self.assertEqual([WAITING in text for text in stderr.values()].count(True), 1, stderr)
         self.assertEqual(self.logins_run(), EVERY_LOGIN)
         self.assertIn("(checked again, no login run)", results[waited][0])
 
