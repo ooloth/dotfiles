@@ -36,5 +36,5 @@ dcu() { dcc up --build --detach --remove-orphans "$@"; }  # recreate and start o
 # COMPLETIONS #
 ###############
 
-fpath+="~/.docker/completions"
+cached_completion docker docker completion zsh
 
