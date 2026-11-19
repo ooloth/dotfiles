@@ -26,8 +26,8 @@ Only post once you'd be fine with that exact content landing in front of the use
 `reply_to_comment.py`) match only a command that is nothing but that call, so anything chained
 to it sends the post to the auto-mode classifier instead. The classifier reads the user's
 messages but not your replies, so an approval such as "2 yes", which answers a question you
-asked, does not tell it what was approved, and it blocks the post. Seen 2026-11-13 on
-recursionpharma/bc-eng-clinical#664: `cd … && P=… && gh pr comment … --body-file $P/rex.md` was
+asked, does not tell it what was approved, and it blocks the post. Seen 2026-11-13 on a
+work PR: `cd … && P=… && gh pr comment … --body-file $P/rex.md` was
 blocked after the user approved posting by answering a numbered question.
 
 **After a post fails, read before you post again.** A 5xx error, a timeout or a dropped connection
@@ -103,11 +103,11 @@ anything is missing.
   included. Save the body when you read it, read it again just before you post, and when the two
   differ, merge their change into yours instead of posting over it. `write-pr-description`'s
   `check_pr_body.py --live-copy <saved file> --pr <n>` makes that comparison and fails on a
-  difference. Seen 2026-11-18 on recursionpharma/react-clinops-siteoutreach#384 and #389, whose
-  rewritten descriptions another session overwrote from older copies.
+  difference. Seen 2026-11-18 on two work PRs, whose rewritten
+  descriptions another session overwrote from older copies.
 
-- **An empty `reviewDecision` doesn't mean unapproved.** It came back empty on
-  recursionpharma/bc-eng-clinical#678 while the PR was approved and mergeable, because `trunk`'s
+- **An empty `reviewDecision` doesn't mean unapproved.** It came back empty on a
+  work PR while the PR was approved and mergeable, because `trunk`'s
   ruleset requires zero approving reviews and only a code owner's. Read `mergeStateStatus` (`CLEAN`
   means it can merge, `BLOCKED` means a rule is unmet) and `latestReviews` for who approved. A
   repo's rules are at `gh api repos/<owner>/<repo>/rules/branches/<branch>`. Its classic protection

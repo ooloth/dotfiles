@@ -70,8 +70,8 @@ Your own list and the fresh subagent both look for:
   unchecked list of steps for one rollout or launch, a cutover section, or a qualifier such as
   "being removed (TICKET)" or "once X lands". Each step becomes a ticket, and the doc is
   rewritten to say what is true now. A procedure a reader repeats, such as rebuilding an
-  environment, is not one. Seen 2026-11-12 in bc-eng-clinical: PROD's cutover runbook in
-  `siteoutreach-prod/README.md`, and `README.md`'s "being removed (CENG-143)" notes
+  environment, is not one. Seen 2026-11-12 in a work repo: PROD's cutover runbook in
+  an environment's README, and the root README's "being removed (<ticket>)" notes
 - Decision records, question files or standards that the change made stale
 - Learnings that exist only in the conversation and belong in a project doc
 - A false claim kept with a correction further down, instead of replaced. The fix states the true

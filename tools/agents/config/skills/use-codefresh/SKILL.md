@@ -36,14 +36,15 @@ ends, so a pipe to `grep` or `tail` waits until the build finishes or the comman
 the status with `codefresh get builds <build-id> -o json` first, and read logs once it has finished.
 
 A build at `pending-approval` prints no log until it ends. Read its effects instead: image tags in
-Artifact Registry and the CD commit in bc-eng-clinical.
+Artifact Registry and the CD commit in the repo the pipeline commits image tags to, which the
+project's docs name.
 
 ```bash
 # Each image digest with its tags and when it was last pushed
 gcloud artifacts docker images list <registry>/<project>/<repository>/<image> --include-tags \
   --format='value(version,tags,updateTime)'
-# Commits on bc-eng-clinical's trunk since the build started (UTC)
-gh api "repos/recursionpharma/bc-eng-clinical/commits?sha=trunk&since=<build start>" \
+# Commits on the CD repo's default branch since the build started (UTC)
+gh api "repos/<owner>/<cd-repo>/commits?sha=<default branch>&since=<build start>" \
   -q '.[] | .sha[0:8] + " " + .commit.committer.date + " " + (.commit.message | split("\n")[0])'
 ```
 

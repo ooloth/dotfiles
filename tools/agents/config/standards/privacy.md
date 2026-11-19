@@ -27,8 +27,8 @@ that retries from every position of a long run, such as an unbounded
 `[\w.+-]+@` before an address, takes time quadratic in the run's length. Each
 part is bounded by the limit its format sets, such as the 64-character local
 part and 255-character domain of RFC 5321 §4.5.3.1, and a test times the
-redaction on long inputs shaped to make it backtrack. Seen in
-recursionpharma/react-clinops-siteoutreach (D-LOGGING-004): an unbounded email
+redaction on long inputs shaped to make it backtrack. Seen in a
+work repo: an unbounded email
 pattern took 12.5 s on 64,000 word characters.
 
 **Data collection is minimal.**

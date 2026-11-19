@@ -50,8 +50,8 @@ and nothing fails to show it, because the test that would have failed is gone.
 So for each removed test, assertion or expected-value helper, the change names
 the test that now checks the same property for the same inputs, or states in
 the commit or PR why the property no longer needs checking. "The new tests
-replace the old ones" is not a reason; one property at a time is. Seen on
-recursionpharma/react-clinops-siteoutreach#373: a module-ownership check was
+replace the old ones" is not a reason; one property at a time is. Seen on a
+work PR: a module-ownership check was
 dropped because a new table "covers each route", but the table's module field
 defaulted to none, so a route under a dormant prefix could ship ungated.
 
@@ -186,7 +186,7 @@ formatter does, redacting a value or adding or dropping a field, never reaches
 it. A test that reads the capture can pass while the app writes a value it means
 to keep out, and fail when the app's formatter correctly removes one. So the
 test formats each captured record with the app's formatter, or reads what the
-running process wrote. Seen in recursionpharma/react-clinops-siteoutreach#395:
+running process wrote. Seen in a work PR:
 once redaction moved into the JSON formatter, two `caplog` tests read the
 unredacted address and token.
 
