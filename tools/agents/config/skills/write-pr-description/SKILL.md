@@ -44,8 +44,9 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
       existing PR, save its live body when you read it and add `--live-copy <saved file> --pr <n>`,
       so a change someone made since then is merged, not overwritten. When `prove-it-works` saved
       the commands it ran, add `--commands <that file>`, so every step shown is one that ran.
-   4. This skill does not open the PR. `create-pr` opens it with these files. To update an
-      existing PR, run `gh pr edit <n> -R <owner>/<repo> --body-file <dir>/pr-body.md`.
+   4. This skill does not open the PR. `create-pr` opens it with these files, and updating an
+      existing PR's title and body goes through `create-pr` too. To change only the body, as when
+      fixing its layout, run `gh pr edit <n> -R <owner>/<repo> --body-file <dir>/pr-body.md`.
 
 **Self-check before handing the path back:**
 
@@ -191,15 +192,19 @@ into steps of the row it proves and run again, or left out.
 - The outline is an ordered list. `1. <details>` starts a row at the top level, and each grouped row
   is a nested item, `   1. <details>`, under its label. Everything inside a row is indented to the
   row's text, with `<summary>…</summary>` on the next line and a blank line after it.
+- A row numbered 10 or higher has its text one column further right than one numbered 9, so
+  everything inside it is indented one more space.
 - A code block that belongs to a step is indented to the step's text, so it sits inside the step,
   and every line inside it is indented exactly as its fence. A line indented less ends the step and
   leaves the block empty. GitHub drops the indentation when the code is copied.
 - What holds no code block: one makes GitHub space out every bullet in the list.
 - **Never link a local path.**
 - Nested markup breaks in ways that look fine in the source: a code block that renders empty, a
-  row pushed inside the row above it, a summary turned into a bullet. So the body is never posted
-  until `check_pr_body.py` passes, as step 5 says. It renders the body through GitHub's markdown
-  API and checks every rule above.
+  row pushed inside the row above it, a summary turned into a bullet, a row whose summary falls out
+  of it. So the body is never posted until `check_pr_body.py` passes, as step 5 says. It renders
+  the body through GitHub's markdown API and checks the markup rules in this section, no code
+  block in What, only bullets under Proven by, no property number and no Pre-merge heading. Nothing
+  checks hard wrapping, the outline's order or a row's three headings, so read the body for those.
 
 ### Structure
 
