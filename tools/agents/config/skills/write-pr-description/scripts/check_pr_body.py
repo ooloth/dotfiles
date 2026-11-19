@@ -23,7 +23,7 @@ layout without complaint, so these are found only by checking:
     only bullets under each `#### 🧾 Proven by` heading
     no property number such as P1
     no link to a local path: ](/ , ](~ or ](file:
-    no Pre-merge heading unless an After merge row exists
+    no Pre-merge heading, since After merge is the outline's last row
 
   With --live-copy and --pr, the PR's description on GitHub is still the copy that was read, so
   posting the body cannot overwrite someone else's edit.
@@ -423,20 +423,12 @@ def line_pattern_problems(lines: list[str], code: set[int]) -> list[Problem]:
 
 
 def pre_merge_problems(lines: list[str], code: set[int]) -> list[Problem]:
-    has_after_merge = any(
-        "After merge" in TAG.sub("", match)
-        for index, line in enumerate(lines)
-        if index not in code
-        for match in SUMMARY.findall(line)
-    )
-    if has_after_merge:
-        return []
     return [
         Problem(
             LineNumber(index + 1),
             "Pre-merge heading",
-            "a Pre-merge heading appears with no After merge row, so it splits nothing",
-            "drop the heading; every row runs before merge unless it sits under After merge",
+            "a Pre-merge heading splits the outline, where After merge is its last row",
+            "drop the heading; every row runs before merge except the After merge row",
         )
         for index, line in enumerate(lines)
         if index not in code and HEADING_LINE.match(line) and "pre-merge" in line.lower()
@@ -492,12 +484,18 @@ def check_commands(text: str, commands: str, commands_name: str) -> list[Problem
                 row, heading = summary, ""
         elif token.type == "heading_open":
             heading = tokens[index + 1].content
-        elif token.type == "fence" and token.map is not None:
+        elif token.type in ("fence", "code_block") and token.map is not None:
             in_steps = "Verification steps" in heading
             in_setup = row is not None and ("Setup" in row or "Clean up" in row)
             block = without_trailing_space(token.content)
             if (in_steps or in_setup) and block and block not in ran:
-                where = f'the Verification steps of "{row}"' if in_steps and row else f'"{row}"'
+                where = (
+                    f'the Verification steps of "{row}"'
+                    if in_steps and row
+                    else f'"{row}"'
+                    if row
+                    else "Verification steps outside every row"
+                )
                 found.append(
                     Problem(
                         LineNumber(token.map[0] + 1),

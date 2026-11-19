@@ -302,12 +302,12 @@ class TestMarkdownSource:
         body = "## 👩‍🔬 How to verify\n\n### Pre-merge\n\n- [ ] Run it\n"
         assert lines_of(check_pr_body.check_markdown(body), "Pre-merge heading") == [3]
 
-    def test_pre_merge_heading_with_an_after_merge_row_passes(self) -> None:
+    def test_pre_merge_heading_with_an_after_merge_row_is_reported(self) -> None:
         body = (
             "### Pre-merge\n\n1. <details>\n   <summary><b>🚀 After merge</b></summary>\n\n"
             "   - [ ] Check prod\n\n   </details>\n"
         )
-        assert check_pr_body.check_markdown(body) == []
+        assert lines_of(check_pr_body.check_markdown(body), "Pre-merge heading") == [1]
 
     def test_line_numbers_count_windows_line_endings_once(self) -> None:
         body = "- a\r\n- b\r\n- P3\r\n"
@@ -352,6 +352,19 @@ class TestCommands:
         assert kinds(check_pr_body.check_commands(body, "first\nother\nsecond\n", "ran.txt")) == [
             "command not run"
         ]
+
+    def test_an_indented_code_block_not_run_is_reported(self) -> None:
+        body = "#### 🔍 Verification steps\n\n    make deploy\n"
+        assert kinds(check_pr_body.check_commands(body, "make dev\n", "ran.txt")) == [
+            "command not run"
+        ]
+
+    def test_a_verification_steps_block_outside_every_row_is_named_without_a_row(self) -> None:
+        body = "#### 🔍 Verification steps\n\n```sh\nmake deploy\n```\n"
+        problems = check_pr_body.check_commands(body, "make dev\n", "ran.txt")
+        assert kinds(problems) == ["command not run"]
+        assert "None" not in problems[0].what
+        assert "outside every row" in problems[0].what
 
     def test_trailing_whitespace_is_ignored(self) -> None:
         body = "#### 🔍 Verification steps\n\n```sh\nls -la   \n```\n"

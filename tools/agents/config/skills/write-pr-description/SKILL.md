@@ -96,8 +96,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - **Why**: First bullet is a single-sentence TL;DR of the entire reason. Subsequent bullets add
   detail if needed. Prefer writing at the level of impact and outcome rather than implementation
   where possible — explain why this change needed to exist and try to pre-emptively answer the key
-  question a reviewer would ask before reading the diff in this case (e.g. "Didn't we already fix
-  this?", "Why do we need this?", "Aren't there better ways to solve this problem?", etc happen.
+  question a reviewer would ask before reading the diff in this case, such as "Didn't we already
+  fix this?", "Why do we need this?" or "Aren't there better ways to solve this problem?".
   If it's not visible to users or reviewers, skip it.
 - **Phrasing:** Do not write like an LLM. Write like a mentor teaching a Junior Engineer. Onboard
   as you describe. Use simple, unintimidating language a coworker just joining the project could
@@ -151,7 +151,7 @@ row. The user hears about each one before the PR opens.
   CI runs, a type, a runtime assertion, a CI check. Every entry is a bullet.
 - **`#### 🔍 Verification steps`:** a `- [ ]` checklist a reviewer can follow from a fresh
   checkout, each item an action or an "Expect to see X" line, each building on the one before.
-  Left out, with one line saying so under Proven by, when the behaviour can't be seen from outside.
+  Left out, with a bullet under Proven by saying so, when the behaviour can't be seen from outside.
 - **`#### 👀 What I saw`:** what running exactly those steps showed. A reviewer trusts a step
   because its output is here, so this holds only output pasted from that run, never from another
   run, another script or memory. Text goes in a list, numbered for a sequence and bulleted
