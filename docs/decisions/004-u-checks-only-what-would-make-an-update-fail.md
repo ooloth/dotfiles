@@ -69,3 +69,12 @@ browser login only for each one whose check says it has expired. A check that ca
 service opens nothing, and the session starts whatever the checks find. With every login valid,
 the checks add about a second to each start. Skipping them for a few minutes after a run that
 found every login valid was considered and not taken, since a second is acceptable.
+
+## Addendum (2026-11-19) — a login found expired opens even when the next check can't tell
+
+Runs that start together share the logins through a lock, and a run checks each expired login
+again once it holds the lock. When that check can't reach its service, `auth` still opens the
+browser login, because the run's first check already found it expired. A second browser login
+shows on screen and can be closed, while a session that starts with an expired login says
+nothing. A check that can't reach its service still opens nothing when it is the run's first
+check, as the addendum above says.
