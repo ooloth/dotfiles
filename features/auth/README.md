@@ -38,10 +38,13 @@ checks every expired login again at once and logs in to each unless that check f
 its tool missing, so a login another run just finished isn't opened again. A check that can't tell
 still logs in. The system releases the lock when a run ends, even when it crashes, and Ctrl-C while
 waiting stops the run as it does during a check. Runs that wait take the lock one after another,
-each for one round of checks, so the last of several sessions opened together waits about one
-round for each run ahead of it. A run whose logins are all valid never takes the lock. When the
-lock can't be set up, because its file can't be created or the file system refuses it, the run
-says so and logs in without sharing. The lock is in
+each for one round of checks, so once the first run's logins succeed, the last of several sessions
+opened together waits about one round for each run ahead of it. A login still expired after a run,
+because it failed or was stopped, opens again in the next run's turn. A run whose logins are all
+valid never takes the lock. When the lock can't be set up, because its folder or file can't be
+created or the file system refuses it, the run says so and logs in without sharing. Decision 004's
+addenda record why (`docs/decisions/004-u-checks-only-what-would-make-an-update-fail.md`). The lock
+is in
 `login_lock.py`.
 
 It prints `Checking logins...` and then one line per login as soon as that login's result is final,

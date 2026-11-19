@@ -3,7 +3,8 @@
 # requires-python = ">=3.11"
 # dependencies = ["hypothesis"]
 # ///
-"""Tests for tools/claude/cc.bash, which starts Claude Code told where a repo's related repos are.
+"""Tests for tools/claude/cc.bash, which starts Claude Code in a permission mode, after the work
+logins on the work laptop, told where a repo's related repos are.
 
 Run with: uv run tools/claude/tests/test_cc.py
 
@@ -63,7 +64,7 @@ class Run:
 
 
 def write_stubs(folder: Path) -> Path:
-    """Write the `claude` stub into `folder`, then make the folder read-only, so examples that share
+    """Write the `claude` stub, and the `uv` stub that stands in for auth.py, into `folder`, then make the folder read-only, so examples that share
     it can't change what the others run."""
     folder.mkdir(parents=True, exist_ok=True)
     claude = folder / "claude"

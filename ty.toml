@@ -1,8 +1,9 @@
 # Applies to every Python file in the repo, for scripts/checks/types.bash and for editors.
 # See: https://docs.astral.sh/ty/reference/configuration/
 #
-# The repo root as an import path is passed by types.bash as a flag, not set here, so an editor
-# reading only this file reports an import such as `tools.github.repo_settings` as unresolved.
+# The import paths are passed by types.bash as flags, not set here, so an editor reading only this
+# file reports an import such as `tools.github.repo_settings`, or a bare sibling import such as
+# `from login_lock import ...`, as unresolved.
 
 [environment]
 python-version = "3.11"

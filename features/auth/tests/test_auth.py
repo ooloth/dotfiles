@@ -975,7 +975,7 @@ class EndToEnd(unittest.TestCase):
         cls._folder = tempfile.TemporaryDirectory()
         cls.stubs = Path(cls._folder.name) / "stubs"
         cls.stubs.mkdir()
-        for name in ("gcloud", "spacectl", "argocd"):
+        for name in TOOLS:
             stub = cls.stubs / name
             stub.write_text(STUB)
             stub.chmod(0o755)
@@ -1082,7 +1082,7 @@ class EndToEnd(unittest.TestCase):
 
         self.assertEqual(result.returncode, 1)
         self.assertNotIn("Traceback", result.stderr)
-        for command in ("gcloud", "spacectl", "argocd"):
+        for command in TOOLS:
             self.assertIn(f"{command} is not installed", result.stdout)
 
     def test_help_runs_nothing(self) -> None:

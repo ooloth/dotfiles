@@ -36,7 +36,8 @@ installs each header with `uv run --with-requirements`, and a test file in a `te
 no header fails the run. Declare a test's dependencies in its header and nowhere else. Every test
 shares one environment, so a missing declaration shows up only when the file runs on its own with
 `uv run <file>`. The tests beside a skill's scripts have no header: they run with the pytest,
-hypothesis, pydantic and markdown-it-py that `tests.bash` installs for every run.
+hypothesis, pydantic, markdown-it-py and youtube-transcript-api that `tests.bash` installs for every
+run.
 
 A test that puts a stub or fake tool on `PATH` writes it once per test class or module, in a folder
 it then makes read-only, and keeps everything each test changes in that test's own temporary
@@ -62,9 +63,9 @@ gcloud auth login --update-adc <you>@recursion.com
 On the work laptop, `auth` runs this login along with the other work logins, and only for the ones
 that have expired (see `features/auth/README.md`).
 
-Without it, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. The managed
-config names that index as the only default, so uv resolves packages only through it unless a
-project names another index, and an install from a lock fetches the URLs the lock records. The
+Without that login, uv fails with `Incomplete credentials` or a 403 from `python.pkg.dev`. The
+managed config names that index as the only default, so uv resolves packages only through it unless
+a project names another index, and an install from a lock fetches the URLs the lock records. The
 maintainer allows the packages this repo's Python project depends on to come from PyPI on a work
 laptop, as long as every one of them is a public package. Which command and `uv.lock` option the
 project uses to get them is open in
@@ -104,13 +105,15 @@ Then run what you changed. Tests passing is not evidence that it works:
 
   A session's own status line runs the main checkout's copy, because `settings.json` names it by
   that path, so a change in a worktree shows there only once it reaches the main checkout.
-  The command unsets `ANTHROPIC_VERTEX_PROJECT_ID`, which `cc.bash` exports into every session it
-  starts on the work laptop. With it set, each run also applies the Vertex AI switch's saved state
-  to the real `~/.claude/settings.json`, which every session reloads, as each session's status line
+  The command unsets `ANTHROPIC_VERTEX_PROJECT_ID`, which `cc.bash` exports on the work laptop when
+  `private.env` sets the project. With it set, each run also applies the Vertex AI switch's saved
+  state to the real `~/.claude/settings.json`, a link to the main checkout's tracked
+  `tools/claude/config/settings.json` that every session reloads, as each session's status line
   does on every refresh (see `tools/claude/README.md`). It also replaces the usage windows saved in
   the real `~/.local/state/claude/provider.json` with the fixture's, so a fixture edited to 100%
-  moves every session to Vertex AI. To watch the switch itself run, set `HOME` to a temporary
-  folder holding a copy of `.claude/settings.json` as well as the project.
+  moves every session to Vertex AI. Unset, the switch does nothing, so the line shows no Vertex AI
+  segment. To watch the switch or that segment, leave out `env -u`, set `HOME` to a temporary folder
+  holding a copy of `.claude/settings.json`, and edit a fixture window to 100%.
 - **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
   aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
   interactive zsh, keeping the variables Claude Code needs to find its login:
