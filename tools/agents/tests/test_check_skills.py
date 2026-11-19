@@ -232,6 +232,20 @@ class OnlyCreatePrOpensAPr(unittest.TestCase):
         self.assertEqual(run.status, 1, run.stdout)
         self.assertIn("example/scripts/open.py:1: runs `gh pr create`", run.stdout)
 
+    def test_a_skill_posting_to_the_pulls_endpoint_fails(self) -> None:
+        run = run_checker(skill("Open it:\n\ngh api repos/o/r/pulls --input pr.json\n"))
+        self.assertEqual(run.status, 1, run.stdout)
+        self.assertIn("example/SKILL.md:8: runs `gh api …/pulls`", run.stdout)
+
+    def test_a_skill_reading_pulls_or_posting_under_one_pr_passes(self) -> None:
+        run = run_checker(
+            skill(
+                "List: gh api 'repos/o/r/pulls?state=open' --paginate\n"
+                "Review: gh api repos/o/r/pulls/5/reviews --input review.json\n"
+            )
+        )
+        self.assertEqual(run.status, 0, run.stdout)
+
     def test_the_create_pr_skill_and_its_scripts_may_name_it(self) -> None:
         files = skill("Fine.\n") | {
             "create-pr/SKILL.md": FRONTMATTER + OPEN_PR,

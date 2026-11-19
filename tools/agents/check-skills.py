@@ -33,8 +33,10 @@ instructions, with the user there, is not checked.
 
 create-pr is the one way a PR gets opened: it writes the description, opens the
 draft and links it on its Jira, Linear or Monday ticket. An instruction file
-that runs gh pr create itself skips all of that. So no file an agent reads as instructions names gh pr create,
-except the create-pr skill and use-gh's list of commands that take --body-file.
+that opens a PR itself skips all of that. So no file an agent reads as instructions runs
+gh pr create, or sends a body to the pulls endpoint with gh api as create-pr does, except the
+create-pr skill and use-gh's list of commands that take --body-file. A gh api call that reads
+pulls, or posts under one PR such as pulls/<n>/reviews, opens nothing and passes.
 This check reads the skills and tools/claude/config, which holds CLAUDE.md, the
 agents and the routines, and nothing there is exempt.
 
@@ -44,7 +46,7 @@ file, such as a third-party skill synced into skills/synced/, is not this
 repo's to fix and is never checked.
 
 Run it directly, or with uv, optionally passing a skills directory other than
-the shared one, then any other instruction directories to check for gh pr create
+the shared one, then any other instruction directories to check for a PR opening
 in place of tools/claude/config:
 
     ./tools/agents/check-skills.py
@@ -87,7 +89,13 @@ class UnreadableFile:
 
 
 INSTRUCTIONS_DIR = REPO_ROOT / "tools" / "claude" / "config"
-OPEN_PR = "gh pr create"
+# `gh pr create`, or a `gh api` call on `…/pulls` itself (not `…/pulls/<n>/…`) that sends a body.
+OPEN_PR = re.compile(
+    r"gh pr create"
+    r"|gh api\b[^\n]*?/pulls(?![/\w?])"
+    r"(?=[^\n]*?(?:--input|--field|--raw-field|\s-[fF]\s|(?:-X|--method)\s*POST))"
+)
+API_OPEN_PR = "gh api …/pulls"
 # Paths under the skills directory that may name it: create-pr opens PRs, and use-gh only lists the
 # command among those that take --body-file. A path ending in / exempts its whole folder.
 OPENS_PR_ALLOWED = ("create-pr/", "use-gh/SKILL.md")
@@ -97,24 +105,25 @@ OPENS_PR_ALLOWED = ("create-pr/", "use-gh/SKILL.md")
 class PrOpening:
     path: Path
     line: int
+    command: str
 
 
 def pr_openings(path: Path) -> list[PrOpening] | UnreadableFile:
-    """Return each line of this file that names gh pr create, or why it can't be read."""
+    """Return each line of this file that opens a PR, or why it can't be read."""
     try:
         text = path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
         return UnreadableFile(path)
 
     return [
-        PrOpening(path, number)
+        PrOpening(path, number, "gh pr create" if match.group(0) == "gh pr create" else API_OPEN_PR)
         for number, line in enumerate(text.splitlines(), start=1)
-        if OPEN_PR in line
+        if (match := OPEN_PR.search(line)) is not None
     ]
 
 
 def may_open_pr(path: Path, skills_dir: Path) -> bool:
-    """True when this skill file is one of the places allowed to name gh pr create."""
+    """True when this skill file is one of the places allowed to open a PR."""
     relative = path.relative_to(skills_dir).as_posix()
     return any(
         relative.startswith(allowed) if allowed.endswith("/") else relative == allowed
@@ -271,7 +280,7 @@ def shown(path: Path, skills_dir: Path) -> Path:
 
 
 def report_pr_openings(skills_dir: Path, files: list[Path], instruction_dirs: list[Path]) -> bool:
-    """Print every place other than create-pr that runs gh pr create, and return whether any did."""
+    """Print every place other than create-pr that opens a PR, and return whether any did."""
     found: list[tuple[PrOpening, Path]] = []
     unreadable: list[tuple[UnreadableFile, Path]] = []
     empty: list[Path] = []
@@ -297,14 +306,14 @@ def report_pr_openings(skills_dir: Path, files: list[Path], instruction_dirs: li
                 case openings:
                     found.extend((opening, base) for opening in openings)
 
-    print(f"\nChecked {checked} instruction files for `{OPEN_PR}` outside create-pr")
+    print(f"\nChecked {checked} instruction files for a PR opened outside create-pr")
     for root in empty:
         print(f"❌ No files found under {root}, so it can't be checked")
     for file, base in unreadable:
         print(f"❌ {shown(file.path, base)}: not UTF-8 text, so it can't be checked")
     for opening, base in found:
         print(
-            f"❌ {shown(opening.path, base)}:{opening.line}: runs `{OPEN_PR}`; "
+            f"❌ {shown(opening.path, base)}:{opening.line}: runs `{opening.command}`; "
             "open PRs through the create-pr skill instead"
         )
     if found:
