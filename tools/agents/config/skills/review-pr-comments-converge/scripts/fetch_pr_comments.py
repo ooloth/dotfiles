@@ -30,8 +30,10 @@ whether it has been answered already, judged from the PR as it stands. An answer
 author or the gh login running this script, listed on the `# Answerers:` line under `# Source:`; a
 deleted account never is one. A thread comment is timed from when it was published, not drafted.
   - `yes (...)` names the evidence:
-    - an inline thread was resolved, by anyone, and no other account's comment was posted or
-      edited at or after the latest answerer's reply in it;
+    - an inline thread was resolved by the one person, other than the answerers, who commented in
+      it, and nothing that person wrote was posted or edited at or after the latest answerer's
+      reply in it. Any other resolution, by a bot, a deleted account, someone else or an answerer,
+      leaves the thread judged as if it were unresolved;
     - or an answerer's reply is the thread's newest comment and nothing in it changed at or after
       that reply;
     - or for a review body or conversation comment, an answerer posted a conversation comment, or a
@@ -315,7 +317,9 @@ class Answer:
 
 @dataclass(frozen=True)
 class Resolved:
-    by: Reviewer
+    """Resolved by the thread's one reviewer, so only a person can be its evidence."""
+
+    by: Person
 
 
 @dataclass(frozen=True)
@@ -436,17 +440,20 @@ def thread_verdict(
         return NotFeedback()
     replies = [post for post in posts if answerers.includes(post.author)]
     latest = max(replies, key=lambda post: post.posted_at, default=None)
-    # A resolution stands unless a reviewer posted or edited at or after the latest answerer reply,
-    # so resolving a thread does not hide a follow-up nobody answered.
-    if resolved_by is not None and (
-        latest is None
-        or all(
-            post.changed_at < latest.posted_at
-            for post in posts
-            if not answerers.includes(post.author)
-        )
-    ):
-        return Answered(Resolved(resolved_by))
+    feedback = [post for post in posts if not answerers.includes(post.author)]
+    reviewers = {post.author for post in feedback}
+    # Only the person whose feedback it is can settle it by resolving, and only when nobody else
+    # commented: a bot, a deleted account, someone else or an answerer resolving it says nothing
+    # about whether the reviewer heard back. The resolution still doesn't hide a follow-up the
+    # reviewer posted or edited at or after the latest answerer reply.
+    match resolved_by:
+        case Person() as reviewer if reviewers == {reviewer} and (
+            latest is None or all(post.changed_at < latest.posted_at for post in feedback)
+        ):
+            assert not answerers.includes(reviewer), f"{reviewer} resolved as its own reviewer"
+            return Answered(Resolved(reviewer))
+        case _:
+            pass
     if latest is None:
         return Unanswered()
     reply = latest

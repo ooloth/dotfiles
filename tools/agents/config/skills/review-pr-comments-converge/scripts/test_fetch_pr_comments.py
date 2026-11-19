@@ -840,17 +840,66 @@ def test_the_answerers_line_names_the_pr_author_and_the_gh_login(
     assert lines.index(expected) < lines.index("#" * 80)
 
 
+OUTSIDER = author("outsider")
+A_BOT = author("copilot-pull-request-reviewer", "Bot")
+
+
 @pytest.mark.parametrize(
-    ("resolver", "expected"),
+    ("comments", "resolver", "expected"),
     [
-        pytest.param(ME, "yes (resolved by me)", id="by-the-author"),
-        pytest.param(REVIEWER, "yes (resolved by reviewer)", id="by-the-reviewer"),
+        pytest.param(
+            [thread_comment(101, review_id=1, at=ts(0))],
+            REVIEWER,
+            "yes (resolved by reviewer)",
+            id="by-its-only-reviewer",
+        ),
+        pytest.param(
+            [thread_comment(101, review_id=1, at=ts(0))],
+            ME,
+            "no",
+            id="by-the-author-with-no-reply",
+        ),
+        pytest.param(
+            [
+                thread_comment(101, review_id=1, at=ts(0)),
+                thread_comment(102, "Done.", by=ME, at=ts(5)),
+            ],
+            ME,
+            "yes (reply 102 by me at 2026-10-01T12:00:05Z)",
+            id="by-the-author-after-replying",
+        ),
+        pytest.param(
+            [thread_comment(101, review_id=1, at=ts(0))],
+            OUTSIDER,
+            "no",
+            id="by-someone-who-did-not-comment",
+        ),
+        pytest.param(
+            [thread_comment(101, review_id=1, at=ts(0))],
+            A_BOT,
+            "no",
+            id="by-a-bot-on-a-persons-comment",
+        ),
+        pytest.param(
+            [thread_comment(101, review_id=1, by=A_BOT, at=ts(0))],
+            A_BOT,
+            "no",
+            id="by-a-bot-on-its-own-comment",
+        ),
+        pytest.param(
+            [
+                thread_comment(101, review_id=1, at=ts(0)),
+                thread_comment(102, "Same here.", by=OUTSIDER, at=ts(3)),
+            ],
+            REVIEWER,
+            "no",
+            id="by-one-of-two-reviewers",
+        ),
     ],
 )
-def test_a_resolved_thread_is_answered_by_its_resolution(
-    harness: Harness, resolver: dict, expected: str
+def test_a_resolution_answers_a_thread_only_when_its_one_reviewer_resolved_it(
+    harness: Harness, comments: list[dict], resolver: dict, expected: str
 ) -> None:
-    comments = [thread_comment(101, review_id=1, at=ts(0))]
     stdout = run_ok(harness, pr([thread_of(comments, resolved_by=resolver)], [review(1, "")]))
 
     assert verdict_of(stdout, "thread", 101) == expected
@@ -1563,9 +1612,13 @@ def test_the_evidence_gives_when_the_answer_was_posted_not_last_edited(harness: 
 
 
 def test_a_thread_counts_as_resolved_only_when_github_says_it_is(harness: Harness) -> None:
-    # `isResolved` decides: a `resolvedBy` on an unresolved thread does not count, and a resolved
-    # thread whose `resolvedBy` is null still counts, printed as resolved by ghost.
-    unresolved = {**thread_of([thread_comment(101, review_id=1, at=ts(0))]), "resolvedBy": ME}
+    # `isResolved` decides: a `resolvedBy` on an unresolved thread does not count. A resolved
+    # thread whose `resolvedBy` is null was resolved by a deleted account, which can't be shown to
+    # be its reviewer, so that resolution does not count either.
+    unresolved = {
+        **thread_of([thread_comment(101, review_id=1, at=ts(0))]),
+        "resolvedBy": REVIEWER,
+    }
     by_deleted = {
         **thread_of([thread_comment(201, review_id=1, at=ts(0))]),
         "isResolved": True,
@@ -1574,7 +1627,7 @@ def test_a_thread_counts_as_resolved_only_when_github_says_it_is(harness: Harnes
     stdout = run_ok(harness, pr([unresolved, by_deleted], [review(1, "")]))
 
     assert verdict_of(stdout, "thread", 101) == "no"
-    assert verdict_of(stdout, "thread", 201) == "yes (resolved by ghost)"
+    assert verdict_of(stdout, "thread", 201) == "no"
 
 
 def test_a_finished_list_is_not_requested_again(harness: Harness) -> None:
@@ -1998,7 +2051,7 @@ def test_a_resolution_is_measured_from_when_the_latest_reply_was_posted(
         ),
         pytest.param(
             [thread_comment(101, review_id=1, at=ts(0)), thread_comment(102, "+1", at=ts(3))],
-            "yes (resolved by me)",
+            "yes (resolved by reviewer)",
             id="no-reply-from-an-answerer",
         ),
         pytest.param(
@@ -2006,7 +2059,7 @@ def test_a_resolution_is_measured_from_when_the_latest_reply_was_posted(
                 thread_comment(101, review_id=1, at=ts(0)),
                 thread_comment(102, "Done.", by=ME, at=ts(5)),
             ],
-            "yes (resolved by me)",
+            "yes (resolved by reviewer)",
             id="the-reply-is-the-latest-activity",
         ),
     ],
@@ -2014,7 +2067,7 @@ def test_a_resolution_is_measured_from_when_the_latest_reply_was_posted(
 def test_a_resolved_thread_does_not_hide_feedback_after_the_latest_reply(
     harness: Harness, comments: list[dict], expected: str
 ) -> None:
-    stdout = run_ok(harness, pr([thread_of(comments, resolved_by=ME)], [review(1, "")]))
+    stdout = run_ok(harness, pr([thread_of(comments, resolved_by=REVIEWER)], [review(1, "")]))
 
     assert verdict_of(stdout, "thread", 101) == expected
 
@@ -2467,6 +2520,51 @@ def test_any_thread_answered_after_all_other_activity_is_answered_by_that_reply(
     login = answer_node["author"]["login"]
     expected = f"yes (reply {answer_node['databaseId']} by {login} at "
     assert verdict_of(stdout, "thread", 101).startswith(expected), json.dumps(nodes, indent=1)
+
+
+@st.composite
+def threads_resolved_by_someone_other_than_their_one_reviewer(
+    draw: st.DrawFn,
+) -> tuple[str, list[GenPost], dict | None]:
+    """Any generated thread, and a resolver that is not a person who wrote all of its feedback: an
+    answerer, a bot, a deleted account (None), a reviewer who shares the thread with another, or
+    someone who never commented."""
+    setup, posts = draw(
+        st.one_of(
+            threads_with_activity_at_or_after_the_answer(),
+            threads_answered_after_all_other_activity(),
+        )
+    )
+    feedback_authors = {
+        json.dumps(post.by, sort_keys=True) for post in posts if not is_answerer(post.by, setup)
+    }
+    resolvers = [*AUTHORS, author("outsider")]
+    allowed = [
+        resolver
+        for resolver in resolvers
+        if not (
+            resolver is not None
+            and resolver["__typename"] == "User"
+            and feedback_authors == {json.dumps(resolver, sort_keys=True)}
+        )
+    ]
+    return setup, posts, draw(st.sampled_from(allowed))
+
+
+@GENERATED
+@given(case=threads_resolved_by_someone_other_than_their_one_reviewer())
+def test_a_resolution_by_anyone_but_the_threads_one_reviewer_changes_no_verdict(
+    stubs: Path, case: tuple[str, list[GenPost], dict | None]
+) -> None:
+    setup, posts, resolver = case
+    unresolved = thread_of(thread_nodes(posts, 101))
+    resolved = thread_of(thread_nodes(posts, 201), resolved_by=resolver, resolved=True)
+
+    stdout = run_generated(stubs, pr([unresolved, resolved], who=identities_for(setup)))
+
+    # The same posts under other ids, so a reply's evidence names its own id.
+    expected = verdict_of(stdout, "thread", 101).replace("reply 1", "reply 2", 1)
+    assert verdict_of(stdout, "thread", 201) == expected, json.dumps(posts, default=str)
 
 
 @dataclass(frozen=True)

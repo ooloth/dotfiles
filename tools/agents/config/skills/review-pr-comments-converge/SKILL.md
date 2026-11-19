@@ -87,8 +87,10 @@ was published, not when it was drafted in a pending review, and a post or edit i
 as an answer counts as newer than it.
 
 - `yes (...)` names the evidence that counted:
-  - `resolved by <login>`: the thread is resolved, by anyone, and no other account's comment in it
-    was posted or edited at or after the latest answerer's reply in it.
+  - `resolved by <login>`: the thread was resolved by the one person, other than the answerers, who
+    commented in it, and nothing that person wrote was posted or edited at or after the latest
+    answerer's reply in it. Any other resolution, by a bot, a deleted account, someone else or an
+    answerer, counts for nothing: the thread is judged as if it were unresolved.
   - `reply <id> by <login> at <time>`: an answerer's reply is the thread's newest comment and
     nothing in it changed at or after it.
   - `conversation comment <id> by <login> at <time>` or `review <id> by <login> at <time>`: an

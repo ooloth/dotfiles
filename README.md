@@ -72,9 +72,10 @@ parallelism and isn't.
 does the same for reviewer feedback, and doesn't take the reviewer's word for it either: each
 comment is checked against the current code and marked valid, stale or mistaken before anything
 acts on it. Feedback already answered is skipped and listed with the evidence that counted as
-its answer, so a later run doesn't reply twice: a resolved thread, a thread whose newest comment is
-an answerer's reply, or a top-level post naming the reviewer, where an answerer is the PR author or
-the account running the skill. What gets fixed automatically and what gets escalated
+its answer, so a later run doesn't reply twice: a thread its one reviewer resolved, a thread whose
+newest comment is an answerer's reply, or a top-level post naming the reviewer, where an answerer
+is the PR author or the account running the skill. What gets fixed automatically and what gets
+escalated
 turns on one question, does applying this require the author to make a choice.
 
 [prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) proves or disproves a claim
