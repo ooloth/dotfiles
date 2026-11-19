@@ -110,10 +110,6 @@ class TestRenderedHtml:
         html = "<details>\n<summary>📄 x</summary>\n<p>y</p>\n</details>\n"
         assert kinds(check_pr_body.check_html(html)) == ["row outside a list item"]
 
-    def test_details_with_no_summary_is_reported(self) -> None:
-        html = "<ol><li><details><p>y</p></details></li></ol>"
-        assert kinds(check_pr_body.check_html(html)) == ["row with no summary"]
-
     def test_fence_shown_as_text_is_reported(self) -> None:
         html = '<p dir="auto">Stray ``` here</p>'
         assert kinds(check_pr_body.check_html(html)) == ["fence shown as text"]
@@ -281,7 +277,14 @@ class TestMarkdownSource:
         body = "- Holds P1 and P12\n"
         assert lines_of(check_pr_body.check_markdown(body), "property number") == [1, 1]
 
-    @pytest.mark.parametrize("text", ["- HTTP1 and P1x and p1\n", "```\nP1\n```\n"])
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "- HTTP1 and P1x and p1\n",
+            "```\nP1\n```\n",
+            "- P95 latency, P50, P75, P90, P99 and P999 stay flat, and P0 bugs\n",
+        ],
+    )
     def test_text_that_is_not_a_property_number_passes(self, text: str) -> None:
         assert check_pr_body.check_markdown(text) == []
 

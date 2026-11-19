@@ -208,16 +208,9 @@ def details_problems(details: Element) -> list[Problem]:
         (child for child in details.children if not (isinstance(child, str) and not child.strip())),
         None,
     )
-    has_summary = any(child.tag == "summary" for child in details.elements())
-    if not has_summary:
-        found.append(
-            rendered(
-                "row with no summary",
-                f'a <details> {place(details)} has no <summary>, so GitHub labels it "Details"',
-                SUMMARY_FIX,
-            )
-        )
-    elif not (isinstance(first, Element) and first.tag == "summary"):
+    # A <details> always has a summary here: GitHub gives one with none a <summary>Details</summary>
+    # of its own, so a row whose content fell out shows as a summary outside its row instead.
+    if not (isinstance(first, Element) and first.tag == "summary"):
         before = squeeze(first) if isinstance(first, str) else f"<{first.tag if first else ''}>"
         found.append(
             rendered(
@@ -319,7 +312,8 @@ NUMBERED_TAG = re.compile(r"^\s*\d+[.)]\s+(</details>|<summary>)")
 PROVEN_BY = re.compile(r"^\s*####\s.*Proven by")
 H4 = re.compile(r"^\s*####\s")
 BULLET = re.compile(r"^\s*[-*+]\s")
-PROPERTY_NUMBER = re.compile(r"\bP[0-9]+\b")
+# Properties start at P1. P0 and the percentiles a latency figure names are not property numbers.
+PROPERTY_NUMBER = re.compile(r"\bP(?!(?:0|50|75|90|95|99|999)\b)[0-9]+\b")
 LOCAL_LINK = re.compile(r"\]\((/|~|file:)")
 SUMMARY = re.compile(r"<summary>(.*?)</summary>", re.DOTALL)
 TAG = re.compile(r"<[^>]+>")
