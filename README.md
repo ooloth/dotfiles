@@ -59,7 +59,8 @@ in parallel, plus one that checks rule consistency when instruction files change
 when the base branch has moved since the fork, whether the PR still relies on what changed and
 where its edits land, one that checks whether merging another open PR that shares its files would
 undo its edits, one that checks that every assertion removed from the tests is still made or
-dropped for a stated reason, one that checks every claim the change's prose makes, and one that
+dropped for a stated reason, one that checks every claim the change's prose makes, one that runs a
+PR's own verification steps and the checks its author would run, base against head, and one that
 checks that removed prose took nothing a reader needs. Then it assumes they're wrong.
 Every claim about library behaviour, API guarantees or numbers is checked against the installed code
 before it reaches me, and a claim that fails is struck rather than softened.
