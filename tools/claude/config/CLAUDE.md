@@ -440,8 +440,8 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
      Commit Signal Covers" below. When I run `wrap-up` myself, its own rule holds instead: it
      applies nothing I haven't approved.
    - **A feature branch in a repo that ships through PRs:** commit the slice via `/commit` without
-     waiting for a signal, once its checks and proof pass, and carry on to the next approved slice.
-     See "Working Through to a Draft PR" below.
+     waiting for a signal, once its checks pass and `prove-it-works` has reported on it (step 7),
+     and carry on to the next approved slice. See "Working Through to a Draft PR" below.
 
    (An autonomous run signals its own commits only as "What a Commit Signal Covers" says.)
 9. On the default branch, when you receive a commit signal, commit via `/commit`. After committing,
@@ -564,15 +564,23 @@ the work on a feature branch, in a worktree of its own beside the repo: from the
 shared checkout's branch at any time, and your next commit then lands on its branch. Once I approve
 a task's approach and design, carry it to a draft PR without stopping for me in between:
 
-1. **Commit each slice** via `/commit` once its checks and proof pass. No signal is needed.
-2. **Verify locally before anything is pushed:** the project's full checks, `prove-it-works` on the
-   claim, and then `wrap-up-codebase` once on the commits about to be pushed, on a PR's first push
-   and on every later push of new work alike. Apply and commit each fix it returns, and push them
-   without running it again. If it returns any asks, stop and put them to me in the session as
-   numbered questions, then apply my answers and commit them before going on. My answer to an ask
-   is the approval it needed, including for an edit to agent instructions. A question for me never
-   goes in the PR instead. A commit that only adds a record a ticket comment must link may be pushed
-   on its own before then.
+1. **Commit each slice** via `/commit` once the project's checks pass and `prove-it-works` has
+   reported on the slice's claim. No signal is needed.
+2. **Before every push, in this order,** on a PR's first push and on every later push of new work
+   alike:
+   1. Run the project's full checks.
+   2. Run `prove-it-works` on the head commit's claim. Run it even when the claim can only be seen
+      after a push or a deploy, such as a CI plan: it then records the before state and names the
+      step that will show the rest. A report already made on the head commit's claim counts, unless
+      a commit since changed what it proved.
+   3. Run `wrap-up-codebase` once on the commits about to be pushed. Apply and commit each fix it
+      returns, and push them without running it again. If it returns any asks, stop and put them
+      to me in the session as numbered questions, then apply my answers and commit them before
+      going on. My answer to an ask is the approval it needed, including for an edit to agent
+      instructions. A question for me never goes in the PR instead.
+
+   A commit that only adds a record a ticket comment must link may be pushed on its own before
+   then.
 3. **Push the branch and open a draft PR** without asking, using `create-pr`.
 4. **Start the independent review** as step 9 of "Work in Small Steps" describes. CI and the
    review run on the draft, and I review the PR with both in front of me.

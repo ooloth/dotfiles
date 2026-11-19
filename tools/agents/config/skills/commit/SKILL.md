@@ -99,9 +99,15 @@ still runs the full suite unless the script says otherwise.
    approves undoing your commit, first check that `git rev-parse HEAD` is the hash you noted, then
    reset to that hash's parent by its full hash.
 7. Push when the user asked you to, or when the commit is on a feature branch in a repo that ships
-   through PRs and the work is ready for its draft PR or already has one. Never push the default
-   branch without the user asking. To push:
-   1. First read CI's result for the commit the remote branch already holds, so a red build is
+   through PRs and the work is ready for its draft PR or already has one. Inside "Working Through
+   to a Draft PR", the work is ready only once every pre-push step it lists has run, the last being
+   `wrap-up-codebase`, so the push waits for them. Never push the default branch without the user
+   asking. To push:
+   1. On a feature branch, first confirm from this session that `prove-it-works` has reported on
+      the claim of the commit being pushed, and that no commit since has changed what it proved.
+      If it hasn't, run it now and push only after it reports. Its report can say that part of the
+      claim shows only after the push, such as a CI plan; that report is enough to push.
+   2. Then read CI's result for the commit the remote branch already holds, so a red build is
       caught before more commits land on it. Invoke the `use-gh` skill, then run:
 
       ```sh
@@ -110,11 +116,11 @@ still runs the full suite unless the script says otherwise.
 
       This reads what has already finished and never waits: a run still in progress, a branch with
       no remote yet, or a repo with no GitHub Actions runs is not a reason to wait or stop.
-   2. If any of those runs concluded `failure`, do not push. Tell the user which workflow failed on
+   3. If any of those runs concluded `failure`, do not push. Tell the user which workflow failed on
       which commit, and ask whether to push anyway or fix it first.
-   3. Run `git push origin <branch>`. It pushes every commit on the branch, including any another
+   4. Run `git push origin <branch>`. It pushes every commit on the branch, including any another
       session made, and the user wants that whole batch pushed, so it needs no check or question.
-   4. In the report, list what the push sent, from the `old..new` range it printed
+   5. In the report, list what the push sent, from the `old..new` range it printed
       (`git log --oneline <old>..<new>`), and name the commits this session did not make.
 8. If a precommit hook fails and addressing the failure requires a design decision the user has not
    made, stop and present options and wait for approval.

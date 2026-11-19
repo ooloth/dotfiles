@@ -13,7 +13,8 @@ this skill asks nothing there and puts what it would have asked in its final rep
    current branch earlier in this session with nothing changed since. If any fail when the user
    ran this skill, fix them and stop so the user can review the fixes. Inside "Working Through
    to a Draft PR" or another skill, fix what is mechanical and carry on, since the caller already
-   ran its checks.
+   ran its checks. Then confirm from this session that `prove-it-works` has reported on the
+   branch's head commit, as the `commit` skill's step 7 describes, and run it now if it hasn't.
 2. Use the `commit` skill to commit the non-temporary changes in the working tree that belong in
    the PR.
 3. Push the branch as the `commit` skill's step 7 describes, with `git push -u origin <branch>` so
