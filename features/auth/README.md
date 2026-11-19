@@ -8,12 +8,11 @@ auth          # check every login, then run the browser login for each expired o
 auth --check  # only report; logs in to nothing
 ```
 
-On the work laptop, every Claude Code session `tools/claude/cc.bash` starts (`cc`, `ccc`,
-`cc-vertex` and Rex tabs) runs `auth` first, then starts whatever the checks found. A session
-started with `--unattended` skips it, since nobody is there to finish a login. With every login
-valid, that adds about a second, set by the slowest check, the recursion.com one. A check that
-hasn't answered after 10 seconds is reported as `couldn't check`, so a server that hangs costs at
-most that.
+On the work laptop, every Claude Code session `tools/claude/cc.bash` starts runs `auth` first,
+then starts whatever the checks found. A session started with `--unattended` skips it, since nobody
+is there to finish a login. With every login valid, that adds about a second, set by the slowest
+check, the recursion.com one. A check that hasn't answered after 10 seconds is reported as
+`couldn't check`, so a server that hangs costs at most that.
 
 It checks these all at once, then logs in to the expired ones one at a time:
 
@@ -39,7 +38,9 @@ checks every expired login again at once and logs in to each unless that check f
 its tool missing, so a login another run just finished isn't opened again. A check that can't tell
 still logs in, and after one login the next is checked once more, since a login can make another
 valid. The system releases the lock when a run ends, even when it crashes, and Ctrl-C while waiting
-stops the run as it does during a check. A run whose logins are all valid never takes the lock.
+stops the run as it does during a check. Runs that wait take the lock one after another, each for
+one round of checks, so the last of several sessions opened together waits about one round for
+each run ahead of it. A run whose logins are all valid never takes the lock.
 When the lock file can't be created, the run says so and logs in without sharing. The lock is in
 `login_lock.py`.
 

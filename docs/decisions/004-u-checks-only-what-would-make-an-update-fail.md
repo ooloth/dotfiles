@@ -2,7 +2,7 @@
 number: 004
 status: accepted
 date: 2026-10-20
-amended: 2026-11-05
+amended: 2026-11-18
 ---
 
 # 004 — `u` checks only what would make an update fail, and prints no warnings
@@ -56,8 +56,8 @@ A failure that `u` used to catch starts surfacing late somewhere else.
 
 The maintainer chose not to add a gcloud credentials check to the `cc` alias. Nothing checks
 those credentials before a Claude session starts, so a session that needs them finds out when a
-`gcloud` command fails. `cc-vertex` in `tools/claude/shell.zsh` then still checked them before
-starting a Vertex AI session.
+`gcloud` command fails. `ccy-vertex` (now `cc-vertex`) in `tools/claude/shell.zsh` then still
+checked them before starting a Vertex AI session.
 The 2026-11-05 addendum below reverses this: `cc`, `ccc` and `cc-vertex` all run `auth`.
 
 ## Addendum (2026-11-05) — `cc` checks the Google login again
@@ -70,7 +70,7 @@ service opens nothing, and the session starts whatever the checks find. With eve
 the checks add about a second to each start. Skipping them for a few minutes after a run that
 found every login valid was considered and not taken, since a second is acceptable.
 
-## Addendum (2026-11-19) — a login found expired opens even when the next check can't tell
+## Addendum (2026-11-18) — a login found expired opens even when the next check can't tell
 
 Runs that start together share the logins through a lock, and a run checks each expired login
 again once it holds the lock. When that check can't reach its service, `auth` still opens the
@@ -78,3 +78,11 @@ browser login, because the run's first check already found it expired. A second 
 shows on screen and can be closed, while a session that starts with an expired login says
 nothing. A check that can't reach its service still opens nothing when it is the run's first
 check, as the addendum above says.
+
+## Addendum (2026-11-18): a run that can't set up the lock logs in without sharing
+
+When the lock can't be set up, because its folder or file can't be created or the file system
+refuses the lock, `auth` says why and logs in without sharing the logins with other runs. The
+lock only stops two runs opening the same login, and a session that starts with an expired login
+says nothing, while a second browser login shows on screen. Runs that log in this way can also
+reset Argo CD's default context while another run's `argocd login` writes the same config file.

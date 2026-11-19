@@ -21,10 +21,10 @@ right. `CONTRIBUTING.md` says how to try a change to it by hand.
 
 ## Moving sessions to Vertex AI
 
-On the work laptop, every session `cc.bash` starts (`cc`, `ccc`, `cc-vertex` and Rex tabs) can use
-Vertex AI instead of the subscription, so work can go on when the subscription's usage limit is
-reached. That needs `PRIVATE_VERTEX_PROJECT` in `private.env`. A session started another way, or
-without it, has no Vertex AI project and fails while sessions are on Vertex AI.
+On the work laptop, every session `cc.bash` starts can use Vertex AI instead of the subscription,
+so work can go on when the subscription's usage limit is reached. That needs
+`PRIVATE_VERTEX_PROJECT` in `private.env`. A session started another way, or without it, has no
+Vertex AI project and fails while sessions are on Vertex AI.
 `CLAUDE_CODE_USE_VERTEX` in the `env` block of `settings.json` is the switch: `"1"` means Vertex AI
 and `""` the subscription. Claude Code reloads the file in every running session, so they all move
 together, from their next prompt.

@@ -98,17 +98,19 @@ Then run what you changed. Tests passing is not evidence that it works:
   jq --arg d "$PWD" '.workspace.current_dir = $d
     | .rate_limits.five_hour.resets_at = (now + 3 * 3600)
     | .rate_limits.seven_day.resets_at = (now + 4 * 86400)' \
-    tools/claude/tests/fixtures/statusline-payload.json | COLUMNS=120 tools/claude/statusline.py
+    tools/claude/tests/fixtures/statusline-payload.json \
+    | env -u ANTHROPIC_VERTEX_PROJECT_ID COLUMNS=120 tools/claude/statusline.py
   ```
 
   A session's own status line runs the main checkout's copy, because `settings.json` names it by
   that path, so a change in a worktree shows there only once it reaches the main checkout.
-  With `ANTHROPIC_VERTEX_PROJECT_ID` set, as in a session `cc.bash` started on the work laptop,
-  each run also applies the Vertex AI switch's saved state to the real `~/.claude/settings.json`,
-  which every session reloads, as each session's status line does on every refresh (see
-  `tools/claude/README.md`). It also saves the fixture's usage windows into the real
-  `~/.local/state/claude/provider.json`, so a fixture edited to 100% moves every session to Vertex
-  AI. Leave `ANTHROPIC_VERTEX_PROJECT_ID` unset to try a change without either.
+  The command unsets `ANTHROPIC_VERTEX_PROJECT_ID`, which `cc.bash` exports into every session it
+  starts on the work laptop. With it set, each run also applies the Vertex AI switch's saved state
+  to the real `~/.claude/settings.json`, which every session reloads, as each session's status line
+  does on every refresh (see `tools/claude/README.md`). It also replaces the usage windows saved in
+  the real `~/.local/state/claude/provider.json` with the fixture's, so a fixture edited to 100%
+  moves every session to Vertex AI. To watch the switch itself run, set `HOME` to a temporary
+  folder holding a copy of `.claude/settings.json` as well as the project.
 - **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
   aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
   interactive zsh, keeping the variables Claude Code needs to find its login:

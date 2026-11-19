@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Starts Claude Code with a permission mode (the caller's, else this machine's), told where the
-# repos related to the current repo are cloned. On the work laptop it also exports the Vertex AI project
-# when private.env sets one, and runs the work logins first unless --unattended is passed.
+# repos related to the current repo are cloned. On the work laptop it also exports the Vertex AI
+# project when private.env sets one, and runs the work logins first unless --unattended is passed.
 #
 # Related repos are named in the system prompt rather than added with --add-dir, because a clone is
 # a working checkout that may be on any branch: adding it would load its CLAUDE.md and present its

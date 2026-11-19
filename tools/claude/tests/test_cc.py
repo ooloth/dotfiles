@@ -8,10 +8,10 @@
 Run with: uv run tools/claude/tests/test_cc.py
 
 Each test builds a throwaway HOME holding the repo at ~/Repos/ooloth/dotfiles, the install path in
-utils.bash, and runs the script from a folder beside its siblings, under macOS's own bash except
-where a test names another. A `claude`
-stub on PATH records its arguments separated by NUL bytes, with the text of an
---append-system-prompt-file in place of its path, so no test reaches the real Claude Code.
+utils.bash, and runs the script from the folder the test names, under macOS's own bash except
+where a test names another. A `claude` stub on PATH records its arguments separated by NUL bytes,
+with the text of an --append-system-prompt-file in place of its path, so no test reaches the real
+Claude Code.
 The tests of the map's handling in general source the real cc.bash and replace only its
 `related_repos` lookup before calling `main`.
 """
@@ -31,8 +31,9 @@ from hypothesis import strategies as st
 REPO = Path(__file__).resolve().parent.parent.parent.parent
 SCRIPT = "tools/claude/cc.bash"
 
-# The value after --append-system-prompt-file is /dev/fd/3, the stub's own descriptor, which the
-# test can't open once the stub exits, so the stub records the file's text in its place
+# cc.bash passes --append-system-prompt-file a /dev/fd path to a pipe it opened. That path names a
+# descriptor of whichever process opens it, so only the stub can read it, and it records the text
+# in the path's place
 CLAUDE_STUB = """#!/bin/bash
 previous=""
 for arg in "$@"; do
