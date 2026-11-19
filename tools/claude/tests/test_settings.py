@@ -8,8 +8,8 @@ Run with: uv run tools/claude/tests/test_settings.py
 
 `CLAUDE_CODE_USE_VERTEX` in the settings file's `env` block moves every running session between the
 subscription and Vertex AI. On the work laptop it is "1" while sessions use Vertex AI, and ""
-otherwise. Every machine reads the committed file, so a commit made while it is "1"
-would start personal Macs, which have no Vertex AI project, on Vertex AI.
+otherwise. Every machine reads the committed file, so a commit made while it is "1" would start
+personal Macs, which have no Vertex AI project, on Vertex AI.
 """
 
 from __future__ import annotations

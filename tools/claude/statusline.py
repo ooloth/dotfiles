@@ -5,8 +5,9 @@
 # ///
 """Print the Claude Code status line: location and git state on the left, and on the right the
 model and its window size, the context used, and how much of the subscription's 5-hour and 7-day
-limits is left and when each resets. On the work laptop it starts with "Vertex AI until <time>"
-while sessions use Vertex AI.
+limits is left and when each resets. On the work laptop it starts with where the Vertex AI switch
+has put sessions: "Vertex AI until <time>", "subscription until <time>" while a hold lasts, or
+"switch failed". A session cc-vertex started runs on Vertex AI whatever this shows.
 
 Each run also runs the Vertex AI switch (provider_switch.py), which can rewrite the state file and
 ~/.claude/settings.json when sessions should move. It does nothing without
@@ -397,8 +398,8 @@ def _provider_segments(
     now: float,
     zone: tzinfo | None,
 ) -> list[Segment]:
-    """Whether sessions are on Vertex AI rather than the subscription, and until when. Nothing while
-    they use the subscription."""
+    """Where the switch has put sessions, and until when: Vertex AI, a hold on the subscription, or
+    a failed switch. Nothing while they use the subscription with no hold."""
     if switch_failed:
         return [Segment("switch failed", Colour.RED), Segment(GROUP_SEPARATOR)]
     if held_until is not None and held_until > now:

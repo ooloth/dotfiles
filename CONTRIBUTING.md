@@ -106,7 +106,9 @@ Then run what you changed. Tests passing is not evidence that it works:
   With `ANTHROPIC_VERTEX_PROJECT_ID` set, as in a session `cc.bash` started on the work laptop,
   each run also applies the Vertex AI switch's saved state to the real `~/.claude/settings.json`,
   which every session reloads, as each session's status line does on every refresh (see
-  `tools/claude/README.md`).
+  `tools/claude/README.md`). It also saves the fixture's usage windows into the real
+  `~/.local/state/claude/provider.json`, so a fixture edited to 100% moves every session to Vertex
+  AI. Leave `ANTHROPIC_VERTEX_PROJECT_ID` unset to try a change without either.
 - **A shell function or alias:** open a new shell and call it. An agent's shell does not set up the
   aliases, so there a name such as `cc` finds a program on `PATH` instead. Start a clean
   interactive zsh, keeping the variables Claude Code needs to find its login:

@@ -54,7 +54,7 @@ ARGOCD_SERVERS_KEY = "PRIVATE_ARGOCD_SERVERS"
 CHECK_TIMEOUT_SECONDS = 10
 # What a shell reports for a command stopped by Ctrl-C (128 + SIGINT)
 INTERRUPTED_EXIT_CODE = 130
-# Held while a run logs in, so runs that start together open each login once
+# Held while a run logs in, so a login one run completes isn't opened again by another
 LOCK_PATH = Path.home() / ".local" / "state" / "auth" / "logins.lock"
 
 # What argocd printed on this laptop when its refresh token had been revoked (invalid_grant) and when
@@ -350,7 +350,8 @@ def check_status(item: Login | Unconfigured, shell: Shell) -> Status:
 
 @dataclass(frozen=True)
 class HeldLoginLock:
-    """Proof that this run holds the login lock, which only entering a LoginLock gives."""
+    """Marks that this run holds the login lock. Only entering a LoginLock makes one outside the
+    tests, and log_in takes it so a call outside the lock reads as wrong."""
 
 
 LoginLock = AbstractContextManager[HeldLoginLock]
@@ -408,8 +409,9 @@ def run(
     again.
 
     Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
-    login, once the login and its second check are done. So the order of the reports follows the
-    order the checks finish in, and the returned outcomes keep the order of `items`."""
+    login, once its check under the lock and any login and check after it are done. So the order of
+    the reports follows the order the checks finish in, and the returned outcomes keep the order of
+    `items`."""
     befores: dict[int, Status] = {}
     reported: list[LoginName] = []
 

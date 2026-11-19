@@ -67,8 +67,8 @@ echo "${{json}}"
 (cd "${{dir}}" && "$@") > "${{TAB_LOG}}" 2>&1
 """
 
-# The value after --append-system-prompt-file is a path that only lasts while cc.bash's process
-# substitution does, so the stub records the file's text in its place
+# The value after --append-system-prompt-file is /dev/fd/3, the stub's own descriptor, which the
+# test can't open once the stub exits, so the stub records the file's text in its place
 CLAUDE_STUB = """#!/bin/bash
 previous=""
 for arg in "$@"; do

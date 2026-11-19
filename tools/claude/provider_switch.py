@@ -13,9 +13,9 @@ file in every running session, so they all move together. While sessions are on 
 used-up window a status line reports that resets later than their stay ends extends the stay to that
 reset. The StopFailure hook in settings.json runs this script with --stop-failure, which moves
 sessions when a subscription session's turn failed on a rate limit, whatever Claude Code's
-wording. The Vertex AI project comes from ANTHROPIC_VERTEX_PROJECT_ID, which cc.bash exports for
-every session it starts on the work laptop, so nothing here writes a private value. Without it nothing moves, which keeps
-personal Macs on the subscription.
+wording. The Vertex AI project comes from ANTHROPIC_VERTEX_PROJECT_ID, which cc.bash exports on
+the work laptop when private.env sets PRIVATE_VERTEX_PROJECT, so nothing here writes a private
+value. Without it nothing moves, which keeps personal Macs on the subscription.
 
 Run with: cc-switch [vertex | subscription]. With no argument it says which one sessions use.
 """

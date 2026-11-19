@@ -44,8 +44,8 @@ alias ccc="bash ${DOTFILES}/tools/claude/cc.bash --continue"
 
 if is_work; then
   # Moves every session to Vertex AI or back, or with no argument says which one they use. The
-  # status line and the StopFailure hook do this on their own when a usage limit is reached; this
-  # is for when they don't, or to move early. Run it in a session as `! cc-switch`.
+  # status line and the StopFailure hook do this on their own (see tools/claude/README.md); this is
+  # for when they don't, or to move early. Run it in a session as `! cc-switch`.
   cc-switch() {
     # The project comes from private.env, so this works in a terminal as well as in a session
     ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT:-}" \

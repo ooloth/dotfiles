@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Starts Claude Code with the permission mode for this machine, told where the repos related to the
-# current repo are cloned. On the work laptop it also exports the Vertex AI project and runs the
-# work logins first.
+# Starts Claude Code with a permission mode (the caller's, else this machine's), told where the
+# repos related to the current repo are cloned. On the work laptop it also exports the Vertex AI project
+# when private.env sets one, and runs the work logins first unless --unattended is passed.
 #
 # Related repos are named in the system prompt rather than added with --add-dir, because a clone is
 # a working checkout that may be on any branch: adding it would load its CLAUDE.md and present its
@@ -12,8 +12,9 @@
 #
 # Run with: cc [claude arguments], or ccc to continue the last session. A first argument of
 # --unattended starts in auto mode on every machine, for a session nobody watches as it starts. A
-# caller that passes its own --permission-mode, such as a tool whose sessions read text other people
-# wrote, keeps that mode, and cc.bash adds none.
+# caller that passes its own --permission-mode before any --, such as a tool whose sessions read
+# text other people wrote, keeps that mode, and cc.bash adds none. With --unattended as well,
+# cc.bash refuses to start, since the two would override each other.
 set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../tools/bash/utils.bash"
@@ -81,7 +82,7 @@ main() {
   if is_work; then
     mode="auto"
     # Every work session can then use Vertex AI, so setting CLAUDE_CODE_USE_VERTEX in the settings
-    # file moves it there when a usage limit is reached or a turn fails on a rate limit. The project
+    # file moves it there when provider_switch.py sets the switch (see README.md). The project
     # and region do nothing while that switch is "". The project is private, so it comes from
     # private.env rather than the tracked settings file.
     if [[ -n "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
@@ -115,8 +116,8 @@ main() {
   # A work session someone is watching runs auth first, which opens a browser login for each work
   # tool whose credentials have expired and waits for it, or for another run's logins, so the
   # session doesn't meet an expired login later, such as after a switch to Vertex AI. The session
-  # starts whatever auth finds. One
-  # nobody watches skips it, since a login waiting with nobody there would stop it starting.
+  # starts whatever auth finds. One nobody watches skips it, since a login waiting with nobody
+  # there would stop it starting.
   if is_work && [[ "${unattended}" == false ]]; then
     uv run --offline "${DOTFILES}/features/auth/auth.py" || true
   fi
