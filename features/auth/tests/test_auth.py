@@ -100,7 +100,8 @@ ANSWERS = {
 
 @dataclass
 class FakeShell:
-    """Answers checks from `states`, keyed by login name, and records each login it runs."""
+    """Answers checks from `states`, keyed by login name, and records each check and login it
+    runs."""
 
     items: tuple
     states: dict[str, State]
@@ -108,6 +109,7 @@ class FakeShell:
     missing: frozenset[str] = frozenset()
     timed_out: frozenset[str] = frozenset()
     attached: list[tuple[str, ...]] = field(default_factory=list)
+    checked: list[tuple[str, ...]] = field(default_factory=list)
 
     def _logins(self) -> list:
         return [item for item in self.items if isinstance(item, auth.Login)]
@@ -116,6 +118,7 @@ class FakeShell:
         return command not in self.missing
 
     def capture(self, command: tuple[str, ...]):
+        self.checked.append(command)
         (login,) = [item for item in self._logins() if item.check == command]
         if login.name in self.timed_out:
             return auth.TimedOut()
@@ -154,19 +157,6 @@ class LockAnotherRunReleasedAfterLoggingIn:
 
     def __exit__(self, *_exc: object) -> None:
         return None
-
-
-@dataclass
-class SharedCredentialShell(FakeShell):
-    """A login that also makes every other login to its tool valid, as one SSO session can."""
-
-    def attach(self, command: tuple[str, ...]) -> int:
-        exit_code = super().attach(command)
-        (login,) = [item for item in self._logins() if item.login == command]
-        for other in self._logins():
-            if other.check[0] == login.check[0]:
-                self.states[other.name] = self.states[login.name]
-        return exit_code
 
 
 @dataclass
@@ -394,15 +384,19 @@ class SharedLogins(unittest.TestCase):
 
         self.assertIsNone(auth.default_context_command(settings, outcomes))
 
-    def test_a_login_this_run_made_valid_is_not_opened(self) -> None:
+    def test_each_expired_login_is_checked_before_the_lock_under_it_and_after_its_login(
+        self,
+    ) -> None:
         items = configured_logins()
-        shell = SharedCredentialShell(
+        shell = FakeShell(
             items, dict.fromkeys(names(items), "expired"), dict.fromkeys(names(items), True)
         )
 
         auth.run(auth.Mode.REFRESH, items, shell, ignore, FreeLock())
 
-        self.assertEqual([command[0] for command in shell.attached], list(TOOLS))
+        self.assertEqual(len(shell.attached), len(items))
+        for item in items:
+            self.assertEqual(shell.checked.count(item.check), 3, item.name)
 
     def test_the_context_reset_runs_inside_the_lock_once_the_logins_are_done(self) -> None:
         items = configured_logins()
@@ -718,11 +712,24 @@ esac
 """
 
 
-# Like STUB, except that a login makes its tool's checks valid, through a file under STUB_STATE, so
-# a login one run completes is seen by another
+# Like STUB, except that a login makes its own check valid, through a file under STUB_STATE, so a
+# login one run completes is seen by another. Each login keeps its own credential, as the real
+# tools do: the two Google accounts apart, and each Argo CD server's token apart
 STATEFUL_STUB = """#!/bin/bash
 printf '%s\\n' "${0##*/} $*" >> "${STUB_LOG}"
-valid="${STUB_STATE}/${0##*/}-valid"
+credential="${0##*/}"
+case "${credential}" in
+  gcloud)
+    if [[ " $* " == *" application-default "* || " $* " == *" --update-adc "* ]]; then
+      credential+=-internal
+    else
+      credential+=-external
+    fi
+    ;;
+  # The server is the last argument of both the check and the login
+  argocd) credential+="-${*: -1}" ;;
+esac
+valid="${STUB_STATE}/${credential}-valid"
 for arg in "$@"; do
   if [[ "${arg}" == login ]]; then
     # Long enough that a run started at the same moment finishes its checks and meets the lock
@@ -754,12 +761,14 @@ case "${0##*/}" in
 esac
 """
 TOOLS = ("gcloud", "spacectl", "argocd")
-# The stubs keep one credential per tool, so the first login to each tool makes that tool's other
-# check valid too, and the check under the lock skips its login: one login per tool
-FIRST_LOGIN_TO_EACH_TOOL = [
-    "gcloud auth login --update-adc michael.uloth@recursion.com",
-    "spacectl profile login --method browser --endpoint https://example.app.spacelift.io/ example",
-    "argocd login --sso --grpc-web cd-prod.example.com",
+CREDENTIALS = ("gcloud-internal", "gcloud-external", "spacectl") + tuple(
+    f"argocd-{server}" for server in SERVERS
+)
+EVERY_LOGIN = [
+    f"gcloud auth login --update-adc {auth.INTERNAL_ACCOUNT}",
+    f"gcloud auth login --no-activate {auth.EXTERNAL_ACCOUNT}",
+    f"spacectl profile login --method browser --endpoint https://{ACCOUNT}.app.spacelift.io/ {ACCOUNT}",
+    *(f"argocd login --sso --grpc-web {server}" for server in SERVERS),
 ]
 WAITING = "Another run of auth is logging in"
 
@@ -859,8 +868,8 @@ class LoginLockBetweenRuns(unittest.TestCase):
         return [call for call in calls if "login" in call.split()]
 
     def make_all_valid(self) -> None:
-        for name in TOOLS:
-            (self.state / f"{name}-valid").touch()
+        for credential in CREDENTIALS:
+            (self.state / f"{credential}-valid").touch()
 
     def test_a_run_that_waited_runs_no_login_another_run_completed(self) -> None:
         with self.held_by_another_run():
@@ -881,7 +890,7 @@ class LoginLockBetweenRuns(unittest.TestCase):
         out, err = process.communicate(timeout=30)
 
         self.assertEqual(process.returncode, 0, out + err)
-        self.assertEqual(self.logins_run(), FIRST_LOGIN_TO_EACH_TOOL)
+        self.assertEqual(self.logins_run(), EVERY_LOGIN)
 
     def test_ctrl_c_while_waiting_stops_the_run_without_a_login(self) -> None:
         with self.held_by_another_run():
@@ -926,7 +935,7 @@ class LoginLockBetweenRuns(unittest.TestCase):
         out, err = self.start().communicate(timeout=30)
 
         self.assertIn("won't share logins", err)
-        self.assertEqual(self.logins_run(), FIRST_LOGIN_TO_EACH_TOOL, out + err)
+        self.assertEqual(self.logins_run(), EVERY_LOGIN, out + err)
 
     def test_two_runs_started_together_log_in_to_each_tool_once(self) -> None:
         gate = Path(self._tmp.name) / "gate"
@@ -939,7 +948,7 @@ class LoginLockBetweenRuns(unittest.TestCase):
             self.assertEqual(process.returncode, 0, out + err)
             # Only the run that already said so waited
             self.assertNotIn(WAITING, err)
-        self.assertEqual(self.logins_run(), FIRST_LOGIN_TO_EACH_TOOL)
+        self.assertEqual(self.logins_run(), EVERY_LOGIN)
         self.assertIn("(checked again, no login run)", results[waited][0])
 
 

@@ -365,12 +365,10 @@ def run(
     after_logins: Callable[[tuple[Outcome, ...]], None] = lambda _outcomes: None,
 ) -> tuple[Outcome, ...]:
     """Check every login at once, then log in to the expired ones one at a time inside `lock`, which
-    holds the login lock unless it couldn't be set up.
-    Once it holds the lock, every expired login is checked again at once, and each is logged in to
-    unless that check finds it valid or its tool missing, so a login another run completed
-    meanwhile is not opened again. After this run has logged in to one, the next is checked once
-    more just before, since a login can make another valid. `after_logins` then runs with the
-    outcomes, still inside `lock`.
+    holds the login lock unless it couldn't be set up. Inside it, every expired login is checked
+    again at once, and each is logged in to unless that check finds it valid or its tool missing,
+    so a login another run completed meanwhile is not opened again. `after_logins` then runs with
+    the outcomes, still inside `lock`.
 
     Each outcome goes to `report` as soon as it is final: when its check finishes, or for an expired
     login, once its check under the lock and any login and check after it are done. So the order of
@@ -389,38 +387,56 @@ def run(
             index = checks[check]
             befores[index] = check.result()
             if login_to_run(mode, items[index], befores[index]) is None:
-                report_and_record(Outcome(items[index].name, befores[index], None, False))
+                report_and_record(unchanged(items[index], befores[index]))
     expired = {
         index
         for index, item in enumerate(items)
         if login_to_run(mode, item, befores[index]) is not None
     }
-    after_lock: dict[int, Outcome] = {}
 
-    def outcomes_so_far() -> tuple[Outcome, ...]:
+    def outcomes_with(after_lock: Mapping[int, Outcome]) -> tuple[Outcome, ...]:
         return tuple(
-            after_lock.get(index, Outcome(item.name, befores[index], None, False))
+            after_lock.get(index, unchanged(item, befores[index]))
             for index, item in enumerate(items)
         )
 
+    after_lock: dict[int, Outcome] = {}
     if expired:
         with lock as permit:
-            with ThreadPoolExecutor(max_workers=len(expired)) as pool:
-                rechecks = {
-                    index: pool.submit(check_status, items[index], shell) for index in expired
-                }
-            logged_in = False
-            for index in sorted(expired):
-                again = check_status(items[index], shell) if logged_in else rechecks[index].result()
-                after_lock[index] = log_in_unless_settled(
-                    items[index], befores[index], again, mode, shell, permit
-                )
-                logged_in = logged_in or after_lock[index].login_ran
-                report_and_record(after_lock[index])
-            after_logins(outcomes_so_far())
-    outcomes = outcomes_so_far()
+            after_lock = log_in_expired(
+                items, befores, expired, mode, shell, permit, report_and_record
+            )
+            after_logins(outcomes_with(after_lock))
+    outcomes = outcomes_with(after_lock)
     assert len(reported) == len(set(reported)), f"a login was reported twice: {reported}"
     assert set(reported) == {item.name for item in items}, f"a login went unreported: {reported}"
+    return outcomes
+
+
+def unchanged(item: Login | Unconfigured, before: Status) -> Outcome:
+    """The outcome of a login this run doesn't log in to: what its first check found."""
+    return Outcome(item.name, before, None, False)
+
+
+def log_in_expired(
+    items: tuple[Login | Unconfigured, ...],
+    befores: Mapping[int, Status],
+    expired: set[int],
+    mode: Mode,
+    shell: Shell,
+    permit: LoginPermit,
+    report: Callable[[Outcome], None],
+) -> dict[int, Outcome]:
+    """Check every expired login again at once, then go through them in order, logging in to each
+    unless its check found it valid or its tool missing, and reporting each outcome once final."""
+    with ThreadPoolExecutor(max_workers=len(expired)) as pool:
+        rechecks = {index: pool.submit(check_status, items[index], shell) for index in expired}
+    outcomes: dict[int, Outcome] = {}
+    for index in sorted(expired):
+        outcomes[index] = log_in_unless_settled(
+            items[index], befores[index], rechecks[index].result(), mode, shell, permit
+        )
+        report(outcomes[index])
     return outcomes
 
 
@@ -509,7 +525,7 @@ def restore_default_context(command: Command, shell: Shell) -> None:
 def restore_default_context_after(
     settings: Settings, outcomes: tuple[Outcome, ...], shell: Shell
 ) -> None:
-    """Make the first Argo CD server the default context again, when this run's logins changed it."""
+    """Make the first Argo CD server the default context again, after any Argo CD login."""
     match default_context_command(settings, outcomes):
         case None:
             pass
