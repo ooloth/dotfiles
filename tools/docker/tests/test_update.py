@@ -40,15 +40,15 @@ class Run:
         self.calls = calls
 
 
-def run(*, reclaimable: list[str] | None = None, mode: str = "df", docker: bool = True) -> Run:
+def run(*, rows: list[tuple[str, str]] | None = None, mode: str = "df", docker: bool = True) -> Run:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         bin_dir = root / "bin"
         bin_dir.mkdir()
         log = root / "docker.log"
         log.touch()
-        rows = root / "reclaimable"
-        rows.write_text("".join(f"{row}\n" for row in reclaimable or []))
+        reclaimable = root / "reclaimable"
+        reclaimable.write_text("".join(f"{kind}\t{size}\n" for kind, size in rows or []))
         if docker:
             stub = bin_dir / "docker"
             stub.write_text(DOCKER_STUB)
@@ -58,7 +58,7 @@ def run(*, reclaimable: list[str] | None = None, mode: str = "df", docker: bool 
             "PATH": f"{bin_dir}:/usr/bin:/bin",
             "DOCKER_LOG": str(log),
             "DOCKER_MODE": mode,
-            "DOCKER_RECLAIMABLE": str(rows),
+            "DOCKER_RECLAIMABLE": str(reclaimable),
         }
         started = time.monotonic()
         result = subprocess.run(
@@ -74,33 +74,66 @@ class ReportTest(unittest.TestCase):
         self.assertFalse([call for call in outcome.calls if "prune" in call], outcome.calls)
 
     def test_over_ten_gigabytes_reclaimable_suggests_dp_and_dpa(self) -> None:
-        outcome = run(reclaimable=["18.57GB (70%)", "1.098GB (99%)", "1.962GB (89%)", "697.6MB"])
+        outcome = run(
+            rows=[
+                ("Images", "18.57GB (70%)"),
+                ("Containers", "1.098GB (99%)"),
+                ("Local Volumes", "1.962GB (89%)"),
+                ("Build Cache", "697.6MB"),
+            ]
+        )
 
         self.assertEqual(outcome.code, 0, outcome.output)
-        self.assertIn("22.3 GB", outcome.output)
-        self.assertIn("dp", outcome.output)
+        self.assertIn("up to 20.4 GB", outcome.output)
+        self.assertIn("run dp,", outcome.output)
         self.assertIn("dpa", outcome.output)
         self.assert_nothing_deleted(outcome)
 
     def test_under_ten_gigabytes_reclaimable_prints_nothing(self) -> None:
-        outcome = run(reclaimable=["9.5GB (70%)", "400MB (10%)", "0B", "99.9kB"])
+        outcome = run(
+            rows=[
+                ("Images", "9.5GB (70%)"),
+                ("Containers", "400MB (10%)"),
+                ("Local Volumes", "0B"),
+                ("Build Cache", "99.9kB"),
+            ]
+        )
 
         self.assertEqual((outcome.code, outcome.output), (0, ""))
         self.assert_nothing_deleted(outcome)
 
+    def test_volumes_do_not_count_because_neither_prune_removes_them(self) -> None:
+        outcome = run(rows=[("Images", "9GB (50%)"), ("Local Volumes", "5GB (90%)")])
+
+        self.assertEqual((outcome.code, outcome.output), (0, ""))
+
     def test_exactly_ten_gigabytes_is_not_over_the_threshold(self) -> None:
-        outcome = run(reclaimable=["5GB (50%)", "4000MB", "999999kB", "1000B"])
+        outcome = run(
+            rows=[
+                ("Images", "5GB (50%)"),
+                ("Containers", "4000MB"),
+                ("Local Volumes", "1000B"),
+                ("Build Cache", "1000000kB"),
+            ]
+        )
 
         self.assertEqual((outcome.code, outcome.output), (0, ""))
 
     def test_every_unit_docker_prints_counts_towards_the_total(self) -> None:
-        outcome = run(reclaimable=["0.01TB", "500MB", "250000kB", "250000000B"])
+        outcome = run(
+            rows=[
+                ("Images", "0.01TB"),
+                ("Containers", "500MB"),
+                ("Build Cache", "250000kB"),
+                ("Build Cache", "250000000B"),
+            ]
+        )
 
         self.assertEqual(outcome.code, 0, outcome.output)
-        self.assertIn("11.0 GB", outcome.output)
+        self.assertIn("up to 11.0 GB", outcome.output)
 
     def test_an_unknown_unit_is_named_instead_of_guessed(self) -> None:
-        outcome = run(reclaimable=["18.57GB (70%)", "3.2XB"])
+        outcome = run(rows=[("Images", "18.57GB (70%)"), ("Containers", "3.2XB")])
 
         self.assertEqual(outcome.code, 0, outcome.output)
         self.assertIn("3.2XB", outcome.output)

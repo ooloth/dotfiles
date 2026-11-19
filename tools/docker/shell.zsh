@@ -18,7 +18,7 @@ de() { docker container exec -it "$@" sh; }
 # leaves anything made more recently, such as another session's stopped containers and its cache;
 # running containers are never pruned. `u` says when either is worth running.
 dp() { docker system df; docker system prune --filter until=168h; docker system df; }         # stopped containers, unused networks, dangling images and build cache, older than a week
-dpa() { docker system df; docker system prune --all --filter until=720h; docker system df; }  # the same, plus every unused image, older than 30 days
+dpa() { docker system df; docker system prune --all --filter until=720h; docker system df; }  # the same kinds plus every unused image and all unused build cache, but only what is older than 30 days
 
 if is_work; then
   alias db="docker build --secret id=gcp_adc,src=${HOME}/.config/gcloud/application_default_credentials.json ."

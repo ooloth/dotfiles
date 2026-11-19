@@ -17,26 +17,29 @@ fi
 rows="$(mktemp)"
 trap 'rm -f "${rows}"' EXIT
 
-# One "18.57GB (70%)" per kind of object: images, containers, volumes, build cache. The deadline is
-# perl's alarm, which outlives its exec and leaves nothing running; a loop of `sleep 0.1` overruns
+# One "Images<TAB>18.57GB (70%)" per kind of object: images, containers, volumes, build cache.
+# The deadline is perl's alarm, which outlives its exec and leaves nothing running; a loop of `sleep 0.1` overruns
 # by each sleep's start-up cost. bash reports a child killed by a signal, so the call runs in a
 # subshell whose stderr is discarded, and the `exit` after it stops bash exec'ing the call in place
 # of the subshell, which would hand that report back to this shell.
 if ! (perl -e 'alarm shift; exec @ARGV' "${deadline_seconds}" \
-  docker system df --format '{{.Reclaimable}}' >"${rows}"; exit $?) 2>/dev/null; then
+  docker system df --format '{{.Type}}\t{{.Reclaimable}}' >"${rows}"; exit $?) 2>/dev/null; then
   exit 0
 fi
 
-# Docker prints decimal units (1 GB is 10^9 bytes). Prints "unknown <value>" for a size in a unit
-# it doesn't know, rather than guess, the total in GB when it is over the threshold, or nothing.
-verdict="$(awk -v threshold="${threshold_bytes}" '
+# Volumes are left out, because neither dp nor dpa removes them. Docker prints decimal units (1 GB
+# is 10^9 bytes). Prints "unknown <value>" for a size in a unit it doesn't know, rather than guess,
+# the total in GB when it is over the threshold, or nothing.
+verdict="$(awk -F '\t' -v threshold="${threshold_bytes}" '
   BEGIN { scale["B"] = 1; scale["kB"] = 1e3; scale["MB"] = 1e6; scale["GB"] = 1e9; scale["TB"] = 1e12; scale["PB"] = 1e15 }
-  NF == 0 { next }
+  NF == 0 || $1 == "Local Volumes" { next }
   {
-    unit = $1
+    split($2, parts, " ")
+    size = parts[1]
+    unit = size
     sub(/^[0-9.]+/, "", unit)
-    if (unit == $1 || !(unit in scale)) { unknown = 1; print "unknown " $1; exit }
-    sum += substr($1, 1, length($1) - length(unit)) * scale[unit]
+    if (unit == size || !(unit in scale)) { unknown = 1; print "unknown " size; exit }
+    sum += substr(size, 1, length(size) - length(unit)) * scale[unit]
   }
   END { if (!unknown && sum > threshold) printf "%.1f\n", sum / 1e9 }
 ' "${rows}")"
@@ -44,5 +47,5 @@ verdict="$(awk -v threshold="${threshold_bytes}" '
 if [[ "${verdict}" == unknown* ]]; then
   warn "⚠️ Docker printed a reclaimable size this script can't read: ${verdict#unknown }"
 elif [[ -n "${verdict}" ]]; then
-  info "🐳 Docker could free ${verdict} GB: run dp, or dpa to also remove unused images older than 30 days"
+  info "🐳 Docker could free up to ${verdict} GB: run dp, or dpa to remove unused images as well"
 fi
