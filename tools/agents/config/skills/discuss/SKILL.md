@@ -243,6 +243,12 @@ sees what was chosen first and how it was chosen right after:
    and where anything durable is kept.
 8. `## Deferred ⏳`: only when discussion found something worth doing that this work does not do,
    such as a fix to a deeper cause that lies outside the ticket, or a bug found on the way.
+9. `## For the later PR 📌`: only when the approach leaves part of this ticket to a later PR. The
+   facts found during this discussion that the later PR's author would otherwise have to find
+   again or would get wrong: where the code it changes lives and how that code behaves now, what
+   users see now, what this work changes for it, and how it touches related tickets. Each fact
+   names the file or record it comes from, and a fact nobody has observed is written as an open
+   question.
 
 In the terminal, follow it with `## Open decisions ❓`, only those that block correct implementation,
 numbered, each with a recommended answer, and then the approval request, offering to post the
@@ -251,7 +257,8 @@ approach above as the ticket comment when the work is on a ticket, and to run `/
 Write for someone who opens the ticket with no context and a few seconds to spare: a teammate, or
 the user in three months. They came for the decision: what was chosen, what it had to achieve, and
 why it beat the alternatives. Everything you did to reach it, such as the runs, the commands, the
-line numbers and the dead ends, was for you, not them, and stays in this session. Say each thing
+line numbers and the dead ends, was for you, not them, and stays in this session. The exception is
+what a later PR on this ticket needs, which item 9 carries. Say each thing
 once, in the plainest words that carry it, and stop when the decision is clear. A sentence that
 would not change what the reader understands, or what they would want to check, does not belong. The
 opening paragraph says what the approach does, not the evidence for it. A property says what must be
