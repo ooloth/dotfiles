@@ -129,6 +129,17 @@ history. The replacement is a new draft: approved wording changes only with fres
 replacement that only makes the fixes the check requires, keeping every word in the same order, is
 the exception, as step 4 above says.
 
+## Links
+
+`createIssueLink` can reply "Issue link created" for a link that was never saved. On 2026-11-20 it
+said that for a Blocks link from VTT-46 to VTT-2249, and VTT-46 had no links when listed minutes
+later. After creating a link, list the links on both issues before reporting it:
+`acli jira workitem link list --key KEY --json`, or `getJiraIssue` with `"fields": ["issuelinks"]`.
+Create the link again when it is missing.
+
+The MCP tools cannot delete a link. `acli jira workitem link delete --id ID --yes` does, with the ID
+from the listing above.
+
 ## The acli CLI
 
 `acli` is set up on the work laptop as the fallback when the Atlassian MCP server will not connect.
