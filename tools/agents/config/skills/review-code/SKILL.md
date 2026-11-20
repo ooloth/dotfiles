@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs 13 parallel specialized agents, plus one that checks rule consistency when instruction files change, one that checks, when the base branch has moved since the fork, whether the PR still relies on what it changed and where the PR's edits land, one that checks whether merging another open PR that shares its files would undo its edits, one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, one that checks every claim the change's prose makes against the system it describes, one that checks that removed prose took nothing a reader needs, and one that runs a PR's own verification steps and the checks the PR's author would run, base against head, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
+description: Standalone code review for any scope — PR number, branch, file paths, or current changes. Synthesizes intent, runs up to 13 parallel specialized agents (fewer for a Markdown-only diff), plus one that checks rule consistency when instruction files change, one that checks, when the base branch has moved since the fork, whether the PR still relies on what it changed and where the PR's edits land, one that checks whether merging another open PR that shares its files would undo its edits, one that checks that every assertion the change removes from the tests is still made or dropped for a stated reason, one that checks every claim the change's prose makes against the system it describes, one that checks that removed prose took nothing a reader needs, and one that runs a PR's own verification steps and the checks the PR's author would run, base against head, and presents actionable findings with a verdict. A dependency update (Dependabot, Renovate, any lockfile change) gets a check of each release it adopts instead. For PR scope, optionally posts the review to GitHub with inline comments.
 argument-hint: '[pr number, branch name, file paths, or nothing for current branch]'
 allowed-tools: Bash Read Grep Glob Agent Write
 effort: high
@@ -289,7 +289,9 @@ or a record chose an option is reported beside the recommendation, never given a
 
 ## Step 3: Launch the agents in parallel
 
-Agents 1 to 13 always run, Agent 14 runs when the diff touches an agent instruction file, Agent 15
+Agents 1 to 13 always run, except that Agents 3, 8, 10 and 11 do not run when every reviewable
+file is Markdown: they judge code structure, tests, language idioms and failure paths, which a
+prose-only diff has none of. Agent 14 runs when the diff touches an agent instruction file, Agent 15
 runs for PR scope when Step 1's `base_moved.py` exits 1, or exits 2 for a PR whose stored
 `mergeable` is `CONFLICTING`,
 Agent 16 runs when Step 1's `overlapping_prs.py` exits 1, Agent 17 runs when the diff removes
@@ -1112,6 +1114,7 @@ category — [what recurs] — close it by [adding a standing agent for X / addi
 - **[agent name]:** [the model chosen for it], [why that model]. [Only when it did not finish:
   errored or never ran, and why.] An Agent 14 not launched because the diff touches no agent
   instruction file is listed as "not applicable", and does not count as never ran. So is an
+  Agent 3, 8, 10 or 11 not launched because every reviewable file is Markdown, an
   Agent 15 not launched because the Base moved line lists no commit and no conflict, an Agent 16
   not launched
   because the Overlapping open PRs line says "none", and an Agent 17 not launched because the diff
@@ -1242,7 +1245,8 @@ On any answer other than "skip":
     ```
 
     - **Exit 2 (the script could not tell):** discard this review and run it again from Step 1 on
-      the new head, with every standing agent that applies (Agent 14 applies when the full PR
+      the new head, with every standing agent that applies (Agents 3, 8, 10 and 11 apply unless
+      every file in the full PR diff is Markdown, Agent 14 applies when the full PR
       diff touches an agent instruction file, Agent 15 when Step 3 says it runs, Agent 16
       when `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an
       assertion, Agent 18 when it adds or changes prose, Agent 19 when it removes prose, Agent 20
@@ -1250,7 +1254,8 @@ On any answer other than "skip":
       added ones over the whole PR diff, as Step 3
       always does.
     - **Exit 1 (the PR's own changes differ):** run Steps 2 to 4 again on the new head with every
-      standing agent that applies (Agent 14 applies when the full PR diff touches an agent
+      standing agent that applies (Agents 3, 8, 10 and 11 apply unless every file in the full PR
+      diff is Markdown, Agent 14 applies when the full PR diff touches an agent
       instruction file, Agent 15 when Step 3 says it runs, Agent 16 when
       `overlapping_prs.py` exits 1, Agent 17 when the full PR diff removes a test or an assertion,
       Agent 18 when it adds or changes prose, Agent 19 when it removes prose, Agent 20 for every
