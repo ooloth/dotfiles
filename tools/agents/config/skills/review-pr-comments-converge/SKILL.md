@@ -223,6 +223,9 @@ The test: *does applying this require the author to make a choice?* If no, auto-
 - Multiple valid approaches exist and the choice depends on requirements or preferences
 - The fix would change a public API, data model, or contract
 - Correctly fixing it requires intent or context only the author has
+- The reviewer asks to remove, revert or split out part of the change. Doing so gives up what that
+  part was for, so whether to agree is the author's call, however explicit the request. The
+  escalation says what the part protects and what removing it costs
 
 **Escalation discipline:**
 
