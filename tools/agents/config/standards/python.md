@@ -107,6 +107,17 @@ Add `from __future__ import annotations` at the top of any file targeting
 Python < 3.14 rather than quoting return type annotations. Quoted annotations
 are harder to read and unnecessary with the future import.
 
+**A boolean Series that starts a chain of pandas filters is built over the frame's own index.**
+`pd.Series(True, index=df.index)` lines up with the frame whatever index it holds, and is `bool`
+even when the frame is empty. A Series built from a Python list, `pd.Series([True] * len(df))`, gets
+a default `RangeIndex`, so indexing a frame whose index holds other labels, such as one read from a
+parquet file that stores its index, raises `IndexingError`. On an empty frame that Series is
+`object` dtype, which pandas 2 reads as a column selection, so the result has no columns. It also
+builds one Python object per row: 437 ms on an 8.4M-row table, against 0.1 ms. A positional numpy
+mask, such as `np.zeros(len(df), dtype=bool)`, selects by position and is outside this rule. Seen in
+a work repo, where the timing came from a production-sized table and both errors were reproduced
+locally.
+
 ## In scope
 
 - Every `.py` file, scripts included
