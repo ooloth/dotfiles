@@ -31,11 +31,12 @@ this skill asks nothing there and puts what it would have asked in its final rep
    body now, before anything rewrites it, with
    `gh pr view <n> -R <owner>/<repo> --json body -q .body > <saved file>`, the file in a new
    `mktemp -d` directory.
-6. Use the `write-pr-description` skill, passing it the ticket from step 4, to write the title and
-   body to files following my voice guide. When a PR is open, or the body changed after that skill
-   ran `check_pr_body.py`, run it again on `<dir>/pr-body.md`, as its step 5 says, and go on only
-   once it exits 0. With a PR open, pass `--live-copy <saved file> --pr <n>`, so an edit someone
-   made since step 5 is merged rather than overwritten. Then put the title and body in one
+6. Use the `write-pr-description` skill, passing it the ticket from step 4 and any evidence folder
+   the caller named, whose `commands.txt` it gives `check_pr_body.py` as `--commands`, to write the
+   title and body to files following my voice guide. When a PR is open, or the body changed after
+   that skill ran `check_pr_body.py`, run it again on `<dir>/pr-body.md`, as its step 5 says, and go
+   on only once it exits 0. With a PR open, pass `--live-copy <saved file> --pr <n>`, so an edit
+   someone made since step 5 is merged rather than overwritten. Then put the title and body in one
    request file, using the full path of the directory the skill names:
 
    ```sh

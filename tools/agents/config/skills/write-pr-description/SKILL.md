@@ -133,12 +133,12 @@ order: its `New` rows under What's new and its `Unchanged` rows under What stays
 design was approved before the code was written, so the PR shows the plan the reviewer can hold the
 code to, and this skill never invents, drops or rewords a row. `prove-it-works` runs the rows and
 hands back their steps and output: use its report for the PR's head commit, and when the session has
-none, or the head has moved since, run `prove-it-works` on the PR first. When the work has no
-design, `prove-it-works` builds the same table from the ticket and the diff, and the rows come from
-its report. A row covers one behaviour a user or operator would notice; a finer point, such as a
-format detail or a speed bound, goes inside the row whose behaviour it refines. Nothing that isn't
-behaviour of the running system, such as a doc pointer or a code comment, is a row: it belongs in
-What. A property number such as P1 is the approach's shorthand and never appears.
+none, or the head has moved since, run `prove-it-works` on the PR first. Work with no design gets
+its Observable behaviour table from the `design` skill before the PR opens, since that table is the
+only source of rows. A row covers one behaviour a user or operator would notice; a finer point, such
+as a format detail or a speed bound, goes inside the row whose behaviour it refines. Nothing that
+isn't behaviour of the running system, such as a doc pointer or a code comment, is a row: it belongs
+in What. A property number such as P1 is the approach's shorthand and never appears.
 
 **A change nobody planned is never a row.** When a run finds behaviour the design didn't list, it is
 either a bug, which stops the PR until it is fixed and run again, or behaviour the change should
@@ -209,7 +209,7 @@ into steps of the row it proves and run again, or left out.
 ### Structure
 
 - Start with `> [!NOTE]` callout if PR depends on another PR
-- Include 🍿 screen recording for ANY UI changes
+- A UI change is shown by a 📸 or 🎬 row, its screenshot or recording in that row's What I saw
 - Mention deployment timing if backend/frontend coordination needed
 - When the PR changes how parts of the system interact in a way a reviewer can
   observe, add a before and after diagram of that interaction under What, drawn
@@ -265,10 +265,6 @@ skills open, in any repo.
 - Hides completely (no tooltip either) when the current dataset has no archived items
 - Since this toggle won't appear until datasets with archived items are in prod, it's safe to deploy backend and frontend together
 - See PROJ-123 for detailed explanations of this solution's overall [approach](https://jira.example.com/browse/PROJ-123?focusedCommentId=1001) and [design](https://jira.example.com/browse/PROJ-123?focusedCommentId=1002)
-
-### 🍿 Screen recording of verification steps below
-
-[video]
 
 ## 🤔 Why
 
