@@ -24,6 +24,17 @@ collide on the same record.
 
 ## Should
 
+**A write that must not replace an existing file asks the store to refuse it, rather than checking
+first.**
+A check that the path is free, followed by an upload, leaves a gap between the two. Two writers that
+both check before either uploads both find the path free, and the second upload then replaces the
+first with nothing reported. So the write itself carries the condition, such as Google Cloud
+Storage's `if_generation_match=0`, which makes the store reject the upload when any object already
+has that name. The code treats that rejection as an expected outcome with a message of its own, not
+as an error. Seen in a work repo on 2026-11-20: a snapshot export run a second time on the same day
+was refused by GCS, and both files kept their generations. Where a store offers no such condition,
+the code says so beside the write, because nothing then stops the second writer.
+
 **A cache or mirror distinguishes "the source said nothing" from "the source said empty".**
 A fetch that reaches no source returns the same shape as one that reaches every source and finds
 nothing: an empty collection. Writing the first over a populated store destroys what was known and
