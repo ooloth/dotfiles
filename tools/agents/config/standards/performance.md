@@ -65,6 +65,18 @@ batched equivalents. N+1 patterns are identified and resolved before merging.
 Operations that could return unbounded result sets use pagination or streaming.
 Fetching everything into memory is not the default for large collections.
 
+**A memory figure states what it measured, and a figure for what a process holds comes from the
+operating system's count of the process's physical memory.**
+A library's own size report can count a shared object once per reference. pandas'
+`memory_usage(deep=True)` counts a Python string once for every row that points at it, so for a
+column where pyarrow gave each distinct string one object, it reported 5.07 GB for a table that grew
+the process by about 2 GB. Resident set size misleads too: on macOS it leaves out memory the system
+has compressed, and a process showed 570 MB of RSS while holding 3.1 GB. So a figure a decision
+rests on is the growth of the process's physical footprint (`footprint` or `vmmap --summary` on
+macOS, the container's working set in Kubernetes), measured before and after the step, and the
+record names which counter it read. Freed memory an allocator keeps is part of that footprint, so a
+laptop measurement of a drop is confirmed on the deployed system before it is relied on.
+
 ## Consider
 
 **Performance budgets exist for user-facing operations.**
