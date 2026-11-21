@@ -148,7 +148,9 @@ row. The user hears about each one before the PR opens.
 **Inside a row,** in this order, each a `####` heading with a blank line above it:
 
 - **`#### 🧾 Proven by`:** a bullet list of what proves the behaviour: the run below, a named test
-  CI runs, a type, a runtime assertion, a CI check. Every entry is a bullet.
+  CI runs, a type, a runtime assertion, a CI check. Every entry is a bullet. The list is what
+  `prove-it-works` reports proved the row, not the design's planned proof, so a proof it found
+  while exploring appears and one it found wanting does not.
 - **`#### 🔍 Verification steps`:** a `- [ ]` checklist a reviewer can follow from a fresh
   checkout, each item an action or an "Expect to see X" line, each building on the one before.
   Left out, with a bullet under Proven by saying so, when the behaviour can't be seen from outside.
