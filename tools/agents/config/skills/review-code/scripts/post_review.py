@@ -166,7 +166,7 @@ def unbroken_bodies(review: Review) -> tuple[str, ...]:
 
 # Words that turn an approval back into a request. An inline comment may still say what the
 # reviewer would pick, so only obligation is noted there; the body also notes preference and
-# timing, which the triage sentence has just left to the author.
+# timing, which an approval leaves to the author.
 _OBLIGATION = (
     r"\bmust\b|\bneeds? (?:fixing|to be fixed)\b|\brequired\b|(?<!non-)\bblock(?:ers?|ing)\b"
 )

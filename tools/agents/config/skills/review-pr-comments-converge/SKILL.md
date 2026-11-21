@@ -193,6 +193,11 @@ Spawn a general-purpose subagent on Opus, because it decides which comments to k
 - Instruction to read the relevant code at each commented location (and surrounding context) to
   independently verify whether each comment is correct, stale, or mistaken — **do not trust
   comments at face value**
+- Instruction that a comment making a claim about how the code behaves is checked by running the
+  code path, starting where its inputs are produced rather than from a value it assumes, not by
+  reading it, and the verdict cites the saved output. A type, comment or doc saying a value can be
+  missing is itself a claim to check, not evidence. When it can't be run, the verdict says so and
+  what was checked
 - Instruction to return one verdict per comment:
   - **Valid** — the comment identifies a real issue; include the issue and a suggested fix
   - **Stale** — the code has already been changed to address this; include evidence
@@ -534,7 +539,8 @@ next feedback, since it prepares nothing for a PR while that PR's tab is open.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
 - **Validate before fixing** — never auto-fix a comment without first confirming the comment is
-  correct by reading the actual code.
+  correct: by reading the actual code, or by running it when the comment makes a claim about how
+  the code behaves.
 - **One fix agent per round** — it holds the whole round's fixes. Never one per file.
 - **The coordinator owns the quality gate** — it runs once per round, after the fix agent returns.
   The fix agent runs only what proves its own change.

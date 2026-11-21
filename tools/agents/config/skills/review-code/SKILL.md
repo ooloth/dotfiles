@@ -1031,6 +1031,14 @@ claims — most likely to be subtly wrong — and the ones a reviewer would have
   print(inspect.getsource(lib.func))"`
 - File/doc claims → read the file
 
+**Base every claim about how the code behaves on a run.** This covers the agents' findings and any
+earlier reviewer's point the posted review agrees or disagrees with: run the code path yourself,
+starting where its inputs are produced rather than from a value you assume, and cite the saved
+output. A type, comment or doc saying a value can be missing is itself a claim to check, not
+evidence. When you can't run it, because the data or system is out of reach or the PR's author is
+outside the repo owner's organization (whose code you never run), say what you checked and ask the
+author instead of asserting.
+
 **Apply the results:**
 
 - Strike claims that don't survive the check rather than softening them, and list each one under
@@ -1088,7 +1096,7 @@ the sentence under the verdict says overlapping PRs were not checked.
 
 **1. `file:line` — [imperative: what to do]** *(must)*
 
-[1–3 sentences. Explain why this matters — what breaks, degrades, or becomes harder if left unfixed. Then describe what work you did to verify the claim: which file or function you read, which command you ran, what the output showed. Use hedging language ("no guard visible in the surrounding context", "appears to", "may") if confidence is less than certain.]
+[1–3 sentences. Explain why this matters — what breaks, degrades, or becomes harder if left unfixed. Then describe what work you did to verify the claim: which file or function you read, which command you ran, what the output showed. Use hedging language ("no guard visible in the surrounding context", "appears to", "may") if confidence is less than certain, except for a claim about how the code behaves, which Step 3.5 runs instead.]
 
 **2. `file:line` — [imperative: what to do]**
 
@@ -1149,7 +1157,7 @@ come back clean.]
   are not optional; a finding with no impact explanation or no verification basis should not be
   reported.
 - Use hedging language within the prose when confidence is less than certain — don't assert facts
-  you haven't confirmed.
+  you haven't confirmed. A claim about how the code behaves is run in Step 3.5 instead of hedged.
 - Open question items (`?`) get the (a)/(b) tradeoff format instead of prose.
 - A finding located outside the PR's diff carries `(outside the diff)` after its location in the
   table and its detail heading, and one label in its detail: **coupled change missing** (the PR
@@ -1186,8 +1194,8 @@ are pushed only after the local verification in "Working Through to a Draft PR" 
 Otherwise, if a bot opened the PR (`author.is_bot`, such as Dependabot or Renovate), nobody will
 act on posted findings: a bot cannot read a review or push a fix. A bot's PR never gets Request
 Changes or inline comments, and `post_review.py` refuses both. Its body gives the verdict without
-a credit sentence, carries each finding's evidence itself, and leaves out the triage and
-consequences sentences, which address an author.
+a credit sentence, carries each finding's evidence itself, and leaves out the consequences
+callout, which addresses an author.
 
 - **When the user can push to the repo** (`viewerPermission` is `ADMIN`, `MAINTAIN` or `WRITE`)
   and there are findings, ask which to fix on the PR's branch. The answer naming the fixes also
@@ -1299,9 +1307,14 @@ On any answer other than "skip":
   comment → COMMENT
 - Write the review body in this shape, each part only when it has something to say (see the
   audience and tone guidance below):
-  - **Verdict and credit:** the verdict, then one sentence crediting a specific choice the author
-    made and why it works, drawn from Looks Good. A bot made no choice to credit, so its PR gets
-    the verdict alone.
+  - **Verdict and credit:** the verdict as a teammate would say it out loud, in terms of what the
+    author needs to do next ("No blockers from me", "One thing needs fixing before this merges"),
+    never the review's event name ("comment", "approve", "block"), and in the same sentence what
+    you checked. Then one sentence crediting a specific choice the author made, drawn from Looks
+    Good, by its effect on a person (a reader, a user, the next developer) rather than by a quality
+    word such as "honest", "clean" or "solid". Under Request Changes, the verdict asks for the
+    `must` findings directly and says in a clause that the others are optional. A bot made no
+    choice to credit, so its PR gets the verdict alone.
   - **What the approval rests on:** when the review approves a dependency update, one bullet per
     check that ran, with its result at the head the review is pinned to. These are Step 1a's
     checks, such as the releases adopted, the advisories fixed and introduced, breaking changes
@@ -1312,11 +1325,6 @@ On any answer other than "skip":
     list, one sentence names each fix commit pushed to the PR and what it resolves. A reader
     deciding whether to trust the approval needs these, and `post_review.py --dry-run` notes an
     approval of a dependency update that lists none.
-  - **Triage:** when the review approves or comments and still carries findings, end the first
-    paragraph with this sentence, word for word: "Feel free to decide yourself which findings to
-    fix here vs file as a ticket vs ignore for now." Under Request Changes there is no triage
-    sentence. The body asks for the `must` findings directly, and says in a clause that the
-    others are optional.
   - **Consequences to know about, inside an Approve:** an approval leaves every finding to
     the author, so this part asks for nothing. It points out the findings whose harm would
     be easy to miss: data that ends up wrong without anyone noticing, a security exposure,
@@ -1331,8 +1339,8 @@ On any answer other than "skip":
     review's only finding "The one finding has bigger consequences than it might look:"),
     then give each finding as its consequence in plain terms. It carries no
     preference ("I'd", "strongly consider", "recommend") and no timing ("before you
-    merge"), because either one tells the author what to do after the triage sentence has
-    just said they decide.
+    merge"), because either one tells the author what to do when an approval leaves the
+    choice to them.
   - **Other code affected by these changes:** one bold `**Other code affected by these changes**`
     line, then one bullet per finding outside the diff: a bold lead naming the problem, then where
     it is, what to do and where you saw it, in one or two sentences. The bullets carry no labels;
@@ -1483,8 +1491,8 @@ it out loud to the person sitting next to you. The goal is a batch that reads li
 person moved down the file making distinct, differently-voiced observations, not like a template
 applied four times or a fixed phrasebook applied on rotation.
 
-The credit sentence is worded fresh each time, so an author on their tenth review doesn't read the
-same sentence ten times. The triage sentence is not: use the user's wording above.
+The verdict and credit sentences are worded fresh each time, so an author on their tenth review
+doesn't read the same sentence ten times.
 
 Use a quick example when it makes the impact click. When
 a code snippet or a suggested fix would make the ask concrete, include it directly in the
