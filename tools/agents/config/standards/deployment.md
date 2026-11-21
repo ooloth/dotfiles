@@ -129,6 +129,25 @@ version produced them. A regression reaches someone, or something, that can
 act within minutes, and reversing it is a single action. Where nothing serves
 production traffic, such as a published library or CLI, this does not apply.
 
+**A change made to move a measurable outcome is judged against an expected range set before it
+ships.**
+The outcome can be a latency, an error rate, a memory figure, a response size, or anything else the
+change sets out to move. Before the change ships, three things hold. The signal that measures the
+outcome is in production; where none is, it ships in an earlier deploy of its own, because a signal
+shipped with the change has no before reading. A production baseline is taken with the exact query
+the after-measurement will use, repeated enough to show the noise. The expected effect is written as
+a range, whose width comes from that noise. After the change serves, the same query runs again, and
+the baseline, the result, the delta, the range and the verdict are recorded together, with the gap
+between the estimate and the result, so the team can see whether its estimates run high or low. A
+result outside the range, better or worse, is explained before it is relied on, because either way
+the model behind the estimate was wrong. The result is recorded whatever it is, and what follows it
+is chosen from it. A result in range or better is announced. A result short of its range means the
+targeted state was not reached, which is settled one of three ways, each recorded with its reason:
+accepted as close enough, kept open with follow-up work for the gap, or closed as not achievable. A
+regression leads to a revert or a fix. Where nothing serves production traffic, such as a published
+library or CLI, the baseline and the after-measurement are the same benchmark run on the same
+machine.
+
 **A value the system cannot read back is confirmed by its effect.**
 Once a write-only value is set, such as a secret held by another service, a
 credential in a store the deployer cannot read, or a header or token pushed

@@ -636,6 +636,7 @@ Instructions:
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. If package files changed, read them in full. If config or env handling changed, read those files in full.
+5. Measured changes: when the intent, the PR description or the ticket says the change moves a measurable outcome (faster, lighter, fewer errors, smaller responses), check `deployment.md`'s Should "A change made to move a measurable outcome is judged against an expected range set before it ships" against it. Name the query that would measure the outcome in production, and say whether a signal answering it is already in production before this change, from code on the base branch, rather than added in this diff. A signal this diff adds ships with the change, so nothing can take a before reading: that is a finding, with the recommendation to ship the signal first in its own PR. Also flag a promised outcome with no expected range or baseline recorded in the PR, the ticket or its design comment.
 
 For each issue: file:line | what's wrong | specific recommendation
 If no concerns found, report "No release readiness concerns identified."

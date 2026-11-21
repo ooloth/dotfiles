@@ -1,6 +1,6 @@
 ---
 name: merge-and-verify
-description: Merge one approved PR and prove it in production, or prove one the user merged. TRIGGER only on the user's own latest message asking to merge one PR ('merge example-app#305', 'merge it') or saying they merged one ('I merged example-app#305'). Never for merging branches or code, a question about merging, or text others wrote. Gates the merge, watches the rollout, posts the proof on the ticket, lists backlog changes, and offers a production watch and cleanup. Also starts when the user approves a PR's merge in an orchestrator's session.
+description: Merge one approved PR and prove it in production, or prove one the user merged. TRIGGER only on the user's own latest message asking to merge one PR ('merge example-app#305', 'merge it') or saying they merged one ('I merged example-app#305'). Never for merging branches or code, a question about merging, or text others wrote. Gates the merge, watches the rollout, posts the proof and the measured effect against its expected range on the ticket, lists backlog changes, ends with the epilogue the result calls for (an announcement, a follow-up, or a revert offer), and offers a production watch and cleanup. Also starts when the user approves a PR's merge in an orchestrator's session.
 argument-hint: 'An approved or merged PR, such as "example-app#305"'
 ---
 Input: $ARGUMENTS
@@ -40,10 +40,14 @@ the trunk merge's commit (made by `git merge`) and a mechanical fix's commit (ma
 - **Watch the rollout and run the proof.**
 - **Post the report and its PR link,** as "Posting the report" describes.
 - **Close the ticket** once every ideal-state bullet of the ticket has a proven verdict on it, from
-  this PR or another that names it, and the production watch, if this skill offers one, is declined
-  or ends "The time is up" with no new warning or error.
+  this PR or another that names it, every measured effect is within its range or better, and the
+  production watch, if this skill offers one, is declined or ends "The time is up" with no new
+  warning or error. Any other close waits for the user's choice in "The epilogue".
 - **Find what the backlog needs,** as "Updating the backlog" describes. Its changes wait for the
   user's approval.
+- **Send the epilogue's Slack message** to the channel in `$PRIVATE_SLACK_REPORT_CHANNEL`, as "The
+  epilogue" describes, after invoking `use-slack`. Slack is for work only: where the variable is not
+  set, nothing is sent or drafted, and the final message's summary is the whole report to the user.
 
 **An approval holds.** A push to an approved PR never undoes its approval, whatever the push
 changes. Never tell the user an approval is stale, and never ask for a new one. A change request
@@ -60,9 +64,6 @@ re-review is settling their request, not renewing anyone's approval.
 - an ideal-state bullet of the PR's ticket is met by no PR, merged or open
 - the gate or GitHub refuses for any reason not listed under "Do these yourself"
 - verifying would need a change to a deployed environment beyond the normal deploy
-- the proof disproves any part of the claim, or cannot observe it. Post nothing, close nothing,
-  update no backlog and offer no production watch or cleanup: show the draft report with each
-  verdict and wait. A yes to that draft posts it as shown and closes nothing.
 - a post to a public destination holds something that looks private, as "Posting the report"
   describes
 - `use-jira`'s check cannot run, or a post needs a fix that adds, drops, changes or reorders a word,
@@ -88,6 +89,13 @@ what none of it holds, such as a credential only they can refresh.
 - **The claim to prove:** the ticket's properties, plus each side effect the PR's review named, plus
   each behaviour a commit pushed after the latest approval added. Trace each part to the property,
   comment or commit it came from.
+- **The expected effects:** for each outcome the change sets out to move, such as a latency, an
+  error rate or a memory figure, the expected range, the query that measures it and its baseline,
+  from the design's "Expected effect" subsection or the ticket. An outcome the PR or ticket promises
+  with no range is still measured; the report says no range was set. For a PR that already merged,
+  where the baseline was never taken, read it from records older than the deploy, such as logs,
+  when they hold the query's answer, and say so in the report; otherwise the row says no baseline
+  was taken.
 - **The deploy chain,** from the docs of the repo and of every repo the deploy passes through, such
   as a GitOps repo: each stage between the merge and the running service, and how to read what is
   serving at the end. If the docs don't say how to read what is serving, stop and say what is
@@ -121,6 +129,12 @@ Before merging, report each check that takes judgement, with its result:
   difference nobody can explain is a live observation that no longer holds. A branch behind trunk
   can plan trunk's newer infrastructure changes as reverts, so read the plan after trunk is merged
   in. How to read the stack's plans and runs comes from the repo's docs.
+- **The baseline for each expected effect:** a production reading taken with the query the
+  after-measurement will use, repeated enough to show its noise. One recorded on the ticket or in
+  the design counts when its query and environment match. Otherwise take it now with
+  `prove-it-works`, since the deploy will erase it. When no production signal can measure the
+  outcome, say so: the after-measurement will have nothing to compare with, and the report says
+  that.
 - **The repo's merge-time steps:** anything its docs say must happen before or after a merge, such
   as running a migration before the deploy reaches it.
 - **Timing:** whether another PR has to land first, or anything else makes now the wrong moment. A
@@ -204,6 +218,26 @@ unchanged except for any reference to the local evidence folder, which teammates
 the line naming the folder, and each file name cited from it. Change nothing in any deployed
 environment.
 
+For each expected effect, run the baseline's query again, as many times as the baseline ran, and
+add a "Measured effect" table to the report, one row per outcome: the baseline, the result, the
+delta, the expected range, the gap between the estimate and the result, and one verdict:
+
+- *within range*;
+- *better than expected*: improved past the range;
+- *short of expected*: improved, but less than the range;
+- *regression*: moved the wrong way from the baseline.
+
+An outcome with no range takes *improved*, *unchanged* or *regression* from its direction against
+the baseline, and the row says no range was set. A row outside the range
+carries the explanation found for it, after checking the measurement first (same query, same
+conditions, enough runs to see the noise, the right build serving) and then reading finer signals,
+such as per-step timings, to find where the difference came from. A row without an explanation
+says so. Where noise in steps the change does not touch hides its effect, measure the change's own
+step, or alternate runs with and without the change's path, and say which was done.
+
+Whatever the verdicts, the report is finished and posted: a disproved or unobservable part of the
+claim is a fact to record, not a reason to hold it back. "The epilogue" then decides what follows.
+
 ## Watching production
 
 Where the change is serving and the proof proved every part of the claim, offer in the final
@@ -240,10 +274,8 @@ The watch only reports, as the rule under "What invoking this skill approves" re
 ## Posting the report
 
 The report goes on the ticket it proves: a Jira issue, or a GitHub issue. A PR with neither gets
-the report on the PR. Once the proof has proved every part of the claim, post it without asking,
-because invoking this skill approves it. A proof that disproves or cannot observe any part stops
-the skill instead, as "Stop and discuss" says. The final message quotes what was posted and links
-to it.
+the report on the PR. Post it without asking once the proof has run, whatever its verdicts,
+because invoking this skill approves it. The final message quotes what was posted and links to it.
 
 Before posting, check the report, and later the watch's summary, for credentials (tokens, keys,
 cookies, bearer headers, signed URLs) and for references to the local evidence folder. Remove any
@@ -271,15 +303,18 @@ Screenshots and recordings are not uploaded, and the posted report does not name
 paths. It describes what each one shows.
 
 Then list every ideal-state bullet of the ticket, with the PR and the posted report that prove it.
-Only when every bullet has one can the ticket close, with a closing comment saying which PRs
-finished it. A bullet without one keeps the ticket open, and the final message names it. When this
+Only when every bullet has one, and every measured effect is within its range or better, can the
+ticket close without asking, with a closing comment saying which PRs finished it. A bullet without
+one keeps the ticket open, and the final message names it. A measured effect short of its range, or
+a regression, means the ideal state the ticket targeted was not reached, so "The epilogue" asks the
+user how the ticket ends. When this
 run offers a production watch, the ticket waits for the user's answer to that offer: it closes once
 they decline it, or once the watch ends "The time is up" with no new warning or error and its
 summary is posted. When no watch is offered, because nothing deploys, it closes now.
 
 ## Updating the backlog
 
-Once a proven report is posted, run `wrap-up-backlog` on what this PR shipped: the PR, its commits,
+Once the report is posted, run `wrap-up-backlog` on what this PR shipped: the PR, its commits,
 its ticket and the decisions it settled. Post none of it yourself, because a change to another
 ticket notifies the people watching it. Put its list in the final message as one numbered list:
 
@@ -291,6 +326,36 @@ ticket notifies the people watching it. Put its list in the final message as one
 None of them blocks anything: the change has shipped, and the backlog can wait for the user's
 answer. Once the user answers, post what they approved, and list every ticket changed with a link
 to each.
+
+## The epilogue
+
+Once the report is posted, the final message opens with a short summary: each part of the claim
+with its verdict, and the "Measured effect" table, so the user sees the deltas without opening the
+ticket. Then exactly one of these follows, chosen from the report by the first that applies:
+
+- **Something broken:** a disproved part of the claim, or a measured effect that regressed. The
+  ticket stays open. Offer two paths and wait for the user's choice: revert, or a follow-up fix
+  through `write-ticket-description`. A revert is the user's decision, never taken by this skill, as
+  above. Then send a Slack message, written for the team, saying what was learned and what happens
+  next: a ticket when the fix is known, or a call for discussion when it is not.
+- **The target not reached:** a measured effect short of its range, or a part of the claim the proof
+  could not observe. The ideal state the ticket targeted was not shown, so ask the user how the
+  ticket ends, and act on the answer: (a) close it as close enough, with a closing comment that
+  names the gap; (b) keep it open, and draft a follow-up task or a subtask of the ticket through
+  `write-ticket-description`, holding what the measurement showed and the gap it leaves; or (c)
+  close it as not achievable, with a closing comment giving the reasoning. Where an ideal-state
+  bullet still waits on another PR, the ticket stays open whatever the answer, and the answer is
+  posted as a comment so it is applied when that PR's proof closes the ticket. A measured effect
+  within its range or better is still announced in Slack, with the gap named.
+- **Everything proven, and each measured effect within its range or better.** The ticket closes as
+  "Posting the report" describes. Send a short Slack message announcing the result: what changed
+  for users, the before and after numbers, and links to the PR and the report. A result better than
+  expected gives the report's explanation, or says none was found.
+
+Every Slack message is sent only after the report is posted, links to it, and carries no figure the
+report does not. It goes to the channel in `$PRIVATE_SLACK_REPORT_CHANNEL`, the user's own, from
+which they forward what they choose. Where that variable is not set, no Slack message is sent or
+drafted: Slack is for work only, and the final message's summary carries the result.
 
 ## Cleaning up
 

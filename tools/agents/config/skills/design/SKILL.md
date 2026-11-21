@@ -22,8 +22,11 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
    ambiguous.
 2. Load `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md`,
    `~/.agents/standards/testing.md` and `~/.agents/standards/decision-making.md`. The last applies
-   because Phase 2 chooses between options. Also load any language-specific reference file that
-   applies to this codebase (`~/.agents/standards/rust.md`, `~/.agents/standards/python.md`, etc.).
+   because Phase 2 chooses between options. When the slice sets out to move a measurable outcome,
+   also load `~/.agents/standards/deployment.md` for its Should "A change made to move a measurable
+   outcome is judged against an expected range set before it ships". Also load any
+   language-specific reference file that applies to this codebase
+   (`~/.agents/standards/rust.md`, `~/.agents/standards/python.md`, etc.).
 3. Explore the codebase to understand:
    - Existing domain types and naming conventions
    - Existing testing patterns and what paradigms are already in use
@@ -220,7 +223,7 @@ the running system can already answer it. A question it can answer produces noth
 it cannot answer names one thing to record, and the entry states the question rather than the log
 line, so a later reader can tell when the record stops being worth keeping.
 
-Four sources of questions, beyond those the type story suggests on its own:
+Five sources of questions, beyond those the type story suggests on its own:
 
 1. **What each failure variant retains.** Phase 3 named this per variant, because it constrains the
    types. Carry those forward rather than re-deriving them, and check that what is retained answers
@@ -235,6 +238,11 @@ Four sources of questions, beyond those the type story suggests on its own:
    change, this slice records what that later decision reads: each kind of case the change would
    affect, with enough detail to fix it or reject it on purpose. The entry names the slice that
    reads it, and the record is removed when that slice ships.
+5. **What judges the change's effect.** Where the slice sets out to move a measurable outcome, the
+   question is how much it moved in production. When no production signal answers that with the
+   query the approach named, the entry is the signal, and it ships in an earlier PR, deployed
+   before the change, so a baseline exists to compare with. A slice in the change's own PR deploys
+   with the change and leaves no before reading. The entry names that PR.
 
 State for each entry: the question, why the system cannot answer it today, and the smallest thing
 that would let it. Where the answer needs a mechanism this slice does not own — an identifier that
@@ -364,6 +372,13 @@ sees how the change fits together to solve the problem:
    means*. When nothing needs a runtime check, the section is one line saying why.
 5. `## Telemetry 📡`: one line saying why nothing needs recording, or a list of the questions the
    running system cannot answer, each with what to record.
+   **Expected effect**, as a subsection of Telemetry, whenever the slice sets out to move a
+   measurable outcome, and left out otherwise. For each outcome: the query that measures it in
+   production; the baseline it returned, with how many runs and the spread between them; the
+   expected range after the change; and how the range was derived, from the baseline's spread and
+   the estimate behind the change. When no baseline exists yet, the design for the signal's PR says
+   so, and the change's own design is written once that PR's baseline is in, setting the range
+   before the change's PR opens. `merge-and-verify` measures the change against this subsection.
 6. `## Tests 🧪`: open with one sentence on what neither the types nor the assertions cover, which is
    why these need tests. Then a table with columns `Expectation` (one claim per row), `Property` and
    `Technique`, and after it one line per technique used, saying why it fits the behaviour it tests.

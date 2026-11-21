@@ -93,10 +93,11 @@ through merge to proof of its effect. It starts when I ask to merge a PR, or run
 when I say I merged one. It reads the deploy chain from the
 repo's docs, counts the change as serving only when the live artifact's commit contains the merge,
 and checks every five minutes or so in a fresh turn until the watch reaches one of its named
-endings. When the proof proves the whole claim, it posts the proof on the ticket, closes the ticket
-once every PR for it has a proven verdict, and lists the backlog changes what shipped calls for,
-posting only the ones I approve. When the proof disproves or can't observe part of the claim, it
-posts nothing and shows me the draft.
+endings. Whatever the proof's verdicts, it posts the proof on the ticket, with each measured effect
+set against the range expected before the change shipped, and lists the backlog changes what
+shipped calls for, posting only the ones I approve. It closes the ticket once every PR for it has a
+proven verdict. Then it ends the way the result calls for: a Slack message announcing a win, an
+offer to draft a follow-up task, or, when something broke, an offer to revert.
 
 [monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so,
 or every five while one of my pull requests has checks running or is undecided, for the pull
@@ -113,7 +114,7 @@ the entry points and reports whatever confused it or looked stale. It runs once 
 opens, so its fixes merge with the code, and, on a default branch or on any branch of a repo like
 this one that commits straight to `main`, once per session before asking for the last commit signal.
 [wrap-up-backlog](./tools/agents/config/skills/wrap-up-backlog/SKILL.md) does the same for the
-tracker's open tickets, and merge-and-verify runs it once its proven report is posted. Neither
+tracker's open tickets, and merge-and-verify runs it once its report is posted. Neither
 changes anything itself: whoever runs it acts on the list.
 
 [wrap-up](./tools/agents/config/skills/wrap-up/SKILL.md) ends a session with both passes, asking
