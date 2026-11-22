@@ -90,9 +90,18 @@ Before the first round, understand the intent of the changes:
 
 - If scope is a **branch**: run `git log origin/<BASE>..HEAD --oneline` (the `<BASE>` from Phase
   0.5) and read the PR description if one
-  exists (`gh pr view` — skip if no PR yet)
+  exists (`gh pr view <branch> -R <owner>/<repo>` — skip if no PR yet)
 - If scope is a **PR number**: fetch the PR description with `gh pr view <number> -R <owner>/<repo>`
 - If scope is a **file path**: read the file and any related context files
+
+Then set what every round passes to `review-code`:
+
+- **Base ref:** for a branch or PR, `git merge-base origin/<BASE> HEAD`; for file paths, `HEAD`.
+- **Diff command:** for a branch or PR, `git diff <Base ref>`; for file paths,
+  `git diff HEAD -- <files>`. Both compare the working tree, so each round after the first reviews
+  the code with the earlier rounds' uncommitted fixes in it.
+- **Reviewable file list:** the same command with `--name-only`, less what `review-code`'s Step 1
+  skip rules leave out.
 
 Also discover what quality checks this project has documented. Look for:
 
@@ -117,8 +126,9 @@ quality gate throughout the run.
 
 Maintain a **decided list** across all rounds: every finding that has been auto-fixed, escalated or
 noted with no action in a prior round. Before classifying findings each round, filter out anything
-already on the decided list. This keeps review agents fresh and unbiased (they see everything anew)
-while preventing the coordinator from re-presenting already-handled items.
+escalated or noted; a finding that returns after its auto-fix goes to Step C. This keeps review
+agents fresh and unbiased (they see everything anew) while preventing the coordinator from
+re-presenting already-handled items.
 
 Run up to **5 rounds**. Before each round, emit:
 
@@ -147,7 +157,8 @@ question about a claim it could not run).
 
 ### Step B — Classify Findings
 
-Filter out any finding already on the decided list. Then partition the remaining findings.
+Filter out any finding already escalated or noted in a prior round. A finding that matches one
+auto-fixed in a prior round goes to Step C. Then partition the remaining findings.
 
 **Sort by provenance first.** Before deciding auto-fix versus escalate, establish for each finding
 whether this change introduced it or whether it is already true on the base ref. The review agents
@@ -198,11 +209,13 @@ it, not whose change owns it.
 
 - Resolve all analytical sub-questions yourself by reading the code and tests, by running it when
   the question is how the code behaves (as `review-code`'s Step 3.5 runs it), or by a read-only
-  query (`gh api` GETs, ticket reads, another repo's config) when the answer lives outside the
-  repo. These need no approval. Never escalate "is this a bug?", "is this intentional?", or "does
-  X occur in production?" — answer those yourself and state your conclusion. The one exception
-  is a `?` row `review-code` returns for a claim it could not run: escalate it with what was
-  checked, and options that include asking the author. Otherwise only the _decision_ goes to the
+  query (`gh api` GETs, ticket reads, another repo's config, a GET against a deployed system)
+  when the answer lives outside the repo. A read-only query changes nothing and its output is
+  cited; running code stays local. These need no approval. Never escalate "is this a bug?", "is
+  this intentional?", or "does X occur in production?" — answer those yourself and state your
+  conclusion. The one exception is a `?` row `review-code` returns for a claim it could not run
+  and no read-only query settles: escalate it with what was checked, and options that include
+  asking the author. Otherwise only the _decision_ goes to the
   author.
 - Every escalated item must present ≥2 concrete lettered action options, each with a clear
   outcome. If you find yourself writing an option like "(a) No action — just confirming
@@ -218,8 +231,9 @@ Add all classified findings to the decided list.
 
 ### Step C — Check for Repetition
 
-Compare this round's auto-fix findings against prior rounds. A finding is **repeated** if the
-same issue at the same location appeared in a prior round after a fix was attempted.
+Step B sends here each finding that matches one auto-fixed in a prior round. A finding is
+**repeated** if the same issue at the same location appeared in a prior round after a fix was
+attempted.
 
 **One failed attempt = escalate.** Move it to the escalate bucket and add it to the decided list.
 
@@ -348,7 +362,6 @@ Leave a blank line before and after every diff block so items don't run together
   ```
 
 - Noted, no action: `file:line`: [what the author may want to know, and your conclusion]
-````
 
 - `file:line` — [issue] — [fix applied]
 
@@ -460,6 +473,7 @@ recurs] — close it by [a standing agent for X / a standard in
 
 All changes are uncommitted. Run `git diff` to review before committing.
 [N total files modified]
+````
 
 ---
 
@@ -485,8 +499,5 @@ All changes are uncommitted. Run `git diff` to review before committing.
   `Noted, no action:` line changes nothing, so it has no diff.
 - **One attempt per issue** — if a fix doesn't hold, escalate immediately rather than speculating.
 - **Split, don't bundle** — never hold a mechanical fix hostage to an unresolved design question.
-- **Decided list** — never re-present a finding the coordinator has already classified.
-
-```
-
-```
+- **Decided list** — never re-present a finding the coordinator has already escalated or noted. A
+  finding that returns after its auto-fix is a repeat, which Step C escalates.
