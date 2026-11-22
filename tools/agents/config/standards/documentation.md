@@ -19,9 +19,9 @@ outdated command signatures, removed flags, and superseded architecture
 descriptions don't exist after a merge.
 
 **Public interfaces are documented.**
-APIs, CLI commands, config keys, and exported types have documentation
-describing what they do, what they accept, and what they return. A caller
-can use them without reading the implementation.
+Every interface a caller uses, such as an API or a CLI command, has documentation
+describing what it does, what it accepts, and what it returns. A caller
+can use it without reading the implementation.
 
 **Non-obvious code has a comment explaining why.**
 Hidden constraints, subtle invariants, workarounds for specific bugs, and
@@ -32,11 +32,12 @@ not explained — well-named identifiers do that.
 Reasons, rejected options, constraints, traps and procedures belong in prose. A
 fact that code, configuration or a canonical external page already states is
 linked, not copied, because a copy goes stale at the next change to its source. An identifier a
-command needs in order to run is part of the command, not a copy.
+command needs in order to run is part of the command, not a copy. A value quoted to show how a
+figure was worked out links its source.
 
 **Recorded facts name their source.**
-A figure, limit, quota, or quoted behavior carries where it came from — vendor
-documentation, a specification, source code, a measurement. That includes a comment in code or
+A figure, limit, quota, or quoted behavior carries where it came from, such as the page, file or
+measurement it was read from. That includes a comment in code or
 config that states what a third-party tool does with a setting: the comment cites the doc page or
 source file that says so, and the claim was checked there, not recalled. Where the docs are silent,
 the tool's source decides.
@@ -92,8 +93,8 @@ change the constant, re-add the dependency — what ships is the instruction not
 to, and the constraint that makes it so. Not the account of what went wrong
 when someone did.
 
-**A command or procedure a doc presents as working has been run as written, did what the doc says,
-and the doc names every effect it has.**
+**A command or procedure a doc presents as working was run as written and did what the doc says,
+and the doc names all of its effects.**
 Running without an error is not the bar. A command can succeed and then be undone by something else
 that owns the same state, such as a controller that reconciles to a declared spec, or it can change
 more than the doc says. Before a doc that gives one is committed, its commands are run against the
@@ -128,10 +129,8 @@ surface that never received its entry is as wrong as one that went stale.
 The reasoning and the rejected options sit in one decision record, except for a
 decision taken on the spot under the decision-making standard's triage, whose
 commit message is its record. What the
-decision commits the project to sits wherever that commitment is checked: a
-rule for reviewers in the standards, a new way to run something in the run
-instructions, a misleading half-finished state in whatever file warns about
-those. Each of those entries links to the record rather than restating its
+decision commits the project to sits wherever that commitment is checked, such as the standards
+for a rule reviewers apply. Each of those entries links to the record rather than restating its
 reasoning. A decision recorded only as a record binds only the people who
 think to open it, and one restated in full in several places drifts into
 versions that disagree.
@@ -145,12 +144,11 @@ reader has them improvise a write against production.
 
 **A step that changes a production system says how to tell it worked and how to undo it.**
 The reader is told what to look at and what it shows once the step has taken effect, and which
-step reverses it, through whatever owns the state.
+step reverses it.
 
 **A procedure run against production states how long it takes and what serves while it runs.**
 A reader choosing between procedures under time pressure needs the time each takes on its slowest
-path, and what users get meanwhile. The figure names its source like any other, and a figure
-derived from configuration links the file it comes from rather than copying its values.
+path, and what users get meanwhile.
 
 **A doc needed during an incident is one link from the repo's entry points.**
 Whatever a reader needs while production is failing lives in the README or the agent context file,
@@ -177,9 +175,9 @@ to show it, because the path that breaks it is usually one the writer did not th
 
 **Prose is followed in one pass, forward, without backtracking.**
 A reader who reaches the third paragraph and has to return to the first has been
-failed, however short the piece is. Length is not the measure. Draft it as you
-would say it aloud, then write that: speech keeps one idea per sentence in the
-order the reader needs them, joined by the words that carry the logic. Those
+failed, however short the piece is. Length is not the measure. Prose reads the way it
+would be said aloud. Speech keeps one idea per sentence, in the order the reader needs them, joined
+by the words that carry the logic. Those
 joining words and the distinctions an argument turns on are structure, not
 padding — cutting them leaves assertions the reader has to reassemble.
 
