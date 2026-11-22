@@ -1,47 +1,48 @@
 # Testing
 
-Tests are trustworthy when they fail for the right reasons, pass for the right
-reasons, and cover the behaviors that matter most.
+Tests are how a team knows the code still does what it is for. At their maximum:
+
+- **Safety:** the suite fails whenever a behavior it covers breaks and passes only when it holds, so
+  a passing run is evidence.
+- **Performance:** the suite gives that answer as fast as the work allows. Tests run in parallel,
+  wait on events rather than the clock, and build what never changes once.
+- **Experience:** a failing test's name says what broke, and a reader learns what the system does
+  from the test names alone.
 
 ## Must
 
 **Tests verify behavior, not implementation.**
-Assertions are on outcomes observable by a caller — return values, side
-effects, error types. Internal state, private methods, and call counts are
+Assertions are on outcomes observable by a caller, such as a return value or an error type.
+Internals, such as private methods or call counts, are
 not asserted unless they are the observable contract.
 
 **Passing tests are meaningful.**
-A test that always passes regardless of what the code does provides no value.
-Every assertion can fail, and would fail if the behavior it covers were broken.
-A test written after the code it covers has not demonstrated that by passing, so
-it is confirmed against a deliberate break — a condition inverted, a term
-dropped, a constant returned — and the confirmation is that the right test fails
-and names the right thing. The break is made in the code the test's name or
-docstring says it guards. A setup that never produces the condition that code
-handles passes whatever the code does: a test session shared across requests
-shows writes that were never committed, a fixture that raises before writing
-anything cannot show a rollback, and a check run where the environment never
-holds the value it guards against has nothing to catch. A property the types
-make impossible needs no test of its own, and a deliberate break of it is
-confirmed when the type checker rejects it. An assertion does not replace a
-test: a property an assertion guards is tested too, and generated inputs that
-drive the code until the assertion fires are among the strongest of those tests.
+A test that always passes regardless of what the code does provides no value. Every assertion can
+fail, and would fail if the behavior it covers were broken. A test written after the code it covers
+has not demonstrated that by passing, so it is confirmed against a deliberate break, such as an
+inverted condition or a returned constant, and the confirmation is that the right test fails and
+names the right thing. The break is made in the code the test's name or docstring says it guards. A
+setup that never produces the condition that code handles passes whatever the code does. Many setups
+never produce it: a test session shared across requests, for example, shows writes that were never
+committed. A property the types make impossible needs no test of its own, and a deliberate break of
+it is confirmed when the type checker rejects it. An assertion does not replace a test: a property
+an assertion guards is tested too, and generated inputs that drive the code until the assertion
+fires are among the strongest of those tests.
 
 **A check whose selection matches nothing fails, unless its input is legitimately empty there.**
 A test runner, linter or type checker aimed at a glob, a directory or a config
 condition reports success when that selection matches nothing, and the success
 looks the same as a real pass. So an empty selection is a failure: the tool's
-own signal is used where it has one (pytest exits 5 when it collects no tests),
-and a guard runs ahead of the tool where it has none (ruff and ty exit 0 on a
-path with no Python files).
+own signal is used where it has one, such as a test runner's exit code for collecting nothing, and
+a guard runs ahead of the tool where it has none.
 
 This is about a selection that came up empty by mistake. A check whose input is
 legitimately empty in some environment, such as a machine with nothing
 configured, says it skipped and why instead of failing.
 
 **Critical paths have test coverage.**
-Authentication, authorization, payment flows, data integrity operations, and
-error handling paths are tested. The absence of tests here is a defect.
+Paths where a failure does harm, such as authentication, payments or data integrity, are tested. The
+absence of tests here is a defect.
 
 **A change that deletes or replaces tests keeps each property they checked, or says why it drops
 it.**
@@ -50,18 +51,15 @@ and nothing fails to show it, because the test that would have failed is gone.
 So for each removed test, assertion or expected-value helper, the change names
 the test that now checks the same property for the same inputs, or states in
 the commit or PR why the property no longer needs checking. "The new tests
-replace the old ones" is not a reason; one property at a time is. Seen on a
-work PR: a module-ownership check was
-dropped because a new table "covers each route", but the table's module field
-defaulted to none, so a route under a dormant prefix could ship ungated.
+replace the old ones" is not a reason; one property at a time is.
 
 ## Should
 
 **Test names describe behavior in domain terms.**
 A test name is documentation — it states what the system does in language the
 domain recognizes. `subscription_expires_after_trial_period` is domain
-documentation. `process_user_data` is not. A failing test name alone should
-tell a reader what broke without reading the test body.
+documentation. `process_user_data` is not. A failing test's name alone
+tells a reader what broke without reading the test body.
 
 **Each test covers one behavior.**
 A test has one reason to fail. Multiple unrelated assertions in a single test
@@ -90,17 +88,17 @@ takes a body fails until it has one.
 
 **Tests span every dimension the behavior varies along.**
 Inputs are one dimension: happy path, empty input, boundary values and error conditions are all
-represented. Others are who is acting (a role or account type), how the system is configured (each
-state of a flag the code reads), and when the data was written (before the change, or by an older
-version). Each value of each dimension is covered, and so is each combination the code makes
-interact. A combination left out is named as not covered. Parametrization is used when the same
-behavior holds across a range of values.
+represented. Other dimensions include who is acting (a role or account type), how the system is
+configured (each state of a flag the code reads), and when the data was written (before the change,
+or by an older version). Each value of each dimension is covered, and so is each combination the
+code makes interact. A combination left out is named as not covered. Parametrization is used when
+the same behavior holds across a range of values.
 
 **A generator produces the inputs that exercise the behaviour under test.**
 A property test whose generator rarely reaches the branch in question passes
 identically against correct and broken code, while reading as the strongest test
-in the suite. Generators are shaped toward the region that matters — the long
-input, the empty one, the one dense with separators — and the shaping is
+in the suite. Generators are shaped toward the region that matters, such as the long
+input or the empty one, and the shaping is
 confirmed the same way as any other test, by watching it fail against a
 deliberate break.
 
@@ -125,33 +123,29 @@ total run time fails on a loaded machine while the code is correct, because the 
 concurrent and serial times is usually small next to the slowdown a busy machine adds. The test is
 shown to fail against a version of the code changed to run the units one at a time.
 
+**A test waits for the event it needs, not for a fixed time.**
+A fixed sleep is too short on a loaded machine and too long everywhere else, so the test is both
+flaky and slow. The test waits on the signal that the work is done, such as a message, a file or a
+state change, with a bound of its own.
+
 **Test code is held to the same standard as production code.**
 Duplicated setup is extracted to fixtures or helpers. Names are as descriptive
 as in production code. Dead test code is removed.
 
-**Conditions that can be asserted at runtime are asserted as well as tested.**
-A test covers the inputs its author imagined; an assertion covers the inputs
-production supplies. A condition that must always hold is asserted at its site
-and tested for the cases worth naming, rather than left to tests alone, which
-see only synthetic data. Which conditions are assertions, which belong in
-validation at an I/O boundary, and which are returned as errors is set out in
-`correctness.md`.
 
 **Mocks are used only at system boundaries.**
-Real objects are used wherever possible. Mocks are reserved for external APIs,
-time, randomness, and other true system boundaries. Excessive mocking
+Real objects are used wherever possible. Mocks are reserved for true system
+boundaries, such as external APIs, time and randomness. Excessive mocking
 disconnects tests from real behavior and masks integration failures.
 
 For HTTP API boundaries specifically, a fake HTTP server is preferred over a
 trait-based mock — it exercises URL construction, headers, and serialization,
 not just call presence.
 
-Some behaviour cannot be exercised in-process at all. Anything that depends on
-a connection staying open — streaming, timeouts, backpressure, reconnection,
-a stall that never raises an error — needs a real server and a real connection,
-because an in-process request helper completes immediately by construction. A
-test that appears to cover a stream but never holds one open passes for the
-wrong reason.
+Some behaviour cannot be exercised in-process at all. Anything that depends on a connection staying
+open, such as streaming, a timeout or a stall that never raises an error, needs a real server and a
+real connection, because an in-process request helper completes immediately by construction. A test
+that appears to cover a stream but never holds one open passes for the wrong reason.
 
 **The urge to mock a non-boundary component is a signal that logic is in the wrong layer.**
 When testing requires mocking something that isn't a true system boundary, the logic
@@ -171,34 +165,31 @@ code that does not.
 **Code that reads another system's payload is run against a payload that system actually sent, not
 only its documented example.**
 A vendor's example is written separately from the code that sends the payload,
-and the two drift. Google's documented Cloud Monitoring webhook example spells a
-link's fields `url` and `displayName`, while real deliveries send `URL` and
-`DisplayName`. A transform, parser or mapping tested only against the example
+and the two drift. A vendor's example and its real deliveries can differ, such as in a field's
+spelling or casing. A transform, parser or mapping tested only against the example
 passes, then reads nothing from the field that differs, and a fallback value
 hides the miss. So before its output is relied on, the code is run once on a
 real payload, captured from the receiving side or a log. That payload is kept
 beside the code's tests wherever it holds no secrets or personal data.
 
 **A test of what a log line holds reads the line through the formatter the app writes it with.**
-A test runner's capture of log records, such as pytest's `caplog`, keeps each
+A test runner's capture of log records keeps each
 raw record and formats it with the runner's own formatter. Whatever the app's
 formatter does, redacting a value or adding or dropping a field, never reaches
 it. A test that reads the capture can pass while the app writes a value it means
 to keep out, and fail when the app's formatter correctly removes one. So the
 test formats each captured record with the app's formatter, or reads what the
-running process wrote. Seen in a work PR:
-once redaction moved into the JSON formatter, two `caplog` tests read the
-unredacted address and token.
+running process wrote.
 
 ## Consider
 
 **Flakiness risk is minimized.**
-Tests that depend on timing, execution order, or external state are identified
-and either fixed or explicitly marked. Async operations are awaited, not raced.
+Tests that depend on something outside their control, such as timing or execution order, are
+identified and either fixed or explicitly marked. Async operations are awaited, not raced.
 
 **Plain helpers are preferred over framework abstractions.**
 Test setup lives in plain functions unless the framework provides something
-those functions cannot — lifecycle hooks, shared fixtures with teardown. The
+those functions cannot, such as lifecycle hooks. The
 simpler form is chosen by default.
 
 ## In scope
