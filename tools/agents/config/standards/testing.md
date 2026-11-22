@@ -14,7 +14,8 @@ Tests are how a team knows the code still does what it is for. At their maximum:
 **Tests verify behavior, not implementation.**
 Assertions are on outcomes observable by a caller, such as a return value or an error type.
 Internals, such as private methods or call counts, are
-not asserted unless they are the observable contract.
+not asserted unless they are the observable contract. A call made across a system boundary, such as
+a charge sent to a payment provider, is part of the observable contract, so asserting it is allowed.
 
 **Passing tests are meaningful.**
 A test that always passes regardless of what the code does provides no value. Every assertion can
@@ -22,14 +23,15 @@ fail, and would fail if the behavior it covers were broken. A test written after
 has not demonstrated that by passing, so it is confirmed against a deliberate break, such as an
 inverted condition or a returned constant, and the confirmation is that the right test fails and
 names the right thing. The break is made in the code the test's name or docstring says it guards. A
-setup that never produces the condition that code handles passes whatever the code does. Many setups
+setup that never produces the condition the code handles passes whatever the code does. Many setups
 never produce it: a test session shared across requests, for example, shows writes that were never
 committed. A property the types make impossible needs no test of its own, and a deliberate break of
 it is confirmed when the type checker rejects it. An assertion does not replace a test: a property
 an assertion guards is tested too, and generated inputs that drive the code until the assertion
 fires are among the strongest of those tests.
 
-**A check whose selection matches nothing fails, unless its input is legitimately empty there.**
+**A check whose selection matches nothing fails, unless its input is legitimately empty in that
+environment.**
 A test runner, linter or type checker aimed at a glob, a directory or a config
 condition reports success when that selection matches nothing, and the success
 looks the same as a real pass. So an empty selection is a failure: the tool's
@@ -74,7 +76,8 @@ table written that way rather than generated from the code's answers, since a ge
 copies today's mistakes into the expectation. A table drafted with help, from an agent or a
 document, counts only once each row has been checked against a source the code does not read. A
 snapshot or golden-file test, which exists to detect change rather than to define correct output,
-is the exception.
+is the exception, and it still meets the Must on meaningful tests because it fails whenever the
+output changes.
 
 **A check that expects an access refusal sends a request that passes validation, so the refusal
 comes from the access check and not from the parser.**
@@ -112,15 +115,13 @@ A stub executable with fixed content, or a fake tool that reads its answers from
 writes, is written once per test class or module, in a folder made read-only so that no test can
 change what another one runs. Everything a test writes to, such as its home directory, logs and
 response tables, stays in that test's own temporary directory. Rebuilding the unchanging parts for
-every example multiplies a property test's cost by its example count, and on a machine running
-endpoint security a newly written executable is slow to start the first time, so a stub written per
-example can cost more than the code under test.
+every example multiplies a property test's cost by its example count.
 
-**A test that concurrent work overlaps observes the overlap, not the elapsed time.**
+**A test that checks concurrent work ran together observes the overlap, not the elapsed time.**
 Each concurrent unit records that it started, then waits, up to a bound of its own, until the
 others have started too, so the test passes only when they really ran together. A bound on the
-total run time fails on a loaded machine while the code is correct, because the gap between the
-concurrent and serial times is usually small next to the slowdown a busy machine adds. The test is
+total run time fails on a loaded machine while the code is correct, because a busy machine can slow
+both runs by more than the gap between them. The test is
 shown to fail against a version of the code changed to run the units one at a time.
 
 **A test waits for the event it needs, not for a fixed time.**
@@ -138,28 +139,27 @@ Real objects are used wherever possible. Mocks are reserved for true system
 boundaries, such as external APIs, time and randomness. Excessive mocking
 disconnects tests from real behavior and masks integration failures.
 
-For HTTP API boundaries specifically, a fake HTTP server is preferred over a
-trait-based mock — it exercises URL construction, headers, and serialization,
-not just call presence.
+For HTTP API boundaries specifically, a fake HTTP server is preferred over an
+interface-based mock, because it exercises what the request carries, such as its URL, headers and
+body, not just that a call happened.
 
 Some behaviour cannot be exercised in-process at all. Anything that depends on a connection staying
 open, such as streaming, a timeout or a stall that never raises an error, needs a real server and a
-real connection, because an in-process request helper completes immediately by construction. A test
-that appears to cover a stream but never holds one open passes for the wrong reason.
+real connection, because an in-process request helper can return the whole response without ever
+holding a connection open. A test that appears to cover a stream but never holds one open passes for
+the wrong reason.
 
-**The urge to mock a non-boundary component is a signal that logic is in the wrong layer.**
+**Logic a test can reach only by mocking a non-boundary component sits in the wrong layer.**
 When testing requires mocking something that isn't a true system boundary, the logic
 being tested belongs one layer closer to the pure core. Moving it there makes it
 directly testable without mocks and reveals the correct architectural boundary.
 
-**More powerful techniques are used where they fit.**
-Property-based testing applies when a behavior holds for a large or unbounded
-input space. Snapshot testing applies for serialized structures or rendered
-output. Mutation testing applies when confidence in a suite's sensitivity is
-low. Generated-input techniques compound with assertions in the code under
-test: every generated case exercises those assertions too, so one run covers
-the properties the test states plus every invariant the implementation
-asserts. Code that asserts its invariants is worth more generator effort than
+**Testing techniques suited to the behavior are used where they fit.**
+Such techniques include property-based testing for a large or unbounded input space, snapshot
+testing for serialized or rendered output, and mutation testing where the suite's sensitivity is in
+doubt. Generated inputs also exercise the assertions in the code under test: every generated case
+that reaches one checks it, so one run covers the properties the test states and the invariants the
+code asserts along its path. Code that asserts its invariants is worth more generator effort than
 code that does not.
 
 **Code that reads another system's payload is run against a payload that system actually sent, not
@@ -175,7 +175,7 @@ beside the code's tests wherever it holds no secrets or personal data.
 **A test of what a log line holds reads the line through the formatter the app writes it with.**
 A test runner's capture of log records keeps each
 raw record and formats it with the runner's own formatter. Whatever the app's
-formatter does, redacting a value or adding or dropping a field, never reaches
+formatter does, such as redacting a value, never reaches
 it. A test that reads the capture can pass while the app writes a value it means
 to keep out, and fail when the app's formatter correctly removes one. So the
 test formats each captured record with the app's formatter, or reads what the
