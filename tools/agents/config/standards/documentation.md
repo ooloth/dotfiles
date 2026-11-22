@@ -48,18 +48,16 @@ measured one, and decisions get built on it.
 
 **A recorded absence rests on two sources that agree.**
 A claim that something is absent, such as "no errors in the logs", is a fact
-like any other, and one empty result supports them less than it seems to. A
-feed that has not been populated yet, a filter the source silently ignored, a
-query aimed at the wrong place and a request that failed without saying so all
-return the same empty answer as a true absence. So an absence is recorded only
+like any other, and one empty result supports it less than it seems to. Many
+failures return the same empty answer as a true absence, such as a filter the source silently
+ignored or a query aimed at the wrong place. So an absence is recorded only
 when an independent second source agrees, or with the reason only one source
 exists. Where two sources disagree, both are recorded and the disagreement is
 the finding.
 
 **Comments and documents describe the present, never the past.**
-What a value used to be, what a rule replaced, which record was removed, what
-an earlier pass got wrong, how far along the work is, when the content expires —
-none of it is visible to a reader of the current state, and all of it competes
+Anything about the past or the schedule, such as what a value used to be or how far along the work
+is, is invisible to a reader of the current state, and all of it competes
 with the instruction for their attention. Version control holds the past;
 whatever tracks work holds the schedule.
 
@@ -88,10 +86,9 @@ were not in. The two look alike and only one survives. A measurement's date is t
 says when the figure was read.
 
 **History survives only as a forward-facing instruction.**
-Where a reader lacking context would do the wrong thing — delete the guard,
-change the constant, re-add the dependency — what ships is the instruction not
-to, and the constraint that makes it so. Not the account of what went wrong
-when someone did.
+Where a reader lacking context would do the wrong thing, such as deleting a guard, what ships is the
+instruction not to, and the constraint that makes it so. Not the account of what went wrong when
+someone did.
 
 **Every command or procedure a doc says works has been shown to do what the doc says.**
 Running without an error is not the bar. A command can succeed and then be undone by something else
@@ -112,8 +109,8 @@ named in the doc.
 Docs are read and edited as plain text far more often than rendered, and a
 markdown table there is alignment padding nobody maintains: editing one cell
 means re-padding its row, a formatter re-pads the whole block, and a one-word
-change surfaces as a rewrite of every line. Grep reads paragraphs and lists
-and mangles table rows. The exceptions are a lookup whose every row fits inside
+change surfaces as a rewrite of every line. A line search reads paragraphs and
+lists and mangles table rows. The exceptions are a lookup whose every row fits inside
 the wrap width — an index, a key map — where scanning down a column is the point,
 and output read rendered and not edited afterwards, such as a ticket comment or
 PR description.
@@ -123,7 +120,8 @@ PR description.
 **Behavior appears in the right doc surfaces.**
 Each behavior appears on every surface where a reader looks for it, such as a flag in help text or
 a config key in the example config. Each surface gets its entry in the same change as the behavior
-it describes, so none is left without one.
+it describes, so none is left without one. A surface that has gone stale falls under the Must that
+docs reflect current behavior. This claim covers one that never got its entry.
 
 **A decision reaches every reader it binds, each in the place that reader looks.**
 The reasoning and the rejected options sit in one decision record, except for a
@@ -158,7 +156,6 @@ or one link from them, so a reader who starts where everyone starts reaches it i
 Every value the reader would otherwise look up is filled in, or the doc says exactly where to get
 it. A placeholder with no source sends the reader to guess, and a guess aimed at the wrong target
 runs without complaint. Illustrative values in examples that run against nothing are out of scope.
-A code sample runs as pasted.
 
 **A check a procedure asks the reader to run can be seen to fail.**
 A step that has the reader compare an answer with an expected one is a test run by hand, and the
@@ -182,11 +179,17 @@ by the words that carry the logic. Those
 joining words and the distinctions an argument turns on are structure, not
 padding — cutting them leaves assertions the reader has to reassemble.
 
+**A list of examples says it is examples, and the general idea comes first.**
+A reader takes an unmarked list as the whole set and stops looking past it. Stating the general
+idea first, then a few cases introduced with a phrase such as "such as", tells them the list is a
+start.
+
 **A diagram shows what prose would have to describe one piece at a time.**
 When understanding a change means holding several parts in mind at once, such
 as actors exchanging messages, states and the transitions between them, or
 components and what depends on what, a diagram shows them together where prose
-makes the reader assemble them. The form follows the question the reader has:
+makes the reader assemble them. The form follows the question the reader has. These are examples,
+not a complete list:
 
 - Who talks to whom, and in what order: a sequence diagram
 - What states a thing can be in, and what moves it between them: a state diagram
@@ -196,7 +199,7 @@ makes the reader assemble them. The form follows the question the reader has:
 - What happens in what order during a rollout or migration: a timeline
 - How a value changes shape from input to output: a data-flow diagram
 
-These are examples, not a complete list. Where the content is a set of
+Where the content is a set of
 combinations, such as options scored against properties or inputs mapped to
 outcomes, a table shows it better than a diagram, wherever the claim on tables allows one. Where
 a change alters a structure, a before and after pair shows the change itself. A diagram is
@@ -211,10 +214,9 @@ wherever it is not rendered. At 100 columns or
 less, a diagram does not wrap in a narrow terminal or comment pane.
 
 **Statements are unhedged, and what is uncertain is recorded as an open question.**
-Caveats woven through prose — no evidence for this, unverified assumption, not
-measurable yet — weaken every sentence around them while making none of it
-actionable. The same content, stated as an open question somewhere a reader
-looks for open questions, becomes work someone can pick up.
+Caveats woven through prose, such as "not verified yet", weaken every sentence around them while
+making none of it actionable. The same content, stated as an open question somewhere a reader looks
+for open questions, becomes work someone can pick up.
 
 **An invariant a machine could check is checked by a machine, not asserted in prose.**
 Documentation and agent instructions are where unchecked invariants collect. An assertion in a doc
@@ -253,21 +255,18 @@ convention until it is rewrapped in a commit of its own, so no diff mixes the tw
 When the project maintains a changelog, additions, removals, and breaking
 changes to user-facing behavior have an entry.
 
-**Diagrams reflect current architecture.**
-Visual representations of system structure, data flow, or component
-relationships are updated when the structure they depict changes.
 
 ## In scope
 
 - README.md at any level
 - .md files under docs/, .claude/, or similar doc directories
-- Module-level doc comments (//! blocks, docstrings at file tops)
+- Module-level doc comments, such as a docstring at the top of a file
 - Inline comments, for the standards that name comments, such as whether a comment explains a
   non-obvious why
 - Ticket comments and PR descriptions, for the diagram and table standards
 
 ## Out of scope
 
-- Illustrative paths (path/to/your/config.toml, \<owner\>/\<repo\>)
+- Illustrative paths, such as path/to/your/config.toml
 - Commands in sections explicitly marked as planned or not yet implemented
 - External URLs
