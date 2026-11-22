@@ -1,6 +1,6 @@
 ---
 name: write-progress-update
-description: Draft a short Slack message summarizing progress on a work project over a period of time, gathered from Jira, GitHub and Slack. Use when the user asks for a progress update, status update or "what we did and what's next" message. Saves a Slack draft for the user to review; never sends.
+description: Draft a short Slack message summarizing progress on a work project over a period of time, gathered from Jira, GitHub and Slack. Use when the user asks for a progress update, status update or "what we did and what's next" message. Posts it only to the user's own channel, where they finalize it before posting it where it belongs.
 ---
 
 # Write a progress update
@@ -29,9 +29,9 @@ title's main words without quotes. Titles drift between posts ("update" or "upda
 confirm a match by its shape: a title line followed by one or more numbered lists. Use the title as
 the user gives it now, even if earlier posts worded it differently.
 
-The user's DM to themselves is a scratchpad for drafts. Nothing in it is ever a source or a
-previous update. Add `-in:<@U…>`, with the user's own Slack user ID, to the filters of every Slack
-search in this skill, which excludes that DM from the results.
+Read the `use-slack` skill before the first Slack call, and again before each later one. Its rule
+on the user's DM to themselves applies to every search here, so nothing in that DM is a previous
+update.
 
 Read the last two updates in full, with their thread replies. What they or their replies reported
 is already reported; match items to them by ticket key, not by title, because tickets get renamed.
@@ -63,8 +63,7 @@ itself and spawn no subagents. Tell each:
   mentioned
 - for Slack: read the named channels, and also search all channels and DMs for the topic's key
   words and the names of systems in scope, since decisions and plans are often discussed in DMs
-- to add `-in:<@U…>` with the user's Slack user ID to every Slack search, and to ignore the user's
-  DM to themselves entirely
+- for Slack: to read the `use-slack` skill before its first Slack call
 
 Each returns findings, each with:
 
@@ -160,8 +159,7 @@ _<One sentence on the roadmap after Next up, pointing to the thread reply if the
 - A PR is a fine link when no ticket covers the item.
 - Every update is written in the same plain voice, whoever is in the channel. Name a system when
   its name is the clearest way to say what changed, and let the outcome lead.
-- Write standard markdown: links as `[text](url)`, mentions as `<@U…>`. Mention only people whose
-  Slack user ID you have, and use their name without `@` otherwise.
+- Format links, emphasis and mentions as `use-slack` describes.
 - Next up covers about the next week. The closing line below it then sums up, in one sentence,
   the rest of the roadmap after that week, from the user's plan when there is one and otherwise as
   your guess, which you tell the user. When a thread reply holds the full plan, the closing
@@ -191,20 +189,14 @@ to phrase, not what to say.
   provider's default sender, which should make it less likely for them to land in spam _(<@U…> is
   working on this)_"
 
-## 6. Save it as a Slack draft
+## 6. Post it to the user's own channel
 
-Save the draft with `slack_send_message_draft` in the user's DM to themselves, never in the
-destination channel. Slack keeps one draft per channel, and the tool cannot replace or delete
-one. If a draft already exists there, ask the user to delete it and save once they say they have;
-when the user asks for a revision, say this before they need to. Tell the user where the draft is
-and that nothing was sent. Never send or schedule a message.
+Post the update to the channel whose ID is in `$PRIVATE_SLACK_REPORT_CHANNEL`, the user's own
+channel, where they finalize each message before posting it where it belongs. Invoking this skill
+approves that destination. Never post to the destination channel or anywhere else, and never
+schedule a message. When the variable is unset, show the update in the terminal and post nothing,
+as `use-slack`'s "Work only" describes.
 
-If the user marked detail for a thread reply, show it in the terminal and ask them to say when
-they have posted the main message. Then find it: look for messages from the user in the
-destination channel and in their DM to themselves, where users often post first to see how it
-renders, posted after the draft was saved, whose first line is the series title. Read the DM with
-`slack_read_channel`; this is the one use of that DM, and it is not a source. When the match is in
-the DM, remind the user that a thread draft saved there does not move with the message. Show
-the user its permalink and first line and ask them to confirm it. Save the thread reply with
-`slack_send_message_draft` and that message's `thread_ts` only after they confirm. If no message or
-more than one matches, ask the user for the link instead.
+If the user marked detail for a thread reply, post it as a reply to that message, with its
+`thread_ts`. Then give the user the message's permalink and the destination channel it is meant
+for.

@@ -684,6 +684,8 @@ Skip and say nothing if execution went smoothly.
 - `rex` - NEVER run a `rex` command without first invoking the `use-rex` skill
 - Jira (the Atlassian MCP tools and `acli`) - NEVER call a Jira tool, reads included, without first
   invoking the `use-jira` skill
+- Slack (the Slack MCP tools) - NEVER call a Slack tool, reads included, without first invoking the
+  `use-slack` skill
 - YouTube - NEVER read a YouTube video's content without first invoking the `use-youtube` skill
 - **Doing something later in this session:** a one-shot `CronCreate` at the wall-clock time, on a
   minute other than :00 or :30, with the whole instruction in its prompt. It fires only while this
