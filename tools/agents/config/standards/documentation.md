@@ -13,7 +13,8 @@ rest of it, as `decision-making.md` defines them. At its maximum:
 
 ## Must
 
-**Existing docs reflect current behavior.**
+**Docs reflect current behavior.**
+A doc says only what is true of the system it describes, whether it is new or already in the repo.
 When behavior changes, the docs that describe it change too. After a merge, no doc still describes
 behavior the merge changed, such as a removed flag or an outdated command signature. A doc that
 describes something another repo or system owns is checked against that source whenever the doc is
@@ -31,7 +32,7 @@ not explained — well-named identifiers do that.
 
 **A doc or comment holds only what its source of truth cannot say.**
 What only a person can say, such as a reason, a rejected option or a trap, belongs in prose. A
-fact that code, configuration or a canonical external page already states is
+fact its source already states, such as code or a canonical external page, is
 linked, not copied, because a copy goes stale at the next change to its source. An identifier a
 command needs in order to run is part of the command, not a copy. A value quoted to show how a
 figure was worked out links its source.
@@ -111,7 +112,7 @@ markdown table there is alignment padding nobody maintains: editing one cell
 means re-padding its row, a formatter re-pads the whole block, and a one-word
 change surfaces as a rewrite of every line. A line search reads paragraphs and
 lists and mangles table rows. The exceptions are a lookup whose every row fits inside
-the wrap width — an index, a key map — where scanning down a column is the point,
+the wrap width, such as an index or a key map, where scanning down a column is the point,
 and output read rendered and not edited afterwards, such as a ticket comment or
 PR description.
 
@@ -165,10 +166,10 @@ reports a failure. A step whose failure cannot occur reports a pass whatever the
 reader who trusts it stops looking where the fault is. The usual cause is a default that answers
 every input the same way, such as a server that returns one page for every path it has no file for.
 
-**Absolute claims hold for every path, mode, environment and input.**
+**Absolute claims hold for every case that could break them.**
 A sentence that makes an absolute claim about a system, with a word such as only, every or never,
-holds for the other paths, modes, environments and inputs that could break
-it. An absolute is the kind of claim most often false with nothing in the text
+holds for every other case that could break it, such as another mode, a slow clock or an unusual
+input. An absolute is the kind of claim most often false with nothing in the text
 to show it, because the path that breaks it is usually one the writer did not think of.
 
 **Prose is followed in one pass, forward, without backtracking.**
@@ -225,7 +226,7 @@ maintainers to always or never do something is a check with no runner and no sig
 Both read as settled and neither is. Each one either has a runner or states why it cannot have one.
 
 How it runs is a separate choice: whichever mechanism is most reliable and deterministic for the
-case, a type, a lint rule or a test among them. Several mechanisms are paired where together they
+case, such as a type, a lint rule or a test. Several mechanisms are paired where together they
 catch what one would miss.
 
 Docs and non-deterministic inference are good places to discover invariants worth checking, and a

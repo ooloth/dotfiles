@@ -1,49 +1,63 @@
 # Correctness
 
-Code is correct when it faithfully implements its stated intent across all
-inputs, states, and callers.
+Correctness belongs to safety: code that does the wrong thing harms whoever relies on it, and code
+that does it quietly harms them longest. At its maximum:
+
+- **Safety:** for every input, state and caller, the code does what its stated intent says, and
+  when an assumption it depends on fails, it stops there and names the assumption rather than
+  producing a plausible wrong result.
+- **Performance:** keeping code correct costs nothing a user can notice. Checks run as early as the
+  toolchain allows, at build time where possible, and a runtime assertion costs less than the wrong
+  answer it stops.
+- **Experience:** a reader can tell what the code promises from the code itself, through its types,
+  assertions and names, and a mistake shows up at the earliest moment something can catch it.
 
 ## Must
 
 **Logic covers all meaningful branches.**
-Conditionals, loop bounds, and comparisons are exact. Off-by-one errors don't
+Every condition, bound and comparison is exact. Off-by-one errors don't
 exist. Every reachable branch is handled.
 
 **Edge cases are handled.**
-Empty collections, null/None/zero, single-element inputs, and boundary values
+Edge cases, such as an empty collection, a missing value or a boundary value,
 produce defined behavior. Edge-case behavior matches general-case behavior
 unless the difference is deliberate.
+
+**Numbers keep their meaning through every calculation.**
+A calculation that could overflow, lose precision or mix units does so only where that is the
+intent, such as money held in whole minor units rather than in floating point, and a comparison of
+floating-point values allows for rounding.
+
+**Text and time keep their meaning across every boundary they cross.**
+Text carries its encoding, and a time carries its zone or is held in UTC, so a value read back means
+what was written. A timestamp stored without a zone and read in another one is the usual way this
+breaks.
 
 **Errors propagate consistently.**
 Errors are surfaced the same way surrounding code surfaces them. Errors are not
 swallowed silently unless the codebase establishes that as a deliberate pattern.
 
 **Existing solutions are used.**
-When the codebase already solves this problem — a utility, a pattern, a shared
+When the codebase already solves this problem — such as a utility or a shared
 abstraction — that solution is used rather than reimplemented.
 
 **Implementation is complete and finished.**
-Every stated outcome exists in the code. There are no half-implemented paths,
-silently missing behaviors, known hacks, or deferred cleanup. A rule the change
-introduces holds everywhere its meaning reaches, including places the change
-did not touch: other code, links and messages the system generates,
-documentation, and configuration kept elsewhere. Those places are found by
-searching for every use of the thing the rule constrains — its name, its path,
-its key — not for the rule's own name, because what never mentions the rule is
-where it is most often broken. Incomplete work and shortcuts don't
-ship as permanent fixtures — they compound and they're easiest to address while
-the context is still loaded.
+Every stated outcome exists in the code. There are no half-implemented paths, silently missing
+behaviors, known hacks, or deferred cleanup. A rule the change introduces holds everywhere its
+meaning reaches, including places the change did not touch, such as
+generated messages or configuration kept elsewhere. Those places are found by searching for every
+use of the thing the rule constrains — such as its name or its key — not for the rule's own name,
+because what never mentions the rule is where it is most often broken. Incomplete work and shortcuts
+don't ship as permanent fixtures — they compound and they're easiest to address while the context is
+still loaded.
 
 **Runtime invariants and violable contracts are asserted, not only tested.**
-Conditions that must always hold — preconditions on inputs, postconditions on
-outputs, internal state constraints — are asserted where they apply, not only
-in tests. Both what must be true and what must never be true are stated.
-Beyond the invariants already identified, no function carries a contract a
-caller could violate without something checking it: a range an argument must
-fall in, a relationship between two parameters, a property a collection always
-has. A contract already guaranteed by the type system or by validation at a
-boundary is considered checked. An assertion that fires in production catches
-programmer errors that types and tests alone cannot.
+Conditions that must always hold — such as a precondition on an input or a constraint on internal
+state — are asserted where they apply, not only in tests. Both what must be true and what must never
+be true are stated. Beyond the invariants already identified, no function carries a contract a
+caller could violate without something checking it, such as a range an argument must fall in. A
+contract already guaranteed by the type system or by validation at a boundary is considered checked.
+An assertion that fires in production catches programmer errors that types and tests alone cannot.
 
 **Assertions are split so a failure names the exact violation.**
 One condition per assertion. `assert(a && b)` reports that something broke;
@@ -75,11 +89,10 @@ notice a new one. Suppressions are narrow, sited at the specific occurrence
 rather than the file or the project, and state their reason.
 
 **Behaviour is deterministic given the same inputs.**
-The same inputs produce the same outputs and the same sequence of effects.
-Clocks, randomness, iteration order over unordered collections, and scheduling
-are injected or seeded rather than reached for directly. A bug that reproduces
-costs an order of magnitude less to fix than one that doesn't, and replaying a
-failure is only possible if the system was deterministic to begin with.
+The same inputs produce the same outputs and the same sequence of effects. Anything that varies
+between runs, such as a clock or a random seed, is injected or seeded rather than reached for
+directly. A bug that reproduces costs an order of magnitude less to fix than one that doesn't, and
+replaying a failure is only possible if the system was deterministic to begin with.
 
 ## Should
 
@@ -88,7 +101,7 @@ Changes don't break existing call sites or corrupt existing data unless the
 breakage is intentional, documented, and coordinated.
 
 **Mistakes the toolchain could catch are caught by the toolchain.**
-Where a mistake can be surfaced by a type, a schema, a compiler check, or a
+Where a mistake can be surfaced by a toolchain check, such as a type or a
 lint rule, it is — rather than left to be found when the code runs. This is a
 choice about how things are arranged, not only about heeding what the tools
 already say: a misspelled field name, an unhandled variant, or a malformed
@@ -96,15 +109,13 @@ template found at build time costs a moment, and the same mistake found at
 runtime costs a user.
 
 **`assert` is for programmer errors; errors are returned for environmental failures.**
-The discriminator: could this condition occur because of something outside the
-code — absent config, malformed input, a failed network call? If yes, return
-an error. If only a bug within the codebase could trigger it, assert it.
-Assertion failures halt; they are not caught and recovered from.
+A condition that can arise from something outside the code, such as missing config or malformed
+input, returns an error. A condition only a bug in the code can cause is asserted.
 
 **Code that relies on what an external call removes, revokes or invalidates cites the provider's
 documentation of everything that call affects.**
-A revoke, delete, cancel or void can act on more than the identifier passed to
-it: an OAuth revoke can end every token an account has given the project, and
+A call that ends something, such as a revoke or a delete, can act on more than the identifier passed
+to it: revoking one token can end every token an account has issued, and
 deleting a namespace deletes everything in it. A test double of the provider
 encodes its author's belief about that reach, so no test against it can show the
 reach is wider. The reach is taken from the provider's documentation, quoted
@@ -126,15 +137,12 @@ is the gap to fix.
 
 **A check computes its expected result by a method independent of the code it checks.**
 A self-check that reaches its expected value the way the checked code reached its result fails
-whenever the code fails, and then agrees with it. A script that rebuilt a merge by applying a
-branch's diff with `git apply`, then checked the result against a tree it built with the same
-`git apply` call, reported success on a merge that had dropped the whole diff: the patch was
-refused both times, so both trees were the unchanged base. The expected value comes from a
-different method, such as Git's own three-way merge for a rebuilt merge or a second source for a
-read value, or from a property of the result the method could not fake, such as every path the
-diff touched still differing from the base. Tests hold the same rule as "An expectation is
-written separately from the code it checks" in `testing.md`; this one holds for checks that run
-in the code itself.
+whenever the code fails, and then agrees with it. Two runs of the same method fail the same way, so
+they agree on a wrong result. The expected value comes from a different method, such as an
+independent merge implementation for a rebuilt merge or a second source for a read value, or from a
+property of the result the method could not fake, such as every path the diff touched still
+differing from the base. Tests hold the same rule as "An expectation is written separately from the
+code it checks" in `testing.md`; this one holds for checks that run in the code itself.
 
 **A check that expects a refusal also shows that the step before it succeeded.**
 A check that an old credential, route or permission no longer works passes in

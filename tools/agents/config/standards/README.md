@@ -37,8 +37,9 @@ rephrasing.
   not an instruction to the reader.
 - **No imperative verbs, in the heading or the body.** A sentence whose main verb is a command,
   such as one that starts with "Use" or "Ensure", reads as an instruction, not a property.
-- **The higher tier decides.** When a broad claim and a narrower one both catch the same gap, the
-  gap is graded at the higher tier, and the narrower claim adds detail rather than a second grade.
+- **The higher tier decides.** When two claims both catch the same gap, whether one contains the
+  other or they only overlap, the gap is graded at the higher tier, and the other claim adds detail
+  rather than a second grade.
 - **General terms rather than products.** A claim names a product or tool only when it is about
   that product or tool.
 
