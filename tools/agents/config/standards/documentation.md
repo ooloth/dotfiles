@@ -37,8 +37,8 @@ command needs in order to run is part of the command, not a copy. A value quoted
 figure was worked out links its source.
 
 **Recorded facts name their source.**
-A figure, limit, quota, or quoted behavior carries where it came from, such as the page, file or
-measurement it was read from. That includes a comment in code or
+Every fact a doc records, such as a figure or a quoted behavior, carries where it came from, such
+as the page, file or measurement it was read from. That includes a comment in code or
 config that states what a third-party tool does with a setting: the comment cites the doc page or
 source file that says so, and the claim was checked there, not recalled. Where the docs are silent,
 the tool's source decides.
@@ -47,7 +47,7 @@ left out. Once an unsourced figure sits in a document of facts it is indistingui
 measured one, and decisions get built on it.
 
 **A recorded absence rests on two sources that agree.**
-"No open alerts", "no errors in the logs" and "nothing calls this" are facts
+A claim that something is absent, such as "no errors in the logs", is a fact
 like any other, and one empty result supports them less than it seems to. A
 feed that has not been populated yet, a filter the source silently ignored, a
 query aimed at the wrong place and a request that failed without saying so all
@@ -84,7 +84,8 @@ account of the day somebody routed around it does not.
 **A date that says when a source was read stays, and a date that says when work happened goes.**
 "Read 2026-09-12" tells a reader how current a fact is and is load bearing on
 whether to trust it. "Corrected on 2026-09-12" tells them about a session they
-were not in. The two look alike and only one survives.
+were not in. The two look alike and only one survives. A measurement's date is the first kind: it
+says when the figure was read.
 
 **History survives only as a forward-facing instruction.**
 Where a reader lacking context would do the wrong thing — delete the guard,
@@ -97,7 +98,8 @@ Running without an error is not the bar. A command can succeed and then be undon
 that owns the same state, such as a controller that reconciles to a declared spec, or it can change
 more than the doc says. Before a doc that gives one is committed, its commands are run against the
 system they target. Where running would change production, they run in a mode that checks every
-name and reference against that system without writing to it, and whatever that mode cannot show,
+name and reference against that system without writing to it, such as a server-side dry run rather
+than one that checks only locally, and whatever that mode cannot show,
 such as another owner putting the old state back, is read from the configuration that decides it.
 Where no such mode exists, the configuration that decides the outcome is read instead. The change
 that adds or edits the doc records what was run and what it showed, so a reviewer checks the run
@@ -120,8 +122,8 @@ PR description.
 
 **Behavior appears in the right doc surfaces.**
 Each behavior appears on every surface where a reader looks for it, such as a flag in help text or
-a config key in the example config. Each surface is updated in the same change as the behavior it
-describes, and a surface that never received its entry is as wrong as one that went stale.
+a config key in the example config. Each surface gets its entry in the same change as the behavior
+it describes, so none is left without one.
 
 **A decision reaches every reader it binds, each in the place that reader looks.**
 The reasoning and the rejected options sit in one decision record, except for a
@@ -167,7 +169,7 @@ reader who trusts it stops looking where the fault is. The usual cause is a defa
 every input the same way, such as a server that returns one page for every path it has no file for.
 
 **Absolute claims hold for every path, mode, environment and input.**
-A sentence that says only, every, never, nothing or always about a system
+A sentence that makes an absolute claim about a system, with a word such as only, every or never,
 holds for the other paths, modes, environments and inputs that could break
 it. An absolute is the kind of claim most often false with nothing in the text
 to show it, because the path that breaks it is usually one the writer did not think of.
@@ -196,7 +198,7 @@ makes the reader assemble them. The form follows the question the reader has:
 
 These are examples, not a complete list. Where the content is a set of
 combinations, such as options scored against properties or inputs mapped to
-outcomes, a table, where the standard on tables allows one, shows it better than a diagram. Where
+outcomes, a table shows it better than a diagram, wherever the claim on tables allows one. Where
 a change alters a structure, a before and after pair shows the change itself. A diagram is
 included only when it replaces prose or shows something the prose does not. One
 that restates the surrounding text, or that holds two boxes and an arrow, is
@@ -242,8 +244,8 @@ A pattern breaks silently when the text it matches changes.
 **Prose wraps at 100 columns.**
 Fixed-width wrapping keeps a diff to the lines that actually changed instead of
 reflowing a paragraph because one word was added. Code blocks, URLs, and tables
-wrap where they wrap. A file whose prose isn't wrapped at 100 columns keeps the convention most of
-it follows, or is rewrapped as a whole in a commit of its own, so no diff mixes conventions.
+wrap where they wrap. A file wrapped some other way keeps its own
+convention until it is rewrapped in a commit of its own, so no diff mixes the two.
 
 ## Consider
 
@@ -260,8 +262,8 @@ relationships are updated when the structure they depict changes.
 - README.md at any level
 - .md files under docs/, .claude/, or similar doc directories
 - Module-level doc comments (//! blocks, docstrings at file tops)
-- Inline comments, for the two standards that name them: whether a comment
-  explains a non-obvious why, and whether it describes the code as it is
+- Inline comments, for the standards that name comments, such as whether a comment explains a
+  non-obvious why
 - Ticket comments and PR descriptions, for the diagram and table standards
 
 ## Out of scope

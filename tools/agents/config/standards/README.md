@@ -43,7 +43,7 @@ Right: "Names use domain vocabulary and reflect intent."
 
 ## Read this file first
 
-Always read this file before any category file. The tier definitions below
+This file is read before any category file. The tier definitions below
 govern how strongly each standard should be upheld or flagged.
 
 ## Tiers
