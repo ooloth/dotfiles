@@ -376,7 +376,7 @@ class TestLiveCopy:
         assert check_pr_body.check_live_copy("a\nb\n", "a  \r\nb", 7, "saved.md") == []
 
     def test_a_body_edited_since_it_was_read_is_reported(self) -> None:
-        problems = check_pr_body.check_live_copy("a\nb\n", "a\nb\n- [x] Checked by Sam\n", 7, "s")
+        problems = check_pr_body.check_live_copy("a\nb\n", "a\nb\n- [x] Checked by Alice\n", 7, "s")
         assert kinds(problems) == ["live body changed"]
         assert "someone edited it" in problems[0].what
         assert "merge their change" in problems[0].fix
@@ -463,7 +463,7 @@ class TestMain:
     ) -> None:
         body = write(tmp_path, "body.md", GOOD_BODY)
         saved = write(tmp_path, "saved.md", GOOD_BODY)
-        gh = FakeGh(live=GOOD_BODY + "\nA note Sam added\n")
+        gh = FakeGh(live=GOOD_BODY + "\nA note Alice added\n")
         argv = [str(body), "--repo", REPO, "--live-copy", str(saved), "--pr", "7"]
         assert check_pr_body.main(argv, gh) == 1
         assert f"{body}:live: live body changed: PR #7" in capsys.readouterr().out

@@ -372,5 +372,5 @@ skills open, in any repo.
 ## 🔖 Related links
 
 - [Jira task: PROJ-123](https://jira.example.com/browse/PROJ-123)
-- [Slack thread](https://workspace.slack.com/archives/C12345/p1234567890) discussing UX polish options with Sam
+- [Slack thread](https://workspace.slack.com/archives/C12345/p1234567890) discussing UX polish options with Alice
 ````
