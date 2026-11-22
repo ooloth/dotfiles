@@ -195,11 +195,14 @@ it, not whose change owns it.
 
 **Escalation discipline** — before writing an escalation:
 
-- Resolve all analytical sub-questions yourself by reading the code and tests, or by a read-only
+- Resolve all analytical sub-questions yourself by reading the code and tests, by running it when
+  the question is how the code behaves (as `review-code`'s Step 3.5 runs it), or by a read-only
   query (`gh api` GETs, ticket reads, another repo's config) when the answer lives outside the
   repo. These need no approval. Never escalate "is this a bug?", "is this intentional?", or "does
-  X occur in production?" — answer those yourself and state your conclusion. Only the _decision_
-  goes to the author.
+  X occur in production?" — answer those yourself and state your conclusion. The one exception
+  is a `?` row `review-code` returns for a claim it could not run: escalate it with what was
+  checked, and options that include asking the author. Otherwise only the _decision_ goes to the
+  author.
 - Every escalated item must present ≥2 concrete lettered action options, each with a clear
   outcome. If you find yourself writing an option like "(a) No action — just confirming
   awareness", the item is not a genuine escalation. Give it one line under that round in the

@@ -65,7 +65,7 @@ author would run, base against head, and one that checks that removed prose took
 needs. Then it assumes they're wrong.
 Every claim about library behaviour, API guarantees or numbers is checked against the installed code
 before it reaches me, and a claim that fails is struck rather than softened. A claim about how the
-code behaves rests on a run, not a reading.
+code behaves rests on a run, or goes to the author as a question when it can't be run.
 Findings are labelled introduced or pre-existing by reading the base ref, not by impression.
 
 [review-converge](./tools/agents/config/skills/review-converge/SKILL.md) reviews and fixes in rounds
@@ -77,8 +77,9 @@ parallelism and isn't.
 [review-pr-comments-converge](./tools/agents/config/skills/review-pr-comments-converge/SKILL.md)
 does the same for reviewer feedback, and doesn't take the reviewer's word for it either: each
 comment is checked against the current code, with a claim about how the code behaves run rather
-than read, before anything acts on it. What gets fixed automatically and what gets escalated turns
-on one question, does applying this require the author to make a choice.
+than read, or escalated when it can't be run, before anything acts on it. What gets fixed
+automatically and what gets escalated turns on one question, does applying this require the
+author to make a choice.
 
 [prove-it-works](./tools/agents/config/skills/prove-it-works/SKILL.md) proves or disproves a claim
 about the running system, given one sentence naming the claim or a PR, commit or URL. It sets the

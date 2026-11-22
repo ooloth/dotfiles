@@ -1028,17 +1028,23 @@ claims — most likely to be subtly wrong — and the ones a reviewer would have
 - API signature or accepted kwargs → `python3 -c "import inspect, lib;
   print(inspect.signature(lib.Cls.method))"`
 - Stdlib availability → `python3 -c "import lib; print(hasattr(lib, 'func'))"`
-- Source behavior → read the relevant installed source with `python3 -c "import inspect, lib;
-  print(inspect.getsource(lib.func))"`
+- A library's own behavior → read the relevant installed source with `python3 -c "import inspect,
+  lib; print(inspect.getsource(lib.func))"`
 - File/doc claims → read the file
 
-**Base every claim about how the code behaves on a run.** This covers the agents' findings and any
-earlier reviewer's point the posted review agrees or disagrees with: run the code path yourself,
-starting where its inputs are produced rather than from a value you assume, and cite the saved
-output. A type, comment or doc saying a value can be missing is itself a claim to check, not
-evidence. When you can't run it, because the data or system is out of reach or the PR's author is
-outside the repo owner's organization (whose code you never run), say what you checked and ask the
-author instead of asserting.
+**Base every claim about how the code behaves on a run.** Such a claim is about a value or a path
+at runtime: what a function returns, what a caller receives, whether a value can be missing, which
+branch runs. A claim that code is unused, breaks a standard or reads badly keeps the checks above.
+Run the code path yourself, starting where its inputs are produced rather than from a value you
+assume, and cite the saved output. Run it as Agent 20's instruction 3 does: in detached worktrees
+of the reviewed head (and base), locally only. A type, comment or doc saying a value can be missing
+is itself a claim to check, not evidence.
+
+**When you can't run it, ask instead of asserting.** You can't run it when its inputs come only
+from a deployed or shared system, when the data is out of reach, or when Agent 20's instruction 2
+allows nothing from the PR to be run. Keep the finding, and carry it into Step 4 as a `?` row that
+says what you checked and asks the author how the code behaves there. Outside PR scope the author
+is the user.
 
 **Apply the results:**
 
@@ -1050,7 +1056,7 @@ author instead of asserting.
 - Drop findings you cannot verify and that are speculative rather than grounded in the diff, and
   list each one under **Dropped** in Step 4.
 
-Only carry verified findings into Step 4.
+Only carry verified findings into Step 4, and the questions for claims you could not run.
 
 ## Step 4: Present findings
 
@@ -1065,6 +1071,10 @@ agents' and Step 1a's. Read each earlier finding and open question, and give it 
 - **answered**: it was an open question, or a check the reviewer could not run, and your work
   settles it.
 - **not checked**: nothing you did bears on it. Say so rather than adopting their claim.
+
+When the earlier point is a claim about how the code behaves, agreed, disputed and answered each
+rest on a run, as Step 3.5 describes, on Step 1a's path too. One you can't run is not checked, and
+says what you checked instead.
 
 An earlier finding is a claim to verify, not a finding of yours. One you have not checked does not
 enter Findings, however confident it sounds. Note where a review describes an older commit than the
@@ -1092,12 +1102,13 @@ the sentence under the verdict says overlapping PRs were not checked.
 | 2 | should | `file:line` | [imperative: what to do] |
 | 3 | consider | `file:line` | [imperative: what to do] |
 | 4 | ? | `file:line` | [open design question] |
+| 5 | ? | `file:line` | [question about a claim you could not run] |
 
 ---
 
 **1. `file:line` — [imperative: what to do]** *(must)*
 
-[1–3 sentences. Explain why this matters — what breaks, degrades, or becomes harder if left unfixed. Then describe what work you did to verify the claim: which file or function you read, which command you ran, what the output showed. Use hedging language ("no guard visible in the surrounding context", "appears to", "may") if confidence is less than certain, except for a claim about how the code behaves, which Step 3.5 runs instead.]
+[1–3 sentences. Explain why this matters — what breaks, degrades, or becomes harder if left unfixed. Then describe what work you did to verify the claim: which file or function you read, which command you ran, what the output showed. Use hedging language ("no guard visible in the surrounding context", "appears to", "may") if confidence is less than certain, except for a claim about how the code behaves that Step 3.5 checked, which is stated as run or asked as a `?` row.]
 
 **2. `file:line` — [imperative: what to do]**
 
@@ -1107,6 +1118,10 @@ the sentence under the verdict says overlapping PRs were not checked.
 
 - (a) [one path and its tradeoff]
 - (b) [another path and its tradeoff]
+
+**5. `file:line` — [question about a claim you could not run]**
+
+[What the finding would mean if true, what you checked, why it could not be run, and the question for the author.]
 
 ### Added agents
 [Omit this section entirely if you added none.]
@@ -1158,8 +1173,10 @@ come back clean.]
   are not optional; a finding with no impact explanation or no verification basis should not be
   reported.
 - Use hedging language within the prose when confidence is less than certain — don't assert facts
-  you haven't confirmed. A claim about how the code behaves is run in Step 3.5 instead of hedged.
-- Open question items (`?`) get the (a)/(b) tradeoff format instead of prose.
+  you haven't confirmed. A claim about how the code behaves that Step 3.5 checked is stated as
+  run, or asked as a `?` row when it could not be run, never hedged.
+- Open design questions (`?`) get the (a)/(b) tradeoff format instead of prose. A `?` row for a
+  claim Step 3.5 could not run is prose: what you checked and what you are asking.
 - A finding located outside the PR's diff carries `(outside the diff)` after its location in the
   table and its detail heading, and one label in its detail: **coupled change missing** (the PR
   should have made it) or **pre-existing gap made relevant** (it was already true; this change is
@@ -1279,8 +1296,9 @@ On any answer other than "skip":
       - re-check every finding whose evidence cites a file the script shows as changed, in the
         PR's diff or outside it. Read each such file at the new head in a scratch worktree
         (`git fetch origin <new-head>`, then `mktemp -d`, then `git worktree add --detach <that
-        folder>/wt <new-head>` as a separate command, and remove the worktree when done). Keep,
-        correct or strike each finding, and say which;
+        folder>/wt <new-head>` as a separate command, and remove the worktree when done), and run
+        again there each claim about how the code behaves, as Step 3.5 does. Keep, correct or
+        strike each finding, and say which;
       - unless the script lists no files outside the PR's diff, launch one agent shaped like an
         added agent in Step 3, with this question: "Do the changes between the two heads, in the
         files outside the PR's diff that the script lists, break or contradict anything this PR's
@@ -1291,9 +1309,10 @@ On any answer other than "skip":
 
     Either way, tell the user which findings were re-checked against the new head, and the new
     head and base become the saved state.
-  - **Only new reviews, comments or replies:** the code is unchanged, so the findings stand. Add
-    the new ones to Prior reviews, rewrite the review body to account for them, and show the user
-    the new draft before posting. This read becomes the saved state.
+  - **Only new reviews, comments or replies:** the code is unchanged, so the findings stand.
+    Reconcile the new ones as Step 4 does, add them to Prior reviews, rewrite the review body to
+    account for them, and show the user the new draft before posting. This read becomes the saved
+    state.
   - **Nothing changed:** say so in one line and continue.
 
   A review handles at most two head moves after its first run, whichever exit each one takes. A
@@ -1309,12 +1328,17 @@ On any answer other than "skip":
 - Write the review body in this shape, each part only when it has something to say (see the
   audience and tone guidance below):
   - **Verdict and credit:** the verdict as a teammate would say it out loud, in terms of what the
-    author needs to do next ("No blockers from me", "One thing needs fixing before this merges"),
-    never the review's event name ("comment", "approve", "block"), and in the same sentence what
-    you checked. Then one sentence crediting a specific choice the author made, drawn from Looks
-    Good, by its effect on a person (a reader, a user, the next developer) rather than by a quality
-    word such as "honest", "clean" or "solid". Under Request Changes, the verdict asks for the
-    `must` findings directly and says in a clause that the others are optional. A bot made no
+    author needs to do next ("Nothing here needs to change", "One thing needs fixing before this
+    merges"), never the review's event name ("approve", "request changes", "comment"), and in the
+    same sentence what you checked. Then one sentence crediting a specific choice the author made,
+    drawn from Looks Good, by its effect on a person (a reader, a user, the next developer) rather
+    than by a quality word such as "honest", "clean" or "solid". Under Request Changes, the
+    verdict asks for the `must` findings directly and says in a clause that the others are
+    optional. Under Approve or Comment with findings, it says the findings are the author's to
+    pick from, the way a person says it out loud: "Up to you which of these you pick up", "Take
+    or leave any of these", "None of these need to hold this up". Use one of these or something
+    as short and plain; never "at your discretion", "non-blocking", "entirely your call" or
+    "optional suggestions". A bot made no
     choice to credit, so its PR gets the verdict alone.
   - **What the approval rests on:** when the review approves a dependency update, one bullet per
     check that ran, with its result at the head the review is pinned to. These are Step 1a's
@@ -1492,8 +1516,10 @@ it out loud to the person sitting next to you. The goal is a batch that reads li
 person moved down the file making distinct, differently-voiced observations, not like a template
 applied four times or a fixed phrasebook applied on rotation.
 
-The verdict and credit sentences are worded fresh each time, so an author on their tenth review
-doesn't read the same sentence ten times.
+The verdict and credit sentences are worded for this review, so an author on their tenth review
+doesn't read the same sentence ten times. The clause saying the findings are the author's to pick
+from may repeat one of the examples above word for word: plain and repeated reads better than
+varied and stilted.
 
 Use a quick example when it makes the impact click. When
 a code snippet or a suggested fix would make the ask concrete, include it directly in the

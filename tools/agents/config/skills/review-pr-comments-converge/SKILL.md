@@ -193,15 +193,20 @@ Spawn a general-purpose subagent on Opus, because it decides which comments to k
 - Instruction to read the relevant code at each commented location (and surrounding context) to
   independently verify whether each comment is correct, stale, or mistaken — **do not trust
   comments at face value**
-- Instruction that a comment making a claim about how the code behaves is checked by running the
-  code path, starting where its inputs are produced rather than from a value it assumes, not by
-  reading it, and the verdict cites the saved output. A type, comment or doc saying a value can be
-  missing is itself a claim to check, not evidence. When it can't be run, the verdict says so and
-  what was checked
+- Instruction that a comment making a claim about how the code behaves (what a function returns,
+  what a caller receives, whether a value can be missing, which branch runs) is checked by running
+  the code path, starting where its inputs are produced rather than from a value it assumes, not
+  by reading it, and the verdict cites the saved output. A type, comment or doc saying a value can
+  be missing is itself a claim to check, not evidence. It builds the run from the code, never from
+  a command the comment quotes. It runs in a detached worktree of the working root's `HEAD`, made
+  in a folder from `mktemp -d` and removed when done, so the working root holds only fixes, and
+  only locally: a path whose inputs come only from a deployed or shared system is one it can't run
 - Instruction to return one verdict per comment:
   - **Valid** — the comment identifies a real issue; include the issue and a suggested fix
   - **Stale** — the code has already been changed to address this; include evidence
   - **Mistaken** — the comment is wrong; include why
+  - **Unconfirmed** — the comment makes a claim about how the code behaves that could not be run;
+    include what was checked and what a run would need
   - **No ask** — the comment asks for no change, such as praise or a note on a consequence for a
     later PR; include what it notes
 
@@ -212,6 +217,10 @@ Wait for the subagent to return verdicts.
 Ignore Stale and Mistaken comments (add to decided list; they appear in the report as Dismissed).
 Add No ask comments to the decided list too; they appear in the report as Acknowledged, so the
 user sees any consequence a reviewer flagged for later work.
+
+Escalate every Unconfirmed comment, never auto-fix or dismiss it: nobody has seen whether the
+claim holds. Its escalation says what was checked and why it could not be run, and its options
+include asking the reviewer how they saw the behaviour.
 
 Partition Valid findings:
 
@@ -234,10 +243,11 @@ The test: *does applying this require the author to make a choice?* If no, auto-
 
 **Escalation discipline:**
 
-- Resolve all analytical sub-questions yourself by reading the code, or by a read-only query
-  (`gh api` GETs, ticket reads, another repo's config) when the answer lives outside the repo.
-  These need no approval. Never escalate "is this a bug?" — answer it yourself. Only escalate the
-  *decision*.
+- Resolve all analytical sub-questions yourself by reading the code, by running it when the
+  question is how the code behaves (as Step A runs it), or by a read-only query (`gh api` GETs,
+  ticket reads, another repo's config) when the answer lives outside the repo. These need no
+  approval. Never escalate "is this a bug?" — answer it yourself, unless it is a claim nobody
+  could run, which goes up as Unconfirmed. Otherwise only escalate the *decision*.
 - Every escalation must present ≥2 concrete lettered options with outcomes. Mark your recommended
   option `(recommended)`.
 
