@@ -70,8 +70,8 @@ Your own list and the fresh subagent both look for:
   unchecked list of steps for one rollout or launch, a cutover section, or a qualifier such as
   "being removed (TICKET)" or "once X lands". Each step becomes a ticket, and the doc is
   rewritten to say what is true now. A procedure a reader repeats, such as rebuilding an
-  environment, is not one. Seen 2026-11-12 in a work repo: PROD's cutover runbook in
-  an environment's README, and the root README's "being removed (<ticket>)" notes
+  environment, is not one. Seen 2026-11-12 in a work repo: one environment's cutover runbook in
+  its README, and the root README's "being removed (<ticket>)" notes
 - Decision records, question files or standards that the change made stale
 - Learnings that exist only in the conversation and belong in a project doc
 - A false claim kept with a correction further down, instead of replaced. The fix states the true
@@ -81,9 +81,10 @@ Your own list and the fresh subagent both look for:
 - A doc that contradicts a recorded decision
 - A README or doc describing a check its script does not implement
 - A change in progress that is not flagged where a reader will meet it
-- In a public repo, an example, name, quote or dated "Seen" note copied from a real session rather
-  than made up: a channel name, ticket key, project word, colleague, or Slack or GitHub ID. The fix
-  replaces it with a generic made-up example. Seen 2026-11-21 in dotfiles: a new skill's examples
+- In a public repo, a private value, as the repo's own docs define one, copied from a real session
+  into an example, name, quote or dated "Seen" note: a work channel name, ticket key or project
+  name, a colleague, or a Slack ID. The correction replaces the value with a generic made-up one
+  and keeps the rest of the note. Seen 2026-11-21 in dotfiles: a new skill's examples
   named two real work channels and a work project's term
 
 Check every subagent finding against the files before keeping it.

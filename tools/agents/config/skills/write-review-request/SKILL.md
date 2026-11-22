@@ -1,46 +1,63 @@
 ---
 name: write-review-request
-description: Draft one Slack message per channel asking for reviews of the user's open work PRs, ranked by cost of delay, tagging the user's own team. Use when the user asks for a review request, or to ask people to review their PRs. Shows the drafts for approval, then posts them only to the user's own channel for them to forward.
+description: Draft one Slack message per channel asking for reviews of the user's open work PRs, ranked by cost of delay, tagging the user's own team. Use when the user asks for a review request, or to ask people to review their PRs. Shows the drafts for approval, then posts them only to the user's own channel for them to copy where they belong.
 ---
 
 # Write a review request
 
-A reviewer should be able to tell from the message alone that the order is the priority, why it
-matters now, and where they can stop. Everything below serves that, in as few lines as it takes.
+A reviewer should be able to tell from the message alone which PRs need their review and, on the
+user's own team, that the order is the priority. Everything below serves that, in as few lines as
+it takes.
 
-Read the `use-gh` skill before the first `gh` command and the `use-slack` skill before the first
-Slack call, and again before each later one.
+Before step 1, read the `use-slack` skill and run its "Work only" check. When it fails, say so and
+stop, because step 2 depends on Slack. Read `use-gh` before the first `gh` command and `use-slack`
+again before each Slack call.
 
 ## 1. Find the PRs waiting on reviewers
 
-Read the user's open PRs in the work GitHub org only (`author:@me` with
-`--owner recursionpharma`), with `isDraft`, `mergeStateStatus`, the last commit's check rollup,
-`reviewRequests` (people and teams), `latestReviews` (author and state), `baseRefName`,
-`additions`, `deletions` and `body`.
+List the user's open PRs in the work GitHub org only, then read each one, keeping only the paths
+from `files`. `gh search prs` lacks most of these fields, such as `mergeStateStatus` and
+`latestReviews`, so each PR needs its own `gh pr view`:
+
+```bash
+gh search prs --author @me --owner recursionpharma --state open --json url,isDraft --limit 100
+gh pr view <url> --json isDraft,mergeStateStatus,statusCheckRollup,reviewRequests,\
+latestReviews,baseRefName,additions,deletions,body,files
+```
+
 The user never asks colleagues to review PRs in their own `ooloth` org, so those are never read,
-shown or mentioned. Leave out drafts.
+shown or mentioned. Drafts go in no message, and the table in step 4 lists them as left out.
 
 Every PR needs an approval from a person on each team that owns its code: always the user's own
 team, whose members the user's earlier requests tag, plus the teams the repo's `CODEOWNERS` names
-for the changed files and any team requested on the PR. A PR goes in the request for each owning
-team that has not approved it yet. An approval from a bot, such as an AI review bot, counts for
-nothing, and neither does any other review a bot leaves. `reviewDecision` does not
-decide this, because a bot's approval or a ruleset that needs no approvals can make it read as
-approved. A PR every owning team has approved is left out, with its reason, for the terminal (step
-4).
+for the changed files and any team requested on the PR. Read each repo's `CODEOWNERS` once, from
+the PR's base branch. A PR goes in the request for each owning team that has not approved it yet.
+
+An approval counts for a team only when its author is a member of that team. Read each owning
+team's members once with `gh api --paginate orgs/recursionpharma/teams/<slug>/members -q
+'.[].login'`, asking the user, in step 2's message, for any team's slug you cannot find, such as
+the user's own team's. A bot is never a member, so a bot's review counts for nothing. When a
+membership read fails, that team has not approved, and the table says its membership could not be
+read.
+`reviewDecision` does not decide this, because it can read empty on an approved PR and does not say
+which team an approver is on. A PR every owning team has approved is left out, with its reason, for
+the terminal (step 4).
 
 Then note, for the terminal and the offer after posting:
 
-- **Checks failing:** a PR whose rollup is `FAILURE` or `ERROR` still goes in, and is warned about.
-- **Conflicts:** a PR whose `mergeStateStatus` is `DIRTY` still goes in, and is flagged.
+- **Checks failing:** a PR with a check in `statusCheckRollup` whose `conclusion` is `FAILURE`,
+  `TIMED_OUT`, `CANCELLED`, `STARTUP_FAILURE` or `ACTION_REQUIRED`, or whose `state` is `FAILURE`
+  or `ERROR`, still goes in, and is warned about.
+- **Conflicts:** a PR whose `mergeStateStatus` is `DIRTY` still goes in, and is flagged. GitHub
+  computes it lazily, so read it again once when it is `UNKNOWN`.
 
 ## 2. Match each PR to a team
 
-Find the user's earlier review requests: messages from the user, outside their DM to themselves,
-that list PR links and ask for review. A request to the user's own team tags them; one to another
-team usually tags no one. Read the most recent one in each channel they appear in, with its
-thread. Each gives a team: its channel, the people tagged, if any, and the repos and ticket keys of
-the PRs it listed.
+Find the user's earlier review requests: messages from the user, outside the two scratchpads
+`use-slack` names, that list PR links and ask for review, newest first. A request to the user's
+own team tags them; one to another team usually tags no one. Read the most recent one in each
+channel they appear in, with its thread. Each gives a team: its channel, the people tagged, if
+any, and the repos and ticket keys of the PRs it listed.
 
 Each owning team from step 1 that has not approved a PR gets that PR in the message for the
 channel it is asked in. Teams asked in the same channel share one message. Match the
@@ -92,9 +109,10 @@ their PRs before reading any draft. One row per PR, in each message's order, wit
 - **Flags:** "merge after" a row number, or a PR when that PR is not in the table; conflicts;
   failing checks
 
-Then, for each channel: the channel the message is for, and the draft in the shape below. A team
-with no PRs waiting gets no draft, and the terminal says so. Ask the user to approve, reorder, cut
-or reword.
+Then, for each channel: the channel the message is for, and the draft in the shape below, written to
+a file and checked for mentions as `use-slack` describes before it is shown. A team
+with no PRs waiting gets no draft, and the terminal says so. Say that the approved drafts will be
+posted to the user's own channel, and ask the user to approve, reorder, cut or reword.
 
 The user's own team:
 
@@ -115,9 +133,9 @@ A couple <project> PRs that need your team's review. :pray:
 
 - The user's own team is tagged once, in the first line, by Slack user ID. Another team's message
   tags no one, since the user posts it in that team's channel.
-- The first line is exactly as above. "A couple <project> PRs that need" becomes "A <project> PR
-  that needs" for one PR and "A few" for more than two. `<project>` is the product the PRs change,
-  in the words the user's earlier requests use. Neither
+- Another team's first line is as above, with only its count word varying. "A couple <project>
+  PRs that need" becomes "A <project> PR that needs" for one PR and "A few" for more than two.
+  `<project>` is the product the PRs change, in the words the user's earlier requests use. Neither
   line counts the PRs exactly, since the numbered list does.
 - The link text is the PR title exactly as written, so the reviewer finds the same words in
   GitHub.
@@ -132,9 +150,8 @@ A couple <project> PRs that need your team's review. :pray:
 ## 5. Post the approved drafts to the user's own channel
 
 Post each approved draft, unchanged, to the channel whose ID is in `$PRIVATE_SLACK_REPORT_CHANNEL`,
-the user's own channel, from which they forward what they choose. Never post to a team's channel
-or DM anyone. When the variable is unset, show the drafts in the terminal and post nothing, as
-`use-slack`'s "Work only" describes.
+the user's own channel, from which they copy what they choose into each team's channel. Post it
+from its file as `use-slack`'s "Posting" describes. Never post to a team's channel or DM anyone.
 
 Then tell the user, for each draft, the team channel it is meant for and its permalink. Offer to
 help with each PR that has failing checks or conflicts.

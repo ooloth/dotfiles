@@ -354,7 +354,7 @@ ticket. Then exactly one of these follows, chosen from the report by the first t
 
 Every Slack message is sent only after the report is posted, links to it, and carries no figure the
 report does not. It goes to the channel in `$PRIVATE_SLACK_REPORT_CHANNEL`, the user's own, from
-which they forward what they choose. Where that variable is not set, no Slack message is sent or
+which they copy what they choose. Where that variable is not set, no Slack message is sent or
 drafted: Slack is for work only, and the final message's summary carries the result.
 
 ## Cleaning up

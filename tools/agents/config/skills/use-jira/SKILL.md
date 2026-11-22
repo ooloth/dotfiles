@@ -132,7 +132,7 @@ the exception, as step 4 above says.
 ## Links
 
 `createIssueLink` can reply "Issue link created" for a link that was never saved. On 2026-11-20 it
-said that for a Blocks link from EXAMPLE-46 to EXAMPLE-2249, and EXAMPLE-46 had no links when
+said that for a Blocks link from EXAMPLE-1 to EXAMPLE-2, and EXAMPLE-1 had no links when
 listed minutes later. After creating a link, list the links on both issues before reporting it:
 `acli jira workitem link list --key KEY --json`, or `getJiraIssue` with `"fields": ["issuelinks"]`.
 Create the link again when it is missing.

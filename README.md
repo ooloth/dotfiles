@@ -141,14 +141,14 @@ links rather than in the body, so a body never goes stale when tickets are renum
 
 [write-progress-update](./tools/agents/config/skills/write-progress-update/SKILL.md) drafts a short
 Slack update on what a work project finished and what comes next, gathered from Jira, GitHub and
-Slack since the last update. It shows the candidate items with their sources first, then posts the
-update only to the user's own Slack channel, where they finalize it before posting it where it
-belongs.
+Slack since the last update. It shows the candidate items with their sources first, then the
+update, and once I approve it, posts it only to my own Slack channel, where I finalize it before
+posting it where it belongs.
 
 [write-review-request](./tools/agents/config/skills/write-review-request/SKILL.md) drafts one Slack
-message per team asking for reviews of my open work PRs, ranked by cost of delay to ship and verify.
-It first shows a table of every open work PR and why each lands where it does, then posts the
-approved drafts only to my own channel for me to forward.
+message per channel asking for reviews of my open work PRs, ranked by cost of delay to ship and
+verify. It first shows a table of every open work PR and why each lands where it does, then posts
+the approved drafts only to my own channel for me to copy where they belong.
 
 They're opinionated and evolving because they're mostly an attempt to encode how I already like to
 work.

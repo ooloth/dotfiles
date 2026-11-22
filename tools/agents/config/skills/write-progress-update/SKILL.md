@@ -1,12 +1,15 @@
 ---
 name: write-progress-update
-description: Draft a short Slack message summarizing progress on a work project over a period of time, gathered from Jira, GitHub and Slack. Use when the user asks for a progress update, status update or "what we did and what's next" message. Posts it only to the user's own channel, where they finalize it before posting it where it belongs.
+description: Draft a short Slack message summarizing progress on a work project over a period of time, gathered from Jira, GitHub and Slack. Use when the user asks for a progress update, status update or "what we did and what's next" message. Shows the update for approval, then posts it only to the user's own channel, where they finalize it before posting it where it belongs.
 ---
 
 # Write a progress update
 
 A busy manager should get through the update in under a minute and come away knowing what is now
 possible, what is coming next, and roughly what follows. Everything below serves that.
+
+Before step 1, read the `use-slack` skill and run its "Work only" check. When it fails, say so and
+stop, because every step after this one depends on Slack.
 
 ## 1. Read the request
 
@@ -24,14 +27,13 @@ the previous updates' links (step 2).
 
 ## 2. Find the previous updates
 
+Read the `use-slack` skill again before each Slack call. Its rule on the user's two scratchpads
+applies to every search here, so nothing in either is a previous update.
+
 Search Slack for messages from the user `in:` the destination channel only, newest first, using the
 title's main words without quotes. Titles drift between posts ("update" or "updates", a colon), so
 confirm a match by its shape: a title line followed by one or more numbered lists. Use the title as
 the user gives it now, even if earlier posts worded it differently.
-
-Read the `use-slack` skill before the first Slack call, and again before each later one. Its rule
-on the user's DM to themselves applies to every search here, so nothing in that DM is a previous
-update.
 
 Read the last two updates in full, with their thread replies. What they or their replies reported
 is already reported; match items to them by ticket key, not by title, because tickets get renamed.
@@ -191,12 +193,15 @@ to phrase, not what to say.
 
 ## 6. Post it to the user's own channel
 
-Post the update to the channel whose ID is in `$PRIVATE_SLACK_REPORT_CHANNEL`, the user's own
-channel, where they finalize each message before posting it where it belongs. Invoking this skill
-approves that destination. Never post to the destination channel or anywhere else, and never
-schedule a message. When the variable is unset, show the update in the terminal and post nothing,
-as `use-slack`'s "Work only" describes.
+The update goes to the channel whose ID is in `$PRIVATE_SLACK_REPORT_CHANNEL`, the user's own
+channel, where they finalize each message before posting it where it belongs. Never post to the
+destination channel or anywhere else, and never schedule a message.
 
-If the user marked detail for a thread reply, post it as a reply to that message, with its
-`thread_ts`. Then give the user the message's permalink and the destination channel it is meant
-for.
+Write the update, and any thread reply, to files and check their mentions as `use-slack`
+describes. Then show them exactly as they will be posted, and say they will go to the user's own
+channel. Post only once the user approves that text, as `use-slack`'s "Posting"
+describes. Post the thread reply as a reply to that message, with its `thread_ts`.
+
+Then give the user the message's permalink and the destination channel it is meant for. When there
+is a thread reply, tell them it stays in their own channel, so once the message is in its
+destination they post the reply again under it there.

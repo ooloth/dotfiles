@@ -3,10 +3,10 @@
 Facts about what this repository may contain, because it is public on GitHub.
 
 - No file git would publish names a private value: an internal hostname or URL, a cloud project,
-  dataset, table or cluster ID, a private repo or internal project, the Jira cloud ID, a Slack
-  channel name or ID, a Slack user ID, a work ticket key or project word, or a colleague or their
-  GitHub handle. A file's path counts as much as its contents, and so do
-  examples, test fixtures, comments and archived files. Names that are already public, such as the
+  dataset, table or cluster ID, a private repo, an internal project's name or codename, the Jira
+  cloud ID, a Slack channel name or ID, a Slack user ID, a work ticket key, or a colleague or their
+  GitHub handle. A file's path counts as much as its contents, and so do examples, test fixtures,
+  comments and archived files. Names that are already public, such as the
   employer, its GitHub org, the tools it uses and the work email, are not private values. Neither
   are the names of my own repos under `ooloth`, private ones included. A SaaS account name or
   tenant subdomain is a private value, even when it matches the employer's name.
