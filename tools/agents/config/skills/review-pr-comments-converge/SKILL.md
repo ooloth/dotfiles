@@ -206,7 +206,8 @@ Spawn a general-purpose subagent on Opus, because it decides which comments to k
   `git stash create` prints in the working root, so it holds earlier rounds' uncommitted fixes, or
   of `HEAD` when that prints nothing. It runs code only locally. When a claim's inputs come only
   from a deployed or shared system, a read-only query there, such as a GET, may settle it instead,
-  as long as the query changes nothing and the verdict cites its output
+  as long as the query changes nothing and the verdict cites its output. A GET that writes
+  anything, such as one that migrates, counts or caches on read, is not read-only
 - Instruction to return one verdict per comment:
   - **Valid** — the comment identifies a real issue; include the issue and a suggested fix
   - **Stale** — the code has already been changed to address this; include evidence
@@ -252,7 +253,8 @@ The test: *does applying this require the author to make a choice?* If no, auto-
 - Resolve all analytical sub-questions yourself by reading the code, by running it when the
   question is how the code behaves (as Step A runs it), or by a read-only query (`gh api` GETs,
   ticket reads, another repo's config, a GET against a deployed system) when the answer lives
-  outside the repo. A read-only query changes nothing and its output is cited. These need no
+  outside the repo. A read-only query changes nothing, and its output is cited; a GET that writes
+  anything on read is not one. These need no
   approval. Never escalate "is this a bug?" — answer it yourself, unless it is a claim nobody
   could run, which goes up as Unconfirmed. Otherwise only escalate the *decision*.
 - Every escalation must present ≥2 concrete lettered options with outcomes. Mark your recommended

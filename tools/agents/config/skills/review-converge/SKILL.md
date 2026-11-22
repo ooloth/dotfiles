@@ -210,8 +210,9 @@ it, not whose change owns it.
 - Resolve all analytical sub-questions yourself by reading the code and tests, by running it when
   the question is how the code behaves (as `review-code`'s Step 3.5 runs it), or by a read-only
   query (`gh api` GETs, ticket reads, another repo's config, a GET against a deployed system)
-  when the answer lives outside the repo. A read-only query changes nothing and its output is
-  cited; running code stays local. These need no approval. Never escalate "is this a bug?", "is
+  when the answer lives outside the repo. A read-only query changes nothing, and its output is
+  cited; a GET that writes anything on read, such as a migration, a counter or a cache, is not
+  one. Running code stays local. These need no approval. Never escalate "is this a bug?", "is
   this intentional?", or "does X occur in production?" — answer those yourself and state your
   conclusion. The one exception is a `?` row `review-code` returns for a claim it could not run
   and no read-only query settles: escalate it with what was checked, and options that include
