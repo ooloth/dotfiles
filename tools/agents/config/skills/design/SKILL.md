@@ -324,11 +324,9 @@ Every claim the design makes about what existing code does today, in any section
 before the design is presented: which input reaches which branch, what it logs, what it returns.
 Run it through the real caller with that input, not the library call or helper on its own, and not
 inferred from a test's name. A claim that the run contradicts is corrected or removed. One that
-cannot be run is marked as unchecked. Seen on 2026-11-20 on a work ticket: a design said a heatmap
-with one perturbation on an axis logged a clustering error, because scipy's `linkage` raises on a
-single row. The caller returns early for that case and never calls `linkage`. The false claim
-reached the posted design comment, the PR and a proposed follow-up ticket before running the
-caller's existing test showed no such log.
+cannot be run is marked as unchecked. A library's behaviour is not the caller's: a caller can
+return early, catch the error or never reach the call, so a claim drawn from the library alone
+travels into the design comment, the PR and any follow-up ticket unchecked.
 
 **List the observable behaviour.** After the test plan, list every behaviour of the running system a
 user or operator could notice that this change affects: each one it adds or changes (`New`), and

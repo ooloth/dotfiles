@@ -152,11 +152,8 @@ Then merge through the gate, passing the full head commit you checked:
 uv run <skill-base-dir>/scripts/merge.py <pr> --repo <owner>/<repo> --head <sha> [--check-only]
 ```
 
-It refuses unless the head is unchanged, the PR is open and not a draft, someone approved the PR (on
-any commit) or it is the repo owner's own PR and the owner is merging it, there is no outstanding
-change request, every check on the head passed (a head with no checks passes only when none of the
-repo's last 5 merged PRs ran a check either) and GitHub says it can merge. It prints every failed
-condition at once. Exit 3 means the only conditions left are waits, such as checks still running:
+It refuses unless every condition its docstring lists holds, and prints every failed condition at
+once. Exit 3 means the only conditions left are waits, such as checks still running:
 schedule the next check rather than stopping. Never merge any other way: not `gh pr merge`, not the
 button in a browser. `--check-only` reports readiness without merging, for showing the user before
 you ask.
@@ -287,7 +284,9 @@ approves. When the destination is public,
 such as an issue or PR in a repo whose `gh repo view <owner>/<repo> --json visibility` says
 `PUBLIC`, check the post for private values. Search it for each `PRIVATE_*` value in the dotfiles
 repo's ignored `private.env` (`~/Repos/ooloth/dotfiles/private.env`), and for each value in the
-PR repo's own ignored `private.env` if it has one. Remove any match and say so in the report. On a
+PR repo's own ignored `private.env` if it has one. Remove any match and say so in the report. When
+neither file exists, as on a Mac that holds no work values, say the check had nothing to search
+rather than reporting the post clean. On a
 public PR, the link to a Jira ticket names the key only, never its URL. If anything else in a post
 looks private, such as an internal hostname or URL, or a person's name or handle that the ticket
 does not already show, post nothing and show the user the draft.
@@ -299,8 +298,9 @@ does not already show, post nothing and show the user the draft.
   `use-gh`.
 - **The PR link:** once the ticket comment exists, post one line on the PR linking to it.
 
-Screenshots and recordings are not uploaded, and the posted report does not name their local
-paths. It describes what each one shows.
+Output the report quotes is carried in it as text. A screenshot or recording is uploaded where the
+destination accepts one, as `use-gh` describes for GitHub, and described in words where it does
+not. The posted report never names a local path.
 
 Then list every ideal-state bullet of the ticket, with the PR and the posted report that prove it.
 Only when every bullet has one, and every measured effect is within its range or better, can the

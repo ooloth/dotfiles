@@ -15,7 +15,7 @@ Facts about what this repository may contain, because it is public on GitHub.
   each key with a made-up value and a `# read by:` line naming what reads it. The one older ignored
   file, `tools/agents/config/skills/monitor-prs/team-repos.local`, holds the repos `monitor-prs`
   watches.
-- Commit messages, issue text and pull request text follow the first point too. History written
-  before #230 was not rewritten.
+- Commit messages, issue text and pull request text follow the first point too. Commits older than
+  #230 may still hold values this rule now keeps out, and they stay as they are.
 - Nothing checks these points. A check that held them needed more edge-case rules in bash than a
   leak has cost so far, so the rule is kept by whoever writes a file.
