@@ -142,7 +142,8 @@ in Phase 1 and do not change between rounds. Jump straight to Step 3, supplying:
   start its Agents 15 and 16. Outside PR scope, both lines say "not applicable: not a PR review".
 
 Wait for `review-code` to return its findings in its Step 4 format: a verdict, then a findings
-table whose severities are `must`, `should`, `consider` and `?` (open design question).
+table whose severities are `must`, `should`, `consider` and `?` (an open design question, or a
+question about a claim it could not run).
 
 ### Step B — Classify Findings
 

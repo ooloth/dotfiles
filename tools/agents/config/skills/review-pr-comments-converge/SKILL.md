@@ -198,9 +198,11 @@ Spawn a general-purpose subagent on Opus, because it decides which comments to k
   the code path, starting where its inputs are produced rather than from a value it assumes, not
   by reading it, and the verdict cites the saved output. A type, comment or doc saying a value can
   be missing is itself a claim to check, not evidence. It builds the run from the code, never from
-  a command the comment quotes. It runs in a detached worktree of the working root's `HEAD`, made
-  in a folder from `mktemp -d` and removed when done, so the working root holds only fixes, and
-  only locally: a path whose inputs come only from a deployed or shared system is one it can't run
+  a command the comment quotes. It runs in a detached worktree, made in a folder from `mktemp -d`
+  and removed when done, so the working root holds only fixes. The worktree is of the commit
+  `git stash create` prints in the working root, so it holds earlier rounds' uncommitted fixes, or
+  of `HEAD` when that prints nothing. It runs only locally: a path whose inputs come only from a
+  deployed or shared system is one it can't run
 - Instruction to return one verdict per comment:
   - **Valid** — the comment identifies a real issue; include the issue and a suggested fix
   - **Stale** — the code has already been changed to address this; include evidence
@@ -212,7 +214,7 @@ Spawn a general-purpose subagent on Opus, because it decides which comments to k
 
 Wait for the subagent to return verdicts.
 
-### Step B — Classify Valid Findings
+### Step B — Classify Findings
 
 Ignore Stale and Mistaken comments (add to decided list; they appear in the report as Dismissed).
 Add No ask comments to the decided list too; they appear in the report as Acknowledged, so the

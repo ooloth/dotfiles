@@ -1037,8 +1037,9 @@ at runtime: what a function returns, what a caller receives, whether a value can
 branch runs. A claim that code is unused, breaks a standard or reads badly keeps the checks above.
 Run the code path yourself, starting where its inputs are produced rather than from a value you
 assume, and cite the saved output. Run it as Agent 20's instruction 3 does: in detached worktrees
-of the reviewed head (and base), locally only. A type, comment or doc saying a value can be missing
-is itself a claim to check, not evidence.
+of the reviewed head (and base), locally only. When the change is uncommitted, the reviewed head is
+the commit `git stash create` prints, as in Agent 17's instruction 4. A type, comment or doc saying
+a value can be missing is itself a claim to check, not evidence.
 
 **When you can't run it, ask instead of asserting.** You can't run it when its inputs come only
 from a deployed or shared system, when the data is out of reach, or when Agent 20's instruction 2
@@ -1054,7 +1055,8 @@ is the user.
 - Merge duplicate findings — when multiple agents flag the same issue, keep the most precise version
   and note the convergence.
 - Drop findings you cannot verify and that are speculative rather than grounded in the diff, and
-  list each one under **Dropped** in Step 4.
+  list each one under **Dropped** in Step 4. A claim you could not run is not speculative: it is a
+  `?` row, as the paragraph above says.
 
 Only carry verified findings into Step 4, and the questions for claims you could not run.
 
