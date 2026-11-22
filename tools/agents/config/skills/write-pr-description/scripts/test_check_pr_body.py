@@ -273,6 +273,22 @@ class TestMarkdownSource:
         body = "#### 🧾 Proven by\n\n- The run below\n\n</details>\n\nA paragraph after the row.\n"
         assert check_pr_body.check_markdown(body) == []
 
+    @pytest.mark.parametrize(
+        "after",
+        ["#### 🔍 Verification steps\n\n- [ ] Run it\n", "</details>\n", ""],
+        ids=["next heading", "closing tag", "end of body"],
+    )
+    def test_proven_by_with_no_bullet_is_reported(self, after: str) -> None:
+        body = "#### 🧾 Proven by\n\n" + after
+        assert lines_of(check_pr_body.check_markdown(body), "Proven by has no bullet") == [1]
+
+    def test_only_the_empty_proven_by_is_reported(self) -> None:
+        body = (
+            "#### 🧾 Proven by\n\n- The run below\n\n</details>\n\n"
+            "#### 🧾 Proven by\n\n</details>\n"
+        )
+        assert lines_of(check_pr_body.check_markdown(body), "Proven by has no bullet") == [7]
+
     def test_property_number_is_reported(self) -> None:
         body = "- Holds P1 and P12\n"
         assert lines_of(check_pr_body.check_markdown(body), "property number") == [1, 1]

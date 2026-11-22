@@ -20,7 +20,7 @@ layout without complaint, so these are found only by checking:
     no <summary> or </details> on a list item's line, and no <details> on a bullet's line
       (`1. <details>` is how a row starts, so a numbered <details> is allowed)
     no fenced code block in the What section
-    only bullets under each `#### 🧾 Proven by` heading
+    at least one bullet, and only bullets, under each `#### 🧾 Proven by` heading
     no property number such as P1
     no link to a local path: ](/ , ](~ or ](file:
     no Pre-merge heading, since After merge is the outline's last row
@@ -373,16 +373,33 @@ def what_section_problems(tokens: list[Token]) -> list[Problem]:
     return found
 
 
+def empty_proven_by(heading: int) -> Problem:
+    return Problem(
+        LineNumber(heading + 1),
+        "Proven by has no bullet",
+        "the row's Proven by is empty, so it claims a behaviour and shows nothing that proves it",
+        "list what proves the row, or stop the PR if nothing does",
+    )
+
+
 def proven_by_problems(lines: list[str]) -> list[Problem]:
     found: list[Problem] = []
-    inside = False
+    heading: int | None = None
+    has_bullet = False
     for index, line in enumerate(lines):
+        ends_section = PROVEN_BY.match(line) or H4.match(line) or "</details>" in line
+        if heading is not None and ends_section:
+            if not has_bullet:
+                found.append(empty_proven_by(heading))
+            heading = None
         if PROVEN_BY.match(line):
-            inside = True
+            heading, has_bullet = index, False
             continue
-        if inside and (H4.match(line) or "</details>" in line):
-            inside = False
-        if inside and line.strip() and not BULLET.match(line):
+        if heading is None:
+            continue
+        if BULLET.match(line):
+            has_bullet = True
+        elif line.strip():
             found.append(
                 Problem(
                     LineNumber(index + 1),
@@ -392,6 +409,8 @@ def proven_by_problems(lines: list[str]) -> list[Problem]:
                     "make it a `- ` bullet, or move it under What I saw if it is output",
                 )
             )
+    if heading is not None and not has_bullet:
+        found.append(empty_proven_by(heading))
     return found
 
 
