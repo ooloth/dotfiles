@@ -333,8 +333,8 @@ user or operator could notice that this change affects: each one it adds or chan
 each nearby one users rely on that must stay as it is (`Unchanged`). One row each, in plain words,
 saying how it will be proven: a type, an assertion, a test row above, or a run a reviewer can repeat
 from outside. Every binding property appears in at least one row. This table is the PR's
-verification outline: `prove-it-works` reads it to decide what to prove and how, and
-`write-pr-description` shows its rows as they are.
+verification outline: `prove-it-works` takes its rows as the claims to prove, and
+`write-pr-description` shows each row's behaviour in its words and order.
 
 ### Phase 7: Present and Stop
 

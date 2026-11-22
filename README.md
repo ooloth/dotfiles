@@ -12,7 +12,8 @@ I've been experimenting with coding agents as a way to make good engineering pra
 repeatable, rather than just using them to generate code. Most of what's here exists because an
 agent failed in a specific way and the fix had to be something that runs, not something I remember.
 The same rules keep surfacing in different places: prove-it-works, the global instructions and
-write-pr-description each refuse to count a passing test suite as evidence that a change works.
+write-pr-description's verification steps each refuse to count a passing test suite as evidence
+that a change works.
 
 The skills and standards live in [`tools/agents/config/`](./tools/agents/config), symlinked into
 both `~/.claude/` and `~/.agents/` so they belong to no single harness and any agent that reads the
@@ -54,15 +55,9 @@ to the whole backlog and lists what has gone stale.
 
 ### Reviewing
 
-[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs up to thirteen specialised
-reviewers in parallel (fewer for a Markdown-only change), plus one that checks rule consistency
-when instruction files change, one that checks, when the base branch has moved since the fork,
-whether the PR still relies on what changed and where its edits land, one that checks whether
-merging another open PR that shares its files would undo its edits, one that checks that every
-assertion removed from the tests is still made or dropped for a stated reason, one that checks every
-claim the change's prose makes, one that runs a PR's own verification steps and the checks its
-author would run, base against head, and one that checks that removed prose took nothing a reader
-needs. Then it assumes they're wrong.
+[review-code](./tools/agents/config/skills/review-code/SKILL.md) runs specialised reviewers in
+parallel, each asking one question of the change, chosen by what the change touches; its
+description lists them. Then it assumes they're wrong.
 Every claim about library behaviour, API guarantees or numbers is checked against the installed code
 before it reaches me, and a claim that fails is struck rather than softened. A claim about how the
 code behaves rests on a run, or goes to the author as a question when it can't be run.
@@ -127,9 +122,9 @@ disappear. It fixes only what I approve.
 ### Writing
 
 [write-pr-description](./tools/agents/config/skills/write-pr-description/SKILL.md) writes the
-verification checklist a reviewer actually needs, which means never citing the test suite or CI, and
-cutting any step that can't run on a laptop before merging. The bar is what a skeptic would demand
-you prove without running tests or deploying.
+verification checklist a reviewer actually needs: its steps never run the test suite or CI, and a
+step that only a deployed system can run waits in an After merge row. The bar is what a skeptic
+would demand you prove without running tests or deploying.
 
 [create-pr](./tools/agents/config/skills/create-pr/SKILL.md) is the one way a PR gets opened. It
 commits and pushes the branch, opens a draft PR with the description `write-pr-description` writes,

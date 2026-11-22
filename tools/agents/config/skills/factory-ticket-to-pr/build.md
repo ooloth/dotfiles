@@ -157,12 +157,12 @@ send the failures to the builder and run the checks again once it returns.
 
 ## 6. Prove it
 
-Spawn a subagent to run `prove-it-works`, giving it the approach comment's property table as the
-claim to prove. Its report points each quote at the raw output it saved in the evidence folder
-it names, and shows the attempts that failed. "Tests pass" is not evidence for this step. Before
-using its verdicts, open one cited observation file in that folder yourself. If a finding is
-disproven, send its evidence to the builder, run the checks again, then run this step
-again.
+Spawn a subagent to run `prove-it-works`, giving it the design comment's Observable behaviour table
+as the claims to prove, and the approach comment's property table so it can say which binding
+property no row shows. Its report points each quote at the raw output it saved in the evidence
+folder it names, and shows the attempts that failed. "Tests pass" is not evidence for this step.
+Before using its verdicts, open one cited observation file in that folder yourself. If a finding is
+disproven, send its evidence to the builder, run the checks again, then run this step again.
 
 ## 7. Open the PR
 

@@ -57,8 +57,8 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
 - [ ] "Why" focuses on impact/outcome, and pre-empts the obvious reviewer question
 - [ ] What ends with the "See <ticket ID> for detailed explanations…" bullet when the ticket records
   an approach or a design, and holds no code block
-- [ ] How to verify's rows are the design's Observable behaviour rows, run by `prove-it-works`, with
-  no unplanned row and no property number (P1…)
+- [ ] How to verify's rows are the design's Observable behaviour rows, proven by `prove-it-works`,
+  with no unplanned row and no property number (P1…)
 - [ ] The outline is Setup, What's new, What stays the same, Clean up and After merge, each part
   present only when it has something, with every row collapsed and nothing inside a row collapsed
 - [ ] Each row has Proven by, Verification steps and What I saw as headings with lists, and its What
@@ -131,9 +131,10 @@ so only the rows are collapsed and nothing inside a row is. The outline, in this
 **Where the rows come from.** The rows are the design's Observable behaviour table, in its words and
 order: its `New` rows under What's new and its `Unchanged` rows under What stays the same. The
 design was approved before the code was written, so the PR shows the plan the reviewer can hold the
-code to, and this skill never invents, drops or rewords a row. `prove-it-works` runs the rows and
-hands back their steps and output: use its report for the PR's head commit, and when the session has
-none, or the head has moved since, run `prove-it-works` on the PR first. Work with no design gets
+code to, and this skill never invents, drops or rewords a row's behaviour. `prove-it-works` takes
+each row as a claim, proves it, and hands back the steps it ran and their output: use its report for
+the PR's head commit, and when the session has none, or the head has moved since, run
+`prove-it-works` on the PR first. Work with no design gets
 its Observable behaviour table from the `design` skill before the PR opens, since that table is the
 only source of rows. A row covers one behaviour a user or operator would notice; a finer point, such
 as a format detail or a speed bound, goes inside the row whose behaviour it refines. Nothing that
@@ -145,12 +146,18 @@ either a bug, which stops the PR until it is fixed and run again, or behaviour t
 have, which the design gains through a change comment on the ticket before it becomes an ordinary
 row. The user hears about each one before the PR opens.
 
+**A planned row that doesn't hold stops the PR.** A row `prove-it-works` disproves is a bug, which
+stops the PR until it is fixed and run again. When a row's proof differs from the design's plan,
+because a planned test, type or assertion doesn't exist at the head commit or a planned run did not
+hold, the user hears about it before the PR opens.
+
 **Inside a row,** in this order, each a `####` heading with a blank line above it:
 
-- **`#### 🧾 Proven by`:** a bullet list of what proves the behaviour: the run below, a named test
-  CI runs, a type, a runtime assertion, a CI check. Every entry is a bullet. The list is what
-  `prove-it-works` reports proved the row, not the design's planned proof, so a proof it found
-  while exploring appears and one it found wanting does not.
+- **`#### 🧾 Proven by`:** a bullet list of what proves the behaviour at the head commit, not what
+  the design planned: the run below, when `prove-it-works` proved the row by running it, and each
+  named test CI runs, type, runtime assertion or CI check that exists at the head commit and covers
+  the row. A planned proof that doesn't exist there, or a run that did not hold, is left out. Every
+  entry is a bullet.
 - **`#### 🔍 Verification steps`:** a `- [ ]` checklist a reviewer can follow from a fresh
   checkout, each item an action or an "Expect to see X" line, each building on the one before.
   Left out, with a bullet under Proven by saying so, when the behaviour can't be seen from outside.
