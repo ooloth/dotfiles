@@ -81,6 +81,10 @@ Your own list and the fresh subagent both look for:
 - A doc that contradicts a recorded decision
 - A README or doc describing a check its script does not implement
 - A change in progress that is not flagged where a reader will meet it
+- In a public repo, an example, name, quote or dated "Seen" note copied from a real session rather
+  than made up: a channel name, ticket key, project word, colleague, or Slack or GitHub ID. The fix
+  replaces it with a generic made-up example. Seen 2026-11-21 in dotfiles: a new skill's examples
+  named two real work channels and a work project's term
 
 Check every subagent finding against the files before keeping it.
 
