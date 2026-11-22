@@ -14,9 +14,10 @@ rest of it, as `decision-making.md` defines them. At its maximum:
 ## Must
 
 **Existing docs reflect current behavior.**
-When behavior changes, the docs that describe it change too. Stale examples,
-outdated command signatures, removed flags, and superseded architecture
-descriptions don't exist after a merge.
+When behavior changes, the docs that describe it change too. After a merge, no doc still describes
+behavior the merge changed, such as a removed flag or an outdated command signature. A doc that
+describes something another repo or system owns is checked against that source whenever the doc is
+reviewed, because a change there reaches the doc without a merge here.
 
 **Public interfaces are documented.**
 Every interface a caller uses, such as an API or a CLI command, has documentation
@@ -24,12 +25,12 @@ describing what it does, what it accepts, and what it returns. A caller
 can use it without reading the implementation.
 
 **Non-obvious code has a comment explaining why.**
-Hidden constraints, subtle invariants, workarounds for specific bugs, and
-behavior that would surprise a reader are annotated. What the code does is
+Anything in the code that would surprise a reader, such as a hidden constraint or a workaround for
+a specific bug, has a comment. What the code does is
 not explained — well-named identifiers do that.
 
 **A doc or comment holds only what its source of truth cannot say.**
-Reasons, rejected options, constraints, traps and procedures belong in prose. A
+What only a person can say, such as a reason, a rejected option or a trap, belongs in prose. A
 fact that code, configuration or a canonical external page already states is
 linked, not copied, because a copy goes stale at the next change to its source. An identifier a
 command needs in order to run is part of the command, not a copy. A value quoted to show how a
@@ -42,9 +43,8 @@ config that states what a third-party tool does with a setting: the comment cite
 source file that says so, and the claim was checked there, not recalled. Where the docs are silent,
 the tool's source decides.
 Numbers and behaviors whose origin is an untraceable conversation or a model's recollection are
-left out, or recorded as an open question where readers look for open questions. Once an unsourced
-figure sits in a document of facts it is indistinguishable from a measured one, and decisions get
-built on it.
+left out. Once an unsourced figure sits in a document of facts it is indistinguishable from a
+measured one, and decisions get built on it.
 
 **A recorded absence rests on two sources that agree.**
 "No open alerts", "no errors in the logs" and "nothing calls this" are facts
@@ -81,8 +81,7 @@ mechanism that makes the rule matter is what carries the weight, so that is
 what is written. "A refusal here is the signal, not an obstacle" survives; an
 account of the day somebody routed around it does not.
 
-**A date attached to a source is provenance and stays; a date attached to our
-own activity is narration and goes.**
+**A date that says when a source was read stays, and a date that says when work happened goes.**
 "Read 2026-09-12" tells a reader how current a fact is and is load bearing on
 whether to trust it. "Corrected on 2026-09-12" tells them about a session they
 were not in. The two look alike and only one survives.
@@ -93,8 +92,7 @@ change the constant, re-add the dependency — what ships is the instruction not
 to, and the constraint that makes it so. Not the account of what went wrong
 when someone did.
 
-**A command or procedure a doc presents as working was run as written and did what the doc says,
-and the doc names all of its effects.**
+**Every command or procedure a doc says works has been shown to do what the doc says.**
 Running without an error is not the bar. A command can succeed and then be undone by something else
 that owns the same state, such as a controller that reconciles to a declared spec, or it can change
 more than the doc says. Before a doc that gives one is committed, its commands are run against the
@@ -103,10 +101,10 @@ name and reference against that system without writing to it, and whatever that 
 such as another owner putting the old state back, is read from the configuration that decides it.
 Where no such mode exists, the configuration that decides the outcome is read instead. The change
 that adds or edits the doc records what was run and what it showed, so a reviewer checks the run
-instead of asking for it. A review of a doc already in the repo checks its commands against
-the system, or against the configuration that owns their state, instead of looking for that record.
+instead of asking for it. A review of a doc already in the repo checks its commands the same way an
+author would, instead of looking for that record.
 Every effect beyond the step's stated purpose, and every other owner of the state it changes, is
-named in the doc. A code sample runs as pasted once any value the doc says how to fill is filled.
+named in the doc.
 
 **Structured content reads as prose or lists rather than tables.**
 Docs are read and edited as plain text far more often than rendered, and a
@@ -121,9 +119,9 @@ PR description.
 ## Should
 
 **Behavior appears in the right doc surfaces.**
-A flag appears in help text. A config key appears in the example config. Each
-surface is updated in the same change as the behavior it describes, and a
-surface that never received its entry is as wrong as one that went stale.
+Each behavior appears on every surface where a reader looks for it, such as a flag in help text or
+a config key in the example config. Each surface is updated in the same change as the behavior it
+describes, and a surface that never received its entry is as wrong as one that went stale.
 
 **A decision reaches every reader it binds, each in the place that reader looks.**
 The reasoning and the rejected options sit in one decision record, except for a
@@ -158,6 +156,7 @@ or one link from them, so a reader who starts where everyone starts reaches it i
 Every value the reader would otherwise look up is filled in, or the doc says exactly where to get
 it. A placeholder with no source sends the reader to guess, and a guess aimed at the wrong target
 runs without complaint. Illustrative values in examples that run against nothing are out of scope.
+A code sample runs as pasted.
 
 **A check a procedure asks the reader to run can be seen to fail.**
 A step that has the reader compare an answer with an expected one is a test run by hand, and the
@@ -181,7 +180,7 @@ by the words that carry the logic. Those
 joining words and the distinctions an argument turns on are structure, not
 padding — cutting them leaves assertions the reader has to reassemble.
 
-**Structure that prose would deliver one piece at a time is drawn.**
+**A diagram shows what prose would have to describe one piece at a time.**
 When understanding a change means holding several parts in mind at once, such
 as actors exchanging messages, states and the transitions between them, or
 components and what depends on what, a diagram shows them together where prose
@@ -243,8 +242,8 @@ A pattern breaks silently when the text it matches changes.
 **Prose wraps at 100 columns.**
 Fixed-width wrapping keeps a diff to the lines that actually changed instead of
 reflowing a paragraph because one word was added. Code blocks, URLs, and tables
-wrap where they wrap. A file whose prose is unwrapped keeps its convention, or is rewrapped as a
-whole in a commit of its own, so no diff mixes the two.
+wrap where they wrap. A file whose prose isn't wrapped at 100 columns keeps the convention most of
+it follows, or is rewrapped as a whole in a commit of its own, so no diff mixes conventions.
 
 ## Consider
 
