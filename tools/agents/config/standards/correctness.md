@@ -14,9 +14,8 @@ that does it quietly harms them longest. At its maximum:
 
 ## Must
 
-**Logic covers all meaningful branches.**
-Every condition, bound and comparison is exact. Off-by-one errors don't
-exist. Every reachable branch is handled.
+**Logic handles every reachable branch.**
+Every condition, bound and comparison is exact, so off-by-one errors don't exist.
 
 **Edge cases are handled.**
 Edge cases, such as an empty collection, a missing value or a boundary value,
@@ -37,18 +36,17 @@ Errors are surfaced the same way surrounding code surfaces them. Errors are not
 swallowed silently unless the codebase establishes that as a deliberate pattern.
 
 **Existing solutions are used.**
-When the codebase already solves this problem — such as a utility or a shared
-abstraction — that solution is used rather than reimplemented.
+When the codebase already solves a problem the code needs solved, such as with a utility or a shared
+abstraction, that solution is used rather than reimplemented.
 
 **Implementation is complete and finished.**
 Every stated outcome exists in the code. There are no half-implemented paths, silently missing
 behaviors, known hacks, or deferred cleanup. A rule the change introduces holds everywhere its
-meaning reaches, including places the change did not touch, such as
-generated messages or configuration kept elsewhere. Those places are found by searching for every
-use of the thing the rule constrains — such as its name or its key — not for the rule's own name,
-because what never mentions the rule is where it is most often broken. Incomplete work and shortcuts
-don't ship as permanent fixtures — they compound and they're easiest to address while the context is
-still loaded.
+meaning reaches, including places the change did not touch, such as generated messages or
+configuration kept elsewhere. Those places include every use of the thing the rule constrains, such
+as its name or its key, not only places that mention the rule. Incomplete work and shortcuts don't
+ship as permanent fixtures — they compound and they're easiest to address while the context is still
+loaded.
 
 **Runtime invariants and violable contracts are asserted, not only tested.**
 Conditions that must always hold — such as a precondition on an input or a constraint on internal

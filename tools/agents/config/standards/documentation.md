@@ -38,14 +38,14 @@ command needs in order to run is part of the command, not a copy. A value quoted
 figure was worked out links its source.
 
 **Recorded facts name their source.**
-Every fact a doc records, such as a figure or a quoted behavior, carries where it came from, such
-as the page, file or measurement it was read from. That includes a comment in code or
-config that states what a third-party tool does with a setting: the comment cites the doc page or
-source file that says so, and the claim was checked there, not recalled. Where the docs are silent,
-the tool's source decides.
-Numbers and behaviors whose origin is an untraceable conversation or a model's recollection are
-left out. Once an unsourced figure sits in a document of facts it is indistinguishable from a
-measured one, and decisions get built on it.
+Every fact a doc records, such as a figure or a quoted behavior, carries where it came from, such as
+the page, file or measurement it was read from. That includes a comment in code or config that
+states what a third-party tool does with a setting: the comment cites the doc page or source file
+that says so, and the claim was checked there, not recalled. Where the docs are silent, the tool's
+source decides. This covers figures and specific behaviors. A general word such as often or usually
+is a judgment, and it stays plain rather than sourced. Numbers and behaviors whose origin is an
+untraceable conversation or a model's recollection are left out. Once an unsourced figure sits in a
+document of facts it is indistinguishable from a measured one, and decisions get built on it.
 
 **A recorded absence rests on two sources that agree, or says why only one exists.**
 A claim that something is absent, such as "no errors in the logs", is a fact
@@ -58,9 +58,9 @@ the finding.
 
 **Comments and documents describe the present.**
 Anything about the past or the schedule, such as what a value used to be or how far along the work
-is, is invisible to a reader of the current state, and all of it competes
-with the instruction for their attention. Version control holds the past;
-whatever tracks work holds the schedule.
+is, is invisible to a reader of the current state, and all of it competes for their attention with
+what the doc is there to say. Version control holds the past; whatever tracks work holds the
+schedule.
 
 Sentences that narrate change over time, with words such as _used to_, _previously_ or _no
 longer_, or whose subject is a past session, author or incident, are rewritten without it, and the
@@ -73,7 +73,7 @@ reader repeats, such as rebuilding an environment, is not work in progress and
 stays.
 
 **A rule is stated without the incident that produced it.**
-The war story is the most tempting form of this, because it reads as evidence
+A war story is the most tempting way to break this rule, because it reads as evidence
 the rule is well founded. It is not: it adds nothing a reader can act on, and
 it dates the rule to a situation that will not recur in the same shape. The
 mechanism that makes the rule matter is what carries the weight, so that is
@@ -81,10 +81,9 @@ what is written. "A refusal here is the signal, not an obstacle" survives; an
 account of the day somebody routed around it does not.
 
 **A date that says when a source was read stays, and a date that says when work happened goes.**
-"Read 2026-09-12" tells a reader how current a fact is and is load bearing on
-whether to trust it. "Corrected on 2026-09-12" tells them about a session they
-were not in. The two look alike and only one survives. A measurement's date is the first kind: it
-says when the figure was read.
+"Read 2026-09-12" tells a reader how current a fact is and so whether to trust it. "Corrected on
+2026-09-12" tells them about a session they were not in. The two look alike and only one survives. A
+measurement's date is the first kind: it says when the figure was read.
 
 **History survives only as a forward-facing instruction.**
 Where a reader lacking context would do the wrong thing, such as deleting a guard, what ships is the
@@ -106,7 +105,7 @@ author would, instead of looking for that record.
 Every effect beyond the step's stated purpose, and every other owner of the state it changes, is
 named in the doc.
 
-**Structured content reads as prose or lists rather than tables.**
+**A table appears in a doc only as a lookup that fits the wrap width, or in output read rendered.**
 Docs are often read and edited as plain text rather than rendered, and a
 markdown table there is alignment padding nobody maintains: editing one cell
 means re-padding its row, a formatter re-pads the whole block, and a one-word
@@ -173,12 +172,11 @@ input. An absolute can be false with nothing in the text to show it, because the
 is usually one the writer did not think of.
 
 **Prose is followed in one pass, forward, without backtracking.**
-A reader who reaches the third paragraph and has to return to the first has been
-failed, however short the piece is. Length is not the measure. Prose reads the way it
-would be said aloud. Speech keeps one idea per sentence, in the order the reader needs them, joined
-by the words that carry the logic. Those
-joining words and the distinctions an argument turns on are structure, not
-padding — cutting them leaves assertions the reader has to reassemble.
+A reader who reaches the third paragraph and has to return to the first has been failed, however
+short the piece is. Length is not the measure. Prose reads the way it would be said aloud. Speech
+keeps one idea per sentence, in the order the reader needs them, joined by the words that carry the
+logic. Those joining words and the distinctions an argument turns on carry the logic, so cutting
+them leaves assertions the reader has to reassemble.
 
 **A list of examples says it is examples, and the general idea comes first.**
 A reader takes an unmarked list as the whole set and stops looking past it. Stating the general
@@ -209,10 +207,9 @@ that restates the surrounding text, or that holds two boxes and an arrow, is
 left out.
 
 **Diagrams are plain text in a code block, no wider than 100 columns.**
-They are read in terminals and in trackers that do not render diagram
-languages, and plain text looks the same in all of them. A diagram language shows as source
-wherever it is not rendered. At 100 columns or
-less, a diagram does not wrap in a narrow terminal or comment pane.
+They are read in terminals and in trackers that render markdown but not diagram languages, and plain
+text looks the same in all of them. A diagram language shows as source wherever it is not rendered.
+At 100 columns or less, a diagram does not wrap in a narrow terminal or comment pane.
 
 **Statements are unhedged, and what is uncertain is recorded as an open question.**
 Caveats woven through prose, such as "not verified yet", weaken every sentence around them while
@@ -221,21 +218,22 @@ for open questions, becomes work someone can pick up.
 
 **An invariant a machine could check is checked by a machine, not asserted in prose.**
 Documentation and agent instructions are where unchecked invariants collect. An assertion in a doc
-with no check that monitors it is a nudge that drifts from reality, and an instruction to agents or
-maintainers to always or never do something is a check with no runner and no sign it is followed.
-Both read as settled and neither is. Each one either has a runner or states why it cannot have one.
+with no check that monitors it is an unchecked statement that goes stale, and an instruction to
+agents or maintainers to always or never do something is a check with no runner and no sign it is
+followed. Both read as settled and neither is. Each one either has a runner or states why it cannot
+have one.
 
 How it runs is a separate choice: whichever mechanism is most reliable and deterministic for the
 case, such as a type, a lint rule or a test. Several mechanisms are paired where together they
 catch what one would miss.
 
 Docs and non-deterministic inference are good places to discover invariants worth checking, and a
-check can start as a wish in a code comment. Whatever can be checked automatically graduates to a
-check, and where judgement must remain, the parts that can be made mechanical are extracted from it.
+check can start as a wish in a code comment. Whatever can be checked automatically becomes a check,
+and where judgement must remain, the parts that can be made mechanical are extracted from it.
 
 **An index entry describes what its target contains rather than restating its name.**
-"errors — error handling" tells a reader nothing the filename didn't. An entry
-earns its place by carrying what the name can't.
+"errors — error handling" tells a reader nothing the filename didn't. An entry is worth having only
+when it says what the name can't.
 
 **References point to files rather than to headings within them.**
 A path survives a document being reorganised. An anchor breaks silently the
@@ -244,7 +242,7 @@ moment someone rewords a heading, and nothing reports it.
 **Docs and code comments state what to check, not a shell search to run.**
 A pattern breaks silently when the text it matches changes.
 
-**Prose wraps at 100 columns.**
+**Prose wraps at 100 columns, or keeps the convention its file already follows.**
 Fixed-width wrapping keeps a diff to the lines that actually changed instead of
 reflowing a paragraph because one word was added. Code blocks, URLs, and tables
 wrap where they wrap. A file wrapped some other way keeps its own

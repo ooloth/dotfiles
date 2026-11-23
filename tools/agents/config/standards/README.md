@@ -55,23 +55,24 @@ govern how strongly each standard should be upheld or flagged.
 
 ## Tiers
 
-**Must** — no exceptions. A violation is always wrong. Writing skills never
-produce violations. Reviewing skills flag violations immediately regardless of context.
+**Must**: holds in every case the claim covers, and a condition in the claim itself, such as an
+"unless" in its body, is part of what it covers rather than an exception to it. A violation is
+always wrong. Code written against a Must has none, and a review flags every one it finds, whatever
+the context.
 
-**Should** — true by default. A violation is wrong unless there is a documented,
-deliberate reason for it. Writing skills follow this unless they can name the
-exception. Reviewing skills flag violations and ask whether the exception applies.
+**Should**: true by default. A violation is wrong unless it has a documented, deliberate reason.
+Code written against a Should meets it or names its exception, and a review flags each violation and
+asks whether the exception applies.
 
-**Consider** — worth raising for judgment. Neither right nor wrong by default.
-Writing skills think about it. Reviewing skills surface it when the trade-off
-seems unresolved.
+**Consider**: worth raising for judgment, neither right nor wrong by default. A writer weighs it,
+and a review raises it where the tradeoff looks unresolved.
 
 ## File index
 
 Every file whose scope matches the task at hand is loaded, and so is a file that might match: an
 extra file costs one read, and a skipped one means missed guidance.
 
-- **`agent-harness.md`** — agent context files (CLAUDE.md, AGENTS.md), harness config, tool
+- **`agent-harness.md`** — agent context files, such as CLAUDE.md or AGENTS.md, harness config, tool
   permissions
 - **`api-design.md`** — exported function signatures, REST/RPC routes, SDK surface, interface
   declarations
