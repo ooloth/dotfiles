@@ -14,16 +14,13 @@ engineering guidance, this one carries what is true only here.
 
 ## No Private Values
 
-This repository is public. No file, path, commit message or issue text names a private value: an
-internal hostname or URL, a cloud project, dataset, table or cluster ID, a private repo, an internal
-project's name or codename, the Jira cloud ID, a Slack channel name or ID, a Slack user ID, a work
-ticket key, or a colleague or their GitHub handle. Names that are already public,
-such as the employer, its GitHub org and the tools it uses, may appear. An example uses made-up
-names, such as `alice` or `example-repo#123`, never a value copied from a real session.
+This repository is public. No file, path, commit message, issue or pull request text names a
+private value, and [docs/invariants/public-repo.md](docs/invariants/public-repo.md) lists what
+counts as one. An example uses made-up names, such as `alice` or `example-repo#123`, never a value
+copied from a real session.
 
 A value a tool needs lives in the ignored `private.env` as a `PRIVATE_*` key, listed in
-`private.env.example`. The full rule is in
-[docs/invariants/public-repo.md](docs/invariants/public-repo.md).
+`private.env.example`.
 
 ## Folder Structure
 
