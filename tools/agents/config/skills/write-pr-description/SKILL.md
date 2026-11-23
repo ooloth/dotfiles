@@ -61,8 +61,9 @@ allowed-tools: [Bash, Read, Write, Glob, Grep]
   describes, with no unplanned row and no property number (P1…)
 - [ ] The outline is Setup, What's new, What stays the same, Clean up and After merge, each part
   present only when it has something, with every row collapsed and nothing inside a row collapsed
-- [ ] Each row has Proven by, Verification steps and What I saw as headings with lists, and its What
-  I saw holds only output from running its own steps
+- [ ] Each row has Proven by, Verification steps and What I saw as headings with lists, except a 🧪
+  row or a row whose run waits under After merge, which has only Proven by, and the Setup, Clean up
+  and After merge rows; its What I saw holds only output from running its own steps
 - [ ] The body was rendered through GitHub's markdown API and checked
 - [ ] No implementation details snuck in
 - [ ] No hard-wrapped prose: each paragraph and list item is one line, because GitHub renders every
@@ -159,18 +160,19 @@ hold, the user hears about it before the PR opens.
 - **`#### 🧾 Proven by`:** a bullet list of what proves the behaviour at the head commit, not what
   the design planned: the run below, when `prove-it-works` proved the row by running it, and each
   named test CI runs, type, runtime assertion or CI check that exists at the head commit and covers
-  the row. A planned proof that doesn't exist there, or a run that did not hold, is left out. Every
+  the row. A row only a deployed system can show names the run under After merge instead of the run
+  below. A planned proof that doesn't exist there, or a run that did not hold, is left out. Every
   entry is a bullet.
 - **`#### 🔍 Verification steps`:** a `- [ ]` checklist a reviewer can follow from a fresh
   checkout, each item an action or an "Expect to see X" line, each building on the one before.
-  Left out, with a bullet under Proven by saying so, when the behaviour can't be seen from outside.
+  Left out, with What I saw, in a 🧪 row, whose behaviour can't be seen from outside.
 - **`#### 👀 What I saw`:** what running exactly those steps showed. A reviewer trusts a step
   because its output is here, so this holds only output pasted from that run, never from another
   run, another script or memory. Text goes in a list, numbered for a sequence and bulleted
   otherwise, with each output block under the item it supports. A screenshot or recording is
   uploaded as `use-gh` describes, with alt text saying what it shows.
 
-**A row's summary** is an emoji for the kind of evidence What I saw holds, then the behaviour in
+**A row's summary** is an emoji for the kind of evidence the row holds, then the behaviour in
 plain words, stated as what is true after the change, in plain text with `<code>…</code>` for code
 and values: 📄 for text output of any kind (a terminal, a browser console, a log), 📸 for a
 screenshot, 🎬 for a recording, and 🧪 for a behaviour shown only by tests. Setup, Clean up and
@@ -193,9 +195,11 @@ into steps of the row it proves and run again, or left out.
 
 - A PR that only fixes docs or comments changes no behaviour: it has What stays the same rows, or
   none, and How to verify says in one line why.
-- A PR whose behaviour shows only on a live system puts its steps under After merge, and its rows
-  say so under Proven by.
-- A behaviour covered only by tests is still a row, a 🧪 one, so the outline stays complete.
+- A PR whose behaviour shows only on a live system puts its steps under After merge, and each such
+  row's Proven by names the run under After merge.
+- A behaviour covered only by tests is still a row, a 🧪 one, so the outline stays complete. Its
+  Proven by names the test and the CI check that ran it at the head commit, and it has no
+  Verification steps and no What I saw, since CI already shows that result.
 - A row whose steps need a browser, another machine or credentials says so, and the user hears it
   before the PR opens.
 
