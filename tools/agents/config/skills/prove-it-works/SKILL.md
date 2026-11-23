@@ -62,9 +62,11 @@ How you gather the proof is yours to decide. What you return must meet this bar:
   `merge-and-verify` keeps for a merge, and name the exact artifact it observed (host, revision,
   image, token, file). Every quote in the report points to the file it came from, and matches it
   exactly. A `mktemp -d` folder is temporary and the system deletes it in time, so the report names
-  the folder for the caller, and whoever posts the report carries each cited file's content in the
-  post, never a local path: quoted text inline, and a screenshot or recording uploaded where the
-  destination accepts one, as `use-gh` describes, or described in words where it does not.
+  the folder for the caller, and whoever posts the report carries what it quotes from each cited
+  file in the post, never a local path: quoted text inline, and a screenshot or recording uploaded
+  where a skill here says how, as `use-gh` does for GitHub, or described in words elsewhere,
+  including Jira. On a public destination, the poster opens each image and checks it for private
+  values before uploading it.
 - **Before and after,** wherever a before state can be observed.
 - **Every attempt is shown,** including the ones that failed or cut against the claim.
 - **What an app shows is observed in the app itself,** never inferred from server or internal

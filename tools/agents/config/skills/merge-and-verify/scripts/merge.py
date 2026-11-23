@@ -13,13 +13,15 @@ The script reads the PR from GitHub and refuses unless all of these hold:
 - the PR is open and not a draft
 - the PR changes at least one file: a head whose tree matches its base would merge as an empty
   commit while every other condition still holds
-- someone approved it, on any commit, and no reviewer's latest review requests changes or was
-  dismissed: a push to an approved PR never undoes its approval. The repo owner's own PR, merged
-  by the owner, needs no approval, because GitHub never lets an author approve their own PR and
-  on a personal repo nobody else can
+- someone's latest review approves it, on any commit, and no reviewer's latest review requests
+  changes: a push to an approved PR never undoes its approval. A dismissed review counts as no
+  review from that reviewer, so it removes their approval or change request and refuses nothing by
+  itself. The repo owner's own PR, merged by the owner, needs no approval, because GitHub never lets
+  an author approve their own PR and on a personal repo nobody else can
 - every check on the head passed, and a head with no checks at all comes from a repo whose recent
   merged PRs ran none either: CI is respected where it exists, and a repo without CI can still merge
 - GitHub says it can merge
+- the repo allows at least one merge method
 
 A check still running is a wait, not a refusal: when the running checks are all that stands
 between the PR and merging, the script exits 3 so the caller checks again later.

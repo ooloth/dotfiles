@@ -22,8 +22,8 @@ tests) — that belongs to `/design`, which runs after the user approves the app
 
 1. Read `~/.agents/standards/README.md` and `~/.agents/standards/decision-making.md`. Both always
    apply: recommending an approach is a decision. When the change runs in a deployed environment,
-   also read `~/.agents/standards/deployment.md`, because how a change is measured and rolled out
-   shapes the PRs the approach divides it into.
+   or sets out to move a measurable outcome, also read `~/.agents/standards/deployment.md`, because
+   how a change is measured and rolled out shapes the PRs the approach divides it into.
 2. List `~/.agents/standards/` and load any other file whose theme matches the task.
 3. Load additional standards files only when the investigation shows they matter.
 4. If the task scope is still unclear, prefer asking a clarifying question over loading every file.
@@ -106,14 +106,14 @@ cost.
 
    Where the work sets out to move a measurable outcome, such as a latency, an error rate or a
    memory figure, the property names the outcome and the query that will measure it in production,
-   and the approach plans what judging it needs, as `deployment.md`'s Should "A change made to move
-   a measurable outcome is judged against an expected range set before it ships" describes. Each
-   option is scored partly on its anticipated effect on that outcome, so an estimate an option's
-   score rests on is checked, by a prototype or a measurement, before the option is chosen, wherever
-   that costs less than choosing wrongly. When no production signal can answer the query yet, the
-   signal ships first, in a deploy of its own, and the approach waits for a baseline from it before
-   the change ships. The expected range itself is set in `/design`, once the baseline's noise is
-   known.
+   or the benchmark where nothing serves production traffic. The approach plans what
+   `deployment.md`'s Shoulds on measured changes require, including how the signal comes to record
+   before the change's behaviour serves when it does not yet. Each option is scored partly on its
+   anticipated effect on that outcome, so an estimate an option's score rests on is checked by a
+   measurement before the option is chosen, wherever that costs less than choosing wrongly. A
+   read-only measurement can run here. A prototype is a write, so propose it as a step for the user
+   to approve, run in a `mktemp -d` folder outside the repo. The expected range itself is set in
+   `/design`, once the baseline's noise is known.
 
    Where the change runs in a deployed environment, how it reaches users is part of the approach:
    all at once, behind a flag, or one group at a time. The choice follows from the properties, such

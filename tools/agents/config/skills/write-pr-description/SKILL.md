@@ -244,7 +244,8 @@ into steps of the row it proves and run again, or left out.
 - In a repo whose `CLAUDE.md` or `AGENTS.md` says its PRs merge through `merge-and-verify`, a
   resolved issue is listed as `Resolves (closed by merge-and-verify once proven): #N` instead of
   `Fixes #N`, because a closing keyword closes the issue at merge, before any proof, and
-  `merge-and-verify` closes it only on a proven verdict
+  `merge-and-verify` closes it only after its proof, on its own close conditions or the user's
+  choice
 
 ### Anti-patterns
 

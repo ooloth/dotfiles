@@ -206,18 +206,18 @@ confusing report, comes before the next work item. Resolve it with the user befo
   approved": ask for each PR when its turn comes, because the tab's prompt counts as the user
   starting `merge-and-verify`, which approves every step its "What invoking this skill approves"
   section lists, the merge itself included. Start it with the `use-rex` launcher and the prompt
-  `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and its backlog list
-  and cleanup offer are answered, or once the user has answered a report it held back; the PR's row
-  leaves the table then too, and any work the user's answer leaves joins as its own row.
-  Name the environment in the prompt when the repo deploys to more than one. A permission prompt,
-  such as the merge gate's, is answered by the user in that tab. A question or a wording to
-  approve, such as a backlog change it lists or a report it held back, is relayed as any worker's
-  is. Merge in the agreed
-  order: start the next PR's tab only after the previous one's watch has ended "serving" and its
-  proof proved every part of its claim. A report it held back, because the proof disproved or
-  could not observe part of the claim, stops the batch until the user decides what to do. Relay
-  each report, and never
-  tell the user to press "Squash and merge".
+  `/merge-and-verify <owner>/<repo>#<n>`. Close it once its report is posted and every question
+  its final message asks is answered: the epilogue's question (revert or fix, or how the ticket
+  ends), the backlog list, the production-watch offer and any cleanup offer. Keep it open while an
+  accepted watch or a scheduled *not measured yet* check is still to run, because both run in that
+  tab and the ticket's close waits on them. The PR's row leaves the table then too, and any
+  work the user's answer leaves joins as its own row. Name the environment in the prompt when the
+  repo deploys to more than one. A permission prompt, such as the merge gate's, is answered by the
+  user in that tab. A question or a wording to approve, such as the epilogue's question or a
+  backlog change it lists, is relayed as any worker's is. Merge in the agreed order: start the next
+  PR's tab only after the previous one's epilogue is "everything proven, and every row met". Any
+  other epilogue stops the batch until the user decides what to do. Relay each report with its
+  "Measured effect" table, and never tell the user to press "Squash and merge".
 - **What serves, for the rest of the batch:** a `merge-and-verify` watch ends once its own PR is
   serving, but another person's merge can still land on a shared stack. In each sweep, for as long
   as work depends on an environment, check that what serves there still contains every PR the

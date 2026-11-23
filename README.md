@@ -91,9 +91,13 @@ repo's docs, counts the change as serving only when the live artifact's commit c
 and checks every five minutes or so in a fresh turn until the watch reaches one of its named
 endings. Whatever the proof's verdicts, it posts the proof on the ticket, with each measured effect
 set against the range expected before the change shipped, and lists the backlog changes what
-shipped calls for, posting only the ones I approve. It closes the ticket once every PR for it has a
-proven verdict. Then it ends the way the result calls for: a Slack message announcing a win, an
-offer to draft a follow-up task, or, when something broke, an offer to revert.
+shipped calls for, posting only the ones I approve. It closes the ticket on its own only when the
+skill's close conditions hold, and otherwise asks me. Then it ends the way the result calls for:
+when something broke, an offer to revert or to draft a fix; when the target wasn't shown, a
+question about how the ticket ends; when every measured effect met its range, a Slack message
+announcing it. Once I answer, the first also sends Slack a note, and the second does when some
+measured effect met its range. Slack messages go only where
+`PRIVATE_SLACK_REPORT_CHANNEL` is set.
 
 [monitor-prs](./tools/agents/config/skills/monitor-prs/SKILL.md) checks every fifteen minutes or so,
 or every five while one of my pull requests has checks running or is undecided, for the pull

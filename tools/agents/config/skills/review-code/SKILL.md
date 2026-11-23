@@ -265,6 +265,10 @@ Approach: [how this change addresses it, at a high level]
 Key outcomes: [invariants, constraints, or requirements the implementation must satisfy]
 Recorded decisions: [the ticket's numbered properties, rejected options, deliberate choices and
   deferrals, each with where it is recorded; "none found in <where you looked>" when empty]
+Expected effect: [for each outcome the change sets out to move, the query or benchmark, the
+  baseline, its spread and the expected range, verbatim from the design comment, the ticket or the
+  PR's description, with where it is recorded; "none promised" when the change promises none;
+  "promised, none recorded in <where you looked>" when it promises one with no range]
 Dry-run output: [each planned action and the summary line, verbatim, then the path of a file
   holding the full dry run, attribute lines included, for agents to read; "none posted" when CI
   posted none]
@@ -636,7 +640,10 @@ Instructions:
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed.
 4. If package files changed, read them in full. If config or env handling changed, read those files in full.
-5. Measured changes: when the intent, the PR description or the ticket says the change moves a measurable outcome (faster, lighter, fewer errors, smaller responses), check `deployment.md`'s Should "A change made to move a measurable outcome is judged against an expected range set before it ships" against it. Name the query that would measure the outcome in production, and say whether a signal answering it is already in production before this change, from code on the base branch, rather than added in this diff. A signal this diff adds ships with the change, so nothing can take a before reading: that is a finding, with the recommendation to ship the signal first in its own PR. Also flag a promised outcome with no expected range or baseline recorded in the PR, the ticket or its design comment.
+5. Measured changes: when Context's Expected effect line names an outcome, check it against `deployment.md`'s Shoulds on measured changes.
+   - Name the query that would measure the outcome in production, or the benchmark where nothing serves production traffic.
+   - Say whether the signal records before the change's behaviour serves: it is already in production (from the base branch or the platform), or this diff adds it while the change stays behind a flag that is off until a baseline is taken. A signal this diff adds with the change's behaviour live has no before reading: that is a finding, with the recommendation to ship the signal first in its own PR, deployed before this one. A benchmark may ship in the same diff, because it can run on the base commit.
+   - Flag a line that reads "promised, none recorded".
 
 For each issue: file:line | what's wrong | specific recommendation
 If no concerns found, report "No release readiness concerns identified."

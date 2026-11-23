@@ -130,6 +130,14 @@ because the implementation would install or call it before the user has seen the
 waits for review. Start /factory-ticket-to-pr build <owner/repo#issue> <run-id> once you approve
 it` as the final line.
 
+When the design is the design of a signal's PR alone, because the `design` skill's "What judges
+the change's effect" puts the change's own design after that signal's baseline, the implementation
+builds the signal's PR. The design comment already says so, because the design does. Record it in
+the run record, and end the final line with `; the change's own design follows once this signal's
+baseline is taken`. That design is written with `/design`
+once the baseline is in, not by a new run of this skill, which plans only tickets with no design
+comment.
+
 Find the main checkout with `git rev-parse --path-format=absolute --git-common-dir`; its parent
 directory is the repo root.
 

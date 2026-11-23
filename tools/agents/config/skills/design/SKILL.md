@@ -23,8 +23,7 @@ commands, commits, or ticket creation. Read-only exploration is allowed.
 2. Load `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md`,
    `~/.agents/standards/testing.md` and `~/.agents/standards/decision-making.md`. The last applies
    because Phase 2 chooses between options. When the slice sets out to move a measurable outcome,
-   also load `~/.agents/standards/deployment.md` for its Should "A change made to move a measurable
-   outcome is judged against an expected range set before it ships". Also load any
+   also load `~/.agents/standards/deployment.md` for its Shoulds on measured changes. Also load any
    language-specific reference file that applies to this codebase
    (`~/.agents/standards/rust.md`, `~/.agents/standards/python.md`, etc.).
 3. Explore the codebase to understand:
@@ -239,10 +238,15 @@ Five sources of questions, beyond those the type story suggests on its own:
    affect, with enough detail to fix it or reject it on purpose. The entry names the slice that
    reads it, and the record is removed when that slice ships.
 5. **What judges the change's effect.** Where the slice sets out to move a measurable outcome, the
-   question is how much it moved in production. When no production signal answers that with the
-   query the approach named, the entry is the signal, and it ships in an earlier PR, deployed
-   before the change, so a baseline exists to compare with. A slice in the change's own PR deploys
-   with the change and leaves no before reading. The entry names that PR.
+   question is how much it moved, measured as `deployment.md`'s Shoulds on measured changes
+   describe: by the query the approach named, or, where nothing serves production traffic, by a
+   benchmark that can ship in the change's own PR. When the signal the query needs is not recording
+   yet, it has to be recording before the change's behaviour serves, in one of two ways. It ships
+   with the change while the change stays behind a flag that is off until the baseline is taken,
+   and the entry names the flag. Or it ships in an earlier PR, deployed first: then this design
+   becomes the design of that PR alone, saying that the change's design follows once its baseline
+   is in, and you tell the user. If the approach did not plan for the signal, go back to `/discuss`
+   instead.
 
 State for each entry: the question, why the system cannot answer it today, and the smallest thing
 that would let it. Where the answer needs a mechanism this slice does not own — an identifier that
@@ -372,11 +376,14 @@ sees how the change fits together to solve the problem:
    running system cannot answer, each with what to record.
    **Expected effect**, as a subsection of Telemetry, whenever the slice sets out to move a
    measurable outcome, and left out otherwise. For each outcome: the query that measures it in
-   production; the baseline it returned, with how many runs and the spread between them; the
-   expected range after the change; and how the range was derived, from the baseline's spread and
-   the estimate behind the change. When no baseline exists yet, the design for the signal's PR says
-   so, and the change's own design is written once that PR's baseline is in, setting the range
-   before the change's PR opens. `merge-and-verify` measures the change against this subsection.
+   production, or the benchmark where nothing serves production traffic; the baseline it returned,
+   with how many runs, the window each run covered, and the spread between them; the expected range
+   after the change; and how the range was derived, from the baseline's spread and the estimate
+   behind the change. Where the signal ships with the change behind a flag, the subsection names
+   the query and how many runs the baseline will take, and the baseline and range are added to the
+   ticket before the flag turns on. When the work is not on a ticket, this subsection is the one
+   part of the design recorded, in the PR's description. `merge-and-verify` measures the change
+   against it.
 6. `## Tests 🧪`: open with one sentence on what neither the types nor the assertions cover, which is
    why these need tests. Then a table with columns `Expectation` (one claim per row), `Property` and
    `Technique`, and after it one line per technique used, saying why it fits the behaviour it tests.
@@ -418,4 +425,5 @@ open decision settled during design goes in the section it affects and links the
 settles it, which is committed and pushed before the comment is posted. Offer to post it, then post
 it once the user approves, before writing code. If answers to the open decisions change the text,
 show the changed text and offer to post that instead. When the work is not on a ticket,
-nothing is recorded. Then proceed with the first slice.
+nothing is recorded except the Expected effect subsection, which goes in the PR's description.
+Then proceed with the first slice.
