@@ -19,24 +19,22 @@ a charge sent to a payment provider, is part of the observable contract, so asse
 
 **Passing tests are meaningful.**
 A test that always passes regardless of what the code does provides no value. Every assertion can
-fail, and would fail if the behavior it covers were broken. A test written after the code it covers
-has not demonstrated that by passing, so it is confirmed against a deliberate break, such as an
-inverted condition or a returned constant, and the confirmation is that the right test fails and
-names the right thing. The break is made in the code the test's name or docstring says it guards. A
-setup that never produces the condition the code handles passes whatever the code does. Many setups
-never produce it: a test session shared across requests, for example, shows writes that were never
+fail, and would fail if the behavior it covers were broken. Passing alone doesn't show that a test
+written after its code can fail. So the test is run against a deliberate break, such as an inverted
+condition, and the right test fails and names the right thing. The change records the break and the
+failure. The recorded break is in the code the test's name or docstring says it guards. A setup that
+never produces the condition the code handles passes whatever the code does. Many setups never
+produce it: a database session shared across requests, for example, can show writes that were never
 committed. A property the types make impossible needs no test of its own, and a deliberate break of
 it is confirmed when the type checker rejects it. An assertion does not replace a test: a property
 an assertion guards is tested too, and generated inputs that drive the code until the assertion
 fires are among the strongest of those tests.
 
-**A check whose selection matches nothing fails, unless its input is legitimately empty in that
-environment.**
-A test runner, linter or type checker aimed at a glob, a directory or a config
-condition reports success when that selection matches nothing, and the success
-looks the same as a real pass. So an empty selection is a failure: the tool's
-own signal is used where it has one, such as a test runner's exit code for collecting nothing, and
-a guard runs ahead of the tool where it has none.
+**A check whose selection matches nothing fails, unless its input is legitimately empty where it
+runs.** Many checks, such as a test runner or a linter aimed at a glob, report success when their
+selection matches nothing, and the success looks the same as a real pass. So an empty selection is a
+failure: the tool's own signal is used where it has one, such as a test runner's exit code for
+collecting nothing, and a guard runs ahead of the tool where it has none.
 
 This is about a selection that came up empty by mistake. A check whose input is
 legitimately empty in some environment, such as a machine with nothing
@@ -44,7 +42,8 @@ configured, says it skipped and why instead of failing.
 
 **Critical paths have test coverage.**
 Paths where a failure does harm, such as authentication, payments or data integrity, are tested. The
-absence of tests here is a defect.
+absence of tests here is a defect. Coverage includes each way the path can fail, not only its
+success.
 
 **A change that deletes or replaces tests keeps each property they checked, or says why it drops
 it.**
@@ -68,21 +67,23 @@ A test has one reason to fail. Multiple unrelated assertions in a single test
 obscure which behavior broke.
 
 **An expectation is written separately from the code it checks.**
-A test that reads what to expect from the code under test, such as a route's declared roles or the
-constants a function compares against, passes whatever that code does, because the expectation
-moves with it. The expected values are written by hand, from what the behaviour is for, and
-compared with what the code does. Where they are too many to write one by one, they still go in a
-table written that way rather than generated from the code's answers, since a generated table
+This covers what the Must on meaningful tests can miss: an expectation computed the same way the
+code computes it, such as a copied formula, can still fail when the code changes, yet agrees with
+any mistake the two share. A test that reads what to expect from the code under test, such as a
+route's declared roles or the constants a function compares against, passes whatever that code does,
+because the expectation moves with it. The expected values are literals taken from what the behavior
+is for, compared with what the code does. Where they are too many to write one by one, they still go
+in a table written that way rather than generated from the code's answers, since a generated table
 copies today's mistakes into the expectation. A table drafted with help, from an agent or a
 document, counts only once each row has been checked against a source the code does not read. A
-snapshot or golden-file test, which exists to detect change rather than to define correct output,
-is the exception, and it still meets the Must on meaningful tests because it fails whenever the
-output changes.
+snapshot or golden-file test, which exists to detect change rather than to define correct output, is
+the exception, and it still meets the Must on meaningful tests because it fails whenever the output
+changes.
 
 **A check that expects an access refusal sends a request that passes validation, so the refusal
 comes from the access check and not from the parser.**
-A web framework validates a request's body and parameters before the handler runs, and an access
-check inside the handler runs only after that. A test that sends a placeholder body, such as `{}`,
+Where a framework validates a request's body before the handler runs, an access check inside the
+handler runs only after that. A test that sends a placeholder body, such as `{}`,
 gets the framework's validation error, and a test that accepts any refusal passes without the
 access check ever running. The route could admit the caller with a real body and the test would not
 notice. So each request carries a body that passes the schema, the test accepts only the access
@@ -98,36 +99,34 @@ code makes interact. A combination left out is named as not covered. Parametriza
 the same behavior holds across a range of values.
 
 **A generator produces the inputs that exercise the behaviour under test.**
-A property test whose generator rarely reaches the branch in question passes
-identically against correct and broken code, while reading as the strongest test
-in the suite. Generators are shaped toward the region that matters, such as the long
-input or the empty one, and the shaping is
-confirmed the same way as any other test, by watching it fail against a
-deliberate break.
+A property test whose generator rarely reaches the branch in question passes identically against
+correct and broken code, while reading as the strongest test in the suite. Generators are shaped
+toward the region that matters, such as the long input or the empty one, and the change records the
+deliberate break the shaped generator failed against.
 
 **Tests are independent.**
-No test depends on the execution order of other tests or on state left behind
-by a previous test. Each test sets up what it needs and cleans up after itself.
+No test depends on the execution order of other tests or on state left behind by a previous test.
+Each test sets up the state it changes and cleans up after itself, and parts that never change are
+shared read-only, as the next claim describes.
 
 **Fixture parts that never change are built once and shared read-only, and parts a test changes are
-built fresh for each test.**
-A stub executable with fixed content, or a fake tool that reads its answers from a file each test
-writes, is written once per test class or module, in a folder made read-only so that no test can
-change what another one runs. Everything a test writes to, such as its home directory, logs and
-response tables, stays in that test's own temporary directory. Rebuilding the unchanging parts for
-every example multiplies a property test's cost by its example count.
+built fresh for each test.** Parts that never change, such as a stub executable with fixed content,
+are written once per test class or module, in a folder made read-only so that no test can change
+what another one runs. Everything a test writes to, such as its home directory, logs and response
+tables, stays in that test's own temporary directory. Rebuilding the unchanging parts for every
+example multiplies a property test's cost by its example count.
 
 **A test that checks concurrent work ran together observes the overlap, not the elapsed time.**
-Each concurrent unit records that it started, then waits, up to a bound of its own, until the
-others have started too, so the test passes only when they really ran together. A bound on the
-total run time fails on a loaded machine while the code is correct, because a busy machine can slow
-both runs by more than the gap between them. The test is
-shown to fail against a version of the code changed to run the units one at a time.
+Each concurrent unit records that it started, then waits, up to a bound of its own, until the others
+have started too, so the test passes only when they really ran together. A bound on the total run
+time can fail on a loaded machine while the code is correct, because a busy machine can slow both
+runs by more than the gap between them. The change records the test failing against a version of the
+code changed to run the units one at a time.
 
 **A test waits for the event it needs, not for a fixed time.**
-A fixed sleep is too short on a loaded machine and too long everywhere else, so the test is both
-flaky and slow. The test waits on the signal that the work is done, such as a message, a file or a
-state change, with a bound of its own.
+A fixed sleep can be too short on a loaded machine and is longer than needed everywhere else, so the
+test is both flaky and slow. The test waits on the signal that the work is done, such as a message,
+a file or a state change, with a bound of its own.
 
 **Test code is held to the same standard as production code.**
 Duplicated setup is extracted to fixtures or helpers. Names are as descriptive
@@ -163,20 +162,18 @@ code asserts along its path. Code that asserts its invariants is worth more gene
 code that does not.
 
 **Code that reads another system's payload is run against a payload that system actually sent, not
-only its documented example.**
-A vendor's example is written separately from the code that sends the payload,
-and the two drift. A vendor's example and its real deliveries can differ, such as in a field's
-spelling or casing. A transform, parser or mapping tested only against the example
-passes, then reads nothing from the field that differs, and a fallback value
-hides the miss. So before its output is relied on, the code is run once on a
-real payload, captured from the receiving side or a log. That payload is kept
-beside the code's tests wherever it holds no secrets or personal data.
+only its documented example.** A vendor's example is written separately from the code that sends the
+payload, and the two drift. A vendor's example and its real deliveries can differ, such as in a
+field's spelling or casing. A transform, parser or mapping tested only against the example passes,
+then reads nothing from the field that differs, and a fallback value hides the miss. So before its
+output is relied on, the code is run on a real payload, captured from the receiving side or a log,
+and the change records which one. That payload is kept beside the code's tests wherever it holds no
+secrets or personal data.
 
 **A test of what a log line holds reads the line through the formatter the app writes it with.**
-A test runner's capture of log records keeps each
-raw record and formats it with the runner's own formatter. Whatever the app's
+Where a test runner captures log records and formats them with its own formatter, whatever the app's
 formatter does, such as redacting a value, never reaches
-it. A test that reads the capture can pass while the app writes a value it means
+the captured record. A test that reads the capture can pass while the app writes a value it means
 to keep out, and fail when the app's formatter correctly removes one. So the
 test formats each captured record with the app's formatter, or reads what the
 running process wrote.

@@ -30,8 +30,7 @@ floating-point values allows for rounding.
 
 **Text and time keep their meaning across every boundary they cross.**
 Text carries its encoding, and a time carries its zone or is held in UTC, so a value read back means
-what was written. A timestamp stored without a zone and read in another one is the usual way this
-breaks.
+what was written. A timestamp stored without a zone and read in another one is one way this breaks.
 
 **Errors propagate consistently.**
 Errors are surfaced the same way surrounding code surfaces them. Errors are not
@@ -75,11 +74,11 @@ continuing produces the exact undefined and potentially-catastrophic outcome
 the assertion exists to prevent.
 
 **Loops and recursion have fixed upper bounds.**
-Every loop has a bound a reader can determine without running it, and recursion
-either has a proven depth limit or is written as iteration. Queues, buffers, and
-accumulating collections have an explicit cap. An unbounded loop turns a logic
-bug into a hang and an unbounded buffer turns one into an outage — the two
-failure modes hardest to diagnose from outside the process.
+Every loop has a bound a reader can determine without running it, except a loop meant to run for the
+life of the process, such as a server's accept loop, which says that it is one, and recursion either
+has a proven depth limit or is written as iteration. Queues, buffers, and accumulating collections
+have an explicit cap. An unbounded loop turns a logic bug into a hang and an unbounded buffer turns
+one into an outage — the two failure modes hardest to diagnose from outside the process.
 
 **The build produces no warnings, with warning levels set as strict as the toolchain allows.**
 Strictness and cleanliness are one standard, not two — a silent build with the
@@ -91,7 +90,7 @@ rather than the file or the project, and state their reason.
 **Behaviour is deterministic given the same inputs.**
 The same inputs produce the same outputs and the same sequence of effects. Anything that varies
 between runs, such as a clock or a random seed, is injected or seeded rather than reached for
-directly. A bug that reproduces costs an order of magnitude less to fix than one that doesn't, and
+directly. A bug that reproduces costs far less to fix than one that doesn't, and
 replaying a failure is only possible if the system was deterministic to begin with.
 
 ## Should
@@ -165,10 +164,9 @@ drift.
 
 ## Consider
 
-**Assertions multiply the value of fuzzing.**
-Because assertions check invariants on every execution path, fuzz inputs that
-reach unexpected states trigger assertion failures — uncovering bugs invisible
-to deterministic tests.
+**Code under fuzzing asserts its invariants.**
+Fuzz inputs that reach unexpected states trip the assertions on their path, which turns bugs no
+deterministic test reaches into failures.
 
 ## In scope
 

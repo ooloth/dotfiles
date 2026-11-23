@@ -47,7 +47,7 @@ Numbers and behaviors whose origin is an untraceable conversation or a model's r
 left out. Once an unsourced figure sits in a document of facts it is indistinguishable from a
 measured one, and decisions get built on it.
 
-**A recorded absence rests on two sources that agree.**
+**A recorded absence rests on two sources that agree, or says why only one exists.**
 A claim that something is absent, such as "no errors in the logs", is a fact
 like any other, and one empty result supports it less than it seems to. Many
 failures return the same empty answer as a true absence, such as a filter the source silently
@@ -56,7 +56,7 @@ when an independent second source agrees, or with the reason only one source
 exists. Where two sources disagree, both are recorded and the disagreement is
 the finding.
 
-**Comments and documents describe the present, never the past.**
+**Comments and documents describe the present.**
 Anything about the past or the schedule, such as what a value used to be or how far along the work
 is, is invisible to a reader of the current state, and all of it competes
 with the instruction for their attention. Version control holds the past;
@@ -107,7 +107,7 @@ Every effect beyond the step's stated purpose, and every other owner of the stat
 named in the doc.
 
 **Structured content reads as prose or lists rather than tables.**
-Docs are read and edited as plain text far more often than rendered, and a
+Docs are often read and edited as plain text rather than rendered, and a
 markdown table there is alignment padding nobody maintains: editing one cell
 means re-padding its row, a formatter re-pads the whole block, and a one-word
 change surfaces as a rewrite of every line. A line search reads paragraphs and
@@ -163,14 +163,14 @@ A step that has the reader compare an answer with an expected one is a test run 
 bar `testing.md` sets for a passing test applies to it: the condition the step guards against has
 been made to happen, or traced through the code to the answer it would produce, and the step then
 reports a failure. A step whose failure cannot occur reports a pass whatever the system does, and a
-reader who trusts it stops looking where the fault is. The usual cause is a default that answers
+reader who trusts it stops looking where the fault is. One cause is a default that answers
 every input the same way, such as a server that returns one page for every path it has no file for.
 
 **Absolute claims hold for every case that could break them.**
 A sentence that makes an absolute claim about a system, with a word such as only, every or never,
 holds for every other case that could break it, such as another mode, a slow clock or an unusual
-input. An absolute is the kind of claim most often false with nothing in the text
-to show it, because the path that breaks it is usually one the writer did not think of.
+input. An absolute can be false with nothing in the text to show it, because the path that breaks it
+is usually one the writer did not think of.
 
 **Prose is followed in one pass, forward, without backtracking.**
 A reader who reaches the third paragraph and has to return to the first has been

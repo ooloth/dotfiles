@@ -26,13 +26,15 @@ scanning target — which surfaces to examine and which to skip.
 
 ## Phrasing
 
-Each bold lead sentence must be a standalone claim you could hold up against a
-piece of code and mark true or false, regardless of who's reading it or why.
-That's what keeps one file usable for writing, reviewing, and scanning without
-rephrasing.
+Each bold lead sentence is a standalone claim that can be held up against the code, the running
+system or the change and marked true or false, whoever is reading it and why. That's what keeps one
+file usable for writing, reviewing, and scanning without rephrasing.
 
-- **Subject is the code, not the agent.** A claim reads "Errors are handled at the
-  level with enough context to act," not "Handle errors at the right level."
+- **Subject is the code, the running system or the change, never the agent.** A claim reads "Errors
+  are handled at the level with enough context to act," not "Handle errors at the right level." A
+  claim about how work was done is stated as what the change records, so a reviewer checks the
+  record: "The change records the deliberate break the test failed against," not "Confirm the test
+  against a break."
 - **Present tense, declarative, third person.** State a fact about the code,
   not an instruction to the reader.
 - **No imperative verbs, in the heading or the body.** A sentence whose main verb is a command,
