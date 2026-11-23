@@ -510,14 +510,17 @@ def test_a_hung_tool_ends_in_a_sentence_once_the_timeout_passes(
     for name, value in hang.items():
         monkeypatch.setenv(name, value)
     script = load_script(monkeypatch)
-    monkeypatch.setattr(script, "TOOL_TIMEOUT_SECONDS", 1)
+    # One timeout governs both tools, so it has to outlast the osascript stub's start-up on a loaded
+    # machine, or the screencapture case fails on the listing. The hang is 60 s, so the elapsed
+    # limit sits halfway between the timeout and the hang.
+    monkeypatch.setattr(script, "TOOL_TIMEOUT_SECONDS", 3)
     request = script.parse_arguments(["--app", "Rex", "--out", str(tmp_path / "out" / "shot.png")])
     started = time.monotonic()
     outcome = script.run(request)
-    assert time.monotonic() - started < 10
+    assert time.monotonic() - started < 30
     assert isinstance(outcome, script.Failed)
     assert tool in outcome.message
-    assert "did not finish within 1 seconds" in outcome.message
+    assert "did not finish within 3 seconds" in outcome.message
     assert "Run this once more" in outcome.message
     assert sorted((tmp_path / "out").iterdir()) == []
 

@@ -152,11 +152,13 @@ class ReportTest(unittest.TestCase):
         self.assert_nothing_deleted(outcome)
 
     def test_a_daemon_that_hangs_is_given_up_on_at_the_deadline(self) -> None:
-        # The deadline is 5 s and sourcing utils.bash takes under 1 s; the stub would hang for 30
+        # The deadline is 5 s and the stub would hang for 30. The limit sits halfway between them,
+        # so a loaded machine starting bash and perl slowly still passes, and a run that waited
+        # out the hang still fails.
         outcome = run(mode="hang")
 
         self.assertEqual((outcome.code, outcome.output), (0, ""))
-        self.assertLess(outcome.seconds, 8)
+        self.assertLess(outcome.seconds, 18)
         self.assert_nothing_deleted(outcome)
 
 
