@@ -13,9 +13,9 @@ Tests are how a team knows the code still does what it is for. At their maximum:
 
 **Tests verify behavior, not implementation.**
 Assertions are on outcomes observable by a caller, such as a return value or an error type.
-Internals, such as private methods or call counts, are
-not asserted unless they are the observable contract. A call made across a system boundary, such as
-a charge sent to a payment provider, is part of the observable contract, so asserting it is allowed.
+Internals, such as private methods or call counts, are not asserted unless they are the observable
+contract. A call made across a system boundary, such as a charge sent to a payment provider, is part
+of the observable contract, so asserting it is allowed.
 
 **Passing tests are meaningful.**
 A test that always passes regardless of what the code does provides no value. Every assertion can
@@ -47,24 +47,22 @@ success.
 
 **A change that deletes or replaces tests keeps each property they checked, or says why it drops
 it.**
-A replacement that looks broader can still miss a case the old test caught,
-and nothing fails to show it, because the test that would have failed is gone.
-So for each removed test, assertion or expected-value helper, the change names
-the test that now checks the same property for the same inputs, or states in
-the commit or PR why the property no longer needs checking. "The new tests
+A replacement that looks broader can still miss a case the old test caught, and nothing fails to
+show it, because the test that would have failed is gone. So for each removed test, assertion or
+expected-value helper, the change names the test that now checks the same property for the same
+inputs, or states in the commit or PR why the property no longer needs checking. "The new tests
 replace the old ones" is not a reason; one property at a time is.
 
 ## Should
 
 **Test names describe behavior in domain terms.**
-A test name is documentation — it states what the system does in language the
-domain recognizes. `subscription_expires_after_trial_period` is domain
-documentation. `process_user_data` is not. A failing test's name alone
-tells a reader what broke without reading the test body.
+A test name is documentation — it states what the system does in language the domain recognizes.
+`subscription_expires_after_trial_period` is domain documentation. `process_user_data` is not. A
+failing test's name alone tells a reader what broke without reading the test body.
 
 **Each test covers one behavior.**
-A test has one reason to fail. Multiple unrelated assertions in a single test
-obscure which behavior broke.
+A test has one reason to fail. Multiple unrelated assertions in a single test obscure which behavior
+broke.
 
 **An expectation is written separately from the code it checks.**
 This covers what the Must on meaningful tests can miss: an expectation computed the same way the
@@ -83,12 +81,12 @@ changes.
 **A check that expects an access refusal sends a request that passes validation, so the refusal
 comes from the access check and not from the parser.**
 Where a framework validates a request's body before the handler runs, an access check inside the
-handler runs only after that. A test that sends a placeholder body, such as `{}`,
-gets the framework's validation error, and a test that accepts any refusal passes without the
-access check ever running. The route could admit the caller with a real body and the test would not
-notice. So each request carries a body that passes the schema, the test accepts only the access
-check's own answers, such as 403 or a 404 for a row the caller may not see, and a new route that
-takes a body fails until it has one.
+handler runs only after that. A test that sends a placeholder body, such as `{}`, gets the
+framework's validation error, and a test that accepts any refusal passes without the access check
+ever running. The route could admit the caller with a real body and the test would not notice. So
+each request carries a body that passes the schema, the test accepts only the access check's own
+answers, such as 403 or a 404 for a row the caller may not see, and a new route that takes a body
+fails until it has one.
 
 **Tests span every dimension the behavior varies along.**
 Inputs are one dimension: happy path, empty input, boundary values and error conditions are all
@@ -129,18 +127,18 @@ test is both flaky and slow. The test waits on the signal that the work is done,
 a file or a state change, with a bound of its own.
 
 **Test code is held to the same standard as production code.**
-Duplicated setup is extracted to fixtures or helpers. Names are as descriptive
-as in production code. Dead test code is removed.
+Duplicated setup is extracted to fixtures or helpers. Names are as descriptive as in production
+code. Dead test code is removed.
 
 
 **Mocks are used only at system boundaries.**
-Real objects are used wherever possible. Mocks are reserved for true system
-boundaries, such as external APIs, time and randomness. Excessive mocking
-disconnects tests from real behavior and masks integration failures.
+Real objects are used wherever possible. Mocks are reserved for true system boundaries, such as
+external APIs, time and randomness. Excessive mocking disconnects tests from real behavior and masks
+integration failures.
 
-For HTTP API boundaries specifically, a fake HTTP server is preferred over an
-interface-based mock, because it exercises what the request carries, such as its URL, headers and
-body, not just that a call happened.
+For HTTP API boundaries specifically, a fake HTTP server is preferred over an interface-based mock,
+because it exercises what the request carries, such as its URL, headers and body, not just that a
+call happened.
 
 Some behaviour cannot be exercised in-process at all. Anything that depends on a connection staying
 open, such as streaming, a timeout or a stall that never raises an error, needs a real server and a
@@ -149,9 +147,9 @@ holding a connection open. A test that appears to cover a stream but never holds
 the wrong reason.
 
 **Logic a test can reach only by mocking a non-boundary component sits in the wrong layer.**
-When testing requires mocking something that isn't a true system boundary, the logic
-being tested belongs one layer closer to the pure core. Moving it there makes it
-directly testable without mocks and reveals the correct architectural boundary.
+When testing requires mocking something that isn't a true system boundary, the logic being tested
+belongs one layer closer to the pure core. Moving it there makes it directly testable without mocks
+and reveals the correct architectural boundary.
 
 **Testing techniques suited to the behavior are used where they fit.**
 Such techniques include property-based testing for a large or unbounded input space, snapshot
@@ -172,11 +170,10 @@ secrets or personal data.
 
 **A test of what a log line holds reads the line through the formatter the app writes it with.**
 Where a test runner captures log records and formats them with its own formatter, whatever the app's
-formatter does, such as redacting a value, never reaches
-the captured record. A test that reads the capture can pass while the app writes a value it means
-to keep out, and fail when the app's formatter correctly removes one. So the
-test formats each captured record with the app's formatter, or reads what the
-running process wrote.
+formatter does, such as redacting a value, never reaches the captured record. A test that reads the
+capture can pass while the app writes a value it means to keep out, and fail when the app's
+formatter correctly removes one. So the test formats each captured record with the app's formatter,
+or reads what the running process wrote.
 
 ## Consider
 
@@ -185,9 +182,8 @@ Tests that depend on something outside their control, such as timing or executio
 identified and either fixed or explicitly marked. Async operations are awaited, not raced.
 
 **Plain helpers are preferred over framework abstractions.**
-Test setup lives in plain functions unless the framework provides something
-those functions cannot, such as lifecycle hooks. The
-simpler form is chosen by default.
+Test setup lives in plain functions unless the framework provides something those functions cannot,
+such as lifecycle hooks. The simpler form is chosen by default.
 
 ## In scope
 

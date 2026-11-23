@@ -18,9 +18,8 @@ that does it quietly harms them longest. At its maximum:
 Every condition, bound and comparison is exact, so off-by-one errors don't exist.
 
 **Edge cases are handled.**
-Edge cases, such as an empty collection, a missing value or a boundary value,
-produce defined behavior. Edge-case behavior matches general-case behavior
-unless the difference is deliberate.
+Edge cases, such as an empty collection, a missing value or a boundary value, produce defined
+behavior. Edge-case behavior matches general-case behavior unless the difference is deliberate.
 
 **Numbers keep their meaning through every calculation.**
 A calculation that could overflow, lose precision or mix units does so only where that is the
@@ -32,8 +31,8 @@ Text carries its encoding, and a time carries its zone or is held in UTC, so a v
 what was written. A timestamp stored without a zone and read in another one is one way this breaks.
 
 **Errors propagate consistently.**
-Errors are surfaced the same way surrounding code surfaces them. Errors are not
-swallowed silently unless the codebase establishes that as a deliberate pattern.
+Errors are surfaced the same way surrounding code surfaces them. Errors are not swallowed silently
+unless the codebase establishes that as a deliberate pattern.
 
 **Existing solutions are used.**
 When the codebase already solves a problem the code needs solved, such as with a utility or a shared
@@ -59,17 +58,15 @@ An assertion that fires in production catches programmer errors that types and t
 **Assertions are split so a failure names the exact violation.**
 One condition per assertion. `assert(a && b)` reports that something broke;
 `assert(a)` followed by `assert(b)` reports which. Where a contract spans a call
-boundary it is asserted on both sides — the caller checks what it promises, the
-callee checks what it requires — so a disagreement about the contract surfaces
-as well as a violation of it.
+boundary it is asserted on both sides — the caller checks what it promises, the callee checks what
+it requires — so a disagreement about the contract surfaces as well as a violation of it.
 
 **Assertions convert silent incorrectness into a halt.**
-An assertion that fires stops the process at the violation, before wrong
-output is written, sent, or displayed. What reaches a user is a crash naming
-the condition that failed, rather than plausible-looking corrupt data. This is
-why assertion failures are not caught and recovered from: catching one and
-continuing produces the exact undefined and potentially-catastrophic outcome
-the assertion exists to prevent.
+An assertion that fires stops the process at the violation, before wrong output is written, sent, or
+displayed. What reaches a user is a crash naming the condition that failed, rather than
+plausible-looking corrupt data. This is why assertion failures are not caught and recovered from:
+catching one and continuing produces the exact undefined and potentially-catastrophic outcome the
+assertion exists to prevent.
 
 **Loops and recursion have fixed upper bounds.**
 Every loop has a bound a reader can determine without running it, except a loop meant to run for the
@@ -79,31 +76,29 @@ have an explicit cap. An unbounded loop turns a logic bug into a hang and an unb
 one into an outage — the two failure modes hardest to diagnose from outside the process.
 
 **The build produces no warnings, with warning levels set as strict as the toolchain allows.**
-Strictness and cleanliness are one standard, not two — a silent build with the
-checks turned down proves nothing. A warning is either a defect or noise that
-conceals one, and a build where warnings are routine has no capacity left to
-notice a new one. Suppressions are narrow, sited at the specific occurrence
-rather than the file or the project, and state their reason.
+Strictness and cleanliness are one standard, not two — a silent build with the checks turned down
+proves nothing. A warning is either a defect or noise that conceals one, and a build where warnings
+are routine has no capacity left to notice a new one. Suppressions are narrow, sited at the specific
+occurrence rather than the file or the project, and state their reason.
 
 **Behaviour is deterministic given the same inputs.**
 The same inputs produce the same outputs and the same sequence of effects. Anything that varies
 between runs, such as a clock or a random seed, is injected or seeded rather than reached for
-directly. A bug that reproduces costs far less to fix than one that doesn't, and
-replaying a failure is only possible if the system was deterministic to begin with.
+directly. A bug that reproduces costs far less to fix than one that doesn't, and replaying a failure
+is only possible if the system was deterministic to begin with.
 
 ## Should
 
 **Existing callers and data are unaffected.**
-Changes don't break existing call sites or corrupt existing data unless the
-breakage is intentional, documented, and coordinated.
+Changes don't break existing call sites or corrupt existing data unless the breakage is intentional,
+documented, and coordinated.
 
 **Mistakes the toolchain could catch are caught by the toolchain.**
-Where a mistake can be surfaced by a toolchain check, such as a type or a
-lint rule, it is — rather than left to be found when the code runs. This is a
-choice about how things are arranged, not only about heeding what the tools
-already say: a misspelled field name, an unhandled variant, or a malformed
-template found at build time costs a moment, and the same mistake found at
-runtime costs a user.
+Where a mistake can be surfaced by a toolchain check, such as a type or a lint rule, it is — rather
+than left to be found when the code runs. This is a choice about how things are arranged, not only
+about heeding what the tools already say: a misspelled field name, an unhandled variant, or a
+malformed template found at build time costs a moment, and the same mistake found at runtime costs a
+user.
 
 **`assert` is for programmer errors; errors are returned for environmental failures.**
 A condition that can arise from something outside the code, such as missing config or malformed
@@ -112,25 +107,22 @@ input, returns an error. A condition only a bug in the code can cause is asserte
 **Code that relies on what an external call removes, revokes or invalidates cites the provider's
 documentation of everything that call affects.**
 A call that ends something, such as a revoke or a delete, can act on more than the identifier passed
-to it: revoking one token can end every token an account has issued, and
-deleting a namespace deletes everything in it. A test double of the provider
-encodes its author's belief about that reach, so no test against it can show the
-reach is wider. The reach is taken from the provider's documentation, quoted
-beside the call or in the decision that relies on it, and the code keeps its own
-records in step with everything the call ends.
+to it: revoking one token can end every token an account has issued, and deleting a namespace
+deletes everything in it. A test double of the provider encodes its author's belief about that
+reach, so no test against it can show the reach is wider. The reach is taken from the provider's
+documentation, quoted beside the call or in the decision that relies on it, and the code keeps its
+own records in step with everything the call ends.
 
 **A check that an action took effect in an outside system reads that system's answer, not a record
 the code writes either way.**
-Code that calls an outside system often records the attempt locally whether or
-not the call succeeded, such as a `sent_at` timestamp or a
+Code that calls an outside system often records the attempt locally whether or not the call
+succeeded, such as a `sent_at` timestamp or a
 `status = 'refunded'`, so that a failed call doesn't block the user. A runbook
-gate, a health check or a reconciliation job that reads that record reports
-success for a call that timed out or was refused. So the check reads the
-outside system's own state, such as the payment provider's record of the refund
-or the mail server's delivery status, or a local record written only from that
-system's response, where success and failure are told apart. Where neither
-exists, the check says what it can't see, and the code that drops the response
-is the gap to fix.
+gate, a health check or a reconciliation job that reads that record reports success for a call that
+timed out or was refused. So the check reads the outside system's own state, such as the payment
+provider's record of the refund or the mail server's delivery status, or a local record written only
+from that system's response, where success and failure are told apart. Where neither exists, the
+check says what it can't see, and the code that drops the response is the gap to fix.
 
 **A check computes its expected result by a method independent of the code it checks.**
 A self-check that reaches its expected value the way the checked code reached its result fails
@@ -142,23 +134,20 @@ differing from the base. Tests hold the same rule as "An expectation is written 
 code it checks" in `testing.md`; this one holds for checks that run in the code itself.
 
 **A check that expects a refusal also shows that the step before it succeeded.**
-A check that an old credential, route or permission no longer works passes in
-two cases: the change removed it, or the change never ran, for example because
-the step that set it up failed. Both end in the same refusal. So the check is
-paired with proof that the earlier step succeeded, such as the credential
-working before the change, or that step gating everything after it. A runbook
-whose only check is the refusal reports success when nothing ran.
+A check that an old credential, route or permission no longer works passes in two cases: the change
+removed it, or the change never ran, for example because the step that set it up failed. Both end in
+the same refusal. So the check is paired with proof that the earlier step succeeded, such as the
+credential working before the change, or that step gating everything after it. A runbook whose only
+check is the refusal reports success when nothing ran.
 
 **A check over every item of a kind refuses an item it cannot classify.**
-A check that enforces a rule over everything a system has, such as every
-route it serves, every table it holds or every file it ships, finds the items
-by walking them, and the walk handles only the variants its author knew of.
-An item of any other variant, such as a route type the walk skips, then
-escapes the rule with nothing reported, and the check still passes. So the
-walk sorts every item into a variant it checks or a refusal that names the
-item. An item exempt on purpose is named with its reason, and the exemption
-asks the system which items those are, rather than keeping a list that can
-drift.
+A check that enforces a rule over everything a system has, such as every route it serves, every
+table it holds or every file it ships, finds the items by walking them, and the walk handles only
+the variants its author knew of. An item of any other variant, such as a route type the walk skips,
+then escapes the rule with nothing reported, and the check still passes. So the walk sorts every
+item into a variant it checks or a refusal that names the item. An item exempt on purpose is named
+with its reason, and the exemption asks the system which items those are, rather than keeping a list
+that can drift.
 
 ## Consider
 
