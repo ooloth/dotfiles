@@ -541,8 +541,9 @@ Instructions:
 2. Search for project docs defining standards or preferences (README.md, CONTRIBUTING.md, docs/, style guides) — CLAUDE.md is already loaded. Use them to inform your review.
 3. Run the diff command from Context to read what changed, then read surrounding context.
 4. If database models or migrations changed, read them in full.
+5. If the change touches a model call that reads text from outside the system, a session or cookie, an outbound connection, or a script, CI job or setup doc that handles a secret, check it against the `security.md` claims for that surface as well as the data it stores.
 
-For each issue: file:line | what's wrong | severity (Critical/High/Medium/Low) | specific fix
+For each issue: file:line | what's wrong | tier (Must/Should/Consider, from the claim it breaks) | specific fix
 Only report actual violations, not theoretical what-ifs.
 If no concerns found, report "No data safety concerns identified."
 ```

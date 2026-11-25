@@ -61,9 +61,12 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    Inline: `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md`,
    `~/.agents/standards/error-handling.md`
 
-   **Subagent 3 — Security & Privacy** (subagent_type: Explore, description: "review security and
-   privacy")
-   Inline: `~/.agents/standards/security.md`, `~/.agents/standards/privacy.md`
+   **Subagent 3 — Security & Privacy** (subagent_type: general-purpose, model: opus, description:
+   "review security and privacy"). Not Explore, which reads excerpts to locate code rather than
+   audit it, and a security gap it skims past ships silently.
+   Inline: `~/.agents/standards/security.md`, `~/.agents/standards/privacy.md`,
+   `~/.agents/standards/dependencies.md`, which holds the dependency claims `security.md` leaves
+   to it
 
    **Subagent 4 — Data** (subagent_type: Explore, description: "review data integrity")
    Inline: `~/.agents/standards/data-integrity.md`

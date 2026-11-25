@@ -37,7 +37,9 @@ It stops the accidents that copy a secret somewhere it stays:
   Clipboard can send it to your other Apple devices.
 - **Exported variables.** `export JIRA_API_TOKEN=…` hands the value to every process the shell
   starts, agents included, and to anything that prints the environment. `"$(secret get <name>)"`
-  gives it to one command only.
+  gives it to one command only. Where the tool reads the secret from its environment, setting it
+  for that command alone, as in `TOKEN="$(secret get <name>)" tool`, also keeps it out of the
+  process list, which shows every command's arguments to other users on the machine.
 - **Tracked files.** This repo is public, and setup docs give the `secret add` step rather than a
   value to paste.
 - **The screen.** `secret add` hides the value as you type or paste it.

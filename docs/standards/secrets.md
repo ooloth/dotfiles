@@ -8,10 +8,13 @@ it holds a literal value in one of the shapes that README lists, such as after `
 
 **Should: a command that needs a secret reads it from the login Keychain, and the secret is stored
 there first.** Store it once with `secret add <name>`, which asks for the value without showing
-it, so it never reaches shell history, the clipboard or a command you typed. Pass it as
-`"$(secret get <name>)"`. A tool that keeps its own credential after a one-time login, such as
-`codefresh auth create-context` writing `~/.cfconfig`, is the exception for later runs, but the
-one-time login still reads the secret this way. Setup docs in this repo give the `secret add` step,
-never an instruction to paste a value into a command. This is this repo's choice for the
-commands its shells and scripts run. Another project may keep its secrets in another store, such as
-1Password, for reasons its own records give.
+it, so it never reaches shell history, the clipboard or a command you typed. Pass it to that one
+command as a variable set for the command alone, `TOKEN="$(secret get <name>)" tool`, where the tool
+reads one from its environment, and otherwise as an argument, `--token "$(secret get <name>)"`. An
+argument is visible to other users on the machine in the process list while the command runs, as
+the security standard's Should on commands says. A tool that keeps its own credential after a
+one-time login, such as `codefresh auth create-context` writing `~/.cfconfig`, is the exception
+for later runs, but the one-time login still reads the secret this way. Setup docs in this repo
+give the `secret add` step, never an instruction to paste a value into a command. This is this
+repo's choice for the commands its shells and scripts run. Another project may keep its secrets in
+another store, such as 1Password, for reasons its own records give.

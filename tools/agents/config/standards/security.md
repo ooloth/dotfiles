@@ -43,18 +43,19 @@ A model that reads text, such as a web page, an issue comment or an email, can f
 written in it, and no escaping prevents that. So the limit lies in what the model can do while that
 text is in its context: it holds only the permissions the text's author already has, or each action
 outside them waits for a person to approve it. A session that holds private data, reads untrusted
-text and can send data out has everything a leak needs, so no session holds all three.
+text and can send data out has everything a leak needs, so no session holds all three unless each
+action that sends data out waits for a person's approval.
 
 **Secrets are not hardcoded, logged or shipped to anyone else.**
 Credentials, API keys, tokens and passwords reach the system when it runs, from a secret store or
 from the environment it is started with. No secret, whether the system's own or one a caller
 sends, appears in source code, in the logs, error messages and stack traces the system writes, or
 in anything handed to someone else, such as a browser bundle, a mobile app or a container image
-layer. This includes local development: a file of real values on a developer's disk, such as an
-ignored env file, does not meet this, because only an ignore rule keeps it out of the repository,
-and one wrong rule or one forced add commits it. Where a committed file describes what the
-environment needs, it holds _references_ to a secret store rather than the values themselves, so
-committing it is harmless by construction rather than by vigilance.
+layer. This includes local development: a file of real values inside the project's directory, such
+as an ignored env file, does not meet this, because only an ignore rule keeps it out of the
+repository, and one wrong rule or one forced add commits it. Where a committed file describes
+what the environment needs, it holds _references_ to a secret store rather than the values
+themselves, so committing it is harmless by construction rather than by vigilance.
 
 **Every protected operation checks identity, and permission for the resource it touches, before it
 proceeds.**
@@ -154,7 +155,8 @@ it is refused as unknown or expired, because ordinary expiry produces the same r
 
 **Changes to production are traceable to who made them and when.**
 Each change to production, such as a deploy, a configuration change, a permission grant or a manual
-action in a cloud console, leaves a record naming the person or identity and the time. The
+action in a cloud console, leaves a record naming the person, or the service identity for an
+automated change, and the time. The
 platform's audit log is turned on and kept long enough to cover the gap between a change and the
 failure it causes. When a system breaks with no deploy to blame, this record is how a manual change
 is found.
@@ -183,6 +185,8 @@ limit.
 - Outbound connections
 - Model calls that read text from outside the system while holding tools or private data
 - Audit logging and production access configuration for the cloud project or account
+- Shell commands, scripts and CI job configuration that handle secrets
+- Setup docs that say where secrets go
 
 ## Out of scope
 

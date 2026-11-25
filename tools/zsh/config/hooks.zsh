@@ -37,7 +37,8 @@ warn_secret_in_history() {
   fi
   if [[ -n "${marker}" ]]; then
     print -u2 -r -- "⚠️  Not saved to history: it holds a secret after ${marker}. Store the secret" \
-      "once with \`secret add <name>\`, then pass \"\$(secret get <name>)\" instead."
+      "once with \`secret add <name>\`, then read it with \"\$(secret get <name>)\" instead, as" \
+      "a variable set for that one command where the tool reads one."
     return 2
   fi
   return 0
