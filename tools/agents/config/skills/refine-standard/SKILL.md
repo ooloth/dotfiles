@@ -45,8 +45,10 @@ refined them (`git log --format='%h %s' -- tools/agents/config/standards/<file>`
    Every item carries its exact new text; a question with no draft goes to the user as a question,
    with lettered options.
 
-   Show all of them together, in the user's plain-speech style, and stop. Standards are agent
-   instructions, so nothing is applied before the user approves the wording.
+   Before showing them, apply them to a copy of the standards folder and run the repo's docs check
+   on the copy, so a heading or line that breaks the column limit is fixed in the draft rather than
+   after approval. Show all of them together, in the user's plain-speech style, and stop. Standards
+   are agent instructions, so nothing is applied before the user approves the wording.
 7. Apply exactly what was approved, as edits to the lines that change, never by copying a whole
    file over from a draft. Other sessions may be editing the same files, such as an index every
    refinement touches, and a copied file drops their changes with no sign. Before applying, read
