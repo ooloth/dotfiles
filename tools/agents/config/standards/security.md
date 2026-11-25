@@ -114,15 +114,15 @@ this for every caller.
 **A command gets a secret from a store when it runs, not as a literal or an exported variable.**
 A secret typed into a command is kept by shell history, terminal scrollback and anything that
 records the session, and from there it reaches backups and whoever searches them. A variable
-exported in a shell, or set for a whole job or step in CI configuration, reaches every process
-started under it, including ones that print their environment in an error report. Reading the
-secret from a secret store inside the command hands it to that one process. Where the tool can
-read the secret from its environment, a file or standard input, the command passes it that way, as
-in `TOKEN="$(<store> read <name>)" tool`, because an argument is visible to other users on the
-machine in the process list while the command runs. Where the tool takes the secret only as an
-argument, as in `tool --token "$(<store> read <name>)"`, and also writes its own arguments to a log
-file, such as a cloud provider's command-line tool that records every command it runs, the command
-turns that file logging off.
+exported in a shell, or set for a whole job, or for a CI step that runs more than the command that
+needs it, reaches every process started under it, including ones that print their environment in an
+error report. Reading the secret from a secret store inside the command hands it to that one
+process. Where the tool can read the secret from its environment, a file or standard input, the
+command passes it that way, as in `TOKEN="$(<store> read <name>)" tool`, because an argument is
+visible to other users on the machine in the process list while the command runs. Where the tool
+takes the secret only as an argument, as in `tool --token "$(<store> read <name>)"`, and also writes
+its own arguments to a log file, such as a cloud provider's command-line tool that records every
+command it runs, the command turns that file logging off.
 
 **Session cookies are hidden from page scripts, sent only over HTTPS and replaced at sign-in.**
 A cookie that carries a session, or a credential that restores one such as a remember-me token, is
