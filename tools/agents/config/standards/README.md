@@ -115,9 +115,10 @@ extra file costs one read, and a skipped one means missed guidance.
 - **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API
   responses; analytics events
 - **`python.md`** — .py files; loaded alongside language-agnostic files
-- **`reliability.md`** — network requests, database queries, external service calls, file handles,
-  resource cleanup; restarts, health checks, expiry, growth bounds and resource limits in
-  deployment config
+- **`reliability.md`** — network requests, database queries, external service calls, subprocesses,
+  retries, file handles, resource cleanup, failure paths at the process boundary, queue consumers,
+  scheduled jobs, shutdown handling; restarts, health checks, expiry, backups, growth bounds and
+  resource limits in deployment config
 - **`rust.md`** — .rs files; loaded alongside language-agnostic files
 - **`security.md`** — HTTP handlers, auth and permission checks, sessions and cookies, file I/O,
   URLs the system fetches, secret handling, password storage, token generation, encryption,
