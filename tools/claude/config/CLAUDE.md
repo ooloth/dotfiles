@@ -403,7 +403,7 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
 1. Choose your next thematic change aiming for a thin vertical slice that can be verified end to
    end (rather than a horizontal layer that can't). A slice here is a commit. How the work divides
    into PRs is settled with the approach, by the vertical-slice and design-coupling Shoulds in
-   `deployment.md` in the standards
+   `deployment.md` in the standards, whose slices are the units that ship, such as PRs
 
 2. Describe your implementation plan, including the "/design" skill's type and test design plan
    for any slice that changes code, and calling out any design decisions or questions the user

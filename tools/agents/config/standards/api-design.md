@@ -42,8 +42,6 @@ The failure modes of an operation are as documented as its happy path. A
 caller who doesn't know what errors to expect and under what conditions has
 an incomplete contract.
 
-## Consider
-
 **The simple case is simple.**
 Common usage requires the fewest inputs and the least ceremony. Advanced
 options are available but don't intrude on the common path.
