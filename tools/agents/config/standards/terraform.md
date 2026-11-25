@@ -88,13 +88,18 @@ change being reviewed.
 **A check that only the apply evaluates is run before merge where the provider allows it.**
 Some checks run only when the provider sends the change, such as the `test`
 blocks on a GCP URL map, which GCP evaluates on the update call and nowhere
-else. A plan shows none of them passing. A failure shows up as a failed apply,
-and on a stack that applies on merge, every later run fails the same way until
-the change is fixed or reverted. Where the provider has a dry-run call that runs
-the check without changing anything, such as `gcloud compute url-maps validate`,
-the PR carries its result. Where there is none, or the reviewer lacks the
-permission it needs, the PR says so and names the check that confirms it after
-the apply.
+else. Restrictions set above the project work the same way: a VPC Service
+Controls perimeter or an organization policy constraint is enforced on the write
+call, so a plan that creates a public uptime check inside a perimeter passes and
+the apply fails with a 403. A plan shows none of them passing. A failure shows
+up as a failed apply, and on a stack that applies on merge, every later run
+fails the same way until the change is fixed or reverted. Where the provider has
+a dry-run call that runs the check without changing anything, such as
+`gcloud compute url-maps validate`, the PR carries its result. A change to a
+resource in a project under such restrictions carries the ones that bear on it,
+read from the perimeter's restricted services and the project's effective
+policies. Where there is no dry-run, or the reviewer lacks the permission it
+needs, the PR says so and names the check that confirms it after the apply.
 
 **A plan-time guard reads configuration, not a resource the same plan creates.**
 Whether an attribute of a resource being created is known at plan depends on the provider and the
