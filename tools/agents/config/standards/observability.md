@@ -82,8 +82,8 @@ available form, because `privacy.md` rules out the value.
 A record deleted before anyone asks answers nothing. Logs, traces, retained inputs and whatever a
 reference in them points to are kept for longer than the slowest routine way their failures are
 found, such as the interval of a check that looks for a broken invariant, or the billing cycle in
-which a wrong charge appears. `reliability.md` bounds how long stored data grows; this sets how long
-a record lasts at least. Where `privacy.md` sets a shorter limit for personal data, that limit
+which a wrong charge appears. `reliability.md` bounds how large stored data grows; this sets how
+long a record lasts at least. Where `privacy.md` sets a shorter limit for personal data, that limit
 holds, and the gap it leaves is recorded where retention is configured.
 
 **A failure that needs a person reaches one.**
