@@ -33,20 +33,66 @@ meant to open. Each interpreter it reaches gets it through a form that keeps dat
 such as a database query that takes values as parameters, a command run from a list of arguments
 rather than a shell string, HTML output that is escaped, a URL whose parameters are encoded, and a
 deserialiser that cannot construct arbitrary objects. A path built from input resolves inside the
-directory meant for it before it is opened, and a URL the server fetches on a caller's behalf
-reaches only the hosts it is meant to reach. Escaping is a property of the rendering approach rather
-than a step someone remembers, so the only way to skip it is an explicit opt-out that shows in the
-code.
+directory meant for it before it is opened, and a URL the server fetches on a caller's behalf, or
+because a model chose it, reaches only the hosts it is meant to reach. Escaping is a property of the
+rendering approach rather than a step someone remembers, so the only way to skip it is an explicit
+opt-out that shows in the code.
 
-**Text from an untrusted source cannot direct an action its author is not allowed to take.**
+**Text from an untrusted source cannot direct an action the text's author is not allowed to take.**
 A model that reads text, such as a web page, an issue comment or an email, can follow instructions
-written in it, and no escaping prevents that. So the limit lies in what the model can do while that
-text is in its context: it holds only the permissions the text's author already has, or each action
-outside them waits for a person to approve it. A session that holds private data, reads untrusted
-text and can send data out has everything a leak needs, so no session holds all three unless each
-action that sends data out waits for a person's approval. A read of data the text's author could not
-see needs no approval of its own while every action that sends data out waits for one, because a
-read reaches nobody until something sends it.
+written in it, and no escaping prevents that. Text is untrusted when anyone outside the organisation
+running the system could have written any of it. That includes what a tool returns, such as a
+fetched page or a note a customer typed into an order, and text the organisation's own people wrote
+where it quotes or carries outside text. Nothing shows which of the model's actions untrusted text
+steered, so this claim covers every action the model takes while that text is in its context, the
+job the model was given included.
+
+The definitions that follow decide what those actions may do, starting with the author's
+permissions. An author's permissions are what they could do themselves, under their own name and on
+their own resources, such as cancelling only their own order. The author is known only where the
+code shows the system authenticated them, such as a check that a ticket belongs to the signed-in
+customer, and an identifier carried with the text, such as an account number on a ticket, does not
+show that. An unknown author has an anonymous member of the public's permissions, and where the
+context holds text from several outside people, the permissions are the ones they all share. A label
+the model reads inside the same text, such as `[staff]` before a message, does not show who wrote
+that message, even when the code added it, so the message counts as written by the least trusted
+author. Private data is any data the author could not see themselves, and a session can read it once
+it holds a tool that can, whether or not it has called the tool. A tool whose reach is unknown
+counts as one that can, and a tool whose arguments are unknown counts as taking free text. Sending
+data out is any action that delivers information someone outside the organisation can read, such as
+a reply to the author, a web request, which carries data in its address even when it only reads, an
+email, a public comment, a post to a partner's webhook, or a post to an address the text could name.
+A service that only delivers to the organisation's own people, such as a paging vendor, is not
+someone outside.
+
+The rule is that each action either stays within the author's permissions or waits for a person who
+wrote none of the text to approve it. Text the model writes that readers see as coming from the
+system or the organisation is beyond those permissions, such as a comment under an account the
+maintainers use or a routing reason shown to staff, and text whose presentation the code does not
+show counts as that kind. A reply that only the author reads is not in that category. A post to a
+fixed destination that only the organisation's own people read is beyond those permissions too,
+unless the system already lets outside authors post there under their own name, such as through a
+contact form. An automated digest of public posts is such a post, so it waits for approval each
+time. One case is stricter: once a session can read private data, each send waits for approval, even
+one the author could make themselves, because the send could carry data the author never had. The
+read itself needs no approval, because a read reaches nobody until something sends it. One case is
+looser: an action needs no approval when the only part the text chooses is a value from a fixed set,
+the code fixes everything else, and the only effect is that value landing on an item the text's
+author wrote or owns, such as the listing their description is part of, or on the organisation's
+record of that author, such as a label on the issue being triaged or a certification on a supplier's
+file. The worst result is then a wrong value on the author's own item. A value landing on anything
+someone else wrote or owns, such as a post another user reported, is outside this exception. Leaving
+the action untaken counts as one of the values, and the item's place in a sorted list moving with
+its value is part of the effect. A free-text argument, an effect on anything else, such as paging a
+person, or a send in a session that can read private data each puts the action outside this
+exception.
+
+An approval counts when the person sees every argument the text could have influenced, such as the
+full address a request goes to, everything it sends, or an order number the code took from a
+complaint, and the code, the tool's own definition included, shows that the card holds them all.
+Arguments the code fixes to values the text cannot influence need not appear. Approval settles only
+this claim, so a URL the model fetches still reaches only the hosts it is meant to reach, as the
+Must on injection requires.
 
 **Secrets are not hardcoded, logged or shipped to anyone else.**
 Credentials, API keys, tokens and passwords reach the system when it runs, from a secret store or
