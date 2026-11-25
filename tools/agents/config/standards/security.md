@@ -58,19 +58,26 @@ the model reads inside the same text, such as `[staff]` before a message, does n
 that message, even when the code added it, so the message counts as written by the least trusted
 author. Private data is any data the author could not see themselves, and a session can read it once
 it holds a tool that can, whether or not it has called the tool. A tool whose reach is unknown
-counts as one that can, and a tool whose arguments are unknown counts as taking free text. Sending
-data out is any action that delivers information someone outside the organisation can read, such as
-a reply to the author, a web request, which carries data in its address even when it only reads, an
-email, a public comment, a post to a partner's webhook, or a post to an address the text could name.
-A service that only delivers to the organisation's own people, such as a paging vendor, is not
-someone outside.
+counts as one that can, a tool whose arguments are unknown counts as taking free text, and a tool
+whose side effects are unknown counts as having one beyond the item it is given. Sending data out is
+any action that delivers information someone outside the organisation can read, such as a reply to
+the author, a web request, which carries data in its address even when it only reads, an email, a
+public comment, a post to a partner's webhook, or a post to an address the text could name. A
+service that only delivers to the organisation's own people, such as a paging vendor, is not someone
+outside.
 
 The rule is that each action either stays within the author's permissions or waits for a person who
-wrote none of the text to approve it. Text the model writes that readers see as coming from the
-system or the organisation is beyond those permissions, such as a comment under an account the
-maintainers use or a routing reason shown to staff, and text whose presentation the code does not
-show counts as that kind. A reply that only the author reads is not in that category. A post to a
-fixed destination that only the organisation's own people read is beyond those permissions too,
+wrote none of the text to approve it. The code shows that only where the approver is someone the
+text could not have come from, such as a member of staff approving in a queue outside the
+conversation, and a role name alone does not show it, since a member of staff may also have written
+part of the conversation. Text the model writes that readers see as coming from the system or the
+organisation is beyond those permissions, such as a comment under an account the maintainers use or
+a routing reason shown to staff, and text whose presentation the code does not show counts as that
+kind. A reply that only the author reads is not in that category, and a reply counts as one only
+where the code shows it goes back to the author alone, such as into the signed-in customer's own
+chat window. An address the text supplies, such as an email address typed into a form, is an address
+the text could name, so a message sent there is a send to someone who may not be the author. A post
+to a fixed destination that only the organisation's own people read is beyond those permissions too,
 unless the system already lets outside authors post there under their own name, such as through a
 contact form. An automated digest of public posts is such a post, so it waits for approval each
 time. One case is stricter: once a session can read private data, each send waits for approval, even
