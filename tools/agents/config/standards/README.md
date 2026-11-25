@@ -110,8 +110,10 @@ extra file costs one read, and a skipped one means missed guidance.
   content
 - **`observability.md`** — what a failure has to reveal, what must be recorded for it to and for how
   long, invariants no call site can check, alerts and whether they reach a person
-- **`performance.md`** — design choices that put a network hop on a path, loop bodies, database
-  queries, hot-path functions, large or unbounded data operations
+- **`performance.md`** — designs and change descriptions that add a path, a store or a dependency or
+  report a measurement, network hops, paths a caller waits on, loop bodies, database queries,
+  hot-path functions, large or unbounded data operations, caches, code that waits on another
+  process's state
 - **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API
   responses; analytics events
 - **`python.md`** — .py files; loaded alongside language-agnostic files
