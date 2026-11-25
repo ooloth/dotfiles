@@ -44,7 +44,9 @@ written in it, and no escaping prevents that. So the limit lies in what the mode
 text is in its context: it holds only the permissions the text's author already has, or each action
 outside them waits for a person to approve it. A session that holds private data, reads untrusted
 text and can send data out has everything a leak needs, so no session holds all three unless each
-action that sends data out waits for a person's approval.
+action that sends data out waits for a person's approval. A read of data the text's author could not
+see needs no approval of its own while every action that sends data out waits for one, because a
+read reaches nobody until something sends it.
 
 **Secrets are not hardcoded, logged or shipped to anyone else.**
 Credentials, API keys, tokens and passwords reach the system when it runs, from a secret store or
