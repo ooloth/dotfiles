@@ -47,8 +47,13 @@ refined them (`git log --format='%h %s' -- tools/agents/config/standards/<file>`
 
    Show all of them together, in the user's plain-speech style, and stop. Standards are agent
    instructions, so nothing is applied before the user approves the wording.
-7. Apply exactly what was approved. If an edit forces wording the user didn't see, such as a
-   sentence that needs a general noun, show it before committing.
+7. Apply exactly what was approved, as edits to the lines that change, never by copying a whole
+   file over from a draft. Other sessions may be editing the same files, such as an index every
+   refinement touches, and a copied file drops their changes with no sign. Before applying, read
+   `git diff` for each file: any change in it that you did not make belongs to someone else and
+   stays. After applying, `git diff` shows your changes and theirs, and nothing of theirs lost. If
+   an edit forces wording the user didn't see, such as a sentence that needs a general noun, show it
+   before committing.
 8. Replay through a fresh agent on Opus that sees only the README, the changed file and its inputs:
    - a sample with one planted problem for each claim that changed or was added
    - a clean sample as a control
