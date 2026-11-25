@@ -11,7 +11,11 @@ effort: high
 **If the user specified a theme:**
 
 1. Read `~/.agents/standards/README.md` to understand the framing and tier definitions
-2. Load `~/.agents/standards/<theme>.md` (list `~/.agents/standards/` if unsure which file applies)
+2. Load `~/.agents/standards/<theme>.md` (list `~/.agents/standards/` if unsure which file
+   applies), and every standards file it names as covering part of the same gap, such as
+   `instrumentation.md` for `observability.md`. When two files catch one gap, the README grades it
+   at the higher tier, so a scan that loads only the theme file can grade a gap lower than a review
+   would
 3. Study the current project's documented guidance for this concern (if any)
 4. Use up to 50 subagents to explore the codebase (or the path/git-range if the user specified a
    smaller scope)

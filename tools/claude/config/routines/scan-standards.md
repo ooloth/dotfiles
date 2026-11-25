@@ -66,7 +66,7 @@ Themes: [THEMES]
 
 Question: Does this codebase uphold its [THEMES] standards?
 
-## Invariant definitions
+## Standards
 
 [paste full content of README.md from step 2]
 
