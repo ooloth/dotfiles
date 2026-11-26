@@ -119,7 +119,8 @@ cost.
    all at once, behind a flag, or one group at a time. The choice follows from the properties, such
    as how many users a defect could reach before anyone notices, and from whether a claim can be
    observed only in production, where a flag enabled for the person testing lets it be proven before
-   anyone else sees it. `deployment.md` sets the defaults.
+   anyone else sees it. `deployment.md` sets one default, that unfinished work ships behind a flag
+   that is off, and its claims on staged rollout are Considers.
 
    Where the change is hard to make in the code as it stands, such as a value read globally in many
    places that must become a parameter, the approach makes the change easy first, then makes the

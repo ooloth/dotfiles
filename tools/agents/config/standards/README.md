@@ -41,7 +41,8 @@ file usable for writing, reviewing, and scanning without rephrasing.
   such as one that starts with "Use" or "Ensure", reads as an instruction, not a property.
 - **The higher tier decides.** When two claims both catch the same gap, whether one contains the
   other or they only overlap, the gap is graded at the higher tier, and the other claim adds detail
-  rather than a second grade.
+  rather than a second grade. When both are at the same tier, the gap is graded once, under the
+  claim that names it most specifically.
 - **General terms rather than products.** A claim names a product or tool only when it is about
   that product or tool.
 
@@ -97,7 +98,8 @@ extra file costs one read, and a skipped one means missed guidance.
   base images, automatic update config, platform and runtime versions
 - **`deployment.md`** — any change to code that runs in a deployed environment; CI/CD config,
   Dockerfiles, infrastructure manifests, migration files, spend limits; how a change is
-  divided into PRs, in any repo; pre-commit hook config and the task runner's check command
+  divided into PRs, in any repo that ships through them; pre-commit hook config and the task
+  runner's check command
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions,
   the operator document (SYSTEM.md)
 - **`documentation.md`** — any file change that affects documented behaviour or has accompanying
@@ -106,21 +108,26 @@ extra file costs one read, and a skipped one means missed guidance.
 - **`git.md`** — any code that runs git commands; loaded alongside language-agnostic files
 - **`instrumentation.md`** — logging, metric and trace call sites; log format, levels and field
   content
-- **`observability.md`** — what a failure has to reveal, what must be recorded for it to, invariants
-  no call site can check, alerts and whether they reach a person
-- **`performance.md`** — design choices that put a network hop on a path, loop bodies, database
-  queries, hot-path functions, large or unbounded data operations
+- **`observability.md`** — what a failure has to reveal, what must be recorded for it to and for how
+  long, invariants no call site can check, alerts and whether they reach a person
+- **`performance.md`** — designs and change descriptions that add a path, a store or a dependency or
+  report a measurement, network hops, paths a caller waits on, loop bodies, database queries,
+  hot-path functions, large or unbounded data operations, caches, code that waits on another
+  process's state
 - **`prioritization.md`** — rankings of tickets, backlog items, work in flight, PRs waiting on
   review, findings and steps toward a goal; any recommendation of what to work on next
 - **`privacy.md`** — any code that handles, stores, logs, or transmits user data or PII; API
   responses; analytics events
 - **`python.md`** — .py files; loaded alongside language-agnostic files
-- **`reliability.md`** — network requests, database queries, external service calls, file handles,
-  resource cleanup; restarts, health checks, expiry, growth bounds and resource limits in
-  deployment config
+- **`reliability.md`** — network requests, database queries, external service calls, subprocesses,
+  retries, file handles, resource cleanup, failure paths at the process boundary, queue consumers,
+  scheduled jobs, shutdown handling; restarts, health checks, expiry, backups, growth bounds and
+  resource limits in deployment config
 - **`rust.md`** — .rs files; loaded alongside language-agnostic files
-- **`security.md`** — HTTP handlers, auth and permission checks, file I/O, secret handling, input
-  parsing, audit logging of production changes
+- **`security.md`** — HTTP handlers, auth and permission checks, sessions and cookies, file I/O,
+  URLs the system fetches, secret handling, password storage, token generation, encryption,
+  outbound connections, input parsing, model calls that read untrusted text, audit logging of
+  production changes
 - **`terraform.md`** — .tf and .tfvars files, CI/CD that runs plan or apply
 - **`testing.md`** — test files and test directories
 - **`type-design.md`** — type definitions, function signatures, domain models, API boundary types

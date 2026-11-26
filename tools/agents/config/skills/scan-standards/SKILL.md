@@ -11,7 +11,11 @@ effort: high
 **If the user specified a theme:**
 
 1. Read `~/.agents/standards/README.md` to understand the framing and tier definitions
-2. Load `~/.agents/standards/<theme>.md` (list `~/.agents/standards/` if unsure which file applies)
+2. Load `~/.agents/standards/<theme>.md` (list `~/.agents/standards/` if unsure which file
+   applies), and every standards file it names as covering part of the same gap, such as
+   `instrumentation.md` for `observability.md`. When two files catch one gap, the README grades it
+   at the higher tier, so a scan that loads only the theme file can grade a gap lower than a review
+   would
 3. Study the current project's documented guidance for this concern (if any)
 4. Use up to 50 subagents to explore the codebase (or the path/git-range if the user specified a
    smaller scope)
@@ -61,9 +65,12 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    Inline: `~/.agents/standards/type-design.md`, `~/.agents/standards/correctness.md`,
    `~/.agents/standards/error-handling.md`
 
-   **Subagent 3 — Security & Privacy** (subagent_type: Explore, description: "review security and
-   privacy")
-   Inline: `~/.agents/standards/security.md`, `~/.agents/standards/privacy.md`
+   **Subagent 3 — Security & Privacy** (subagent_type: general-purpose, model: opus, description:
+   "review security and privacy"). Not Explore, which reads excerpts to locate code rather than
+   audit it, and a security gap it skims past ships silently.
+   Inline: `~/.agents/standards/security.md`, `~/.agents/standards/privacy.md`,
+   `~/.agents/standards/dependencies.md`, which holds the dependency claims `security.md` leaves
+   to it
 
    **Subagent 4 — Data** (subagent_type: Explore, description: "review data integrity")
    Inline: `~/.agents/standards/data-integrity.md`

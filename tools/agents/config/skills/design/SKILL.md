@@ -254,7 +254,9 @@ crosses interfaces, a store that outlives the run — name it as an open decisio
 slice that invents a system-wide mechanism from the inside produces the third incompatible one, and
 `/discuss` is where those are settled.
 
-This plan covers what must be recorded and why. Log format, log levels, field naming, and keeping
+This plan covers what must be recorded and why, which `~/.agents/standards/observability.md`
+grades: read it before writing the plan, including what a failure record holds, how long records
+are kept, and which failures must reach a person. Log format, log levels, field naming, and keeping
 telemetry out of the logic it instruments are implementation concerns governed by
 `~/.agents/standards/instrumentation.md`, and they do not appear here.
 

@@ -10,7 +10,9 @@ place is `observability.md`.
 **A code path that runs leaves a trace.**
 Operations, decisions and failure modes each emit output covering them, and
 that output is added in the same change as the path it covers. A code path that
-runs and says nothing is indistinguishable from one that never ran.
+runs and says nothing is indistinguishable from one that never ran. A fault the
+code recovered from, so that the work still did what it was for, is graded by
+`observability.md`'s Should on recovered faults rather than by this claim.
 
 ## Should
 
@@ -49,4 +51,6 @@ of the surrounding code remains clear after instrumentation is added.
 
 - What has to be recorded and why, which belongs to `observability.md`
 - Test code (no logging required)
-- Intentional no-op error handling that is explicitly documented
+- Handling of an error that is an expected outcome rather than a fault, such as
+  an optional file that is absent, where the code says it is expected. A
+  dependency that failed is a fault even when falling back from it is expected.
