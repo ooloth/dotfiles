@@ -460,7 +460,7 @@ Instructions:
 3. Run the diff command from Context to read what changed.
 4. Read related unchanged files to understand existing structural patterns and conventions.
 
-For each issue: file:line | what's wrong | specific alternative
+For each issue: file:line | what's wrong | tier (Must/Should/Consider, from the claim it breaks) | specific alternative
 If structure is sound, report "Structure and internal organisation look solid."
 ```
 
@@ -488,7 +488,7 @@ Instructions:
 3. Run the diff command from Context to read what changed.
 4. Find all documentation that could be affected: .md files, help text, docstrings, CLI --help output, code comments in changed files.
 
-For each issue: file:line | what's wrong | specific fix
+For each issue: file:line | what's wrong | tier (Must/Should/Consider, from the claim it breaks) | specific fix
 If the public surface is well-designed and documented, report "Public surface is well-designed and documented."
 ```
 
@@ -515,7 +515,7 @@ Instructions:
 3. Run the diff command from Context to read what changed. For files under 500 lines, read the full file. For larger files, read each changed section plus ~30 lines of context.
 4. Read 2-3 similar unchanged files to understand existing patterns for error handling and validation.
 
-For each issue: file:line | what's wrong | concrete impact | specific fix
+For each issue: file:line | what's wrong | tier (Must/Should/Consider, from the claim it breaks) | concrete impact | specific fix
 Skip theoretical what-ifs — report actual problems in the code.
 ```
 
@@ -614,7 +614,7 @@ Sensitivity:
 - Make the cheapest breaks, at most three, and run only the test that should catch each. Never edit the reviewed tree, which other agents are reading. Work in a scratch worktree: run `git stash create` and `mktemp -d` as separate commands, then `git worktree add --detach <folder> <the stash commit, or HEAD when it printed nothing>`, and `git worktree remove --force <folder>` when done.
 - A test that still passes under its break is a finding: name the test, the break, and why its setup cannot produce the failure (a shared session, a fixture that raises before writing, an environment that never holds the guarded value).
 
-For each issue: file:line | what's wrong | specific fix
+For each issue: file:line | what's wrong | tier (Must/Should/Consider, from the claim it breaks) | specific fix
 If tests are well-designed, report "Test design is solid and coverage is appropriate."
 ```
 
@@ -646,7 +646,7 @@ Instructions:
    - Say whether the signal records before the change's behaviour serves: it is already in production (from the base branch or the platform), or this diff adds it while the change stays behind a flag that is off until a baseline is taken. A signal this diff adds with the change's behaviour live has no before reading: that is a finding, with the recommendation to ship the signal first in its own PR, deployed before this one. A benchmark may ship in the same diff, because it can run on the base commit.
    - Flag a line that reads "promised, none recorded".
 
-For each issue: file:line | what's wrong | specific recommendation
+For each issue: file:line | what's wrong | tier (Must/Should/Consider, from the claim it breaks) | specific recommendation
 If no concerns found, report "No release readiness concerns identified."
 ```
 
@@ -675,7 +675,7 @@ Instructions:
 
 Apply the loaded standards to the changed files. Look for violations specific to the language — idioms, error handling patterns, type system conventions, and anti-patterns called out in the standards files.
 
-For each issue: file:line | what's wrong | specific fix
+For each issue: file:line | what's wrong | tier (Must/Should/Consider, from the claim it breaks) | specific fix
 If no language-specific issues found, report "No language-specific concerns identified."
 ```
 
@@ -705,7 +705,7 @@ Instructions:
 5. Check specifically for handlers that do not catch what they look like they catch: a synchronous throw evaluated while building an argument, before the promise/future it is passed to exists; a throw in a constructor or at module load; an error raised outside the `try` that visually surrounds it; a rejected promise nothing awaits.
 6. Judge each outcome against the intent block. A change whose stated point is failing earlier or louder has not delivered it if the failure is caught and logged deep in the stack, or if the process still exits 0.
 
-For each issue: file:line | the path | reachable from where, or not at all | what the process actually does | why that is wrong given the intent
+For each issue: file:line | the path | reachable from where, or not at all | what the process actually does | why that is wrong given the intent | tier (Must/Should/Consider, from the claim it breaks)
 ```
 
 ---
@@ -1178,6 +1178,7 @@ come back clean.]
 
 - The table is a scannable index only — one row per finding, action phrased as an imperative.
 - Severity column values: `must`, `should`, `consider`, `?` (open question). Order rows by severity.
+  A finding an agent graded against a standards claim takes that claim's tier as its severity.
 - Each detail section is 1–3 sentences of integrated prose — no labeled sub-fields. It must answer
   two questions: (1) why does this matter, and (2) what did you actually look at to verify it. These
   are not optional; a finding with no impact explanation or no verification basis should not be
