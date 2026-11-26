@@ -164,6 +164,11 @@ Setup is in `tools/jira/README.md`. Tested with acli 1.3.39 on a work ticket:
   --body-adf <file>` replaces the body and notifies nobody unless `--notify` is passed. Use
   `--body-adf`: `update --body-file` takes plain text only. The replacement is a new draft:
   approved wording changes only with fresh approval.
+- **There is no `--parent` flag.** `acli jira workitem edit` cannot change a work item's parent.
+  Move a ticket to another epic with the MCP tool, `editJiraIssue` with
+  `"fields": {"parent": {"key": "EPIC-1"}}`, then confirm it with
+  `acli jira workitem view KEY --fields parent --json`. Keep acli's output visible on any write: a
+  failed write prints only its error, and discarding it hides the failure.
 - **A failure says only `unexpected error, trace id: …`.** Run the command again with
   `ACLI_LOG_ENABLED=true ACLI_LOG_FILE=<file>` to log the request and response. The log redacts the
   `Authorization` header; a 401 with `X-Failure-Category: FAILURE_CLIENT_SCOPE_CHECK` means the
