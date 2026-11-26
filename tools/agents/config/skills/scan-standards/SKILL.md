@@ -115,4 +115,4 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    - Write to `.outputs/<yyyy-mm-dd>/scan-standards.html` — clean minimal styling, one slide per
      category plus a title/summary slide, keyboard arrow-key and click navigation
    - `open .outputs/<yyyy-mm-dd>/scan-standards.html`
-7. Recommend a next action and wait for the user's response
+8. Recommend a next action and wait for the user's response

@@ -1,6 +1,6 @@
 ---
-updated: 2026-11-02
-update_when: the work laptop check below is run, or #127 starts
+updated: 2026-11-25
+update_when: the check runs on a newly issued work laptop, or #127 starts
 decays: slow
 status: open
 ---
@@ -61,8 +61,12 @@ Nothing here is settled until it graduates into a decision record.
 - *Measured (2026-10-19):* uv 0.13.2 downloads Python from `releases.astral.sh`, not from PyPI or
   the package index set in `~/.config/uv/uv.toml`. This was measured on a personal machine with no
   `uv.toml`.
-- *Unverified:* whether a fresh work laptop can download Python with uv before gcloud is logged
-  in. The check under **What would settle it** answers it.
+- *Measured (2026-11-25):* on the work laptop with uv 0.13.6 and its managed config active, and
+  gcloud's credentials hidden from uv as described under **What would settle it**,
+  `uv python install 3.11 -v` into scratch install and bin directories downloaded
+  `cpython-3.11.18` from `releases.astral.sh` and installed it in under two seconds, with no proxy
+  or certificate error. The laptop was not newly issued, so the same check on one that is would
+  confirm it.
 - *Reasoned:* the global Python standards call for Pydantic at boundaries wherever third-party
   packages can be installed, and the standard library before then. A setup that runs before
   gcloud is logged in can still install third-party packages on a work laptop from a lock made

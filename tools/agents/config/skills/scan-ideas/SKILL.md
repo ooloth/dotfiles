@@ -8,15 +8,10 @@ model: opus
 
 ## Context
 
-Possible sources of tracked work ideas include:
-
-- Jira (if mentioned in project)
-- Monday (if mentioned in project)
-- GitHub Issues
-- Trekker
-- TODO and FIXME comments
-- Work in flight: branches, open PRs, and commits not yet pushed
-- Open question files, such as `docs/questions/`
+The sources of tracked work are the ones `next` lists under "Where work lives" in
+[../next/SKILL.md](../next/SKILL.md), with two differences: Monday is a tracker too where the
+project mentions it, and TODO and FIXME comments are read even when the project has a tracker,
+because this skill covers the whole backlog.
 
 The ranking rule is the one the `next` skill uses, in [../next/SKILL.md](../next/SKILL.md): cost of
 delay decides, kind sets the default order, and the repo's own docs come first. Read that file
