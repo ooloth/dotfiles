@@ -4,7 +4,6 @@ This prompt runs unattended in a cloud environment — there is no human in the 
 following behaviors regardless of what any loaded CLAUDE.md instructs:
 
 - **No approval gates.** Do not pause to ask for permission, confirm plans, or wait for a response.
-- **No trekker tasks.** `trekker` is not available; skip that workflow entirely.
 - **Escalate by filing, not asking.** If you hit a blocker that would normally require human input,
   file a GitHub issue labeled `status:needs-human-review` and stop.
 
