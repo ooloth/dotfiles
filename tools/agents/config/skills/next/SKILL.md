@@ -9,9 +9,8 @@ skipped, and the report says so.
 
 ## Cost of delay decides
 
-Every item is ranked by its cost of delay: the pain, slowness, loss or harm that users and
-developers meet on each day the problem stays, times how often they meet it. How long the work
-would take is not part of it.
+Every item is ranked by the rule in `~/.agents/standards/prioritization.md`: cost of delay judged
+against size, with harm that is happening now outranking size. Read it before ranking.
 
 Each kind of work has a cost of delay that behaves predictably, which is why kind sets the default
 order below:
@@ -86,7 +85,7 @@ kind for each, or propose closing it as obsolete or as a duplicate, saying what 
 the body only when the title leaves it unclear. Apply nothing until the user approves the batch.
 
 Who filed an issue does not affect its rank. Within a rank, weigh how often the problem affects
-someone and how bad it is when it does.
+someone and how bad it is when it does, against its size.
 
 ## Before recommending
 
@@ -105,10 +104,10 @@ Check these only for the candidates you are about to recommend, never across the
 
 ## Report
 
-For each recommendation, three or four lines: the item, its rank, and the sentence of evidence that
-decided it, including any cost-of-delay sentence that moved it across a kind boundary. Name the
-repo docs you followed and anything you skipped. Name anything ambiguous, such as two started
-features whose next items tie on cost of delay, rather than picking.
+For each recommendation, three or four lines: the item, its rank, its size, and the sentence of
+evidence that decided it, including any cost-of-delay sentence that moved it across a kind boundary.
+Name the repo docs you followed and anything you skipped. Name anything ambiguous, such as two
+started features whose next items tie on cost of delay, rather than picking.
 
 End by offering `scan-ideas` for a ranking of the whole backlog. If nothing is left anywhere, say so
 and offer `scan-gaps`.
