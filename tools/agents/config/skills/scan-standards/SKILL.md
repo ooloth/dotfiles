@@ -111,8 +111,8 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
 5. Rank findings by priority (impact, cost of delay, ROI)
 6. Present the prioritized findings with a summary table, followed by the unevaluable standards
 7. Generate a self-contained HTML slide deck:
-   - `mkdir -p .outputs/<yyyy-mm-dd>`
-   - Write to `.outputs/<yyyy-mm-dd>/scan-standards.html` — clean minimal styling, one slide per
+   - Make a new folder with `mktemp -d`, so the report leaves nothing in the repo
+   - Write to `<folder>/scan-standards.html` — clean minimal styling, one slide per
      category plus a title/summary slide, keyboard arrow-key and click navigation
-   - `open .outputs/<yyyy-mm-dd>/scan-standards.html`
+   - `open <folder>/scan-standards.html`
 8. Recommend a next action and wait for the user's response

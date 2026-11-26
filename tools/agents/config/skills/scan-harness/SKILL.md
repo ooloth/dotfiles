@@ -42,9 +42,9 @@ Use up to 25 subagents to explore the following data sources:
 9. Present the prioritized findings to the user, ensuring a summary table is included near the end
    of your response for clarity
 10. Generate a self-contained HTML slide deck of the prioritized findings:
-   - `mkdir -p .outputs/<yyyy-mm-dd>`
-   - Write the report to `.outputs/<yyyy-mm-dd>/scan-harness.html` — clean minimal styling, one
+   - Make a new folder with `mktemp -d`, so the report leaves nothing in the repo
+   - Write the report to `<folder>/scan-harness.html` — clean minimal styling, one
      slide per category plus a summary/title slide, keyboard arrow-key and click navigation between
      slides
-   - `open .outputs/<yyyy-mm-dd>/scan-harness.html`
+   - `open <folder>/scan-harness.html`
 11. Recommend a next action and wait for the user's response

@@ -63,10 +63,10 @@ offers do not apply here.
    of your response for clarity. Show the stale, needs-a-kind and in-progress lists separately,
    each item with its evidence, so the user can overrule any of them
 2. Generate a self-contained HTML slide deck of the prioritized findings:
-   - `mkdir -p .outputs/<yyyy-mm-dd>`
-   - Write the report to `.outputs/<yyyy-mm-dd>/prioritized-work-items.html` — use clean, minimal
+   - Make a new folder with `mktemp -d`, so the report leaves nothing in the repo
+   - Write the report to `<folder>/prioritized-work-items.html` — use clean, minimal
      styling, one slide per kind in the default order plus one for each of the lists above and a
      summary/title slide, and keyboard arrow-key and click navigation between slides
-   - `open .outputs/<yyyy-mm-dd>/prioritized-work-items.html`
+   - `open <folder>/prioritized-work-items.html`
 3. Recommend a next action and wait for the user's response. Change nothing in any tracker until
    the user approves it

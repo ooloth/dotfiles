@@ -43,7 +43,7 @@ Find each source; none is assumed.
 - **In flight:** uncommitted changes (`git status`), commits on the default branch not yet pushed,
   branches other than the default, and open PRs. A branch whose PR was closed unmerged is not in
   flight; report it for deletion.
-- **Trackers:** GitHub Issues, and Jira, Linear or Trekker where the repo mentions them. Invoke the
+- **Trackers:** the ones the repo's docs name, such as GitHub Issues, Jira or Linear. Invoke the
   matching `use-*` skill before the first call. Pass a `--limit` above the largest count you expect
   to every list, because the default stops at 30 without saying so.
 - **Open questions:** a folder such as `docs/questions/`, one file per question.

@@ -10,8 +10,8 @@ effort: high
    smaller scope)
 2. Identify opportunities to improve user- or developer-facing characteristics and address
    fundamental flaws
-3. Study the user's `trekker`, Jira, Monday, GitHub issues or other backlog (if any) to see what
-   opportunities are already tracked
+3. Study the project's backlog, on the tracker its docs name, such as GitHub Issues, Jira or
+   Linear, to see what opportunities are already tracked
 4. Report the top untracked user-facing and developer-facing opportunities
 5. Generate a self-contained HTML slide deck of the findings:
    - `mkdir -p .outputs/<yyyy-mm-dd>`

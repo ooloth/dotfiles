@@ -1,6 +1,6 @@
 ---
 name: scan-impact
-description: Identify the most mind-blowing, game-changing changes that could be made next assuming users will shortly abandon this project if it doesn't differentiate itself soon. TRIGGER whenever the user asks what work would be most impactful to do next.
+description: Identify the most mind-blowing, game-changing changes that could be made next assuming users will shortly abandon this project if it doesn't differentiate itself soon. TRIGGER only when the user asks for game-changing or differentiating ideas. A question about what to work on next belongs to `next`, or to `prioritize` when the user names a goal.
 effort: high
 model: opus
 ---
