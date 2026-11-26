@@ -70,6 +70,7 @@ When making changes to this repository:
 1. **Update all relevant project-level CLAUDE.md files** after clarifying any Claude-specific
    workflows
 
+Work on this repository is tracked in its GitHub Issues, with open questions in `docs/questions/`.
 Work in this repository is committed straight to `main`, with no pull request, so the global step
 that opens a draft PR and starts its review does not apply here. The review it exists for still
 does: after a session's last commit, a fresh session runs `review-code` on that session's commits,

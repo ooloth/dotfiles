@@ -8,15 +8,10 @@ model: opus
 
 ## Context
 
-Possible sources of tracked work ideas include:
-
-- Jira (if mentioned in project)
-- Monday (if mentioned in project)
-- GitHub Issues
-- Trekker
-- TODO and FIXME comments
-- Work in flight: branches, open PRs, and commits not yet pushed
-- Open question files, such as `docs/questions/`
+The sources of tracked work are the ones `next` lists under "Where work lives" in
+[../next/SKILL.md](../next/SKILL.md), with two differences: Monday is a tracker too where the
+project mentions it, and TODO and FIXME comments are read even when the project has a tracker,
+because this skill covers the whole backlog.
 
 The ranking rule is the one the `next` skill uses, in [../next/SKILL.md](../next/SKILL.md): cost of
 delay decides, kind sets the default order, and the repo's own docs come first. Read that file
@@ -68,10 +63,10 @@ offers do not apply here.
    of your response for clarity. Show the stale, needs-a-kind and in-progress lists separately,
    each item with its evidence, so the user can overrule any of them
 2. Generate a self-contained HTML slide deck of the prioritized findings:
-   - `mkdir -p .outputs/<yyyy-mm-dd>`
-   - Write the report to `.outputs/<yyyy-mm-dd>/prioritized-work-items.html` — use clean, minimal
+   - Make a new folder with `mktemp -d`, so the report leaves nothing in the repo
+   - Write the report to `<folder>/prioritized-work-items.html` — use clean, minimal
      styling, one slide per kind in the default order plus one for each of the lists above and a
      summary/title slide, and keyboard arrow-key and click navigation between slides
-   - `open .outputs/<yyyy-mm-dd>/prioritized-work-items.html`
+   - `open <folder>/prioritized-work-items.html`
 3. Recommend a next action and wait for the user's response. Change nothing in any tracker until
    the user approves it

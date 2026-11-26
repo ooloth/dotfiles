@@ -9,7 +9,7 @@ u() {
   local tool="$1"
 
   if [[ ! -z "${tool}" ]]; then
-    # If a specific tool was provided, jsut update that tool
+    # If a specific tool was provided, just update that tool
     bash "${DOTFILES}/features/update/tools.bash" "${tool}";
   else
     # Otherwise, update all tools

@@ -517,10 +517,8 @@ An option that fails silently loses to one that fails loudly, even when it is ot
 
 ## Out of scope
 
-- Which decision is taken next, and in what order — that depends on what the project is reaching
-  for and belongs in the project's own standards
-- Which work item is done next, such as a ticket or an untracked step toward a goal:
-  `prioritization.md`
+- Where a decision ranks among other work, and which work item is done next, such as a ticket or
+  an untracked step toward a goal: `prioritization.md`
 - Choices inside an already-decided area: naming, file layout, formatting
 - Reversible experiments that nothing else depends on yet
 - Beyond the triage in the first entry, a choice that holds none of its three tests
