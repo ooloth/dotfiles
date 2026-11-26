@@ -47,63 +47,66 @@ where it quotes or carries outside text. Nothing shows which of the model's acti
 steered, so this claim covers every action the model takes while that text is in its context, the
 job the model was given included.
 
-The definitions that follow decide what those actions may do. Wherever this claim asks what the code
-shows, only code a reviewer can trace counts, such as a check, a binding or a tool's implementation,
-and a comment or docstring that says the same does not, because nothing keeps it true. A call shows
-where it sends and what it passes through its arguments, such as sending to the signed-in customer's
-own session, and shows what else it does only through the called code. An author's permissions are
-what they could do themselves, under their own name and on their own resources, such as cancelling
-only their own order. The author is known only where the code shows the system authenticated them,
-such as a check that a ticket belongs to the signed-in customer, and an identifier carried with the
-text, such as an account number on a ticket, does not show that. An unknown author has an anonymous
-member of the public's permissions, and where the context holds text from several outside people,
-the permissions are the ones they all share. A label the model reads inside the same text, such as
-`[staff]` before a message, does not show who wrote that message, even when the code added it, so
-the message counts as written by the least trusted author. Private data is any data the author could
-not see themselves, and a session can read it once it holds a tool that can, whether or not it has
-called the tool. A tool whose reach is unknown counts as one that can, a tool whose arguments are
-unknown counts as taking free text, and a tool whose side effects are unknown counts as having one
-beyond the item it is given. Sending data out is any action that delivers information someone
-outside the organisation can read, such as a reply to the author, a web request, which carries data
-in its address even when it only reads, an email, a public comment, a post to a partner's webhook,
-or a post to an address the text could name. A service that only delivers to the organisation's own
-people, such as a paging vendor, is not someone outside.
-
 The rule is that each action either stays within the author's permissions or waits for a person who
-wrote none of the text to approve it. The code shows that only where the approver is someone the
-text could not have come from, such as a member of staff approving in a queue outside the
-conversation, and a role name alone does not show it, since a member of staff may also have written
-part of the conversation. Text the model writes that readers see as coming from the system or the
-organisation is beyond those permissions, such as a comment under an account the maintainers use or
-a routing reason shown to staff, and text whose presentation the code does not show counts as that
-kind. A reply that only the author reads is not in that category, and a reply counts as one only
-where the code shows it goes back to the author alone, such as into the signed-in customer's own
-chat window. An address the text supplies, such as an email address typed into a form, is an address
-the text could name, so a message sent there is a send to someone who may not be the author. A post
-to a fixed destination that only the organisation's own people read is beyond those permissions too,
-unless the system already lets outside authors post there under their own name, such as through a
-contact form. An automated digest of public posts is such a post, so it waits for approval each
-time. One case is stricter: once a session can read private data, each send waits for approval, even
-one the author could make themselves, because the send could carry data the author never had. The
-read itself needs no approval, because a read reaches nobody until something sends it. One case is
+wrote none of the text to approve it, such as a member of staff approving in a queue that excludes
+the conversation's participants. A role name does not show the approver wrote none of the text,
+since staff may also have written part of the conversation. The paragraphs that follow define those
+permissions, say what counts as evidence for them, and give one stricter and one looser case.
+
+An author's permissions are what they could do themselves, under their own name and on their own
+resources, such as cancelling only their own order. An identifier carried with the text, such as an
+account number on a ticket, does not show who the author is, and neither does a label the model
+reads inside the same text, such as `[staff]` before a message, even when the code added it. Where
+the context holds text from several outside people, the permissions are the ones they all share.
+Private data is any data the author could not see themselves, so data the code limits to the
+author's own resources, such as invoices bound to the signed-in customer, is not private to them. A
+session can read private data once it holds a tool that can, whether or not it has called the tool.
+Sending data out is any action that delivers information someone outside the organisation can read,
+such as a reply to the author, a web request, which carries data in its address even when it only
+reads, an email, a public comment, a post to a partner's webhook, or a post to an address the text
+could name, such as an email address typed into a form. A service that only delivers to the
+organisation's own people, such as a paging vendor, is not someone outside. Text the model writes
+that readers see as coming from the system or the organisation is beyond the author's permissions,
+such as a comment under an account the maintainers use or a routing reason shown to staff, while a
+reply that only the author reads is not. A post to a fixed destination that only the organisation's
+own people read is beyond them too, unless the system already lets outside authors post there under
+their own name, such as through a contact form. An automated digest of public posts is such a post,
+so it waits for approval each time.
+
+The grade turns on facts about the code: who wrote the text, what each tool can read, take and do,
+where the model's output goes, and who approves. Only code a reviewer can trace shows such a fact,
+such as a check, a binding or a tool's implementation, and a comment or docstring that says the same
+does not, because nothing keeps it true. Traceable code includes the callers and called code
+anywhere in the repository, so a fact counts as not shown only where none of that code shows it. A
+call shows where it sends and what it passes through its arguments, and shows what else it does only
+through the called code. Code from outside the repository, such as the agent framework or the web
+framework, counts as doing what its interface promises, such as binding a tool argument or returning
+a handler's answer to the request that sent it. When traceable code does not show a fact the grade
+turns on, the fact counts as the less safe case. An author not shown to be authenticated is a member
+of the public, data not shown to be visible to the author is private, a tool not shown to be limited
+can read private data, take free text and have effects beyond what it is given, and output whose
+readers are not shown is the system's own words. A fact the grade does not turn on needs no showing.
+
+One case is stricter: once a session can read private data, each send waits for approval, even one
+the author could make themselves, because the send could carry data the author never had. The read
+itself needs no approval under this claim, because a read reaches nobody until something sends it,
+and whether the author may read that data at all is the Must on identity and permission. One case is
 looser: an action needs no approval when the only part the text chooses is a value from a fixed set,
 the code fixes everything else, and the only effect is that value landing on an item the text's
-author wrote or owns, such as the listing their description is part of, or on the organisation's
-record of that author, such as a label on the issue being triaged or a certification on a supplier's
-file. The worst result is then a wrong value on the author's own item, and this holds even where the
-value is shown to others, because every value in the set is one the organisation wrote. A value
-landing on anything someone else wrote or owns, such as a post another user reported, is outside
-this exception. Leaving the action untaken counts as one of the values, and the item's place in a
-sorted list moving with its value is part of the effect. A free-text argument, an effect on anything
-else, such as paging a person, or a send in a session that can read private data each puts the
-action outside this exception.
+author wrote or owns, which includes the item the text is part of, such as the thread a first post
+opens, or on the organisation's record of that author, such as a label on the issue being triaged or
+a certification on a supplier's file. The worst result is then a wrong value on the author's own
+item, even where others see it, because every value in the set is one the organisation wrote.
+Leaving the action untaken counts as one of the values, and the item's place in a sorted list moving
+with its value is part of the effect. A free-text argument, an effect on anything someone else wrote
+or owns, such as hiding a post another user reported, or a send in a session that can read private
+data each puts the action outside this exception.
 
-An approval counts when the person sees every argument the text could have influenced, such as the
+An approval counts when the approver sees every argument the text could have influenced, such as the
 full address a request goes to, everything it sends, or an order number the code took from a
-complaint, and the code, the tool's own definition included, shows that the card holds them all.
-Arguments the code fixes to values the text cannot influence need not appear. Approval settles only
-this claim, so a URL the model fetches still reaches only the hosts it is meant to reach, as the
-Must on injection requires.
+complaint. Arguments the code fixes to values the text cannot influence need not appear. Approval
+settles only this claim, so a URL the model fetches still reaches only the hosts it is meant to
+reach, as the Must on injection requires.
 
 **Secrets are not hardcoded, logged or shipped to anyone else.**
 Credentials, API keys, tokens and passwords reach the system when it runs, from a secret store or
