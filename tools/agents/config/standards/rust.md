@@ -1,6 +1,6 @@
 # Rust
 
-Rust code upholds these invariants in addition to all language-agnostic references.
+Rust code meets these standards in addition to the language-agnostic files.
 
 ## Must
 

@@ -1,6 +1,6 @@
 # TypeScript
 
-TypeScript-specific invariants. Read alongside the general reference files.
+TypeScript code meets these standards in addition to the language-agnostic files.
 
 ## Must
 
