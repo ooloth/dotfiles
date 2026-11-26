@@ -118,9 +118,10 @@ another way, such as on missing data, has not proven its query and threshold by 
 way. Where triggering it in production would page someone, the proof is split in two: the alert's
 condition is shown to match a test event, such as one raised in staging, and a test notification is
 shown to reach the channel. The split leaves the threshold and its timing unproven, and that gap is
-recorded where the alert is documented. The change that adds or edits an alert records what
-triggered it and where the notification arrived, so a reviewer checks the record rather than asking
-for the proof.
+recorded as an open question on the alert's ticket. Where the alert is documented, the documentation
+gives the method that proves it, not whether it has been proven yet. The change that adds or edits
+an alert records what triggered it and where the notification arrived, so a reviewer checks the
+record rather than asking for the proof.
 
 **Each alert says what it means and links to where to look.**
 An alert's text names the condition that fired it and what that condition means for the system, and
