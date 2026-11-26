@@ -575,8 +575,8 @@ Instructions:
 Observability:
 - If this fails in production, would we know? Is the failure diagnosable from logs alone?
 
-For each issue: file:line | what's wrong | concrete impact | specific fix
-Only report actual problems, not theoretical micro-optimizations.
+For each issue: file:line | what's wrong | tier (Must/Should/Consider, from the claim it breaks) | concrete impact | specific fix
+Only report actual problems, not theoretical micro-optimizations. A cost at the worst input a caller can send is an actual problem, even when typical traffic never reaches it.
 If no concerns found, report "No runtime behaviour concerns identified."
 ```
 

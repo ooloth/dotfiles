@@ -133,9 +133,9 @@ every claim in them that bears on the component:
 - **The system as a whole:** `deployment.md`, `dependencies.md`, `security.md`, `observability.md`,
   `developer-experience.md`, and `terraform.md` where Terraform is used
 - **Service:** `reliability.md`, `security.md`, `config.md`, `instrumentation.md`,
-  `observability.md`
+  `observability.md`, `performance.md`
 - **Scheduled job or worker:** `reliability.md`, `security.md`, `observability.md`,
-  `instrumentation.md`
+  `instrumentation.md`, `performance.md`
 - **Datastore:** `reliability.md`, `security.md`, `privacy.md`, `data-integrity.md`
 - **Queue:** `reliability.md`, `async-coordination.md`
 - **Static site or frontend:** `security.md`, `observability.md`, `performance.md`

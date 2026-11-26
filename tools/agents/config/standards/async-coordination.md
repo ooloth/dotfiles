@@ -56,9 +56,10 @@ CPU-bound or blocking operations are offloaded from async executors. Async
 runtimes are not blocked by synchronous work.
 
 **Concurrency and queues have explicit bounds.**
-Every queue has a maximum size. Every thread pool or task executor has a
-concurrency limit. Unbounded growth is not the default. Backpressure is
-applied before bounds are exceeded.
+Every thread pool or task executor has a concurrency limit. Every queue has a
+maximum size, which `correctness.md` already requires as a Must of any queue,
+so that tier decides a queue without one. Backpressure is applied before
+bounds are exceeded.
 
 **Async continuations read current state, not captured state.**
 State consumed after an async operation resolves is read at resolution
