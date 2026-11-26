@@ -225,7 +225,11 @@ into steps of the row it proves and run again, or left out.
 
 ### Structure
 
-- Start with `> [!NOTE]` callout if PR depends on another PR
+- A PR that must merge before or after another PR starts with a `> [!IMPORTANT]` callout giving
+  the merge order of the whole set, linking every other PR in it, and saying what breaks if the
+  order is not followed. A PR in the set that is not open yet is named by what it does, and once
+  it opens, its link is added to the callout of every PR in the set. A PR that only builds on
+  another's code, with no order to follow, uses a `> [!NOTE]` instead
 - A UI change is shown by a 📸 or 🎬 row, its screenshot or recording in that row's What I saw
 - Mention deployment timing if backend/frontend coordination needed
 - When the PR changes how parts of the system interact in a way a reviewer can
@@ -274,8 +278,8 @@ skills open, in any repo.
 ## Example
 
 ````markdown
-> [!NOTE]
-> Builds on #142 to leverage its frontend helpers
+> [!IMPORTANT]
+> **Merge order:** merge #142 first, then this PR. This PR uses #142's frontend helpers, so it fails to build if it merges first.
 
 ## ✅ What
 

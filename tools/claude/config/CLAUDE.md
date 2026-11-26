@@ -582,7 +582,11 @@ a task's approach and design, carry it to a draft PR without stopping for me in 
 
    A commit that only adds a record a ticket comment must link may be pushed on its own before
    then.
-3. **Push the branch and open a draft PR** without asking, using `create-pr`.
+3. **Push the branch and open a draft PR** without asking, using `create-pr`. When the approach
+   splits the work into several PRs, open each one as soon as its own slices are ready, beside
+   the others, rather than waiting for an earlier one to merge. Every PR in the set starts with
+   the merge order, as `write-pr-description` says, so the order lives in the PRs and not in
+   who opened what when.
 4. **Start the independent review** as step 9 of "Work in Small Steps" describes. CI and the
    review run on the draft, and I review the PR with both in front of me.
 
