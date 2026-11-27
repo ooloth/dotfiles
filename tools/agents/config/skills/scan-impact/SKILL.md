@@ -5,7 +5,7 @@ effort: high
 model: opus
 ---
 
-What should we work on next?
+Which change would most differentiate this project, so its users have a reason to stay?
 
 1. Read all the docs in this codebase and all tasks in this system's issue tracker (e.g. github
    issues, jira, etc) - though don't assume the right answer is already a ticket

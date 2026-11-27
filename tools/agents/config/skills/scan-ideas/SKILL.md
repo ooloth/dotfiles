@@ -9,9 +9,8 @@ model: opus
 ## Context
 
 The sources of tracked work are the ones `next` lists under "Where work lives" in
-[../next/SKILL.md](../next/SKILL.md), with two differences: Monday is a tracker too where the
-project mentions it, and TODO and FIXME comments are read even when the project has a tracker,
-because this skill covers the whole backlog.
+[../next/SKILL.md](../next/SKILL.md), with one difference: TODO and FIXME comments are read even
+when the project has a tracker, because this skill covers the whole backlog.
 
 The ranking rule is the one the `next` skill uses, in [../next/SKILL.md](../next/SKILL.md): cost of
 delay against size decides, kind sets the default order, and the repo's own docs come first. Read
@@ -25,18 +24,21 @@ instead of the top few, so the checks `next` runs only on its candidates run her
 ### Phase 1: Confirm what work items to consider
 
 1. If the user specified what issue source they want you to focus on, this phase is done
-2. If the user did not specify where potential work items can be found, use subagents to search
-   for each of the potential sources mentioned above
+2. If the user did not specify where potential work items can be found, search for each of the
+   potential sources mentioned above, giving any subagent one named source to search
 3. Confirm with the user which sources you found and whether they should all be included in your
    analysis
 4. Wait for the user's response
 
 ### Phase 2: Understand all work items
 
-1. Use as many subagents as you need to read every potential work idea identified above
-2. Use as many subagents as you need to explore all relevant code paths and documentation to
-   understand and validate each potential work item and its relevance to the project's current
-   and ideal future state
+1. Read every potential work idea identified above. When there are more than you can read
+   yourself, split them into bounded lists of items, one list per subagent. Give each subagent a
+   scratch folder of its own from `mktemp -d`, and tell it to read its items itself and start no
+   subagents of its own.
+2. Explore the code paths and documentation each item touches, to understand and validate it and
+   its relevance to the project's current and ideal future state, with each subagent covering
+   only the items on its list
 3. Investigate until you can say, for each item, whether it still applies to the current code and
    docs and how it compares with the others. For items that look stale, gather enough evidence to
    recommend redefining or cancelling them.

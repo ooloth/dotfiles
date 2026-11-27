@@ -5,8 +5,9 @@ A new script that is run, rather than sourced, is written in Python
 single-file uv script, as decision 008's addendum allows until the root project exists. Two kinds
 stay in shell, as decision 007 and its addendum say:
 
-- **Scripts `u` and setup find by file name:** a tool's `install.bash`, `update.bash`, `link.bash`
-  and `preflight.bash`. The runners look only for those names, so an `update.py` would never run.
+- **Scripts the runners find by file name:** a tool's `install.bash`, which `i` runs through
+  `features/install/tools.bash`, and its `update.bash`, `link.bash` and `preflight.bash`, which `u`
+  runs. The runners look only for those names, so an `update.py` would never run.
 - **The first step of setup on a new Mac**, which runs before Python is installed.
 
 ## Check a change

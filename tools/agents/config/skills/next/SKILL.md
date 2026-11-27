@@ -3,9 +3,9 @@ name: next
 description: Recommend what to work on next in the current repo, ranked by cost of delay against size. TRIGGER at the start of a session, or when the user asks what to work on next and you are not already partway through something. When the user names a goal to reach, use `prioritize` instead.
 ---
 
-Recommend one to three things to work on next, say why, and stop. The user decides. This names the
-next item rather than deciding it, so reading that a repo asks for only before a decision is
-skipped, and the report says so.
+Recommend one to three things to work on next, say why, and stop. The user decides. Recommending
+an item is not a decision, so reading a repo requires only before a decision, such as loading its
+decision records, is skipped, and the report says so.
 
 ## Cost of delay against size decides
 
@@ -59,7 +59,8 @@ to those kinds and state the mapping in the report.
 
 An issue labelled `status:agent-working` already has an agent on it and is not ranked, unless the
 PR for it is closed, in which case report the label as stale. The `status:*` labels belong to the
-agent PR workflows and say nothing else about priority.
+routines in `tools/claude/config/routines/` that implement issues, and say nothing else about
+priority.
 
 ## Default order
 

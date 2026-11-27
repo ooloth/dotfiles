@@ -452,7 +452,9 @@ tracker still needs approval, except what an invoked `merge-and-verify` posts an
    draft PR as "Working
    Through to a Draft PR" describes. A PR you draft stays a draft until an independent self-review
    has run on it and the user has dealt with its findings. Only then is it marked ready for
-   teammates to review.
+   teammates to review. A PR an unattended routine opens is the exception: no session or user is
+   there to deal with findings, so its routine marks it ready, labelled `author:agent`, and my
+   review of the PR takes the self-review's place.
    - **Once every slice this session will complete is committed and its draft PR is open, start
      the review without asking; don't run it yourself.** The review comes before shipping, not
      after each slice, so thin slices don't each wait on one. Open a fresh session in whichever

@@ -207,7 +207,10 @@ again, so a fix made in step 11 is checked. Skip any steps that require interact
 browser step fails here; carry on.
 
 `create-pr` reports the PR number. Add the assignee and label, creating the label first, then mark
-the PR ready, because `create-pr` opens a draft and this routine's PR must be open:
+the PR ready, because `create-pr` opens a draft and this routine's PR must be open. This is the
+exception the global `CLAUDE.md` makes for a routine's PR: nobody is present to deal with an
+independent review's findings, so the `author:agent` label tells the human reviewer that step 11's
+self-review is the only one it has had:
 
 ```bash
 gh label create "author:agent" --color "0075ca" --repo <repo> --force
