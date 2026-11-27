@@ -130,9 +130,12 @@ A `_Default` exclusion exists so the lines a sink routes elsewhere are not also 
 When each holds its own copy of the filter, the two drift, and lines then land in both places or in
 neither. Written as `filter = google_logging_project_sink.<name>.filter`, the exclusion matches
 exactly what the sink routes, and the reference makes Terraform finish the sink's update before it
-starts the exclusion's (the edge shows in `terraform graph` on Terraform 1.17.1). A filter that
-widens is then safe: a failed sink update stops the apply before the exclusion widens, so no line
-is excluded with nowhere to go. A filter that narrows gets no such protection, because the sink
+starts the exclusion's (the edge shows in `terraform graph` on Terraform 1.17.1). A failed sink
+update then stops the apply before the exclusion widens, so a widening never leaves lines excluded
+with nowhere to go while the sink keeps its old filter. The edge orders the API calls, not when
+each change takes effect: Cloud Logging says a sink change "might take a few minutes to apply"
+(https://cloud.google.com/logging/docs/export/configure_export_v2), so even a successful widening
+can lose a few minutes of lines. A filter that narrows gets no such protection, because the sink
 stops matching first and the lines it drops are lost until the exclusion's update lands.
 
 ## Consider
