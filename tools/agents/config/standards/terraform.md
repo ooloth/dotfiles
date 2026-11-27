@@ -125,6 +125,16 @@ map uses, the destroy fails, the update is skipped, and every later run fails th
 (reproduced on Terraform 1.17.1). Adding `create_before_destroy` to the dependent in the same change
 doesn't help. The block stays, read by nothing, until the dependent's update has applied.
 
+**A log exclusion that pairs with a sink reads its filter from the sink.**
+A `_Default` exclusion exists so the lines a sink routes elsewhere are not also kept in `_Default`.
+When each holds its own copy of the filter, the two drift, and lines then land in both places or in
+neither. Written as `filter = google_logging_project_sink.<name>.filter`, the exclusion matches
+exactly what the sink routes, and the reference makes Terraform finish the sink's update before it
+starts the exclusion's (the edge shows in `terraform graph` on Terraform 1.17.1). A filter that
+widens is then safe: a failed sink update stops the apply before the exclusion widens, so no line
+is excluded with nowhere to go. A filter that narrows gets no such protection, because the sink
+stops matching first and the lines it drops are lost until the exclusion's update lands.
+
 ## Consider
 
 **A repeated shape becomes a module.**
