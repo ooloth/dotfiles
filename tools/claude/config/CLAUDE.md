@@ -107,7 +107,8 @@ design also approves the commits, the push and the draft PR that section describ
 uploaded into its description, the one-line comment linking that PR on its ticket, each entry in a
 repo's invariants or standards, as "These stop the loop" below defines them, whose exact wording the
 approved design shows, and applying the fixes `wrap-up-codebase` returns, on any branch, in the same
-turn as its questions. It approves nothing beyond them. Another is `merge-and-verify`, which starts
+turn as its questions, except a fix that edits a file "These stop the loop" lists, which is an ask.
+It approves nothing beyond them. Another is `merge-and-verify`, which starts
 only on my own words: a
 typed `/merge-and-verify`, a message of mine asking to merge one PR or saying I merged one, or my
 approval of that PR's merge in an orchestrator's session. Its description lists what does not start
@@ -577,7 +578,9 @@ a task's approach and design, carry it to a draft PR without stopping for me in 
       step that will show the rest. A report already made on the head commit's claim counts, unless
       a commit since changed what it proved.
    3. Run `wrap-up-codebase` once on the commits about to be pushed. Apply and commit each fix it
-      returns, and push them without running it again. If it returns any asks, stop and put them
+      returns, and push them without running it again. A fix that edits a file "These stop the
+      loop" lists, such as an invariant or a decision record, is an ask instead: put its exact
+      wording to me before applying it. If it returns any asks, stop and put them
       to me in the session as numbered questions, then apply my answers and commit them before
       going on. My answer to an ask is the approval it needed, including for an edit to agent
       instructions. A question for me never goes in the PR instead.
