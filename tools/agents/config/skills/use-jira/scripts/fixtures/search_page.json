@@ -1,0 +1,923 @@
+{
+ "issues": [
+  {
+   "key": "EXAMPLE-4",
+   "fields": {
+    "summary": "papa quebec romeo sierra tango alpha bravo charlie delta echo foxtrot golf",
+    "status": {
+     "name": "In Progress"
+    },
+    "description": {
+     "content": [
+      {
+       "attrs": {
+        "level": 2
+       },
+       "content": [
+        {
+         "text": "hotel india",
+         "type": "text"
+        }
+       ],
+       "type": "heading"
+      },
+      {
+       "content": [
+        {
+         "text": "juliet kilo lima mike november oscar papa quebec romeo sierra tango alpha ",
+         "type": "text"
+        },
+        {
+         "marks": [
+          {
+           "type": "code"
+          }
+         ],
+         "text": "bravo",
+         "type": "text"
+        },
+        {
+         "text": " charlie delta ",
+         "type": "text"
+        },
+        {
+         "marks": [
+          {
+           "type": "code"
+          }
+         ],
+         "text": "echo",
+         "type": "text"
+        },
+        {
+         "text": " foxtrot golf hotel india juliet kilo lima mike november oscar ",
+         "type": "text"
+        },
+        {
+         "marks": [
+          {
+           "type": "code"
+          }
+         ],
+         "text": "papa",
+         "type": "text"
+        }
+       ],
+       "type": "paragraph"
+      },
+      {
+       "content": [
+        {
+         "content": [
+          {
+           "content": [
+            {
+             "text": "quebec romeo sierra tango alpha bravo charlie delta echo foxtrot golf hotel",
+             "type": "text"
+            }
+           ],
+           "type": "paragraph"
+          }
+         ],
+         "type": "listItem"
+        },
+        {
+         "content": [
+          {
+           "content": [
+            {
+             "text": "india juliet kilo lima mike november oscar papa quebec romeo sierra tango",
+             "type": "text"
+            }
+           ],
+           "type": "paragraph"
+          }
+         ],
+         "type": "listItem"
+        }
+       ],
+       "type": "bulletList"
+      }
+     ],
+     "type": "doc",
+     "version": 1
+    },
+    "comment": {
+     "total": 2,
+     "maxResults": 2,
+     "startAt": 0,
+     "comments": [
+      {
+       "id": "10000",
+       "author": {
+        "accountId": "000000:example-0",
+        "displayName": "Alice Example",
+        "emailAddress": "alice@example.com"
+       },
+       "created": "2026-11-20T06:25:05.452+0000",
+       "body": {
+        "content": [
+         {
+          "content": [
+           {
+            "text": "alpha bravo ",
+            "type": "text"
+           },
+           {
+            "marks": [
+             {
+              "attrs": {
+               "href": "https://example.com/page/1"
+              },
+              "type": "link"
+             }
+            ],
+            "text": "charlie",
+            "type": "text"
+           },
+           {
+            "text": " delta echo foxtrot golf hotel india juliet kilo lima mike november oscar",
+            "type": "text"
+           }
+          ],
+          "type": "paragraph"
+         },
+         {
+          "content": [
+           {
+            "content": [
+             {
+              "content": [
+               {
+                "marks": [
+                 {
+                  "type": "strong"
+                 }
+                ],
+                "text": "papa quebec romeo sierra tango alpha bravo",
+                "type": "text"
+               },
+               {
+                "text": " charlie delta echo foxtrot ",
+                "type": "text"
+               },
+               {
+                "marks": [
+                 {
+                  "type": "code"
+                 }
+                ],
+                "text": "golf",
+                "type": "text"
+               },
+               {
+                "text": " hotel india ",
+                "type": "text"
+               },
+               {
+                "marks": [
+                 {
+                  "type": "code"
+                 }
+                ],
+                "text": "juliet kilo lima",
+                "type": "text"
+               },
+               {
+                "text": " mike ",
+                "type": "text"
+               }
+              ],
+              "type": "paragraph"
+             }
+            ],
+            "type": "listItem"
+           },
+           {
+            "content": [
+             {
+              "content": [
+               {
+                "marks": [
+                 {
+                  "type": "strong"
+                 }
+                ],
+                "text": "tango alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo",
+                "type": "text"
+               },
+               {
+                "text": " lima mike november oscar papa quebec romeo sierra tango alpha bravo charlie ",
+                "type": "text"
+               },
+               {
+                "marks": [
+                 {
+                  "type": "code"
+                 }
+                ],
+                "text": "delta",
+                "type": "text"
+               },
+               {
+                "text": "echo ",
+                "type": "text"
+               },
+               {
+                "marks": [
+                 {
+                  "type": "code"
+                 }
+                ],
+                "text": "foxtrot",
+                "type": "text"
+               },
+               {
+                "text": " golf ",
+                "type": "text"
+               }
+              ],
+              "type": "paragraph"
+             }
+            ],
+            "type": "listItem"
+           }
+          ],
+          "type": "bulletList"
+         }
+        ],
+        "type": "doc",
+        "version": 1
+       }
+      },
+      {
+       "id": "10001",
+       "author": {
+        "accountId": "000000:example-1",
+        "displayName": "Bob Example",
+        "emailAddress": "bob@example.com"
+       },
+       "created": "2026-11-26T03:15:11.702+0000",
+       "body": {
+        "content": [
+         {
+          "attrs": {
+           "level": 1
+          },
+          "content": [
+           {
+            "text": "india",
+            "type": "text"
+           }
+          ],
+          "type": "heading"
+         },
+         {
+          "content": [
+           {
+            "marks": [
+             {
+              "type": "code"
+             }
+            ],
+            "text": "juliet",
+            "type": "text"
+           },
+           {
+            "text": " kilo lima mike november oscar papa quebec romeo sierra tango alpha bravo",
+            "type": "text"
+           }
+          ],
+          "type": "paragraph"
+         },
+         {
+          "content": [
+           {
+            "content": [
+             {
+              "content": [
+               {
+                "marks": [
+                 {
+                  "type": "strong"
+                 }
+                ],
+                "text": "charlie delta echo",
+                "type": "text"
+               },
+               {
+                "text": " foxtrot golf hotel india juliet kilo lima mike november oscar papa quebec",
+                "type": "text"
+               }
+              ],
+              "type": "paragraph"
+             }
+            ],
+            "type": "listItem"
+           },
+           {
+            "content": [
+             {
+              "content": [
+               {
+                "marks": [
+                 {
+                  "type": "strong"
+                 }
+                ],
+                "text": "romeo sierra tango alpha bravo",
+                "type": "text"
+               },
+               {
+                "text": " charlie delta echo foxtrot golf hotel india juliet kilo lima mike november ",
+                "type": "text"
+               },
+               {
+                "marks": [
+                 {
+                  "type": "code"
+                 }
+                ],
+                "text": "oscar",
+                "type": "text"
+               },
+               {
+                "text": " papa ",
+                "type": "text"
+               },
+               {
+                "marks": [
+                 {
+                  "type": "code"
+                 }
+                ],
+                "text": "quebec romeo",
+                "type": "text"
+               },
+               {
+                "text": "sierra tango alpha bravo charlie delta echo foxtrot golf hotel india juliet ",
+                "type": "text"
+               }
+              ],
+              "type": "paragraph"
+             }
+            ],
+            "type": "listItem"
+           }
+          ],
+          "type": "bulletList"
+         },
+         {
+          "attrs": {
+           "isNumberColumnEnabled": false,
+           "layout": "default"
+          },
+          "content": [
+           {
+            "content": [
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "text": "bravo",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableHeader"
+             },
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "text": "charlie",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableHeader"
+             },
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "text": "delta",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableHeader"
+             }
+            ],
+            "type": "tableRow"
+           },
+           {
+            "content": [
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "marks": [
+                   {
+                    "type": "strong"
+                   }
+                  ],
+                  "text": "november oscar papa quebec romeo sierra tango alpha bravo charlie delta echo",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableCell"
+             },
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "text": "foxtrot",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableCell"
+             },
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "text": "golf",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableCell"
+             }
+            ],
+            "type": "tableRow"
+           },
+           {
+            "content": [
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "text": "papa quebec romeo sierra tango alpha bravo charlie delta echo",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableCell"
+             },
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "text": "foxtrot",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableCell"
+             },
+             {
+              "attrs": {},
+              "content": [
+               {
+                "content": [
+                 {
+                  "text": "golf",
+                  "type": "text"
+                 }
+                ],
+                "type": "paragraph"
+               }
+              ],
+              "type": "tableCell"
+             }
+            ],
+            "type": "tableRow"
+           }
+          ],
+          "type": "table"
+         },
+         {
+          "content": [
+           {
+            "content": [
+             {
+              "marks": [
+               {
+                "type": "strong"
+               }
+              ],
+              "text": "tango alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo",
+              "type": "text"
+             },
+             {
+              "text": " lima",
+              "type": "text"
+             },
+             {
+              "marks": [
+               {
+                "type": "code"
+               }
+              ],
+              "text": "mike",
+              "type": "text"
+             },
+             {
+              "text": "november ",
+              "type": "text"
+             },
+             {
+              "marks": [
+               {
+                "type": "code"
+               }
+              ],
+              "text": "oscar",
+              "type": "text"
+             },
+             {
+              "text": "papa quebec romeo sierra tango alpha bravo charlie delta echo foxtrot golf ",
+              "type": "text"
+             }
+            ],
+            "type": "paragraph"
+           }
+          ],
+          "type": "blockquote"
+         }
+        ],
+        "type": "doc",
+        "version": 1
+       }
+      }
+     ]
+    },
+    "parent": {
+     "key": "EXAMPLE-5",
+     "fields": {
+      "summary": "golf hotel india juliet"
+     }
+    },
+    "issuelinks": [
+     {
+      "type": {
+       "name": "Relates",
+       "inward": "relates to",
+       "outward": "relates to"
+      },
+      "inwardIssue": {
+       "key": "EXAMPLE-1"
+      }
+     },
+     {
+      "type": {
+       "name": "Relates",
+       "inward": "relates to",
+       "outward": "relates to"
+      },
+      "outwardIssue": {
+       "key": "EXAMPLE-2"
+      }
+     },
+     {
+      "type": {
+       "name": "Blocks",
+       "inward": "is blocked by",
+       "outward": "blocks"
+      },
+      "outwardIssue": {
+       "key": "EXAMPLE-3"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "key": "EXAMPLE-20",
+   "fields": {
+    "summary": "Made-up ticket with the node types the real sample lacked",
+    "status": {
+     "name": "To Do"
+    },
+    "description": {
+     "type": "doc",
+     "version": 1,
+     "content": [
+      {
+       "type": "paragraph",
+       "content": [
+        {
+         "type": "text",
+         "text": "See "
+        },
+        {
+         "type": "mention",
+         "attrs": {
+          "id": "000000:example-account",
+          "text": "@Bob Example",
+          "accessLevel": ""
+         }
+        },
+        {
+         "type": "text",
+         "text": " "
+        },
+        {
+         "type": "emoji",
+         "attrs": {
+          "id": "1f44d",
+          "shortName": ":thumbsup:",
+          "text": "👍"
+         }
+        },
+        {
+         "type": "hardBreak"
+        },
+        {
+         "type": "text",
+         "text": "second line with "
+        },
+        {
+         "type": "text",
+         "text": "emphasis",
+         "marks": [
+          {
+           "type": "em"
+          }
+         ]
+        },
+        {
+         "type": "text",
+         "text": " and "
+        },
+        {
+         "type": "text",
+         "text": "underline",
+         "marks": [
+          {
+           "type": "underline"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "codeBlock",
+       "attrs": {
+        "language": "python"
+       },
+       "content": [
+        {
+         "type": "text",
+         "text": "print(\"hello\")\nprint(\"bye\")"
+        }
+       ]
+      },
+      {
+       "type": "orderedList",
+       "attrs": {
+        "order": 1
+       },
+       "content": [
+        {
+         "type": "listItem",
+         "content": [
+          {
+           "type": "paragraph",
+           "content": [
+            {
+             "type": "text",
+             "text": "first step"
+            }
+           ]
+          },
+          {
+           "type": "bulletList",
+           "content": [
+            {
+             "type": "listItem",
+             "content": [
+              {
+               "type": "paragraph",
+               "content": [
+                {
+                 "type": "text",
+                 "text": "nested point"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "listItem",
+         "content": [
+          {
+           "type": "paragraph",
+           "content": [
+            {
+             "type": "text",
+             "text": "second step"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "taskList",
+       "attrs": {},
+       "content": [
+        {
+         "type": "taskItem",
+         "attrs": {
+          "state": "DONE"
+         },
+         "content": [
+          {
+           "type": "text",
+           "text": "finished task"
+          }
+         ]
+        },
+        {
+         "type": "taskItem",
+         "attrs": {
+          "state": "TODO"
+         },
+         "content": [
+          {
+           "type": "text",
+           "text": "open task"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "rule"
+      },
+      {
+       "type": "blockCard",
+       "attrs": {
+        "url": "https://example.com/card"
+       }
+      },
+      {
+       "type": "paragraph",
+       "content": [
+        {
+         "type": "text",
+         "text": "inline "
+        },
+        {
+         "type": "inlineCard",
+         "attrs": {
+          "url": "https://example.com/inline"
+         }
+        }
+       ]
+      },
+      {
+       "type": "mediaSingle",
+       "attrs": {
+        "layout": "align-start",
+        "width": 865,
+        "widthType": "pixel"
+       },
+       "content": [
+        {
+         "type": "media",
+         "attrs": {
+          "alt": "diagram.png",
+          "collection": "",
+          "height": 631,
+          "id": "00000000-0000-0000-0000-000000000001",
+          "type": "file",
+          "width": 865
+         }
+        }
+       ]
+      }
+     ]
+    },
+    "comment": {
+     "total": 1,
+     "maxResults": 1,
+     "startAt": 0,
+     "comments": [
+      {
+       "id": "20001",
+       "author": {
+        "accountId": "000000:example-3",
+        "displayName": "Carol Example",
+        "emailAddress": "carol@example.com"
+       },
+       "created": "2026-11-20T10:00:00.000-0500",
+       "body": {
+        "type": "doc",
+        "version": 1,
+        "content": [
+         {
+          "type": "paragraph",
+          "content": [
+           {
+            "type": "text",
+            "text": "Looks "
+           },
+           {
+            "type": "text",
+            "text": "good",
+            "marks": [
+             {
+              "type": "strong"
+             }
+            ]
+           },
+           {
+            "type": "text",
+            "text": ", see "
+           },
+           {
+            "type": "text",
+            "text": "the doc",
+            "marks": [
+             {
+              "type": "link",
+              "attrs": {
+               "href": "https://example.com/doc"
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "parent": null,
+    "issuelinks": []
+   }
+  },
+  {
+   "key": "EXAMPLE-21",
+   "fields": {
+    "summary": "Made-up ticket with no description and no comments",
+    "status": {
+     "name": "Backlog"
+    },
+    "description": null,
+    "comment": {
+     "total": 0,
+     "maxResults": 0,
+     "startAt": 0,
+     "comments": []
+    },
+    "parent": null,
+    "issuelinks": []
+   }
+  }
+ ],
+ "isLast": true
+}

@@ -109,6 +109,7 @@
       "Bash(acli jira workitem comment create *)",
       "Bash(acli jira workitem comment update *)",
       "Bash(acli jira workitem link delete *)",
+      "Bash(uv run ~/.claude/skills/use-jira/scripts/fetch_jira_backlog.py *)",
       "Skill(commit)",
       "Skill(create-pr)",
       "Bash(git add *)",

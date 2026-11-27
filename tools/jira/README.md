@@ -55,3 +55,10 @@ Nothing in this repo links or tracks them.
 acli sends usage analytics to `as.atlassian.com` on every command: a hashed user ID, an anonymous
 ID, the cloud ID, the command name, its flag names and its duration. The comment body is not in
 the event. No setting or environment variable turns this off in acli 1.3.39.
+
+## Backlog token
+
+Reading a whole backlog uses a second credential: a scoped `read:jira-work` API token, stored in
+the login keychain as `jira-backlog-read`, which
+`tools/agents/config/skills/use-jira/scripts/fetch_jira_backlog.py` reads. The token expires
+within a year. Its setup steps are in that script's module docstring.

@@ -17,4 +17,7 @@ one-time login, such as `codefresh auth create-context` writing `~/.cfconfig`, i
 for later runs, but the one-time login still reads the secret this way. Setup docs in this repo
 give the `secret add` step, never an instruction to paste a value into a command. This is this
 repo's choice for the commands its shells and scripts run. Another project may keep its secrets in
-another store, such as 1Password, for reasons its own records give.
+another store, such as 1Password, for reasons its own records give. A script that an agent runs
+reads its secret from the login Keychain itself, so the secret never appears in a command the
+agent writes or in what the agent reads back, as
+`tools/agents/config/skills/use-jira/scripts/fetch_jira_backlog.py` does.

@@ -32,7 +32,7 @@ echo "== ty check"
 env_dir="${DOTFILES}/.cache/check-types-env"
 uv venv --quiet --allow-existing "${env_dir}"
 uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis pydantic \
-  beartype 'markdown-it-py>=4,<5' 'youtube-transcript-api>=1,<2'
+  beartype 'markdown-it-py>=4,<5' 'youtube-transcript-api>=1,<2' 'truststore>=0.10,<1'
 "${env_dir}/bin/ty" check --python "${env_dir}" --project "${DOTFILES}" \
   --extra-search-path "${DOTFILES}" --extra-search-path "${DOTFILES}/tools/claude" \
   --extra-search-path "${DOTFILES}/features/auth" "${DOTFILES}"

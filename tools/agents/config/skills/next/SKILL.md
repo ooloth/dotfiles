@@ -47,7 +47,9 @@ Find each source; none is assumed.
   flight; report it for deletion.
 - **Trackers:** the ones the repo's docs name, such as GitHub Issues, Jira or Linear. Invoke the
   matching `use-*` skill, where one exists, before the first call. Pass a `--limit` above the
-  largest count you expect to every list, because the default stops at 30 without saying so.
+  largest count you expect to every list, because the default stops at 30 without saying so. For
+  Jira, invoke `use-jira` and read the backlog the way it says, because a list call leaves out
+  comments.
 - **Open questions:** a folder such as `docs/questions/`, one file per question.
 - **TODO and FIXME comments**, only when the repo has no tracker.
 

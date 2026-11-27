@@ -37,8 +37,8 @@ installs each header with `uv run --with-requirements`, and a test file in a `te
 no header fails the run. Declare a test's dependencies in its header and nowhere else. Every test
 shares one environment, so a missing declaration shows up only when the file runs on its own with
 `uv run <file>`. The tests beside a skill's scripts have no header: they run with the pytest,
-hypothesis, pydantic, markdown-it-py and youtube-transcript-api that `tests.bash` installs for every
-run.
+hypothesis, pydantic, markdown-it-py, youtube-transcript-api and truststore that `tests.bash`
+installs for every run.
 
 A test that puts a stub or fake tool on `PATH` writes it once per test class or module, in a folder
 it then makes read-only, and keeps everything each test changes in that test's own temporary

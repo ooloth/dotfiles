@@ -1,6 +1,6 @@
 ---
 name: use-jira
-description: Jira gotchas for the Atlassian MCP tools and the acli CLI. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every markdown body before posting it through the MCP tool. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
+description: Jira gotchas for the Atlassian MCP tools and the acli CLI. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every markdown body before posting it through the MCP tool, and reading a whole backlog with comments in one command. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
 ---
 
 ## Which server
@@ -44,12 +44,24 @@ than asking for less. Two kinds of field cause it, and paging hides results:
 - **`comment` and `description` are the long fields.** Request them when the plan or the body is
   what you came for, and leave them out of a search that only lists tickets.
 - **A search returns one page.** When the response has `"isLast": false`, the rest of the results
-  are behind its `nextPageToken`, and nothing else says they were cut off. Pass `maxResults` above
-  the number of tickets you expect, or narrow the query, before treating the results as complete.
+  are behind its `nextPageToken`, and nothing else says they were cut off. Jira can return fewer
+  than `maxResults` on a page, so follow `nextPageToken` until `isLast` is true before treating the
+  results as complete.
 
 Saved responses come in more than one shape. One saved issue was the bare issue object, and one
 saved search was `[{"type": "text", "text": "<JSON string>"}]` wrapping the results, so read the
 first bytes of the file before parsing it.
+
+## Reading a whole backlog
+
+To read every open ticket of a project with all its comments, as a backlog scan does, run
+`uv run ~/.claude/skills/use-jira/scripts/fetch_jira_backlog.py <PROJECT> --out-dir <dir>` with a
+new `mktemp -d` directory, and read the files it writes. `acli jira workitem search` refuses
+`--fields comment`, and `searchJiraIssuesUsingJql` with comments returns too much to read for
+hundreds of tickets. The script uses Jira's REST search with a read-only API token from the
+Keychain, and read 464 tickets in under 10 seconds. Its setup and its exit codes are in its module
+docstring. Run it as written here, starting `uv run ~/.claude/...`, because that is the text its
+permission rule matches.
 
 ## Markdown that Jira's conversion breaks
 
