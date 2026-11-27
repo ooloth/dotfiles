@@ -105,7 +105,7 @@ ticket comment about it, even in the same already-approved task — check separa
 four exceptions. One is "Working Through to a Draft PR" below: approving a task's approach and
 design also approves the commits, the push and the draft PR that section describes, the evidence
 uploaded into its description, the one-line comment linking that PR on its ticket, each entry in a
-repo's own `docs/invariants/` (or `docs/guarantees/`) or `docs/standards/` whose exact wording the
+repo's invariants or standards, as "These stop the loop" below defines them, whose exact wording the
 approved design shows, and applying the fixes `wrap-up-codebase` returns, on any branch, in the same
 turn as its questions. It approves nothing beyond them. Another is `merge-and-verify`, which starts
 only on my own words: a
@@ -597,9 +597,11 @@ a task's approach and design, carry it to a draft PR without stopping for me in 
 - Editing agent instructions or permissions: `CLAUDE.md`, `AGENTS.md`, skills (each `SKILL.md`;
   a skill's scripts and their tests are code), standards,
   subagent definitions, routines, `settings.json` and hooks, in any repo or under `~/.claude/` and
-  `~/.agents/`, and a repo's own `docs/invariants/` (or `docs/guarantees/`), `docs/standards/` and
-  `docs/decisions/`. An entry in a repo's own `docs/invariants/` (or `docs/guarantees/`) or
-  `docs/standards/` whose exact wording the approved design shows is approved with the design.
+  `~/.agents/`, and a repo's invariants, standards and decision records: every `docs/invariants/`,
+  `docs/guarantees/`, `docs/standards/`, `docs/decisions/` and `docs/adrs/` folder at any depth,
+  such as `neuro_usage_dashboard/docs/decisions/`, a top-level `adrs/` folder, and any other folder
+  the repo's context file says holds them. An entry in a repo's invariants or standards whose exact
+  wording the approved design shows is approved with the design.
 - Posting anything that notifies other people, such as a comment, a review, a request for reviewers
   or marking the PR ready. Opening the draft PR, and the one-line comment linking it on its ticket,
   are the exceptions.
