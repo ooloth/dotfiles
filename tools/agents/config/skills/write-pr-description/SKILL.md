@@ -214,14 +214,15 @@ into steps of the row it proves and run again, or left out.
   and every line inside it is indented exactly as its fence. A line indented less ends the step and
   leaves the block empty. GitHub drops the indentation when the code is copied.
 - What holds no code block: one makes GitHub space out every bullet in the list.
-- **Never link a local path.**
+- **Never link a local path, or put one in a step's command.** A path on your machine, such as your
+  home folder or a `mktemp -d` folder, is one no reviewer has.
 - Nested markup breaks in ways that look fine in the source: a code block that renders empty, a
   row pushed inside the row above it, a summary turned into a bullet, a row whose summary falls out
   of it. So the body is never posted until `check_pr_body.py` passes, as step 5 says. It renders
   the body through GitHub's markdown API and checks the markup rules in this section, no code
-  block in What, at least one bullet and only bullets under Proven by, no property number and no
-  Pre-merge heading. Nothing checks hard wrapping, the outline's order or a row's three headings,
-  so read the body for those.
+  block in What, at least one bullet and only bullets under Proven by, no property number, no local
+  path in a step's code block and no Pre-merge heading. Nothing checks hard wrapping, the outline's
+  order or a row's three headings, so read the body for those.
 
 ### Structure
 

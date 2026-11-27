@@ -382,9 +382,96 @@ class TestCommands:
         assert "None" not in problems[0].what
         assert "outside every row" in problems[0].what
 
+    def test_a_row_whose_title_only_mentions_setup_is_not_the_setup_row(self) -> None:
+        body = (
+            "1. <details>\n   <summary>📄 Setup wizard opens</summary>\n\n"
+            "   #### 👀 What I saw\n\n   ```text\n   wizard shown\n   ```\n\n   </details>\n"
+        )
+        assert check_pr_body.check_commands(body, "", "ran.txt") == []
+
     def test_trailing_whitespace_is_ignored(self) -> None:
         body = "#### 🔍 Verification steps\n\n```sh\nls -la   \n```\n"
         assert check_pr_body.check_commands(body, "ls -la\r\n", "ran.txt") == []
+
+
+# check-skills.py's fixed temp path rule matches any path written out under /tmp, including these
+# examples, which name no file anything writes. Building them from TMP keeps the rule from
+# matching them.
+TMP = "/tmp"
+
+
+def step_body(block: str) -> str:
+    """A row whose Verification steps hold one code block, with output that names a path."""
+    return (
+        "1. <details>\n   <summary>📄 The toggle appears</summary>\n\n"
+        "   #### 🔍 Verification steps\n\n   - [ ] Run:\n\n"
+        f"     ```sh\n     {block}\n     ```\n\n"
+        "   #### 👀 What I saw\n\n   - It printed:\n\n"
+        "     ```text\n     wrote /Users/me/out.txt\n     ```\n\n   </details>\n"
+    )
+
+
+def row_body(summary: str, block: str) -> str:
+    return (
+        f"1. <details>\n   <summary><b>{summary}</b></summary>\n\n   - [ ] Run:\n\n"
+        f"     ```sh\n     {block}\n     ```\n\n   </details>\n"
+    )
+
+
+class TestLocalPaths:
+    @pytest.mark.parametrize(
+        "path",
+        [
+            "/Users/me/Repos/app",
+            "/home/me/app",
+            "/var/folders/nx/09sd/T/tmp.06TqmtTQ4H/count_reads.py",
+            "/private/var/folders/nx/09sd/T/tmp.06TqmtTQ4H",
+            f"{TMP}/tmp.06TqmtTQ4H/count_reads.py",
+            f"/private{TMP}/tmp.06TqmtTQ4H/count_reads.py",
+        ],
+    )
+    def test_a_path_on_the_authors_machine_in_a_verification_step_is_reported_on_its_line(
+        self, path: str
+    ) -> None:
+        body = step_body(f"cd {path} && make check")
+        assert lines_of(check_pr_body.check_markdown(body), "local path") == [9]
+
+    @pytest.mark.parametrize("summary", ["🛠️ Setup", "🧹 Clean up", "🚀 After merge"])
+    def test_a_path_on_the_authors_machine_in_a_setup_clean_up_or_after_merge_row_is_reported(
+        self, summary: str
+    ) -> None:
+        body = row_body(summary, "cd /Users/me/Repos/app")
+        assert kinds(check_pr_body.check_markdown(body)) == ["local path"]
+
+    @pytest.mark.parametrize(
+        "block",
+        [
+            'cd "$dir/pr" && make check',
+            "cat ~/.zshrc",
+            f"make report > {TMP}/out.txt && cat {TMP}/out.txt",
+            'cd "${dir}/home/me/app" && make check',
+            "ls /Users/Shared/fixtures",
+            "/home/linuxbrew/.linuxbrew/bin/jq . out.json",
+        ],
+    )
+    def test_variable_home_relative_shared_and_fixed_tmp_paths_pass(self, block: str) -> None:
+        assert check_pr_body.check_markdown(step_body(block)) == []
+
+    def test_a_path_in_what_i_saw_output_passes(self) -> None:
+        # step_body's What I saw block prints /Users/me/out.txt.
+        assert check_pr_body.check_markdown(step_body("make check")) == []
+
+    def test_a_path_in_a_row_whose_title_only_mentions_setup_is_not_held_to_the_rule(
+        self,
+    ) -> None:
+        body = step_body("make check").replace("📄 The toggle appears", "📄 Setup wizard opens")
+        assert check_pr_body.check_markdown(body) == []
+
+    def test_a_path_in_a_code_block_outside_every_step_is_not_reported_as_a_local_path(
+        self,
+    ) -> None:
+        body = "## ✅ What\n\n- Moves the cache\n\n```text\n/Users/me/cache\n```\n"
+        assert "local path" not in kinds(check_pr_body.check_markdown(body))
 
 
 class TestLiveCopy:
@@ -446,6 +533,15 @@ class TestMain:
         out = capsys.readouterr().out.splitlines()
         assert out[0].startswith(f"{body}:1: property number: ")
         assert out[1].startswith(f"{body}:rendered: text before summary: ")
+        assert out[-1].endswith("post nothing until then")
+
+    def test_a_local_path_in_a_step_exits_1_with_its_line(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        body = write(tmp_path, "body.md", step_body("cd /Users/me/Repos/app"))
+        assert check_pr_body.main([str(body), "--repo", REPO], FakeGh()) == 1
+        out = capsys.readouterr().out.splitlines()
+        assert out[0].startswith(f"{body}:9: local path: ")
         assert out[-1].endswith("post nothing until then")
 
     def test_a_failed_render_exits_2_even_with_other_problems_found(

@@ -23,6 +23,9 @@ layout without complaint, so these are found only by checking:
     at least one bullet, and only bullets, under each `#### 🧾 Proven by` heading
     no property number such as P1
     no link to a local path: ](/ , ](~ or ](file:
+    no home folder (/Users/<name>/, /home/<name>/) or folder `mktemp -d` made (under
+      /var/folders/, /private/var/folders/, or a tmp.* folder in /tmp) in a step's code block:
+      one under a Verification steps heading, or in the Setup, Clean up or After merge row
     no Pre-merge heading, since After merge is the outline's last row
 
   With --live-copy and --pr, the PR's description on GitHub is still the copy that was read, so
@@ -315,6 +318,16 @@ BULLET = re.compile(r"^\s*[-*+]\s")
 # Properties start at P1. P0 and the percentiles a latency figure names are not property numbers.
 PROPERTY_NUMBER = re.compile(r"\bP(?!(?:0|50|75|90|95|99|999)\b)[0-9]+\b")
 LOCAL_LINK = re.compile(r"\]\((/|~|file:)")
+# A path only the author's machine has: a person's home folder, or a folder `mktemp -d` made.
+# /Users/Shared and Homebrew's /home/linuxbrew exist on every reviewer's machine. A path built on a
+# variable (`${dir}/home/...`) is not one. check-skills.py's fixed temp path rule matches any
+# path written out under /tmp, this pattern's own text included, so `[/]` keeps it from matching.
+LOCAL_PATH = re.compile(
+    r"(?<![\w.$}-])("
+    r"/Users/(?!Shared(?:/|\b))[^/\s]+|/home/(?!linuxbrew(?:/|\b))[^/\s]+"
+    r"|(/private)?/var/folders/|(/private)?/tmp[/]tmp\."
+    r")"
+)
 SUMMARY = re.compile(r"<summary>(.*?)</summary>", re.DOTALL)
 TAG = re.compile(r"<[^>]+>")
 HEADING_LINE = re.compile(r"^\s*(#{1,6}\s|\*\*|<summary>|\d+[.)]\s+\*\*)")
@@ -454,6 +467,81 @@ def pre_merge_problems(lines: list[str], code: set[int]) -> list[Problem]:
     ]
 
 
+# The rows whose every code block is a step. Steps under a row's Verification steps heading count
+# wherever the row is. After merge steps run on a deployed system, after the body is checked, so
+# no commands file can hold them, but they cannot use the author's paths either.
+COMMAND_ROWS = ("Setup", "Clean up")
+LOCAL_PATH_ROWS = (*COMMAND_ROWS, "After merge")
+
+
+def summary_text(html_block: str) -> str | None:
+    match = SUMMARY.search(html_block)
+    return squeeze(TAG.sub("", match.group(1))) if match else None
+
+
+@dataclass(frozen=True)
+class CodeBlock:
+    """A code block in the body, with the row and heading it sits under."""
+
+    start: LineNumber  # 1-based line of its opening fence, or of its first indented line
+    first_line: LineNumber  # 1-based line of its first line of content
+    row: str | None  # the summary of the row it is in, or None outside every row
+    heading: str  # the last heading above it since the row opened, or since the body began
+    content: str  # its lines, with the indentation markdown-it removes already gone
+
+    @property
+    def in_verification_steps(self) -> bool:
+        return "Verification steps" in self.heading
+
+    def in_row(self, names: tuple[str, ...]) -> bool:
+        """Whether its row is one of these, by the label after the summary's emoji."""
+        if self.row is None:
+            return False
+        label = self.row.split(maxsplit=1)[-1]
+        return label in names
+
+
+def code_blocks(tokens: list[Token]) -> Iterator[CodeBlock]:
+    """Every code block, with the row and heading it sits under."""
+    row: str | None = None
+    heading = ""
+    for index, token in enumerate(tokens):
+        if token.type == "html_block":
+            if "</details>" in token.content:
+                row, heading = None, ""
+            summary = summary_text(token.content)
+            if summary is not None:
+                row, heading = summary, ""
+        elif token.type == "heading_open":
+            heading = tokens[index + 1].content
+        elif token.type in ("fence", "code_block") and token.map is not None:
+            start = token.map[0] + 1  # markdown-it counts lines from 0
+            first = start + 1 if token.type == "fence" else start  # content follows the fence
+            yield CodeBlock(LineNumber(start), LineNumber(first), row, heading, token.content)
+
+
+def local_path_problems(tokens: list[Token]) -> list[Problem]:
+    found: list[Problem] = []
+    for block in code_blocks(tokens):
+        if not (block.in_verification_steps or block.in_row(LOCAL_PATH_ROWS)):
+            continue
+        for offset, line in enumerate(block.content.split("\n")):
+            match = LOCAL_PATH.search(line)
+            if match:
+                found.append(
+                    Problem(
+                        LineNumber(block.first_line + offset),
+                        "local path",
+                        f"a step names {match.group(0)}, a path only this machine has, so no"
+                        " reviewer can run it as written",
+                        "make the step create what it needs, such as `dir=$(mktemp -d)` in Setup,"
+                        " refer to that, and run the step again so the commands file holds it as"
+                        " written",
+                    )
+                )
+    return found
+
+
 def check_markdown(text: str) -> list[Problem]:
     """Every problem in a body's markdown source."""
     text = text.replace("\r\n", "\n").replace("\r", "\n")
@@ -465,17 +553,13 @@ def check_markdown(text: str) -> list[Problem]:
         *what_section_problems(tokens),
         *proven_by_problems(lines),
         *line_pattern_problems(lines, code),
+        *local_path_problems(tokens),
         *pre_merge_problems(lines, code),
     ]
 
 
 # ---------------------------------------------------------------------------------------------
 # Commands that were run
-
-
-def summary_text(html_block: str) -> str | None:
-    match = SUMMARY.search(html_block)
-    return squeeze(TAG.sub("", match.group(1))) if match else None
 
 
 def without_trailing_space(text: str) -> str:
@@ -491,40 +575,28 @@ def check_commands(text: str, commands: str, commands_name: str) -> list[Problem
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     ran = without_trailing_space(commands)
     found: list[Problem] = []
-    row: str | None = None
-    heading = ""
-    tokens = PARSER.parse(text)
-    for index, token in enumerate(tokens):
-        if token.type == "html_block":
-            if "</details>" in token.content:
-                row, heading = None, ""
-            summary = summary_text(token.content)
-            if summary is not None:
-                row, heading = summary, ""
-        elif token.type == "heading_open":
-            heading = tokens[index + 1].content
-        elif token.type in ("fence", "code_block") and token.map is not None:
-            in_steps = "Verification steps" in heading
-            in_setup = row is not None and ("Setup" in row or "Clean up" in row)
-            block = without_trailing_space(token.content)
-            if (in_steps or in_setup) and block and block not in ran:
-                where = (
-                    f'the Verification steps of "{row}"'
-                    if in_steps and row
-                    else f'"{row}"'
-                    if row
-                    else "Verification steps outside every row"
+    for step in code_blocks(PARSER.parse(text)):
+        in_steps = step.in_verification_steps
+        block = without_trailing_space(step.content)
+        if (in_steps or step.in_row(COMMAND_ROWS)) and block and block not in ran:
+            row = step.row
+            where = (
+                f'the Verification steps of "{row}"'
+                if in_steps and row
+                else f'"{row}"'
+                if row
+                else "Verification steps outside every row"
+            )
+            found.append(
+                Problem(
+                    step.start,
+                    "command not run",
+                    f"the code block in {where} does not appear in {commands_name} as written,"
+                    " so nothing shows it was run",
+                    "run it exactly as shown and add it to the commands file, or change the"
+                    " block to what was run",
                 )
-                found.append(
-                    Problem(
-                        LineNumber(token.map[0] + 1),
-                        "command not run",
-                        f"the code block in {where} does not appear in {commands_name} as written,"
-                        " so nothing shows it was run",
-                        "run it exactly as shown and add it to the commands file, or change the"
-                        " block to what was run",
-                    )
-                )
+            )
     return found
 
 
