@@ -206,6 +206,18 @@ holds, has only the permissions its work needs, so a leak or a bug in it can do 
 Broader access, such as admin where read-only suffices or write where read suffices, gives a leak or
 a bug more to damage.
 
+**Every route a service exposes has a declared access rule, and the service refuses to start while
+a route has none.**
+A check written inside each handler holds only while every author remembers to write it, and a
+missed one shows nothing until someone reads data they should not. Declaring each route's rule in
+one place the service reads, such as a table of routes or a marker on each route, lets one shared
+check enforce it before any handler runs, and lets the service compare the declarations with the
+routes it actually serves when it starts. A route with no declaration then stops the deploy instead
+of serving, which a test alone does not do where a failing check can still be merged. The
+comparison also refuses a declaration for a route that no longer exists, so the list stays a true
+account a reviewer can read. The exception is a service whose every route has the same rule,
+applied by one check that runs for every request: there is nothing to declare.
+
 **Refused sign-ins and denied permissions are recorded.**
 Each rejected password or one-time code, each refused key or token that never expires, such as an
 API key, and each denied permission check leaves a record of the account it named where there is

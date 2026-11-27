@@ -88,6 +88,17 @@ each request carries a body that passes the schema, the test accepts only the ac
 answers, such as 403 or a 404 for a row the caller may not see, and a new route that takes a body
 fails until it has one.
 
+**A test of a check that runs before every handler sends its request through the whole
+application.**
+Middleware, request hooks and other checks the application runs for every request are registered
+on the application, not on the handler. A test that mounts one handler on a bare application, or
+calls the handler function directly, never runs them, so it passes whether the check exists or not.
+Such a test sends its request through the application as it is built for production, with only the
+boundaries replaced, such as the identity provider and the data store. It is paired with a request
+the check allows reaching the same handler, so a check that refuses everything does not pass as one
+that refuses correctly. Where every route should be covered, the cases come from the application's
+own list of routes, so a route added later is tested with no new test.
+
 **Tests span every dimension the behavior varies along.**
 Inputs are one dimension: happy path, empty input, boundary values and error conditions are all
 represented. Other dimensions include who is acting (a role or account type), how the system is
