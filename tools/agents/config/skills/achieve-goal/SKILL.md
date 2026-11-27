@@ -1,6 +1,6 @@
 ---
 name: achieve-goal
-description: Drive a goal with a checkable "done" through to done, doing every step that is unblocked and approved, watching what it starts, and keeping one numbered table of the remaining steps in every reply. TRIGGER when the user asks to get one or more tasks to done, ship and verify a set of PRs, or drive a multi-step goal through to done.
+description: Drive a goal with a checkable "done" through to done, doing every step that is unblocked and approved, watching what it starts, and keeping one numbered table of the remaining steps in every reply. TRIGGER when the user asks to get one or more tasks to done, ship and verify a set of PRs, or drive a multi-step goal through to done. When the user only wants to know what to do first toward a goal, use `prioritize` instead.
 argument-hint: 'The outcome you want to be true, such as "get these three tickets to done"'
 ---
 

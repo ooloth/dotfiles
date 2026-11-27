@@ -102,9 +102,9 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    `~/.agents/standards/git.md` → Operations (if the code runs git commands);
    `~/.agents/standards/cli-design.md` → Structure (if the project has a CLI binary).
 
-   `~/.agents/standards/prioritization.md` is in no cluster: it judges rankings of work, which a
-   codebase does not hold. It is checked only when asked for as a theme, such as on a repo of
-   skills whose instructions rank work.
+   `~/.agents/standards/prioritization.md` → Documentation & Release (if the codebase holds agent
+   instructions, such as skills, that rank work). It judges rankings of work, which other codebases
+   do not hold.
 
 2. Wait for all subagents to return their results
 3. Collect anything a subagent reported as unevaluable. Those are defects in the standards files

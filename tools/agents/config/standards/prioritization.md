@@ -60,8 +60,9 @@ with the evidence. Items further down are covered by the Should on where investi
 
 **Work that waits on an unmade decision ranks as that decision.**
 The decision takes the work's rank, and the ranking names the work it unblocks. How deeply the
-decision is then derived follows `decision-making.md`. Where several decisions wait, their order
-among themselves follows `decision-making.md`.
+decision is then derived follows `decision-making.md`. Where several decisions wait, they keep the
+slots their work earns, and `decision-making.md` decides only which of them fills which slot, such
+as a decision that another derives from taking the earlier slot.
 
 **A ranking toward a goal includes the steps nobody has tracked.**
 It compares the goal with the current state and names every step between them, tracked or not, and
@@ -97,8 +98,8 @@ This holds when most of that cost comes from one part of the item.
 
 ## Out of scope
 
-- Choosing between options for one decision, and the order of decisions that derive from one
-  another: `decision-making.md`
+- Choosing between options for one decision, and which waiting decision fills which of the slots
+  their work earns: `decision-making.md`
 - A project's own costs, orders and conventions, which live in its docs and take precedence where
   they settle something this file leaves open. They never override a Must here, such as ranking by
   a priority field instead of by consequences.

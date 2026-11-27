@@ -46,8 +46,8 @@ Find each source; none is assumed.
   branches other than the default, and open PRs. A branch whose PR was closed unmerged is not in
   flight; report it for deletion.
 - **Trackers:** the ones the repo's docs name, such as GitHub Issues, Jira or Linear. Invoke the
-  matching `use-*` skill before the first call. Pass a `--limit` above the largest count you expect
-  to every list, because the default stops at 30 without saying so.
+  matching `use-*` skill, where one exists, before the first call. Pass a `--limit` above the
+  largest count you expect to every list, because the default stops at 30 without saying so.
 - **Open questions:** a folder such as `docs/questions/`, one file per question.
 - **TODO and FIXME comments**, only when the repo has no tracker.
 
@@ -62,6 +62,9 @@ PR for it is closed, in which case report the label as stale. The `status:*` lab
 agent PR workflows and say nothing else about priority.
 
 ## Default order
+
+Anything causing serious harm now, as the standard defines it, ranks first whatever its kind. The
+rest follows this order:
 
 1. **Work in flight:** uncommitted changes, unpushed commits, a branch other than the default, or
    an open PR.
@@ -106,8 +109,9 @@ this says where to look.
 
 For each recommendation, three or four lines: the item, its rank, its size with what it was judged
 from (never a time), and the sentence of evidence that decided it, including any sentence that moved
-it across a kind boundary. Name the repo docs you followed and anything you skipped. Name anything
-ambiguous, such as two started features whose next items tie, rather than picking.
+it across a kind boundary. Name any item whose metadata disagrees with its consequences, such as a
+`priority: low` on a live breach. Name the repo docs you followed and anything you skipped. Name
+anything ambiguous, such as two started features whose next items tie, rather than picking.
 
 End by offering `scan-ideas` for a ranking of the whole backlog. If nothing is left anywhere, say so
 and offer `scan-gaps`.
