@@ -15,4 +15,6 @@ this folder holds what they all read. Amp reads it too, in an orb, where
 `~/.agents/skills`, so any harness can load it.
 
 `check-skills.py` checks every skill in `config/skills/` that git does not ignore against
-`docs/invariants/skills.md`, from `scripts/checks/linting.bash`. Its tests are in `tests/`.
+`docs/invariants/skills.md`, from `scripts/checks/linting.bash`. `check-skill-rules.py` checks that
+every allow rule in `tools/claude/config/settings.json` for a skill script matches the command every
+skill writes for it. Their tests are in `tests/`.

@@ -1,9 +1,10 @@
 """Tests for fetch_jira_backlog.py.
 
 The script is loaded in-process, and `main` is called with a fake Jira and a fake Keychain in place
-of the two system boundaries it reaches, so no test sends a request or reads the real Keychain. The
-two tests of the real HTTP sender point it at local sockets: one that never answers, and a TLS
-server whose certificate macOS does not trust.
+of the two system boundaries it reaches, so no test sends a request to Jira or reads the real
+Keychain. The tests of the real HTTP sender point it at local sockets: servers that never answer,
+answer too slowly, cut a body short or redirect, and a TLS server whose certificate macOS does not
+trust.
 
 `fixtures/search_page.json` is a search response whose first issue is a real ticket with every value
 replaced by a made-up one, and whose other two issues are made up from node shapes seen in real
@@ -112,6 +113,7 @@ class FakeJira:
     comment_page_size: int = 100
     never_last: bool = False
     comment_total: int | None = None  # a total the comment endpoint claims, if not the real one
+    comment_start_shift: int = 0  # added to the startAt the comment endpoint claims
     projects: frozenset[str] = frozenset({"EXAMPLE"})
     lookup_answer: Any = None  # sent instead of the real answer to the project lookup
     requests: list[Any] = field(
@@ -157,7 +159,7 @@ class FakeJira:
         return response(
             200,
             {
-                "startAt": start,
+                "startAt": start + self.comment_start_shift,
                 "maxResults": len(page),
                 "total": len(everything) if self.comment_total is None else self.comment_total,
                 "comments": page,
@@ -170,21 +172,44 @@ def response(status: int, body: Any, headers: dict[str, str] | None = None) -> A
     return fjb.HttpResponse(status=status, headers=headers or {}, body=raw)
 
 
+ITEM_ARGS = ["find-generic-password", "-s", "jira-backlog-read"]
+NOT_FOUND = fjb.KeychainAnswer(
+    returncode=44,
+    stdout="",
+    stderr="security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.\n",
+)
+
+
 def keychain(email: str = EMAIL, token: str = TOKEN, present: bool = True) -> Any:
+    """Answers only the two reads `security` would answer for the item, so another item is absent."""
+
     def read(args: list[str]) -> Any:
-        if not present:
-            return fjb.KeychainAnswer(
-                returncode=44,
-                stdout="",
-            )
-        if "-w" in args:
-            return fjb.KeychainAnswer(returncode=0, stdout=token + "\n")
+        if not present or args not in (ITEM_ARGS, [*ITEM_ARGS, "-w"]):
+            return NOT_FOUND
+        if args[-1] == "-w":
+            return fjb.KeychainAnswer(returncode=0, stdout=token + "\n", stderr="")
         return fjb.KeychainAnswer(
             returncode=0,
             stdout=f'keychain: "login.keychain-db"\nattributes:\n    "acct"<blob>="{email}"\n',
+            stderr="",
         )
 
     return read
+
+
+@dataclass
+class Clock:
+    """A monotonic clock that only moves when the script sleeps."""
+
+    now: float = 0.0
+    sleeps: list[float] = field(default_factory=list)
+
+    def __call__(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float) -> None:
+        self.sleeps.append(seconds)
+        self.now += seconds
 
 
 @dataclass
@@ -202,14 +227,20 @@ def run(
     project: str = "EXAMPLE",
     environ: dict[str, str] | None = None,
     read_keychain: Any = None,
+    clock: Clock | None = None,
+    workers: int = fjb.COMMENT_WORKERS,
 ) -> Run:
-    out, err, sleeps = io.StringIO(), io.StringIO(), []
+    out, err = io.StringIO(), io.StringIO()
+    clock = clock or Clock()
+    sleeps = clock.sleeps
     code = fjb.main(
         [project, "--out-dir", str(tmp)],
         environ={"PRIVATE_JIRA_CLOUD_ID": CLOUD_ID} if environ is None else environ,
         send=jira,
         read_keychain=read_keychain or keychain(),
-        sleep=sleeps.append,
+        sleep=clock.sleep,
+        clock=clock,
+        workers=workers,
         out=out,
         err=err,
     )
@@ -312,32 +343,32 @@ def test_the_fixture_page_renders_every_node_type_as_text(tmp_path: Path) -> Non
         "\n"
         "--- description\n"
         "\n"
-        "See @Bob Example 👍\n"
-        "second line with emphasis and underline\n"
+        "  See @Bob Example 👍\n"
+        "  second line with emphasis and underline\n"
         "\n"
-        "```python\n"
-        'print("hello")\n'
-        'print("bye")\n'
-        "```\n"
+        "  ```python\n"
+        '  print("hello")\n'
+        '  print("bye")\n'
+        "  ```\n"
         "\n"
-        "1. first step\n"
-        "   - nested point\n"
-        "2. second step\n"
+        "  1. first step\n"
+        "     - nested point\n"
+        "  2. second step\n"
         "\n"
-        "- [x] finished task\n"
-        "- [ ] open task\n"
+        "  - [x] finished task\n"
+        "  - [ ] open task\n"
         "\n"
-        "---\n"
+        "  ---\n"
         "\n"
-        "https://example.com/card\n"
+        "  https://example.com/card\n"
         "\n"
-        "inline https://example.com/inline\n"
+        "  inline https://example.com/inline\n"
         "\n"
-        "[media: diagram.png]\n"
+        "  [media: diagram.png]\n"
         "\n"
         "--- comment 1 of 1: Carol Example, 2026-11-20T10:00:00.000-0500\n"
         "\n"
-        "Looks good, see the doc (https://example.com/doc)\n"
+        "  Looks good, see the doc (https://example.com/doc)\n"
         "\n"
         "=== EXAMPLE-21: Made-up ticket with no description and no comments\n"
         "status: Backlog\n"
@@ -346,7 +377,7 @@ def test_the_fixture_page_renders_every_node_type_as_text(tmp_path: Path) -> Non
         "\n"
         "--- description\n"
         "\n"
-        "(none)\n"
+        "  (none)\n"
         "\n"
         "--- no comments\n"
     )
@@ -369,11 +400,13 @@ def test_the_real_ticket_in_the_fixture_keeps_its_structure(tmp_path: Path) -> N
         in lines
     )
     assert "links: relates to EXAMPLE-1; relates to EXAMPLE-2; blocks EXAMPLE-3" in lines
-    assert any(line.startswith("## ") for line in lines), "a heading"
-    assert any(line.startswith("- ") for line in lines), "a bullet"
-    assert any(re.fullmatch(r"\| --- (\| --- )*\|", line) for line in lines), "a table header rule"
-    assert any(line.startswith("| ") for line in lines), "a table row"
-    assert any(line.startswith("> ") for line in lines), "a blockquote"
+    assert any(line.startswith("  ## ") for line in lines), "a heading"
+    assert any(line.startswith("  - ") for line in lines), "a bullet"
+    assert any(re.fullmatch(r"  \| --- (\| --- )*\|", line) for line in lines), (
+        "a table header rule"
+    )
+    assert any(line.startswith("  | ") for line in lines), "a table row"
+    assert any(line.startswith("  > ") for line in lines), "a blockquote"
     assert re.search(r"`[a-z]+`", real), "inline code"
     assert "--- comment 1 of 2: Alice Example, " in real
     assert "--- comment 2 of 2: Bob Example, " in real
@@ -522,12 +555,14 @@ def test_a_rate_limit_is_waited_out_and_the_run_completes(tmp_path: Path) -> Non
     assert len(jira.requests) == 2
 
 
-def test_a_long_retry_after_is_capped(tmp_path: Path) -> None:
+def test_a_retry_after_longer_than_the_time_left_fails_at_once_and_says_so(tmp_path: Path) -> None:
     jira = FakeJira(issues=[issue(1)], script={1: response(429, b"", {"Retry-After": "3600"})})
     result = run(jira, tmp_path)
 
-    assert result.code == 0, result.err
-    assert result.sleeps == [fjb.MAX_WAIT_SECONDS]
+    assert result.code == 1
+    assert result.sleeps == []
+    assert "3600" in result.err
+    assert result.files == {}
 
 
 def test_server_errors_on_every_attempt_fail_with_the_request_and_write_nothing(
@@ -716,12 +751,14 @@ def test_a_rejected_certificate_fails_at_once_and_names_a_tls_inspecting_proxy(
     assert result.files == {}
 
 
-def test_the_dependency_range_matches_the_test_and_type_check_installs() -> None:
-    header = re.search(r'# dependencies = \["([^"]+)"\]', SCRIPT.read_text())
+def test_the_pinned_dependencies_match_the_test_and_type_check_installs() -> None:
+    header = re.search(r"# dependencies = \[(.+)\]", SCRIPT.read_text())
     assert header is not None
-    spec = header.group(1)
+    specs = re.findall(r'"([^"]+)"', header.group(1))
+    assert specs and all("==" in spec for spec in specs), specs
     for check_script in ("scripts/checks/tests.bash", "scripts/checks/types.bash"):
-        assert f"'{spec}'" in (REPO / check_script).read_text(), check_script
+        for spec in specs:
+            assert f"'{spec}'" in (REPO / check_script).read_text(), (check_script, spec)
 
 
 # --- the project lookup and requests Jira rejects -------------------------------------------
@@ -798,3 +835,384 @@ def test_help_prints_the_usage_and_exits_0(tmp_path: Path) -> None:
     assert code == 0
     assert "--out-dir" in out.getvalue()
     assert err.getvalue() == ""
+
+
+# --- a backlog read is complete or fails ----------------------------------------------------
+
+
+def test_a_page_that_says_more_follow_but_gives_no_token_fails_and_writes_nothing(
+    tmp_path: Path,
+) -> None:
+    jira = FakeJira(issues=[], script={1: response(200, {"issues": [issue(1)], "isLast": False})})
+    result = run(jira, tmp_path)
+
+    assert result.code == 1
+    assert "search page 1" in result.err
+    assert result.files == {}
+
+
+@pytest.mark.parametrize("page", [{"isLast": True}, {"issues": []}, {"issues": {}, "isLast": True}])
+def test_a_page_without_its_issues_or_its_last_page_flag_fails_and_writes_nothing(
+    tmp_path: Path, page: dict[str, Any]
+) -> None:
+    result = run(FakeJira(issues=[], script={1: response(200, page)}), tmp_path)
+
+    assert result.code == 1
+    assert "search page 1" in result.err
+    assert "0 open tickets" not in result.out
+    assert result.files == {}
+
+
+def test_a_comment_page_for_another_offset_fails_and_writes_nothing(tmp_path: Path) -> None:
+    short = issue(7, comments=1, total=3)
+    full = issue(7, comments=3)["fields"]["comment"]["comments"]
+    jira = FakeJira(issues=[short], full_comments={"EXAMPLE-7": full}, comment_start_shift=5)
+    result = run(jira, tmp_path)
+
+    assert result.code == 1
+    assert "EXAMPLE-7" in result.err
+    assert result.files == {}
+
+
+def test_short_comment_lists_among_complete_tickets_are_completed_in_key_order(
+    tmp_path: Path,
+) -> None:
+    issues = [issue(n, comments=1, total=3) if n % 2 == 0 else issue(n) for n in range(1, 7)]
+    full = {
+        f"EXAMPLE-{n}": issue(n, comments=3)["fields"]["comment"]["comments"] for n in (2, 4, 6)
+    }
+    jira = FakeJira(issues=issues, full_comments=full)
+    result = run(jira, tmp_path)
+
+    assert result.code == 0, result.err
+    keys = re.findall(r"^=== (EXAMPLE-\d+):", result.files["part-1.txt"], re.MULTILINE)
+    assert keys == [f"EXAMPLE-{n}" for n in range(1, 7)]
+    # the project lookup, one search page and one comment page for each of the three
+    assert "in 5 requests" in result.out
+
+
+def test_every_ticket_whose_comments_jira_rejects_is_reported(tmp_path: Path) -> None:
+    issues = [issue(n, comments=1, total=3) for n in (2, 4, 6)]
+    full = {
+        f"EXAMPLE-{n}": issue(n, comments=3)["fields"]["comment"]["comments"] for n in (2, 4, 6)
+    }
+    jira = FakeJira(
+        issues=issues, full_comments=full, script={2: response(404, b""), 3: response(404, b"")}
+    )
+    result = run(jira, tmp_path, workers=1)
+
+    assert result.code == 1
+    assert "comments of EXAMPLE-2" in result.err
+    assert "comments of EXAMPLE-4" in result.err
+    assert result.files == {}
+
+
+def test_a_refused_token_stops_the_remaining_comment_fetches(tmp_path: Path) -> None:
+    issues = [issue(n, comments=1, total=3) for n in range(1, 21)]
+    full = {
+        f"EXAMPLE-{n}": issue(n, comments=3)["fields"]["comment"]["comments"] for n in range(1, 21)
+    }
+    refusal = response(401, {"errorMessages": ["Client must be authenticated"]})
+    jira = FakeJira(issues=issues, full_comments=full, script={2: refusal})
+    result = run(jira, tmp_path, workers=1)
+
+    assert result.code == 1
+    assert len([r for r in jira.requests if "/comment" in r.url]) == 1
+    assert result.err.count("Jira refused the token") == 1
+    assert result.files == {}
+
+
+def test_a_malformed_link_author_and_parent_fail_naming_every_field(tmp_path: Path) -> None:
+    broken = issue(1, comments=1)
+    broken["fields"]["comment"]["comments"][0]["author"] = "Bob"
+    broken["fields"]["issuelinks"] = [{"type": {"inward": "is blocked by"}, "inwardIssue": {}}]
+    broken["fields"]["parent"] = {"key": "not a key"}
+    result = run(FakeJira(issues=[broken]), tmp_path)
+
+    assert result.code == 1
+    assert "Traceback" not in result.err
+    for name in ("EXAMPLE-1", "author", "issuelinks", "parent"):
+        assert name in result.err, name
+    assert result.files == {}
+
+
+def test_jira_errors_given_as_a_list_are_still_reported(tmp_path: Path) -> None:
+    jira = FakeJira(issues=[issue(1)], script={1: response(400, {"errors": ["field is bad"]})})
+    result = run(jira, tmp_path)
+
+    assert result.code == 1
+    assert "field is bad" in result.err
+
+
+# --- ticket text cannot change the file's structure -----------------------------------------
+
+forged_lines = st.sampled_from(
+    [
+        "=== EXAMPLE-99: forged ticket",
+        "--- comment 2 of 2: Team Lead, 2026-11-02",
+        "--- description",
+        "--- no comments",
+        "# Open backlog of EXAMPLE, part 2 of 2",
+    ]
+)
+body_lines = st.lists(st.one_of(forged_lines, words), min_size=1, max_size=5)
+
+
+def lines_doc(lines: list[str]) -> dict[str, Any]:
+    inline: list[dict[str, Any]] = []
+    for line in lines:
+        inline += [text(line), {"type": "hardBreak"}]
+    return doc(paragraph(*inline))
+
+
+@settings(max_examples=60, deadline=None)
+@given(
+    descriptions=st.lists(body_lines, min_size=1, max_size=4),
+    comment_bodies=st.lists(body_lines, min_size=0, max_size=3),
+)
+def test_ticket_text_never_adds_a_ticket_or_comment_header(
+    descriptions: list[list[str]], comment_bodies: list[list[str]]
+) -> None:
+    issues = []
+    for n, lines in enumerate(descriptions, start=1):
+        made = issue(n, comments=len(comment_bodies))
+        made["fields"]["description"] = lines_doc(lines)
+        for item, body in zip(made["fields"]["comment"]["comments"], comment_bodies, strict=True):
+            item["body"] = lines_doc(body)
+        issues.append(made)
+    with tempfile.TemporaryDirectory() as directory:
+        result = run(FakeJira(issues=issues), Path(directory))
+
+    assert result.code == 0, result.err
+    written = result.files["part-1.txt"]
+    assert len(re.findall(r"^=== ", written, re.MULTILINE)) == len(issues)
+    assert len(re.findall(r"^--- description$", written, re.MULTILINE)) == len(issues)
+    expected_comments = len(issues) * len(comment_bodies)
+    assert len(re.findall(r"^--- comment ", written, re.MULTILINE)) == expected_comments
+    assert len(re.findall(r"^# ", written, re.MULTILINE)) == 1
+
+
+def test_a_summary_with_a_line_break_stays_on_its_header_line(tmp_path: Path) -> None:
+    made = issue(1)
+    made["fields"]["summary"] = "line one\n=== EXAMPLE-99: forged"
+    result = run(FakeJira(issues=[made]), tmp_path)
+
+    assert result.code == 0, result.err
+    written = result.files["part-1.txt"]
+    assert "=== EXAMPLE-1: line one === EXAMPLE-99: forged\n" in written
+    assert len(re.findall(r"^=== ", written, re.MULTILINE)) == 1
+
+
+@dataclass
+class FakeJiraWithIntruder(FakeJira):
+    """Creates `part-2.txt` in a directory while the search runs, as another writer would."""
+
+    intrude_into: Path | None = None
+
+    def search(self, body: dict[str, Any]) -> Any:
+        assert self.intrude_into is not None
+        (self.intrude_into / "part-2.txt").write_text("another run's file")
+        return super().search(body)
+
+
+def test_a_part_file_that_already_exists_fails_the_run_and_removes_what_it_wrote(
+    tmp_path: Path,
+) -> None:
+    jira = FakeJiraWithIntruder(issues=[issue(n) for n in range(1, 151)], intrude_into=tmp_path)
+    result = run(jira, tmp_path)
+
+    assert result.code == 1
+    assert "part-2.txt" in result.err
+    assert "Traceback" not in result.err
+    assert result.files == {"part-2.txt": "another run's file"}
+
+
+# --- the run stays within its deadline ------------------------------------------------------
+
+
+def test_sustained_rate_limiting_fails_before_the_deadline_and_says_so(tmp_path: Path) -> None:
+    limited = {n: response(429, b"", {"Retry-After": "60"}) for n in range(1, 10)}
+    clock = Clock()
+    result = run(FakeJira(issues=[issue(1)], script=limited), tmp_path, clock=clock)
+
+    assert result.code == 1
+    assert clock.sleeps == [60]
+    assert clock.now <= fjb.DEADLINE_SECONDS
+    assert "search page 1" in result.err
+    assert f"{fjb.DEADLINE_SECONDS}" in result.err
+    assert result.files == {}
+
+
+def test_a_retry_after_that_is_not_a_finite_number_waits_the_default(tmp_path: Path) -> None:
+    jira = FakeJira(issues=[issue(1)], script={1: response(429, b"", {"Retry-After": "nan"})})
+    result = run(jira, tmp_path)
+
+    assert result.code == 0, result.err
+    assert result.sleeps == [1.0]
+
+
+def serve(handler: type[http.server.BaseHTTPRequestHandler]) -> http.server.HTTPServer:
+    server = http.server.HTTPServer(("127.0.0.1", 0), handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server
+
+
+class Quiet(http.server.BaseHTTPRequestHandler):
+    def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
+        pass
+
+
+def test_the_real_sender_bounds_a_response_that_trickles_in() -> None:
+    class Trickle(Quiet):
+        def do_GET(self) -> None:
+            self.send_response(200)
+            self.send_header("Content-Length", "20")
+            self.end_headers()
+            for _ in range(20):
+                self.wfile.write(b" ")
+                self.wfile.flush()
+                time.sleep(0.2)
+
+    server = serve(Trickle)
+    request = fjb.HttpRequest(
+        method="GET", url=f"http://127.0.0.1:{server.server_port}/", headers={}, body=None
+    )
+    started = time.monotonic()
+    result = fjb.urllib_send(request, timeout=1.0)
+
+    assert isinstance(result, fjb.NetworkError), result
+    assert time.monotonic() - started < 2.5
+    server.shutdown()
+
+
+def test_the_real_sender_reports_a_body_cut_short_as_a_network_error() -> None:
+    class CutShort(Quiet):
+        def do_GET(self) -> None:
+            self.send_response(200)
+            self.send_header("Content-Length", "100")
+            self.end_headers()
+            self.wfile.write(b"{")
+            self.close_connection = True
+
+    server = serve(CutShort)
+    request = fjb.HttpRequest(
+        method="GET", url=f"http://127.0.0.1:{server.server_port}/", headers={}, body=None
+    )
+
+    assert isinstance(fjb.urllib_send(request, timeout=3), fjb.NetworkError)
+    server.shutdown()
+
+
+def test_the_real_sender_never_follows_a_redirect_with_the_token() -> None:
+    received: list[str | None] = []
+
+    class Elsewhere(Quiet):
+        def do_GET(self) -> None:
+            received.append(self.headers.get("Authorization"))
+            self.send_response(200)
+            self.end_headers()
+
+    other = serve(Elsewhere)
+
+    class Redirecting(Quiet):
+        def do_GET(self) -> None:
+            self.send_response(302)
+            self.send_header("Location", f"http://localhost:{other.server_port}/x")
+            self.end_headers()
+
+    server = serve(Redirecting)
+    request = fjb.HttpRequest(
+        method="GET",
+        url=f"http://127.0.0.1:{server.server_port}/",
+        headers={"Authorization": "Basic SECRET"},
+        body=None,
+    )
+    result = fjb.urllib_send(request, timeout=3)
+
+    assert isinstance(result, fjb.HttpResponse) and result.status == 302, result
+    assert received == []
+    server.shutdown()
+    other.shutdown()
+
+
+def test_a_redirect_fails_the_run_at_once_naming_where_it_pointed(tmp_path: Path) -> None:
+    moved = response(302, b"", {"Location": "https://elsewhere.example/rest"})
+    jira = FakeJira(issues=[issue(1)], script={1: moved})
+    result = run(jira, tmp_path)
+
+    assert result.code == 1
+    assert len(jira.requests) == 1
+    assert "elsewhere.example" in result.err
+    assert result.files == {}
+
+
+# --- the Keychain ---------------------------------------------------------------------------
+
+
+def test_the_token_is_read_from_the_named_keychain_item_only(tmp_path: Path) -> None:
+    reads: list[list[str]] = []
+
+    def read_keychain(args: list[str]) -> Any:
+        reads.append(args)
+        return keychain()(args)
+
+    result = run(FakeJira(issues=[issue(1)]), tmp_path, read_keychain=read_keychain)
+
+    assert result.code == 0, result.err
+    assert reads == [ITEM_ARGS, [*ITEM_ARGS, "-w"]]
+
+
+def test_a_keychain_that_cannot_be_read_says_why_instead_of_asking_for_a_new_token(
+    tmp_path: Path,
+) -> None:
+    locked = fjb.KeychainAnswer(
+        returncode=51, stdout="", stderr="security: User interaction is not allowed.\n"
+    )
+    result = run(FakeJira(issues=[issue(1)]), tmp_path, read_keychain=lambda args: locked)
+
+    assert result.code == 1
+    assert "51" in result.err
+    assert "User interaction is not allowed" in result.err
+    assert "No API token is stored" not in result.err
+
+
+def test_a_machine_without_the_security_command_says_the_macos_keychain_is_needed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("PATH", str(tmp_path))
+    answer = fjb.security_read(ITEM_ARGS)
+    assert isinstance(answer, fjb.KeychainUnavailable)
+
+    out_dir = tmp_path / "out"
+    out_dir.mkdir()
+    result = run(FakeJira(issues=[issue(1)]), out_dir, read_keychain=lambda args: answer)
+    assert result.code == 1
+    assert "macOS Keychain" in result.err
+
+
+def test_an_account_that_is_not_an_email_says_how_to_store_it_again(tmp_path: Path) -> None:
+    result = run(FakeJira(issues=[issue(1)]), tmp_path, read_keychain=keychain(email="alice"))
+
+    assert result.code == 1
+    assert "Atlassian email" in result.err
+    assert "security delete-generic-password -s jira-backlog-read" in result.err
+
+
+# --- arguments ------------------------------------------------------------------------------
+
+
+def test_a_missing_project_prints_only_argparses_message(tmp_path: Path) -> None:
+    out, err = io.StringIO(), io.StringIO()
+    code = fjb.main(
+        ["--out-dir", str(tmp_path)],
+        environ={},
+        send=FakeJira(issues=[]),
+        read_keychain=keychain(),
+        sleep=lambda _: None,
+        out=out,
+        err=err,
+    )
+
+    assert code == 2
+    assert err.getvalue().startswith("the following arguments are required: project")
+    assert "--help" in err.getvalue()

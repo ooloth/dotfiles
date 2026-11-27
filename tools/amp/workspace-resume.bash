@@ -5,7 +5,9 @@
 # a copy of this file, not a reference to it: paste it into that setting after changing it.
 #
 # Amp reads ~/.agents/skills and ~/.config/AGENTS.md when a thread starts, Claude Code threads
-# included, and skills read ~/.agents/standards/ during a turn. Nothing reads the orb's ~/.claude.
+# included, and skills read ~/.agents/standards/ during a turn. Nothing reads the orb's ~/.claude
+# as config, but some skill commands run scripts through ~/.claude/skills, so tools/agents/link.bash
+# still links the skills there.
 #
 # Amp waits at most 10 seconds for this script, so git gets 6. When the network fails, the copy
 # already on disk is used.

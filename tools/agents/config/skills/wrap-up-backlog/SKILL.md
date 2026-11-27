@@ -25,16 +25,15 @@ gh issue list -R <owner>/<repo> --state open --limit 1000 \
   --json number,title,body,comments,labels,parent,blockedBy,blocking,subIssues > <file>
 ```
 
-For Jira, the directory itself is the target, and it must be empty:
+For Jira, the directory itself is the target, and it must be empty. Make it with `mktemp -d` as one
+command, then run the script as its own command with that path written out, as `use-jira` says:
 
 ```sh
 uv run ~/.claude/skills/use-jira/scripts/fetch_jira_backlog.py <PROJECT> --out-dir <dir>
 ```
 
-It writes every open ticket, with its description and every comment, into files of 100 tickets
-and prints each file's key range. When it exits anything but 0 it has written nothing: report the
-backlog scan as incomplete, with the reason it printed, and never fall back to reading descriptions
-alone.
+It writes every open ticket, with its description and every comment, into part files and prints
+each file's key range. When it exits anything but 0, follow `use-jira`'s rule for a failed read.
 
 Read the whole backlog, not only search results, because a ticket can bear on the change without
 naming anything it touched.
@@ -73,4 +72,6 @@ gives at least two lettered options with what each would do, and marks one recom
 ## Return
 
 One list: the fixes with their exact text, the asks with their lettered options, and the dismissed
-findings with their reasons.
+findings with their reasons. When the backlog could not be read, the list opens with `Backlog scan
+incomplete: <what the fetch printed>`, so the caller shows that line where the backlog findings
+go.

@@ -101,7 +101,9 @@ warm_uv() {
   uv run --quiet --with pytest pytest --version
   env_dir=".cache/check-types-env"
   uv venv --quiet --allow-existing "${env_dir}"
-  uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis
+  uv pip install --quiet --python "${env_dir}" "ty==${TY_VERSION}" pytest pyyaml hypothesis \
+    beartype 'markdown-it-py>=4,<5' 'youtube-transcript-api>=1,<2' 'truststore==0.10.5' \
+    'pydantic==2.14.3'
   find tools features scripts -mindepth 3 -maxdepth 3 -path '*/tests/test_*.py' \
     ! -path '*/@new/*' ! -path '*/@archive/*' -print0 |
     xargs -0 -n 1 uv sync --quiet --script

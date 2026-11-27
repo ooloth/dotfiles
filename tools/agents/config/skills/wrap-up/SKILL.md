@@ -36,7 +36,8 @@ Send one message with:
 3. **The codebase findings:** the fixes, each with its location, what misleads and the exact edit,
    then the asks with their lettered options. Lead with whatever would actively mislead.
 4. **The backlog findings:** the fixes, each with the ticket, the action and its exact wording,
-   then the asks with their lettered options.
+   then the asks with their lettered options. When `wrap-up-backlog`'s list opens with
+   `Backlog scan incomplete:`, show that line first.
 5. **Dismissed findings** from both passes, each with the reason.
 6. **Out-of-scope problems noticed,** listed briefly and not fixed.
 

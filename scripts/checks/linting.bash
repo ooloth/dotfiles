@@ -12,6 +12,9 @@
 # at high effort or above, no file in a skill names a fixed temp path, no skill script opens a
 # Claude tab without --unattended, and no instruction file but create-pr's opens a PR
 # (tools/agents/check-skills.py).
+# Skill-script allow rules: every Bash allow rule in tools/claude/config/settings.json that names a
+# skill script is written `Bash(uv run ~/.claude/skills/<skill>/scripts/<file> *)`, and every skill
+# writes that script's command the same way (tools/agents/check-skill-rules.py).
 # Each fails when it finds nothing to check.
 set -uo pipefail
 
@@ -45,6 +48,7 @@ bash -n tools/zsh/utils.zsh || failed+=("zsh utils parse as bash")
 
 echo "== skills"
 uv run tools/agents/check-skills.py || failed+=("skills")
+uv run tools/agents/check-skill-rules.py || failed+=("skill rules")
 
 if [[ ${#failed[@]} -gt 0 ]]; then
   printf '\n❌ Linting failed: %s\n' "${failed[*]}" >&2

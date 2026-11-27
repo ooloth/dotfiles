@@ -22,7 +22,9 @@
 # scripts in-process or run them as a subprocess, and generate inputs for them. markdown-it-py is
 # installed because use-jira's check imports it and its tests run it under this Python; its range
 # matches the script's own header, which a test compares. youtube-transcript-api is installed for
-# use-youtube's transcript.py, and truststore for use-jira's fetch_jira_backlog.py, on the same terms.
+# use-youtube's transcript.py on the same terms. pydantic and truststore are pinned to the exact
+# versions use-jira's fetch_jira_backlog.py pins, which a test compares, and the other skill scripts'
+# pydantic ranges allow that version.
 set -uo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -51,8 +53,8 @@ if [[ ${#tests[@]} -eq 0 ]]; then
   exit 1
 fi
 
-with=(--with pytest --with pytest-xdist --with hypothesis --with pydantic --with 'markdown-it-py>=4,<5'
-  --with 'youtube-transcript-api>=1,<2' --with 'truststore>=0.10,<1')
+with=(--with pytest --with pytest-xdist --with hypothesis --with 'markdown-it-py>=4,<5'
+  --with 'youtube-transcript-api>=1,<2' --with 'truststore==0.10.5' --with 'pydantic==2.14.3')
 for test in "${tests[@]}"; do
   with+=(--with-requirements "${test}")
 done

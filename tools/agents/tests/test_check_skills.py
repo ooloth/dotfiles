@@ -14,7 +14,6 @@ checker takes its file list from git.
 
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 import tempfile
@@ -385,71 +384,6 @@ class SessionPins(unittest.TestCase):
     def test_inherit_without_fork_passes(self) -> None:
         run = run_checker(pinned("model: inherit"))
         self.assertEqual(run.status, 0, run.stdout)
-
-
-def allowing(*rules: str) -> dict[str, str]:
-    """A settings.json whose allow list holds `rules`, for the checker's instruction directory."""
-    return {"settings.json": json.dumps({"permissions": {"allow": list(rules)}})}
-
-
-TILDE_RULE = "Bash(uv run ~/.claude/skills/example/scripts/run.py *)"
-COMMAND = "uv run ~/.claude/skills/example/scripts/run.py --flag\n"
-
-
-class SkillScriptRules(unittest.TestCase):
-    """An allow rule for a skill script matches only the command text its skill writes."""
-
-    def test_a_tilde_rule_whose_skill_writes_the_command_passes(self) -> None:
-        files = skill(COMMAND) | {"example/scripts/run.py": "print()\n"}
-        run = run_checker(files, extra=allowing(TILDE_RULE))
-        self.assertEqual(run.status, 0, run.stdout)
-        self.assertIn("Checked 1 allow rules for skill scripts", run.stdout)
-
-    def test_an_absolute_home_path_rule_fails_and_asks_for_tilde(self) -> None:
-        rule = "Bash(uv run /Users/alice/.claude/skills/example/scripts/run.py *)"
-        files = skill(COMMAND) | {"example/scripts/run.py": "print()\n"}
-        run = run_checker(files, extra=allowing(rule))
-        self.assertEqual(run.status, 1, run.stdout)
-        self.assertIn(rule, run.stdout)
-        self.assertIn("~/.claude/skills/", run.stdout)
-
-    def test_a_rule_whose_skill_writes_only_the_base_dir_placeholder_fails(self) -> None:
-        files = skill("uv run <skill-base-dir>/scripts/run.py --flag\n") | {
-            "example/scripts/run.py": "print()\n"
-        }
-        run = run_checker(files, extra=allowing(TILDE_RULE))
-        self.assertEqual(run.status, 1, run.stdout)
-        self.assertIn("never writes `uv run ~/.claude/skills/example/scripts/run.py`", run.stdout)
-
-    def test_a_rule_for_a_script_that_does_not_exist_fails(self) -> None:
-        run = run_checker(skill(COMMAND), extra=allowing(TILDE_RULE))
-        self.assertEqual(run.status, 1, run.stdout)
-        self.assertIn("no such script", run.stdout)
-
-    def test_a_rule_for_a_skill_that_does_not_exist_fails(self) -> None:
-        rule = "Bash(uv run ~/.claude/skills/missing/scripts/run.py *)"
-        run = run_checker(skill("Fine.\n"), extra=allowing(rule))
-        self.assertEqual(run.status, 1, run.stdout)
-        self.assertIn("no such script", run.stdout)
-
-    def test_a_skills_path_rule_in_another_shape_fails_as_unrecognised(self) -> None:
-        rule = "Bash(python ~/.claude/skills/example/scripts/run.py *)"
-        files = skill(COMMAND) | {"example/scripts/run.py": "print()\n"}
-        run = run_checker(files, extra=allowing(rule))
-        self.assertEqual(run.status, 1, run.stdout)
-        self.assertIn(rule, run.stdout)
-        self.assertIn("not in the shape", run.stdout)
-
-    def test_settings_that_are_not_json_fail_as_uncheckable(self) -> None:
-        run = run_checker(skill("Fine.\n"), extra={"settings.json": "{ not json"})
-        self.assertEqual(run.status, 1, run.stdout)
-        self.assertIn("settings.json", run.stdout)
-        self.assertIn("can't be checked", run.stdout)
-
-    def test_rules_that_name_no_skills_path_are_ignored(self) -> None:
-        run = run_checker(skill("Fine.\n"), extra=allowing("Bash(acli jira workitem view *)"))
-        self.assertEqual(run.status, 0, run.stdout)
-        self.assertIn("Checked 0 allow rules for skill scripts", run.stdout)
 
 
 if __name__ == "__main__":

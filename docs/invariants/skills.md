@@ -36,11 +36,15 @@ Facts about the shared skills in `tools/agents/config/skills/`, which `~/.claude
   `skills/<name>/SKILL.md` that git does not ignore, from `scripts/checks/linting.bash`. It does
   not check the gitignored skills in `skills/synced/` or the project skills in `.claude/skills/`.
 - A skill script that an allow rule in `tools/claude/config/settings.json` lets run without a
-  prompt is written in its `SKILL.md` as the command the rule matches,
-  `uv run ~/.claude/skills/<skill>/scripts/<file>`, and the rule names the same `~` path. A rule
-  matches the command's text, not the file it runs. An agent expands `<skill-base-dir>` to the
-  absolute path of the home folder, which a `~` rule does not match, so the command stops at a
-  permission prompt. A rule written with that absolute path matches only on a machine with the
-  same user name. `tools/agents/check-skills.py` fails an allow rule naming `.claude/skills/`
-  that is not written this way, or whose skill never writes its command, from
+  prompt is written as the command the rule matches,
+  `uv run ~/.claude/skills/<skill>/scripts/<file>`, in every skill's Markdown file, and the rule
+  names the same `~` path. Claude Code matches a Bash
+  rule against the command's text, not the file it runs
+  ([permissions](https://code.claude.com/docs/en/permissions), read 2026-11-26), and documents `~/`
+  anchoring only for path rules. An agent expands `<skill-base-dir>` to the skill's absolute folder,
+  such as `/Users/<user>/.claude/skills/<skill>`, which a `~` rule does not match, so the rule does
+  not approve the command: a prompt in manual mode, the classifier's judgement in auto mode. A rule
+  written with that absolute path matches only where the home folder has the same path.
+  `tools/agents/check-skill-rules.py` fails a Bash allow rule naming a skill script that is not
+  written this way, and any skill that writes the script's command another way, from
   `scripts/checks/linting.bash`.

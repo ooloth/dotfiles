@@ -1,6 +1,6 @@
 ---
 name: use-jira
-description: Jira gotchas for the Atlassian MCP tools and the acli CLI. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every markdown body before posting it through the MCP tool, and reading a whole backlog with comments in one command. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
+description: Jira gotchas for the Atlassian MCP tools and the acli CLI. Covers the cloud ID that works, reads that silently omit comments, fields and paging that make responses too large or incomplete, and markdown that Jira's conversion breaks in posted comments and descriptions, with a check to run on every markdown body before posting it through the MCP tool, and reading a whole backlog with comments with one script. Read before every Jira tool call, reads included, because a bad post notifies watchers and stays in the history. Re-invoke each time.
 ---
 
 ## Which server
@@ -54,14 +54,17 @@ first bytes of the file before parsing it.
 
 ## Reading a whole backlog
 
-To read every open ticket of a project with all its comments, as a backlog scan does, run
-`uv run ~/.claude/skills/use-jira/scripts/fetch_jira_backlog.py <PROJECT> --out-dir <dir>` with a
-new `mktemp -d` directory, and read the files it writes. `acli jira workitem search` refuses
-`--fields comment`, and `searchJiraIssuesUsingJql` with comments returns too much to read for
-hundreds of tickets. The script uses Jira's REST search with a read-only API token from the
-Keychain, and read 464 tickets in under 10 seconds. Its setup and its exit codes are in its module
-docstring. Run it as written here, starting `uv run ~/.claude/...`, because that is the text its
-permission rule matches.
+To read every open ticket of a project with all its comments, as a backlog scan does, make a
+directory with `mktemp -d` as one command, then run
+`uv run ~/.claude/skills/use-jira/scripts/fetch_jira_backlog.py <PROJECT> --out-dir <dir>` as its
+own command with that directory's path written out, and read the files it writes. Its permission
+rule matches only that text, so a `$(…)`, a variable or `&&` gets a prompt. `acli jira workitem
+search` refuses `--fields comment`, and `searchJiraIssuesUsingJql` with comments returns too much
+to read for hundreds of tickets. The script uses Jira's REST search with a read-only API token from
+the Keychain. Its setup and its exit codes are in its module docstring.
+
+When it exits anything but 0, the backlog was not read: report the read as incomplete with what it
+printed, read the backlog no other way, and ignore any files in the directory.
 
 ## Markdown that Jira's conversion breaks
 
