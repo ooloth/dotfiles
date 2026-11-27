@@ -122,9 +122,11 @@ themselves, so committing it is harmless by construction rather than by vigilanc
 **Every protected operation checks identity, and permission for the resource it touches, before it
 proceeds.**
 A caller allowed to read their own record cannot read another's by changing an identifier in the
-request. Auth checks are not bypassable by omitting a parameter or header, or by skipping a step of
-a sign-in that has several, such as a second factor. A check that cannot reach an answer, such as
-one whose permission service times out, refuses.
+request. The permission is checked on the identifier the operation acts on, not on a copy read
+separately. A request that names the resource more than once is refused, because the check and the
+operation could each read a different one. Auth checks are not bypassable by omitting a parameter
+or header, or by skipping a step of a sign-in that has several, such as a second factor. A check
+that cannot reach an answer, such as one whose permission service times out, refuses.
 
 **A statement of who can reach a resource counts every way to become an identity that holds
 access.**
@@ -139,9 +141,11 @@ resource itself overstates the boundary, and nothing in it shows that it does.
 
 **Errors don't leak sensitive information.**
 Messages returned to callers don't include sensitive details, such as stack traces, internal paths,
-database schemas, user data, or whether an account exists. A sign-in or password reset gives the
-same answer for an unknown account as for a wrong password, and does the same work for both, so
-neither the message nor the time it takes shows whether an account exists.
+database schemas, user data, or whether an account exists. A request for a resource the caller may
+not access gets the same answer as a request for one that does not exist, so a refusal does not show
+that the resource exists. A sign-in or password reset gives the same answer for an unknown account
+as for a wrong password, and does the same work for both, so neither the message nor the time it
+takes shows whether an account exists.
 
 **Passwords, tokens and encryption use primitives built for the purpose.**
 A stored password, or any other secret short enough to guess, is hashed with a function designed to
