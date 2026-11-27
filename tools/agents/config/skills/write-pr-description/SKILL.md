@@ -136,12 +136,11 @@ code to, and this skill never invents, drops or rewords a row's behaviour. `prov
 each row as a claim, proves it, and hands back the steps it ran and their output: use its report for
 the PR's head commit, and when the session has none, or the head has moved since, run
 `prove-it-works` on the PR first, with the design's Observable behaviour table. Work with no design
-gets
-its Observable behaviour table from the `design` skill before the PR opens, since that table is the
-only source of rows. A row covers one behaviour a user or operator would notice; a finer point, such
-as a format detail or a speed bound, goes inside the row whose behaviour it refines. Nothing that
-isn't behaviour of the running system, such as a doc pointer or a code comment, is a row: it belongs
-in What. A property number such as P1 is the approach's shorthand and never appears.
+gets its Observable behaviour table from the `design` skill before the PR opens, since that table is
+the only source of rows. A row covers one behaviour a user or operator would notice; a finer point,
+such as a format detail or a speed bound, goes inside the row whose behaviour it refines. Nothing
+that isn't behaviour of the running system, such as a doc pointer or a code comment, is a row: it
+belongs in What. A property number such as P1 is the approach's shorthand and never appears.
 
 **A change nobody planned is never a row.** When a run finds behaviour the design didn't list, it is
 either a bug, which stops the PR until it is fixed and run again, or behaviour the change should
@@ -220,8 +219,9 @@ into steps of the row it proves and run again, or left out.
   row pushed inside the row above it, a summary turned into a bullet, a row whose summary falls out
   of it. So the body is never posted until `check_pr_body.py` passes, as step 5 says. It renders
   the body through GitHub's markdown API and checks the markup rules in this section, no code
-  block in What, at least one bullet and only bullets under Proven by, no property number, no local
-  path in a step's code block and no Pre-merge heading. Nothing checks hard wrapping, the outline's
+  block in What, at least one bullet and only bullets under Proven by, no property number, no
+  home-folder or `mktemp -d` path written out in a step's code block and no Pre-merge heading.
+  Nothing checks hard wrapping, a path written as `~` or `$HOME` or in inline code, the outline's
   order or a row's three headings, so read the body for those.
 
 ### Structure

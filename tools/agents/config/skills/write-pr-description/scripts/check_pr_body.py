@@ -320,12 +320,11 @@ PROPERTY_NUMBER = re.compile(r"\bP(?!(?:0|50|75|90|95|99|999)\b)[0-9]+\b")
 LOCAL_LINK = re.compile(r"\]\((/|~|file:)")
 # A path only the author's machine has: a person's home folder, or a folder `mktemp -d` made.
 # /Users/Shared and Homebrew's /home/linuxbrew exist on every reviewer's machine. A path built on a
-# variable (`${dir}/home/...`) is not one. check-skills.py's fixed temp path rule matches any
-# path written out under /tmp, this pattern's own text included, so `[/]` keeps it from matching.
+# variable (`${dir}/home/...`) is not one.
 LOCAL_PATH = re.compile(
     r"(?<![\w.$}-])("
     r"/Users/(?!Shared(?:/|\b))[^/\s]+|/home/(?!linuxbrew(?:/|\b))[^/\s]+"
-    r"|(/private)?/var/folders/|(/private)?/tmp[/]tmp\."
+    r"|/(?:private/)?var/folders/|/(?:private/)?tmp/tmp\."
     r")"
 )
 SUMMARY = re.compile(r"<summary>(.*?)</summary>", re.DOTALL)
