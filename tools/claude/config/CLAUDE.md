@@ -579,11 +579,13 @@ a task's approach and design, carry it to a draft PR without stopping for me in 
       a commit since changed what it proved.
    3. Run `wrap-up-codebase` once on the commits about to be pushed. Apply and commit each fix it
       returns, and push them without running it again. A fix that edits a file "These stop the
-      loop" lists, such as an invariant or a decision record, is an ask instead: put its exact
-      wording to me before applying it. If it returns any asks, or a fix became one, stop and put
-      them to me in the session as numbered questions, then apply my answers and commit them before
-      going on. My answer to an ask is the approval it needed, including for an edit to agent
-      instructions. A question for me never goes in the PR instead.
+      loop" lists, such as an invariant or a decision record, is an ask instead, unless the
+      approved design shows that exact wording: put its exact wording to me before applying it. If
+      it returns any asks, or a fix became one, stop and put them to me in the session as numbered
+      questions, then apply my answers and commit them before going on. Before the push, run the
+      project's full checks again on the commits this step added, and `prove-it-works` again only
+      when one of them changed what it proved. My answer to an ask is the approval it needed,
+      including for an edit to agent instructions. A question for me never goes in the PR instead.
 
    A commit that only adds a record a ticket comment must link may be pushed on its own before
    then.
