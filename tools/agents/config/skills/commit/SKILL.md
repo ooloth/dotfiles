@@ -35,8 +35,10 @@ changes, with the paths the commit will contain. It exits 0 only when every path
 and no file outside Markdown names it or a directory above it in a string, or reads Markdown files
 by extension. Then skip step 2, and quote the script's output in the report so the reader can see
 why. Step 1 still runs, because linters and formatters can read Markdown. Exit 1 or 2 means step 2
-runs as usual. Nothing else skips step 2: a change that looks small, safe or documentation-only
-still runs the full suite unless the script says otherwise.
+runs as usual. Run it as a command of its own, with nothing chained after it, because its exit 1
+asks for the tests rather than reporting an error, and a `git commit` chained after it with `;`
+commits before they run. Nothing else skips step 2: a change that looks small, safe or
+documentation-only still runs the full suite unless the script says otherwise.
 
 1. Run all relevant checks. Fix any errors that are mechanical and contained to files this commit
    will contain (e.g. formatting, unused imports, trivial lint), never to another session's files.
