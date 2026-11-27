@@ -580,8 +580,8 @@ a task's approach and design, carry it to a draft PR without stopping for me in 
    3. Run `wrap-up-codebase` once on the commits about to be pushed. Apply and commit each fix it
       returns, and push them without running it again. A fix that edits a file "These stop the
       loop" lists, such as an invariant or a decision record, is an ask instead: put its exact
-      wording to me before applying it. If it returns any asks, stop and put them
-      to me in the session as numbered questions, then apply my answers and commit them before
+      wording to me before applying it. If it returns any asks, or a fix became one, stop and put
+      them to me in the session as numbered questions, then apply my answers and commit them before
       going on. My answer to an ask is the approval it needed, including for an edit to agent
       instructions. A question for me never goes in the PR instead.
 
