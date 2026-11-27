@@ -108,7 +108,10 @@ shell_config_files() {
 
 return_or_exit() {
   local code="$1"                            # The exit code to return or exit with
-  return "$code" 2>/dev/null || exit "$code" # return if script is sourced to avoid terminating the parent script; exit if run directly
+  # This does not stop its caller: return inside a function leaves only the function, so a caller
+  # carries on whether it was sourced or run. To stop a file, write
+  # `return N 2>/dev/null || exit N` at the file's top level instead.
+  return "$code" 2>/dev/null || exit "$code"
 }
 
 ###########
