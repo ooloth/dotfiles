@@ -73,7 +73,8 @@ re-review is settling their request, not renewing anyone's approval.
 watch or the production watch. Say what you would do and wait for the user.
 
 **Still ask before** watching production and removing branches. Each keeps the approval its section
-describes.
+describes. A follow-up ticket the user chooses in "The epilogue" is drafted to a file in a new
+`mktemp -d` directory and shown, and created unchanged once the user approves that wording.
 
 ## What to work out first
 
@@ -237,11 +238,14 @@ table as a further comment on the report's destination, with every check in "Pos
 and that comment counts as part of the report; then the run carries on from "Watching production".
 
 Add a "Measured effect" table to the report, one row per outcome: the baseline, the result, the
-delta, the windows each side covered, the expected range, the gap between the estimate and the
-result, and the first verdict that applies. The noise is the spread between the baseline's runs.
+delta, the noise, the windows each side covered, the expected range, the gap between the estimate
+and the result, and the first verdict that applies. The baseline and the result are each the
+median of their runs, and the noise is the spread between the baseline's runs, its largest minus
+its smallest.
 
 - *not measured*: no baseline was taken, or the query failed or returned no rows. The row says why.
-  An empty result is not a zero until the query has been shown to return rows.
+  An empty result is not a zero until the query has been shown to return rows. A query that fails
+  or returns no rows is run once more before the row takes this verdict.
 - *regression*: worse than the baseline by more than the noise.
 - *within range*;
 - *better than expected*: improved past the range;
@@ -306,7 +310,7 @@ you find, and say so in the post.
 
 Every post this skill makes gets the next check, judged by that post's own destination: the
 report, the PR link, the closing comment, the watch's summary, the epilogue's answer comment and
-follow-up task, and each backlog change the user approves. When the destination is public,
+follow-up ticket, and each backlog change the user approves. When the destination is public,
 such as an issue or PR in a repo whose `gh repo view <owner>/<repo> --json visibility` says
 `PUBLIC`, check the post for private values. Search it for each `PRIVATE_*` value in the dotfiles
 repo's ignored `private.env` (`~/Repos/ooloth/dotfiles/private.env`), and for each value in the
@@ -359,6 +363,8 @@ ticket notifies the people watching it. Put its list in the final message as one
   A bare "yes" to a fix posts it as shown.
 - **Each ask** as a question with its lettered options and its recommendation.
 
+When its list opens with `Backlog scan incomplete:`, show that line first, before the fixes.
+
 None of them blocks anything: the change has shipped, and the backlog can wait for the user's
 answer. Once the user answers, post what they approved, and list every ticket changed with a link
 to each.
@@ -370,10 +376,12 @@ with its verdict, and the "Measured effect" table, so the user sees the deltas w
 ticket. Then exactly one of these follows, chosen from the report by the first that applies:
 
 - **Something broken:** a disproved part of the claim, or a *regression* row. The ticket stays
-  open. Offer two paths and wait for the user's choice: revert, or a follow-up fix through
-  `write-ticket-description`. A revert is the user's decision, never taken by this skill, as above.
-  Once the user has chosen, send a Slack message, written for the team, saying what was learned and
-  the choice: a revert, a ticket when the fix is known, or a call for discussion when it is not.
+  open. Offer these paths and wait for the user's choice: (a) revert, which the user carries out,
+  because this skill never reverts, as above; (b) a follow-up fix, drafted as a ticket through
+  `write-ticket-description`, offered only when the fix is known; or (c) a discussion, offered when
+  it is not. Once the
+  user has chosen, send a Slack message, written for the team, saying what was learned and which
+  path was chosen.
 - **The target not reached:** a row that is *short of expected*, *unchanged*, *not measured*, or
   *better than expected* with no explanation found, or a part of the claim the proof could not
   observe. The ideal state the ticket targeted was not
