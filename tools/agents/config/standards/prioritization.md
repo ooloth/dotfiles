@@ -2,11 +2,13 @@
 
 A ranking of work is well made when the work it puts first is the work whose delay costs the most
 for the effort it takes, and when a reader who disagrees can see why each item sits where it does.
-It ranks work items: tickets, untracked steps toward a goal, and work in flight. Choosing between
-options for one decision belongs to `decision-making.md`. At its maximum:
+It ranks work items: tickets, untracked steps toward a goal, work in flight, PRs waiting on review,
+and the findings a review or scan reports. Choosing between options for one decision belongs to
+`decision-making.md`. At its maximum:
 
 - **Safety:** nothing whose delay is causing serious harm now sits below work that only saves time,
-  and no rank rests on a claim nobody checked.
+  no recommended item rests on a claim nobody checked, and every other unchecked item is marked as
+  unchecked.
 - **Performance:** the reader learns the next action and its reason in one read of the ranking, and
   the investigation behind it goes deepest where a wrong rank would cost the most.
 - **Experience:** the reader brings what they care about and nothing else. The ranking finds the
@@ -34,7 +36,8 @@ delivers its value sooner while delaying a large one only a little.
 **Harm that is happening now outranks size.**
 When delay causes serious harm that is already under way, such as breaching a contract, an open
 security exposure, data being lost, or a cost that grows every day, the item ranks by that harm
-however large it is. Size changes the order only between items whose costs of delay are comparable.
+however large it is. Between two items causing such harm, size changes the order only when their
+harms are comparable.
 This is judged by consequence, not by category: a ticket labelled compliance may cost little to
 leave, and a speedup on the path that bills customers may cost a great deal.
 
@@ -50,8 +53,10 @@ weighing different things. Where an item's metadata disagrees with its consequen
 its consequences and the ranking names the disagreement.
 
 **An item whose problem no longer exists has no cost of delay.**
-Its problem is confirmed against the current system before it ranks. One that is gone, or sits in
-code nothing calls, leaves the ranking and is reported as stale with the evidence.
+Each item the ranking recommends or places near the top has its problem confirmed against the
+current system, and so does each item that moves into that place once others are checked. One
+whose problem is gone, or sits in code nothing calls, leaves the ranking and is reported as stale
+with the evidence. Items further down are covered by the Should on where investigation goes.
 
 **Work that waits on an unmade decision ranks as that decision.**
 The decision takes the work's rank, and the ranking names the work it unblocks. How deeply the
@@ -61,8 +66,8 @@ among themselves follows `decision-making.md`.
 **A ranking toward a goal includes the steps nobody has tracked.**
 It compares the goal with the current state and names every step between them, tracked or not, and
 ranks untracked steps beside tracked ones. While the path has untracked steps, tracking it ranks
-first, after any item causing harm now, because every later ranking of the path relies on the path
-being visible.
+first, after every item causing serious harm now, because every later ranking of the path relies
+on the path being visible.
 
 ## Should
 
@@ -86,13 +91,14 @@ This holds when most of that cost comes from one part of the item.
 
 ## In scope
 
-- Rankings of tickets, backlog items, untracked steps toward a goal, work in flight and PRs waiting
-  on review
+- Rankings of tickets, backlog items, untracked steps toward a goal, work in flight, PRs waiting
+  on review, and the findings a review or scan reports
 - Any report or recommendation of what to work on next
 
 ## Out of scope
 
 - Choosing between options for one decision, and the order of decisions that derive from one
   another: `decision-making.md`
-- A project's own costs, priorities and conventions, which live in its docs and take precedence
-  where they say something this file leaves open
+- A project's own costs, orders and conventions, which live in its docs and take precedence where
+  they settle something this file leaves open. They never override a Must here, such as ranking by
+  a priority field instead of by consequences.

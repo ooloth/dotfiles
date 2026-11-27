@@ -22,9 +22,9 @@ definitions live in [`tools/claude/config/`](./tools/claude/config), symlinked i
 
 ### Standards
 
-[The standards library](./tools/agents/config/standards/README.md) is 32 files the rest of this
-reads. Each standard is phrased as a claim about the code rather than an instruction to the agent:
-"Errors are handled at the level with enough context to act," not "Handle errors at the right
+[The standards library](./tools/agents/config/standards/README.md) is the set of files the rest
+of this reads. Each standard is phrased as a claim about the code rather than an instruction to the
+agent: "Errors are handled at the level with enough context to act," not "Handle errors at the right
 level." That single rule is what lets one file serve three jobs unchanged, since a writing skill
 reads it as "produce this," a review skill as "check for this," and a scan as "find violations of
 this." Each is graded Must, Should or Consider, and only Must holds unconditionally.
@@ -54,9 +54,11 @@ cost of delay against size, by the rule in
 trackers and conventions from that repo's own docs rather than from a copy of the skill kept per
 repo. [prioritize](./tools/agents/config/skills/prioritize/SKILL.md) answers the other question:
 given a goal I name, which actions reach it with the most value first. It maps the path from where
-things stand to the goal, including steps nobody has tracked, and gives each step the sentence that
-decided its place. [scan-ideas](./tools/agents/config/skills/scan-ideas/SKILL.md) applies `next`'s
-rule to the whole backlog and lists what has gone stale.
+things stand to the goal, including steps nobody has tracked, and gives each of the top ten steps
+the sentence that decided its place, then stops;
+[achieve-goal](./tools/agents/config/skills/achieve-goal/SKILL.md) carries the steps out.
+[scan-ideas](./tools/agents/config/skills/scan-ideas/SKILL.md) applies `next`'s rule to the whole
+backlog and lists what has gone stale.
 
 ### Reviewing
 

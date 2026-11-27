@@ -1,6 +1,6 @@
 ---
 name: scan-ideas
-description: Rank every tracked issue and work item idea in the current project by cost of delay, and find the ones that are stale. Use when the user asks for the whole backlog ranked or cleaned up, not just for what to work on next.
+description: Rank every tracked issue and work item idea in the current project by cost of delay against size, and find the ones that are stale. Use when the user asks for the whole backlog ranked or cleaned up, not just for what to work on next.
 argument-hint: '[issue source]'
 effort: high
 model: opus
@@ -14,11 +14,11 @@ project mentions it, and TODO and FIXME comments are read even when the project 
 because this skill covers the whole backlog.
 
 The ranking rule is the one the `next` skill uses, in [../next/SKILL.md](../next/SKILL.md): cost of
-delay decides, kind sets the default order, and the repo's own docs come first. Read that file
-before Phase 1, and follow its notes on each tracker, such as invoking the matching `use-*` skill
-and passing `--limit` to every list. This skill applies the rule to every item instead of the top
-few, so the checks `next` runs only on its candidates run here on every item. `next`'s closing
-offers do not apply here.
+delay against size decides, kind sets the default order, and the repo's own docs come first. Read
+that file before Phase 1, and follow its notes on each tracker, such as invoking the matching
+`use-*` skill and passing `--limit` to every list. This skill applies the rule to every item
+instead of the top few, so the checks `next` runs only on its candidates run here on every item.
+`next`'s closing offers do not apply here.
 
 ## Your task
 

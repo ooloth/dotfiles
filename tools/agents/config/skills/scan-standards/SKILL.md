@@ -1,6 +1,6 @@
 ---
 name: scan-standards
-description: Check whether a codebase upholds its standards — a specific theme or all themes in parallel. Use when asked to review conventions, check standards, or audit codebase health.
+description: Check whether a codebase upholds its standards — a specific theme, or every code theme in parallel. Use when asked to review conventions, check standards, or audit codebase health.
 argument-hint: '[code-structure | code-readability | type-design | correctness | error-handling | security | privacy | data-integrity | testing | observability | instrumentation | performance | async-coordination | reliability | documentation | api-design | cli-design | dependencies | deployment | config | agent-harness | decision-making | prioritization | developer-experience | user-experience | bash | css | git | python | rust | terraform | typescript] [optional: path/glob or git-range e.g. src/api/ or main..HEAD]'
 model: opus
 effort: high
@@ -101,6 +101,10 @@ Do NOT invoke any Skill tools yourself. Instead, launch 7 Agent subagents in a *
    `~/.agents/standards/terraform.md` → Documentation & Release (if the project has `.tf` files);
    `~/.agents/standards/git.md` → Operations (if the code runs git commands);
    `~/.agents/standards/cli-design.md` → Structure (if the project has a CLI binary).
+
+   `~/.agents/standards/prioritization.md` is in no cluster: it judges rankings of work, which a
+   codebase does not hold. It is checked only when asked for as a theme, such as on a repo of
+   skills whose instructions rank work.
 
 2. Wait for all subagents to return their results
 3. Collect anything a subagent reported as unevaluable. Those are defects in the standards files
