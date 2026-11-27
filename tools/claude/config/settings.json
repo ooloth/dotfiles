@@ -104,6 +104,7 @@
       "Bash(gcloud beta monitoring channels describe *)",
       "Bash(gcloud monitoring uptime list-configs *)",
       "Bash(gcloud monitoring uptime describe *)",
+      "Bash(gcloud logging read *)",
       "Bash(uv run ~/.claude/skills/review-pr-comments-converge/scripts/reply_to_comment.py *)",
       "Bash(acli jira workitem view *)",
       "Bash(acli jira workitem comment create *)",
