@@ -164,6 +164,7 @@ work.
 ```
 docs/          # decisions, invariants, open questions, repo-specific standards
 features/      # workflows that span tools: setup, install, update, check, test, run
+scripts/       # the repo's checks: check.bash runs every category in checks/, as CI does
 tools/         # one self-contained folder per tool, each owning its own
                # install, config, symlinks and update logic
 ├── agents/    # config shared by every coding agent: the standards library and skills

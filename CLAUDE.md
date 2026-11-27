@@ -10,7 +10,9 @@ For general project information, installation instructions, and usage details, s
 Before designing, writing, or editing any code — invoke the `uphold-project-invariants` skill. It
 loads this repo's own `docs/invariants/`, `docs/standards/` and accepted `docs/decisions/`. This is
 in addition to the global `uphold-standards` skill, not instead of it: that one carries portable
-engineering guidance, this one carries what is true only here.
+engineering guidance, this one carries what is true only here. It is a project skill, so only a
+Claude Code session started in this repo can invoke it. Any other agent reads
+`.claude/skills/uphold-project-invariants/SKILL.md` and follows it.
 
 ## No Private Values
 

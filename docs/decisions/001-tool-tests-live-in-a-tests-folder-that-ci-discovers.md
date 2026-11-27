@@ -89,3 +89,12 @@ pytest searches `tools/`, `features/` and `scripts/` at any depth, skipping `@ar
 `@new/`, so the depth limits in the risk above no longer leave a test unrun. A `test_*.py` placed
 directly in a tool or feature folder still fails the check, because it breaks the layout this
 record sets.
+
+## Addendum (2026-11-27) — skills
+
+A skill's tests sit beside its scripts, at any depth under `tools/agents/config/skills/`, such as
+`write-pr-description/scripts/test_check_pr_body.py`, with no inline header: `tests.bash` installs
+one set of packages for all of them, as `CONTRIBUTING.md` lists. The `tests/` layout, and the check
+against a `test_*.py` placed directly in a folder, apply to `tools/{tool}/`, `features/{feature}/`
+and `scripts/{folder}/`. The option rejected above, tests beside a tool's scripts, does not cover
+skills.

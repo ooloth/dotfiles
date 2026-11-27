@@ -11,9 +11,9 @@
 # - every test, in one pytest run spread across the machine's cores by pytest-xdist: pytest collects
 #   every test_*.py at any depth under tools/, features/ and scripts/, which takes in the shared
 #   skills' tests, but only each tests/test_*.py one folder down, such as tools/<tool>/tests/, has
-#   its inline header installed. Finding no tests/test_*.py fails, and so does a
-#   test_*.py placed directly in such a folder, which breaks the layout in decision 001. pytest exits
-#   5 when it collects nothing. importlib mode keeps same-named test files, such as the two
+#   its inline header installed. Finding no tests/test_*.py fails, and so does a test_*.py one
+#   folder down without a tests/ folder, such as tools/<tool>/test_x.py, which breaks the layout in
+#   decision 001. pytest exits 5 when it collects nothing. importlib mode keeps same-named test files, such as the two
 #   tests/test_update.py, from colliding on import.
 #
 # pytest ignores each file's inline script header, so uv installs each tests/test_*.py file's header
