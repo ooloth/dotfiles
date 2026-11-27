@@ -101,7 +101,7 @@ extra file costs one read, and a skipped one means missed guidance.
   divided into PRs, in any repo that ships through them; pre-commit hook config and the task
   runner's check command
 - **`developer-experience.md`** — README, CONTRIBUTING.md, onboarding docs, setup instructions,
-  the operator document (SYSTEM.md)
+  the operator document, under whatever name it has
 - **`documentation.md`** — any file change that affects documented behaviour or has accompanying
   docs; diagrams and tables in ticket comments and PR descriptions
 - **`error-handling.md`** — fallible operations, error propagation paths, user-facing error output

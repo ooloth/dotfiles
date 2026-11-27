@@ -66,6 +66,17 @@ agent that already behaves well without the change shows the change is not
 what produced the result. This is the closest an instruction file gets to a
 test, and instruction files are otherwise unverified.
 
+**A replay of a change to a project's instruction files runs in a new session started in the
+checkout that holds the change.**
+Only that session loads the changed files the way a future session will: by itself, from the
+checkout, with nothing carried over from the session that made the change. An agent started from
+the session that made the change can carry that session's context, including the older instruction
+files of the directory it began in, so a good result may come from what it inherited rather than
+from the change. A headless session refuses every command its allow rules do not cover, so a replay
+whose input needs such commands, such as reads of a production system, either lists the rules it
+ran with or says which commands were refused. A refused command shows only that the agent chose it,
+never that its result would have led to the right answer.
+
 **A claim about how an instruction will behave is replayed before it is argued
 from.**
 Predicting that an instruction would be ignored, read too broadly, or filled in

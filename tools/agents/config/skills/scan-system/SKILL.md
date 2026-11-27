@@ -39,8 +39,9 @@ read for each kind of component.
   the report.
 - **Changes are made the way the project already manages infrastructure.** If it uses Terraform,
   change Terraform, and never create resources by hand alongside it. If the infrastructure was set
-  up by hand, make the change by hand with approval, record it in `SYSTEM.md`, and raise bringing it
-  under code as a separate question. Never introduce infrastructure-as-code as part of this run.
+  up by hand, make the change by hand with approval, record it in the operator document, and raise
+  bringing it under code as a separate question. Never introduce infrastructure-as-code as part of
+  this run.
 - **Nothing that pages a person fires without the user's approval,** including test alerts in
   production.
 - **Ask rather than guess** about anything the system can't tell you.
@@ -53,8 +54,14 @@ read for each kind of component.
 
 ## 1. Inventory
 
-List the system's components. Start from `SYSTEM.md` if it exists, and check it against the
-running system rather than trusting it. Otherwise work it out from the repo and the platform.
+List the system's components. Start from the repo's operator document if it has one, and check it
+against the running system rather than trusting it. Otherwise work it out from the repo and the
+platform. The operator document is whichever doc says what the system is made of, where each part
+runs and where its signals are, under any name and in any folder. Find it by following the links in
+the README and the agent context file (`AGENTS.md` or `CLAUDE.md`) first, then by searching the
+repo's Markdown for a doc that lists components with their logs, dashboards or deploy steps, such as
+`SYSTEM.md`, `docs/system.md`, `RUNBOOK.md` or `docs/operations.md`. Name the file you found in the
+report, or say that none exists.
 
 Every system has a repository and pipeline, a cloud project or account, alerting, and an operator
 document, even when some of them are missing or empty. Together these four make up one component,
@@ -237,14 +244,15 @@ Propose fixes for the top few results, not all of them, each with what would cha
 be proven. Apply a fix only after the user approves it, then re-check the claim and report the new
 evidence.
 
-## 5. Update SYSTEM.md
+## 5. Update the operator document
 
-Create or update `SYSTEM.md` at the repo root from the inventory and results. Link to consoles and
-saved queries rather than copying what they show. Link to it from the repo's agent context file
-(`AGENTS.md` or `CLAUDE.md`) so agents read it at the start of a session. Set the "last checked"
-date to today only if this run could see the platform's own state, through its console, CLI or
-API. Public probes such as `curl` and `whois` are not enough on their own. Creating or editing
-it is a change, so show the draft in the report and write it only once the user approves.
+Update the operator document step 1 found, where it already lives, from the inventory and results.
+When the repo has none, create `docs/system.md`. Link to consoles and saved queries rather than
+copying what they show. Link to it from the repo's agent context file (`AGENTS.md` or `CLAUDE.md`)
+so agents read it at the start of a session. Set the "last checked" date to today only if this run
+could see the platform's own state, through its console, CLI or API. Public probes such as `curl`
+and `whois` are not enough on their own. Creating or editing it is a change, so show the draft in
+the report and write it only once the user approves.
 
 ```markdown
 # <Project> system
@@ -302,5 +310,5 @@ End with:
    third party.
 3. The ranked list from step 3, which can be read without the rest.
 4. The fixes proposed, waiting for approval.
-5. The `SYSTEM.md` draft, waiting for approval.
+5. The operator document's draft, waiting for approval.
 6. The numbered questions still open.

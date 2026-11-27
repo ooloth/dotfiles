@@ -111,7 +111,7 @@ project evolved and what has already been considered and rejected.
 - README.md at the repo root
 - CONTRIBUTING.md or equivalent
 - Files under docs/, adr/, or equivalent documentation directories
-- An operator document such as SYSTEM.md
+- The operator document, whatever it is called and wherever it lives
 - Inline comments that carry rationale for non-obvious decisions
 
 ## Out of scope
