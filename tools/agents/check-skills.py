@@ -5,7 +5,8 @@
 # ///
 """Validate every shared skill: its YAML frontmatter, that it keeps the session loading it on Opus
 at high effort or above, that it names no fixed temp path, that its scripts open Claude tabs only
-with --unattended, and that only create-pr opens a PR.
+with --unattended, that only create-pr opens a PR, and that every allow rule for a skill script
+matches the command its skill writes.
 
 A skill whose frontmatter is not valid YAML is silently dropped by strict
 loaders while lenient ones still load it, so the skill works in one harness
@@ -40,6 +41,14 @@ pulls, or posts under one PR such as pulls/<n>/reviews, opens nothing and passes
 This check reads the skills and tools/claude/config, which holds CLAUDE.md, the
 agents and the routines, and nothing there is exempt.
 
+A permission rule matches a command's text, not the file it runs. So an allow rule for a skill
+script is written `Bash(uv run ~/.claude/skills/<skill>/scripts/<file> *)`, and the skill writes
+that command with the same `~` path. An agent expands <skill-base-dir> to the absolute home path,
+which a `~` rule does not match, and a rule with an absolute path matches only on a machine with
+the same user name. Each settings.json in an instruction directory is read, and a rule naming
+.claude/skills/ that is not in that shape, names a missing script, or whose skill never writes the
+command fails. With no arguments, tools/claude/config/settings.json must exist.
+
 Git decides which files are skills: tracked files, and untracked ones git does
 not ignore, so a new skill is checked before it is committed. A gitignored
 file, such as a third-party skill synced into skills/synced/, is not this
@@ -55,6 +64,7 @@ in place of tools/claude/config:
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -274,6 +284,113 @@ def opens_tab_unattended(path: Path) -> bool:
     return LAUNCHER not in text or any("--unattended" in line for line in code)
 
 
+SKILL_SCRIPT_RULE = re.compile(
+    r"Bash\(uv run (?P<home>\S*?)/\.claude/skills/(?P<skill>[\w.-]+)/scripts/(?P<script>[\w.-]+) \*\)"
+)
+
+
+@dataclass(frozen=True)
+class SkillScriptRule:
+    rule: str
+    home: str
+    skill: str
+    script: str
+
+    def command(self) -> str:
+        return f"uv run ~/.claude/skills/{self.skill}/scripts/{self.script}"
+
+
+@dataclass(frozen=True)
+class UnrecognisedRule:
+    rule: str
+
+
+@dataclass(frozen=True)
+class UnreadableSettings:
+    path: Path
+    reason: str
+
+
+def allow_rules(
+    settings: Path,
+) -> list[SkillScriptRule | UnrecognisedRule] | UnreadableSettings:
+    """The allow rules in a settings file that name a skills path, each parsed or refused."""
+    try:
+        parsed = json.loads(settings.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError) as error:
+        return UnreadableSettings(settings, str(error))
+    allow = parsed.get("permissions", {}).get("allow", []) if isinstance(parsed, dict) else None
+    if not isinstance(allow, list) or not all(isinstance(rule, str) for rule in allow):
+        return UnreadableSettings(settings, "permissions.allow is not a list of strings")
+    rules: list[SkillScriptRule | UnrecognisedRule] = []
+    for rule in allow:
+        if ".claude/skills/" not in rule:
+            continue
+        match = SKILL_SCRIPT_RULE.fullmatch(rule)
+        if match is None:
+            rules.append(UnrecognisedRule(rule))
+        else:
+            rules.append(SkillScriptRule(rule, match["home"], match["skill"], match["script"]))
+    return rules
+
+
+def rule_problem(rule: SkillScriptRule | UnrecognisedRule, skills_dir: Path) -> str | None:
+    match rule:
+        case UnrecognisedRule():
+            return (
+                "names a skills path but is not in the shape "
+                "`Bash(uv run ~/.claude/skills/<skill>/scripts/<file> *)`, so it can't be checked"
+            )
+        case SkillScriptRule(home=home) if home != "~":
+            return "names the skills folder by an absolute path; write it as ~/.claude/skills/"
+        case SkillScriptRule(skill=name, script=script):
+            skill_md = skills_dir / name / "SKILL.md"
+            if not (skills_dir / name / "scripts" / script).is_file() or not skill_md.is_file():
+                return f"no such script: {name}/scripts/{script}"
+            if rule.command() not in skill_md.read_text(encoding="utf-8"):
+                return (
+                    f"{name}/SKILL.md never writes `{rule.command()}`, so an agent types "
+                    "another command and gets a permission prompt"
+                )
+            return None
+
+
+def report_skill_script_rules(
+    skills_dir: Path, instruction_dirs: list[Path], require_settings: bool
+) -> bool:
+    """Print every allow rule for a skill script that can't match its skill's command."""
+    settings_files = [
+        d / "settings.json" for d in instruction_dirs if (d / "settings.json").is_file()
+    ]
+    problems: list[str] = []
+    checked = 0
+    if require_settings and not settings_files:
+        problems.append(f"No settings.json found under {INSTRUCTIONS_DIR}, so it can't be checked")
+    for settings in settings_files:
+        match allow_rules(settings):
+            case UnreadableSettings(reason=reason):
+                problems.append(
+                    f"{shown(settings, settings.parent)}: {reason}, so it can't be checked"
+                )
+            case rules:
+                for rule in rules:
+                    checked += 1
+                    if (problem := rule_problem(rule, skills_dir)) is not None:
+                        problems.append(f"{rule.rule}: {problem}")
+
+    print(f"\nChecked {checked} allow rules for skill scripts")
+    for problem in problems:
+        print(f"❌ {problem}")
+    if problems:
+        print(
+            "\nA rule matches the command's text, so a skill script runs without a prompt only "
+            "when its skill writes the rule's command. See docs/invariants/skills.md."
+        )
+    else:
+        print("✅ Every allow rule for a skill script matches the command its skill writes")
+    return bool(problems)
+
+
 def shown(path: Path, skills_dir: Path) -> Path:
     """The path as a reader of the output would look for it."""
     return path.relative_to(REPO_ROOT if path.is_relative_to(REPO_ROOT) else skills_dir)
@@ -393,8 +510,11 @@ def main() -> int:
         print("✅ No skill script opens a Claude tab without --unattended")
 
     pr_opened = report_pr_openings(skills_dir, files, instruction_dirs)
+    bad_rules = report_skill_script_rules(
+        skills_dir, instruction_dirs, require_settings=len(sys.argv) == 1
+    )
 
-    return 1 if failures or found or unreadable or attended or pr_opened else 0
+    return 1 if failures or found or unreadable or attended or pr_opened or bad_rules else 0
 
 
 if __name__ == "__main__":

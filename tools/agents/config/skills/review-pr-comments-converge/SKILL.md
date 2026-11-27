@@ -91,7 +91,7 @@ The thread ID is looked up automatically from the comment ID — you only need t
 exactly, in place of `<body>`, so the reply needs no shell quoting.
 
 ```bash
-uv run <skill-base-dir>/scripts/reply_to_comment.py 196 3126400199 --body-file /abs/path/reply.md --resolve --repo OWNER/NAME
+uv run ~/.claude/skills/review-pr-comments-converge/scripts/reply_to_comment.py 196 3126400199 --body-file /abs/path/reply.md --resolve --repo OWNER/NAME
 ```
 
 It prints `Target: OWNER/NAME#PR, comment ID` before writing. Read that line — it is the only
