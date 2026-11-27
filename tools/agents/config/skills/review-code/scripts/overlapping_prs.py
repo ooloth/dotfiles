@@ -24,6 +24,10 @@ query pages through the rest of any PR with more. GraphQL gives a renamed file's
 this PR's files, and those of any open PR that renames a file, come from REST, which also gives the
 old path. This PR is skipped in the listing. Every list, the listing included, is compared with the
 count GitHub reports for it, so a short read is never reported as no overlap.
+
+A PR whose head branch, in this repository, is this PR's base branch is the PR this one is stacked
+on. Its changes are this PR's base, so sharing its files is expected and not an overlap. It is named
+in the output, and a commit it gains after this PR forked is base_moved.py's to report.
 """
 
 import argparse
@@ -47,7 +51,7 @@ query($owner: String!, $name: String!, $cursor: String) {
       totalCount
       pageInfo { hasNextPage endCursor }
       nodes {
-        number title isDraft baseRefName
+        number title isDraft baseRefName headRefName isCrossRepository
         author { login }
         files(first: 100) {
           totalCount
@@ -108,7 +112,13 @@ class OpenPr:
     author: str
     is_draft: bool
     base: str
+    head: str
+    is_cross_repository: bool
     paths: frozenset[FilePath]
+
+    def is_stack_parent_of(self, target: TargetPr) -> bool:
+        """True when this PR's branch, in this repository, is the branch `target` is based on."""
+        return not self.is_cross_repository and self.head == target.base
 
 
 @dataclass(frozen=True)
@@ -209,6 +219,8 @@ def fetch_open_prs(repo: str, skip: PrNumber) -> list[OpenPr]:
                     author=(node.get("author") or {}).get("login", "ghost"),
                     is_draft=node["isDraft"],
                     base=node["baseRefName"],
+                    head=node["headRefName"],
+                    is_cross_repository=node["isCrossRepository"],
                     paths=paths,
                 )
             )
@@ -227,10 +239,13 @@ def find_overlaps(target: TargetPr, others: list[OpenPr]) -> list[Overlap]:
     overlaps = [
         Overlap(pr=pr, shared=target.paths & pr.paths)
         for pr in others
-        if pr.number != target.number and target.paths & pr.paths
+        if pr.number != target.number
+        and not pr.is_stack_parent_of(target)
+        and target.paths & pr.paths
     ]
     assert all(o.pr.number != target.number for o in overlaps), "target listed as its own overlap"
     assert all(o.shared for o in overlaps), "an overlap with no shared file"
+    assert not any(o.pr.is_stack_parent_of(target) for o in overlaps), "stack parent listed"
     return overlaps
 
 
@@ -251,6 +266,11 @@ def main() -> None:
         f"PR #{target.number} (base {target.base}) changes {len(target.paths)} paths. "
         f"Checked {len(others)} other open {noun}."
     )
+    for parent in (pr for pr in others if pr.is_stack_parent_of(target)):
+        print(
+            f"Not counted: #{parent.number}, the PR this one is stacked on (its branch "
+            f"{parent.head} is this PR's base)."
+        )
     print()
     if not overlaps:
         print("None of them changes a file this PR changes.")

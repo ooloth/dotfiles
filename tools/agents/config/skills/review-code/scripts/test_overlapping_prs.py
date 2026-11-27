@@ -93,10 +93,12 @@ class Harness:
             "GH_TABLE": str(self.table_path),
         }
 
-    def target(self, files: Sequence[File], *, changed_files: int | None = None) -> None:
+    def target(
+        self, files: Sequence[File], *, changed_files: int | None = None, base: str = "trunk"
+    ) -> None:
         self.table[f"api repos/{REPO}/pulls/{TARGET}"] = {
             "number": TARGET,
-            "base": {"ref": "trunk"},
+            "base": {"ref": base},
             "changed_files": len(files) if changed_files is None else changed_files,
         }
         self.table[f"api repos/{REPO}/pulls/{TARGET}/files?per_page=100&page=1"] = [
@@ -113,6 +115,8 @@ class Harness:
         more_files: Sequence[File] = (),
         total: int | None = None,
         serve_more: bool = True,
+        head: str | None = None,
+        cross_repository: bool = False,
     ) -> None:
         """Add an open PR to the listing. `more_files` arrive on a second page of its files."""
         everything = [*files, *more_files]
@@ -122,6 +126,8 @@ class Harness:
             "title": f"Change {number}",
             "isDraft": draft,
             "baseRefName": "trunk",
+            "headRefName": head or f"branch-{number}",
+            "isCrossRepository": cross_repository,
             "author": {"login": "alice"},
             "files": files_page(files, total=count, cursor="f2" if more_files else None),
         }
@@ -311,3 +317,29 @@ def test_the_target_is_not_paged_through_in_the_open_pr_listing(h: Harness) -> N
     result = h.run()
     assert result.returncode == 1, result.stderr
     assert listed(result.stdout) == {8}
+
+
+def test_the_pr_the_target_is_stacked_on_is_named_but_not_an_overlap(h: Harness) -> None:
+    h.target(["app.py"], base="parent-branch")
+    h.open_pr(8, ["app.py"], head="parent-branch")
+    result = h.run()
+    assert result.returncode == 0, result.stdout
+    assert listed(result.stdout) == set()
+    assert "Not counted: #8, the PR this one is stacked on" in result.stdout
+
+
+def test_a_fork_pr_whose_branch_shares_the_base_name_is_still_an_overlap(h: Harness) -> None:
+    h.target(["app.py"], base="parent-branch")
+    h.open_pr(8, ["app.py"], head="parent-branch", cross_repository=True)
+    result = h.run()
+    assert result.returncode == 1, result.stdout
+    assert listed(result.stdout) == {8}
+
+
+def test_another_pr_beside_the_stack_parent_is_still_an_overlap(h: Harness) -> None:
+    h.target(["app.py"], base="parent-branch")
+    h.open_pr(8, ["app.py"], head="parent-branch")
+    h.open_pr(9, ["app.py"])
+    result = h.run()
+    assert result.returncode == 1, result.stdout
+    assert listed(result.stdout) == {9}
