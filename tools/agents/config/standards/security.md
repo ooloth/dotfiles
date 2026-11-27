@@ -126,6 +126,17 @@ request. Auth checks are not bypassable by omitting a parameter or header, or by
 a sign-in that has several, such as a second factor. A check that cannot reach an answer, such as
 one whose permission service times out, refuses.
 
+**A statement of who can reach a resource counts every way to become an identity that holds
+access.**
+A grant names an identity, and anyone who can act as that identity reaches what it reaches: by
+impersonating it, by minting a token for it, or by running a workload under it, such as a pod that
+runs as a Kubernetes service account. Each of those abilities is itself granted, often at a broader
+scope than the resource, such as a project or folder role that allows creating pods in every
+namespace. So a statement that only certain identities reach a resource, in a design, a decision
+record or a review, holds only once it also names who can act as those identities, and which grants
+above the resource reach it by inheritance. A statement that counts only the grants made on the
+resource itself overstates the boundary, and nothing in it shows that it does.
+
 **Errors don't leak sensitive information.**
 Messages returned to callers don't include sensitive details, such as stack traces, internal paths,
 database schemas, user data, or whether an account exists. A sign-in or password reset gives the
