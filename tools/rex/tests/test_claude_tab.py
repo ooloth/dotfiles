@@ -151,6 +151,8 @@ class Machine:
             "REX_SESSIONS": sessions,
             # Set even when empty, so cc.bash keeps it rather than reading the repo's private.env
             "PRIVATE_RELATED_REPOS": related,
+            # Set, so the work laptop's cc.bash doesn't refuse to start for want of it
+            "PRIVATE_VERTEX_ONLY_REPOS": "",
         }
         if list_fails:
             env["REX_LIST_FAILS"] = "1"

@@ -54,13 +54,9 @@ if is_work; then
 
   # Starts a session that stays on Vertex AI whatever the switch in settings.json says. It starts
   # through cc.bash, so it gets the permission mode, related repos and Vertex AI project `cc` gets.
-  # Vertex AI is chosen with --settings, which outranks the user settings file.
+  # cc.bash's --vertex adds the --settings that outranks the user settings file, and refuses to
+  # start when PRIVATE_VERTEX_PROJECT is empty, as it does for a repo that must always use Vertex AI.
   cc-vertex() {
-    if [[ -z "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
-      error "PRIVATE_VERTEX_PROJECT is unset (see private.env.example), so there is no Vertex AI project"
-      return 1
-    fi
-
-    bash "${DOTFILES}/tools/claude/cc.bash" --settings '{"env":{"CLAUDE_CODE_USE_VERTEX":"1"}}' "$@"
+    bash "${DOTFILES}/tools/claude/cc.bash" --vertex "$@"
   }
 fi

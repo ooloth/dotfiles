@@ -2,6 +2,9 @@
 # Starts Claude Code with a permission mode (the caller's, else this machine's), told where the
 # repos related to the current repo are cloned. On the work laptop it also exports the Vertex AI
 # project when private.env sets one, and runs the work logins first unless --unattended is passed.
+# A session in a repo that must use Vertex AI (PRIVATE_VERTEX_ONLY_REPOS), or one passed a leading
+# --vertex, as cc-vertex does, is held on Vertex AI for its whole life with --settings, so a caller's
+# own --settings, which would replace it, stops such a session from starting.
 #
 # Related repos are named in the system prompt rather than added with --add-dir, because a clone is
 # a working checkout that may be on any branch: adding it would load its CLAUDE.md and present its
@@ -10,8 +13,8 @@
 # where a second --append-system-prompt would replace the first. A caller's own
 # --append-system-prompt-file would replace the hints the same way.
 #
-# Run with: cc [claude arguments], or ccc to continue the last session. A first argument of
-# --unattended starts in auto mode on every machine, for a session nobody watches as it starts. A
+# Run with: cc [claude arguments], or ccc to continue the last session. A leading --unattended
+# starts in auto mode on every machine, for a session nobody watches as it starts. A
 # caller that passes its own --permission-mode before any --, such as a tool whose sessions read
 # text other people wrote, keeps that mode, and cc.bash adds none. With --unattended as well,
 # cc.bash refuses to start, since the two would override each other.
@@ -65,6 +68,39 @@ related_repo_hint() {
     "${name}" "${path}"
 }
 
+# The owner/name of the repo the current folder's origin remote points at, as git reads it after
+# any insteadOf rewrite (tools/rex/claude-tab.bash reads it the same way), in lowercase, since
+# GitHub ignores case in them, or nothing outside git or without an origin. A worktree, including
+# one of a bare clone such as hub's, shares its repo's config, so it answers as the repo does.
+# Takes git@host:owner/name.git, ssh://git@host/owner/name.git and https://host/owner/name forms.
+origin_repo() {
+  local url owner name
+  url="$(git remote get-url origin 2>/dev/null)" || return 0
+  url="${url%/}"
+  url="${url%.git}"
+  url="${url//:/\/}"
+  name="${url##*/}"
+  owner="${url%/*}"
+  owner="${owner##*/}"
+  if [[ -n "${owner}" && -n "${name}" && "${url}" == */* ]]; then
+    printf '%s/%s\n' "${owner}" "${name}" | tr '[:upper:]' '[:lower:]'
+  fi
+}
+
+# Stops before anything starts, saying why on stderr and in a notification, since the session may
+# have been opened in a tab or window nobody is watching, which closes or sits unread once this exits
+refuse() {
+  printf '🚨 %s\n' "$1" >&2
+  if command -v osascript >/dev/null; then
+    osascript \
+      -e 'on run argv' \
+      -e 'display notification (item 1 of argv) with title "Claude Code did not start"' \
+      -e 'end run' \
+      -- "$(basename "${PWD}"): $1" >/dev/null 2>&1 || true
+  fi
+  exit 2
+}
+
 # Succeeds when the caller's arguments, up to any --, choose a permission mode
 callers_mode() {
   local arg
@@ -72,6 +108,19 @@ callers_mode() {
     case "${arg}" in
       --) return 1 ;;
       --permission-mode | --permission-mode=*) return 0 ;;
+    esac
+  done
+  return 1
+}
+
+# Succeeds when the caller's arguments, up to any --, pass their own settings, which would replace
+# the --settings this script adds, since Claude Code keeps only the last one
+callers_settings() {
+  local arg
+  for arg in "$@"; do
+    case "${arg}" in
+      --) return 1 ;;
+      --settings | --settings=*) return 0 ;;
     esac
   done
   return 1
@@ -99,19 +148,58 @@ main() {
   # rules were tried and dropped: their prompts showed long gh commands cut short, which could not
   # be reviewed.
   local unattended=false
-  if [[ "${1:-}" == "--unattended" ]]; then
+  # A leading --vertex, which cc-vertex passes, starts the session on Vertex AI wherever it is
+  local vertex=false vertex_reason="--vertex was passed"
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --unattended)
+        mode="auto"
+        unattended=true
+        ;;
+      --vertex) vertex=true ;;
+      *) break ;;
+    esac
     shift
-    mode="auto"
-    unattended=true
-  fi
+  done
   local mode_args=(--permission-mode "${mode}")
   if callers_mode "$@"; then
     if [[ "${unattended}" == true ]]; then
-      printf '🚨 Pass --unattended or --permission-mode, not both: %s\n' \
-        '--unattended already chooses auto mode' >&2
-      exit 2
+      refuse "Pass --unattended or --permission-mode, not both: --unattended already chooses auto mode"
     fi
     mode_args=()
+  fi
+  # A session in a repo PRIVATE_VERTEX_ONLY_REPOS lists runs on Vertex AI for its whole life, because
+  # of the data it can reach. The repo is found from the origin remote, so every checkout, worktree
+  # and clone of it counts, whatever its folder is called. Each way that could fail without anyone
+  # noticing stops the session instead: an unset key, an entry that could never match, no Vertex AI
+  # project, or a caller's own --settings, which would replace this one.
+  if is_work; then
+    if [[ -z "${PRIVATE_VERTEX_ONLY_REPOS+set}" ]]; then
+      refuse "PRIVATE_VERTEX_ONLY_REPOS is unset (see private.env.example). Set it to the owner/name repos whose sessions must use Vertex AI, or to \"\" for none. A shell or tmux server started before then keeps its old variables: open a new terminal, or run tmux set-environment -g PRIVATE_VERTEX_ONLY_REPOS with the value"
+    fi
+    local entries=() entry repo
+    read -r -a entries <<<"${PRIVATE_VERTEX_ONLY_REPOS}"
+    repo="$(origin_repo)"
+    # The guarded expansion keeps an empty list from failing under bash 3.2's set -u
+    for entry in ${entries[@]+"${entries[@]}"}; do
+      if [[ ! "${entry}" =~ ^[^/]+/[^/]+$ ]]; then
+        refuse "PRIVATE_VERTEX_ONLY_REPOS holds \"${entry}\", which is not an owner/name repo, so it could never match"
+      fi
+      if [[ -n "${repo}" && "$(printf '%s' "${entry}" | tr '[:upper:]' '[:lower:]')" == "${repo}" ]]; then
+        vertex=true
+        vertex_reason="${repo} is in PRIVATE_VERTEX_ONLY_REPOS"
+      fi
+    done
+  fi
+  if [[ "${vertex}" == true ]]; then
+    if [[ -z "${PRIVATE_VERTEX_PROJECT:-}" ]]; then
+      refuse "PRIVATE_VERTEX_PROJECT is empty (see private.env.example), and this session must use Vertex AI because ${vertex_reason}"
+    fi
+    if callers_settings "$@"; then
+      refuse "This session must use Vertex AI because ${vertex_reason}, and the --settings passed to it would replace the setting that keeps it there"
+    fi
+    # On a personal Mac too, where nothing above exported it
+    export ANTHROPIC_VERTEX_PROJECT_ID="${PRIVATE_VERTEX_PROJECT}" CLOUD_ML_REGION=global
   fi
   # A work session someone is watching runs auth first, which opens a browser login for each work
   # tool whose credentials have expired and waits for it, or for another run's logins, so the
@@ -120,6 +208,12 @@ main() {
   # there would stop it starting.
   if is_work && [[ "${unattended}" == false ]]; then
     uv run --offline "${DOTFILES}/features/auth/auth.py" || true
+  fi
+  if [[ "${vertex}" == true ]]; then
+    # Settings given on the command line outrank the user settings file, including after
+    # provider_switch.py rewrites it, so the switch can't move this session to the subscription.
+    # Written as one argument, so it can't take the caller's arguments as its own.
+    claude_args+=('--settings={"env":{"CLAUDE_CODE_USE_VERTEX":"1"}}')
   fi
   org="$(org_folder)"
   while IFS= read -r name; do

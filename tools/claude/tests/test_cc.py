@@ -4,7 +4,8 @@
 # dependencies = ["hypothesis"]
 # ///
 """Tests for tools/claude/cc.bash, which starts Claude Code in a permission mode, after the work
-logins on the work laptop, told where a repo's related repos are.
+logins on the work laptop, told where a repo's related repos are, and held on Vertex AI in a repo
+PRIVATE_VERTEX_ONLY_REPOS lists or when passed --vertex, refusing to start where that could fail.
 
 Run with: uv run tools/claude/tests/test_cc.py
 
@@ -49,6 +50,11 @@ printf '%s\\n' "${ANTHROPIC_VERTEX_PROJECT_ID-<unset>}" "${CLOUD_ML_REGION-<unse
 printf 'claude\\n' >> "${CLAUDE_LOG}.order"
 """
 
+# Stands in for osascript, which posts a macOS notification, recording the text it would show
+OSASCRIPT_STUB = """#!/bin/bash
+printf '%s\\n' "${@: -1}" >> "${CLAUDE_LOG}.notified"
+"""
+
 # Stands in for `uv run ... auth.py`, the work logins, recording that it ran and in what order
 UV_STUB = """#!/bin/bash
 printf 'uv %s\\n' "$*" >> "${CLAUDE_LOG}.order"
@@ -64,7 +70,8 @@ class Run:
 
 
 def write_stubs(folder: Path) -> Path:
-    """Write the `claude` stub, and the `uv` stub that stands in for auth.py, into `folder`, then make the folder read-only, so examples that share
+    """Write the `claude` stub, the `uv` stub that stands in for auth.py, and the `osascript` stub
+    that records notifications, into `folder`, then make the folder read-only, so examples that share
     it can't change what the others run."""
     folder.mkdir(parents=True, exist_ok=True)
     claude = folder / "claude"
@@ -73,6 +80,9 @@ def write_stubs(folder: Path) -> Path:
     uv = folder / "uv"
     uv.write_text(UV_STUB)
     uv.chmod(0o755)
+    osascript = folder / "osascript"
+    osascript.write_text(OSASCRIPT_STUB)
+    osascript.chmod(0o755)
     folder.chmod(0o555)
     return folder
 
@@ -98,6 +108,8 @@ class Machine:
         self._claude_log = root / "claude.log"
         # Further variables every run gets, such as the private values a machine's private.env sets
         self.extra_env: dict[str, str] = {}
+        # Variables every run leaves unset, overriding the defaults and extra_env
+        self.unset: set[str] = set()
 
     def sibling(self, name: str) -> Path:
         folder = self.repos / name
@@ -118,6 +130,34 @@ class Machine:
         subprocess.run([*git, "init", "-q"], check=True)
         subprocess.run([*git, "commit", "-q", "--allow-empty", "-m", "init"], check=True)
 
+    def make_repo_with_origin(self, folder: Path, url: str) -> None:
+        """Turn `folder` into a git repo with one commit whose origin remote is `url`."""
+        folder.mkdir(parents=True, exist_ok=True)
+        self.make_git_repo(folder)
+        subprocess.run(["git", "-C", str(folder), "remote", "add", "origin", url], check=True)
+
+    def make_bare_clone_worktree(self, url: str) -> Path:
+        """A worktree of a bare clone whose origin is `url`, laid out as hub lays out its PR
+        worktrees: ~/.hub/repos/<name>/pr-1, inside the bare repo."""
+        source = self.repos / "source-for-bare"
+        source.mkdir()
+        self.make_git_repo(source)
+        bare = self.repos / "hub-repos" / "app"
+        bare.parent.mkdir(parents=True)
+        subprocess.run(["git", "clone", "-q", "--bare", str(source), str(bare)], check=True)
+        subprocess.run(["git", "-C", str(bare), "remote", "set-url", "origin", url], check=True)
+        worktree = bare / "pr-1"
+        subprocess.run(
+            ["git", "-C", str(bare), "worktree", "add", "-q", "-b", "pr-1", str(worktree)],
+            check=True,
+        )
+        return worktree
+
+    def notified(self) -> list[str]:
+        """The notifications the last run posted, one text a line."""
+        log = Path(f"{self._claude_log}.notified")
+        return log.read_text().splitlines() if log.exists() else []
+
     def add_worktree(self, repo: Path, folder: Path) -> None:
         folder.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(
@@ -131,14 +171,16 @@ class Machine:
         private = (
             {"PRIVATE_UNRELATED": ""} if related is None else {"PRIVATE_RELATED_REPOS": related}
         )
-        return {
+        env = {
             "HOME": str(self.home),
             "PATH": f"{self.stubs}:/usr/bin:/bin:/usr/sbin:/sbin",
             "CLAUDE_LOG": str(self._claude_log),
             "COMPUTER": computer,
+            "PRIVATE_VERTEX_ONLY_REPOS": "",
             **private,
             **self.extra_env,
         }
+        return {key: value for key, value in env.items() if key not in self.unset}
 
     def started(self) -> list[str]:
         """What the last run started, in order: `claude`, and `uv` lines for the work logins."""
@@ -150,6 +192,7 @@ class Machine:
     ) -> Run:
         self._claude_log.unlink(missing_ok=True)
         Path(f"{self._claude_log}.order").unlink(missing_ok=True)
+        Path(f"{self._claude_log}.notified").unlink(missing_ok=True)
         result = subprocess.run(
             command,
             cwd=cwd or self.app,
@@ -523,6 +566,228 @@ class RelatedReposFromPrivateEnv(unittest.TestCase):
         self.assertEqual(run.output, "")
 
 
+# The setting that keeps a session on Vertex AI whatever the switch in the user settings file says.
+# It is written as --settings=<json>, so it can't take the caller's arguments as its own.
+ON_VERTEX = '--settings={"env":{"CLAUDE_CODE_USE_VERTEX":"1"}}'
+LISTED = "example-org/example-app"
+LISTED_URL = "git@github.com:example-org/example-app.git"
+
+
+class VertexOnlyRepos(unittest.TestCase):
+    """PRIVATE_VERTEX_ONLY_REPOS names the owner/name repos whose sessions always use Vertex AI."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.machine = Machine(Path(self._tmp.name))
+        self.machine.extra_env["PRIVATE_VERTEX_PROJECT"] = "example-vertex-1234"
+        self.machine.extra_env["PRIVATE_VERTEX_ONLY_REPOS"] = f"example-org/other {LISTED}"
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def assert_refused(self, run: Run, says: str) -> None:
+        self.assertEqual(run.status, 2, run.output)
+        self.assertIsNone(run.claude, run.output)
+        self.assertEqual(self.machine.started(), [], "nothing starts, not even the logins")
+        self.assertIn(says, run.output)
+        self.assertEqual(len(self.machine.notified()), 1, run.output)
+        self.assertIn(says, self.machine.notified()[0])
+
+    def test_on_the_work_laptop_every_checkout_of_a_listed_repo_starts_on_vertex(self) -> None:
+        checkout = self.machine.repos / "example-app"
+        self.machine.make_repo_with_origin(checkout, LISTED_URL)
+        worktree = self.machine.repos / "example-app-ticket-1"
+        self.machine.add_worktree(checkout, worktree)
+        renamed_clone = self.machine.repos / "some-other-name"
+        self.machine.make_repo_with_origin(renamed_clone, LISTED_URL)
+        hub_worktree = self.machine.make_bare_clone_worktree(LISTED_URL)
+        for label, folder in {
+            "checkout": checkout,
+            "worktree": worktree,
+            "clone in a differently named folder": renamed_clone,
+            "worktree of a bare clone": hub_worktree,
+        }.items():
+            with self.subTest(label):
+                run = self.machine.run("review this", computer="work", cwd=folder)
+
+                self.assertEqual(
+                    run.claude, ["--permission-mode", "auto", ON_VERTEX, "review this"], run.output
+                )
+
+    def test_a_listed_repo_matches_whatever_form_or_case_its_origin_url_takes(self) -> None:
+        urls = [
+            "git@github.com:example-org/example-app.git",
+            "git@github.com:example-org/example-app",
+            "ssh://git@github.com/example-org/example-app.git",
+            "https://github.com/example-org/example-app.git",
+            "https://github.com/example-org/example-app",
+            "https://github.com/example-org/example-app/",
+            "https://github.com/Example-Org/Example-App.git",
+        ]
+        for index, url in enumerate(urls):
+            with self.subTest(url):
+                folder = self.machine.repos / f"clone-{index}"
+                self.machine.make_repo_with_origin(folder, url)
+
+                run = self.machine.run(computer="work", cwd=folder)
+
+                self.assertEqual(run.claude, ["--permission-mode", "auto", ON_VERTEX], run.output)
+
+    def test_a_listed_repo_matches_through_an_insteadof_rewrite(self) -> None:
+        folder = self.machine.repos / "example-app"
+        # The owner appears only once git applies the rewrite
+        self.machine.make_repo_with_origin(folder, "work:example-app.git")
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(folder),
+                "config",
+                "url.git@github.com:example-org/.insteadOf",
+                "work:",
+            ],
+            check=True,
+        )
+
+        run = self.machine.run(computer="work", cwd=folder)
+
+        self.assertEqual(run.claude, ["--permission-mode", "auto", ON_VERTEX], run.output)
+
+    def test_an_entry_matches_whatever_its_case(self) -> None:
+        self.machine.extra_env["PRIVATE_VERTEX_ONLY_REPOS"] = "Example-Org/Example-App"
+        folder = self.machine.repos / "example-app"
+        self.machine.make_repo_with_origin(folder, LISTED_URL)
+
+        run = self.machine.run(computer="work", cwd=folder)
+
+        self.assertEqual(run.claude, ["--permission-mode", "auto", ON_VERTEX], run.output)
+
+    def test_other_folders_start_as_before(self) -> None:
+        unlisted = self.machine.repos / "unlisted"
+        self.machine.make_repo_with_origin(unlisted, "git@github.com:example-org/unlisted.git")
+        same_name_other_owner = self.machine.repos / "fork"
+        self.machine.make_repo_with_origin(
+            same_name_other_owner, "git@github.com:someone/example-app.git"
+        )
+        no_origin = self.machine.repos / "no-origin"
+        no_origin.mkdir()
+        self.machine.make_git_repo(no_origin)
+        for label, folder in {
+            "an unlisted repo": unlisted,
+            "a repo with a listed name under another owner": same_name_other_owner,
+            "a repo with no origin": no_origin,
+            "a folder outside git": self.machine.app,
+        }.items():
+            with self.subTest(label):
+                run = self.machine.run(computer="work", cwd=folder)
+
+                self.assertEqual(run.claude, ["--permission-mode", "auto"], run.output)
+                self.assertEqual(self.machine.notified(), [])
+
+    def test_a_personal_mac_in_a_listed_repo_starts_as_before(self) -> None:
+        folder = self.machine.repos / "example-app"
+        self.machine.make_repo_with_origin(folder, LISTED_URL)
+        self.machine.unset = {"PRIVATE_VERTEX_ONLY_REPOS", "PRIVATE_VERTEX_PROJECT"}
+
+        run = self.machine.run(computer="air", cwd=folder)
+
+        self.assertEqual(run.claude, ["--permission-mode", "bypassPermissions"], run.output)
+
+    def test_on_the_work_laptop_an_unset_key_refuses_to_start(self) -> None:
+        self.machine.unset = {"PRIVATE_VERTEX_ONLY_REPOS"}
+
+        run = self.machine.run(computer="work")
+
+        self.assert_refused(run, "PRIVATE_VERTEX_ONLY_REPOS is unset")
+
+    def test_an_entry_that_is_not_owner_and_name_refuses_to_start(self) -> None:
+        for entry in ["example-app", "example-org/example-app/extra", "/example-app"]:
+            with self.subTest(entry):
+                self.machine.extra_env["PRIVATE_VERTEX_ONLY_REPOS"] = f"{LISTED} {entry}"
+
+                run = self.machine.run(computer="work")
+
+                self.assert_refused(run, f'"{entry}"')
+
+    def test_a_listed_repo_with_no_vertex_project_refuses_to_start(self) -> None:
+        folder = self.machine.repos / "example-app"
+        self.machine.make_repo_with_origin(folder, LISTED_URL)
+        self.machine.extra_env["PRIVATE_VERTEX_PROJECT"] = ""
+
+        run = self.machine.run(computer="work", cwd=folder)
+
+        self.assert_refused(run, "PRIVATE_VERTEX_PROJECT is empty")
+
+    def test_a_listed_repo_refuses_a_callers_own_settings(self) -> None:
+        folder = self.machine.repos / "example-app"
+        self.machine.make_repo_with_origin(folder, LISTED_URL)
+        for args in (["--settings", "{}"], ["--settings={}"]):
+            with self.subTest(args):
+                run = self.machine.run(*args, computer="work", cwd=folder)
+
+                self.assert_refused(run, "--settings")
+
+    def test_settings_after_a_double_dash_is_the_prompt(self) -> None:
+        folder = self.machine.repos / "example-app"
+        self.machine.make_repo_with_origin(folder, LISTED_URL)
+
+        run = self.machine.run("--", "--settings", computer="work", cwd=folder)
+
+        self.assertEqual(
+            run.claude, ["--permission-mode", "auto", ON_VERTEX, "--", "--settings"], run.output
+        )
+
+    def test_an_unlisted_repo_keeps_a_callers_own_settings(self) -> None:
+        run = self.machine.run("--settings={}", computer="work")
+
+        self.assertEqual(run.claude, ["--permission-mode", "auto", "--settings={}"], run.output)
+
+
+class VertexOption(unittest.TestCase):
+    """A leading --vertex, which cc-vertex passes, starts a session on Vertex AI anywhere."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.machine = Machine(Path(self._tmp.name))
+        self.machine.extra_env["PRIVATE_VERTEX_PROJECT"] = "example-vertex-1234"
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_starts_an_unlisted_folder_on_vertex_without_passing_the_option_on(self) -> None:
+        run = self.machine.run("--vertex", "--resume", "abc", computer="work")
+
+        self.assertEqual(
+            run.claude, ["--permission-mode", "auto", ON_VERTEX, "--resume", "abc"], run.output
+        )
+
+    def test_works_before_or_after_unattended_with_the_project_on_any_machine(self) -> None:
+        for args in (["--vertex", "--unattended"], ["--unattended", "--vertex"]):
+            with self.subTest(args):
+                run = self.machine.run(*args, computer="air")
+
+                self.assertEqual(run.claude, ["--permission-mode", "auto", ON_VERTEX], run.output)
+                self.assertEqual(self.machine.vertex_settings(), ("example-vertex-1234", "global"))
+
+    def test_in_a_listed_repo_adds_the_setting_once(self) -> None:
+        folder = self.machine.repos / "example-app"
+        self.machine.make_repo_with_origin(folder, LISTED_URL)
+        self.machine.extra_env["PRIVATE_VERTEX_ONLY_REPOS"] = LISTED
+
+        run = self.machine.run("--vertex", computer="work", cwd=folder)
+
+        self.assertEqual(run.claude, ["--permission-mode", "auto", ON_VERTEX], run.output)
+
+    def test_with_no_vertex_project_refuses_to_start(self) -> None:
+        self.machine.extra_env["PRIVATE_VERTEX_PROJECT"] = ""
+
+        run = self.machine.run("--vertex", computer="work")
+
+        self.assertEqual(run.status, 2, run.output)
+        self.assertIsNone(run.claude, run.output)
+        self.assertIn("PRIVATE_VERTEX_PROJECT is empty", run.output)
+
+
 # Flags cc.bash may pass as a separate argument ahead of the caller's own, each taking exactly one
 # value. Any other flag is written as --flag=<value>, so a flag that takes several values can't read
 # the caller's arguments as more of its own.
@@ -560,6 +825,21 @@ class AddedArguments(unittest.TestCase):
                 assert run.claude is not None, run.output
                 self.assertEqual(run.claude[-1], "review this", run.output)
                 self.assertEqual(arguments_that_could_take_the_callers(run.claude[:-1]), [])
+
+    def test_leave_the_callers_arguments_to_the_caller_in_a_vertex_only_repo(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            machine = Machine(Path(tmp))
+            folder = machine.repos / "example-app"
+            machine.make_repo_with_origin(folder, LISTED_URL)
+            machine.extra_env["PRIVATE_VERTEX_PROJECT"] = "example-vertex-1234"
+            machine.extra_env["PRIVATE_VERTEX_ONLY_REPOS"] = LISTED
+
+            run = machine.run("review this", computer="work", cwd=folder)
+
+        assert run.claude is not None, run.output
+        self.assertIn(ON_VERTEX, run.claude)
+        self.assertEqual(run.claude[-1], "review this", run.output)
+        self.assertEqual(arguments_that_could_take_the_callers(run.claude[:-1]), [])
 
 
 class Arguments(unittest.TestCase):

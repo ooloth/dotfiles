@@ -6,7 +6,7 @@
 
 Run with: uv run tools/claude/tests/test_shell.py
 
-The test sources the file in a bare zsh on the work laptop, with `is_work` and `error` stubbed, and
+The test sources the file in a bare zsh on the work laptop, with `is_work` stubbed, and
 calls `cc` and `cc-vertex` in turn. The real cc.bash runs, and stubs on PATH stand in for `uv`,
 which runs the work logins, and `claude`, which records its arguments.
 """
@@ -41,10 +41,10 @@ def claude_started_by(command: str, stubs: Path) -> list[str]:
             "PRIVATE_VERTEX_PROJECT": "example-vertex-1234",
             # Set, even empty, so cc.bash keeps what it inherited and names no related repos
             "PRIVATE_RELATED_REPOS": "",
+            "PRIVATE_VERTEX_ONLY_REPOS": "",
         }
         script = (
             "is_work() { return 0 }\n"
-            'error() { print -u2 -- "error: $*" }\n'
             f"source '{SHELL_ZSH}'\n"
             # eval, because zsh expands an alias only in lines it reads after defining it
             f"eval {shlex.quote(command)}\n"
@@ -61,7 +61,8 @@ class CcVertex(unittest.TestCase):
     def test_starts_claude_as_cc_does_but_on_vertex(self) -> None:
         # A session on Vertex AI gets the same permission mode and related repos as `cc`, so
         # switching to it when the subscription's limit is reached keeps the same safety checks.
-        # Vertex is chosen with --settings, which outranks the switch in the user settings file.
+        # Vertex is chosen with --settings, which outranks the switch in the user settings file, and
+        # cc.bash adds it when passed --vertex, as it does for a repo that must always use Vertex.
         with tempfile.TemporaryDirectory() as folder:
             stubs = Path(folder)
             (stubs / "uv").write_text("#!/bin/bash\n")
@@ -70,9 +71,10 @@ class CcVertex(unittest.TestCase):
                 stub.chmod(0o755)
             cc = claude_started_by("cc --resume abc", stubs)
             vertex = claude_started_by("cc-vertex --resume abc", stubs)
-        at = vertex.index("--settings")
-        self.assertEqual(json.loads(vertex[at + 1]), {"env": {"CLAUDE_CODE_USE_VERTEX": "1"}})
-        self.assertEqual(vertex[:at] + vertex[at + 2 :], cc)
+        [at] = [i for i, arg in enumerate(vertex) if arg.startswith("--settings=")]
+        setting = vertex[at].removeprefix("--settings=")
+        self.assertEqual(json.loads(setting), {"env": {"CLAUDE_CODE_USE_VERTEX": "1"}})
+        self.assertEqual(vertex[:at] + vertex[at + 1 :], cc)
         self.assertIn("--resume", cc)
 
 

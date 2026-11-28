@@ -7,8 +7,8 @@
 model and its window size, the context used, and how much of the subscription's 5-hour and 7-day
 limits is left and when each resets. On the work laptop it starts with where the Vertex AI switch
 has put sessions: "Vertex AI until <time>", "subscription until <time>" while a hold lasts, or
-"switch failed", and with none of those, nothing. A session cc-vertex started runs on Vertex AI
-whatever this shows.
+"switch failed", and with none of those, nothing. A session cc-vertex started, or one in a repo
+PRIVATE_VERTEX_ONLY_REPOS lists, runs on Vertex AI whatever this shows.
 
 Each run also runs the Vertex AI switch (provider_switch.py), which can rewrite the state file and
 ~/.claude/settings.json when sessions should move. It does nothing without

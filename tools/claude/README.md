@@ -56,6 +56,24 @@ which one they use, `! cc-switch vertex` to move them until the 5-hour limit res
 on the subscription until it resets, with neither trigger moving them, and the status line shows
 `subscription until <time>`.
 
+A session `cc.bash` starts in a repo listed in `PRIVATE_VERTEX_ONLY_REPOS` always runs on Vertex AI,
+because of the data it can reach. `cc.bash` finds the repo from the origin remote of the folder the
+session starts in, so every checkout, worktree and clone of it counts, and gives the session the
+same `--settings` `cc-vertex` uses. So these sessions follow neither the switch nor `cc-switch`. A
+session started another way, such as a plain `claude`, or one started in another repo that reads
+the listed repo's files, is not held. hub's investigations are held only on a device whose
+`hub.toml` sets `[investigation] launcher` to `cc.bash`, as the work laptop's does. With Claude Code
+2.1.332, on 2026-11-27, a `--settings` value beat the user settings file's at start, and beat a
+project settings file's after that file was rewritten mid-session.
+
+On the work laptop, `cc.bash` refuses to start, saying why on stderr and in a notification, while
+the key is unset, when an entry is not `owner/name`, when a listed repo has no
+`PRIVATE_VERTEX_PROJECT`, when a caller passes its own `--settings`, which would replace this one,
+or when `--unattended` and `--permission-mode` are passed together. A shell or tmux server started
+before the key was added keeps its old `PRIVATE_*` variables, and a session started from it refuses
+until it gets the key: open a new terminal, or run `tmux set-environment -g` for the tmux server
+whose windows hub opens.
+
 `cc-vertex` starts a single session that stays on Vertex AI whatever the switch says. A commit
 must never hold the switch at `"1"`, since personal Macs have no Vertex AI project.
 `tests/test_settings.py` fails when the last commit holds it, so it catches one on the next check
