@@ -743,6 +743,23 @@ class VertexOnlyRepos(unittest.TestCase):
         self.assertEqual(run.claude, ["--permission-mode", "auto", "--settings={}"], run.output)
 
 
+class AmpOrb(unittest.TestCase):
+    """An Amp orb is never for work, so cc starts there as on a personal Mac."""
+
+    def test_starts_with_permissions_bypassed_and_no_work_checks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            machine = Machine(Path(tmp))
+            machine.unset = {"PRIVATE_VERTEX_ONLY_REPOS"}
+
+            run = machine.run("review this", computer="orb", related=None)
+
+            self.assertEqual(
+                run.claude, ["--permission-mode", "bypassPermissions", "review this"], run.output
+            )
+            self.assertEqual(machine.started(), ["claude"], "no work logins")
+            self.assertEqual(run.output, "", "no refusal and no unset-key warning")
+
+
 class VertexOption(unittest.TestCase):
     """A leading --vertex, which cc-vertex passes, starts a session on Vertex AI anywhere."""
 

@@ -5,7 +5,8 @@
 #
 # Homebrew's bin/brew re-runs itself under `env -i`, keeping only a short list of variables and
 # every HOMEBREW_* one, so COMPUTER never reaches a Brewfile and this asks networksetup itself.
-# networksetup exists only on macOS; elsewhere the name is empty, so "work".
+# Brewfiles run only on Macs, so unlike utils.bash and shell.zsh this has no "orb": AMP_ORB couldn't
+# reach it anyway. networksetup exists only on macOS; elsewhere the name is empty, so "work".
 
 def computer_for(name)
   case name

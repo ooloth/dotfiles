@@ -23,7 +23,7 @@ if [[ ! -f "${DOTFILES}/tools/bash/utils.bash" ]]; then
 fi
 export DOTFILES
 
-# Include is_air, is_mini, is_work in this commonly-sourced file
+# Include is_air, is_mini, is_work, is_orb in this commonly-sourced file
 source "${DOTFILES}/tools/macos/utils.bash"
 
 # A script started outside a configured zsh, such as a Rex tab, inherits no private values, so it

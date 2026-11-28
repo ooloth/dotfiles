@@ -3,7 +3,7 @@
 # In case this file is sourced before shell variables have been symlinked
 export DOTFILES="${DOTFILES:-${HOME}/Repos/ooloth/dotfiles}"
 
-# Include is_air, is_mini, is_work in this commonly-sourced file
+# Include is_air, is_mini, is_work, is_orb in this commonly-sourced file
 source "${DOTFILES}/tools/macos/shell.zsh"
 
 ###########

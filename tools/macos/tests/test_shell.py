@@ -9,7 +9,8 @@ Run with: uv run tools/macos/tests/test_shell.py
 
 Each test sources the real file in a bare zsh and prints the COMPUTER_NAME and COMPUTER it settles
 on. `scutil` is called by absolute path, so the name it detects is whatever this Mac is called, and
-the tests compare against that name as `networksetup` reports it.
+the tests compare against that name as `networksetup` reports it. An Amp orb is recognised by
+AMP_ORB=1, which the tests set themselves.
 """
 
 from __future__ import annotations
@@ -54,6 +55,26 @@ class ComputerName(unittest.TestCase):
 
     def test_an_empty_inherited_name_is_asked_for_again(self) -> None:
         self.assertEqual(sourced({"COMPUTER_NAME": ""})[0], this_mac())
+
+
+class AmpOrb(unittest.TestCase):
+    def test_an_amp_orb_is_an_orb_without_asking_for_a_name(self) -> None:
+        # An empty COMPUTER_NAME shows scutil, which an orb doesn't have, was never asked
+        self.assertEqual(sourced({"AMP_ORB": "1"}), ("", "orb"))
+
+    def test_in_an_amp_orb_only_is_orb_holds(self) -> None:
+        program = (
+            f"source '{SHELL_ZSH}'; "
+            "for p in is_air is_mini is_work is_orb; do $p && print -r -- $p; done; :"
+        )
+        result = subprocess.run(
+            ["zsh", "-f", "-c", program],
+            env={"PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "AMP_ORB": "1"},
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        self.assertEqual(result.stdout.split(), ["is_orb"])
 
 
 if __name__ == "__main__":
